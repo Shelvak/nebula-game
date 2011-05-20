@@ -53,6 +53,12 @@
       <library-path dir="${lib.loc}" append="true">
         <include name="*.swc" />
       </library-path>
+
+      <!-- Needed for nebula -->
+      <keep-as3-metadata name="Required" />
+      <keep-as3-metadata name="Optional" />
+      <keep-as3-metadata name="ArrayElementType" />
+      <keep-as3-metadata name="SkipProperty" />
       
       <!--
       use the ActionScript 3 class based object model for greater

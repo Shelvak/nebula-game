@@ -151,13 +151,53 @@
     <Alliances2 value="Alliances" />
   </Objects>
 
+  <Alliances>
+    <label.noTech>
+      <p>To create your alliance you need to research alliances technology.</p>
+      <p />
+      <p>If you wish to join an existing alliance you must get an invitation
+      from that alliance..</p>
+    </label.noTech>
+    <label.noAlly>
+      <p>You can create your alliance in this screen.</p>
+      <p />
+      <p>If you wish to join an existing alliance you must get an invitation
+      from that alliance..</p>
+    </label.noAlly>
+    <label.name value="Alliance name" />
+    <label.description value="Alliance description" />
+    <label.noDescription value="This alliance does not have description" />
+    <label.editDescription value="Edit description" />
+    <label.save value="Save" />
+    <label.cancel value="Cancel" />
+    <label.cooldown value="You are unable to create alliance for another {0}" />
+    <label.create value="Create alliance" />
+    <label.allyExists value="Alliance with that name already exists" />
+    <label.players value="Alliance members" />
+    <label.kick value="Kick" />
+    <label.action value="Action" />
+    <label.refresh value="Refresh" />
+    <label.leave value="Leave" />
+    <label.rename value="Rename" />
+    <label.renameCost>
+      <p>Renaming your alliance will cost you 
+      {0 one[one cred] many[? creds]}.</p>
+    </label.renameCost>
+    <label.total>
+      <p>Total ({0 one[one player] many[? players]})</p>
+    </label.total>
+    <label.inAlliance value="In alliance" />
+    <label.notInAlliance value="Not in alliance" />
+  </Alliances>
+
   <BattleMap>
     <individual value="Individual" />
     <combined value="Combined" />
     <status0 value="Self" />
     <status1 value="Alliance" />
-    <status3 value="Enemy" />
     <status2 value="NAP" />
+    <status2.tooltip value="Non-Agression Pact" />
+    <status3 value="Enemy" />
     <space value="Space" />
     <ground value="Ground" />
     <youWon value="You won!" />
@@ -474,14 +514,10 @@
     <CollectorT3.tooltip value="Generates energy" />
     <CollectorT3.common>
       <p>
-        Geothermal vents are as rarely found as they are powerful and these 
+        Geothermal vents are as rarely found on the planets.
+        However they are powerful and these 
         hubs allow you to use that power. They are the most effective means of 
         generating energy and gives best cost to performance ratio. 
-      </p>
-      <p>
-        However this comes at a price: due to origin of their power these hubs 
-        are weak and easily destroyed. However if you can defend it well, it 
-        prove to be greatly useful to you. 
       </p>
     </CollectorT3.common>
     <CollectorT3.about>
@@ -644,7 +680,7 @@
     <Thunder.about>
       <p>
         Firing plasma balls capable of reaching suborbital levels it is your 
-        best best against enemy crafts and bombers. Its projectiles detonate 
+        best bet against enemy crafts and bombers. Its projectiles detonate 
         upon impact dealing massive damage. 
       </p>
       <p>Only capable of hitting space units.</p>
@@ -657,11 +693,6 @@
         A great technological advancement allowing us to build tanks and other 
         advanced ground units. 
       </p>
-      <p>
-        One of its most feared creations are Scorpion tanks that are main force 
-        in any ground attack squad, although other units can also be built 
-        here. 
-      </p>
     </GroundFactory.about>
 
     <SpaceFactory.name value="Space Factory" />
@@ -671,10 +702,6 @@
         From the humble [reference:Units/Crow.name] scout class vessel to the 
         great [reference:Units/Rhyno.name] battleship - 
         [reference:SpaceFactory.name] brings it all at your disposal. 
-      </p>
-      <p>
-        It's facilities allows production of spacecraft that are capable of 
-        solar and interstellar travel allowing you to expand your empire. 
       </p>
     </SpaceFactory.about>
 
@@ -693,13 +720,19 @@
     </HealingCenter.about>
 
     <DefensivePortal.name ref="Objects/DefensivePortal1" />
-    <DefensivePortal.tooltip value="Summons units for defence" />
+    <DefensivePortal.tooltip value="Summons ground units for defense" />
     <DefensivePortal.common>
-      <p>TODO</p>
+      <p>When activated this portal allows you sending troops to other planets 
+      for defense.
+      It also allows other units to travel to planet it is built on to aid
+      in its defense.</p>
+      <p>Beware that it can only accept a fixed amount of volume from other
+      planets. If you want bigger reinforcements you'll have to either
+      upgrade the portal or build more of them.</p>
     </DefensivePortal.common>
     <DefensivePortal.about>
       <p>[reference:DefensivePortal.common]</p>
-      <p>TODO</p>
+      <p>Each level increases incoming teleportation volume.</p>
     </DefensivePortal.about>
 
     <GivesUnits>
@@ -844,7 +877,7 @@
     <description.noResearchCenter>
       <p>
         You could explore this object if you had a research center in this 
-        planet. Build one. 
+        planet.
       </p>
     </description.noResearchCenter>
     <description.explorationUnderway>
@@ -877,7 +910,7 @@
     <label.enemyPlanets value="Enemy planets detected" />
     <label.enemyShips value="Enemy ships detected" />
     <label.napPlanets value="NAP planets detected" />
-    <label.napShips value="NAP ships detected " />
+    <label.napShips value="NAP ships detected" />
     <label.openSolarSystem value="Enter solar system" />
     <label.openWormhole value="Enter battleground" />
     <label.wormhole value="Battleground" />
@@ -957,7 +990,6 @@
     <reach value="Reach" />
     <reach.ground value="Ground" />
     <reach.space value="Space" />
-    <reach.both value="Both" />
     <cooldown value="Cooldown time" />
     <bestAgainst value="Best against" />
     <weakAgainst value="Weak against" />
@@ -1000,39 +1032,9 @@
       <p>You can no longer view this location</p>
     </message.locationNotAvailable>
   </Location>
-  
-  <Alliances>
-    <label.noTech>
-      <p>To create an alliance you need to research alliances technology.</p>
-      <p>To join an alliance you must get an invitation from that alliance.</p>
-    </label.noTech>
-    <label.noAlly value="If you wish to create an alliance you can do it here." />
-    <label.name value="Alliance name" />
-    <label.description value="Alliance description" />
-    <label.noDescription value="This alliance does not have description" />
-    <label.editDescription value="Edit description" />
-    <label.save value="Save" />
-    <label.cancel value="Cancel" />
-    <label.cooldown value="You are unable to create alliance for another {0}" />
-    <label.create value="Create alliance" />
-    <label.allyExists value="Alliance with that name already exists" />
-    <label.players value="Alliance members" />
-    <label.kick value="Kick" />
-    <label.action value="Action" />
-    <label.refresh value="Refresh" />
-    <label.leave value="Leave" />
-    <label.rename value="Rename" />
-    <label.renameCost value="Renaming alliance will cost you {0} creds" />
-    <label.total value="Total ({0} Players)" />
-    <label.inAlliance value="In alliance" />
-    <label.notInAlliance value="Not in alliance" />
-  </Alliances>
 
   <MainMenu>
-
     <label.vip value="Vip" />
-    <label.start value="Start" />
-    <label.logout value="Logout" />
     <label.quests value="Quests" />
     <label.squadrons value="Fleets" />
     <label.ratings value="Ratings" />
@@ -1067,8 +1069,10 @@
     <label.reset value="Reset"/>
     <label.buyCreds value="Buy creds"/>
     <label.learnMore value="Learn more"/>
-    <message.combatCooldownInfo value="There will be {0} cooldown before combat will ensue."/>
-    <message.speedUpCost value="The speed up will cost you {0} creds."/>
+    <message.combatCooldownInfo 
+      value="Upon arrival there will be {0} cooldown before combat will ensue."/>
+    <message.speedUpCost 
+      value="The speed up will cost you {0 one[? cred] many[? creds]}."/>
   </Movement>
 
   <Navigator>
@@ -1091,19 +1095,18 @@
     <label.alliances value="Alliances" />
     <label.nap value="NAPs" />
     <label.enemies value="Enemies" />
-    <label.leveled value="Additionaly leveled" />
-    <label.dmgDealtPlayer value="Damage dealt by player" />
+    <label.leveled value="Leveled Up" />
+    <label.dmgDealtPlayer value="Damage dealt by you" />
     <label.dmgDealtAlliance value="Damage dealt by alliance" />
-    <label.dmgTakenPlayer value="Damage taken by player" />
+    <label.dmgTakenPlayer value="Damage taken by you" />
     <label.dmgTakenAlliance value="Damage taken by alliance" />
     <label.xp value="XP earned" />
-    <label.points value="Points earned" />
+    <label.points value="War points earned" />
     <label.stats value="Combat statistics" />
     <label.close value="Close" />
     <label.players value="Players" />
     <label.noNotifications value="There are no notifications" />
     <label.questCompleted value="Quest '{0}' was completed." />
-    <label.openQuests value="Open quests" />
     <label.oldPlayer value="You have ceased it's control from" />
     <label.noPlayer value="This planet was uninhabitated." />
     <label.newPlayer value="It was conquered by" />
@@ -1112,17 +1115,9 @@
     <label.readAll value="Read all" />
     <label.resourcesGained value="Resources gained" />
     <label.wreckageLeft value="Wreckage left" />
-    <label.notReadColor>
-      <p>Notifications that are marked with this color are not read yet.</p>
-    </label.notReadColor>
-    <label.newColor>
-      <p>
-        Notifications that are marked with this color have been just received. 
-      </p>
-    </label.newColor>
-    <label.readColor>
-      <p>Notifications that are marked with this color have been read.</p>
-    </label.readColor>
+    <label.newColor value="New notifications" />
+    <label.notReadColor value="Unread notifications" />
+    <label.readColor value="Read notifications" />
 
     <title.combatLog value="Combat report" />
     <message.combatLog value="Battle in {0}" />
@@ -1132,19 +1127,19 @@
     <label.combatLog.showLog value="View replay" />
     <label.combatLog.copyToClipboard value="Copy to clipboard" />
 
-    <title.questCompleted value="Quest progress information:" />
+    <title.questCompleted value="Quest competed" />
     <message.questCompleted value="Quest '{0}' was completed." />
     <message.newQuests value="Following quests were started:" />
 
     <title.achievementCompleted value="Achievement completed" />
-    <message.achievementCompleted value="Achievement completed" />
+    <message.achievementCompleted ref="title.achievementCompleted" />
 
     <title.notEnoughResources value="Not enough resources" />
     <message.notEnoughResources value="Not enough resources" />
 
     <title.buildingsDeactivated value="Buildings deactivated" />
     <message.buildingsDeactivated>
-      <p>Buildings deactivated due to insufficient energy</p>
+      <p>Buildings deactivated due to insufficient energy.</p>
     </message.buildingsDeactivated>
 
     <title.explorationFinished value="Exploration finished" />
@@ -1156,13 +1151,18 @@
     <message.planetAnnexed.lose value="Planet {0} lost" />
     
     <title.planetProtected value="Planet protected!" />
-    <message.planetProtected value="Planet protected!" />
+    <message.planetProtected ref="title.planetProtected" />
+    <label.planetProtected.explained>
+      <p>While this protection is active there will be no battles in this
+      planet.</p>
+    </label.planetProtected.explained>
     <label.planetProtected.enemies>
       <p>
       In a battle over a planet the owner of a planet lost. 
       However, due to interstellar treaties his/hers last planet 
-      has been placed under protection for {0} until {1}.
+      has been placed under protection for {0} (until {1}).
       </p>
+      <p>[reference:label.planetProtected.explained]</p>
     </label.planetProtected.enemies>
     <label.planetProtected.yours>
       <p>
@@ -1170,10 +1170,11 @@
       Due to interstellar treaties your planet has been placed 
       under protection for {0} until {1}.
       </p>
+      <p>[reference:label.planetProtected.explained]</p>
     </label.planetProtected.yours>
     
     <title.allianceInvitation value="Alliance invitation"/>
-    <message.allianceInvitation value="Intivation to alliance {0}"/>
+    <message.allianceInvitation value="Invitation to join alliance '{0}'"/>
     <message.allianceInvitation.long>
       You have been invited to the alliance {0}. Click
       '[reference:Notifications/label.allianceInvitation.join]' to join it.
@@ -1181,8 +1182,9 @@
     <label.allianceInvitation.join value="Join"/>
     <message.allianceInvitation.cooldown value="You can't join any alliance for {0} (until {1})."/>
     <message.allianceInvitation.alreadyInAlliance>
-      You can't join this alliance because you belong to another alliance. However you may leave your current
-      alliance but you won't be able to join another for {0}.
+      You can't join this alliance because you belong to another alliance. 
+      If you want to leave your alliance to join this one there will be a {0}
+      gap where you won't belong to any alliance at all.
     </message.allianceInvitation.alreadyInAlliance>
 
     <prop.alive value="Alive" />
@@ -1191,8 +1193,7 @@
 
   <Players>
     <npc value="NPC" />
-    <leftPlayer value="Lord Voldemort" />
-    <noAlliance value="No alliance" />
+    <noAlliance value="Without alliance" />
     <alliances value="Alliances" />
     <label.inRatings value="Show in ratings" />
     <label.sendMessage value="Send message" />
@@ -1211,7 +1212,7 @@
     <label.yes value="Yes" />
     <label.no value="No" />
     
-    <title.boostPlanet value="Boost planet" />
+    <title.boostPlanet value="Boost planet resources/storage" />
     <message.areYouSure value="Are you sure?" />
 
     <title.selfDestruct value="Self destruct!" />
@@ -1223,8 +1224,8 @@
 
     <title.renameAlliance value="Rename Alliance" />
     <message.renameAlliance>
-      <p>You are about to rename your alliance to {0}.</p>
-      <p>It will cost you {1} creds.</p>
+      <p>You are about to rename your alliance to '{0}'.</p>
+      <p>It will cost you {1 one[? cred] many[? creds]}.</p>
       <p>Are you sure?</p>
     </message.renameAlliance>
     
@@ -1243,13 +1244,14 @@
 
     <title.kick value="Kick alliance member"/>
     <message.kick>
-       <p>You are about to kick {0} from your alliance.</p>
+       <p>You are about to kick "{0}" from your alliance.</p>
        <p>Are you sure?</p>
     </message.kick>
 
     <title.moveBuilding value="Move Building"/>
     <message.moveBuilding>
-       <p>It will cost you {0} creds to move this building.</p>
+       <p>It will cost you {0 one[? cred] many[? creds]} to move this 
+       building.</p>
        <p>Are you sure?</p>
     </message.moveBuilding>
 
@@ -1263,11 +1265,10 @@
       <p>Connection lost with the server. Click '{0}' to reconnect.</p>
     </message.connectionLost>
 
-    <title.connectionTimeout value="Connection timeout!" />
+    <title.connectionTimeout value="Unable to connect!" />
     <message.connectionTimeout>
-      <p>
-        No response from server in last {0} seconds. Click '{1}' to reconnect. 
-      </p>
+      <p>We tried to connect but the server was not able to respond in 
+      {0} seconds. Click '{1}' to try again.</p>
     </message.connectionTimeout>
 
     <title.ioError value="IO Error!" />
@@ -1296,10 +1297,12 @@
     <title.disconnect.otherLogin value="Security error!" />
     <message.disconnect.otherLogin>
       <p>
-        Other player logged in with your username and password. If this wasn't 
-        you, please change your password immediatly to ensure account safety. 
-        Click '{0}' to reconnect. 
+        Other game client connected as you. 
+        If this wasn't you (e.g. from other browser) and you didn't report
+        any bugs recently (it can be game administrator, check your bug report),
+        we advise to change your password IMMEDIATELY to ensure account safety.
       </p>
+      <p>Click '{0}' to reconnect.</p>
     </message.disconnect.otherLogin>
 
     <title.disconnect.notFound value="Resource missing!" />
@@ -1337,7 +1340,7 @@
       </p>
       <p>
         So just copy that text below to clipboard (or press our conveniently 
-        placed Copy-O-Matic button) and wander to our forum to report this bug. 
+        placed '[reference:label.clientCrash.copy]' button) and wander to our forum to report this bug. 
         Your hard work will be rewarded. We promise. Cosmic pinky swear. Oh 
         yeah... 
       </p>
@@ -1349,7 +1352,7 @@
         We could fix this however unfortunately you do not have debugger 
         version of Flash Player so we can't collect much useful information. If 
         you DO WANT to prevent this from happening ever again then click the 
-        [reference:label.clientCrash.wiki] button to get more information on 
+        '[reference:label.clientCrash.wiki]' button to get more information on 
         how you can help us ;) We appreciate your help! 
       </p>
     </message.clientCrash.debugPlayer>
@@ -1368,8 +1371,8 @@
     <level value=" level {0}" />
     <ofLevel value="of level {0}" />
     <npc value="neutral" />
+    <technology value="išrastą technologiją" />
     <enemy value="enemy" />
-    <technology value="technology researched" />
     <of value="of" />
     
     <!-- 0: "Subclass or class to upgrade, 
@@ -1377,17 +1380,18 @@
     2: "ofLevel" or "level" from Objectives or '' if less than 2 
     3: word "Technology" from Objectives-->
     <objectiveText.HaveUpgradedTo1 value="Have {1} {0}{2}" />
-    <objectiveText.HaveUpgradedTo2 value="Have {2} {0} {3}" />
+    <objectiveText.HaveUpgradedTo2 value="Have {2} {0} technology researched" />
 
     <!-- 0: "objectiveLvlx.UpgradeTo" from Objectives, 
-    1: count of objects to destroy, 
+    1: count of objects to upgrade 
     2: "level" from Objectives or '' if less than 2 -->
     <objectiveLvl1.UpgradeTo value="Build" />
     <objectiveLvl2.UpgradeTo value="Upgrade" />
-    <objectiveText.UpgradeTo value="{0} {2} {1}{3}" />
+    <objectiveText.UpgradeTo value="{0} {2} {1} technology researched" />
 
     <!-- 0: Subclass or class to destroy, 1: count of objects to destroy, 
-    2: "level" from Objectives or '' if less than 2 -->
+    2: "level" from Objecti
+    ves or '' if less than 2 -->
     <objectiveText.Destroy value="Destroy {1}{2} {0}" />
     <objectiveText.DestroyNpcBuilding value="Destroy {1}{2} {0}" />
     
@@ -1484,15 +1488,8 @@
         planet due to insufficient storage.
       </p>
     </warning.wontFit>
-    <label.notCompletedColor>
-      <p>Quests that are marked in this color are not yet completed.</p>
-    </label.notCompletedColor>
-    <label.completedColor>
-      <p>
-        Quests that are marked in this color are completed and their reward may 
-        be claimed. 
-      </p>
-    </label.completedColor>
+    <label.notCompletedColor value="Not completed quests" />
+    <label.completedColor value="Completed quests" />
 
     <message.rewardClaimed value="Reward has been claimed to planet {0}" />
 
@@ -1578,7 +1575,7 @@
     <about.4>
       <p>It is good to see you, Commander.</p>
       <p>
-        Our resource production is steady now. As wonderfull as it is I cannot 
+        Our resource production is steady now. As wonderful as it is I cannot 
         get it out of my head that we aren't pushing to the limits of our 
         capabilities. There is so much raw metal and energy out there! 
       </p>
@@ -2547,8 +2544,6 @@
     <armyPoints value="Army points" />
     <online value="online" />
     <offline value="offline" />
-    <label.sortNames value="Sort by names" />
-    <label.sortPoints value="Sort by points" />
     <label.search value="Search" />
     <label.pointsToWin value="Victory points to win: {0}" />
     <label.filterOnline value="Show only online players" />
@@ -2581,7 +2576,7 @@
 
   <SSObjects>
     <title.info value="{0} info" />
-    <label.owner value="Occupied by " />
+    <label.owner value="Occupied by" />
     <label.inviteToAlliance value="Invite owner to alliance"/>
     <label.unoccupied value="Unoccupied" />
     <label.toPlanet value="Enter planet" />
@@ -2611,7 +2606,7 @@
 
   <Squadrons>
     <title.squadrons value="Fleets" />
-    <title.noSquadrons value="No fleets detected" />
+    <title.noSquadrons value="No moving fleets detected." />
     <label.currentLocation value="Current location" />
     <label.sourceLocation value="Flying from" />
     <label.targetLocation value="Traveling to" />
@@ -2638,8 +2633,9 @@
     </buildCenters>
     <notEnoughScientists>
       <p>
-        This technology needs {0} scientists. However only {2} scientists out 
-        of {4} are available. 
+        This technology needs {0 one[one scientist] many[? scientists]}. 
+        However only {2 one[one scientist] many[? scientists]} out 
+        of {4 one[one scientist] many[? scientists]} are available. 
       </p>
     </notEnoughScientists>
     <notEnoughScientistsExploration>
@@ -2647,7 +2643,8 @@
     </notEnoughScientistsExploration>
     <technologiesNeeded value="Additional technologies needed" />
     <groupResearched>
-      <p>Another technology in this group has been already researched</p>
+      <p>Another technology in this group has been already researched so you
+      cannot research this technology</p>
     </groupResearched>
 
     <upgrade value="Upgrade" />
@@ -2847,9 +2844,7 @@
     <Radar.name ref="Buildings/Radar.name" />
     <Radar.about ref="Buildings/Radar.common" />
 
-    <MetalExtractorT2.name>
-      <p>[reference:Buildings/MetalExtractorT2.name]</p>
-    </MetalExtractorT2.name>
+    <MetalExtractorT2.name ref="Buildings/MetalExtractorT2.name" />
     <MetalExtractorT2.about>
       <p>Allows building [reference:Buildings/MetalExtractorT2.name].</p>
       <p>[reference:Buildings/MetalExtractorT2.common]</p>
@@ -2884,16 +2879,12 @@
         By using zetium coated wires our scientists are able to increase their 
         throughput and use our energy more efficiently. This increases our 
         energy generation rates and storage capacities. Investing in 
-      </p>
-      <p>
         this technology may prove useful if you are falling short on energy. 
       </p>
       <p>Each level increases energy generation rate and storage.</p>
     </SuperconductorTechnology.about>
 
-    <ZetiumExtractorT2.name>
-      <p>[reference:Buildings/ZetiumExtractorT2.name]</p>
-    </ZetiumExtractorT2.name>
+    <ZetiumExtractorT2.name ref="Buildings/ZetiumExtractorT2.name" />
     <ZetiumExtractorT2.about>
       <p>Allows building [reference:Buildings/ZetiumExtractorT2.name].</p>
       <p>[reference:Buildings/ZetiumExtractorT2.common]</p>
@@ -3076,16 +3067,16 @@
 
     <Alliances.name ref="Objects/Alliances1" />
     <Alliances.about>
-      <p>Allows creating your own alliance.</p>
-      <p>Join forces with your neighbours! Protect each other!
-      Share your fleets! Help each other to complete quests. Anything is
+      <p>Join forces with your neighbours. Protect each other.
+      Coordinate your attacks. Help each other to complete quests. Anything is
       possible when you are not alone. So why wait? Create your alliance now!</p>
+      <p>Allows creating your own alliance.</p>
     </Alliances.about>
 
     <DefensivePortal.name ref="Objects/DefensivePortal1" />
     <DefensivePortal.about>
+      <p>Allows building [reference:Objects/DefensivePortal1].</p>
       <p>[reference:Buildings/DefensivePortal.common]</p>
-      <p>TODO</p>
     </DefensivePortal.about>
   </Technologies>
 
@@ -3107,7 +3098,6 @@
     <property.storage value="Storage" />
     <property.move.solarSystem.hopTime value="One hop in SS" />
     <property.move.galaxy.hopTime value="One hop in Galaxy" />
-    <property.unloadPerTick value="Volume unloaded per tick" />
     <property.population value="Population" />
 
     <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
@@ -3129,7 +3119,7 @@
     <defensivePool.totalVolume value="Total volume: {0}" />
     <defensivePool.teleportedVolume value="Teleported volume: {0}" />
     <defensivePool.maxVolume value="Max power: {0}" />
-    <defensivePool.pickUnits value="Pick" />
+    <defensivePool.pickUnits value="Show other" />
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
@@ -3145,8 +3135,6 @@
     <label.currentFacilities value="Facilities" />
     <label.flankNr1 value="First" />
     <label.flankNr2 value="Second" />
-    <label.flankNr3 value="Third" />
-    <label.flankNr4 value="Fourth" />
     <tooltip.flank>
       <p>{0} flank</p>
       <p>Units in {0} flank has {1}% probability to be hit.</p>
@@ -3182,7 +3170,7 @@
     <label.healing value="Healing" />
     <label.willHeal value="You can heal selected units for:" />
     <label.healCooldown value="You wont be able to heal units again for {0}." />
-    <toolTip.healCooldown value="Healing cooldown is active" />
+    <toolTip.healCooldown value="Healing cooldown is active." />
     <label.heal value="Heal" />
     <label.show value="Show" />
     <label.deploy value="Deploy" />
@@ -3223,7 +3211,7 @@
       </p>
     </description.dontAvoidBattles>
     <warning.noFleets>
-      <p>There are currently no ships leaving this planet</p>
+      <p>There are currently no ships leaving this planet.</p>
     </warning.noFleets>
 
     <stored.short>
@@ -3245,7 +3233,7 @@
     </message.noResources>
 
     <message.wasDeselected>
-      <p>Some unit was deselected due to insufficient resources for healing.</p>
+      <p>Unit was deselected due to insufficient resources for healing.</p>
     </message.wasDeselected>
 
     <kind.ground value="Ground ({0})" />
@@ -3268,10 +3256,6 @@
         be in large groups thus compensating their weakness with their 
         quantities. 
       </p>
-      <p>
-        They are usually found near resource deposits and are best dealt with 
-        the help of light infantry. 
-      </p>
     </Gnat.about>
 
     <Glancer.name value="Glancer" />
@@ -3282,7 +3266,6 @@
         however their tendency to hide behind other units makes them hard 
         targets. 
       </p>
-      <p>It is best to deal with them by using anti-infantry weapons.</p>
     </Glancer.about>
 
     <Spudder.name value="Spudder" />
@@ -3291,10 +3274,6 @@
         Semi-heavy humanoid robots. Armed with homing plasma particles they are 
         a considerable threat for your troops. They fire multiple particles at 
         once making them excellent troops against groups of weak opponents. 
-      </p>
-      <p>
-        Because their thick armor protects them from light weapons they are 
-        best dealt with when outnumbered by Shockers or a few Scorpions. 
       </p>
     </Spudder.about>
 

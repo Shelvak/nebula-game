@@ -1,0 +1,3506 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<locale>
+  <Objects>
+    <!-- Savi žemės unitai -->
+    
+    <Trooper1 value="Desantininkas" />
+    <Trooper10 value="Desantininkų" />
+    <Trooper2 value="Desantininkai" />
+
+    <Shocker1 value="Mechas" />
+    <Shocker10 value="Mechų" />
+    <Shocker2 value="Mechai" />
+
+    <Seeker1 value="Sėlintojas" />
+    <Seeker10 value="Sėlintojų" />
+    <Seeker2 value="Sėlintojai" />
+    
+    <Scorpion1 value="Skorpionas" />
+    <Scorpion10 value="Skorpionų" />
+    <Scorpion2 value="Skorpionai" />
+    
+    <Azure1 value="Azuras" />
+    <Azure10 value="Azurų" />
+    <Azure2 value="Azurai" />
+
+    <Mantis1 value="Maldininkas" />
+    <Mantis10 value="Maldininkų" />
+    <Mantis2 value="Maldininkai" />
+
+    <Zeus1 value="Dzeusas" />
+    <Zeus10 value="Dzeusų" />
+    <Zeus2 value="Dzeusai" />
+
+    <MDH1 value="Mobilus štabas" />
+    <MDH10 value="Mobilių štabų" />
+    <MDH2 value="Mobilūs štabai" />
+    
+    <!-- Savi kosmoso unitai -->
+
+    <Mule1 value="Mulas" />
+    <Mule1 value="Mulų" />
+    <Mule2 value="Mulai" />
+
+    <Crow1 value="Varnas" />
+    <Crow10 value="Varnų" />
+    <Crow2 value="Varnai" />
+
+    <Cyrix1 value="Cyriksas" />
+    <Cyrix10 value="Cyriksų" />
+    <Cyrix2 value="Cyriksai" />
+
+    <Rhyno1 value="Raganosis" />
+    <Rhyno10 value="Raganosių" />
+    <Rhyno2 value="Raganosiai" />
+
+    <Dart1 value="Strelė" />
+    <Dart10 value="Strėlių" />
+    <Dart2 value="Strėlės" />
+
+    <Avenger1 value="Keršytojas" />
+    <Avenger10 value="Keršytojų" />
+    <Avenger2 value="Keršytojai" />
+
+    <Jumper1 value="Šoklys" />
+    <Jumper10 value="Šoklių" />
+    <Jumper2 value="Šokliai" />
+    
+    <!-- NPC žemės unitai -->
+
+    <Gnat1 value="Gnatas" />
+    <Gnat10 value="Gnatų" />
+    <Gnat2 value="Gnatai" />
+
+    <Glancer1 value="Žvilgčiotojas" />
+    <Glancer10 value="Žvilgčiotojų" />
+    <Glancer2 value="Žvilgčiotojai" />
+
+    <Spudder1 value="Spuderis" />
+    <Spudder10 value="Spuderių" />
+    <Spudder2 value="Spuderiai" />
+
+    <Gnawer1 value="Kankintojas" />
+    <Gnawer10 value="Kankintojų" />
+    <Gnawer2 value="Kankintojai" />
+
+    <!-- NPC kosmoso unitai -->
+
+    <Dirac1 value="Dirakas" />
+    <Dirac10 value="Dirakų" />
+    <Dirac2 value="Dirakai" />
+
+    <Thor1 value="Toras" />
+    <Thor10 value="Torų" />
+    <Thor2 value="Torai" />
+
+    <Demosis1 value="Demozis" />
+    <Demosis10 value="Demozių" />
+    <Demosis2 value="Demoziai" />
+    
+    <!-- Bokšteliai -->
+
+    <Vulcan1 value="Vulkanas" />
+    <Vulcan10 value="Vulkanų" />
+    <Vulcan2 value="Vulkanai" />
+
+    <Screamer1 value="Rėksnys" />
+    <Screamer10 value="Rėksnių" />
+    <Screamer2 value="Rėksniai" />
+
+    <Thunder1 value="Griausmas" />
+    <Thunder10 value="Griausmų" />
+    <Thunder2 value="Griausmai" />
+    
+    <!-- Kasyklos -->
+
+    <MetalExtractor1 value="MEX" />
+    <MetalExtractor10 value="MEX-ų" />
+    <MetalExtractor2 value="MEX-ai" />
+
+    <MetalExtractorT21 value="MEX T-2" />
+    <MetalExtractorT210 value="MEX-ų T-2" />
+    <MetalExtractorT22 value="MEX-ai T-2" />
+
+    <CollectorT11 value="Vėjo jėgainė" />
+    <CollectorT110 value="Vėjo jėgainių" />
+    <CollectorT12 value="Vėjo jėgainės" />
+
+    <CollectorT21 value="Kolektorius" />
+    <CollectorT210 value="Kolektorių" />
+    <CollectorT22 value="Kolektoriai" />
+
+    <CollectorT31 value="Terminis Centras" />
+    <CollectorT310 value="Terminių Centrų" />
+    <CollectorT32 value="Terminiai Centrai" />
+
+    <ZetiumExtractor1 value="ZEX" />
+    <ZetiumExtractor10 value="ZEX-ų" />
+    <ZetiumExtractor2 value="ZEX-ai" />
+    
+    <ZetiumExtractorT21 value="ZEX T-2" />
+    <ZetiumExtractorT210 value="ZEX-ų T-2" />
+    <ZetiumExtractorT22 value="ZEX-ai T-2" />
+    
+    <!-- Talpyklos -->
+
+    <MetalStorage1 value="Metalo talpykla" />
+    <MetalStorage10 value="Metalo talpyklų" />
+    <MetalStorage2 value="Metalo talpyklas" />
+    
+    <EnergyStorage1 value="Energijos talpykla" />
+    <EnergyStorage10 value="Energijos talpyklų" />
+    <EnergyStorage2 value="Energijos talpyklas" />
+    
+    <ZetiumStorage1 value="Zetiumo talpykla" />
+    <ZetiumStorage10 value="Zetiumo talpyklų" />
+    <ZetiumStorage2 value="Zetiumo talpyklas" />
+    
+    <!-- NPC pastatai -->
+
+    <NpcMetalExtractor1 value="Liejykla" />
+    <NpcMetalExtractor10 value="Liejyklų" />
+    <NpcMetalExtractor2 value="Liejyklos" />
+
+    <NpcZetiumExtractor1 value="Z-Laboratorija" />
+    <NpcZetiumExtractor10 value="Z-Laboratorijų" />
+    <NpcZetiumExtractor2 value="Z-Laboratorijas" />
+    
+    <NpcGeothermalPlant1 value="Šilumos Rinktuvas" />
+    <NpcGeothermalPlant10 value="Šilumos Rinktuvų" />
+    <NpcGeothermalPlant2 value="Šilumos Rinktuvai" />
+     
+    <NpcSolarPlant1 value="Prizmė" />
+    <NpcSolarPlant10 value="Prizmių" />
+    <NpcSolarPlant2 value="Prizmės" />
+    
+    <NpcCommunicationsHub1 value="Komunikatorius" />
+    <NpcCommunicationsHub10 value="Komunikatorių" />
+    <NpcCommunicationsHub2 value="Komunikatoriai" />
+
+    <NpcTemple1 value="Šventykla" /> 
+    <NpcTemple10 value="Šventyklų" /> 
+    <NpcTemple2 value="Šventyklos" /> 
+
+    <NpcExcavationSite1 value="Kasinėjimų vieta" />
+    <NpcExcavationSite10 value="Kasinėjimų vietų" />
+    <NpcExcavationSite2 value="Kasinėjimų vietos" />
+
+    <NpcResearchCenter1 value="Laboratorija" />
+    <NpcResearchCenter10 value="Laboratorijų" />
+    <NpcResearchCenter2 value="Laboratorijos" />
+
+    <NpcJumpgate1 value="Šuolio vartai" />
+    <NpcJumpgate10 value="Šuolio vartų" />
+    <NpcJumpgate2 value="Šuolio vartai" />
+    
+    <NpcInfantryFactory1 value="Perykla" />
+    <NpcInfantryFactory10 value="Peryklų" />
+    <NpcInfantryFactory2 value="Peryklas" />
+
+    <NpcTankFactory1 value="Ateivių fabrikas" />
+    <NpcTankFactory10 value="Ateivių fabrikų" />
+    <NpcTankFactory2 value="Ateivių fabrikai" />
+    
+    <NpcSpaceFactory1 value="Laivų dirbtuvės" />
+    <NpcSpaceFactory10 value="Laivų dirbtuvių" />
+    <NpcSpaceFactory2 value="Laivų dirbtuvės" />
+    
+    <NpcHall1 value="Siųstuvas" />
+    <NpcHall10 value="Siųstuvų" />
+    <NpcHall2 value="Siųstuvai" />
+    
+    <!-- Statymo pastatai -->
+    
+    <Mothership1 value="Motininis laivas" />
+    <Mothership10 value="Motininių laivų" />
+    <Mothership2 value="Motininiai laivai" />
+
+    <Headquarters1 value="Štabas" />
+    <Headquarters10 value="Štabų" />
+    <Headquarters2 value="Štabai" />
+    
+    <Crane1 value="Kranas" />
+    <Crane10 value="Kranų" />
+    <Crane2 value="Kranai" />
+    
+    <!-- Kareivių gaminimo pastatai -->
+
+    <Barracks1 value="Kareivinės" />
+    <Barracks10 value="Kareivinių" />
+    <Barracks2 value="Kareivines" />
+    
+    <GroundFactory1 value="Tankų gamykla" />
+    <GroundFactory10 value="Tankų gamyklų" />
+    <GroundFactory2 value="Tankų gamyklas" />
+
+    <SpaceFactory1 value="Laivų gamykla" />
+    <SpaceFactory10 value="Laivų gamyklų" />
+    <SpaceFactory2 value="Laivų gamyklos" />
+
+    <!-- Kiti pastatai -->
+
+    <Radar1 value="Radaras" />
+    <Radar10 value="Radarų" />
+    <Radar2 value="Radarus" />
+
+    <DefensivePortal1 value="Portalas" />
+    <DefensivePortal10 value="Portalų" />
+    <DefensivePortal2 value="Portalai" />
+
+    <ResearchCenter1 value="Tyrimų centras" />
+    <ResearchCenter10 value="Tyrimų centrų" />
+    <ResearchCenter2 value="Tyrimų centrai" />
+
+    <Housing1 value="Gyvenamieji bokštai" />
+    <Housing10 value="Gyvenamųjų bokštų" />
+    <Housing2 value="Gyvenamieji bokštai" />
+    
+    <HealingCenter1 value="Techninė ligoninė" />
+    <HealingCenter10 value="Techninių ligoninių" />
+    <HealingCenter2 value="Techninės ligoninės" />
+    
+    <!-- Technologijos -->
+
+    <ZetiumExtraction1 value="Zetiumo gavyba" />
+    <MetabolicChargers1 value="Sustiprinti šarvai" />
+    <HighVelocityCharges1 value="Greituminiai šoviniai" />
+    <ShipsArmor1 value="Keliasluoksnės plokštės" />
+    <ShipsDamage1 value="Energizuota plazma" />
+    <TanksDamage1 value="Zetiumo sviediniai" />
+    <TanksArmor1 value="Magnetiniai 6arvai" />
+    <FieryMelters1 value="Aukšto spaudimo lydymas" />
+    <SuperconductorTechnology1 value="Superlaidininkai" />
+    <PowderedZetium1 value="Zetiumo pjaustikliai" />
+    <HeavyFlight1 value="Gama varikliai" />
+    
+    
+    <!-- Kita -->
+
+    <Planet1 value="planeta" />
+    <Planet10 value="planetų" />
+    <Planet2 value="planetos" />
+
+    <Point1 value="taškas" />
+    <Point10 value="taškų" />
+    <Point2 value="taškai" />
+
+    <Object1 value="objektas" />
+    <Object10 value="objektų" />
+    <Object2 value="objektai" />
+
+    <Is1 value="yra" />
+    <Is2 value="yra" />
+
+    <Scientist1 value="Mokslininkas" />
+    <Scientist10 value="Mokslininkų" />
+    <Scientist2 value="Mokslininkai" />
+
+    <Alliances1 value="Sąjungos" />
+    <Alliances10 value="Sąjungų" />
+    <Alliances2 value="Sąjungos" />
+  </Objects>
+
+  <Alliances>
+    <label.noTech>
+      <p>Kad galėtum įkurti sąjungą tau reikia išrasti sąjungų technologiją.</p>
+      <p />
+      <p>Jeigu nori įstoti į jau egzistuojančią sąjungą, turi iš tos sąjungos 
+      gauti pakvietimą.</p>
+    </label.noTech>
+    <label.noAlly>
+      <p>Šiame ekrane gali įkurti savo sąjungą.</p>
+      <p />
+      <p>Jeigu nori įstoti į jau egzistuojančią sąjungą, turi iš tos sąjungos 
+      gauti pakvietimą.</p>
+    </label.noAlly>
+    <label.name value="Sąjungos vardas" />
+    <label.description value="Sąjungos aprašymas" />
+    <label.noDescription value="Ši sąjunga neturi savo aprašymo" />
+    <label.editDescription value="Keisti aprašymą" />
+    <label.save value="Išsaugoti" />
+    <label.cancel value="Atšaukti" />
+    <label.cooldown value="Tu galėsi įkurti sąjungą po {0}" />
+    <label.create value="Įkurti sąjungą" />
+    <label.allyExists value="Sąjunga su tokiu vardu jau yra." />
+    <label.players value="Sąjungos nariai" />
+    <label.kick value="Išspirti" />
+    <label.action value="Veiksmas" />
+    <label.refresh value="Atnaujinti" />
+    <label.leave value="Išeiti" />
+    <label.rename value="Pervadinti" />
+    <label.renameCost>
+      <p>Sąjungos pervadinimas tau kainuos 
+      {0 one[? kredą] tens[? kredų] many[? kredus]}.</p>
+    </label.renameCost>
+    <label.total>
+      <p>Iš viso ({0 one[? žaidejas] tens[? žaidėjų] many[? žaidėjų]})</p>
+    </label.total>
+    <label.inAlliance value="Sąjungoje" />
+    <label.notInAlliance value="Ne sąjungoje" />
+  </Alliances>
+
+  <BattleMap>    
+    <status0 value="Tu" />
+    <status1 value="Sąjungininkai" />
+    <status2 value="NS" />
+    <status2.tooltip value="Nepuolimo Sutartis" />
+    <status3 value="Priešai" />
+    
+    <space value="Kosmosas" />
+    <ground value="Žemė" />
+    <youWon value="Tu nugalėjai!" />
+    <youLost value="Tu pralaimėjai!" />
+    <tie value="Lygiosios!" />
+    <close value="Uždaryti" />
+    <battleOver value="Mūšis baigtas" />
+    <tick value="Ėjimas {0}/{1}" />
+    <title.overallHp value="Viso gyvybių" />
+    <pause value="SUSTABDYTA" />
+    <pressPlay value="Paspausk GROTI, kad pratęsti kovą" />
+  </BattleMap>
+  
+  <Messenger>
+    <clickHere value="Nori sužinoti daugiau? Spausk čia." />
+  </Messenger>
+
+  <BuildingSelectedSidebar>
+    <currentLevel value="Dabartinis lygis" />
+    <queueInfo value="Eilės informacija" />
+    <hp value="GT" />
+    <selectedUpgradeCost value="Patobulinimo kaina" />
+    <upgrade value="Patobulinti pastatą" />
+    <status value="Būsena" />
+    <constructing value="Konstruoja" />
+    <upgrading value="Tobulinama" />
+    
+    <rates value="Greičiai" />
+    <storage value="Talpyklos" />
+    <activate value="Aktyvuoti" />
+    <deactivate value="Deaktyvuoti" />
+    <attack value="Pulti" />
+    <label.noUnits value="Tu neturi karių!" />
+    <deselectAll value="Atžymėti visus" />
+    <selectAll value="Pažymėti visus" />
+    <open value="Atidaryti {0}" />
+    <noUnits value="Tu neturi antžeminių karių" />
+    <attackInfo value="Pastate ęsantys kariai" />
+    <selfDestruct value="Susinaikinti" />
+    <destructResources>
+      <p>Jeigu sunaikinsi šį pastatą gausi:</p>
+    </destructResources>
+    <destructCooldown.total>
+      <p>
+        Sunaikinus šį pastatą negalėsi sunaikinti kito pastato {0}.
+      </p>
+    </destructCooldown.total>
+    <destructCooldown.remaining>
+      <p>Galėsi sunaikinti šį pastatą po {0}.</p>
+    </destructCooldown.remaining>
+    <destroy value="Sunaikinti" />
+    <move value="Perkelti" />
+    <buildingInfo value="Pastato informacija" />
+    <buildingDestroyed value="Pasirinktas pastatas buvo sunaikintas!" />
+    <renamePlanet value="Pervadinti planetą" />
+    <label.changeName value="Pakeisti vardą" />
+    <label.busy>
+      <p>Šis pastatas negali būti pradėtas tobulinti, nes šiuo metu jis 
+      kažką stato.</p>
+    </label.busy>
+    <message.changeName>
+      <p>Kaip šios planetos valdovas gali pakeisti jos vardą.</p>
+    </message.changeName>
+    <message.pressOnEmpty>
+      <p>Paspausk ant tuščios žemėlapio vietos, jog įeitum į statybų 
+      režimą.</p>
+    </message.pressOnEmpty>
+    <toolTip.afterUpgrade value="Po patobulinimo" />
+
+    <title.buildingBonus value="Pastato privalumai" />
+    <label.nextBonus value="Sekantis pliusas už:" />
+    <label.victoryPoint value="1 laimėjimo taškas" />
+    <tileBonuses value="Žemėlapio privalumai" />
+    <armor.bonus value="Šarvai" />
+    <energy.bonus value="Energijos gamyba" />
+    <construction.bonus value="Statymo greitis" />
+    <scientists value="Mokslininkai" />
+    <special value="Sąvybės" />
+  </BuildingSelectedSidebar>
+
+  <BuildingSidebar>
+    <facilitiesTitle value="Pasirink statymo pastatą" />
+    <constructableTitle value="Pastatai" />
+    <infoTitle value="Statymo informacija" />
+    <applicable value="Įtakojantys:" />
+    <notApplicable value="Nesvarbūs:" />
+    <pressEsc value="Spausk ESC kad atžymėtum" />
+    <notYourPlanet value="Ši planeta tau nepriklauso!" />
+
+    <deselectButtonText value="atžymėti pastatą" />
+
+    <noFacilities value="Nėra statančių pastatų" />
+    <disabled value="Neužtenka resursų" />
+    <queueFull value="Šio pastato statymo eilė pilna" />
+
+    <tileBonuses value="Žemėlapio privalumai:" />
+    <armor.bonus value="šarvai" />
+    <energy.bonus value="energijos gavyba" />
+    <construction.bonus value="statymo greitis" />
+
+    <deployInProgress value="Vykdomas išskleidimas" />
+
+    <timeToFinish value="Iki užbaigimo" />
+  </BuildingSidebar>
+
+  <Buildings>
+    <property.hp value="Gyvybės Taškai" />
+    <property.timeToFinish.short value="{0}" />
+    <property.timeToFinish.long value="Baigta už {0}" />
+    <property.radar.strength value="Radaro stiprumas" />
+    <property.scientists value="Mokslininkai" />
+    <property.upgradeTime value="Tobulinimo laikas" />
+    <property.metal.generate value="Metalo išgavimo greitis" />
+    <property.metal.store value="Metalo talpa" />
+    <property.metal.use value="Metalo vartojimo greitis" />
+    <property.metal.cost value="Metalo kaina" />
+    <property.energy.generate value="Energy išgavimo greitis" />
+    <property.energy.store value="Energijos talpa" />
+    <property.energy.use value="Energy vartojimo greitis" />
+    <property.energy.cost value="Energijos kaina" />
+    <property.zetium.generate value="Zetiumo išgavimo greitis" />
+    <property.zetium.store value="Zetiumo talpa" />
+    <property.zetium.use value="Zetiumo vartojimo greitis" />
+    <property.zetium.cost value="Zetiumo kaina" />
+    <property.queue.max value="Statymo eilės ilgis" />
+    <property.constructing value="Stato" />
+    <property.initiative value="Iniciatyva" />
+    <property.armor value="Šarvai" />
+    <property.armorMod value="Šarvų daugiklis" />
+    <property.damageMod value="Žalos daugiklis" />
+    <property.mod.construction value="Konstravimo greičio daugiklis" />
+    <property.healing.time.mod value="Sekundžių pagyditi 1 GT" />
+    <property.healing.cost.mod value="Gydymo kainos daugiklis" />
+
+    <text.deactivated>
+      <p>
+        Neaktyvūs pastatai nevartoja energijos, tačiau ir neatlieka savo 
+        funkcijų. Aktyvuok šį pastatą, jog pratęstum jo darbą. Jeigu šis 
+        pastatas šiuo metu yra tobulinimas, jis aktyvuos automatiškai 
+        pasibaigus tobulinimui.
+      </p>
+    </text.deactivated>
+
+    <!-- NPC pastatai -->
+
+    <NpcMetalExtractor.name ref="Objects/NpcMetalExtractor1" />
+    <NpcMetalExtractor.about>
+      <p>
+        Šios ateiviškų technologijų valdomos liejyklos seniai dūla apleistos
+        tikrųjų savo šeimininkų. Iš kai kurių belikę tik tuščias kiautas... 
+        Tačiau būk atsargus, nes net ir tokias vietas gina ankstesnieji jų 
+        sargybiniai.
+      </p>
+    </NpcMetalExtractor.about>
+
+    <NpcZetiumExtractor.name ref="Objects/NpcZetiumExtractor1" />
+    <NpcZetiumExtractor.about>
+      <p>
+        Šie pastatai buvo naudojami zetiumo gavybai, talpinimui ir tyrinėjimui.
+        Dauguma iš jų yra visiškai neaktyvus, o likusiuose iki šiol veikia 
+        tik automatiniai mechanizmai.
+      </p>
+      <p>Tačiau nors jie ir atrodo apleisti, tačiau juos po senovei saugo akyli
+      sargai. Būk atsargus.</p>
+    </NpcZetiumExtractor.about>
+
+    <NpcGeothermalPlant.name ref="Objects/NpcGeothermalPlant1" />
+    <NpcGeothermalPlant.about>
+      <p>
+        Pastatyti amžių glūdumoje, šie pastatai buvo skirti rinkti iš po žemių
+        besiveržiančiai šilumai. Nugalėk šiuos buveinės gyvėjus ir pasiglemžk
+        šią nevaržomą energiją sau!
+      </p>
+    </NpcGeothermalPlant.about>
+
+    <NpcSolarPlant.name ref="Objects/NpcSolarPlant1" />
+    <NpcSolarPlant.about>
+      <p>
+        Šiuose pastatuose renkama saulės energija. Mūsų skaneriai rodo stiprų
+        energijos srautą ir keletą priešiškų karių pastato apylinkėse. Elkis
+        apdairiai.
+      </p>
+    </NpcSolarPlant.about>
+
+    <NpcCommunicationsHub.name ref="Objects/NpcCommunicationsHub1" />
+    <NpcCommunicationsHub.about>
+      <p>
+        Šie pastatai panašūs į komunikacijos įrenginius. Galbūt jie buvo 
+        naudojami susisiekti tarp pasaulių ar net saulės sistemų?
+      </p>
+    </NpcCommunicationsHub.about>
+
+    <NpcTemple.name ref="Objects/NpcTemple1" />
+    <NpcTemple.about>
+      <p>
+        Pirmtakai buvo nepaprastai išsivysčiusi rasė, tačiau tai netrukdė jiems
+        būti ir itin religingais. Jie rinkdavosi šiose šventyklose, jog 
+        melstusi savo technologiniams dievams.</p>
+      <p>Sakoma, jog žemė, ant kurios stovi šie pastatai yra šventa. Nežinia
+      ar tai tiesa, tačiau ji yra ypatingai saugoma.</p>
+    </NpcTemple.about>
+
+    <NpcExcavationSite.name ref="Objects/NpcExcavationSite1" />
+    <NpcExcavationSite.about>
+      <p>Šį įduba panašėja į kasinėjimų ir tyrimų vietą. Ir nors jau niekas
+      nebesužinos ko pirmtakai čia ieškojo, ši vieta vis dar saugoma aršiai
+      nusiteikusių karių.</p>
+    </NpcExcavationSite.about>
+
+    <NpcResearchCenter.name ref="Objects/NpcResearchCenter1" />
+    <NpcResearchCenter.about>
+      <p>Šis mistiškas pastatas panašus į pirmtakų tyrimų laboratoriją. Niekas
+      nežino kokie tyrimai buvo joje vykdomi, tačiau kad ir kas tai būtų, tai 
+      buvo labai svarbu, nes šį pastatą saugo krūva robotų.</p>
+    </NpcResearchCenter.about>
+
+    <NpcJumpgate.name ref="Objects/NpcJumpgate1" />
+    <NpcJumpgate.about>
+      <p>Šie vartai buvo naudojami perkelti karius ir netgi kosminius laivus 
+      milžiniškais atstumais akimirksniu. Jie galėdavo perskrosti tarpus tarp
+      planetų ar netgi saulės sistemų per kelias sekundes.</p>
+      <p>Ir netgi jiems nebefunkcionuojant prie jų vartų stovi didžiulės 
+      pajėgos, kurios pasiruošusios ginti šiuos vartus bet kurią akimirką. Jos
+      neleis tau užimti šio pastato.</p>
+    </NpcJumpgate.about>
+
+    <!-- Žaidėjo pastatai -->
+
+    <Mothership.name ref="Objects/Mothership1" />
+    <Mothership.about>
+      <p>[reference:Objects/Mothership1] - tai pagrindinis laivas žmonėms, 
+      kurie gyvena šioje planetoje. Jie atkeliavo čia šiuo laivu ir jis tapo 
+      jiems pirmaja saugia užuoveja šioje laukinėje planetoje.</p>
+      <p>[reference:Objects/Mothership1] turi integruotą metalo išgavėją, 
+      saulės baterijas generuoti energijai ir talpyklas šiems resursams saugoti.
+      To pilnai užtenka, kad patenkinti bazines planetos resursų reikmes.</p>
+    </Mothership.about>
+
+    <MEX.common>
+      <p>
+        Kiekviena metalo kasykla gali būti patobulinta, jog 
+        pagerint jos efektyvumą ir išgauti daugiau metalo. Tačiau tokia 
+        patobulinta kasykla taip pat reikalauja daugiau energijos savo
+        darbui.
+      </p>
+      <p>Metalo kasyklos išsijungs ęsant energijos stygiui.</p>
+      <p>Kiekvienas patobulinimo lygis pakelia metalo išgavimo greitį.</p>
+    </MEX.common>
+
+    <MetalExtractor.name ref="Objects/MetalExtractor1" />
+    <MetalExtractor.tooltip value="Kasa metalą" />
+    <MetalExtractor.about>
+      <p>
+        Statomos ant rūdos kalnų šios kasyklos yra naudojamos išgauti metalą
+        iš purvo ir akmenų. Metalo kasyklos 
+        ([reference:Objects/MetalExtractor2]) - tai pastatai, kurie kasdami
+        kalnus duoda pastovias metalo įplaukas.
+      </p>
+      <p>[reference:MEX.common]</p>
+    </MetalExtractor.about>
+
+    <MetalExtractorT2.name ref="Objects/MetalExtractorT21" />
+    <MetalExtractorT2.tooltip ref="MetalExtractor.tooltip" />
+    <MetalExtractorT2.common>
+      <p>Geresnė, greitesnė ir brangesnė [reference:Objects/MetalExtractor1]
+      versija.</p>
+    </MetalExtractorT2.common>
+
+    <MetalExtractorT2.about>
+      <p>[reference:MetalExtractorT2.common]</p>
+      <p>[reference:MEX.common]</p>
+    </MetalExtractorT2.about>
+
+    <MetalStorage.name ref="Objects/MetalStorage1" />
+    <MetalStorage.tooltip value="Saugo metalą" />
+    <MetalStorage.about>
+      <p>
+        Iškastas metalas turi būti kažkur talpinamas, jog vėliau jį būtų galima
+        panaudoti statybose ir konstravime. Taigi jis dedamas į šiuos 
+        milžiniškus pastatus ir kai ateina laikas, iš jų išimamas, jog galėtume
+        panaudoti metalą savo laivynų ir pastatų gamyboje.
+      </p>
+      <p>Kiekvienas patobulinimo lygis padidina saugomo metalo kiekį.</p>
+    </MetalStorage.about>
+
+    <CollectorT1.name ref="Objects/CollectorT11" />
+    <CollectorT1.tooltip value="Išgauną energiją" />
+    <CollectorT1.common>
+      <p>
+        Šios vėjo jėgainės naudojamos užtikrinti pagrindinius energijos 
+        poreikius visiems pastatams ir statybai. Jos gali būti lengvai ir pigiai
+        tobulinamos, bei yra nebrangios savo kainai, jeigu turi pakankamai 
+        vietos.
+      </p>
+    </CollectorT1.common>
+    <CollectorT1.about>
+      <p>[reference:CollectorT1.common]</p>
+      <p>Kiekvienas patobulinimo lygis didina išgaunamos energijos kiekį.</p>
+    </CollectorT1.about>
+
+    <CollectorT2.name ref="Objects/CollectorT21" />
+    <CollectorT2.tooltip ref="CollectorT1.tooltip" />
+    <CollectorT2.common>
+      <p>
+        Šie didžiuliai saulės kolektoriai naudojami išgauti didžiulius 
+        energijos kiekius statyboms ir pastatų aprūpinimui. Jie sukonstruoti
+        naudojant technologijas iš pirmtakų pastatytų prizmių, todėl gali 
+        išgauti žymiai daugiau energijos nei paprastos vėjo jėgainės.
+      </p>
+    </CollectorT2.common>
+    <CollectorT2.about>
+      <p>[reference:CollectorT2.common]</p>
+      <p>Kiekvienas patobulinimo lygis didina energijos išgavimo greitį.</p>
+    </CollectorT2.about>
+
+    <CollectorT3.name ref="Objects/CollectorT31" />
+    <CollectorT3.tooltip ref="CollectorT1.tooltip" />
+    <CollectorT3.common>
+      <p>
+        Geoterminės angos žemėje pasitaiko pakankamai retai, tačiau yra labai
+        galingos. Šis pastatas leidžia tau panaudoti tą galią. Tai pats 
+        efektyviausias būdas išgauti energijai.
+      </p>
+    </CollectorT3.common>
+    <CollectorT3.about>
+      <p>[reference:CollectorT3.common]</p>
+      <p>Kiekvienas patobulinimo lygis didina energijos išgavimo greitį.</p>
+    </CollectorT3.about>
+
+    <EnergyStorage.name ref="Objects/EnergyStorage1" />
+    <EnergyStorage.tooltip value="Talpina energiją" />
+    <EnergyStorage.about>
+      <p>
+        Šios didžiulės baterijos laiko milžiniškus energijos kiekius, kurie
+        gali būti panaudoti vėliau. Dėl savo masyvumo didžioji pastato dalis
+        yra užkasta po žeme.
+      </p>
+      <p>Kiekvienas patobulinimo lygis didina energijos talpą.</p>
+    </EnergyStorage.about>
+
+    <Barracks.name ref="Objects/Barracks1" />
+    <Barracks.tooltip value="Apmokina kareivius" />
+    <Barracks.about>
+      <p>
+        Geriausi vyrai ir moterys yra treniruojami šioje bazėje, kad pavirstų
+        į elitinius karius, kurie gintų mus ir kovotų dėl mūsų. Čia jie praeina 
+        sunkiausias fizinio ir psichinio treniravimo programas, bei gauna 
+        galingus kovinius kostiumus ir ginklus, kurie jiems padeda kovoje.
+      </p>
+    </Barracks.about>
+
+    <ResearchCenter.name ref="Objects/ResearchCenter1" />
+    <ResearchCenter.tooltip value="Išranda technologijas" />
+    <ResearchCenter.about>
+      <p>
+        Ryškiausi planetos protai susirenka į šį pastatą dirbti prie 
+        technologijų, kurios stumia mūsų civilizaciją į priekį. Ir nors ši
+        pažanga nėra lengva ir brangiai kainuoja, tačiau ji yra būtina norint
+        neatsilikti nuo kitų civilizacijų gyvenančių šioje galaktikoje.
+      </p>
+      <p>
+        Primygtinai siūlome turėti bent jau po vieną tyrimų centrą planetoje.
+        Kitu atveju tavo priešininkai ilgainiui būsi sutriuškintas dėl 
+        atsilikusių technologijų.
+      </p>
+      <p>Kiekvienas patobulinimo lygis didina mokslininkų, dirbančių šiame 
+      centre, kiekį.</p>
+    </ResearchCenter.about>
+
+    <ZetiumExtractor.common>
+      <p>Ęsant energijos trūkumui zetiumo kasyklos išsijungs.</p>
+      <p>Kiekvienas patobulinimo lygis didina zetiumo išgavimo greitį.</p>
+    </ZetiumExtractor.common>
+
+    <ZetiumExtractor.name ref="Objects/ZetiumExtractor1" />
+    <ZetiumExtractor.tooltip value="Kasa zetiumą" />
+    <ZetiumExtractor.about>
+      <p>[reference:Technologies/Zetium.common]</p>
+      <p>[reference:ZetiumExtractor.common]</p>
+    </ZetiumExtractor.about>
+
+    <ZetiumExtractorT2.name ref="Objects/ZetiumExtractorT21" />
+    <ZetiumExtractorT2.tooltip ref="ZetiumExtractor.tooltip" />
+    <ZetiumExtractorT2.common>
+      <p>
+        Geresnė, greitesnė ir brangesnė [reference:ZetiumExtractor.name] 
+        versija. Ši kasykla pastatyta naudojantis pirmtakų technologijomis, tad
+        ji tikrai gali užtikrinti tavo zetiumo poreikius.
+      </p>
+    </ZetiumExtractorT2.common>
+    <ZetiumExtractorT2.about>
+      <p>[reference:ZetiumExtractorT2.common]</p>
+      <p>[reference:ZetiumExtractor.common]</p>
+    </ZetiumExtractorT2.about>
+
+    <ZetiumStorage.name ref="Objects/ZetiumStorage1" />
+    <ZetiumStorage.tooltip value="Talpina zetiumą" />
+    <ZetiumStorage.about>
+      <p>
+        Išgauti zetiumo kristalai yra išlydomi ir saugomi kaip skystis šiose
+        talpyklose. Tai vienintėlė jų forma, kuri leidžia vėliau panaudoti 
+        zetiumą gamyboje, tačiau ji yra labai nestabili ir net ir menkiausias
+        sudrebinimas galėtų sukelti sprogimą, kuris nieko nepaliktų. Dėl šios
+        priežasties aplink šias talpyklas paliekama didelė tuščia zona.
+      </p>
+      <p>Kiekvienas patobulinimo lygis didina zetiumo talpą.</p>
+    </ZetiumStorage.about>
+
+    <Crane.name ref="Objects/Crane1" />
+    <Crane.tooltip value="Stato pastatus" />
+    <Crane.about>
+      <p>
+        Šie milžiniški kranai ypač praverčia statant naujas kolonijas. Jie 
+        ypatingai naudingi tuo, jog gali turėti daug nurodymų savo eilėje.
+        Naudojant keletą šių kranų galima pastataty visą koloniją per keletą
+        dienų.
+      </p>
+    </Crane.about>
+
+    <Radar.name ref="Objects/Radar1" />
+    <Radar.tooltip value="Atskleidžia galaktikos zoną" />
+    <Radar.common>
+      <p>
+        Šie milžiniški pastatai yra naudojami giliosios erdvės tyrinėjimui. 
+        Siurbdami energiją iš mūsų generatorių jie pasitelkia ją, jog galėtume
+        matyti planetas mūsų saulės sistemoje, bei kitas saulės sistemas. Jie
+        netgi sugeba užfiksuoti draugiškų ar priešiškų laivų judėjimą ir 
+        suteikia mums taktinę informaciją, kuri būtina mūsų veiksmams planuoti.
+      </p>
+    </Radar.common>
+    <Radar.about>
+      <p>[reference:Radar.common]</p>
+      <p>Kiekvienas patobulinimo lygis padidina matomumo zoną.</p>
+    </Radar.about>
+
+    <Housing.name ref="Objects/Housing1" />
+    <Housing.tooltip value="Didina maksimalų gyventojų kiekį" />
+    <Housing.about>
+      <p>Šiuose bokštuose gyvena mūsų kariai ir tankų, bei laivų įgulos.</p>
+      <p>Jeigu nebeturi laisvos gyvenamos vietos, tu negali statyti daugiau 
+      armijos.</p>
+    </Housing.about>
+
+    <ResourceTransporter.name ref="Objects/ResourceTransporter1" /> <!-- <ResourceTransporter1 value="TODO: Resource transporter" /> -->
+    <ResourceTransporter.tooltip value="Transports resources between planets" />
+    <ResourceTransporter.about value="Teleport resources with this one" />
+
+    <Headquarters.name ref="Objects/Headquarters1" />
+    <Headquarters.about>
+      <p>
+        Šis pastatas transformuojasi ir pasistato iš Mobilaus Štabo. Tai 
+        pirmasis naujakurių prieglobstis naujoje kolonijoje. Jis turi šiokias 
+        tokias metalo ir energijos saugyklas, bei nedidelius generatorius, kurie
+        aprūpina šiais dviem resursais. Štabas - tai sėkla, iš kurios užauga
+        gyvuojanti kolonija.
+      </p>
+      <p>Štabas stato kitus pastatus.</p>
+    </Headquarters.about>
+
+    <Vulcan.name ref="Objects/Vulcan1" />
+    <Vulcan.tooltip value="Gynybinis bokštelis prieš nešarvuotus karius" />
+    <Vulcan.about>
+      <p>
+        Stacionarus gynybinis bokštelis, kuris yra ypatingai efektyvus prieš
+        lengvai šarvuotus karius. Turėdamas šešias CX-60 didelio greičio 
+        patrankas jis gali žaibiškai sėti mirtį priešininko gretose.
+      </p>
+      <p>Šaudo tik į žemės karius.</p>
+    </Vulcan.about>
+
+    <Screamer.name ref="Objects/Screamer1" />
+    <Screamer.tooltip value="Gynybinis bokštelis prieš šarvuotus karius" />
+    <Screamer.about>
+      <p>
+        Šiame bokštelyje įrengti du ROCKO-3 sunkieji raketsvaidžiai 
+        su sprogstamosiom galvutėmis užtikrina
+        greitą pražūtį priešo tankams ir kitiems smarkiai šarvuotiems kariams.
+      </p>
+      <p>Šaudo tik į žemės karius.</p>
+    </Screamer.about>
+
+    <Thunder.name ref="Objects/Thunder1" />
+    <Thunder.tooltip value="Gynybinis bokštelis prieš kosmoso flotiles" />
+    <Thunder.about>
+      <p>
+        Besisvaidantis karštos plazmos kamuoliais į pačią orbitą, šis bokštelis
+        yra visų priešo laivų ir kruizerių siaubas. Palietusi laivo korpusą 
+        plasma tiesiog jį išlydo padarydama milžinišką žalą.
+      </p>
+      <p>Šaudo tik į kosminius laivus.</p>
+    </Thunder.about>
+
+    <GroundFactory.name ref="Objects/GroundFactory1" />
+    <GroundFactory.tooltip value="Stato tankus" />
+    <GroundFactory.about>
+      <p>Tai pastatas, leidžiantis statyti tankus ir kitus aukšto lygio žemės
+      karius. Taip pat tau prireiks šio pastato norint pasistatyti 
+      Mobilųjį Štabą, kuris leidžia kolonizuoti kitas planets.</p>
+    </GroundFactory.about>
+
+    <SpaceFactory.name ref="Objects/SpaceFactory1" />
+    <SpaceFactory.tooltip value="Stato kosminius laivus" />
+    <SpaceFactory.about>
+      <p>
+        Šioje gamykloje statomi kosminiai laivai: pradedant nuo kuklių Varno
+        klasės skautų, baigiant didžiaisiais Raganosio klasės kruizeriais, 
+        kurių galia neabejoja niekas.
+      </p>
+    </SpaceFactory.about>
+
+    <HealingCenter.name ref="Objects/HealingCenter1" />
+    <HealingCenter.tooltip value="Gydo bei taiso karius, tankus ir laivus" />
+    <HealingCenter.common>
+      <p>
+        [reference:Objects/HealingCenter1] - tai medicininių pastatų ir 
+        techninių servisų kompleksas, kuris leidžia tau pagydyti ar pataisyti 
+        bet kokį karinį vienetą, kurį tu ar tavo sąjungininkai valdote.
+      </p>
+    </HealingCenter.common>
+    <HealingCenter.about>
+      <p>[reference:HealingCenter.common]</p>
+      <p>Kiekvienas patobulinimo lygis mažina gydymo kainą ir laiką.</p>
+    </HealingCenter.about>
+
+    <DefensivePortal.name ref="Objects/DefensivePortal1" />
+    <DefensivePortal.tooltip value="Teleportuoja žemės karius į gynybą" />
+    <DefensivePortal.common>
+      <p>Kai šis portalas yra aktyvus, kitos planetos užpuolimo atveju 
+      jis siunčia žemės armiją ęsančią šioje planetoje į pagalbą. 
+      Taip pat jis leidžia kariams ir tankams iš kitų planetų 
+      atkeliauti planetai, kurioje jis pastatytas, į gynybą.</p>
+      <p>Atkreipk dėmesį, jog šis pastatas gali priimti tik tiek karių iš kitų
+      planetų, kiek jis gali perkelti apimties. Jeigu nori gauti daugiau 
+      pastiprinimo - tau reikės arba tobulinti šį portalą, arba statyti jų 
+      daugiau.</p>
+    </DefensivePortal.common>
+    <DefensivePortal.about>
+      <p>[reference:DefensivePortal.common]</p>
+      <p>Kiekvienas patobulinimo lygis didina apimtį, kurią šis portalas gali 
+      perkelti.</p>
+    </DefensivePortal.about>
+
+    <GivesUnits>
+      <p>Šis pastatas kas tam tikrą laiką duoda planetos sąvininkui karių.</p>
+    </GivesUnits>
+
+    <NpcInfantryFactory.name ref="Objects/NpcInfantryFactory1" />
+    <NpcInfantryFactory.about>
+      <p>Ši senovinė gamykla gamina mažus robotus iš saulės energijos ir 
+      susintezuoto silikono. Sklinda gandai, jog jie auginami organiniu būdu,
+      tačiau niekas to negali patvirtinti...</p>
+      <p>[reference:GivesUnits]</p>
+    </NpcInfantryFactory.about>
+
+    <NpcTankFactory.name ref="Objects/NpcTankFactory1" />
+    <NpcTankFactory.about>
+      <p>Šiame ateiviškame fabrike gaminami galingi ir puikiai ginkluoti 
+      robotai.</p>
+      <p>[reference:GivesUnits]</p>
+    </NpcTankFactory.about>
+
+    <NpcSpaceFactory.name ref="Objects/NpcSpaceFactory1" />
+    <NpcSpaceFactory.about>
+      <p>Ši gamykla, ęsanti po žeme, gamina galingus ateivių laivus, kurie
+      gali būti panaudoti tiek gynybai, tiek puolimui.</p>
+      <p>[reference:GivesUnits]</p>
+    </NpcSpaceFactory.about>
+
+    <NpcHall.name ref="Objects/NpcHall1" />
+    <NpcHall.about>
+      <p>Valdyk planetas, kurios turi siųstuvus, ir šie tau rinks pergalės
+      taškus tau ir tavo sąjungai. Surink pakankamai pergalės taškų ir tapk
+      šios galaktikos valdovu!</p>
+    </NpcHall.about>
+  </Buildings>
+
+  <Credits>
+    <label.accelerate value="Paspartinti" />
+    <label.vip value="VIP" />
+    <label.whouldFinish value="Tobulinimas baigtusi" />
+    <label.selectAccelerate value="Pasirink paspartinimą" />
+    <label.creds value="kredai" />
+    <label.instant value="Iš karto" />
+    <label.confirm value="Patvirtinti" />
+    <label.buy value="Pirkti kredus" />
+    <label.move value="Perkelti" />
+    <label.movePrice>
+      <p>Šio pastato perkėlimas tau kainuotų 
+      {0 one[? kredą] tens[? kredų] many[? kredus]}"</p>      
+    </label.movePrice>
+    <label.destructPrice><![CDATA[
+       <p>Šio pastato išankstinis sunaikinimas tau kainuos</p>
+       <p />
+       <p><span fontWeight="bold"
+        >{0 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
+      ]]>
+    </label.destructPrice>
+    <label.notEnough>
+     <p>Nepakanka kredų.<br/>Tau dar reikia 
+       {0 one[vieno kredo] tens[? kredų] many[? kredų]}.</p>
+    </label.notEnough>
+  </Credits>
+
+  <Exploration>
+    <title.explore value="Tyrinėjimas" />
+    <label.explore value="Tyrinėti" />
+    <label.finishesIn value="Bus baigta už {0}" />
+    <description.noResearchCenter>
+      <p>Tu galėtum tyrinėtį šį objektą, jeigu šioje planetoje turėtum tyrimų 
+      centrą.</p>
+    </description.noResearchCenter>
+    <description.explorationUnderway>
+      <p>Tu šioje planetoje jau tyrinėji objektą. Palauk kol ekspedicija 
+      grįš.</p>
+    </description.explorationUnderway>
+    <description.startExploration>
+      <p>Gali išsiųsti mokslininkus tyrinėti šio objekto.</p>
+      <p>Tyrinėdamas objektus gali rasti resursų ir karių. Tyrinėjant didesnius
+      objektus užtrunkama ilgiau, tačiau yra didesnė tikimybė rasti vertingų
+      atradimų.</p>
+    </description.startExploration>
+  </Exploration>
+
+  <Formatters>
+    <format.shortDate value="YYYY-MM-DD" />
+    <format.shortDateTime value="YYYY-MM-DD JJ:NN" />
+  </Formatters>
+
+  <Galaxy>
+    <title.solarSystemInfo value="Saulės sistemos informacija" />
+    <label.playerPlanets value="Yra žaidėjo planetų" />
+    <label.playerShips value="Yra žaidėjo laivų" />
+    <label.alliancePlanets value="Yra sąjungos planetų" />
+    <label.allianceShips value="Yra sąjungos laivų" />
+    <label.enemyPlanets value="Yra priešo planetų" />
+    <label.enemyShips value="Yra priešo laivų" />
+    <label.napPlanets value="Yra NS planetų" />
+    <label.napShips value="Yra NS laivų" />
+    <label.openSolarSystem value="Įeiti į saulės sistemą" />
+    <label.openWormhole value="Įeiti į areną" />
+    <label.wormhole value="Arena" />
+    <label.shield>
+      <![CDATA[Ši saulės sistema yra apsaugota<br/><span fontWeight="bold">{0}</span>]]>
+    </label.shield>
+    <message.noRadar value="Tau reikia radaro, jog matytum galaktiką" />
+  </Galaxy>
+
+  <General>
+    <days.short value="d" />
+    <hours.short value="v" />
+    <minutes.short value="m" />
+    <seconds.short value="s" />
+    <day.long value="diena" />
+    <hour.long value="valanda" />
+    <message.actionCanceled>
+      <p>Atsiprašome, jūsų veiksmas negalėjo būti įvykdytas. Pabandykite dar
+      kartą.</p>
+    </message.actionCanceled>
+    <message.copyToClipboardSuccessful value="Nukopijuota į iškarpinę" />
+    <label.cooldownEndsIn value="Pertrauka baigsis už" />
+  </General>
+
+  <InfoScreen>
+    <currentLevel value="Dabartinis lygis" />
+    <description value="Aprašymas" />
+    <level value="Lygis" />
+    <close value="Uždaryti" />
+    <property value="Sąvybė" />
+    <atLevel value="{0} lygyje" />
+    <difference value="Skirtumas" />
+    <fullUpgradeCost value="Pilna kaina {0} lygiui" />
+    <resource value="Resursas" />
+    <tableTitle value="Sąvybės" />
+    <guns value="Ginklai" />
+    <gunProperties value="{0} sąvybės" />
+    <gun.pistol value="Pistoletas" />
+    <gun.machine_gun value="Automatas" />
+    <gun.sniper_rifle value="CR-24 Snaiperinis Šautuvas" />
+    <gun.laser value="Lazeris" />
+    <gun.space_laser_red ref="gun.laser" />
+    <gun.space_laser_green ref="gun.laser" />
+    <gun.space_laser_blue ref="gun.laser" />
+    <gun.cannon value="Pyro klasės pabūklas" />
+    <gun.alien_cannon value="Naikintojas" />
+    <gun.railgun value="Plazminė patranka" />
+    <gun.small_rocket value="P-40 svaidyklė" />
+    <gun.heavy_rocket value="Raketų leidyklė" />
+    <gun.space_rocket ref="gun.heavy_rocket" />
+    <gun.rhyno_rocket value="Halo raketa" />
+    <gun.rhyno_rocket2 value="Scorchmaker raketa" />
+    <gun.plasma_gun value="Sukūrių generatorius" />
+    <gun.plasma_spike value="Šoko patranka" />
+    <gun.thor_ground value="Pūga" />
+    <gun.cannon_air value="Dzeuso klasės patranka" />
+    <damagesDealt value="Žala padaryta žaidėjo {0}" />
+    <armorType value="Šarvų tipas" />
+    <damageInPercent value="Procentai" />
+    <damage value="Žala" />
+    <baseDamage value="Bazinė žala" />
+    <armor.light value="Lengvi šarvai" />
+    <armor.normal value="Normalūs šarvai" />
+    <armor.heavy value="Sunkūs šarvai" />
+    <armor.fortified value="Sutvirtinti šarvai" />
+    <armorShort.light value="Lengvi" />
+    <armorShort.normal value="Normalūs" />
+    <armorShort.heavy value="Sunkūs" />
+    <armorShort.fortified value="Sutvirtinti" />
+    <damageType value="Žalos tipas" />
+    <damage.piercing value="Veriantis" />
+    <damage.normal value="Normalus" />
+    <damage.explosive value="Sprogstantis" />
+    <damage.siege value="Apgulties" />
+    <reach value="Pasiekiamumas" />
+    <reach.ground value="Žemės" />
+    <reach.space value="Kosmoso" />
+    <cooldown value="Ataušimo laikas" />
+    <bestAgainst value="Geriausias prieš" />
+    <weakAgainst value="Silpniausias prieš" />
+    <specialDamage value="Žala: {0} x {1} = {2}" />
+    <damageCoef value="Žalos koeficientas: {0}" />
+    <armorFromTechs value="Šarvai iš technologijų:" />
+    <damageFromTechs value="Žala iš technologijų:" />
+    <forOne value="Vienam:" />
+    <total value="Iš viso:" />
+    <cost value="Kaina" />
+    <deploysTo value="Išsiskleidžia į" />
+  </InfoScreen>
+
+  <LoadingScreen>
+    <label.pleaseWait value="Kraunami paveiksliukai, prašome palaukti." />
+  </LoadingScreen>
+
+  <Location>
+    <label.open value="Atidaryti" />
+    <label.openLocation value="Atidaryti vietą" />
+    <label.storage value="{0}/{1}" />
+
+    <sector value="Sektorius {0}" />
+
+    <header.galaxy value="Galaktikos sektorius" />
+    <header.solarSystem value="Saulės sistema" />
+    <header.planet value="Planeta" />
+    <header.building value="Pastatas" />
+    <header.unit value="Karys" />
+    <header.storage value="Talpa" />
+
+    <description.short.galaxy value="Galaktika" />
+    <description.short.solarSystem value="Saulės sistema {0}" />
+    <description.short.planet value="Planeta {0}" />
+    <description.long.galaxy value="Galaktikos sektorius {0}:{1}" />
+    <description.long.solarSystem 
+      value="Saulės sistemos {0} sektorius {1}:{2}" />
+    <description.long.planet value="Saulės sistemos {1} planeta {0}" />
+
+    <message.locationNotAvailable>
+      <p>Tu nebegali peržiūrėti šios vietos</p>
+    </message.locationNotAvailable>
+  </Location>
+
+  <MainMenu>
+    <label.vip value="VIP" />
+    <label.quests value="Užduotys" />
+    <label.squadrons value="Laivynai" />
+    <label.ratings value="Reitingai" />
+    <label.alliances value="Sąjungų reitingai" />
+    <label.alliance value="Sąjunga" />
+    <label.forum value="Forumas" />
+  </MainMenu>
+
+  <MapViewportControls>
+    <tooltip.zoomOut value="Nutolinti" />
+    <tooltip.zoomIn value="Priartinti" />
+  </MapViewportControls>
+
+  <Movement>
+    <label.location.open value="Atidaryti" />
+    <label.location.source value="Iš:" />
+    <label.location.target value="Į:" />
+    <label.location.arrivesIn value="Atvyks po: {0}" />
+    <label.close value="Uždaryti" />
+    <label.cancel value="Atšaukti" />
+    <label.toSector value="Judėti į sektorių" />
+    <label.toPlanet value="Judėti į planetą" />
+    <label.stop value="Stabdyti" />
+    <label.unitsManagement value="Tvarkyti" />
+    <label.showUnits value="Rodyti" />
+    <label.move value="Judinti" />
+    <label.arrivesIn value="Atvyks po: {0}" />
+    <label.arrivesAt value="Atvyks: {0}" />
+    <label.owner value="Žaidėjo:" />
+    <label.confirm value="Patvirtinti"/>
+    <label.cancel  value="Atšaukti"/>
+    <label.reset value="Atstatyti"/>
+    <label.buyCreds value="Pirkti kredus"/>
+    <label.learnMore value="Sužinok daugiau"/>
+    <message.combatCooldownInfo 
+      value="Atvykus į vietą bus {0} pertrauka prieš prasidedant kovai."/>
+    <message.speedUpCost>
+      <p>Laivų pagreitinimas tau kainuos 
+      {0 one[? kredą] tens[? kredų] many[? kredus]}.</p>
+    </message.speedUpCost>
+  </Movement>
+
+  <Navigator>
+    <label.currentGalaxy value="Galaktika" />
+  </Navigator>
+
+  <Notifications>
+    <label.notifications.normal value="{0}" />
+    <label.notifications.hasUnread value="{0}" />
+    <label.notifications.hasNew value="{0}" />
+    <label.notifications.all value="Visi" />
+    <label.notifications.unread value="Tik neperskaityti" />
+    <label.notifications.starred value="Tik pažymėti" />
+    <label.createdAt value="Gautas" />
+    <label.expiresAt value="Susinaikins" />
+    <label.planet value="Planeta" />
+    <!-- TODO: wtf? -->
+    <label.constructable value="Constructable" />
+    <label.showPlanet value="Atidaryti planetą" />
+    <label.yours value="Tavo" />
+    <label.alliances value="Sąjungininkų" />
+    <label.nap value="NS" />
+    <label.enemies value="Priešų" />
+    <label.leveled value="Patobulėję kariai" />
+    <label.stats value="Mūšio statistika" />
+    <label.dmgDealtPlayer value="Tavo padaryta žala" />
+    <label.dmgDealtAlliance value="Sąjungos padaryta žala" />
+    <label.dmgTakenPlayer value="Tavo gauta žala" />
+    <label.dmgTakenAlliance value="Sąjungos gauta žala" />
+    <label.xp value="Gauta patirties" />
+    <label.points value="Gauta karo taškų" />
+    <label.close value="Uždaryti" />
+    <label.players value="Žaidėjai" />
+    <label.noNotifications value="Pranešimų nėra" />
+    <label.claimReward value="Pasiimk atlygį!" />
+    <label.questCompleted value="Užduotis „{0}“ buvo atlikta." />
+    <label.oldPlayer value="Tu atėmei planetą iš" />
+    <label.noPlayer value="Ši planeta buvo neapgyvendinta." />
+    <label.newPlayer value="Planetą užkariavo" />
+    <label.npcAnexed value="Planetą užkariavo ateivių plėšikai." />
+    <label.title value="Pranešimai" />
+    <label.readAll value="Perskaityti visus" />
+    <label.resourcesGained value="Gauta resursų" />
+    <label.wreckageLeft value="Liko liekanų" />
+    <label.newColor value="Nauji pranešimai" />
+    <label.notReadColor value="Neperskaityti pranešimai" />
+    <label.readColor value="Perskaityti pranešimai" />
+
+    <title.combatLog value="Mūšio ataskaita" />
+    <message.combatLog value="Mūšis {0}" />
+    <label.combatLog.outcome.win value="Tu laimėjai!" />
+    <label.combatLog.outcome.loose value="Tu pralaimėjai!" />
+    <label.combatLog.outcome.tie value="Lygiosios" />
+    <label.combatLog.showLog value="Peržiūrėti įrašą" />
+    <label.combatLog.copyToClipboard value="Kopijuoti į iškarpinę" />
+
+    <title.questCompleted value="Užduotis įvykdyta" />
+    <message.questCompleted value="Užduotis „{0}“ buvo įvykdyta." />
+    <message.newQuests value="Tu pradejai vykdyti šias užduotis:" />
+
+    <title.achievementCompleted value="Pasiekimas įgytas" />
+    <message.achievementCompleted ref="title.achievementCompleted" />
+
+    <title.notEnoughResources value="Nepakako resursų" />
+    <message.notEnoughResources ref="title.notEnoughResources" />
+
+    <title.buildingsDeactivated value="Pastatai išjungti" />
+    <message.buildingsDeactivated>
+      <p>Kai kurie pastatai buvo išjungti dėl energijos stygiaus.</p>
+    </message.buildingsDeactivated>
+
+    <title.explorationFinished value="Ekspedicija grįžo" />
+    <message.explorationFinished 
+      value="Ji planetoje {0} baigė savo tyrinėjimus." />
+
+    <title.planetAnnexed.win value="Tu užkariavai planetą!" />
+    <title.planetAnnexed.lose value="Tu praradai planetą!" />
+    <message.planetAnnexed.win value="Planeta {0} užkariauta" />
+    <message.planetAnnexed.lose value="Planeta {0} prarasta" />
+    
+    <title.planetProtected value="Planeta apsaugota!" />
+    <message.planetProtected ref="title.planetProtected" />
+    <label.planetProtected.explained>
+      <p>Kol nesibaigs planetos apsauga, šioje planetoje mūšiai nevyks.</p>
+    </label.planetProtected.explained>
+    <label.planetProtected.enemies>
+      <p>Planetos sąvininkas pralaimėjo mūšį dėl šios planetos, tačiau kadangi
+      tai buvo jo paskutinė planeta, remiantis tarpžvaigždiniais paktais šiai
+      planetai buvo suteikta apsauga {0} (iki {1}).</p>
+      <p>[reference:label.planetProtected.explained]</p>
+    </label.planetProtected.enemies>
+    <label.planetProtected.yours>
+      <p>Tavo paskutinė planeta buvo užpulta ir tu buvai nugalėtas, tačiau 
+      remiantis tarpžvaigždinės paktais tau buvo suteikta planetos apsauga {0}
+      (iki {1})</p>
+      <p>[reference:label.planetProtected.explained]</p>
+    </label.planetProtected.yours>
+    
+    <title.allianceInvitation value="Pakvietimas į sąjungą"/>
+    <message.allianceInvitation 
+      value="Pakvietimas prisijungti prie sąjungos „{0}“"/>
+    <message.allianceInvitation.long>
+      Tu buvai pakviestas prisijungti prie sąjungos „{0}“. Paspausk 
+      '[reference:label.allianceInvitation.join]' kad prisijungtum.
+    </message.allianceInvitation.long>
+    <label.allianceInvitation.join value="Prisijungti"/>
+    <message.allianceInvitation.cooldown 
+      value="Tu galėsi prisijungti prie sąjungos už {0} ({1})."/>
+    <message.allianceInvitation.alreadyInAlliance>
+      Tu negali prisijungti prie šios sąjungos, nes tu jau priklausai sąjungai.
+      Jeigu nori pereiti į šią sąjungą, gali išeiti iš savo sąjungos, tačiau
+      negalėsi būti jokioje sąjungoje {0}.
+    </message.allianceInvitation.alreadyInAlliance>
+
+    <prop.alive value="Gyvi" />
+    <prop.destroyed value="Sunaikinti" />
+  </Notifications>
+
+  <Players>
+    <npc value="Ateiviai" />
+    <noAlliance value="Be sąjungos" />
+    <alliances value="Sąjungos" />
+    <label.inRatings value="Rodyti reitinguose" />
+    <label.sendMessage value="Nusiųsti žinutę" />
+    <title.achievements value="PASIEKIMAI" />
+    <label.close value="Uždaryti" />
+  </Players>
+
+  <Popups>
+    <!-- TODO: Are these used? -->
+    <title.securityError value="Saugumo klaida!" />
+    <title.defaultError value="Klaida!" />
+
+    <label.reconnect value="Jungtis vėl" />
+    <label.cancel value="Atšaukti" />
+    <label.confirm value="Patvirtinti" />
+    <label.ok value="Gerai" />
+    <label.yes value="Taip" />
+    <label.no value="Ne" />
+    
+    <title.boostPlanet value="Padidinti planetos resursus/talpą" />
+    <message.areYouSure value="Ar esi tikras?" />
+
+    <title.selfDestruct value="Susinaikinti!" />
+    <message.selfDestruct>
+      <p>Tu nori sunaikinti:</p>
+      <p>{0}</p>
+      <p>Ar esi tikras?</p>
+    </message.selfDestruct>
+
+    <title.renameAlliance value="Pervadinti sąjungą" />
+    <message.renameAlliance>
+      <p>Tu nori pervadinti savo sąjungą į „{0}“.</p>
+      <p>Tai tau kainuos {1 one[? kredą] tens[? kredų] many[? kredus]}.</p>
+      <p>Ar esi tikras?</p>
+    </message.renameAlliance>
+    
+    <title.leaveAlly value="Palikti sąjungą" />
+    <message.leaveAlly>
+      <p>Jeigu išeisi iš šios sąjungos, negalėsi įkurti savo arba prisijungti 
+      prie kitos sąjungos {0}.</p>
+      <p>Ar esi tikras?</p>
+    </message.leaveAlly>
+    <message.leaveSelfAlly>
+      <p>Jeigu išeisi iš savo sąjungos, ji bus sunaikinta.</p>
+      <p>Ar esi tikras?</p>
+    </message.leaveSelfAlly>
+
+    <title.kick value="Išmesti sąjungos narį"/>
+    <message.kick>
+       <p>Tu nori išmesti „{0}“ iš savo sąjungos.</p>
+       <p>Ar esi tikras?</p>
+    </message.kick>
+
+    <title.moveBuilding value="Perkelti pastatą"/>
+    <message.moveBuilding>
+       <p>Šio pastato perkėlimas tau kainuos 
+       {0 one[„?“ kredą] tens[„?“ kredų] many[„?“ kredus]}.</p>
+       <p>Ar esi tikras?</p>
+    </message.moveBuilding>
+
+    <!-- TODO: is this even used anymore? -->
+    <title.loginFailed value="Login failed!" />
+    <message.loginFailed>
+      <p>Username or password incorrect. Refresh the page and try again.</p>
+    </message.loginFailed>
+
+    <title.connectionLost value="Ryšys nutrūko!" />
+    <message.connectionLost>
+      <p>Su serveriu nutrūko ryšys. Paspausk „{0}“ kad prisijungti iš naujo.</p>
+    </message.connectionLost>
+
+    <title.connectionTimeout value="Nepavyko prisijungti!" />
+    <message.connectionTimeout>
+      <p>Per {0 one[? sekundę] tens[? sekundžių] many[? sekundes]} nepavyko
+      susisiekti su serveriu. Paspausk „{1}“ kad pabandyti dar kartelį.</p>
+    </message.connectionTimeout>
+
+    <!-- TODO: How this differs from title.connectionTimeout? -->
+    <title.ioError value="IO Error!" />
+    <message.ioError>
+      <p>
+        Unable to communicate with the server (it is probably down). Try again 
+        later. 
+      </p>
+    </message.ioError>
+
+    <!-- TODO: WTF? same as below? -->
+    <title.disconnect.default value="Serverio klaida!" />
+    <message.disconnect.default>
+      <p>Tu buvai atjungtas nuo serverio! Paspausk „{0}“ kad prisijungtum iš 
+      naujo.</p>
+    </message.disconnect.default>
+
+    <title.disconnect.serverError value="Serverio klaida!" />
+    <message.disconnect.serverError>
+      <p>Tu buvai atjungtas nuo serverio! Paspausk „{0}“ kad prisijungtum iš 
+      naujo.</p>
+    </message.disconnect.serverError>
+
+    <title.disconnect.otherLogin value="Saugumo klaida!" />
+    <message.disconnect.otherLogin>
+      <p>Prie žaidimo buvo prisijungtą dar kartą su tavo prisijungimo 
+      duomenimis. Jeigu tai ne tu (pvz. su kita naršykle) ir tu neseniai 
+      nepranešei apie klaidas žaidime (kaip tu galėjo prisijungti žaidimo 
+      administratorius, patikrink savo klaidos pranešimą), mes siūlome
+      NEDELSIANT pasikeisti savo slaptažodį, kad užtikrinti savo paskyros 
+      saugumą.</p>
+      <p>Paspausk „{0}“ kad prisijungtum iš naujo.</p>
+    </message.disconnect.otherLogin>
+
+    <!-- TODO: WTF? -->
+    <title.disconnect.notFound value="Resource missing!" />
+    <message.disconnect.notFound>
+      <p>A resource has not been found!  Click „{0}“ to reconnect.</p>
+    </message.disconnect.notFound>
+
+    <title.disconnect.jsonError value="Bendravimo klaida!" />
+    <message.disconnect.jsonError>
+      <p>Žaidimas nesuprato žinutės atsiųstos iš serverio. Prašome paleisti
+      žaidimą iš naujo. Jeigu tai kartosis, prašytume jog praneštumėt apie 
+      klaidą detaliai aprašant veiksmų seką ir aplinkybes. Dėkojame.</p>
+    </message.disconnect.jsonError>
+
+    <crash>
+      <p>Gelbėkitės kas galit! Galingieji Kosmoso Vabalai įsibrovė į mūsų 
+      žaidimą, o jis, kad ir kaip bebūtų gaila, dar nėra jiems visiškai 
+      atsparus! (bent jau kol kas). Na nieko, nesijaudink, visuomet gali 
+      paleisti žaidimą iš naujo ir viskas turėtų (greičiausiai) būti gerai.</p>
+    </crash>
+
+    <title.clientCrash value="Aaaaaaaaaa!" />
+    <message.clientCrash.general>
+      <p>[reference:crash]</p>
+      <p>Tačiau! Jeigu tau nesvetimas noras išvaikyti tuos niekingus Kosmoso
+      Vabalus, galėtum atsiųsti tuos trupinėlius informacijos, kuriuos mes 
+      surinkome. Užtikriname tave, kad PANAUDOSIME juos tobulinant mūsų 
+      Anti-Vabalinę formulę, jog tavo žaidimas būtų toks malonus, kaip tik
+      žmogiškai įmanoma ;)</p>
+      <p>Taigi tiesiog nukopijuok apačioje ęsantį tekstą į iškarpinę (arba 
+      spustelėk mūsų patogiai padėtą „[reference:label.clientCrash.copy]“
+      mygtuką) ir keliauk į forumą, kad praneštum apie šią klaidą. Už tavo 
+      sunkų darbą bus atlyginta. Mes pažadam. Kosminis mažojo pirštelio pažadas.
+      O taip...</p>
+    </message.clientCrash.general>
+
+    <message.clientCrash.debugPlayer>
+      <p>[reference:crash]</p>
+      <p>Mes, ko gero, galėtume tai pataisyti, tačiau deja tu neturi Flash 
+      grotuvo versijos skirtos derinimui, tad mes negalime surinkti naudingos
+      informacijos, kuri praverstų ištaisant šią klaidą. Jeigu tu vis gi NORI,
+      kad ši klaida daugiau nepasikartotų, tada spausk ant 
+      „[reference:label.clientCrash.wiki]“ mygtuko, kad sužinotum kaip tu gali
+      mums padėti ;) Mes visuomet dėkingi už pagalbą ir skolingi neliekam!</p>
+    </message.clientCrash.debugPlayer>
+
+    <label.clientCrash.copy value="Kopijuoti" />
+    <label.clientCrash.forum value="Pranešti klaidą" />
+    <label.clientCrash.wiki value="Parsisiųsti derintuvą" />
+  </Popups>
+
+  <Achievements>
+    <level value="level {0}" />
+  </Achievements>
+  
+  <Objectives>
+    <toLevel value="iki {0} lygio" />
+    <level value="{0} lygio" />
+    <ofLevel value="{0} lygio" />
+    <npc value="neutralią" />
+    <enemy value="priešo" />
+    <!-- TODO: remove this fucker -->
+    <technology value="išrastą technologiją" />
+    <of value="" />
+    
+    <!-- 0: "Subclass or class to upgrade, 
+    1: count of objects to upgrade, 
+    2: "ofLevel" or "level" from Objectives or '' if less than 2
+    -->
+    <objectiveText.HaveUpgradedTo1 value="Turėk {1} {2}: „{0}“" />
+    <objectiveText.HaveUpgradedTo2 value="Būk išradęs {2} technologiją „{0}“" />
+
+    <!-- 0: "objectiveLvlx.UpgradeTo" from Objectives, 
+    1: count of objects to upgrade 
+    2: "level" from Objectives or '' if less than 2 -->
+    <!-- TODO: WTF, 3 is not defined. -->
+    <objectiveLvl1.UpgradeTo value="Pastatyk" />
+    <objectiveLvl2.UpgradeTo value="Patobulink" />
+    <objectiveText.UpgradeTo value="{0} {1} {2}{3}" />
+
+    <!-- 0: Subclass or class to destroy, 1: count of objects to destroy, 
+    2: "level" from Objectives or '' if less than 2 -->
+    <objectiveText.Destroy value="Destroy {1}{2} {0}" />
+    <objectiveText.DestroyNpcBuilding value="Destroy {1}{2} {0}" />
+    
+    <!-- 0: count of planets to occupy, 1: word "npc" or 
+    "enemy" from Objectives, 2: word "Planet" from Objects -->
+    <objectiveText.AnnexPlanet value="Occupy {0} {1} {2}" />
+    
+    <!-- 0: count of planets to have, 1: word "Planet" 
+    from Objects -->
+    <objectiveText.HavePlanets value="Have {0} {1}" />
+    
+    <!-- 0: count of points to have, 1: word "Point" 
+    from Objects -->
+    <objectiveText.HaveSciencePoints value="Have {0} Science {1}" />
+    <objectiveText.HaveEconomyPoints value="Have {0} Economy {1}" />
+    <objectiveText.HaveVictoryPoints value="Have {0} Victory {1}" />
+    <objectiveText.HaveArmyPoints value="Have {0} Army {1}" />
+    <objectiveText.HaveWarPoints value="Have {0} War {1}" />
+    <objectiveText.HavePoints value="Have {0} {1}" />
+
+    <!-- 0: count of hit points to heal -->
+    <objectiveText.HealHp value="Heal {0} HP" />
+    
+    <!-- 0: count of times to move building, 1: word "Time" 
+    from Objects -->
+    <objectiveText.MoveBuilding value="Move building {0} {1}" />
+
+    <!-- 0: VIP level, 1: count of times to become VIP, 2: word "Time" 
+    from Objects -->
+    <objectiveText.BecomeVip value="Become level {0} VIP {1} {2}" />
+
+    <!-- 0: count of times to accelerate flight, 1: word "Time" 
+    from Objects -->
+    <objectiveText.AccelerateFlight value="Accelerate flight {0} {1}" />
+
+    <!-- 0: count of times to win battle, 1: word "Battle" 
+    from Objects -->
+    <objectiveText.Battle0 value="Win {0} {1}" />    
+    <!-- 0: count of times to loose battle, 1: word "Battle" 
+    from Objects -->
+    <objectiveText.Battle1 value="Loose {0} {1}" />
+
+    <!-- 0: count of quests to complete -->
+    <objectiveText.CompleteQuests value="Complete {0} quests" />
+
+    <!-- 0: count of achievements to complete -->
+    <objectiveText.CompleteAchievements value="Complete {0} achievements" />
+
+    <!-- 0: count of times to accelerate object, 1: word "Time" 
+    from Objects -->
+    <objectiveText.AccelerateBuilding>
+      <p>Accelerate building construction {0} {1}</p>
+    </objectiveText.AccelerateBuilding>
+    <objectiveText.AccelerateUnit>
+      <p>Accelerate unit training {0} {1}</p>
+    </objectiveText.AccelerateUnit>
+    <objectiveText.AccelerateTechnology>
+      <p>Accelerate technology research {0} {1}</p>
+    </objectiveText.AccelerateTechnology>
+
+    <!-- 0: count of buildings to self destruct, 1: word "Building" 
+    from Objects -->
+    <objectiveText.SelfDestruct value="Destroy {0} {1} that belongs to you" />
+
+    <!-- 0: count of times to explore object, 1: word "Time" 
+    from Objects, 2: count of minimum scientists to use -->
+    <objectiveText.ExploreBlock1>
+      <p>Explore any object {0} {1} with at least {2} scientists</p>
+    </objectiveText.ExploreBlock1>
+    
+    <!-- 0: count of times to explore object, 1: word "Time" 
+    from Objects -->
+    <objectiveText.ExploreBlock0>
+      <p>Explore any object {0} {1}</p>
+    </objectiveText.ExploreBlock0>
+  </Objectives>
+
+  <Quests>
+    <label.current value="Dabartinės" />
+    <label.completed value="Įvykdytos" />
+    <label.showQuest value="Parodyti užduotį" />
+    <label.noQuests value="Užduočių nėra" />
+    <label.progress value="{0}/{1} pabaigta" />
+    <label.title value="Užduotys" />
+    <label.rewards value="Atlygis:" />
+    <label.objectives value="Tikslai:" />
+    <label.close value="Uždaryti" />
+    <label.claimReward value="Pasiimti atlygį!" />
+    <label.tutorial value="Pradžiamokslis" />
+    <label.choosePlanet value="Pasirink planetą:" />
+    <warning.wontFit> 
+      <p>Atsiimdamas atlygį į pasirinktą planetą dėl nepakankamų talpyklų
+      tu prarasi {0}.</p>
+    </warning.wontFit>
+    <label.notCompletedColor value="Neįvykdytos užduotys" />
+    <label.completedColor value="Įvykdytos užduotys" />
+
+    <message.rewardClaimed value="Atlygis buvo pasiimtas į planetą „{0}“" />
+
+    <title.newQuest value="Naujas užduotis: {0}" />
+    <title.questCompleted value="Užduotis įvykdyta: {0}" />
+
+    <units value="Kariai" />
+    <points value="Ekonomikos taškai" />
+
+    <Destroy value="Sunaikinti" />
+
+    <title.1 value="Pradžia" />
+    <about.1>
+      <p>Sveiki atvykę, Komandore.</p>
+
+      <p>Mes sėkmingai nutupdėme motininį laivą šioje planetoje ir remiantis 
+      pirminiais žvalgybos duomenimis, čia ęsame ne vieni. Inžinieriai įrengė 
+      gynybos perimetrą, tačiau šis išeikvoja gerokai daugiau energijos, nei 
+      jos pagamina mūsų generatoriai. Tokiomis sąlygomis ilgai čia 
+      netversime!</p>
+
+      <p>Privalome pastatyti vėjo jėgainę, kad patenkintume savo energetinius 
+      poreikius. Negaiškite laiko, Komandore, tuoj pat įsakykite pradėti 
+      darbus.</p>
+    </about.1>
+
+    <title.2 value="Apšilimas" />
+    <about.2>
+      <p>Puikiai susidorota, Komandore.</p>
+
+      <p>Mūsų energijos tiekimas normalizavosi, bet panašu, kad šioje 
+      planetoje įstrigome ilgam.</p>
+
+      <p>Yra ir gerų naujienų. Netoliese aptikome metalų rūdos sankaupas. 
+      Įsakykite įrengti MEX'ą kurio dėka išgausime mums taip reikalingo 
+      metalo.</p>
+
+      <p>Mūsų ateitis jūsų rankose, Komandore.</p>
+    </about.2>
+
+    <title.3 value="Augantys poreikiai" />
+    <about.3>
+      <p>Komandore,</p>
+      
+      <p>
+        Panašu, kad su metalo gavyba viskas tvarkoje. Gera pradžia pusė darbo, 
+        bet mes privalome užtikrinti stabilų atsargų augimą. Pastatykime dar 
+        pora resursinių pastatų, jie puikiai pasitarnaus mūsų reikmėms!
+      </p>
+    </about.3>
+
+    <title.22 value="Atradimai" />
+    <about.22>
+      <p>Gerą dieną, Komandore!</p>
+
+      <p>
+        Apylinkėse dirbę žvalgai pranešė apie įdomų radinį. Panašu, kad tai 
+        kažkokio milžiniško padaro liekanos. Deja, bet žvalgams trūksta žinių, 
+        tad apžiūrėję grunte palaidotas liekanas tepranešė, kad rado „kaulus“.
+      </p>
+
+      <p>
+        Būtų labai teisinga ir tikslinga į įvykio vietą nusiųsti tyrėjus. 
+        Galbūt jiems pavyks sužinoti ką nors daugiau.
+      </p>
+    </about.22>
+
+    <title.23 value="Smalsiųjų laimikis" />
+    <about.23>
+      <p>Gera žinia!</p>
+
+      <p>
+        Pamenate nesenai išsiųstą tyrėjų ekspediciją? Jie grįžo! Ir ne vieni! 
+        Tyrėjai į bazę atgabeno ateivių robotą! Jis gerokai nusidėvėjęs, bet 
+        nepaisant to, mokslininkams pavyko jį aktyvuoti. Mūsų gretas ką tik 
+        papildė ištikimas tarnas. Šaunu!     
+      </p>
+
+      <p>
+        Tiesa, tyrėjai taip pat atgabeno šiek tiek naudingų žaliavų. Jums 
+        leidus, rekomenduočiau ekspedicijas į tyrimo zonas siųsti nuolatos. 
+        Negalime žinoti ką ten rasime, bet panašu, kad kol kas ši praktika 
+        atneša apčiuopiamos naudos.     
+      </p>
+    </about.23>
+
+    <title.4 value="Godumas" />
+    <about.4>
+      <p>Nuostabu, kad užsukote, Komandore.</p>
+
+      <p>
+        Skubu pranešti, kad išteklių gavyba šioje planetoje vyksta sklandžiai. 
+        Nors iš pirmo žvilgsnio atrodo, kad ęsame apsirūpinę, aš negaliu 
+        atsikratyti minčių apie mūsų galimybių ribas. Ši planeta tokia 
+        turtinga ištekliais! Mes galime iš jos išspausti daug, daug daugiau!      
+      </p>
+
+      <p>
+        Vadinkite mane godžia, jei jums taip norisi, bet pirma išklausykite 
+        ką siūlau. Mes privalome patobulinti resursų išgavėjus! Žaliavų 
+        perteklius dar niekam nepakenkė, juk tiesa?     
+      </p>
+    </about.4>
+
+    <title.5 value="Dar. Dar. Dar!" />
+    <about.5>
+      <p>Sveiki ir vėl, Komandore.</p>
+
+      <p>
+        Matau jūs atsižvelgėte į mano pastabas ir patobulinote išteklių gavybą. 
+        Nesustokite. Investuokime į gamybą ir toliau, visos išlaidos tikrai
+        atsipirks su kaupu!
+      </p>
+      
+      <p>Iki greito!</p>
+    </about.5>
+
+    <title.6 value="Nerimas" />
+    <about.6>
+      <p>Komandore!</p>
+
+      <p>
+        Žvalgyba praneša apie keistus triukšmus ir tai nėra šiaip vėjo 
+        stūgavimas. Žvalgų nerimą patvirtina ir skeneriai, kuriuose stebime 
+        keistas anomalijas. Įtarimai, kad šioje planetoje ęsame ne vieni 
+        pasitvirtino, o kol nežinome su kuo susidūrėme, negalime pasikliauti 
+        tik gynybinio perimetro apsauga. 
+      </p>
+
+      <p>Mums reikia karių! Įsakykite įrengti kareivines!</p>
+
+      <p>Mes privalome užtikrinti savo žmonių saugumą.</p>
+    </about.6>
+
+    <title.7 value="Ginklavimosi varžybos" />
+    <about.7>
+      <p>Komandore.</p>
+
+      <p>
+        Jūsų įsakymu įrengėme kareivines. Keli įgulos nariai pareiškė norą 
+        tapti pirmaisiais desantininkais, tačiau jų negana. Toks menkas būrys 
+        bus nušluotas pirmos atakos metu.
+      </p>
+
+      <p>
+        Privalome parengti daugiau karių. Užsukite į kareivines ir įsakykite 
+        pradėti desantininkų mokymus.
+      </p>
+    </about.7>
+
+    <StrenghteningForces.title value="Pranašumo įtvirtinimas"/>
+    <StrenghteningForces.about>
+      <p>Komandore.</p>
+
+      <p>
+        Kolonistai ir bazės įgula su pasigėrėjimu stebi kaip auga mūsų 
+        ryžtas ir kovinė galia. Nesustokime pusiaukelėje. Didinkime savo 
+        kovinį potencialą, priverskime priešus virpėti vien nuo minties 
+        apie susidūrimą su mūsų pajėgomis! 
+      </p>
+    </StrenghteningForces.about>
+    
+    <title.66 ref="StrenghteningForces.title" />
+    <about.66 ref="StrenghteningForces.about" />
+
+    <title.67 value="[reference:StrenghteningForces.title] (II)" />
+    <about.67 ref="StrenghteningForces.about" />
+
+    <title.68 value="[reference:StrenghteningForces.title] (III)" />
+    <about.68 ref="StrenghteningForces.about" />
+
+    <title.69 value="[reference:StrenghteningForces.title] (IV)" />
+    <about.69 ref="StrenghteningForces.about" />
+
+    <title.70 value="[reference:StrenghteningForces.title] (V)" />
+    <about.70 ref="StrenghteningForces.about" />
+
+    <title.71 value="[reference:StrenghteningForces.title] (VI)" />
+    <about.71 ref="StrenghteningForces.about" />
+
+    <title.95 value="[reference:StrenghteningForces.title] (VII)" />
+    <about.95 ref="StrenghteningForces.about" />
+
+    <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
+    <about.96 ref="StrenghteningForces.about" />
+
+    <title.97 value="[reference:StrenghteningForces.title] (IX)" />
+    <about.97 ref="StrenghteningForces.about" />
+
+    <title.98 value="[reference:StrenghteningForces.title] (X)" />
+    <about.98 ref="StrenghteningForces.about" />
+
+    <title.99 value="[reference:StrenghteningForces.title] (XI)" />
+    <about.99 ref="StrenghteningForces.about" />
+
+    <title.100 value="[reference:StrenghteningForces.title] (XII)" />
+    <about.100 ref="StrenghteningForces.about" />
+
+    <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
+    <about.101 ref="StrenghteningForces.about" />
+
+    <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
+    <about.102 ref="StrenghteningForces.about" />
+
+    <title.95 value="[reference:StrenghteningForces.title] (VII)" />
+    <about.95 ref="StrenghteningForces.about" />
+
+    <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
+    <about.96 ref="StrenghteningForces.about" />
+
+    <title.97 value="[reference:StrenghteningForces.title] (IX)" />
+    <about.97 ref="StrenghteningForces.about" />
+
+    <title.98 value="[reference:StrenghteningForces.title] (X)" />
+    <about.98 ref="StrenghteningForces.about" />
+
+    <title.99 value="[reference:StrenghteningForces.title] (XI)" />
+    <about.99 ref="StrenghteningForces.about" />
+
+    <title.100 value="[reference:StrenghteningForces.title] (XII)" />
+    <about.100 ref="StrenghteningForces.about" />
+
+    <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
+    <about.101 ref="StrenghteningForces.about" />
+
+    <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
+    <about.102 ref="StrenghteningForces.about" />
+
+    <title.95 value="[reference:StrenghteningForces.title] (VII)" />
+    <about.95 ref="StrenghteningForces.about" />
+
+    <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
+    <about.96 ref="StrenghteningForces.about" />
+
+    <title.97 value="[reference:StrenghteningForces.title] (IX)" />
+    <about.97 ref="StrenghteningForces.about" />
+
+    <title.98 value="[reference:StrenghteningForces.title] (X)" />
+    <about.98 ref="StrenghteningForces.about" />
+
+    <title.99 value="[reference:StrenghteningForces.title] (XI)" />
+    <about.99 ref="StrenghteningForces.about" />
+
+    <title.100 value="[reference:StrenghteningForces.title] (XII)" />
+    <about.100 ref="StrenghteningForces.about" />
+
+    <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
+    <about.101 ref="StrenghteningForces.about" />
+
+    <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
+    <about.102 ref="StrenghteningForces.about" />
+
+    <title.8 value="Pirmas kontaktas" />
+    <about.8>
+      <p>Komandore.</p>
+      <p>
+        Iškilo problema. Metalo poreikiai nuolat auga, o du mūsų turimi MEX-ai 
+        netrukus negalės jų patenkinti. Pats metas atrasti naują rūdos šaltinį.
+      </p>
+      <p>
+        Laimei mūsų žvalgams pavyko aptikti metalų klodus visai šalia bazės, 
+        bet juos sergi ateivių robotai. Panašu, kad šį sykį nepavyks išvengti 
+        kautynių, žvalgyba teigia, kad ateiviai nusiteikę agresyviai ir 
+        veikiau mirs nei atsitrauks nuo resursų.
+      </p>
+      <p>
+        Privalome veikti. Žvalgybos skaičiavimu 8 desantininkai turėtų 
+        susidoroti su ateivių pajėgomis. Tikslus reikalingų pajėgų dydis 
+        gali svyruoti, jis priklauso ir nuo jūsų strateginių gebėjimų. 
+        Kaip ten bebūtų, privalome išmušti ateivius iš šios pozicijos, 
+        ji lemtinga tolimesniai mūsų raidai planetoje. 
+      </p>
+      <p>Mes pasitikime jūsų kompetencija, Komandore.</p>
+    </about.8>
+
+    <title.32 value="Drąsos vaisiai" />
+    <about.32>
+      <p>Gera žinia!</p>
+      <p>
+        Mes užėmėme rūda turtingas pozicijas! Dabar galime įrengti ten MEX‘ą. 
+        Jums leidus, siųlyčiau padaryti tai nedelsiant. Šią akimirką kolonija 
+        tikrai ras kur panaudoti papildomas metalų atsargas.
+      </p>
+    </about.32>
+
+    <title.9 value="Mokslas metalo vardan" />
+    <about.9>
+      <p>Komandore, džiaugiuosi jus matydama!</p>
+      <p>
+        Aš ką tik peržiūrėjau naudingų iškasenų gavybos duomenis. Skaičiai 
+        mums palankūs, bet aš manau mes galime išspausti daugiau. Mūsų 
+        mokslininkai teigia, kad gavę reikiamą resursų kiekį, jie gali 
+        patobulinti MEX‘us ir padidinti metalų išgavimo greitį iki naujų, 
+        dar neregėtų aukštumų. Vadinkite tai moteriška nuovoka, bet aš jais 
+        tikiu.
+      </p>
+      <p>
+        Pamėginkime patobulinti vieną iš mūsų MEX‘ų ir išsiaiškinkime ar 
+        moksliukai gali sukurti tai ką pažada.  
+      </p>
+    </about.9>
+
+    <title.10 value="Energetinis mokslas" />
+    <about.10>
+      <p>Komandore!</p>
+      <p>
+        Aš ką tik iš susitikimo su mūsų laborantais, jie pristatė naujus 
+        sprendimus energijos gavybai. Viskas ko jiems reikia, kad kibtų į 
+        darbą ir juos pritaikytų — investicijos.
+      </p>
+      <p>
+        Rekomenduočiau duoti jiems tai, ko prašo. Tikiu, kad netrukus patirtos 
+        išlaidos atsipirks su kaupu. Nedelsdami įsakykite patobulinti vieną 
+        iš vėjo jėgainių.
+      </p>
+    </about.10>
+
+    <title.116 value="Galingųjų turtai" />
+    <about.116>
+      <p>Komandore!</p>
+      <p>Po sėkmingos atakos „Pirmojo kontakto“ metu, jūs buvote apdovanoti 
+      simboline kreditų suma. Būtinai atsiimkite šį apdovanojimą, jei to 
+      nepadarėte iki šiol.</p>
+      <p>Kreditai — naudingas ir galingas įrankis. Juos galite išleisti 
+      įvairiausioms užduotims — paspartinti statybas, tyrimus ir karių 
+      parengimą. Tiesą sakant juos galėsite išleisti net pastatų perkėlimui į 
+      kitą vietą ar norėdami paspartinti savo erdvėlaivius!</p>
+      <p>Matau ketinate klausti, kaip gauti daugiau kreditų. Tam yra keli 
+      metodai. Galite tiesiog įsigyti jų parduotuvėje į kurią galite nueiti
+      per N44 meniu apatiniame kairiajame žaidimo kampe. Taip pat kreditais 
+      apdovanojami Komandorai gebantys užimti ir išlaikyti tam tikras, karo 
+      niokojamas planetas, apie kurias sužinosite vėliau.</p>
+      <p>Yra ir dar vienas būdas. Galite prisijungti prie VIP Komandorų. Tapdami
+      vienu iš galaktikos VIP‘ų, jūs gausite daugiau kreditų, nei pačios 
+      narystės kaina. Kartu su VIP naryste gautus kreditus galėsite išleisti 
+      savo nuožiūra.</p>
+      <p>Išmėginkite VIP paslaugą dabar ir mėgaukitės apdovanojimais ir jų 
+      suteikiama galia!</p>
+    </about.116>
+
+    <title.117 value="Skubos darbas!" />
+    <about.117>
+      <p>Sveikinimai tapus VIP, Komandore.</p>
+      <p>Nuo šiol jūs kasdien gausite kreditų įvairioms išlaidoms, tad kodėl gi 
+      jų neišeikvojus naudingai veiklai?</p>
+      <p>Aš rekomenduočiau paspartinti statybas. Tyrimų centras tikrai 
+      nudžiugintu iki šiol mums labai daug naudos atnešusius mokslininkus. 
+      Įsakykite pradėti jo statybas ir paspartinkite jas išleisdami 
+      dalį kreditų.</p>
+    </about.117>
+
+    <title.11 value="Neramios sielos" />
+    <about.11>
+      <p>Sveiki, Komandore.</p>
+      <p>
+        Mūsų kolonija klesti. Paskutinės ataskaitos demonstruoja stabilų 
+        resursų išgavimą, mūsų kariai tvirti ir bebaimiai, kolonistai jaučiasi 
+        saugūs ir galų gale sulaukėme puikaus oro. Pastarieji įvykiai ir 
+        saulės spinduliai sukuria jaukią namų atmosferą, ar ne tiesa, 
+        Komandore?
+      </p>
+      <p>
+        Tokios nuostabios dienos proga, būtų puiku pakloti pamatus tolimesniai 
+        mūsų raidai. Tyrimų centras būtų puiki pradžia. Mes net radome grupę 
+        savanorių, kurie mielai taptų tyrėjais, o reikalui esant ir tyrimų 
+        objektais. Neverskime jų laukti. 
+      </p>
+      <p>
+        Mano rekomendacija — tyrimų centrą šioje planetoje turime įrengti 
+        nedelsiant. Galų gale vienas kitas mokslinis triukas rankovėje mums 
+        tikrai nepakenks. Juk mes neturime skaudžios mokslinės patirties?
+      </p>
+    </about.11>
+
+    <title.24 value="Tai, kas mus supa" />
+    <about.24>
+      <p>
+        Tyrimų centras įrengtas! Prie paradinių durų būriuojasi mokslininkai 
+        trokštantys tuojau pat leistis į ekspedicijas. Žvalgybos pranešimuose 
+        minimi įdomūs, dėmesio verti objektai ir tyrėjai tiesiog dega 
+        troškimu juos aplankyti. 
+      </p>
+      <p>
+        Pasiųskime grupę ar kelias ir ištirkime tuos objektus ir pažiūrėkime 
+        ką dar nuo mūsų slepia ši planeta. 
+      </p>
+    </about.24>
+
+    <title.25 value="Naudingi atradimai" />
+    <about.25>
+      <p>Tai buvo netikėta!</p>
+      <p>
+        Kartu su kalnais šlamšto, mokslininkai atvilko dar keletą ateivių 
+        robotų. Nedalyvavę ekspedicijoje mokslininkai, dabar lipa laboratorijų 
+        sienomis ir reikalauja surengti daugiau iškylų! Jie ketina surinkti 
+        dar didesnę tyrėjų grupę ir apžiūrėti dar didesnį kalną. Sakyčiau 
+        padėtis tampa nekontroliuojama, bet moksliukai savo ataskaitose 
+        įrodinėja, kad jų ekspedicijos tikslas „Žvilgčiotojas“. Tai galingas 
+        robotas, kuris tikrai būtų naudingesnis šioje bazėje, nei kažkur, kur 
+        jis mėtosi dabar.
+      </p>
+      <p>Leiskime jiems keliauti! Įsakykime rengti mega-ekspediciją!</p>
+    </about.25>
+
+    <title.26 value="Nepasotinami" />
+    <about.26>
+      <p>Jie paprasčiausiai išsikraustė iš proto!</p>
+      <p>
+        Mokslininkai ir laborantai vėl kraunasi kuprines. Šį kartą jie ketina 
+        apžiūrėti dar vieną milžinišką kalną! Sumauti geografai... 
+        Atleiskit už išsireiškimą. Bėda tame, kad šiai ekspedicijai mūsų 
+        personalas per mažas.
+      </p>
+      <p>
+        Mūsų tyrimų centras turi būti išplėstas ir patobulintas. Komandore, 
+        privalau jūs įspėti, kad kol bus vykdomi centro išplėtimo darbai, 
+        jame negalėsime vykdyti jokių tyrimų. Tiesa... Trumpam be darbo 
+        likusius mokslininkus vis tiek galėsime siųsti į ekspedicijas.
+      </p>
+      <p>Sprendimą ir tolimesnių darbų planavimą palieku jums, Komandore.</p>
+    </about.26>
+    
+    <title.12 value="Keliaujantys su šešėliu" />
+    <about.12>
+      <p>Sveiki, Komandore.</p>
+      <p>Žmonės baltais chalatais jau atsigauna nuo euforijos kurią sukėlė 
+      naujas tyrimų centras. Pats metas duoti jiems darbo. Jei jums įdomi mano 
+      nuomonė, Komandore, mes turėtume investuoti į kovinę galią. Kam dar gali 
+      būti naudingas mokslas, jei ne karui? Apsilankykite tyrimų centre ir 
+      liepkite pradėti „Sėlintojų“ projektą. Šie kariai puikiai pasitarnaus 
+      naikinant šarvuotus priešo pėstininkus. Pats tas ko reikia kovai su 
+      ateivių robotais.</p>
+      
+      <p>Kai tik mokslininkai baigs tyrimą, siūlyčiau iškart pasigaminti 
+      keletą šių karių, kad patikrinti jų kovines galias mūšio lauke.</p>
+    </about.12>
+
+    <title.13 value="Veteranai" />
+    <about.13>
+      <p>Komandore.</p>
+      <p>
+        Jūsų ryžtas ir nusiteikimas asmeniškai vadovauti mūšyje 
+        dalyvaujantiems kariams verti pagarbos. Esu įsitikinusi, kad jūs tą 
+        patį pasakytumėte apie kiekvieną jūsų įsakymus vykdžiusi karį. 
+        Atkreipkite dėmesį, kad kai kurie, nuolatos greta ęsantys, kovotojai 
+        tapo labiau patyrę. Jie tapo efektyvesni ir atsparesni priešų atakoms. 
+      </p>
+      <p>
+        Būtų protinga atitraukti juos iš priešakinių linijų, tegul ten 
+        pasireiškia geltonsnapiai naujokai. Neleiskite žūti veteranams, tai 
+        galingi ir įkvepiantys kovotojai, mums jie reikalingi gyvi. 
+      </p>
+    </about.13>
+
+    <ThirstForKnowledge.title value="Žinių troškimas" />
+    <ThirstForKnowledge.about>
+      <p>Komandore.</p>
+      <p>
+        Atradimai! Progresas! Pasitelkę mokslą, mes išplečiame savo galimybių 
+        ribas. Mūsų priešai gali statytis laivynius, bet mes pasistatysime 
+        geresnius! Negailėkite investicijų tyrimams ir mėgaukitės kosminiais 
+        dividendais!
+      </p>
+    </ThirstForKnowledge.about>
+
+    <title.72 ref="ThirstForKnowledge.title" />
+    <about.72 ref="ThirstForKnowledge.about" />
+
+    <title.73 value="[reference:ThirstForKnowledge.title] (II)" />
+    <about.73 ref="ThirstForKnowledge.about" />
+
+    <title.74 value="[reference:ThirstForKnowledge.title] (III)" />
+    <about.74 ref="ThirstForKnowledge.about" />
+
+    <title.75 value="[reference:ThirstForKnowledge.title] (IV)" />
+    <about.75 ref="ThirstForKnowledge.about" />
+
+    <title.76 value="[reference:ThirstForKnowledge.title] (V)" />
+    <about.76 ref="ThirstForKnowledge.about" />
+
+    <title.77 value="[reference:ThirstForKnowledge.title] (VI)" />
+    <about.77 ref="ThirstForKnowledge.about" />
+
+    <title.78 value="[reference:ThirstForKnowledge.title] (VII)" />
+    <about.78 ref="ThirstForKnowledge.about" />
+
+    <title.79 value="[reference:ThirstForKnowledge.title] (VIII)" />
+    <about.79 ref="ThirstForKnowledge.about" />
+
+    <title.27 value="Technologijų šukės" />
+    <about.27>
+      <p>Commander!</p>
+      <p>
+        Žvalgyba aptiko keletą keistų, ateivių robotų saugomų, pastatų. Juos 
+        aptikęs dalinys sugebėjo prasmukti pro išorinį jų apsaugos perimetrą 
+        ir paimti keletą aplinkoje vyraujančios medžiagos mėginių. Gautus 
+        mėginius, jau kuris laikas analizuoja proto bokštai iš tyrimų centro. 
+      </p>
+      <p>
+        Jų atąskaitose teigiama, kad mislinguose ateivių pastatuose išgaunama 
+        nauja, kristalizuota medžiaga — zetiumas. Panašu, kad ateiviai rado 
+        gausybę praktiškų šios medžiagos panaudojimo būdų. Atrasime ir mes. 
+        Mums būtina pradėti šių kristalų gavybą! 
+      </p>
+      <p>Pats metas išvaduoti kristalus iš ateiviškų pastatų priespaudos!</p>
+    </about.27>
+
+    <EchoesOfBattle.title value="Mūšio aidai" />
+    <EchoesOfBattle.about>
+      <p>Komandore.</p>
+      <p>
+        Galaktika — pavojinga ir nerami vieta. Žinoma, mes esame taikūs 
+        žmonės, bet mus supantys pavojai mūsų nuosaikumą gali suvokti kaip 
+        baimės ar neryžtingumo požymį. Mes privalome gintis nuo grobikiškas 
+        mintis puoselėjančių kaimynų, o geriausia gynyba yra... Taip, 
+        Komandore, puolimas! Suduokime jiems pirmą prevencinį smūgį!
+      </p>
+      <p>Atminkite, piktų kėslų prevencija yra doras savigynos būdas. 
+      Nedvejokite, drąsiai ginkitės kas kartą sutikę ateivius, su kuriais ar 
+      taip, ar taip nesusikalbėtumėte.</p>
+    </EchoesOfBattle.about>
+
+    <title.80 ref="EchoesOfBattle.title" />
+    <about.80 ref="EchoesOfBattle.about" />
+
+    <title.81 value="[reference:EchoesOfBattle.title] (II)" />
+    <about.81 ref="EchoesOfBattle.about" />
+
+    <title.82 value="[reference:EchoesOfBattle.title] (III)" />
+    <about.82 ref="EchoesOfBattle.about" />
+
+    <title.83 value="[reference:EchoesOfBattle.title] (IV)" />
+    <about.83 ref="EchoesOfBattle.about" />
+
+    <title.84 value="[reference:EchoesOfBattle.title] (V)" />
+    <about.84 ref="EchoesOfBattle.about" />
+
+    <title.85 value="[reference:EchoesOfBattle.title] (VI)" />
+    <about.85 ref="EchoesOfBattle.about" />
+
+    <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
+    <about.86 ref="EchoesOfBattle.about" />
+
+    <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
+    <about.87 ref="EchoesOfBattle.about" />
+
+    <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
+    <about.88 ref="EchoesOfBattle.about" />
+
+    <title.89 value="[reference:EchoesOfBattle.title] (X)" />
+    <about.89 ref="EchoesOfBattle.about" />
+
+    <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
+    <about.90 ref="EchoesOfBattle.about" />
+
+    <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
+    <about.91 ref="EchoesOfBattle.about" />
+
+    <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
+    <about.92 ref="EchoesOfBattle.about" />
+
+    <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
+    <about.93 ref="EchoesOfBattle.about" />
+
+    <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
+    <about.94 ref="EchoesOfBattle.about" />
+
+    <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
+    <about.106 ref="EchoesOfBattle.about" />
+
+    <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
+    <about.107 ref="EchoesOfBattle.about" />
+
+    <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
+    <about.108 ref="EchoesOfBattle.about" />
+
+    <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
+    <about.109 ref="EchoesOfBattle.about" />
+
+    <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
+    <about.110 ref="EchoesOfBattle.about" />
+
+    <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
+    <about.111 ref="EchoesOfBattle.about" />
+
+    <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
+    <about.112 ref="EchoesOfBattle.about" />
+
+    <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
+    <about.113 ref="EchoesOfBattle.about" />
+
+    <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
+    <about.114 ref="EchoesOfBattle.about" />
+
+    <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
+    <about.115 ref="EchoesOfBattle.about" />
+
+    <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
+    <about.86 ref="EchoesOfBattle.about" />
+
+    <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
+    <about.87 ref="EchoesOfBattle.about" />
+
+    <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
+    <about.88 ref="EchoesOfBattle.about" />
+
+    <title.89 value="[reference:EchoesOfBattle.title] (X)" />
+    <about.89 ref="EchoesOfBattle.about" />
+
+    <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
+    <about.90 ref="EchoesOfBattle.about" />
+
+    <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
+    <about.91 ref="EchoesOfBattle.about" />
+
+    <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
+    <about.92 ref="EchoesOfBattle.about" />
+
+    <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
+    <about.93 ref="EchoesOfBattle.about" />
+
+    <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
+    <about.94 ref="EchoesOfBattle.about" />
+
+    <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
+    <about.106 ref="EchoesOfBattle.about" />
+
+    <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
+    <about.107 ref="EchoesOfBattle.about" />
+
+    <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
+    <about.108 ref="EchoesOfBattle.about" />
+
+    <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
+    <about.109 ref="EchoesOfBattle.about" />
+
+    <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
+    <about.110 ref="EchoesOfBattle.about" />
+
+    <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
+    <about.111 ref="EchoesOfBattle.about" />
+
+    <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
+    <about.112 ref="EchoesOfBattle.about" />
+
+    <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
+    <about.113 ref="EchoesOfBattle.about" />
+
+    <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
+    <about.114 ref="EchoesOfBattle.about" />
+
+    <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
+    <about.115 ref="EchoesOfBattle.about" />
+
+    <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
+    <about.86 ref="EchoesOfBattle.about" />
+
+    <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
+    <about.87 ref="EchoesOfBattle.about" />
+
+    <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
+    <about.88 ref="EchoesOfBattle.about" />
+
+    <title.89 value="[reference:EchoesOfBattle.title] (X)" />
+    <about.89 ref="EchoesOfBattle.about" />
+
+    <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
+    <about.90 ref="EchoesOfBattle.about" />
+
+    <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
+    <about.91 ref="EchoesOfBattle.about" />
+
+    <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
+    <about.92 ref="EchoesOfBattle.about" />
+
+    <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
+    <about.93 ref="EchoesOfBattle.about" />
+
+    <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
+    <about.94 ref="EchoesOfBattle.about" />
+
+    <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
+    <about.106 ref="EchoesOfBattle.about" />
+
+    <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
+    <about.107 ref="EchoesOfBattle.about" />
+
+    <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
+    <about.108 ref="EchoesOfBattle.about" />
+
+    <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
+    <about.109 ref="EchoesOfBattle.about" />
+
+    <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
+    <about.110 ref="EchoesOfBattle.about" />
+
+    <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
+    <about.111 ref="EchoesOfBattle.about" />
+
+    <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
+    <about.112 ref="EchoesOfBattle.about" />
+
+    <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
+    <about.113 ref="EchoesOfBattle.about" />
+
+    <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
+    <about.114 ref="EchoesOfBattle.about" />
+
+    <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
+    <about.115 ref="EchoesOfBattle.about" />
+
+    <title.14 value="Harnessing The Crystals" />
+    <about.14>
+      <p>Great!</p>
+      <p>
+        You have destroyed the aliens and we can use those crystals. Of course 
+        we need to research a technology that allows us to mine those crystals. 
+      </p>
+      <p>
+        Hurry! Go to your [reference:Buildings/ResearchCenter.name] and order 
+        research now. 
+      </p>
+    </about.14>
+
+    <title.15 value="Fruits of Patience" />
+    <about.15>
+      <p>Finally!</p>
+      <p>
+        Our research on [reference:Technologies/ZetiumExtraction.name] has 
+        payed of. We are now able to build much needed buildings that will 
+        extract precious zetium from these crystals. 
+      </p>
+    </about.15>
+
+
+    <title.16 value="Achieving Greatness" />
+    <about.16>
+      <p>Commander.</p>
+      <p>
+        As a great leader you have brought us many victories. All your efforts 
+        are appreciated. 
+      </p>
+    </about.16>
+
+
+    <title.28 value="More Glory" />
+    <about.28>
+      <p>Commander.</p>
+      <p>Your deeds are most glorious.</p>
+      <p>May luck be with you.</p>
+    </about.28>
+
+    <title.29 value="Even More Glory" />
+    <about.29>
+      <p>Commander.</p>
+      <p>
+        All our neighbors know about your skills. You are truly worthy. Keep it 
+        up! 
+      </p>
+    </about.29>
+
+    <title.30 value="Top of the Hill" />
+    <about.30>
+      <p>Commander.</p>
+      <p>
+        You are truly a great leader. Your people thrive and prosper under your 
+        ruling. 
+      </p>
+      <p>I Wish best luck in your future affairs, Commander.</p>
+    </about.30>
+
+    <title.33 value="The Unstoppable Force" />
+    <about.33>
+      <p>Commander.</p>
+      <p>
+        You are known in whole sector of this galaxy. Our allies respect you 
+        and our enemies fear you. 
+      </p>
+      <p>You are truly unstoppable.</p>
+    </about.33>
+
+    <title.64 value="Mayhem Unleashed" />
+    <about.64>
+      <p>Commander.</p>
+      <p>You are a leader in economy, science and war. Keep this on!</p>
+    </about.64>
+
+    <title.17 value="Saving Every Bit" />
+    <about.17>
+      <p>Welcome back, Commander.</p>
+      <p>
+        Now that we have a sufficient income for all three resource types we 
+        need to be sure they are not wasted. We need to build some additional 
+        storages to store excess resources we are not using at the moment. 
+      </p>
+      <p>
+        Order construction of buildings that store each resource type, 
+        Commander. 
+      </p>
+    </about.17>
+
+    <title.18 value="Reaching To The Stars" />
+    <about.18>
+      <p>Commander.</p>
+      <p>
+        Our scientists have found a way to use zetium in space travel! This is 
+        a glorious day! Order them to start researching of 
+        [reference:Technologies/SpaceFactory.name] now. 
+      </p>
+      <p>Galaxy awaits us!</p>
+    </about.18>
+
+    <title.19 value="Tools of Travel" />
+    <about.19>
+      <p>Commander!</p>
+      <p>
+        Now that we have [reference:Technologies/SpaceFactory.name] technology 
+        we must build a [reference:Buildings/SpaceFactory.name] on this planet. 
+      </p>
+      <p>
+        I suggest you construct on that gray leveled building ground - it looks 
+        like building on such terrain will save us a lot of time. 
+      </p>
+    </about.19>
+
+    <title.31 value="Threatening Space" />
+    <about.31>
+      <p>Hello, Commander.</p>
+      <p>
+        We have built our [reference:Buildings/SpaceFactory.name]. Now we need 
+        ships to travel space. Unfortunately we cannot rely only on our 
+        [reference:Units/Mule.name] class transporter ships. They are strongly 
+        armored however without any offensive power they will be ripped apart 
+        in seconds by alien ships hovering planets and other objects in our 
+        solar system. 
+      </p>
+      <p>
+        We need combat ships to counter them. Go to your 
+        [reference:Buildings/SpaceFactory.name] and order construction now. 
+      </p>
+    </about.31>
+
+    <title.35 value="Cleansing" />
+    <about.35>
+      <p>Hello, Commander.</p>
+      <p>
+        As we have built our [reference:Buildings/SpaceFactory.name] we should 
+        start amassing our space fleet right now! As an easy first task go pick 
+        on some [reference:Objects/Dirac2]. 
+      </p>
+    </about.35>
+
+    <title.36 value="Boiling Waters" />
+    <about.36>
+      <p>Commander.</p>
+      <p>
+        Your recent activity in this region has made alien ships more cautious. 
+        Some rumors even tell they are planning a rebellion! Go and destroy 
+        their powerful [reference:Units/Thor.name] class ships. Show them who 
+        rules this galaxy! 
+      </p>
+    </about.36>
+
+    <title.37 value="Fire Against Fire" />
+    <about.37>
+      <p>Greetings, Commander.</p>
+      <p>
+        It seems there is no stopping these alien ships. You must strike at 
+        their strongest spot to make them bow down to your might! It is the 
+        only way to stop the rebellion! 
+      </p>
+    </about.37>
+
+    <title.20 value="Expanding Ground" />
+    <about.20>
+      <p>Commander.</p>
+      <p>
+        Now that we have mastered space travel we should start expanding to 
+        other planets. Our sensors indicate there is a nearby life supporting 
+        planet. However it is guarded by alien ships. 
+      </p>
+      <p>
+        Use fleet you just built to annex that planet and take over its 
+        control. 
+      </p>
+      <p>To annex a planet we must land with our ships on its soil.</p>
+    </about.20>
+
+    <title.21 value="The Second Outpost" />
+    <about.21>
+      <p>Great job, Commander!</p>
+      <p>
+        We now control two planets! We should start building immediately! Load 
+        your Mobile Deployable Headquarters into our 
+        [reference:Units/Mule.name] and travel to our new colony. 
+      </p>
+      <p>
+        Deploy that [reference:Units/Mdh.name] to 
+        [reference:Buildings/Headquarters.name] and start constructing. 
+      </p>
+      <p>
+        Oh, and I suggest we take as many resources as we can with that 
+        [reference:Units/Mule.name] to our new colony. They will prove to be 
+        very useful there. 
+      </p>
+    </about.21>
+
+    <title.34 value="Eye in the Sky" />
+    <about.34>
+      <p>Commander!</p>
+      <p>
+        We now have plenty of space in our new colony. After establishing an 
+        operational base we should begin exploring our galaxy. 
+      </p>
+      <p>
+        Build a [reference:Buildings/Radar.name]. It will reveal a sector of 
+        galaxy map and show other solar systems with ship movement within that 
+        sector. 
+      </p>
+      <p>
+        Keep in mind that running a [reference:Buildings/Radar.name] requires 
+        substantial amount of energy. It will drain your energy storage quickly 
+        if you do not have enough energy generated. And if it runs out of 
+        energy - it will simply shut down keeping you blind from enemy actions. 
+      </p>
+    </about.34>
+
+    <title.38 value="Gaining Ground" />
+    <about.38>
+      <p>Commander.</p>
+      <p>
+        It is time to expand your empire. Gain another colony so we could 
+        thrive there! Make our ancestors proud. 
+      </p>
+    </about.38>
+
+    <title.39 value="Expanding Empire" />
+    <about.39>
+      <p>Good job, Commander.</p>
+      <p>
+        Even if we have conquered that pesky world we should not stop with it. 
+        There is much ground to cover. Go and conquer yet another world. Make 
+        it fall to the might of our empire! 
+      </p>
+    </about.39>
+
+    <title.40 value="Expanding Empire (II)" />
+    <about.40>
+      <p>Commander.</p>
+      <p>I am sure you are happy with our empire. But will you stop at this?</p>
+    </about.40>
+
+    <title.41 value="Expanding Empire (III)" />
+    <about.41>
+      <p>Commander.</p>
+      <p>
+        It is astonishing work you have done! But we need more ground to live 
+        on, our population is growing. You need to acquire more planets! 
+      </p>
+    </about.41>
+
+    <title.42 value="Expanding Empire (IV)" />
+    <about.42>
+      <p>Commander.</p>
+      <p>
+        We have ultimate empire, all our puny neighbors are in fear. I say - 
+        lets take one more planet from them, just to show them our might. Shall 
+        we? 
+      </p>
+    </about.42>
+
+    <title.43 value="Corrupting Transport Lines" />
+    <about.43>
+      <p>Commander.</p>
+      <p>
+        We should destroy some enemy transporters and corrupt their supplies. 
+        Hunt down some [reference:Objects/Mule2] and cripple their transport
+        lines. 
+      </p>
+    </about.43>
+
+    <destroying_enemy_will.title value="Destroying Enemy Will" />
+    <destroying_enemy_will.about>
+      <p>Commander.</p>
+      <p>
+        We have spotted nearby enemy activity. Destroy their fleet and troops 
+        to crush the resistance and show them our true power! 
+      </p>
+    </destroying_enemy_will.about>
+
+    <title.44 ref="destroying_enemy_will.title" />
+    <about.44 ref="destroying_enemy_will.about" />
+
+    <title.45 value="[reference:destroying_enemy_will.title] (II)" />
+    <about.45 ref="destroying_enemy_will.about" />
+
+    <title.46 value="[reference:destroying_enemy_will.title] (III)" />
+    <about.46 ref="destroying_enemy_will.about" />
+
+    <title.47 value="[reference:destroying_enemy_will.title] (IV)" />
+    <about.47 ref="destroying_enemy_will.about" />
+
+    <title.48 value="[reference:destroying_enemy_will.title] (V)" />
+    <about.48 ref="destroying_enemy_will.about" />
+
+    <title.49 value="[reference:destroying_enemy_will.title] (VI)" />
+    <about.49 ref="destroying_enemy_will.about" />
+
+    <title.50 value="[reference:destroying_enemy_will.title] (VII)" />
+    <about.50 ref="destroying_enemy_will.about" />
+
+    <title.51 value="[reference:destroying_enemy_will.title] (VIII)" />
+    <about.51 ref="destroying_enemy_will.about" />
+
+    <title.52 value="[reference:destroying_enemy_will.title] (IX)" />
+    <about.52 ref="destroying_enemy_will.about" />
+
+    <title.53 value="[reference:destroying_enemy_will.title] (X)" />
+    <about.53 ref="destroying_enemy_will.about" />
+
+    <title.54 value="[reference:destroying_enemy_will.title] (XI)" />
+    <about.54 ref="destroying_enemy_will.about" />
+
+    <crushing_enemy_defenses.title value="Crushing Enemy Defenses" />
+    <crushing_enemy_defenses.about>
+      <p>Commander.</p>
+      <p>
+        We cannot allow our enemies to reign for no more! Attack their planets 
+        and crush their defenses! Hurry! 
+      </p>
+    </crushing_enemy_defenses.about>
+
+    <title.55 ref="crushing_enemy_defenses.title" />
+    <about.55 ref="crushing_enemy_defenses.about" />
+
+    <title.56 value="[reference:crushing_enemy_defenses.title] (II)" />
+    <about.56 ref="crushing_enemy_defenses.about" />
+
+    <title.57 value="[reference:crushing_enemy_defenses.title] (III)" />
+    <about.57 ref="crushing_enemy_defenses.about" />
+
+    <title.58 value="[reference:crushing_enemy_defenses.title] (IV)" />
+    <about.58 ref="crushing_enemy_defenses.about" />
+
+    <title.59 value="[reference:crushing_enemy_defenses.title] (V)" />
+    <about.59 ref="crushing_enemy_defenses.about" />
+
+    <title.60 value="[reference:crushing_enemy_defenses.title] (VI)" />
+    <about.60 ref="crushing_enemy_defenses.about" />
+
+    <title.61 value="[reference:crushing_enemy_defenses.title] (VII)" />
+    <about.61 ref="crushing_enemy_defenses.about" />
+
+    <title.62 value="[reference:crushing_enemy_defenses.title] (VIII)" />
+    <about.62 ref="crushing_enemy_defenses.about" />
+
+    <title.63 value="[reference:crushing_enemy_defenses.title] (IX)" />
+    <about.63 ref="crushing_enemy_defenses.about" />
+
+    <title.65 value="Overtaking Enemies" />
+    <about.65>
+      <p>Commander!</p>
+      <p>
+        We have enemies at our front lines! We must stop them! Go ahead and 
+        conquer one of their worlds. That will most certainly stop them from 
+        advancing on us. 
+      </p>
+    </about.65>
+  </Quests>
+
+  <Ratings>
+    <label.ratings value="Reitingai" />
+    <rank value="#" />
+    <player value="Žaidėjas" />
+    <alliance value="Sąjunga" />
+    <points value="Viso taškų" />
+    <planetsCount value="Planetų" />
+    <warPoints value="Karo taškų" />
+    <economyPoints value="Ekonomijos taškų" />
+    <sciencePoints value="Mokslo taškų" />
+    <victoryPoints value="Pergalės taškų" />
+    <armyPoints value="Kariuomenės taškų" />
+    <online value="prisijungęs" />
+    <offline value="atsijungęs" />
+    <label.search value="Paieška" />
+    <label.pointsToWin value="Pergalės taškų laimėti žaidimui: {0}" />
+    <label.filterOnline value="Rodyti tik prisijungusius žaidėjus" />
+  </Ratings>
+
+  <Resources>
+    <metal value="Metalas" />
+    <energy value="Energija" />
+    <zetium value="Zetiumas" />
+    <time value="Tobulinimo laikas" />
+    <scientists value="Mokslininkai" />
+    <points value="Taškai" />
+    <vps value="PT" />
+    <timer value="Laikas iki kito padidėjimo" />
+    <resources value="Resursai" />
+    <current value="Dabartinis kiekis" />
+    <max value="Maks. talpa" />
+    <rates value="išgavimo greitis" />
+    <full value="Pilnas per {0}" />
+    <empty value="Tuščias per {0}" />
+    <and value="ir" />
+    <notEnoughResources value="Nepakanka resursų" />
+    <enoughResourcesIn value="Resursų užteks už:" />
+    <insufficientRate value="Nepakankamas resursų išgavimo greitis" />
+    <additionalStorage value="Reikia papildomų {0} talpyklų" />
+    <toolTip.selectNone value="Atžymėti visus" />
+    <toolTip.selectAll value="Pažymėti visus" />
+  </Resources>
+
+  <SSObjects>
+    <title.info value="{0} informacija" />
+    <label.owner value="Užimta" />
+    <label.unoccupied value="Neužimta" />
+    <label.toPlanet value="Įeiti į planetą" />
+    <label.toGalaxy value="Eiti į galaktiką" />
+    <label.endsAt value="Baigiasi {0}" />
+    <label.cooldownEndsIn value="Baigiasi už" />
+    <type.Planet value="Planeta" />
+    <type.Jumpgate value="Šuolio vartai" />
+    <type.Asteroid value="Asteroidas" />
+    <location.sector value="Sektorius {0}:{1}" />
+    <location.position value="Orbita" />
+    <location.angle value="Kampas" />
+    <prompt.selectPlanet value="Tavo planetos" />
+
+    <message.battleground>
+      <p>Planetų, ęsančių šioje saulės sistemoje, užėmimas ir kontrolė duoda
+      tau Pergalės Taškų, kredų ir karių.</p>
+    </message.battleground>
+    <message.planetRenamed 
+      value="Tavo planetos vardas buvo pakeistas į „{0}“." />
+  </SSObjects>
+
+  <SpinnerContainer>
+    <label.seconds value="sekundžių" />
+  </SpinnerContainer>
+
+  <Squadrons>
+    <title.squadrons value="Laivynai" />
+    <title.noSquadrons value="Judančių laivynų neaptikta." />
+    <label.currentLocation value="Dabartinė pozicija" />
+    <label.sourceLocation value="Skrenda iš" />
+    <label.targetLocation value="Skrenda į" />
+    <label.units value="Laivyno nariai" />
+    <label.arrivesAt value="Atvyks" />
+    <label.leavesPlanet value="Iš planetos išvyksta" />
+    <label.inTime value="(už {0})" />
+  </Squadrons>
+
+  <Technologies>
+    <title value="Technologijų medis" />
+    <scientistsAvailable value="Laisvi mokslininkai" />
+    <currentlyResearching value="Šiuo metu tiriama" />
+    <scientistsAssigned value="Priskirti mokslininkai" />
+    <finishedIn value="Baigs už {0}" />
+    <scientistsSelected value="Pasirinkta mokslininkų" />
+    <scientistsPanelTitle value="Mokslininkai" />
+    <upgradeProgress value="Tyrimo eiga" />
+    <buildCenters>
+      <p>Mokslininkų kiekiui padidinti statyk arba tobulink tyrimų 
+      laboratorijas.</p>
+    </buildCenters>
+    <notEnoughScientists>
+      <p>Šiai technologijai reikia 
+      {0 one[? mokslininko] tens[? mokslininkų] many[? mokslininkų]}, tačiau
+      tik {2 one[? mokslininkas] tens[? mokslininkų] many[? mokslininkai]} iš
+      {4 one[? mokslininko] tens[? mokslininkų] many[? mokslininkų]} yra laisvi.
+      </p>
+    </notEnoughScientists>
+    <notEnoughScientistsExploration>
+      <p>Tu neturi pakankamai mokslininkų šiam objektui tyrinėti.</p>
+    </notEnoughScientistsExploration>
+    <technologiesNeeded value="Reikia papildomų technologijų" />
+    <groupResearched>
+      <p>Kita technologija iš šios grupės jau buvo išrasta, todėl tu negali
+      išrasti šios technologijos.</p>
+    </groupResearched>
+
+    <upgrade value="Tobulinti" />
+    <update value="Atnaujinti" />
+
+    <paused value="Sustabdyta" />
+
+    <upgradeCost value="Tobulinimo kaina" />
+    <forceOvertime value="Dirbti viršvalandžius" />
+
+    <isGroup>
+      <p>Jeigu išrasi šią technologiją, negalėsi išrasti:</p>
+    </isGroup>
+    <required value="Reikalauja" />
+    <details value="Detalės" />
+    <unlocks value="Atrakina" />
+
+    <level value="{0} lygio" />
+
+
+    <property.upgradeTime value="Tobulinimo laikas" />
+    <property.metal.cost value="Metalo kaina" />
+    <property.energy.cost value="Energijos kaina" />
+    <property.zetium.cost value="Zetiumo kaina" />
+    <property.scientists.min value="Reikia mokslininkų" />
+    <property.mod.zetium.generate value="Zetiumo išgavimo greičio priedas" />
+    <property.mod.zetium.store value="Zetiumo talpos priedas" />
+    <property.mod.metal.generate value="Metalo išgavimo greičio priedas" />
+    <property.mod.metal.store value="Metalo talpos priedas" />
+    <property.mod.energy.generate value="Energy išgavimo greičio priedas" />
+    <property.mod.energy.store value="Energijos talpos priedas" />
+    <property.mod.armor value="Šarvų priedas" />
+    <property.mod.damage value="Žalos priedas" />
+    <property.mod.movement_time_decrease value="Jūdėjimo trukmės sumažinimas" />
+
+    <UnitTech>
+      <p>Pirmas šios technologijos lygis atrakiną šį karį/laivą. Kiti jos 
+      lygiai jį tobulina.</p>
+    </UnitTech>
+
+    <Zetium.common>
+      <p>
+        Zetiumas tai retas kristalas su ypatingomis savybėmis. Jo ir kitų 
+        technologjų pagalba galime statyti puikius pastatus, galingus laivus, 
+        bei nesustabdomus ginklus. Šie kristalai yra būtini mūsų kosminių laivų
+        varikliams ir daugumai kitų technologijų.
+      </p>
+    </Zetium.common>
+
+    <ZetiumExtraction.name ref="Objects/ZetiumExtraction1" />
+    <ZetiumExtraction.about>
+      <p>Įgalina statyti zetiumo kasyklas ir talpyklas.</p>
+      <p>[reference:Zetium.common]</p>
+    </ZetiumExtraction.about>
+
+    <Spy.name ref="Objects/Spy1" /> <!-- <Spy1 value="Spy" /> -->
+    <Spy.about value="Just a simple spy technology" />
+
+    <Saboteur.name ref="Objects/Saboteur1" /> <!-- <Saboteur1 value="Saboteur" /> -->
+    <Saboteur.about value="I think thisone has ability to ruin things" />
+
+    <SatteliteHacking.name ref="Objects/SatteliteHacking1" /> <!-- <SatteliteHacking1 value="Sattelite hacking" /> -->
+    <SatteliteHacking.about>
+      <p>This one will ruin any satelite if sysAdmin is not there</p>
+    </SatteliteHacking.about>
+
+    <CamouflageSuits.name ref="Objects/CamouflageSuits1" /> <!-- <CamouflageSuits1 value="Camouflage suits" /> -->
+    <CamouflageSuits.about>
+      <p>You can dress with this one if you go to picnic</p>
+    </CamouflageSuits.about>
+
+    <TacticalReconnaissance.name ref="Objects/TacticalReconnaissance1" /> <!-- <TacticalReconnaissance1 value="Tactical reconnaissance" /> -->
+    <TacticalReconnaissance.about>
+      <p>
+        This is very strage technology, it is told that ancient scientists are 
+        the ones who invented it first 
+      </p>
+    </TacticalReconnaissance.about>
+
+    <R14Charges.name ref="Objects/R14Charges1" /> <!-- <R14Charges1 value="R14 charges" /> -->
+    <R14Charges.about value="Charge enemies with R14" />
+
+    <Spaceport.name ref="Objects/Spaceport1" /> <!-- <Spaceport1 value="Spaceport" /> -->
+    <Spaceport.about value="Fly to the sky" />
+
+    <ArmorTech value="Ši technologija padidina šarvų stiprumą" />
+    <WeaponsTech value="Ši technologija padidina ginklų stiprumą" />
+
+    <InfantryUpgradeTech>
+      <p>žemės kariams statomiems kareivinėse, tokiems kaip desantininkas
+      ar sėlintojas.</p>
+    </InfantryUpgradeTech>
+
+    <MetabolicChargers.name ref="Objects/MetabolicChargers1" />
+    <MetabolicChargers.about>
+      <p>Neseniai padaryti atradimai leidžia įterpti zetiumo plokšteles į karių
+      šarvus, taip padarant juos atsparesniais.</p>
+      <p>[reference:ArmorTech] [reference:InfantryUpgradeTech]</p>
+    </MetabolicChargers.about>
+
+    <HighVelocityCharges.name ref="Objects/HighVelocityCharges1" />
+    <HighVelocityCharges.about>
+      <p>Ši technologija papildo pėstininkų amuniciją zetiumu, taip suteikiant
+      jiems daugiau galios. Šoviniai ir raketos greičiau skrenda ir stipriau
+      sprogsta, padarydami daugiau žalos priešams.</p>
+      <p>[reference:WeaponsTech] [reference:InfantryUpgradeTech]</p>
+    </HighVelocityCharges.about>
+
+    <ShipUpgradeTech>
+      <p>kosminiams laivams statomiems laivų gamykloje, tokiems kaip 
+      varno ar cyrikso klasės laivai.</p>
+      <p>Ji NEPAGERINA raganosio klasės laivų.</p>
+    </ShipUpgradeTech>
+
+    <ShipsArmor.name ref="Objects/ShipsArmor1" />
+    <ShipsArmor.about>
+      <p>Ši technologija leidžia panaudojus zetiumą gaminti tvirtus ir lengvus
+      išorinius laivų šarvus, kurie gali būti sluoksniuojami, taip padidinant
+      jų atsparumą.</p>
+      <p>[reference:ArmorTech] [reference:ShipUpgradeTech]</p>
+    </ShipsArmor.about>
+
+    <ShipsDamage.name ref="Objects/ShipsDamage1" />
+    <ShipsDamage.about>
+      <p>Įpurškiant zetiumą į generuojamą plazmos srautą išgaunama daug 
+      karštesnė ir galingesnė plazma, kuri sugeba ištirpdyti net labiausiai
+      pažengusius šarvus.</p>
+      <p>[reference:WeaponsTech] [reference:ShipUpgradeTech]</p>
+    </ShipsDamage.about>
+
+    <TankUpgradeTech>
+      <p>žemės tankams statomiems tankų gamykloje, tokiems kaip skorpionas ar
+      azuras.</p>
+    </TankUpgradeTech>
+
+    <TanksDamage.name ref="Objects/TanksDamage1" />
+    <TanksDamage.about>
+      <p>Pridedant nestabilaus zetiumo į tankų sviedinius ir raketas gaunamas
+      jų galios padidėjimas užtikrina, jog priešo kareiviai nebepasitrauks 
+      iš mūšio lauko.</p>
+      <p>[reference:WeaponsTech] [reference:TankUpgradeTech]</p>
+    </TanksDamage.about>
+
+    <TanksArmor.name ref="Objects/TanksArmor1" />
+    <TanksArmor.about>
+      <p>Skydo generatoriai įtaisyti tankų šarvuose generuoja jėgą, kuri
+      sumažina atskrendančių šovinių ir sviedinių greitį, taip sumažindami
+      žalą padaromą tankui.</p>
+      <p>[reference:ArmorTech] [reference:TankUpgradeTech]</p>
+    </TanksArmor.about>
+
+    <ResourceTransporter.name ref="Objects/ResourceTransporter1" /> <!-- <ResourceTransporter1 value="Resource transporter" /> -->
+    <ResourceTransporter.about>
+      <p>
+        This technology helps you to transport resources through hyperspace 
+        chanels 
+      </p>
+    </ResourceTransporter.about>
+
+    <Crane.name ref="Buildings/Crane.name" />
+    <Crane.about ref="Buildings/Crane.about" />
+
+    <Radar.name ref="Buildings/Radar.name" />
+    <Radar.about ref="Buildings/Radar.common" />
+
+    <MetalExtractorT2.name ref="Buildings/MetalExtractorT2.name" />
+    <MetalExtractorT2.about>
+      <p>Leidžia statyti [reference:Buildings/MetalExtractorT2.name].</p>
+      <p>[reference:Buildings/MetalExtractorT2.common]</p>
+    </MetalExtractorT2.about>
+
+    <FieryMelters.name ref="Objects/FieryMelters1" />
+    <FieryMelters.about>
+      <p>Metalo kasyklose, panaudojant aukštą spaudimą, galima didesnė
+      metalo išgavimo sparta, bei laikymo efektyvumas. Nors ši technologija ir 
+      kiek brangoka, į tą tikrai verta investuoti, jeigu tau trūksta metalo.</p>
+      <p>Kiekvienas patobulinimo lygis didina metalo išgavimo greitį ir 
+      saugyklų talpą.</p>
+    </FieryMelters.about>
+
+    <CollectorT2.name ref="Buildings/CollectorT2.name" />
+    <CollectorT2.about>
+      <p>Leidžia statyti saulės jėgaines.</p>
+      <p>[reference:Buildings/CollectorT2.common]</p>
+    </CollectorT2.about>
+
+    <CollectorT3.name ref="Buildings/CollectorT3.name" />
+    <CollectorT3.about>
+      <p>Leidžia statyti terminius centrus.</p>
+      <p>[reference:Buildings/CollectorT3.common]</p>
+    </CollectorT3.about>
+
+    <SuperconductorTechnology.name ref="Objects/SuperconductorTechnology1" />
+    <SuperconductorTechnology.about>
+      <p>Panaudodami zetiumą laiduose, mūsų mokslininkai sugebėjo pagerinti
+      jų laidumą elektrai ir panaudoti turimą energiją efektyviau. Į šią 
+      technologiją tikrai verta investuoti, jeigu trūksta energijos.</p>
+      <p>Kiekvienas patobulinimo lygis didina energijos išgavimo greitį ir 
+      saugyklų talpą.</p>
+    </SuperconductorTechnology.about>
+
+    <ZetiumExtractorT2.name ref="Buildings/ZetiumExtractorT2.name" />
+    <ZetiumExtractorT2.about>
+      <p>Leidžia statyti [reference:Buildings/ZetiumExtractorT2.name].</p>
+      <p>[reference:Buildings/ZetiumExtractorT2.common]</p>
+    </ZetiumExtractorT2.about>
+
+    <PowderedZetium.name ref="Objects/PowderedZetium1" />
+    <PowderedZetium.about>
+      <p>Šie aštresni zetiumo pjaustikliai išgauna geresnės kokybės zetiumo
+      dulkes, kurios tada gali būti apdorotos ir perdirbtos į pramoninį zetiumą.
+      Šis zetiumas gali būti laikomas ir naudojamas efektyviau, taip padidinant
+      naudingą išgaunamo zetiumo kiekį.</p>
+      <p>Kiekvienas patobulinimo lygis didina zetiumo išgavimo greitį ir 
+      saugyklų talpą.</p>
+    </PowderedZetium.about>
+
+    <Vulcan.name ref="Buildings/Vulcan.name" />
+    <Vulcan.about ref="Buildings/Vulcan.about" />
+
+    <Screamer.name ref="Buildings/Screamer.name" />
+    <Screamer.about ref="Buildings/Screamer.about" />
+
+    <Thunder.name ref="Buildings/Thunder.name" />
+    <Thunder.about ref="Buildings/Thunder.about" />
+
+    <GroundFactory.name ref="Buildings/GroundFactory.name" />
+    <GroundFactory.about>
+      <p>Leidžia statyti tankų gamyklą.</p>
+      <p>[reference:Buildings/GroundFactory.about]</p>
+    </GroundFactory.about>
+
+    <SpaceFactory.name ref="Buildings/SpaceFactory.name" />
+    <SpaceFactory.about>
+      <p>Leidžia statyti laivų gamyklą.</p>
+      <p>[reference:Buildings/SpaceFactory.about]</p>
+    </SpaceFactory.about>
+
+    <HeavyFlight.name ref="Objects/HeavyFlight1" />
+    <HeavyFlight.about>
+      <p>Panaudojant gama daleles mūsų sunkiųjų variklių procesuose mes galime
+      pasiekti didesnius greičius ir sumažinti skrydžio laiką.</p>
+      <p>Deja, bet ši technologija pritaikoma tik UX-20 varikliuose, kurie 
+      naudojami tik didžiausiuose mūsų laivuose. Kita vertus - jie yra ir 
+      patys lėčiausi mūsų laivai, tad ši technologija yra labai pravarti.</p>
+      <p>Sutrumpina skrydžio laiką mulo ir raganosio klasės laivams.</p>
+    </HeavyFlight.about>
+    
+    <UnitUpgrade>
+      <p>Kiekvienas patobulinimo lygis didina šarvų atsparumą ir ginklų žalą.</p>
+    </UnitUpgrade>
+
+    <Trooper.name ref="Units/Trooper.name" />
+    <Trooper.about>
+      <p>Nors desantininkai ir neturi ypatingos technikos, būriuose jie yra
+      gana grėsminga jėga. Šis patobulinimas suteikia jiems papildomos kovinės
+      galios ir stipresnius šarvus, jog šie ištikimi vyrai ir moterys galėtų
+      geriau pasitarnauti mūšyje.</p>
+      <p>[reference:UnitUpgrade]</p>
+    </Trooper.about>
+
+    <Shocker.name ref="Units/Shocker.name" />
+    <Shocker.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Shocker.about]</p>
+      <p>Pagerina mecho šarvus ir raketas padarydamas jį dar galingesniu mūšyje.
+      Papildomi šarvai padeda ilgiau ginti kitus karius, o zetiumu praturtintos
+      raketos daro daugiau žalos.</p>
+      <p>[reference:UnitUpgrade]</p>
+    </Shocker.about>
+
+    <Seeker.name ref="Units/Seeker.name" />
+    <Seeker.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Seeker.about]</p>
+      <p>Investicija į sėlintojus gali atsipirkti. Pagerinti šarvai gali
+      leisti jam iššauti tą paskutinį šūvį, kurio taip reikėjo. Be šarvų, ši
+      technologija dar ir duoda kulka su zetiumo lydiniu, kurios geriau 
+      skrenda ir daro daugiau žalos.</p>
+      <p>[reference:UnitUpgrade]</p>
+    </Seeker.about>
+
+    <Scorpion.name ref="Units/Scorpion.name" />
+    <Scorpion.about>
+      <p>Į skorpiono klasės tankus galima įmontuoti geresnius skydų generatorius
+      ir galingesnius dalelių greitintuvus. Investicijos į šią technologiją
+      tau duoda pranašumą prieš tokius pačius priešininko tankus.</p>
+      <p>[reference:UnitUpgrade]</p>
+    </Scorpion.about>
+
+    <Azure.name ref="Units/Azure.name" />
+    <Azure.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Azure.about]</p>
+      <p>Įmaišant zetiumo į azurų raketas išgaunamas didesnis sprogstamasis 
+      efektas, o panaudojant zetiumą jų šarvuose, jie sugeria daugiau žalos.</p>
+      <p>[reference:UnitUpgrade]</p>
+    </Azure.about>
+
+    <Mdh.name ref="Units/Mdh.name" />
+    <Mdh.about ref="Units/Mdh.common" />
+
+    <Crow.name ref="Units/Crow.name" />
+    <Crow.about>
+      <p>Pagerina varno klasės laivų lazerius ir šarvus, taip padarant jį 
+      geresniu koviniu laivu, kuris išlieka toks pat greitas.</p>
+      <p>[reference:UnitUpgrade]</p>
+    </Crow.about>
+
+    <Cyrix.name ref="Units/Cyrix.name" />
+    <Cyrix.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Cyrix.about]</p>
+      <p>Panaudojant zetiumo kristalus cyrikso klasės laivuose pagerinami jo
+      lazeriai ir skydų generatoriai, todėl patobulinti laivai gali dalyvauti
+      kovoje ilgiau.</p>
+      <p>[reference:UnitUpgrade]</p>
+    </Cyrix.about>
+
+    <Rhyno.name ref="Units/Rhyno.name" />
+    <Rhyno.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Rhyno.about]</p>
+      <p>Ši technologija patobulina ir taip grėsmingus raganosio klasės 
+      kovinius laivus. Ji sustiprina jų šarvus zetiumo plokštėmis ir padidina
+      laivo daromos žalos kiekį.</p>
+      <p>[reference:UnitUpgrade]</p>
+    </Rhyno.about>
+
+    <Dart.name ref="Units/Dart.name" />
+    <Dart.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Dart.about]</p>
+      <p>Strėlės klasės laivams pagerina šarvus ir ginklus, taip padarant
+      juos dar mirtinesnius priešo laivams.</p>
+      <p>[reference:UnitUpgrade]</p>
+    </Dart.about>
+
+    <Avenger.name ref="Units/Avenger.name" />
+    <Avenger.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Avenger.about]</p>
+      <p>Pagerina keršytojų šarvus ir sustiprina jų raketas. Tai padaro šiuos
+      laivus dar geresniais nuklydusių laivynų medžiotojais.</p>
+      <p>[reference:UnitUpgrade]</p>
+    </Avenger.about>
+
+    <Jumper.name ref="Units/Jumper.name" />
+    <Jumper.about>
+      <p>Leidžia statyti šoklius.</p>
+      <p>[reference:Units/Jumper.about]</p>
+    </Jumper.about>
+
+    <HealingCenter.name ref="Buildings/HealingCenter.name" />
+    <HealingCenter.about>
+      <p>Leidžia statyti [reference:Buildings/HealingCenter.name].</p>
+      <p>[reference:Buildings/HealingCenter.common]</p>
+    </HealingCenter.about>
+
+    <Alliances.name ref="Objects/Alliances1" />
+    <Alliances.about>
+      <p>Susijunk su kaimynais, ginkite vieni kitus, koordinuokite atakas bei
+      padėkite vieni kitiems vykdyti užduotis. Viskas įmanoma, kai esi ne 
+      vienas. Tai kam laukti? Sukurk savo sąjungą jau dabar!</p>
+      <p>Leidžia įkurti savo sąjungą.</p>
+    </Alliances.about>
+
+    <DefensivePortal.name ref="Objects/DefensivePortal1" />
+    <DefensivePortal.about>
+      <p>Leidžia statyti portalą.</p>
+      <p>[reference:Buildings/DefensivePortal.common]</p>
+    </DefensivePortal.about>
+  </Technologies>
+
+  <Units>
+    <property.timeToFinish.short value="{0}" />
+    <property.timeToFinish.long value="Bus už {0}" />
+    <property.hp value="Gyvybės Taškai" />
+    <property.upgradeTime value="Statymo laikas" />
+    <property.metal.cost value="Metalo kaina" />
+    <property.energy.cost value="Energijos kaina" />
+    <property.zetium.cost value="Zetiumo kaina" />
+    <property.armor value="Šarvai" />
+    <property.armorMod value="Šarvų pliusas" />
+    <property.damageMod value="Žalos pliusas" />
+    <property.evasiveness value="Išsisukimas" />
+    <property.xpNeeded value="PT pakelti lygiui" />
+    <property.initiative value="Iniciatyva" />
+    <property.volume value="Apimtis" />
+    <property.storage value="Talpa" />
+    <property.move.solarSystem.hopTime value="Šuolio laikas saulės sist." />
+    <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
+    <property.population value="Populiacija" />
+    
+    
+    <tooltip.populationLeft value="{0} population left" />
+    
+    <title.defensivePool value="Tavo gynybinis rezervas" />
+    <title.emptyDefensivePool>
+      <p>Tavo gynybinis rezervas yra tuščias. Priešams užpuolus šią planetą
+      į jos gynybą nebus atiteleportuoti jokie kariai.</p>
+      <p>Pastatyk portalą kitose planetose, arba prisijunk prie sąjungos, kuri
+      turi portalų, jog planetos užpuolimo atveju iš planetų su portalais būtų
+      atiteleportuoti kariai.</p>
+    </title.emptyDefensivePool>
+    <title.possiblePool value="Jeigu tave užpuls, tu gali gauti" />
+    <defensivePool.totalVolume value="Iš viso apimties: {0}" />
+    <defensivePool.teleportedVolume value="Teleportuota apimtis: {0}" />
+    <defensivePool.maxVolume value="Maksimali galia: {0}" />
+    <defensivePool.pickUnits value="Parodyti kitą" />
+
+    <!-- TODO: is params ok? -->
+    <stance.defensive value="Gynybinė būsena ({0}% žalos, {1}% gynybos)" />
+    <stance.neutral value="Neutrali būsena" />
+    <stance.aggressive value="Agresyvi būsena ({0}% žalos, {1}% gynybos)" />
+
+    <label.incomingRaiders value="Atskrendantys piratai" />
+    <label.count value="Kiekis:" />
+    <label.current value="Dabar" />
+    <label.queued value="Eilėje" />
+    <label.dropItems.build value="Nutempk karius čia, kad pradėti statyti!" />
+    <label.dropItems.queue value="Nutempk karius čia, kad padėti į eilę!" />
+    <label.fullQueue value="Statymo eilė pilna" />
+    <label.notEnoughResources value="Nepakanka resursų" />
+    <label.notEnoughStorage value="Nepakanka talpyklų" />
+    <label.enoughIn value="Pakaks už {0}" />
+    <label.currentUnits value="Kariai" />
+    <label.currentFacilities value="Gamyklos" />
+    <label.flankNr1 value="Pirmas" />
+    <label.flankNr2 value="Antras" />
+    <tooltip.flank>
+      <p>{0} flangas</p>
+      <p>Kariai šiame flange turi {1}% tikimybę, kad į juos pataikys.</p>
+    </tooltip.flank>
+    <label.setStance value="Keisti būseną" />
+    <label.issueOrder value="Siųsti" />
+    <label.attack value="Pulti" />
+    <title.dismiss value="Pašalinti karius" />
+    <label.dismiss value="Pašalinti" />
+    <message.dismiss value="Jeigu pašalinsi pasirinktus karius, gausi:" />
+    <label.mission value="Misija" />
+    <label.changesDetected value="Rikiuotės tvarka pakeista" />
+    <label.confirm value="Patvirtinti" />
+    <label.cancel value="Atšaukti" />
+    <label.location value="Vieta" />
+    <label.target value="Taikinys" />
+    <label.select value="Pasirinkti" />
+    <label.all value="Visus" />
+    <label.none value="Nei vieno" />
+    <label.transfer value="Perkelti" />
+    <label.load value="Įkrauti" />
+    <label.close value="Uždaryti" />
+    <label.unload value="Iškrauti" />
+    <label.noStorage value="Nepakanka talpumo!" />
+    <label.noSelection value="Nepasirinktas nei vienas karys!" />
+    <label.selectedVolume value="Pasirinkta apimtis: {0}" />
+    <label.freeStorage value="Laisvos vietos: {0}" />
+    <label.volume value="Apimtis: {0}" />
+    <label.technologyNeeded value="Reikia technologijos!" />
+    <label.selectUnits value="Pasirink karius" />
+    <label.pleaseWait value="Palauk, kraunasi..." />
+    <label.units value="Kariai" />
+    <label.healing value="Gydymas" />
+    <label.willHeal value="Tu gali pagyditi šiuos karius už:" />
+    <label.healCooldown value="Tu negalėsi gydyti karių {0}." />
+    <toolTip.healCooldown value="Šiuo metu dar negali gydyti karių." />
+    <label.heal value="Gydyti" />
+    <label.show value="Rodyti" />
+    <label.deploy value="Išskleisti" />
+    <label.manage value="Tvarkyti" />
+    <label.withPlanets 
+      value="Su {0 one[? planeta] tens[? planetų] many[? planetų]}" />
+    <label.resources value="Resursai" />
+    <label.transferResources value="Perkelti" />
+    <label.planetFull>
+      <p>Tu negali iškrauti {0} į šią planetą, nes {0} talpyklos {1} yra 
+      pilnos.</p>
+    </label.planetFull>
+    <label.transporterFull>
+      <p>Tu negali įkrauti resursų į šį krovininį laivą, nes jame nebėra 
+      laisvos vietos.</p>
+    </label.transporterFull>
+    <label.empty>
+      <p>Šis krovininis laivas yra tuščias ir toje vietoje, kur jis yra, nėra
+      nieko, ką jis galėtų įsikrauti.</p>
+    </label.empty>
+    <label.notYours value="Šie kariai tau nepriklauso!" />
+    <label.leavingSquadrons>
+      <p>Šie laivynai šiuo metu iškrenda iš planetos.</p>
+    </label.leavingSquadrons>
+    <label.avoidBattles value="Vengti mūšių su ateiviais" />
+    <description.avoidBattles>
+      <p>Tavo laivynas stengsis išvengti nebūtinų mūšių su ateivių laivais,
+      todėl jis gali užtrukti ilgiau, jeigu tavo kelyje stovi ateiviai.</p>
+    </description.avoidBattles>
+    <description.dontAvoidBattles>
+      <p>Tavo laivynas skris greičiausiu maršrutu ir kausis su ateiviais 
+      ęsančiais jo kelyje.</p>
+    </description.dontAvoidBattles>
+    <warning.noFleets>
+      <p>Šiuo metu nėra išskrendančių laivynų.</p>
+    </warning.noFleets>
+
+    <stored.short>
+      <p>R: {0}%<br/>K: {1}%</p>
+    </stored.short>
+
+    <message.notSelected>
+      <p>Kai kurie kariai nebuvo parinkti, nes jų apimtis viršyja likusią 
+      laisvą vietą krovininiame laive.</p>
+    </message.notSelected>
+
+    <message.noResources>
+      <p>Kai kurie kariai nebuvo parinkti, nes jų gydymui šioje planetoje
+      nėra pakankamai resursų.</p>
+    </message.noResources>
+
+    <message.wasDeselected>
+      <p>Karys buvo atžymėtas, nes planetoje pritrūko resursų jo gydymui.</p>
+    </message.wasDeselected>
+
+    <kind.ground value="Žemės ({0})" />
+    <kind.space value="Kosmoso ({0})" />
+    <!-- TODO: is this used? -->
+    <kind.moving value="Judantys ({0})" />
+    <kind.launch value="Ruošiasi išskristi" />
+    <kind.stored value="Saugoma ({0})" />
+    <kind.land value="Žemės ({0})" />
+    <kind.resources value="Resursai" />
+    <kind.squadron value="Laivynas" />
+    <kind.self value="Tavo kariai" />
+    <kind.nap  value="NS kariai" />
+    <kind.ally value="Sąjungos kariai" />
+
+    <Gnat.name ref="Objects/Gnat1" />
+    <Gnat.about>
+      <p>Silpniausias karys iš ateivių žemės armijos. Jie yra gana silpi ir
+      lengvai sužeidžiami, bei jų lazeriai nepadaro didelės žalos, tačiau jie 
+      linkę burtis į dideles grupes, kiekybe kompensuodami savo silpnumą.</p>
+    </Gnat.about>
+
+    <Glancer.name ref="Objects/Glancer1" />
+    <Glancer.about>
+      <p>Labai pažeidžiami, tačiau kartu ir labai mirtini pėstininkams. Jų 
+      snaiperių šautuvai kiaurai skrodžia lengvučius šarvus, tad šiais ateiviais
+      geriausia atsikratyti iš karto. Deja tai dažniausiai būna problematiška,
+      mat jie mėgsta slėptis už kitų karių.</p>
+    </Glancer.about>
+
+    <Spudder.name ref="Objects/Spudder1" />
+    <Spudder.about>
+      <p>Pusiau šarvuoti humanoidiniai robotai, ginkluoti plasmos sviediniais.
+      Jie iššauna keletą šių kamuoliukų vieno kartu, todėl yra puikūs kariai 
+      prieš daug silpnų priešų.</p>
+    </Spudder.about>
+
+    <Gnawer.name ref="Objects/Gnawer1" />
+    <Gnawer.about>
+      <p>Tai švenčiausių ateivių artefaktų sergėtojai, nuožmios žudymo mašinos,
+      kurių tikslas yra sunaikinti bet ką, kas peržengia jų saugomos teritorijos
+      ribas. Stori šarvai ir galingos patrankos padaro juos ypač tvirtais 
+      kariais.</p>
+    </Gnawer.about>
+
+    <Dirac.name ref="Objects/Dirac1" />
+    <Dirac.about>
+      <p>Šie greiti laivai buvo statomi kaip priešakinių puolamųjų linijų 
+      šturmuotojai. Tačiau šiandien jie tūno įvairiose vietose, mažomis 
+      grupelėmis ir tiesiog ginasi nuo bet ko, kas priartėja prie jų.</p>
+    </Dirac.about>
+
+    <Thor.name ref="Objects/Thor1" />
+    <Thor.about>
+      <p>Šie smarkiai šarvuoti, bet pakankamai silpnai ginkluoti laivai 
+      senovėje buvo naudojami kaip priekinės linijos gynybiniai laivai. Dabar 
+      jie išsibarstę mažomis grupelėmis po visatą, kartu su dirakais, kuriuos
+      jie vis dar saugo.</p>
+    </Thor.about>
+
+    <Demosis.name ref="Objects/Demosis1" />
+    <Demosis.about>
+      <p>
+        These gigantic ships wander around in Nebula 44. Once built for great 
+        conquest now their simple robotic minds wait for orders from masters 
+        who are long gone. 
+      </p>
+      <p>
+        But beware of their massive armor and weapons. Their laser is slow and 
+        requires some time to recharge but packs a powerful punch that is able 
+        to take down whole ships in a few shots. 
+      </p>
+    </Demosis.about>
+
+    <Trooper.name ref="Objects/Trooper1" />
+    <Trooper.about>
+      <p>
+        Basic warriors of our armies armed with machine guns. They fearlessly 
+        run into battlefield bringing fear into our enemy hearts and confidence 
+        into our allies. Even if not very tough they can prove very useful in 
+        numbers. 
+      </p>
+    </Trooper.about>
+
+    <Shocker.name ref="Objects/Shocker1" />
+    <Shocker.about>
+      <p>
+        Highly armored field warriors with the capabilities to withstand enemy 
+        troop fire. Their rocket launchers are designed to counter more heavily 
+        armored opponents but massive shockers still work as best shields for 
+        your other anti-infantry units. 
+      </p>
+    </Shocker.about>
+
+    <Seeker.name ref="Objects/Seeker1" />
+    <Seeker.about>
+      <p>
+        Armed with [reference:InfoScreen/gun.sniper_rifle] they are lethal to 
+        lightly armored enemy units. Although deadly Seekers are very fragile 
+        and must be covered well behind the backs of other units or they will 
+        perish very quickly. 
+      </p>
+    </Seeker.about>
+
+    <Spy.name value="Spy" />
+    <Spy.about value="Explore your enemies" />
+
+    <Saboteur.name value="Saboteur" />
+    <Saboteur.about value="Is likely to ruin things" />
+
+    <Scorpion.name ref="Objects/Scorpion1" />
+    <Scorpion.about>
+      <p>
+        Scorpion class tanks are basic ground warfare vehicles. They pack a 
+        heavy punch with their [reference:InfoScreen/gun.cannon]. Scorpions are 
+        quite strong and armored and can take many enemy lives before giving up 
+        their own. 
+      </p>
+    </Scorpion.about>
+
+    <Azure.name ref="Objects/Azure1" />
+    <Azure.about>
+      <p>
+        Azure hovertanks are best way of countering enemy tanks. Their twin 
+        rocket launchers on each side barrages battlefield with missiles 
+        devastating everything in their path. Hovertank technology stabilizes 
+        Azure while it's firing but makes it vulnerable to enemy shots so it 
+        should be shielded by other units. 
+      </p>
+    </Azure.about>
+
+    <Mdh.name ref="Objects/MDH1" />
+    <Mdh.common>
+      <p>
+        Mobile Deployable Headquarters (MDH) is used as first and primary base 
+        upon foreign colony. This massive vehicle deploys into a fully 
+        operational base with building construction capabilities, storage 
+        containers and even brings a small 
+        [reference:Buildings/MetalExtractor.name] and energy source. 
+      </p>
+    </Mdh.common>
+    <Mdh.about>
+      <p>[reference:Mdh.common]</p>
+      <p>
+        Beware! Although massive and big it is very fragile while undeployed. 
+        Do not let it get into battlefield or it will be damaged beyond repair 
+        very soon. 
+      </p>
+    </Mdh.about>
+
+    <Mule.name ref="Objects/Mule1" />
+    <Mule.about>
+      <p>
+        Slow and heavily armored transport unit. Its massive hull protects the 
+        cargo inside and allows deploying troops onto enemy battlefield even 
+        upon heavy fire. 
+      </p>
+    </Mule.about>
+
+    <Crow.name ref="Objects/Crow1" />
+    <Crow.about>
+      <p>
+        Light, fast and versatile basic combat spaceship. Perfect for quick 
+        skirmishes and attacking lone enemy transporters. 
+      </p>
+    </Crow.about>
+
+    <Cyrix.name ref="Objects/Cyrix1" />
+    <Cyrix.about>
+      <p>
+        Cyrix class battleships are standard combat ships used in our fleets. 
+        Their sturdy armor and formidable lasers vanquish our enemies whilst 
+        Cyrixes wade through space in their pride. Sometimes they are also used 
+        as shields for weaker ships like [reference:Dart.name] or 
+        [reference:Avenger.name]. 
+      </p>
+    </Cyrix.about>
+
+    <Rhyno.name ref="Objects/Rhyno1" />
+    <Rhyno.about>
+      <p>
+        Rhyno battlecruisers are flagships of any fleet. With their huge 
+        defences they can withstand massive fire and their array of weapons 
+        makes them strong against multiple types of enemies. However they are 
+        costly and their size makes them slow in travel. 
+      </p>
+    </Rhyno.about>
+
+    <Dart.name ref="Objects/Dart1" />
+    <Dart.about>
+      <p>
+        Dart class ships were built specifically to counter 
+        [reference:Crow.name] and [reference:Avenger.name] class ships. They 
+        are fast and carry weapons deadly to those ships however they lack any 
+        solid protection from enemy fire. 
+      </p>
+      <p>
+        They are best at hit and run attacks where they outnumber enemy to 
+        destroy them quickly and without casualties. 
+      </p>
+    </Dart.about>
+
+    <Avenger.name ref="Objects/Avenger1" />
+    <Avenger.about>
+      <p>
+        Avengers are deadly against heavily armored ships. Their armor piercing 
+        rockets drill through and explode inside enemy ship hulls causing 
+        massive damage. Avenger fast engines ensure they can intercept 
+        [reference:Cyrix.name] and [reference:Rhyno.name] class ships easily 
+        and damage them severely. 
+      </p>
+      <p>
+        However if Avengers are left in the battlefield they can suffer very 
+        quickly because they lack any kind of solid protection from enemy fire. 
+      </p>
+    </Avenger.about>
+
+    <Jumper.name ref="Objects/Jumper1" />
+    <Jumper.about>
+      <p>Šokliai - tai žaibiški satelitai, kurie pagrinde naudojami žvalgybai
+      priešo planetose. Jų dizainas suteikia jiems milžinišką greitį, tačiau 
+      jie neturi jokių šarvų ar ginklų ir žūna nuo menkiausios ugnies.</p>
+    </Jumper.about>
+  </Units>
+
+  <WelcomeScreen>
+    <title value="Sveikas!" />
+    <greeting value="Sveikas, Komandore!" />
+    <instructions>
+      <p>Aš esu Diana, tavo pagalbininkė.</p>
+      <p>Mes turime svarbių reikalų. Paspausk ant N44 logotipo apatiniame
+      kairiajame kampe ir pasirink „Užduotys“, kad perskaitytum savo pirmąją
+      misiją. Kai tai padarysi, pasirink savo planetą iš viršutinio kairioje
+      kampo ir pradėt vykdyti savo misiją.</p>
+      <p>Sekmės, Komandore.</p>
+    </instructions>
+  </WelcomeScreen>
+
+  <Chat>
+     <format.time value="HH:NN:SS"/>
+     <message.channelJoin  value="[ {0} prisijungė ]"/>
+     <message.channelLeave value="[ {0} išėjo ]"/>
+     <label.send value="Siųsti" />
+     <label.mainChannel value="#galaktika"/>
+     <label.allianceChannel value="#sąjunga"/>
+     <label.privateChannel value="{0}"/>
+     <label.channelMembers value="Žaidėjai"/>
+  </Chat>
+
+</locale>
