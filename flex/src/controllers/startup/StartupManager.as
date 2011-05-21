@@ -51,7 +51,6 @@ package controllers.startup
    import models.ModelLocator;
    import models.chat.MChat;
    
-   import mx.logging.ILoggingTarget;
    import mx.logging.Log;
    import mx.logging.LogEventLevel;
    import mx.logging.targets.TraceTarget;
@@ -62,6 +61,7 @@ package controllers.startup
    import utils.DateUtil;
    import utils.Objects;
    import utils.SingletonFactory;
+   import utils.logging.targets.InMemoryTarget;
    
    
    public final class StartupManager
@@ -149,10 +149,18 @@ package controllers.startup
       
       private static function initializeLogging() : void
       {
-         var target:ILoggingTarget = new TraceTarget();
-         target.level = LogEventLevel.ALL;
-         //         target.level = LogEventLevel.WARN;
-         Log.addTarget(target);
+         var traceTarget:TraceTarget = new TraceTarget();   
+         traceTarget.includeCategory = true;
+         traceTarget.includeLevel = true;
+         traceTarget.level = LogEventLevel.ALL;
+         Log.addTarget(traceTarget);
+         
+         var memoryTarget:InMemoryTarget = new InMemoryTarget();   
+         memoryTarget.includeCategory = true;
+         memoryTarget.includeLevel = true;
+         memoryTarget.maxEntries = 100;
+         memoryTarget.level = LogEventLevel.ALL;
+         Log.addTarget(memoryTarget);
       }
       
       
