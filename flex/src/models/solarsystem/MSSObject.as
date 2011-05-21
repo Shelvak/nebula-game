@@ -622,8 +622,13 @@ package models.solarsystem
       }
       
       
+      [Bindable(event="playerChange")]
       /**
        * Will be <code>true</code> if current player can intite the owner of this planet to the alliance.
+       * 
+       * <p>Metadata:</br>
+       * [Bindable(event="playerChange")]
+       * </p>
        */
       public function get canInviteOwnerToAlliance() : Boolean
       {

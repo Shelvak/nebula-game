@@ -96,6 +96,7 @@ package components.movement
       
       
       private var _arrivalDate:MTimeEventFixedInterval;
+      [Bindable(event="willNotChange")]
       /**
        * Squad arrival to its destination date. The object returns values with speed modifier applied.
        * The object is updated when <code>speedModifier</code> changes
@@ -219,6 +220,7 @@ package components.movement
       }
       
       
+      [Bindable(event="willNotChange")]
       /**
        * @see config.Config#getMinMovementSpeedModifier()
        */
@@ -228,6 +230,7 @@ package components.movement
       }
       
       
+      [Bindable(event="willNotChange")]
       /** 
        * @see config.Config#getMaxMovementSpeedModifier()
        */
@@ -325,36 +328,42 @@ package components.movement
       /* ##################### */
       
       
+      [Bindable(event="willNotChange")]
       public function get label_confirmButton() : String
       {
          return getString("label.confirm");
       }
       
       
+      [Bindable(event="willNotChange")]
       public function get label_buyCredsButton() : String
       {
          return getString("label.buyCreds");
       }
       
       
+      [Bindable(event="willNotChange")]
       public function get label_resetButton() : String
       {
          return getString("label.reset");
       }
       
       
+      [Bindable(event="willNotChange")]
       public function get label_cancelButton() : String
       {
          return getString("label.cancel");
       }
       
       
+      [Bindable(event="willNotChange")]
       public function get label_cooldownInfoButton() : String
       {
          return getString("label.learnMore");
       }
       
       
+      [Bindable(event="willNotChange")]
       public function get text_cooldownInfoLabel() : String
       {
          return getString(
@@ -371,7 +380,7 @@ package components.movement
       
       public function text_arrivesAtLabel(occuresAt:Date) : String
       {
-         return getString("label.arrivesAt", [occuresAt]); 
+         return getString("label.arrivesAt", [DateUtil.formatShortDateTime(occuresAt)]); 
       }
       
       
@@ -385,7 +394,7 @@ package components.movement
       [Bindable(event="speedModifierChange")]
       public function get text_speedUpCostLabel() : String
       {
-         return getString("message.speedUpCost", [speedUpCost]);
+         return getStringPluralized("message.speedUpCost", [speedUpCost]);
       }
       
       
@@ -413,6 +422,14 @@ package components.movement
       private function getString(property:String, parameters:Array = null) : String
       {
          return Localizer.string("Movement", property, parameters);
+      }
+      
+      
+      private function getStringPluralized(property:String,
+                                           pluralizationParams:Array,
+                                           simpleParams:Array = null) : String
+      {
+         return Localizer.stringPluralized("Movement", property, pluralizationParams, simpleParams);
       }
       
       

@@ -24,7 +24,7 @@ package controllers.startup
          return 55345;
       }
       
-      [Required]
+//      [Required]
       public var locale:String = Locale.EN;
       
       [Required]
