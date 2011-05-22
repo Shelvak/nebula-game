@@ -54,10 +54,18 @@ package utils
       
       /**
        * Returns the fully qualified class name of a given object.
+       * 
+       * @param replaceColons if <code>true</code>, will replace the two colons that separate package
+       * from class name with a dot (.) symbol.
        */
-      public static function getClassName(o:Object) : String
+      public static function getClassName(o:Object, replaceColons:Boolean = false) : String
       {
-         return getQualifiedClassName(o);
+         var className:String = getQualifiedClassName(o);
+         if (replaceColons)
+         {
+            className = className.replace("::", ".");
+         }
+         return className;
       }
       
       /**

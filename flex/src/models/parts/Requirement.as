@@ -5,6 +5,10 @@ package models.parts
    import models.ModelLocator;
    import models.technology.Technology;
    
+   import mx.logging.Log;
+   
+   import utils.Objects;
+   
    public class Requirement
    {
       /**
@@ -28,7 +32,8 @@ package models.parts
                THIS IS TEMPORARY AND NEEDS TO BE CHANGED
                2011.02.21
                */
-               trace('Technology',requirement,'not found in config!');
+               Log.getLogger(Objects.getClassName(Requirement, true))
+                  .warn("Technology {0} not found in config!", requirement);
                return false;
             }
             if (requirements[requirement].invert)        

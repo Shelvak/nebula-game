@@ -6,6 +6,7 @@ package controllers.startup
    import com.developmentarc.core.actions.actions.AbstractAction;
    import com.developmentarc.core.utils.EventBroker;
    
+   import controllers.GlobalFlags;
    import controllers.alliances.AlliancesCommand;
    import controllers.alliances.actions.*;
    import controllers.buildings.BuildingsCommand;
@@ -140,10 +141,12 @@ package controllers.startup
        */
       public static function resetApp() : void
       {
+         _inMemoryLog.clear();
          EventBroker.broadcast(new GlobalEvent(GlobalEvent.APP_RESET));
          ML.reset();
          MChat.getInstance().reset();
          ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
+         GlobalFlags.getInstance().lockApplication = false;
       }
       
       
@@ -155,12 +158,22 @@ package controllers.startup
          traceTarget.level = LogEventLevel.ALL;
          Log.addTarget(traceTarget);
          
-         var memoryTarget:InMemoryTarget = new InMemoryTarget();   
-         memoryTarget.includeCategory = true;
-         memoryTarget.includeLevel = true;
-         memoryTarget.maxEntries = 100;
-         memoryTarget.level = LogEventLevel.ALL;
-         Log.addTarget(memoryTarget);
+         _inMemoryLog = new InMemoryTarget();   
+         _inMemoryLog.includeCategory = true;
+         _inMemoryLog.includeLevel = true;
+         _inMemoryLog.maxEntries = 100;
+         _inMemoryLog.level = LogEventLevel.ALL;
+         Log.addTarget(_inMemoryLog);
+      }
+      
+      
+      private static var _inMemoryLog:InMemoryTarget;
+      /**
+       * An <code>ILoggingTarget</code> that stores log netries in the memory.
+       */
+      public static function get inMemoryLog() : InMemoryTarget
+      {
+         return _inMemoryLog;
       }
       
       
