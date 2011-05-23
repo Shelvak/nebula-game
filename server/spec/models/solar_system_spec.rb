@@ -14,12 +14,8 @@ describe SolarSystem do
       @model = Factory.create(:solar_system)
     end
 
-    @required_fields = [:id, :x, :y,
-      [:wormhole, lambda { |m| m.wormhole = true}, "it is a wormhole"]
-    ]
-    @ommited_fields = [:galaxy_id,
-      [:wormhole, lambda { |m| m.wormhole = false}, "it's not a wormhole"]
-    ]
+    @required_fields = [:id, :x, :y, :kind]
+    @ommited_fields = [:galaxy_id]
     it_should_behave_like "to json"
   end
 
@@ -58,17 +54,6 @@ describe SolarSystem do
       ]
       Factory.create(:planet, :solar_system => @ss, :position => 5)
       Factory.create(:planet, :solar_system => @ss, :position => 2)
-    end
-    
-    describe ".rand_jumpgate" do
-      it "should return Planet::Jumpgate" do
-        SolarSystem.rand_jumpgate(@ss.id).should be_instance_of(
-          SsObject::Jumpgate)
-      end
-
-      it "should select one of the existing jumpgates" do
-        @gates.should include(SolarSystem.rand_jumpgate(@ss.id))
-      end
     end
   end
 

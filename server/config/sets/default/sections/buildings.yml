@@ -41,6 +41,7 @@ npc_<%= name %>.max_level: 1
 npc_<%= name %>.upgrade_time: 0
 npc_<%= name %>.npc: true
 npc_<%= name %>.constructable: false
+npc_<%= name %>.managable: false
 
 <% end %>
 
@@ -532,7 +533,11 @@ defensive_portal.requirement.defensive_portal.level: 1
 # Position in constructable list
 defensive_portal.constructable.position: 550
 
-<% bg_building_level = 6 %>
+<% bg_building_level = 10 %>
+# Max level in battleground planets buildings. This is used by SpaceMule when
+# it is generating galaxies to ensure, that mini battlegrounds have level 1
+# buildings and main battleground has max level buildings.
+battleground.max_level: <%= bg_building_level %>
 
 ### npc_infantry_factory config ###
 

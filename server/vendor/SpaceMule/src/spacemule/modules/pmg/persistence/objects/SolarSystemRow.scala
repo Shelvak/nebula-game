@@ -5,13 +5,12 @@ import java.util.Date
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
-import spacemule.modules.pmg.objects.solar_systems.Homeworld
-import spacemule.modules.pmg.objects.solar_systems.Wormhole
+import spacemule.modules.pmg.objects.solar_systems.{Battleground, Wormhole, Homeworld}
 import spacemule.modules.pmg.objects.{Galaxy, SolarSystem}
 import spacemule.persistence.DB
 
 object SolarSystemRow {
-  val columns = "`id`, `galaxy_id`, `x`, `y`, `wormhole`, `shield_ends_at`, " +
+  val columns = "`id`, `galaxy_id`, `x`, `y`, `kind`, `shield_ends_at`, " +
     "`shield_owner_id`"
 
   private var _shieldEndsAt: String = null
@@ -43,8 +42,9 @@ coords: Option[Coords]) {
       case None => DB.loadInFileNull
     },
     solarSystem match {
-      case wh: Wormhole => 1
-      case _ => 0
+      case bg: Battleground => SolarSystem.Battleground.id
+      case wh: Wormhole => SolarSystem.Wormhole.id
+      case _ => SolarSystem.Normal.id
     },
     playerRow match {
       case Some(playerRow) => SolarSystemRow.shieldEndsAt

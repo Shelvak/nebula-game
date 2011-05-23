@@ -143,7 +143,7 @@ class Building < ActiveRecord::Base
   def deactivate
     raise GameLogicError.new("Cannot deactivate, not active for #{self}!") \
       unless active?
-    forbid_npc_actions!
+    forbid_unmanagable!
 
     self.state = STATE_INACTIVE
     @activation_state = :deactivated
@@ -161,7 +161,7 @@ class Building < ActiveRecord::Base
   def activate
     raise GameLogicError.new("Cannot activate, not inactive for #{self}!") \
       unless inactive?
-    forbid_npc_actions!
+    forbid_unmanagable!
 
     self.state = STATE_ACTIVE
     @activation_state = :activated
@@ -186,7 +186,7 @@ class Building < ActiveRecord::Base
   def y_end; y ? y + height - 1 : nil; end
 
   def upgrade
-    forbid_npc_actions!
+    forbid_unmanagable!
     super
     deactivate if active?
   end
@@ -297,11 +297,11 @@ class Building < ActiveRecord::Base
   end
 
   protected
-  # Raises GameLogicError if building is npc building.
-  def forbid_npc_actions!
+  # Raises GameLogicError if building is unmanagable.
+  def forbid_unmanagable!
     raise GameLogicError.new(
-      "Actions cannot be performed on NPC buildings!"
-    ) if npc?
+      "Actions cannot be performed on unmanagable buildings!"
+    ) unless managable?
   end
 
   before_validation :ensure_position_attributes,

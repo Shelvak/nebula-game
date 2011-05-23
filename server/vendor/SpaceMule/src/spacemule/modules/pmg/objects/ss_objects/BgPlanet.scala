@@ -10,7 +10,7 @@ import spacemule.modules.config.objects.Config
 
 object BgPlanet {
   lazy val Maps = Config.battlegroundPlanetMaps.map {
-    map => MapReader.parseMap(map, Nil) }
+    map => MapReader.parseMap(map, Nil, Config.battlegroundBuildingMaxLevel) }
 
   val Names = List("Gramen", "Inculta", "Limus")
 }

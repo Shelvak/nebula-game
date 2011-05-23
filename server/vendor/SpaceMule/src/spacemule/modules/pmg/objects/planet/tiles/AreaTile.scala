@@ -20,9 +20,8 @@ object AreaTile {
   val Junkyard = AreaTile(4)
   val Sand = AreaTile(5)
   val Titan = AreaTile(6)
-  val Water = AreaTile(7)
 
-  val types = List[AreaTile](Regular, Noxrium, Junkyard, Water, Titan, Sand)
+  val types = List[AreaTile](Regular, Noxrium, Junkyard, Titan, Sand)
 
   /**
    * Return tile counts for each area tile type.

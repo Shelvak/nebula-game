@@ -119,18 +119,12 @@ class SolarSystem < ActiveRecord::Base
     FowSsEntry.observer_player_ids(id)
   end
 
-  # Returns random jumpgate for solar system with given _id_.
-  def self.rand_jumpgate(id)
-    SsObject::Jumpgate.find(:first, :conditions => {:solar_system_id => id},
-      :order => "RAND()")
-  end
-
   def as_json(options=nil)
     hash = defined?(super) ? super(options) : {}
     hash["id"] = id
     hash["x"] = x
     hash["y"] = y
-    hash["wormhole"] = true if wormhole?
+    hash["kind"] = kind
     hash
   end
 
