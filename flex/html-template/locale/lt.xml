@@ -2266,117 +2266,130 @@
     <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
     <about.115 ref="EchoesOfBattle.about" />
 
-    <title.14 value="Harnessing The Crystals" />
+    <title.14 value="Kristalizacija" />
     <about.14>
-      <p>Great!</p>
+      <p>Puikiai!</p>
       <p>
-        You have destroyed the aliens and we can use those crystals. Of course 
-        we need to research a technology that allows us to mine those crystals. 
+        Jūsų kariai išvaikė ir sunaikino kristalų sergėtojus! Džiugu, kad šį 
+        sykį jie dirbo atsargiai ir po mūšio vietovje dar liko kristalų su 
+        kuriais galime padirbėti. Mokslininkai pranešė, kad jų galvose jau 
+        kristalizavosi tyrimų planas, jums beliko tik palaiminti ir finansuoti
+        jų darbą. Išraskime patikimą būdą kasti kristalus!
       </p>
       <p>
-        Hurry! Go to your [reference:Buildings/ResearchCenter.name] and order 
-        research now. 
+        Nedelskite! Užsukite į tyrimų centrą ir įsakykite pradėti darbus. 
       </p>
     </about.14>
 
-    <title.15 value="Fruits of Patience" />
+    <title.15 value="Kantrybės vaisiai" />
     <about.15>
-      <p>Finally!</p>
+      <p>Komandore!</p>
       <p>
-        Our research on [reference:Technologies/ZetiumExtraction.name] has 
-        payed of. We are now able to build much needed buildings that will 
-        extract precious zetium from these crystals. 
+        Jūsų kabinete išties karšta... Ar jūsų kondicionavimo sistema 
+        tvarkinga? Hm... Panašu, kad viskas tvarkoje. Vadinas čia aš užkaitau 
+        nuo minties apie tai, ką mes išdarinėsime su rastais kristalais! 
+        Mokslininkai baigė tyrimą, mes galime pradėti zetiumo ekstraktorių 
+        statybas! 
       </p>
     </about.15>
 
-
-    <title.16 value="Achieving Greatness" />
+    <title.16 value="Dydybės link" />
     <about.16>
-      <p>Commander.</p>
+      <p>Komandore.</p>
       <p>
-        As a great leader you have brought us many victories. All your efforts 
-        are appreciated. 
+        Tiesiog užsukau pasakyti, kad ęsate didis vadovas ir nuostabus 
+        lyderis. Jūsų dėka mes daug pasiekėme ir už tai esame dėkingi. 
       </p>
     </about.16>
 
 
-    <title.28 value="More Glory" />
+    <title.28 value="Ir niekada šlovės mums, nebus per daug" />
     <about.28>
-      <p>Commander.</p>
-      <p>Your deeds are most glorious.</p>
-      <p>May luck be with you.</p>
+      <p>Komandore.</p>
+      <p>Jūsų darbų reikšmė žmonijai neprilygstama.</p>
+      <p>Telydi jus sėkmė.</p>
     </about.28>
 
-    <title.29 value="Even More Glory" />
+    <title.29 value="Galaktikos talentas" />
     <about.29>
-      <p>Commander.</p>
+      <p>Komandore.</p>
       <p>
-        All our neighbors know about your skills. You are truly worthy. Keep it 
-        up! 
+        Kaiminystėje visi tik ir šneka apie neprilygstamus jūsų įgūdžius. 
+        Jūs to nusipelnote. Neatsipalaiduokite, išlaikykite tą patį ritmą! 
       </p>
     </about.29>
 
-    <title.30 value="Top of the Hill" />
+    <title.30 value="Viršūkalnė" />
     <about.30>
-      <p>Commander.</p>
+      <p>Komandore.</p>
       <p>
-        You are truly a great leader. Your people thrive and prosper under your 
-        ruling. 
+        Žmonės kurių gyvenimas neapdovanojo galimybe tarnauti po jūsų vėliava, 
+        nesupranta tikrosios žodžių „laimingai klęstėti“ prasmės. Mes žinome, 
+        ką tai reiškia. Ačiū, jums už tai.
       </p>
-      <p>I Wish best luck in your future affairs, Commander.</p>
+      <p>Aš kalbu mūsų kolonijos vardu, Komandore.</p>
     </about.30>
 
-    <title.33 value="The Unstoppable Force" />
+    <title.33 value="Nesustabdoma jėga" />
     <about.33>
-      <p>Commander.</p>
+      <p>Komandore.</p>
       <p>
-        You are known in whole sector of this galaxy. Our allies respect you 
-        and our enemies fear you. 
+        Šiame galaktikos sektoriuje nebeliko žmogaus kuris apie jus nežinotų. 
+        Milijardai mamų savo sūnus krikštyja jūsų vardu. Mūsų sąjungininkai 
+        reiškia jums pagarbą, priešai daro viską, kad tik neužsitrauktų 
+        didesnės jūsų rūstybės. 
       </p>
-      <p>You are truly unstoppable.</p>
+      <p>Jūs nesustabdomas!</p>
     </about.33>
 
-    <title.64 value="Mayhem Unleashed" />
+    <title.64 value="Dievybė" />
     <about.64>
-      <p>Commander.</p>
-      <p>You are a leader in economy, science and war. Keep this on!</p>
+      <p>Komandore.</p>
+      <p>Jūs esate ekonomikos, mokslo ir karybos guru. Mes lyderiaujame visose 
+      sferose! Jums nebuvo kilusi mintis sukurti savo religiją?</p>
     </about.64>
 
-    <title.17 value="Saving Every Bit" />
+    <title.17 value="Ekonomika turi būti ekonomiška" />
     <about.17>
-      <p>Welcome back, Commander.</p>
+      <p>Sveiki sugrįžę, Komandore.</p>
       <p>
-        Now that we have a sufficient income for all three resource types we 
-        need to be sure they are not wasted. We need to build some additional 
-        storages to store excess resources we are not using at the moment. 
+        Bijau, kad sakydama „resursų nebūna per daug“ truputį pasikarščiavau. 
+        Analitikai pateikė žaliavų ir energijos gavybos planą, kuris aprėpia 
+        kelis ciklus. Panašu, kad dirbdami tokiais tempais, mes nepajėgsime 
+        sunaudoti visko, ką išgausime. Suprantu, tai skamba lyg bloga naujiena,
+        tačiau iš tiesų ji gera. Viskas ką turime padaryti, tai įrengti keletą 
+        saugyklų nepanaudotoms žaliavoms.  
       </p>
       <p>
-        Order construction of buildings that store each resource type, 
-        Commander. 
+        Įsakykite pastatyti po saugyklą kiekvienam išgaunamų resursų tipui, 
+        Komandore.
       </p>
     </about.17>
 
-    <title.18 value="Reaching To The Stars" />
+    <title.18 value="Kelias į žvaigždes" />
     <about.18>
-      <p>Commander.</p>
+      <p>Komandore.</p>
       <p>
-        Our scientists have found a way to use zetium in space travel! This is 
-        a glorious day! Order them to start researching of 
-        [reference:Technologies/SpaceFactory.name] now. 
+        Mokslininkai sugalvojo kaip panaudoti zetiumą kosminių kelionių metu. 
+        Šią nuostabią dieną mes vėl trauksime žvagdžių link! Įsakykite pradėti 
+        laivų statyklos projektą.
       </p>
-      <p>Galaxy awaits us!</p>
+      <p>Kad pastatyti statyklą, mums būtini brėžiniai, tad nedelskite!</p>
     </about.18>
 
-    <title.19 value="Tools of Travel" />
+    <title.19 value="Kad kelias nedulkėtų..." />
     <about.19>
-      <p>Commander!</p>
+      <p>Komandore!</p>
       <p>
-        Now that we have [reference:Technologies/SpaceFactory.name] technology 
-        we must build a [reference:Buildings/SpaceFactory.name] on this planet. 
+        Laivų statyklos projektas ir technologijų aprašai jau perduoti 
+        statybininkų brigadoms. Ne patys iškiliausi, bet tikrai darbštūs 
+        kolonistai nekantrauja griebti suvirinimo aparatus ir pradėti darbą! 
+        Įsakykite pradėti laivų statyklos statybas šioje planetoje. 
       </p>
       <p>
-        I suggest you construct on that gray leveled building ground - it looks 
-        like building on such terrain will save us a lot of time. 
+        Atkeipkite dėmesį į tuos pilkus, lygius plotus. Panašu, kad tai 
+        ideali vieta statyboms. Jei gamyklą statysime ten, darbai eisis 
+        gerokai sparčiau. 
       </p>
     </about.19>
 
