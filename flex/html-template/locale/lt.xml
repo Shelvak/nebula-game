@@ -3329,46 +3329,36 @@
 
     <Demosis.name ref="Objects/Demosis1" />
     <Demosis.about>
-      <p>
-        These gigantic ships wander around in Nebula 44. Once built for great 
-        conquest now their simple robotic minds wait for orders from masters 
-        who are long gone. 
-      </p>
-      <p>
-        But beware of their massive armor and weapons. Their laser is slow and 
-        requires some time to recharge but packs a powerful punch that is able 
-        to take down whole ships in a few shots. 
-      </p>
+      <p>Šie gigantiški ir didingi kosminiai laivai buvo labai senai pastatyti 
+      kūrėjų, kurių jau nebėra. Jie ramiai laukia kosmose, tykodami 
+      prašalaičių į kuriuos galėtų atidengti ugnį. Tačiau, nors ir stiprūs, 
+      šių laivų lazeriai savo pilną galingumą pasiekia tik gavę laiko pilnai 
+      pasikrauti, tad ryžtingas tavo laivyno smūgis gali smarkiai pakenkti
+      šiems laivams milžinams.</p>
     </Demosis.about>
 
     <Trooper.name ref="Objects/Trooper1" />
     <Trooper.about>
-      <p>
-        Basic warriors of our armies armed with machine guns. They fearlessly 
-        run into battlefield bringing fear into our enemy hearts and confidence 
-        into our allies. Even if not very tough they can prove very useful in 
-        numbers. 
-      </p>
+      <p>Tai pagrindiniai kareiviai visose galaktikos armijose, ypač 
+      stiprūs didelėmis grupėmis. Ginkluoti kulkosvaidžiais, jie be 
+      baimės kaunasi už savo vadą, ir nors jų gyvenimas mūšio lauke 
+      nėra ilgas, jie žino, kad jų aukos atneš didžią pergalę.</p>
     </Trooper.about>
 
     <Shocker.name ref="Objects/Shocker1" />
     <Shocker.about>
-      <p>
-        Highly armored field warriors with the capabilities to withstand enemy 
-        troop fire. Their rocket launchers are designed to counter more heavily 
-        armored opponents but massive shockers still work as best shields for 
-        your other anti-infantry units. 
-      </p>
+      <p>Stipriai šarvuoti pėstininkai, gebantys atlaikyti net ir stipriausią 
+      priešo ugnį karo lauke. Jų raketsvaidžiai gali pramušti net ir 
+      labiausiai šarvuotą priešo techniką, tačiau pavieniui šis ginklas
+      nėra labai efektyvus prieš paprastus pėstininkus.</p>
     </Shocker.about>
 
     <Seeker.name ref="Objects/Seeker1" />
     <Seeker.about>
-      <p>
-        Armed with [reference:InfoScreen/gun.sniper_rifle] they are lethal to 
-        lightly armored enemy units. Although deadly Seekers are very fragile 
-        and must be covered well behind the backs of other units or they will 
-        perish very quickly. 
-      </p>
+      <p>Ginkluoti snaiperiniu šautuvu, sėlintojai yra tikri mažiau šarvuotų
+      priešų žudikai. Nors sėlintojai ir yra puikūs snaiperiai, tačiau 
+      ekipuotės lengvumas ir šarvų neturėjimas lemtų jų žūtį būnant 
+      priešakinėse linijose.</p>
     </Seeker.about>
 
     <Spy.name value="Spy" />
@@ -3379,109 +3369,88 @@
 
     <Scorpion.name ref="Objects/Scorpion1" />
     <Scorpion.about>
-      <p>
-        Scorpion class tanks are basic ground warfare vehicles. They pack a 
-        heavy punch with their [reference:InfoScreen/gun.cannon]. Scorpions are 
-        quite strong and armored and can take many enemy lives before giving up 
-        their own. 
-      </p>
+      <p>Skorpiono tankai yra pagrindinė smogiamoji jėga tankų mūšiuose. Jie 
+      suduoda smarkų smūgį su savo pyro klasės pabūklu ir yra ypač tvirti.
+      Jų šarvai sugeria nemažai žalos ir skorpiono klasės tankai gali atimti
+      daug priešo gyvybių prieš atiduodant savają.</p>
     </Scorpion.about>
 
     <Azure.name ref="Objects/Azure1" />
     <Azure.about>
-      <p>
-        Azure hovertanks are best way of countering enemy tanks. Their twin 
-        rocket launchers on each side barrages battlefield with missiles 
-        devastating everything in their path. Hovertank technology stabilizes 
-        Azure while it's firing but makes it vulnerable to enemy shots so it 
-        should be shielded by other units. 
-      </p>
+      <p>Azuro skraidantys tankai yra geriausias ginklas prieš 
+      priešo tankus. Jų dvigubi raketų leistuvai abiejose pusėse ir kovinės
+      raketos juose, paruoštos naikinti priešus, yra tai, kas priešus privers 
+      bėgti arba mirti. Tačiau azuro tankai yra gana lengvai pamušami, 
+      todėl mūšio lauke turi būti saugomi stipriau šarvuotų pajėgų.</p>
     </Azure.about>
 
     <Mdh.name ref="Objects/MDH1" />
     <Mdh.common>
-      <p>
-        Mobile Deployable Headquarters (MDH) is used as first and primary base 
-        upon foreign colony. This massive vehicle deploys into a fully 
-        operational base with building construction capabilities, storage 
-        containers and even brings a small 
-        [reference:Buildings/MetalExtractor.name] and energy source. 
-      </p>
+      <p>Mobilusis štabas naudojamas kaip pirminė vadavietė ir operacijų 
+      centras, įkuriant naujas kolonijas. Šios masyvios mašinos geba būti ne 
+      tik pilnai funkcionuojančia baze, bet ir turi pastatų statybos, 
+      talpyklos, autonominės energijos šaltinio bei metalo gavybos 
+      funkcijas.</p>
     </Mdh.common>
     <Mdh.about>
       <p>[reference:Mdh.common]</p>
-      <p>
-        Beware! Although massive and big it is very fragile while undeployed. 
-        Do not let it get into battlefield or it will be damaged beyond repair 
-        very soon. 
-      </p>
+      <p>Dėmesio! Nors jis ir atrodo didelis ir masyvus, 
+      mobilusis štabas yra lengvai pažeidžiamas kol nėra įkurtas kolonijoje - 
+      pakliuvęs į mūšį jis greitai ir lengvai gali būti nepataisomai 
+      sugadintas.</p>
     </Mdh.about>
 
     <Mule.name ref="Objects/Mule1" />
     <Mule.about>
-      <p>
-        Slow and heavily armored transport unit. Its massive hull protects the 
-        cargo inside and allows deploying troops onto enemy battlefield even 
-        upon heavy fire. 
-      </p>
+      <p>Lėtas ir stipriai šarvuotas krovininis laivas, galintis saugiai 
+      nugabeti bet kokį krovinį ar išlaipinti karių desantą vidury mūšio 
+      lauko bet kuriame galaktikos kampelyje.</p>
     </Mule.about>
 
     <Crow.name ref="Objects/Crow1" />
     <Crow.about>
-      <p>
-        Light, fast and versatile basic combat spaceship. Perfect for quick 
-        skirmishes and attacking lone enemy transporters. 
-      </p>
+      <p>Lengvas, greitas ir universalus karinis erdvėlaivis. Puikiai 
+      pritaikytas atlikti pavienes kovines misijas ir naikinti nesaugomus 
+      priešo krovininius laivus.</p>
     </Crow.about>
 
     <Cyrix.name ref="Objects/Cyrix1" />
     <Cyrix.about>
-      <p>
-        Cyrix class battleships are standard combat ships used in our fleets. 
-        Their sturdy armor and formidable lasers vanquish our enemies whilst 
-        Cyrixes wade through space in their pride. Sometimes they are also used 
-        as shields for weaker ships like [reference:Dart.name] or 
-        [reference:Avenger.name]. 
-      </p>
+      <p>Cyrikso klasės kreiseriai yra standartiniai ir dažniausiai sutinkami 
+      koviniai laivai visoje galaktikoje. Jų patikimi šarvai ir galingi 
+      lazeriai daro juos puikia karine jėga, su kuria nesiskaityti negalima. 
+      Be to, šie kreiseriai išmanių karo vadų yra dažnai naudojami kaip 
+      skydas, siekinat apsaugoti silpniau šarvuotas laivų klases, tokias kaip 
+      strėlės ar keršytojai.</p>
     </Cyrix.about>
 
     <Rhyno.name ref="Objects/Rhyno1" />
     <Rhyno.about>
-      <p>
-        Rhyno battlecruisers are flagships of any fleet. With their huge 
-        defences they can withstand massive fire and their array of weapons 
-        makes them strong against multiple types of enemies. However they are 
-        costly and their size makes them slow in travel. 
-      </p>
+      <p>Raganosio klasės sunkieji kreiseriai yra bet kurio laivyno pažiba. 
+      Su jų įspūdingu gynybiniu arsenalu ir storais, lyg raganosio oda, šarvais 
+      jie gali be didesnių nuostolių nugalėti beveik visus jiems kelią 
+      pastojančius priešus. Tačiau jų didelė kaina ir nedidelis greitis yra šių 
+      galingų laivų neigiama pusė.</p>
     </Rhyno.about>
 
     <Dart.name ref="Objects/Dart1" />
     <Dart.about>
-      <p>
-        Dart class ships were built specifically to counter 
-        [reference:Crow.name] and [reference:Avenger.name] class ships. They 
-        are fast and carry weapons deadly to those ships however they lack any 
-        solid protection from enemy fire. 
-      </p>
-      <p>
-        They are best at hit and run attacks where they outnumber enemy to 
-        destroy them quickly and without casualties. 
-      </p>
+      <p>Strėlės klasės laivai buvo kuriami kovoti su varno ir keršytojo 
+      klasės laivais - jie greiti ir vikrūs, be to, apsiginklavę iki dantų. 
+      Nors ir turėdami silpnus šarvus, kuriuos priešų laivai lengvai 
+      pramuša, strelės klasės laivai yra nepakeičiami trumpose, 
+      greitose atakose turint didelę persvarą prieš priešininką.</p>
     </Dart.about>
 
     <Avenger.name ref="Objects/Avenger1" />
     <Avenger.about>
-      <p>
-        Avengers are deadly against heavily armored ships. Their armor piercing 
-        rockets drill through and explode inside enemy ship hulls causing 
-        massive damage. Avenger fast engines ensure they can intercept 
-        [reference:Cyrix.name] and [reference:Rhyno.name] class ships easily 
-        and damage them severely. 
-      </p>
-      <p>
-        However if Avengers are left in the battlefield they can suffer very 
-        quickly because they lack any kind of solid protection from enemy fire. 
-      </p>
+      <p>Keršytojas - tai mirtinas ginklas kovojant su stipriai šarvuotais 
+      laivais. Jų raketiniai šoviniai lengvai pramuša šarvą ir sprogsta 
+      laivo viduje, darydami ypatingai didelę žalą. Keršytojo greitaeigiai 
+      varikliai užtikrina, kad nei raganosio, nei cyrikso klasės laivai nuo 
+      jo nepaspruks ir bus be gailesčio sunaikinti. Tačiau ir nors turėdami 
+      didelę šaunamają galią ir gretį, keršytojo klasės laivai kovose yra 
+      lengvai pažeidžiami dėl savo plonų šarvų.</p>
     </Avenger.about>
 
     <Jumper.name ref="Objects/Jumper1" />
