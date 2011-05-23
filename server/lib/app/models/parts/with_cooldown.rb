@@ -6,7 +6,9 @@ module Parts::WithCooldown
 
   module InstanceMethods
     # When the next cooldown should end.
-    def cooldowns_at; evalproperty('cooldown').seconds.from_now; end
+    def cooldowns_at
+      self.class.cooldowns_at(level)
+    end
 
     # Checks if the cooldown has expired.
     def cooldown_expired?
@@ -20,6 +22,11 @@ module Parts::WithCooldown
   end
 
   module ClassMethods
+    # When the next cooldown should end.
+    def cooldowns_at(level)
+      evalproperty('cooldown', nil, 'level' => level).seconds.from_now
+    end
+    
     def on_callback(id, event)
       if event == CallbackManager::EVENT_COOLDOWN_EXPIRED
         find(id).cooldown_expired!

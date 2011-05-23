@@ -11,8 +11,6 @@ class Building < ActiveRecord::Base
     :finder_sql => proc { %Q{SELECT * FROM `#{Unit.table_name}` WHERE
     `location_type`=#{Location::BUILDING} AND `location_id`=#{id}} }
 
-  # What gives?
-
   include Trait
   include Location
   include Parts::WithProperties
@@ -25,7 +23,7 @@ class Building < ActiveRecord::Base
   include Parts::Constructable
   include Parts::EconomyPoints
   include Parts::BattleParticipant
-  def armor_mod 
+  def armor_mod
     super + (read_attribute(:armor_mod) || 0)
   end
   # Buildings are always in neutral stance.
@@ -61,11 +59,11 @@ class Building < ActiveRecord::Base
       :include => :planet
     }
   }
-  
+
   # This needs to be Proc because we can't test it otherwise.
   scope :shooting, Proc.new { {:conditions => {:type => shooting_types}} }
   scope :defensive, Proc.new { {:conditions => {:type => defensive_types}} }
-  
+
   # Regexp used to match building guns in config.
   SHOOTING_REGEXP = /^buildings\.(.+?)\.guns$/
 
@@ -130,6 +128,8 @@ class Building < ActiveRecord::Base
   # Buildings don't accumulate XP. This method always returns 0.
   def xp; 0; end
   # Buildings don't accumulate XP. This method doesn't change anything.
+  #
+  # noinspection RubyUnusedLocalVariable
   def xp=(value); end
   # Buildings don't accumulate XP. This method always returns 0.
   def can_upgrade_by; 0; end
@@ -217,6 +217,7 @@ class Building < ActiveRecord::Base
     raise GameLogicError.new("Cannot self-destruct upgrading buildings!") if
       upgrading?
 
+    player = nil
     if with_credits
       player = self.player
       creds_needed = CONFIG['creds.building.destroy']
@@ -375,7 +376,7 @@ class Building < ActiveRecord::Base
   def on_upgrade_finished
     super
     activate
-    # Recalculate mods. If we have built this building on a regular 
+    # Recalculate mods. If we have built this building on a regular
     # ground construction mod should not apply to subsequent upgrades of
     # this building.
     self.construction_mod = 0
@@ -398,7 +399,7 @@ class Building < ActiveRecord::Base
   class << self
     def constructor?; ! property('constructor.items').nil?; end
 
-    def width 
+    def width
       value = property('width')
       raise ArgumentError.new("Width for #{self.to_s} is nil!") if value.nil?
       value

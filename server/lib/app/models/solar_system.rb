@@ -6,6 +6,13 @@ class SolarSystem < ActiveRecord::Base
   include Parts::Shieldable
   include Zone
 
+  # Regular kind of solar system
+  KIND_NORMAL = 0
+  # Wormhole solar system
+  KIND_WORMHOLE = 1
+  # Battleground solar system
+  KIND_BATTLEGROUND = 2
+
   # Foreign keys take care of the destruction
   has_many :ss_objects
   has_many :planets, :class_name => "SsObject::Planet"
@@ -71,7 +78,7 @@ class SolarSystem < ActiveRecord::Base
       :conditions => {:id => solar_system_entries.keys}
     ).map do |solar_system|
       entries = solar_system_entries[solar_system.id]
-      
+
       {
         :solar_system => solar_system,
         :metadata => FowSsEntry.merge_metadata(

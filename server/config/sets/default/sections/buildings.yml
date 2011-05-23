@@ -532,6 +532,8 @@ defensive_portal.requirement.defensive_portal.level: 1
 # Position in constructable list
 defensive_portal.constructable.position: 550
 
+<% bg_building_level = 6 %>
+
 ### npc_infantry_factory config ###
 
 # Dimensions
@@ -544,14 +546,14 @@ npc_infantry_factory.hp: 60000
 
 # Upgrades
 npc_infantry_factory.managable: false
-npc_infantry_factory.max_level: 1
+npc_infantry_factory.max_level: <%= bg_building_level %>
 npc_infantry_factory.upgrade_time: 0
 npc_infantry_factory.metal.cost: 0
 npc_infantry_factory.energy.cost: 0
 npc_infantry_factory.zetium.cost: 0
 
 # How much time must pass for player to receive the bonus?
-npc_infantry_factory.cooldown: <%= 12.hours %> / speed
+npc_infantry_factory.cooldown: <%= 8.hours * bg_building_level %> / level / speed
 # Bonus for holding planet from infantry factory
 # [type, count]
 npc_infantry_factory.unit_bonus:
@@ -570,14 +572,14 @@ npc_tank_factory.hp: 200000
 
 # Upgrades
 npc_tank_factory.managable: false
-npc_tank_factory.max_level: 1
+npc_tank_factory.max_level: <%= bg_building_level %>
 npc_tank_factory.upgrade_time: 0
 npc_tank_factory.metal.cost: 0
 npc_tank_factory.energy.cost: 0
 npc_tank_factory.zetium.cost: 0
 
 # How much time must pass for player to receive the bonus?
-npc_tank_factory.cooldown: <%= 24.hours %> / speed
+npc_tank_factory.cooldown: <%= 16.hours * bg_building_level %> / level / speed
 npc_tank_factory.unit_bonus:
   - [gnawer, 1]
   - [spudder, 2]
@@ -594,18 +596,18 @@ npc_space_factory.hp: 450000
 
 # Upgrades
 npc_space_factory.managable: false
-npc_space_factory.max_level: 1
+npc_space_factory.max_level: <%= bg_building_level %>
 npc_space_factory.upgrade_time: 0
 npc_space_factory.metal.cost: 0
 npc_space_factory.energy.cost: 0
 npc_space_factory.zetium.cost: 0
 
 # How much time must pass for player to receive the bonus?
-npc_space_factory.cooldown: <%= 48.hours %> / speed
+npc_space_factory.cooldown: <%= 32.hours * bg_building_level %> / level / speed
 npc_space_factory.unit_bonus:
   - [demosis, 1]
   - [thor, 2]
-  - [dirac, 6]
+  - [dirac, 3]
 
 ### npc_hall config ###
 
@@ -619,13 +621,13 @@ npc_hall.hp: 145000
 
 # Upgrades
 npc_hall.managable: false
-npc_hall.max_level: 1
+npc_hall.max_level: <%= bg_building_level %>
 npc_hall.upgrade_time: 0
 npc_hall.metal.cost: 0
 npc_hall.energy.cost: 0
 npc_hall.zetium.cost: 0
 
 # How much time do you need to keep planet for to get 1 victory point.
-npc_hall.cooldown: <%= 5.minutes %> / speed
+npc_hall.cooldown: <%= 5.minutes * bg_building_level %> / level / speed
 npc_hall.victory_points: 1
-npc_hall.creds: 3
+npc_hall.creds: 2
