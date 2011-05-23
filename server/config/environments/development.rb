@@ -1,3 +1,2 @@
-LOGGER.outputs += [ConsoleOutput.new(STDOUT)]# \
-  #if File.basename($0) == 'main.rb' && RUBY_PLATFORM !~ /mingw/
+LOGGER.outputs += [ConsoleOutput.new(STDOUT)] unless rake?
 LOGGER.level = GameLogger::LEVEL_DEBUG
