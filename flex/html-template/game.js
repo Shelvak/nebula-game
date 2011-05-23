@@ -74,7 +74,7 @@ function getGameOptions() {
   if (! galaxyId) galaxyId = queryString('galaxy_id');
   if (! authToken) authToken = queryString('auth_token');
   if (! title) title = "Dev Login Mode";
-  if (! locale) locale = "en_US";
+  if (! locale) locale = "en";
   
   var titleSuffix = " :: Nebula 44";
 
