@@ -166,7 +166,12 @@ class SolarSystem {
   }
 }
 
-object SolarSystem {
+object SolarSystem extends Enumeration {
+  val Normal = Value(0, "normal")
+  val Wormhole = Value(1, "wormhole")
+  val Battleground = Value(2, "battleground")
+  type Kind = Value
+      
   /**
    * Returns "random" angle. Each position have certain allowed angles and
    * this method returns one of them.

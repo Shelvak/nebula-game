@@ -302,8 +302,9 @@ object Manager {
     }
   }
 
-  def readBattleground(galaxy: Galaxy, battleground: Battleground) = {
-    val ssRow = new SolarSystemRow(battleground.galaxyId, battleground, None)
+  def readBattleground(galaxyId: Int, galaxy: Galaxy, 
+                       battleground: Battleground) = {
+    val ssRow = new SolarSystemRow(galaxyId, battleground, None)
     solarSystems += ssRow.values
 
     readSSObjects(galaxy, ssRow, battleground)

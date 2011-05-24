@@ -2267,117 +2267,130 @@
     <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
     <about.115 ref="EchoesOfBattle.about" />
 
-    <title.14 value="Harnessing The Crystals" />
+    <title.14 value="Kristalizacija" />
     <about.14>
-      <p>Great!</p>
+      <p>Puikiai!</p>
       <p>
-        You have destroyed the aliens and we can use those crystals. Of course 
-        we need to research a technology that allows us to mine those crystals. 
+        Jūsų kariai išvaikė ir sunaikino kristalų sergėtojus! Džiugu, kad šį 
+        sykį jie dirbo atsargiai ir po mūšio vietovje dar liko kristalų su 
+        kuriais galime padirbėti. Mokslininkai pranešė, kad jų galvose jau 
+        kristalizavosi tyrimų planas, jums beliko tik palaiminti ir finansuoti
+        jų darbą. Išraskime patikimą būdą kasti kristalus!
       </p>
       <p>
-        Hurry! Go to your [reference:Buildings/ResearchCenter.name] and order 
-        research now. 
+        Nedelskite! Užsukite į tyrimų centrą ir įsakykite pradėti darbus. 
       </p>
     </about.14>
 
-    <title.15 value="Fruits of Patience" />
+    <title.15 value="Kantrybės vaisiai" />
     <about.15>
-      <p>Finally!</p>
+      <p>Komandore!</p>
       <p>
-        Our research on [reference:Technologies/ZetiumExtraction.name] has 
-        payed of. We are now able to build much needed buildings that will 
-        extract precious zetium from these crystals. 
+        Jūsų kabinete išties karšta... Ar jūsų kondicionavimo sistema 
+        tvarkinga? Hm... Panašu, kad viskas tvarkoje. Vadinas čia aš užkaitau 
+        nuo minties apie tai, ką mes išdarinėsime su rastais kristalais! 
+        Mokslininkai baigė tyrimą, mes galime pradėti zetiumo ekstraktorių 
+        statybas! 
       </p>
     </about.15>
 
-
-    <title.16 value="Achieving Greatness" />
+    <title.16 value="Dydybės link" />
     <about.16>
-      <p>Commander.</p>
+      <p>Komandore.</p>
       <p>
-        As a great leader you have brought us many victories. All your efforts 
-        are appreciated. 
+        Tiesiog užsukau pasakyti, kad ęsate didis vadovas ir nuostabus 
+        lyderis. Jūsų dėka mes daug pasiekėme ir už tai esame dėkingi. 
       </p>
     </about.16>
 
 
-    <title.28 value="More Glory" />
+    <title.28 value="Ir niekada šlovės mums, nebus per daug" />
     <about.28>
-      <p>Commander.</p>
-      <p>Your deeds are most glorious.</p>
-      <p>May luck be with you.</p>
+      <p>Komandore.</p>
+      <p>Jūsų darbų reikšmė žmonijai neprilygstama.</p>
+      <p>Telydi jus sėkmė.</p>
     </about.28>
 
-    <title.29 value="Even More Glory" />
+    <title.29 value="Galaktikos talentas" />
     <about.29>
-      <p>Commander.</p>
+      <p>Komandore.</p>
       <p>
-        All our neighbors know about your skills. You are truly worthy. Keep it 
-        up! 
+        Kaiminystėje visi tik ir šneka apie neprilygstamus jūsų įgūdžius. 
+        Jūs to nusipelnote. Neatsipalaiduokite, išlaikykite tą patį ritmą! 
       </p>
     </about.29>
 
-    <title.30 value="Top of the Hill" />
+    <title.30 value="Viršūkalnė" />
     <about.30>
-      <p>Commander.</p>
+      <p>Komandore.</p>
       <p>
-        You are truly a great leader. Your people thrive and prosper under your 
-        ruling. 
+        Žmonės kurių gyvenimas neapdovanojo galimybe tarnauti po jūsų vėliava, 
+        nesupranta tikrosios žodžių „laimingai klęstėti“ prasmės. Mes žinome, 
+        ką tai reiškia. Ačiū, jums už tai.
       </p>
-      <p>I Wish best luck in your future affairs, Commander.</p>
+      <p>Aš kalbu mūsų kolonijos vardu, Komandore.</p>
     </about.30>
 
-    <title.33 value="The Unstoppable Force" />
+    <title.33 value="Nesustabdoma jėga" />
     <about.33>
-      <p>Commander.</p>
+      <p>Komandore.</p>
       <p>
-        You are known in whole sector of this galaxy. Our allies respect you 
-        and our enemies fear you. 
+        Šiame galaktikos sektoriuje nebeliko žmogaus kuris apie jus nežinotų. 
+        Milijardai mamų savo sūnus krikštyja jūsų vardu. Mūsų sąjungininkai 
+        reiškia jums pagarbą, priešai daro viską, kad tik neužsitrauktų 
+        didesnės jūsų rūstybės. 
       </p>
-      <p>You are truly unstoppable.</p>
+      <p>Jūs nesustabdomas!</p>
     </about.33>
 
-    <title.64 value="Mayhem Unleashed" />
+    <title.64 value="Dievybė" />
     <about.64>
-      <p>Commander.</p>
-      <p>You are a leader in economy, science and war. Keep this on!</p>
+      <p>Komandore.</p>
+      <p>Jūs esate ekonomikos, mokslo ir karybos guru. Mes lyderiaujame visose 
+      sferose! Jums nebuvo kilusi mintis sukurti savo religiją?</p>
     </about.64>
 
-    <title.17 value="Saving Every Bit" />
+    <title.17 value="Ekonomika turi būti ekonomiška" />
     <about.17>
-      <p>Welcome back, Commander.</p>
+      <p>Sveiki sugrįžę, Komandore.</p>
       <p>
-        Now that we have a sufficient income for all three resource types we 
-        need to be sure they are not wasted. We need to build some additional 
-        storages to store excess resources we are not using at the moment. 
+        Bijau, kad sakydama „resursų nebūna per daug“ truputį pasikarščiavau. 
+        Analitikai pateikė žaliavų ir energijos gavybos planą, kuris aprėpia 
+        kelis ciklus. Panašu, kad dirbdami tokiais tempais, mes nepajėgsime 
+        sunaudoti visko, ką išgausime. Suprantu, tai skamba lyg bloga naujiena,
+        tačiau iš tiesų ji gera. Viskas ką turime padaryti, tai įrengti keletą 
+        saugyklų nepanaudotoms žaliavoms.  
       </p>
       <p>
-        Order construction of buildings that store each resource type, 
-        Commander. 
+        Įsakykite pastatyti po saugyklą kiekvienam išgaunamų resursų tipui, 
+        Komandore.
       </p>
     </about.17>
 
-    <title.18 value="Reaching To The Stars" />
+    <title.18 value="Kelias į žvaigždes" />
     <about.18>
-      <p>Commander.</p>
+      <p>Komandore.</p>
       <p>
-        Our scientists have found a way to use zetium in space travel! This is 
-        a glorious day! Order them to start researching of 
-        [reference:Technologies/SpaceFactory.name] now. 
+        Mokslininkai sugalvojo kaip panaudoti zetiumą kosminių kelionių metu. 
+        Šią nuostabią dieną mes vėl trauksime žvagdžių link! Įsakykite pradėti 
+        laivų statyklos projektą.
       </p>
-      <p>Galaxy awaits us!</p>
+      <p>Kad pastatyti statyklą, mums būtini brėžiniai, tad nedelskite!</p>
     </about.18>
 
-    <title.19 value="Tools of Travel" />
+    <title.19 value="Kad kelias nedulkėtų..." />
     <about.19>
-      <p>Commander!</p>
+      <p>Komandore!</p>
       <p>
-        Now that we have [reference:Technologies/SpaceFactory.name] technology 
-        we must build a [reference:Buildings/SpaceFactory.name] on this planet. 
+        Laivų statyklos projektas ir technologijų aprašai jau perduoti 
+        statybininkų brigadoms. Ne patys iškiliausi, bet tikrai darbštūs 
+        kolonistai nekantrauja griebti suvirinimo aparatus ir pradėti darbą! 
+        Įsakykite pradėti laivų statyklos statybas šioje planetoje. 
       </p>
       <p>
-        I suggest you construct on that gray leveled building ground - it looks 
-        like building on such terrain will save us a lot of time. 
+        Atkeipkite dėmesį į tuos pilkus, lygius plotus. Panašu, kad tai 
+        ideali vieta statyboms. Jei gamyklą statysime ten, darbai eisis 
+        gerokai sparčiau. 
       </p>
     </about.19>
 
@@ -3317,46 +3330,36 @@
 
     <Demosis.name ref="Objects/Demosis1" />
     <Demosis.about>
-      <p>
-        These gigantic ships wander around in Nebula 44. Once built for great 
-        conquest now their simple robotic minds wait for orders from masters 
-        who are long gone. 
-      </p>
-      <p>
-        But beware of their massive armor and weapons. Their laser is slow and 
-        requires some time to recharge but packs a powerful punch that is able 
-        to take down whole ships in a few shots. 
-      </p>
+      <p>Šie gigantiški ir didingi kosminiai laivai buvo labai senai pastatyti 
+      kūrėjų, kurių jau nebėra. Jie ramiai laukia kosmose, tykodami 
+      prašalaičių į kuriuos galėtų atidengti ugnį. Tačiau, nors ir stiprūs, 
+      šių laivų lazeriai savo pilną galingumą pasiekia tik gavę laiko pilnai 
+      pasikrauti, tad ryžtingas tavo laivyno smūgis gali smarkiai pakenkti
+      šiems laivams milžinams.</p>
     </Demosis.about>
 
     <Trooper.name ref="Objects/Trooper1" />
     <Trooper.about>
-      <p>
-        Basic warriors of our armies armed with machine guns. They fearlessly 
-        run into battlefield bringing fear into our enemy hearts and confidence 
-        into our allies. Even if not very tough they can prove very useful in 
-        numbers. 
-      </p>
+      <p>Tai pagrindiniai kareiviai visose galaktikos armijose, ypač 
+      stiprūs didelėmis grupėmis. Ginkluoti kulkosvaidžiais, jie be 
+      baimės kaunasi už savo vadą, ir nors jų gyvenimas mūšio lauke 
+      nėra ilgas, jie žino, kad jų aukos atneš didžią pergalę.</p>
     </Trooper.about>
 
     <Shocker.name ref="Objects/Shocker1" />
     <Shocker.about>
-      <p>
-        Highly armored field warriors with the capabilities to withstand enemy 
-        troop fire. Their rocket launchers are designed to counter more heavily 
-        armored opponents but massive shockers still work as best shields for 
-        your other anti-infantry units. 
-      </p>
+      <p>Stipriai šarvuoti pėstininkai, gebantys atlaikyti net ir stipriausią 
+      priešo ugnį karo lauke. Jų raketsvaidžiai gali pramušti net ir 
+      labiausiai šarvuotą priešo techniką, tačiau pavieniui šis ginklas
+      nėra labai efektyvus prieš paprastus pėstininkus.</p>
     </Shocker.about>
 
     <Seeker.name ref="Objects/Seeker1" />
     <Seeker.about>
-      <p>
-        Armed with [reference:InfoScreen/gun.sniper_rifle] they are lethal to 
-        lightly armored enemy units. Although deadly Seekers are very fragile 
-        and must be covered well behind the backs of other units or they will 
-        perish very quickly. 
-      </p>
+      <p>Ginkluoti snaiperiniu šautuvu, sėlintojai yra tikri mažiau šarvuotų
+      priešų žudikai. Nors sėlintojai ir yra puikūs snaiperiai, tačiau 
+      ekipuotės lengvumas ir šarvų neturėjimas lemtų jų žūtį būnant 
+      priešakinėse linijose.</p>
     </Seeker.about>
 
     <Spy.name value="Spy" />
@@ -3367,109 +3370,88 @@
 
     <Scorpion.name ref="Objects/Scorpion1" />
     <Scorpion.about>
-      <p>
-        Scorpion class tanks are basic ground warfare vehicles. They pack a 
-        heavy punch with their [reference:InfoScreen/gun.cannon]. Scorpions are 
-        quite strong and armored and can take many enemy lives before giving up 
-        their own. 
-      </p>
+      <p>Skorpiono tankai yra pagrindinė smogiamoji jėga tankų mūšiuose. Jie 
+      suduoda smarkų smūgį su savo pyro klasės pabūklu ir yra ypač tvirti.
+      Jų šarvai sugeria nemažai žalos ir skorpiono klasės tankai gali atimti
+      daug priešo gyvybių prieš atiduodant savają.</p>
     </Scorpion.about>
 
     <Azure.name ref="Objects/Azure1" />
     <Azure.about>
-      <p>
-        Azure hovertanks are best way of countering enemy tanks. Their twin 
-        rocket launchers on each side barrages battlefield with missiles 
-        devastating everything in their path. Hovertank technology stabilizes 
-        Azure while it's firing but makes it vulnerable to enemy shots so it 
-        should be shielded by other units. 
-      </p>
+      <p>Azuro skraidantys tankai yra geriausias ginklas prieš 
+      priešo tankus. Jų dvigubi raketų leistuvai abiejose pusėse ir kovinės
+      raketos juose, paruoštos naikinti priešus, yra tai, kas priešus privers 
+      bėgti arba mirti. Tačiau azuro tankai yra gana lengvai pamušami, 
+      todėl mūšio lauke turi būti saugomi stipriau šarvuotų pajėgų.</p>
     </Azure.about>
 
     <Mdh.name ref="Objects/MDH1" />
     <Mdh.common>
-      <p>
-        Mobile Deployable Headquarters (MDH) is used as first and primary base 
-        upon foreign colony. This massive vehicle deploys into a fully 
-        operational base with building construction capabilities, storage 
-        containers and even brings a small 
-        [reference:Buildings/MetalExtractor.name] and energy source. 
-      </p>
+      <p>Mobilusis štabas naudojamas kaip pirminė vadavietė ir operacijų 
+      centras, įkuriant naujas kolonijas. Šios masyvios mašinos geba būti ne 
+      tik pilnai funkcionuojančia baze, bet ir turi pastatų statybos, 
+      talpyklos, autonominės energijos šaltinio bei metalo gavybos 
+      funkcijas.</p>
     </Mdh.common>
     <Mdh.about>
       <p>[reference:Mdh.common]</p>
-      <p>
-        Beware! Although massive and big it is very fragile while undeployed. 
-        Do not let it get into battlefield or it will be damaged beyond repair 
-        very soon. 
-      </p>
+      <p>Dėmesio! Nors jis ir atrodo didelis ir masyvus, 
+      mobilusis štabas yra lengvai pažeidžiamas kol nėra įkurtas kolonijoje - 
+      pakliuvęs į mūšį jis greitai ir lengvai gali būti nepataisomai 
+      sugadintas.</p>
     </Mdh.about>
 
     <Mule.name ref="Objects/Mule1" />
     <Mule.about>
-      <p>
-        Slow and heavily armored transport unit. Its massive hull protects the 
-        cargo inside and allows deploying troops onto enemy battlefield even 
-        upon heavy fire. 
-      </p>
+      <p>Lėtas ir stipriai šarvuotas krovininis laivas, galintis saugiai 
+      nugabeti bet kokį krovinį ar išlaipinti karių desantą vidury mūšio 
+      lauko bet kuriame galaktikos kampelyje.</p>
     </Mule.about>
 
     <Crow.name ref="Objects/Crow1" />
     <Crow.about>
-      <p>
-        Light, fast and versatile basic combat spaceship. Perfect for quick 
-        skirmishes and attacking lone enemy transporters. 
-      </p>
+      <p>Lengvas, greitas ir universalus karinis erdvėlaivis. Puikiai 
+      pritaikytas atlikti pavienes kovines misijas ir naikinti nesaugomus 
+      priešo krovininius laivus.</p>
     </Crow.about>
 
     <Cyrix.name ref="Objects/Cyrix1" />
     <Cyrix.about>
-      <p>
-        Cyrix class battleships are standard combat ships used in our fleets. 
-        Their sturdy armor and formidable lasers vanquish our enemies whilst 
-        Cyrixes wade through space in their pride. Sometimes they are also used 
-        as shields for weaker ships like [reference:Dart.name] or 
-        [reference:Avenger.name]. 
-      </p>
+      <p>Cyrikso klasės kreiseriai yra standartiniai ir dažniausiai sutinkami 
+      koviniai laivai visoje galaktikoje. Jų patikimi šarvai ir galingi 
+      lazeriai daro juos puikia karine jėga, su kuria nesiskaityti negalima. 
+      Be to, šie kreiseriai išmanių karo vadų yra dažnai naudojami kaip 
+      skydas, siekinat apsaugoti silpniau šarvuotas laivų klases, tokias kaip 
+      strėlės ar keršytojai.</p>
     </Cyrix.about>
 
     <Rhyno.name ref="Objects/Rhyno1" />
     <Rhyno.about>
-      <p>
-        Rhyno battlecruisers are flagships of any fleet. With their huge 
-        defences they can withstand massive fire and their array of weapons 
-        makes them strong against multiple types of enemies. However they are 
-        costly and their size makes them slow in travel. 
-      </p>
+      <p>Raganosio klasės sunkieji kreiseriai yra bet kurio laivyno pažiba. 
+      Su jų įspūdingu gynybiniu arsenalu ir storais, lyg raganosio oda, šarvais 
+      jie gali be didesnių nuostolių nugalėti beveik visus jiems kelią 
+      pastojančius priešus. Tačiau jų didelė kaina ir nedidelis greitis yra šių 
+      galingų laivų neigiama pusė.</p>
     </Rhyno.about>
 
     <Dart.name ref="Objects/Dart1" />
     <Dart.about>
-      <p>
-        Dart class ships were built specifically to counter 
-        [reference:Crow.name] and [reference:Avenger.name] class ships. They 
-        are fast and carry weapons deadly to those ships however they lack any 
-        solid protection from enemy fire. 
-      </p>
-      <p>
-        They are best at hit and run attacks where they outnumber enemy to 
-        destroy them quickly and without casualties. 
-      </p>
+      <p>Strėlės klasės laivai buvo kuriami kovoti su varno ir keršytojo 
+      klasės laivais - jie greiti ir vikrūs, be to, apsiginklavę iki dantų. 
+      Nors ir turėdami silpnus šarvus, kuriuos priešų laivai lengvai 
+      pramuša, strelės klasės laivai yra nepakeičiami trumpose, 
+      greitose atakose turint didelę persvarą prieš priešininką.</p>
     </Dart.about>
 
     <Avenger.name ref="Objects/Avenger1" />
     <Avenger.about>
-      <p>
-        Avengers are deadly against heavily armored ships. Their armor piercing 
-        rockets drill through and explode inside enemy ship hulls causing 
-        massive damage. Avenger fast engines ensure they can intercept 
-        [reference:Cyrix.name] and [reference:Rhyno.name] class ships easily 
-        and damage them severely. 
-      </p>
-      <p>
-        However if Avengers are left in the battlefield they can suffer very 
-        quickly because they lack any kind of solid protection from enemy fire. 
-      </p>
+      <p>Keršytojas - tai mirtinas ginklas kovojant su stipriai šarvuotais 
+      laivais. Jų raketiniai šoviniai lengvai pramuša šarvą ir sprogsta 
+      laivo viduje, darydami ypatingai didelę žalą. Keršytojo greitaeigiai 
+      varikliai užtikrina, kad nei raganosio, nei cyrikso klasės laivai nuo 
+      jo nepaspruks ir bus be gailesčio sunaikinti. Tačiau ir nors turėdami 
+      didelę šaunamają galią ir gretį, keršytojo klasės laivai kovose yra 
+      lengvai pažeidžiami dėl savo plonų šarvų.</p>
     </Avenger.about>
 
     <Jumper.name ref="Objects/Jumper1" />

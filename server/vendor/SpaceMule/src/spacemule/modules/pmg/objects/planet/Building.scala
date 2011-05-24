@@ -41,21 +41,21 @@ object Building {
   val NpcResearchCenter = "NpcResearchCenter"
   val NpcJumpgate = "NpcJumpgate"
 
-  def create(name: String, x: Int, y: Int): Building = {
+  def create(name: String, x: Int, y: Int, level: Int=1): Building = {
     val building = name match {
       case Mothership | Screamer | Thunder | Vulcan | NpcHall |
         NpcInfantryFactory | NpcTankFactory | NpcSpaceFactory =>
-        new buildings.Player(name, x, y)
+        new buildings.Player(name, x, y, level)
       case NpcMetalExtractor | NpcGeothermalPlant | NpcZetiumExtractor | 
         NpcSolarPlant | NpcCommunicationsHub | NpcTemple | NpcExcavationSite |
         NpcResearchCenter | NpcJumpgate =>
-        new buildings.Npc(name, x, y)
+        new buildings.Npc(name, x, y, level)
     }
     return building
   }
 }
 
-class Building(val name: String, val x: Int, val y: Int) {
+class Building(val name: String, val x: Int, val y: Int, val level: Int) {
   val area = Config.getBuildingArea(name)
   val xEnd = x + area.width - 1 // -1 because xEnd is inclusive.
   val yEnd = y + area.height - 1 // -1 because yEnd is inclusive.

@@ -162,6 +162,7 @@ object Config {
   lazy val resourceSolarSystems =
     positions("galaxy.resource_systems.positions")
   lazy val wormholes = positions("galaxy.wormholes.positions")
+  lazy val miniBattlegrounds = positions("galaxy.mini_battlegrounds.positions")
 
   // Combat attributes
 
@@ -323,7 +324,6 @@ object Config {
     case AreaTile.Junkyard => areaTileConfig("junkyard")
     case AreaTile.Titan => areaTileConfig("titan")
     case AreaTile.Sand => areaTileConfig("sand")
-    case AreaTile.Water => areaTileConfig("water")
   }
 
   def extractorNpcChance(blockTile: BlockTile): Int = blockTile match {
@@ -361,6 +361,9 @@ object Config {
 
   // Building attributes
 
+  lazy val battlegroundBuildingMaxLevel = 
+    int("buildings.battleground.max_level")
+  
   def buildingInitiative(name: String) =
     int("buildings.%s.initiative".format(name.underscore))
   def buildingHp(building: Building): Int = buildingHp(building.name)

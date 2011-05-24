@@ -869,8 +869,8 @@ describe Building do
       @building = Factory.build :building, :planet => @planet, :level => 5
     end
 
-    it "should raise GameLogicError if npc" do
-      with_config_values 'buildings.test_building.npc' => true do
+    it "should raise GameLogicError if unmanagable" do
+      with_config_values 'buildings.test_building.managable' => false do
         lambda do
           @building.upgrade
         end.should raise_error(GameLogicError)

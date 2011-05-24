@@ -34,3 +34,8 @@ wormholes.positions:
   - [2, 1]
   - [6, 3]
   - [5, 7]
+# Positions of mini battlegrounds.
+mini_battlegrounds.positions:
+  - [1, 2]
+  - [6, 5]
+  - [7, 0]

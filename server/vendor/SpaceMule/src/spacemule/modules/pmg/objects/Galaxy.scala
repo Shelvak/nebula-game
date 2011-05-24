@@ -5,6 +5,7 @@ import solar_systems.{Resource, Expansion, Homeworld}
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
+import spacemule.modules.pmg.objects.solar_systems.MiniBattleground
 import spacemule.modules.pmg.objects.solar_systems.Wormhole
 
 /**
@@ -20,6 +21,7 @@ class Galaxy(val id: Int, val ruleset: String) {
   val expansionSystems = Config.expansionSolarSystems
   val resourceSystems = Config.resourceSolarSystems
   val wormholes = Config.wormholes
+  val miniBattlegrounds = Config.miniBattlegrounds
   val zones = new HashMap[Coords, Zone]()
 
   def addExistingSS(x: Int, y: Int): scala.Unit = {
@@ -117,6 +119,8 @@ class Galaxy(val id: Int, val ruleset: String) {
         zone.addSolarSystem(new Expansion(), coords) }
       resourceSystems.foreach { coords =>
         zone.addSolarSystem(new Resource(), coords) }
+      miniBattlegrounds.foreach { coords =>
+        zone.addSolarSystem(new MiniBattleground(), coords) }
     }
 
     zone.addSolarSystem(new Homeworld(player))

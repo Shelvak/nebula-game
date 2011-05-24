@@ -5,6 +5,8 @@ ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
 $LOAD_PATH.unshift File.expand_path(ROOT_DIR) \
   if RUBY_VERSION.include?("1.9")
 
+def rake?; File.basename($0) == 'rake'; end
+
 require 'benchmark'
 load_times = {}
 
@@ -159,10 +161,6 @@ load_times[:game_config] = Benchmark.realtime do
       )
     end
   end
-end
-
-def rake?
-  File.basename($0) == 'rake'
 end
 
 load_times[:db] = Benchmark.realtime do
