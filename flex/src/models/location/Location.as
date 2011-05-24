@@ -275,8 +275,8 @@ package models.location
                         if (ML.latestSolarSystem != null && !ML.latestSolarSystem.fake)
                         {
                            if (ML.latestSolarSystem.id == solarSystemId ||
-                               ML.latestSolarSystem.isBattleground && (ML.latestGalaxy.isBattleground(solarSystemId) ||
-                                                                       ML.latestGalaxy.isWormhole(solarSystemId)))
+                               ML.latestSolarSystem.isGlobalBattleground && (ML.latestGalaxy.isBattleground(solarSystemId) ||
+                                                                             ML.latestGalaxy.isWormhole(solarSystemId)))
                            {
                               planet = ML.latestSolarSystem.getSSObjectById(id);
                               if (planet.viewable)

@@ -16,6 +16,7 @@ package tests.models
    import models.planet.Planet;
    import models.player.Player;
    import models.solarsystem.MSSObject;
+   import models.solarsystem.SSKind;
    import models.solarsystem.SolarSystem;
    
    import namespaces.client_internal;
@@ -147,7 +148,7 @@ package tests.models
          loc.type = LocationType.SOLAR_SYSTEM;
          var wormhole:SolarSystem = new SolarSystem();
          wormhole.id = 2;
-         wormhole.wormhole = true;
+         wormhole.kind = SSKind.WORMHOLE;
          ML.latestGalaxy.addObject(wormhole);
          
          assertThat( loc.isNavigable, equals (true) );
@@ -305,7 +306,7 @@ package tests.models
          loc.type = LocationType.SS_OBJECT;
          var wormhole:SolarSystem = new SolarSystem();
          wormhole.id = 2;
-         wormhole.wormhole = true;
+         wormhole.kind = SSKind.WORMHOLE;
          ML.latestGalaxy.addObject(wormhole);
          
          assertThat( loc.isNavigable, equals (true) );

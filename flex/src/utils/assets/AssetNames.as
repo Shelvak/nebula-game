@@ -99,6 +99,11 @@ package utils.assets
       public static const WORMHOLE_IMAGE_NAME:String = SS_IMAGE_FOLDER + "wormhole";
       
       /**
+       * Name of a mini-battleground image.
+       */
+      public static const MINI_BATTLEGROUND_IMAGE_NAME:String = SS_IMAGE_FOLDER + "battleground";
+      
+      /**
        * Name of solar system shield image.
        */
       public static const SS_SHIELD_IMAGE_NAME:String = SS_IMAGE_FOLDER + "shield";

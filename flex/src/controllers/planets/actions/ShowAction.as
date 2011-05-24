@@ -15,6 +15,7 @@ package controllers.planets.actions
    import models.factories.UnitFactory;
    import models.planet.Planet;
    import models.solarsystem.MSSObject;
+   import models.solarsystem.SSKind;
    import models.solarsystem.SolarSystem;
    
    import utils.ArrayUtil;
@@ -90,7 +91,7 @@ package controllers.planets.actions
             if (ML.latestGalaxy.hasWormholes)
             {
                if (ML.latestSolarSystem == null ||
-                  !ML.latestSolarSystem.wormhole && !ML.latestSolarSystem.isBattleground)
+                  !ML.latestSolarSystem.isWormhole && !ML.latestSolarSystem.isGlobalBattleground)
                {
                   if (ML.latestSolarSystem != null)
                   {
@@ -102,7 +103,7 @@ package controllers.planets.actions
                   ss.id = wormholeInGalaxy.id;
                   ss.x  = wormholeInGalaxy.x;
                   ss.y  = wormholeInGalaxy.y;
-                  ss.wormhole = true;
+                  ss.kind = SSKind.WORMHOLE;
                   ML.latestSolarSystem = ss;
                }
             }

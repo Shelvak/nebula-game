@@ -62,7 +62,7 @@
                width="{MSSObject.IMAGE_WIDTH}"
                lineBreak="toFit"
                textAlign="center"/>
-   <s:Button id="btnOpen" label="{SolarSystem(staticObject).wormhole ?
+   <s:Button id="btnOpen" label="{SolarSystem(staticObject).isWormhole ?
                                        getString('label.openWormhole') :
                                        getString('label.openSolarSystem')}"
              visible="{SolarSystem(staticObject).isNavigable}"

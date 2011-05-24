@@ -87,6 +87,7 @@ package controllers.startup
        */
       public static function loadStartupInfo() : Boolean
       {
+         initializeLogging();
          var startupInfo:StartupInfo;
          if (!ExternalInterface.available)
          {
@@ -122,7 +123,6 @@ package controllers.startup
        */	   
       public static function initializeApp() : void
       {
-         initializeLogging();
          AnimationTimer.forUi.start();
          AnimationTimer.forMovement.start();
          ToolTipManager.showDelay = 0;

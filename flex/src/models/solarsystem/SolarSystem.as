@@ -75,8 +75,8 @@ package models.solarsystem
                return true;
             }
             // check if both solar systems are wormholes
-            if (ML.latestGalaxy.hasWormholes && (wormhole || isBattleground) &&
-                ML.latestSolarSystem.isBattleground)
+            if (ML.latestGalaxy.hasWormholes && (isWormhole || isGlobalBattleground) &&
+                ML.latestSolarSystem.isGlobalBattleground)
             {
                return true;
             }
@@ -95,13 +95,17 @@ package models.solarsystem
        */
       public function get name() : String
       {
-         if (!wormhole && !isBattleground)
+         if (isWormhole)
          {
-            return NameResolver.resolveSolarSystem(id);
+            return Localizer.string("Galaxy", "label.wormhole");
+         }
+         else if (isMiniBattleground)
+         {
+            return Localizer.string("Galaxy", "label.miniBattleground");
          }
          else
          {
-            return Localizer.string("Galaxy", "label.wormhole");
+            return NameResolver.resolveSolarSystem(id);
          }
       }
       
@@ -321,21 +325,43 @@ package models.solarsystem
       /* ################ */
       
       
-      [Optional]
+      [Required]
       /**
-       * Indicates if this is actually a wormhole to a BattleGround solar system (one in whole galaxy).
-       * Default is <code>false</code>.
+       * Kind of this solar system (one of constants in <code>SSKind</code>).
+       * 
+       * <p>Metadata:</br>
+       * [Required]
+       * </p>
        */
-      public var wormhole:Boolean = false;
+      public var kind:int = SSKind.NORMAL;
       
       
       /**
-       * Indicates if this solar systems is a battleground system. Wormholes are not battlegrounds: just
-       * gates to battleground. 
+       * Indicates if this is a wormhole to a global battleground solar system (one in whole galaxy).
        */
-      public function get isBattleground() : Boolean
+      public function get isWormhole() : Boolean
+      {
+         return kind == SSKind.WORMHOLE;
+      }
+      
+      
+      /**
+       * Indicates if this solar systems is global battleground system. Wormholes are not battlegrounds: just
+       * gates to global battleground.
+       */
+      public function get isGlobalBattleground() : Boolean
       {
          return id == ML.latestGalaxy.battlegroundId;
+      }
+      
+      
+      /**
+       * Indicates if this solar system is a mini-battleground system. Those are placed all over the galaxy
+       * as playground for players around them.
+       */
+      public function get isMiniBattleground() : Boolean
+      {
+         return kind == SSKind.BATTLEGROUND;
       }
       
       
@@ -352,13 +378,17 @@ package models.solarsystem
       [Bindable(event="willNotChange")]
       public function get imageData() : BitmapData
       {
-         if (!wormhole)
+         if (isWormhole)
          {
-            return IMG.getImage(AssetNames.getSSImageName(variation));
+            return IMG.getImage(AssetNames.WORMHOLE_IMAGE_NAME);
+         }
+         else if (isMiniBattleground)
+         {
+            return IMG.getImage(AssetNames.MINI_BATTLEGROUND_IMAGE_NAME);
          }
          else
          {
-            return IMG.getImage(AssetNames.WORMHOLE_IMAGE_NAME);
+            return IMG.getImage(AssetNames.getSSImageName(variation));
          }
       }
       
