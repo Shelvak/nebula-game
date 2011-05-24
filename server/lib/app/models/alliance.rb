@@ -41,11 +41,13 @@ class Alliance < ActiveRecord::Base
   end
 
   after_destroy do
-    @cached_players.each do |player|
-      player.alliance = nil
-      Chat::Pool.instance.hub_for(player).on_alliance_change(player)
-    end
-    EventBroker.fire(@cached_players, EventBroker::CHANGED)
+    unless @cached_players.blank?
+      @cached_players.each do |player|
+        player.alliance = nil
+        Chat::Pool.instance.hub_for(player).on_alliance_change(player)
+      end
+      EventBroker.fire(@cached_players, EventBroker::CHANGED)
+    end      
 
     ControlManager.instance.alliance_destroyed(self)
   end
