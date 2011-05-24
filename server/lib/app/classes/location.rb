@@ -45,7 +45,7 @@ module Location
     check_in_ss = lambda do |ss_id|
       if ss_id == Galaxy.battleground_id(player.galaxy_id)
         FowSsEntry.for(player).joins(:solar_system).where(
-          SolarSystem.table_name => {:wormhole => true}
+          SolarSystem.table_name => {:kind => SolarSystem::KIND_WORMHOLE}
         ).count > 0
       else
         begin

@@ -40,8 +40,11 @@ class SolarSystem < ActiveRecord::Base
     where(:galaxy_id => galaxy_id, :x => nil, :y => nil).first
   end
 
-  # Is this solar system a battleground?
-  def battleground?; x.nil? && y.nil?; end
+  # Is this solar system a global battleground?
+  def main_battleground?; x.nil? && y.nil?; end
+  
+  def battleground?; kind == KIND_BATTLEGROUND; end
+  def wormhole?; kind == KIND_WORMHOLE; end
 
   # Return +SolarSystemPoint+s where NPC units are standing.
   def npc_unit_locations

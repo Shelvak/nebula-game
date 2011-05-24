@@ -75,6 +75,10 @@ describe SpaceMule do
       it "should create battleground ss" do
         @ss.should_not be_nil
       end
+      
+      it "should have its kind set" do
+        @ss.kind.should == SolarSystem::KIND_BATTLEGROUND
+      end
 
       it "should create battleground jumpgates" do
         @ss.jumpgates.count.should == CONFIG[
@@ -226,8 +230,16 @@ describe SpaceMule do
 
     it "should create wormholes in area" do
       @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-      SolarSystem.where(:galaxy_id => @galaxy.id, :wormhole => true).count.
-        should == CONFIG['galaxy.wormholes.positions'].size
+      SolarSystem.where(:galaxy_id => @galaxy.id, 
+        :kind => SolarSystem::KIND_WORMHOLE
+      ).count.should == CONFIG['galaxy.wormholes.positions'].count
+    end
+    
+    it "should create mini battlegrounds in area" do
+      @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
+      SolarSystem.where(:galaxy_id => @galaxy.id, 
+        :kind => SolarSystem::KIND_BATTLEGROUND
+      ).count.should == CONFIG['galaxy.mini_battlegrounds.positions'].count
     end
 
     describe "in planets" do
@@ -343,7 +355,7 @@ describe SpaceMule do
       :x => -4, :y => 2)
     wh = Factory.create(:wormhole, :galaxy => galaxy,
       :x => 1, :y => 3)
-    bg = Factory.create(:solar_system, :galaxy => galaxy,
+    bg = Factory.create(:battleground, :galaxy => galaxy,
       :x => nil, :y => nil)
     jg1 = Factory.create(:sso_jumpgate, :solar_system => ss1,
       :position => 2, :angle => 0)
@@ -499,11 +511,11 @@ describe SpaceMule do
 
       path("planet to battleground").planet(p1).
         solar_system(ss1) { from(0,0).through(1,0).to(2,0) }.
-        galaxy(galaxy) { from(1,0).through(1,1, 1,2).to(1,3) }.
+        galaxy(galaxy) { from(ss1).through(1,1, 1,2).to(wh) }.
         solar_system(bg) { from(0,0).through(1,0).to(2,0) },
       path("battleground to planet").
         solar_system(bg) { from(2,0).through(1,0).to(0,0) }.
-        galaxy(galaxy) { from(1,3).through(1,2, 1,1).to(1,0) }.
+        galaxy(galaxy) { from(wh).through(1,2, 1,1).to(ss1) }.
         solar_system(ss1) { from(2,0).through(1,0).to(0,0) }.
         planet(p1),
 

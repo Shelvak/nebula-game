@@ -186,7 +186,7 @@ class SpaceMule
   # Otherwise travels as expected.
   def set_wormhole(message, name, galaxy_id, wormhole_proximity_point,
       solar_system)
-    if solar_system.battleground?
+    if solar_system.main_battleground?
       wormhole = Galaxy.closest_wormhole(galaxy_id, 
         wormhole_proximity_point.x, wormhole_proximity_point.y)
       message[name] = [wormhole.x, wormhole.y]
