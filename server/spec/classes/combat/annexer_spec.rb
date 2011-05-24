@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb'))
 
 describe "with owner (you)", :shared => true do
   it "should assign it to one of the enemies randomly" do
