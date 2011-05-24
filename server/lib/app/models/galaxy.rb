@@ -42,7 +42,7 @@ class Galaxy < ActiveRecord::Base
   # if you do not see any wormholes.
   def self.closest_wormhole(galaxy_id, x, y)
     SolarSystem.where(
-      :galaxy_id => galaxy_id, :wormhole => true
+      :galaxy_id => galaxy_id, :kind => SolarSystem::KIND_WORMHOLE
     ).select(
       "*, SQRT(POW(x - #{x.to_i}, 2) + POW(y - #{y.to_i}, 2)) as distance"
     ).order("distance ASC").first
