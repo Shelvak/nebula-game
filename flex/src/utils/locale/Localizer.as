@@ -56,7 +56,15 @@ package utils.locale
             matches = resultString.match(REFERENCE_REGEXP);
          }
          
-         return resultString;
+         if (parameters != null)
+         {
+            // pluralization pass is the last one
+            return mx.utils.StringUtil.substitute(pluralize(resultString, parameters), parameters);
+         }
+         else
+         {
+            return resultString;
+         }
       }
       
       
@@ -76,31 +84,6 @@ package utils.locale
       /* ##################### */
       /* ### PLURALIZATION ### */
       /* ##################### */
-      
-      
-      /**
-       * Dereferences and pluralizes a string in the given <code>bundle</code> stored under the given
-       * <code>property</code> and replaces any simple parameters if needed. If you don't need pluralization
-       * feature, use <code>Localizer.string()</code> instead.
-       * 
-       * @param bundle The name of a resource bundle.
-       * @param property The name of a resource in the resource bundle.
-       * @param pluralizationParams list of pluralization parameters defined in the resource string.
-       * @param simpleParams list of simple parameters ({n}) to replace.
-       * 
-       * @return dereferenced string with pluralization and simple parameters replaced.
-       * 
-       * @see Localizer#string()
-       */
-      public static function stringPluralized(bundle:String,
-                                              property:String,
-                                              pluralizationParams:Array,
-                                              simpleParams:Array = null) : String
-      {
-         return mx.utils.StringUtil.substitute(
-            pluralize(string(bundle, property, simpleParams), pluralizationParams), simpleParams
-         );
-      }
       
       
       private static const PARAM_PATTERN:RegExp = /\{(\d+)\s+(\w+\[.*?\])\s*\}/s;

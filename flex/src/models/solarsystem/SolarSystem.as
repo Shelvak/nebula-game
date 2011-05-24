@@ -95,18 +95,9 @@ package models.solarsystem
        */
       public function get name() : String
       {
-         if (isWormhole)
-         {
-            return Localizer.string("Galaxy", "label.wormhole");
-         }
-         else if (isMiniBattleground)
-         {
-            return Localizer.string("Galaxy", "label.miniBattleground");
-         }
-         else
-         {
-            return NameResolver.resolveSolarSystem(id);
-         }
+         return isWormhole ?
+            Localizer.string("Galaxy", "label.wormhole") :
+            NameResolver.resolveSolarSystem(id);
       }
       
       

@@ -394,7 +394,7 @@ package components.movement
       [Bindable(event="speedModifierChange")]
       public function get text_speedUpCostLabel() : String
       {
-         return getStringPluralized("message.speedUpCost", [speedUpCost]);
+         return getString("message.speedUpCost", [speedUpCost]);
       }
       
       
@@ -422,14 +422,6 @@ package components.movement
       private function getString(property:String, parameters:Array = null) : String
       {
          return Localizer.string("Movement", property, parameters);
-      }
-      
-      
-      private function getStringPluralized(property:String,
-                                           pluralizationParams:Array,
-                                           simpleParams:Array = null) : String
-      {
-         return Localizer.stringPluralized("Movement", property, pluralizationParams, simpleParams);
       }
       
       

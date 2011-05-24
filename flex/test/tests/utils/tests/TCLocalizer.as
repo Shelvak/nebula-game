@@ -184,51 +184,49 @@ package tests.utils.tests
          {
             content["simple"] = "My name is {0}";
             content["plural"] = "I have {0 one[? car] many[? cars]}";
-            content["both"] = "My name is {0} and I have {0 one[? car] many[? cars]}";
-            content["reference"] = "Hi! [reference:PluralizationTest/both]. {1}";
+            content["both"] = "My name is {0} and I have {1 one[? car] many[? cars]}";
+            content["reference"] = "Hi! [reference:PluralizationTest/both]. {2}";
          }
          Localizer.addBundle(bundle);
       }
       
       
-      private function stringPluralized(property:String,
-                                        pluralizationParams:Array,
-                                        simpleParams:Array = null) : String
+      private function string(property:String, params:Array = null) : String
       {
-         return Localizer.stringPluralized("PluralizationTest", property, pluralizationParams, simpleParams);
+         return Localizer.string("PluralizationTest", property, params);
       }
       
       
       [Test]
-      public function stringPluralized_should_replace_simple_as_well_as_pluralizable_parameters() : void
+      public function string_should_replace_simple_as_well_as_pluralizable_parameters() : void
       {
          addPluralizationBundle();
          
          assertThat(
             "should only replace simple parameter if pluralization is not required",
-            stringPluralized("simple", [], ["Bob"]), equals ("My name is Bob")
+            string("simple", ["Bob"]), equals ("My name is Bob")
          );
          
          assertThat(
             "should only replace pluralizable parameters if simple ones are not required",
-            stringPluralized("plural", [2]), equals ("I have 2 cars")
+            string("plural", [2]), equals ("I have 2 cars")
          );
          
          assertThat(
             "should replace both parameter types",
-            stringPluralized("both", [2], ["Bob"]), equals ("My name is Bob and I have 2 cars")
+            string("both", ["Bob", 2]), equals ("My name is Bob and I have 2 cars")
          );
       };
       
       
       [Test]
-      public function stringPluralized_should_make_dereference_pass_before_pluralization_pass() : void
+      public function string_should_make_dereference_pass_before_pluralization_pass() : void
       {
          addPluralizationBundle();
          
          assertThat(
             "should dereference, then replace all parameters",
-            stringPluralized("reference", [2], ["Bob", "Yahoo!"]),
+            string("reference", ["Bob", 2, "Yahoo!"]),
             equals ("Hi! My name is Bob and I have 2 cars. Yahoo!")
          );
       };
