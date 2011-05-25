@@ -152,6 +152,9 @@ class Building < ActiveRecord::Base
   def activate
     raise GameLogicError.new("Cannot activate, not inactive for #{self}!") \
       unless inactive?
+    raise GameLogicError.new(
+      "Cannot activate building #{self} which is being upgraded!") \
+      if upgrading?
     forbid_npc_actions!
 
     self.state = STATE_ACTIVE
