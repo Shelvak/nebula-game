@@ -22,7 +22,7 @@ BATTLEFIELD_BUNDLES = [
   "ImagesTileBundle"
 ]
 # Locale reference regular expression.
-LOCALE_REF_RE = /\[reference:((\w+)\/)?(.+?)\]/\
+LOCALE_REF_RE = /\[reference:((\w+)\/)?(.+?)\]/
 
 namespace :flex do
   namespace :locales do
@@ -46,6 +46,7 @@ namespace :flex do
 
       Dir[File.join(FLEX_LOCALE_DIR, "*.xml")].each do |fpath|
         fname = File.basename(fpath)
+        puts "Checking #{fname}"
         contents = XmlSimple.xml_in(fpath)
         contents.each do |bundle_name, bundle_contents|
           if bundle_contents.size > 1

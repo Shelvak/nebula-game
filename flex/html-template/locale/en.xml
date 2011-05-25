@@ -953,6 +953,7 @@
     <tableTitle value="Properties" />
     <guns value="Guns" />
     <gunProperties value="{0} properties" />
+    <damagesDealt value="Damage dealt by {0}" />
     <gun.pistol value="Pistol" />
     <gun.machine_gun value="Machine Gun" />
     <gun.sniper_rifle value="CR-24 Sniper Rifle" />
@@ -972,7 +973,6 @@
     <gun.plasma_spike value="Shock Rifle" />
     <gun.thor_ground value="Blizzard" />
     <gun.cannon_air value="Zeus class cannon" />
-    <damagesDealt value="Damage dealt by {0}" />
     <armorType value="Armor type" />
     <damageInPercent value="Percentage" />
     <damage value="Damage" />
@@ -3311,6 +3311,8 @@
         or with small groups with [reference:Objects/Dirac2] whom they still 
         protect. 
       </p>
+      <p>If you get a grasp on few of these ships know that they are pretty
+      useful in air to ground bombardment of your enemy ground forces.</p>
     </Thor.about>
 
     <Demosis.name value="Demosis" />

@@ -784,14 +784,14 @@
     <Housing.name ref="Objects/Housing1" />
     <Housing.tooltip value="Didina maksimalų gyventojų kiekį" />
     <Housing.about>
-      <p>Šiuose bokštuose gyvena mūsų kariai ir tankų, bei laivų įgulos.</p>
-      <p>Jeigu nebeturi laisvos gyvenamos vietos, tu negali statyti daugiau 
-      armijos.</p>
+      <p>Šiuose bokštuose gyvena mūsų kariai ir tankų, bei laivų įgulos. Jeigu 
+      tau trūksta laisvos gyvenamos vietos ir negali statyti daugiau 
+      armijos, statyk arba tobulink šiuos bokštus.</p>
     </Housing.about>
 
-    <ResourceTransporter.name ref="Objects/ResourceTransporter1" /> <!-- <ResourceTransporter1 value="TODO: Resource transporter" /> -->
+<!--    <ResourceTransporter.name ref="Objects/ResourceTransporter1" />  <ResourceTransporter1 value="TODO: Resource transporter" /> 
     <ResourceTransporter.tooltip value="Transports resources between planets" />
-    <ResourceTransporter.about value="Teleport resources with this one" />
+    <ResourceTransporter.about value="Teleport resources with this one" />-->
 
     <Headquarters.name ref="Objects/Headquarters1" />
     <Headquarters.about>
@@ -1067,9 +1067,9 @@
 
   <General>
     <days.short value="d." />
-    <hours.short value="val." />
-    <minutes.short value="min." />
-    <seconds.short value="sek." />
+    <hours.short value="v." />
+    <minutes.short value="m." />
+    <seconds.short value="s." />
     <day.long value="diena" />
     <hour.long value="valanda" />
     <message.actionCanceled>
@@ -1092,7 +1092,8 @@
     <resource value="Resursas" />
     <tableTitle value="Sąvybės" />
     <guns value="Ginklai" />
-    <gunProperties value="{0} sąvybės" />
+    <gunProperties value="Ginklo „{0}“ sąvybės" />
+    <damagesDealt value="Ginklo „{0}“ žala" />
     <gun.pistol value="Pistoletas" />
     <gun.machine_gun value="Automatas" />
     <gun.sniper_rifle value="CR-24 Snaiperinis Šautuvas" />
@@ -1112,7 +1113,6 @@
     <gun.plasma_spike value="Šoko patranka" />
     <gun.thor_ground value="Pūga" />
     <gun.cannon_air value="Dzeuso klasės patranka" />
-    <damagesDealt value="Žala padaryta žaidėjo {0}" />
     <armorType value="Šarvų tipas" />
     <damageInPercent value="Procentai" />
     <damage value="Žala" />
@@ -2879,23 +2879,23 @@
       <p>[reference:Zetium.common]</p>
     </ZetiumExtraction.about>
 
-    <Spy.name ref="Objects/Spy1" /> <!-- <Spy1 value="Spy" /> -->
+<!--    <Spy.name ref="Objects/Spy1" />  <Spy1 value="Spy" /> 
     <Spy.about value="Just a simple spy technology" />
 
-    <Saboteur.name ref="Objects/Saboteur1" /> <!-- <Saboteur1 value="Saboteur" /> -->
+    <Saboteur.name ref="Objects/Saboteur1" />  <Saboteur1 value="Saboteur" /> 
     <Saboteur.about value="I think thisone has ability to ruin things" />
 
-    <SatteliteHacking.name ref="Objects/SatteliteHacking1" /> <!-- <SatteliteHacking1 value="Sattelite hacking" /> -->
+    <SatteliteHacking.name ref="Objects/SatteliteHacking1" />  <SatteliteHacking1 value="Sattelite hacking" /> 
     <SatteliteHacking.about>
       <p>This one will ruin any satelite if sysAdmin is not there</p>
     </SatteliteHacking.about>
 
-    <CamouflageSuits.name ref="Objects/CamouflageSuits1" /> <!-- <CamouflageSuits1 value="Camouflage suits" /> -->
+    <CamouflageSuits.name ref="Objects/CamouflageSuits1" />  <CamouflageSuits1 value="Camouflage suits" /> 
     <CamouflageSuits.about>
       <p>You can dress with this one if you go to picnic</p>
     </CamouflageSuits.about>
 
-    <TacticalReconnaissance.name ref="Objects/TacticalReconnaissance1" /> <!-- <TacticalReconnaissance1 value="Tactical reconnaissance" /> -->
+    <TacticalReconnaissance.name ref="Objects/TacticalReconnaissance1" />  <TacticalReconnaissance1 value="Tactical reconnaissance" /> 
     <TacticalReconnaissance.about>
       <p>
         This is very strage technology, it is told that ancient scientists are 
@@ -2903,11 +2903,11 @@
       </p>
     </TacticalReconnaissance.about>
 
-    <R14Charges.name ref="Objects/R14Charges1" /> <!-- <R14Charges1 value="R14 charges" /> -->
+    <R14Charges.name ref="Objects/R14Charges1" />  <R14Charges1 value="R14 charges" /> 
     <R14Charges.about value="Charge enemies with R14" />
 
-    <Spaceport.name ref="Objects/Spaceport1" /> <!-- <Spaceport1 value="Spaceport" /> -->
-    <Spaceport.about value="Fly to the sky" />
+    <Spaceport.name ref="Objects/Spaceport1" />  <Spaceport1 value="Spaceport" /> 
+    <Spaceport.about value="Fly to the sky" />-->
 
     <ArmorTech value="Ši technologija padidina šarvų stiprumą" />
     <WeaponsTech value="Ši technologija padidina ginklų stiprumą" />
@@ -2974,14 +2974,14 @@
       žalą padaromą tankui.</p>
       <p>[reference:ArmorTech] [reference:TankUpgradeTech]</p>
     </TanksArmor.about>
-
-    <ResourceTransporter.name ref="Objects/ResourceTransporter1" /> <!-- <ResourceTransporter1 value="Resource transporter" /> -->
+<!--
+    <ResourceTransporter.name ref="Objects/ResourceTransporter1" />  <ResourceTransporter1 value="Resource transporter" /> 
     <ResourceTransporter.about>
       <p>
         This technology helps you to transport resources through hyperspace 
         chanels 
       </p>
-    </ResourceTransporter.about>
+    </ResourceTransporter.about>-->
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
@@ -3214,7 +3214,7 @@
     <property.initiative value="Iniciatyva" />
     <property.volume value="Apimtis" />
     <property.storage value="Talpa" />
-    <property.move.solarSystem.hopTime value="Šuolio laikas saulės sist." />
+    <property.move.solarSystem.hopTime value="Šuolio laikas saulės sistemoje" />
     <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
     <property.population value="Populiacija" />
     
@@ -3397,10 +3397,13 @@
 
     <Thor.name ref="Objects/Thor1" />
     <Thor.about>
-      <p>Šie smarkiai šarvuoti, bet pakankamai silpnai ginkluoti laivai 
+      <p>Šie smarkiai šarvuoti, bet pakankamai silpnai ginkluoti, laivai 
       senovėje buvo naudojami kaip priekinės linijos gynybiniai laivai. Dabar 
       jie išsibarstę mažomis grupelėmis po visatą, kartu su dirakais, kuriuos
       jie vis dar saugo.</p>
+      <p>Jeigu šie laivai paklius į tavo rankas, žinok, kad jie yra vertingi 
+      dėl savo oras-žemė patrankų, kurios gali efektyviai bombarduoti
+      priešo antžemines pajėgas.</p>
     </Thor.about>
 
     <Demosis.name ref="Objects/Demosis1" />
