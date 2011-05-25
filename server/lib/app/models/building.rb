@@ -155,12 +155,12 @@ class Building < ActiveRecord::Base
     save!
   end
 
-  #THIS IS IDEA + ruby plugin
-  # it cannot find most of my stuff even if it's there...
-
   def activate
     raise GameLogicError.new("Cannot activate, not inactive for #{self}!") \
       unless inactive?
+    raise GameLogicError.new(
+      "Cannot activate building #{self} which is being upgraded!") \
+      if upgrading?
     forbid_unmanagable!
 
     self.state = STATE_ACTIVE

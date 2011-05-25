@@ -471,6 +471,12 @@ describe Building do
         Factory.build(:building, opts_inactive).activate
       end.should_not raise_error(GameLogicError)
     end
+    
+    it "should raise error if upgrading" do
+      lambda do
+        Factory.build(:building, opts_upgrading).activate
+      end.should raise_error(GameLogicError)
+    end
 
     it "should fire EventBroker::CHANGED with activated reason" do
       model = Factory.build(:building, opts_inactive)
