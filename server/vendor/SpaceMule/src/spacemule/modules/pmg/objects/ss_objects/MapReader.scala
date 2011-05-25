@@ -26,7 +26,8 @@ case class MapData(area: Area, tilesMap: AreaMap,
  */
 object MapReader {
   def parseMap(map: List[String], 
-               npcBuildingChances: List[UnitChance]): MapData = {
+               npcBuildingChances: List[UnitChance],
+               buildingLevel: Int = 1): MapData = {
     val area = Area(map(0).length() / 2, map.length)
     val tilesMap = new AreaMap(area)
     val buildings = ListBuffer[Building]()
@@ -40,7 +41,7 @@ object MapReader {
           map(row).substring(stringIndex, stringIndex + 1))
         setBuilding(buildings, buildingTiles, coord,
           map(row).substring(stringIndex + 1, stringIndex + 2),
-          npcBuildingChances)
+          npcBuildingChances, buildingLevel)
       }
     }
 
@@ -64,7 +65,6 @@ object MapReader {
       case "j" => AreaTile.Junkyard
       case "n" => AreaTile.Noxrium
       case "t" => AreaTile.Titan
-      case "w" => AreaTile.Water
       case _ => error("Unknown map signature " + char)
     }
 
@@ -77,7 +77,8 @@ object MapReader {
                           buildingTiles: HashSet[Coords],
                           coord: Coords,
                           char: String,
-                          chances: List[UnitChance]) = {
+                          chances: List[UnitChance],
+                          level: Int) = {
     val name = char.toLowerCase match {
       case " " | "-" => null
       case "m" => Building.Mothership
@@ -101,7 +102,7 @@ object MapReader {
     }
 
     if (name != null) {
-      val building = Building.create(name, coord.x, coord.y)
+      val building = Building.create(name, coord.x, coord.y, level)
       if (building.isInstanceOf[Npc]) {
         val npc = building.asInstanceOf[Npc]
         npc.createUnits(chances)

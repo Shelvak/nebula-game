@@ -9,14 +9,6 @@ import spacemule.modules.pmg.objects.SSObject
 import spacemule.modules.config.objects.Config
 import spacemule.persistence.DB
 
-/**
- * Created by IntelliJ IDEA.
- * User: arturas
- * Date: Oct 17, 2010
- * Time: 4:51:25 PM
- * To change this template use File | Settings | File Templates.
- */
-
 object SSObjectRow {
   val columns = "`id`, `type`, `solar_system_id`, `angle`, `position`," +
           "`width`, `height`, `terrain`, `player_id`, `name`, `size`, " +
@@ -54,6 +46,10 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
     case _ => DB.loadInFileNull
   }
   val name = ssObject match {
+    case bgPlanet: MiniBgPlanet => "%s-%d".format(
+        BgPlanet.Names.wrapped(bgPlanet.index),
+        id
+    )
     case bgPlanet: BgPlanet => BgPlanet.Names.wrapped(bgPlanet.index)
     case planet: Planet => "P-%d".format(id)
     case _ => DB.loadInFileNull

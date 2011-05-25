@@ -1,4 +1,6 @@
-require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
+require File.expand_path(
+  File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
+)
 
 describe Building::ConstructorTest do
   it "should respond to construction_queue_entries" do

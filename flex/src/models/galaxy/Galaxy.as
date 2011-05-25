@@ -75,7 +75,7 @@ package models.galaxy
       private var _solarSystems:ListCollectionView;
       private function filterFunction_solarSystems(ss:SolarSystem) : Boolean
       {
-         return !ss.wormhole;
+         return !ss.isWormhole;
       }
       [Bindable(event="willNotChange")]
       /**
@@ -95,7 +95,7 @@ package models.galaxy
       private var _wormholes:ListCollectionView;
       private function filterFunction_wormholes(ss:SolarSystem) : Boolean
       {
-         return ss.wormhole;
+         return ss.isWormhole;
       }
       [Bindable(event="willNotChange")]
       /**
@@ -124,7 +124,7 @@ package models.galaxy
                return ss.id == ssId;
             }
          );
-         return ss != null && ss.wormhole;
+         return ss != null && ss.isWormhole;
       }
       
       

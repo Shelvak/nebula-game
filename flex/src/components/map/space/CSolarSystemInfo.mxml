@@ -22,6 +22,14 @@
          }
          
          
+         private function getBtnOpenLabel(ss:SolarSystem) : String
+         {
+            return ss.isWormhole ?
+               getString("label.openWormhole") :
+               getString("label.openSolarSystem");
+         }
+         
+         
          private function btnOpen_clickHandler(event:MouseEvent):void
          {
             SolarSystem(staticObject).navigateTo();
@@ -62,9 +70,7 @@
                width="{MSSObject.IMAGE_WIDTH}"
                lineBreak="toFit"
                textAlign="center"/>
-   <s:Button id="btnOpen" label="{SolarSystem(staticObject).wormhole ?
-                                       getString('label.openWormhole') :
-                                       getString('label.openSolarSystem')}"
+   <s:Button id="btnOpen" label="{getBtnOpenLabel(SolarSystem(staticObject))}"
              visible="{SolarSystem(staticObject).isNavigable}"
              includeInLayout="{SolarSystem(staticObject).isNavigable}"
              click="btnOpen_clickHandler(event)"/>

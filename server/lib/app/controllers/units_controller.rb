@@ -177,7 +177,6 @@ class UnitsController < GenericController
   # Response: None
   #
   def action_move
-    params['speed_modifier'] ||= 1 # TODO: remove when client gets fixed.
     param_options :required => %w{unit_ids source target avoid_npc
       speed_modifier}
 

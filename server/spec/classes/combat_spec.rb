@@ -438,7 +438,7 @@ describe Combat do
       location_container = nil
       @dsl = CombatDsl.new do
         location_container = location(:planet) do
-          buildings { thunder :hp => 10 }
+          buildings { thunder :hp => 6 }
         end
         player(:planet_owner => true)
         player = self.player do

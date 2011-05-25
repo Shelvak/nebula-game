@@ -98,8 +98,7 @@ describe SolarSystemsController do
     end
 
     it "should return battleground if we requested to view a wormhole" do
-      wormhole = Factory.create :solar_system, :galaxy => player.galaxy,
-        :wormhole => true
+      wormhole = Factory.create :wormhole, :galaxy => player.galaxy
       Factory.create :fse_player, :solar_system => wormhole,
         :player => player
       battleground = Factory.create(:solar_system, :galaxy => player.galaxy,

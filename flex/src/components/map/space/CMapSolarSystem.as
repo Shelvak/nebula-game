@@ -71,7 +71,7 @@ package components.map.space
        */
       public static function screenShowHandler() : void
       {
-         if (ModelLocator.getInstance().latestSolarSystem.isBattleground)
+         if (ModelLocator.getInstance().latestSolarSystem.isGlobalBattleground)
          {
             Messenger.show(Localizer.string("SSObjects", "message.battleground"), Messenger.VERY_LONG, 
                'http://nebula44.com/info/battleground');

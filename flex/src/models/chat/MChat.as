@@ -686,7 +686,7 @@ package models.chat
          if (channel == null)
          {
             // Not a critical error here I suppose.
-            Log.getLogger(className).warn(
+            Log.getLogger(Objects.getClassName(this, true)).warn(
                "closePrivateChannel() is unable to find channel with name '{0}'. Returning.",
                channelName
             );
@@ -943,7 +943,7 @@ package models.chat
              * This is probably not crtitical error since MChatChannel.messageSendFailure()
              * only returns message to the pool.
              */
-            Log.getLogger(className).warn(
+            Log.getLogger(Objects.getClassName(this, true)).warn(
                "messageSendFailure({0}) did not find channel '{1}'. Unable to call " +
                "MChatChannel.messageSendFailure(). Returning MChatMessage to MChat.messagePool.",
                message, message.channel

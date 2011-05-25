@@ -22,7 +22,7 @@ object Runner extends BenchmarkableMock {
 
       val battleground = benchmark("create battleground") { 
         () =>
-        val battleground = new Battleground(galaxyRow.id)
+        val battleground = new Battleground()
         battleground.createObjects()
         battleground
       }
@@ -31,6 +31,7 @@ object Runner extends BenchmarkableMock {
         Manager.save { () =>
           Manager.galaxies += galaxyRow.values
           Manager.readBattleground(
+            galaxyRow.id,
             new Galaxy(galaxyRow.id, ruleset),
             battleground
           )

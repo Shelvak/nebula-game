@@ -10,4 +10,5 @@ import spacemule.modules.pmg.objects.planet.Building
  * To change this template use File | Settings | File Templates.
  */
 
-class Player(name: String, x: Int, y: Int) extends Building(name, x, y)
+class Player(name: String, x: Int, y: Int, level: Int) 
+extends Building(name, x, y, level)

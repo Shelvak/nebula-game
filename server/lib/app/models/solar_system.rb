@@ -6,6 +6,13 @@ class SolarSystem < ActiveRecord::Base
   include Parts::Shieldable
   include Zone
 
+  # Regular kind of solar system
+  KIND_NORMAL = 0
+  # Wormhole solar system
+  KIND_WORMHOLE = 1
+  # Battleground solar system
+  KIND_BATTLEGROUND = 2
+
   # Foreign keys take care of the destruction
   has_many :ss_objects
   has_many :planets, :class_name => "SsObject::Planet"
@@ -33,8 +40,11 @@ class SolarSystem < ActiveRecord::Base
     where(:galaxy_id => galaxy_id, :x => nil, :y => nil).first
   end
 
-  # Is this solar system a battleground?
-  def battleground?; x.nil? && y.nil?; end
+  # Is this solar system a global battleground?
+  def main_battleground?; x.nil? && y.nil?; end
+  
+  def battleground?; kind == KIND_BATTLEGROUND; end
+  def wormhole?; kind == KIND_WORMHOLE; end
 
   # Return +SolarSystemPoint+s where NPC units are standing.
   def npc_unit_locations
@@ -71,7 +81,7 @@ class SolarSystem < ActiveRecord::Base
       :conditions => {:id => solar_system_entries.keys}
     ).map do |solar_system|
       entries = solar_system_entries[solar_system.id]
-      
+
       {
         :solar_system => solar_system,
         :metadata => FowSsEntry.merge_metadata(
@@ -112,18 +122,12 @@ class SolarSystem < ActiveRecord::Base
     FowSsEntry.observer_player_ids(id)
   end
 
-  # Returns random jumpgate for solar system with given _id_.
-  def self.rand_jumpgate(id)
-    SsObject::Jumpgate.find(:first, :conditions => {:solar_system_id => id},
-      :order => "RAND()")
-  end
-
   def as_json(options=nil)
     hash = defined?(super) ? super(options) : {}
     hash["id"] = id
     hash["x"] = x
     hash["y"] = y
-    hash["wormhole"] = true if wormhole?
+    hash["kind"] = kind
     hash
   end
 

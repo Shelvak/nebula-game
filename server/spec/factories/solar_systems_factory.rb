@@ -7,8 +7,9 @@ end
 Factory.define :battleground, :parent => :solar_system do |m|
   m.x nil
   m.y nil
+  m.kind SolarSystem::KIND_BATTLEGROUND
 end
 
 Factory.define :wormhole, :parent => :solar_system do |m|
-  m.wormhole true
+  m.kind SolarSystem::KIND_WORMHOLE
 end

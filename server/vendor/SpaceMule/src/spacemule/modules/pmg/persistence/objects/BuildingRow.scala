@@ -25,7 +25,7 @@ case class BuildingRow(planetRow: SSObjectRow, building: Building) {
     building.y,
     building.xEnd,
     building.yEnd,
-    0, 0, 0, 0, 1,
+    0, 0, 0, 0, building.level,
     Config.buildingHp(building),
     BuildingRow.StateActive
   )

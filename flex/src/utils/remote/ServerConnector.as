@@ -11,7 +11,11 @@ package utils.remote
    import flash.events.SecurityErrorEvent;
    import flash.net.Socket;
    
+   import mx.logging.ILogger;
+   import mx.logging.Log;
+   
    import utils.DateUtil;
+   import utils.Objects;
    import utils.remote.events.ServerProxyEvent;
    import utils.remote.rmo.*;
    
@@ -58,6 +62,12 @@ package utils.remote
        * How many messages are stored in <code>communicationHistory</code> array.
        */
       private static const HISTORY_SIZE:int = 20;
+      
+      
+      private function get LOG() : ILogger
+      {
+         return Log.getLogger(Objects.getClassName(this, true));
+      }
       
       
       private var _socket: Socket = new Socket ();
@@ -127,7 +137,7 @@ package utils.remote
          while (index != -1)
          {
             var msg:String = _buffer.substring(0, index);
-            addHistoryRecord(" ~->| Incoming message: " + msg);
+            LOG.info(" ~->| Incoming message: {0}", msg);
             var rmo:ServerRMO = ServerRMO.parse(msg);
             DateUtil.updateTimeDiff(rmo.id, new Date());
             _unprocessedMessages.push(rmo);
@@ -139,7 +149,7 @@ package utils.remote
       
       private function socket_ioErrorHandler(event:IOErrorEvent) : void
       {
-         trace(event.text);
+         LOG.error(event.text);
          dispatchIOErrorEvent();
       }
       
@@ -154,7 +164,7 @@ package utils.remote
          // Apparently the famous #2048 error is thrown every time connection is closed so just ignore it.
          else
          {
-            trace("Expected security error after disconnect: " + event.text);
+            LOG.debug("Expected security error after disconnect: {0}", event.text);
          }
       }
       
@@ -167,26 +177,6 @@ package utils.remote
       public function get connected() : Boolean
       {
          return _socket.connected;
-      }
-      
-      
-      private var _communicationHistory:Vector.<String> = new Vector.<String>();
-      public function get communicationHistory() : Vector.<String>
-      {
-         return _communicationHistory;
-      }
-      private function addHistoryRecord(value:String) : void
-      {
-         trace(value);
-         if (value.indexOf(GameCommand.CONFIG) >= 0)
-         {
-            return;
-         }
-         _communicationHistory.push(value);
-         if (_communicationHistory.length > HISTORY_SIZE)
-         {
-            _communicationHistory.shift();
-         }
       }
       
       
@@ -217,7 +207,6 @@ package utils.remote
       
       public function reset() : void
       {
-         _communicationHistory.splice(0, _communicationHistory.length);
       }
       
       
@@ -226,7 +215,7 @@ package utils.remote
          if (_socket.connected)
          {
             var msg:String = rmo.toJSON();
-            addHistoryRecord("<-~ | Outgoing message: " + msg);
+            LOG.info("<-~ | Outgoing message: {0}", msg);
             _socket.writeUTFBytes(msg + "\n");
             _socket.flush();
          }

@@ -22,10 +22,14 @@ class FowSsEntry < ActiveRecord::Base
     # Returns +Player+ ids that observe _solar_system_id_.
     def observer_player_ids(solar_system_id)
       solar_system = SolarSystem.find(solar_system_id)
-      if solar_system.battleground?
+      if solar_system.main_battleground?
         ss_table = SolarSystem.table_name
-        super(SolarSystem.sanitize_sql_for_conditions(:wormhole => true),
-          "LEFT JOIN `#{ss_table}` ON `#{ss_table}`.`id`=`solar_system_id`")
+        super(
+          SolarSystem.sanitize_sql_for_conditions(
+            :kind => SolarSystem::KIND_WORMHOLE
+          ),
+          "LEFT JOIN `#{ss_table}` ON `#{ss_table}`.`id`=`solar_system_id`"
+        )
       else
         super(
           sanitize_sql_for_conditions(:solar_system_id => solar_system_id)

@@ -13,7 +13,8 @@ import spacemule.modules.config.objects.Config
  * To change this template use File | Settings | File Templates.
  */
 
-class Npc(name: String, x: Int, y: Int) extends Building(name, x, y) {
+class Npc(name: String, x: Int, y: Int, level: Int) 
+extends Building(name, x, y, level) {
   override val importance = Config.npcBuildingImportance(this)
 
   def createUnits(chances: List[UnitChance]) {

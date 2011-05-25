@@ -15,10 +15,12 @@ package models.technology
    import models.parts.Requirement;
    import models.parts.TechnologyUpgradable;
    import models.parts.Upgradable;
-   import models.parts.UpgradableType;
    import models.parts.events.UpgradeEvent;
    
+   import mx.logging.Log;
+   
    import utils.DateUtil;
+   import utils.Objects;
    import utils.locale.Localizer;
    
    
@@ -183,7 +185,8 @@ package models.technology
                THIS IS TEMPORARY AND NEEDS TO BE CHANGED
                2011.03.01
                */
-               trace('Technology',requirement,'not found in config!');
+               Log.getLogger(Objects.getClassName(Technology, true))
+                  .warn("Technology {0} not found in config!", requirement);
                return false;
             }
             if (requirements[requirement].invert)        

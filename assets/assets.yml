@@ -171,14 +171,11 @@ assets:
         wormhole.png: 
           wiki_name: Wormhole.png
           "flex": {save_as: "swf:png"}
+        battleground.png: BattlegroundSun.png
         galaxy.png: Galaxy.png
-        background.jpg: 
-          wiki_name: GalaxyBackground.jpg
-          iphone: {pp_opts: "-resize 256x256"}
+        background.jpg: GalaxyBackground.jpg
         <% CONFIG["ui.solar_system.variations"].times do |i| %>
-        <%= i.to_s %>.png:
-          wiki_name: SolarSystem<%= i %>.png
-          iphone: {pp_opts: "-resize 64x64"}
+        <%= i.to_s %>.png: SolarSystem<%= i %>.png
         <% end %>
       "status_icons":
         <% %w{player alliance enemy nap}.each do |type| %>

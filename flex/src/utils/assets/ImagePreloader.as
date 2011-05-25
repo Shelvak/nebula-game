@@ -4,6 +4,7 @@ package utils.assets
    
    import config.Config;
    
+   import controllers.startup.StartupInfo;
    import controllers.startup.StartupMode;
    
    import flash.display.BitmapData;
@@ -56,6 +57,12 @@ package utils.assets
     */ 
    public final class ImagePreloader extends EventDispatcher
    {
+      private function get STARTUP_INFO() : StartupInfo
+      {
+         return StartupInfo.getInstance();
+      }
+      
+      
       /**
        * @return instance of <code>ImagePreloader</code> for application wide use.
        */
@@ -150,7 +157,7 @@ package utils.assets
       
       private function getModules() : Array
       {
-         if (ModelLocator.getInstance().startupInfo.mode == StartupMode.GAME)
+         if (STARTUP_INFO.mode == StartupMode.GAME)
          {
             return AssetsBundle.getGameModules();
          }

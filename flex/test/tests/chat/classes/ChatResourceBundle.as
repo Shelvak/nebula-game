@@ -2,6 +2,8 @@ package tests.chat.classes
 {
    import mx.resources.IResourceBundle;
    
+   import utils.locale.Locale;
+   
    
    public class ChatResourceBundle implements IResourceBundle
    {
@@ -33,7 +35,7 @@ package tests.chat.classes
       
       public function get locale() : String
       {
-         return "en_US";
+         return Locale.EN;
       }
    }
 }

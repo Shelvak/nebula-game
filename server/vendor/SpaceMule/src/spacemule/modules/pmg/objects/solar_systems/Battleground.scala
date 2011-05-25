@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package spacemule.modules.pmg.objects.solar_systems
 
 import spacemule.helpers.Converters._
@@ -18,14 +13,13 @@ import spacemule.modules.pmg.objects.ss_objects.RichAsteroid
 /**
  * Solar system in which most battles happen.
  */
-class Battleground(val galaxyId: Int) extends SolarSystem {
+class Battleground extends SolarSystem {
   override def createPlanets() = {
     Config.battlegroundPlanetPositions.foreachWithIndex {
-      case (coords, index) => {
-          val planet = new BgPlanet(index)
-          planet.createOrbitUnits(orbitUnits(planet))
-          initializeAndAdd(planet, coords)
-      }
+      case (coords, index) => 
+        val planet = new BgPlanet(index)
+        planet.createOrbitUnits(orbitUnits(planet))
+        initializeAndAdd(planet, coords)
     }
   }
 
