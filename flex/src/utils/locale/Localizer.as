@@ -125,8 +125,10 @@ package utils.locale
                   parameters.length + " were provided. The string to pluralize was: " + str
                );
             }
-            var useNumber:Number = parameters[paramIndex];
-            var useForm:String = getPluralForm(locale, useNumber);
+            var parameter:* = parameters[paramIndex];
+            var useForm:String = (parameter is Number) 
+               ? getPluralForm(locale, parameter as Number)
+               : parameter;
             var forms:String = paramPatternResult[2];
             
             // look for required form and construct parameter replacement
@@ -138,7 +140,7 @@ package utils.locale
                var formData:String = formPatternResult[2];
                if (form == useForm)
                {
-                  matchedParamRepl = com.adobe.utils.StringUtil.replace(formData, "?", useNumber.toString());
+                  matchedParamRepl = com.adobe.utils.StringUtil.replace(formData, "?", parameter.toString());
                   break;
                }
             }
@@ -148,7 +150,7 @@ package utils.locale
                // we didn't find a required plural form
                throw new Error(
                   "Plural form '" + useForm + "' not found in parameter " + matchedParamStr +
-                  " for number " + useNumber + ". The string to pluralize was: " + str
+                  " for parameter " + parameter + ". The string to pluralize was: " + str
                );
             }
             str = com.adobe.utils.StringUtil.replace(str, matchedParamStr, matchedParamRepl);
