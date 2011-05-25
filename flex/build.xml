@@ -53,6 +53,12 @@
         <include name="*.swc" />
       </library-path>
 
+      <!-- Needed for binding -->
+      <keep-as3-metadata name="Bindable" />
+      <keep-as3-metadata name="Managed" />
+      <keep-as3-metadata name="ChangeEvent" />
+      <keep-as3-metadata name="NonCommittingChangeEvent" />
+      <keep-as3-metadata name="Transient" />
       <!-- Needed for nebula -->
       <keep-as3-metadata name="Required" />
       <keep-as3-metadata name="Optional" />

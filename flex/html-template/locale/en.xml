@@ -224,7 +224,7 @@
     <status value="Status" />
     <constructing value="Constructing" />
     <upgrading value="Upgrading" />
-    <rates value="Rates" />
+    <rates value="Inactive building" />
     <storage value="Storage" />
     <activate value="Activate" />
     <deactivate value="Deactivate" />
@@ -2578,7 +2578,13 @@
   </Resources>
 
   <SSObjects>
-    <title.info value="{0} info" />
+    <title.info 
+      value="{0 planet[Planet] jumpgate[Jumpgate] asteroid[Asteroid]} info" />
+    <!-- TODO: fix code -->
+    <type.Planet value="planet" />
+    <type.Jumpgate value="jumpgate" />
+    <type.Asteroid value="asteroid" />
+    
     <label.owner value="Occupied by" />
     <label.inviteToAlliance value="Invite owner to alliance"/>
     <label.unoccupied value="Unoccupied" />
@@ -2586,9 +2592,6 @@
     <label.toGalaxy value="Go to galaxy" />
     <label.endsAt value="Ends at {0}" />
     <label.cooldownEndsIn value="Ends in" />
-    <type.Planet value="Planet" />
-    <type.Jumpgate value="Jumpgate" />
-    <type.Asteroid value="Asteroid" />
     <location.sector value="Sector {0}:{1}" />
     <location.position value="Orbit" />
     <location.angle value="Angle" />

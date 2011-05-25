@@ -373,7 +373,7 @@
     <constructing value="Konstruoja" />
     <upgrading value="Tobulinama" />
     
-    <rates value="Greičiai" />
+    <rates value="Neaktyvus pastatas" />
     <storage value="Talpyklos" />
     <activate value="Aktyvuoti" />
     <deactivate value="Deaktyvuoti" />
@@ -454,7 +454,7 @@
   <Buildings>
     <property.hp value="Gyvybės Taškai" />
     <property.timeToFinish.short value="{0}" />
-    <property.timeToFinish.long value="Baigta už {0}" />
+    <property.timeToFinish.long value="Baigs už {0}" />
     <property.radar.strength value="Radaro stiprumas" />
     <property.scientists value="Mokslininkai" />
     <property.upgradeTime value="Tobulinimo laikas" />
@@ -2716,12 +2716,12 @@
     <player value="Žaidėjas" />
     <alliance value="Sąjunga" />
     <points value="Viso taškų" />
-    <planetsCount value="Planetų" />
-    <warPoints value="Karo taškų" />
-    <economyPoints value="Ekonomijos taškų" />
-    <sciencePoints value="Mokslo taškų" />
-    <victoryPoints value="Pergalės taškų" />
-    <armyPoints value="Kariuomenės taškų" />
+    <planetsCount value="Planetos" />
+    <warPoints value="Karo taškai" />
+    <economyPoints value="Ekonomijos taškai" />
+    <sciencePoints value="Mokslo taškai" />
+    <victoryPoints value="Pergalės taškai" />
+    <armyPoints value="Kariuomenės taškai" />
     <online value="prisijungęs" />
     <offline value="atsijungęs" />
     <label.search value="Paieška" />
@@ -2754,16 +2754,20 @@
   </Resources>
 
   <SSObjects>
-    <title.info value="{0} informacija" />
+    <!-- {0}: planet/jumpgate/asteroid -->
+    <title.info 
+      value="{0 planet[Planetos] jumpgate[Šuolio vartų] asteroid[Asteroido]} informacija" />
+    <!-- TODO: fix code -->
+    <type.Planet value="planet" />
+    <type.Jumpgate value="jumpgate" />
+    <type.Asteroid value="asteroid" />
+    
     <label.owner value="Užimta" />
     <label.unoccupied value="Neužimta" />
     <label.toPlanet value="Įeiti į planetą" />
     <label.toGalaxy value="Eiti į galaktiką" />
     <label.endsAt value="Baigiasi {0}" />
     <label.cooldownEndsIn value="Baigiasi už" />
-    <type.Planet value="Planeta" />
-    <type.Jumpgate value="Šuolio vartai" />
-    <type.Asteroid value="Asteroidas" />
     <location.sector value="Sektorius {0}:{1}" />
     <location.position value="Orbita" />
     <location.angle value="Kampas" />
