@@ -1,5 +1,6 @@
 package models.objectives
 {
+   import utils.ObjectFormType;
    import utils.ObjectStringsResolver;
    import utils.locale.Localizer;
 
@@ -14,8 +15,8 @@ package models.objectives
       {         
          return Localizer.string('Objectives', 'objectiveText.'+
             objective.type+objective.key,
-            [objective.count,
-               ObjectStringsResolver.getString('Time', objective.count)]);
+            [ObjectStringsResolver.getString('Time', 
+                  ObjectFormType.WHAT, objective.count)]);
       }
    }
 }

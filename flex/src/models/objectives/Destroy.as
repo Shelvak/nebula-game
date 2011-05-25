@@ -15,14 +15,13 @@ package models.objectives
       
       public override function get objectiveText():String
       {
+         var classOnly: Boolean = objective.key.indexOf(
+            ModelUtil.MODEL_SUBCLASS_SEPARATOR) == -1;
+         var klass: String = ModelUtil.getModelClass(objective.key);
          return Localizer.string('Objectives', 'objectiveText.'+objective.type, 
-            [ObjectStringsResolver.getString(
-               (objective.key.indexOf(ModelUtil.MODEL_SUBCLASS_SEPARATOR) != -1
-               ? ModelUtil.getModelSubclass(objective.key)
-               : objective.key), objective.count), 
-            objective.count, (objective.level > 1
-               ? ' '+Localizer.string('Objectives','level',[objective.level])
-               : '')]);
+            [ObjectStringsResolver.getString(classOnly ? objective.key
+               : ModelUtil.getModelSubclass(objective.key), ObjectFormType.WHAT,
+               objective.count), objective.level]);
       }
    }
 }
