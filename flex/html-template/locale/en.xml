@@ -289,7 +289,7 @@
 
     <deselectButtonText value="deselect building" />
 
-    <noFacilities value="There is no facilities available" />
+    <noFacilities value="There are no facilities available." />
     <disabled value="Not enough resources" />
     <queueFull value="Contruction queue full for this constructor" />
 
@@ -777,15 +777,13 @@
   <Credits>
     <label.accelerate value="Accelerate" />
     <message.vipOrdered value="VIP ordered successfully" />
-    <title.becomeVIP value="Become A VIP" />
+    <title.becomeVIP value="Become a VIP" />
     <label.becomeVIP>
       <p>
         Becoming a VIP grants you daily creds you can spend 
         on anything you like.
       </p>
-      <p>
-        Also we're giving you more than you have paid for!
-      </p>
+      <p>Also you get more than you have paid for!</p>
     </label.becomeVIP>
     <warning.becomeVIP>
       <![CDATA[
@@ -834,18 +832,25 @@
     </label.movePrice> 
     <label.boostCost> 
       <![CDATA[
-      <p>It would cost you <span fontWeight="bold">{0} creds</span>.</p>
+      <p>It would cost you <span fontWeight="bold">
+        {0 one[cred] many[? creds]}</span>.</p>
       ]]>
     </label.boostCost>
+    <!-- {0}: metal/energy/zetium
+         {1}: rate/storage
+         {2}: int
+         {3}: short time (3m) -->
     <label.boostInactive>
       <![CDATA[
-      <p>You can boost this planets <span fontWeight="bold">{0} {1}</span> 
+      <p>You can boost this planets <span fontWeight="bold">
+        {0} {1 rate[extraction rate] storage[storage]}</span> 
       by <span fontWeight="bold">{2}%</span> for 
       <span fontWeight="bold">{3}</span>.</p> 
       ]]>
     </label.boostInactive>
     <label.boostActive1> 
-      <p>You have your {0} {1} boosted by {2}% for</p> 
+      <p>You have your {0} {1 rate[extraction rate] storage[storage]} boosted 
+      by {2}% for</p> 
     </label.boostActive1>
     <label.boostActive2> 
       <p>You can increase this time by {0}.</p>
@@ -858,9 +863,7 @@
          To destroy this building before cooldown ends you need to pay
        </p>
        <p />
-       <p>
-        <span fontWeight="bold">{0} creds</span>
-       </p>
+       <p><span fontWeight="bold">{0} creds</span></p>
       ]]>
     </label.destructPrice>
     <label.notEnough>

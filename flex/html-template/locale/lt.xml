@@ -251,9 +251,9 @@
     <ResearchCenter10 value="Tyrimų centrų" />
     <ResearchCenter2 value="Tyrimų centrai" />
 
-    <Housing1 value="Gyvenamieji bokštai" />
-    <Housing10 value="Gyvenamųjų bokštų" />
-    <Housing2 value="Gyvenamieji bokštai" />
+    <Housing1 value="Gyv. bokštai" />
+    <Housing10 value="Gyv. bokštų" />
+    <Housing2 value="Gyv. bokštai" />
     
     <HealingCenter1 value="Techninė ligoninė" />
     <HealingCenter10 value="Techninių ligoninių" />
@@ -432,12 +432,12 @@
     <infoTitle value="Statymo informacija" />
     <applicable value="Įtakojantys:" />
     <notApplicable value="Nesvarbūs:" />
-    <pressEsc value="Spausk ESC kad atžymėtum" />
+    <pressEsc value="Spausk ESC klavišą, jog atžymėtum savo pasirinkimą" />
     <notYourPlanet value="Ši planeta tau nepriklauso!" />
 
     <deselectButtonText value="atžymėti pastatą" />
 
-    <noFacilities value="Nėra statančių pastatų" />
+    <noFacilities value="Nėra statančių pastatų." />
     <disabled value="Neužtenka resursų" />
     <queueFull value="Šio pastato statymo eilė pilna" />
 
@@ -632,7 +632,7 @@
     </MetalStorage.about>
 
     <CollectorT1.name ref="Objects/CollectorT11" />
-    <CollectorT1.tooltip value="Išgauną energiją" />
+    <CollectorT1.tooltip value="Gamina energiją" />
     <CollectorT1.common>
       <p>
         Šios vėjo jėgainės naudojamos užtikrinti pagrindinius energijos 
@@ -924,19 +924,91 @@
 
   <Credits>
     <label.accelerate value="Paspartinti" />
-    <label.vip value="VIP" />
-    <label.whouldFinish value="Tobulinimas baigtusi" />
-    <label.selectAccelerate value="Pasirink paspartinimą" />
-    <label.creds value="kredai" />
+    <message.vipOrdered value="VIP sėkmingai užsakytas" />
+    <title.becomeVIP value="Tapk VIP" />
+    <label.becomeVIP>
+      <p>Tapimas VIP nariu tau suteikia VIP dienpinigių, kuriuos gali 
+      išleisti kur tik nori. Ir jų gauni daugiau, negu sumokėjai!</p>
+    </label.becomeVIP>
+    <warning.becomeVIP>
+      <![CDATA[
+      <p>Atkreipk dėmėsį, kad geriausia yra išleisti visus dienos 
+      VIP kredus.</p>
+      <p/>
+      <p><span fontSize="10">Neišleisti kredai nėra perkeliami į kitą dieną.
+      Kita diena prasideda po 24 valandų nuo tavo VIP narystės 
+      pradžios.</span></p>
+      ]]>
+    </warning.becomeVIP>
+    <tab.select value="Pasirinkti" />
+    <tab.vipLevel value="VIP lygis" />
+    <tab.cost value="Kaina" />
+    <tab.dailyCreds value="Kredų per dieną" />
+    <tab.duration value="Trukmė" />
+    <tab.totalCreds value="Iš viso gauni" />
+    <label.totalCreds>
+      <![CDATA[
+      <p>
+        {0} * {1} = {2} <span fontWeight="bold" color="#eec500">
+        ({3 one[? kartą] tens[? kartų] many[? kartus]} daugiau!)</span>
+      </p>
+      ]]>
+    </label.totalCreds>
+    <label.vipCreds value="VIP kredai" />
+    <label.nextVipTick value="VIP diena už" />
+    <tooltip.nextVipTick>
+      <p>Laikas, kai tavo VIP kredai bus vėl užpildyti.</p>
+    </tooltip.nextVipTick>
+    <label.vipEndsIn value="VIP baigsis už" />
+    <label.whouldFinish value="Patobulinimas baigsis už" />
+    <label.selectAccelerate value="Pasirink pagreitinimą" />
+    <label.creds value="kredų" />
+    <label.waitingCreds value="Laukiama kredų..." />
     <label.instant value="Iš karto" />
     <label.confirm value="Patvirtinti" />
+    <label.cancel value="Atšaukti" />
+    <label.order value="Užsakyti" />
     <label.buy value="Pirkti kredus" />
     <label.move value="Perkelti" />
+    <!-- TODO: fix in code. Pass rate/storage strings instead of these. -->
+    <rate value="rate" />
+    <storage value="storage" />
     <label.movePrice>
       <p>Šio pastato perkėlimas tau kainuotų 
-      {0 one[? kredą] tens[? kredų] many[? kredus]}"</p>      
-    </label.movePrice>
-    <label.destructPrice><![CDATA[
+      {0 one[? kredą] tens[? kredų] many[? kredus]}.</p> 
+    </label.movePrice> 
+    <label.boostCost> 
+      <![CDATA[
+      <p>Tai tau kainuotų <span fontWeight="bold">
+        {0 one[? kredą] tens[? kredų] many[? kredus]}</span>.</p>
+      ]]>
+    </label.boostCost>
+    <!-- {0}: metal/energy/zetium
+         {1}: rate/storage
+         {2}: int
+         {3}: short time (3m) -->
+    <label.boostInactive>
+      <![CDATA[
+      <p>Tu gali padidinti šios planetos <span fontWeight="bold">
+        {0 metal[metalo] energy[energijos] zetium[zetiumo]} 
+        {1 rate[išgavimo greitį] storage[talpą]}</span> 
+      <span fontWeight="bold">{2}%</span> 
+      <span fontWeight="bold">{3}</span>.</p> 
+      ]]>
+    </label.boostInactive>
+    <!-- {0} - metal/energy/zetium
+         {1} - rate/storage 
+         {2} - int -->
+    <label.boostActive1> 
+      <p>Tavo {0 metal[metalo] energy[energijos] zetium[zetiumo]} 
+        {1 rate[išgavimo greitis] storage[talpa]} yra padidinta {2}%</p> 
+    </label.boostActive1>
+    <!-- {0} - time (e.g. 3m) -->
+    <label.boostActive2 value="Tu gali pratęsti šį laiką {0}." /> 
+    <label.boostRate value="Padidinti greitį" />
+    <label.boostStorage value="Padidinti talpą" />
+    <label.destructPrice>
+      <![CDATA[
        <p>Šio pastato išankstinis sunaikinimas tau kainuos</p>
        <p />
        <p><span fontWeight="bold"
@@ -994,10 +1066,10 @@
   </Galaxy>
 
   <General>
-    <days.short value="d" />
-    <hours.short value="v" />
-    <minutes.short value="m" />
-    <seconds.short value="s" />
+    <days.short value="d." />
+    <hours.short value="val." />
+    <minutes.short value="min." />
+    <seconds.short value="sek." />
     <day.long value="diena" />
     <hour.long value="valanda" />
     <message.actionCanceled>
@@ -1220,7 +1292,7 @@
 
     <title.explorationFinished value="Ekspedicija grįžo" />
     <message.explorationFinished 
-      value="Ji planetoje {0} baigė savo tyrinėjimus." />
+      value="Planetoje {0} tyrinėjimai baigti." />
 
     <title.planetAnnexed.win value="Tu užkariavai planetą!" />
     <title.planetAnnexed.lose value="Tu praradai planetą!" />
@@ -3142,8 +3214,8 @@
     <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
     <property.population value="Populiacija" />
     
-    
-    <tooltip.populationLeft value="{0} population left" />
+    <tooltip.populationLeft 
+      value="{0 one[? laisvas gyventojas] tens[? laisvų gyventojų] many[? laisvi gyventojai]}" />
     
     <title.defensivePool value="Tavo gynybinis rezervas" />
     <title.emptyDefensivePool>
