@@ -1372,16 +1372,15 @@
     <level value=" level {0}" />
     <ofLevel value="of level {0}" />
     <npc value="neutral" />
-    <technology value="išrastą technologiją" />
     <enemy value="enemy" />
     <of value="of" />
     
     <!-- 0: "Subclass or class to upgrade, 
     1: count of objects to upgrade, 
-    2: "ofLevel" or "level" from Objectives or '' if less than 2 
-    3: word "Technology" from Objectives-->
+    2: "ofLevel" or "level" from Objectives or '' if less than 2-->
     <objectiveText.HaveUpgradedTo1 value="Have {1} {0}{2}" />
-    <objectiveText.HaveUpgradedTo2 value="Have {2} {0} technology researched" />
+    <objectiveText.HaveUpgradedTo1Tech value="Have {1} {0}{2}" />
+    <objectiveText.HaveUpgradedTo2Tech value="Have {2} {0} technology researched" />
 
     <!-- 0: "objectiveLvlx.UpgradeTo" from Objectives, 
     1: count of objects to upgrade 

@@ -3,9 +3,8 @@
   <Objects>
     <!-- Savi žemės unitai -->
     
-    <Trooper1 value="Desantininkas" />
-    <Trooper10 value="Desantininkų" />
-    <Trooper2 value="Desantininkai" />
+    <Trooper-What value="{0 one[? desantininką] tens[? desantininkų] many[? desantininkus]}" />
+    <Trooper-Whom value="{0 one[? desantininko] tens[? desantininkų] many[? desantininkų]}" />
 
     <Shocker1 value="Mechas" />
     <Shocker10 value="Mechų" />
@@ -928,6 +927,7 @@
     <label.whouldFinish value="Tobulinimas baigtusi" />
     <label.selectAccelerate value="Pasirink paspartinimą" />
     <label.creds value="kredai" />
+    <label.credsSum value="Iš viso kredų" />
     <label.instant value="Iš karto" />
     <label.confirm value="Patvirtinti" />
     <label.buy value="Pirkti kredus" />
@@ -1448,6 +1448,7 @@
     -->
     <objectiveText.HaveUpgradedTo1 value="Turėk {1} {2}: „{0}“" />
     <objectiveText.HaveUpgradedTo2 value="Būk išradęs {2} technologiją „{0}“" />
+    <objectiveText.HaveUpgradedToTech value="Būk išradęs {2} technologiją „{0}“" />
 
     <!-- 0: "objectiveLvlx.UpgradeTo" from Objectives, 
     1: count of objects to upgrade 
