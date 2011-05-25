@@ -5,6 +5,7 @@ package tests.models
    import models.ModelLocator;
    import models.galaxy.Galaxy;
    import models.player.Player;
+   import models.solarsystem.SSKind;
    import models.solarsystem.SolarSystem;
    
    import org.hamcrest.assertThat;
@@ -72,9 +73,9 @@ package tests.models
       public function should_not_be_cached_if_ids_do_not_match_and_both_are_not_wormholes() : void
       {
          ML.latestSolarSystem.id = 1;
-         ML.latestSolarSystem.wormhole = false;
+         ML.latestSolarSystem.kind = SSKind.NORMAL;
          ss.id = 2;
-         ss.wormhole = false;
+         ss.kind = SSKind.NORMAL;
          assertFalse();
       };
       
@@ -102,9 +103,9 @@ package tests.models
       public function should_not_be_cached_if_ids_do_not_match_and_both_are_wormholes() : void
       {
          ML.latestSolarSystem.id = 1;
-         ML.latestSolarSystem.wormhole = true;
+         ML.latestSolarSystem.kind = SSKind.WORMHOLE;
          ss.id = 2;
-         ss.wormhole = true;
+         ss.kind = SSKind.WORMHOLE;
          ML.latestGalaxy.addObject(ss);
          assertFalse();
       };
@@ -116,7 +117,7 @@ package tests.models
          ML.latestGalaxy.battlegroundId = 1;
          ML.latestSolarSystem.id = 1;
          ss.id = 2;
-         ss.wormhole = true;
+         ss.kind = SSKind.WORMHOLE;
          ML.latestGalaxy.addObject(ss);
          assertTrue();
       };

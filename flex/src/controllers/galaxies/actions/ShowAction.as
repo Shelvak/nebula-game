@@ -119,7 +119,7 @@ package controllers.galaxies.actions
             // now if we don't see any wormholes and we have a cached wormhole - invalidate
             if (!ML.latestGalaxy.hasWormholes &&
                  ML.latestSolarSystem != null &&
-                 ML.latestSolarSystem.wormhole)
+                 ML.latestSolarSystem.isWormhole)
             {
                destroyCachedSolarSystem();
             }

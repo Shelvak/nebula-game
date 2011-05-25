@@ -9,6 +9,7 @@ package controllers.players.actions
    import controllers.screens.MainAreaScreensSwitch;
    import controllers.screens.Screens;
    import controllers.screens.ScreensSwitch;
+   import controllers.startup.StartupInfo;
    
    import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
@@ -19,6 +20,12 @@ package controllers.players.actions
     */
    public class LoginAction extends CommunicationAction
    {
+      private function get STARTUP_INFO() : StartupInfo
+      {
+         return StartupInfo.getInstance();
+      }
+      
+      
       public function LoginAction()
       {
          super ();
@@ -28,8 +35,8 @@ package controllers.players.actions
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {         
          sendMessage(new ClientRMO({
-            "galaxyId":  ML.startupInfo.galaxyId,
-            "authToken": ML.startupInfo.authToken
+            "galaxyId":  STARTUP_INFO.galaxyId,
+            "authToken": STARTUP_INFO.authToken
          }));
       }
       

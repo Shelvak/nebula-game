@@ -13,6 +13,7 @@ package tests.chat.actions
    import namespaces.client_internal;
    
    import utils.SingletonFactory;
+   import utils.locale.Locale;
    import utils.pool.impl.StackObjectPoolFactory;
    
    
@@ -74,7 +75,7 @@ package tests.chat.actions
       [After]
       public function tearDown() : void
       {
-         RM.removeResourceBundlesForLocale("en_US");
+         RM.removeResourceBundlesForLocale(Locale.EN);
          
          mockRepository = null;
          SingletonFactory.clearAllSingletonInstances();
@@ -84,6 +85,9 @@ package tests.chat.actions
 
 
 import mx.resources.IResourceBundle;
+
+import utils.locale.Locale;
+
 internal class GeneralResourceBundle implements IResourceBundle
 {
    public function get bundleName() : String
@@ -94,7 +98,7 @@ internal class GeneralResourceBundle implements IResourceBundle
    
    public function get locale() : String
    {
-      return "en_US";
+      return Locale.EN;
    }
    
    

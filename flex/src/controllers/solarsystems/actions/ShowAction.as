@@ -65,9 +65,9 @@ package controllers.solarsystems.actions
          var ss:SolarSystem = SolarSystemFactory.fromObject(params.solarSystem);
          
          // destroy latest a planet if its not in the given solar system
-         if (ML.latestPlanet != null && (!ML.latestPlanet.inBattleground || !ss.isBattleground))
+         if (ML.latestPlanet != null && (!ML.latestPlanet.inBattleground || !ss.isGlobalBattleground))
          {
-            if ( !(ML.latestPlanet.inBattleground && ss.isBattleground ||
+            if ( !(ML.latestPlanet.inBattleground && ss.isGlobalBattleground ||
                    ML.latestPlanet.solarSystemId == ss.id) )
             {
                ML.latestPlanet.setFlag_destructionPending();

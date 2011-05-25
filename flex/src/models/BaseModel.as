@@ -2,7 +2,6 @@ package models
 {
    import com.adobe.errors.IllegalStateError;
    
-   import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.utils.Dictionary;
    import flash.utils.describeType;
@@ -19,9 +18,9 @@ package models
    
    import namespaces.property_name;
    
-   import utils.Objects;
    import utils.DateUtil;
    import utils.EventUtils;
+   import utils.Objects;
    import utils.TypeChecker;
    import utils.assets.ImagePreloader;
    
@@ -640,7 +639,7 @@ package models
        */
       public function get className() : String
       {
-         return getQualifiedClassName(this);
+         return Objects.getClassName(this);
       }
       
       
