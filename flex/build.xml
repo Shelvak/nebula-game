@@ -18,7 +18,6 @@
   <property name="bin.loc" location="${output.loc}/bin" />
   <property name="report.loc" location="${output.loc}/report" />
   <property name="dist.loc" location="${output.loc}/dist" />
-  <property name="assets.loc" location="${dist.loc}/assets/" />
 
   <!-- Setup Flex and FlexUnit ant tasks -->
   <!-- You can set this directly so mxmlc will work correctly, or set FLEX_HOME as an environment variable and use as below -->
@@ -147,8 +146,8 @@
       <report format="frames" todir="${report.loc}/html" />
     </junitreport>
   </target>
-
-  <target name="build" depends="compile">
+  
+  <target name="build-swf" depends="compile">
     <!-- Assemble final website -->
     <copy file="${bin.loc}/${swf.name}.swf" todir="${dist.loc}" />
     <copy todir="${dist.loc}">
@@ -194,8 +193,24 @@
         <replacetoken expandproperties="false">${version_revision}</replacetoken>
         <replacevalue expandproperties="true">${version.revision}</replacevalue>
       </replacefilter>
-    </replace>    
+    </replace>
   </target>
+  
+  <target name="build-assets">
+    <!-- Run wiki sync for the assets -->
+    <exec executable="rake"><arg value="wiki:sync" /></exec>
+
+    <!-- Copy assets -->
+    <property name="assetsdir" location="${dist.loc}/assets" />
+    <mkdir dir="${assetsdir}" />
+    <copy todir="${assetsdir}">
+      <fileset dir="${main.src.loc}/assets">
+        <include name="*.swf" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="build" depends="build-swf,build-assets" />
 
   <target name="release" depends="test,build" />
 </project>
