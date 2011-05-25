@@ -29,4 +29,5 @@ else
   REQUIRED_GEMS.push(:name => 'mysql2', :version => '>=0.2.6', :skip => true,
     :platform => nil)
   REQUIRED_DEVELOPMENT_GEMS.push("ruby-prof")
+  REQUIRED_DEVELOPMENT_GEMS.push("spork")
 end
