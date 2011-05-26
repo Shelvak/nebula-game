@@ -2578,12 +2578,12 @@
   </Resources>
 
   <SSObjects>
-    <title.info 
-      value="{0 planet[Planet] jumpgate[Jumpgate] asteroid[Asteroid]} info" />
+    <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage -->    
+    <title.info value="{0} info" />
     <!-- TODO: fix code -->
-    <type.Planet value="planet" />
-    <type.Jumpgate value="jumpgate" />
-    <type.Asteroid value="asteroid" />
+    <type.Planet value="Planet" />
+    <type.Jumpgate value="Jumpgate" />
+    <type.Asteroid value="Asteroid" />
     
     <label.owner value="Occupied by" />
     <label.inviteToAlliance value="Invite owner to alliance"/>

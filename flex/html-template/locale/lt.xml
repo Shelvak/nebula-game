@@ -2754,13 +2754,13 @@
   </Resources>
 
   <SSObjects>
-    <!-- {0}: planet/jumpgate/asteroid -->
+    <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage -->
     <title.info 
-      value="{0 planet[Planetos] jumpgate[Šuolio vartų] asteroid[Asteroido]} informacija" />
+      value="{0 Planet[Planetos] Jumpgate[Šuolio vartų] Asteroid[Asteroido] Wreckage[Nuolaužų]} informacija" />
     <!-- TODO: fix code -->
-    <type.Planet value="planet" />
-    <type.Jumpgate value="jumpgate" />
-    <type.Asteroid value="asteroid" />
+    <type.Planet value="Planet" />
+    <type.Jumpgate value="Jumpgate" />
+    <type.Asteroid value="Asteroid" />
     
     <label.owner value="Užimta" />
     <label.unoccupied value="Neužimta" />
