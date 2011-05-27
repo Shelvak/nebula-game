@@ -2374,8 +2374,7 @@
       </p>
     </about.16>
 
-
-    <title.28 value="Ir niekada šlovės mums, nebus per daug" />
+    <title.28 value="Ir niekada šlovės nebus per daug" />
     <about.28>
       <p>Komandore.</p>
       <p>Jūsų darbų reikšmė žmonijai neprilygstama.</p>
@@ -2575,8 +2574,10 @@
         thrive there! Make our ancestors proud. 
       </p>
     </about.38>
+    
+    <expanding_empire.title value="Expanding Empire" />
 
-    <title.39 value="Expanding Empire" />
+    <title.39 value="[reference:expanding_empire.title]" />
     <about.39>
       <p>Good job, Commander.</p>
       <p>
@@ -2586,13 +2587,13 @@
       </p>
     </about.39>
 
-    <title.40 value="Expanding Empire (II)" />
+    <title.40 value="[reference:expanding_empire.title] (II)" />
     <about.40>
       <p>Commander.</p>
       <p>I am sure you are happy with our empire. But will you stop at this?</p>
     </about.40>
 
-    <title.41 value="Expanding Empire (III)" />
+    <title.41 value="[reference:expanding_empire.title] (III)" />
     <about.41>
       <p>Commander.</p>
       <p>
@@ -2601,7 +2602,7 @@
       </p>
     </about.41>
 
-    <title.42 value="Expanding Empire (IV)" />
+    <title.42 value="[reference:expanding_empire.title] (IV)" />
     <about.42>
       <p>Commander.</p>
       <p>
