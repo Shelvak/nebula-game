@@ -124,15 +124,15 @@ class AssetBase
     process_file_options
     build_lists
   rescue Psych::SyntaxError => e
-	around = 10
-	line = e.message.match(/at line (\d+)/)[1].to_i - 1
-	lines = processed.split("\n")
-	
-	puts "Error at:"
-	puts lines[(line - around)..(line - 1)].join("\n")
-	puts "#{lines[line]} <--------"
-	puts lines[(line + 1)..(line + around)].join("\n")
-	raise e
+    around = 10
+    line = e.message.match(/at line (\d+)/)[1].to_i - 1
+    lines = processed.split("\n")
+
+    puts "Error at:"
+    puts lines[(line - around)..(line - 1)].join("\n")
+    puts "#{lines[line]} <--------"
+    puts lines[(line + 1)..(line + around)].join("\n")
+    raise e
   end
 
   # Number of remote files.
@@ -335,7 +335,7 @@ class Processor
 
         info %Q{#{name} (#{t}): }
         FileUtils.mkdir_p(File.dirname(dest_file_path))
-		FileUtils.rm dest_file_path if File.exists?(dest_file_path)
+        FileUtils.rm dest_file_path if File.exists?(dest_file_path)
         FileUtils.cp(file.path, dest_file_path)
 
         preprocess(dest_file_path, target_opts)
