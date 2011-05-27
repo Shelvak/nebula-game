@@ -2755,9 +2755,9 @@
   </Resources>
 
   <SSObjects>
-    <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage -->
+    <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->
     <title.info 
-      value="{0 Planet[Planetos] Jumpgate[Šuolio vartų] Asteroid[Asteroido] Wreckage[Nuolaužų]} informacija" />
+      value="{0 Planet[Planetos] Jumpgate[Šuolio vartų] Asteroid[Asteroido] Wreckage[Nuolaužų] Cooldown[Pertraukos]} informacija" />
     <!-- TODO: fix code -->
     <type.Planet value="Planet" />
     <type.Jumpgate value="Jumpgate" />

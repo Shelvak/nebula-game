@@ -2582,7 +2582,7 @@
   </Resources>
 
   <SSObjects>
-    <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage -->    
+    <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    
     <title.info value="{0} info" />
     <!-- TODO: fix code -->
     <type.Planet value="Planet" />
