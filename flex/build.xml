@@ -121,7 +121,7 @@
       <warn-scoping-change-in-this>false</warn-scoping-change-in-this>
       <warn-slow-text-field-addition>true</warn-slow-text-field-addition>
       <warn-unlikely-function-value>true</warn-unlikely-function-value>
-      <warn-xml-class-has-changed>true</warn-xml-class-has-changed>
+      <warn-xml-class-has-changed>false</warn-xml-class-has-changed>
     </mxmlc>
   </target>
 
@@ -204,8 +204,13 @@
   
   <target name="build-assets">
     <!-- Run wiki sync for the assets -->
-    <exec executable="rake"><arg value="wiki:sync" /></exec>
-
+    <exec executable="cmd" osfamily="windows">
+       <arg value="/c" />
+       <arg value="rake.bat" />
+       <arg value="wiki:sync" />
+    </exec>
+    <exec executable="rake" osfamily="unix"><arg value="wiki:sync" /></exec>
+    
     <!-- Copy assets -->
     <property name="assetsdir" location="${dist.loc}/assets" />
     <mkdir dir="${assetsdir}" />
