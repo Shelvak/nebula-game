@@ -116,7 +116,6 @@ package components.map.space
          if (viewport != null)
          {
             removeViewportEventHandlers(viewport);
-            viewport = null;
          }
          if (targetLocationPopup != null)
          {
