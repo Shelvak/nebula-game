@@ -2,8 +2,6 @@ package utils.assets
 {
    import assets.AssetsBundle;
    
-   import utils.SingletonFactory;
-   
    import config.Config;
    
    import controllers.startup.StartupMode;
@@ -27,6 +25,7 @@ package utils.assets
    import mx.modules.ModuleManager;
    
    import utils.PropertiesTransformer;
+   import utils.SingletonFactory;
    
    
    
@@ -279,7 +278,9 @@ package utils.assets
          if (instance is MovieClip)
          {
             MovieClip(instance).stop();
-            _movieClips[_currentSwfName.substring(0, _currentSwfName.length - 4)] = instance;
+            var assetName:String = _currentSwfName.substring(0, _currentSwfName.length - 4); 
+            _movieClips[assetName] = instance;
+            getVisualAsset(assetName);
          }
          else
          {
