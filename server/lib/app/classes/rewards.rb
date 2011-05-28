@@ -45,9 +45,7 @@ class Rewards
 
     exploration_config.each do |item|
       case item['kind']
-      when METAL, ENERGY, ZETIUM
-        rewards.send "add_#{item['kind']}", item['count']
-      when POINTS, XP
+      when METAL, ENERGY, ZETIUM, POINTS, XP, CREDS
         rewards.send "add_#{item['kind']}", item['count']
       when UNITS
         klass = "Unit::#{item['type'].camelcase}".constantize

@@ -3,19 +3,9 @@ require File.expand_path(
   File.join(File.dirname(__FILE__), 'initializer.rb')
 )
 
-LOGGER.info "Starting server (argv: #{ARGV.inspect})..."
+LOGGER.info "Starting server..."
 
 callback_manager = proc { CallbackManager.tick }
-
-allowed_options = ["--no-policy-server", "-nps", "--only-policy-server",
-  "-ops"]
-ARGV.each do |arg|
-  unless allowed_options.include?(arg)
-    $stderr.write "Unknown option #{arg}!\nAllowed options: #{
-      allowed_options.inspect}"
-    exit
-  end
-end
 
 irb_loaded = false
 unless ENV["environment"] == "production" || defined?(DAEMONIZED)

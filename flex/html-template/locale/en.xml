@@ -2394,7 +2394,11 @@
       </p>
     </about.38>
 
-    <title.39 value="Expanding Empire" />
+
+    
+    <expanding_empire.title value="Expanding Empire" />
+
+    <title.39 value="[reference:expanding_empire.title]" />
     <about.39>
       <p>Good job, Commander.</p>
       <p>
@@ -2404,13 +2408,13 @@
       </p>
     </about.39>
 
-    <title.40 value="Expanding Empire (II)" />
+    <title.40 value="[reference:expanding_empire.title] (II)" />
     <about.40>
       <p>Commander.</p>
       <p>I am sure you are happy with our empire. But will you stop at this?</p>
     </about.40>
 
-    <title.41 value="Expanding Empire (III)" />
+    <title.41 value="[reference:expanding_empire.title] (III)" />
     <about.41>
       <p>Commander.</p>
       <p>
@@ -2419,7 +2423,7 @@
       </p>
     </about.41>
 
-    <title.42 value="Expanding Empire (IV)" />
+    <title.42 value="[reference:expanding_empire.title] (IV)" />
     <about.42>
       <p>Commander.</p>
       <p>
@@ -2576,7 +2580,7 @@
   </Resources>
 
   <SSObjects>
-    <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage -->    
+    <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    
     <title.info value="{0} info" />
     <!-- TODO: fix code -->
     <type.Planet value="Planet" />

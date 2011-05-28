@@ -69,8 +69,8 @@ namespace :wiki do
               begin
                 processor.process(file, local, info)
               ensure
-		file.close
-		FileUtils.rm_f file.path
+                file.close
+                FileUtils.rm_f file.path
               end
               
               # Store hash if everything went fine
