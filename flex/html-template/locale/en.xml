@@ -2574,7 +2574,10 @@
     <notEnoughResources value="Insufficient resources" />
     <enoughResourcesIn value="Enough resources in:" />
     <insufficientRate value="Insufficient resource extraction rate" />
-    <additionalStorage value="Additional {0} storage needed" />
+    <!-- {0}: metal/energy/zetium -->
+    <additionalStorage.resource value="{0}" />
+    <!-- {0}: additionalStorage.resource (1..3, joined as human string) -->
+    <additionalStorage value="Additional {0} storage needed." />
     <toolTip.selectNone value="Select none" />
     <toolTip.selectAll value="Select all" />
   </Resources>

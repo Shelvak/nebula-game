@@ -109,6 +109,8 @@
          [Bindable]
          private var missingStorageString: String = '';
          
+         // FIXIT: JHO, lameri tu, pasiziurek i BuildingSidebar.xml ir surask 10 skirtumu tarp kodo... 
+         // arturaz ;]
          private function calculateResLeft(): void
          {
             missingStorages = [];

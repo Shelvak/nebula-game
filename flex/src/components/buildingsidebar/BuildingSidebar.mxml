@@ -628,7 +628,7 @@
                      }
                   }
                   i++;
-                  tempStorageString += Localizer.string('Resources', res);
+                  tempStorageString += Localizer.string('Resources', 'additionalStorage.resource', [res]);
                }
                if (missingStorageString != tempStorageString)
                {
@@ -833,7 +833,11 @@
                   <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
                   styleName="unsatisfied"/-->
                   <s:Group width="100%" visible="{!enoughStorage}">
-                     <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" 
+                     <s:Label text="{
+                              missingStorageString == '' 
+                                 ? '' 
+                                 : Localizer.string('Resources','additionalStorage', [missingStorageString])
+                              }" 
                               styleName="unsatisfied" left="0" right="0"/>
                   </s:Group>
                   <base:layout>

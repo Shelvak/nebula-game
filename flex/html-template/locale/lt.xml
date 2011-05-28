@@ -2737,16 +2737,18 @@
     <vps value="PT" />
     <timer value="Laikas iki kito padidėjimo" />
     <resources value="Resursai" />
-    <current value="Dabartinis kiekis" />
+    <current value="Kiekis" />
     <max value="Maks. talpa" />
-    <rates value="išgavimo greitis" />
+    <rates value="Išgavimas" />
     <full value="Pilnas per {0}" />
     <empty value="Tuščias per {0}" />
     <and value="ir" />
     <notEnoughResources value="Nepakanka resursų" />
     <enoughResourcesIn value="Resursų užteks už:" />
     <insufficientRate value="Nepakankamas resursų išgavimo greitis" />
-    <additionalStorage value="Reikia papildomų {0} talpyklų" />
+    <additionalStorage.resource value="{0 metal[metalo] energy[energijos] zetium[zetiumo]}" />
+    <!-- {0}: additionalStorage.resource (1..3, joined as human string) -->
+    <additionalStorage value="Reikia papildomų {0} talpyklų." />
     <toolTip.selectNone value="Atžymėti visus" />
     <toolTip.selectAll value="Pažymėti visus" />
   </Resources>
