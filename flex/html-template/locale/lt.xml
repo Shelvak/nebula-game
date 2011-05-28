@@ -970,9 +970,6 @@
     <label.order value="Užsakyti" />
     <label.buy value="Pirkti kredus" />
     <label.move value="Perkelti" />
-    <!-- TODO: fix in code. Pass rate/storage strings instead of these. -->
-    <rate value="rate" />
-    <storage value="storage" />
     <label.movePrice>
       <p>Šio pastato perkėlimas tau kainuotų 
       {0 one[? kredą] tens[? kredų] many[? kredus]}.</p> 

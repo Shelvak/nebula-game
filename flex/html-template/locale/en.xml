@@ -825,8 +825,6 @@
     <label.order value="Order" />
     <label.buy value="Buy Creds" />
     <label.move value="Move" />
-    <rate value="extraction rate" />
-    <storage value="storage" />
     <label.movePrice>
       <p>It would cost you {0} creds to move this building.</p>
     </label.movePrice> 

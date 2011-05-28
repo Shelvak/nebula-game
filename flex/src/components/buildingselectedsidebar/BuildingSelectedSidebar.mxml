@@ -1129,12 +1129,12 @@
                      <!-- RATES BOOST -->
                      <s:RichText textFlow="{getTextFlow(
                                  Localizer.string('Credits', 'label.boostInactive',
-                                 [resource.type, Localizer.string('Credits', 'rate'),
+                                 [resource.type, 'rate',
                                  Config.getPlanetBoost(), DateUtil.secondsToHumanString(
                                  Config.getPlanetBoostDuration())]))}"
                                  visible="{resource.boost.rateTime == null}"/>
                      <s:Label text="{Localizer.string('Credits', 'label.boostActive1',
-                              [resource.type, Localizer.string('Credits', 'rate'),
+                              [resource.type, 'rate',
                               Config.getPlanetBoost(),
                               DateUtil.secondsToHumanString(
                               Config.getPlanetBoostDuration())])}"
@@ -1160,12 +1160,12 @@
                      <!-- STORAGES BOOST -->
                      <s:RichText textFlow="{getTextFlow(
                                  Localizer.string('Credits', 'label.boostInactive',
-                                 [resource.type, Localizer.string('Credits', 'storage'),
+                                 [resource.type, 'storage',
                                  Config.getPlanetBoost(), DateUtil.secondsToHumanString(
                                  Config.getPlanetBoostDuration())]))}"
                                  visible="{resource.boost.storageTime == null}"/>
                      <s:Label text="{Localizer.string('Credits', 'label.boostActive1',
-                              [resource.type, Localizer.string('Credits', 'storage'),
+                              [resource.type, 'storage',
                               Config.getPlanetBoost(),
                               DateUtil.secondsToHumanString(
                               Config.getPlanetBoostDuration())])}"
