@@ -9,23 +9,25 @@ describe DailyBonusController do
     init_controller DailyBonusController, :login => true
   end
   
-  describe "daily_bonus|get" do
+  describe "daily_bonus|show" do
     before(:each) do
-      @action = "daily_bonus|get"
+      @action = "daily_bonus|show"
       @params = {}
     end
+    
+    it_should_behave_like "only push"
     
     it "should fail if bonus is not available" do
       player.stub!(:daily_bonus_available?).and_return(false)
       lambda do
-        invoke @action, @params
+        push @action, @params
       end.should raise_error(GameLogicError)
     end
     
     it "should return rewards" do
       DailyBonus.should_receive(:get_bonus).with(player.id, player.points).
         and_return(:bonus)
-      invoke @action, @params
+      push @action, @params
       response_should_include(:bonus => :bonus.as_json)
     end
   end

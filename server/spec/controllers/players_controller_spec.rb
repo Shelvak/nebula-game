@@ -29,16 +29,35 @@ describe PlayersController do
       end
 
       it "should push actions" do
+        invoke @action, @params
+        
         %w{game|config players|show planets|player_index technologies|index
         quests|index notifications|index routes|index
-        chat|index}.each do |action|
-          @dispatcher.should_receive(:push).with({
-            'action' => action,
-            'params' => {}
-          }, @test_player.id).ordered
+        chat|index}.each_with_index do |action, index|
+          message = {'action' => action, 'params' => {}}
+          @dispatcher.pushed_messages[@test_player.id][index].should == 
+            message
         end
-
+      end
+      
+      it "should push daily_bonus|show if there is a bonus available" do
+        @test_player.daily_bonus_at = 1.day.ago
+        @test_player.save!
         invoke @action, @params
+        
+        @dispatcher.pushed_messages[@test_player.id].should include(
+          {'action' => DailyBonusController::ACTION_SHOW, 'params' => {}}
+        )
+      end
+      
+      it "should not push daily_bonus|show if there is no bonus" do
+        @test_player.daily_bonus_at = 1.day.from_now
+        @test_player.save!
+        invoke @action, @params
+        
+        @dispatcher.pushed_messages[@test_player.id].should_not include(
+          {'action' => DailyBonusController::ACTION_SHOW, 'params' => {}}
+        )
       end
 
       it "should validate login data" do

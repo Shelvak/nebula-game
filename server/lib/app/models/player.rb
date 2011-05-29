@@ -86,7 +86,7 @@ class Player < ActiveRecord::Base
   
   # Is daily bonus available for this player?
   def daily_bonus_available?
-    daily_bonus_at.nil? || daily_bonus_at <= Time.now
+    ! first_time? && (daily_bonus_at.nil? || daily_bonus_at <= Time.now)
   end
   
   # Set next daily bonus expiration. 
@@ -128,8 +128,7 @@ class Player < ActiveRecord::Base
         first_time economy_points army_points science_points war_points
         victory_points creds population population_max planets_count
         alliance_id alliance_cooldown_ends_at
-        vip_creds vip_level vip_until vip_creds_until
-        daily_bonus_at}
+        vip_creds vip_level vip_until vip_creds_until}
       )
       unless alliance_id.nil?
         owner = id == alliance.owner_id

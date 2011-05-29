@@ -8,7 +8,14 @@ module ControllerSpecHelper
 
     dispatcher_mock.stub!(:change_player).and_return(true)
     dispatcher_mock.stub!(:transmit).and_return(true)
-    dispatcher_mock.stub!(:push).and_return(true)
+    def dispatcher_mock.push(message, client_id)
+      @pushed_messages ||= {}
+      @pushed_messages[client_id] ||= []
+      @pushed_messages[client_id].push message
+    end
+    def dispatcher_mock.pushed_messages
+      @pushed_messages || {}
+    end
     dispatcher_mock.stub!(:push_to_player).and_return(true)
     dispatcher_mock.stub!(:update_player).and_return(true)
 

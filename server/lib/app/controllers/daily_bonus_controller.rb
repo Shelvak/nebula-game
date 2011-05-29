@@ -1,15 +1,18 @@
 class DailyBonusController < GenericController
+  ACTION_SHOW = "daily_bonus|show"
   # Get todays reward for this player. Raises error if reward is already
   # taken.
   # 
-  # Invocation: by client
+  # Invocation: by server
   # 
   # Parameters: None
   # 
   # Response:
   # - bonus (Hash): Rewards#as_json
   #
-  def action_get
+  def action_show
+    only_push!
+    
     respond :bonus => get_bonus.as_json
   end
   

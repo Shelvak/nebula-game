@@ -64,6 +64,11 @@ describe Player do
         daily_bonus_available?.should be_true
     end
     
+    it "should return false if it's players first time" do
+      Factory.build(:player, :daily_bonus_at => nil, :first_time => true).
+        daily_bonus_available?.should be_false
+    end
+    
     it "should return false if #daily_bonus_at is in future" do
       Factory.build(:player, :daily_bonus_at => 10.seconds.from_now).
         daily_bonus_available?.should be_false
@@ -393,8 +398,7 @@ describe Player do
         first_time economy_points army_points science_points war_points
         victory_points creds population population_max planets_count
         alliance_id alliance_cooldown_ends_at
-        vip_level vip_creds vip_until vip_creds_until
-        daily_bonus_at}
+        vip_level vip_creds vip_until vip_creds_until}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
 
