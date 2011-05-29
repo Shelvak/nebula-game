@@ -58,11 +58,8 @@ describe DailyBonusController do
     end
     
     it "should save Player#daily_bonus_at" do
+      player.should_receive(:set_next_daily_bonus!)
       invoke @action, @params
-      player.reload
-      player.daily_bonus_at.should be_close(
-        CONFIG['daily_bonus.cooldown'].from_now,
-        SPEC_TIME_PRECISION)
     end
   end
 end

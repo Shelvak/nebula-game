@@ -30,8 +30,7 @@ class DailyBonusController < GenericController
       find(params['planet_id'])
     
     get_bonus.claim!(planet, player)
-    player.daily_bonus_at = CONFIG['daily_bonus.cooldown'].from_now
-    player.save!
+    player.set_next_daily_bonus!
   end
   
   private

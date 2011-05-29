@@ -70,6 +70,27 @@ describe Player do
     end
   end
   
+  describe "#set_next_daily_bonus" do
+    it "should set to now + cooldown if previous value was nil" do
+      player = Factory.build(:player)
+      player.set_next_daily_bonus
+      player.daily_bonus_at.should be_close(
+        CONFIG['daily_bonus.cooldown'].from_now,
+        SPEC_TIME_PRECISION
+      )
+    end
+    
+    it "should set to closest future date otherwise" do
+      next_bonus = 24.minutes.from_now
+      player = Factory.build(:player, :daily_bonus_at => 
+           next_bonus - 10 * CONFIG['daily_bonus.cooldown'])
+      player.set_next_daily_bonus
+      player.daily_bonus_at.should be_close(
+        next_bonus, SPEC_TIME_PRECISION
+      )
+    end
+  end
+  
   describe "vip mode" do
     describe "#vip?" do
       it "should return false if level is 0" do
