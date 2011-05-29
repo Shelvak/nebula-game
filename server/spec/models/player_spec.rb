@@ -53,6 +53,23 @@ describe Player do
     end
   end
 
+  describe "#daily_bonus_available?" do
+    it "should return true if #daily_bonus_at is nil" do
+      Factory.build(:player, :daily_bonus_at => nil).daily_bonus_available?.
+        should be_true
+    end
+    
+    it "should return true if #daily_bonus_at is in past" do
+      Factory.build(:player, :daily_bonus_at => 10.seconds.ago).
+        daily_bonus_available?.should be_true
+    end
+    
+    it "should return false if #daily_bonus_at is in future" do
+      Factory.build(:player, :daily_bonus_at => 10.seconds.from_now).
+        daily_bonus_available?.should be_false
+    end
+  end
+  
   describe "vip mode" do
     describe "#vip?" do
       it "should return false if level is 0" do
@@ -355,7 +372,8 @@ describe Player do
         first_time economy_points army_points science_points war_points
         victory_points creds population population_max planets_count
         alliance_id alliance_cooldown_ends_at
-        vip_level vip_creds vip_until vip_creds_until}
+        vip_level vip_creds vip_until vip_creds_until
+        daily_bonus_at}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
 

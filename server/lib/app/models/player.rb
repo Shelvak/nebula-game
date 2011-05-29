@@ -83,6 +83,11 @@ class Player < ActiveRecord::Base
       minimal(player_id)
     end
   end
+  
+  # Is daily bonus available for this player?
+  def daily_bonus_available?
+    daily_bonus_at.nil? || daily_bonus_at <= Time.now
+  end
 
   # Prepare for serialization to JSON.
   #
@@ -103,7 +108,8 @@ class Player < ActiveRecord::Base
         first_time economy_points army_points science_points war_points
         victory_points creds population population_max planets_count
         alliance_id alliance_cooldown_ends_at
-        vip_creds vip_level vip_until vip_creds_until}
+        vip_creds vip_level vip_until vip_creds_until
+        daily_bonus_at}
       )
       unless alliance_id.nil?
         owner = id == alliance.owner_id
