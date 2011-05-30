@@ -13,9 +13,7 @@ package models.objectives
       public override function get objectiveText(): String
       {
          return Localizer.string('Objectives', 'objectiveText.'+objective.type,
-            [objective.level, (objective.count > 1?objective.count:''),
-               (objective.count > 1?
-               ObjectStringsResolver.getString('Time', objective.count):'')]);
+            [objective.level, objective.count]);
       }
    }
 }

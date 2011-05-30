@@ -13,7 +13,7 @@ package models.objectives
       public override function get objectiveText(): String
       {
          return Localizer.string('Objectives', 'objectiveText.'+objective.type,
-            [objective.count, ObjectStringsResolver.getString(objective.key, objective.count)]);
+            [objective.count]);
       }
    }
 }

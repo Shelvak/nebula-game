@@ -1533,8 +1533,6 @@
     <toLevel value="to level {0}" />
     <level value=" level {0}" />
     <ofLevel value="of level {0}" />
-    <npc value="neutral" />
-    <enemy value="enemy" />
     <of value="of" />
     
     <!-- HAVE_UPGRADED_TO
@@ -1559,19 +1557,33 @@
     <objectiveText.DestroyNpcBuilding 
     value="Destroy {0}{1 one[] many[ of level ?]}" />
     
-    <!-- 0: Subclass or class to destroy, 1: count of objects to destroy, 
-    2: "level" from Objecti
-    ves or '' if less than 2 -->
-    <objectiveText.Destroy value="Destroy {1}{2} {0}" />
-    <objectiveText.DestroyNpcBuilding value="Destroy {1}{2} {0}" />
+    <!-- ANNEX_PLANET
+    0: count of planets to occupy -->
+    <objectiveText.AnnexPlanet.npc>
+    <p>Occupy {0 one[neutral planet] many[? neutral planets]}</p>
+    </objectiveText.AnnexPlanet.npc>
+    <objectiveText.AnnexPlanet.enemy>
+    <p>Occupy {0 one[enemy planet] many[? enemy planets]}</p>
+    </objectiveText.AnnexPlanet.enemy>
     
-    <!-- 0: count of planets to occupy, 1: word "npc" or 
-    "enemy" from Objectives, 2: word "Planet" from Objects -->
-    <objectiveText.AnnexPlanet value="Occupy {0} {1} {2}" />
+    <!-- HAVE_PLANETS
+    0: count of planets to have -->
+    <objectiveText.HavePlanets value="Have {0 one[one planet] many[? planets]}" />
     
-    <!-- 0: count of planets to have, 1: word "Planet" 
-    from Objects -->
-    <objectiveText.HavePlanets value="Have {0} {1}" />
+    <!-- HAVE_POINTS, HAVE_XXX_POINTS
+    0: count of points to have -->
+    <objectiveText.HaveSciencePoints 
+    value="Have {0} science {0 one[point] many[points]}" />
+    <objectiveText.HaveEconomyPoints 
+    value="Have {0} economy {0 one[point] many[points]}" />
+    <objectiveText.HaveVictoryPoints 
+    value="Have {0} victory {0 one[point] many[points]}" />
+    <objectiveText.HaveArmyPoints 
+    value="Have {0} army {0 one[point] many[points]}" />
+    <objectiveText.HaveWarPoints 
+    value="Have {0} war {0 one[point] many[points]}" />
+    <objectiveText.HavePoints 
+    value="Have {0 one[? point] many[? points]}" />
     
     <!-- 0: count of points to have, 1: word "Point" 
     from Objects -->
@@ -1582,61 +1594,63 @@
     <objectiveText.HaveWarPoints value="Have {0} War {1}" />
     <objectiveText.HavePoints value="Have {0} {1}" />
 
-    <!-- 0: count of hit points to heal -->
+    <!-- HEAL_HP
+    0: count of hit points to heal -->
     <objectiveText.HealHp value="Heal {0} HP" />
     
-    <!-- 0: count of times to move building, 1: word "Time" 
-    from Objects -->
-    <objectiveText.MoveBuilding value="Move building {0} {1}" />
+    <!-- MOVE_BUILDINGS
+    0: count of times to move building -->
+    <objectiveText.MoveBuilding value="Move building {0 one[] many[? times]}" />
 
-    <!-- 0: VIP level, 1: count of times to become VIP, 2: word "Time" 
-    from Objects -->
-    <objectiveText.BecomeVip value="Become level {0} VIP {1} {2}" />
+    <!-- BECOME_VIP
+    0: VIP level, 
+    1: count of times to become VIP -->
+    <objectiveText.BecomeVip value="Become level {0} VIP {1 one[] many[? times]}" />
 
-    <!-- 0: count of times to accelerate flight, 1: word "Time" 
-    from Objects -->
-    <objectiveText.AccelerateFlight value="Accelerate flight {0} {1}" />
+    <!-- ACCELERATE_FLIGHT
+    0: count of times to accelerate flight -->
+    <objectiveText.AccelerateFlight value="Accelerate flight {0 one[] many[? times]}" />
 
-    <!-- 0: count of times to win battle, 1: word "Battle" 
-    from Objects -->
-    <objectiveText.Battle0 value="Win {0} {1}" />    
-    <!-- 0: count of times to loose battle, 1: word "Battle" 
-    from Objects -->
-    <objectiveText.Battle1 value="Loose {0} {1}" />
+    <!-- BATTLE
+    0: count of times to proceed battle 
+    1: 'win' or 'loose' -->
+    <objectiveText.Battle 
+    value="{1 win[Win] loose[Loose]} {0 one[a battle] many[? battles]}"/>
 
-    <!-- 0: count of quests to complete -->
-    <objectiveText.CompleteQuests value="Complete {0} quests" />
+    <!-- COMPLETE_QUESTS
+    0: count of quests to complete -->
+    <objectiveText.CompleteQuests value="Complete {0 one[quest] many[? quests]}" />
 
-    <!-- 0: count of achievements to complete -->
-    <objectiveText.CompleteAchievements value="Complete {0} achievements" />
+    <!-- COMPLETE_ACHIEVEMENTS
+    0: count of achievements to complete -->
+    <objectiveText.CompleteAchievements 
+    value="Complete {0 one[achievement] many[? achievements]}" />
 
-    <!-- 0: count of times to accelerate object, 1: word "Time" 
-    from Objects -->
+    <!-- ACCELERATE
+    0: count of times to accelerate object -->
     <objectiveText.AccelerateBuilding>
-      <p>Accelerate building construction {0} {1}</p>
+      <p>Accelerate building construction {0 one[] many[? times]}</p>
     </objectiveText.AccelerateBuilding>
     <objectiveText.AccelerateUnit>
-      <p>Accelerate unit training {0} {1}</p>
+      <p>Accelerate unit training {0 one[] many[? times]}</p>
     </objectiveText.AccelerateUnit>
     <objectiveText.AccelerateTechnology>
-      <p>Accelerate technology research {0} {1}</p>
+      <p>Accelerate technology research {0 one[] many[? times]}</p>
     </objectiveText.AccelerateTechnology>
 
-    <!-- 0: count of buildings to self destruct, 1: word "Building" 
-    from Objects -->
-    <objectiveText.SelfDestruct value="Destroy {0} {1} that belongs to you" />
+    <!-- SELF_DESTRUCT
+    0: count of buildings to self destruct -->
+    <objectiveText.SelfDestruct 
+    value="Destroy {0 one[building] many[? buildings]} that belongs to you" />
 
-    <!-- 0: count of times to explore object, 1: word "Time" 
-    from Objects, 2: count of minimum scientists to use -->
-    <objectiveText.ExploreBlock1>
-      <p>Explore any object {0} {1} with at least {2} scientists</p>
-    </objectiveText.ExploreBlock1>
-    
-    <!-- 0: count of times to explore object, 1: word "Time" 
-    from Objects -->
-    <objectiveText.ExploreBlock0>
-      <p>Explore any object {0} {1}</p>
-    </objectiveText.ExploreBlock0>
+
+    <!-- EXPLORE_BLOCK
+    0: count of times to explore object, 
+    1: count of minimum scientists to use -->
+    <objectiveText.ExploreBlock>
+      <p>Explore any object {0 one[] many[? times ]}
+      {1 zero[] one[with at least ? scientist] many[with at least ? scientists]}</p>
+    </objectiveText.ExploreBlock>
   </Objectives>
 
   <Quests>

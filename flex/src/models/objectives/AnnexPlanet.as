@@ -14,16 +14,8 @@ package models.objectives
       
       public override function get objectiveText():String
       {
-         var text: String = Localizer.string('Objectives', 'objectiveText.'+objective.type, [
-            objective.count, (objective.npc
-               ? Localizer.string('Objectives', 'npc')
-               : Localizer.string('Objectives', 'enemy')), 
-            ObjectStringsResolver.getString('Planet', objective.count)]);
-         if (text == null)
-         {
-            throw new Error("Objective text creation failed, "+objective.type+', Planet');
-         }
-         return text;
+         return Localizer.string('Objectives', 'objectiveText.'+objective.type+'.'+
+            (objective.npc?'npc':'enemy'), [objective.count]);
       }
       
    }

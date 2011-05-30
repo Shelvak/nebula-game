@@ -148,9 +148,10 @@ package tests.utils.tests
       [Test]
       public function pluralize_should_respect_english_rules() : void
       {
-         var str:String = "{0 one[? dog] many[? dogs]}";
-         assertThat( "first form: 1",               pluralize(str, [1], Locale.EN), equals ("1 dog")  );
-         assertThat( "second form: everythig else", pluralize(str, [5], Locale.EN), equals ("5 dogs") );
+         var str:String = "{0 zero[no dogs] one[dog] many[? dogs]}";
+         assertThat( "0",               pluralize(str, [0], Locale.EN), equals ("no dogs")  );
+         assertThat( "1",               pluralize(str, [1], Locale.EN), equals ("dog")  );
+         assertThat( "everything else", pluralize(str, [5], Locale.EN), equals ("5 dogs") );
       };
       
       
@@ -159,10 +160,13 @@ package tests.utils.tests
       {
          function _pluralize(number:int) : String
          {
-            return pluralize("{0 one[? šuo] tens[? šunų] many[? šunys]}", [number], Locale.LT);
+            return pluralize(
+               "{0 zero[nėra šunų] one[šuo] 1sts[? šuo] tens[? šunų] many[? šunys]}",
+               [number], Locale.LT);
          }
          
-         assertThat( "1st form: ends in 1, not 11:  1", _pluralize( 1), equals ( "1 šuo") );
+         assertThat( "is 0:  0", _pluralize( 0), equals ("nėra šunų") );
+         assertThat( "is 1:  1", _pluralize( 1), equals ("šuo") );
          assertThat( "1st form: ends in 1, not 11: 21", _pluralize(21), equals ("21 šuo") );
          
          assertThat( "2nd form: ends in 0 or 10-20: 110", _pluralize(110), equals ("110 šunų") );
@@ -173,6 +177,18 @@ package tests.utils.tests
          
          assertThat( "3rd form: everything else", _pluralize( 8), equals ( "8 šunys") );
          assertThat( "3rd form: everything else", _pluralize(25), equals ("25 šunys") );
+      };
+      
+      [Test]
+      public function pluralize_should_follow fallbacks() : void
+      {
+         function _pluralize(number:int) : String
+         {
+            return pluralize("{0 one[? šuo] tens[? šunų] many[? šunys]}", [number], Locale.LT);
+         }
+         
+         assertThat( "is 1:  1", _pluralize( 1), equals ("1 šuo") );
+         assertThat( "ends in 1, not 11: 21", _pluralize(21), equals ("21 šuo") );
       };
       
       

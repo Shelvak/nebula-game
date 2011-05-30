@@ -36,6 +36,7 @@
          
          import spark.events.IndexChangeEvent;
          
+         import utils.ObjectFormType;
          import utils.ObjectStringsResolver;
          import utils.assets.AssetNames;
          import utils.locale.Localizer;
@@ -379,7 +380,8 @@
                tempStorageString += Localizer.string('Resources', res);
             }
             tempStorageString = missingStorages.length == 0?'':Localizer.string('Units', 'label.planetFull', [tempStorageString, 
-               ObjectStringsResolver.getString('Is', missingStorages.length)]);
+               ObjectStringsResolver.getString('Is', ObjectFormType.WHAT,
+                  missingStorages.length)]);
             if (missingStorageString != tempStorageString)
             {
                missingStorageString = tempStorageString;

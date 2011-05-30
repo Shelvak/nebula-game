@@ -523,9 +523,7 @@
                               (_selectedModel.pauseRemainder != 0)}">
                      <base:AdvancedContainer left="6" right="6">
                         <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
-                                 [_selectedModel.minScientists, ObjectStringsResolver.getString(
-                                 'Scientist', _selectedModel.minScientists), ML.player.scientists, 
-                                 ObjectStringsResolver.getString('Scientist', ML.player.scientists),
+                                 [_selectedModel.minScientists, ML.player.scientists, 
                                  ML.player.scientistsTotal])}" 
                                  visible="{_selectedModel.minScientists > ML.player.scientists
                                  &amp;&amp; _selectedModel.pauseScientists != 0}"
@@ -607,9 +605,7 @@
                                  visible="{!(!_selectedModel.groupForbiden || ML.player.scientistsTotal == 0)}" 
                                  width="100%"/>
                         <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
-                                 [_selectedModel.minScientists, ObjectStringsResolver.getString(
-                                 'Scientist', _selectedModel.minScientists), ML.player.scientists, 
-                                 ObjectStringsResolver.getString('Scientist', ML.player.scientists),
+                                 [_selectedModel.minScientists, ML.player.scientists, 
                                  ML.player.scientistsTotal])}" id="notEnoughSciLbl" 
                                                                visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
                                                                (upgradePending) || (!_selectedModel.isValid))}" 
