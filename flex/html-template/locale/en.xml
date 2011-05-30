@@ -988,8 +988,6 @@
     <label.order value="Order" />
     <label.buy value="Buy Creds" />
     <label.move value="Move" />
-    <rate value="extraction rate" />
-    <storage value="storage" />
     <label.movePrice>
       <p>It would cost you {0} creds to move this building.</p>
     </label.movePrice> 
@@ -2760,7 +2758,10 @@
     <notEnoughResources value="Insufficient resources" />
     <enoughResourcesIn value="Enough resources in:" />
     <insufficientRate value="Insufficient resource extraction rate" />
-    <additionalStorage value="Additional {0} storage needed" />
+    <!-- {0}: metal/energy/zetium -->
+    <additionalStorage.resource value="{0}" />
+    <!-- {0}: additionalStorage.resource (1..3, joined as human string) -->
+    <additionalStorage value="Additional {0} storage needed." />
     <toolTip.selectNone value="Select none" />
     <toolTip.selectAll value="Select all" />
   </Resources>
