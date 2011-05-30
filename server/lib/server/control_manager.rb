@@ -11,6 +11,7 @@ class ControlManager
   #
   # Parameters:
   # - ruleset (String): ruleset for given galaxy
+  # - callback_url (String): URL for callback
   #
   # Response:
   # - success (Boolean): Did creation succeeded?
@@ -177,7 +178,8 @@ class ControlManager
   end
 
   def action_create_galaxy(io, message)
-    galaxy_id = Galaxy.create_galaxy(message['ruleset'])
+    galaxy_id = Galaxy.create_galaxy(message['ruleset'], 
+      message['callback_url'])
     io.send_message :success => true, :galaxy_id => galaxy_id
   rescue Exception => e
     io.send_message :success => false, :galaxy_id => nil

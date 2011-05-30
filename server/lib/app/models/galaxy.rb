@@ -48,8 +48,8 @@ class Galaxy < ActiveRecord::Base
     ).order("distance ASC").first
   end
 
-  def self.create_galaxy(ruleset)
-    SpaceMule.instance.create_galaxy(ruleset)
+  def self.create_galaxy(ruleset, callback_url)
+    SpaceMule.instance.create_galaxy(ruleset, callback_url)
   end
 
   def self.create_player(galaxy_id, name, auth_token)

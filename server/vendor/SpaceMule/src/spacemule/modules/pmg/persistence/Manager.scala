@@ -68,12 +68,12 @@ object Manager {
   /**
    * Quest ids that need to be started when creating player.
    */
-  private val startQuestIds = loadQuests()
+  private var startQuestIds = loadQuests()
 
   /**
    * Objective ids that need to be started when creating player.
    */
-  private val startObjectiveIds = loadObjectives()
+  private var startObjectiveIds = loadObjectives()
 
   /**
    * Load current solar systems to avoid clashes.
@@ -119,6 +119,13 @@ object Manager {
     clearBuffers()
     saveTempHolders.foreach { set => set.clear }
     currentDateTime = DB.date(new Date())
+    
+    // Reload quest/objective ids because they might have changed. E.g. when
+    // testing.
+    if (System.getenv("environment") != "production") {
+      startQuestIds = loadQuests()
+      startObjectiveIds = loadObjectives()
+    }
 
     // Run something before save if provided
     beforeSave match {
