@@ -1037,7 +1037,8 @@
   <MainMenu>
     <label.vip value="Vip" />
     <label.quests value="Quests" />
-    <label.squadrons value="Fleets" />
+    <label.squadrons value="Fleets ({0})" />
+    <label.noSquadrons value="No fleets" />
     <label.ratings value="Ratings" />
     <label.alliances value="Alliance ratings" />
     <label.alliance value="Alliance" />

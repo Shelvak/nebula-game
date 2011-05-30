@@ -21,7 +21,8 @@
             </s:DataGroup>
          </s:Group>
       </base:Scroller>
+      <s:Label verticalCenter="0" horizontalCenter="0" styleName="h1"
+               text="{Localizer.string('Squadrons', 'title.noSquadrons')}"
+               visible="{ML.routes.length == 0}"/>
    </s:Group>
-   <s:Label left="6" top="26" text="{Localizer.string('Squadrons', 'title.noSquadrons')}" styleName="h3"
-            visible="{ML.routes.length == 0}"/>
 </base:BaseContainer>

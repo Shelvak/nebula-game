@@ -68,6 +68,14 @@
                btnStart.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
             }
          }
+         
+         
+         private function getBtnSquadronsLabel(squadrons:int) : String
+         {
+            return squadrons > 0 ?
+               Localizer.string("MainMenu", "label.squadrons", [squadrons]) :
+               Localizer.string("MainMenu", "label.noSquadrons");
+         }
       ]]>
    </fx:Script>
    
@@ -179,8 +187,8 @@
          <s:Group width="100%">
             <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
             <s:Button id="btnSquadrons" click="NC.showSquadrons()" left="22" right="0" top="5" bottom="5"
-                      label="{Localizer.string('MainMenu', 'label.squadrons') + 
-                      (ML.routes.length > 0?' (' + ML.routes.length + ')':'')}"/>
+                      enabled="{ML.routes.length > 0}"
+                      label="{getBtnSquadronsLabel(ML.routes.length)}"/>
          </s:Group>
          <!--- Button for viewing ratings screen. -->
          <s:Group width="100%">

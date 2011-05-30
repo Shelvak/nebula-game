@@ -1177,7 +1177,8 @@
   <MainMenu>
     <label.vip value="VIP" />
     <label.quests value="Užduotys" />
-    <label.squadrons value="Laivynai" />
+    <label.squadrons value="Laivynai ({0})" />
+    <label.noSquadrons value="Laivynų nėra" />
     <label.ratings value="Reitingai" />
     <label.alliances value="Sąjungų reitingai" />
     <label.alliance value="Sąjunga" />
