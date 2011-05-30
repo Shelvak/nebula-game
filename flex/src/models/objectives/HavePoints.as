@@ -13,14 +13,13 @@ package models.objectives
       
       public override function get objectiveText():String
       {
-         var text: String = Localizer.string('Objectives', 'objectiveText.'+objective.type, [
-            objective.limit, ObjectStringsResolver.getString(
-               'Point', objective.limit), objective.count]);
-         if (text == null)
+         var result: String = Localizer.string('Objectives', 'objectiveText.'+objective.type, 
+            [objective.limit]);
+         if (result == null || result == '')
          {
-            throw new Error("Objective text creation failed, "+objective.type+', Planet');
+            throw new Error('Objective '+ objective.type + ' text was not resolved');
          }
-         return text;
+         return result;
       }
       
    }

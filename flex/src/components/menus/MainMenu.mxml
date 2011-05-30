@@ -84,85 +84,7 @@
    
    <!--- Styled container for menu buttons. -->
    <s:SkinnableContainer bottom="{btnStart.height + 3}" id="menuItems" enabled="false" click="toggleStartButton(event)">
-      <base:AdvancedContainer left="0" right="0">
-         <s:Group width="100%">
-            <s:Button label="{ML.player.name}" top="6" fontSize="18"
-                     bottom="6" maxWidth="150" click="NC.showPlayer(ML.player.id)"
-                     skinClass="components.skins.LinkButtonSkin"
-                     horizontalCenter="0"/>
-         </s:Group>
-         <s:Group width="100%">
-            <base:AdvancedContainer horizontalCenter="0">
-               <s:Group visible="{ML.player.vipLevel > 0}">
-                  <s:Group>
-                     <s:Label text="{Localizer.string('Credits','label.vipCreds') + ':'}" width="65"/>
-                     <s:Label text="{ML.player.vipCreds + ' / ' + 
-                              VipLevelsData.getVipDailyBonus(ML.player.vipLevel)}"/>
-                     <s:layout>
-                        <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
-                     </s:layout>
-                  </s:Group>
-                  <s:Group toolTip="{Localizer.string('Credits','tooltip.nextVipTick')}">
-                     <s:Label text="{Localizer.string('Credits','label.nextVipTick') + ':'}" width="65"/>
-                     <s:Label text="{ML.player.vipCredsTime}"/>
-                     <s:layout>
-                        <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
-                     </s:layout>
-                  </s:Group>
-                  <s:Group>
-                     <s:Label text="{Localizer.string('Credits','label.vipEndsIn') + ':'}" width="65"/>
-                     <s:Label text="{ML.player.vipTime}"/>
-                     <s:layout>
-                        <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
-                     </s:layout>
-                  </s:Group>
-                  <s:layout>
-                     <s:VerticalLayout gap="1"/>
-                  </s:layout>
-               </s:Group>
-               <s:Group>
-                  <s:Label text="{Localizer.string('Resources','population') + ':'}" width="65"/>
-                  <s:Label text="{ML.player.population + ' / ' + ML.player.populationMax}"
-                           styleName="{ML.player.population >= ML.player.populationMax?'unsatisfied':null}"/>
-                  <s:layout>
-                     <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
-                  </s:layout>
-               </s:Group>
-               <s:Group>
-                  <s:Label text="{Localizer.string('Resources','scientists') + ':'}" width="65"/>
-                  <s:Label text="{ML.player.scientists + ' / ' + ML.player.scientistsTotal}"/>
-                  <s:layout>
-                     <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
-                  </s:layout>
-               </s:Group>
-               <s:Group>
-                  <s:Label text="{Localizer.string('Resources','points') + ':'}" width="65"/>
-                  <s:Label text="{ML.player.points}"/>
-                  <s:layout>
-                     <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
-                  </s:layout>
-               </s:Group>
-               <s:Group toolTip="{Localizer.string('Ratings','victoryPoints')}">
-                  <s:Label text="{Localizer.string('Resources','vps') + ':'}" width="65"/>
-                  <s:Label text="{ML.player.victoryPoints}"/>
-                  <s:layout>
-                     <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
-                  </s:layout>
-               </s:Group>
-               <s:Group>
-                  <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.creds')) + ':'}" 
-                           width="65"/>
-                  <s:Label text="{ML.player.creds}"/>
-                  <s:layout>
-                     <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
-                  </s:layout>
-               </s:Group>
-               <base:layout>
-                  <s:VerticalLayout gap="1"/>
-               </base:layout>
-            </base:AdvancedContainer>
-         </s:Group>
-         
+      <base:AdvancedContainer>
          <!--- Button for viewing vip screen. -->
          <s:Group width="100%" visible="{ML.player.vipLevel == 0}">
             <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
@@ -223,6 +145,121 @@
          <base:layout>
             <s:VerticalLayout gap="1"/>
          </base:layout>
+      </base:AdvancedContainer>
+      <base:AdvancedContainer height="100%">
+         <!-- TOP -->
+         <s:BitmapImage id="topLeft" left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_top_left')}"/>
+         <s:BitmapImage id="topRight" right="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_top_right')}"/>
+         <s:BitmapImage id="topRepeat" fillMode="repeat" left="{topLeft.width}" top="0" right="{topRight.width}" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_top_center_repeat')}"/>
+         <!-- BOTTOM -->
+         <s:BitmapImage id="bottomLeft" left="0" bottom="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_bottom_left')}"/>
+         <s:BitmapImage id="bottomRight" right="0" bottom="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_bottom_right')}"/>
+         <s:BitmapImage id="bottomRepeat" fillMode="repeat" left="{bottomLeft.width}" bottom="0" right="{bottomRight.width}" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_bottom_center_repeat')}"/>
+         
+         <!-- CENTER -->
+         <s:BitmapImage id="centerLeft" left="0" top="{topLeft.height}" bottom="{bottomLeft.height}" fillMode="repeat" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_center_left')}"/>
+         <s:BitmapImage id="centerRight" right="0" top="{topRight.height}" bottom="{bottomRight.height}" fillMode="repeat" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_center_right')}"/> 
+         
+         <base:AdvancedContainer left="5" right="{centerRight.width/2}"
+                                 top="{topRepeat.height/2}" bottom="{bottomRepeat.height}">
+            <s:Group>
+               <s:Group toolTip="{Localizer.string('Credits','tooltip.nextVipTick')}">
+                  <s:Label text="{Localizer.string('Credits','label.nextVipTick') + ':'}" 
+                           width="{int(Localizer.string('MainMenu', 'panelWidth'))}" 
+                           color="{ML.player.vipLevel > 0?0xeec500:0x636363}"/>
+                  <s:Label text="{ML.player.vipLevel > 0?ML.player.vipCredsTime:'---'}"
+                           color="{ML.player.vipLevel > 0?0xffffff:0x636363}"/>
+                  <s:layout>
+                     <s:HorizontalLayout paddingLeft="6" paddingTop="6"/>
+                  </s:layout>
+               </s:Group>
+               <s:Group>
+                  <s:Label text="{Localizer.string('Credits','label.vipEndsIn') + ':'}" 
+                           width="{int(Localizer.string('MainMenu', 'panelWidth'))}"  
+                           color="{ML.player.vipLevel > 0?0xeec500:0x636363}"/>
+                  <s:Label text="{ML.player.vipLevel > 0?ML.player.vipTime:'---'}"
+                           color="{ML.player.vipLevel > 0?0xffffff:0x636363}"/>
+                  <s:layout>
+                     <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+                  </s:layout>
+               </s:Group>
+               <s:layout>
+                  <s:VerticalLayout gap="1" paddingTop="6" paddingBottom="13"/>
+               </s:layout>
+            </s:Group>
+            <s:Group>
+               <s:Label text="{Localizer.string('Resources','population') + ':'}"
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
+               <s:Label text="{ML.player.population + ' / ' + ML.player.populationMax}"
+                        styleName="{ML.player.population >= ML.player.populationMax?'unsatisfied':null}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+               </s:layout>
+            </s:Group>
+            <s:Group>
+               <s:Label text="{Localizer.string('Resources','scientists') + ':'}" 
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
+               <s:Label text="{ML.player.scientists + ' / ' + ML.player.scientistsTotal}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+               </s:layout>
+            </s:Group>
+            <s:Group>
+               <s:Label text="{Localizer.string('Resources','points') + ':'}" 
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
+               <s:Label text="{ML.player.points}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
+               </s:layout>
+            </s:Group>
+            <s:Group toolTip="{Localizer.string('Ratings','victoryPoints')}">
+               <s:Label text="{Localizer.string('Resources','vps') + ':'}" 
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
+               <s:Label text="{ML.player.victoryPoints}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="13" paddingBottom="6"/>
+               </s:layout>
+            </s:Group>               
+            <s:Group>
+               <s:Label text="{Localizer.string('Credits','label.vipCreds') + ':'}" 
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="{ML.player.vipLevel > 0?0xeec500:0x636363}"/>
+               <s:Label text="{(ML.player.vipLevel > 0?ML.player.vipCreds:'---') + ' / ' + 
+                        (ML.player.vipLevel > 0
+                        ?VipLevelsData.getVipDailyBonus(ML.player.vipLevel)
+                        :'---')}"
+                        color="{ML.player.vipLevel > 0?0xffffff:0x636363}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="13"/>
+               </s:layout>
+            </s:Group>
+            <s:Group>
+               <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.creds')) + ':'}" 
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
+               <s:Label text="{ML.player.creds - ML.player.vipCreds}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+               </s:layout>
+            </s:Group>
+            <s:Group visible="{ML.player.vipLevel > 0}">
+               <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.credsSum')) + ':'}" 
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
+               <s:Label text="{ML.player.creds}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+               </s:layout>
+            </s:Group>
+            <base:layout>
+               <s:VerticalLayout gap="1" verticalAlign="top" paddingRight="3"
+                                 paddingTop="12" paddingBottom="12"/>
+            </base:layout>
+         </base:AdvancedContainer>
       </base:AdvancedContainer>
       
    </s:SkinnableContainer>

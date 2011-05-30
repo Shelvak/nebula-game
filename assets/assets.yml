@@ -541,16 +541,24 @@ assets:
         top_right.png:                 St_window_top_right.png
 
       "start_menu":
-        top_center.png:            Startmenu_top_center.png
-        top_left.png:              Startmenu_top_left.png
-        top_repeat.png:            Startmenu_top_repeat.png
-        top_right.png:             Startmenu_top_right.png
-        center_left.png:           Startmenu_center_left.png
-        center_right.png:          Startmenu_center_right.png
-        bottom_left.png:           Startmenu_bottom_left.png
-        bottom_repeat.png:         Startmenu_bottom_repeat.png
-        bottom_right.png:          Startmenu_bottom_right.png
-        holder.png:                Startmenu_holder.png
+        top_center.png:               Startmenu_top_center.png
+        top_left.png:                 Startmenu_top_left.png
+        top_repeat.png:               Startmenu_top_repeat.png
+        top_right.png:                Startmenu_top_right.png
+        center_left.png:              Startmenu_center_left.png
+        center_right.png:             Startmenu_center_right.png
+        bottom_left.png:              Startmenu_bottom_left.png
+        bottom_repeat.png:            Startmenu_bottom_repeat.png
+        bottom_right.png:             Startmenu_bottom_right.png
+        sm_top_center_repeat.png:     Sm2_top_center(repeat).png
+        sm_bottom_center_repeat.png:  Sm2_bottom_center(repeat).png
+        sm_top_left.png:              Sm2_top_left.png
+        sm_top_right.png:             Sm2_top_right.png
+        sm_center_left.png:           Sm2_center_left.png
+        sm_center_right.png:          Sm2_center_right.png
+        sm_bottom_left.png:           Sm2_bottom_left.png
+        sm_bottom_right.png:          Sm2_bottom_right.png
+        holder.png:                   Startmenu_holder.png
 
       "chat":
         btn_chan_close_up.png:          Closetab_up.png

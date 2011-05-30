@@ -83,6 +83,31 @@ class Player < ActiveRecord::Base
       minimal(player_id)
     end
   end
+  
+  # Is daily bonus available for this player?
+  def daily_bonus_available?
+    ! first_time? && (daily_bonus_at.nil? || daily_bonus_at <= Time.now)
+  end
+  
+  # Set next daily bonus expiration. 
+  # 
+  # If it was nil, set it to CONFIG['daily_bonus.cooldown'] from now. 
+  # 
+  # If it was not nil, set it to closest future date to now by adding
+  # CONFIG['daily_bonus.cooldown'] intervals to previous daily bonus date.
+  def set_next_daily_bonus
+    now = Time.now
+    self.daily_bonus_at ||= now
+    while self.daily_bonus_at <= now
+      self.daily_bonus_at += CONFIG['daily_bonus.cooldown']
+    end
+    self.daily_bonus_at
+  end
+  
+  def set_next_daily_bonus!
+    set_next_daily_bonus
+    save!
+  end
 
   # Prepare for serialization to JSON.
   #

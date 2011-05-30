@@ -33,6 +33,10 @@ class Rewards
   def self.from_json(json); new(JSON.parse(json)); end
 
   def as_json(options=nil); @data; end
+  
+  def eql?(other)
+    other.is_a?(self.class) && other.as_json == as_json
+  end
 
   def ==(other)
     other.is_a?(self.class) && as_json == other.as_json

@@ -9,9 +9,11 @@ package models.resource
    import models.parts.UpgradableType;
    import models.planet.MBoost;
    import models.resource.events.ResourcesEvent;
+   import models.solarsystem.MSSObject;
    import models.unit.Unit;
    
    import utils.StringUtil;
+   import utils.locale.Localizer;
    
    [Bindable]
    public class Resource extends BaseModel
@@ -20,6 +22,50 @@ package models.resource
       private var _currentStock: Number = 0;
       private var _maxStock: Number = 0;
       private var _rate: Number = 0;
+      
+      public static function getMissingStoragesString(planet: MSSObject,
+                                              metalCost: Number, 
+                                              energyCost: Number, 
+                                              zetiumCost: Number): String
+      {
+         var missingStorages: Array = [];
+         if (ML.latestPlanet)
+         {
+            var planet:MSSObject = ML.latestPlanet.ssObject;
+            if (metalCost  > planet.metal.maxStock)
+            {
+               missingStorages.push(ResourceType.METAL);
+            }
+            if (energyCost  > planet.energy.maxStock)
+            {
+               missingStorages.push(ResourceType.ENERGY);
+            }
+            if (zetiumCost  > planet.zetium.maxStock)
+            {
+               missingStorages.push(ResourceType.ZETIUM);
+            }
+            var tempStorageString: String = '';
+            var i: int = 0;
+            for each (var res: String in missingStorages)
+            {
+               if (i > 0)
+               {
+                  if (i == missingStorages.length - 1)
+                  {
+                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
+                  }
+                  else
+                  {
+                     tempStorageString += ', ';
+                  }
+               }
+               i++;
+               tempStorageString += Localizer.string('Resources', 'additionalStorage.resource', [res]);
+            }
+            return tempStorageString;
+         }
+         return '';
+      }
       
       public static function getTimeToReachResources(currentMetal: Resource, currentEnergy: Resource, currentZetium: Resource,
                                                      destMetal: int, destEnergy: int, destZetium: int): int

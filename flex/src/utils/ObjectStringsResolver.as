@@ -6,33 +6,14 @@ package utils
    
    public class ObjectStringsResolver
    {
-      public static function getString(type: String, count: int): String
+      public static function getString(type: String, form: String, count: int): String
       {
-         var minNumber: int = getMin(count);
-         var rString: String = Localizer.string('Objects', type+minNumber);
+         var rString: String = Localizer.string('Objects', type+'-'+form, [count]);
          if (rString == null)
          {
-            throw new Error("Object "+type+" count "+minNumber+" not found");
+            throw new Error("Object "+type+'-'+form+" count "+count+" not found");
          }
          return rString;
-      }
-      
-      private static function getMin(current: int): int
-      {
-         switch (Locale.currentLocale)
-         {
-            case Locale.EN:
-               if (current > 1)
-               {
-                  return 2;
-               }
-               else
-               {
-                  return 1;
-               }
-               break;
-         }
-         return 0;
       }
    }
 }

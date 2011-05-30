@@ -19,18 +19,13 @@ package models.objectives
       public override function get objectiveText():String
       {
          var scientists: int = ExplorationStatus.calculateNeededScientists(limit, 1);
-         var text: String = Localizer.string('Objectives', 'objectiveText.'+
-            objective.type+
-            (objective.scientists > 0?'1':'0'), [
-            (objective.count > 1 ? objective.count + ' ' : ''),
-            ObjectStringsResolver.getString('Time', objective.count), 
-            objective.scientists]);
-         if (text == null)
+         var result: String = Localizer.string('Objectives', 'objectiveText.'+
+            objective.type, [objective.count, Math.max(0, objective.scientists)]);
+         if (result == null || result == '')
          {
-            throw new Error("Objective text creation failed, "+objective.type+
-               ', count: '+objective.count+', limit: '+limit);
+            throw new Error('Objective '+ objective.type + ' text was not resolved');
          }
-         return text;
+         return result;
       }
       
    }
