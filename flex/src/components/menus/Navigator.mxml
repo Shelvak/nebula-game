@@ -13,29 +13,29 @@ system and planet.
                     creationComplete="this_creationCompleteHandler(event)" >
    
    <s:Group id="topLeftMenu">
-      <mnu:NavigatorButton id="btnCurrentPlanet" name="{MainAreaScreens.PLANET}"
-                           x="{btnNotifications.width + btnCurrentGalaxy.width + ddlPlayerPlanets.width + 
-                           btnCurrentSS.width - (BUTTON_OFFSET * 2)}"
-                           visible="{ML.latestPlanet != null}"
-                           imageData="{ML.latestPlanet.ssObject.imageData}"
-                           label="{ML.latestPlanet.ssObject.name}"/>
-      
-      <mnu:NavigatorButton id="btnCurrentSS" name="{MainAreaScreens.SOLAR_SYSTEM}"
-                           visible="{ML.latestSolarSystem != null}"
-                           x="{btnNotifications.width + btnCurrentGalaxy.width + 
-                           ddlPlayerPlanets.width - BUTTON_OFFSET}"
-                           imageData="{ML.latestSolarSystem.imageData}"
-                           label="{ML.latestSolarSystem.name}"/>
-      
-      <mnu:NavigatorButton id="btnCurrentGalaxy" name="{MainAreaScreens.GALAXY}"
-                           x="{btnNotifications.width + ddlPlayerPlanets.width}"
-                           imageData="{IMG.getImage(AssetNames.SS_IMAGE_FOLDER + 'galaxy')}"
-                           label="{Localizer.string ('Navigator', 'label.currentGalaxy')}"/>
-      
-      <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" width="93" dataProvider="{ML.player.planets}"
-                                 left="{btnNotifications.width}"/>
-      
-      <notifications:NotificationsButton id="btnNotifications" name="{MainAreaScreens.NOTIFICATIONS}" left="0"/>
+      <s:Group left="0" top="0" bottom="0">
+         <s:layout>
+            <s:HorizontalLayout horizontalAlign="left" gap="0"/>
+         </s:layout>
+         <notifications:NotificationsButton id="btnNotifications" name="{MainAreaScreens.NOTIFICATIONS}"/>
+         <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" width="93" dataProvider="{ML.player.planets}"/>
+         <base:AdvancedContainer height="100%">
+            <base:layout>
+               <s:HorizontalLayout gap="-9"/>
+            </base:layout>
+            <mnu:NavigatorButton id="btnCurrentGalaxy" name="{MainAreaScreens.GALAXY}" depth="3"
+                                 imageData="{IMG.getImage(AssetNames.SS_IMAGE_FOLDER + 'galaxy')}"
+                                 label="{Localizer.string ('Navigator', 'label.currentGalaxy')}"/>
+            <mnu:NavigatorButton id="btnCurrentSS" name="{MainAreaScreens.SOLAR_SYSTEM}" depth="1"
+                                 visible="{ML.latestSolarSystem != null}"
+                                 imageData="{ML.latestSolarSystem.imageData}"
+                                 label="{ML.latestSolarSystem.name}"/>
+            <mnu:NavigatorButton id="btnCurrentPlanet" name="{MainAreaScreens.PLANET}" depth="0"
+                                 visible="{ML.latestPlanet != null}"
+                                 imageData="{ML.latestPlanet.ssObject.imageData}"
+                                 label="{ML.latestPlanet.ssObject.name}"/>
+         </base:AdvancedContainer>
+      </s:Group>
       
       <s:DataGroup top="26" left="0" dataProvider="{ML.notificationAlerts}">
          <s:itemRenderer>
@@ -58,17 +58,10 @@ system and planet.
          import controllers.screens.MainAreaScreens;
          import controllers.ui.NavigationController;
          
-         import models.Owner;
-         import models.map.MapType;
-         import models.unit.UnitKind;
-         
          import mx.events.FlexEvent;
          
-         import utils.locale.Localizer;
-         import utils.NameResolver;
          import utils.assets.AssetNames;
-         
-         private static const BUTTON_OFFSET: int = 8;
+         import utils.locale.Localizer;
          
          
          /**

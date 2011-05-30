@@ -83,7 +83,7 @@ package controllers.startup
       
       
       /**
-       * Loads startup information information into <code>ModelLocator.startupInfo</code>.
+       * Loads startup information information into <code>StartupInfo</code> singleton.
        */
       public static function loadStartupInfo() : Boolean
       {
