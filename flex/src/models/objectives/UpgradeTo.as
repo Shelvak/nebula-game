@@ -18,10 +18,15 @@ package models.objectives
       {
          var classOnly: Boolean = objective.key.indexOf(
             ModelUtil.MODEL_SUBCLASS_SEPARATOR) == -1;
-         return Localizer.string('Objectives', 'objectiveText.'+objective.type, 
+         var result: String = Localizer.string('Objectives', 'objectiveText.'+objective.type, 
             [ObjectStringsResolver.getString(classOnly ? objective.key
                : ModelUtil.getModelSubclass(objective.key), ObjectFormType.WHAT,
                objective.count), objective.level]);
+         if (result == null || result == '')
+         {
+            throw new Error('Objective '+ objective.type + ' text was not resolved');
+         }
+         return result;
       }
    }
 }

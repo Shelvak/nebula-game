@@ -286,7 +286,19 @@
     
     
     <!-- Kita -->
-
+    
+    <Technology value="Technologija" />
+    <Technology-what value="{0 one[technologiją] 1sts[? technologiją] tens[? technologijų] many[? technologijas]}" />
+    <Technology-whos value="{0 one[technologijos] 1sts[? technologijos] tens[? technologijų] many[? technologijų]}" />
+    
+    <Unit value="Karys" />
+    <Unit-what value="{0 one[karį] 1sts[? karį] tens[? karių] many[? karius]}" />
+    <Unit-whos value="{0 one[kario] 1sts[? kario] tens[? karių] many[? karių]}" />
+    
+    <Building value="Pastatas" />
+    <Building-what value="{0 one[pastatą] 1sts[? pastatą] tens[? pastatų] many[? pastatus]}" />
+    <Building-whos value="{0 one[pastato] 1sts[? pastato] tens[? pastatų] many[? pastatų]}" />
+    
     <Planet value="Planeta" />
     <Planet-what value="{0 one[planetą] 1sts[? planetą] tens[? planetų] many[? planetas]}" />
     <Planet-whos value="{0 one[planetos] 1sts[? planetos] tens[? planetų] many[? planetų]}" />
@@ -642,7 +654,7 @@
       <p>Kiekvienas patobulinimo lygis padidina saugomo metalo kiekį.</p>
     </MetalStorage.about>
 
-    <CollectorT1.name ref="Objects/CollectorT11" />
+    <CollectorT1.name ref="Objects/CollectorT1" />
     <CollectorT1.tooltip value="Gamina energiją" />
     <CollectorT1.common>
       <p>
@@ -1197,6 +1209,7 @@
     <label.alliances value="Sąjungų reitingai" />
     <label.alliance value="Sąjunga" />
     <label.forum value="Forumas" />
+    <panelWidth value="85" />
   </MainMenu>
 
   <MapViewportControls>
@@ -1606,11 +1619,11 @@
 
     <!-- BATTLE
     0: count of times to proceed battle 
-    1: 'win' or 'loose' -->
+    1: 'win' or 'lose' -->
     <objectiveText.Battle>
-    <p>{1 win[Laimėk] loose[Pralaimėk]} {0 one[mūšį] 1sts[? mūšį] 
+    <p>{1 win[Laimėk] lose[Pralaimėk]} {0 one[mūšį] 1sts[? mūšį] 
     tens[? mūšių] many[? mūšius]}</p>
-    <objectiveText.Battle>
+    </objectiveText.Battle>
    
     <!-- COMPLETE_QUESTS
     0: count of quests to complete -->
@@ -1620,7 +1633,7 @@
     <!-- COMPLETE_ACHIEVEMENTS
     0: count of achievements to complete -->
     <objectiveText.CompleteAchievements 
-    value="Surink {0 1sts[? pasiekimą] tens[? pasiekimų] many[? pasiekimus]" />
+    value="Surink {0 1sts[? pasiekimą] tens[? pasiekimų] many[? pasiekimus]}" />
 
     <!-- ACCELERATE
     0: count of times to accelerate object -->
@@ -2779,6 +2792,7 @@
     <energy value="Energija" />
     <zetium value="Zetiumas" />
     <time value="Tobulinimo laikas" />
+    <population value="Populiacija" />
     <scientists value="Mokslininkai" />
     <points value="Taškai" />
     <vps value="PT" />
@@ -3594,8 +3608,8 @@
       <p>Aš esu Diana, tavo pagalbininkė.</p>
       <p>Mes turime svarbių reikalų. Paspausk ant N44 logotipo apatiniame
       kairiajame kampe ir pasirink „Užduotys“, kad perskaitytum savo pirmąją
-      misiją. Kai tai padarysi, pasirink savo planetą iš viršutinio kairioje
-      kampo ir pradėt vykdyti savo misiją.</p>
+      misiją. Kai tai padarysi, pasirink savo planetą iš viršutinio kairiojo
+      kampo ir pradėk vykdyti savo misiją.</p>
       <p>Sekmės, Komandore.</p>
     </instructions>
   </WelcomeScreen>

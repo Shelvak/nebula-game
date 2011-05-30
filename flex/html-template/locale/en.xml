@@ -287,6 +287,18 @@
     
     <!-- Other stuff -->
 
+    <Unit value="Unit" />
+    <Unit-what value="{0 one[one unit] many[? units]}" />
+    <Unit-whos ref="Unit-what" />
+    
+    <Building value="Building" />
+    <Building-what value="{0 one[one building] many[? buildings]}" />
+    <Building-whos ref="Building-what" />
+    
+    <Technology value="Technology" />
+    <Technology-what value="{0 one[one technology] many[? technologies]}" />
+    <Technology-whos ref="Technology-what" />
+    
     <Planet value="Planet" />
     <Planet-what value="{0 one[one planet] many[? planets]}" />
     <Planet-whos ref="Planet-what" />
@@ -1205,6 +1217,7 @@
     <label.alliances value="Alliance ratings" />
     <label.alliance value="Alliance" />
     <label.forum value="Forum" />
+    <panelWidth value="65" />
   </MainMenu>
 
   <MapViewportControls>
@@ -1614,9 +1627,9 @@
 
     <!-- BATTLE
     0: count of times to proceed battle 
-    1: 'win' or 'loose' -->
+    1: 'win' or 'lose' -->
     <objectiveText.Battle 
-    value="{1 win[Win] loose[Loose]} {0 one[a battle] many[? battles]}"/>
+    value="{1 win[Win] lose[Lose]} {0 one[a battle] many[? battles]}"/>
 
     <!-- COMPLETE_QUESTS
     0: count of quests to complete -->

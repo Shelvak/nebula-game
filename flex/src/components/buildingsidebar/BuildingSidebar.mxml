@@ -565,7 +565,7 @@
             if (deployInProgress)
             {
                resLeft = 0;
-               missingStorages = [];
+               missingStorageString = '';
                enoughStorage = true;
                return;
             }
@@ -591,53 +591,20 @@
             dispatchEvent(new BuildingEvent(BuildingEvent.BUILDING_STATES_CHANGE));
          }
          
-         private var missingStorages: Array = [];
          [Bindable]
          private var missingStorageString: String = '';
          private function calculateResLeft(): void
          {
-            missingStorages = [];
-            if (ML.latestPlanet)
-            {
-               var planet:MSSObject = ML.latestPlanet.ssObject;
-               if (getMetalPrice()  > planet.metal.maxStock)
-               {
-                  missingStorages.push(ResourceType.METAL);
-               }
-               if (getEnergyPrice()  > planet.energy.maxStock)
-               {
-                  missingStorages.push(ResourceType.ENERGY);
-               }
-               if (getZetiumPrice()  > planet.zetium.maxStock)
-               {
-                  missingStorages.push(ResourceType.ZETIUM);
-               }
-               var tempStorageString: String = '';
-               var i: int = 0;
-               for each (var res: String in missingStorages)
-               {
-                  if (i > 0)
-                  {
-                     if (i == missingStorages.length - 1)
-                     {
-                        tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
-                     }
-                     else
-                     {
-                        tempStorageString += ', ';
-                     }
-                  }
-                  i++;
-                  tempStorageString += Localizer.string('Resources', 'additionalStorage.resource', [res]);
-               }
-               if (missingStorageString != tempStorageString)
-               {
-                  missingStorageString = tempStorageString;
-               }
-               enoughStorage = (missingStorages.length > 0?false:true);
-               resLeft = Resource.getTimeToReachResources
-                  (planet.metal, planet.energy, planet.zetium, getMetalPrice(), getEnergyPrice(), getZetiumPrice());
-            }
+            var planet:MSSObject = ML.latestPlanet.ssObject;
+            var metalCost: int = getMetalPrice();
+            var energyCost: int = getEnergyPrice();
+            var zetiumCost: int = getZetiumPrice();
+            missingStorageString = Resource.getMissingStoragesString(planet,
+               metalCost, energyCost, zetiumCost);
+            enoughStorage = (missingStorageString == ''?true:false);
+            resLeft = Resource.getTimeToReachResources
+               (planet.metal, planet.energy, planet.zetium, 
+                  metalCost, energyCost, zetiumCost);
          }
          
          

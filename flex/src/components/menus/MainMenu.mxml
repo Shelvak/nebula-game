@@ -157,7 +157,8 @@
             <s:Group>
                <s:Group toolTip="{Localizer.string('Credits','tooltip.nextVipTick')}">
                   <s:Label text="{Localizer.string('Credits','label.nextVipTick') + ':'}" 
-                           width="65" color="{ML.player.vipLevel > 0?0xeec500:0x636363}"/>
+                           width="{int(Localizer.string('MainMenu', 'panelWidth'))}" 
+                           color="{ML.player.vipLevel > 0?0xeec500:0x636363}"/>
                   <s:Label text="{ML.player.vipLevel > 0?ML.player.vipCredsTime:'---'}"
                            color="{ML.player.vipLevel > 0?0xffffff:0x636363}"/>
                   <s:layout>
@@ -166,7 +167,8 @@
                </s:Group>
                <s:Group>
                   <s:Label text="{Localizer.string('Credits','label.vipEndsIn') + ':'}" 
-                           width="65" color="{ML.player.vipLevel > 0?0xeec500:0x636363}"/>
+                           width="{int(Localizer.string('MainMenu', 'panelWidth'))}"  
+                           color="{ML.player.vipLevel > 0?0xeec500:0x636363}"/>
                   <s:Label text="{ML.player.vipLevel > 0?ML.player.vipTime:'---'}"
                            color="{ML.player.vipLevel > 0?0xffffff:0x636363}"/>
                   <s:layout>
@@ -178,8 +180,9 @@
                </s:layout>
             </s:Group>
             <s:Group>
-               <s:Label text="{Localizer.string('Resources','population') + ':'}" 
-                        width="65" color="#eec500"/>
+               <s:Label text="{Localizer.string('Resources','population') + ':'}"
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
                <s:Label text="{ML.player.population + ' / ' + ML.player.populationMax}"
                         styleName="{ML.player.population >= ML.player.populationMax?'unsatisfied':null}"/>
                <s:layout>
@@ -188,7 +191,8 @@
             </s:Group>
             <s:Group>
                <s:Label text="{Localizer.string('Resources','scientists') + ':'}" 
-                        width="65" color="#eec500"/>
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
                <s:Label text="{ML.player.scientists + ' / ' + ML.player.scientistsTotal}"/>
                <s:layout>
                   <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
@@ -196,7 +200,8 @@
             </s:Group>
             <s:Group>
                <s:Label text="{Localizer.string('Resources','points') + ':'}" 
-                        width="65" color="#eec500"/>
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
                <s:Label text="{ML.player.points}"/>
                <s:layout>
                   <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
@@ -204,7 +209,8 @@
             </s:Group>
             <s:Group toolTip="{Localizer.string('Ratings','victoryPoints')}">
                <s:Label text="{Localizer.string('Resources','vps') + ':'}" 
-                        width="65" color="#eec500"/>
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
                <s:Label text="{ML.player.victoryPoints}"/>
                <s:layout>
                   <s:HorizontalLayout paddingLeft="6" paddingTop="13" paddingBottom="6"/>
@@ -212,7 +218,8 @@
             </s:Group>               
             <s:Group>
                <s:Label text="{Localizer.string('Credits','label.vipCreds') + ':'}" 
-                        width="65" color="{ML.player.vipLevel > 0?0xeec500:0x636363}"/>
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="{ML.player.vipLevel > 0?0xeec500:0x636363}"/>
                <s:Label text="{(ML.player.vipLevel > 0?ML.player.vipCreds:'---') + ' / ' + 
                         (ML.player.vipLevel > 0
                         ?VipLevelsData.getVipDailyBonus(ML.player.vipLevel)
@@ -224,7 +231,8 @@
             </s:Group>
             <s:Group>
                <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.creds')) + ':'}" 
-                        width="65" color="#eec500"/>
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
                <s:Label text="{ML.player.creds - ML.player.vipCreds}"/>
                <s:layout>
                   <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
@@ -232,7 +240,8 @@
             </s:Group>
             <s:Group visible="{ML.player.vipLevel > 0}">
                <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.credsSum')) + ':'}" 
-                        width="65" color="#eec500"/>
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
                <s:Label text="{ML.player.creds}"/>
                <s:layout>
                   <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>

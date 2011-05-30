@@ -137,7 +137,7 @@ package utils.locale
             // and if that does not exist, try "firsts". Raise error
             // if none of the forms can be applied.
             var formMatched: Boolean = false;
-            for (var usableFormName: String in usableFormNames) {
+            for each(var usableFormName: String in usableFormNames) {
                // look for required form and construct parameter replacement
                var formPatternResult:Object = null;
                FORM_PATTERN.lastIndex = 0;
@@ -167,8 +167,10 @@ package utils.locale
             if (! formMatched) {
                // we didn't find a required plural form
                throw new Error(
-                  "None of plural forms '" + usableFormNames.join(", ") + 
-                  "' found in parameter " + matchedParamStr +
+                  "None of plural forms [" + usableFormNames.map(
+                     function(item:String): String { return "'" + item + "'" }  
+                  ).join(", ") + 
+                  "] found in parameter " + matchedParamStr +
                   " for parameter " + parameter + 
                   ". The string to pluralize was: " + str
                );

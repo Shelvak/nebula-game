@@ -16,8 +16,13 @@ package models.objectives
       
       public override function get objectiveText(): String
       {
-         return Localizer.string('Objectives', 'objectiveText.'+objective.type,
-            [objective.count, (objective.outcome==1?'loose':'win')]);
+         var result: String = Localizer.string('Objectives', 'objectiveText.'+objective.type,
+            [objective.count, (objective.outcome==1?'lose':'win')]);
+         if (result == null || result == '')
+         {
+            throw new Error('Objective '+ objective.type + ' text was not resolved');
+         }
+         return result;
       }
       
       public override function get image():BitmapData
