@@ -787,6 +787,7 @@
     <label.whouldFinish value="Upgrade would finish in" />
     <label.selectAccelerate value="Select acceleration amount" />
     <label.creds value="creds" />
+    <label.credsSum value="Total creds" />
     <label.waitingCreds value="Waiting for creds..." />
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />

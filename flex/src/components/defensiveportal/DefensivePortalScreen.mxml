@@ -155,7 +155,7 @@
                   fontSize="18" color="#eec500" width="100%"/>
          <s:Button skinClass="components.skins.InfoButtonSkin"
                    click="navigateToURL(
-                   new URLRequest('http://nebula44.com/info/defensive_portal'))"/>
+                   new URLRequest('http://nebula44.com/info/defensive-portal'))"/>
          <s:layout>
             <s:HorizontalLayout  verticalAlign="top"/>
          </s:layout>
