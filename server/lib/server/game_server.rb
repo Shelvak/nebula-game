@@ -11,7 +11,10 @@ module GameServer
 
   def receive_data(data)
     if flash_policy_request?(data)
+      info "Policy request got, responding."
       respond_with_policy
+      # Disconnect upon flash policy, otherwise flash client gets stuck.
+      close_connection_after_writing
     else
       @buffer += data
       newline_at = @buffer.index("\n")

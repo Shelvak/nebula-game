@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb'))
 
 class Building::HasScientistsTraitMock < Building
   include Trait::HasScientists
@@ -25,7 +25,7 @@ describe Building::HasScientistsTraitMock do
     end
 
     it "should call player.change_scientist_count!" do
-      @rc.stub_chain(:planet, :player).and_return(@player)
+      @rc.planet.stub!(:player).and_return(@player)
       @player.should_receive(:change_scientist_count!).with(@rc.scientists)
       @rc.activate!
     end
@@ -38,7 +38,7 @@ describe Building::HasScientistsTraitMock do
     end
 
     it "should call player.chance_scientist_count!" do
-      @rc.stub_chain(:planet, :player).and_return(@player)
+      @rc.planet.stub!(:player).and_return(@player)
       @player.should_receive(:change_scientist_count!).with(-@rc.scientists)
       @rc.deactivate!
     end

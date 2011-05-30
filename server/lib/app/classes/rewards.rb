@@ -33,6 +33,10 @@ class Rewards
   def self.from_json(json); new(JSON.parse(json)); end
 
   def as_json(options=nil); @data; end
+  
+  def eql?(other)
+    other.is_a?(self.class) && other.as_json == as_json
+  end
 
   def ==(other)
     other.is_a?(self.class) && as_json == other.as_json
@@ -45,9 +49,7 @@ class Rewards
 
     exploration_config.each do |item|
       case item['kind']
-      when METAL, ENERGY, ZETIUM
-        rewards.send "add_#{item['kind']}", item['count']
-      when POINTS, XP
+      when METAL, ENERGY, ZETIUM, POINTS, XP, CREDS
         rewards.send "add_#{item['kind']}", item['count']
       when UNITS
         klass = "Unit::#{item['type'].camelcase}".constantize

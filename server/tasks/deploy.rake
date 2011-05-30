@@ -7,12 +7,17 @@ end
 
 PROJECT_ROOT = File.expand_path(
   File.join(File.dirname(__FILE__), '..', '..'))
+CLIENT_TARGET = File.join(PROJECT_ROOT, 'flex', 'target', 'dist')
 
 DEPLOY_CONFIG = {
   :username => "spacegame",
   # Number of releases kept in server (including current)
   :releases_kept => 2,
-  :release_branch => "master",
+  :release_branch => {
+    :stable => "master",
+    :beta => "master",
+    :beta3 => "server"
+  },
 
   :servers => {
     :stable => {
@@ -23,12 +28,16 @@ DEPLOY_CONFIG = {
       :client => ["nebula44.com"],
       :server => ["nebula44.com"],
     },
+    :beta3 => {
+      :client => ["beta3.nebula44.com"],
+      :server => ["beta3.nebula44.com"],
+    },
   },
 
   :paths => {
     :local => {
       :client => [
-        ["", File.join(PROJECT_ROOT, 'flex', 'bin-release')]
+        ["", CLIENT_TARGET]
       ],
       :server => [
         File.join("config", "environments"),
@@ -80,10 +89,10 @@ class DeployHelpers; class << self
     end
   end
 
-  def check_git_branch!
-    branch = DEPLOY_CONFIG[:release_branch]
+  def check_git_branch!(env)
+    branch = DEPLOY_CONFIG[:release_branch][env]
     raise "You should probably want to switch to '#{branch
-      }' branch before deployment.#" \
+      }' branch before deployment for #{env} environment." \
       unless `git branch`.include?("* #{branch}")
   end
 
@@ -246,8 +255,8 @@ namespace :deploy do
   namespace :client do
     desc "Deploy client locales to given environment"
     task :locales, [:env] do |task, args|
-      DeployHelpers.check_git_branch!
       env = DeployHelpers.get_env(args[:env])
+      DeployHelpers.check_git_branch!(env)
       Rake::Task['flex:locales:check'].invoke
 
       DEPLOY_CONFIG[:servers][env][:client].each do |server|
@@ -268,11 +277,11 @@ namespace :deploy do
 
   desc "Deploy client to given environment"
   task :client, [:env] do |task, args|
-    DeployHelpers.check_git_branch!
     env = DeployHelpers.get_env(args[:env])
+    DeployHelpers.check_git_branch!(env)
     Rake::Task['flex:locales:check'].invoke
     
-    dst = File.join(PROJECT_ROOT, 'flex', 'bin-release', 'locale')
+    dst = File.join(CLIENT_TARGET, 'locale')
     FileUtils.remove_dir(dst) if File.exist?(dst)
     FileUtils.cp_r(HTML_TEMPLATE_LOCALE, dst, :verbose => true)
 
@@ -358,8 +367,8 @@ namespace :deploy do
 
   desc "Deploy server to given environment"
   task :server, [:env] do |task, args|
-    DeployHelpers.check_git_branch!
     env = DeployHelpers.get_env(args[:env])
+    DeployHelpers.check_git_branch!(env)
 
     DEPLOY_CONFIG[:servers][env][:server].each do |server|
       DeployHelpers.info env, "Deploying server to #{server}" do

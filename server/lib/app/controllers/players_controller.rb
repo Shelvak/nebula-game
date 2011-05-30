@@ -10,10 +10,10 @@ class PlayersController < GenericController
   def action_login
     param_options :required => %w{auth_token galaxy_id}
 
-    player = Player.find(:first, :conditions => {
-        :auth_token => params['auth_token'],
-        :galaxy_id => params['galaxy_id']
-      })
+    player = Player.where(
+      :auth_token => params['auth_token'],
+      :galaxy_id => params['galaxy_id']
+    ).first
     if player
       login player
 
@@ -22,6 +22,9 @@ class PlayersController < GenericController
       chat|index}.each do |action|
         push action
       end
+      
+      push DailyBonusController::ACTION_SHOW \
+        if player.daily_bonus_available?
 
       respond :success => true
     else

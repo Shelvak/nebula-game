@@ -4,8 +4,6 @@ FLEX_ASSET_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex', 'src',
   'assets')
 FLEX_BIN_DEBUG_ASSET_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex',
   'bin-debug', 'assets')
-FLEX_BIN_RELEASE_ASSET_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex',
-  'bin-release', 'assets')
 FLEX_LOCALE_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex',
   'html-template', 'locale')
 FLEX_SOURCE_DIR = File.expand_path(
@@ -24,7 +22,7 @@ BATTLEFIELD_BUNDLES = [
   "ImagesTileBundle"
 ]
 # Locale reference regular expression.
-LOCALE_REF_RE = /\[reference:((\w+)\/)?(.+?)\]/\
+LOCALE_REF_RE = /\[reference:((\w+)\/)?(.+?)\]/
 
 namespace :flex do
   namespace :locales do
@@ -48,6 +46,7 @@ namespace :flex do
 
       Dir[File.join(FLEX_LOCALE_DIR, "*.xml")].each do |fpath|
         fname = File.basename(fpath)
+        puts "Checking #{fname}"
         contents = XmlSimple.xml_in(fpath)
         contents.each do |bundle_name, bundle_contents|
           if bundle_contents.size > 1
@@ -281,17 +280,6 @@ namespace :flex do
         :force => true
       FileUtils.mkdir_p FLEX_BIN_DEBUG_ASSET_DIR
       FileUtils.cp files, FLEX_BIN_DEBUG_ASSET_DIR
-    end
-
-    desc "Copy built assets to bin-release directory"
-    task :"copy-release" => "flex:assets:build" do
-      files = Dir[File.join(FLEX_ASSET_DIR, '*.swf')]
-      puts "Copying #{files.size} bundles to bin-release."
-
-      FileUtils.rm Dir[File.join(FLEX_BIN_DEBUG_ASSET_DIR, '*.swf')],
-        :force => true
-      FileUtils.mkdir_p FLEX_BIN_RELEASE_ASSET_DIR
-      FileUtils.cp files, FLEX_BIN_RELEASE_ASSET_DIR
     end
   end
 end

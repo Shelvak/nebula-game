@@ -384,7 +384,7 @@
     <constructing value="Konstruoja" />
     <upgrading value="Tobulinama" />
     
-    <rates value="Greičiai" />
+    <rates value="Neaktyvus pastatas" />
     <storage value="Talpyklos" />
     <activate value="Aktyvuoti" />
     <deactivate value="Deaktyvuoti" />
@@ -443,12 +443,12 @@
     <infoTitle value="Statymo informacija" />
     <applicable value="Įtakojantys:" />
     <notApplicable value="Nesvarbūs:" />
-    <pressEsc value="Spausk ESC kad atžymėtum" />
+    <pressEsc value="Spausk ESC klavišą, jog atžymėtum savo pasirinkimą" />
     <notYourPlanet value="Ši planeta tau nepriklauso!" />
 
     <deselectButtonText value="atžymėti pastatą" />
 
-    <noFacilities value="Nėra statančių pastatų" />
+    <noFacilities value="Nėra statančių pastatų." />
     <disabled value="Neužtenka resursų" />
     <queueFull value="Šio pastato statymo eilė pilna" />
 
@@ -465,7 +465,7 @@
   <Buildings>
     <property.hp value="Gyvybės Taškai" />
     <property.timeToFinish.short value="{0}" />
-    <property.timeToFinish.long value="Baigta už {0}" />
+    <property.timeToFinish.long value="Baigs už {0}" />
     <property.radar.strength value="Radaro stiprumas" />
     <property.scientists value="Mokslininkai" />
     <property.upgradeTime value="Tobulinimo laikas" />
@@ -642,8 +642,8 @@
       <p>Kiekvienas patobulinimo lygis padidina saugomo metalo kiekį.</p>
     </MetalStorage.about>
 
-    <CollectorT1.name ref="Objects/CollectorT1" />
-    <CollectorT1.tooltip value="Išgauną energiją" />
+    <CollectorT1.name ref="Objects/CollectorT11" />
+    <CollectorT1.tooltip value="Gamina energiją" />
     <CollectorT1.common>
       <p>
         Šios vėjo jėgainės naudojamos užtikrinti pagrindinius energijos 
@@ -795,14 +795,15 @@
     <Housing.name ref="Objects/Housing" />
     <Housing.tooltip value="Didina maksimalų gyventojų kiekį" />
     <Housing.about>
-      <p>Šiuose bokštuose gyvena mūsų kariai ir tankų, bei laivų įgulos.</p>
-      <p>Jeigu nebeturi laisvos gyvenamos vietos, tu negali statyti daugiau 
-      armijos.</p>
+      <p>Šiuose bokštuose gyvena mūsų kariai ir tankų, bei laivų įgulos. Jeigu 
+      tau trūksta laisvos gyvenamos vietos ir negali statyti daugiau 
+      armijos, statyk arba tobulink šiuos bokštus.</p>
     </Housing.about>
 
     <ResourceTransporter.name ref="Objects/ResourceTransporter" /> <!-- <ResourceTransporter1 value="TODO: Resource transporter" /> -->
+
     <ResourceTransporter.tooltip value="Transports resources between planets" />
-    <ResourceTransporter.about value="Teleport resources with this one" />
+    <ResourceTransporter.about value="Teleport resources with this one" />-->
 
     <Headquarters.name ref="Objects/Headquarters" />
     <Headquarters.about>
@@ -938,17 +939,91 @@
     <label.vip value="VIP" />
     <label.whouldFinish value="Tobulinimas baigtusi" />
     <label.selectAccelerate value="Pasirink paspartinimą" />
-    <label.creds value="kredai" />
     <label.credsSum value="Iš viso kredų" />
+    <message.vipOrdered value="VIP sėkmingai užsakytas" />
+    <title.becomeVIP value="Tapk VIP" />
+    <label.becomeVIP>
+      <p>Tapimas VIP nariu tau suteikia VIP dienpinigių, kuriuos gali 
+      išleisti kur tik nori. Ir jų gauni daugiau, negu sumokėjai!</p>
+    </label.becomeVIP>
+    <warning.becomeVIP>
+      <![CDATA[
+      <p>Atkreipk dėmėsį, kad geriausia yra išleisti visus dienos 
+      VIP kredus.</p>
+      <p/>
+      <p><span fontSize="10">Neišleisti kredai nėra perkeliami į kitą dieną.
+      Kita diena prasideda po 24 valandų nuo tavo VIP narystės 
+      pradžios.</span></p>
+      ]]>
+    </warning.becomeVIP>
+    <tab.select value="Pasirinkti" />
+    <tab.vipLevel value="VIP lygis" />
+    <tab.cost value="Kaina" />
+    <tab.dailyCreds value="Kredų per dieną" />
+    <tab.duration value="Trukmė" />
+    <tab.totalCreds value="Iš viso gauni" />
+    <label.totalCreds>
+      <![CDATA[
+      <p>
+        {0} * {1} = {2} <span fontWeight="bold" color="#eec500">
+        ({3 one[? kartą] tens[? kartų] many[? kartus]} daugiau!)</span>
+      </p>
+      ]]>
+    </label.totalCreds>
+    <label.vipCreds value="VIP kredai" />
+    <label.nextVipTick value="VIP diena už" />
+    <tooltip.nextVipTick>
+      <p>Laikas, kai tavo VIP kredai bus vėl užpildyti.</p>
+    </tooltip.nextVipTick>
+    <label.vipEndsIn value="VIP baigsis už" />
+    <label.whouldFinish value="Patobulinimas baigsis už" />
+    <label.creds value="kredų" />
+    <label.waitingCreds value="Laukiama kredų..." />
     <label.instant value="Iš karto" />
     <label.confirm value="Patvirtinti" />
+    <label.cancel value="Atšaukti" />
+    <label.order value="Užsakyti" />
     <label.buy value="Pirkti kredus" />
     <label.move value="Perkelti" />
+    <!-- TODO: fix in code. Pass rate/storage strings instead of these. -->
+    <rate value="rate" />
+    <storage value="storage" />
     <label.movePrice>
       <p>Šio pastato perkėlimas tau kainuotų 
-      {0 one[? kredą] tens[? kredų] many[? kredus]}"</p>      
-    </label.movePrice>
-    <label.destructPrice><![CDATA[
+      {0 one[? kredą] tens[? kredų] many[? kredus]}.</p> 
+    </label.movePrice> 
+    <label.boostCost> 
+      <![CDATA[
+      <p>Tai tau kainuotų <span fontWeight="bold">
+        {0 one[? kredą] tens[? kredų] many[? kredus]}</span>.</p>
+      ]]>
+    </label.boostCost>
+    <!-- {0}: metal/energy/zetium
+         {1}: rate/storage
+         {2}: int
+         {3}: short time (3m) -->
+    <label.boostInactive>
+      <![CDATA[
+      <p>Tu gali padidinti šios planetos <span fontWeight="bold">
+        {0 metal[metalo] energy[energijos] zetium[zetiumo]} 
+        {1 rate[išgavimo greitį] storage[talpą]}</span> 
+      <span fontWeight="bold">{2}%</span> 
+      <span fontWeight="bold">{3}</span>.</p> 
+      ]]>
+    </label.boostInactive>
+    <!-- {0} - metal/energy/zetium
+         {1} - rate/storage 
+         {2} - int -->
+    <label.boostActive1> 
+      <p>Tavo {0 metal[metalo] energy[energijos] zetium[zetiumo]} 
+        {1 rate[išgavimo greitis] storage[talpa]} yra padidinta {2}%</p> 
+    </label.boostActive1>
+    <!-- {0} - time (e.g. 3m) -->
+    <label.boostActive2 value="Tu gali pratęsti šį laiką {0}." /> 
+    <label.boostRate value="Padidinti greitį" />
+    <label.boostStorage value="Padidinti talpą" />
+    <label.destructPrice>
+      <![CDATA[
        <p>Šio pastato išankstinis sunaikinimas tau kainuos</p>
        <p />
        <p><span fontWeight="bold"
@@ -1006,10 +1081,10 @@
   </Galaxy>
 
   <General>
-    <days.short value="d" />
-    <hours.short value="v" />
-    <minutes.short value="m" />
-    <seconds.short value="s" />
+    <days.short value="d." />
+    <hours.short value="v." />
+    <minutes.short value="m." />
+    <seconds.short value="s." />
     <day.long value="diena" />
     <hour.long value="valanda" />
     <message.actionCanceled>
@@ -1032,7 +1107,8 @@
     <resource value="Resursas" />
     <tableTitle value="Sąvybės" />
     <guns value="Ginklai" />
-    <gunProperties value="{0} sąvybės" />
+    <gunProperties value="Ginklo „{0}“ sąvybės" />
+    <damagesDealt value="Ginklo „{0}“ žala" />
     <gun.pistol value="Pistoletas" />
     <gun.machine_gun value="Automatas" />
     <gun.sniper_rifle value="CR-24 Snaiperinis Šautuvas" />
@@ -1052,7 +1128,6 @@
     <gun.plasma_spike value="Šoko patranka" />
     <gun.thor_ground value="Pūga" />
     <gun.cannon_air value="Dzeuso klasės patranka" />
-    <damagesDealt value="Žala padaryta žaidėjo {0}" />
     <armorType value="Šarvų tipas" />
     <damageInPercent value="Procentai" />
     <damage value="Žala" />
@@ -1232,7 +1307,7 @@
 
     <title.explorationFinished value="Ekspedicija grįžo" />
     <message.explorationFinished 
-      value="Ji planetoje {0} baigė savo tyrinėjimus." />
+      value="Planetoje {0} tyrinėjimai baigti." />
 
     <title.planetAnnexed.win value="Tu užkariavai planetą!" />
     <title.planetAnnexed.lose value="Tu praradai planetą!" />
@@ -2346,8 +2421,7 @@
       </p>
     </about.16>
 
-
-    <title.28 value="Ir niekada šlovės mums, nebus per daug" />
+    <title.28 value="Ir niekada šlovės nebus per daug" />
     <about.28>
       <p>Komandore.</p>
       <p>Jūsų darbų reikšmė žmonijai neprilygstama.</p>
@@ -2547,8 +2621,10 @@
         thrive there! Make our ancestors proud. 
       </p>
     </about.38>
+    
+    <expanding_empire.title value="Expanding Empire" />
 
-    <title.39 value="Expanding Empire" />
+    <title.39 value="[reference:expanding_empire.title]" />
     <about.39>
       <p>Good job, Commander.</p>
       <p>
@@ -2558,13 +2634,13 @@
       </p>
     </about.39>
 
-    <title.40 value="Expanding Empire (II)" />
+    <title.40 value="[reference:expanding_empire.title] (II)" />
     <about.40>
       <p>Commander.</p>
       <p>I am sure you are happy with our empire. But will you stop at this?</p>
     </about.40>
 
-    <title.41 value="Expanding Empire (III)" />
+    <title.41 value="[reference:expanding_empire.title] (III)" />
     <about.41>
       <p>Commander.</p>
       <p>
@@ -2573,7 +2649,7 @@
       </p>
     </about.41>
 
-    <title.42 value="Expanding Empire (IV)" />
+    <title.42 value="[reference:expanding_empire.title] (IV)" />
     <about.42>
       <p>Commander.</p>
       <p>
@@ -2688,12 +2764,12 @@
     <player value="Žaidėjas" />
     <alliance value="Sąjunga" />
     <points value="Viso taškų" />
-    <planetsCount value="Planetų" />
-    <warPoints value="Karo taškų" />
-    <economyPoints value="Ekonomijos taškų" />
-    <sciencePoints value="Mokslo taškų" />
-    <victoryPoints value="Pergalės taškų" />
-    <armyPoints value="Kariuomenės taškų" />
+    <planetsCount value="Planetos" />
+    <warPoints value="Karo taškai" />
+    <economyPoints value="Ekonomijos taškai" />
+    <sciencePoints value="Mokslo taškai" />
+    <victoryPoints value="Pergalės taškai" />
+    <armyPoints value="Kariuomenės taškai" />
     <online value="prisijungęs" />
     <offline value="atsijungęs" />
     <label.search value="Paieška" />
@@ -2726,16 +2802,20 @@
   </Resources>
 
   <SSObjects>
-    <title.info value="{0} informacija" />
+    <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->
+    <title.info 
+      value="{0 Planet[Planetos] Jumpgate[Šuolio vartų] Asteroid[Asteroido] Wreckage[Nuolaužų] Cooldown[Pertraukos]} informacija" />
+    <!-- TODO: fix code -->
+    <type.Planet value="Planet" />
+    <type.Jumpgate value="Jumpgate" />
+    <type.Asteroid value="Asteroid" />
+    
     <label.owner value="Užimta" />
     <label.unoccupied value="Neužimta" />
     <label.toPlanet value="Įeiti į planetą" />
     <label.toGalaxy value="Eiti į galaktiką" />
     <label.endsAt value="Baigiasi {0}" />
     <label.cooldownEndsIn value="Baigiasi už" />
-    <type.Planet value="Planeta" />
-    <type.Jumpgate value="Šuolio vartai" />
-    <type.Asteroid value="Asteroidas" />
     <location.sector value="Sektorius {0}:{1}" />
     <location.position value="Orbita" />
     <location.angle value="Kampas" />
@@ -2949,7 +3029,7 @@
         This technology helps you to transport resources through hyperspace 
         chanels 
       </p>
-    </ResourceTransporter.about>
+    </ResourceTransporter.about>-->
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
@@ -3182,12 +3262,12 @@
     <property.initiative value="Iniciatyva" />
     <property.volume value="Apimtis" />
     <property.storage value="Talpa" />
-    <property.move.solarSystem.hopTime value="Šuolio laikas saulės sist." />
+    <property.move.solarSystem.hopTime value="Šuolio laikas saulės sistemoje" />
     <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
     <property.population value="Populiacija" />
     
-    
-    <tooltip.populationLeft value="{0} population left" />
+    <tooltip.populationLeft 
+      value="{0 one[? laisvas gyventojas] tens[? laisvų gyventojų] many[? laisvi gyventojai]}" />
     
     <title.defensivePool value="Tavo gynybinis rezervas" />
     <title.emptyDefensivePool>
@@ -3365,10 +3445,13 @@
 
     <Thor.name ref="Objects/Thor" />
     <Thor.about>
-      <p>Šie smarkiai šarvuoti, bet pakankamai silpnai ginkluoti laivai 
+      <p>Šie smarkiai šarvuoti, bet pakankamai silpnai ginkluoti, laivai 
       senovėje buvo naudojami kaip priekinės linijos gynybiniai laivai. Dabar 
       jie išsibarstę mažomis grupelėmis po visatą, kartu su dirakais, kuriuos
       jie vis dar saugo.</p>
+      <p>Jeigu šie laivai paklius į tavo rankas, žinok, kad jie yra vertingi 
+      dėl savo oras-žemė patrankų, kurios gali efektyviai bombarduoti
+      priešo antžemines pajėgas.</p>
     </Thor.about>
 
     <Demosis.name ref="Objects/Demosis" />

@@ -7,8 +7,7 @@ class SpaceMule
   class Crash < RuntimeError; end
 
   def restart!
-    @worker.stop
-    initialize_mule
+    send_config
   end
 
   def initialize
@@ -209,19 +208,21 @@ class SpaceMule
     LOGGER.block "Initializing SpaceMule", :level => :info do
       LOGGER.info "Loading SpaceMule"
       @worker = SpaceMule::Worker.new
-      LOGGER.info "Sending configuration"
-      @full_sets ||= CONFIG.full_set_values
-
-      # Suppress huge configuration. No need to have it in logs.
-      LOGGER.suppress(:debug) do
-        command({
-          'action' => 'config',
-          'db' => USED_DB_CONFIG,
-          'sets' => @full_sets
-        })
-      end
+      send_config
     end
     true
+  end
+  
+  def send_config
+    LOGGER.info "Sending configuration"
+    # Suppress huge configuration. No need to have it in logs.
+    LOGGER.suppress(:debug) do
+      command({
+        'action' => 'config',
+        'db' => USED_DB_CONFIG,
+        'sets' => CONFIG.full_set_values
+      })
+    end
   end
 
   def command(message)
@@ -255,10 +256,6 @@ if RUBY_PLATFORM == 'java'
     def issue(json)
       Java::spacemule.main.Main.rubyCommand(json)
     end
-
-    def stop
-      raise "Stopping SpaceMule in JRuby mode is impossible."
-    end
   end
 else
   class SpaceMule::Worker
@@ -267,10 +264,6 @@ else
         'java -server -jar "%s" 2>&1' % SpaceMule::JAR_PATH,
         "w+"
       )
-    end
-
-    def stop
-      @mule.close
     end
 
     def issue(json)

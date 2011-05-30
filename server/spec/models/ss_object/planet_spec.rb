@@ -1,5 +1,5 @@
 # encoding: UTF-8
-require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb'))
 
 class Technology::TestResourceMod < Technology
   include Parts::ResourceIncreasingTechnology

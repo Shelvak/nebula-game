@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb'))
 
 describe Building::Headquarters do
   it "should be a constructor" do

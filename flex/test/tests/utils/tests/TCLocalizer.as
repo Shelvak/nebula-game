@@ -142,6 +142,14 @@ package tests.utils.tests
             pluralize("{0 one[CAT] many[CATS]} vs {1 one[DOG] many[DOGS]}", [5, 5]),
             equals ("CATS vs DOGS")
          );
+         
+         // Added by arturaz. 2011-05-25
+         // Support for string replacement when param is not a number.
+         assertThat(
+            "should pluralize strings too",
+            pluralize("{0 bar[CAT] foo[CATS]} vs {1 foo[DOG] bar[DOGS]}", ["foo", "bar"]),
+            equals ("CATS vs DOGS")
+         );
       };
       
       
@@ -180,7 +188,7 @@ package tests.utils.tests
       };
       
       [Test]
-      public function pluralize_should_follow fallbacks() : void
+      public function pluralize_should_follow_fallbacks() : void
       {
          function _pluralize(number:int) : String
          {

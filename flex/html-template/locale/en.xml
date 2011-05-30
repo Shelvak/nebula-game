@@ -384,7 +384,7 @@
     <status value="Status" />
     <constructing value="Constructing" />
     <upgrading value="Upgrading" />
-    <rates value="Rates" />
+    <rates value="Inactive building" />
     <storage value="Storage" />
     <activate value="Activate" />
     <deactivate value="Deactivate" />
@@ -449,7 +449,7 @@
 
     <deselectButtonText value="deselect building" />
 
-    <noFacilities value="There is no facilities available" />
+    <noFacilities value="There are no facilities available." />
     <disabled value="Not enough resources" />
     <queueFull value="Contruction queue full for this constructor" />
 
@@ -939,15 +939,13 @@
   <Credits>
     <label.accelerate value="Accelerate" />
     <message.vipOrdered value="VIP ordered successfully" />
-    <title.becomeVIP value="Become A VIP" />
+    <title.becomeVIP value="Become a VIP" />
     <label.becomeVIP>
       <p>
         Becoming a VIP grants you daily creds you can spend 
         on anything you like.
       </p>
-      <p>
-        Also we're giving you more than you have paid for!
-      </p>
+      <p>Also you get more than you have paid for!</p>
     </label.becomeVIP>
     <warning.becomeVIP>
       <![CDATA[
@@ -997,18 +995,25 @@
     </label.movePrice> 
     <label.boostCost> 
       <![CDATA[
-      <p>It would cost you <span fontWeight="bold">{0} creds</span>.</p>
+      <p>It would cost you <span fontWeight="bold">
+        {0 one[cred] many[? creds]}</span>.</p>
       ]]>
     </label.boostCost>
+    <!-- {0}: metal/energy/zetium
+         {1}: rate/storage
+         {2}: int
+         {3}: short time (3m) -->
     <label.boostInactive>
       <![CDATA[
-      <p>You can boost this planets <span fontWeight="bold">{0} {1}</span> 
+      <p>You can boost this planets <span fontWeight="bold">
+        {0} {1 rate[extraction rate] storage[storage]}</span> 
       by <span fontWeight="bold">{2}%</span> for 
       <span fontWeight="bold">{3}</span>.</p> 
       ]]>
     </label.boostInactive>
     <label.boostActive1> 
-      <p>You have your {0} {1} boosted by {2}% for</p> 
+      <p>You have your {0} {1 rate[extraction rate] storage[storage]} boosted 
+      by {2}% for</p> 
     </label.boostActive1>
     <label.boostActive2> 
       <p>You can increase this time by {0}.</p>
@@ -1021,9 +1026,7 @@
          To destroy this building before cooldown ends you need to pay
        </p>
        <p />
-       <p>
-        <span fontWeight="bold">{0} creds</span>
-       </p>
+       <p><span fontWeight="bold">{0} creds</span></p>
       ]]>
     </label.destructPrice>
     <label.notEnough>
@@ -1113,6 +1116,7 @@
     <tableTitle value="Properties" />
     <guns value="Guns" />
     <gunProperties value="{0} properties" />
+    <damagesDealt value="Damage dealt by {0}" />
     <gun.pistol value="Pistol" />
     <gun.machine_gun value="Machine Gun" />
     <gun.sniper_rifle value="CR-24 Sniper Rifle" />
@@ -1132,7 +1136,6 @@
     <gun.plasma_spike value="Shock Rifle" />
     <gun.thor_ground value="Blizzard" />
     <gun.cannon_air value="Zeus class cannon" />
-    <damagesDealt value="Damage dealt by {0}" />
     <armorType value="Armor type" />
     <damageInPercent value="Percentage" />
     <damage value="Damage" />
@@ -2577,7 +2580,11 @@
       </p>
     </about.38>
 
-    <title.39 value="Expanding Empire" />
+
+    
+    <expanding_empire.title value="Expanding Empire" />
+
+    <title.39 value="[reference:expanding_empire.title]" />
     <about.39>
       <p>Good job, Commander.</p>
       <p>
@@ -2587,13 +2594,13 @@
       </p>
     </about.39>
 
-    <title.40 value="Expanding Empire (II)" />
+    <title.40 value="[reference:expanding_empire.title] (II)" />
     <about.40>
       <p>Commander.</p>
       <p>I am sure you are happy with our empire. But will you stop at this?</p>
     </about.40>
 
-    <title.41 value="Expanding Empire (III)" />
+    <title.41 value="[reference:expanding_empire.title] (III)" />
     <about.41>
       <p>Commander.</p>
       <p>
@@ -2602,7 +2609,7 @@
       </p>
     </about.41>
 
-    <title.42 value="Expanding Empire (IV)" />
+    <title.42 value="[reference:expanding_empire.title] (IV)" />
     <about.42>
       <p>Commander.</p>
       <p>
@@ -2759,7 +2766,13 @@
   </Resources>
 
   <SSObjects>
+    <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    
     <title.info value="{0} info" />
+    <!-- TODO: fix code -->
+    <type.Planet value="Planet" />
+    <type.Jumpgate value="Jumpgate" />
+    <type.Asteroid value="Asteroid" />
+    
     <label.owner value="Occupied by" />
     <label.inviteToAlliance value="Invite owner to alliance"/>
     <label.unoccupied value="Unoccupied" />
@@ -2767,9 +2780,6 @@
     <label.toGalaxy value="Go to galaxy" />
     <label.endsAt value="Ends at {0}" />
     <label.cooldownEndsIn value="Ends in" />
-    <type.Planet value="Planet" />
-    <type.Jumpgate value="Jumpgate" />
-    <type.Asteroid value="Asteroid" />
     <location.sector value="Sector {0}:{1}" />
     <location.position value="Orbit" />
     <location.angle value="Angle" />
@@ -3489,6 +3499,8 @@
         or with small groups with [reference:Objects/Dirac2] whom they still 
         protect. 
       </p>
+      <p>If you get a grasp on few of these ships know that they are pretty
+      useful in air to ground bombardment of your enemy ground forces.</p>
     </Thor.about>
 
     <Demosis.name ref="Objects/Demosis" />

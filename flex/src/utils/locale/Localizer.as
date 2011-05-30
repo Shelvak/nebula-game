@@ -125,8 +125,10 @@ package utils.locale
                   parameters.length + " were provided. The string to pluralize was: " + str
                );
             }
-            var useNumber:Number = parameters[paramIndex];
-            var useForms:Array = getPluralForms(locale, useNumber);
+            var parameter:* = parameters[paramIndex];
+            var usableFormNames:Array = (parameter is Number) 
+               ? getPluralForms(locale, parameter as Number)
+               : [parameter];
             var forms:String = paramPatternResult[2];
             
             // Try to match any form that matches.
@@ -135,18 +137,20 @@ package utils.locale
             // and if that does not exist, try "firsts". Raise error
             // if none of the forms can be applied.
             var formMatched: Boolean = false;
-            for (var useForm: String in useForms) {
+            for (var usableFormName: String in usableFormNames) {
                // look for required form and construct parameter replacement
                var formPatternResult:Object = null;
                FORM_PATTERN.lastIndex = 0;
+               
+               // Match form regexps.
                while ((formPatternResult = FORM_PATTERN.exec(forms)) != null)
                {
-                  var form:String = formPatternResult[1];
+                  var formName:String = formPatternResult[1];
                   var formData:String = formPatternResult[2];
-                  if (form == useForm)
+                  if (formName == usableFormName)
                   {
                      matchedParamRepl = com.adobe.utils.StringUtil.replace(
-                        formData, "?", useNumber.toString());
+                        formData, "?", parameter);
                      break;
                   }
                }
@@ -163,9 +167,9 @@ package utils.locale
             if (! formMatched) {
                // we didn't find a required plural form
                throw new Error(
-                  "None of plural forms '" + useForms.join(", ") + 
+                  "None of plural forms '" + usableFormNames.join(", ") + 
                   "' found in parameter " + matchedParamStr +
-                  " for number " + useNumber + 
+                  " for parameter " + parameter + 
                   ". The string to pluralize was: " + str
                );
             }
