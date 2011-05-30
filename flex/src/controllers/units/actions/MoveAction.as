@@ -4,14 +4,8 @@ package controllers.units.actions
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
    import controllers.units.OrdersController;
-   import controllers.units.SquadronsController;
    
-   import models.BaseModel;
    import models.location.LocationMinimal;
-   import models.movement.MSquadron;
-   import models.unit.Unit;
-   
-   import mx.collections.IList;
    
    import utils.remote.rmo.ClientRMO;
    
@@ -21,14 +15,7 @@ package controllers.units.actions
     * action.
     * 
     * <p>
-    * Client -->> Server:</br>
-    * <ul>
-    *    <li><code>unitIds</code> - array of IDs of units to move</li>
-    *    <li><code>source</code> - current location of units</li>
-    *    <li><code>target</code> - units destination</li>
-    *    <li><code>jumpgate</code> - instance of <code>Planet</code> units will travel through
-    *        (needed only if units move from solar system to a galaxy or other solar system)</li>
-    * </ul>
+    * Client -->> Server: <code>MoveActionParams</code>
     * </p>
     */
    public class MoveAction extends CommunicationAction
@@ -46,13 +33,12 @@ package controllers.units.actions
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
          GF.lockApplication = true;
-         var squad:MSquadron = cmd.parameters.squad;
-         var unitIds:Array = cmd.parameters.units;
-         var locSource:LocationMinimal = cmd.parameters.source;
-         var locTarget:LocationMinimal = cmd.parameters.target;
+         var params:MoveActionParams = MoveActionParams(cmd.parameters);
+         var locSource:LocationMinimal = params.sourceLocation;
+         var locTarget:LocationMinimal = params.targetLocation;
          
          sendMessage(new ClientRMO({
-            "unitIds": unitIds,
+            "unitIds": params.unitIds,
             "source": {
                "locationId": locSource.id, "locationType": locSource.type,
                "locationX": locSource.x, "locationY": locSource.y
@@ -61,8 +47,9 @@ package controllers.units.actions
                "locationId": locTarget.id, "locationType": locTarget.type,
                "locationX": locTarget.x, "locationY": locTarget.y
             },
-            "avoidNpc": cmd.parameters.avoid
-         }, squad));
+            "avoidNpc": params.avoidNpc,
+            "speedModifier": params.speedModifier
+         }, params.squadron));
       }
       
       

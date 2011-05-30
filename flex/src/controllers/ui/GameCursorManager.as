@@ -24,7 +24,7 @@ package controllers.ui
    import spark.components.ToggleButton;
    import spark.primitives.BitmapImage;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.assets.Cursors;
    import utils.datastructures.PriorityQueue;
 
@@ -146,7 +146,7 @@ package controllers.ui
        */
       public function setDefaultCursorImage(image:BitmapData) : void
       {
-         ClassUtil.checkIfParamNotNull("image", image);
+         Objects.paramNotNull("image", image);
          if (_defaultCursorImage != null)
          {
             throw new IllegalOperationError("Default cursor image can only be set once");

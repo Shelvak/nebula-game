@@ -3,7 +3,7 @@ package models.chat
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    
    
    /**
@@ -32,7 +32,7 @@ package models.chat
        */
       public function addChannel(channel:MChatChannel) : void
       {
-         ClassUtil.checkIfParamNotNull("channel", channel);
+         Objects.paramNotNull("channel", channel);
          if (containsChannel(channel.name))
          {
             throw new ArgumentError("Channel " + channel + " is already in the list");
@@ -52,7 +52,7 @@ package models.chat
        */
       public function removeChannel(channel:MChatChannel) : void
       {
-         ClassUtil.checkIfParamNotNull("channel", channel);
+         Objects.paramNotNull("channel", channel);
          var toRemove:MChatChannel = getChannel(channel.name);
          if (toRemove == null)
          {
@@ -95,7 +95,7 @@ package models.chat
        */
       internal function moveChannel(name:String, newIndex:int) : void
       {
-         ClassUtil.checkIfParamNotEquals("name", name, [null, ""]);
+         Objects.paramNotEquals("name", name, [null, ""]);
          
          var channel:MChatChannel = getChannel(name);
          if (channel == null)

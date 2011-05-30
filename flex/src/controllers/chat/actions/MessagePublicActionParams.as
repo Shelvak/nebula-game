@@ -1,6 +1,8 @@
 package controllers.chat.actions
 {
    import models.chat.MChatMessage;
+   
+   import utils.Objects;
 
    /**
     * Aggregates parameters of <code>controllers.chat.actions.MessagePublicAction</code> client command.
@@ -17,7 +19,7 @@ package controllers.chat.actions
        */
       public function MessagePublicActionParams(message:MChatMessage)
       {
-         this.message = message;
+         this.message = Objects.paramNotNull("message", message);
       }
       
       

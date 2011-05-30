@@ -38,7 +38,7 @@ package models.planet
    import mx.collections.SortField;
    import mx.events.CollectionEvent;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.ModelUtil;
    import utils.datastructures.Collections;
    
@@ -969,8 +969,7 @@ package models.planet
        */
       public override function removeObject(obj:BaseModel, silent:Boolean = false) : *
       {
-         ClassUtil.checkIfParamNotNull("obj", obj);
-         var object:PlanetObject = PlanetObject(obj);
+         var object:PlanetObject = Objects.paramNotNull("obj", obj);
          var x:int = object.x;
          var y:int = object.y;
          if (objectsMatrix[x][y] == object)

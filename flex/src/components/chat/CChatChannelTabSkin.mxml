@@ -85,6 +85,7 @@
    
    <!-- layer 2: text and close button -->
    <s:Label id="labelDisplay" maxDisplayedLines="1"
+            mouseEnabled="false" mouseChildren="false"
             left="18" right="26" bottom="1"
             fontSize="10"
             color.selectedStates="0xF6AC22"/>

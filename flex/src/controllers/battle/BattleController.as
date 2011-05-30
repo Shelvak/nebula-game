@@ -53,7 +53,7 @@ package controllers.battle
    
    import spark.components.NavigatorContent;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.MathUtil;
    import utils.StringUtil;
    
@@ -161,7 +161,7 @@ package controllers.battle
        */
       public function BattleController(battle:Battle, battleMap:BattleMap)
       {
-         ClassUtil.checkIfParamNotNull("battle", battle);
+         Objects.paramNotNull("battle", battle);
          
          _battle = battle;
          _battleMap = battleMap;
@@ -392,7 +392,7 @@ package controllers.battle
       {
          if (!appeared)
          {
-            if (ClassUtil.hasAnyProperty(_battle.appearOrders))
+            if (Objects.hasAnyProperty(_battle.appearOrders))
             {
                executeOrder();
             }

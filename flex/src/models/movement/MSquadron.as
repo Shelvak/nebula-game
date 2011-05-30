@@ -22,7 +22,7 @@ package models.movement
    
    import namespaces.client_internal;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.datastructures.Collections;
    
    
@@ -417,7 +417,7 @@ package models.movement
        */
       public function addHop(hop:MHop) : void
       {
-         ClassUtil.checkIfParamNotNull("hop", hop);
+         Objects.paramNotNull("hop", hop);
          if (hasLocationEqualTo(hop.location))
          {
             throwLocationAlreadyInRouteError(hop.location);

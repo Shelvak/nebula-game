@@ -18,7 +18,7 @@ package components.movement
    
    import spark.components.Group;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.DateUtil;
    import utils.locale.Localizer;
    
@@ -51,8 +51,8 @@ package components.movement
       public function CRoute(squadC:CSquadronMapIcon, grid:Grid)
       {
          super();
-         ClassUtil.checkIfParamNotNull("squadron", squadC);
-         ClassUtil.checkIfParamNotNull("grid", grid);
+         Objects.paramNotNull("squadron", squadC);
+         Objects.paramNotNull("grid", grid);
          left = right = top = bottom = 0;
          mouseEnabled = mouseChildren = visible = false;
          _squadC = squadC;

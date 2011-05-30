@@ -3,7 +3,7 @@ package models.chat
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    
    
    /**
@@ -36,7 +36,7 @@ package models.chat
        */
       public function addMember(member:MChatMember) : void
       {
-         ClassUtil.checkIfParamNotNull("member", member);
+         Objects.paramNotNull("member", member);
          if (containsMember(member.id))
          {
             throw new ArgumentError("Member " + member + " is already in the list");
@@ -56,7 +56,7 @@ package models.chat
        */
       public function removeMember(member:MChatMember) : void
       {
-         ClassUtil.checkIfParamNotNull("member", member);
+         Objects.paramNotNull("member", member);
          var toRemove:MChatMember = getMember(member.id);
          if (toRemove == null)
          {

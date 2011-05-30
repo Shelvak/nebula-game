@@ -7,12 +7,6 @@
                 autoDrawBackground="false">
    
    
-   <fx:Declarations>
-      <mx:DateFormatter id="dateFormatter"
-                        formatString="{Localizer.string('Formatters', 'format.shortDateTime')}"/>
-   </fx:Declarations>
-   
-   
    <s:states>
       <s:State name="normal"/>
       <s:State name="selected"/>
@@ -245,8 +239,9 @@
          
          import mx.graphics.SolidColor;
          
-         import utils.locale.Localizer;
+         import utils.DateUtil;
          import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
          
          
          private static const ML:ModelLocator = ModelLocator.getInstance();
@@ -365,7 +360,7 @@
             {
                lblCreatedAt.text =
                   Localizer.string('Notifications', 'label.createdAt') + ": " +
-                  dateFormatter.format(notification.createdAt);
+                  DateUtil.formatShortDateTime(notification.createdAt);
             }
          }
          
@@ -376,7 +371,7 @@
             {
                lblExpiresAt.text =
                   Localizer.string('Notifications', 'label.expiresAt') + ": " +
-                  dateFormatter.format(notification.expiresAt);
+                  DateUtil.formatShortDateTime(notification.expiresAt);
             }
          }
          

@@ -12,14 +12,6 @@ package tests.animation.tests
       private var seq:Sequence;
       
       
-      [Test(description="when [param finishFrames] is null constuctor should throw an error",
-            expects="ArgumentError")]
-      public function instantiation_finishFrames_null() : void
-      {
-         new Sequence(null, null, null);
-      };
-      
-      
       [Test(description="[param finishFrames] beeing empty array should cause an error",
             expects="ArgumentError")]
       public function instantiation_finishFrames_empty() : void

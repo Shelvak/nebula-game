@@ -11,12 +11,14 @@ package models.events
        * Dispatched when <code>pending</code> property of <code>BaseModel</code>
        * changes.
        * 
-       * @eventType modelPendingChange
+       * @eventType pendingChange
        */
-      public static const PENDING_CHANGE:String = "modelPendingChange";
+      public static const PENDING_CHANGE:String = "pendingChange";
       
       
       /**
+       * Dispatched when <code>BaseModel.flag_destructionPendingSet</code> flag has been set.
+       * 
        * @eventType flagDestructionPendingSet
        * 
        * @see BaseModel#flag_destructionPending
@@ -28,9 +30,9 @@ package models.events
        * Dispatched when <code>id</code> property of <code>BaseModel</code>
        * changes.
        * 
-       * @eventType modelIdChange
+       * @eventType idChange
        */
-      public static const ID_CHANGE:String = "modelIdChange";
+      public static const ID_CHANGE:String = "idChange";
       
       
       /**

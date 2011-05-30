@@ -57,7 +57,7 @@ package components.notifications.parts
       protected override function commitProperties() : void
       {
          super.commitProperties();
-         if (fNotificationPartChange)
+         if (f_NotificationPartChange)
          {
             var part:ExplorationFinished = ExplorationFinished(notificationPart);
             unitsGroup.dataProvider = new ArrayCollection(part.rewards.units);
@@ -70,7 +70,7 @@ package components.notifications.parts
             unitsCont.visible = (part.rewards.units.length > 0);
             pointsGroup.visible = (part.rewards.points != 0);
          }
-         fNotificationPartChange = false;
+         f_NotificationPartChange = false;
       }
    }
 }

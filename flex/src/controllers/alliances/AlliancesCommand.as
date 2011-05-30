@@ -21,6 +21,18 @@ package controllers.alliances
       public static const EDIT_DESCRIPTION:String = "alliances|edit_description";
       
       
+      /**
+       * @see controllers.alliances.actions.JoinAction
+       */
+      public static const JOIN:String = "alliances|join";
+      
+      
+      /**
+       * @see controllers.alliances.actions.InviteAction
+       */
+      public static const INVITE:String = "alliances|invite";
+      
+      
       public function AlliancesCommand(type:String, parameters:Object = null, fromServer:Boolean = false)
       {
          super (type, parameters, fromServer);

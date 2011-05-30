@@ -1,8 +1,10 @@
 package tests.utils
 {
+   import tests.utils.tests.TCDateUtil;
    import tests.utils.tests.TCLocalizer;
    import tests.utils.tests.TCModelUtil;
    import tests.utils.tests.TCNumberUtil;
+   import tests.utils.tests.TCStringUtil;
    import tests.utils.tests.TCSyncUtil;
    
    
@@ -10,6 +12,8 @@ package tests.utils
    [RunWith("org.flexunit.runners.Suite")]
    public class TSUtils
    {
+      public var tcStringUtil:TCStringUtil;
+      public var tcDateUtil:TCDateUtil;
       public var tcSyncUtil:TCSyncUtil;
       public var tcLocalizer:TCLocalizer;
       public var tcNumberUtil:TCNumberUtil;

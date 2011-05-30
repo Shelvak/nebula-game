@@ -7,7 +7,7 @@ package controllers.folliages
    
    import mx.collections.IList;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.MathUtil;
    
    
@@ -57,8 +57,7 @@ package controllers.folliages
       
       public function setFolliages(folliages:IList) : void
       {
-         ClassUtil.checkIfParamNotNull("folliages", folliages);
-         _folliages = folliages;
+         _folliages = Objects.paramNotNull("folliages", folliages);
       }
       
       

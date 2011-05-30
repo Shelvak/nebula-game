@@ -2,7 +2,7 @@ package utils.datastructures.editors
 {
    import mx.collections.IList;
    
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.TypeChecker;
 
    /**
@@ -24,7 +24,7 @@ package utils.datastructures.editors
        */
       public static function getEditor(collection:*) : ICollectionEditor
       {
-         ClassUtil.checkIfParamNotNull("collection", collection);
+         Objects.paramNotNull("collection", collection);
          if (collection is Array)
          {
             return arrayEditor(collection);
@@ -37,7 +37,7 @@ package utils.datastructures.editors
          {
             return listEditor(collection);
          }
-         throw new ArgumentError("Unsupported collection type: " + ClassUtil.getClassName(collection));
+         throw new ArgumentError("Unsupported collection type: " + Objects.getClassName(collection));
       }
       
       

@@ -92,12 +92,12 @@ package components.notifications.parts
       protected override function commitProperties() : void
       {
          super.commitProperties();
-         if (fNotificationPartChange)
+         if (f_NotificationPartChange)
          {
             setQuestCompleted();
             setNewQuests();
          }
-         fNotificationPartChange = false;
+         f_NotificationPartChange = false;
       }
    }
 }

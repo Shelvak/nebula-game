@@ -9,10 +9,12 @@ package tests.chat.models.channel
    
    import models.chat.MChatChannelPrivate;
    import models.chat.MChatMember;
+   import models.chat.events.MChatChannelEvent;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.core.throws;
    import org.hamcrest.object.hasProperties;
+   import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
    import org.hamcrest.object.notNullValue;
    
@@ -36,11 +38,11 @@ package tests.chat.models.channel
          
          channel = new MChatChannelPrivate("friend");
          
-         player = createMember(ML.player.id, ML.player.name);
-         channel.members.addMember(player);
+         player = newMember(ML.player.id, ML.player.name);
+         channel.memberJoin(player, false);
          
-         friend = createMember(2, "friend");
-         channel.members.addMember(friend);
+         friend = newMember(2, "friend");
+         channel.memberJoin(friend, false);
       };
       
       
@@ -57,7 +59,7 @@ package tests.chat.models.channel
       public function should_not_allow_more_than_two_members_in_private_channel() : void
       {
          assertThat(
-            function():void{ channel.memberJoin(createMember(3, "intruder")) },
+            function():void{ channel.memberJoin(newMember(3, "intruder")) },
             throws (IllegalOperationError)
          );
       };
@@ -95,12 +97,96 @@ package tests.chat.models.channel
       };
       
       
-      private function createMember(id:int, name:String) : MChatMember
+      [Test]
+      public function should_set_isFriendOnline_property_when_a_friend_of_the_player_joins() : void
       {
-         var member:MChatMember = new MChatMember();
-         member.id = id;
-         member.name = name;
-         return member;
+         friend.isOnline = false;
+         var privateChan:MChatChannelPrivate = newChannel(friend.name);
+         privateChan.memberJoin(player, false);
+         // player is not friend so isFriendOnline should still be false
+         assertThat( privateChan.isFriendOnline, isFalse() );
+         privateChan.memberJoin(friend);
+         // online friend joined but he is offline so isFriendOnline should be false
+         assertThat( privateChan.isFriendOnline, isFalse() );
+         
+         friend.isOnline = true;
+         privateChan = newChannel(friend.name);
+         privateChan.memberJoin(friend, false);
+         // a friend joined and he is online so isFriendOnline should be true now
+         assertThat( privateChan.isFriendOnline, isTrue() );
+      };
+      
+      
+      [Test]
+      public function should_update_isFriendOnline_property_when_friend_goes_offline_and_then_online() : void
+      {
+         friend.isOnline = false;
+         var privateChan:MChatChannelPrivate = newChannel(friend.name);
+         privateChan.memberJoin(friend, false);
+         privateChan.memberJoin(player, false);
+         
+         var eventDispatched:Boolean;
+         privateChan.addEventListener(
+            MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE,
+            function(event:MChatChannelEvent) : void
+            {
+               eventDispatched = true;
+            }
+         );
+         
+         assertThat( privateChan.isFriendOnline, isFalse() );
+         
+         eventDispatched = false;
+         friend.isOnline = true;
+         assertThat( privateChan.isFriendOnline, isTrue() );
+         assertThat( eventDispatched, isTrue() );
+         
+         eventDispatched = false;
+         friend.isOnline = false;
+         assertThat( privateChan.isFriendOnline, isFalse() );
+         assertThat( eventDispatched, isTrue() );
+      };
+      
+      
+      [Test]
+      public function should_not_update_isFriendOnline_property_when_friend_online_status_changes_after_cleanup() : void
+      {
+         friend.isOnline = false;
+         var privateChan:MChatChannelPrivate = newChannel(friend.name);
+         privateChan.memberJoin(friend, false);
+         privateChan.memberJoin(player, false);
+         
+         var eventDispatched:Boolean = false;
+         privateChan.addEventListener(
+            MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE,
+            function(event:MChatChannelEvent) : void
+            {
+               eventDispatched = true;
+            }
+         );
+         
+         // this should unregister event listeners from the friend instance
+         privateChan.cleanup();
+         friend.isOnline = true;
+         assertThat( privateChan.isFriendOnline, isFalse() );
+         assertThat( eventDispatched, isFalse() );
+      };
+      
+      
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+      
+      
+      private function newChannel(name:String) : MChatChannelPrivate
+      {
+         return new MChatChannelPrivate(name);
+      }
+      
+      
+      private function newMember(id:int, name:String, isOnline:Boolean = true) : MChatMember
+      {
+         return new MChatMember(id, name, isOnline);;
       }
    }
 }

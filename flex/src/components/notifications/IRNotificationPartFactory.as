@@ -1,6 +1,7 @@
 package components.notifications
 {
    import components.notifications.parts.IRAchievementCompleted;
+   import components.notifications.parts.IRAllianceInvitation;
    import components.notifications.parts.IRBuildingsDeactivated;
    import components.notifications.parts.IRCombatLog;
    import components.notifications.parts.IRExplorationFinished;
@@ -18,16 +19,19 @@ package components.notifications
     */
    public class IRNotificationPartFactory
    {
-      private static const TYPE_TO_CLASS:Object = {
-         (String (NotificationType.NOT_ENOUGH_RESOURCES)): IRNotEnoughResources,
-         (String (NotificationType.COMBAT_LOG)): IRCombatLog,
-         (String (NotificationType.ACHIEVEMENT_COMPLETED)): IRAchievementCompleted,
-         (String (NotificationType.QUEST_COMPLETED)): IRQuestLog,
-         (String (NotificationType.BUILDINGS_DEACTIVATED)): IRBuildingsDeactivated,
-         (String (NotificationType.EXPLORATION_FINISHED)): IRExplorationFinished,
-         (String (NotificationType.PLANET_ANNEXED)): IRPlanetAnnexed,
-         (String (NotificationType.PLANET_PROTECTED)): IRPlanetProtected
-      };
+      private static const TYPE_TO_CLASS:Object = new Object();
+      with (NotificationType)
+      {
+         TYPE_TO_CLASS[NOT_ENOUGH_RESOURCES] = IRNotEnoughResources;
+         TYPE_TO_CLASS[COMBAT_LOG] = IRCombatLog;
+         TYPE_TO_CLASS[ACHIEVEMENT_COMPLETED] = IRAchievementCompleted;
+         TYPE_TO_CLASS[QUEST_COMPLETED] = IRQuestLog;
+         TYPE_TO_CLASS[BUILDINGS_DEACTIVATED] = IRBuildingsDeactivated;
+         TYPE_TO_CLASS[EXPLORATION_FINISHED] = IRExplorationFinished;
+         TYPE_TO_CLASS[PLANET_ANNEXED] = IRPlanetAnnexed;
+         TYPE_TO_CLASS[PLANET_PROTECTED] = IRPlanetProtected;
+         TYPE_TO_CLASS[ALLIANCE_INVITATION] = IRAllianceInvitation;
+      }
       
       
       /**

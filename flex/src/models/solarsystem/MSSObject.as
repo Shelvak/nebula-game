@@ -2,6 +2,8 @@ package models.solarsystem
 {
    import config.Config;
    
+   import controllers.alliances.AlliancesCommand;
+   import controllers.alliances.actions.InviteActionParams;
    import controllers.ui.NavigationController;
    
    import flash.display.BitmapData;
@@ -21,7 +23,6 @@ package models.solarsystem
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
    import models.map.MMapSpace;
-   import models.planet.MBoost;
    import models.player.Player;
    import models.player.PlayerId;
    import models.resource.Resource;
@@ -621,6 +622,27 @@ package models.solarsystem
       }
       
       
+      /**
+       * Will be <code>true</code> if current player can intite the owner of this planet to the alliance.
+       */
+      public function get canInviteOwnerToAlliance() : Boolean
+      {
+         return isOwned && !inBattleground && ML.player.canInviteToAlliance(_player.id);
+      }
+      
+      
+      /**
+       * Sends invitation to join players alliance if this is possible.
+       */
+      public function inviteOwnerToAlliance() : void
+      {
+         if (canInviteOwnerToAlliance)
+         {
+            new AlliancesCommand(AlliancesCommand.INVITE, new InviteActionParams(id)).dispatch();
+         }
+      }
+      
+      
       /* ################# */
       /* ### RESOURCES ### */
       /* ################# */
@@ -710,7 +732,7 @@ package models.solarsystem
       
       private function recalculateResources(event:GlobalEvent) : void
       {
-         var timeDiff:Number = Math.floor((new Date().time - lastResourcesUpdate.time) / 1000);
+         var timeDiff:Number = Math.floor((DateUtil.now - lastResourcesUpdate.time) / 1000);
          for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM])
          {
             var resource:Resource = this[type];
@@ -726,7 +748,7 @@ package models.solarsystem
          }
          if (nextRaidAt && ML.player.planetsCount >= Config.getRaidingPlanetLimit())
          {
-            raidTime = DateUtil.secondsToHumanString((nextRaidAt.time - new Date().time)/1000,2);
+            raidTime = DateUtil.secondsToHumanString((nextRaidAt.time - DateUtil.now)/1000,2);
          }
          else
          {
@@ -734,12 +756,16 @@ package models.solarsystem
          }
          
       }
-
+      
+      
       [Bindable]
       public var raidTime: String = null;
+      
+      
       /* ######################## */
       /* ### SELF DESTRUCTION ### */
       /* ######################## */
+      
       
       [Bindable]
       [Optional]

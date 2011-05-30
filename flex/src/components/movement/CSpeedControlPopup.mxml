@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<space:CSpaceMapPopup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                      xmlns:s="library://ns.adobe.com/flex/spark" 
+                      xmlns:mx="library://ns.adobe.com/flex/mx"
+                      xmlns:space="components.map.space.*"
+                      transparentWhenNotUnderMouse="false">
+   
+   <fx:Declarations>
+      <mx:NumberFormatter id="fmtSliderDataTip" precision="1"/>
+   </fx:Declarations>
+   
+   <fx:Script>
+      <![CDATA[
+         private function sldChangeSpeed_dataTipFormatFunction(value:Number) : String
+         {
+            return fmtSliderDataTip.format(value) + "%";
+         }
+         
+         
+         [Bindable]
+         public var model:CSpeedControlPopupM;
+         
+         
+         private function sldChangeSpeed_changeHandler(event:Event):void
+         {
+            if (model != null)
+            {
+               model.speedModifier = sldChangeSpeed.value / 100;
+            }
+         }
+      ]]>
+   </fx:Script>
+   
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor color="0x000000"/>
+      </s:fill>
+   </s:Rect>
+   
+   <s:Group left="5" right="5" top="5" bottom="5">
+      
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="center"/>
+      </s:layout>
+      
+      <s:Label id="lblArrivesIn"
+               text="{model.text_arrivesInLabel}"/>
+      <s:Label id="lblArrivesAt"
+               text="{model.text_arrivesAtLabel(model.arrivalDate.occuresAt)}"/>
+      <s:Group width="100%">
+         <s:layout>
+            <s:HorizontalLayout gap="5"/>
+         </s:layout>
+         <s:Label id="lblSpeedMin"
+                  text="{sldChangeSpeed_dataTipFormatFunction(model.speedModifierMin * 100)}"/>
+         <s:HSlider id="sldChangeSpeed" width="100%"
+                    minimum="{model.speedModifierMin * 100}"
+                    maximum="{model.speedModifierMax * 100}"
+                    value="{model.speedModifier * 100}"
+                    stepSize="0.1"
+                    dataTipFormatFunction="sldChangeSpeed_dataTipFormatFunction"
+                    change="sldChangeSpeed_changeHandler(event)"/>
+         <s:Label id="lblSpeedMax"
+                  text="{sldChangeSpeed_dataTipFormatFunction(model.speedModifierMax * 100)}"/>
+      </s:Group>
+      <s:Label id="lblSpeedUpCost"
+               text="{model.text_speedUpCostLabel}"
+               visible="{model.showSpeedUpCost}"
+               includeInLayout="{model.showSpeedUpCost}"/>
+      <s:Group>
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+         <s:Label id="lblCooldownInfo"
+                  text="{model.text_cooldownInfoLabel}"/>
+         <s:Button id="btnCooldownInfo"
+                   label="{model.label_cooldownInfoButton}"
+                   skinClass="components.skins.LinkButtonSkin"
+                   click="model.openPreBattleCooldownInfo()"/>
+      </s:Group>
+      <s:Group>
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+         <s:Button id="btnConfirm"
+                   visible="{model.playerHasEnoughCreds}"
+                   includeInLayout="{model.playerHasEnoughCreds}"
+                   label="{model.label_confirmButton}"
+                   click="model.confirm()"/>
+         <s:Button id="btnBuyCreds"
+                   visible="{!model.playerHasEnoughCreds}"
+                   includeInLayout="{!model.playerHasEnoughCreds}"
+                   label="{model.label_buyCredsButton}"
+                   click="model.buyCreds()"/>
+         <s:Button id="btnReset"
+                   label="{model.label_resetButton}"
+                   click="model.reset()"/>
+         <s:Button id="btnCancel"
+                   label="{model.label_cancelButton}"
+                   click="model.cancel()"/>
+      </s:Group>
+      
+   </s:Group>
+   
+</space:CSpaceMapPopup>

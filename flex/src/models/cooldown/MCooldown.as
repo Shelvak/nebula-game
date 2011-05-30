@@ -1,11 +1,8 @@
 package models.cooldown
 {
-   import com.adobe.errors.IllegalStateError;
-   
-   import flash.errors.IllegalOperationError;
+   import interfaces.IUpdatable;
    
    import models.BaseModel;
-   import models.IMSelfUpdating;
    import models.IMStaticMapObject;
    import models.cooldown.events.MCooldownEvent;
    import models.location.LocationMinimal;
@@ -23,7 +20,7 @@ package models.cooldown
    [Event(name="endsInChange", type="models.cooldown.events.MCooldownEvent")]
    
    
-   public class MCooldown extends BaseModel implements IMStaticMapObject, IMSelfUpdating
+   public class MCooldown extends BaseModel implements IMStaticMapObject, IUpdatable
    {
       public function MCooldown()
       {
@@ -63,10 +60,10 @@ package models.cooldown
        * [Bindable(event="endsInChange")]
        * </p>
        */
-      public function get endsIn() : int
+      public function get endsIn() : Number
       {
          checkState_endsAt();
-         return Math.max(0, (_endsAt.time - DateUtil.currentTime) / 1000);
+         return Math.max(0, (_endsAt.time - DateUtil.now) / 1000);
       }
       
       

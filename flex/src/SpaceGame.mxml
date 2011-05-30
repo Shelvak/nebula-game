@@ -144,7 +144,6 @@
             _messagesProcessor.process();
             _respMsgTracker.checkWaitingMessages();
          }
-
       ]]>
    </fx:Script>
    

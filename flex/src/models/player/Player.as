@@ -4,17 +4,30 @@ package models.player
    
    import globalevents.GlobalEvent;
    
+   import models.alliance.MAlliance;
    import models.player.events.PlayerEvent;
    import models.solarsystem.MSSObject;
    
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
-   import mx.utils.ObjectUtil;
    
    import utils.DateUtil;
    import utils.NumberUtil;
    import utils.StringUtil;
    import utils.datastructures.Collections;
+   
+   
+   /**
+    * @see models.player.events.PlayerEvent#CREDS_CHANGE
+    */
+   [Event(name="credsChange", type="models.player.events.PlayerEvent")]
+   
+   
+   /**
+    * @see models.player.events.PlayerEvent#SCIENTISTS_CHANGE
+    */
+   [Event(name="scientistsChange", type="models.player.events.PlayerEvent")]
+   
    
    [Bindable]
    public class Player extends PlayerMinimal
@@ -81,19 +94,29 @@ package models.player
          return res == 0 ? NumberUtil.compare(p0.id, p1.id) : res;
       }
       
+      
+      private var _creds: int = 0;
+      [Bindable(event="credsChange")]
       [Optional]
+      /**
+       * Amount of credits player has.
+       */
       public function set creds(value: int): void
       {
-         _creds = value;
-         dispatchCredsChangeEvent();
+         if (_creds != value)
+         {
+            _creds = value;
+            dispatchCredsChangeEvent();
+         }
       }
-      
-      [Bindable (event="playerCredsChanged")]
+      /**
+       * @private
+       */
       public function get creds(): int
       {
          return _creds;
       }
-      private var _creds: int = 0;
+      
       
       [Optional]
       public var vipLevel: int = 0;
@@ -116,7 +139,7 @@ package models.player
       public var populationMax: int = 0;
       
       private var _scientists:int = 0;
-      [Bindable(event='scientistsChanged')]
+      [Bindable(event="scientistsChange")]
       [Optional]
       public function set scientists(value: int): void
       {
@@ -141,11 +164,61 @@ package models.player
       public var xp:int = 0;
       
       
+      /* ################ */
+      /* ### ALLIANCE ### */
+      /* ################ */
+      
+      
       [Optional]
+      /**
+       * Id of alliance the player belongs to.
+       */
       public var allianceId:int = 0;
+      
       
       [Optional]
       public var allianceCooldownEndsAt: Date;
+      
+      
+      /**
+       * An alliance the player belongs to. This is not <code>null</code> only if <code>allianceId > 0</code>.
+       */
+      public function get alliance() : MAlliance
+      {
+         return ML.alliance;
+      }
+      
+      
+      /**
+       * <code>true</code> if this player belongs to an alliance.
+       */
+      public function get belongsToAlliance() : Boolean
+      {
+         return allianceId > 0;
+      }
+      
+      
+      /**
+       * Indicates if the player owns the alliance he/she belongs to.
+       */
+      public function get ownsAlliance() : Boolean
+      {
+         return alliance != null &&
+                alliance.ownerId == id;
+      }
+      
+      
+      /**
+       * Checks if a player with a given id can be invited to the alliance owned by the current player.
+       * 
+       * @param playerId id of a player.
+       * 
+       * @return <code>true</code> if a player can be invited to the alliance or <code>false</code> otherwise.
+       */
+      public function canInviteToAlliance(playerId:int) : Boolean
+      {
+         return ownsAlliance && Collections.findFirstWithId(alliance.players, playerId) == null;
+      }
       
       
       [SkipProperty]
@@ -279,6 +352,8 @@ package models.player
          armyPoints = 0;
          economyPoints = 0;
          planetsCount = 0;
+         allianceId = 0;
+         allianceCooldownEndsAt = null;
       }
       
       private function timedUpdateHandler(e: GlobalEvent): void
@@ -310,18 +385,12 @@ package models.player
       
       private function dispatchScientistsChangeEvent(): void
       {
-         if (hasEventListener(PlayerEvent.SCIENTISTS_CHANGE))
-         {
-            dispatchEvent(new PlayerEvent(PlayerEvent.SCIENTISTS_CHANGE));
-         }
+         dispatchSimpleEvent(PlayerEvent, PlayerEvent.SCIENTISTS_CHANGE);
       }
       
       private function dispatchCredsChangeEvent(): void
       {
-         if (hasEventListener(PlayerEvent.CREDS_CHANGE))
-         {
-            dispatchEvent(new PlayerEvent(PlayerEvent.CREDS_CHANGE));
-         }
+         dispatchSimpleEvent(PlayerEvent, PlayerEvent.CREDS_CHANGE);
       }
    }
 }

@@ -7,12 +7,7 @@ package controllers.startup
    import com.developmentarc.core.utils.EventBroker;
    
    import controllers.alliances.AlliancesCommand;
-   import controllers.alliances.actions.EditAction;
-   import controllers.alliances.actions.KickAction;
-   import controllers.alliances.actions.LeaveAction;
-   import controllers.alliances.actions.NewAction;
-   import controllers.alliances.actions.RatingsAction;
-   import controllers.alliances.actions.ShowAction;
+   import controllers.alliances.actions.*;
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.*;
    import controllers.chat.ChatCommand;
@@ -233,6 +228,7 @@ package controllers.startup
          bindPair(UnitsCommand.MOVE, new controllers.units.actions.MoveAction());
          bindPair(UnitsCommand.MOVEMENT, new MovementAction());
          bindPair(UnitsCommand.MOVEMENT_PREPARE, new MovementPrepareAction());
+         bindPair(UnitsCommand.ARRIVAL_DATE, new ArrivalDateAction());
       }
       private static function bindObjectsCommands() : void
       {
@@ -284,13 +280,18 @@ package controllers.startup
       }
       private static function bindAlliancesCommands() : void
       {
-         bindPair(AlliancesCommand.RATINGS, new controllers.alliances.actions.RatingsAction());
-         bindPair(AlliancesCommand.NEW, new controllers.alliances.actions.NewAction());
-         bindPair(AlliancesCommand.SHOW, new controllers.alliances.actions.ShowAction());
-         bindPair(AlliancesCommand.KICK, new controllers.alliances.actions.KickAction());
-         bindPair(AlliancesCommand.LEAVE, new controllers.alliances.actions.LeaveAction());
-         bindPair(AlliancesCommand.EDIT, new controllers.alliances.actions.EditAction());
-         bindPair(AlliancesCommand.EDIT_DESCRIPTION, new controllers.alliances.actions.EditDescriptionAction());
+         with (AlliancesCommand)
+         {
+            bindPair(RATINGS, new controllers.alliances.actions.RatingsAction());
+            bindPair(NEW, new controllers.alliances.actions.NewAction());
+            bindPair(SHOW, new controllers.alliances.actions.ShowAction());
+            bindPair(KICK, new controllers.alliances.actions.KickAction());
+            bindPair(LEAVE, new controllers.alliances.actions.LeaveAction());
+            bindPair(EDIT, new controllers.alliances.actions.EditAction());
+            bindPair(EDIT_DESCRIPTION, new controllers.alliances.actions.EditDescriptionAction());
+            bindPair(INVITE, new InviteAction());
+            bindPair(JOIN, new JoinAction());
+         }
       }
       private static function bindGalaxiesCommands() : void
       {

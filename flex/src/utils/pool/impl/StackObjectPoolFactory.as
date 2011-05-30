@@ -1,6 +1,6 @@
 package utils.pool.impl
 {
-   import utils.ClassUtil;
+   import utils.Objects;
    import utils.pool.IObjectPool;
    import utils.pool.IObjectPoolFactory;
    import utils.pool.IPoolableObjectFactory;
@@ -22,8 +22,7 @@ package utils.pool.impl
        */
       public function StackObjectPoolFactory(factory:IPoolableObjectFactory)
       {
-         ClassUtil.checkIfParamNotNull("factory", factory);
-         _factory = factory;
+         _factory = Objects.paramNotNull("factory", factory);
       }
       
       

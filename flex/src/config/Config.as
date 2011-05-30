@@ -3,14 +3,11 @@ package config
    import controllers.objects.ObjectClass;
    
    import models.building.BuildingBonuses;
-   import models.parts.UpgradableType;
    import models.tile.TileKind;
    import models.unit.ReachKind;
    import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
-   
-   import namespaces.client_internal;
    
    import utils.ModelUtil;
    import utils.StringUtil;
@@ -21,12 +18,6 @@ package config
     */
    public final class Config
    {
-      // Variables in client_internal namespace allow replacing implementation of certain configuration getters.
-      // This allows unit tests to be independent from server: you only have to provide implementations
-      // before running unit tests. Othwerwise configuration data would have to be retrieved from server.
-      // These variables should hold function with same signature as their counterparts in public namespace.
-      
-      
       private static var _data: Object = null;
       
       public static var assetsConfig: Object = null;
@@ -216,6 +207,15 @@ package config
       public static function getPointsToWin(): int
       {
          return getValue('battleground.victory.condition'); 
+      }
+      
+      
+      /**
+       * Returns duration of a pre-battle cooldown in seconds.
+       */
+      public static function getPreBattleCooldownDuration() : Number
+      {
+         return getValue("combat.cooldown.afterJump.duration");
       }
       
       /* ################################### */
@@ -435,15 +435,9 @@ package config
          return getUnitProperty(type, "hp");
       }
       
-      
-      client_internal static var getUnitKind:Function = function(type:String) : String
-      {
-         return getUnitProperty(type, "kind");
-      }
-      
       public static function getUnitKind(type: String): String
       {
-         return client_internal::getUnitKind(type);
+         return getUnitProperty(type, "kind");
       }
       
       public static function getUnitGuns(type: String): Array
@@ -485,6 +479,42 @@ package config
                types.push(StringUtil.firstToUpperCase(parts[0]));
          }
          return types;
+      }
+      
+      
+      /* ################ */
+      /* ### MOVEMENT ### */
+      /* ################ */
+      
+      
+      /**
+       * Minimum value of squad speed modifier: devide 1 from the result of this function to find out
+       * maximum number of times you can decrease squad movement speed.
+       */
+      public static function getMinMovementSpeedModifier() : Number
+      {
+         return getValue("units.move.modifier.min");
+      }
+      
+      
+      /**
+       * Maximum value of squad speed modifier (not necessarily 1 which means that if speed modifier is
+       * greater than one squadron will actully get slowed down): devide 1 from the result of this function
+       * to find out minimum number of times you can decrease squad movement speed.
+       */
+      public static function getMaxMovementSpeedModifier() : Number
+      {
+         return getValue("units.move.modifier.max");
+      }
+      
+      
+      /**
+       * Returns amount of credits required to instantly move (teleport) one squadron (number of units is
+       * not important) to its destination (distance is also not important).
+       */
+      public static function getMovementSpeedUpCredsCost() : int
+      {
+         return getValue("creds.move.speedUp");
       }
       
       
@@ -744,18 +774,12 @@ package config
       /* ### SOLAR SYSTEMS ### */
       /* ##################### */
       
-      
-      client_internal static var getSolarSystemVariations:Function = function() : int
-      {
-         return getValue("ui.solarSystem.variations");
-      };
-      
       /**
        * @return number of solar system variations  
        */
       public static function getSolarSystemVariations() : int
       {
-         return client_internal::getSolarSystemVariations();
+         return getValue("ui.solarSystem.variations");
       }
       
       

@@ -42,7 +42,7 @@ package components.notifications.parts
       protected override function commitProperties() : void
       {
          super.commitProperties();
-         if (fNotificationPartChange)
+         if (f_NotificationPartChange)
          {
             var part:NotEnoughResources = NotEnoughResources(notificationPart); 
             constructables.dataProvider = part.constructables;
@@ -51,7 +51,7 @@ package components.notifications.parts
             constructor.imageData =
                ImagePreloader.getInstance().getImage(AssetNames.getBuildingImageName(part.constructorType));
          }
-         fNotificationPartChange = false;
+         f_NotificationPartChange = false;
       }
    }
 }

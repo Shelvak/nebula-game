@@ -2,8 +2,6 @@ package utils.assets
 {
    import assets.AssetsBundle;
    
-   import utils.SingletonFactory;
-   
    import config.Config;
    
    import controllers.startup.StartupMode;
@@ -20,13 +18,13 @@ package utils.assets
    
    import models.ModelLocator;
    
-   import mx.core.BitmapAsset;
    import mx.events.ModuleEvent;
    import mx.formatters.NumberFormatter;
    import mx.modules.IModuleInfo;
    import mx.modules.ModuleManager;
    
    import utils.PropertiesTransformer;
+   import utils.SingletonFactory;
    
    
    
@@ -58,9 +56,6 @@ package utils.assets
     */ 
    public final class ImagePreloader extends EventDispatcher
    {
-      public static var testMode:Boolean = false;
-      
-      
       /**
        * @return instance of <code>ImagePreloader</code> for application wide use.
        */
@@ -140,10 +135,6 @@ package utils.assets
        */
       public function getImage(name:String) : BitmapData
       {
-         if (testMode)
-         {
-            return new BitmapData(1, 1);
-         }
          if (name.indexOf("null") != -1)
          {
             return null;

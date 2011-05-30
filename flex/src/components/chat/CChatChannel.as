@@ -10,10 +10,14 @@ package components.chat
    
    import models.chat.ChatConstants;
    import models.chat.MChatChannel;
+   import models.chat.MChatChannelPrivate;
+   import models.chat.events.MChatChannelEvent;
    
    import mx.core.ClassFactory;
    
    import spark.components.Button;
+   import spark.components.Group;
+   import spark.components.Label;
    import spark.components.TextArea;
    import spark.components.TextInput;
    import spark.components.supportClasses.SkinnableComponent;
@@ -87,6 +91,12 @@ package components.chat
                   textFlow_compositionCompleteHandler
                );
                txtContent.textFlow = null;
+               if (_modelOld is MChatChannelPrivate)
+               {
+                  MChatChannelPrivate(_modelOld).removeEventListener(
+                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE, model_isFriendOnlineChangeHandler, false
+                  );
+               }
                _modelOld = null;
             }
             if (_model != null)
@@ -98,6 +108,12 @@ package components.chat
                txtContent.textFlow = _model.content.text;
                lstMembers.model = _model.members;
                lstMembers.itemRendererFunction = _model.membersListIRFactory;
+               if (_model is MChatChannelPrivate)
+               {
+                  MChatChannelPrivate(_model).addEventListener(
+                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE, model_isFriendOnlineChangeHandler, false, 0, true
+                  );
+               }
             }
             else
             {
@@ -106,6 +122,7 @@ package components.chat
             }
             inpMessage.text = "";
             inpMessage.setFocus();
+            updateGrpFriendOfflineWarningContainer();
          }
          f_modelChanged = false;
       }
@@ -144,6 +161,28 @@ package components.chat
       public var btnSend:Button;
       
       
+      [SkinPart(required="true")]
+      /**
+       * Container for <code>lblFriendOfflineWarning</code> and corresponding artwork.
+       */
+      public var grpFriendOfflineWarningContainer:Group;
+      private function updateGrpFriendOfflineWarningContainer() : void
+      {
+         grpFriendOfflineWarningContainer.visible =
+         grpFriendOfflineWarningContainer.includeInLayout =
+            _model != null &&
+            _model is MChatChannelPrivate &&
+            !MChatChannelPrivate(_model).isFriendOnline;
+      }
+      
+      
+      [SkinPart(required="true")]
+      /**
+       * A warning that a friend in a private channel is offline.
+       */
+      public var lblFriendOfflineWarning:Label;
+      
+      
       protected override function partAdded(partName:String, instance:Object) : void
       {
          super.partAdded(partName, instance);
@@ -164,6 +203,14 @@ package components.chat
                btnSend.label = getString("label.send");
                btnSend.addEventListener(MouseEvent.CLICK, btnSend_clickHandler, false, 0, true);
                break;
+            
+            case lblFriendOfflineWarning:
+               lblFriendOfflineWarning.text = getString("message.friendOffline");
+               break;
+            
+            case grpFriendOfflineWarningContainer:
+               updateGrpFriendOfflineWarningContainer();
+               break;
          }
       }
       
@@ -182,6 +229,17 @@ package components.chat
                btnSend.removeEventListener(MouseEvent.CLICK, btnSend_clickHandler, false);
                break;
          }
+      }
+      
+      
+      /* ############################ */
+      /* ### MODEL EVENT HANDLERS ### */
+      /* ############################ */
+      
+      
+      private function model_isFriendOnlineChangeHandler(event:MChatChannelEvent) : void
+      {
+         updateGrpFriendOfflineWarningContainer();
       }
       
       
