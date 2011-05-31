@@ -174,6 +174,9 @@ package controllers.ui
          (String (MainAreaScreens.RATINGS)): new ScreenProperties(
             MainAreaScreens.RATINGS, null, false
          ),
+         (String (MainAreaScreens.VIP)): new ScreenProperties(
+            MainAreaScreens.VIP, null, false
+         ),
          (String (MainAreaScreens.ALLY_RATINGS)): new ScreenProperties(
             MainAreaScreens.ALLY_RATINGS, null, false
          ),
@@ -591,6 +594,10 @@ package controllers.ui
          resetToNonMapScreen(_screenProperties[MainAreaScreens.NOTIFICATIONS]);
       }
       
+      public function showVip() :void
+      {
+         showNonMapScreen(_screenProperties[MainAreaScreens.VIP]);
+      }
       
       public function showAlliance() :void
       {

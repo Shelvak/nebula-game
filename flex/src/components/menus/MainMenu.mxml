@@ -16,16 +16,19 @@
    
    <fx:Script>
       <![CDATA[
+         import components.skins.CreditButtonSkin;
+         
+         import config.Config;
+         
          import controllers.GlobalFlags;
          import controllers.alliances.AlliancesCommand;
+         
+         import models.credit.VipLevelsData;
          
          import mx.controls.Alert;
          
          import utils.StringUtil;
-      ]]>
-   </fx:Script>
-   <fx:Script>
-      <![CDATA[
+         
          import controllers.startup.StartupManager;
          import components.skins.StartButtonSkin;
          
@@ -37,6 +40,7 @@
          import utils.locale.Localizer;
          import utils.assets.AssetNames;
          
+         private var NC: NavigationController = NavigationController.getInstance();
          
          /**
           * Show and hide menu items when btnStart is toggled.
@@ -74,107 +78,136 @@
    
    <!--- Styled container for menu buttons. -->
    <s:SkinnableContainer bottom="{btnStart.height + 3}" id="menuItems" enabled="false" click="toggleStartButton(event)">
-      
-      <s:Group width="100%">
-         <s:Label text="{ML.player.name}" paddingTop="6" fontSize="18" color="#eec500" maxDisplayedLines="1"
-                  paddingBottom="6" left="0" right="0" textAlign="center" showTruncationTip="true"/>
-      </s:Group>
-      <s:Group width="100%">
-         <s:Group horizontalCenter="0">
-            <s:Group>
-               <s:Label text="{Localizer.string('Resources','population') + ':'}" width="65"/>
-               <s:Label text="{ML.player.population + ' / ' + ML.player.populationMax}"/>
-               <s:layout>
-                  <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
-               </s:layout>
-            </s:Group>
-            <s:Group>
-               <s:Label text="{Localizer.string('Resources','scientists') + ':'}" width="65"/>
-               <s:Label text="{ML.player.scientists + ' / ' + ML.player.scientistsTotal}"/>
-               <s:layout>
-                  <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
-               </s:layout>
-            </s:Group>
-            <s:Group>
-               <s:Label text="{Localizer.string('Resources','points') + ':'}" width="65"/>
-               <s:Label text="{ML.player.points}"/>
-               <s:layout>
-                  <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
-               </s:layout>
-            </s:Group>
-            <s:Group toolTip="{Localizer.string('Ratings','victoryPoints')}">
-               <s:Label text="{Localizer.string('Resources','vps') + ':'}" width="65"/>
-               <s:Label text="{ML.player.victoryPoints}"/>
-               <s:layout>
-                  <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
-               </s:layout>
-            </s:Group>
-            <s:Group>
-               <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.creds')) + ':'}" 
-                        width="65"/>
-               <s:Label text="{ML.player.creds}"/>
-               <s:layout>
-                  <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
-               </s:layout>
-            </s:Group>
-            <s:layout>
-               <s:VerticalLayout gap="1"/>
-            </s:layout>
+      <base:AdvancedContainer left="0" right="0">
+         <s:Group width="100%">
+            <s:Label text="{ML.player.name}" paddingTop="6" fontSize="18" color="#eec500" maxDisplayedLines="1"
+                     paddingBottom="6" left="0" right="0" textAlign="center" showTruncationTip="true"/>
          </s:Group>
-      </s:Group>
-      
-      <!--- Button for viewing alliance screen. -->
-      <s:Group width="100%">
-         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-         <s:Button id="btnAlliance" click="NavigationController.getInstance().showAlliance()" left="22" right="0" top="5" bottom="5"
-                   label="{Localizer.string('MainMenu', 'label.alliance')}"/>
-      </s:Group>
-      <!--- Button for viewing quest screen. -->
-      <s:Group width="100%">
-         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-         <s:Button id="btnQuests" click="NavigationController.getInstance().showQuests()" left="22" right="0" top="5" bottom="5"
-                   label="{Localizer.string('MainMenu', 'label.quests')}"/>
-      </s:Group>
-      <!--- Button for viewing squadrons screen. -->
-      <s:Group width="100%">
-         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-         <s:Button id="btnSquadrons" click="NavigationController.getInstance().showSquadrons()" left="22" right="0" top="5" bottom="5"
-                   label="{Localizer.string('MainMenu', 'label.squadrons') + 
-                   (ML.routes.length > 0?' (' + ML.routes.length + ')':'')}"/>
-      </s:Group>
-      <!--- Button for viewing ratings screen. -->
-      <s:Group width="100%">
-         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-         <s:Button id="btnRatings" click="GlobalFlags.getInstance().lockApplication = true;
-                   new PlayersCommand(PlayersCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
-                                                                          label="{Localizer.string('MainMenu', 'label.ratings')}"/>
-      </s:Group>
-      <!--- Button for viewing alliance ratings screen. -->
-      <s:Group width="100%">
-         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-         <s:Button id="btnAllyRatings" click="GlobalFlags.getInstance().lockApplication = true;
-                   new AlliancesCommand(AlliancesCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
-                                                                              label="{Localizer.string('MainMenu', 'label.alliances')}"/>
-      </s:Group>
-      <!--- 
-      <s:Group width="100%">
-      <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-      <s:Button id="btnVip" click="Alert.show('Bring money to 101a cab. in KTU')"
-      skinClass="components.skins.CreditButtonSkin"
-      left="22" right="0" top="5" bottom="5" 
-      label="{Localizer.string('Credits', 'label.vip')}"/>
-      </s:Group> -->
-      <s:Group height="10"/>
-      <!--- Button for logging out from the game. -->
-      <s:Group width="100%">
-         <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-         <s:Button id="btnForum" click="navigateToURL(new URLRequest('http://nebula44.com/forum/'))" 
-                   left="22" right="0" top="5" bottom="5"
-                   label="{Localizer.string('MainMenu', 'label.forum')}"/>
-      </s:Group>
-      <s:layout>
-         <s:VerticalLayout gap="1"/>
-      </s:layout>
+         <s:Group width="100%">
+            <base:AdvancedContainer horizontalCenter="0">
+               <s:Group visible="{ML.player.vipLevel > 0}">
+                  <s:Group>
+                     <s:Label text="{Localizer.string('Credits','label.vipCreds') + ':'}" width="65"/>
+                     <s:Label text="{ML.player.vipCreds + ' / ' + 
+                              VipLevelsData.getVipDailyBonus(ML.player.vipLevel)}"/>
+                     <s:layout>
+                        <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+                     </s:layout>
+                  </s:Group>
+                  <s:Group>
+                     <s:Label text="{Localizer.string('Credits','label.nextVipTick') + ':'}" width="65"/>
+                     <s:Label text="{ML.player.vipCredsTime}"/>
+                     <s:layout>
+                        <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+                     </s:layout>
+                  </s:Group>
+                  <s:Group>
+                     <s:Label text="{Localizer.string('Credits','label.vipEndsIn') + ':'}" width="65"/>
+                     <s:Label text="{ML.player.vipTime}"/>
+                     <s:layout>
+                        <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
+                     </s:layout>
+                  </s:Group>
+                  <s:layout>
+                     <s:VerticalLayout gap="1"/>
+                  </s:layout>
+               </s:Group>
+               <s:Group>
+                  <s:Label text="{Localizer.string('Resources','population') + ':'}" width="65"/>
+                  <s:Label text="{ML.player.population + ' / ' + ML.player.populationMax}"
+                           styleName="{ML.player.population >= ML.player.populationMax?'unsatisfied':null}"/>
+                  <s:layout>
+                     <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+                  </s:layout>
+               </s:Group>
+               <s:Group>
+                  <s:Label text="{Localizer.string('Resources','scientists') + ':'}" width="65"/>
+                  <s:Label text="{ML.player.scientists + ' / ' + ML.player.scientistsTotal}"/>
+                  <s:layout>
+                     <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+                  </s:layout>
+               </s:Group>
+               <s:Group>
+                  <s:Label text="{Localizer.string('Resources','points') + ':'}" width="65"/>
+                  <s:Label text="{ML.player.points}"/>
+                  <s:layout>
+                     <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
+                  </s:layout>
+               </s:Group>
+               <s:Group toolTip="{Localizer.string('Ratings','victoryPoints')}">
+                  <s:Label text="{Localizer.string('Resources','vps') + ':'}" width="65"/>
+                  <s:Label text="{ML.player.victoryPoints}"/>
+                  <s:layout>
+                     <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
+                  </s:layout>
+               </s:Group>
+               <s:Group>
+                  <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.creds')) + ':'}" 
+                           width="65"/>
+                  <s:Label text="{ML.player.creds}"/>
+                  <s:layout>
+                     <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
+                  </s:layout>
+               </s:Group>
+               <base:layout>
+                  <s:VerticalLayout gap="1"/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </s:Group>
+         
+         <!--- Button for viewing vip screen. -->
+         <s:Group width="100%" visible="{ML.player.vipLevel == 0}">
+            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:Button id="btnVip" click="NC.showVip()" 
+                      left="22" right="0" top="5" bottom="5"
+                      label="{Localizer.string('MainMenu', 'label.vip')}"
+                      skinClass="components.skins.CreditButtonSkin"/>
+         </s:Group>
+         <!--- Button for viewing alliance screen. -->
+         <s:Group width="100%">
+            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:Button id="btnAlliance" click="NC.showAlliance()" left="22" right="0" top="5" bottom="5"
+                      label="{Localizer.string('MainMenu', 'label.alliance')}"/>
+         </s:Group>
+         <!--- Button for viewing quest screen. -->
+         <s:Group width="100%">
+            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:Button id="btnQuests" click="NC.showQuests()" left="22" right="0" top="5" bottom="5"
+                      label="{Localizer.string('MainMenu', 'label.quests')}"/>
+         </s:Group>
+         <!--- Button for viewing squadrons screen. -->
+         <s:Group width="100%">
+            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:Button id="btnSquadrons" click="NC.showSquadrons()" left="22" right="0" top="5" bottom="5"
+                      label="{Localizer.string('MainMenu', 'label.squadrons') + 
+                      (ML.routes.length > 0?' (' + ML.routes.length + ')':'')}"/>
+         </s:Group>
+         <!--- Button for viewing ratings screen. -->
+         <s:Group width="100%">
+            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:Button id="btnRatings" click="GlobalFlags.getInstance().lockApplication = true;
+                      new PlayersCommand(PlayersCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
+                                                                             label="{Localizer.string('MainMenu', 'label.ratings')}"/>
+         </s:Group>
+         <!--- Button for viewing alliance ratings screen. -->
+         <s:Group width="100%">
+            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:Button id="btnAllyRatings" click="GlobalFlags.getInstance().lockApplication = true;
+                      new AlliancesCommand(AlliancesCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
+                                                                                 label="{Localizer.string('MainMenu', 'label.alliances')}"/>
+         </s:Group>
+         <s:Group height="10"/>
+         <!--- Button for logging out from the game. -->
+         <s:Group width="100%">
+            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:Button id="btnForum" click="navigateToURL(new URLRequest('http://nebula44.com/forum/'))" 
+                      left="22" right="0" top="5" bottom="5"
+                      label="{Localizer.string('MainMenu', 'label.forum')}"/>
+         </s:Group>
+         <base:layout>
+            <s:VerticalLayout gap="1"/>
+         </base:layout>
+      </base:AdvancedContainer>
       
    </s:SkinnableContainer>
    

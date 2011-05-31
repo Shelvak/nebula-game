@@ -21,11 +21,11 @@
          <s:VerticalLayout paddingLeft="6" paddingTop="6"/>
       </base:layout>
       <s:Button id="lblQuestCompleted" skinClass="components.skins.LinkButtonSkin"/>
-      <s:Label id="lblNewQuests"/>
+      <s:Label id="lblNewQuests" paddingTop="10" paddingBottom="2"/>
       <s:DataGroup id="newQuestsGroup" width="100%" 
                    itemRenderer="components.quests.IRQuestLink">
          <s:layout>
-            <s:VerticalLayout paddingLeft="6"/>
+            <s:VerticalLayout paddingLeft="16"/>
          </s:layout>
       </s:DataGroup>
    </base:AdvancedContainer>

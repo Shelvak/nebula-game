@@ -728,13 +728,43 @@
 
   <Credits>
     <label.accelerate value="Accelerate" />
-    <label.vip value="VIP" />
+    <message.vipOrdered value="VIP ordered successfully" />
+    <title.becomeVIP value="Become A VIP" />
+    <label.becomeVIP>
+      <p>
+        Becoming a VIP grants you daily creds you can spend 
+        on anything you like.
+      </p>
+      <p>
+        Also we're giving you more than you have paid for!
+      </p>
+    </label.becomeVIP>
+    <warning.becomeVIP>
+      <p>
+        Beware that you should spend all your daily creds.<br/>
+        Unspent creds are not transfered to other day.<br/>
+        Next day is considered to be 24 hours after your VIP 
+        has started.
+      </p>
+    </warning.becomeVIP>
+    <tab.select value="Select" />
+    <tab.vipLevel value="VIP level" />
+    <tab.cost value="Cost" />
+    <tab.dailyCreds value="Daily Creds" />
+    <tab.duration value="Duration" />
+    <tab.totalCreds value="Total creds you get" />
+    <label.totalCreds value="{0} * {1} = {2} ({3} times more!)" />
+    <label.vipCreds value="VIP creds" />
+    <label.nextVipTick value="VIP tick in" />
+    <label.vipEndsIn value="VIP ends in" />
     <label.whouldFinish value="Upgrade would finish in" />
     <label.selectAccelerate value="Select acceleration amount" />
     <label.creds value="creds" />
     <label.waitingCreds value="Waiting for creds..." />
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />
+    <label.cancel value="Cancel" />
+    <label.order value="Order" />
     <label.buy value="Buy Creds" />
     <label.move value="Move" />
     <rate value="extraction rate" />
@@ -969,7 +999,7 @@
 
   <MainMenu>
 
-
+    <label.vip value="Vip" />
     <label.start value="Start" />
     <label.logout value="Logout" />
     <label.quests value="Quests" />

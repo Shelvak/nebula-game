@@ -278,6 +278,7 @@ package controllers.startup
          bindPair(PlayersCommand.RATINGS, new controllers.players.actions.RatingsAction());
          bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
          bindPair(PlayersCommand.EDIT, new controllers.players.actions.EditAction());
+         bindPair(PlayersCommand.VIP, new controllers.players.actions.VipAction());
       }
       private static function bindAlliancesCommands() : void
       {
