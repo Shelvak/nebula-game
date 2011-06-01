@@ -34,6 +34,9 @@
          [Bindable]
          public var achievements: ArrayCollection;
          
+         [Bindable]
+         private var IMG: ImagePreloader = ImagePreloader.getInstance();
+         
          private var NC: NavigationController = NavigationController.getInstance();
          
          protected function alliance_clickHandler(event:MouseEvent):void
@@ -64,9 +67,19 @@
       <s:Group width="100%">
          <s:Group width="100%">
             <s:Group width="{CONTENT_WIDTH}">
-               <components:CenteredBitmapImage source="{ImagePreloader.getInstance().getImage(
-                                               AssetNames.getUnitImageName('Trooper'))}"/>
-               <base:AdvancedContainer width="100%">
+               <s:BitmapImage left="0" top="0" id="topLeft" 
+                              source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 
+                              'player_screen/left')}"/>
+               <s:BitmapImage right="0" top="0" id="topRight"
+                              source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 
+                              'player_screen/right')}"/>
+               <s:BitmapImage left="{topLeft.width}" right="{topRight.width}" 
+                              fillMode="repeat"
+                              source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 
+                              'player_screen/center')}"/>
+               <components:CenteredBitmapImage left="78" top="57" width="110" height="130"
+                  source="{IMG.getImage(AssetNames.getUnitImageName('Trooper'))}"/>
+               <base:AdvancedContainer left="320" right="0" top="20">
                   <s:Group width="100%" toolTip="{Localizer.string('Ratings', player.online
                            ?'online':'offline')}">
                      <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
@@ -151,9 +164,6 @@
                      <s:VerticalLayout paddingLeft="20"/>
                   </base:layout>
                </base:AdvancedContainer>
-               <s:layout>
-                  <s:HorizontalLayout paddingLeft="10" paddingTop="10" gap="30"/>
-               </s:layout>
             </s:Group>
             <base:Panel width="{CONTENT_WIDTH}" skinClass="components.skins.LargePanelSkin"
                         title="{Localizer.string('Players', 'title.achievements')}">
