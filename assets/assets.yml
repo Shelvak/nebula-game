@@ -146,7 +146,7 @@ assets:
           %w{ExploreBlock ExploreBlock},
           %w{Destroy Unit Building},
           %w{UpgradeTo Unit Building Building::Radar},
-		  %w{HaveUpgradedTo Technology},
+          %w{HaveUpgradedTo Technology},
           %w{BecomeVip Vip},
           %w{Accelerate Unit Building Technology},
           ["CompleteQuests", ""],
@@ -521,6 +521,27 @@ assets:
         ring_top.png:               Ziedas_virus.png
         ring_bottom.png:            Ziedas_apacia.png
         ring_repeat.png:            Ziedas_repeat.png
+
+      "player_screen":
+        left.png:                   Pinfo_left.png
+        center.png:                 Pinfo_center_repeat.png
+        right.png:                  Pinfo_right.png
+
+      "large_panel":
+        top_center_left.png:        Mainwindow_top_center(left).png
+        top_center_right.png:       Mainwindow_top_center(right).png
+        top_center.png:             Mainwindow_top_center_repeat.png
+        top_repeat.png:             Mainwindow_top_left-right_repeat.png
+        top_right.png:              Mainwindow_top_left.png
+        top_left.png:               Mainwindow_top_right.png
+        bottom_center_left.png:     Mainwindow_bottom_center(left).png
+        bottom_center_right.png:    Mainwindow_bottom_center(right).png
+        bottom_center.png:          Mainwindow_bottom_center_repeat.png
+        bottom_repeat.png:          Mainwindow_bottom_left-right_repeat.png
+        bottom_right.png:           Mainwindow_bottom_left.png
+        bottom_left.png:            Mainwindow_bottom_right.png
+        center_right.png:           Mainwindow_center_right_repeat.png
+        center_left.png:            Mainwindow_center_left_repeat.png
 
       "storage_screen":
         location_center.png:           St_location_center.png

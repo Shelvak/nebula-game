@@ -11,6 +11,7 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.skins.LargePanelSkin;
          import components.skins.ListNonScrollableSkin;
          import components.skins.YellowButtonSkin;
          
@@ -1014,7 +1015,8 @@
                      </base:Panel>
                      
                      
-                     <base:Panel id="dataTable" title="{Localizer.string('InfoScreen', 'tableTitle')}" width="100%">
+                     <base:Panel id="dataTable" title="{Localizer.string('InfoScreen', 'tableTitle')}" width="100%"
+                                 skinClass="components.skins.LargePanelSkin">
                         <mx:DataGrid dataProvider="{dataForTable}" resizableColumns="false" selectable="false" 
                                      draggableColumns="false" rowCount="{dataForTable.length}"
                                      headerBackgroundSkin="components.skins.DataGridHeaderBackgroundSkin" 
