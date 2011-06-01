@@ -342,6 +342,7 @@
     <label.editDescription value="Keisti aprašymą" />
     <label.save value="Išsaugoti" />
     <label.cancel value="Atšaukti" />
+    <label.close value="Uždaryti" />
     <label.cooldown value="Tu galėsi įkurti sąjungą po {0}" />
     <label.create value="Įkurti sąjungą" />
     <label.allyExists value="Sąjunga su tokiu vardu jau yra." />
@@ -812,10 +813,13 @@
       armijos, statyk arba tobulink šiuos bokštus.</p>
     </Housing.about>
 
-    <ResourceTransporter.name ref="Objects/ResourceTransporter" /> <!-- <ResourceTransporter1 value="TODO: Resource transporter" /> -->
-
+    
+    <!--
+    <ResourceTransporter.name ref="Objects/ResourceTransporter" /> 
+    <ResourceTransporter1 value="TODO: Resource transporter" />
     <ResourceTransporter.tooltip value="Transports resources between planets" />
-    <ResourceTransporter.about value="Teleport resources with this one" />-->
+    <ResourceTransporter.about value="Teleport resources with this one" />
+    -->
 
     <Headquarters.name ref="Objects/Headquarters" />
     <Headquarters.about>
@@ -2545,7 +2549,7 @@
       <p>
         As we have built our [reference:Buildings/SpaceFactory.name] we should 
         start amassing our space fleet right now! As an easy first task go pick 
-        on some [reference:Objects/Dirac2]. 
+        on some Diracs. 
       </p>
     </about.35>
 
@@ -2675,7 +2679,7 @@
       <p>Commander.</p>
       <p>
         We should destroy some enemy transporters and corrupt their supplies. 
-        Hunt down some [reference:Objects/Mule2] and cripple their transport
+        Hunt down some Mules and cripple their transport
         lines. 
       </p>
     </about.43>
@@ -2771,10 +2775,14 @@
 
   <Ratings>
     <label.ratings value="Reitingai" />
+    <label.noAlliances value="Šioje galaktikoje sąjungų nėra" />
+    <label.allyRatings value="Sąjungų reitingai" />
+    <label.close value="Uždaryti"/>
     <rank value="#" />
     <player value="Žaidėjas" />
     <alliance value="Sąjunga" />
     <points value="Viso taškų" />
+    <playersCount value="Žaidėjai" />
     <planetsCount value="Planetos" />
     <warPoints value="Karo taškai" />
     <economyPoints value="Ekonomijos taškai" />
@@ -2941,23 +2949,28 @@
       <p>[reference:Zetium.common]</p>
     </ZetiumExtraction.about>
 
-    <Spy.name ref="Objects/Spy" /> <!-- <Spy1 value="Spy" /> -->
+    <!--
+    <Spy.name ref="Objects/Spy" /> <Spy1 value="Spy" />
     <Spy.about value="Just a simple spy technology" />
 
-    <Saboteur.name ref="Objects/Saboteur" /> <!-- <Saboteur1 value="Saboteur" /> -->
+    <Saboteur.name ref="Objects/Saboteur" />
+    <Saboteur1 value="Saboteur" />
     <Saboteur.about value="I think thisone has ability to ruin things" />
 
-    <SatteliteHacking.name ref="Objects/SatteliteHacking" /> <!-- <SatteliteHacking1 value="Sattelite hacking" /> -->
+    <SatteliteHacking.name ref="Objects/SatteliteHacking" />
+    <SatteliteHacking1 value="Sattelite hacking" />
     <SatteliteHacking.about>
       <p>This one will ruin any satelite if sysAdmin is not there</p>
     </SatteliteHacking.about>
 
-    <CamouflageSuits.name ref="Objects/CamouflageSuits" /> <!-- <CamouflageSuits1 value="Camouflage suits" /> -->
+    <CamouflageSuits.name ref="Objects/CamouflageSuits" />
+    <CamouflageSuits1 value="Camouflage suits" />
     <CamouflageSuits.about>
       <p>You can dress with this one if you go to picnic</p>
     </CamouflageSuits.about>
 
-    <TacticalReconnaissance.name ref="Objects/TacticalReconnaissance" /> <!-- <TacticalReconnaissance1 value="Tactical reconnaissance" /> -->
+    <TacticalReconnaissance.name ref="Objects/TacticalReconnaissance" />
+    <TacticalReconnaissance1 value="Tactical reconnaissance" />
     <TacticalReconnaissance.about>
       <p>
         This is very strage technology, it is told that ancient scientists are 
@@ -2965,11 +2978,14 @@
       </p>
     </TacticalReconnaissance.about>
 
-    <R14Charges.name ref="Objects/R14Charges" /> <!-- <R14Charges1 value="R14 charges" /> -->
+    <R14Charges.name ref="Objects/R14Charges" />
+    <R14Charges1 value="R14 charges" />
     <R14Charges.about value="Charge enemies with R14" />
 
-    <Spaceport.name ref="Objects/Spaceport" /> <!-- <Spaceport1 value="Spaceport" /> -->
+    <Spaceport.name ref="Objects/Spaceport" />
+    <Spaceport1 value="Spaceport" />
     <Spaceport.about value="Fly to the sky" />
+    -->
 
     <ArmorTech value="Ši technologija padidina šarvų stiprumą" />
     <WeaponsTech value="Ši technologija padidina ginklų stiprumą" />
@@ -3036,8 +3052,10 @@
       žalą padaromą tankui.</p>
       <p>[reference:ArmorTech] [reference:TankUpgradeTech]</p>
     </TanksArmor.about>
-
-    <ResourceTransporter.name ref="Objects/ResourceTransporter" /> <!-- <ResourceTransporter1 value="Resource transporter" /> -->
+   
+    <!--
+    <ResourceTransporter.name ref="Objects/ResourceTransporter" />
+    <ResourceTransporter1 value="Resource transporter" />
     <ResourceTransporter.about>
       <p>
         This technology helps you to transport resources through hyperspace 

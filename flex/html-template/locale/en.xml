@@ -342,6 +342,7 @@
     <label.editDescription value="Edit description" />
     <label.save value="Save" />
     <label.cancel value="Cancel" />
+    <label.close value="Close" />
     <label.cooldown value="You are unable to create alliance for another {0}" />
     <label.create value="Create alliance" />
     <label.allyExists value="Alliance with that name already exists" />
@@ -813,10 +814,10 @@
       <p>If you're out of living space you cannot support more units in
       your army.</p>
     </Housing.about>
-
-    <ResourceTransporter.name ref="Objects/ResourceTransporter" />
-    <ResourceTransporter.tooltip value="Transports resources between planets" />
-    <ResourceTransporter.about value="Teleport resources with this one" />
+<!---->
+<!--    <ResourceTransporter.name ref="Objects/ResourceTransporter" />-->
+<!--    <ResourceTransporter.tooltip value="Transports resources between planets" />-->
+<!--    <ResourceTransporter.about value="Teleport resources with this one" />-->
 
     <Headquarters.name ref="Objects/Headquarters" />
     <Headquarters.about>
@@ -1817,12 +1818,12 @@
       <p>
         Construction of your [reference:Buildings/Barracks.name] is complete as 
         you ordered. A few men have volunteered to become our first 
-        [reference:Objects/Trooper2] but their numbers are low. They will not 
+        Troopers but their numbers are low. They will not 
         save us if someone attacks. 
       </p>
       <p>
         We need to have trained personnel that is able to defend us. Order 
-        training of [reference:Objects/Trooper2] in our 
+        training of Troopers in our 
         [reference:Buildings/Barracks.name]. 
       </p>
     </about.7>
@@ -1932,7 +1933,7 @@
       <p>Commander.</p>
       <p>
         We have a problem. Our metal needs are growing and those two 
-        [reference:Objects/MetalExtractor2] won't keep us running for long. We 
+        MetalExtractors won't keep us running for long. We 
         need to claim another ore site. 
       </p>
       <p>
@@ -1942,7 +1943,7 @@
       </p>
       <p>
         We must act. Intelligence estimates that 12 
-        [reference:Objects/Trooper2] will be able to take down the guards. It 
+        Troopers will be able to take down the guards. It 
         may take less or more depending on your strategic skills. But we have 
         to take that ore site over. It is crucial to our survival. 
       </p>
@@ -1969,7 +1970,7 @@
         believe them. 
       </p>
       <p>
-        Lets upgrade one of our [reference:Objects/MetalExtractor2] and see if 
+        Lets upgrade one of our MetalExtractors and see if 
         they can deliver what they promised. 
       </p>
     </about.9>
@@ -1984,8 +1985,7 @@
       </p>
       <p>
         Lets give them those resources and I am sure we will get a lot more 
-        back than we gave. Order upgrading one of 
-        [reference:Objects/CollectorT12] now! 
+        back than we gave. Order upgrading one of Wind panels now! 
       </p>
     </about.10>
 
@@ -2504,7 +2504,7 @@
       <p>
         As we have built our [reference:Buildings/SpaceFactory.name] we should 
         start amassing our space fleet right now! As an easy first task go pick 
-        on some [reference:Objects/Dirac2]. 
+        on some Diracs. 
       </p>
     </about.35>
 
@@ -2636,8 +2636,7 @@
       <p>Commander.</p>
       <p>
         We should destroy some enemy transporters and corrupt their supplies. 
-        Hunt down some [reference:Objects/Mule2] and cripple their transport
-        lines. 
+        Hunt down some Mules and cripple their transport lines. 
       </p>
     </about.43>
 
@@ -2734,6 +2733,7 @@
     <label.ratings value="Ratings" />
     <label.noAlliances value="There are no alliances in this galaxy" />
     <label.allyRatings value="Alliance ratings" />
+    <label.close value="Close"/>
     <rank value="#" />
     <player value="Player" />
     <alliance value="Alliance" />
@@ -2836,7 +2836,7 @@
     <upgradeProgress value="Upgrade progress" />
     <buildCenters>
       <p>
-        Build or upgrade [reference:Objects/ResearchCenter2] to increase the 
+        Build or upgrade ResearchCenters to increase the 
         number of your scientists. 
       </p>
     </buildCenters>
@@ -2908,6 +2908,7 @@
       <p>[reference:Zetium.common]</p>
     </ZetiumExtraction.about>
 
+    <!--
     <Spy.name ref="Objects/Spy" />
     <Spy.about value="Just a simple spy technology" />
 
@@ -2934,9 +2935,11 @@
 
     <R14Charges.name ref="Objects/R14Charges" />
     <R14Charges.about value="Charge enemies with R14" />
+    
 
     <Spaceport.name ref="Objects/Spaceport" />
     <Spaceport.about value="Fly to the sky" />
+    -->
 
     <InfantryUpgradeTech>
       <p>
@@ -3039,13 +3042,14 @@
       </p>
     </TanksArmor.about>
 
+   <!--
     <ResourceTransporter.name ref="Objects/ResourceTransporter" />
     <ResourceTransporter.about>
       <p>
         This technology helps you to transport resources through hyperspace 
         chanels 
       </p>
-    </ResourceTransporter.about>
+    </ResourceTransporter.about> -->
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
@@ -3062,10 +3066,10 @@
     <FieryMelters.name ref="Objects/FieryMelters" />
     <FieryMelters.about>
       <p>
-        Using high pressure in [reference:Objects/MetalExtractor2] allows 
+        Using high pressure in MetalExtractors allows 
         getting higher metal extraction and storage efficiency. Although this 
         technology is a bit pricey it may be worth investing to if your metal 
-        needs are growing. 
+        needs are growing.
       </p>
       <p>Each level increases metal extraction rate and storage.</p>
     </FieryMelters.about>
@@ -3139,8 +3143,8 @@
       <p>However this technology requires UX-20 engines which can only be
       found in our biggest ships. As it is they are also slowest, so
       this technology is very valuable for them.</p>
-      <p>Shortens flight times for [reference:Objects/Mule1] and
-      [reference:Objects/Rhyno1] class ships.</p>
+      <p>Shortens flight times for [reference:Objects/Mule] and
+      [reference:Objects/Rhyno] class ships.</p>
     </HeavyFlight.about>
 
     <Trooper.name ref="Units/Trooper.name" />
@@ -3264,7 +3268,7 @@
 
     <Jumper.name ref="Units/Jumper.name" />
     <Jumper.about>
-      <p>This research allows you to build [reference:Objects/Jumper2].</p>
+      <p>This research allows you to build Jumpers.</p>
       <p>[reference:Units/Jumper.about]</p>
     </Jumper.about>
 
@@ -3319,9 +3323,9 @@
     <title.emptyDefensivePool>
       <p>Your defensive pool is empty. That means no units will be teleported
       to your defense in case this planet is attacked.</p>
-      <p>Build [reference:Objects/DefensivePortal2] in other planets or join an
-      alliance which has [reference:Objects/DefensivePortal2] built to enable
-      teleporting units from planets with [reference:Objects/DefensivePortal2]
+      <p>Build DefensivePortals in other planets or join an
+      alliance which has DefensivePortals built to enable
+      teleporting units from planets with DefensivePortals
       built.</p>
     </title.emptyDefensivePool>
     <title.possiblePool value="When you are attacked you might get" />
@@ -3511,8 +3515,7 @@
       <p>
         These highly armored but fairly weak ships were used as a front line 
         live shields long time ago. However now they are mostly scattered alone 
-        or with small groups with [reference:Objects/Dirac2] whom they still 
-        protect. 
+        or with small groups of Diracs whom they still protect. 
       </p>
       <p>If you get a grasp on few of these ships know that they are pretty
       useful in air to ground bombardment of your enemy ground forces.</p>
@@ -3562,8 +3565,10 @@
       </p>
     </Seeker.about>
 
+    <!--
     <Spy.name ref="Objects/Spy" />
     <Spy.about value="Explore your enemies" />
+     -->
 
     <Saboteur.name value="Saboteur" />
     <Saboteur.about value="Is likely to ruin things" />
@@ -3678,7 +3683,7 @@
     <Jumper.name ref="Objects/Jumper" />
     <Jumper.about>
       <p>
-        [reference:Objects/Jumper2] are lightning fast satellites that are
+        Jumpers are lightning fast satellites that are
         used mainly for intelligence missions launched onto enemy
         planets. However because they were engineered for speed they lack
         any protection or guns and cannot sustain even lightest enemy fire.
