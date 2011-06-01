@@ -1183,7 +1183,7 @@
     <label.openLocation value="Atidaryti vietą" />
     <label.storage value="{0}/{1}" />
 
-    <sector value="Sektorius {0}" />
+    <sector value="Sektorius" />
 
     <header.galaxy value="Galaktikos sektorius" />
     <header.solarSystem value="Saulės sistema" />

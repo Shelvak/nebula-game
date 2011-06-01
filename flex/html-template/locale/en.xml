@@ -1189,7 +1189,7 @@
     <label.openLocation value="Open location" />
     <label.storage value="{0}/{1}" />
 
-    <sector value="Sector {0}" />
+    <sector value="Sector" />
 
     <header.galaxy value="Galaxy sector" />
     <header.solarSystem value="Solar System" />
