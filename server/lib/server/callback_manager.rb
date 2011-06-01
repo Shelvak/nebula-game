@@ -1,4 +1,11 @@
 class CallbackManager
+  class UnknownEvent < ArgumentError
+    def initialize(klass, id, event)
+      super("Unrecognized event #{CallbackManager::STRING_NAMES[event]} (#{
+        event} for #{klass} ID #{id}")
+    end
+  end
+  
   # Constructable has finished upgrading.
   EVENT_UPGRADE_FINISHED = 0
   # Constructor has finished construction of constructable.
@@ -23,7 +30,6 @@ class CallbackManager
   EVENT_VIP_TICK = 10
   # VIP has expired.
   EVENT_VIP_STOP = 11
-
   STRING_NAMES = {
     EVENT_UPGRADE_FINISHED => 'upgrade finished',
     EVENT_CONSTRUCTION_FINISHED => 'construction finished',
@@ -36,7 +42,7 @@ class CallbackManager
     EVENT_CHECK_INACTIVE_PLAYER => "inactivity check",
     EVENT_SPAWN => "spawn",
     EVENT_VIP_TICK => "vip tick",
-    EVENT_VIP_STOP => "vip stop"
+    EVENT_VIP_STOP => "vip stop",
   }
 
   # Maximum time for callback

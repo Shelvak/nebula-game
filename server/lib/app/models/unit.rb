@@ -227,6 +227,17 @@ class Unit < ActiveRecord::Base
   end
 
   class << self
+    def on_callback(id, event)
+      case event 
+      when CallbackManager::EVENT_DESTROY
+        unit = find(id)
+        unit.destroy
+        EventBroker.fire(unit, EventBroker::DESTROYED)
+      else
+        raise CallbackManager::UnknownEvent.new(self, id, event)
+      end
+    end
+    
     def update_combat_attributes(player_id, updates)
       transaction do
         updates.each do |unit_id, attributes|

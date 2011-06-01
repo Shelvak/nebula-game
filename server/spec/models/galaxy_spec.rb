@@ -92,6 +92,26 @@ describe Galaxy do
     end
   end
 
+  describe ".on_callback" do
+    describe "spawn convoy" do
+      before(:each) do
+        @galaxy = Factory.create(:galaxy)
+        Galaxy.stub!(:find).with(@galaxy.id).and_return(@galaxy)
+      end
+      
+      it "should call #spawn_convoy!" do
+        @galaxy.should_receive(:spawn_convoy!)
+        Galaxy.on_callback(@galaxy.id, CallbackManager::EVENT_SPAWN)
+      end
+      
+      it "should register callback" do
+        Galaxy.on_callback(@galaxy.id, CallbackManager::EVENT_SPAWN)
+        @galaxy.should have_callback(CallbackManager::EVENT_SPAWN,
+          CONFIG.evalproperty('galaxy.convoy.time').from_now)
+      end
+    end
+  end
+  
   describe "#by_coords" do
     it "should return solar system by x,y" do
       model = Factory.create :galaxy
@@ -99,6 +119,72 @@ describe Galaxy do
       y = 300
       ss = Factory.create :solar_system, :galaxy => model, :x => x, :y => y
       model.by_coords(x, y).should == ss
+    end
+  end
+
+  describe "#spawn_convoy!" do
+    describe "galaxy with < 2 wormholes" do
+      it "should do nothing" do
+        galaxy = Factory.create(:galaxy)
+        galaxy.spawn_convoy!.should be_nil
+        Unit.where(:galaxy_id => galaxy.id).count.should == 0
+      end
+    end
+    
+    describe "galaxy with >= 2 wormholes" do
+      before(:each) do
+        @galaxy = Factory.create(:galaxy)
+        @wh1 = Factory.create(:wormhole, :galaxy => @galaxy, 
+          :x => -10, :y => 20)
+        @wh2 = Factory.create(:wormhole, :galaxy => @galaxy, 
+          :x => -30, :y => -10)
+        @route = @galaxy.spawn_convoy!
+      end
+
+      it "should create route" do
+        @route.should be_instance_of(Route)
+      end
+      
+      it "should fire created on units" do
+        SPEC_EVENT_HANDLER.clear_events!
+        @galaxy.spawn_convoy!
+        SPEC_EVENT_HANDLER.fired?(
+          Unit.in_location(@route.source).all, EventBroker::CREATED
+        ).should be_true
+      end
+      
+      it "should use speed modifier" do
+        UnitMover.should_receive(:move).with(nil, an_instance_of(Array),
+          anything, anything, false, 
+          CONFIG['galaxy.convoy.speed_modifier']).and_return(
+          Factory.create(:route))
+        @galaxy.spawn_convoy!
+      end
+      
+      it "should create units in source location" do
+        counts = Unit.in_location(@route.source).where(:player_id => nil).
+          all.grouped_counts { |unit| [unit.type, unit.flank] }
+        CONFIG['galaxy.convoy.units'].each do
+          |count_from, count_to, type, flank|
+          
+          (count_from..count_to).should include(counts[[type, flank]] || 0)
+        end
+      end
+
+      it "should have route that goes to other wormhole" do
+        if @wh1.galaxy_point == @route.source
+          @wh2.galaxy_point.should == @route.target
+        else
+          @wh1.galaxy_point.should == @route.target
+        end
+      end
+      
+      it "should have callbacks for units which destroys them upon arival" do
+        Unit.in_location(@route.source).each do |unit|
+          unit.should have_callback(CallbackManager::EVENT_DESTROY, 
+            @route.arrives_at)
+        end
+      end
     end
   end
 end

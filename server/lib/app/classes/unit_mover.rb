@@ -67,10 +67,12 @@ class UnitMover
         :galaxy => 0
       }
 
-      decreases = TechModApplier.apply(
-        TechTracker.query_active(player_id, 'movement_time_decrease'),
-        'movement_time_decrease'
-      )
+      decreases = player_id.nil? \
+        ? {} \
+        : TechModApplier.apply(
+          TechTracker.query_active(player_id, 'movement_time_decrease'),
+          'movement_time_decrease'
+        )
 
       units = Unit.units_for_moving(unit_ids, player_id, source)
       units.each do |type, count|

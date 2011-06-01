@@ -128,7 +128,8 @@ class DispatcherEventHandler
     unit_ids = movement_prepare_event.unit_ids
 
     player_ids, filter = self.class.resolve_location(route.current)
-    friendly_player_ids = route.player.friendly_ids
+    player = route.player
+    friendly_player_ids = player.nil? ? [] : player.friendly_ids
 
     player_ids.each do |player_id|
       friendly = friendly_player_ids.include?(player_id)
@@ -166,7 +167,7 @@ class DispatcherEventHandler
       )
 
       player = movement_event.route.player
-      friendly_player_ids = player.friendly_ids
+      friendly_player_ids = player.nil? ? [] : player.friendly_ids
       next_hop = movement_event.next_hop
       # We need previous and current filters to ensure that we always get
       # the message
@@ -381,16 +382,21 @@ class DispatcherEventHandler
     when Unit, Wreckage, Cooldown
       resolve_location(object.location)
     when Route
-      case context
-      when CONTEXT_CHANGED
-        [object.player.friendly_ids, nil]
-      when CONTEXT_DESTROYED
-        player_ids, filter = resolve_location(object.current)
-        player_ids += object.player.friendly_ids
-        [player_ids.uniq, nil]
+      player = object.player
+      if player.nil?
+        [[], nil]
       else
-        raise ArgumentError.new(
-          "Unknown Route context for objects resolver: #{context.inspect}")
+        case context
+        when CONTEXT_CHANGED
+          [object.player.friendly_ids, nil]
+        when CONTEXT_DESTROYED
+          player_ids, filter = resolve_location(object.current)
+          player_ids += object.player.friendly_ids
+          [player_ids.uniq, nil]
+        else
+          raise ArgumentError.new(
+            "Unknown Route context for objects resolver: #{context.inspect}")
+        end
       end
     when SsObject
       # Only owner should know about this change.

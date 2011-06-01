@@ -26,20 +26,27 @@ object CallbackRow {
   def asteroidSpawn = _asteroidSpawn
   def initAsteroidSpawn = _asteroidSpawn = DB.date(
     Config.asteroidFirstSpawnCooldown.fromNow)
+
+  private var _convoySpawn: String = null
+  def convoySpawn = _convoySpawn
+  def initConvoySpawn = _convoySpawn = DB.date(Config.convoyTime.fromNow)
 }
 
 case class CallbackRow(row: {def id: Int}, ruleset: String) {
   val values = "%s\t%d\t%d\t%s\t%s".format(
     row match {
+      case galaxy: GalaxyRow => "Galaxy"
       case asteroid: SSObjectRow => "SsObject::Asteroid"
       case ssRow: SolarSystemRow => "SolarSystem"
     },
     row.id,
     row match {
+      case galaxy: GalaxyRow => CallbackRow.EventSpawn
       case asteroid: SSObjectRow => CallbackRow.EventSpawn
       case ssRow: SolarSystemRow => CallbackRow.EventCheckInactivePlayer
     },
     row match {
+      case galaxy: GalaxyRow => CallbackRow.convoySpawn
       case asteroid: SSObjectRow => CallbackRow.asteroidSpawn
       case ssRow: SolarSystemRow => CallbackRow.playerInactivityCheck
     },
