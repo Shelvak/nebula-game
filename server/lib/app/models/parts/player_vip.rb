@@ -23,8 +23,7 @@ module Parts
         when CallbackManager::EVENT_VIP_STOP
           find(id).vip_stop!
         else
-          raise ArgumentError.new("Don't know how to handle callback #{
-            CallbackManager::STRING_NAMES[event]} (#{event})!")
+          raise CallbackManager::UnknownEvent.new(self, id, event)
         end
       end
     end

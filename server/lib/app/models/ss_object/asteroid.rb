@@ -44,7 +44,7 @@ class SsObject::Asteroid < SsObject
     when CallbackManager::EVENT_SPAWN
       find(id).spawn_resources!
     else
-      super(id, event)
+      raise CallbackManager::UnknownEvent.new(self, id, event)
     end
   end
 end

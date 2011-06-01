@@ -445,7 +445,7 @@ class SsObject::Planet < SsObject
         # Don't raid if planet does not belong to planet.
         Combat.npc_raid!(model) unless model.player_id.nil?
       else
-        super
+        raise CallbackManager::UnknownEvent.new(self, id, event)
       end
     end
 

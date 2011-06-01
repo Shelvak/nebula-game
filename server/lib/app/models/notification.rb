@@ -81,7 +81,7 @@ class Notification < ActiveRecord::Base
       model = find(id)
       model.destroy
     else
-      raise ArgumentError.new("Don't know how to handle event #{event}!")
+      raise CallbackManager::UnknownEvent.new(self, id, event)
     end
   end
 

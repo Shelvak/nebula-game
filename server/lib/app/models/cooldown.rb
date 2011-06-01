@@ -48,9 +48,7 @@ class Cooldown < ActiveRecord::Base
       model.destroy
       Combat::LocationChecker.check_location(model.location)
     else
-      raise ArgumentError.new("Unknown event: #{
-        CallbackManager::STRING_NAMES[event]} (#{event})"
-      )
+      raise CallbackManager::UnknownEvent.new(self, id, event)
     end
   end
 end
