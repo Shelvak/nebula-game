@@ -11,6 +11,7 @@ class ControlManager
   #
   # Parameters:
   # - ruleset (String): ruleset for given galaxy
+  # - callback_url (String): URL for callback
   #
   # Response:
   # - success (Boolean): Did creation succeeded?
@@ -87,7 +88,8 @@ class ControlManager
 
   def player_destroyed(player)
     only_in_production("player_destroyed invoked for #{player}") do
-      response = post_to_web("remove_player_from_galaxy",
+      response = post_to_web(player.galaxy.callback_url, 
+        "remove_player_from_galaxy",
         'player_auth_token' => player.auth_token,
         'galaxy_id' => player.galaxy_id
       )
@@ -99,7 +101,8 @@ class ControlManager
   def alliance_created(alliance)
     only_in_production("alliance_created invoked for #{alliance}") do
       player = alliance.owner
-      response = post_to_web("alliance_created",
+      response = post_to_web(alliance.galaxy.callback_url,
+        "alliance_created",
         'owner_name' => player.name,
         'galaxy_id' => alliance.galaxy_id,
         'alliance_id' => alliance.id,
@@ -112,7 +115,8 @@ class ControlManager
 
   def alliance_renamed(alliance)
     only_in_production("alliance_renamed invoked for #{alliance}") do
-      response = post_to_web("alliance_renamed",
+      response = post_to_web(alliance.galaxy.callback_url,
+        "alliance_renamed",
         'galaxy_id' => alliance.galaxy_id,
         'alliance_id' => alliance.id,
         'name' => alliance.name
@@ -124,7 +128,8 @@ class ControlManager
 
   def alliance_destroyed(alliance)
     only_in_production("alliance_destroyed invoked for #{alliance}") do
-      response = post_to_web("alliance_destroyed",
+      response = post_to_web(alliance.galaxy.callback_url,
+        "alliance_destroyed",
         'alliance_id' => alliance.id
       )
 
@@ -135,7 +140,8 @@ class ControlManager
   def player_joined_alliance(player, alliance)
     only_in_production("player_joined_alliance invoked for #{player}, #{
         alliance}") do
-      response = post_to_web("player_joined_alliance",
+      response = post_to_web(alliance.galaxy.callback_url,
+        "player_joined_alliance",
         'alliance_id' => alliance.id,
         'player_name' => player.name
       )
@@ -147,7 +153,8 @@ class ControlManager
   def player_left_alliance(player, alliance)
     only_in_production("player_left_alliance invoked for #{player}, #{
         alliance}") do
-      response = post_to_web("player_left_alliance",
+      response = post_to_web(alliance.galaxy.callback_url,
+        "player_left_alliance",
         'alliance_id' => alliance.id,
         'player_name' => player.name
       )
@@ -177,7 +184,8 @@ class ControlManager
   end
 
   def action_create_galaxy(io, message)
-    galaxy_id = Galaxy.create_galaxy(message['ruleset'])
+    galaxy_id = Galaxy.create_galaxy(message['ruleset'], 
+      message['callback_url'])
     io.send_message :success => true, :galaxy_id => galaxy_id
   rescue Exception => e
     io.send_message :success => false, :galaxy_id => nil
@@ -258,15 +266,15 @@ class ControlManager
       :auth_token => message['auth_token']).first
   end
 
-  def post_to_web(path, params={})
+  def post_to_web(callback_url, path, params={})
     Net::HTTP.post_form(
-      web_uri_for(path),
+      web_uri_for(callback_url, path),
       params.merge('secret_key' => CONFIG['control']['token'])
     )
   end
 
-  def web_uri_for(path)
-    URI.parse(CONFIG['control']['web_url'] + "/#{path}")
+  def web_uri_for(callback_url, path)
+    URI.parse((CONFIG['control']['web_url'] % callback_url) + "/#{path}")
   end
 
   def only_in_production(message)

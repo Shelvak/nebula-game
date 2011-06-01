@@ -16,8 +16,9 @@ class SpaceMule
 
   # Create a new galaxy with battleground solar system. Returns id of that
   # galaxy.
-  def create_galaxy(ruleset)
-    command('action' => 'create_galaxy', 'ruleset' => ruleset)['id']
+  def create_galaxy(ruleset, callback_url)
+    command('action' => 'create_galaxy', 'ruleset' => ruleset,
+      'callback_url' => callback_url)['id']
   end
 
   # Create a new players in _galaxy_id_. _players_ is a +Hash+ of

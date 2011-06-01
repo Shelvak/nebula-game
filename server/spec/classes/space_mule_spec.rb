@@ -45,7 +45,7 @@ describe SpaceMule do
 
   describe "#create_galaxy" do
     before(:all) do
-      @galaxy_id = @mule.create_galaxy("default")
+      @galaxy_id = @mule.create_galaxy("default", "localhost")
       @galaxy = Galaxy.find(@galaxy_id)
     end
 
@@ -60,6 +60,10 @@ describe SpaceMule do
 
       it "should have ruleset set" do
         @galaxy.ruleset.should == "default"
+      end
+      
+      it "should have callback url set" do
+        @galaxy.callback_url.should == "localhost"
       end
 
       it "should have created_at set" do

@@ -40,7 +40,7 @@ class DailyBonusController < GenericController
   def get_bonus
     raise GameLogicError.new(
       "Cannot get daily bonus, as it will only be available at #{
-      player.daily_bonus_at}") unless player.daily_bonus_available?
+      player.daily_bonus_at || "nil"}") unless player.daily_bonus_available?
     
     DailyBonus.get_bonus(player.id, player.points)
   end

@@ -15,10 +15,11 @@ import spacemule.persistence.DB
 object Runner extends BenchmarkableMock {
   def createGalaxy(input: Map[String, Any]): Map[String, Any] = {
     val ruleset = getRuleset(input)
+    val callbackUrl = input.getOrError("callback_url").asInstanceOf[String]
     return Config.withSetScope(ruleset) { () =>
       val createdAt = DB.date(new Date())
       TableIds.initialize
-      val galaxyRow = new GalaxyRow(ruleset, createdAt)
+      val galaxyRow = new GalaxyRow(ruleset, callbackUrl, createdAt)
 
       val battleground = benchmark("create battleground") { 
         () =>
