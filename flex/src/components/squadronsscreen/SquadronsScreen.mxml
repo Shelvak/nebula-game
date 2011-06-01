@@ -3,15 +3,18 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx" 
                     xmlns:base="components.base.*"
+                    xmlns:screens="components.screens.*"
                     width="100%" height="100%">
    <fx:Script>
       <![CDATA[
+         import controllers.ui.NavigationController;
+         
          import utils.locale.Localizer;
       ]]>
    </fx:Script>
    <s:Label left="6" top="6" text="{Localizer.string('Squadrons', 'title.squadrons')}" styleName="h2"/>
-   <s:Group left="6" top="26" right="6" bottom="6">
-      <base:Scroller right="0" left="0" top="0" bottom="0" stepMultiplier="5">
+   <s:Group left="0" top="26" right="0" bottom="0">
+      <base:Scroller id="contScroller" right="0" left="0" top="0" bottom="0" stepMultiplier="5">
          <s:Group left="0" right="0" height="100%">
             <s:DataGroup dataProvider="{ML.routes}" left="0" right="0" height="100%"
                          itemRenderer="components.squadronsscreen.IRSquadronElement">
@@ -25,4 +28,7 @@
                text="{Localizer.string('Squadrons', 'title.noSquadrons')}"
                visible="{ML.routes.length == 0}"/>
    </s:Group>
+   <screens:ScreenCloseButton label="{Localizer.string('Squadrons', 'label.close')}"
+                              scroller="{contScroller}" right="0" bottom="0"
+                              click="NavigationController.getInstance().showPreviousScreen()"/>
 </base:BaseContainer>

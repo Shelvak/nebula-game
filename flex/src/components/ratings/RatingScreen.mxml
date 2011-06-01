@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
                     xmlns:s="library://ns.adobe.com/flex/spark" 
-                    xmlns:mx="library://ns.adobe.com/flex/mx" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*"
-                    width="100%" height="100%" 
-                    creationComplete="basecontainer1_creationCompleteHandler(event)" 
-                    xmlns:ratings="components.ratings.*">
+                    xmlns:ratings="components.ratings.*"
+                    xmlns:screens="components.screens.*"
+                    width="100%" height="100%"
+                    creationComplete="basecontainer1_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
@@ -135,10 +136,10 @@
    <s:CheckBox id="onlyOnline" label="{Localizer.string('Ratings', 'label.filterOnline')}"
                change="onlyOnline_changeHandler(event)"/>
    
-   <s:Group height="100%">
-      <ratings:RatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)"/>
-      <base:Scroller left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10">
-         <s:Group left="0" right="0">
+   <s:Group height="100%" width="100%">
+      <ratings:RatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)" horizontalCenter="0"/>
+      <base:Scroller id="contScroller" left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10">
+         <s:Group width="100%">
             <s:DataGroup dataProvider="{ML.ratings}" horizontalCenter="0"
                          itemRenderer="components.ratings.IRRatingsRow">
                <s:layout>
@@ -146,7 +147,10 @@
                </s:layout>
             </s:DataGroup>
          </s:Group>
-      </base:Scroller>    
+      </base:Scroller>
+      <screens:ScreenCloseButton label="{Localizer.string('Ratings', 'label.close')}"
+                                 scroller="{contScroller}" right="0" bottom="0"
+                                 click="NavigationController.getInstance().showPreviousScreen()"/>
    </s:Group>
    <base:layout>
       <s:VerticalLayout horizontalAlign="center" gap="10" paddingTop="10"/>

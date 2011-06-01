@@ -2823,6 +2823,7 @@
     <label.arrivesAt value="Arrives at" />
     <label.leavesPlanet value="Leaves planet at" />
     <label.inTime value="(in {0})" />
+    <label.close value="Close" />
   </Squadrons>
 
   <Technologies>
@@ -2843,8 +2844,8 @@
     <notEnoughScientists>
       <p>
         This technology needs {0 one[one scientist] many[? scientists]}. 
-        However only {2 one[one scientist] many[? scientists]} out 
-        of {4 one[one scientist] many[? scientists]} are available. 
+        However only {1 one[one scientist] many[? scientists]} out 
+        of {2 one[one scientist] many[? scientists]} are available. 
       </p>
     </notEnoughScientists>
     <notEnoughScientistsExploration>

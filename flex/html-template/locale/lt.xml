@@ -2865,6 +2865,7 @@
     <label.arrivesAt value="Atvyks" />
     <label.leavesPlanet value="Iš planetos išvyksta" />
     <label.inTime value="(už {0})" />
+    <label.close value="Uždaryti" />
   </Squadrons>
 
   <Technologies>

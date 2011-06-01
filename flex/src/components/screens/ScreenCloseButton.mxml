@@ -4,7 +4,7 @@
          xmlns:mx="library://ns.adobe.com/flex/mx"
          clipAndEnableScrolling="true"
          mouseEnabled="false"
-         width="{_scroller.verticalScrollBar.visible ? 224 : 207}">
+         width="{_scroller == null || !_scroller.verticalScrollBar.visible ? 207 : 224}">
    <fx:Script>
       <![CDATA[
          import spark.components.Scroller;
