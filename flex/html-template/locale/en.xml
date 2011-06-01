@@ -405,7 +405,7 @@
     <label.noUnits value="You dont have available units!" />
     <deselectAll value="Deselect all" />
     <selectAll value="Select all" />
-    <open value="Open {0}" />
+    <open value="Open" />
     <noUnits value="You have no ground units" />
     <attackInfo value="Garrisoned units" />
     <selfDestruct value="Self Destruct" />

@@ -405,7 +405,7 @@
     <label.noUnits value="Tu neturi karių!" />
     <deselectAll value="Atžymėti visus" />
     <selectAll value="Pažymėti visus" />
-    <open value="Atidaryti {0}" />
+    <open value="Atidaryti" />
     <noUnits value="Tu neturi antžeminių karių" />
     <attackInfo value="Pastate ęsantys kariai" />
     <selfDestruct value="Susinaikinti" />

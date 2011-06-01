@@ -686,28 +686,28 @@
                         <s:Group width="100%" 
                                  visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
                                  (_selectedModel.type != BuildingType.HEALING_CENTER))}">
-                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
+                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open')}"
                                      click="NC.showHealing(_selectedModel, ML.latestPlanet.getActiveHealableUnits())"
                                      right="6"/>
                         </s:Group>
                         <s:Group width="100%" 
                                  visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
                                  (!_selectedModel.isConstructor(ObjectClass.UNIT)) )}">
-                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
+                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open')}"
                                      click="NC.showFacilities(_selectedModel.id)"
                                      right="6"/>
                         </s:Group>
                         <s:Group width="100%" 
                                  visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
                                  _selectedModel.type != BuildingType.RESEARCH_CENTER)}">
-                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
+                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open')}"
                                      click="NC.showTechnologies()"
                                      right="6"/>
                         </s:Group>
                         <s:Group width="100%" 
                                  visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
                                  _selectedModel.type != BuildingType.DEFENSIVE_PORTAL)}">
-                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
+                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open')}"
                                      click="NC.showDefensivePortal(ML.latestPlanet.id)"
                                      right="6"/>
                         </s:Group>
