@@ -532,14 +532,14 @@ assets:
         top_center_right.png:       Mainwindow_top_center(right).png
         top_center.png:             Mainwindow_top_center_repeat.png
         top_repeat.png:             Mainwindow_top_left-right_repeat.png
-        top_right.png:              Mainwindow_top_left.png
-        top_left.png:               Mainwindow_top_right.png
+        top_left.png:               Mainwindow_top_left.png
+        top_right.png:              Mainwindow_top_right.png
         bottom_center_left.png:     Mainwindow_bottom_center(left).png
         bottom_center_right.png:    Mainwindow_bottom_center(right).png
         bottom_center.png:          Mainwindow_bottom_center_repeat.png
         bottom_repeat.png:          Mainwindow_bottom_left-right_repeat.png
-        bottom_right.png:           Mainwindow_bottom_left.png
-        bottom_left.png:            Mainwindow_bottom_right.png
+        bottom_left.png:            Mainwindow_bottom_left.png
+        bottom_right.png:           Mainwindow_bottom_right.png
         center_right.png:           Mainwindow_center_right_repeat.png
         center_left.png:            Mainwindow_center_left_repeat.png
 

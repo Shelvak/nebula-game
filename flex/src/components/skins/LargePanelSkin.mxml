@@ -24,45 +24,45 @@
    <s:BitmapImage right="0" top="0" id="topRight"
                   source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_right')}"/>   
    <!-- Title container -->
-   <s:Group horizontalCenter="0" minWidth="245" id="topCenter">
-      <s:BitmapImage horizontalCenter="0" fillMode="repeat" left="0" right="0"
+   <s:Group left="{(this.width - topCenter.width)/2}" minWidth="246" id="topCenter">
+      <s:BitmapImage fillMode="repeat" left="0" right="0" minWidth="246"
                      source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_center')}"/>
-      <s:Label color="#eec500" fontSize="24" fontWeight="bold" verticalCenter="0"
+      <s:Label color="#eec500" fontSize="24" fontWeight="bold" verticalCenter="-5"
                paddingLeft="25" paddingRight="25" horizontalCenter="0" id="titleDisplay"/>
    </s:Group>
-   <s:BitmapImage horizontalCenter="{topCenter.width/-2}" top="0" id="topCenterLeft"
+   <s:BitmapImage right="{(this.width + topCenter.width)/2}" top="0" id="topCenterLeft"
                   source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_center_left')}"/>
-   <s:BitmapImage horizontalCenter="{topCenter.width/2}" top="0" id="topCenterRight"
+   <s:BitmapImage left="{(this.width + topCenter.width)/2}" top="0" id="topCenterRight"
                   source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_center_right')}"/>
    <s:BitmapImage left="{topLeft.width}" top="0" fillMode="repeat"
-                  right="{(this.width + topCenter.width + topCenterLeft.width)/2}"
+                  right="{(this.width + topCenter.width)/2 + topCenterLeft.width}"
                   source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_repeat')}"/>
    <s:BitmapImage right="{topRight.width}" top="0" fillMode="repeat"
-                  left="{(this.width + topCenter.width + topCenterRight.width)/2}" 
+                  left="{(this.width + topCenter.width)/2 + topCenterRight.width}" 
                   source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_repeat')}"/>
    
    <s:BitmapImage left="0" bottom="0" id="bottomLeft"
                   source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_left')}"/>
    <s:BitmapImage right="0" bottom="0" id="bottomRight"
                   source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_right')}"/>   
-   <s:BitmapImage horizontalCenter="0" fillMode="repeat" left="0" right="0"
+   <s:BitmapImage left="{(this.width - bottomCenter.width)/2}" fillMode="repeat" bottom="0"
                   source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_center')}"
                   id="bottomCenter" width="{topCenter.width}"/>
-   <s:BitmapImage horizontalCenter="{bottomCenter.width/-2}" bottom="0" id="bottomCenterLeft"
+   <s:BitmapImage right="{(this.width + bottomCenter.width)/2}" bottom="0" id="bottomCenterLeft"
                   source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_center_left')}"/>
-   <s:BitmapImage horizontalCenter="{bottomCenter.width/2}" bottom="0" id="bottomCenterRight"
+   <s:BitmapImage left="{(this.width + bottomCenter.width)/2}" bottom="0" id="bottomCenterRight"
                   source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_center_right')}"/>
    <s:BitmapImage left="{bottomLeft.width}" bottom="0" fillMode="repeat"
-                  right="{(this.width + bottomCenter.width + bottomCenterLeft.width)/2}"
+                  right="{(this.width + bottomCenter.width)/2 + bottomCenterLeft.width}"
                   source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_repeat')}"/>
    <s:BitmapImage right="{bottomRight.width}" bottom="0" fillMode="repeat"
-                  left="{(this.width + bottomCenter.width + bottomCenterRight.width)/2}" 
+                  left="{(this.width + bottomCenter.width)/2 + bottomCenterRight.width}" 
                   source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_repeat')}"/>
    
    <s:BitmapImage left="0" source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'center_left')}"
                   top="{topLeft.height}" bottom="{bottomLeft.height}" fillMode="repeat"
                   id="centerLeft"/>
-   <s:BitmapImage left="0" source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'center_right')}"
+   <s:BitmapImage right="0" source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'center_right')}"
                   top="{topRight.height}" bottom="{bottomRight.height}" fillMode="repeat"
                   id="centerRight"/>
    

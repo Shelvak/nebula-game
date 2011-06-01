@@ -8,6 +8,7 @@
          creationComplete="group1_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[
+         import components.skins.LargePanelSkin;
          import components.skins.LinkButtonSkin;
          
          import controllers.GlobalFlags;
@@ -154,19 +155,18 @@
                   <s:HorizontalLayout paddingLeft="10" paddingTop="10" gap="30"/>
                </s:layout>
             </s:Group>
-            <s:Group width="{CONTENT_WIDTH}">
-               <s:Label text="{Localizer.string('Players', 'title.achievements')}" 
-                        fontSize="24" fontWeight="bold" color="#eec500" paddingLeft="20"/>
+            <base:Panel width="{CONTENT_WIDTH}" skinClass="components.skins.LargePanelSkin"
+                        title="{Localizer.string('Players', 'title.achievements')}">
                <s:DataGroup width="100%" dataProvider="{achievements}" 
                             itemRenderer="components.achievement.IRAchievement">
                   <s:layout>
                      <s:TileLayout requestedColumnCount="8"/>
                   </s:layout>
                </s:DataGroup>
-               <s:layout>
+               <base:layout>
                   <s:VerticalLayout paddingTop="20"/>
-               </s:layout>
-            </s:Group>
+               </base:layout>
+            </base:Panel>
             <s:layout>
                <s:VerticalLayout horizontalAlign="center"/>
             </s:layout>
