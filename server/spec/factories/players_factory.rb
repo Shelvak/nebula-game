@@ -6,6 +6,7 @@ Factory.define :player do |m|
   m.scientists_total 2000
   m.population_max 2000
   m.planets_count 0
+  m.first_time false
 end
 
 Factory.define :player_for_ratings, :parent => :player do |m|

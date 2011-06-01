@@ -38,8 +38,8 @@ namespace :flex do
           if ! contents[bundle][0].has_key?(name)
             ref_name = bundle.nil? ? name : "#{bundle}/#{name}"
 
-            errors[fname] ||= []
-            errors[fname].push "[reference:#{ref_name}] is broken!"
+            errors[fname] ||= Set.new
+            errors[fname].add ref_name
           end
         end
       end
@@ -69,13 +69,24 @@ namespace :flex do
           end
         end
       end
+      
+      def grep_lines(content, needle)
+        index = 0
+        content.split("\n").map do |line|
+          index += 1
+          line.include?(needle) ? index : nil
+        end.compact
+      end
 
       if errors.size > 0
         puts "Following errors detected:"
-        errors.each do |fname, list|
+        errors.each do |fname, set|
+          contents = File.read(File.join(FLEX_LOCALE_DIR, fname))
           puts "  In #{fname}:"
-          list.each do |error|
-            puts "    * #{error}"
+          set.each do |refname|
+            lines = grep_lines(contents, refname)
+            
+            puts "    * #{refname} is broken @ lines #{lines.join(", ")}."
           end
         end
         exit
