@@ -2889,6 +2889,7 @@
     <property.mod.armor value="Armor bonus" />
     <property.mod.damage value="Damage bonus" />
     <property.mod.movementTimeDecrease value="Movement time decrease" />
+    <property.maxPlayers value="Maximum number of players" />
 
     <UnitTech>
       <p>First level of unlocks this unit. Other levels upgrade it.</p>
