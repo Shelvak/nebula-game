@@ -440,7 +440,8 @@ describe SsObject::Planet do
     end
 
     it "should fire changed" do
-      should_fire_event(@planet, EventBroker::CHANGED) do
+      should_fire_event(@planet, EventBroker::CHANGED, 
+          EventBroker::REASON_OWNER_PROP_CHANGE) do
         @planet.explore!(@x, @y)
       end
     end
