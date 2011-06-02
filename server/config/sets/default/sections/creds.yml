@@ -5,10 +5,10 @@
 
 # [time, cost]
 upgradable.speed_up:
-  - [<%= 1.hour %>, 100]
-  - [<%= 2.hours %>, 200]
-  - [<%= 6.hours %>, 500]
-  - [<%= 12.hours %>, 750]
+  - [<%= 1.hour %> / speed, 200]
+  - [<%= 2.hours %> / speed, 300]
+  - [<%= 6.hours %> / speed, 500]
+  - [<%= 12.hours %> / speed, 750]
   - [<%= Creds::ACCELERATE_INSTANT_COMPLETE %>, 1000]
 
 # Cost to move building from one spot to another
