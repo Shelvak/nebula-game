@@ -52,7 +52,8 @@ module Parts::PlanetExploration
         CallbackManager.register(self,
           CallbackManager::EVENT_EXPLORATION_COMPLETE,
           ends_at)
-        EventBroker.fire(self, EventBroker::CHANGED)
+        EventBroker.fire(self, EventBroker::CHANGED, 
+          EventBroker::REASON_OWNER_PROP_CHANGE)
       end
 
       true
