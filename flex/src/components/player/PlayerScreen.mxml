@@ -77,9 +77,9 @@
                               fillMode="repeat"
                               source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 
                               'player_screen/center')}"/>
-               <components:CenteredBitmapImage left="78" top="57" width="110" height="130"
+               <s:BitmapImage left="74" top="46" width="110" height="130"
                   source="{IMG.getImage(AssetNames.getUnitImageName('Trooper'))}"/>
-               <base:AdvancedContainer left="320" right="0" top="20">
+               <base:AdvancedContainer left="214" right="0" top="20">
                   <s:Group width="100%" toolTip="{Localizer.string('Ratings', player.online
                            ?'online':'offline')}">
                      <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
@@ -96,11 +96,12 @@
                                skinClass="components.skins.LinkButtonSkin"
                                click="alliance_clickHandler(event)" width="100%"/>
                      <s:layout>
-                        <s:HorizontalLayout paddingBottom="10"/>
+                        <s:HorizontalLayout paddingBottom="8" paddingTop="3"/>
                      </s:layout>
                   </s:Group>
-                  <s:Label visible="{player.alliance == null}" 
+                  <s:Label visible="{player.alliance == null}" paddingBottom="8" paddingTop="3" 
                            text="{Localizer.string('Alliances', 'label.notInAlliance')}" />
+                  <s:Group width="100%">
                   <s:Group width="100%">
                      <s:Label width="100" text="{Localizer.string('Ratings', 'planetsCount')}"/>
                      <s:Label text="{player.planetsCount}"/>
@@ -150,20 +151,24 @@
                         <s:HorizontalLayout/>
                      </s:layout>
                   </s:Group>
-                  <s:Group width="100%">
-                     <s:Button label="{Localizer.string('Players', 'label.inRatings')}" 
-                               click="ratings_clickHandler(event)"/>
-                     <s:Button label="{Localizer.string('Players', 'label.sendMessage')}" 
-                               click="chat_clickHandler(event)"
-                               visible="{ModelLocator.getInstance().player.id != player.id}"/>
                      <s:layout>
-                        <s:HorizontalLayout />
+                        <s:VerticalLayout gap="3"/>
                      </s:layout>
                   </s:Group>
                   <base:layout>
                      <s:VerticalLayout paddingLeft="20"/>
                   </base:layout>
                </base:AdvancedContainer>
+               <s:Group left="300" top="205">
+                  <s:Button label="{Localizer.string('Players', 'label.inRatings')}" 
+                            click="ratings_clickHandler(event)"/>
+                  <s:Button label="{Localizer.string('Players', 'label.sendMessage')}" 
+                            click="chat_clickHandler(event)"
+                            visible="{ModelLocator.getInstance().player.id != player.id}"/>
+                  <s:layout>
+                     <s:HorizontalLayout />
+                  </s:layout>
+               </s:Group>
             </s:Group>
             <base:Panel width="{CONTENT_WIDTH}" skinClass="components.skins.LargePanelSkin"
                         title="{Localizer.string('Players', 'title.achievements')}">
