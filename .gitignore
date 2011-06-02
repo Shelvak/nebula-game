@@ -8,6 +8,7 @@ doc/app
 flex/.actionScriptProperties
 flex/.flexProperties
 flex/target
+flex/html-template/history
 server/config/database.yml
 web/config/database.yml
 Thumbs.db

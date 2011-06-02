@@ -148,8 +148,11 @@
          <base:AdvancedContainer left="0" right="0" visible="{(loaded
                                  &amp;&amp; unitsOwner == Owner.PLAYER &amp;&amp; currentKind != UnitKind.MOVING)}">
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
-               <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()" left="50"/>
-               <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()" right="50"/>
+               <base:layout>
+                  <s:HorizontalLayout gap="10" horizontalAlign="center"/>
+               </base:layout>
+               <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()"/>
+               <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()"/>
             </base:Panel>
             
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.setStance')}"

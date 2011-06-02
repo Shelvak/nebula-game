@@ -181,31 +181,5 @@ package utils
 			
 			return transfValue; 
 		}
-      
-      
-      /**
-       * Compares two strings.
-       * 
-       * @param s0
-       * @param s1
-       * @param ignoreCase specifies whether case should be ignored or not
-       * 
-       * @return <code>-1</code> if <code>s0 < s1</code>, <code>+1</code> if <code>s0 > s2</code> or
-       * <code>0</code> if <code>s0 == s1</code>. 
-       */
-      public static function compare(s0:String, s1:String, ignoreCase:Boolean = true) : int
-      {
-         var ss0:String = ignoreCase ? s0.toLowerCase() : s0;
-         var ss1:String = ignoreCase ? s1.toLowerCase() : s1;
-         if (ss0 < ss1)
-         {
-            return -1;
-         }
-         if (ss0 > ss1)
-         {
-            return 1;
-         }
-         return 0;
-      }
 	}
 }

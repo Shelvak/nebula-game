@@ -132,45 +132,13 @@
          
          private function calculateResLeft(): void
          {
-            missingStorages = [];
             var planet:MSSObject = ML.latestPlanet.ssObject;
-            if (metalCost  > planet.metal.maxStock)
-            {
-               missingStorages.push(ResourceType.METAL);
-            }
-            if (energyCost  > planet.energy.maxStock)
-            {
-               missingStorages.push(ResourceType.ENERGY);
-            }
-            if (zetiumCost  > planet.zetium.maxStock)
-            {
-               missingStorages.push(ResourceType.ZETIUM);
-            }
-            var tempStorageString: String = '';
-            var i: int = 0;
-            for each (var res: String in missingStorages)
-            {
-               if (i > 0)
-               {
-                  if (i == missingStorages.length - 1)
-                  {
-                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
-                  }
-                  else
-                  {
-                     tempStorageString += ', ';
-                  }
-               }
-               i++;
-               tempStorageString += Localizer.string('Resources', res);
-            }
-            if (missingStorageString != tempStorageString)
-            {
-               missingStorageString = tempStorageString;
-            }
-            enoughStorage = (missingStorages.length > 0?false:true);
+            missingStorageString = Resource.getMissingStoragesString(planet,
+               metalCost, energyCost, zetiumCost);
+            enoughStorage = (missingStorageString == ''?true:false);
             resLeft = Resource.getTimeToReachResources
-               (planet.metal, planet.energy, planet.zetium, metalCost, energyCost, zetiumCost);
+               (planet.metal, planet.energy, planet.zetium, 
+                  metalCost, energyCost, zetiumCost);
          }
          
          public function refreshUpgradeState(e: Event = null): void
@@ -523,9 +491,7 @@
                               (_selectedModel.pauseRemainder != 0)}">
                      <base:AdvancedContainer left="6" right="6">
                         <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
-                                 [_selectedModel.minScientists, ObjectStringsResolver.getString(
-                                 'Scientist', _selectedModel.minScientists), ML.player.scientists, 
-                                 ObjectStringsResolver.getString('Scientist', ML.player.scientists),
+                                 [_selectedModel.minScientists, ML.player.scientists, 
                                  ML.player.scientistsTotal])}" 
                                  visible="{_selectedModel.minScientists > ML.player.scientists
                                  &amp;&amp; _selectedModel.pauseScientists != 0}"
@@ -607,9 +573,7 @@
                                  visible="{!(!_selectedModel.groupForbiden || ML.player.scientistsTotal == 0)}" 
                                  width="100%"/>
                         <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
-                                 [_selectedModel.minScientists, ObjectStringsResolver.getString(
-                                 'Scientist', _selectedModel.minScientists), ML.player.scientists, 
-                                 ObjectStringsResolver.getString('Scientist', ML.player.scientists),
+                                 [_selectedModel.minScientists, ML.player.scientists, 
                                  ML.player.scientistsTotal])}" id="notEnoughSciLbl" 
                                                                visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
                                                                (upgradePending) || (!_selectedModel.isValid))}" 

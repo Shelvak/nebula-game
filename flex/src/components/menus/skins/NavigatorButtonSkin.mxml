@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
-        xmlns:s="library://ns.adobe.com/flex/spark"   
-        minWidth="21" minHeight="21" mouseEnabled="false" maxHeight="21" xmlns:mx="library://ns.adobe.com/flex/mx">
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        minWidth="21" minHeight="21" maxHeight="21"
+        mouseEnabled="false">
    
    <!-- host component -->
    <fx:Metadata>

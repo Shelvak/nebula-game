@@ -6,6 +6,7 @@
                     xmlns:unit="components.unit.*"
                     xmlns:components="utils.components.*"
                     xmlns:infoscreen="components.infoscreen.*"
+                    xmlns:screens="components.screens.*"
                     creationComplete="this_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[
@@ -1062,7 +1063,7 @@
          </s:Group> 
       </base:Scroller>
    </base:AdvancedContainer>
-   <s:Button label="{Localizer.string('InfoScreen', 'close')}" bottom="10" 
-             right="30" click="close_clickHandler(event)" skinClass="components.skins.YellowButtonSkin"/>
+   <screens:ScreenCloseButton scroller="{scrollCont}" label="{Localizer.string('InfoScreen', 'close')}"
+                              bottom="0" right="0" click="close_clickHandler(event)"/>
    
 </base:BaseContainer>

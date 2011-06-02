@@ -12,9 +12,13 @@ package models.objectives
       
       public override function get objectiveText(): String
       {
-         return Localizer.string('Objectives', 'objectiveText.'+objective.type,
-            [objective.count,
-               ObjectStringsResolver.getString('Time', objective.count)]);
+         var result: String = Localizer.string('Objectives', 'objectiveText.'+objective.type,
+            [objective.count]);
+         if (result == null || result == '')
+         {
+            throw new Error('Objective '+ objective.type + ' text was not resolved');
+         }
+         return result;
       }
    }
 }

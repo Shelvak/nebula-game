@@ -5,6 +5,7 @@ package utils.locale
    import mx.resources.IResourceBundle;
    import mx.resources.IResourceManager;
    import mx.resources.ResourceManager;
+   import mx.utils.ObjectUtil;
    import mx.utils.StringUtil;
    
    import utils.Objects;
@@ -59,7 +60,20 @@ package utils.locale
          if (parameters != null)
          {
             // pluralization pass is the last one
-            return mx.utils.StringUtil.substitute(pluralize(resultString, parameters), parameters);
+            try
+            {
+               return mx.utils.StringUtil.substitute(pluralize(resultString, parameters), parameters);
+            }
+            catch (err:Error)
+            {
+               throw new Error(
+                  "Pluralization pass has failed with message: " + err.message + "\n" +
+                  "Bundle: " + bundle + "\n" +
+                  "Property: " + property + "\n" +
+                  "Parameters: " + ObjectUtil.toString(parameters)
+               );
+            }
+            return null;   // unreachable
          }
          else
          {
@@ -126,59 +140,93 @@ package utils.locale
                );
             }
             var parameter:* = parameters[paramIndex];
-            var useForm:String = (parameter is Number) 
-               ? getPluralForm(locale, parameter as Number)
-               : parameter;
+            var usableFormNames:Array = (parameter is Number) 
+               ? getPluralForms(locale, parameter as Number)
+               : [parameter];
             var forms:String = paramPatternResult[2];
             
-            // look for required form and construct parameter replacement
-            var formPatternResult:Object = null;
-            FORM_PATTERN.lastIndex = 0;
-            while ((formPatternResult = FORM_PATTERN.exec(forms)) != null)
-            {
-               var form:String = formPatternResult[1];
-               var formData:String = formPatternResult[2];
-               if (form == useForm)
+            // Try to match any form that matches.
+            //
+            // e.g. if we have ["ones", "firsts"] first try to match "ones"
+            // and if that does not exist, try "firsts". Raise error
+            // if none of the forms can be applied.
+            var formMatched: Boolean = false;
+            for each(var usableFormName: String in usableFormNames) {
+               // look for required form and construct parameter replacement
+               var formPatternResult:Object = null;
+               FORM_PATTERN.lastIndex = 0;
+               
+               // Match form regexps.
+               while ((formPatternResult = FORM_PATTERN.exec(forms)) != null)
                {
-                  matchedParamRepl = com.adobe.utils.StringUtil.replace(formData, "?", parameter.toString());
+                  var formName:String = formPatternResult[1];
+                  var formData:String = formPatternResult[2];
+                  if (formName == usableFormName)
+                  {
+                     matchedParamRepl = com.adobe.utils.StringUtil.replace(
+                        formData, "?", parameter);
+                     break;
+                  }
+               }
+               
+               if (matchedParamRepl != null)
+               {
+                  str = com.adobe.utils.StringUtil.replace(str, 
+                     matchedParamStr, matchedParamRepl);
+                  formMatched = true;
                   break;
                }
             }
             
-            if (matchedParamRepl == null)
-            {
+            if (! formMatched) {
                // we didn't find a required plural form
                throw new Error(
-                  "Plural form '" + useForm + "' not found in parameter " + matchedParamStr +
-                  " for parameter " + parameter + ". The string to pluralize was: " + str
+                  "None of plural forms [" + usableFormNames.map(
+                     function(item:String): String { return "'" + item + "'" }  
+                  ).join(", ") + 
+                  "] found in parameter " + matchedParamStr +
+                  " for parameter " + parameter + 
+                  ". The string to pluralize was: " + str
                );
             }
-            str = com.adobe.utils.StringUtil.replace(str, matchedParamStr, matchedParamRepl);
          }
          return str;
       }
       
       
-      private static function getPluralForm(locale:String, number:int) : String
+      private static function getPluralForms(locale:String, number:int) : Array
       {
          Objects.paramNotNull("locale", locale);
          switch (locale)
          {
             case Locale.EN:
-               return number == 1 ?
-                  PluralForm.EN_ONE :
-                  PluralForm.EN_ELSE;
+               return number == 0 ?
+                  [PluralForm.EN_ZERO, PluralForm.EN_ELSE] :
+                  (number == 1 ? 
+                     [PluralForm.EN_ONE] :
+                     [PluralForm.EN_ELSE]);
             
             case Locale.LT:
-               if (number % 10 == 1 && number != 11)
+               if (number == 0) 
                {
-                  return PluralForm.LT_ONE;
+                  return [PluralForm.LT_ZERO, PluralForm.LT_TENS];
+               }
+               else if (number == 1) 
+               {
+                  return [PluralForm.LT_ONE, PluralForm.LT_FIRSTS]; 
+               }
+               else if (number % 10 == 1 && number != 11)
+               {
+                  return [PluralForm.LT_FIRSTS, PluralForm.LT_ONE];
                }
                else
                {
-                  return number % 10 == 0 || 10 <= number % 100 && number % 100 <= 20 ?
-                     PluralForm.LT_TENS :
-                     PluralForm.LT_ELSE;
+                  return (
+                     number % 10 == 0 || 
+                     10 <= number % 100 && number % 100 <= 20
+                  ) ?
+                     [PluralForm.LT_TENS] :
+                     [PluralForm.LT_ELSE];
                }
             
             default:

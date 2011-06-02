@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         clipAndEnableScrolling="true"
+         mouseEnabled="false"
+         width="{_scroller == null || !_scroller.verticalScrollBar.visible ? 207 : 224}">
+   <fx:Script>
+      <![CDATA[
+         import spark.components.Scroller;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         
+         [Bindable]
+         private var _scroller:Scroller;
+         /**
+          * A scroller the should be monitored for vertical scroller visibility changes.
+          */
+         public function set scroller(value:Scroller) : void
+         {
+            _scroller = value;
+         }
+         
+         
+         [Bindable]
+         public var label:String = "";
+         
+         
+         [Bindable(event="willNotChange")]
+         private function get backgroundImage() : BitmapData
+         {
+            return ImagePreloader.getInstance()
+               .getImage(AssetNames.BUTTONS_IMAGE_FOLDER + "close_button_background");
+         }
+      ]]>
+   </fx:Script>
+   <!-- backgrund -->
+   <s:BitmapImage top="0" bottom="0" left="0"
+                  source="{this.backgroundImage}"/>
+   <!-- button -->
+   <s:Button top="25" left="25" id="button" enabled="{this.enabled}"
+             skinClass="components.skins.YellowButtonSkin"
+             label="{this.label}"/>
+</s:Group>

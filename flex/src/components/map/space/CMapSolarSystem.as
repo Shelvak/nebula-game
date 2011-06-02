@@ -109,7 +109,7 @@ package components.map.space
          var star:BitmapImage = new BitmapImage();
          star.verticalCenter = 0;
          star.horizontalCenter = 0;
-         star.source = IMG.getImage(AssetNames.getSSImageName(SolarSystem(model).variation));
+         star.source = getSolarSystem().imageData;
          objectsContainer.addElement(star);
          
          // Orbits

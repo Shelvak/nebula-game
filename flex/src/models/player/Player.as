@@ -10,10 +10,10 @@ package models.player
    
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
+   import mx.utils.ObjectUtil;
    
    import utils.DateUtil;
    import utils.NumberUtil;
-   import utils.StringUtil;
    import utils.datastructures.Collections;
    
    
@@ -90,7 +90,7 @@ package models.player
       public var planets:ArrayCollection;
       private function compareFunction_planets(p0:MSSObject, p1:MSSObject, fields:Array = null) : int
       {
-         var res:int = StringUtil.compare(p0.name, p1.name);
+         var res:int = ObjectUtil.stringCompare(p0.name, p1.name, true);
          return res == 0 ? NumberUtil.compare(p0.id, p1.id) : res;
       }
       

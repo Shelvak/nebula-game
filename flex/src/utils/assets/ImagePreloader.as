@@ -14,16 +14,24 @@ package utils.assets
    import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.events.IOErrorEvent;
+   import flash.events.NetStatusEvent;
    import flash.events.ProgressEvent;
+   import flash.net.SharedObject;
+   import flash.net.SharedObjectFlushStatus;
+   import flash.utils.ByteArray;
    import flash.utils.getQualifiedClassName;
    
    import models.ModelLocator;
    
    import mx.events.ModuleEvent;
    import mx.formatters.NumberFormatter;
+   import mx.logging.ILogger;
+   import mx.logging.Log;
    import mx.modules.IModuleInfo;
    import mx.modules.ModuleManager;
+   import mx.utils.ObjectUtil;
    
+   import utils.Objects;
    import utils.PropertiesTransformer;
    import utils.SingletonFactory;
    
@@ -60,6 +68,12 @@ package utils.assets
       private function get STARTUP_INFO() : StartupInfo
       {
          return StartupInfo.getInstance();
+      }
+      
+      
+      private function get LOG() : ILogger
+      {
+         return Log.getLogger(Objects.getClassName(this, true));
       }
       
       
@@ -150,6 +164,63 @@ package utils.assets
       };
       
       
+      /* #################### */
+      /* ### SharedObject ### */
+      /* #################### */
+      
+      
+      private static const SO_NAME:String = "nebula44images";
+      private static const SO_PROP:String = "images";
+      
+      
+      private function loadFromSharedObject() : void
+      {
+         
+      }
+      
+      
+      private function saveToSharedObject() : void
+      {
+         try
+         {
+            var so:SharedObject = SharedObject.getLocal(SO_NAME);
+            
+            so.data[SO_PROP] = "Test";
+            so.addEventListener(NetStatusEvent.NET_STATUS, sharedObject_netStatusHandler, false, 0, true);
+            if (so.flush(50 * 1024 * 1024) == SharedObjectFlushStatus.FLUSHED)
+            {
+               LOG.info("All images saved in SharedObject.");
+               dispatchCompleteEvent();
+            }
+            else
+            {
+               LOG.info("Requested for unlimited amount of local storage. Waiting user response.");
+            }
+         }
+         // OK: user has disabled local storage for our app
+         catch (err:Error)
+         {
+            LOG.info("Failed to create SharedObject: user has disabled local storage for our domain.");
+            dispatchCompleteEvent();
+         }
+      }
+      
+      
+      private function sharedObject_netStatusHandler(event:NetStatusEvent) : void
+      {
+         LOG.info("NetStatusEvent: {0}", ObjectUtil.toString(event));
+         if (event.info["code"] == "SharedObject.Flush.Success")
+         {
+            LOG.info("All images saved in SharedObject.");
+            dispatchCompleteEvent();
+         }
+         else
+         {
+            // did not gove us enough storage
+            LOG.info("Unable to save images in SharedObject: user has denied local storage request.");
+         }
+      }
+      
       /* ################ */
       /* ### DOWNLOAD ### */
       /* ################ */
@@ -233,10 +304,12 @@ package utils.assets
        */
       private function finalizeDownload() : void
       {
-         _swfLoader.removeEventListener(Event.COMPLETE, swfLoaded);
+         _swfLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, swfLoaded);
+         _swfLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
          _swfLoader = null;
          _swfHash = null;
          _swfNames = null;
+//         saveToSharedObject();
          dispatchCompleteEvent();
       }
       
@@ -277,9 +350,18 @@ package utils.assets
          if (instance is MovieClip)
          {
             MovieClip(instance).stop();
-            var assetName:String = _currentSwfName.substring(0, _currentSwfName.length - 4); 
-            _movieClips[assetName] = instance;
-            getVisualAsset(assetName);
+            _movieClips[_currentSwfName.substring(0, _currentSwfName.length - 4)] = instance;
+            /**
+             * @since Flash Player 10.3
+             * 
+             * Devs in Adobe changed something in 10.3 version. If I deffer unpacking of frames
+             * in a MovieClip until they are actually needed, goToAndStop() does not work anymore.
+             * The MovieClip completely ignores number of a frame I pass and it stays on the 1st frame
+             * all the time. So all unpacked frames of an animation become the first frame and our
+             * animations do not seem to work anymore. All this does not happen if I unpack the frames
+             * right after the SWF has been loaded.
+             */
+            getVisualAsset(_currentSwfName.substring(0, _currentSwfName.length - 4));
          }
          else
          {
@@ -290,7 +372,10 @@ package utils.assets
       private function ioErrorHandler(event:IOErrorEvent) : void
       {
          
-         throw new IOError(event.text + "\nLoaded module: " + _currentModule + "\nContent type: " + _swfLoader.contentLoaderInfo.contentType);
+         throw new IOError(
+            event.text + "\nLoaded module: " + _currentModule + "\nContent type: " + 
+            _swfLoader.contentLoaderInfo.contentType
+         );
       }
       
       
@@ -342,6 +427,37 @@ package utils.assets
       }
       
       
+      public static function corr(image1:BitmapData, image2:BitmapData) : Number
+      {
+         var bytes1:ByteArray = image1.getPixels(image1.rect); bytes1.position = 0;
+         var bytes2:ByteArray = image2.getPixels(image2.rect); bytes2.position = 0;
+         var SHIFT_A:int = 8 * 3; var MASK_A:uint = 0xFF000000;
+         var SHIFT_R:int = 8 * 2; var MASK_R:uint = 0x00FF0000;
+         var SHIFT_G:int = 8 * 1; var MASK_G:uint = 0x0000FF00;
+         var SHIFT_B:int = 8 * 0; var MASK_B:uint = 0x000000FF;
+         var CHANNEL_MAX:uint = 0xFF;
+         var result:Number = 0;
+         var byteIdx:int = 0;
+         while(bytes1.bytesAvailable >= 4)
+         {
+            var px1:uint = bytes1.readUnsignedInt();
+            var A1:uint = (px1 & MASK_A >> SHIFT_A) / CHANNEL_MAX;
+            var R1:uint = (px1 & MASK_R >> SHIFT_R) / CHANNEL_MAX;
+            var G1:uint = (px1 & MASK_G >> SHIFT_G) / CHANNEL_MAX;
+            var B1:uint = (px1 & MASK_B >> SHIFT_B) / CHANNEL_MAX;
+            
+            var px2:uint = bytes2.readUnsignedInt();
+            var A2:uint = (px2 & MASK_A >> SHIFT_A) / CHANNEL_MAX;
+            var R2:uint = (px2 & MASK_R >> SHIFT_R) / CHANNEL_MAX;
+            var G2:uint = (px2 & MASK_G >> SHIFT_G) / CHANNEL_MAX;
+            var B2:uint = (px2 & MASK_B >> SHIFT_B) / CHANNEL_MAX;
+            
+            result += A1 * A2 * (R1 * R2 + G1 * G2 + B1 * B2);
+         }
+         return result / 1e6;         
+      }
+      
+      
       /* ################################## */
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
@@ -349,7 +465,10 @@ package utils.assets
       
       private function dispatchCompleteEvent() : void
       {
-         dispatchEvent(new Event(Event.COMPLETE));
+         if (hasEventListener(Event.COMPLETE))
+         {
+            dispatchEvent(new Event(Event.COMPLETE));
+         }
       }
       
       

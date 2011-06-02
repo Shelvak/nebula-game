@@ -2,8 +2,8 @@
 <% gun_types = %w{
 pistol machine_gun sniper_rifle
 small_rocket heavy_rocket space_rocket rhyno_rocket rhyno_rocket2
-railgun 
-laser space_laser_red space_laser_blue space_laser_green 
+railgun
+laser space_laser_red space_laser_blue space_laser_green
 cannon cannon_air
 plasma_gun plasma_spike
 alien_cannon thor_ground
@@ -106,12 +106,12 @@ assets:
         <%= "#{base}.png: #{base}.png" %>
         <% end %>
       "constructors":
-        <% each_model('building') do |base| 
+        <% each_model('building') do |base|
         klass = "Building::#{base}".constantize %>
         <%= "#{base}.jpg: #{base}UnitConstructorBuilding.jpg" \
           if klass.constructor? and klass.constructs_units? %>
         <% end %>
-  
+
   "images/units":
     opts:
       flex:
@@ -121,7 +121,7 @@ assets:
         <% each_model('unit') do |base| %>
         <%= "#{base}.jpg: #{base}Unit.jpg" %>
         <% end %>
-  
+
   "images/technologies":
     opts:
       flex:
@@ -131,7 +131,7 @@ assets:
         <% each_model('technology') do |base| %>
         <%= "#{base}.jpg: #{base}Technology.jpg" %>
         <% end %>
-        background.jpg: 
+        background.jpg:
           wiki_name: Technology_background.jpg
           "*": {pp_opts: "-resize 1050x"}
 
@@ -157,18 +157,18 @@ assets:
           ["AccelerateFlight", ""],
           ["HealHp", ""],
         ].each do |type, *keys|
-          keys.each do |key| 
+          keys.each do |key|
             key.gsub!("::", "_")
           %>
         <%= "#{type}#{key}.jpg: Achievement#{type}#{key}.jpg" %>
           <% end %>
         <% end %>
-    
+
   "images/solar_system":
     "*":
       ".":
         shield.png: EnergyShield.png
-        wormhole.png: 
+        wormhole.png:
           wiki_name: Wormhole.png
           "flex": {save_as: "swf:png"}
         battleground.png: BattlegroundSun.png
@@ -185,30 +185,30 @@ assets:
             iphone: {pp_opts: ""}
         <% end %>
         <% end %>
-        
+
   "images/folliage":
     "*":
       "0/blocking":
         # 6x6
-        12.png: 
+        12.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": EarthMountain6x6.png
         # 6x2
         13.png: Crack04.png
         # 4x4
-        10.png: 
+        10.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": EarthMountain4x4.png
         # 4x3
         9.png: Skeleton05.png
         # 4x6
-        11.png: 
+        11.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": EarthMountain6x4.png
         # 3x3
         8.png: Skeleton03.png
         # 3x4
-        14.png: 
+        14.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": Earth_element1.png
       "0/nonblocking":
@@ -228,27 +228,27 @@ assets:
         13.tar.gz: Skeleton02.tar.gz
       "1/blocking":
         # 6x6
-        12.png: 
+        12.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": DesertMountain6x6.png
         # 6x2
         13.png: Crack05.png
         # 4x4
-        10.png: 
+        10.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": DesertMountain4x4.png
         # 4x3
         9.png: Skeleton04.png
         # 4x6
-        11.png: 
+        11.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": DesertMountain6x4.png
         # 3x3
-        8.png: 
+        8.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": Crater01.png
         # 3x4
-        14.png: 
+        14.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": Desert_element1.png
       "1/nonblocking":
@@ -266,21 +266,21 @@ assets:
         11.tar.gz: Sandp12.tar.gz
         12.tar.gz: Skeleton01.tar.gz
         13.tar.gz: Skeleton02.tar.gz
-      "2/blocking":      
+      "2/blocking":
         # 6x6
-        12.png: 
+        12.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": MudHill01.png
         # 6x2
         13.png: Crack06.png
         # 4x4
-        10.png: 
+        10.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": MudHill03.png
         # 4x3
         9.png: Marsh01.png
         # 4x6
-        11.png: 
+        11.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": MudHill02.png
         # 3x3
@@ -302,7 +302,7 @@ assets:
         11.tar.gz: Mudp12.tar.gz
         12.tar.gz: Mudp13.tar.gz
         13.tar.gz: Mudp14.tar.gz
-      "3/blocking":      
+      "3/blocking":
         # 6x6
         12.png: TwilightTerrainBlockingFolliage6x6.png
         # 6x2
@@ -350,7 +350,7 @@ assets:
         <%= "#{i}.png: Terrain#{name.camelcase}Planet#{i}.png" %>
         <% end %>
       <% end %>
-      
+
 #      # Planet cloud variations
 #      <# {
 #        "clouds" => "",
@@ -362,7 +362,7 @@ assets:
 #        <#= "%d.png: Cloud%02d%s.png" % [i, i + 1, suffix] %>
 #        <# end #>
 #      <# end #>
-      
+
   "images/tile":
     "*":
       ".":
@@ -460,7 +460,7 @@ assets:
         <% each_model('unit') do |base| %>
         <%= "#{base}.tar.gz: #{base}BattlefieldUnit.tar.gz" %>
         <% end %>
-      
+
     <% terrain_types.each do |number, name| %>
       # Battlefield scenery
       <%= number %>:
@@ -474,7 +474,7 @@ assets:
         <%= "#{i}.tar.gz: Bfplant_%s_%02d.tar.gz" % [name, i] %>
         <% end %>
     <% end %>
-  
+
   "images/ui":
     opts:
       "*":
@@ -482,7 +482,7 @@ assets:
       "flex":
         # We need best quality we can get for these
         save_as: swf:png
-  
+
     # Common UI assets
     "*":
       "icons":
@@ -512,7 +512,7 @@ assets:
         hidden.png: Status_hidden.png
         cooldown.png: CooldownIcon.png
         population.png: PopulationIcon.png
-        
+
       "notifications":
         outcome_loose.jpg:          Outcome_loose.jpg
         outcome_win.jpg:            Outcome_win.jpg
@@ -521,7 +521,7 @@ assets:
         ring_top.png:               Ziedas_virus.png
         ring_bottom.png:            Ziedas_apacia.png
         ring_repeat.png:            Ziedas_repeat.png
-        
+
       "storage_screen":
         location_center.png:           St_location_center.png
         location_left.png:             St_location_left.png
@@ -539,18 +539,26 @@ assets:
         top_left3.png:                  St_window_top_left3.png
         top_center.png:                St_window_top_center.png
         top_right.png:                 St_window_top_right.png
-        
+
       "start_menu":
-        top_center.png:            Startmenu_top_center.png
-        top_left.png:              Startmenu_top_left.png
-        top_repeat.png:            Startmenu_top_repeat.png
-        top_right.png:             Startmenu_top_right.png
-        center_left.png:           Startmenu_center_left.png
-        center_right.png:          Startmenu_center_right.png
-        bottom_left.png:           Startmenu_bottom_left.png
-        bottom_repeat.png:         Startmenu_bottom_repeat.png
-        bottom_right.png:          Startmenu_bottom_right.png
-        holder.png:                Startmenu_holder.png
+        top_center.png:               Startmenu_top_center.png
+        top_left.png:                 Startmenu_top_left.png
+        top_repeat.png:               Startmenu_top_repeat.png
+        top_right.png:                Startmenu_top_right.png
+        center_left.png:              Startmenu_center_left.png
+        center_right.png:             Startmenu_center_right.png
+        bottom_left.png:              Startmenu_bottom_left.png
+        bottom_repeat.png:            Startmenu_bottom_repeat.png
+        bottom_right.png:             Startmenu_bottom_right.png
+        sm_top_center_repeat.png:     Sm2_top_center(repeat).png
+        sm_bottom_center_repeat.png:  Sm2_bottom_center(repeat).png
+        sm_top_left.png:              Sm2_top_left.png
+        sm_top_right.png:             Sm2_top_right.png
+        sm_center_left.png:           Sm2_center_left.png
+        sm_center_right.png:          Sm2_center_right.png
+        sm_bottom_left.png:           Sm2_bottom_left.png
+        sm_bottom_right.png:          Sm2_bottom_right.png
+        holder.png:                   Startmenu_holder.png
 
       "chat":
         btn_chan_close_up.png:          Closetab_up.png
@@ -581,6 +589,7 @@ assets:
 
 
       "buttons":
+        close_button_background.png:  Close_panel.png
         info_up.png:       Infob_up.png
         info_down.png:     Infob_down.png
         info_disabled.png: Infob_disabled.png
@@ -632,7 +641,7 @@ assets:
         show_up.png:     Show_button_up.png
         show_over.png:     Show_button_over.png
         show_down.png:     Show_button_down.png
-        show_disabled.png:     Show_button_disabled.png 
+        show_disabled.png:     Show_button_disabled.png
         next_up.png:      Next_up.png
         next_over.png:    Next_over.png
         forward_up.png:    Forward_up.png
@@ -647,32 +656,32 @@ assets:
         notification_allread_up.png: Notification_button_allread_up.png
         notification_allread_over.png: Notification_button_allread_over.png
         notification_allread_down.png: Notification_button_allread_down.png
-        zoom_background.png:  Zoom_buttons_background.png 
+        zoom_background.png:  Zoom_buttons_background.png
         bf_pause_down.png:  Bf_pause_down.png
-        bf_pause_over.png:  Bf_pause_over.png 
-        bf_pause_up.png:  Bf_pause_up.png 
-        bf_play_down.png:  Bf_play_down.png 
-        bf_play_over.png:  Bf_play_over.png 
-        bf_play_up.png:  Bf_play_up.png 
+        bf_pause_over.png:  Bf_pause_over.png
+        bf_pause_up.png:  Bf_pause_up.png
+        bf_play_down.png:  Bf_play_down.png
+        bf_play_over.png:  Bf_play_over.png
+        bf_play_up.png:  Bf_play_up.png
         x05_disabled.png:  X05_disabled.png
-        x05_down.png:  X05_down.png 
-        x05_over.png:  X05_over.png 
+        x05_down.png:  X05_down.png
+        x05_over.png:  X05_over.png
         x05_up.png:  X05_up.png
         x1_disabled.png:  X1_disabled.png
-        x1_down.png:  X1_down.png 
-        x1_over.png:  X1_over.png 
+        x1_down.png:  X1_down.png
+        x1_over.png:  X1_over.png
         x1_up.png:  X1_up.png
         x2_disabled.png:  X2_disabled.png
-        x2_down.png:  X2_down.png 
-        x2_over.png:  X2_over.png 
+        x2_down.png:  X2_down.png
+        x2_over.png:  X2_over.png
         x2_up.png:  X2_up.png
         x4_disabled.png:  X4_disabled.png
-        x4_down.png:  X4_down.png 
-        x4_over.png:  X4_over.png 
+        x4_down.png:  X4_down.png
+        x4_over.png:  X4_over.png
         x4_up.png:  X4_up.png
         xReplay_disabled.png:  Xreplay_disabled.png
-        xReplay_down.png:  Xreplay_down.png 
-        xReplay_over.png:  Xreplay_over.png 
+        xReplay_down.png:  Xreplay_down.png
+        xReplay_over.png:  Xreplay_over.png
         xReplay_up.png:  Xreplay_up.png
         units_bg.png:    Units(all)_button_bg.png
         groundUnits_bg.png:  Units(ground)_button_bg.png
@@ -682,16 +691,16 @@ assets:
         units_orange.png:    Units_color_orange.png
         units_white.png:    Units_color_white.png
         attack_disabled.png:  Attack_disabled.png
-        attack_down.png:  Attack_down.png 
-        attack_over.png:  Attack_over.png 
+        attack_down.png:  Attack_down.png
+        attack_over.png:  Attack_over.png
         attack_up.png:  Attack_up.png
         move_disabled.png:  Move_disabled.png
-        move_down.png:  Move_down.png 
-        move_over.png:  Move_over.png 
+        move_down.png:  Move_down.png
+        move_over.png:  Move_over.png
         move_up.png:  Move_up.png
         transfer_disabled.png:  Load_disabled.png
-        transfer_down.png:  Load_down.png 
-        transfer_over.png:  Load_over.png 
+        transfer_down.png:  Load_down.png
+        transfer_over.png:  Load_over.png
         transfer_up.png:  Load_up.png
 
       "level_parts":
@@ -699,7 +708,7 @@ assets:
         level_full.png: Level_full.png
         level_space.png: Level_space.png
         npc.png: Level_npc.png
-  
+
     # Flex UI assets
     "flex":
       ".":
@@ -790,7 +799,7 @@ assets:
         hint_bottom_right.png:    Hint_bottom_right.png
         hint_center_left.png:     Hint_center_left.png
         hint_center_right.png:    Hint_center_right.png
-      
+
       "notifications":
         location_background.jpg:     Window.jpg
         mini_location_background.jpg:     Window_mini.jpg
@@ -863,6 +872,6 @@ assets:
         popup_bottom_center.png:       Sp_bottom_center.png
         popup_bottom_right.png:        Sp_bottom_right.png
         cooldown_indicator.tar.gz:     Cooldown.tar.gz
-  
+
     # iPhone UI assets
     "iphone": {}

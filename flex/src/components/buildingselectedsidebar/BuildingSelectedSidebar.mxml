@@ -104,52 +104,18 @@
          
          [Bindable]
          private var enoughStorage: Boolean = true;
-         
-         private var missingStorages: Array = [];
          [Bindable]
          private var missingStorageString: String = '';
          
          private function calculateResLeft(): void
          {
-            missingStorages = [];
             var planet:MSSObject = ML.latestPlanet.ssObject;
-            if (metalCost  > planet.metal.maxStock)
-            {
-               missingStorages.push(ResourceType.METAL);
-            }
-            if (energyCost  > planet.energy.maxStock)
-            {
-               missingStorages.push(ResourceType.ENERGY);
-            }
-            if (zetiumCost  > planet.zetium.maxStock)
-            {
-               missingStorages.push(ResourceType.ZETIUM);
-            }
-            var tempStorageString: String = '';
-            var i: int = 0;
-            for each (var res: String in missingStorages)
-            {
-               if (i > 0)
-               {
-                  if (i == missingStorages.length - 1)
-                  {
-                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
-                  }
-                  else
-                  {
-                     tempStorageString += ', ';
-                  }
-               }
-               i++;
-               tempStorageString += Localizer.string('Resources', res);
-            }
-            if (missingStorageString != tempStorageString)
-            {
-               missingStorageString = tempStorageString;
-            }
-            enoughStorage = (missingStorages.length > 0?false:true);
+            missingStorageString = Resource.getMissingStoragesString(planet,
+               metalCost, energyCost, zetiumCost);
+            enoughStorage = (missingStorageString == ''?true:false);
             resLeft = Resource.getTimeToReachResources
-               (planet.metal, planet.energy, planet.zetium, metalCost, energyCost, zetiumCost);
+               (planet.metal, planet.energy, planet.zetium, 
+                  metalCost, energyCost, zetiumCost);
             resLeftString = getStringFromSeconds(resLeft);
          }
          
@@ -720,28 +686,28 @@
                         <s:Group width="100%" 
                                  visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
                                  (_selectedModel.type != BuildingType.HEALING_CENTER))}">
-                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
+                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open')}"
                                      click="NC.showHealing(_selectedModel, ML.latestPlanet.getActiveHealableUnits())"
                                      right="6"/>
                         </s:Group>
                         <s:Group width="100%" 
                                  visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
                                  (!_selectedModel.isConstructor(ObjectClass.UNIT)) )}">
-                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
+                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open')}"
                                      click="NC.showFacilities(_selectedModel.id)"
                                      right="6"/>
                         </s:Group>
                         <s:Group width="100%" 
                                  visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
                                  _selectedModel.type != BuildingType.RESEARCH_CENTER)}">
-                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
+                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open')}"
                                      click="NC.showTechnologies()"
                                      right="6"/>
                         </s:Group>
                         <s:Group width="100%" 
                                  visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
                                  _selectedModel.type != BuildingType.DEFENSIVE_PORTAL)}">
-                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open', [_selectedModel.name])}"
+                           <s:Button label="{Localizer.string('BuildingSelectedSidebar', 'open')}"
                                      click="NC.showDefensivePortal(ML.latestPlanet.id)"
                                      right="6"/>
                         </s:Group>
@@ -1129,12 +1095,12 @@
                      <!-- RATES BOOST -->
                      <s:RichText textFlow="{getTextFlow(
                                  Localizer.string('Credits', 'label.boostInactive',
-                                 [resource.type, Localizer.string('Credits', 'rate'),
+                                 [resource.type, 'rate',
                                  Config.getPlanetBoost(), DateUtil.secondsToHumanString(
                                  Config.getPlanetBoostDuration())]))}"
                                  visible="{resource.boost.rateTime == null}"/>
                      <s:Label text="{Localizer.string('Credits', 'label.boostActive1',
-                              [resource.type, Localizer.string('Credits', 'rate'),
+                              [resource.type, 'rate',
                               Config.getPlanetBoost(),
                               DateUtil.secondsToHumanString(
                               Config.getPlanetBoostDuration())])}"
@@ -1160,12 +1126,12 @@
                      <!-- STORAGES BOOST -->
                      <s:RichText textFlow="{getTextFlow(
                                  Localizer.string('Credits', 'label.boostInactive',
-                                 [resource.type, Localizer.string('Credits', 'storage'),
+                                 [resource.type, 'storage',
                                  Config.getPlanetBoost(), DateUtil.secondsToHumanString(
                                  Config.getPlanetBoostDuration())]))}"
                                  visible="{resource.boost.storageTime == null}"/>
                      <s:Label text="{Localizer.string('Credits', 'label.boostActive1',
-                              [resource.type, Localizer.string('Credits', 'storage'),
+                              [resource.type, 'storage',
                               Config.getPlanetBoost(),
                               DateUtil.secondsToHumanString(
                               Config.getPlanetBoostDuration())])}"

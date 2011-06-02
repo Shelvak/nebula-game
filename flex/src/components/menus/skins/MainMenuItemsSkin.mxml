@@ -3,7 +3,6 @@
 <s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
              xmlns:s="library://ns.adobe.com/flex/spark"
              xmlns:mx="library://ns.adobe.com/flex/halo"
-             width="180"
              visible.disabled="false">
    
    <fx:Metadata>
@@ -12,7 +11,14 @@
    
    <fx:Script>
       <![CDATA[
+         import controllers.ui.NavigationController;
+         
+         import models.ModelLocator;
+         
          import utils.assets.AssetNames;
+         
+         [Bindable]
+         private var ML: ModelLocator = ModelLocator.getInstance();
       ]]>
    </fx:Script>
    <fx:Script>
@@ -61,12 +67,11 @@
    
    <!--- Background of the component. -->
    <s:Group id="background" x="0" y="0" height="100%" width="100%"
-           alpha.disabled="0" y.disabled="{width}" height.disabled="0" width.disabled="0">     
+            alpha.disabled="0" y.disabled="{width}" height.disabled="0" width.disabled="0">     
       <!-- TOP -->
       <s:BitmapImage id="topLeft" left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'top_left')}"/>
       <s:BitmapImage id="topRight" right="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'top_right')}"/>
-      <s:BitmapImage fillMode="repeat" left="{topLeft.width}" top="0" right="{topRight.width}" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'top_repeat')}"/>
-      <s:BitmapImage id="topCenter" horizontalCenter="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'top_center')}"/>
+      <s:BitmapImage id="topRepeat" fillMode="repeat" left="{topLeft.width}" top="0" right="{topRight.width}" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'top_repeat')}"/>
       
       <!-- BOTTOM -->
       <s:BitmapImage id="bottomLeft" left="0" bottom="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'bottom_left')}"/>
@@ -76,17 +81,23 @@
       <!-- CENTER -->
       <s:BitmapImage id="centerLeft" left="0" top="{topLeft.height}" bottom="{bottomLeft.height}" fillMode="repeat" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'center_left')}"/>
       <s:BitmapImage id="centerRight" right="0" top="{topRight.height}" bottom="{bottomRight.height}" fillMode="repeat" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'center_right')}"/> 
-      <s:Rect left="{centerLeft.width}" right="{centerRight.width}" top="{topCenter.height}" bottom="{bottomRepeat.height}">
+      <s:Rect left="{centerLeft.width}" right="{centerRight.width}" top="{topRepeat.height}" bottom="{bottomRepeat.height}">
          <s:fill>
             <s:SolidColor color="#0f0f0f"/>
          </s:fill>
       </s:Rect>    
+      <s:BitmapImage id="topCenter" horizontalCenter="0" top="{(topRepeat.height/2) - 3}" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'top_center')}"/>         
+      <s:Button label="{ML.player.name}" top="{(topCenter.height + (topRepeat.height/2))}" 
+                fontSize="18" maxWidth="300" 
+                click="NavigationController.getInstance().showPlayer(ML.player.id)"
+                skinClass="components.skins.LinkButtonSkin"
+                horizontalCenter="0"/>
    </s:Group>
    
    <!--- Here children will be placed and layed out. -->
-   <s:Group id="contentGroup" left="10" right="15" top="{topCenter.height}" bottom="{bottomRepeat.height + 5}" minWidth="0" minHeight="0">
+   <s:Group id="contentGroup" left="10" right="10" top="{topCenter.height + topRepeat.height}" bottom="{bottomRepeat.height}" minWidth="0" minHeight="0">
       <s:layout>
-         <s:VerticalLayout gap="1"/>
+         <s:HorizontalLayout gap="10"/>
       </s:layout>
    </s:Group>
    

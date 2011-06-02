@@ -8,9 +8,13 @@ package utils.locale
    public final class PluralForm
    {
       /* ######################## */
-      /* ### ENGLISH: 2 forms ### */
+      /* ### ENGLISH: 3 forms ### */
       /* ######################## */
       
+      /**
+       * English: is 0
+       */
+      public static const EN_ZERO:String = "zero";
       
       /**
        * English: is 1
@@ -24,14 +28,23 @@ package utils.locale
       
       
       /* ########################### */
-      /* ### LITHUANIAN: 3 forms ### */
+      /* ### LITHUANIAN: 5 forms ### */
       /* ########################### */
       
+      /**
+       * Lithuanian: is 0
+       */      
+      public static const LT_ZERO:String = EN_ZERO;
+      
+      /**
+       * Lithuanian: is 1
+       */      
+      public static const LT_ONE:String = EN_ONE;
       
       /**
        * Lithuanian: ends in 1, not 11
        */      
-      public static const LT_ONE:String = EN_ONE;
+      public static const LT_FIRSTS:String = "1sts";
       
       
       /**

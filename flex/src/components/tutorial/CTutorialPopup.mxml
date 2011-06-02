@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<popups:BasePopup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                  xmlns:s="library://ns.adobe.com/flex/spark" 
+                  xmlns:mx="library://ns.adobe.com/flex/mx"
+                  xmlns:popups="components.popups.*"
+                  move="this_moveHandler(event)"
+                  resize="this_resizeHandler(event)">
+   
+   <fx:Declarations>
+   </fx:Declarations>
+   
+   <fx:Script>
+      <![CDATA[
+         import mx.events.MoveEvent;
+         import mx.events.ResizeEvent;
+         
+         import utils.SingletonFactory;
+         
+         
+         public static function getInstance() : CTutorialPopup
+         {
+            return SingletonFactory.getSingletonInstance(CTutorialPopup);
+         }
+         
+         
+         private function this_moveHandler(event:MoveEvent) : void
+         {
+            
+         }
+         
+         
+         private function this_resizeHandler(event:ResizeEvent) : void
+         {
+            
+         }
+         
+         
+         /**
+          * Do not allow dragging the popup
+          */ 
+         private function fixPosition() : void
+         {
+            
+         }
+      ]]>
+   </fx:Script>
+   
+</popups:BasePopup>
