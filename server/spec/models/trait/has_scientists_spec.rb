@@ -29,6 +29,11 @@ describe Building::HasScientistsTraitMock do
       @player.should_receive(:change_scientist_count!).with(@rc.scientists)
       @rc.activate!
     end
+    
+    it "should not fail if player is nil" do
+      @rc.stub_chain(:planet, :player).and_return(nil)
+      @rc.activate!
+    end
   end
 
   describe "#deactivate!" do
@@ -40,6 +45,11 @@ describe Building::HasScientistsTraitMock do
     it "should call player.chance_scientist_count!" do
       @rc.planet.stub!(:player).and_return(@player)
       @player.should_receive(:change_scientist_count!).with(-@rc.scientists)
+      @rc.deactivate!
+    end
+
+    it "should not fail if player is nil" do
+      @rc.stub_chain(:planet, :player).and_return(nil)
       @rc.deactivate!
     end
   end
