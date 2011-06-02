@@ -12,6 +12,7 @@
          import com.developmentarc.core.utils.EventBroker;
          
          import components.ratings.events.RatingsEvent;
+         import components.skins.LargePanelSkin;
          
          import config.Config;
          
@@ -104,55 +105,57 @@
                'victoryPoints':[victoryPtsField, pointsField, planetsCountField, nameField],
                'points':[pointsField, victoryPtsField, planetsCountField, nameField]
             }
-            
-            protected function header_ratingsSortHandler(event:RatingsEvent):void
-            {
-               ML.ratings.sort = new Sort();
-               ML.ratings.sort.fields = sortFields[event.key];
-               ML.ratings.refresh();
-            }
-            
+         
+         protected function header_ratingsSortHandler(event:RatingsEvent):void
+         {
+            ML.ratings.sort = new Sort();
+            ML.ratings.sort.fields = sortFields[event.key];
+            ML.ratings.refresh();
+         }
+         
       ]]>
    </fx:Script>
-   <s:Group width="600">
-      <s:Label text="{Localizer.string('Ratings', 'label.ratings')}" color="#eec500" fontSize="18" 
-               fontWeight="bold" left="14"/>
-      <s:Group right="0">
-         <s:Label text="{Localizer.string('Ratings', 'label.search')}"/>
-         <base:BaseTextInput id="searchText" width="400" change="textinput1_changeHandler(event)"/>
-         <s:layout>
-            <s:HorizontalLayout gap="3" verticalAlign="middle"/>
-         </s:layout>
+   <base:AdvancedContainer left="0" right="0" top="0" bottom="0">
+      <s:Group width="600">
+         <s:Group right="0">
+            <s:Label text="{Localizer.string('Ratings', 'label.search')}"/>
+            <base:BaseTextInput id="searchText" width="400" change="textinput1_changeHandler(event)"/>
+            <s:layout>
+               <s:HorizontalLayout gap="3" verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         
+         <s:Group width="600" top="20">
+            <s:BitmapImage source="{IMG.getImage(AssetNames.INFO_SCREEN_IMAGES_FOLDER + 'line')}"/>
+         </s:Group>
       </s:Group>
       
-      <s:Group width="600" top="20">
-         <s:BitmapImage source="{IMG.getImage(AssetNames.INFO_SCREEN_IMAGES_FOLDER + 'line')}"/>
-      </s:Group>
-   </s:Group>
+      <s:Label text="{Localizer.string('Ratings', 'label.pointsToWin', [Config.getPointsToWin()])}"
+               paddingLeft="10" fontWeight="bold" fontSize="16"/>
+      
+      <s:CheckBox id="onlyOnline" label="{Localizer.string('Ratings', 'label.filterOnline')}"
+                  change="onlyOnline_changeHandler(event)"/>
+      <base:Panel height="100%" horizontalCenter="0" 
+                  skinClass="components.skins.LargePanelSkin"
+                  title="{Localizer.string('Ratings', 'label.ratings')}">
+         <ratings:RatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)" horizontalCenter="0"/>
+         <base:Scroller id="contScroller" left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10">
+            <s:Group width="100%">
+               <s:DataGroup dataProvider="{ML.ratings}" horizontalCenter="0"
+                            itemRenderer="components.ratings.IRRatingsRow">
+                  <s:layout>
+                     <s:VerticalLayout gap="0"/>
+                  </s:layout>
+               </s:DataGroup>
+            </s:Group>
+         </base:Scroller>
+      </base:Panel>
+      <base:layout>
+         <s:VerticalLayout horizontalAlign="center" gap="10" paddingTop="10"/>
+      </base:layout>
+   </base:AdvancedContainer>
    
-   <s:Label text="{Localizer.string('Ratings', 'label.pointsToWin', [Config.getPointsToWin()])}"
-            paddingLeft="10" fontWeight="bold" fontSize="16"/>
-   
-   <s:CheckBox id="onlyOnline" label="{Localizer.string('Ratings', 'label.filterOnline')}"
-               change="onlyOnline_changeHandler(event)"/>
-   
-   <s:Group height="100%" width="100%">
-      <ratings:RatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)" horizontalCenter="0"/>
-      <base:Scroller id="contScroller" left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10">
-         <s:Group width="100%">
-            <s:DataGroup dataProvider="{ML.ratings}" horizontalCenter="0"
-                         itemRenderer="components.ratings.IRRatingsRow">
-               <s:layout>
-                  <s:VerticalLayout gap="0"/>
-               </s:layout>
-            </s:DataGroup>
-         </s:Group>
-      </base:Scroller>
-      <screens:ScreenCloseButton label="{Localizer.string('Ratings', 'label.close')}"
-                                 scroller="{contScroller}" right="0" bottom="0"
-                                 click="NavigationController.getInstance().showPreviousScreen()"/>
-   </s:Group>
-   <base:layout>
-      <s:VerticalLayout horizontalAlign="center" gap="10" paddingTop="10"/>
-   </base:layout>
+   <screens:ScreenCloseButton label="{Localizer.string('Ratings', 'label.close')}"
+                              right="0" bottom="0"
+                              click="NavigationController.getInstance().showPreviousScreen()"/>
 </base:BaseContainer>

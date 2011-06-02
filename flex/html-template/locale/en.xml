@@ -1115,6 +1115,7 @@
   </General>
 
   <InfoScreen>
+    <title.details value="Details" />
     <currentLevel value="Current level" />
     <description value="Description" />
     <level value="Level" />
@@ -2731,6 +2732,7 @@
 
   <Ratings>
     <label.ratings value="Ratings" />
+    <label.loading value="Loading..." />
     <label.noAlliances value="There are no alliances in this galaxy" />
     <label.allyRatings value="Alliance ratings" />
     <label.close value="Close"/>

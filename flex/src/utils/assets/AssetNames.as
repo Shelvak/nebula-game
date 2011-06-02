@@ -144,6 +144,11 @@ package utils.assets
       public static const CHAT_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "chat/";
       
       /**
+       * Folder of large panel images e.g. achievements (UI section).
+       */
+      public static const UI_LARGE_PANEL:String = UI_IMAGES_FOLDER + "large_panel/";
+      
+      /**
        * Folder of maps images (UI section).
        */
       public static const UI_MAPS:String = UI_IMAGES_FOLDER + "maps/";

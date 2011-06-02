@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:base="components.base.*"
+               xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               width="100%" minWidth="400" minHeight="50">
+   <fx:Metadata>
+      [HostComponent("components.base.Panel")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      import utils.assets.AssetNames;
+   </fx:Script>
+   
+   <base:states>
+      <s:State name="normal"/>
+      <s:State name="disabled"/>
+      <s:State name="normalWithControlBar"/>
+      <s:State name="disabledWithControlBar"/>
+   </base:states>
+   
+   <s:BitmapImage left="0" top="0" id="topLeft"
+                  source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_left')}"/>
+   <s:BitmapImage right="0" top="0" id="topRight"
+                  source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_right')}"/>   
+   <!-- Title container -->
+   <s:Group left="{(this.width - topCenter.width)/2}" minWidth="246" id="topCenter">
+      <s:BitmapImage fillMode="repeat" left="0" right="0" minWidth="246"
+                     source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_center')}"/>
+      <s:Label color="#eec500" fontSize="24" fontWeight="bold" verticalCenter="-5"
+               paddingLeft="25" paddingRight="25" horizontalCenter="0" id="titleDisplay"/>
+   </s:Group>
+   <s:BitmapImage right="{(this.width + topCenter.width)/2}" top="0" id="topCenterLeft"
+                  source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_center_left')}"/>
+   <s:BitmapImage left="{(this.width + topCenter.width)/2}" top="0" id="topCenterRight"
+                  source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_center_right')}"/>
+   <s:BitmapImage left="{topLeft.width}" top="0" fillMode="repeat"
+                  right="{(this.width + topCenter.width)/2 + topCenterLeft.width}"
+                  source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_repeat')}"/>
+   <s:BitmapImage right="{topRight.width}" top="0" fillMode="repeat"
+                  left="{(this.width + topCenter.width)/2 + topCenterRight.width}" 
+                  source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_repeat')}"/>
+   
+   <s:BitmapImage left="0" bottom="0" id="bottomLeft"
+                  source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_left')}"/>
+   <s:BitmapImage right="0" bottom="0" id="bottomRight"
+                  source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_right')}"/>   
+   <s:BitmapImage left="{(this.width - bottomCenter.width)/2}" fillMode="repeat" bottom="0"
+                  source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_center')}"
+                  id="bottomCenter" width="{topCenter.width}"/>
+   <s:BitmapImage right="{(this.width + bottomCenter.width)/2}" bottom="0" id="bottomCenterLeft"
+                  source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_center_left')}"/>
+   <s:BitmapImage left="{(this.width + bottomCenter.width)/2}" bottom="0" id="bottomCenterRight"
+                  source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_center_right')}"/>
+   <s:BitmapImage left="{bottomLeft.width}" bottom="0" fillMode="repeat"
+                  right="{(this.width + bottomCenter.width)/2 + bottomCenterLeft.width}"
+                  source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_repeat')}"/>
+   <s:BitmapImage right="{bottomRight.width}" bottom="0" fillMode="repeat"
+                  left="{(this.width + bottomCenter.width)/2 + bottomCenterRight.width}" 
+                  source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'bottom_repeat')}"/>
+   
+   <s:BitmapImage left="0" source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'center_left')}"
+                  top="{topLeft.height}" bottom="{bottomLeft.height}" fillMode="repeat"
+                  id="centerLeft"/>
+   <s:BitmapImage right="0" source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'center_right')}"
+                  top="{topRight.height}" bottom="{bottomRight.height}" fillMode="repeat"
+                  id="centerRight"/>
+   
+   <s:Rect left="{centerLeft.width}" right="{centerRight.width}" top="{topCenter.height}"
+           bottom="{bottomCenter.height}">
+      <s:fill>
+         <s:SolidColor color="#080808"/>
+      </s:fill>
+   </s:Rect>
+   
+   <!--- All the content goes here -->
+   <s:Group id="contentGroup" left="{centerLeft.width + 3}" right="{centerRight.width + 3}" 
+            top="{topCenter.height + 3}" bottom="{bottomCenter.height + 3}">
+   </s:Group>
+   
+</base:BaseSkin>

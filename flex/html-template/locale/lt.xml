@@ -1109,6 +1109,7 @@
   </General>
 
   <InfoScreen>
+    <title.details value="Duomenys" />
     <currentLevel value="Dabartinis lygis" />
     <description value="Aprašymas" />
     <level value="Lygis" />
@@ -2775,6 +2776,7 @@
 
   <Ratings>
     <label.ratings value="Reitingai" />
+    <label.loading value="Kraunasi..." />
     <label.noAlliances value="Šioje galaktikoje sąjungų nėra" />
     <label.allyRatings value="Sąjungų reitingai" />
     <label.close value="Uždaryti"/>
