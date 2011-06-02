@@ -30,7 +30,7 @@
          private static const CONTENT_WIDTH: int = 600;
          
          [Bindable]
-         public var player: MRatingPlayer;
+         public var player: MRatingPlayer = null;
          [Bindable]
          public var achievements: ArrayCollection;
          
@@ -63,10 +63,14 @@
          
       ]]>
    </fx:Script>
-   <base:Scroller id="scroller" left="0" right="0" top="0" bottom="0" stepMultiplier="15">
-      <s:Group width="100%">
+   <s:Label fontSize="52" horizontalCenter="0" verticalCenter="0" color="#eec500"
+            text="{Localizer.string('Ratings', 'label.loading')}"
+            visible="{player == null || player.name == ''}"/>
+   <base:Scroller id="scroller" left="0" right="0" top="0" bottom="0" 
+                  stepMultiplier="15">
+      <s:Group width="100%" visible="{player != null &amp;&amp; player.name != ''}">
          <s:Group width="100%">
-            <s:Group width="{CONTENT_WIDTH}">
+            <s:Group>
                <s:BitmapImage left="0" top="0" id="topLeft" 
                               source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 
                               'player_screen/left')}"/>
@@ -77,9 +81,9 @@
                               fillMode="repeat"
                               source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 
                               'player_screen/center')}"/>
-               <s:BitmapImage left="74" top="46" width="110" height="130"
+               <s:BitmapImage left="76" top="57" width="110" height="130"
                   source="{IMG.getImage(AssetNames.getUnitImageName('Trooper'))}"/>
-               <base:AdvancedContainer left="214" right="0" top="20">
+               <base:AdvancedContainer left="215" right="0" top="20">
                   <s:Group width="100%" toolTip="{Localizer.string('Ratings', player.online
                            ?'online':'offline')}">
                      <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
@@ -152,30 +156,30 @@
                      </s:layout>
                   </s:Group>
                      <s:layout>
-                        <s:VerticalLayout gap="3"/>
+                        <s:VerticalLayout gap="4"/>
                      </s:layout>
                   </s:Group>
                   <base:layout>
                      <s:VerticalLayout paddingLeft="20"/>
                   </base:layout>
                </base:AdvancedContainer>
-               <s:Group left="300" top="205">
+               <base:AdvancedContainer left="300" top="207" width="220">
                   <s:Button label="{Localizer.string('Players', 'label.inRatings')}" 
                             click="ratings_clickHandler(event)"/>
                   <s:Button label="{Localizer.string('Players', 'label.sendMessage')}" 
                             click="chat_clickHandler(event)"
                             visible="{ModelLocator.getInstance().player.id != player.id}"/>
-                  <s:layout>
-                     <s:HorizontalLayout />
-                  </s:layout>
-               </s:Group>
+                  <base:layout>
+                     <s:HorizontalLayout horizontalAlign="right" gap="10"/>
+                  </base:layout>
+               </base:AdvancedContainer>
             </s:Group>
-            <base:Panel width="{CONTENT_WIDTH}" skinClass="components.skins.LargePanelSkin"
+            <base:Panel skinClass="components.skins.LargePanelSkin"
                         title="{Localizer.string('Players', 'title.achievements')}">
                <s:DataGroup width="100%" dataProvider="{achievements}" 
                             itemRenderer="components.achievement.IRAchievement">
                   <s:layout>
-                     <s:TileLayout requestedColumnCount="8"/>
+                     <s:TileLayout requestedColumnCount="9"/>
                   </s:layout>
                </s:DataGroup>
                <base:layout>
@@ -183,7 +187,8 @@
                </base:layout>
             </base:Panel>
             <s:layout>
-               <s:VerticalLayout horizontalAlign="center"/>
+               <s:VerticalLayout horizontalAlign="center" paddingTop="10" paddingBottom="10"
+                                 gap="10"/>
             </s:layout>
          </s:Group>
       </s:Group>
