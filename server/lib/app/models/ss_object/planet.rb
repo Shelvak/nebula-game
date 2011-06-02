@@ -444,6 +444,8 @@ class SsObject::Planet < SsObject
         model = find(id)
         # Don't raid if planet does not belong to planet.
         Combat.npc_raid!(model) unless model.player_id.nil?
+      when CallbackManager::EVENT_EXPLORATION_COMPLETE
+        find(id).finish_exploration!
       else
         raise CallbackManager::UnknownEvent.new(self, id, event)
       end

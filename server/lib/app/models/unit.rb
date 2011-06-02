@@ -234,7 +234,7 @@ class Unit < ActiveRecord::Base
         unit.destroy
         EventBroker.fire(unit, EventBroker::DESTROYED)
       else
-        raise CallbackManager::UnknownEvent.new(self, id, event)
+        super(id, event)
       end
     end
     
