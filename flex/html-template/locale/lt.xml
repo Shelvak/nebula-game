@@ -3313,9 +3313,9 @@
       atiteleportuoti kariai.</p>
     </title.emptyDefensivePool>
     <title.possiblePool value="Jeigu tave užpuls, tu gali gauti" />
-    <defensivePool.totalVolume value="Iš viso apimties: {0}" />
-    <defensivePool.teleportedVolume value="Teleportuota apimtis: {0}" />
-    <defensivePool.maxVolume value="Maksimali galia: {0}" />
+    <defensivePool.totalVolume value="Iš viso apimties:" />
+    <defensivePool.teleportedVolume value="Teleportuota apimtis:" />
+    <defensivePool.maxVolume value="Maksimali galia:" />
     <defensivePool.pickUnits value="Parodyti kitą" />
 
     <!-- TODO: is params ok? -->

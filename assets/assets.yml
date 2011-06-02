@@ -552,14 +552,20 @@ assets:
         bottom_right_buttons.png:      St_window_bottom_right_buttons.png
         bottom_right_buttons_line.png: St_window_bottom_right_buttonsline.png
         bottom_right.png:              St_window_bottom_right.png
-        bottom_right_no_button.png:              St_window_bottom_right2.png
+        bottom_right_no_button.png:    St_window_bottom_right2.png
         center_left.png:               St_window_center_left.png
         center_right.png:              St_window_center_right.png
-        top_left1.png:                  St_window_top_left1.png
-        top_left2.png:                  St_window_top_left2.png
-        top_left3.png:                  St_window_top_left3.png
+        top_left1.png:                 St_window_top_left1.png
+        top_left2.png:                 St_window_top_left2.png
+        top_left3.png:                 St_window_top_left3.png
         top_center.png:                St_window_top_center.png
         top_right.png:                 St_window_top_right.png
+
+      "defensive_portal_screen":
+        table_top.png:                Portal_top_table_top.png
+        table_middle.png:             Portal_top_table_center.png
+        table_bottom_own.png:         Portal_top_table_bottom.png
+        table_bottom_ally.png:        Portal_bottom_table_bottom.png
 
       "start_menu":
         top_center.png:               Startmenu_top_center.png

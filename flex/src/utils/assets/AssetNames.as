@@ -187,6 +187,10 @@ package utils.assets
        */
       public static const NOTIFICATION_IMAGE_FOLDER: String = UI_IMAGES_FOLDER + "notifications/";
       
+      
+      public static const DEFENSIVE_PORTAL_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "defensive_portal_screen/";
+      
+      
       /**
        * Path to the folder where notification images reside.
        */
