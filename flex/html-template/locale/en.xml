@@ -2870,7 +2870,7 @@
     <isGroup>
       <p>If you research this technology you won't be able to research:</p>
     </isGroup>
-    <required value="Required" />
+    <title.requirements value="Requirements" />
     <details value="Details" />
     <unlocks value="Unlocks" />
 

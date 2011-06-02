@@ -2910,7 +2910,7 @@
     <isGroup>
       <p>Jeigu išrasi šią technologiją, negalėsi išrasti:</p>
     </isGroup>
-    <required value="Reikalauja" />
+    <title.requirements value="Reikalavimai" />
     <details value="Detalės" />
     <unlocks value="Atrakina" />
 

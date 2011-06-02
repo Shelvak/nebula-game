@@ -396,8 +396,8 @@
                      height="100%" right="0" horizontalScrollPolicy="off" 
                      stepMultiplier="10">
          <s:Group left="0" height="100%" right="{scrollCont.verticalScrollBar.width}">
-            <s:Group id="contentGroup" height="100%" width="100%">   
-               <base:AdvancedContainer width="100%">
+            <s:Group id="contentGroup" height="100%" left="0" right="0">   
+               <base:AdvancedContainer left="0" right="0">
                   <base:Panel width="100%"
                               title="{Localizer.string ('Technologies', _selectedModel.type + '.name')}">
                      
@@ -412,9 +412,6 @@
                      <base:AdvancedContainer width="100%" horizontalCenter="0">
                         <s:Group width="100%"> 
                            <s:Label left="3" right="3" x="20" text="{Localizer.string('Technologies',_selectedModel.type + '.about')}"/>	
-                        </s:Group>
-                        <s:Group width="100%"> 
-                           <s:Label left="3" right="3" text="{_selectedModel.requirementsText}"/>	
                         </s:Group>
                         <s:Group width="100%">
                            <s:Button label="{Localizer.string('Technologies','details')}" right="6" 
@@ -431,9 +428,14 @@
                         <s:VerticalLayout/>
                      </base:layout>
                   </base:Panel>
-               </base:AdvancedContainer>
                
-               <base:AdvancedContainer width="100%">
+               <base:Panel title="{Localizer.string('Technologies', 'title.requirements')}"
+                           visible="{_selectedModel.requirementsText != ''}">
+                  <s:Group width="100%"> 
+                     <s:Label left="6" right="6" top="6" text="{_selectedModel.requirementsText}"/>	
+                  </s:Group>
+               </base:Panel>
+               
                   <base:Panel title="{Localizer.string ('Technologies', 'scientistsPanelTitle')}" width="100%" 
                               visible="{!(!(_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel ) ||
                               !(_selectedModel.minScientists &lt; (ML.player.scientists + _selectedModel.scientists)))}">
@@ -483,9 +485,7 @@
                         </base:layout>
                      </base:AdvancedContainer>
                   </base:Panel>
-               </base:AdvancedContainer>
                
-               <base:AdvancedContainer width="100%">
                   <base:Panel title="{Localizer.string ('Technologies', 'upgradeProgress')}" width="100%" 
                               visible="{(_selectedModel.upgradePart.upgradeEndsAt != null) || 
                               (_selectedModel.pauseRemainder != 0)}">
@@ -522,9 +522,7 @@
                         </base:layout>
                      </base:AdvancedContainer>
                   </base:Panel>
-               </base:AdvancedContainer>
                
-               <base:AdvancedContainer width="100%">
                   <base:Panel title="{Localizer.string('Technologies', 
                               'upgradeCost')}" width="100%" horizontalCenter="0" 
                                                visible="{!(!(_selectedModel.upgradePart.upgradeEndsAt == null) || 
@@ -611,11 +609,10 @@
                         </base:layout>
                      </base:AdvancedContainer>
                   </base:Panel>
+                  <base:layout>
+                     <s:VerticalLayout horizontalAlign="justify"/>
+                  </base:layout>
                </base:AdvancedContainer>
-               
-               <s:layout>
-                  <s:VerticalLayout/>
-               </s:layout>
             </s:Group>
          </s:Group>
       </base:Scroller>      

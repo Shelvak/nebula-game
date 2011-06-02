@@ -142,8 +142,6 @@ package models.technology
          var requirements: Object = Config.getTechnologyRequirements(type);
          for (var requirement: String in requirements)
          {
-            if (tempText == "")
-               tempText += Localizer.string ('Technologies', 'required')+':'+ "\n";
             if (!requirements[requirement].invert)        
             {
                tempText = tempText + getTechnologyTitle(requirement)+ " " + 
@@ -153,7 +151,7 @@ package models.technology
             else
             {
                if (groupText == "")
-                  groupText += Localizer.string('Technologies', 'isGroup') + "\n";
+                  groupText += '\n' + Localizer.string('Technologies', 'isGroup') + "\n\n";
                groupText += getTechnologyTitle(requirement) + "\n";
             }
             
