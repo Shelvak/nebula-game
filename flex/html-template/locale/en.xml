@@ -3330,9 +3330,9 @@
       built.</p>
     </title.emptyDefensivePool>
     <title.possiblePool value="When you are attacked you might get" />
-    <defensivePool.totalVolume value="Total volume: {0}" />
-    <defensivePool.teleportedVolume value="Teleported volume: {0}" />
-    <defensivePool.maxVolume value="Max power: {0}" />
+    <defensivePool.totalVolume value="Total volume:" />
+    <defensivePool.teleportedVolume value="Teleported volume:" />
+    <defensivePool.maxVolume value="Max power:" />
     <defensivePool.pickUnits value="Show other" />
 
     <label.incomingRaiders value="Incoming raiders" />

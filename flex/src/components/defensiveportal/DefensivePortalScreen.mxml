@@ -12,8 +12,6 @@
          import controllers.screens.MainAreaScreens;
          import controllers.ui.NavigationController;
          
-         import flash.net.navigateToURL;
-         
          import models.unit.UnitBuildingEntry;
          
          import mx.collections.ArrayCollection;
@@ -21,7 +19,8 @@
          import mx.events.FlexEvent;
          
          import utils.ModelUtil;
-         import utils.datastructures.Collections;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
          
          private static function buildUnitsFromArray(source: Array): ArrayCollection
@@ -125,7 +124,7 @@
          }
          private var data: Array;
          [Bindable]
-         private var _allUnits: ArrayCollection;
+         private var _allUnits: ArrayCollection = new ArrayCollection();
          public function set allUnits(value: Array): void
          {
             data = value;
@@ -144,68 +143,106 @@
          {
             NavigationController.getInstance().creationCompleteFunction(
                MainAreaScreens.DEFENSIVE_PORTAL, this);
+            
+            _allUnits.addItem(new UnitBuildingEntry("Unit::Trooper", 5));
+            _allUnits.addItem(new UnitBuildingEntry("Unit::Azure", 5));
+         }
+         
+         
+         private function getImage(name:String) : BitmapData
+         {
+            return ImagePreloader.getInstance()
+               .getImage(AssetNames.DEFENSIVE_PORTAL_IMAGES_FOLDER + "table_" + name);
+         }
+         
+         
+         private function getString(property:String, parameters:Array = null) : String
+         {
+            return Localizer.string("Units", "defensivePool." + property, [getVolume(_allUnits)]);
          }
          
       ]]>
    </fx:Script>
-   <s:Group width="600" top="0" bottom="30" horizontalCenter="0">
-      <s:Group>
-         <s:Label text="{Localizer.string('Units', 'title.'+
-                  (_allUnits.length > 0?'defensivePool':'emptyDefensivePool'))}" 
-                  fontSize="18" color="#eec500" width="100%"/>
-         <s:Button skinClass="components.skins.InfoButtonSkin"
-                   click="navigateToURL(
-                   new URLRequest('http://nebula44.com/info/defensive-portal'))"/>
-         <s:layout>
-            <s:HorizontalLayout  verticalAlign="top"/>
-         </s:layout>
-      </s:Group>
-      <s:Group>
-      <base:PanelContentArtwork left="0" right="0" top="0" bottom="0"/>
-      <s:DataGroup dataProvider="{_allUnits}"
-                   left="24" right="1" top="13" bottom="15" 
-                   visible="{_allUnits.length > 0}"
-                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
-         <s:layout>
-            <s:TileLayout requestedColumnCount="11"/>
-         </s:layout>
-      </s:DataGroup>
-      </s:Group>
-      <s:Group
-         visible="{_allUnits.length > 0}">
-         <s:Label text="{Localizer.string('Units', 'defensivePool.totalVolume',
-                  [getVolume(_allUnits)])}"/>
-      </s:Group>
-      <s:Label text="{Localizer.string('Units', 'title.possiblePool')}" 
-               visible="{_allUnits.length > 0}"
-               fontSize="18" color="#eec500" textAlign="center"/>
-      <s:Group>
-         <base:PanelContentArtwork left="0" right="0" top="0" bottom="0"/>
-      <s:DataGroup dataProvider="{possibleUnits}" 
-                   left="24" right="1" top="13" bottom="15" 
-                   visible="{_allUnits.length > 0}"
-                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
-         <s:layout>
-            <s:TileLayout requestedColumnCount="11"/>
-         </s:layout>
-      </s:DataGroup>
-         </s:Group>
-      <s:Group
-         visible="{_allUnits.length > 0}">
-         <s:Label text="{Localizer.string('Units', 'defensivePool.teleportedVolume',
-                  [getVolume(possibleUnits)])}"/>
-         <s:Label text="{Localizer.string('Units', 'defensivePool.maxVolume',
-                  [_maxVolume])}"/>
-         <s:Button label="{Localizer.string('Units', 'defensivePool.pickUnits')}"
-                   click="findPossibleUnits()"/>
-         <s:layout>
-            <s:HorizontalLayout horizontalAlign="right"/>
-         </s:layout>
-      </s:Group>
+   <fx:Style>
+      .panelTitle
+      {
+         color:#EFC700;
+         fontWeight:bold;
+         fontSize:14;
+      }
+      
+      .volumeLabel
+      {
+         fontWeight:bold;
+         fontSize:14;
+      }
+      
+      .volumeNumber
+      {
+         fontWeight:bold;
+         fontSize:16;
+      }
+   </fx:Style>
+   <s:Group top="10" horizontalCenter="0">
       <s:layout>
-         <s:VerticalLayout horizontalAlign="justify"
-                           paddingTop="10"/>
+         <s:VerticalLayout gap="20"/>
       </s:layout>
+      <s:Group minHeight="190">
+         <s:Group left="0" right="0" top="0" bottom="0">
+            <s:layout>
+               <s:VerticalLayout gap="0"/>
+            </s:layout>
+            <s:BitmapImage source="{getImage('top')}"/>
+            <s:BitmapImage source="{getImage('middle')}" height="100%"/>
+            <s:BitmapImage source="{getImage('bottom_own')}"/>
+         </s:Group>
+         <s:Label left="40" top="15" styleName="panelTitle"
+                  text="{Localizer.string('Units', 'title.defensivePool')}"/>
+         <s:Button top="13" left="295" skinClass="components.skins.InfoButtonSkin"
+                   click="navigateToURL(new URLRequest('http://nebula44.com/info/defensive-portal'))"/>
+         <s:DataGroup dataProvider="{_allUnits}" left="40" right="40" top="50" bottom="75" 
+                      itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+            <s:layout>
+               <s:TileLayout requestedColumnCount="10"/>
+            </s:layout>
+         </s:DataGroup>
+         <s:Group horizontalCenter="0" bottom="24">
+            <s:layout>
+               <s:HorizontalLayout gap="6" horizontalAlign="center" verticalAlign="middle"/>
+            </s:layout>
+            <s:Label styleName="volumeLabel" text="{getString('totalVolume')}"/>
+            <s:Label styleName="volumeNumber" text="{getVolume(_allUnits)}"/>
+         </s:Group>
+      </s:Group>
+      <s:Group minHeight="255">
+         <s:Group left="0" right="0" top="0" bottom="0">
+            <s:layout>
+               <s:VerticalLayout gap="0"/>
+            </s:layout>
+            <s:BitmapImage source="{getImage('top')}"/>
+            <s:BitmapImage source="{getImage('middle')}" height="100%"/>
+            <s:BitmapImage source="{getImage('bottom_ally')}"/>
+         </s:Group>
+         <s:Label left="40" top="15" styleName="panelTitle"
+                  text="{Localizer.string('Units', 'title.possiblePool')}"/>
+         <s:DataGroup dataProvider="{_allUnits}" left="40" right="40" top="50" bottom="140" 
+                      itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+            <s:layout>
+               <s:TileLayout requestedColumnCount="10"/>
+            </s:layout>
+         </s:DataGroup>
+         <s:Group horizontalCenter="0" bottom="90">
+            <s:layout>
+               <s:HorizontalLayout gap="6" horizontalAlign="center" verticalAlign="middle"/>
+            </s:layout>
+            <s:Label styleName="volumeLabel" text="{getString('teleportedVolume')}"/>
+            <s:Label styleName="volumeNumber" text="{getVolume(possibleUnits)}"/>
+            <s:Label styleName="volumeLabel" text="{getString('maxVolume')}"/>
+            <s:Label styleName="volumeNumber" text="{_maxVolume}"/>
+         </s:Group>
+         <s:Button label="{getString('pickUnits')}" click="findPossibleUnits()"
+                   skinClass="components.skins.YellowButtonSkin" bottom="7" horizontalCenter="0"/>
+      </s:Group>
    </s:Group>
    <screens:ScreenCloseButton label="{Localizer.string('Players', 'label.close')}" bottom="0" right="0"
                               click="NavigationController.getInstance().showPreviousScreen()"/>

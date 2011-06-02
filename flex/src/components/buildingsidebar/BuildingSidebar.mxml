@@ -509,6 +509,12 @@
                NC.showTechnologies();
                return;
             }
+            if (e.building.type == BuildingType.DEFENSIVE_PORTAL &&
+                e.building.state == Building.ACTIVE)
+            {
+               NC.showDefensivePortal(ML.latestPlanet.id);
+               return;
+            }
             if (e.building.type == BuildingType.HEALING_CENTER)
             {
                NC.showHealing(e.building, ML.latestPlanet.getActiveHealableUnits());
