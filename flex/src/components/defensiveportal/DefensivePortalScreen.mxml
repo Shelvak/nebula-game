@@ -3,7 +3,7 @@
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx"
          creationComplete="group1_creationCompleteHandler(event)"
-         width="100%" height="100%" xmlns:base="components.base.*">
+         width="100%" height="100%" xmlns:base="components.base.*" xmlns:screens="components.screens.*">
    <fx:Script>
       <![CDATA[
          import components.skins.InfoButtonSkin;
@@ -207,9 +207,6 @@
                            paddingTop="10"/>
       </s:layout>
    </s:Group>
-   <s:Group width="600" height="30" bottom="0" horizontalCenter="0">
-      <s:Button label="{Localizer.string('Players', 'label.close')}" 
-                click="NavigationController.getInstance().showPreviousScreen()" 
-                right="6" verticalCenter="0"/>
-   </s:Group>
+   <screens:ScreenCloseButton label="{Localizer.string('Players', 'label.close')}" bottom="0" right="0"
+                              click="NavigationController.getInstance().showPreviousScreen()"/>
 </s:Group>

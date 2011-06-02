@@ -5,7 +5,7 @@
          xmlns:components="utils.components.*" 
          xmlns:base="components.base.*"
          width="100%" height="100%"
-         creationComplete="group1_creationCompleteHandler(event)">
+         creationComplete="group1_creationCompleteHandler(event)" xmlns:screens="components.screens.*">
    <fx:Script>
       <![CDATA[
          import components.skins.LargePanelSkin;
@@ -63,7 +63,7 @@
          
       ]]>
    </fx:Script>
-   <base:Scroller left="0" right="0" top="0" bottom="30" stepMultiplier="15">
+   <base:Scroller id="scroller" left="0" right="0" top="0" bottom="0" stepMultiplier="15">
       <s:Group width="100%">
          <s:Group width="100%">
             <s:Group width="{CONTENT_WIDTH}">
@@ -188,8 +188,7 @@
          </s:Group>
       </s:Group>
    </base:Scroller>
-   <s:Group width="{CONTENT_WIDTH}" height="30">
-      <s:Button label="{Localizer.string('Players', 'label.close')}" 
-                click="NC.showPreviousScreen()" right="6" verticalCenter="0"/>
-   </s:Group> 
+   <screens:ScreenCloseButton label="{Localizer.string('Players', 'label.close')}"
+                              click="NC.showPreviousScreen()"
+                              scroller="{scroller}" right="0" bottom="0"/>
 </s:Group>

@@ -32,7 +32,14 @@
       <s:Group visible="{location.isGalaxy}">
          <s:Label styleName="locationHeader"
                   text="{Localizer.string('Location', 'header.galaxy')}"/>
-         <s:Label text="{Localizer.string('Location', 'sector', [location.sectorName])}"/>
+         <s:Group>
+            <s:layout>
+               <s:HorizontalLayout gap="6"/>
+            </s:layout>
+            <s:Label styleName="locationHeader"
+                     text="{Localizer.string('Location', 'sector')}"/>
+            <s:Label text="{_location.sectorName}"/>
+         </s:Group>
          <s:layout>
             <s:VerticalLayout/>
          </s:layout>
@@ -58,8 +65,14 @@
                <s:HorizontalLayout/>
             </s:layout>
          </s:Group>
-         <s:Label text="{Localizer.string('Location', 'sector', [location.sectorName])}" 
-                  visible="{!location.isSSObject}"/>
+         <s:Group visible="{!location.isSSObject}">
+            <s:layout>
+               <s:HorizontalLayout gap="6"/>
+            </s:layout>
+            <s:Label styleName="locationHeader"
+                     text="{Localizer.string('Location', 'sector')}"/>
+            <s:Label text="{_location.sectorName}"/>
+         </s:Group>
          <base:layout>
             <s:VerticalLayout/>
          </base:layout>

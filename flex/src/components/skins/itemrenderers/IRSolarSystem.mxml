@@ -28,7 +28,7 @@
          
          private static function getSectorName(ss:SolarSystem) : String
          {
-            return Localizer.string('Location', 'sector', [ss.x + ":" + ss.y]);
+            return Localizer.string('Location', 'sector') + " " + ss.x + ":" + ss.y;
          }
       ]]>
    </fx:Script>

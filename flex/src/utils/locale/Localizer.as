@@ -5,6 +5,7 @@ package utils.locale
    import mx.resources.IResourceBundle;
    import mx.resources.IResourceManager;
    import mx.resources.ResourceManager;
+   import mx.utils.ObjectUtil;
    import mx.utils.StringUtil;
    
    import utils.Objects;
@@ -59,7 +60,20 @@ package utils.locale
          if (parameters != null)
          {
             // pluralization pass is the last one
-            return mx.utils.StringUtil.substitute(pluralize(resultString, parameters), parameters);
+            try
+            {
+               return mx.utils.StringUtil.substitute(pluralize(resultString, parameters), parameters);
+            }
+            catch (err:Error)
+            {
+               throw new Error(
+                  "Pluralization pass has failed with message: " + err.message + "\n" +
+                  "Bundle: " + bundle + "\n" +
+                  "Property: " + property + "\n" +
+                  "Parameters: " + ObjectUtil.toString(parameters)
+               );
+            }
+            return null;   // unreachable
          }
          else
          {
