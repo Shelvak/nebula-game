@@ -1252,7 +1252,7 @@
     <message.combatCooldownInfo 
       value="Upon arrival there will be {0} cooldown before combat will ensue."/>
     <message.speedUpCost 
-      value="The speed up will cost you {0 one[one cred] many[? creds]}."/>
+      value="Speed up cost: {0 one[one cred] many[? creds]}."/>
   </Movement>
 
   <Navigator>

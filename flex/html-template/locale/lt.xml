@@ -1246,10 +1246,8 @@
     <label.learnMore value="Sužinok daugiau"/>
     <message.combatCooldownInfo 
       value="Atvykus į vietą bus {0} pertrauka prieš prasidedant kovai."/>
-    <message.speedUpCost>
-      <p>Laivų pagreitinimas tau kainuos 
-      {0 one[? kredą] tens[? kredų] many[? kredus]}.</p>
-    </message.speedUpCost>
+    <message.speedUpCost
+      value="Pagreitinimo kaina: {0 one[? kredas] tens[? kredų] many[? kredai]}."/>
   </Movement>
 
   <Navigator>

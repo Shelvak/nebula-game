@@ -4,7 +4,8 @@
                               xmlns:mx="library://ns.adobe.com/flex/halo"
                               xmlns:space="components.map.space.*"
                               xmlns:base="components.base.*"
-                              title="{getString('title.info', [(MSSObject(staticObject).typeName)])}" xmlns:ui="components.ui.*">
+                              xmlns:ui="components.ui.*"
+                              title="{getString('title.info', [(MSSObject(staticObject).typeName)])}">
    
    <fx:Script>
       <![CDATA[
