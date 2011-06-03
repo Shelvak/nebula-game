@@ -29,6 +29,13 @@ describe Wreckage do
         Wreckage.add(GalaxyPoint.new(1, 0, 0), 0, 0, -1)
       end.should raise_error(ArgumentError)
     end
+    
+    it "should not create wreckage if all resources are < 1" do
+      ss = Factory.create(:solar_system)
+      location = LocationPoint.new(ss.id, Location::SOLAR_SYSTEM, 0, 0)
+      Wreckage.add(location, 0.5, 0.5, 0.5).should be_nil
+      Wreckage.in_location(location).first.should be_nil
+    end
 
     it "should create new Wreckage if one does not exist in galaxy" do
       galaxy = Factory.create(:galaxy)
@@ -57,7 +64,8 @@ describe Wreckage do
     it "should fire changed with planet" do
       planet = Factory.create(:planet, :metal => 0, :energy => 0,
         :zetium => 0)
-      should_fire_event(planet, EventBroker::CHANGED) do
+      should_fire_event(planet, EventBroker::CHANGED, 
+          EventBroker::REASON_OWNER_PROP_CHANGE) do
         Wreckage.add(planet, 10, 11, 12)
       end
     end

@@ -74,13 +74,16 @@ class Wreckage < ActiveRecord::Base
       metal}, e: #{energy}, z: #{zetium
       }) Perhaps you want to use #subtract?"
     ) if metal < 0 || energy < 0 || zetium < 0
+    # Do nothing if there is not enough resources to create a wreckage.
+    return if metal < 1 && energy < 1 && zetium < 1
 
     if location.is_a?(SsObject::Planet)
       location.metal += metal
       location.energy += energy
       location.zetium += zetium
       location.save!
-      EventBroker.fire(location, EventBroker::CHANGED)
+      EventBroker.fire(location, EventBroker::CHANGED, 
+        EventBroker::REASON_OWNER_PROP_CHANGE)
       location
     else
       wreckage = in_location(location).first || new(:location => location)
