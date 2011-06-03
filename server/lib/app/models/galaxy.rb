@@ -55,6 +55,67 @@ class Galaxy < ActiveRecord::Base
   def self.create_player(galaxy_id, name, auth_token)
     find(galaxy_id).create_player(name, auth_token)
   end
+  
+  def self.on_callback(id, event)
+    case event
+    when CallbackManager::EVENT_SPAWN
+      galaxy = find(id)
+      galaxy.spawn_convoy!
+      
+      CONFIG.with_set_scope(galaxy.ruleset) do
+        CallbackManager.register(galaxy, CallbackManager::EVENT_SPAWN,
+          CONFIG.evalproperty('galaxy.convoy.time').from_now)
+      end
+    else
+      raise ArgumentError.new("Don't know how to handle #{
+        CallbackManager::STRING_NAMES[event]} (#{event})")
+    end
+  end
+  
+  # Spawns convoy traveling from one random wormhole to other.
+  def spawn_convoy!
+    total = solar_systems.wormhole.count
+    return if total < 2
+      
+    CONFIG.with_set_scope(ruleset) do
+      source = target = nil
+      while source == target
+        coords = (0...2).map do
+          row = solar_systems.wormhole.select("x, y").
+            limit("#{rand(total)}, 1").c_select_one
+
+          GalaxyPoint.new(id, row["x"], row["y"])
+        end
+
+        source, target = coords
+      end
+
+      # Create units.
+      transaction do
+        units = []
+        CONFIG['galaxy.convoy.units'].each do |count_from, count_to, type, flank|
+          count = rand(count_from, count_to + 1)
+          klass = "Unit::#{type}".constantize
+          count.times do 
+            unit = klass.new(:hp => klass.hit_points(1), :level => 1,
+              :location => source, :galaxy_id => id, :flank => flank)
+            units.push unit
+          end
+        end
+
+        Unit.save_all_units(units, nil, EventBroker::CREATED)
+        route = UnitMover.move(nil, units.map(&:id), source, target, false,
+          CONFIG['galaxy.convoy.speed_modifier'])
+
+        units.each do |unit|
+          CallbackManager.register(unit, CallbackManager::EVENT_DESTROY, 
+            route.arrives_at)
+        end
+
+        route 
+      end
+    end
+  end
 
   def create_player(name, auth_token)
     # To expand * speed things

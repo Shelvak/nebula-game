@@ -439,6 +439,7 @@
     </message.pressOnEmpty>
     <toolTip.afterUpgrade value="Po patobulinimo" />
 
+    <title.boost value="Padidinti" />
     <title.buildingBonus value="Pastato privalumai" />
     <label.nextBonus value="Sekantis pliusas už:" />
     <label.victoryPoint value="1 laimėjimo taškas" />
@@ -986,13 +987,13 @@
       </p>
       ]]>
     </label.totalCreds>
-    <label.vipCreds value="VIP kredai" />
     <label.nextVipTick value="VIP diena už" />
     <tooltip.nextVipTick>
       <p>Laikas, kai tavo VIP kredai bus vėl užpildyti.</p>
     </tooltip.nextVipTick>
     <label.vipEndsIn value="VIP baigsis už" />
     <label.whouldFinish value="Patobulinimas baigsis už" />
+    <label.vipCreds value="VIP kredų" />
     <label.creds value="kredų" />
     <label.waitingCreds value="Laukiama kredų..." />
     <label.instant value="Iš karto" />
@@ -1070,8 +1071,8 @@
   </Exploration>
 
   <Formatters>
-    <format.shortDate value="YYYY-MM-DD" />
-    <format.shortDateTime value="YYYY-MM-DD JJ:NN" />
+    <date.shortDate value="YYYY-MM-DD" />
+    <date.shortDateTime value="YYYY-MM-DD JJ:NN" />
   </Formatters>
 
   <Galaxy>
@@ -1545,7 +1546,7 @@
     0: "Subclass or class to upgrade (with count), 
     1: level to upgrade to -->
     <objectiveText.HaveUpgradedTo 
-    value="Turėk {1 one[] 1sts[?-o lygio] tens[?-o lygio] many[?-o lygio]}{0}" />
+    value="Turėk {1 one[] 1sts[?-o lygio] tens[?-o lygio] many[?-o lygio]} {0}" />
     <objectiveText.HaveUpgradedToTech>
       <p>{1 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
       {0} technologiją{1 one[] many[ iki ? lygio]}</p>
@@ -2060,7 +2061,7 @@
       <p>
         Mano rekomendacija — tyrimų centrą šioje planetoje turime įrengti 
         nedelsiant. Galų gale vienas kitas mokslinis triukas rankovėje mums 
-        tikrai nepakenks. Juk mes neturime skaudžios mokslinės patirties?
+        tikrai nepakenks!
       </p>
     </about.11>
 
@@ -2437,7 +2438,7 @@
       </p>
     </about.16>
 
-    <title.28 value="Ir niekada šlovės nebus per daug" />
+    <title.28 value="Šlovė jums!" />
     <about.28>
       <p>Komandore.</p>
       <p>Jūsų darbų reikšmė žmonijai neprilygstama.</p>
@@ -2483,7 +2484,7 @@
       sferose! Jums nebuvo kilusi mintis sukurti savo religiją?</p>
     </about.64>
 
-    <title.17 value="Ekonomika turi būti ekonomiška" />
+    <title.17 value="Taupumas" />
     <about.17>
       <p>Sveiki sugrįžę, Komandore.</p>
       <p>
@@ -2787,7 +2788,7 @@
     <playersCount value="Žaidėjai" />
     <planetsCount value="Planetos" />
     <warPoints value="Karo taškai" />
-    <economyPoints value="Ekonomijos taškai" />
+    <economyPoints value="Ekonomikos taškai" />
     <sciencePoints value="Mokslo taškai" />
     <victoryPoints value="Pergalės taškai" />
     <armyPoints value="Kariuomenės taškai" />
@@ -2815,7 +2816,7 @@
     <full value="Pilnas per {0}" />
     <empty value="Tuščias per {0}" />
     <and value="ir" />
-    <notEnoughResources value="Nepakanka resursų" />
+    <notEnoughResources value="Nepakanka resursų." />
     <enoughResourcesIn value="Resursų užteks už:" />
     <insufficientRate value="Nepakankamas resursų išgavimo greitis" />
     <additionalStorage.resource value="{0 metal[metalo] energy[energijos] zetium[zetiumo]}" />
@@ -2836,6 +2837,7 @@
     
     <label.owner value="Užimta" />
     <label.unoccupied value="Neužimta" />
+    <label.inviteToAlliance value="Pakviesk žaidėją į sąjungą"/>
     <label.toPlanet value="Įeiti į planetą" />
     <label.toGalaxy value="Eiti į galaktiką" />
     <label.endsAt value="Baigiasi {0}" />
@@ -2886,7 +2888,7 @@
     <notEnoughScientists>
       <p>Šiai technologijai reikia 
       {0 one[? mokslininko] tens[? mokslininkų] many[? mokslininkų]}, tačiau
-      tik {1 one[? mokslininkas] tens[? mokslininkų] many[? mokslininkai]} iš
+      tik {1} iš
       {2 one[? mokslininko] tens[? mokslininkų] many[? mokslininkų]} yra laisvi.
       </p>
     </notEnoughScientists>
@@ -2931,6 +2933,7 @@
     <property.mod.armor value="Šarvų priedas" />
     <property.mod.damage value="Žalos priedas" />
     <property.mod.movement_time_decrease value="Jūdėjimo trukmės sumažinimas" />
+    <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
 
     <UnitTech>
       <p>Pirmas šios technologijos lygis atrakiną šį karį/laivą. Kiti jos 

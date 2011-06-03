@@ -239,6 +239,13 @@ describe DispatcherEventHandler do
       @handler.fire(@event, EventBroker::MOVEMENT_PREPARE, nil)
     end
 
+    it "should not crash upon NPC movement" do
+      @route.player = nil
+      @route.save!
+      
+      @handler.fire(@event, EventBroker::MOVEMENT_PREPARE, nil)
+    end
+    
     it "should not send null route hops for enemies if there are no hops" +
     " in this zone" do
       @route_hops.each(&:destroy)
@@ -259,6 +266,7 @@ describe DispatcherEventHandler do
   end
 
   describe "movement" do
+    it "should do nothing if player is NPC"
     it "should not send message if moved in zone and stopped (last hop)"
     it "should not send route_hops [nil] if changed zones and stopped"
     it "should not send route_hops [nil] if moved in zone to " +
@@ -390,6 +398,13 @@ describe DispatcherEventHandler do
         DispatcherEventHandler::CONTEXT_CHANGED
       ).should == [player_ids, nil]
     end
+    
+    it "should not fail with NPC Route (changed context)" do
+      obj = Factory.create(:route, :player => nil)
+      DispatcherEventHandler.resolve_objects(obj, :reason,
+        DispatcherEventHandler::CONTEXT_CHANGED
+      ).should == [[], nil]
+    end
 
     it "should resolve Route (destroyed context for friendly ids)" do
       obj = Factory.create(:route)
@@ -407,6 +422,14 @@ describe DispatcherEventHandler do
       ).should == [player_ids.uniq, nil]
     end
 
+    it "should not fail with NPC Route (destroyed context)" do
+      obj = Factory.create(:route, :player => nil)
+
+      DispatcherEventHandler.resolve_objects(obj, :reason,
+        DispatcherEventHandler::CONTEXT_DESTROYED
+      ).should == [[], nil]
+    end
+    
     it "should resolve Planet" do
       obj = Factory.create(:planet)
       player_ids = [1, 2, 3]

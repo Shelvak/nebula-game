@@ -171,7 +171,9 @@ assets:
         wormhole.png:
           wiki_name: Wormhole.png
           "flex": {save_as: "swf:png"}
-        battleground.png: BattlegroundSun.png
+        battleground.png: 
+          wiki_name: BattlegroundSun.png
+          "flex": {save_as: "swf:png"}
         galaxy.png: Galaxy.png
         background.jpg: GalaxyBackground.jpg
         <% CONFIG["ui.solar_system.variations"].times do |i| %>

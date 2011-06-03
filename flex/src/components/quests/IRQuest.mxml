@@ -165,12 +165,13 @@
                      <s:VerticalLayout horizontalAlign="justify" gap="5"/>
                   </base:layout>
                   <s:Group width="100%">
-                     <s:Label text="{quest.about}" color="#a79e6d" left="0" right="0"/>
+                     <s:Label text="{quest.about}" color="#D6CA8D" fontSize="15" left="0" right="0"
+                        paddingBottom="20" />
                   </s:Group>
                   
                   <s:Group width="100%">
                      <s:Label text="{Localizer.string('Quests', 'label.objectives')}" fontWeight="bold"
-                              fontSize="14" width="90"/>
+                              fontSize="15" width="90"/>
                      <s:Group id="grpObjectives" width="100%">
                         <s:DataGroup dataProvider="{quest.objectives}">
                            <s:itemRenderer>

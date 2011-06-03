@@ -11,12 +11,14 @@ module Trait::HasScientists
 
     def on_activation
       super
-      planet.player.change_scientist_count!(scientists)
+      player = planet.player
+      player.change_scientist_count!(scientists) unless player.nil?
     end
 
     def on_deactivation
       super
-      planet.player.change_scientist_count!(- scientists)
+      player = planet.player
+      player.change_scientist_count!(-scientists) unless player.nil?
     end
   end
 

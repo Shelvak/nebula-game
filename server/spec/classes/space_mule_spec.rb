@@ -111,6 +111,11 @@ describe SpaceMule do
         end
       end
     end
+  
+    it "should have spawn callback for first convoy" do
+      @galaxy.should have_callback(CallbackManager::EVENT_SPAWN,
+        CONFIG.evalproperty('galaxy.convoy.time').from_now)
+    end
   end
 
   describe "#create_players" do

@@ -166,7 +166,7 @@ class RouteHop < ActiveRecord::Base
       hop.move!
       Combat::LocationCheckerAj.check_location(hop.location)
     else
-      raise ArgumentError.new("Unknown event: #{event}")
+      raise CallbackManager::UnknownEvent.new(self, id, event)
     end
   end
 end

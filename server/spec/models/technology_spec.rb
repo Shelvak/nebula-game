@@ -376,7 +376,8 @@ describe Technology do
 
   describe "#upgrade" do
     before(:each) do
-      @player = Factory.create(:player)
+      @player = Factory.create(:player, 
+        :war_points => Technology::TestTechnology.war_points_required(1))
       @planet = Factory.create :planet, :player => @player
       @rc = Factory.create(:b_research_center, :planet => @planet)
       @model = Factory.build :technology, :planet_id => @planet.id,
@@ -406,6 +407,15 @@ describe Technology do
     it "should not allow upgrading if planet does not have a " +
     "research center" do
       @rc.destroy
+      lambda do
+        @model.upgrade
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should not allow upgrading if not enough war points" do
+      @player.war_points -= 1
+      @player.save!
+      
       lambda do
         @model.upgrade
       end.should raise_error(GameLogicError)
