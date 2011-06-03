@@ -2060,7 +2060,7 @@
       <p>
         Mano rekomendacija — tyrimų centrą šioje planetoje turime įrengti 
         nedelsiant. Galų gale vienas kitas mokslinis triukas rankovėje mums 
-        tikrai nepakenks. Juk mes neturime skaudžios mokslinės patirties?
+        tikrai nepakenks!
       </p>
     </about.11>
 
@@ -2437,7 +2437,7 @@
       </p>
     </about.16>
 
-    <title.28 value="Ir niekada šlovės nebus per daug" />
+    <title.28 value="Šlovė jums!" />
     <about.28>
       <p>Komandore.</p>
       <p>Jūsų darbų reikšmė žmonijai neprilygstama.</p>
@@ -2483,7 +2483,7 @@
       sferose! Jums nebuvo kilusi mintis sukurti savo religiją?</p>
     </about.64>
 
-    <title.17 value="Ekonomika turi būti ekonomiška" />
+    <title.17 value="Taupumas" />
     <about.17>
       <p>Sveiki sugrįžę, Komandore.</p>
       <p>
@@ -2786,7 +2786,7 @@
     <playersCount value="Žaidėjai" />
     <planetsCount value="Planetos" />
     <warPoints value="Karo taškai" />
-    <economyPoints value="Ekonomijos taškai" />
+    <economyPoints value="Ekonomikos taškai" />
     <sciencePoints value="Mokslo taškai" />
     <victoryPoints value="Pergalės taškai" />
     <armyPoints value="Kariuomenės taškai" />
@@ -2814,7 +2814,7 @@
     <full value="Pilnas per {0}" />
     <empty value="Tuščias per {0}" />
     <and value="ir" />
-    <notEnoughResources value="Nepakanka resursų" />
+    <notEnoughResources value="Nepakanka resursų." />
     <enoughResourcesIn value="Resursų užteks už:" />
     <insufficientRate value="Nepakankamas resursų išgavimo greitis" />
     <additionalStorage.resource value="{0 metal[metalo] energy[energijos] zetium[zetiumo]}" />
@@ -2886,7 +2886,7 @@
     <notEnoughScientists>
       <p>Šiai technologijai reikia 
       {0 one[? mokslininko] tens[? mokslininkų] many[? mokslininkų]}, tačiau
-      tik {1 one[? mokslininkas] tens[? mokslininkų] many[? mokslininkai]} iš
+      tik {1} iš
       {2 one[? mokslininko] tens[? mokslininkų] many[? mokslininkų]} yra laisvi.
       </p>
     </notEnoughScientists>
