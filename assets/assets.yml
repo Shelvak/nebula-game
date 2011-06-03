@@ -783,6 +783,9 @@ assets:
 
       "info_screen":
         line.png: Info_name.png
+        panel_left.png: Info_panel_u_left.png
+        panel_center.png: Info_panel_u_center_repeat.png
+        panel_right.png: Info_panel_u_right.png
 
       "technology_tree":
         v_line_active.png: Techtree_lineV_active.png

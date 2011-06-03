@@ -1178,7 +1178,7 @@
     <forOne value="For one:" />
     <total value="Total:" />
     <cost value="Cost info" />
-    <deploysTo value="Deploys to" />
+    <deploysTo value="Deploys to:" />
   </InfoScreen>
 
   <LoadingScreen>

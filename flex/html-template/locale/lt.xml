@@ -1172,7 +1172,7 @@
     <forOne value="Vienam:" />
     <total value="Iš viso:" />
     <cost value="Kaina" />
-    <deploysTo value="Išsiskleidžia į" />
+    <deploysTo value="Išsiskleidžia į:" />
   </InfoScreen>
 
   <LoadingScreen>
