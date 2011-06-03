@@ -564,25 +564,38 @@
                               <s:HorizontalLayout gap="3" paddingLeft="6" paddingRight="6"/>
                            </s:layout> 
                         </s:Group>
+                        <s:Label text="{Localizer.string('Technologies','warPointsNeeded',
+                                 [Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1), 
+                                 ML.player.warPoints])}" styleName="unsatisfied" 
+                                 visible="{ML.player.warPoints &lt; 
+                                 Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)}" 
+                                 width="100%"/>
                         <s:Label text="{Localizer.string('Technologies','technologiesNeeded')}" styleName="unsatisfied" 
                                  visible="{!(_selectedModel.isValid || ML.player.scientistsTotal == 0
-                                 || _selectedModel.groupForbiden)}" width="100%"/>
+                                 || _selectedModel.groupForbiden || (ML.player.warPoints &lt; 
+                                 Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
+                                 width="100%"/>
                         <s:Label text="{Localizer.string('Technologies','groupResearched')}" styleName="unsatisfied" 
-                                 visible="{!(!_selectedModel.groupForbiden || ML.player.scientistsTotal == 0)}" 
+                                 visible="{!(!_selectedModel.groupForbiden || ML.player.scientistsTotal == 0
+                                 || (ML.player.warPoints &lt; 
+                                 Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
                                  width="100%"/>
                         <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
                                  [_selectedModel.minScientists, ML.player.scientists, 
                                  ML.player.scientistsTotal])}" id="notEnoughSciLbl" 
                                                                visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
-                                                               (upgradePending) || (!_selectedModel.isValid))}" 
+                                                               (upgradePending) || (!_selectedModel.isValid)|| (ML.player.warPoints &lt; 
+                                                               Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
                                                                styleName="unsatisfied" width="100%"/>
                         <s:Label text="{Localizer.string('Technologies','buildCenters')}" 
                                  visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
-                                 (upgradePending) || (!_selectedModel.isValid))}" 
+                                 (upgradePending) || (!_selectedModel.isValid)|| (ML.player.warPoints &lt; 
+                                 Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
                                  styleName="unsatisfied" width="100%"/>
                         <base:AdvancedContainer width="100%"
                                                 visible="{!(notEnoughSciLbl.visible || (!_selectedModel.isValid) || 
-                                                canBeUpgraded || (ML.player.scientistsTotal == 0))}">
+                                                canBeUpgraded || (ML.player.scientistsTotal == 0)|| (ML.player.warPoints &lt; 
+                                                Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}">
                            
                            <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
                                     styleName="unsatisfied"/>
@@ -600,7 +613,9 @@
                         </base:AdvancedContainer>
                         <s:Group width="100%">
                            <s:Button enabled="{!(!_selectedModel.isValid || !canBeUpgraded || 
-                                     (_selectedModel.minScientists > ML.player.scientists) || upgradePending)}" 
+                                     (_selectedModel.minScientists > ML.player.scientists) || upgradePending
+                                     || (ML.player.warPoints &lt; 
+                                     Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
                                      label="{Localizer.string('Technologies','upgrade')}" 
                                      click="upgradeButton_clickHandler(event)" right="6"/>	
                         </s:Group>

@@ -124,7 +124,9 @@
                 width="{imageSize}" height="{imageSize}" top="0" left="0" id="techImg"
                 filters="{modelObj.upgradePart.level == modelObj.maxLevel?[]:
                 (modelObj.upgradePart.upgradeEndsAt != null?[]:(
-                !modelObj.isValid?demoFilter:(!canBeUpgraded?disabledFilter:[])))}"/>
+                (!modelObj.isValid || (ML.player.warPoints &lt; 
+                Technology.getWarPoints(modelObj.type, modelObj.level+1))
+                )?demoFilter:(!canBeUpgraded?disabledFilter:[])))}"/>
       
       <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER+'technology_tree/clock')}"
                      top="0" left="0" visible="{modelObj.pauseRemainder > 0}"/>

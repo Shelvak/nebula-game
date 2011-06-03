@@ -2896,6 +2896,11 @@
       <p>Tu neturi pakankamai mokslininkų šiam objektui tyrinėti.</p>
     </notEnoughScientistsExploration>
     <technologiesNeeded value="Reikia papildomų technologijų" />
+    <warPointsNeeded>
+      <p>Tau reikia {0 1sts[? karo taško] tens[? karo taškų] many[? karo taškų]} 
+       šiai technologijai išrasti, tačiau tu teturi 
+       {1 one[vieną tašką] 1sts[? tašką] tens[? taškų] many[? taškus]}.</p>
+    </warPointsNeeded>
     <groupResearched>
       <p>Kita technologija iš šios grupės jau buvo išrasta, todėl tu negali
       išrasti šios technologijos.</p>
@@ -2919,6 +2924,7 @@
     <level value="{0} lygio" />
 
 
+    <property.warPoints value="Reikiamas karo taškų kiekis" />
     <property.upgradeTime value="Tobulinimo laikas" />
     <property.metal.cost value="Metalo kaina" />
     <property.energy.cost value="Energijos kaina" />

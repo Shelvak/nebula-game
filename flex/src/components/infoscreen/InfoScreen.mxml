@@ -261,6 +261,11 @@
                            Config.getRoundingPrecision());
                         useRounding = true;
                      }
+                     else if (element == Technology.WAR_POINTS)
+                     {
+                        currentValue = Technology.getWarPoints(_infoModel.type, _infoModel.usefulLevel);
+                        newValue = Technology.getWarPoints(_infoModel.type, lvlSelector.value);
+                     }
                      else if (element == Building.RADAR_STRENGTH)
                      {
                         currentValue = Building.calculateRadarStrenth(_infoModel.type,
@@ -672,7 +677,7 @@
                      <s:Group left="240" top="13" right="0">
                         <s:Group left="16" toolTip="{_infoModel.armorType != null
                                  ? Localizer.string('InfoScreen', 'armor.'+ _infoModel.armorType):''}">
-                           <s:BitmapImage visible="{_infoModel.armorType != null}"
+                           <s:BitmapImage visible="{_infoModel.armorType != null}" width="32"
                                           source="{IMG.getImage(AssetNames.getIconImageName(
                                           _infoModel.armorType))}"/>
                            <s:Label text="{_infoModel.name}" styleName="h1" color="#eec500" paddingLeft="6" paddingTop="10"/>

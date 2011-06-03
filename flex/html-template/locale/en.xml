@@ -2854,6 +2854,10 @@
       <p>You don't have enough scientists to explore this object.</p>
     </notEnoughScientistsExploration>
     <technologiesNeeded value="Additional technologies needed" />
+    <warPointsNeeded>
+      <p>You need {0} war points to research this technology but you 
+      only have {1}.</p>
+    </warPointsNeeded>
     <groupResearched>
       <p>Another technology in this group has been already researched so you
       cannot research this technology</p>
@@ -2877,6 +2881,7 @@
     <level value="level {0}" />
 
 
+    <property.warPoints value="War points needed" />
     <property.upgradeTime value="Upgrade time" />
     <property.metal.cost value="Metal cost" />
     <property.energy.cost value="Energy cost" />

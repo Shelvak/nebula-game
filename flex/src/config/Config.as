@@ -253,6 +253,11 @@ package config
          return requirements;
       }
       
+      public static function getTechnologyWarPoints(type: String): String
+      {
+         return getTechnologyProperty(type, 'warPoints');
+      }
+      
       public static function getTechnologyProperty(type:String, prop:String) : *
       {
          return getValue("technologies." + StringUtil.firstToLowerCase(type) + "." + prop);

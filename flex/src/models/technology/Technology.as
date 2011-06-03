@@ -21,6 +21,7 @@ package models.technology
    
    import utils.DateUtil;
    import utils.Objects;
+   import utils.StringUtil;
    import utils.locale.Localizer;
    
    
@@ -67,6 +68,13 @@ package models.technology
          EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, dispatchValidChangeEvent);
       }
       
+      public static const WAR_POINTS: String = 'warPoints';
+      
+      public static function getWarPoints(type: String, level: int): int
+      {
+         return Math.round(StringUtil.evalFormula(
+            Config.getTechnologyWarPoints(type), {'level': level}));
+      }
       
       /**
        * <p>After calling this method you won't be able to access any upgradable properties.</p>
