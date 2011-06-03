@@ -2807,6 +2807,7 @@
     <population value="Populiacija" />
     <scientists value="Mokslininkai" />
     <points value="Taškai" />
+    <warPoints value="Karo taškai" />
     <vps value="PT" />
     <timer value="Laikas iki kito padidėjimo" />
     <resources value="Resursai" />

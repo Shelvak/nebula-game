@@ -430,7 +430,8 @@
                   </base:Panel>
                
                <base:Panel title="{Localizer.string('Technologies', 'title.requirements')}"
-                           visible="{_selectedModel.requirementsText != ''}">
+                           visible="{_selectedModel.requirementsText != '' &amp;&amp;
+                           _selectedModel.upgradePart.level == 0}">
                   <s:Group width="100%"> 
                      <s:Label left="6" right="6" top="6" text="{_selectedModel.requirementsText}"/>	
                   </s:Group>
@@ -565,10 +566,10 @@
                            </s:layout> 
                         </s:Group>
                         <s:Label text="{Localizer.string('Technologies','warPointsNeeded',
-                                 [Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1), 
+                                 [Technology.getWarPoints(_selectedModel.type, _selectedModel.upgradePart.level+1), 
                                  ML.player.warPoints])}" styleName="unsatisfied" 
                                  visible="{ML.player.warPoints &lt; 
-                                 Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)}" 
+                                 Technology.getWarPoints(_selectedModel.type, _selectedModel.upgradePart.level+1)}" 
                                  width="100%"/>
                         <s:Label text="{Localizer.string('Technologies','technologiesNeeded')}" styleName="unsatisfied" 
                                  visible="{!(_selectedModel.isValid || ML.player.scientistsTotal == 0
