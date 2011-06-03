@@ -1,5 +1,5 @@
 ---
-<% speed = 5 %>
+<% speed = 5000 %>
 # Speed factor
 speed: <%= speed %>
 
