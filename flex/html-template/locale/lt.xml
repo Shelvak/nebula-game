@@ -2900,7 +2900,8 @@
     <warPointsNeeded>
       <p>Tau reikia {0 1sts[? karo taško] tens[? karo taškų] many[? karo taškų]} 
        šiai technologijai išrasti, tačiau tu teturi 
-       {1 one[vieną tašką] 1sts[? tašką] tens[? taškų] many[? taškus]}.</p>
+       {1}.</p>
+      <p>Gauk karo taškų kariaudamas su ateiviais arba kitais žaidėjais.</p>
     </warPointsNeeded>
     <groupResearched>
       <p>Kita technologija iš šios grupės jau buvo išrasta, todėl tu negali
@@ -3294,7 +3295,7 @@
   <Units>
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Bus už {0}" />
-    <property.hp value="Gyvybės Taškai" />
+    <property.hp value="Gyvybės taškai" />
     <property.upgradeTime value="Statymo laikas" />
     <property.metal.cost value="Metalo kaina" />
     <property.energy.cost value="Energijos kaina" />
@@ -3303,7 +3304,7 @@
     <property.armorMod value="Šarvų pliusas" />
     <property.damageMod value="Žalos pliusas" />
     <property.evasiveness value="Išsisukimas" />
-    <property.xpNeeded value="PT pakelti lygiui" />
+    <property.xpNeeded value="Pergalės taškų pakelti lygiui" />
     <property.initiative value="Iniciatyva" />
     <property.volume value="Apimtis" />
     <property.storage value="Talpa" />
