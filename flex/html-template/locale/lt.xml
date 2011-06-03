@@ -1087,6 +1087,7 @@
     <label.openSolarSystem value="Įeiti į saulės sistemą" />
     <label.openWormhole value="Įeiti į areną" />
     <label.wormhole value="Arena" />
+    <label.pulsar value="Pulsaras-{0}"/>
     <label.shield>
       <![CDATA[Ši saulės sistema yra apsaugota<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>

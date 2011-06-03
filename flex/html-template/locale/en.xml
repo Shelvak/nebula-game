@@ -1091,6 +1091,7 @@
     <label.openSolarSystem value="Enter solar system" />
     <label.openWormhole value="Enter battleground" />
     <label.wormhole value="Battleground"/>
+    <label.pulsar value="Pulsar-{0}"/>
     <label.shield>
       <![CDATA[This solar system is shielded for<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
