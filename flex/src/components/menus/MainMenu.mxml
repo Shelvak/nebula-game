@@ -207,6 +207,15 @@
                </s:layout>
             </s:Group>
             <s:Group>
+               <s:Label text="{Localizer.string('Resources','warPoints') + ':'}" 
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
+               <s:Label text="{ML.player.warPoints}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="6" paddingBottom="3"/>
+               </s:layout>
+            </s:Group>
+            <s:Group>
                <s:Label text="{Localizer.string('Resources','points') + ':'}" 
                         width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
                         color="#eec500"/>
