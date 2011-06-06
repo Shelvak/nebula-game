@@ -205,6 +205,7 @@
          
       ]]>
    </fx:Script>
+   <screens:GradientBackground gradientWidth="{(width - 400) / 2}" />
    <s:Group left="0" right="0" top="0" bottom="0">
       <base:Scroller id="contScroller" left="0" right="0" top="0" bottom="0" stepMultiplier="5">
          <s:Group left="0" right="0" top="0" bottom="0">

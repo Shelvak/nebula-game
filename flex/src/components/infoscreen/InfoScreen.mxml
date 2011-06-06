@@ -615,32 +615,7 @@
       ]]>
    </fx:Script>
    
-   <!-- left fade -->
-   <s:Rect top="2" bottom="0" left="0" width="{contentGroup.x>0?contentGroup.x:0}">
-      <s:fill>
-         <s:LinearGradient x="0" y="50">
-            <s:GradientEntry ratio="0"/>
-            <s:GradientEntry alpha="0" ratio="1"/>
-         </s:LinearGradient>
-      </s:fill>
-   </s:Rect>
-   
-   <!-- content rect background -->
-   <s:BitmapImage top="2" bottom="0" width="{contentGroup.width}" 
-                  left="{contentGroup.x}" fillMode="repeat"
-                  source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'main_background')}"/>
-   
-   <!-- right fade -->
-   <s:Rect top="2" bottom="0" left="{contentGroup.x + contentGroup.width}" right="0">
-      <s:fill>
-         <s:LinearGradient x="0" y="50">
-            <s:GradientEntry alpha="0" ratio="0"/>
-            <s:GradientEntry ratio="1"/>
-         </s:LinearGradient>
-      </s:fill>
-   </s:Rect>
-   
-   
+   <screens:GradientBackground gradientWidth="{(width - contentGroup.width) / 2}"/>
    
    <base:AdvancedContainer bottom="0" left="0" top="0" right="0">
       <base:Scroller id="scrollCont" top="9" bottom="9" width="100%" 
