@@ -2864,6 +2864,7 @@
     <warPointsNeeded>
       <p>You need {0} war points to research this technology but you 
       only have {1}.</p>
+      <p>You can get more war points by attacking NPCs or other players.</p>
     </warPointsNeeded>
     <groupResearched>
       <p>Another technology in this group has been already researched so you
