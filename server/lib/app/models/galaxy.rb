@@ -97,7 +97,7 @@ class Galaxy < ActiveRecord::Base
           count = rand(count_from, count_to + 1)
           klass = "Unit::#{type}".constantize
           count.times do 
-            unit = klass.new(:hp => klass.hit_points(1), :level => 1,
+            unit = klass.new(:level => 1,
               :location => source, :galaxy_id => id, :flank => flank)
             units.push unit
           end

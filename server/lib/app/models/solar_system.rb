@@ -36,7 +36,7 @@ class SolarSystem < ActiveRecord::Base
     }
   }
 
-  def self.battleground(galaxy_id)
+  def self.galaxy_battleground(galaxy_id)
     where(:galaxy_id => galaxy_id, :x => nil, :y => nil).first
   end
 

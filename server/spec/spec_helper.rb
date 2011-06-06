@@ -16,6 +16,7 @@ Spork.prefork do
 
     DEFAULT_SPEC_CLIENT_ID = -1
     SPEC_TIME_PRECISION = 10
+    SPEC_FLOAT_PRECISION = 0.0001
 
     require 'spec'
     require 'pp'

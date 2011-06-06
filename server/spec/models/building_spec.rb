@@ -548,8 +548,8 @@ describe Building do
       @model = Factory.create :building
     end
 
-    @required_fields = %w{}
-    @ommited_fields = %w{pause_remainder}
+    @required_fields = %w{hp}
+    @ommited_fields = %w{pause_remainder hp_percentage}
     it_should_behave_like "to json"
   end
 
@@ -563,10 +563,6 @@ describe Building do
         @model = Factory.build(:building, attr => nil)
         @model.should_not be_valid
       end
-    end
-
-    it "should set hp to 0" do
-      @building.hp.should == 0
     end
 
     it "should not be active" do
@@ -948,12 +944,8 @@ describe Building do
   end
 
   describe "#hit_points" do
-    it "should return 0 for level 0" do
-      Factory.create(:building).hit_points(0).should == 0
-    end
-
-    it "should return use formula for other levels" do
-      Factory.create(:building).hit_points(2).should == 2000
+    it "should return int" do
+      Factory.create(:building).hit_points.should == 1000
     end
   end
 
