@@ -396,8 +396,9 @@
     <status value="Būsena" />
     <constructing value="Konstruoja" />
     <upgrading value="Tobulinama" />
-    
-    <rates value="Neaktyvus pastatas" />
+        
+    <title.rates value="Išgavimo greičiai" />
+    <title.inactiveBuilding value="Neaktyvus pastatas" />
     <storage value="Talpyklos" />
     <activate value="Aktyvuoti" />
     <deactivate value="Deaktyvuoti" />
@@ -1095,10 +1096,10 @@
   </Galaxy>
 
   <General>
-    <days.short value="d." />
-    <hours.short value="v." />
-    <minutes.short value="m." />
-    <seconds.short value="s." />
+    <day.short value="d." />
+    <hour.short value="v." />
+    <minute.short value="m." />
+    <second.short value="s." />
     <day.long value="diena" />
     <hour.long value="valanda" />
     <message.actionCanceled>
@@ -1300,7 +1301,10 @@
     <label.readColor value="Perskaityti pranešimai" />
 
     <title.combatLog value="Mūšio ataskaita" />
-    <message.combatLog value="Mūšis {0}" />
+    <message.combatLog>
+      <p>Mūšis {0 planet[planetoje] galaxy[galaktikoje] ss[saulės sistemoje] 
+      battleground[arenoje]} {1}</p>
+    </message.combatLog>
     <label.combatLog.outcome.win value="Tu laimėjai!" />
     <label.combatLog.outcome.loose value="Tu pralaimėjai!" />
     <label.combatLog.outcome.tie value="Lygiosios" />
@@ -1679,6 +1683,7 @@
   </Objectives>
 
   <Quests>
+    <rewardsWidth value="120" />
     <label.current value="Dabartinės" />
     <label.completed value="Įvykdytos" />
     <label.showQuest value="Parodyti užduotį" />
@@ -2827,6 +2832,7 @@
     <notEnoughResources value="Nepakanka resursų." />
     <enoughResourcesIn value="Resursų užteks už:" />
     <insufficientRate value="Nepakankamas resursų išgavimo greitis" />
+    <wontFit.resource value="{0 metal[metalo] energy[energijos] zetium[zetiumo]}" />
     <additionalStorage.resource value="{0 metal[metalo] energy[energijos] zetium[zetiumo]}" />
     <!-- {0}: additionalStorage.resource (1..3, joined as human string) -->
     <additionalStorage value="Reikia papildomų {0} talpyklų." />

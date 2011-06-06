@@ -122,7 +122,7 @@ package models.resource
                   }
                   tempStorageString += MathUtil.round(missingAmounts[i], 2).toString();
                   i++;
-                  tempStorageString += ' '+Localizer.string('Resources', res);
+                  tempStorageString += ' '+Localizer.string('Resources', 'wontFit.resource', [res]);
                }
                return tempStorageString;
             }

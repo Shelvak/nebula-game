@@ -397,7 +397,8 @@
     <status value="Status" />
     <constructing value="Constructing" />
     <upgrading value="Upgrading" />
-    <rates value="Inactive building" />
+    <title.rates value="Rates" />
+    <title.inactiveBuilding value="Inactive building" />
     <storage value="Storage" />
     <activate value="Activate" />
     <deactivate value="Deactivate" />
@@ -1098,10 +1099,10 @@
   </Galaxy>
 
   <General>
-    <days.short value="d" />
-    <hours.short value="h" />
-    <minutes.short value="m" />
-    <seconds.short value="s" />
+    <day.short value="d" />
+    <hour.short value="h" />
+    <minute.short value="m" />
+    <second.short value="s" />
     <day.long value="day" />
     <hour.long value="hour" />
     <message.actionCanceled>
@@ -1300,7 +1301,10 @@
     <label.readColor value="Read notifications" />
 
     <title.combatLog value="Combat report" />
-    <message.combatLog value="Battle in {0}" />
+    <message.combatLog>
+      <p>Battle in {0 planet[planet] galaxy[galaxy] ss[solar system] 
+      battleground[battleground]} {1}</p>
+    </message.combatLog>
     <label.combatLog.outcome.win value="You have won!" />
     <label.combatLog.outcome.loose value="You have lost!" />
     <label.combatLog.outcome.tie value="Its a tie" />
@@ -1677,6 +1681,7 @@
   </Objectives>
 
   <Quests>
+    <rewardsWidth value="100" />
     <label.current value="Current" />
     <label.completed value="Completed" />
     <label.showQuest value="Show quest" />
@@ -2782,6 +2787,8 @@
     <notEnoughResources value="Insufficient resources." />
     <enoughResourcesIn value="Enough resources in:" />
     <insufficientRate value="Insufficient resource extraction rate." />
+    <!-- {0}: metal/energy/zetium -->
+    <wontFit.resource value="{0}" />
     <!-- {0}: metal/energy/zetium -->
     <additionalStorage.resource value="{0}" />
     <!-- {0}: additionalStorage.resource (1..3, joined as human string) -->

@@ -16,7 +16,7 @@
       </s:fill>
    </s:Rect>
    <s:Group>
-      <s:Label width="50" text="{Localizer.string('Credits', 'tab.select')}" 
+      <s:Label width="80" text="{Localizer.string('Credits', 'tab.select')}" 
                textAlign="center"/>
       <s:Line yFrom="0" yTo="24">
          <s:stroke>
