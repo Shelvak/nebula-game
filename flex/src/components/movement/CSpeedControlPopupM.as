@@ -8,7 +8,6 @@ package components.movement
    
    import flash.events.EventDispatcher;
    import flash.net.URLRequest;
-   import flash.net.navigateToURL;
    
    import interfaces.ICleanable;
    import interfaces.IUpdatable;
@@ -20,6 +19,7 @@ package components.movement
    import utils.DateUtil;
    import utils.EventUtils;
    import utils.Objects;
+   import utils.UrlNavigate;
    import utils.locale.Localizer;
    
    
@@ -302,7 +302,7 @@ package components.movement
        */
       public function openPreBattleCooldownInfo() : void
       {
-         navigateToURL(new URLRequest("http://nebula44.com/after-jump-cooldown"), "_blank");
+         UrlNavigate.getInstance().showUrl('after-jump-cooldown');
       }
       
       

@@ -40,6 +40,7 @@ package controllers.dailybonus.actions
          popUp.title = Localizer.string('Popups', 'title.dailyBonus');
          popUp.addElement(cont);
          popUp.confirmButtonLabel = Localizer.string('Quests', 'label.claimReward');
+         popUp.cancelButtonLabel = Localizer.string('Quests', 'label.claimLater');
          popUp.cancelButtonClickHandler = function(button: Button):void
          {
             ML.player.dailyBonus = bonus;

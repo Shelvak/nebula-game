@@ -15,6 +15,7 @@ package controllers.dailybonus.actions
       
       public override function result(rmo:ClientRMO):void
       {
+         ML.player.dailyBonus = null;
          GlobalFlags.getInstance().lockApplication = false;
       }
    }

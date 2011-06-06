@@ -346,6 +346,7 @@
    
    <fx:Script>
       <![CDATA[
+         import utils.UrlNavigate;
          import models.resource.Resource;
          import utils.StringUtil;
          import spark.events.IndexChangeEvent;
@@ -354,7 +355,6 @@
          import controllers.Messenger;
          import globalevents.GQuestEvent;
          import com.developmentarc.core.utils.EventBroker;
-         import flash.net.navigateToURL;
          import components.skins.YellowButtonSkin;
          import components.skins.GreenButtonSkin;
          import utils.assets.AssetNames;
@@ -550,8 +550,7 @@
          
          protected function tutorial_clickHandler(event:MouseEvent):void
          {
-            navigateToURL(new URLRequest('http://wiki.nebula44.com/index.php/' + quest.helpUrlId + 
-               " (Tutorial)"));
+            UrlNavigate.getInstance().showWikiUrl(quest.helpUrlId + " (Tutorial)");
          }
          
          protected function claim_clickHandler(event:MouseEvent):void

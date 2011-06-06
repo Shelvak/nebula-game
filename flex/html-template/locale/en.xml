@@ -1392,8 +1392,8 @@
     <label.yes value="Yes" />
     <label.no value="No" />
     
-    <title.dalyBonus value="Daily bonus" />
-    <message.dalyBonus>
+    <title.dailyBonus value="Daily bonus" />
+    <message.dailyBonus>
       <p>Come back every day and get your daily bonus!</p>
       <p>Today you've got:</p>
     </message.dailyBonus>
@@ -1687,6 +1687,7 @@
     <label.objectives value="Objectives:" />
     <label.close value="Close" />
     <label.claimReward value="Claim reward!" />
+    <label.claimLater value="Claim later" />
     <label.tutorial value="Tutorial" />
     <label.choosePlanet value="Choose planet:" />
     <warning.wontFit> 

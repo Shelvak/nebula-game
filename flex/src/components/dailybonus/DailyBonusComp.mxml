@@ -13,13 +13,17 @@
          
          import globalevents.GlobalEvent;
          
+         import models.ModelLocator;
          import models.Reward;
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
          
+         import mx.collections.ArrayCollection;
+         
          import spark.events.IndexChangeEvent;
          
+         import utils.StringUtil;
          import utils.locale.Localizer;
          
          public function set reward(value: Reward): void
@@ -65,8 +69,8 @@
          }
       ]]>
    </fx:Script>
-   <s:Label maxWidth="400" text="{Localizer.string('Popups', 'message.dailyBonus')}"/>
    <base:AdvancedContainer id="grpRewards" maxWidth="400">
+      <s:Label maxWidth="400" text="{Localizer.string('Popups', 'message.dailyBonus')}"/>
       <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{bonus.metal}"
                           visible="{bonus.metal != 0}"
                           toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
@@ -114,7 +118,8 @@
       
       <s:Group>
          <s:Label text="{Localizer.string('Quests', 'label.choosePlanet')}" styleName="h3"/>
-         <base:PlanetSelector id="planetSelector" minWidth="180" dataProvider="{ML.player.planets}"
+         <base:PlanetSelector id="planetSelector" minWidth="180" 
+                              dataProvider="{ModelLocator.getInstance().player.planets}"
                               itemRenderer="components.gameobjects.planet.IRPlayerPlanet"
                               change="planetSelector_changeHandler(event)"/>
          <s:layout>

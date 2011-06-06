@@ -33,6 +33,7 @@
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
+         import utils.UrlNavigate;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
@@ -167,7 +168,7 @@
          {
             if (ML.player.creds < Config.getEditAllianceCredits())
             {
-               navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+               UrlNavigate.getInstance().showBuyCreds();
             }
             else if (allyNewName.text.length >= Config.getMinAllyNameLength())
             {

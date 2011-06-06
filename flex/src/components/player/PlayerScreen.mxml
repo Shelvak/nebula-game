@@ -5,7 +5,8 @@
          xmlns:components="utils.components.*" 
          xmlns:base="components.base.*"
          width="100%" height="100%"
-         creationComplete="group1_creationCompleteHandler(event)" xmlns:screens="components.screens.*">
+         creationComplete="group1_creationCompleteHandler(event)" 
+         xmlns:screens="components.screens.*">
    <fx:Script>
       <![CDATA[
          import components.skins.LargePanelSkin;
@@ -19,10 +20,12 @@
          import models.ModelLocator;
          import models.chat.MChat;
          import models.player.MRatingPlayer;
+         import models.player.Player;
          
          import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
          
+         import utils.UrlNavigate;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
@@ -81,8 +84,10 @@
                               fillMode="repeat"
                               source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 
                               'player_screen/center')}"/>
-               <s:BitmapImage left="76" top="57" width="110" height="130"
-                  source="{IMG.getImage(AssetNames.getUnitImageName('Trooper'))}"/>
+               <mx:Image left="76" top="57" width="110" height="130" maintainAspectRatio="true"
+                         horizontalAlign="center" verticalAlign="middle"
+                         source="{UrlNavigate.getInstance().urlRoot + 
+                         'user/avatar/' + player.name}"/>
                <base:AdvancedContainer left="215" right="0" top="20">
                   <s:Group width="100%" toolTip="{Localizer.string('Ratings', player.online
                            ?'online':'offline')}">

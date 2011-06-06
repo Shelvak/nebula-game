@@ -61,6 +61,7 @@
          
          import utils.DateUtil;
          import utils.NumberUtil;
+         import utils.UrlNavigate;
          import utils.assets.AssetNames;
          import utils.datastructures.Collections;
          import utils.locale.Localizer;
@@ -535,7 +536,7 @@
             }
             else
             {
-               navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+               UrlNavigate.getInstance().showBuyCreds();
             }
          }
          
@@ -567,7 +568,7 @@
          {
             if (ML.player.creds < Config.getPlanetBoostCost())
             {
-               navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+               UrlNavigate.getInstance().showBuyCreds();
             }
             else
             {

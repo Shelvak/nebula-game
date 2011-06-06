@@ -80,7 +80,6 @@ package models.player
        */
       public var loggedIn:Boolean = false;
       
-      [Bindable]
       public var dailyBonus: Reward = null;
       
       

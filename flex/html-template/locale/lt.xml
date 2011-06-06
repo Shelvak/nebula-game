@@ -1391,8 +1391,8 @@
     <label.yes value="Taip" />
     <label.no value="Ne" />
     
-    <title.dalyBonus value="Dienos prizas" />
-    <message.dalyBonus>
+    <title.dailyBonus value="Dienos prizas" />
+    <message.dailyBonus>
       <p>Sugrįžk kiekvieną dieną ir atsiimk savo dienos prizą!</p>
       <p>Šiandien Tu gavai:</p>
     </message.dailyBonus>
@@ -1689,6 +1689,7 @@
     <label.objectives value="Tikslai:" />
     <label.close value="Uždaryti" />
     <label.claimReward value="Pasiimti atlygį!" />
+    <label.claimLater value="Pasiimti vėliau" />
     <label.tutorial value="Pradžiamokslis" />
     <label.choosePlanet value="Pasirink planetą:" />
     <warning.wontFit> 
