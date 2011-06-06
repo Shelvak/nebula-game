@@ -77,23 +77,25 @@ describe SsObject::Planet do
         end.should change(@old, :planets_count).by(-1)
       end
 
-      describe "in battleground" do
-        before(:each) do
-          @planet.solar_system = Factory.create(:battleground)
-        end
+      [:battleground, :mini_battleground].each do |type|
+        describe "in #{type}" do
+          before(:each) do
+            @planet.solar_system = Factory.create(type)
+          end
 
-        it "should not change for new player" do
-          lambda do
-            @planet.save!
-            @new.reload
-          end.should_not change(@new, :planets_count)
-        end
+          it "should not change for new player" do
+            lambda do
+              @planet.save!
+              @new.reload
+            end.should_not change(@new, :planets_count)
+          end
 
-        it "should not change for old player" do
-          lambda do
-            @planet.save!
-            @old.reload
-          end.should_not change(@old, :planets_count)
+          it "should not change for old player" do
+            lambda do
+              @planet.save!
+              @old.reload
+            end.should_not change(@old, :planets_count)
+          end
         end
       end
     end
