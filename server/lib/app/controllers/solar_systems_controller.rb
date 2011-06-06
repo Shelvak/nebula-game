@@ -24,7 +24,7 @@ class SolarSystemsController < GenericController
 
     # Client needs solar system to determine it's variation
     solar_system = SolarSystem.find_if_visible_for(params['id'], player)
-    solar_system = SolarSystem.battleground(player.galaxy_id) \
+    solar_system = SolarSystem.galaxy_battleground(player.galaxy_id) \
       if solar_system.wormhole?
 
     # Only change planet if client opened other solar system.

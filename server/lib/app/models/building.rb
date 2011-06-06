@@ -81,9 +81,11 @@ class Building < ActiveRecord::Base
   end
 
   def to_s
-    "<Building::#{type}(#{id}) hp:#{hp}/#{hp_max}, x: #{x}, y: #{y
-      }, x_end: #{x_end}, y_end: #{y_end
-      }, lvl: #{level}, planet_id: #{planet_id}>"
+    ("<Building::%s(%s) hp:%d/%d (%3.2f%%), x: %s, y: %s, x_end: %s, " +
+    "y_end: %s, lvl: %d, planet_id: %s>") % [
+      type, id.to_s, hp, hit_points, hp_percentage * 100, x.to_s, y.to_s, 
+      x_end.to_s, y_end.to_s, level, planet_id.to_s
+    ]
   end
 
   # Return Array of player ids which can observe this building (see it's
@@ -98,7 +100,8 @@ class Building < ActiveRecord::Base
   end
 
   def as_json(options=nil)
-    hash = attributes.except('pause_remainder')
+    hash = attributes.except('pause_remainder', 'hp_percentage')
+    hash['hp'] = hp
     yield hash if block_given?
     hash
   end

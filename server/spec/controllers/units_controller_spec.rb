@@ -794,7 +794,7 @@ describe UnitsController do
     before(:each) do
       @planet = Factory.create(:planet, :player => player)
       set_resources(@planet, 100000, 100000, 100000)
-      @hp_diff = Unit::Crow.hit_points(1) / 2
+      @hp_diff = Unit::Crow.hit_points / 2
       @unit = Factory.create(:u_crow, :level => 1,
         :hp => @hp_diff, :location => @planet)
       @building = Factory.create!(:b_healing_center, :planet => @planet,

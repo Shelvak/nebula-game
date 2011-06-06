@@ -14,19 +14,17 @@ import spacemule.persistence.DB
  */
 
 object UnitRow {
-  val columns = "`id`, `galaxy_id`, `type`, `hp`, `level`, " +
+  val columns = "`id`, `galaxy_id`, `type`, `level`, " +
   "`location_id`, `location_type`, `location_x`, `location_y`, `flank`"
 }
 
 case class UnitRow(galaxyId: Int, location: Location, unit: Unit) {
   val id = TableIds.unit.next
-  val hp = Config.unitHp(unit)
 
-  val values = "%d\t%d\t%s\t%d\t%d\t%d\t%d\t%s\t%s\t%d".format(
+  val values = "%d\t%d\t%s\t%d\t%d\t%d\t%s\t%s\t%d".format(
     id,
     galaxyId,
     unit.name,
-    hp,
     1,
     location.id,
     location.kind.id,

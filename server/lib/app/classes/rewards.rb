@@ -119,8 +119,7 @@ class Rewards
         specification['count'].times do
           unit = klass.new(
             :level => specification['level'],
-            :hp => klass.hit_points(specification['level']) *
-              specification['hp'] / 100,
+            :hp_percentage => specification['hp'].to_f / 100,
             :location => planet,
             :player => player,
             :galaxy_id => player.galaxy_id

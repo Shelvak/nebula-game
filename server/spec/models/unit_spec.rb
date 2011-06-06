@@ -30,9 +30,9 @@ describe Unit do
       )
       @units = [
         Factory.create(:u_gnat, :level => 1, :location => @planet,
-          :hp => Unit::Gnat.hit_points(1) / 2, :player => @player),
+          :hp => Unit::Gnat.hit_points / 2, :player => @player),
         Factory.create(:u_trooper, :level => 1, :location => @planet,
-          :hp => Unit::Trooper.hit_points(1), :player => @player),
+          :player => @player),
       ]
     end
 

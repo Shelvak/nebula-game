@@ -6,7 +6,6 @@ Factory.define :unit, :class => Unit::TestUnit do |m|
     r.player ? r.player.galaxy_id : Factory.create(:galaxy).id
   end
   m.level 0
-  m.hp 0
   m.location do |r|
     Factory.create(:planet, :player => r.player)
   end
@@ -19,7 +18,6 @@ end
 
 Factory.define :unit_dead, :parent => :unit_built do |m|
   m.level 1
-  m.hp 0
 end
 
 class Unit::DeployableTest < Unit; end

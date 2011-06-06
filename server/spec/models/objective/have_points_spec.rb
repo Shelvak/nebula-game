@@ -17,11 +17,12 @@ describe Objective::HavePoints do
 
   describe ".progress" do
     before(:each) do
+      @player = Factory.create(:player, :war_points => 0)
       @limit = 1000
       @objective = Factory.create(:o_have_points, :limit => @limit,
         :count => 2)
-      @op = Factory.create(:objective_progress, :objective => @objective)
-      @player = @op.player
+      @op = Factory.create(:objective_progress, :objective => @objective,
+        :player => @player)
     end
 
     it "should progress if player has enough points" do
