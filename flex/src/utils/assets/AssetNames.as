@@ -205,6 +205,9 @@ package utils.assets
       public static const UNITS_SCREEN_IMAGE_FOLDER: String = UI_IMAGES_FOLDER + "units_screen/";
       
       
+      public static var ALLIANCE_SCREEN_IMAGE_FOLDER:String = UI_IMAGES_FOLDER + "alliance/";
+      
+      
       /**
        * Path to the folder where battlefield folliage (blocking and non-blocking) images reside.
        */

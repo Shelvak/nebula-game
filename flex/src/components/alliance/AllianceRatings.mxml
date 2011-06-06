@@ -126,8 +126,8 @@
       <base:Panel height="100%" horizontalCenter="0" 
                   skinClass="components.skins.LargePanelSkin"
                   title="{Localizer.string('Ratings', 'label.allyRatings')}">
-         <s:Label fontSize="24" text="{Localizer.string('Ratings', 'label.noAlliances')}" horizontalCenter="0"
-                  verticalCenter="0"/>
+         <s:Label fontSize="24" text="{Localizer.string('Ratings', 'label.noAlliances')}"
+                  horizontalCenter="0" verticalCenter="0" visible="{ML.allyRatings.length == 0}"/>
          <alliance:AllianceRatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)" 
                                          visible="{ML.allyRatings.length > 0}" horizontalCenter="0"/>
          <base:Scroller left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10"

@@ -572,6 +572,36 @@ assets:
         search_header_center.png:     Ratings_search_center_repeat.png
         search_header_right.png:      Ratings_search_right.png
 
+      "alliance":
+        logo.png:                             Alliance_logo.png
+        tab_descr_up_left.png:        Alliance_lb_up_left.png
+        tab_descr_up_center.png:      Alliance_lb_up_center_repeat.png
+        tab_descr_up_right.png:       Alliance_lb_up_right.png
+        tab_descr_over_left.png:      Alliance_lb_over_left.png
+        tab_descr_over_center.png:    Alliance_lb_over_center_repeat.png
+        tab_descr_over_right.png:     Alliance_lb_over_right.png
+        tab_descr_down_left.png:      Alliance_lb_down_left.png
+        tab_descr_down_center.png:    Alliance_lb_down_center_repeat.png
+        tab_descr_down_right.png:     Alliance_lb_down_right.png
+        tab_players_up_left.png:      Alliance_mb_up_left.png
+        tab_players_up_center.png:    Alliance_mb_up_center_repeat.png
+        tab_players_up_right.png:     Alliance_mb_up_right.png
+        tab_players_over_left.png:    Alliance_mb_over_left.png
+        tab_players_over_center.png:  Alliance_mb_over_center_repeat.png
+        tab_players_over_right.png:   Alliance_mb_over_right.png
+        tab_players_down_left.png:    Alliance_mb_down_left.png
+        tab_players_down_center.png:  Alliance_mb_down_center_repeat.png
+        tab_players_down_right.png:   Alliance_mb_down_right.png
+        tab_manage_up_left.png:       Alliance_rb_up_left.png
+        tab_manage_up_center.png:     Alliance_rb_up_center_repeat.png
+        tab_manage_up_right.png:      Alliance_rb_up_right.png
+        tab_manage_over_left.png:     Alliance_rb_over_left.png
+        tab_manage_over_center.png:   Alliance_rb_over_center_repeat.png
+        tab_manage_over_right.png:    Alliance_rb_over_right.png
+        tab_manage_down_left.png:     Alliance_rb_down_left.png
+        tab_manage_down_center.png:   Alliance_rb_down_center_repeat.png
+        tab_manage_down_right.png:    Alliance_rb_down_right.png
+        
       "start_menu":
         top_center.png:               Startmenu_top_center.png
         top_left.png:                 Startmenu_top_left.png

@@ -324,21 +324,21 @@
   </Objects>
 
   <Alliances>
+    <title.section.description value="APRAŠYMAS"/>
+    <title.section.players value="ŽAIDĖJAI"/>
+    <title.section.management value="VALDYMAS"/>
+    <title.section.newAlliance value="SĄJUNGA"/>
     <label.noTech>
       <p>Kad galėtum įkurti sąjungą tau reikia išrasti sąjungų technologiją.</p>
-      <p />
       <p>Jeigu nori įstoti į jau egzistuojančią sąjungą, turi iš tos sąjungos 
       gauti pakvietimą.</p>
     </label.noTech>
     <label.noAlly>
       <p>Šiame ekrane gali įkurti savo sąjungą.</p>
-      <p />
       <p>Jeigu nori įstoti į jau egzistuojančią sąjungą, turi iš tos sąjungos 
       gauti pakvietimą.</p>
     </label.noAlly>
-    <label.name value="Sąjungos vardas" />
-    <label.description value="Sąjungos aprašymas" />
-    <label.noDescription value="Ši sąjunga neturi savo aprašymo" />
+    <label.name value="Sąjungos vardas:" />
     <label.editDescription value="Keisti aprašymą" />
     <label.save value="Išsaugoti" />
     <label.cancel value="Atšaukti" />
@@ -346,12 +346,13 @@
     <label.cooldown value="Tu galėsi įkurti sąjungą po {0}" />
     <label.create value="Įkurti sąjungą" />
     <label.allyExists value="Sąjunga su tokiu vardu jau yra." />
-    <label.players value="Sąjungos nariai" />
     <label.kick value="Išspirti" />
     <label.action value="Veiksmas" />
     <label.refresh value="Atnaujinti" />
-    <label.leave value="Išeiti" />
+    <label.leave value="Palikti" />
+    <label.leaveAlliance value="Palikti sąjungą:" />
     <label.rename value="Pervadinti" />
+    <label.renameAlliance value="Pervadinti sąjungą:" />
     <label.renameCost>
       <p>Sąjungos pervadinimas tau kainuos 
       {0 one[? kredą] tens[? kredų] many[? kredus]}.</p>

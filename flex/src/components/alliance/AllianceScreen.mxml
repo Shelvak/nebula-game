@@ -5,7 +5,8 @@
          xmlns:ratings="components.ratings.*"
          xmlns:alliance="components.alliance.*"
          xmlns:base="components.base.*"
-         creationComplete="group1_creationCompleteHandler(event)" xmlns:screens="components.screens.*">
+         xmlns:screens="components.screens.*"
+         creationComplete="this_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
@@ -35,6 +36,7 @@
          import utils.DateUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
+         import utils.components.ToggleButtonsGroup;
          import utils.locale.Localizer;
          
          [Bindable]
@@ -79,11 +81,20 @@
          [Bindable]
          private var ML: ModelLocator = ModelLocator.getInstance();
          
-         protected function group1_creationCompleteHandler(event:FlexEvent):void
+         private var tabGroup:ToggleButtonsGroup;
+         
+         protected function this_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshCurrentTime);
-            NavigationController.getInstance().creationCompleteFunction(
-               MainAreaScreens.ALLIANCE, this);
+            NavigationController.getInstance().creationCompleteFunction(MainAreaScreens.ALLIANCE, this);
+            
+            tabDescription.width =
+            tabManagement.width = Math.max(tabDescription.width, tabManagement.width);
+            tabGroup = new ToggleButtonsGroup();
+            tabGroup.registerButton(tabDescription);
+            tabGroup.registerButton(tabPlayers);
+            tabGroup.registerButton(tabManagement);
+            tabGroup.select(tabDescription);
          }
          
          [Bindable]
@@ -203,130 +214,177 @@
             editing = false;
          }
          
+         
+         private function getString(property:String, parameters:Array = null) : String
+         {
+            return Localizer.string("Alliances", property, parameters);
+         }
+         
+         
+         private function getImage(name:String) : BitmapData
+         {
+            return ImagePreloader.getInstance().getImage(AssetNames.ALLIANCE_SCREEN_IMAGE_FOLDER + name);
+         }
       ]]>
    </fx:Script>
    <screens:GradientBackground gradientWidth="{(width - 400) / 2}" />
-   <s:Group left="0" right="0" top="0" bottom="0">
-      <base:Scroller id="contScroller" left="0" right="0" top="0" bottom="0" stepMultiplier="5">
-         <s:Group left="0" right="0" top="0" bottom="0">
-            <base:AdvancedContainer left="0" right="0">
-               <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
-                              AssetNames.getTechnologyImageName('alliances'))}"/>
-               <base:Warning text="{Localizer.string('Alliances', 'label.noTech')}" width="60%"
-                             visible="{allianceTech.upgradePart.level &lt; 1 &amp;&amp; ML.player.allianceId == 0}"/>
-               <base:Warning text="{Localizer.string('Alliances', 'label.cooldown', 
-                             [DateUtil.secondsToHumanString(leftTime/1000,2)])}" 
-                             width="60%" visible="{leftTime > 0}"/>
-               <s:Label fontSize="18" text="{Localizer.string('Alliances', 'label.noAlly')}"
-                        visible="{allianceTech.upgradePart.level > 0 &amp;&amp; ML.player.allianceId == 0
-                        &amp;&amp; leftTime == 0}"/>
-               <s:Label fontSize="18" text="{Localizer.string('Alliances', 'label.allyExists')}" color="#ff0000"
-                        visible="{allianceExists}"/>
-               <s:Group visible="{allianceTech.upgradePart.level > 0 &amp;&amp; ML.player.allianceId == 0
-                        &amp;&amp; leftTime == 0}">
-                  <s:Label text="{Localizer.string('Alliances', 'label.name')}" fontSize="14"/>
-                  <base:BaseTextInput width="150" id="allyName" enter="createAlliance(event)"
-                                      maxChars="{Config.getMaxAllyNameLength()}"/>
-                  <s:Button enabled="{allyName.text.length >= Config.getMinAllyNameLength()
-                            &amp;&amp; !allyPending}"
-                            click="createAlliance(event)" 
-                            label="{Localizer.string('Alliances', 'label.create')}"/>
-                  <s:layout>
-                     <s:HorizontalLayout paddingLeft="20" paddingRight="20"/>
-                  </s:layout>
-               </s:Group>
-               <s:Label visible="{alliance != null}" paddingBottom="6"
-                        text="{alliance.name}" fontSize="18" color="#eec500" fontWeight="bold"/>
-               
-               <s:Label visible="{alliance != null}" paddingBottom="6"
-                        text="{Localizer.string('Alliances', 'label.description')}" 
-                        fontSize="16" fontWeight="bold"/>
-               <s:TextArea id="desc" visible="{alliance != null &amp;&amp;
-                           editing}" paddingBottom="6"
-                                     maxChars="{Config.getMaxAllyDescriptionLength()}"
-                                     text="{alliance.newDescription}" 
-                                     fontSize="12" color="#eec500" height="100"
-                                     fontWeight="bold" width="400" editable="true"/>
-               <s:Label id="lblDesc" visible="{alliance != null &amp;&amp;
-                        !editing}" paddingBottom="6"
-                                   text="{alliance.newDescription == ''?
-                                   Localizer.string('Alliances', 'label.noDescription')
-                                   :alliance.newDescription}" 
-                                   fontSize="12" color="#eec500" 
-                                   fontWeight="bold" width="400" minHeight="20"/>
-               <base:AdvancedContainer width="400" visible="{alliance != null &amp;&amp;
-                                       alliance.ownerId == ML.player.id}">
-                  <s:Button label="{Localizer.string('Alliances', 'label.editDescription')}"
-                            click="editing = true;
-                            desc.setFocus()"
-                            visible="{!editing}"/>
-                  <s:Button label="{Localizer.string('Alliances', 'label.save')}"
-                            click="save_clickHandler(event)"
-                            visible="{editing}"/>
-                  <s:Button label="{Localizer.string('Alliances', 'label.cancel')}"
-                            click="alliance.newDescription = alliance.description;
-                            editing = false;
-                            alliance.newDescription = alliance.description"
-                            visible="{editing}"/>
-                  <base:layout>
-                     <s:HorizontalLayout horizontalAlign="right"/>
-                  </base:layout>
-               </base:AdvancedContainer>
-               
-               <s:Label text="{Localizer.string('Alliances', 'label.players')}" fontSize="16"
-                        visible="{ML.player.allianceId != 0}"/>
-               <s:Group maxHeight="200" visible="{ML.player.allianceId != 0}">
-                  <alliance:MembersRatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)"/>
-                  <alliance:TotalAliancePointsComp bottom="0" id="total" alliance="{alliance}"
-                                                   visible="{ML.player.allianceId != 0}"/>
-                  <base:Scroller left="0" right="0" top="{header.height}" bottom="{total.height}" stepMultiplier="10">
-                     <s:Group left="0" right="0">
-                        <s:DataGroup dataProvider="{alliance.players}" horizontalCenter="0"
-                                     itemRenderer="components.alliance.IRMembersRatingsRow">
-                           <s:layout>
-                              <s:VerticalLayout gap="0"/>
-                           </s:layout>
-                        </s:DataGroup>
-                     </s:Group>
-                  </base:Scroller>    
-               </s:Group>
-               <s:Group visible="{ML.player.allianceId != 0
-                        &amp;&amp; ML.player.allianceId == alliance.id}">
-                  <s:Group visible="{alliance.ownerId == ML.player.id}">
-                     <s:Label text="{Localizer.string('Alliances', 'label.renameCost', 
-                              [Config.getEditAllianceCredits()])}" fontSize="14"/>
-                     <base:BaseTextInput width="150" id="allyNewName" enter="createAlliance(event)"
-                                         maxChars="{Config.getMaxAllyNameLength()}"/>
-                     <s:Button enabled="{ML.player.creds &lt; Config.getEditAllianceCredits() ||
-                               allyNewName.text.length >= Config.getMinAllyNameLength()
-                               &amp;&amp; !allyPending}"
-                               skinClass="components.skins.CreditButtonSkin"
-                               click="renameAlliance(event)" 
-                               label="{ML.player.creds &lt; Config.getEditAllianceCredits() 
-                               ?Localizer.string('Credits', 'label.buy') 
-                               :Localizer.string('Alliances', 'label.rename')}"/>
-                     <s:layout>
-                        <s:HorizontalLayout paddingLeft="20" paddingRight="20"/>
-                     </s:layout>
-                  </s:Group>
-                  <s:Button label="{Localizer.string('Alliances', 'label.refresh')}"
-                            click="refresh_clickHandler(event)"/>
-                  <s:Button label="{Localizer.string('Alliances', 'label.leave')}"
-                            click="leave_clickHandler(event)"/>
-                  <s:layout>
-                     <s:HorizontalLayout/>
-                  </s:layout>
-               </s:Group>
-               
-               <base:layout>
-                  <s:VerticalLayout horizontalAlign="center" paddingTop="20" gap="10"/>
-               </base:layout>
-               
-            </base:AdvancedContainer>
-         </s:Group>
-      </base:Scroller>
-      <screens:ScreenCloseButton label="{Localizer.string('Alliances', 'label.close')}"
-                                 scroller="{contScroller}" right="0" bottom="0"
-                                 click="NavigationController.getInstance().showPreviousScreen()"/>
+   
+   <!-- Alliance logo and tabs -->
+   <s:BitmapImage source="{getImage('logo')}" horizontalCenter="0" top="0"/>
+   <s:Group top="0" horizontalCenter="0">
+      <s:layout>
+         <s:HorizontalLayout gap="-45"/>
+      </s:layout>
+      <!-- "name" is used by skin -->
+      <s:ToggleButton id="tabDescription" name="descr" skinClass="components.alliance.SectionTabSkin"
+                      label="{getString('title.section.description')}" minWidth="210"
+                      fontSize="15" enabled="{alliance != null}"/>
+      <s:ToggleButton id="tabPlayers"     name="players" skinClass="components.alliance.SectionTabSkin"
+                      label="{getString('title.section.players')}"     minWidth="276" depth="10"
+                      fontSize="18" enabled="{alliance != null}"/>  
+      <s:ToggleButton id="tabManagement"  name="manage" skinClass="components.alliance.SectionTabSkin"
+                      label="{getString('title.section.management')}"  minWidth="210"
+                      fontSize="15" enabled="{alliance != null}"/>
    </s:Group>
+   
+   <s:Group top="230" horizontalCenter="0">
+      
+      <s:Group horizontalCenter="0">
+         
+         <!-- Description -->
+         <base:Panel title="{getString('title.section.description')}" skinClass="components.skins.LargePanelSkin"
+                     visible="{tabDescription.selected &amp;&amp; alliance != null}" width="100%">
+            <base:layout>
+               <s:VerticalLayout/>
+            </base:layout>
+            <s:Label paddingBottom="6" text="{alliance.name}" fontSize="18" color="#eec500" fontWeight="bold"/>
+            <s:TextArea id="desc" paddingBottom="6" width="100%" height="150" editable="{editing}"
+                        fontSize="12" color="#eec500" fontWeight="bold"
+                        maxChars="{Config.getMaxAllyDescriptionLength()}"
+                        text="{alliance.newDescription}"/>
+            <base:AdvancedContainer width="100%"
+                                    visible="{alliance != null &amp;&amp; alliance.ownerId == ML.player.id}">
+               <base:layout>
+                  <s:HorizontalLayout horizontalAlign="right"/>
+               </base:layout>
+               <s:Button label="{getString('label.editDescription')}"
+                         visible="{!editing}">
+                  <s:click>
+                     editing = true;
+                     desc.setFocus();
+                  </s:click>
+               </s:Button>
+               <s:Button label="{getString('label.save')}" click="save_clickHandler(event)" visible="{editing}"/>
+               <s:Button label="{getString('label.cancel')}" visible="{editing}">
+                  <s:click>
+                     editing = false;
+                     alliance.newDescription = alliance.description;
+                  </s:click>
+               </s:Button>
+            </base:AdvancedContainer>
+         </base:Panel>
+         
+         <!-- Players -->
+         <base:Panel title="{getString('title.section.players')}" width="100%"
+                     visible="{tabPlayers.selected &amp;&amp; alliance != null}"
+                     skinClass="components.skins.LargePanelSkin">
+            <base:layout>
+               <s:VerticalLayout horizontalAlign="right"/>
+            </base:layout>
+            <s:Group maxHeight="200">
+               <alliance:MembersRatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)"/>
+               <alliance:TotalAliancePointsComp bottom="0" id="total" alliance="{alliance}"/>
+               <base:Scroller left="0" right="0" top="{header.height}" bottom="{total.height}" stepMultiplier="10">
+                  <s:Group left="0" right="0">
+                     <s:DataGroup dataProvider="{alliance.players}" horizontalCenter="0"
+                                  itemRenderer="components.alliance.IRMembersRatingsRow">
+                        <s:layout>
+                           <s:VerticalLayout gap="0"/>
+                        </s:layout>
+                     </s:DataGroup>
+                  </s:Group>
+               </base:Scroller>
+            </s:Group>
+            <s:Button label="{getString('label.refresh')}" click="refresh_clickHandler(event)"/>
+         </base:Panel>
+         
+         <!-- Management -->
+         <base:Panel title="{getString('title.section.management')}" width="100%"
+                     visible="{tabManagement.selected &amp;&amp; alliance != null}"
+                     skinClass="components.skins.LargePanelSkin">
+            <base:layout>
+               <s:VerticalLayout horizontalAlign="center" gap="20"/>
+            </base:layout>
+            
+            <s:Group visible="{alliance.ownerId == ML.player.id}">
+               <s:layout>
+                  <s:VerticalLayout horizontalAlign="center" gap="10"/>
+               </s:layout>
+               <s:Label text="{getString('label.renameAlliance')}" fontSize="14"/>
+               <s:Group>
+                  <s:layout>
+                     <s:HorizontalLayout verticalAlign="middle"/>
+                  </s:layout>
+                  <base:BaseTextInput width="80%" id="allyNewName" enter="createAlliance(event)"
+                                      maxChars="{Config.getMaxAllyNameLength()}"/>
+                  <s:Button enabled="{ML.player.creds &lt; Config.getEditAllianceCredits() ||
+                                      allyNewName.text.length >= Config.getMinAllyNameLength()
+                                      &amp;&amp; !allyPending}"
+                            skinClass="components.skins.CreditButtonSkin"
+                            click="renameAlliance(event)" 
+                            label="{ML.player.creds &lt; Config.getEditAllianceCredits() ?
+                                       Localizer.string('Credits', 'label.buy') :
+                                       getString('label.rename')}"/>
+               </s:Group>
+               <s:Label text="{getString('label.renameCost', [Config.getEditAllianceCredits()])}" fontSize="14"/>
+            </s:Group>
+            
+            <s:Group>
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="middle"/>
+               </s:layout>
+               <s:Label text="{getString('label.leaveAlliance')}" fontSize="14"/>
+               <s:Button label="{getString('label.leave')}"
+                         click="leave_clickHandler(event)"/>
+            </s:Group>
+            
+         </base:Panel>
+         
+         <!-- New alliance creation -->
+         <base:Panel title="{getString('title.section.newAlliance')}"
+                     skinClass="components.skins.LargePanelSkin" width="100%"
+                     visible="{allianceTech.upgradePart.level > 0 &amp;&amp;
+                               ML.player.allianceId == 0 &amp;&amp; leftTime == 0}">
+            <base:layout>
+               <s:VerticalLayout gap="5" horizontalAlign="justify"/>
+            </base:layout>
+            <s:Label fontSize="18" text="{getString('label.noAlly')}"/>
+            <s:Label fontSize="18" text="{getString('label.allyExists')}" color="#ff0000" visible="{allianceExists}"/>
+            <s:Group>
+               <s:layout>
+                  <s:HorizontalLayout gap="10" verticalAlign="middle"/>
+               </s:layout>
+               <s:Label text="{getString('label.name')}" fontSize="14"/>
+               <base:BaseTextInput width="100%" id="allyName" enter="createAlliance(event)"
+                                   maxChars="{Config.getMaxAllyNameLength()}"/>
+               <s:Button enabled="{allyName.text.length >= Config.getMinAllyNameLength() &amp;&amp; !allyPending}"
+                         click="createAlliance(event)" label="{getString('label.create')}"/>
+               
+            </s:Group>
+         </base:Panel>
+         
+      </s:Group>
+      
+      <!-- Error message when palyer does not have required technology -->
+      <base:Warning text="{getString('label.noTech')}" width="60%" top="100" horizontalCenter="0"
+                    visible="{allianceTech.upgradePart.level &lt; 1 &amp;&amp; ML.player.allianceId == 0}"/>
+      
+      <!-- Cooldown warning -->
+      <base:Warning text="{getString('label.cooldown', [DateUtil.secondsToHumanString(leftTime / 1000, 2)])}" 
+                    top="100" horizontalCenter="0" width="60%" visible="{leftTime > 0}"/>
+      
+   </s:Group>
+
+   <screens:ScreenCloseButton label="{getString('label.close')}" right="0" bottom="0"
+                              click="NavigationController.getInstance().showPreviousScreen()"/>
 </s:Group>
