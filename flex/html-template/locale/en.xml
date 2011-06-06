@@ -1392,6 +1392,12 @@
     <label.yes value="Yes" />
     <label.no value="No" />
     
+    <title.dalyBonus value="Daily bonus" />
+    <message.dalyBonus>
+      <p>Come back every day and get your daily bonus!</p>
+      <p>Today you've got:</p>
+    </message.dailyBonus>
+    
     <title.boostPlanet value="Boost planet resources/storage" />
     <message.areYouSure value="Are you sure?" />
 

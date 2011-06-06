@@ -346,6 +346,7 @@
    
    <fx:Script>
       <![CDATA[
+         import models.resource.Resource;
          import utils.StringUtil;
          import spark.events.IndexChangeEvent;
          import utils.MathUtil;
@@ -582,53 +583,10 @@
          
          private function refreshNotFitting(e: GlobalEvent = null): void
          {
-            if (quest && quest.rewards && planetSelector)
+            if (quest && planetSelector)
             {
-               missingStorages = [];
-               missingAmounts = [];
-               var tempStorageString: String = '';
-               var planet:MSSObject = planetSelector.selectedItem as MSSObject;
-               if (quest.rewards.metal + planet.metal.currentStock > planet.metal.maxStock)
-               {
-                  missingStorages.push(ResourceType.METAL);
-                  missingAmounts.push(quest.rewards.metal + planet.metal.currentStock - planet.metal.maxStock);
-               }
-               if (quest.rewards.energy + planet.energy.currentStock > planet.energy.maxStock)
-               {
-                  missingStorages.push(ResourceType.ENERGY);
-                  missingAmounts.push(quest.rewards.energy + planet.energy.currentStock - planet.energy.maxStock);
-               }
-               if (quest.rewards.zetium + planet.zetium.currentStock > planet.zetium.maxStock)
-               {
-                  missingStorages.push(ResourceType.ZETIUM);
-                  missingAmounts.push(quest.rewards.zetium + planet.zetium.currentStock - planet.zetium.maxStock);
-               }
-               if (missingStorages.length == 0)
-               {
-                  notFitting = null;
-               }
-               else
-               {
-                  var i: int = 0;
-                  for each (var res: String in missingStorages)
-                  {
-                     if (i > 0)
-                     {
-                        if (i == missingStorages.length - 1)
-                        {
-                           tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
-                        }
-                        else
-                        {
-                           tempStorageString += ', ';
-                        }
-                     }
-                     tempStorageString += MathUtil.round(missingAmounts[i], 2).toString();
-                     i++;
-                     tempStorageString += ' '+Localizer.string('Resources', res);
-                  }
-                  notFitting = tempStorageString;
-               }
+               var planet:MSSObject = MSSObject(planetSelector.selectedItem);
+               notFitting = Resource.getNotFittingReward(planet, quest.rewards);
             }
             else
             {

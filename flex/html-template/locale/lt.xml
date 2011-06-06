@@ -1391,6 +1391,12 @@
     <label.yes value="Taip" />
     <label.no value="Ne" />
     
+    <title.dalyBonus value="Dienos prizas" />
+    <message.dalyBonus>
+      <p>Sugrįžk kiekvieną dieną ir atsiimk savo dienos prizą!</p>
+      <p>Šiandien Tu gavai:</p>
+    </message.dailyBonus>
+    
     <title.boostPlanet value="Padidinti planetos resursus/talpą" />
     <message.areYouSure value="Ar esi tikras?" />
 

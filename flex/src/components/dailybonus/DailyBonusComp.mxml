@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:base="components.base.*"
+         addedToStage="addedToStageHandler(event)"
+         removedFromStage="removedFromStageHandler(event)">
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.gameobjects.planet.IRPlayerPlanet;
+         
+         import globalevents.GlobalEvent;
+         
+         import models.Reward;
+         import models.resource.Resource;
+         import models.resource.ResourceType;
+         import models.solarsystem.MSSObject;
+         
+         import spark.events.IndexChangeEvent;
+         
+         import utils.locale.Localizer;
+         
+         public function set reward(value: Reward): void
+         {
+            bonus = value;
+            refreshNotFitting();
+         }
+         
+         [Bindable]
+         private var bonus: Reward;
+         
+         [Bindable]
+         private var notFitting: String = null;
+         
+         private function refreshNotFitting(e: GlobalEvent = null): void
+         {
+            if (planetSelector)
+            {
+               var planet:MSSObject = MSSObject(planetSelector.selectedItem);
+               notFitting = Resource.getNotFittingReward(planet, bonus);
+            }
+            else
+            {
+               notFitting = null;
+            }
+         }
+         
+         protected function addedToStageHandler(event:Event):void
+         {
+            EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshNotFitting);
+         }
+         
+         
+         protected function removedFromStageHandler(event:Event):void
+         {
+            EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, refreshNotFitting);
+         }
+         
+         
+         protected function planetSelector_changeHandler(event:IndexChangeEvent):void
+         {
+            refreshNotFitting();
+         }
+      ]]>
+   </fx:Script>
+   <s:Label maxWidth="400" text="{Localizer.string('Popups', 'message.dailyBonus')}"/>
+   <base:AdvancedContainer id="grpRewards" maxWidth="400">
+      <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{bonus.metal}"
+                          visible="{bonus.metal != 0}"
+                          toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+      <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{bonus.energy}"
+                          visible="{bonus.energy != 0}"
+                          toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+      <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{bonus.zetium}"
+                          visible="{bonus.zetium != 0}"
+                          toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+      <s:Group width="100%" visible="{bonus.points != 0}">
+         <s:Label width="100" text="{Localizer.string('Quests', 'points')}"/>
+         <s:Label text="{bonus.points}"/>
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
+      <s:Group width="100%" visible="{bonus.scientists != 0}">
+         <s:Label width="100" text="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
+         <s:Label text="{bonus.scientists}"/>
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
+      <s:Group width="100%" visible="{bonus.creds != 0}">
+         <s:Label width="100" text="{StringUtil.firstToUpperCase(
+                  Localizer.string('Credits', 'label.creds'))}"/>
+         <s:Label text="{bonus.creds}"/>
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
+      <s:Group width="100%" visible="{bonus.units.length > 0}">
+         <s:Label text="{Localizer.string('Quests', 'units')}" fontWeight="bold"/>
+         <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" width="100%" 
+                      dataProvider="{new ArrayCollection(bonus.units)}"
+                      height="{85 * unitsLayout.rowCount}">
+            <s:layout>
+               <s:TileLayout id="unitsLayout"/>
+            </s:layout>
+         </s:DataGroup>
+         <s:layout>
+            <s:VerticalLayout/>
+         </s:layout>
+      </s:Group>
+      
+      <s:Group>
+         <s:Label text="{Localizer.string('Quests', 'label.choosePlanet')}" styleName="h3"/>
+         <base:PlanetSelector id="planetSelector" minWidth="180" dataProvider="{ML.player.planets}"
+                              itemRenderer="components.gameobjects.planet.IRPlayerPlanet"
+                              change="planetSelector_changeHandler(event)"/>
+         <s:layout>
+            <s:HorizontalLayout/>
+         </s:layout>
+      </s:Group>
+      
+      <base:Warning text="{Localizer.string('Quests', 'warning.wontFit', [notFitting])}"
+                    visible="{notFitting != null}"/>
+      <base:layout>
+         <s:VerticalLayout paddingTop="6" horizontalAlign="center"/>
+      </base:layout>
+   </base:AdvancedContainer>
+</s:Group>

@@ -18,6 +18,9 @@ package controllers.startup
    import controllers.connection.ConnectionManager;
    import controllers.constructionqueues.ConstructionQueuesCommand;
    import controllers.constructionqueues.actions.*;
+   import controllers.dailybonus.DailyBonusCommand;
+   import controllers.dailybonus.actions.ClaimAction;
+   import controllers.dailybonus.actions.ShowAction;
    import controllers.galaxies.GalaxiesCommand;
    import controllers.galaxies.actions.*;
    import controllers.game.GameCommand;
@@ -202,6 +205,7 @@ package controllers.startup
        */      
       private static function bindCommandsToActions () :void
       {
+         bindDailyBonusCommands();
          bindPlayerCommands();
          bindAlliancesCommands();
          bindGalaxiesCommands();
@@ -234,6 +238,11 @@ package controllers.startup
       {
          bindPair(QuestsCommand.INDEX, new controllers.quests.actions.IndexAction());
          bindPair(QuestsCommand.CLAIM_REWARDS, new controllers.quests.actions.ClaimRewardsAction());
+      }
+      private static function bindDailyBonusCommands() : void
+      {
+         bindPair(DailyBonusCommand.SHOW, new controllers.dailybonus.actions.ShowAction());
+         bindPair(DailyBonusCommand.CLAIM, new controllers.dailybonus.actions.ClaimAction());
       }
       private static function bindRoutesCommands() : void
       {
