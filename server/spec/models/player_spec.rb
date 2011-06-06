@@ -449,7 +449,7 @@ describe Player do
       end
 
       it "should be summed into #points" do
-        player = Factory.create(:player)
+        player = Factory.create(:player, :war_points => 0)
         player.send("#{type}=", 10)
         player.points.should == 10
       end
