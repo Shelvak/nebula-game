@@ -4,7 +4,7 @@ describe Building::HealingCenter do
   describe "#resources_for_healing" do
     it "should return resources" do
       building = Factory.build(:b_healing_center, :level => 1)
-      unit = Factory.build(:u_crow, :level => 1, :hp => 100)
+      unit = Factory.build(:u_crow, :level => 1, :hp_percentage => 0.35)
       percentage = (1 - unit.hp.to_f / unit.hit_points)
       mod = building.cost_modifier
       building.resources_for_healing(unit).should == [
@@ -51,7 +51,7 @@ describe Building::HealingCenter do
     before(:each) do
       @planet = Factory.create(:planet)
       set_resources(@planet, 100000, 100000, 100000)
-      @hp_diff = Unit::Crow.hit_points(1) / 2
+      @hp_diff = Unit::Crow.hit_points / 2
       @unit = Factory.create(:u_crow, :level => 1,
         :hp => @hp_diff, :location => @planet)
       @units = [@unit]
