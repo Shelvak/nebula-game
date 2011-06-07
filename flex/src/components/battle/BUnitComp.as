@@ -86,6 +86,10 @@ package components.battle
             playAnimationImmediately('emotion' + rand.integer(0, emotionCount-1));
       }
       
+      public function get immobile(): Boolean
+      {
+         return BattleConfig.getUnitImmobile(participantModel.type);
+      }
       
       protected function getUnitAnimProps() : Object
       {

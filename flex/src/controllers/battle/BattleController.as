@@ -295,7 +295,10 @@ package controllers.battle
             var movingUnit: BUnitComp = _battleMap.getRandomUnit();
             if ((movingUnit != null) 
                && ((movingUnit.currentAnimation == null) || (movingUnit.currentAnimation == 'still')) 
-               && (movingUnit.moveTween == null) && (movingUnit.getLiving() != 0) && (movingUnit.visible == true))
+               && (movingUnit.moveTween == null) 
+               && (movingUnit.getLiving() != 0) 
+               && (movingUnit.visible == true)
+               && (movingUnit.immobile == false))
             {
                moveUnit(movingUnit);
             }
