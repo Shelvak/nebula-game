@@ -324,21 +324,22 @@
   </Objects>
   
   <Alliances>
+    <title.section.description value="DESCRIPTION"/>
+    <title.section.players value="PLAYERS"/>
+    <title.section.management value="MANAGEMENT"/>
+    <title.section.newAlliance value="ALLIANCE"/>
     <label.noTech>
       <p>To create your alliance you need to research alliances technology.</p>
-      <p />
       <p>If you wish to join an existing alliance you must get an invitation
-      from that alliance..</p>
+      from that alliance.</p>
     </label.noTech>
     <label.noAlly>
       <p>You can create your alliance in this screen.</p>
-      <p />
       <p>If you wish to join an existing alliance you must get an invitation
-      from that alliance..</p>
+      from that alliance.</p>
     </label.noAlly>
-    <label.name value="Alliance name" />
-    <label.description value="Alliance description" />
-    <label.noDescription value="This alliance does not have description" />
+    <label.name value="Alliance name:" />
+    <label.allianceDescription value="Alliance description:"/>
     <label.editDescription value="Edit description" />
     <label.save value="Save" />
     <label.cancel value="Cancel" />
@@ -346,12 +347,13 @@
     <label.cooldown value="You are unable to create alliance for another {0}" />
     <label.create value="Create alliance" />
     <label.allyExists value="Alliance with that name already exists" />
-    <label.players value="Alliance members" />
     <label.kick value="Kick" />
     <label.action value="Action" />
     <label.refresh value="Refresh" />
     <label.leave value="Leave" />
+    <label.leaveAlliance value="Leave alliance:" />
     <label.rename value="Rename" />
+    <label.renameAlliance value="Rename alliance:" />
     <label.renameCost>
       <p>Renaming your alliance will cost you 
       {0 one[one cred] many[? creds]}.</p>
@@ -1092,6 +1094,7 @@
     <label.openSolarSystem value="Enter solar system" />
     <label.openWormhole value="Enter battleground" />
     <label.wormhole value="Battleground"/>
+    <label.pulsar value="Pulsar-{0}"/>
     <label.shield>
       <![CDATA[This solar system is shielded for<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
@@ -1253,7 +1256,7 @@
     <message.combatCooldownInfo 
       value="Upon arrival there will be {0} cooldown before combat will ensue."/>
     <message.speedUpCost 
-      value="The speed up will cost you {0 one[one cred] many[? creds]}."/>
+      value="Speed up cost: {0 one[one cred] many[? creds]}."/>
   </Movement>
 
   <Navigator>

@@ -235,6 +235,7 @@
                      type: e.building.type,
                      constructorId: selectedFacility.id}
                ).dispatch ();
+               waitingForApproval = true;
             }
             else
             {
@@ -253,7 +254,6 @@
             constructionBonus = 0;
             selectedBuilding = null;
             deployInProgress = false;
-            waitingForApproval = true;
             constructable.deselectBuilding();
          }
          

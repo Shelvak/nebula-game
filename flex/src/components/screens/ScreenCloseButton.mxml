@@ -4,9 +4,14 @@
          xmlns:mx="library://ns.adobe.com/flex/mx"
          clipAndEnableScrolling="true"
          mouseEnabled="false"
-         width="{_scroller == null || !_scroller.verticalScrollBar.visible ? 207 : 224}">
+         width="{getWidth(_scroller != null &amp;&amp;
+                          _scroller.verticalScrollBar != null &amp;&amp;
+                          _scroller.verticalScrollBar.visible)}">
+   
    <fx:Script>
       <![CDATA[
+         import mx.events.FlexEvent;
+         
          import spark.components.Scroller;
          
          import utils.assets.AssetNames;
@@ -15,12 +20,42 @@
          
          [Bindable]
          private var _scroller:Scroller;
+         
          /**
           * A scroller the should be monitored for vertical scroller visibility changes.
+          * 
+          * @default null
           */
          public function set scroller(value:Scroller) : void
          {
+            if (_scroller != null)
+            {
+               _scroller.removeEventListener
+                  (FlexEvent.CREATION_COMPLETE, scroller_creationCompleteHandler, false);
+            }
             _scroller = value;
+            if (_scroller != null)
+            {
+               _scroller.addEventListener
+                  (FlexEvent.CREATION_COMPLETE, scroller_creationCompleteHandler, false, 0, true);
+            }
+         }
+         
+         
+         private function scroller_creationCompleteHandler(event:FlexEvent) : void
+         {
+            _scroller.removeEventListener
+               (FlexEvent.CREATION_COMPLETE, scroller_creationCompleteHandler, false);
+            
+            width = getWidth(_scroller != null &&
+                             _scroller.verticalScrollBar != null &&
+                             _scroller.verticalScrollBar.visible);
+         }
+         
+         
+         private function getWidth(scrollBarVisible:Boolean) : Number
+         {
+            return scrollBarVisible ? 224 : 207;
          }
          
          
@@ -37,7 +72,7 @@
       ]]>
    </fx:Script>
    <!-- backgrund -->
-   <s:BitmapImage top="0" bottom="0" left="0"
+   <s:BitmapImage top="0" bottom="0" left="0" right="0" fillMode="clip"
                   source="{this.backgroundImage}"/>
    <!-- button -->
    <s:Button top="25" left="25" id="button" enabled="{this.enabled}"

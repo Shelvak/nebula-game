@@ -150,6 +150,7 @@ package components.map.space
          _lblName.horizontalCenter = 0;
          _lblName.top = _bmpImage.height + 10;
          _imgGroup = new Group();
+         addElement(_imgGroup);
          with (_imgGroup)
          {
             left           = 0;
@@ -158,7 +159,6 @@ package components.map.space
             addElement(_bmpImage);
             addElement(_lblName);
          }
-         addElement(_imgGroup);
          
          hLayout = new HorizontalLayout();
          hLayout.verticalAlign = VerticalAlign.MIDDLE;

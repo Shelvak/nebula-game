@@ -324,34 +324,36 @@
   </Objects>
 
   <Alliances>
+    <title.section.description value="APRAŠYMAS"/>
+    <title.section.players value="ŽAIDĖJAI"/>
+    <title.section.management value="VALDYMAS"/>
+    <title.section.newAlliance value="SĄJUNGA"/>
     <label.noTech>
       <p>Kad galėtum įkurti sąjungą tau reikia išrasti sąjungų technologiją.</p>
-      <p />
       <p>Jeigu nori įstoti į jau egzistuojančią sąjungą, turi iš tos sąjungos 
       gauti pakvietimą.</p>
     </label.noTech>
     <label.noAlly>
       <p>Šiame ekrane gali įkurti savo sąjungą.</p>
-      <p />
       <p>Jeigu nori įstoti į jau egzistuojančią sąjungą, turi iš tos sąjungos 
       gauti pakvietimą.</p>
     </label.noAlly>
-    <label.name value="Sąjungos vardas" />
-    <label.description value="Sąjungos aprašymas" />
-    <label.noDescription value="Ši sąjunga neturi savo aprašymo" />
+    <label.name value="Sąjungos vardas:" />
     <label.editDescription value="Keisti aprašymą" />
+    <label.allianceDescription value="Sąjungos aprašymas:"/>
     <label.save value="Išsaugoti" />
     <label.cancel value="Atšaukti" />
     <label.close value="Uždaryti" />
     <label.cooldown value="Tu galėsi įkurti sąjungą po {0}" />
     <label.create value="Įkurti sąjungą" />
     <label.allyExists value="Sąjunga su tokiu vardu jau yra." />
-    <label.players value="Sąjungos nariai" />
     <label.kick value="Išspirti" />
     <label.action value="Veiksmas" />
     <label.refresh value="Atnaujinti" />
-    <label.leave value="Išeiti" />
+    <label.leave value="Palikti" />
+    <label.leaveAlliance value="Palikti sąjungą:" />
     <label.rename value="Pervadinti" />
+    <label.renameAlliance value="Pervadinti sąjungą:" />
     <label.renameCost>
       <p>Sąjungos pervadinimas tau kainuos 
       {0 one[? kredą] tens[? kredų] many[? kredus]}.</p>
@@ -1089,6 +1091,7 @@
     <label.openSolarSystem value="Įeiti į saulės sistemą" />
     <label.openWormhole value="Įeiti į areną" />
     <label.wormhole value="Arena" />
+    <label.pulsar value="Pulsaras-{0}"/>
     <label.shield>
       <![CDATA[Ši saulės sistema yra apsaugota<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
@@ -1248,10 +1251,8 @@
     <label.learnMore value="Sužinok daugiau"/>
     <message.combatCooldownInfo 
       value="Atvykus į vietą bus {0} pertrauka prieš prasidedant kovai."/>
-    <message.speedUpCost>
-      <p>Laivų pagreitinimas tau kainuos 
-      {0 one[? kredą] tens[? kredų] many[? kredus]}.</p>
-    </message.speedUpCost>
+    <message.speedUpCost
+      value="Pagreitinimo kaina: {0 one[? kredas] tens[? kredų] many[? kredai]}."/>
   </Movement>
 
   <Navigator>

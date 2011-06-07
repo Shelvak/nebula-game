@@ -512,9 +512,10 @@ package components.map.space
          staticObjectsPopup.includeInLayout = false;
          
          var vLayout:VerticalLayout = new VerticalLayout();
-         vLayout.horizontalAlign = HorizontalAlign.LEFT;
+         vLayout.horizontalAlign = HorizontalAlign.JUSTIFY;
          vLayout.gap = 5;
          sectorPopups = new Group();
+         sectorPopups.width = 216;
          with (sectorPopups)
          {
             mouseEnabled = false;
