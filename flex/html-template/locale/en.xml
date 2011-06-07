@@ -339,6 +339,7 @@
       from that alliance.</p>
     </label.noAlly>
     <label.name value="Alliance name:" />
+    <label.allianceDescription value="Alliance description:"/>
     <label.editDescription value="Edit description" />
     <label.save value="Save" />
     <label.cancel value="Cancel" />

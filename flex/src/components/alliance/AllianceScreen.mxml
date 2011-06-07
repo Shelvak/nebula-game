@@ -252,12 +252,12 @@
       <s:Group horizontalCenter="0">
          
          <!-- Description -->
-         <base:Panel title="{getString('title.section.description')}" skinClass="components.skins.LargePanelSkin"
+         <base:Panel title="{alliance.name}" skinClass="components.skins.LargePanelSkin"
                      visible="{tabDescription.selected &amp;&amp; alliance != null}" width="100%">
             <base:layout>
                <s:VerticalLayout/>
             </base:layout>
-            <s:Label paddingBottom="6" text="{alliance.name}" fontSize="18" color="#eec500" fontWeight="bold"/>
+            <s:Label text="{getString('label.allianceDescription')}" fontSize="14"/>
             <s:TextArea id="desc" paddingBottom="6" width="100%" height="150" editable="{editing}"
                         fontSize="12" color="#eec500" fontWeight="bold"
                         maxChars="{Config.getMaxAllyDescriptionLength()}"
@@ -285,7 +285,7 @@
          </base:Panel>
          
          <!-- Players -->
-         <base:Panel title="{getString('title.section.players')}" width="100%"
+         <base:Panel title="{alliance.name}" width="100%"
                      visible="{tabPlayers.selected &amp;&amp; alliance != null}"
                      skinClass="components.skins.LargePanelSkin">
             <base:layout>
@@ -309,23 +309,23 @@
          </base:Panel>
          
          <!-- Management -->
-         <base:Panel title="{getString('title.section.management')}" width="100%"
+         <base:Panel title="{alliance.name}" width="100%"
                      visible="{tabManagement.selected &amp;&amp; alliance != null}"
                      skinClass="components.skins.LargePanelSkin">
             <base:layout>
                <s:VerticalLayout horizontalAlign="center" gap="20"/>
             </base:layout>
             
-            <s:Group visible="{alliance.ownerId == ML.player.id}">
+            <s:Group visible="{alliance.ownerId == ML.player.id}" width="60%">
                <s:layout>
-                  <s:VerticalLayout horizontalAlign="center" gap="10"/>
+                  <s:VerticalLayout horizontalAlign="center" gap="6"/>
                </s:layout>
-               <s:Label text="{getString('label.renameAlliance')}" fontSize="14"/>
-               <s:Group>
+               <s:Label text="{getString('label.renameAlliance')}" fontSize="16"/>
+               <s:Group width="100%">
                   <s:layout>
                      <s:HorizontalLayout verticalAlign="middle"/>
                   </s:layout>
-                  <base:BaseTextInput width="80%" id="allyNewName" enter="createAlliance(event)"
+                  <base:BaseTextInput width="100%" id="allyNewName" enter="createAlliance(event)"
                                       maxChars="{Config.getMaxAllyNameLength()}"/>
                   <s:Button enabled="{ML.player.creds &lt; Config.getEditAllianceCredits() ||
                                       allyNewName.text.length >= Config.getMinAllyNameLength()
@@ -343,7 +343,7 @@
                <s:layout>
                   <s:HorizontalLayout verticalAlign="middle"/>
                </s:layout>
-               <s:Label text="{getString('label.leaveAlliance')}" fontSize="14"/>
+               <s:Label text="{getString('label.leaveAlliance')}" fontSize="16"/>
                <s:Button label="{getString('label.leave')}"
                          click="leave_clickHandler(event)"/>
             </s:Group>

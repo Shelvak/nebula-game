@@ -5,8 +5,9 @@
                     xmlns:base="components.base.*"
                     xmlns:alliance="components.alliance.*"
                     xmlns:screens="components.screens.*"
+                    xmlns:ratings="components.ratings.*"
                     width="100%" height="100%" 
-                    creationComplete="basecontainer1_creationCompleteHandler(event)" xmlns:ratings="components.ratings.*" >
+                    creationComplete="basecontainer1_creationCompleteHandler(event)" >
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
