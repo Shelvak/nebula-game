@@ -1,5 +1,7 @@
 package models.player
 {
+   import controllers.ui.NavigationController;
+   
    import models.BaseModel;
    import models.chat.MChat;
    
@@ -37,12 +39,11 @@ package models.player
       
       
       /**
-       * For now this opens a private channel to this player. Later this will open a profile or something
-       * like that.
+       * Opens up player profile screen.
        */
       public function show() : void
       {
-         MChat.getInstance().openPrivateChannel(id, name);
+         NavigationController.getInstance().showPlayer(id);
       }
    }
 }
