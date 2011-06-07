@@ -139,6 +139,8 @@ assets:
     opts:
       flex:
         pp_opts: "-resize 64x64"
+        quantize_speed: 0
+        save_as: swf:png
     "*":
       ".":
         <%
@@ -160,7 +162,7 @@ assets:
           keys.each do |key|
             key.gsub!("::", "_")
           %>
-        <%= "#{type}#{key}.jpg: Achievement#{type}#{key}.jpg" %>
+        <%= "#{type}#{key}.png: Achievement#{type}#{key}.png" %>
           <% end %>
         <% end %>
 
@@ -766,6 +768,9 @@ assets:
         transfer_down.png:  Load_down.png
         transfer_over.png:  Load_over.png
         transfer_up.png:  Load_up.png
+        daily_bonus_up.png:  Dailybonus_up.png
+        daily_bonus_over.png:  Dailybonus_over.png
+        daily_bonus_blink.png:  Dailybonus_up2.png
 
       "level_parts":
         level_empty.png: Level_00.png
