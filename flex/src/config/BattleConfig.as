@@ -85,6 +85,11 @@ package config
          return guns;
       }
       
+      public static function getUnitImmobile(type: String): Boolean
+      {
+         return getUnitAnimationProps(type).immobile;
+      }
+      
       public static function getBuildingGuns(type:String) : Array
       {
          var gunPoints:Array = getBuildingAnimationProps(type).gunPoints;

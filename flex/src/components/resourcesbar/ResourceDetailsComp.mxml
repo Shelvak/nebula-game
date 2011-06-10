@@ -78,12 +78,12 @@
          <s:Group width="{columnWidth}" left="{columnWidth * 2}" verticalCenter="0">
             <s:Label text="{(_resource.rate &lt; 0?NumberUtil.toShortString(_resource.rate * 3600, Config.getRoundingPrecision()):
                      (_resource.rate == 0?'0':'+'+NumberUtil.toShortString(_resource.rate * 3600,Config.getRoundingPrecision()))) + ' / ' +
-                     Localizer.string('General', 'hours.short')}" width="100%"
+                     Localizer.string('General', 'hour.short')}" width="100%"
                      color="{_resource.rate &lt; 0?0xff0000:(_resource.rate &gt; 0?0x00ff00:0xffffff)}"
                      textAlign="center"/>
             <s:Label text="{(_resource.rate &lt; 0?NumberUtil.toShortString(_resource.rate * 3600*24,Config.getRoundingPrecision()):
                      (_resource.rate == 0?'0':'+'+NumberUtil.toShortString(_resource.rate * 3600*24,Config.getRoundingPrecision()))) + ' / ' +
-                     Localizer.string('General', 'days.short')}" width="100%"
+                     Localizer.string('General', 'day.short')}" width="100%"
                      color="{_resource.rate &lt; 0?0xff0000:(_resource.rate &gt; 0?0x00ff00:0xffffff)}"
                      textAlign="center"/>
             <s:layout>

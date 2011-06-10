@@ -5,6 +5,7 @@
                     xmlns:base="components.base.*"
                     xmlns:alliance="components.alliance.*"
                     xmlns:screens="components.screens.*"
+                    xmlns:ratings="components.ratings.*"
                     width="100%" height="100%" 
                     creationComplete="basecontainer1_creationCompleteHandler(event)" >
    <fx:Script>
@@ -25,34 +26,50 @@
          import mx.collections.SortField;
          import mx.events.FlexEvent;
          
+         import spark.components.TextInput;
          import spark.events.TextOperationEvent;
          
          import utils.assets.AssetNames;
          import utils.locale.Localizer;
          
          
+         private var _searchText:String;
+         private function setSearchText(value:String) : void
+         {
+            if (_searchText != value)
+            {
+               _searchText = value;
+               if (searchHeader != null && searchHeader.txtSearch != null)
+               {
+                  searchHeader.txtSearch.text = value;
+               }
+            }
+         }
+         
+         
          protected function textinput1_changeHandler(event:TextOperationEvent):void
          {
+            setSearchText(TextInput(event.target).text);
             ML.allyRatings.filterFunction = function (item: MRatingPlayer): Boolean
             {
-               return item.name.toLowerCase().indexOf(searchText.text.toLowerCase()) != -1;
+               return item.name.toLowerCase().indexOf(_searchText.toLowerCase()) != -1;
             };
             ML.allyRatings.refresh();
          }
          
          private function filterAlly(e: GRatingsEvent): void
          {
-            searchText.text = e.filterName;
+            setSearchText(e.filterName);
             ML.allyRatings.filterFunction = function (item: MRatingPlayer): Boolean
             {
-               return item.name.toLowerCase().indexOf(searchText.text.toLowerCase()) != -1;
+               return item.name.toLowerCase().indexOf(_searchText.toLowerCase()) != -1;
             };
             ML.allyRatings.refresh();
          }
          
          private function refreshAll(e: GRatingsEvent): void
          {
-            searchText.text = '';
+            setSearchText("");
             header.reset();
          }
          
@@ -100,29 +117,18 @@
          
       ]]>
    </fx:Script>
+   <screens:GradientBackground gradientWidth="{(width - searchHeader.width) / 2}"/>
    <base:AdvancedContainer left="0" right="0" top="0" bottom="0">
-      <s:Group width="600">
-         <s:Group right="0">
-            <s:Label text="{Localizer.string('Ratings', 'label.search')}"/>
-            <base:BaseTextInput id="searchText" width="400" change="textinput1_changeHandler(event)"/>
-            <s:layout>
-               <s:HorizontalLayout gap="3" verticalAlign="middle"/>
-            </s:layout>
-         </s:Group>
-         
-         <s:Group width="600" top="20">
-            <s:BitmapImage source="{IMG.getImage(AssetNames.INFO_SCREEN_IMAGES_FOLDER + 'line')}"/>
-         </s:Group>
-      </s:Group>
       
-      <!--s:Label text="{Localizer.string('Ratings', 'label.pointsToWin', [Config.getPointsToWin()])}"
-      paddingLeft="10" fontWeight="bold" fontSize="16"/-->
+      <ratings:RatingsSearchHeader id="searchHeader"
+                                   searchTextInputChangeHandler="{textinput1_changeHandler}"
+                                   filterOnlineCheckBoxVisible="false"/>
       
       <base:Panel height="100%" horizontalCenter="0" 
                   skinClass="components.skins.LargePanelSkin"
                   title="{Localizer.string('Ratings', 'label.allyRatings')}">
-         <s:Label fontSize="24" text="{Localizer.string('Ratings', 'label.noAlliances')}" horizontalCenter="0"
-                  verticalCenter="0"/>
+         <s:Label fontSize="24" text="{Localizer.string('Ratings', 'label.noAlliances')}"
+                  horizontalCenter="0" verticalCenter="0" visible="{ML.allyRatings.length == 0}"/>
          <alliance:AllianceRatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)" 
                                          visible="{ML.allyRatings.length > 0}" horizontalCenter="0"/>
          <base:Scroller left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10"

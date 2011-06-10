@@ -9,8 +9,7 @@
       <![CDATA[
          import controllers.Messenger;
          
-         import flash.net.navigateToURL;
-         
+         import utils.UrlNavigate;
          import utils.locale.Localizer;
          
          [Bindable]
@@ -23,7 +22,7 @@
          {
             if (link)
             {
-               navigateToURL(new URLRequest(link));
+               UrlNavigate.getInstance().showUrl(link);
             }
          }
          

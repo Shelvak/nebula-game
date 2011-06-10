@@ -139,6 +139,8 @@ assets:
     opts:
       flex:
         pp_opts: "-resize 64x64"
+        quantize_speed: 0
+        save_as: swf:png
     "*":
       ".":
         <%
@@ -160,7 +162,7 @@ assets:
           keys.each do |key|
             key.gsub!("::", "_")
           %>
-        <%= "#{type}#{key}.jpg: Achievement#{type}#{key}.jpg" %>
+        <%= "#{type}#{key}.png: Achievement#{type}#{key}.png" %>
           <% end %>
         <% end %>
 
@@ -569,6 +571,41 @@ assets:
         table_bottom_own.png:         Portal_top_table_bottom.png
         table_bottom_ally.png:        Portal_bottom_table_bottom.png
 
+      "ratings":
+        search_header_left.png:       Ratings_search_left.png
+        search_header_center.png:     Ratings_search_center_repeat.png
+        search_header_right.png:      Ratings_search_right.png
+
+      "alliance":
+        logo.png:                             Alliance_logo.png
+        tab_descr_up_left.png:        Alliance_lb_up_left.png
+        tab_descr_up_center.png:      Alliance_lb_up_center_repeat.png
+        tab_descr_up_right.png:       Alliance_lb_up_right.png
+        tab_descr_over_left.png:      Alliance_lb_over_left.png
+        tab_descr_over_center.png:    Alliance_lb_over_center_repeat.png
+        tab_descr_over_right.png:     Alliance_lb_over_right.png
+        tab_descr_down_left.png:      Alliance_lb_down_left.png
+        tab_descr_down_center.png:    Alliance_lb_down_center_repeat.png
+        tab_descr_down_right.png:     Alliance_lb_down_right.png
+        tab_players_up_left.png:      Alliance_mb_up_left.png
+        tab_players_up_center.png:    Alliance_mb_up_center_repeat.png
+        tab_players_up_right.png:     Alliance_mb_up_right.png
+        tab_players_over_left.png:    Alliance_mb_over_left.png
+        tab_players_over_center.png:  Alliance_mb_over_center_repeat.png
+        tab_players_over_right.png:   Alliance_mb_over_right.png
+        tab_players_down_left.png:    Alliance_mb_down_left.png
+        tab_players_down_center.png:  Alliance_mb_down_center_repeat.png
+        tab_players_down_right.png:   Alliance_mb_down_right.png
+        tab_manage_up_left.png:       Alliance_rb_up_left.png
+        tab_manage_up_center.png:     Alliance_rb_up_center_repeat.png
+        tab_manage_up_right.png:      Alliance_rb_up_right.png
+        tab_manage_over_left.png:     Alliance_rb_over_left.png
+        tab_manage_over_center.png:   Alliance_rb_over_center_repeat.png
+        tab_manage_over_right.png:    Alliance_rb_over_right.png
+        tab_manage_down_left.png:     Alliance_rb_down_left.png
+        tab_manage_down_center.png:   Alliance_rb_down_center_repeat.png
+        tab_manage_down_right.png:    Alliance_rb_down_right.png
+        
       "start_menu":
         top_center.png:               Startmenu_top_center.png
         top_left.png:                 Startmenu_top_left.png
@@ -731,6 +768,9 @@ assets:
         transfer_down.png:  Load_down.png
         transfer_over.png:  Load_over.png
         transfer_up.png:  Load_up.png
+        daily_bonus_up.png:  Dailybonus_up.png
+        daily_bonus_over.png:  Dailybonus_over.png
+        daily_bonus_blink.png:  Dailybonus_up2.png
 
       "level_parts":
         level_empty.png: Level_00.png

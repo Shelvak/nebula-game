@@ -191,6 +191,9 @@ package utils.assets
       public static const DEFENSIVE_PORTAL_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "defensive_portal_screen/";
       
       
+      public static const RATINGS_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "ratings/";
+      
+      
       /**
        * Path to the folder where notification images reside.
        */
@@ -200,6 +203,9 @@ package utils.assets
        * Path to the folder where resource images reside.
        */
       public static const UNITS_SCREEN_IMAGE_FOLDER: String = UI_IMAGES_FOLDER + "units_screen/";
+      
+      
+      public static var ALLIANCE_SCREEN_IMAGE_FOLDER:String = UI_IMAGES_FOLDER + "alliance/";
       
       
       /**

@@ -11,9 +11,10 @@
       <![CDATA[
          import components.skins.GreenButtonSkin;
          
-         import utils.locale.Localizer;
+         import utils.UrlNavigate;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
          
          
          [Bindable]
@@ -51,13 +52,13 @@
 
          private function btnForum_clickHandler(event:MouseEvent):void
          {
-            navigateToURL(new URLRequest("http://nebula44.com/client-crashed/"), "_blank");
+            UrlNavigate.getInstance().showUrl('client-crashed/');
          }
          
          
          private function btnDebugWiki_clickHandler(event:MouseEvent):void
          {
-            navigateToURL(new URLRequest("http://nebula44.com/flash-player-debug/"), "_blank");
+            UrlNavigate.getInstance().showUrl('lash-player-debug/');
          }
       ]]>
    </fx:Script>

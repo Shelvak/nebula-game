@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:base="components.base.*"
+         width="620">
+   <fx:Script>
+      <![CDATA[
+         import config.Config;
+         
+         import spark.events.TextOperationEvent;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         
+         
+         private function getImage(name:String) : BitmapData
+         {
+            return ImagePreloader.getInstance()
+               .getImage(AssetNames.RATINGS_IMAGES_FOLDER + "search_header_" + name);
+         }
+         
+         
+         private function getString(property:String, parameters:Array = null) : String
+         {
+            return Localizer.string("Ratings", property, parameters);
+         }
+         
+         
+         /**
+          * Optional handler for search text input <code>TextOperationEvent.CHANGE</code> event.
+          */
+         public var searchTextInputChangeHandler:Function;
+         
+         
+         /**
+          * Optional handler for filter online check box <code>Event.CHANGE</code> event.
+          */
+         public var filterOnlineCheckBoxChangeHandler:Function;
+         
+         
+         [Bindable]
+         /**
+          * Should the check box for filtering online players be visible.
+          * 
+          * @default true
+          */ 
+         public var filterOnlineCheckBoxVisible:Boolean = true;
+         
+         
+         private function txtSearch_changeHandler(event:TextOperationEvent) : void
+         {
+            if (searchTextInputChangeHandler != null)
+            {
+               searchTextInputChangeHandler(event);
+            }
+         }
+         
+         
+         private function chkFilterOnline_changeHandler(event:Event) : void
+         {
+            if (filterOnlineCheckBoxChangeHandler != null)
+            {
+               filterOnlineCheckBoxChangeHandler(event);
+            }
+         }
+      ]]>
+   </fx:Script>
+   <fx:Style>
+      .pointsToWin
+      {
+         color:#EFC700;
+         fontWeight:bold;
+         fontSize:16;
+      }
+   </fx:Style>
+   <s:Group left="0" right="0">
+      <s:layout>
+         <s:HorizontalLayout gap="0"/>
+      </s:layout>
+      <s:BitmapImage source="{getImage('left')}"/>
+      <s:BitmapImage source="{getImage('center')}" width="100%"/>
+      <s:BitmapImage source="{getImage('right')}"/>
+   </s:Group>
+   <s:Group left="18" right="18" top="18">
+      <s:layout>
+         <s:HorizontalLayout gap="6" verticalAlign="middle"/>
+      </s:layout>
+      <s:Label text="{getString('label.search')}"/>
+      <base:BaseTextInput id="txtSearch" width="100%" change="txtSearch_changeHandler(event)"/>
+   </s:Group>
+   <base:AdvancedContainer horizontalCenter="0" bottom="14" height="44">
+      <base:layout>
+         <s:VerticalLayout horizontalAlign="center" verticalAlign="middle" gap="5"/>
+      </base:layout>
+      <s:Label styleName="pointsToWin" text="{getString('label.pointsToWin', [Config.getPointsToWin()])}"/>
+      <s:CheckBox id="chkFilterOnline" label="{getString('label.filterOnline')}"
+                  visible="{filterOnlineCheckBoxVisible}" change="chkFilterOnline_changeHandler(event)"/>
+   </base:AdvancedContainer>
+</s:Group>

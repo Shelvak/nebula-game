@@ -17,7 +17,7 @@ package utils.components
     * 
     * @eventType utils.components.ToggleButtonsGroup.SELECTION_CHANGE
     */
-   [Event(name="selectionChange", type="utils.components.ToggleButtonsGroup")]
+   [Event(name="selectionChange", type="utils.components.events.ToggleButtonsGroupEvent")]
    
    
    public class ToggleButtonsGroup extends EventDispatcher
@@ -82,22 +82,16 @@ package utils.components
       {
          if (!_buttons.contains(button))
          {
-            throw new ArgumentError("Provided toggle button with name '" + button.name +
-                                    "' + has not been registered");
+            throw new ArgumentError(
+               "Provided toggle button with name '" + button.name + "' + has not been registered"
+            );
          }
-         if (_selectedButton != button)
-         {
-            var oldSelection:ToggleButton = _selectedButton;
-            var newSelection:ToggleButton = button;
-            deselectSelected();
-            _selectedButton = button;
-            dispatchSelectionChangeEvent(newSelection, oldSelection);
-         }
-         else
-         {
-            _fDispatchSelectionChangeInDeselect = true;
-            deselectSelected();
-         }
+         var oldSelection:ToggleButton = _selectedButton;
+         var newSelection:ToggleButton = button;
+         deselectSelected();
+         _selectedButton = button;
+         _selectedButton.selected = true;
+         dispatchSelectionChangeEvent(newSelection, oldSelection);
       }
       
       
@@ -107,12 +101,15 @@ package utils.components
       
       
       private function dispatchSelectionChangeEvent(selectedButton:ToggleButton,
-                                                    deselectedButton:ToggleButton)
+                                                    deselectedButton:ToggleButton) : void
       {
-         dispatchEvent(new ToggleButtonsGroupEvent(
-            ToggleButtonsGroupEvent.SELECTION_CHANGE,
-            selectedButton, deselectedButton
-         ));
+         if (hasEventListener(ToggleButtonsGroupEvent.SELECTION_CHANGE))
+         {
+            dispatchEvent(new ToggleButtonsGroupEvent(
+               ToggleButtonsGroupEvent.SELECTION_CHANGE,
+               selectedButton, deselectedButton
+            ));
+         }
       }
       
       

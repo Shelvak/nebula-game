@@ -22,6 +22,7 @@
       ]]>
    </fx:Script>
    <s:Label text="{Localizer.string('BattleMap','status'+hpModel.playerStatus)}" width="70" textAlign="right"
+            toolTip="{hpModel.playerStatus==2?Localizer.string('BattleMap', 'status2.tooltip'):''}"
             verticalCenter="0"/>
    <base:AdvancedContainer left="73" right="0">
       <s:Group visible="{hpModel.spaceMax != 0}" width="100%">

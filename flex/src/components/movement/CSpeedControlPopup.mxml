@@ -3,7 +3,8 @@
                       xmlns:s="library://ns.adobe.com/flex/spark" 
                       xmlns:mx="library://ns.adobe.com/flex/mx"
                       xmlns:space="components.map.space.*"
-                      transparentWhenNotUnderMouse="false">
+                      transparentWhenNotUnderMouse="false"
+                      skinClass="components.map.space.skins.CStaticSpaceObjectsPopupSkin">
    
    <fx:Declarations>
       <mx:NumberFormatter id="fmtSliderDataTip" precision="1"/>
@@ -31,25 +32,20 @@
       ]]>
    </fx:Script>
    
-   <s:Rect left="0" right="0" top="0" bottom="0">
-      <s:fill>
-         <s:SolidColor color="0x000000"/>
-      </s:fill>
-   </s:Rect>
-   
-   <s:Group left="5" right="5" top="5" bottom="5">
+   <!--
+   <s:Group left="5" right="8" top="5" bottom="10">
+   -->
       
-      <s:layout>
-         <s:VerticalLayout horizontalAlign="center"/>
-      </s:layout>
+      <space:layout>
+         <s:VerticalLayout paddingLeft="2" paddingRight="2" paddingTop="5" paddingBottom="5"
+                           horizontalAlign="center"/>
+      </space:layout>
       
-      <s:Label id="lblArrivesIn"
-               text="{model.text_arrivesInLabel}"/>
-      <s:Label id="lblArrivesAt"
-               text="{model.text_arrivesAtLabel(model.arrivalDate.occuresAt)}"/>
+      <s:Label id="lblArrivesIn" text="{model.text_arrivesInLabel}"/>
+      <s:Label id="lblArrivesAt" text="{model.text_arrivesAtLabel(model.arrivalDate.occuresAt)}"/>
       <s:Group width="100%">
          <s:layout>
-            <s:HorizontalLayout gap="5"/>
+            <s:HorizontalLayout gap="5" paddingTop="12"/>
          </s:layout>
          <s:Label id="lblSpeedMin"
                   text="{sldChangeSpeed_dataTipFormatFunction(model.speedModifierMin * 100)}"/>
@@ -63,24 +59,31 @@
          <s:Label id="lblSpeedMax"
                   text="{sldChangeSpeed_dataTipFormatFunction(model.speedModifierMax * 100)}"/>
       </s:Group>
-      <s:Label id="lblSpeedUpCost"
-               text="{model.text_speedUpCostLabel}"
-               visible="{model.showSpeedUpCost}"
-               includeInLayout="{model.showSpeedUpCost}"/>
-      <s:Group>
+      <s:Group width="100%">
          <s:layout>
-            <s:HorizontalLayout/>
+            <s:VerticalLayout paddingTop="12" gap="10"/>
          </s:layout>
-         <s:Label id="lblCooldownInfo"
-                  text="{model.text_cooldownInfoLabel}"/>
-         <s:Button id="btnCooldownInfo"
-                   label="{model.label_cooldownInfoButton}"
-                   skinClass="components.skins.LinkButtonSkin"
-                   click="model.openPreBattleCooldownInfo()"/>
+         <s:Group width="100%" visible="{model.showSpeedUpCost}" includeInLayout="{model.showSpeedUpCost}">
+            <s:Label id="lblSpeedUpCost" left="0" right="0" lineBreak="toFit" textAlign="center"
+                     text="{model.text_speedUpCostLabel}"/>
+         </s:Group>
+         <s:Group width="100%">
+            <s:layout>
+               <s:VerticalLayout horizontalAlign="center"/>
+            </s:layout>
+            <s:Group width="100%">
+               <s:Label id="lblCooldownInfo" textAlign="center" lineBreak="toFit" 
+                        left="0" right="0" text="{model.text_cooldownInfoLabel}"/>
+            </s:Group>
+            <s:Button id="btnCooldownInfo" 
+                      label="{model.label_cooldownInfoButton}"
+                      skinClass="components.skins.LinkButtonSkin"
+                      click="model.openPreBattleCooldownInfo()"/>
+         </s:Group>
       </s:Group>
-      <s:Group>
+      <s:Group width="100%">
          <s:layout>
-            <s:HorizontalLayout/>
+            <s:VerticalLayout paddingTop="5" horizontalAlign="justify"/>
          </s:layout>
          <s:Button id="btnConfirm"
                    visible="{model.playerHasEnoughCreds}"
@@ -100,6 +103,8 @@
                    click="model.cancel()"/>
       </s:Group>
       
+   <!--
    </s:Group>
+   -->
    
 </space:CSpaceMapPopup>

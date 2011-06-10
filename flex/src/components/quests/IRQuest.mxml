@@ -159,17 +159,16 @@
                <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'quest_advisor')}"/>
                
                
-               <base:AdvancedContainer width="100%">
+               <s:Group width="100%">
                   
-                  <base:layout>
+                  <s:layout>
                      <s:VerticalLayout horizontalAlign="justify" gap="5"/>
-                  </base:layout>
-                  <s:Group width="100%">
-                     <s:Label text="{quest.about}" color="#D6CA8D" fontSize="15" left="0" right="0"
-                        paddingBottom="20" />
-                  </s:Group>
+                  </s:layout>
                   
-                  <s:Group width="100%">
+                  <s:Label text="{quest.about}" color="#D6CA8D" fontSize="15"
+                           paddingBottom="20" />
+                  
+                  <s:Group>
                      <s:Label text="{Localizer.string('Quests', 'label.objectives')}" fontWeight="bold"
                               fontSize="15" width="90"/>
                      <s:Group id="grpObjectives" width="100%">
@@ -197,7 +196,7 @@
                   </s:Group>
                   
                   
-                  <s:Group width="100%">
+                  <s:Group>
                      <s:Label text="{Localizer.string('Quests', 'label.rewards')}" fontWeight="bold" paddingTop="6"
                               fontSize="14" width="90"/>
                      <base:AdvancedContainer id="grpRewards" width="100%">
@@ -211,21 +210,24 @@
                                             visible="{quest.rewards.zetium != 0}"
                                             toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
                         <s:Group width="100%" visible="{quest.rewards.points != 0}">
-                           <s:Label width="100" text="{Localizer.string('Quests', 'points')}"/>
+                           <s:Label width="{int(Localizer.string('Quests', 'rewardsWidth'))}" 
+                                    text="{Localizer.string('Quests', 'points')}"/>
                            <s:Label text="{quest.rewards.points}"/>
                            <s:layout>
                               <s:HorizontalLayout/>
                            </s:layout>
                         </s:Group>
                         <s:Group width="100%" visible="{quest.rewards.scientists != 0}">
-                           <s:Label width="100" text="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
+                           <s:Label width="{int(Localizer.string('Quests', 'rewardsWidth'))}" 
+                                    text="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
                            <s:Label text="{quest.rewards.scientists}"/>
                            <s:layout>
                               <s:HorizontalLayout/>
                            </s:layout>
                         </s:Group>
                         <s:Group width="100%" visible="{quest.rewards.creds != 0}">
-                           <s:Label width="100" text="{StringUtil.firstToUpperCase(
+                           <s:Label width="{int(Localizer.string('Quests', 'rewardsWidth'))}" 
+                                    text="{StringUtil.firstToUpperCase(
                                     Localizer.string('Credits', 'label.creds'))}"/>
                            <s:Label text="{quest.rewards.creds}"/>
                            <s:layout>
@@ -253,7 +255,7 @@
                         <s:HorizontalLayout paddingTop="6"/>
                      </s:layout>
                   </s:Group>
-               </base:AdvancedContainer>
+               </s:Group>
                
                <s:layout>
                   <s:HorizontalLayout gap="10" paddingTop="12" paddingLeft="22" paddingRight="18" 
@@ -346,6 +348,8 @@
    
    <fx:Script>
       <![CDATA[
+         import utils.UrlNavigate;
+         import models.resource.Resource;
          import utils.StringUtil;
          import spark.events.IndexChangeEvent;
          import utils.MathUtil;
@@ -353,7 +357,6 @@
          import controllers.Messenger;
          import globalevents.GQuestEvent;
          import com.developmentarc.core.utils.EventBroker;
-         import flash.net.navigateToURL;
          import components.skins.YellowButtonSkin;
          import components.skins.GreenButtonSkin;
          import utils.assets.AssetNames;
@@ -549,8 +552,7 @@
          
          protected function tutorial_clickHandler(event:MouseEvent):void
          {
-            navigateToURL(new URLRequest('http://wiki.nebula44.com/index.php/' + quest.helpUrlId + 
-               " (Tutorial)"));
+            UrlNavigate.getInstance().showWikiUrl(quest.helpUrlId + " (Tutorial)");
          }
          
          protected function claim_clickHandler(event:MouseEvent):void
@@ -582,53 +584,10 @@
          
          private function refreshNotFitting(e: GlobalEvent = null): void
          {
-            if (quest && quest.rewards && planetSelector)
+            if (quest && planetSelector)
             {
-               missingStorages = [];
-               missingAmounts = [];
-               var tempStorageString: String = '';
-               var planet:MSSObject = planetSelector.selectedItem as MSSObject;
-               if (quest.rewards.metal + planet.metal.currentStock > planet.metal.maxStock)
-               {
-                  missingStorages.push(ResourceType.METAL);
-                  missingAmounts.push(quest.rewards.metal + planet.metal.currentStock - planet.metal.maxStock);
-               }
-               if (quest.rewards.energy + planet.energy.currentStock > planet.energy.maxStock)
-               {
-                  missingStorages.push(ResourceType.ENERGY);
-                  missingAmounts.push(quest.rewards.energy + planet.energy.currentStock - planet.energy.maxStock);
-               }
-               if (quest.rewards.zetium + planet.zetium.currentStock > planet.zetium.maxStock)
-               {
-                  missingStorages.push(ResourceType.ZETIUM);
-                  missingAmounts.push(quest.rewards.zetium + planet.zetium.currentStock - planet.zetium.maxStock);
-               }
-               if (missingStorages.length == 0)
-               {
-                  notFitting = null;
-               }
-               else
-               {
-                  var i: int = 0;
-                  for each (var res: String in missingStorages)
-                  {
-                     if (i > 0)
-                     {
-                        if (i == missingStorages.length - 1)
-                        {
-                           tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
-                        }
-                        else
-                        {
-                           tempStorageString += ', ';
-                        }
-                     }
-                     tempStorageString += MathUtil.round(missingAmounts[i], 2).toString();
-                     i++;
-                     tempStorageString += ' '+Localizer.string('Resources', res);
-                  }
-                  notFitting = tempStorageString;
-               }
+               var planet:MSSObject = MSSObject(planetSelector.selectedItem);
+               notFitting = Resource.getNotFittingReward(planet, quest.rewards);
             }
             else
             {

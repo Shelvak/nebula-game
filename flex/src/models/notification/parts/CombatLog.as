@@ -77,7 +77,19 @@ package models.notification.parts
       
       public function get message() : String
       {
-         return Localizer.string('Notifications', 'message.combatLog', [location.shortDescription]);
+         return Localizer.string('Notifications', 'message.combatLog', 
+            [location.isGalaxy
+               ?'galaxy'
+               :(location.isBattleground
+                  ?'battleground'
+                  :(location.isSolarSystem
+                     ?'ss'
+                     :'planet')), 
+               location.isSSObject
+               ?location.planetName
+               :(location.isSolarSystem
+                  ?location.solarSystemName
+                  :'')]);
       }
    }
 }

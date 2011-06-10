@@ -4,6 +4,7 @@ package models.resource
    
    import models.BaseModel;
    import models.ModelLocator;
+   import models.Reward;
    import models.building.Building;
    import models.parts.Upgradable;
    import models.parts.UpgradableType;
@@ -12,6 +13,7 @@ package models.resource
    import models.solarsystem.MSSObject;
    import models.unit.Unit;
    
+   import utils.MathUtil;
    import utils.StringUtil;
    import utils.locale.Localizer;
    
@@ -65,6 +67,70 @@ package models.resource
             return tempStorageString;
          }
          return '';
+      }
+      
+      /**
+       * 
+       * @param planet
+       * @param reward
+       * @return String - message to display and null if planet or reward 
+       * not given or reward fits
+       * 
+       */      
+      public static function getNotFittingReward(planet: MSSObject, reward: Reward): String
+      {
+         
+         if (reward && planet)
+         {
+            var missingStorages: Array = [];
+            var missingAmounts: Array = [];
+            var tempStorageString: String = '';
+            if (reward.metal + planet.metal.currentStock > planet.metal.maxStock)
+            {
+               missingStorages.push(ResourceType.METAL);
+               missingAmounts.push(reward.metal + planet.metal.currentStock - planet.metal.maxStock);
+            }
+            if (reward.energy + planet.energy.currentStock > planet.energy.maxStock)
+            {
+               missingStorages.push(ResourceType.ENERGY);
+               missingAmounts.push(reward.energy + planet.energy.currentStock - planet.energy.maxStock);
+            }
+            if (reward.zetium + planet.zetium.currentStock > planet.zetium.maxStock)
+            {
+               missingStorages.push(ResourceType.ZETIUM);
+               missingAmounts.push(reward.zetium + planet.zetium.currentStock - planet.zetium.maxStock);
+            }
+            if (missingStorages.length == 0)
+            {
+               return null;
+            }
+            else
+            {
+               var i: int = 0;
+               for each (var res: String in missingStorages)
+               {
+                  if (i > 0)
+                  {
+                     if (i == missingStorages.length - 1)
+                     {
+                        tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
+                     }
+                     else
+                     {
+                        tempStorageString += ', ';
+                     }
+                  }
+                  tempStorageString += MathUtil.round(missingAmounts[i], 2).toString();
+                  i++;
+                  tempStorageString += ' '+Localizer.string('Resources', 'wontFit.resource', [res]);
+               }
+               return tempStorageString;
+            }
+         }
+         else
+         {
+            return null;
+         }
       }
       
       public static function getTimeToReachResources(currentMetal: Resource, currentEnergy: Resource, currentZetium: Resource,

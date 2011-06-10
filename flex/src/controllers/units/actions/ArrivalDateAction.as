@@ -2,6 +2,7 @@ package controllers.units.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.GlobalFlags;
    import controllers.units.OrdersController;
    
    import models.location.LocationMinimal;
@@ -35,6 +36,12 @@ package controllers.units.actions
       }
       
       
+      private function get GF() : GlobalFlags
+      {
+         return GlobalFlags.getInstance();
+      }
+      
+      
       public function ArrivalDateAction()
       {
          super();
@@ -43,6 +50,7 @@ package controllers.units.actions
       
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
+         GF.lockApplication = true;
          var params:ArrivalDateActionParams = ArrivalDateActionParams(cmd.parameters);
          var locSource:LocationMinimal = params.sourceLocation;
          var locTarget:LocationMinimal = params.targetLocation;
@@ -64,12 +72,14 @@ package controllers.units.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
+         GF.lockApplication = false;
          ORDERS_CTRL.showSpeedUpPopup(DateUtil.parseServerDTF(cmd.parameters.arrivalDate).time);
       }
       
       
       public override function cancel(rmo:ClientRMO) : void
       {
+         GF.lockApplication = false;
          ORDERS_CTRL.cancelOrder();
          super.cancel(rmo);
       }

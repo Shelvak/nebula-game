@@ -2,8 +2,10 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:screens="components.screens.*"
+         xmlns:base="components.base.*"
          creationComplete="group1_creationCompleteHandler(event)"
-         width="100%" height="100%" xmlns:base="components.base.*" xmlns:screens="components.screens.*">
+         width="100%" height="100%">
    <fx:Script>
       <![CDATA[
          import components.skins.InfoButtonSkin;
@@ -19,6 +21,7 @@
          import mx.events.FlexEvent;
          
          import utils.ModelUtil;
+         import utils.UrlNavigate;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
@@ -183,7 +186,8 @@
          fontSize:16;
       }
    </fx:Style>
-   <s:Group top="10" horizontalCenter="0">
+   <screens:GradientBackground gradientWidth="{(width - grpContent.width) / 2}"/>
+   <s:Group top="10" horizontalCenter="0" id="grpContent">
       <s:layout>
          <s:VerticalLayout gap="20"/>
       </s:layout>
@@ -199,7 +203,8 @@
          <s:Label left="40" top="15" styleName="panelTitle"
                   text="{Localizer.string('Units', 'title.defensivePool')}"/>
          <s:Button top="13" left="295" skinClass="components.skins.InfoButtonSkin"
-                   click="navigateToURL(new URLRequest('http://nebula44.com/info/defensive-portal'))"/>
+                   click="UrlNavigate.getInstance().showUrl(
+                   'info/defensive-portal')"/>
          <s:DataGroup dataProvider="{_allUnits}" left="40" right="40" top="50" bottom="75" 
                       itemRenderer="components.unit.IRUnitBuildingEntrySmall">
             <s:layout>

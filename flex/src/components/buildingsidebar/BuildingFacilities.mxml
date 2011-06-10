@@ -84,14 +84,16 @@
          }
          
          public function selectedChange():void{
+            var selectedBuilding:Building = null;
             if (buildFacilities.selectedItem != null)
             {
-               dispatchEvent(new SelectFacilityEvent((buildFacilities.selectedItem as FacilitiesElement).facility));
+               selectedBuilding = FacilitiesElement(buildFacilities.selectedItem).facility;
             }
-            else
+            else if (oldList != null && oldList.length > 0)
             {
-               dispatchEvent(new SelectFacilityEvent(null));
+               selectedBuilding = Building(oldList.getItemAt(0));
             }
+            dispatchEvent(new SelectFacilityEvent(selectedBuilding));
          }
          
          //TODO need to create Scroller instead of using default List scroller
