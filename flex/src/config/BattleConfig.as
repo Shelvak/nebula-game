@@ -25,6 +25,8 @@ package config
          props.box = Config.getAssetValue(key + "box");
          props.actions = Config.getAssetValue(key + "actions");
          props.gunPoints = Config.getAssetValue(key + "gunPoints");
+         props.immobile = Config.getAssetValue(key + "immobile");
+         props["dead.passable"] = Config.getAssetValue(key + "dead.passable");
          return props;
       }
       public static function getBuildingAnimationProps(type:String) : Object
