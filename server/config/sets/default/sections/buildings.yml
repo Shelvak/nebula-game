@@ -274,7 +274,7 @@ ground_factory.constructor.items:
   - unit/azure
 #  - unit/mantis
 #  - unit/tremor
-#  - unit/zeus
+  - unit/zeus
   - unit/mdh
 #  - unit/terraformer
 
