@@ -422,7 +422,7 @@ zeus.armor: heavy
 zeus.armor_mod: (level - 1) * 10
 zeus.evasiveness: 0
 zeus.kind: :ground
-zeus.guns: [{"dpt": "80 + 80 * 0.5 * (level-1)", "period": 1, "damage": "explosiveg", "reach": "space"}]
+zeus.guns: [{"dpt": "80 + 80 * 0.5 * (level-1)", "period": 1, "damage": "explosive", "reach": "space"}]
 
 ##### mule config #####
 
