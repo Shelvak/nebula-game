@@ -76,7 +76,7 @@ package models.solarsystem
             }
             // check if both solar systems are wormholes
             if (ML.latestGalaxy.hasWormholes && (isWormhole || isGlobalBattleground) &&
-                ML.latestSolarSystem.isGlobalBattleground)
+               ML.latestSolarSystem.isGlobalBattleground)
             {
                return true;
             }
@@ -99,7 +99,7 @@ package models.solarsystem
          {
             return Localizer.string("Galaxy", "label.pulsar", [id]);
          }
-         return isWormhole ?
+         return (isWormhole || isGlobalBattleground) ?
             Localizer.string("Galaxy", "label.wormhole") :
             NameResolver.resolveSolarSystem(id);
       }
@@ -349,6 +349,11 @@ package models.solarsystem
          return id == ML.latestGalaxy.battlegroundId;
       }
       
+      public function get isBattleground(): Boolean
+      {
+         return kind == SSKind.BATTLEGROUND;
+      }
+      
       
       /**
        * Indicates if this solar system is a mini-battleground system. Those are placed all over the galaxy
@@ -356,7 +361,7 @@ package models.solarsystem
        */
       public function get isMiniBattleground() : Boolean
       {
-         return kind == SSKind.BATTLEGROUND;
+         return kind == SSKind.BATTLEGROUND && !isGlobalBattleground;
       }
       
       
@@ -373,13 +378,13 @@ package models.solarsystem
       [Bindable(event="willNotChange")]
       public function get imageData() : BitmapData
       {
-         if (isWormhole)
-         {
-            return IMG.getImage(AssetNames.WORMHOLE_IMAGE_NAME);
-         }
-         else if (isMiniBattleground)
+         if (isMiniBattleground)
          {
             return IMG.getImage(AssetNames.MINI_BATTLEGROUND_IMAGE_NAME);
+         }
+         else if (isWormhole || isGlobalBattleground)
+         {
+            return IMG.getImage(AssetNames.WORMHOLE_IMAGE_NAME);
          }
          else
          {
@@ -451,7 +456,7 @@ package models.solarsystem
       {
          var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(location);
          return locWrapper.type == LocationType.SOLAR_SYSTEM && locWrapper.id == id &&
-                locWrapper.position >= 0 && locWrapper.position <= orbitsTotal;
+            locWrapper.position >= 0 && locWrapper.position <= orbitsTotal;
       }
    }
 }
