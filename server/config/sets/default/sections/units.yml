@@ -403,6 +403,7 @@ azure.guns: [{"dpt": "60 + 60 * 0.6429 * (level-1)", "period": 1, "damage": "nor
 # [General properties]
 zeus.hp: 100
 zeus.max_level: 3
+zeus.population: 10
 # How much volume does this unit take? Not transportable if not defined.
 zeus.volume: 10
 
