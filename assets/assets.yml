@@ -507,6 +507,7 @@ assets:
         light.png: LightArmorIcon.png
         normal.png: NormalArmorIcon.png
         heavy.png: HeavyArmorIcon.png
+        none.png:  32x32_none_armor.png
         fortified.png: FortifiedArmorIcon.png
         stance0.png: StanceNeutralIcon.png
         stance1.png: StanceDefensiveIcon.png
