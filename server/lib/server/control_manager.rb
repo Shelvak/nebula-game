@@ -74,6 +74,8 @@ class ControlManager
   # - 12h (Fixnum): no. of players logged in 12 hours.
   # - 24h (Fixnum): no. of players logged in 24 hours.
   # - 48h (Fixnum): no. of players logged in 48 hours.
+  # - 1w (Fixnum): no. of players logged in 1 week.
+  # - 2w (Fixnum): no. of players logged in 2 weeks.
   # - total (Fixnum): total no. of players
   #
   ACTION_STATISTICS = 'statistics'
@@ -246,6 +248,8 @@ class ControlManager
       :"12h" => get_player_count_in(12.hours),
       :"24h" => get_player_count_in(24.hours),
       :"48h" => get_player_count_in(48.hours),
+      :"1w" => get_player_count_in(1.week),
+      :"2w" => get_player_count_in(2.weeks),
       :total => Player.count,
     }
 

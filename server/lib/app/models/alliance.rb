@@ -109,7 +109,7 @@ class Alliance < ActiveRecord::Base
     if options[:mode] == :minimal
       {'name' => name, 'id' => id}
     else
-      super(options)
+      attributes.except('galaxy_id')
     end
   end
 

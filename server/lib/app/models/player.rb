@@ -257,15 +257,23 @@ class Player < ActiveRecord::Base
 
   # Update player in dispatcher if it is connected so alliance ids and other
   # things would be intact.
+  # 
+  # Also give vicotry points to alliance if player earned them.
   #
   # This is why DataMapper is great - it keeps one object in memory for one
   # row in DB.
-  after_update do
+  after_save do
     dispatcher = Dispatcher.instance
     dispatcher.update_player(self) if dispatcher.connected?(id)
     hub = Chat::Pool.instance.hub_for(self)
     hub.on_alliance_change(self) if alliance_id_changed?
     hub.on_language_change(self) if language_changed?
+    
+    if victory_points_changed? && ! alliance.nil?
+      old, new = victory_points_change
+      alliance.victory_points += new - old
+      alliance.save!
+    end
   end
 
   # Increase or decrease scientist count.

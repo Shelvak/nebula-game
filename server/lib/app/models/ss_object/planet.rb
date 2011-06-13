@@ -313,7 +313,7 @@ class SsObject::Planet < SsObject
     end
 
     solar_system = self.solar_system
-    if solar_system.id != Galaxy.battleground_id(solar_system.galaxy_id)
+    unless solar_system.battleground?
       old_player.planets_count -= 1 if old_player
       new_player.planets_count += 1 if new_player
     end
