@@ -2,6 +2,7 @@ package controllers.dailybonus.actions
 {
    
    import components.dailybonus.DailyBonusComp;
+   import components.dailybonus.DailyBonusEvent;
    import components.popups.ActionConfirmationPopup;
    
    import controllers.CommunicationAction;
@@ -36,6 +37,12 @@ package controllers.dailybonus.actions
          var bonus: Reward = new Reward(cmd.parameters.bonus);
          var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
          var cont: DailyBonusComp = new DailyBonusComp();
+         cont.addEventListener(DailyBonusEvent.CLOSE_PANEL, 
+            function(e: DailyBonusEvent):void
+            {
+               ML.player.dailyBonus = bonus;
+               popUp.close();
+            });
          cont.reward = bonus;
          popUp.title = Localizer.string('Popups', 'title.dailyBonus');
          popUp.addElement(cont);

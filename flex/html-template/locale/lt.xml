@@ -1399,8 +1399,8 @@
     <title.dailyBonus value="Dienos prizas" />
     <message.dailyBonus>
       <p>Sugrįžk kiekvieną dieną ir atsiimk savo dienos prizą!</p>
-      <p>Šiandien Tu gavai:</p>
     </message.dailyBonus>
+    <label.todayYouGot value="Šiandien Tu gavai:" />
     
     <title.boostPlanet value="Padidinti planetos resursus/talpą" />
     <message.areYouSure value="Ar esi tikras?" />

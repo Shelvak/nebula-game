@@ -21,9 +21,14 @@
          
          import mx.collections.ArrayCollection;
          
+         import org.osmf.media.IMediaGateway;
+         
+         import spark.components.Button;
          import spark.events.IndexChangeEvent;
          
          import utils.StringUtil;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
          
          public function set reward(value: Reward): void
@@ -67,70 +72,92 @@
          {
             refreshNotFitting();
          }
+
+         protected function datagroup1_clickHandler(event:MouseEvent):void
+         {
+            if (event.target is Button)
+            {
+               dispatchCloseEvent();
+            }
+         }
+         
+         private function dispatchCloseEvent(): void
+         {
+            dispatchEvent(new DailyBonusEvent(DailyBonusEvent.CLOSE_PANEL));
+         }
+
       ]]>
    </fx:Script>
-   <base:AdvancedContainer id="grpRewards" maxWidth="400">
-      <s:Label maxWidth="400" text="{Localizer.string('Popups', 'message.dailyBonus')}"/>
-      <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{bonus.metal}"
-                          visible="{bonus.metal != 0}"
-                          toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
-      <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{bonus.energy}"
-                          visible="{bonus.energy != 0}"
-                          toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
-      <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{bonus.zetium}"
-                          visible="{bonus.zetium != 0}"
-                          toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
-      <s:Group width="100%" visible="{bonus.points != 0}">
-         <s:Label width="100" text="{Localizer.string('Quests', 'points')}"/>
-         <s:Label text="{bonus.points}"/>
-         <s:layout>
-            <s:HorizontalLayout/>
-         </s:layout>
-      </s:Group>
-      <s:Group width="100%" visible="{bonus.scientists != 0}">
-         <s:Label width="100" text="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
-         <s:Label text="{bonus.scientists}"/>
-         <s:layout>
-            <s:HorizontalLayout/>
-         </s:layout>
-      </s:Group>
-      <s:Group width="100%" visible="{bonus.creds != 0}">
-         <s:Label width="100" text="{StringUtil.firstToUpperCase(
-                  Localizer.string('Credits', 'label.creds'))}"/>
-         <s:Label text="{bonus.creds}"/>
-         <s:layout>
-            <s:HorizontalLayout/>
-         </s:layout>
-      </s:Group>
-      <s:Group width="100%" visible="{bonus.units.length > 0}">
-         <s:Label text="{Localizer.string('Quests', 'units')}" fontWeight="bold"/>
-         <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" width="100%" 
-                      dataProvider="{new ArrayCollection(bonus.units)}"
-                      height="{85 * unitsLayout.rowCount}">
+   <s:Group maxWidth="400">
+      <s:Label maxWidth="400" text="{Localizer.string('Popups', 'message.dailyBonus')}"
+               id="topLbl" horizontalCenter="0"/>
+      <s:BitmapImage top="{topLbl.height + 10}" id="contentBackground" 
+                     source="{ImagePreloader.getInstance().getImage(
+                     AssetNames.UI_IMAGES_FOLDER + 'daily_bonus_panel')}"/>
+      <s:Label text="{Localizer.string('Popups', 'label.todayYouGot')}" paddingLeft="60"
+               top="{topLbl.height + 15}"/>
+      <base:AdvancedContainer width="{contentBackground.width}" 
+                              top="{topLbl.height + 40}">
+         <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{bonus.metal}"
+                             visible="{bonus.metal != 0}"
+                             toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+         <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{bonus.energy}"
+                             visible="{bonus.energy != 0}"
+                             toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+         <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{bonus.zetium}"
+                             visible="{bonus.zetium != 0}"
+                             toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+         <s:Group width="100%" visible="{bonus.points != 0}">
+            <s:Label width="100" text="{Localizer.string('Quests', 'points')}"/>
+            <s:Label text="{bonus.points}"/>
             <s:layout>
-               <s:TileLayout id="unitsLayout"/>
+               <s:HorizontalLayout horizontalAlign="center"/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%" visible="{bonus.scientists != 0}">
+            <s:Label width="100" text="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
+            <s:Label text="{bonus.scientists}"/>
+            <s:layout>
+               <s:HorizontalLayout horizontalAlign="center"/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%" visible="{bonus.creds != 0}">
+            <s:Label width="100" text="{StringUtil.firstToUpperCase(
+                     Localizer.string('Credits', 'label.creds'))}"/>
+            <s:Label text="{bonus.creds}"/>
+            <s:layout>
+               <s:HorizontalLayout horizontalAlign="center"/>
+            </s:layout>
+         </s:Group>
+         <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" 
+                      dataProvider="{new ArrayCollection(bonus.units)}"
+                      height="85" visible="{bonus.units.length > 0}" 
+                      click="datagroup1_clickHandler(event)">
+            <s:layout>
+               <s:HorizontalLayout id="unitsLayout" horizontalAlign="center"/>
             </s:layout>
          </s:DataGroup>
-         <s:layout>
-            <s:VerticalLayout/>
-         </s:layout>
-      </s:Group>
-      
-      <s:Group>
-         <s:Label text="{Localizer.string('Quests', 'label.choosePlanet')}" styleName="h3"/>
-         <base:PlanetSelector id="planetSelector" minWidth="180" 
-                              dataProvider="{ModelLocator.getInstance().player.planets}"
-                              itemRenderer="components.gameobjects.planet.IRPlayerPlanet"
-                              change="planetSelector_changeHandler(event)"/>
-         <s:layout>
-            <s:HorizontalLayout/>
-         </s:layout>
-      </s:Group>
-      
-      <base:Warning text="{Localizer.string('Quests', 'warning.wontFit', [notFitting])}"
-                    visible="{notFitting != null}"/>
-      <base:layout>
-         <s:VerticalLayout paddingTop="6" horizontalAlign="center"/>
-      </base:layout>
-   </base:AdvancedContainer>
+         <base:layout>
+            <s:VerticalLayout paddingTop="6" horizontalAlign="center"/>
+         </base:layout>
+      </base:AdvancedContainer>
+      <base:AdvancedContainer top="{topLbl.height + contentBackground.height + 30}" 
+                              horizontalCenter="0">
+         <base:Warning text="{Localizer.string('Quests', 'warning.wontFit', [notFitting])}"
+                       visible="{notFitting != null}"/>
+         <s:Group>
+            <s:Label text="{Localizer.string('Quests', 'label.choosePlanet')}" styleName="h3"/>
+            <base:PlanetSelector id="planetSelector" minWidth="180" 
+                                 dataProvider="{ModelLocator.getInstance().player.planets}"
+                                 itemRenderer="components.gameobjects.planet.IRPlayerPlanet"
+                                 change="planetSelector_changeHandler(event)"/>
+            <s:layout>
+               <s:HorizontalLayout horizontalAlign="center"/>
+            </s:layout>
+         </s:Group>
+         <base:layout>
+            <s:VerticalLayout horizontalAlign="center"/>
+         </base:layout>
+      </base:AdvancedContainer>
+   </s:Group>
 </s:Group>
