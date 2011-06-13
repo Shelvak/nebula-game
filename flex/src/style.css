@@ -116,14 +116,6 @@ s|DropDownList {
    alternating-item-colors: #101010, #101010;
 }
 
-/* LOADING SCREEN */
-scr|LoadingScreen mx|ProgressBar {
-   track-height:12;
-}
-scr|LoadingScreen #lblFileName {
-   color:#bbbbbb;
-}
-
 /* IRPlayerPlanet */
 
 planet|IRPlayerPlanet s|Label.h3 {

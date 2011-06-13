@@ -1186,8 +1186,16 @@
   </InfoScreen>
 
   <LoadingScreen>
+    <label.tip value="TIP:"/>
     <label.pleaseWait value="Preloading images. Please stand by." />
+    <label.progress value="Loading {0}%"/>
   </LoadingScreen>
+  
+  <Tips>
+    <tip.0>Tip 0</tip.0>
+    <tip.1>Tip 1</tip.1>
+    <tip.2>Tip 2</tip.2>
+  </Tips>
 
   <Location>
     <label.open value="Open" />

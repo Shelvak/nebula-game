@@ -4,13 +4,6 @@
              xmlns:base="components.base.*"
              alpha.disabled="0.5">
    
-   <fx:Metadata>
-      [HostComponent("SpaceGame")]
-   </fx:Metadata> 
-   <fx:Script>
-      import utils.assets.AssetNames;
-   </fx:Script>
-   
    <base:states>
       <s:State name="normal" />
       <s:State name="disabled" />
@@ -23,7 +16,7 @@
    </s:Rect>
    
    <s:BitmapImage top="0" bottom="0" left="0" right="0" fillMode="repeat"
-                  source="{hostComponent.backgroundImage}"/>
+                  source="@Embed(source='assets/images/main_background.png')"/>
    
    <!--- @copy spark.components.SkinnableContainer#contentGroup -->
    <s:Group id="contentGroup" left="0" right="0" top="0" bottom="0" minWidth="0" minHeight="0"/>
