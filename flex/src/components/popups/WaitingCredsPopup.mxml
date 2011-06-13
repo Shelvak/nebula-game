@@ -18,6 +18,7 @@
          
          import models.player.events.PlayerEvent;
          
+         import utils.UrlNavigate;
          import utils.locale.Localizer; 
          
          public static function showPopup(creds: int, receivedHandler: Function = null,
@@ -28,7 +29,7 @@
             popup.cancelButtonClickHandler = cancelHandler;
             popup.credsReceivedHandler = receivedHandler;
             popup.show();
-            navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+            UrlNavigate.getInstance().showBuyCreds();
          }
          
          /**

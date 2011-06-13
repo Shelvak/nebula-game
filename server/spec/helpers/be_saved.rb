@@ -3,10 +3,11 @@ Spec::Matchers.define :be_saved do
     @memory_attributes = actual.attributes
     @db_attributes = actual.class.find(actual.id).attributes
     
+    matches = true
     @db_attributes.each do |key, value|
-      return false unless equals(value, @memory_attributes[key])
+      matches = false unless equals(value, @memory_attributes[key])
     end
-    true
+    matches
   end
   failure_message_for_should do |actual|
     msg = "#{actual} should been saved but it did not. " +
@@ -30,6 +31,8 @@ Spec::Matchers.define :be_saved do
   def equals(val1, val2)
     if val1.is_a?(Time) && val2.is_a?(Time)
       (val1 - val2).abs.should <= SPEC_TIME_PRECISION
+    elsif val1.is_a?(Float) && val2.is_a?(Float)
+      (val1 - val2).abs.should <= SPEC_FLOAT_PRECISION
     else
       val1 == val2
     end

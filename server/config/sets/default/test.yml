@@ -28,7 +28,7 @@ buildings.test_building.width: 2
 buildings.test_building.height: 2
 buildings.test_building.max_level: 20
 buildings.test_building.upgrade_time: 20 * 60 * level
-buildings.test_building.hp: 1000 + 1000 * (level - 1)
+buildings.test_building.hp: 1000
 buildings.test_building.metal.cost: 100 + 100 * (level - 1)
 buildings.test_building.energy.cost: 200 + 200 * (level - 1)
 buildings.test_building.zetium.cost: 300 + 300 * (level - 1)
@@ -41,7 +41,7 @@ buildings.<%= base %>.width: 1
 buildings.<%= base %>.height: 1
 buildings.<%= base %>.max_level: 20
 buildings.<%= base %>.upgrade_time: 20 * 60 * level
-buildings.<%= base %>.hp: 1000 + 2000 * (level - 1)
+buildings.<%= base %>.hp: 1000
 <% end %>
 buildings.population_manager_part_test.population: 45 * level
 buildings.has_scientists_trait_mock.scientists: 10 * level
@@ -56,7 +56,7 @@ buildings.<%= base %>.width: 1
 buildings.<%= base %>.height: 1
 buildings.<%= base %>.max_level: 20
 buildings.<%= base %>.upgrade_time: 20 * 60 * level
-buildings.<%= base %>.hp: 1000 + 2000 * (level - 1)
+buildings.<%= base %>.hp: 1000
 buildings.<%= base %>.energy.use: <%= usage %>
 <% end %>
 
@@ -87,7 +87,7 @@ buildings.<%= base %>_trait_mock.width: 2
 buildings.<%= base %>_trait_mock.height: 2
 buildings.<%= base %>_trait_mock.max_level: 20
 buildings.<%= base %>_trait_mock.construction_time: 20 * 60 * level
-buildings.<%= base %>_trait_mock.hp: 1000 + 2000 * (level - 1)
+buildings.<%= base %>_trait_mock.hp: 1000
 <% end %>
 
 buildings.radar_trait_mock.radar.strength: 2 + level * 3
@@ -109,6 +109,7 @@ technologies.<%= name %>.zetium.cost: 100 * level
 technologies.<%= name %>.upgrade_time: <%= 10.hours %> * level
 technologies.<%= name %>.max_level: 4
 technologies.<%= name %>.scientists.min: <%= scientists %> * level
+technologies.<%= name %>.war_points: 10
 <% end %>
 
 technologies.needs_technology_trait_mock.requirement.test_technology.level: 2
@@ -141,7 +142,7 @@ units.test_unit.guns:
     reach: :ground
 
 units.deployable_test.deploys_to: Vulcan
-units.deployable_test.hp: 300 * level
+units.deployable_test.hp: 300
 units.deployable_test.population: 10
 units.deployable_test.max_level: 3
 units.deployable_test.xp_needed: 1000 * level
@@ -161,7 +162,7 @@ units.deployable_test.guns:
 
 units.with_storage.storage: 25
 units.with_storage.unload_per_tick: 5 * level
-units.with_storage.hp: 300 * level
+units.with_storage.hp: 300
 units.with_storage.max_level: 3
 units.with_storage.xp_needed: 1000 * level
 units.with_storage.upgrade_time: 100 * level
@@ -175,7 +176,7 @@ units.with_storage.kind: :ground
 units.with_storage.guns: []
 
 units.loadable_test.volume: 10
-units.loadable_test.hp: 300 * level
+units.loadable_test.hp: 300
 units.loadable_test.population: 10
 units.loadable_test.max_level: 3
 units.loadable_test.xp_needed: 1000 * level

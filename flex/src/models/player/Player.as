@@ -4,6 +4,7 @@ package models.player
    
    import globalevents.GlobalEvent;
    
+   import models.Reward;
    import models.alliance.MAlliance;
    import models.player.events.PlayerEvent;
    import models.solarsystem.MSSObject;
@@ -78,6 +79,8 @@ package models.player
        * @default null
        */
       public var loggedIn:Boolean = false;
+      
+      public var dailyBonus: Reward = null;
       
       
       [SkipProperty]

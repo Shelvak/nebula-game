@@ -29,6 +29,7 @@ MAIN_TITLE_PROPS = [
   [/construction mod$/, ".mod.construction"],
   [/scientists min$/, ".scientists.min"],
   [/scientists$/, ".scientists"],
+  [/war points$/, ".war_points"],
   [/population$/, ".population"],
   [/teleported volume$/, ".teleported_volume"],
   [/time decrease$/, ".mod.movement_time_decrease"],
@@ -56,7 +57,7 @@ def underscore(string)
   string.downcase.gsub(' ', '_')
 end
 
-def sf(a, b, b1, c, c1, c2, d, d1, mult)
+def sf(a, b, b1, c, c1, c2, d, d1, level_mult, mult)
   # b * (level + b1)
   linear = (b == 1 ? "" : "#{b} * ") +
     (b1 == 0 ? "level" : "(level + #{b1})")
@@ -78,6 +79,7 @@ def sf(a, b, b1, c, c1, c2, d, d1, mult)
   return 0.0 if params.size == 0
 
   formula = mult == 1 ? params : "(#{params}) * #{mult}"
+  formula = level_mult == "level" ? "(#{formula}) * level" : formula
   if formula.match(/[a-z]/i)
     formula
   else
@@ -103,6 +105,7 @@ def read_main_definition(sections, row, sheet)
   d = read_value(sheet, row, 8, 0).to_f
   d1 = read_value(sheet, row, 9, 0).to_f
   max_lvl = read_value(sheet, row, 10, 0).to_i
+  level_mult = read_value(sheet, row, 11, 0)
   mult = read_value(sheet, row, 12, 1).to_f
 
   prefix = txt_title[0].chr
@@ -132,7 +135,7 @@ def read_main_definition(sections, row, sheet)
   end
 
   sections[section] ||= {}
-  sections[section][config_name] = sf(a, b, b1, c, c1, c2, d, d1, mult)
+  sections[section][config_name] = sf(a, b, b1, c, c1, c2, d, d1, level_mult, mult)
   sections[section][max_lvl_prop] ||= max_lvl
 
   puts (

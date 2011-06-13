@@ -21,7 +21,7 @@ class Unit < ActiveRecord::Base
   TRANSPORTATION_ATTRIBUTES = %w{stored metal energy zetium}
 
   def as_json(options=nil)
-    additional = {:location => location.as_json}
+    additional = {:location => location.as_json, :hp => hp}
 
     if options
       if options[:perspective]
@@ -39,7 +39,7 @@ class Unit < ActiveRecord::Base
     attributes.except(
       *(
         %w{location_id location_type location_x
-        location_y hp_remainder pause_remainder xp} +
+        location_y hp_remainder pause_remainder xp hp_percentage} +
         TRANSPORTATION_ATTRIBUTES
       )
     ).symbolize_keys.merge(additional).as_json
@@ -53,8 +53,10 @@ class Unit < ActiveRecord::Base
   end
 
   def to_s
-    "<#{self.class.to_s} id=#{id} hp=#{hp}/#{hp_max} xp=#{xp} level=#{level
-      } player_id=#{player_id}>"
+    "<%s id=%d hp=%d/%d (%3.2f%%) xp=%d level=%d player_id=%s>" % [
+      self.class.to_s, id, hp, hit_points, hp_percentage * 100, xp, level, 
+      player_id.to_s
+    ]
   end
 
   # Returns floating point percentage of how much unit HP is gone.
@@ -227,6 +229,17 @@ class Unit < ActiveRecord::Base
   end
 
   class << self
+    def on_callback(id, event)
+      case event 
+      when CallbackManager::EVENT_DESTROY
+        unit = find(id)
+        unit.destroy
+        EventBroker.fire(unit, EventBroker::DESTROYED)
+      else
+        super(id, event)
+      end
+    end
+    
     def update_combat_attributes(player_id, updates)
       transaction do
         updates.each do |unit_id, attributes|
@@ -429,7 +442,7 @@ class Unit < ActiveRecord::Base
       description.each do |type, count|
         klass = "Unit::#{type.camelcase}".constantize
         count.times do
-          unit = klass.new(:hp => klass.hit_points(1), :level => 1,
+          unit = klass.new(:level => 1,
             :player => player, :location => location,
             :galaxy_id => player.galaxy_id)
           points.add_unit(unit)

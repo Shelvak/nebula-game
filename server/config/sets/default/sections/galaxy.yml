@@ -39,3 +39,17 @@ mini_battlegrounds.positions:
   - [1, 2]
   - [6, 5]
   - [7, 0]
+  
+convoy.time: <%= 1.day %> / speed
+# Speed modifier for convoy ships.
+convoy.speed_modifier: 2
+# - [count_from, count_to, type, flank]
+#
+# count numbers are inclusive.
+convoy.units:
+  - [1, 5, Dirac, 0]
+  - [2, 5, Dirac, 1]
+  - [2, 4, Thor, 0]
+  - [1, 6, Thor, 1]
+  - [0, 4, Demosis, 0]
+  - [0, 1, Demosis, 1]

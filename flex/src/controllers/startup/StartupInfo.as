@@ -34,6 +34,9 @@ package controllers.startup
       public var server:String = "localhost";
       
       [Optional]
+      public var webHost:String;
+      
+      [Optional]
       public var logId:String = "";
       
       [Optional]

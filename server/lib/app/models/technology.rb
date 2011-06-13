@@ -29,6 +29,10 @@ class Technology < ActiveRecord::Base
     raise GameLogicError.new("Cannot reduce resources from planet " +
       "that player doesn't own!") \
       unless planet.player_id == player_id
+    war_points = war_points_required
+    raise GameLogicError.new("Player does not have enough war points! #{
+      war_points} required, player has #{player.war_points}") \
+      if player.war_points < war_points
     raise GameLogicError.new("Cannot upgrade technology in planet which " +
       "does not have any research centers!"
     ) unless Building::ResearchCenter.where(
@@ -95,6 +99,16 @@ class Technology < ActiveRecord::Base
     super(*args) * (
       speed_up ? CONFIG['technologies.speed_up.resources.mod'] : 1
     )
+  end
+  
+  # War points required to upgrade to next level.
+  def war_points_required
+    self.class.war_points_required(self.level + 1)
+  end
+  
+  # War points required to upgrade to _level_.
+  def self.war_points_required(level)
+    evalproperty('war_points', nil, 'level' => level).round
   end
 
   def scientists_min(level=nil)

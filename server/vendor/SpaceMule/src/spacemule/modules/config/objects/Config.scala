@@ -163,6 +163,7 @@ object Config {
     positions("galaxy.resource_systems.positions")
   lazy val wormholes = positions("galaxy.wormholes.positions")
   lazy val miniBattlegrounds = positions("galaxy.mini_battlegrounds.positions")
+  def convoyTime = int("galaxy.convoy.time")
 
   // Combat attributes
 

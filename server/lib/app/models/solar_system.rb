@@ -36,7 +36,7 @@ class SolarSystem < ActiveRecord::Base
     }
   }
 
-  def self.battleground(galaxy_id)
+  def self.galaxy_battleground(galaxy_id)
     where(:galaxy_id => galaxy_id, :x => nil, :y => nil).first
   end
 
@@ -44,7 +44,9 @@ class SolarSystem < ActiveRecord::Base
   def main_battleground?; x.nil? && y.nil?; end
   
   def battleground?; kind == KIND_BATTLEGROUND; end
+  scope :battleground, :conditions => {:kind => KIND_BATTLEGROUND}
   def wormhole?; kind == KIND_WORMHOLE; end
+  scope :wormhole, :conditions => {:kind => KIND_WORMHOLE}
 
   # Return +SolarSystemPoint+s where NPC units are standing.
   def npc_unit_locations
@@ -156,8 +158,7 @@ class SolarSystem < ActiveRecord::Base
     when CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
       check_player_activity(id)
     else
-      raise ArgumentError.new("Unknown event #{event} for Solar System #{
-        id}!")
+      raise CallbackManager::UnknownEvent.new(self, id, event)
     end
   end
 

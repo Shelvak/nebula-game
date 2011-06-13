@@ -42,6 +42,7 @@ package utils.locale
          if (_content[name] === undefined)
          {
             var prop:XML = _contentXML.child(name)[0];
+            if (prop == null) return null;
             var value:String = "";
             var refAttrs:XMLList = prop.attribute("ref");
             var valueAttrs:XMLList = prop.attribute("value");

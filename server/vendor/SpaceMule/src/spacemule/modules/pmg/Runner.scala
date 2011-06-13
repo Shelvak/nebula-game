@@ -9,6 +9,7 @@ import spacemule.modules.pmg.objects.solar_systems.Battleground
 import spacemule.modules.pmg.persistence.Manager
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.persistence.TableIds
+import spacemule.modules.pmg.persistence.objects.CallbackRow
 import spacemule.modules.pmg.persistence.objects.GalaxyRow
 import spacemule.persistence.DB
 
@@ -20,6 +21,7 @@ object Runner extends BenchmarkableMock {
       val createdAt = DB.date(new Date())
       TableIds.initialize
       val galaxyRow = new GalaxyRow(ruleset, callbackUrl, createdAt)
+      CallbackRow.initConvoySpawn
 
       val battleground = benchmark("create battleground") { 
         () =>
@@ -31,6 +33,7 @@ object Runner extends BenchmarkableMock {
       benchmark("saving") { () => 
         Manager.save { () =>
           Manager.galaxies += galaxyRow.values
+          Manager.callbacks += CallbackRow(galaxyRow, ruleset).values
           Manager.readBattleground(
             galaxyRow.id,
             new Galaxy(galaxyRow.id, ruleset),

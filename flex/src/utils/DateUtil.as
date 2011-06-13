@@ -84,15 +84,15 @@ package utils
          }
             
          var ret:Array;
-         ret = helper(seconds, 60 * 60 * 24, 'days', timeString);
-         ret = helper(ret[0], 60 * 60, 'hours', ret[1]);
-         ret = helper(ret[0], 60, 'minutes', ret[1]);
-         ret = helper(ret[0], 1, 'seconds', ret[1]);
+         ret = helper(seconds, 60 * 60 * 24, 'day', timeString);
+         ret = helper(ret[0], 60 * 60, 'hour', ret[1]);
+         ret = helper(ret[0], 60, 'minute', ret[1]);
+         ret = helper(ret[0], 1, 'second', ret[1]);
          
          timeString = (ret[1] as String);
          if (timeString == "")
          {
-            timeString = '0' + Localizer.string('General','seconds.short') + ' ';
+            timeString = '0' + Localizer.string('General','second.short') + ' ';
          }
          if (parts == 0)
          {

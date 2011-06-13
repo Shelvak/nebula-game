@@ -1,5 +1,12 @@
 require 'rubygems'
-require 'spork'
+begin
+  require 'spork'
+rescue LoadError
+  class Spork
+    def self.prefork; yield; end
+    def self.each_run; yield; end
+  end
+end
 
 Spork.prefork do
   # Loading more in this block will cause your tests to run faster. However, 
@@ -16,6 +23,7 @@ Spork.prefork do
 
     DEFAULT_SPEC_CLIENT_ID = -1
     SPEC_TIME_PRECISION = 10
+    SPEC_FLOAT_PRECISION = 0.0001
 
     require 'spec'
     require 'pp'

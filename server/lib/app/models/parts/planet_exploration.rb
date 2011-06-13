@@ -5,14 +5,6 @@ module Parts::PlanetExploration
   end
 
   module ClassMethods
-    # Callback #finish_exploration if it is complete.
-    def on_callback(id, event)
-      if event == CallbackManager::EVENT_EXPLORATION_COMPLETE
-        find(id).finish_exploration!
-      else
-        super
-      end
-    end
   end
 
   module InstanceMethods
@@ -52,7 +44,8 @@ module Parts::PlanetExploration
         CallbackManager.register(self,
           CallbackManager::EVENT_EXPLORATION_COMPLETE,
           ends_at)
-        EventBroker.fire(self, EventBroker::CHANGED)
+        EventBroker.fire(self, EventBroker::CHANGED, 
+          EventBroker::REASON_OWNER_PROP_CHANGE)
       end
 
       true

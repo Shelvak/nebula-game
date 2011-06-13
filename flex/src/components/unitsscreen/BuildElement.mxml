@@ -27,8 +27,9 @@
          import spark.effects.Fade;
          import spark.effects.animation.RepeatBehavior;
          
-         import utils.locale.Localizer;
+         import utils.UrlNavigate;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          
          private var fade: Fade = new Fade();
          
@@ -115,7 +116,7 @@
                }
                else
                {
-                  navigateToURL(new URLRequest('http://nebula44.com/buy-creds'));
+                  UrlNavigate.getInstance().showBuyCreds();
                }
             }
             speedPopUp.addElement(accelerator);

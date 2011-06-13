@@ -1,6 +1,24 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Unit do
+  describe ".on_callback" do
+    describe "destroy" do
+      it "should destroy unit" do
+        unit = Factory.create(:unit)
+        Unit.stub!(:find).with(unit.id).and_return(unit)
+        unit.should_receive(:destroy)
+        Unit.on_callback(unit.id, CallbackManager::EVENT_DESTROY)
+      end
+      
+      it "should fire destroy on unit" do
+        unit = Factory.create(:unit)
+        should_fire_event(unit, EventBroker::DESTROYED) do
+          Unit.on_callback(unit.id, CallbackManager::EVENT_DESTROY)
+        end
+      end
+    end
+  end
+  
   describe ".dismiss_units" do
     before(:each) do
       @player = Factory.create(:player)
@@ -12,9 +30,9 @@ describe Unit do
       )
       @units = [
         Factory.create(:u_gnat, :level => 1, :location => @planet,
-          :hp => Unit::Gnat.hit_points(1) / 2, :player => @player),
+          :hp => Unit::Gnat.hit_points / 2, :player => @player),
         Factory.create(:u_trooper, :level => 1, :location => @planet,
-          :hp => Unit::Trooper.hit_points(1), :player => @player),
+          :player => @player),
       ]
     end
 

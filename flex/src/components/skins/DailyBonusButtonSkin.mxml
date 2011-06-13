@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:base="components.base.*"
+               minWidth="16" minHeight="16"
+               creationComplete="group1_creationCompleteHandler(event)">
+   
+   <fx:Metadata>
+      [HostComponent("spark.components.Button")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      import components.skins.DailyBonusButtonSkin;
+      
+      import mx.events.FlexEvent;
+      
+      import spark.effects.Fade;
+      import spark.effects.animation.RepeatBehavior;
+      
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      
+      private var fadeEfect: Fade = new Fade(overLabel);
+      
+      protected function group1_creationCompleteHandler(event:FlexEvent):void
+      {
+         fadeEfect.alphaFrom = 1;
+         fadeEfect.alphaTo = 0;
+         fadeEfect.repeatBehavior = RepeatBehavior.REVERSE;
+         fadeEfect.duration = 1000;
+         fadeEfect.repeatCount = 0;
+         fadeEfect.play([overLabel]);
+      }
+      
+   </fx:Script>
+   
+   <!-- states -->
+   <base:states>
+      <s:State name="up" />
+      <s:State name="over" />
+      <s:State name="down" />
+      <s:State name="disabled" />
+   </base:states>
+   
+   <!-- layer 1: fill -->
+   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'daily_bonus_up')}"
+                  source.over="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'daily_bonus_over')}"/>
+   <s:BitmapImage id="overLabel" visible="false" visible.up="true"
+                  source="{ImagePreloader.getInstance().getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'daily_bonus_blink')}"/>
+   
+</base:BaseSkin>

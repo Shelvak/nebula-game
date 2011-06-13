@@ -21,6 +21,7 @@ package models.technology
    
    import utils.DateUtil;
    import utils.Objects;
+   import utils.StringUtil;
    import utils.locale.Localizer;
    
    
@@ -67,6 +68,13 @@ package models.technology
          EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, dispatchValidChangeEvent);
       }
       
+      public static const WAR_POINTS: String = 'warPoints';
+      
+      public static function getWarPoints(type: String, level: int): int
+      {
+         return Math.round(StringUtil.evalFormula(
+            Config.getTechnologyWarPoints(type), {'level': level}));
+      }
       
       /**
        * <p>After calling this method you won't be able to access any upgradable properties.</p>
@@ -137,29 +145,27 @@ package models.technology
       
       [Bindable(event="selectedTechnologyChanged")]
       public function get requirementsText():String{
-         var tempText: String = new String();
-         var groupText: String = new String();
+         var tempText: String = '';
+         var groupText: String = '';
          var requirements: Object = Config.getTechnologyRequirements(type);
          for (var requirement: String in requirements)
          {
-            if (tempText == "")
-               tempText += Localizer.string ('Technologies', 'required')+':'+ "\n";
             if (!requirements[requirement].invert)        
             {
-               tempText = tempText + getTechnologyTitle(requirement)+ " " + 
+               tempText += '   \u2022 ' + getTechnologyTitle(requirement)+ " " + 
                   Localizer.string('Technologies', 'level', 
                      [requirements[requirement].level.toString()]) + "\n";
             }
             else
             {
                if (groupText == "")
-                  groupText += Localizer.string('Technologies', 'isGroup') + "\n";
-               groupText += getTechnologyTitle(requirement) + "\n";
+                  groupText += Localizer.string('Technologies', 'isGroup') + "\n\n";
+               groupText +=  '   \u2022 ' + getTechnologyTitle(requirement) + "\n";
             }
             
          }
          
-         return tempText + groupText;
+         return tempText + ((tempText != '' && groupText != '')?'\n':'') + groupText;
       }
       
       [Bindable(event="validationChange")]

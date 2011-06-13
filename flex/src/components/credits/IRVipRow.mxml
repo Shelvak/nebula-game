@@ -55,7 +55,7 @@
       <s:layout>
          <s:HorizontalLayout gap="1" verticalAlign="middle"/>
       </s:layout>
-      <s:Group width="50">
+      <s:Group width="80">
          <s:RadioButton group="{group}" value="{level}" horizontalCenter="0"/>
       </s:Group>
       <s:Label text="{level.toString()}" width="80" textAlign="center"/>

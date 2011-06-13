@@ -26,14 +26,24 @@
                     xmlns:defensiveportal="components.defensiveportal.*">
    <fx:Script>
       <![CDATA[
+         import components.dailybonus.DailyBonusComp;
+         import components.popups.ActionConfirmationPopup;
+         import components.skins.BuildButtonSkin;
+         import components.skins.DailyBonusButtonSkin;
+         
+         import controllers.GlobalFlags;
+         import controllers.dailybonus.DailyBonusCommand;
          import controllers.screens.MainAreaScreens;
          import controllers.screens.MainAreaScreensSwitch;
          import controllers.screens.SidebarScreens;
          import controllers.screens.SidebarScreensSwitch;
          
          import models.events.ScreensSwitchEvent;
+         import models.solarsystem.MSSObject;
          
          import mx.events.FlexEvent;
+         
+         import utils.locale.Localizer;
          
          
          /**
@@ -69,6 +79,25 @@
             s.setViewStack(vstSidebarStack);
             s.setConfig({"defaultScreenName": SidebarScreens.EMPTY});
             s.resetToDefault();
+         }
+         
+         private function showDailyBonus(): void
+         {
+            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            var cont: DailyBonusComp = new DailyBonusComp();
+            cont.reward = ML.player.dailyBonus;
+            popUp.title = Localizer.string('Popups', 'title.dailyBonus');
+            popUp.addElement(cont);
+            popUp.confirmButtonLabel = Localizer.string('Quests', 'label.claimReward');
+            popUp.cancelButtonLabel = Localizer.string('Quests', 'label.claimLater');
+            popUp.confirmButtonClickHandler = function(button: Button):void
+            {
+               GlobalFlags.getInstance().lockApplication = true;
+               new DailyBonusCommand(DailyBonusCommand.CLAIM, 
+                  {'planetId': MSSObject(cont.planetSelector.selectedItem).id}
+               ).dispatch();
+            };
+            popUp.show();
          }
          
       ]]>
@@ -141,6 +170,8 @@
          </s:NavigatorContent>
       </mx:ViewStack>
       <base:TopMessage bottom="20" horizontalCenter="0" width="100%" visible="false"/>
+      <s:Button skinClass="components.skins.DailyBonusButtonSkin" left="0" top="200"
+                visible="{ML.player.dailyBonus != null}" click="showDailyBonus()"/>
    </s:Group>
    
    <s:SkinnableContainer id="rightSidebarContainer"
