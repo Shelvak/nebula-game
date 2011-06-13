@@ -21,8 +21,6 @@
          
          import mx.collections.ArrayCollection;
          
-         import org.osmf.media.IMediaGateway;
-         
          import spark.components.Button;
          import spark.events.IndexChangeEvent;
          
