@@ -1402,8 +1402,8 @@
     <title.dailyBonus value="Daily bonus" />
     <message.dailyBonus>
       <p>Come back every day and get your daily bonus!</p>
-      <p>Today you've got:</p>
     </message.dailyBonus>
+    <label.todayYouGot value="Today you've got:" />
     
     <title.boostPlanet value="Boost planet resources/storage" />
     <message.areYouSure value="Are you sure?" />

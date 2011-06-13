@@ -27,6 +27,7 @@
    <fx:Script>
       <![CDATA[
          import components.dailybonus.DailyBonusComp;
+         import components.dailybonus.DailyBonusEvent;
          import components.popups.ActionConfirmationPopup;
          import components.skins.BuildButtonSkin;
          import components.skins.DailyBonusButtonSkin;
@@ -86,6 +87,11 @@
             var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
             var cont: DailyBonusComp = new DailyBonusComp();
             cont.reward = ML.player.dailyBonus;
+            cont.addEventListener(DailyBonusEvent.CLOSE_PANEL, 
+               function(e: DailyBonusEvent):void
+            {
+               popUp.close();
+            });
             popUp.title = Localizer.string('Popups', 'title.dailyBonus');
             popUp.addElement(cont);
             popUp.confirmButtonLabel = Localizer.string('Quests', 'label.claimReward');
