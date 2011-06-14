@@ -23,14 +23,13 @@ package models.factories
          }
          var achievement: MAchievement = new MAchievement(data.type);
          achievement.alliance = data.alliance;
-         achievement.completed = data.completed;
          achievement.count = data.count;
          achievement.key = data.key;
          achievement.level = data.level;
          achievement.limit = data.limit;
          achievement.npc = data.npc;
-         achievement.scientists = data.scientists;
          achievement.outcome = data.outcome;
+         achievement.completed = data.completed;
          return achievement;
       }
       

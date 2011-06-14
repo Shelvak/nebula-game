@@ -361,6 +361,7 @@
             {
                missingStorages.push(ResourceType.ZETIUM);
             }
+            
             var tempStorageString: String = '';
             var i: int = 0;
             for each (var res: String in missingStorages)
@@ -377,11 +378,10 @@
                   }
                }
                i++;
-               tempStorageString += Localizer.string('Resources', res);
+               tempStorageString += Localizer.string('Resources', 'additionalStorage.resource', [res]);
             }
             tempStorageString = missingStorages.length == 0?'':Localizer.string('Units', 'label.planetFull', [tempStorageString, 
-               ObjectStringsResolver.getString('Is', ObjectFormType.WHAT,
-                  missingStorages.length)]);
+               (missingStorages.length == 1?'is':'are')]);
             if (missingStorageString != tempStorageString)
             {
                missingStorageString = tempStorageString;

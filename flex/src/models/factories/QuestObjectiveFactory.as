@@ -31,17 +31,16 @@ package models.factories
          objective.level = data.objective.level;
          objective.id = data.objective.id;
          objective.questId = data.objective.questId;
-         objective.scientists = data.objective.scientists;
          objective.key = data.objective.key;
          objective.count = data.objective.count;
          objective.alliance = data.objective.alliance;
          objective.progressId = data.progress == null
             ? -1
             : data.progress.id;
+         objective.outcome = data.outcome;
          objective.completed = data.progress == null
             ? objective.count
             : data.progress.completed;
-         objective.outcome = data.outcome;
          
          return objective;
       }

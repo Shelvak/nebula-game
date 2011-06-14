@@ -3443,6 +3443,7 @@
     <label.withPlanets value="With {0} planets" />
     <label.resources value="Resources" />
     <label.transferResources value="Transfer" />
+    <!-- 0 - resources string, 1 - 'is' or 'are' -->
     <label.planetFull>
       <p>You cannot unload {0} to this planet because {0} storage {1} full.</p>
     </label.planetFull>

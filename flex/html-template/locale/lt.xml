@@ -3425,8 +3425,10 @@
       value="Su {0 one[? planeta] tens[? planetų] many[? planetų]}" />
     <label.resources value="Resursai" />
     <label.transferResources value="Perkelti" />
+    <!-- 0 - resources string, 1 - 'is' or 'are' 
+    in lt we dont use parameter 1 -->
     <label.planetFull>
-      <p>Tu negali iškrauti {0} į šią planetą, nes {0} talpyklos {1} yra 
+      <p>Tu negali iškrauti {0} į šią planetą, nes {0} talpyklos yra 
       pilnos.</p>
     </label.planetFull>
     <label.transporterFull>

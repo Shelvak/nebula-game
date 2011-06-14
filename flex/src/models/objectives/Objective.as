@@ -21,8 +21,6 @@ package models.objectives
       
       public var limit: int;
       
-      public var scientists: int;
-      
       public var outcome: int;
 
       
