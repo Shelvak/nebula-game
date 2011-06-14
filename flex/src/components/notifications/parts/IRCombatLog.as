@@ -8,6 +8,7 @@ package components.notifications.parts
    import components.notifications.parts.skins.CombatLogSkin;
    
    import controllers.Messenger;
+   import controllers.startup.StartupInfo;
    
    import flash.events.Event;
    import flash.events.MouseEvent;
@@ -277,7 +278,8 @@ package components.notifications.parts
       
       private function get combatLogUrl() : String
       {
-         return ExternalInterface.call("getCombatLogUrl", combatLog.logId, ML.player.id);
+         var info:StartupInfo = StartupInfo.getInstance();
+         return ExternalInterface.call("getCombatLogUrl", combatLog.logId, ML.player.id, info.server, info.webHost);
       }
       
       
