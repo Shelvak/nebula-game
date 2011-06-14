@@ -209,9 +209,9 @@
          
          private function refreshPrice(): void
          {
-            var metal: int = deployInProgress ? 0 : getMetalPrice();
-            var energy: int = deployInProgress ? 0 : getEnergyPrice();
-            var zetium: int = deployInProgress ? 0 : getZetiumPrice();
+            var metal: int = getMetalPrice();
+            var energy: int = getEnergyPrice();
+            var zetium: int = getZetiumPrice();
             metalPrice = metal.toString();
             energyPrice = energy.toString();
             zetiumPrice = zetium.toString();
@@ -376,7 +376,7 @@
          [Bindable (event ="buildingsStatesChange")]
          private function getMetalPrice():int
          {
-            if (deployInProgress)
+            if (deployInProgress || (constructable != null && constructable.moving))
             {
                return 0;
             }
@@ -388,7 +388,7 @@
          [Bindable (event ="buildingsStatesChange")]
          private function getEnergyPrice():int
          {
-            if (deployInProgress)
+            if (deployInProgress || (constructable != null && constructable.moving))
             {
                return 0;
             }
@@ -400,7 +400,7 @@
          [Bindable (event ="buildingsStatesChange")]
          private function getZetiumPrice():int
          {
-            if (deployInProgress)
+            if (deployInProgress || (constructable != null && constructable.moving))
             {
                return 0;
             }
