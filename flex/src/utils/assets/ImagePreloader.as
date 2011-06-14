@@ -283,6 +283,8 @@ package utils.assets
       private function downloadNextModule() : void
       {
          currentUnpackingProgress = 0;
+         dispatchUnpackProgressEvent();
+         
          if (_moduleInfo != null)
          {
             _moduleInfo.unload();
