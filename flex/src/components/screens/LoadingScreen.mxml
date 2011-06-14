@@ -3,9 +3,10 @@
                     xmlns:s="library://ns.adobe.com/flex/spark"
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*"
+                    xmlns:screens="components.screens.*"
                     width="100%" height="100%"
                     creationComplete="this_creationCompleteHandler()"
-                    addedToStage="this_addedToStageHandler(event)" xmlns:screens="components.screens.*">
+                    addedToStage="this_addedToStageHandler(event)">
    
    <fx:Script>
       <![CDATA[
@@ -158,7 +159,7 @@
          <s:VerticalLayout horizontalAlign="center" gap="15"/>
       </s:layout>
       <s:Group>
-         <s:BitmapImage source="@Embed(source='assets/images/loading_panel.png')"/>
+         <s:BitmapImage source="@Embed(source='/loading_panel.png')"/>
          <s:Group left="0" right="0" top="0" bottom="0">
             <s:layout>
                <s:VerticalLayout paddingTop="16" paddingLeft="40" paddingRight="40" gap="7"
