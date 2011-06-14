@@ -18,6 +18,7 @@
          import mx.controls.Alert;
          
          import utils.MathUtil;
+         import utils.UrlNavigate;
          import utils.assets.events.ImagePreloaderEvent;
          import utils.locale.Localizer;
          import utils.locale.XMLBundlesLoader;
@@ -77,8 +78,9 @@
                lblTipLabel.text = getString('label.tip');
                
                var tipsTotal:int = _bundlesLoader.data.child("Tips").children().length();
-               var randomTip:int = Math.round(MathUtil.randomBetween(0, tipsTotal));
+               var randomTip:int = Math.round(MathUtil.randomBetween(0, tipsTotal - 1));
                lblTipText.text = Localizer.string("Tips", "tip." + randomTip);
+               imgTip.source = UrlNavigate.getInstance().getTipImageUrl(randomTip);
                
                loadImages();
             }
