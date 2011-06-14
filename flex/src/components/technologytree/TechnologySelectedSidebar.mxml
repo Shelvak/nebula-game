@@ -388,253 +388,230 @@
          
       ]]>
    </fx:Script>
-   
-   
-   
-   <s:Group width="100%" height="100%">
-      <base:Scroller id="scrollCont" top="0" bottom="0" width="100%" 
-                     height="100%" right="0" horizontalScrollPolicy="off" 
-                     stepMultiplier="10">
-         <s:Group left="0" height="100%" right="{scrollCont.verticalScrollBar.width}">
-            <s:Group id="contentGroup" height="100%" left="0" right="0">   
-               <base:AdvancedContainer left="0" right="0">
-                  <base:Panel width="100%"
-                              title="{Localizer.string ('Technologies', _selectedModel.type + '.name')}">
-                     
-                     <s:Group width="100%">
-                        <s:BitmapImage id="techImage" horizontalCenter="0"
-                                       width="150" height="150" 
-                                       source="{IMG.getImage(AssetNames.getTechnologyImageName(_selectedModel.type))}"/>
-                        <s:Button skinClass="components.skins.DeselectButtonSkin" click="deselect_clickHandler(event)" 
-                                  right="3" top="3"/>
-                     </s:Group>
-                     
-                     <base:AdvancedContainer width="100%" horizontalCenter="0">
-                        <s:Group width="100%"> 
-                           <s:Label left="3" right="3" x="20" text="{Localizer.string('Technologies',_selectedModel.type + '.about')}"/>	
-                        </s:Group>
-                        <s:Group width="100%">
-                           <s:Button label="{Localizer.string('Technologies','details')}" right="6" 
-                                     click="details_clickHandler(event)"/>
-                           <s:Button label="{Localizer.string('Technologies','unlocks')}" left="6" 
-                                     click="unlocks_clickHandler(event)" 
-                                     visible="{hasUnlockingStuff(_selectedModel.type) != null}"/>
-                        </s:Group>
-                        <base:layout>
-                           <s:VerticalLayout paddingLeft="6" paddingRight="6"/>
-                        </base:layout>
-                     </base:AdvancedContainer>
-                     <base:layout>
-                        <s:VerticalLayout/>
-                     </base:layout>
-                  </base:Panel>
+   <base:Scroller id="scrollCont" top="0" bottom="0" width="100%" 
+                  height="100%" right="0" horizontalScrollPolicy="off" 
+                  stepMultiplier="10">
+      <s:Group left="0" height="100%" right="{scrollCont.verticalScrollBar.width}">
+         <s:Group id="contentGroup" height="100%" left="0" right="0">   
+            <base:AdvancedContainer left="0" right="0">
+               <base:Panel title="{Localizer.string ('Technologies', _selectedModel.type + '.name')}">
+                  <s:Group>
+                     <s:BitmapImage id="techImage" horizontalCenter="0"
+                                    width="150" height="150" 
+                                    source="{IMG.getImage(AssetNames.getTechnologyImageName(_selectedModel.type))}"/>
+                     <s:Button skinClass="components.skins.DeselectButtonSkin" click="deselect_clickHandler(event)" 
+                               right="0" top="6"/>
+                  </s:Group>
+                  
+                  <s:Group> 
+                     <s:Label left="3" right="3" x="20" text="{Localizer.string('Technologies',_selectedModel.type + '.about')}"/>	
+                  </s:Group>
+                  <s:Group>
+                     <s:Button label="{Localizer.string('Technologies','details')}" right="6" 
+                               click="details_clickHandler(event)"/>
+                     <s:Button label="{Localizer.string('Technologies','unlocks')}" left="6" 
+                               click="unlocks_clickHandler(event)" 
+                               visible="{hasUnlockingStuff(_selectedModel.type) != null}"/>
+                  </s:Group>
+                  <base:layout>
+                     <s:VerticalLayout paddingLeft="6" paddingRight="6" horizontalAlign="justify"/>
+                  </base:layout>
+               </base:Panel>
                
                <base:Panel title="{Localizer.string('Technologies', 'title.requirements')}"
                            visible="{_selectedModel.requirementsText != '' &amp;&amp;
                            _selectedModel.upgradePart.level == 0}">
-                  <s:Group width="100%"> 
-                     <s:Label left="6" right="6" top="6" text="{_selectedModel.requirementsText}"/>	
-                  </s:Group>
+                  <s:Label left="6" right="6" top="6" text="{_selectedModel.requirementsText}"/>
                </base:Panel>
                
-                  <base:Panel title="{Localizer.string ('Technologies', 'scientistsPanelTitle')}" width="100%" 
-                              visible="{!(!(_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel ) ||
-                              !(_selectedModel.minScientists &lt; (ML.player.scientists + _selectedModel.scientists)))}">
-                     
-                     <base:AdvancedContainer width="100%">
-                        <s:Group width="100%" visible="{_selectedModel.scientists != 0}">
-                           
-                           <s:Label text="{Localizer.string('Technologies','scientistsAssigned')}"/>
-                           <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" textToDisplay="{_selectedModel.pauseRemainder == 0?
-                                               _selectedModel.scientists : _selectedModel.pauseScientists}" />
-                           <s:layout>
-                              <s:VerticalLayout gap="3"/>
-                           </s:layout>
-                           
-                        </s:Group>
+               <base:Panel title="{Localizer.string ('Technologies', 'scientistsPanelTitle')}" 
+                           visible="{!(!(_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel ) ||
+                           !(_selectedModel.minScientists &lt; (ML.player.scientists + _selectedModel.scientists)))}">
+                  <base:AdvancedContainer left="0" right="0">
+                     <s:Group width="100%" visible="{_selectedModel.scientists != 0}">
                         
-                        <s:Label text="{Localizer.string('Technologies', 'scientistsSelected') + ': ' +
-                                 scientistsSelector.value.toString()}"/>
-                        <s:Group width="100%">
-                           <s:Label text="{_selectedModel.minScientists}" styleName="h3"/>
-                           <s:HSlider id="scientistsSelector" width="80%" showDataTip="false" 
-                                      change="scientistsSelector_changeHandler(event)"
-                                      mouseFocusEnabled="false"
-                                      value="{_selectedModel.minScientists &lt; _selectedModel.scientists?
-                                      _selectedModel.scientists:_selectedModel.minScientists}" 
-                                      enabled="{(_selectedModel.minScientists &lt; (ML.player.scientists + _selectedModel.scientists))}"
-                                      minimum="{_selectedModel.minScientists}" 
-                                      maximum="{Math.min(_selectedModel.getMaxAssignableScientists(),
-                                      (ML.player.scientists + _selectedModel.scientists))}"/> 
-                           
-                           <s:Label text="{Math.min(_selectedModel.getMaxAssignableScientists(),
-                                    (ML.player.scientists + _selectedModel.scientists)).toString()}" styleName="h3"/>
+                        <s:Label text="{Localizer.string('Technologies','scientistsAssigned')}"/>
+                        <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" textToDisplay="{_selectedModel.pauseRemainder == 0?
+                                            _selectedModel.scientists : _selectedModel.pauseScientists}" />
+                        <s:layout>
+                           <s:VerticalLayout gap="3"/>
+                        </s:layout>
+                        
+                     </s:Group>
+                     
+                     <s:Label text="{Localizer.string('Technologies', 'scientistsSelected') + ': ' +
+                              scientistsSelector.value.toString()}"/>
+                     <s:Group width="100%">
+                        <s:Label text="{_selectedModel.minScientists}" styleName="h3"/>
+                        <s:HSlider id="scientistsSelector" width="80%" showDataTip="false" 
+                                   change="scientistsSelector_changeHandler(event)"
+                                   mouseFocusEnabled="false"
+                                   value="{_selectedModel.minScientists &lt; _selectedModel.scientists?
+                                   _selectedModel.scientists:_selectedModel.minScientists}" 
+                                   enabled="{(_selectedModel.minScientists &lt; (ML.player.scientists + _selectedModel.scientists))}"
+                                   minimum="{_selectedModel.minScientists}" 
+                                   maximum="{Math.min(_selectedModel.getMaxAssignableScientists(),
+                                   (ML.player.scientists + _selectedModel.scientists))}"/> 
+                        
+                        <s:Label text="{Math.min(_selectedModel.getMaxAssignableScientists(),
+                                 (ML.player.scientists + _selectedModel.scientists)).toString()}" styleName="h3"/>
+                        <s:layout>
+                           <s:HorizontalLayout/>
+                        </s:layout>
+                     </s:Group>
+                     <s:Group width="100%" visible="{!((_selectedModel.scientists == scientistsSelector.value) || 
+                              (_selectedModel.upgradePart.upgradeEndsAt == null))}">
+                        <s:Button label="{Localizer.string('Technologies','update')}" click="button1_clickHandler(event)" 
+                                  right="6" enabled="{!updatePending}"/>
+                        
+                     </s:Group> 
+                     <s:Label text="{Localizer.string('Technologies','finishedIn', 
+                              [_selectedModel.getNewTimeToFinishString(scientistsSelector.value)])}"/>
+                     <base:layout>
+                        <s:VerticalLayout paddingLeft="6" paddingRight="6"/>
+                     </base:layout>
+                  </base:AdvancedContainer>
+               </base:Panel>
+               
+               <base:Panel title="{Localizer.string ('Technologies', 'upgradeProgress')}"
+                           visible="{(_selectedModel.upgradePart.upgradeEndsAt != null) || 
+                           (_selectedModel.pauseRemainder != 0)}">
+                  <base:AdvancedContainer left="6" right="6">
+                     <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
+                              [_selectedModel.minScientists, ML.player.scientists, 
+                              ML.player.scientistsTotal])}" 
+                              visible="{_selectedModel.minScientists > ML.player.scientists
+                              &amp;&amp; _selectedModel.pauseScientists != 0}"
+                              styleName="unsatisfied"/>
+                     <s:Group>
+                        <mx:ProgressBar id="techProgressBar" width="80%" left="0" labelPlacement="center" mode="manual"
+                                        label="{_selectedModel.scientists == 0?
+                                        Localizer.string('Technologies','paused'):
+                                        Localizer.string('Technologies','finishedIn', [
+                                        _selectedModel.upgradePart.timeToFinishString])}"/> 
+                        <s:ToggleButton id="pauseButton" skinClass="components.skins.PauseButtonSkin" right="0" 
+                                        click="pause_clickHandler(event)"
+                                        enabled="{(
+                                        (_selectedModel.upgradePart.timeToFinish > 10) || 
+                                        (_selectedModel.pauseRemainder != 0 &amp;&amp; 
+                                        ML.player.scientists >= _selectedModel.minScientists))
+                                        &amp;&amp; !pausePending}" 
+                                        creationComplete="pauseButton_creationCompleteHandler(event)"/>
+                     </s:Group>
+                     <s:Group visible="{_selectedModel.pauseRemainder == 0}">
+                        <s:Button skinClass="components.skins.CreditButtonSkin" 
+                                  click="coin_clickHandler(event)"
+                                  label="{Localizer.string('Credits', 'label.accelerate')}"
+                                  right="0"/>
+                     </s:Group>
+                     <base:layout>
+                        <s:VerticalLayout horizontalAlign="justify"/>
+                     </base:layout>
+                  </base:AdvancedContainer>
+               </base:Panel>
+               
+               <base:Panel title="{Localizer.string('Technologies', 
+                           'upgradeCost')}" 
+                           visible="{!(!(_selectedModel.upgradePart.upgradeEndsAt == null) || 
+                           !(_selectedModel.pauseRemainder == 0) || 
+                           !(_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel ))}">
+                  <base:AdvancedContainer left="0" right="0" height="100%">
+                     <s:Group>
+                        <s:layout>
+                           <s:VerticalLayout paddingTop="10" paddingBottom="10" horizontalAlign="center"/>
+                        </s:layout>
+                        <s:CheckBox id="speedUpBoost" label="{Localizer.string('Technologies','forceOvertime')}" 
+                                    change="speedUpBoost_changeHandler(event)"/>
+                     </s:Group>
+                     <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" textToDisplay="{_selectedModel.minScientists}"
+                                         visible="{_selectedModel.minScientists == ML.player.scientists}"/>
+                     <s:Group>
+                        <s:Group width="40%">
+                           <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCost.toFixed(2)}"
+                                               toolTip="{Localizer.string('Resources', ResourceType.METAL)}"
+                                               labelStyleName="{metalCost > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"/>
+                           <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCost.toFixed(2)}"
+                                               toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"
+                                               labelStyleName="{zetiumCost > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"/>
                            <s:layout>
-                              <s:HorizontalLayout/>
+                              <s:VerticalLayout gap="3" paddingLeft="6" paddingRight="6"/>
                            </s:layout>
                         </s:Group>
-                        <s:Group width="100%" visible="{!((_selectedModel.scientists == scientistsSelector.value) || 
-                                 (_selectedModel.upgradePart.upgradeEndsAt == null))}">
-                           <s:Button label="{Localizer.string('Technologies','update')}" click="button1_clickHandler(event)" 
-                                     right="6" enabled="{!updatePending}"/>
-                           
-                        </s:Group> 
-                        <s:Label text="{Localizer.string('Technologies','finishedIn', 
-                                 [_selectedModel.getNewTimeToFinishString(scientistsSelector.value)])}"/>
-                        <base:layout>
-                           <s:VerticalLayout paddingLeft="6" paddingRight="6"/>
-                        </base:layout>
-                     </base:AdvancedContainer>
-                  </base:Panel>
-               
-                  <base:Panel title="{Localizer.string ('Technologies', 'upgradeProgress')}" width="100%" 
-                              visible="{(_selectedModel.upgradePart.upgradeEndsAt != null) || 
-                              (_selectedModel.pauseRemainder != 0)}">
-                     <base:AdvancedContainer left="6" right="6">
-                        <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
-                                 [_selectedModel.minScientists, ML.player.scientists, 
-                                 ML.player.scientistsTotal])}" 
-                                 visible="{_selectedModel.minScientists > ML.player.scientists
-                                 &amp;&amp; _selectedModel.pauseScientists != 0}"
+                        <s:Group width="40%">
+                           <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyCost.toFixed(2)}"
+                                               toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"
+                                               labelStyleName="{energyCost > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"/>
+                           <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{timeCost}"
+                                               toolTip="{Localizer.string('Resources', ResourceType.TIME)}"/> 
+                           <s:layout>
+                              <s:VerticalLayout gap="3" paddingLeft="6" paddingRight="6"/>
+                           </s:layout>
+                        </s:Group>
+                        <s:layout>
+                           <s:HorizontalLayout gap="3" paddingLeft="6" paddingRight="6"/>
+                        </s:layout> 
+                     </s:Group>
+                     <s:Label text="{Localizer.string('Technologies','warPointsNeeded',
+                              [Technology.getWarPoints(_selectedModel.type, _selectedModel.upgradePart.level+1), 
+                              ML.player.warPoints])}" styleName="unsatisfied" 
+                                                      visible="{ML.player.warPoints &lt; 
+                                                      Technology.getWarPoints(_selectedModel.type, _selectedModel.upgradePart.level+1)}"/>
+                     <s:Label text="{Localizer.string('Technologies','technologiesNeeded')}" styleName="unsatisfied" 
+                              visible="{!(_selectedModel.isValid || ML.player.scientistsTotal == 0
+                              || _selectedModel.groupForbiden || (ML.player.warPoints &lt; 
+                              Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}"/>
+                     <s:Label text="{Localizer.string('Technologies','groupResearched')}" styleName="unsatisfied" 
+                              visible="{!(!_selectedModel.groupForbiden || ML.player.scientistsTotal == 0
+                              || (ML.player.warPoints &lt; 
+                              Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}"/>
+                     <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
+                              [_selectedModel.minScientists, ML.player.scientists, 
+                              ML.player.scientistsTotal])}" id="notEnoughSciLbl" 
+                                                            visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
+                                                            (upgradePending) || (!_selectedModel.isValid)|| (ML.player.warPoints &lt; 
+                                                            Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
+                                                            styleName="unsatisfied"/>
+                     <s:Label text="{Localizer.string('Technologies','buildCenters')}" 
+                              visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
+                              (upgradePending) || (!_selectedModel.isValid)|| (ML.player.warPoints &lt; 
+                              Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
+                              styleName="unsatisfied"/>
+                     <base:AdvancedContainer visible="{!(notEnoughSciLbl.visible || (!_selectedModel.isValid) || 
+                                             canBeUpgraded || (ML.player.scientistsTotal == 0)|| (ML.player.warPoints &lt; 
+                                             Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}">
+                        
+                        <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
                                  styleName="unsatisfied"/>
-                        <s:Group>
-                           <mx:ProgressBar id="techProgressBar" width="80%" left="0" labelPlacement="center" mode="manual"
-                                           label="{_selectedModel.scientists == 0?
-                                           Localizer.string('Technologies','paused'):
-                                           Localizer.string('Technologies','finishedIn', [
-                                           _selectedModel.upgradePart.timeToFinishString])}"/> 
-                           <s:ToggleButton id="pauseButton" skinClass="components.skins.PauseButtonSkin" right="0" 
-                                           click="pause_clickHandler(event)"
-                                           enabled="{(
-                                           (_selectedModel.upgradePart.timeToFinish > 10) || 
-                                           (_selectedModel.pauseRemainder != 0 &amp;&amp; 
-                                           ML.player.scientists >= _selectedModel.minScientists))
-                                           &amp;&amp; !pausePending}" 
-                                           creationComplete="pauseButton_creationCompleteHandler(event)"/>
-                        </s:Group>
-                        <s:Group visible="{_selectedModel.pauseRemainder == 0}">
-                           <s:Button skinClass="components.skins.CreditButtonSkin" 
-                                     click="coin_clickHandler(event)"
-                                     label="{Localizer.string('Credits', 'label.accelerate')}"
-                                     right="0"/>
-                        </s:Group>
+                        <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}"
+                                 visible="{resLeft > 0}" fontWeight="bold"/>
+                        <base:TimeLabel text="{getStringFromSeconds(resLeft)}" visible="{resLeft > 0}"/>
+                        <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
+                        styleName="unsatisfied" width="100%"/-->
+                        <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" 
+                                 visible="{!enoughStorage}"
+                                 styleName="unsatisfied"/>
                         <base:layout>
                            <s:VerticalLayout horizontalAlign="justify"/>
                         </base:layout>
                      </base:AdvancedContainer>
-                  </base:Panel>
-               
-                  <base:Panel title="{Localizer.string('Technologies', 
-                              'upgradeCost')}" width="100%" horizontalCenter="0" 
-                                               visible="{!(!(_selectedModel.upgradePart.upgradeEndsAt == null) || 
-                                               !(_selectedModel.pauseRemainder == 0) || 
-                                               !(_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel ))}">
-                     <base:AdvancedContainer width="100%" height="100%">
-                        <s:Group width="100%">
-                           <s:layout>
-                              <s:VerticalLayout paddingTop="10" paddingBottom="10" horizontalAlign="center"/>
-                           </s:layout>
-                           <s:CheckBox id="speedUpBoost" label="{Localizer.string('Technologies','forceOvertime')}" 
-                                       change="speedUpBoost_changeHandler(event)"/>
-                        </s:Group>
-                        <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" textToDisplay="{_selectedModel.minScientists}"
-                                            visible="{_selectedModel.minScientists == ML.player.scientists}"/>
-                        <s:Group width="100%">
-                           <s:Group width="40%">
-                              <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCost.toFixed(2)}"
-                                                  toolTip="{Localizer.string('Resources', ResourceType.METAL)}"
-                                                  labelStyleName="{metalCost > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"/>
-                              <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCost.toFixed(2)}"
-                                                  toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"
-                                                  labelStyleName="{zetiumCost > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"/>
-                              <s:layout>
-                                 <s:VerticalLayout gap="3" paddingLeft="6" paddingRight="6"/>
-                              </s:layout>
-                           </s:Group>
-                           <s:Group width="40%">
-                              <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyCost.toFixed(2)}"
-                                                  toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"
-                                                  labelStyleName="{energyCost > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"/>
-                              <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{timeCost}"
-                                                  toolTip="{Localizer.string('Resources', ResourceType.TIME)}"/> 
-                              <s:layout>
-                                 <s:VerticalLayout gap="3" paddingLeft="6" paddingRight="6"/>
-                              </s:layout>
-                           </s:Group>
-                           <s:layout>
-                              <s:HorizontalLayout gap="3" paddingLeft="6" paddingRight="6"/>
-                           </s:layout> 
-                        </s:Group>
-                        <s:Label text="{Localizer.string('Technologies','warPointsNeeded',
-                                 [Technology.getWarPoints(_selectedModel.type, _selectedModel.upgradePart.level+1), 
-                                 ML.player.warPoints])}" styleName="unsatisfied" 
-                                 visible="{ML.player.warPoints &lt; 
-                                 Technology.getWarPoints(_selectedModel.type, _selectedModel.upgradePart.level+1)}" 
-                                 width="100%"/>
-                        <s:Label text="{Localizer.string('Technologies','technologiesNeeded')}" styleName="unsatisfied" 
-                                 visible="{!(_selectedModel.isValid || ML.player.scientistsTotal == 0
-                                 || _selectedModel.groupForbiden || (ML.player.warPoints &lt; 
-                                 Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
-                                 width="100%"/>
-                        <s:Label text="{Localizer.string('Technologies','groupResearched')}" styleName="unsatisfied" 
-                                 visible="{!(!_selectedModel.groupForbiden || ML.player.scientistsTotal == 0
-                                 || (ML.player.warPoints &lt; 
-                                 Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
-                                 width="100%"/>
-                        <s:Label text="{Localizer.string('Technologies','notEnoughScientists', 
-                                 [_selectedModel.minScientists, ML.player.scientists, 
-                                 ML.player.scientistsTotal])}" id="notEnoughSciLbl" 
-                                                               visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
-                                                               (upgradePending) || (!_selectedModel.isValid)|| (ML.player.warPoints &lt; 
-                                                               Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
-                                                               styleName="unsatisfied" width="100%"/>
-                        <s:Label text="{Localizer.string('Technologies','buildCenters')}" 
-                                 visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
-                                 (upgradePending) || (!_selectedModel.isValid)|| (ML.player.warPoints &lt; 
-                                 Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
-                                 styleName="unsatisfied" width="100%"/>
-                        <base:AdvancedContainer width="100%"
-                                                visible="{!(notEnoughSciLbl.visible || (!_selectedModel.isValid) || 
-                                                canBeUpgraded || (ML.player.scientistsTotal == 0)|| (ML.player.warPoints &lt; 
-                                                Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}">
-                           
-                           <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
-                                    styleName="unsatisfied"/>
-                           <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}"
-                                    visible="{resLeft > 0}" fontWeight="bold"/>
-                           <base:TimeLabel text="{getStringFromSeconds(resLeft)}" visible="{resLeft > 0}"/>
-                           <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
-                           styleName="unsatisfied" width="100%"/-->
-                           <s:Label text="{Localizer.string('Resources','additionalStorage', [missingStorageString])}" 
-                                    visible="{!enoughStorage}"
-                                    styleName="unsatisfied"/>
-                           <base:layout>
-                              <s:VerticalLayout horizontalAlign="justify"/>
-                           </base:layout>
-                        </base:AdvancedContainer>
-                        <s:Group width="100%">
-                           <s:Button enabled="{!(!_selectedModel.isValid || !canBeUpgraded || 
-                                     (_selectedModel.minScientists > ML.player.scientists) || upgradePending
-                                     || (ML.player.warPoints &lt; 
-                                     Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
-                                     label="{Localizer.string('Technologies','upgrade')}" 
-                                     click="upgradeButton_clickHandler(event)" right="6"/>	
-                        </s:Group>
-                        <base:layout>
-                           <s:VerticalLayout paddingLeft="6" paddingRight="6"/>
-                        </base:layout>
-                     </base:AdvancedContainer>
-                  </base:Panel>
-                  <base:layout>
-                     <s:VerticalLayout horizontalAlign="justify"/>
-                  </base:layout>
-               </base:AdvancedContainer>
-            </s:Group>
+                     <s:Group>
+                        <s:Button enabled="{!(!_selectedModel.isValid || !canBeUpgraded || 
+                                  (_selectedModel.minScientists > ML.player.scientists) || upgradePending
+                                  || (ML.player.warPoints &lt; 
+                                  Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
+                                  label="{Localizer.string('Technologies','upgrade')}" 
+                                  click="upgradeButton_clickHandler(event)" right="6"/>	
+                     </s:Group>
+                     <base:layout>
+                        <s:VerticalLayout paddingLeft="6" paddingRight="6" horizontalAlign="justify"/>
+                     </base:layout>
+                  </base:AdvancedContainer>
+               </base:Panel>
+               <base:layout>
+                  <s:VerticalLayout horizontalAlign="justify"/>
+               </base:layout>
+            </base:AdvancedContainer>
          </s:Group>
-      </base:Scroller>      
-      
-   </s:Group>
-   <base:layout>
-      <s:VerticalLayout/>
-   </base:layout>
+      </s:Group>
+   </base:Scroller>
 </base:BaseContainer>

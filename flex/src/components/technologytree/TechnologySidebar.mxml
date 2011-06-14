@@ -90,7 +90,7 @@
    </fx:Script>
    <base:AdvancedContainer top="0" left="0" bottom="0" right="0">
       
-      <base:Panel width="100%" title="{Localizer.string ('Technologies', 'scientistsAvailable')}">
+      <base:Panel title="{Localizer.string ('Technologies', 'scientistsAvailable')}">
          <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
                              toolTip="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"
                              textToDisplay="{ML.player.scientists.toString() + ' / ' + 
@@ -101,8 +101,8 @@
          </base:layout>
       </base:Panel>
       
-      <base:Panel id="researchPanel" width="100%" title="{Localizer.string ('Technologies', 'currentlyResearching')}"
-                  visible="{hasActive}" height="100%">
+      <base:Panel id="researchPanel" visible="{hasActive}" height="100%"
+                  title="{Localizer.string ('Technologies', 'currentlyResearching')}">
          <base:Scroller top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off">
             <base:AdvancedContainer id="researchContainer" left="0" right="0">
                <base:layout>
@@ -113,7 +113,7 @@
       </base:Panel>
       
       <base:layout>
-         <s:VerticalLayout/>
+         <s:VerticalLayout horizontalAlign="justify"/>
       </base:layout>
       
    </base:AdvancedContainer>

@@ -29,7 +29,7 @@
       <!-- Title container -->
       <s:Group minWidth="246" id="topCenter">
          <s:BitmapImage fillMode="repeat" left="0" right="0" source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_center')}"/>
-         <s:Label color="#eec500" fontSize="24" fontWeight="bold" verticalCenter="-5" left="25" right="25" horizontalCenter="0" id="titleDisplay"/>
+         <s:Label color="#eec500" fontSize="24" fontWeight="bold" verticalCenter="-5" left="25" right="25" textAlign="center" id="titleDisplay"/>
       </s:Group>
       <s:BitmapImage id="topCenterRight" source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_center_right')}"/>
       <s:BitmapImage fillMode="repeat" source="{IMG.getImage(AssetNames.UI_LARGE_PANEL + 'top_repeat')}" width="100%"/>

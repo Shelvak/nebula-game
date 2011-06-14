@@ -3182,6 +3182,10 @@
       <p>Shortens flight times for [reference:Objects/Mule] and
       [reference:Objects/Rhyno] class ships.</p>
     </HeavyFlight.about>
+    
+    <UnitUpgrade>
+      <p>Each level increases unit armor and damage.</p>
+    </UnitUpgrade>
 
     <Trooper.name ref="Units/Trooper.name" />
     <Trooper.about>
@@ -3190,7 +3194,7 @@
         numbers. This upgrade allows to further strengthen our main force by 
         upgrading their weapons and armor. 
       </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Trooper.about>
 
     <Shocker.name ref="Units/Shocker.name" />
@@ -3203,7 +3207,7 @@
         battle. Making them stronger helps them protect other units longer and 
         their zetium enhanced rockets dishes out more damage. 
       </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Shocker.about>
 
     <Seeker.name ref="Units/Seeker.name" />
@@ -3215,7 +3219,7 @@
         final winning shot upon your enemy. And even better - this technology 
         even increases their damage by fitting them with zetium plated bullets. 
       </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Seeker.about>
 
     <Scorpion.name ref="Units/Scorpion.name" />
@@ -3225,6 +3229,7 @@
         faster particle accelerators. Investing into this research gives your 
         basic unit advantage over same vehicles at your enemy side. 
       </p>
+      <p>[reference:UnitUpgrade]</p>
     </Scorpion.about>
 
     <Azure.name ref="Units/Azure.name" />
@@ -3236,8 +3241,18 @@
         with zetium makes them more damaging and zetium also makes 
         [reference:Units/Azure.name] hull more resistant to enemy shots. 
       </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Azure.about>
+    
+    <Zeus.name ref="Units/Zeus.name" />
+    <Zeus.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Zeus.about]</p>
+      <p>This technology increases velocity of tank projectiles thus increasing
+      damage it does. It also thickens its armor so it could withstand more
+      damage.</p>
+      <p>[reference:UnitUpgrade]</p>
+    </Zeus.about>
 
     <Mdh.name ref="Units/Mdh.name" />
     <Mdh.about ref="Units/Mdh.common" />
@@ -3248,7 +3263,7 @@
         Upgrades [reference:Units/Crow.name] lasers and hull making it a better 
         fighter that is cheap and cost effective to produce. 
       </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Crow.about>
 
     <Cyrix.name ref="Units/Cyrix.name" />
@@ -3261,7 +3276,7 @@
         technology means your fleet can last longer and make more damage for 
         same cost. 
       </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Cyrix.about>
 
     <Rhyno.name ref="Units/Rhyno.name" />
@@ -3274,7 +3289,7 @@
         harder to destroy and gives a formidable energy boost for its weapon 
         systems making it the most fearsome ship in whole galaxy. 
       </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Rhyno.about>
 
     <Dart.name ref="Units/Dart.name" />
@@ -3286,7 +3301,7 @@
         ships making them deadlier and allowing engaging enemies in fewer 
         numbers. 
       </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Dart.about>
 
     <Avenger.name ref="Units/Avenger.name" />
@@ -3299,7 +3314,7 @@
         in unfortunate situation. Overall it makes 
         [reference:Units/Avenger.name] class ships better interceptors. 
       </p>
-      <p>Each level increases unit armor and damage.</p>
+      <p>[reference:UnitUpgrade]</p>
     </Avenger.about>
 
     <Jumper.name ref="Units/Jumper.name" />
@@ -3629,6 +3644,13 @@
         should be shielded by other units. 
       </p>
     </Azure.about>
+
+    <Zeus.name ref="Objects/Zeus" />
+    <Zeus.about>
+      <p>These massive tanks fortify themselves into the ground and shoot their
+      projectiles into the space. They are designed to fight enemy spaceships
+      and cannot target ground units.</p>
+    </Zeus.about>
 
     <Mdh.name ref="Objects/MDH" />
     <Mdh.common>

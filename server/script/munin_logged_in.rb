@@ -6,6 +6,8 @@ NAMES = [
   ["12h", "Logged in 12h"],
   ["24h", "Logged in 24h"],
   ["48h", "Logged in 48h"],
+  ["1w", "Logged in 1wk"],
+  ["2w", "Logged in 2wks"],
   ["total", "Total no. of players"]
 ]
 

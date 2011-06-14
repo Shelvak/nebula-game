@@ -53,6 +53,18 @@ describe Player do
     end
   end
 
+  describe "#victory_points" do
+    it "should add to alliance victory points too" do
+      alliance = Factory.create(:alliance)
+      player = Factory.create(:player, :alliance => alliance)
+      player.victory_points += 100
+      lambda do
+        player.save!
+        alliance.reload
+      end.should change(alliance, :victory_points).by(100)
+    end
+  end
+  
   describe "#daily_bonus_available?" do
     it "should return true if #daily_bonus_at is nil" do
       Factory.build(:player, :daily_bonus_at => nil).daily_bonus_available?.
