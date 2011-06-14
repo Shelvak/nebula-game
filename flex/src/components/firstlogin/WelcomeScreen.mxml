@@ -36,9 +36,9 @@
                      source="{getImage(AssetNames.UI_IMAGES_FOLDER + 'first_login_background')}"/>
       <!-- title -->
       <s:Label text="{getString('title')}" fontWeight="bold" color="0xEEC500" fontSize="48"
-               top="10" left="50"/>
+               top="12" left="50"/>
       <s:Group minWidth="0" minHeight="0"
-               left="170" right="200" top="77" bottom="30">
+               left="179" right="200" top="77" bottom="30">
          <s:layout>
             <s:VerticalLayout horizontalAlign="justify" gap="20"/>
          </s:layout>

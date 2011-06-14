@@ -51,6 +51,7 @@
          import utils.DateUtil;
          import utils.MathUtil;
          import utils.ModelUtil;
+         import utils.NumberUtil;
          import utils.ObjectFormType;
          import utils.ObjectStringsResolver;
          import utils.StringUtil;
@@ -208,6 +209,7 @@
             fullCostData.removeAll();
             for (var element: String in _infoModel.infoData)
             {
+               var hourly: Boolean = false;
                if ((ignorableProperties.indexOf(element) == -1) && (ignorableProperties.indexOf(element.split('.')[0]) == -1)) 
                {
                   var currentValue: Number;
@@ -234,6 +236,7 @@
                               {'level': _infoModel.usefulLevel});
                            newValue = Building.calculateResourceGenerationRate(_infoModel.type, parts[0],
                               {'level': lvlSelector.value});
+                           hourly = true;
                         }
                         else if (parts[1] == Building.USE)
                         {
@@ -241,6 +244,7 @@
                               {'level': _infoModel.usefulLevel});
                            newValue = Building.calculateResourceUsageRate(_infoModel.type, parts[0],
                               {'level': lvlSelector.value});
+                           hourly = true;
                         }
                         else if (parts[1] == Building.STORE)
                         {
@@ -318,18 +322,36 @@
                      if (label == null) {
                         label = "!!! " + element;
                      }
-                     var newValueString: String = newValue.toString();
-                     var currentValueString: String = currentValue.toString();
+                     
+                     var newValueString: String;
+                     var currentValueString: String;
                      var diffString: String;
                      
-                     if (useRounding)
+                     if (hourly)
                      {
-                        diffString = MathUtil.round(newValue - currentValue, 
-                           Config.getRoundingPrecision()).toString();
+                        newValue = newValue * 3600;
+                        currentValue = currentValue * 3600;
+                        newValueString = NumberUtil.toShortString(newValue)+ ' / ' +
+                           Localizer.string('General', 'hour.short');
+                        currentValueString = NumberUtil.toShortString(currentValue)+ ' / ' +
+                           Localizer.string('General', 'hour.short');
+                        diffString = NumberUtil.toShortString(newValue - currentValue)+ ' / ' +
+                           Localizer.string('General', 'hour.short');
                      }
                      else
                      {
-                        diffString = (newValue - currentValue).toString();
+                        newValueString = newValue.toString();
+                        currentValueString = currentValue.toString();
+                        
+                        if (useRounding)
+                        {
+                           diffString = MathUtil.round(newValue - currentValue, 
+                              Config.getRoundingPrecision()).toString();
+                        }
+                        else
+                        {
+                           diffString = (newValue - currentValue).toString();
+                        }
                      }
                      
                      if (element.indexOf('hopTime') != -1)
@@ -652,9 +674,11 @@
                      <s:Group left="240" top="13" right="0">
                         <s:Group left="16" toolTip="{_infoModel.armorType != null
                                  ? Localizer.string('InfoScreen', 'armor.'+ _infoModel.armorType):''}">
-                           <s:BitmapImage visible="{_infoModel.armorType != null}" width="32"
+                           <s:BitmapImage width="32"
                                           source="{IMG.getImage(AssetNames.getIconImageName(
-                                          _infoModel.armorType))}"/>
+                                          (_infoModel.armorType != null
+                                          ?_infoModel.armorType
+                                          :'none')))}"/>
                            <s:Label text="{_infoModel.name}" styleName="h1" color="#eec500" paddingLeft="6" paddingTop="10"/>
                            <s:layout>
                               <s:HorizontalLayout/>

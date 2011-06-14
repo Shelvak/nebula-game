@@ -23,9 +23,12 @@ package models.objectives
          var klass: String = ModelUtil.getModelClass(objective.key);
          var result: String = Localizer.string('Objectives', 'objectiveText.'+objective.type+
             (klass != ObjectClass.TECHNOLOGY ? '' 
-               : (classOnly ? 'TechClass' : 'Tech')), 
+               : (classOnly ? 'TechClass' : 'Tech')),
             [ObjectStringsResolver.getString(classOnly ? objective.key
-               : ModelUtil.getModelSubclass(objective.key), ObjectFormType.WHAT,
+               : ModelUtil.getModelSubclass(objective.key), 
+               (klass == ObjectClass.TECHNOLOGY && !classOnly
+                  ?ObjectFormType.WHOS
+                  :ObjectFormType.WHAT),
                objective.count), objective.level]);
          if (result == null || result == '')
          {

@@ -31,6 +31,13 @@ package utils.locale
       }
       
       
+      private var _data:XML;
+      public function get data() : XML
+      {
+         return _data;
+      }
+      
+      
       private var _loadSuccessful:Boolean;
       /**
        * Will be true if XML file with locale data was loaded successfully. If <code>false</code>,
@@ -73,7 +80,7 @@ package utils.locale
       
       private function loader_completeHandler(event:Event) : void
       {
-         var data:XML = new XML(_loader.data);
+         _data = new XML(_loader.data);
          for each (var bundleData:XML in data.children())
          {
             Localizer.addBundle(new XMLBundle(_locale, bundleData.name(), bundleData));

@@ -507,6 +507,7 @@ assets:
         light.png: LightArmorIcon.png
         normal.png: NormalArmorIcon.png
         heavy.png: HeavyArmorIcon.png
+        none.png:  32x32_none_armor.png
         fortified.png: FortifiedArmorIcon.png
         stance0.png: StanceNeutralIcon.png
         stance1.png: StanceDefensiveIcon.png
@@ -821,7 +822,8 @@ assets:
         warning_sign.png:                Y_warning.png
         exploration_clock.png:           Exploration_clock.png
         first_login_background.png:      Start_quest.png
-        small_arrow.png:      RatesArrow.png
+        small_arrow.png:                 RatesArrow.png
+        daily_bonus_panel.png:           Dailybonus_panel.png
 
       "info_screen":
         line.png: Info_name.png

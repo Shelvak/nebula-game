@@ -7,7 +7,8 @@
                 addedToStage="itemrenderer1_addedToStageHandler(event)"
                 removedFromStage="itemrenderer1_removedFromStageHandler(event)"
                 minWidth="5" minHeight="{TITLE_HEIGHT}"
-                enabled="{!quest.pending}" autoDrawBackground="false">
+                autoDrawBackground="false">
+   <!--enabled="{!quest.pending}"-->
    
    <s:states>
       <s:State name="normal"/>

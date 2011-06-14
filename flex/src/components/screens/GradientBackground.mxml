@@ -6,8 +6,6 @@
    
    <fx:Script>
       <![CDATA[
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
          [Bindable]
          /**
           * Width of the gradient on both sides.
@@ -31,8 +29,7 @@
    </s:Rect>
    
    <!-- content rect background -->
-   <s:BitmapImage width="100%" fillMode="repeat"
-                  source="{ImagePreloader.getInstance().getImage(AssetNames.UI_IMAGES_FOLDER + 'main_background')}"/>
+   <s:BitmapImage width="100%" fillMode="repeat" source="@Embed(source='/main_background.png')"/>
    
    <!-- right fade -->
    <s:Rect width="{gradientWidth}">

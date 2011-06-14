@@ -3,6 +3,7 @@
                     xmlns:s="library://ns.adobe.com/flex/spark"
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*"
+                    xmlns:screens="components.screens.*"
                     width="100%" height="100%"
                     creationComplete="this_creationCompleteHandler()"
                     addedToStage="this_addedToStageHandler(event)">
@@ -17,7 +18,10 @@
          
          import mx.controls.Alert;
          
-         import utils.assets.AssetNames;
+         import utils.MathUtil;
+         import utils.UrlNavigate;
+         import utils.assets.events.ImagePreloaderEvent;
+         import utils.locale.Localizer;
          import utils.locale.XMLBundlesLoader;
          
          
@@ -71,6 +75,14 @@
          {
             if (_bundlesLoader.loadSuccessful)
             {
+               lblPleaseWait.text = getString('label.pleaseWait');
+               lblTipLabel.text = getString('label.tip');
+               
+               var tipsTotal:int = _bundlesLoader.data.child("Tips").children().length();
+               var randomTip:int = Math.round(MathUtil.randomBetween(0, tipsTotal - 1));
+               lblTipText.text = Localizer.string("Tips", "tip." + randomTip);
+               imgTip.source = UrlNavigate.getInstance().getTipImageUrl(randomTip);
+               
                loadImages();
             }
             else
@@ -86,12 +98,19 @@
          /* ############## */
          
          
+         private function IMG_unpackProgressHandler(event:ImagePreloaderEvent) : void
+         {
+            unpackProgress.setProgress(IMG.currentUnpackingProgress, 1);
+         }
+         
+         
          /**
           * Starts downloading images.
           */
          private function loadImages() : void
          {
             IMG.addEventListener(ProgressEvent.PROGRESS, imageLoaded);
+            IMG.addEventListener(ImagePreloaderEvent.UNPACK_PROGRESS, IMG_unpackProgressHandler);
             IMG.addEventListener(Event.COMPLETE, imagesLoadComplete);
             IMG.startDownload();
          }
@@ -102,7 +121,7 @@
           */ 
          private function imageLoaded(event:ProgressEvent) : void
          {
-            progress.setProgress(event.bytesLoaded, event.bytesTotal);
+            downloadProgress.setProgress(event.bytesLoaded, event.bytesTotal);
          }
          
          
@@ -112,24 +131,69 @@
          private function imagesLoadComplete(event:Event) : void
          {
             DisplayManager.setFPSForGame();
-            // Now we can set background image
-            (parentApplication as SpaceGame).backgroundImage = IMG.getImage(AssetNames.BACKGROUND_IMAGE);
             IMG.removeEventListener(ProgressEvent.PROGRESS, imageLoaded);
+            IMG.removeEventListener(ImagePreloaderEvent.UNPACK_PROGRESS, IMG_unpackProgressHandler);
             IMG.removeEventListener(Event.COMPLETE, imagesLoadComplete);
             ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
             StartupManager.initializeApp();
          }
+         
+         
+         /* ############### */
+         /* ### HELPERS ### */
+         /* ############### */
+         
+         
+         private function getString(property:String, parameters:Array = null) : String
+         {
+            return Localizer.string("LoadingScreen", property, parameters);
+         }
       ]]>
    </fx:Script>
    
-   <s:Group verticalCenter="0" horizontalCenter="0" width="200">
+   <screens:GradientBackground gradientWidth="{(this.width - contentGroup.width) / 2}"
+                               left="0" right="0" top="0" bottom="0"/>
+   
+   <s:Group id="contentGroup" verticalCenter="0" horizontalCenter="0">
       <s:layout>
-         <s:VerticalLayout horizontalAlign="center"/>
+         <s:VerticalLayout horizontalAlign="center" gap="15"/>
       </s:layout>
-      <s:Label text="Loading images. Please stand by..."/>
-      <mx:ProgressBar id="progress" width="100%" height="12" mode="manual"/>
-      <mx:Spacer height="16"/>
-      <s:Label id="lblFileName" text="{IMG.currentModuleLabel}"/>
+      <s:Group>
+         <s:BitmapImage source="@Embed(source='/loading_panel.png')"/>
+         <s:Group left="0" right="0" top="0" bottom="0">
+            <s:layout>
+               <s:VerticalLayout paddingTop="16" paddingLeft="40" paddingRight="40" gap="7"
+                                 horizontalAlign="center"/>
+            </s:layout>
+            <s:Label id="lblPleaseWait"/>
+            <mx:ProgressBar id="downloadProgress" width="100%" mode="manual" label="" labelPlacement="center"
+                            trackHeight="12" height="12"/>
+            <s:Label text="Loading {downloadProgress.value}%" fontWeight="bold" typographicCase="uppercase"/>
+            <s:Label id="lblFileName" showTruncationTip="false" maxWidth="300"
+                     maxDisplayedLines="1" text="{IMG.currentModuleLabel}" color="0xAFAFAF"/>
+            <mx:ProgressBar id="unpackProgress" width="100%" mode="manual" label="" labelPlacement="center"
+                            height="12" trackHeight="12"/>
+         </s:Group>
+      </s:Group>
+      <s:Group width="675" height="214">
+         <s:Rect left="0" right="0" top="0" bottom="0" radiusX="16">
+            <s:fill><s:SolidColor alpha="0.3"/></s:fill>
+         </s:Rect>
+         <s:Group left="12" right="12" top="12" bottom="12">
+            <s:layout>
+               <s:HorizontalLayout gap="13" verticalAlign="middle"/>
+            </s:layout>
+            <mx:Image maintainAspectRatio="true" id="imgTip"/>
+            <s:Group width="100%" fontSize="13">
+               <s:layout>
+                  <s:VerticalLayout horizontalAlign="left" gap="3"/>
+               </s:layout>
+               <s:Label id="lblTipLabel" fontWeight="bold"/>
+               <s:Label id="lblTipText" text="" lineBreak="toFit"
+                        left="0" right="0"/>
+            </s:Group>
+         </s:Group>
+      </s:Group>
    </s:Group>
    
 </base:BaseContainer>

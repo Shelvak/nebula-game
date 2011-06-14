@@ -63,6 +63,7 @@ package models.quest
          return null;
       }
       
+      [Bindable (event="willNotChange")]
       public function get title(): String
       {
          var rTitle: String = Localizer.string('Quests', 'title.' + id);
@@ -73,6 +74,7 @@ package models.quest
          return rTitle;
       }
       
+      [Bindable (event="willNotChange")]
       public function get about(): String
       {
          var rAbout: String = Localizer.string('Quests', 'about.' + id);

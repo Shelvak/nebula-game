@@ -9,6 +9,8 @@
                     click="handleTechClick(event)">
    <fx:Script>
       <![CDATA[	
+         import components.base.Filters;
+         
          import config.Config;
          
          import controllers.screens.SidebarScreens;
@@ -35,20 +37,6 @@
          
          private static const FADE_DURATION: int = 800;
          private static const FADE_TO: Number = 0.3;
-         
-         //disabled filter
-         private static const disabledFilter: Array =[new ColorMatrixFilter([
-            0.7,0,0,0,0, //red
-            0,0.1,0,0,0, //green
-            0,0,0.1,0,0, //blue
-            0,0,0,1,0,])]; //alpha
-         
-         //demo filters properties
-         private static const demoFilter: Array =[new ColorMatrixFilter([
-            0.2,0,0,0,0, //red
-            0,0.2,0,0,0, //green
-            0,0,0.2,0,0, //blue
-            0,0,0,1,0,])]; //alpha
          
          public static const imageSize: int = 48;
          
@@ -126,7 +114,7 @@
                 (modelObj.upgradePart.upgradeEndsAt != null?[]:(
                 (!modelObj.isValid || (ML.player.warPoints &lt; 
                 Technology.getWarPoints(modelObj.type, modelObj.level+1))
-                )?demoFilter:(!canBeUpgraded?disabledFilter:[])))}"/>
+                )?Filters.GREY_FILTER:(!canBeUpgraded?Filters.RED_FILTER:[])))}"/>
       
       <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER+'technology_tree/clock')}"
                      top="0" left="0" visible="{modelObj.pauseRemainder > 0}"/>

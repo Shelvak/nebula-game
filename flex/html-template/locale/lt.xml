@@ -1181,8 +1181,16 @@
   </InfoScreen>
 
   <LoadingScreen>
+    <label.tip value="TIP:"/>
     <label.pleaseWait value="Kraunami paveiksliukai, prašome palaukti." />
+    <label.progress value="Kraunama {0}%"/>
   </LoadingScreen>
+  
+  <Tips>
+    <tip.0>Tip 0</tip.0>
+    <tip.1>Tip 1</tip.1>
+    <tip.2>Tip 2</tip.2>
+  </Tips>
 
   <Location>
     <label.open value="Atidaryti" />
@@ -1241,6 +1249,7 @@
     <label.unitsManagement value="Tvarkyti" />
     <label.showUnits value="Rodyti" />
     <label.move value="Judinti" />
+    <label.flightTime value="Skrydžio laikas: {0}" />
     <label.arrivesIn value="Atvyks po: {0}" />
     <label.arrivesAt value="Atvyks: {0}" />
     <label.owner value="Žaidėjo:" />
@@ -1399,8 +1408,8 @@
     <title.dailyBonus value="Dienos prizas" />
     <message.dailyBonus>
       <p>Sugrįžk kiekvieną dieną ir atsiimk savo dienos prizą!</p>
-      <p>Šiandien Tu gavai:</p>
     </message.dailyBonus>
+    <label.todayYouGot value="Šiandien Tu gavai:" />
     
     <title.boostPlanet value="Padidinti planetos resursus/talpą" />
     <message.areYouSure value="Ar esi tikras?" />
@@ -3416,8 +3425,10 @@
       value="Su {0 one[? planeta] tens[? planetų] many[? planetų]}" />
     <label.resources value="Resursai" />
     <label.transferResources value="Perkelti" />
+    <!-- 0 - resources string, 1 - 'is' or 'are' 
+    in lt we dont use parameter 1 -->
     <label.planetFull>
-      <p>Tu negali iškrauti {0} į šią planetą, nes {0} talpyklos {1} yra 
+      <p>Tu negali iškrauti {0} į šią planetą, nes {0} talpyklos yra 
       pilnos.</p>
     </label.planetFull>
     <label.transporterFull>

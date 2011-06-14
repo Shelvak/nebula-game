@@ -59,6 +59,7 @@
          <s:Label id="lblSpeedMax"
                   text="{sldChangeSpeed_dataTipFormatFunction(model.speedModifierMax * 100)}"/>
       </s:Group>
+      <s:Button id="btnReset" width="100%" label="{model.label_resetButton}" click="model.reset()"/>
       <s:Group width="100%">
          <s:layout>
             <s:VerticalLayout paddingTop="12" gap="10"/>
@@ -95,9 +96,6 @@
                    includeInLayout="{!model.playerHasEnoughCreds}"
                    label="{model.label_buyCredsButton}"
                    click="model.buyCreds()"/>
-         <s:Button id="btnReset"
-                   label="{model.label_resetButton}"
-                   click="model.reset()"/>
          <s:Button id="btnCancel"
                    label="{model.label_cancelButton}"
                    click="model.cancel()"/>

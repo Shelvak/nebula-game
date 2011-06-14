@@ -3,8 +3,8 @@
                 xmlns:s="library://ns.adobe.com/flex/spark" 
                 xmlns:mx="library://ns.adobe.com/flex/mx"
                 minWidth="5" minHeight="28"
-                enabled="{!Notification(data).pending}"
                 autoDrawBackground="false">
+   <!--enabled="{!Notification(data).pending}"-->
    
    
    <s:states>

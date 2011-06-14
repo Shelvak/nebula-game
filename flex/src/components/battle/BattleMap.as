@@ -1265,8 +1265,8 @@ package components.battle
          if (BattleConfig.getUnitDeathPassable(unitToRemove.getModel().type))
          {
             unitsMatrix.free(new Point(unitToRemove.xGridPos, unitToRemove.yGridPos),
-               new Point(unitToRemove.xGridPos + unitToRemove.getWidthInCells(GRID_CELL_WIDTH),
-                  unitToRemove.yGridPos + unitToRemove.getHeightInCells(GRID_CELL_HEIGHT)));
+               new Point(unitToRemove.xGridPos + unitToRemove.getWidthInCells(GRID_CELL_WIDTH) - 1,
+                  unitToRemove.yGridPos + unitToRemove.getHeightInCells(GRID_CELL_HEIGHT) - 1));
          }
          // TODO: make this normal
          units.removeValue(unitToRemove);

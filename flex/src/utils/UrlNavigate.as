@@ -24,6 +24,11 @@ package utils
          return 'http://' + StartupInfo.getInstance().webHost + '/';
       }
       
+      public function getTipImageUrl(tipId:int) : String
+      {
+         return urlRoot + "tips/" + tipId;
+      }
+      
       public function showUrl(path: String): void
       {
          navigateToURL(new URLRequest(urlRoot + path));

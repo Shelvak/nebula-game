@@ -209,9 +209,9 @@
          
          private function refreshPrice(): void
          {
-            var metal: int = deployInProgress ? 0 : getMetalPrice();
-            var energy: int = deployInProgress ? 0 : getEnergyPrice();
-            var zetium: int = deployInProgress ? 0 : getZetiumPrice();
+            var metal: int = getMetalPrice();
+            var energy: int = getEnergyPrice();
+            var zetium: int = getZetiumPrice();
             metalPrice = metal.toString();
             energyPrice = energy.toString();
             zetiumPrice = zetium.toString();
@@ -376,7 +376,7 @@
          [Bindable (event ="buildingsStatesChange")]
          private function getMetalPrice():int
          {
-            if (deployInProgress)
+            if (deployInProgress || (constructable != null && constructable.moving))
             {
                return 0;
             }
@@ -388,7 +388,7 @@
          [Bindable (event ="buildingsStatesChange")]
          private function getEnergyPrice():int
          {
-            if (deployInProgress)
+            if (deployInProgress || (constructable != null && constructable.moving))
             {
                return 0;
             }
@@ -400,7 +400,7 @@
          [Bindable (event ="buildingsStatesChange")]
          private function getZetiumPrice():int
          {
-            if (deployInProgress)
+            if (deployInProgress || (constructable != null && constructable.moving))
             {
                return 0;
             }
@@ -670,7 +670,8 @@
       <s:Group top="0" left="0" right="0" bottom="0" visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
          <base:Panel top="0" left="0" right="0" id="facilitiesPanel"
                      title="{Localizer.string ('BuildingSidebar','facilitiesTitle')}">
-            <base:AdvancedContainer id="facilitiesContainer" width="100%" top="0">
+            <base:AdvancedContainer id="facilitiesContainer" 
+                                    left="0" right="0" top="0">
                <s:Label id="noFacLabel" text="{Localizer.string ('BuildingSidebar','noFacilities')}"  
                         visible="{_buildingFacilities.length == 0}"/>
                <elements:BuildingFacilities id="facilities" height="{_buildingFacilities.length > 2?130:62}"

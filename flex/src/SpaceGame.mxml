@@ -67,13 +67,6 @@
          }
          
          
-         [Bindable]
-         /**
-          * Set by <code>LoadingScreen</code> when images have been downloaded.
-          * Skin class binds to this property.
-          */
-         public var backgroundImage:BitmapData = null;
-         
          protected function this_keyDownHandler(event:KeyboardEvent):void
          {
             if (event.ctrlKey && event.keyCode == Keyboard.SPACE)

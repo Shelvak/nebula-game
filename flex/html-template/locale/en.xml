@@ -1186,8 +1186,16 @@
   </InfoScreen>
 
   <LoadingScreen>
+    <label.tip value="TIP:"/>
     <label.pleaseWait value="Preloading images. Please stand by." />
+    <label.progress value="Loading {0}%"/>
   </LoadingScreen>
+  
+  <Tips>
+    <tip.0>Tip 0</tip.0>
+    <tip.1>Tip 1</tip.1>
+    <tip.2>Tip 2</tip.2>
+  </Tips>
 
   <Location>
     <label.open value="Open" />
@@ -1245,6 +1253,7 @@
     <label.unitsManagement value="Manage" />
     <label.showUnits value="Show" />
     <label.move value="Move" />
+    <label.flightTime value="Flight time: {0}" />
     <label.arrivesIn value="Arrives in: {0}" />
     <label.arrivesAt value="Arrives at: {0}" />
     <label.owner value="Owner:" />
@@ -1402,8 +1411,8 @@
     <title.dailyBonus value="Daily bonus" />
     <message.dailyBonus>
       <p>Come back every day and get your daily bonus!</p>
-      <p>Today you've got:</p>
     </message.dailyBonus>
+    <label.todayYouGot value="Today you've got:" />
     
     <title.boostPlanet value="Boost planet resources/storage" />
     <message.areYouSure value="Are you sure?" />
@@ -3434,6 +3443,7 @@
     <label.withPlanets value="With {0} planets" />
     <label.resources value="Resources" />
     <label.transferResources value="Transfer" />
+    <!-- 0 - resources string, 1 - 'is' or 'are' -->
     <label.planetFull>
       <p>You cannot unload {0} to this planet because {0} storage {1} full.</p>
     </label.planetFull>

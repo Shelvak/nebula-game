@@ -8,6 +8,7 @@ package controllers.objects.actions.customcontrollers
    
    import utils.DateUtil;
    import utils.SingletonFactory;
+   import utils.datastructures.Collections;
    
    
    public class CooldownController extends BaseObjectController
@@ -44,7 +45,11 @@ package controllers.objects.actions.customcontrollers
          }
          else
          {
-            MMapSpace(location.isGalaxy ? ML.latestGalaxy : ML.latestSolarSystem).addObject(cooldown);
+            var map:MMapSpace = MMapSpace(location.isGalaxy ? ML.latestGalaxy : ML.latestSolarSystem);
+            // Server often sends objects|created with a cooldown in the same location just
+            // before a few seconds it is about to be removed by the client
+            Collections.removeFirstEqualTo(map.cooldowns, cooldown, true);
+            map.addObject(cooldown);
          }
       }
    }
