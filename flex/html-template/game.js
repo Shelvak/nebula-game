@@ -84,7 +84,7 @@ function getGameOptions() {
   if (combatLogId) {
     document.title = "Combat Replay" + titleSuffix;
     return {mode: 'combatLog', server: server, logId: combatLogId, 
-      playerId: playerId, locale: locale};
+      playerId: playerId, locale: locale, webHost: webHost};
   }
   // Let's play the game!
   else if (authToken) {
