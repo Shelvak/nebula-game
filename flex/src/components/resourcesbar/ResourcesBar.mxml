@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                          xmlns:s="library://ns.adobe.com/flex/spark"
-                          xmlns:mx="library://ns.adobe.com/flex/halo"
-                          xmlns:custom="components.resourcesbar.*"
-                          xmlns:base="components.base.*">
+                    xmlns:s="library://ns.adobe.com/flex/spark"
+                    xmlns:mx="library://ns.adobe.com/flex/halo"
+                    xmlns:custom="components.resourcesbar.*"
+                    xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
          import models.resource.ResourceType;
@@ -46,46 +46,42 @@
                rollOut="{widen.stop(); fadeIn.stop();  shorten.play([infoPanel]); fadeOut.play([infoPanel])}" >
          <!-- content rect background -->
          <s:BitmapImage id="background" source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'resources_bar')}"/>
-         <s:Group width="100%" height="100%">
-            <s:Label left="24" top="6" fontSize="12" fontWeight="bold" color="#f4c300" 
-                     text="{Localizer.string('Resources', 'resources')}"/>
-            
-            <s:Group top="25" left="30">
-               <s:Label fontSize="12" fontWeight="bold" text="{Localizer.string('Resources', 'current')}" width="{COLUMN_WIDTH}"
-                        textAlign="center"/>
-               <s:Label fontSize="12" fontWeight="bold" text="{Localizer.string('Resources', 'max')}" width="{COLUMN_WIDTH}"
-                        textAlign="center"/>
-               <s:Label fontSize="12" fontWeight="bold" text="{Localizer.string('Resources', 'rates')}" width="{COLUMN_WIDTH}"
-                        textAlign="center"/>
-               <s:layout>
-                  <s:HorizontalLayout/>
-               </s:layout>
-            </s:Group>
-            <custom:ResourceDetailsComp left="13" top="40" resource="{ML.latestPlanet.ssObject.metal}" columnWidth="{COLUMN_WIDTH}"/>
-            <custom:ResourceDetailsComp left="13" top="90" resource="{ML.latestPlanet.ssObject.energy}" columnWidth="{COLUMN_WIDTH}"/>
-            <custom:ResourceDetailsComp left="13" top="140" resource="{ML.latestPlanet.ssObject.zetium}" columnWidth="{COLUMN_WIDTH}"/>
-            
+         
+         <s:Label left="24" top="6" fontSize="12" fontWeight="bold" color="#f4c300" 
+                  text="{Localizer.string('Resources', 'resources')}"/>
+         
+         <s:Group top="25" left="30">
+            <s:Label fontSize="12" fontWeight="bold" text="{Localizer.string('Resources', 'current')}" width="{COLUMN_WIDTH}"
+                     textAlign="center"/>
+            <s:Label fontSize="12" fontWeight="bold" text="{Localizer.string('Resources', 'max')}" width="{COLUMN_WIDTH}"
+                     textAlign="center"/>
+            <s:Label fontSize="12" fontWeight="bold" text="{Localizer.string('Resources', 'rates')}" width="{COLUMN_WIDTH}"
+                     textAlign="center"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
          </s:Group>
+         <custom:ResourceDetailsComp left="13" top="40" resource="{ML.latestPlanet.ssObject.metal}" columnWidth="{COLUMN_WIDTH}"/>
+         <custom:ResourceDetailsComp left="13" top="90" resource="{ML.latestPlanet.ssObject.energy}" columnWidth="{COLUMN_WIDTH}"/>
+         <custom:ResourceDetailsComp left="13" top="140" resource="{ML.latestPlanet.ssObject.zetium}" columnWidth="{COLUMN_WIDTH}"/>
+         
       </s:Group>
       <s:Group id="resourcesBarsGroup" bottom="0"
                rollOver="{shorten.stop(); widen.play([infoPanel])}"
                rollOut="{widen.stop(); shorten.play([infoPanel])}" >
-         <s:Group>
-            <custom:ResourceBar id="metalBar" _model="{ML.latestPlanet.ssObject.metal}" barWidth="{COLUMN_WIDTH - 10}"
-                                toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
-            <custom:ResourceBar id="energyBar" _model="{ML.latestPlanet.ssObject.energy}" barWidth="{COLUMN_WIDTH - 10}"
-                                toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
-            <custom:ResourceBar id="zetiumBar" _model="{ML.latestPlanet.ssObject.zetium}" barWidth="{COLUMN_WIDTH - 10}"
-                                toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
-            <s:layout>
-               <s:HorizontalLayout verticalAlign="middle"/>
-            </s:layout>
-         </s:Group>
+         <custom:ResourceBar id="metalBar" _model="{ML.latestPlanet.ssObject.metal}" barWidth="{COLUMN_WIDTH - 10}"
+                             toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+         <custom:ResourceBar id="energyBar" _model="{ML.latestPlanet.ssObject.energy}" barWidth="{COLUMN_WIDTH - 10}"
+                             toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+         <custom:ResourceBar id="zetiumBar" _model="{ML.latestPlanet.ssObject.zetium}" barWidth="{COLUMN_WIDTH - 10}"
+                             toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+         <s:layout>
+            <s:HorizontalLayout verticalAlign="middle"/>
+         </s:layout>
       </s:Group>
       <s:layout>
          <s:VerticalLayout gap="1" paddingBottom="2"/>
       </s:layout>
-      
    </s:Group>
 </base:BaseContainer>
 
