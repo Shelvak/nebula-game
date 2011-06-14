@@ -31,9 +31,11 @@ package utils.assets
    import mx.modules.ModuleManager;
    import mx.utils.ObjectUtil;
    
+   import utils.EventUtils;
    import utils.Objects;
    import utils.PropertiesTransformer;
    import utils.SingletonFactory;
+   import utils.assets.events.ImagePreloaderEvent;
    
    
    
@@ -52,6 +54,14 @@ package utils.assets
     * @eventType flash.events.Event.COMPLETE
     */
    [Event (name="complete", type="flash.events.Event")]
+   
+   
+   /**
+    * @see utils.assets.events.ImagePreloaderEvent#UNPACK_PROGRESS
+    * 
+    * @eventType utils.assets.events.ImagePreloaderEvent.UNPACK_PROGRESS
+    */
+   [Event(name="unpackProgress", type="utils.assets.events.ImagePreloaderEvent")]
    
    
    /**
@@ -98,6 +108,12 @@ package utils.assets
          _swfLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, swfLoaded);
          _swfLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
       }
+      
+      
+      /**
+       * Progress (precentage value) of unpacking of downloaded module.
+       */
+      public var currentUnpackingProgress:Number;
       
       
       [Bindable]
@@ -266,6 +282,7 @@ package utils.assets
       }
       private function downloadNextModule() : void
       {
+         currentUnpackingProgress = 0;
          if (_moduleInfo != null)
          {
             _moduleInfo.unload();
@@ -316,6 +333,7 @@ package utils.assets
       
       private var _swfLoader:Loader = null;
       private var _swfHash:Object = null;
+      private var _swfHashLength:int = 0;
       private var _swfNames:Vector.<String> = null;
       private var _currentSwfName:String = null;
       /**
@@ -330,6 +348,7 @@ package utils.assets
          {
             _swfNames.push(name);
          }
+         _swfHashLength = _swfNames.length;
          loadNextSWF();
       }
       private function loadNextSWF() : void
@@ -366,6 +385,11 @@ package utils.assets
          else
          {
             throw new Error("Unexpected asset type: " + getQualifiedClassName(instance));
+         }
+         currentUnpackingProgress = 1 - _swfNames.length / _swfHashLength;
+         if (_swfNames.length % 5 == 0)
+         {
+            dispatchUnpackProgressEvent();
          }
          loadNextSWF();
       }
@@ -474,12 +498,17 @@ package utils.assets
       
       private function dispatchProgressEvent(event:ModuleEvent) : void
       {
-         var modulesLoaded:Number = _modulesTotal - getModules().length;
-         var b:Number = 1 / _modulesTotal;
-         var currentProgress:Number = (modulesLoaded + event.bytesLoaded / event.bytesTotal) * b;
+         var modulesLoaded:Number = _modulesTotal - getModules().length - 1;
+         var currentProgress:Number = (modulesLoaded + event.bytesLoaded / event.bytesTotal) * (1 / _modulesTotal);
          event.bytesTotal = 100;
          event.bytesLoaded = currentProgress * 100;
          dispatchEvent(event);
+      }
+      
+      
+      private function dispatchUnpackProgressEvent() : void
+      {
+         EventUtils.dispatchSimpleEvent(this, ImagePreloaderEvent, ImagePreloaderEvent.UNPACK_PROGRESS);
       }
    }
 }
