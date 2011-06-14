@@ -1,6 +1,10 @@
 class Objective::BecomeVip < Objective
   # Hardcoded objective key.
   KEY = "Vip"
+  
+  def initial_completed(player_id)
+    Player.find(player_id).vip_level >= level ? 1 : 0
+  end
 
   def filter(players)
     players.accept { |player| player.vip_level >= level }

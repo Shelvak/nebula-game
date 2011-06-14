@@ -3,6 +3,27 @@ require File.expand_path(
 )
 
 describe Objective::BecomeVip do
+  describe "#initial_completed" do
+    before(:each) do
+      @objective = Factory.build(:o_become_vip, :level => 2, :count => 2)
+    end
+    
+    it "should return 1 if player satisfies vip" do
+      player = Factory.create(:player, :vip_level => 2)
+      @objective.initial_completed(player.id).should == 1
+    end
+    
+    it "should return 1 if player has greater vip level" do
+      player = Factory.create(:player, :vip_level => 3)
+      @objective.initial_completed(player.id).should == 1
+    end
+    
+    it "should return 0 if player does not have required vip" do
+      player = Factory.create(:player, :vip_level => 1)
+      @objective.initial_completed(player.id).should == 0
+    end
+  end
+  
   describe ".progress" do
     before(:each) do
       @player = Factory.create(:player, :vip_level => 2)
