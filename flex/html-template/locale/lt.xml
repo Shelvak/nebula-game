@@ -3238,6 +3238,16 @@
       efektas, o panaudojant zetiumą jų šarvuose, jie sugeria daugiau žalos.</p>
       <p>[reference:UnitUpgrade]</p>
     </Azure.about>
+    
+    <Zeus.name ref="Units/Zeus.name" />
+    <Zeus.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Zeus.about]</p>
+      <p>Ši technologija padidina tanko šaudmenų greitį ir, to pasekoje, 
+      žalą. Ji taip pat sustiprina tanko šarvus, jog jis galėtų atlaikyti 
+      daugiau smūgių.</p>
+      <p>[reference:UnitUpgrade]</p>
+    </Zeus.about>
 
     <Mdh.name ref="Units/Mdh.name" />
     <Mdh.about ref="Units/Mdh.common" />
@@ -3578,6 +3588,13 @@
       bėgti arba mirti. Tačiau azuro tankai yra gana lengvai pamušami, 
       todėl mūšio lauke turi būti saugomi stipriau šarvuotų pajėgų.</p>
     </Azure.about>
+    
+    <Zeus.name ref="Objects/Zeus" />
+    <Zeus.about>
+      <p>Šie masyvūs tankai įsitvirtina į žemę ir spjaudo savo šovinius į 
+      planetos orbitą. Jie buvo sukurti kovoti su priešo kosminiais laivais,
+      todėl negali taikytis į žemės karius.</p>
+    </Zeus.about>
 
     <Mdh.name ref="Objects/MDH" />
     <Mdh.common>
