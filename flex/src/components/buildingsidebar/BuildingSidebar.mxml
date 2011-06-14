@@ -670,7 +670,8 @@
       <s:Group top="0" left="0" right="0" bottom="0" visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
          <base:Panel top="0" left="0" right="0" id="facilitiesPanel"
                      title="{Localizer.string ('BuildingSidebar','facilitiesTitle')}">
-            <base:AdvancedContainer id="facilitiesContainer" width="100%" top="0">
+            <base:AdvancedContainer id="facilitiesContainer" 
+                                    left="0" right="0" top="0">
                <s:Label id="noFacLabel" text="{Localizer.string ('BuildingSidebar','noFacilities')}"  
                         visible="{_buildingFacilities.length == 0}"/>
                <elements:BuildingFacilities id="facilities" height="{_buildingFacilities.length > 2?130:62}"

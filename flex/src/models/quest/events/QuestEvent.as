@@ -4,6 +4,8 @@ package models.quest.events
    
    public class QuestEvent extends Event
    {
+      public static const COMPLETED_CHANGE:String = "completedChange";
+      
       public static const STATUS_CHANGE:String = "statusChange";
       
       public static const REFRESH_REQUESTED:String = "refreshRequested";
