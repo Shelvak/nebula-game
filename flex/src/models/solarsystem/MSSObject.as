@@ -30,6 +30,8 @@ package models.solarsystem
    import models.solarsystem.events.SSObjectEvent;
    import models.tile.TerrainType;
    
+   import mx.logging.Log;
+   
    import utils.DateUtil;
    import utils.MathUtil;
    import utils.NameResolver;
@@ -632,6 +634,11 @@ package models.solarsystem
        */
       public function get canInviteOwnerToAlliance() : Boolean
       {
+         Log.getLogger("models.solarsystem.MSSObject").info("{0}", this);
+         Log.getLogger("models.solarsystem.MSSObject")
+            .info("canInviteOwnerToAlliance()={0}: ML.player.canInviteToAlliance()={1}",
+               isOwned && !inBattleground && ML.player.canInviteToAlliance(_player.id),
+               ML.player.canInviteToAlliance(_player.id));
          return isOwned && !inBattleground && ML.player.canInviteToAlliance(_player.id);
       }
       
