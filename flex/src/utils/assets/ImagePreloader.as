@@ -498,9 +498,8 @@ package utils.assets
       
       private function dispatchProgressEvent(event:ModuleEvent) : void
       {
-         var modulesLoaded:Number = _modulesTotal - getModules().length;
-         var b:Number = 1 / _modulesTotal;
-         var currentProgress:Number = (modulesLoaded + event.bytesLoaded / event.bytesTotal) * b;
+         var modulesLoaded:Number = _modulesTotal - getModules().length - 1;
+         var currentProgress:Number = (modulesLoaded + event.bytesLoaded / event.bytesTotal) * (1 / _modulesTotal);
          event.bytesTotal = 100;
          event.bytesLoaded = currentProgress * 100;
          dispatchEvent(event);

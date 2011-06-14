@@ -5,7 +5,7 @@
                     xmlns:base="components.base.*"
                     width="100%" height="100%"
                     creationComplete="this_creationCompleteHandler()"
-                    addedToStage="this_addedToStageHandler(event)">
+                    addedToStage="this_addedToStageHandler(event)" xmlns:screens="components.screens.*">
    
    <fx:Script>
       <![CDATA[
@@ -120,7 +120,7 @@
           */ 
          private function imageLoaded(event:ProgressEvent) : void
          {
-            downloadProgress.setProgress(event.bytesLoaded * 100 / event.bytesTotal, 100);
+            downloadProgress.setProgress(event.bytesLoaded, event.bytesTotal);
          }
          
          
@@ -150,7 +150,10 @@
       ]]>
    </fx:Script>
    
-   <s:Group verticalCenter="0" horizontalCenter="0">
+   <screens:GradientBackground gradientWidth="{(this.width - contentGroup.width) / 2}"
+                               left="0" right="0" top="0" bottom="0"/>
+   
+   <s:Group id="contentGroup" verticalCenter="0" horizontalCenter="0">
       <s:layout>
          <s:VerticalLayout horizontalAlign="center" gap="15"/>
       </s:layout>
