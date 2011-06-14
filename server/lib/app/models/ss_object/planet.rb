@@ -249,11 +249,13 @@ class SsObject::Planet < SsObject
 
     scientist_count = 0
     population_count = 0
+    max_population_count = 0
     buildings.each do |building|
       if building.constructor? and building.working?
         constructable = building.constructable
         if constructable.is_a?(Unit)
           constructable.player = new_player
+          population_count += constructable.population
           constructable.save!
         end
 
@@ -269,7 +271,7 @@ class SsObject::Planet < SsObject
       scientist_count += building.scientists \
         if building.respond_to?(:scientists)
 
-      population_count += building.population \
+      max_population_count += building.population \
         if building.respond_to?(:population)
     end
 
@@ -283,11 +285,13 @@ class SsObject::Planet < SsObject
       end
     end
     
-    if population_count > 0
-      transaction do
-        old_player.population_max -= population_count if old_player
-        new_player.population_max += population_count if new_player
-      end
+    if old_player
+      old_player.population -= population_count
+      old_player.population_max -= max_population_count
+    end
+    if new_player
+      new_player.population += population_count
+      new_player.population_max += max_population_count
     end
 
     # Transfer all points to new player.
