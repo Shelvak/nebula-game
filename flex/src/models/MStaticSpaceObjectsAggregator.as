@@ -116,7 +116,7 @@ package models
                                             "are not in the same location (" + currentLocation + ")");
          }
          var objectOfSameType:IMStaticSpaceObject = findObjectOfType(newObject.objectType);
-         if (objectOfSameType)
+         if (objectOfSameType != null)
          {
             throw new IllegalOperationError("New object " + newObject + " is of the same objectType as " +
                                             "another object " + objectOfSameType + " in this list");
