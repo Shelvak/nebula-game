@@ -32,12 +32,12 @@ planet.resources.boost.cost: 2000
 # Vip [cost, creds per tick, vip duration]
 # Vips are enumerated in an ascending order.
 vip:
-  # VIP1, x2,1
-  - [5000,  1500, <%= 1.week %>]
-  # VIP2, x4,2
-  - [10000, 3000, <%= 2.weeks %>]
-  # VIP3, x6,3
-  - [20000, 4500, <%= 4.weeks %>]    
+  # VIP1, x2
+  - [5000,  1450, <%= 1.week %>]
+  # VIP2, x3
+  - [10000, 2150, <%= 2.weeks %>]
+  # VIP3, x4
+  - [20000, 2900, <%= 4.weeks %>]    
 
 # How often it is refreshed?
 vip.tick.duration: <%= 1.day %>

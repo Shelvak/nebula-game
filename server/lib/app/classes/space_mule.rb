@@ -238,7 +238,6 @@ class SpaceMule
       parsed
     end
   rescue SpaceMule::Crash => ex
-    gets
     initialize_mule
     # Notify that something went wrong
     raise ex

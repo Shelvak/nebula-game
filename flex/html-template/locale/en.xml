@@ -134,11 +134,11 @@
     <CollectorT3-whos ref="CollectorT3-what" />
 
     <ZetiumExtractor value="ZEX" />
-    <ZetiumExtractor-what value="{0 one[one ZEX-ą] many[? ZEX-us]}" />
+    <ZetiumExtractor-what value="{0 one[one ZEX] many[? ZEXes]}" />
     <ZetiumExtractor-whos ref="ZetiumExtractor-what" />
 
     <ZetiumExtractorT2 value="ZEX T-2" />
-    <ZetiumExtractorT2-what value="{0 one[one ZEX T-2] many[? ZEX's T-2]}" />
+    <ZetiumExtractorT2-what value="{0 one[one ZEX T-2] many[? ZEXes T-2]}" />
     <ZetiumExtractorT2-whos ref="ZetiumExtractorT2-what" />
     
     <!-- Storages -->
