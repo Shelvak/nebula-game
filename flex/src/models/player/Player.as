@@ -11,6 +11,7 @@ package models.player
    
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
+   import mx.logging.Log;
    import mx.utils.ObjectUtil;
    
    import utils.DateUtil;
@@ -220,6 +221,11 @@ package models.player
        */
       public function canInviteToAlliance(playerId:int) : Boolean
       {
+         Log.getLogger("models.player.Player").info("alliance: {0}", alliance.players);
+         Log.getLogger("models.player.Player").info("canInviteToAlliance({0})={1}",
+            playerId,
+            ownsAlliance && Collections.findFirstWithId(alliance.players, playerId) == null
+         );
          return ownsAlliance && Collections.findFirstWithId(alliance.players, playerId) == null;
       }
       
