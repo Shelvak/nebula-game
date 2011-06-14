@@ -111,9 +111,10 @@ function getGameOptions() {
 }
 
 // Get combat log URL for log with given ID.
-function getCombatLogUrl(id, playerId, server, webHost) {
-  return location.href.replace(location.search, '') + "?server=" + server + "&combat_log_id=" + id +
-     "&player_id=" + playerId + "&web_host=" + webHost;
+function getCombatLogUrl(id, playerId, server, webHost, locale) {
+  return location.href.replace(location.search, '') + "?server=" + server +
+    "&combat_log_id=" + id + "&player_id=" + playerId + "&web_host=" + webHost +
+    "locale=" + locale;
 }
 
 // Helper functions
