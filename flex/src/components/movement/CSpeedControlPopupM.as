@@ -387,7 +387,7 @@ package components.movement
       [Bindable(event="speedModifierChange")]
       public function get text_arrivesInLabel() : String
       {
-         return getString("label.arrivesIn", [DateUtil.secondsToHumanString(_arrivalDate.occuresIn)]);
+         return getString("label.flightTime", [DateUtil.secondsToHumanString(_arrivalDate.occuresIn)]);
       }
       
       
