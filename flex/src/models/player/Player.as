@@ -2,6 +2,8 @@ package models.player
 {
    import com.developmentarc.core.utils.EventBroker;
    
+   import config.Config;
+   
    import globalevents.GlobalEvent;
    
    import models.Reward;
@@ -176,22 +178,28 @@ package models.player
       
       [Optional]
       /**
-       * Id of alliance the player belongs to.
+       * Id of an alliance the player belongs to.
        */
       public var allianceId:int = 0;
       
       
       [Optional]
-      public var allianceCooldownEndsAt: Date;
-      
-      
       /**
-       * An alliance the player belongs to. This is not <code>null</code> only if <code>allianceId > 0</code>.
+       * Does the player owns his alliance?
        */
-      public function get alliance() : MAlliance
-      {
-         return ML.alliance;
-      }
+      public var allianceOwner:Boolean = false;
+      
+      
+      [Optional]
+      /**
+       * Number of members in the player's alliance. This is only not <code>0</code> if the player owns
+       * the alliance.
+       */
+      public var alliancePlayerCount:int = 0;
+      
+      
+      [Optional]
+      public var allianceCooldownEndsAt: Date;
       
       
       /**
@@ -204,30 +212,14 @@ package models.player
       
       
       /**
-       * Indicates if the player owns the alliance he/she belongs to.
+       * Checks if given player be invited to the alliance owned by the current player.
        */
-      public function get ownsAlliance() : Boolean
+      public function canInviteToAlliance(player:Player) : Boolean
       {
-         return alliance != null &&
-                alliance.ownerId == id;
-      }
-      
-      
-      /**
-       * Checks if a player with a given id can be invited to the alliance owned by the current player.
-       * 
-       * @param playerId id of a player.
-       * 
-       * @return <code>true</code> if a player can be invited to the alliance or <code>false</code> otherwise.
-       */
-      public function canInviteToAlliance(playerId:int) : Boolean
-      {
-         Log.getLogger("models.player.Player").info("alliance: {0}", alliance.players);
-         Log.getLogger("models.player.Player").info("canInviteToAlliance({0})={1}",
-            playerId,
-            ownsAlliance && Collections.findFirstWithId(alliance.players, playerId) == null
+         var maxAlliancePlayers:int = Config.getAllianceMaxPlayers(
+            ML.technologies.getTechnologyByType('alliances').level
          );
-         return ownsAlliance && Collections.findFirstWithId(alliance.players, playerId) == null;
+         return allianceOwner && player.allianceId != allianceId && alliancePlayerCount < maxAlliancePlayers;
       }
       
       

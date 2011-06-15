@@ -354,6 +354,11 @@ package config
          return types;
       }
       
+      public static function getAllianceMaxPlayers(techLevel:int) : int
+      {
+         return getTechnologyProperty("Alliances", "maxPlayers");
+      }
+      
       
       /* ############################ */
       /* ### UNITS CONFIG GETTERS ### */
