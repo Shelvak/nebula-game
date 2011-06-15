@@ -16,6 +16,7 @@
          import controllers.startup.StartupInfo;
          import controllers.startup.StartupManager;
          
+         import mx.binding.utils.BindingUtils;
          import mx.controls.Alert;
          
          import utils.MathUtil;
@@ -77,6 +78,7 @@
             {
                lblPleaseWait.text = getString('label.pleaseWait');
                lblTipLabel.text = getString('label.tip');
+               BindingUtils.bindSetter(setLblDownloadProgressText, downloadProgress, "value", false, true);
                
                var tipsTotal:int = _bundlesLoader.data.child("Tips").children().length();
                var randomTip:int = Math.round(MathUtil.randomBetween(0, tipsTotal - 1));
@@ -148,12 +150,17 @@
          {
             return Localizer.string("LoadingScreen", property, parameters);
          }
+         
+         
+         private function setLblDownloadProgressText(value:Number) : void
+         {
+            lblDownloadProgress.text = getString('label.progress', [downloadProgress.value]);
+         }
       ]]>
    </fx:Script>
    
-   <screens:GradientBackground
-           gradientWidth="{(this.width - contentGroup.width) / 2}"
-           left="0" right="0" top="0" bottom="0"/>
+   <screens:GradientBackground gradientWidth="{(this.width - contentGroup.width) / 2}"
+                               left="0" right="0" top="0" bottom="0"/>
    
    <s:Group id="contentGroup" verticalCenter="0" horizontalCenter="0">
       <s:layout>
@@ -171,9 +178,7 @@
             <mx:ProgressBar id="downloadProgress" width="100%" mode="manual"
                             label="" labelPlacement="center"
                             trackHeight="12" height="12"/>
-            <s:Label
-               text="{getString('label.progress', [downloadProgress.value])}"
-               fontWeight="bold" typographicCase="uppercase"/>
+            <s:Label id="lblDownloadProgress" fontWeight="bold" typographicCase="uppercase"/>
             <s:Label id="lblFileName" showTruncationTip="false" maxWidth="300"
                      maxDisplayedLines="1" text="{IMG.currentModuleLabel}"
                      color="0xAFAFAF"/>
