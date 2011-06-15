@@ -40,4 +40,16 @@ describe Objective::CompleteQuests do
       @objective.initial_completed(@player.id).should == 2
     end
   end
+
+  describe ".progress" do
+    it "should not progress complete achievements objective" do
+      objective = Factory.create(:o_complete_achievements, :count => 20)
+      op = Factory.create(:objective_progress, :objective => objective)
+      qp = Factory.create(:quest_progress, :player => op.player)
+      lambda do
+        Objective::CompleteQuests.progress(qp)
+        op.reload
+      end.should_not change(op, :completed)
+    end
+  end
 end

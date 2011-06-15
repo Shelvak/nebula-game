@@ -41,7 +41,18 @@ class Objective < ActiveRecord::Base
       # we have completed them.
       all_progresses = {}
       group_models(models).each do |klass, class_models|
-        objectives = where(:key => resolve_key(klass)).all
+        # :type is needed here because if we have STI like:
+        #
+        # class Objective::CompleteQuests < Objective
+        # class Objective::CompleteAchievements < Objective::CompleteQuests
+        #
+        # ``where(:key => resolve_key(klass)).all`` would actually return
+        # sql with "`type` IN ('CompleteQuests', 'CompleteAchievements')" for
+        # Objective::CompleteAchievements where we really just need
+        # "`type`="CompleteAchievements"``
+        #
+        objectives = where(:key => resolve_key(klass),
+                           :type => to_s.demodulize).all
         objectives.each do |objective|
           objective_models = objective.filter(class_models)
 
