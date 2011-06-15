@@ -1424,6 +1424,13 @@
       <p>Are you sure?</p>
     </message.selfDestruct>
 
+    <title.dismissUnits value="Dismiss units!" />
+    <message.dismissUnits>
+      <p>You are about to dismiss your units.</p>
+      <p>You won't be able to undo this action.</p>
+      <p>Are you sure?</p>
+    </message.dismissUnits>
+
     <title.renameAlliance value="Rename Alliance" />
     <message.renameAlliance>
       <p>You are about to rename your alliance to '{0}'.</p>

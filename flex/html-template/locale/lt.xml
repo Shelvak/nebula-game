@@ -1421,6 +1421,12 @@
       <p>Ar esi tikras?</p>
     </message.selfDestruct>
 
+    <title.dismissUnits value="Karių pašalinimas!" />
+    <message.dismissUnits>
+      <p>Pašalinus savo karius Tu negalėsi jų susigražinti atgal.</p>
+      <p>Ar esi tikras?</p>
+    </message.dismissUnits>
+
     <title.renameAlliance value="Pervadinti sąjungą" />
     <message.renameAlliance>
       <p>Tu nori pervadinti savo sąjungą į „{0}“.</p>
