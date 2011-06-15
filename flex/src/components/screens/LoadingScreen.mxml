@@ -151,8 +151,9 @@
       ]]>
    </fx:Script>
    
-   <screens:GradientBackground gradientWidth="{(this.width - contentGroup.width) / 2}"
-                               left="0" right="0" top="0" bottom="0"/>
+   <screens:GradientBackground
+           gradientWidth="{(this.width - contentGroup.width) / 2}"
+           left="0" right="0" top="0" bottom="0"/>
    
    <s:Group id="contentGroup" verticalCenter="0" horizontalCenter="0">
       <s:layout>
@@ -162,16 +163,22 @@
          <s:BitmapImage source="@Embed(source='/loading_panel.png')"/>
          <s:Group left="0" right="0" top="0" bottom="0">
             <s:layout>
-               <s:VerticalLayout paddingTop="16" paddingLeft="40" paddingRight="40" gap="7"
+               <s:VerticalLayout paddingTop="16" paddingLeft="40"
+                                 paddingRight="40" gap="7"
                                  horizontalAlign="center"/>
             </s:layout>
             <s:Label id="lblPleaseWait"/>
-            <mx:ProgressBar id="downloadProgress" width="100%" mode="manual" label="" labelPlacement="center"
+            <mx:ProgressBar id="downloadProgress" width="100%" mode="manual"
+                            label="" labelPlacement="center"
                             trackHeight="12" height="12"/>
-            <s:Label text="Loading {downloadProgress.value}%" fontWeight="bold" typographicCase="uppercase"/>
+            <s:Label
+               text="{getString('label.progress', [downloadProgress.value])}"
+               fontWeight="bold" typographicCase="uppercase"/>
             <s:Label id="lblFileName" showTruncationTip="false" maxWidth="300"
-                     maxDisplayedLines="1" text="{IMG.currentModuleLabel}" color="0xAFAFAF"/>
-            <mx:ProgressBar id="unpackProgress" width="100%" mode="manual" label="" labelPlacement="center"
+                     maxDisplayedLines="1" text="{IMG.currentModuleLabel}"
+                     color="0xAFAFAF"/>
+            <mx:ProgressBar id="unpackProgress" width="100%" mode="manual"
+                            label="" labelPlacement="center"
                             height="12" trackHeight="12"/>
          </s:Group>
       </s:Group>
