@@ -86,8 +86,8 @@
 
       ]]>
    </fx:Script>
-   <s:Group maxWidth="400">
-      <s:Label maxWidth="400" text="{Localizer.string('Popups', 'message.dailyBonus')}"
+   <s:Group maxWidth="300">
+      <s:Label maxWidth="300" text="{Localizer.string('Popups', 'message.dailyBonus')}"
                id="topLbl" horizontalCenter="0"/>
       <s:BitmapImage top="{topLbl.height + 10}" id="contentBackground" 
                      source="{ImagePreloader.getInstance().getImage(
@@ -95,7 +95,8 @@
       <s:Label text="{Localizer.string('Popups', 'label.todayYouGot')}" paddingLeft="60"
                top="{topLbl.height + 15}"/>
       <base:AdvancedContainer width="{contentBackground.width}" 
-                              top="{topLbl.height + 40}">
+                              top="{topLbl.height + 30}" 
+                              height="{contentBackground.height - 10}">
          <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{bonus.metal}"
                              visible="{bonus.metal != 0}"
                              toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
@@ -136,13 +137,13 @@
             </s:layout>
          </s:DataGroup>
          <base:layout>
-            <s:VerticalLayout paddingTop="6" horizontalAlign="center"/>
+            <s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
          </base:layout>
       </base:AdvancedContainer>
-      <base:AdvancedContainer top="{topLbl.height + contentBackground.height + 30}" 
+      <base:AdvancedContainer top="{topLbl.height + contentBackground.height + 20}" 
                               horizontalCenter="0">
          <base:Warning text="{Localizer.string('Quests', 'warning.wontFit', [notFitting])}"
-                       visible="{notFitting != null}" maxWidth="400"/>
+                       visible="{notFitting != null}" maxWidth="300"/>
          <s:Group>
             <s:Label text="{Localizer.string('Quests', 'label.choosePlanet')}" styleName="h3"/>
             <base:PlanetSelector id="planetSelector" minWidth="180" 
