@@ -1208,7 +1208,8 @@
                   <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'move')}" 
                               visible="{_selectedModel.managable
                               &amp;&amp; !_selectedModel.npc &amp;&amp; !_selectedModel.isGhost
-                              &amp;&amp; _selectedModel.upgradePart.upgradeEndsAt == null}">
+                              &amp;&amp; _selectedModel.upgradePart.upgradeEndsAt == null
+                              &amp;&amp; _selectedModel.state != 2}">
                      <base:AdvancedContainer left="0" right="0">
                         <s:Label text="{Localizer.string('Credits', 'label.movePrice', [Config.getMoveCredits()])}"/>
                         <s:Group>
