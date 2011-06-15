@@ -9,7 +9,9 @@ upgradable.speed_up:
   - [<%= 2.hours %> / speed, 300]
   - [<%= 6.hours %> / speed, 500]
   - [<%= 12.hours %> / speed, 750]
-  - [<%= Creds::ACCELERATE_INSTANT_COMPLETE %>, 1000]
+  - [<%= 1.day %> / speed, 1000]
+  - [<%= 2.days %> / speed, 1500]
+  - [<%= Creds::ACCELERATE_INSTANT_COMPLETE %>, 2000]
 
 # Cost to move building from one spot to another
 building.move: 200
@@ -32,12 +34,12 @@ planet.resources.boost.cost: 2000
 # Vip [cost, creds per tick, vip duration]
 # Vips are enumerated in an ascending order.
 vip:
-  # VIP1, x2,1
-  - [5000,  1500, <%= 1.week %>]
-  # VIP2, x4,2
-  - [10000, 3000, <%= 2.weeks %>]
-  # VIP3, x6,3
-  - [20000, 4500, <%= 4.weeks %>]    
+  # VIP1, x2
+  - [5000,  1450, <%= 1.week %>]
+  # VIP2, x3
+  - [10000, 2150, <%= 2.weeks %>]
+  # VIP3, x4
+  - [20000, 2900, <%= 4.weeks %>]    
 
 # How often it is refreshed?
 vip.tick.duration: <%= 1.day %>

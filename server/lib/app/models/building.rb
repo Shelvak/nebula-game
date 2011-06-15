@@ -250,7 +250,8 @@ class Building < ActiveRecord::Base
       destroy
     end
 
-    EventBroker.fire(planet, EventBroker::CHANGED)
+    EventBroker.fire(planet, EventBroker::CHANGED, 
+      EventBroker::REASON_OWNER_PROP_CHANGE)
   end
 
   # Moves building to new coordinates using creds.

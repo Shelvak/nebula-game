@@ -53,8 +53,8 @@ class Unit < ActiveRecord::Base
   end
 
   def to_s
-    "<%s id=%d hp=%d/%d (%3.2f%%) xp=%d level=%d player_id=%s>" % [
-      self.class.to_s, id, hp, hit_points, hp_percentage * 100, xp, level, 
+    "<%s id=%s hp=%d/%d (%3.2f%%) xp=%d level=%d player_id=%s>" % [
+      self.class.to_s, id.to_s, hp, hit_points, hp_percentage * 100, xp, level, 
       player_id.to_s
     ]
   end

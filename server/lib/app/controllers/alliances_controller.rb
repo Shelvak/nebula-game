@@ -167,6 +167,7 @@ class AlliancesController < GenericController
   # - description (String)
   # - owner_id (Fixnum): ID of the alliance owner.
   # - players (Hash[]): Alliance#player_ratings
+  # - victory_points (Fixnum): number of alliance victory points
   #
   def action_show
     param_options :required => %w{id}
@@ -175,7 +176,8 @@ class AlliancesController < GenericController
     respond :name => alliance.name,
       :description => alliance.description,
       :owner_id => alliance.owner_id,
-      :players => alliance.player_ratings
+      :players => alliance.player_ratings,
+      :victory_points => alliance.victory_points
   end
 
   # Edits an alliance.

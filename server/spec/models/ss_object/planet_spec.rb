@@ -225,18 +225,37 @@ describe SsObject::Planet do
       @planet.save!
     end
 
-    it "should change player ids on all constructors building units" do
-      constructable = Factory.create(
-        :unit, :player => @old, :location => @planet
-      )
-      Factory.create(:b_constructor_with_constructable,
-        :planet => @planet,
-        :constructable => constructable
-      )
-      @planet.save!
-      lambda do
-        constructable.reload
-      end.should change(constructable, :player).from(@old).to(@new)
+    describe "constructors building units" do
+      before(:each) do
+        @constructable = Factory.create(
+          :unit, :player => @old, :location => @planet
+        )
+        Factory.create(:b_constructor_with_constructable,
+          :planet => @planet,
+          :constructable => @constructable
+        )
+      end
+    
+      it "should change constructable player ids" do
+        @planet.save!
+        lambda do
+          @constructable.reload
+        end.should change(@constructable, :player).from(@old).to(@new)
+      end
+      
+      it "should take population from old player" do
+        lambda do
+          @planet.save!
+          @old.reload
+        end.should change(@old, :population).by(- @constructable.population)
+      end
+      
+      it "should give population to new player" do
+        lambda do
+          @planet.save!
+          @new.reload
+        end.should change(@new, :population).by(@constructable.population)        
+      end
     end
 
     it "should clear constructor queues" do
@@ -287,7 +306,7 @@ describe SsObject::Planet do
         end
       end
     end
-
+    
     describe "population_max" do
       before(:each) do
         @housing = Factory.create(:b_housing, :planet => @planet)

@@ -136,7 +136,8 @@ describe Building do
     end
 
     it "should dispatch changed with planet" do
-      should_fire_event(@planet, EventBroker::CHANGED) do
+      should_fire_event(@planet, EventBroker::CHANGED,
+          EventBroker::REASON_OWNER_PROP_CHANGE) do
         @building.self_destruct!
       end
     end
