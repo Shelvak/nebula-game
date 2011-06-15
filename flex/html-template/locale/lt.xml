@@ -382,7 +382,7 @@
     <tick value="Ėjimas {0}/{1}" />
     <title.overallHp value="Viso gyvybių" />
     <pause value="SUSTABDYTA" />
-    <pressPlay value="Paspausk GROTI, kad pratęsti kovą" />
+    <pressPlay value="Paspausk PALEISTI, kad pratęsti kovą" />
   </BattleMap>
   
   <Messenger>
@@ -416,9 +416,7 @@
       <p>Jeigu sunaikinsi šį pastatą gausi:</p>
     </destructResources>
     <destructCooldown.total>
-      <p>
-        Sunaikinus šį pastatą negalėsi sunaikinti kito pastato {0}.
-      </p>
+      <p>Sunaikinus šį pastatą negalėsi sunaikinti kito pastato {0}.</p>
     </destructCooldown.total>
     <destructCooldown.remaining>
       <p>Galėsi sunaikinti šį pastatą po {0}.</p>
@@ -1305,7 +1303,7 @@
     <label.title value="Pranešimai" />
     <label.readAll value="Perskaityti visus" />
     <label.resourcesGained value="Gauta resursų" />
-    <label.wreckageLeft value="Liko liekanų" />
+    <label.wreckageLeft value="Liko nuolaužų" />
     <label.newColor value="Nauji pranešimai" />
     <label.notReadColor value="Neperskaityti pranešimai" />
     <label.readColor value="Perskaityti pranešimai" />
