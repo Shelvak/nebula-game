@@ -78,6 +78,7 @@
       <s:Label text="{player.sciencePoints}" width="80" textAlign="center"/>
       <s:Label text="{player.armyPoints}" width="80" textAlign="center"/>
       <s:Label text="{player.warPoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.victoryPoints}" width="80" textAlign="center"/>
       <s:Label text="{player.allianceVps}" width="80" textAlign="center"/>
       <s:Label text="{player.points}" width="80" textAlign="center"/>
       <s:Group width="80" visible="{player.allianceOwnerId == ML.player.id 

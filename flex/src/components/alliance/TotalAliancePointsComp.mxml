@@ -26,7 +26,7 @@
          <s:SolidColor color="#141414"/>
       </s:fill>
    </s:Rect>      
-   <s:Line xFrom="0" xTo="809" top="0">
+   <s:Line xFrom="0" xTo="890" top="0">
       <s:stroke>
          <s:SolidColorStroke color="0xffffff" weight="1"/>
       </s:stroke>
@@ -44,6 +44,7 @@
       <s:Label text="{alliance.totalArmyPoints}" width="80" textAlign="center"/>
       <s:Label text="{alliance.totalWarPoints}" width="80" textAlign="center"/>
       <s:Label text="{alliance.totalVictoryPoints}" width="80" textAlign="center"/>
+      <s:Label text="{alliance.totalAllianceVps}" width="80" textAlign="center"/>
       <s:Label text="{alliance.totalPoints}" width="80" textAlign="center"/>
       <s:Group width="80"/>
    </s:Group>

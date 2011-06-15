@@ -120,7 +120,8 @@
          private static const nameField: SortField = new SortField('name', true);
          private static const rankField: SortField = new SortField('rank', false, false, true);
          private static const allianceField: SortField = new SortField('alliance', true);
-         private static const victoryPtsField: SortField = new SortField('allianceVps', false, true, true);
+         private static const victoryPtsField: SortField = new SortField('victoryPoints', false, true, true);
+         private static const allianceVpsField: SortField = new SortField('allianceVps', false, true, true);
          private static const pointsField: SortField = new SortField('points', false, true, true);
          private static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
          private static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);
@@ -133,14 +134,15 @@
             {
                'rank':[rankField],
                'name':[nameField],
-               'alliance':[allianceField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'planetsCount':[planetsCountField, victoryPtsField, pointsField, nameField],
-               'economyPoints':[economyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'armyPoints':[armyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'warPoints':[warPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'allianceVps':[victoryPtsField, pointsField, planetsCountField, nameField],
-               'points':[pointsField, victoryPtsField, planetsCountField, nameField]
+               'alliance':[allianceField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'planetsCount':[planetsCountField, allianceVpsField, victoryPtsField, pointsField, nameField],
+               'economyPoints':[economyPtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'sciencePoints':[sciencePtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'armyPoints':[armyPtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'warPoints':[warPtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'victoryPoints':[victoryPtsField, allianceVpsField, pointsField, planetsCountField, nameField],
+               'allianceVps':[allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
+               'points':[pointsField, allianceVpsField, victoryPtsField, planetsCountField, nameField]
             }
          
          protected function header_ratingsSortHandler(event:RatingsEvent):void
@@ -261,16 +263,26 @@
             </base:layout>
             <s:Group>
                <s:layout>
-                  <s:HorizontalLayout/>
+                  <s:HorizontalLayout verticalAlign="middle" paddingBottom="3"/>
                </s:layout>
                <s:Label text="{getString('label.allianceOwner')}" 
-                        fontSize="14"/>
+                        fontSize="14" width="150"/>
                <s:Button label="{alliance.getPlayerName(alliance.ownerId)}"
                          click="NavigationController.getInstance().showPlayer(
                          alliance.ownerId)"
                          skinClass="components.skins.LinkButtonSkin"/>
             </s:Group>
-            <s:Label text="{getString('label.allianceDescription')}" fontSize="14"/>
+            <s:Group>
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="middle" paddingBottom="3"/>
+               </s:layout>
+               <s:Label text="{getString('label.totalAllianceVps')}"
+                        fontSize="14" width="150"/>
+               <s:Label text="{alliance.totalAllianceVps}" fontSize="14"/>
+            </s:Group>
+               
+            <s:Label text="{getString('label.allianceDescription')}" fontSize="14"
+                     paddingTop="6" fontWeight="bold"/>
             <s:TextArea id="desc" paddingBottom="6" width="100%" height="150" editable="{editing}"
                         fontSize="12" color="#eec500" fontWeight="bold"
                         maxChars="{Config.getMaxAllyDescriptionLength()}"
