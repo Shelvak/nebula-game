@@ -647,7 +647,7 @@
                            </s:Group>
                            <s:Label text="{Localizer.string('BuildingSelectedSidebar', 'status') + 
                                     ': ' + (_selectedModel.upgradePart.upgradeEndsAt != null?
-                                    (_selectedModel.level == 0?
+                                    (_selectedModel.upgradePart.level == 0?
                                     Localizer.string('BuildingSelectedSidebar', 'constructing'):
                                     Localizer.string('BuildingSelectedSidebar', 'upgrading')):' ')}" 
                                     visible="{_selectedModel.upgradePart.upgradeEndsAt != null}"/>
@@ -828,7 +828,7 @@
                   </s:Group>
                   
                   <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
-                              'selectedUpgradeCost')}" visible="{!(_selectedModel.level == Config.getBuildingMaxLevel(_selectedModel.type) 
+                              'selectedUpgradeCost')}" visible="{!(_selectedModel.upgradePart.level == Config.getBuildingMaxLevel(_selectedModel.type) 
                                                        || _selectedModel.npc || _selectedModel.upgradePart.upgradeEndsAt != null ||
                                                        _selectedModel.isGhost)}">
                      <s:Group>
@@ -976,7 +976,7 @@
                                            (_selectedModel.energyStorage != 0) ||
                                            (_selectedModel.zetiumStorage != 0) ||
                                            (Building.getPopulation(_selectedModel.type, 
-                                           _selectedModel.level) != 0)) &amp;&amp; !_selectedModel.isGhost}">
+                                           _selectedModel.upgradePart.level) != 0)) &amp;&amp; !_selectedModel.isGhost}">
                      <base:AdvancedContainer left="0" right="0">                        
                         <s:Group visible="{_selectedModel.metalStorage != 0}">
                            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
@@ -1024,13 +1024,13 @@
                         </s:Group>
                         
                         <s:Group visible="{Building.getPopulation(_selectedModel.type, 
-                                 _selectedModel.level) != 0}">
+                                 _selectedModel.upgradePart.level) != 0}">
                            <base:ImageAndLabel type="{ResourceType.POPULATION}" 
                                                textToDisplay="{Building.getPopulation(_selectedModel.type, 
-                                               _selectedModel.level)}"
+                                               _selectedModel.upgradePart.level)}"
                                                toolTip="{Localizer.string('Resources', ResourceType.POPULATION)}"/>
                            <base:NextValueComp textToDisplay="{Building.getPopulation(_selectedModel.type, 
-                                               _selectedModel.level + 1)}"
+                                               _selectedModel.upgradePart.level + 1)}"
                                                visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
                                                toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
                            <s:layout>
