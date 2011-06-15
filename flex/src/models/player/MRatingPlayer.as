@@ -34,8 +34,10 @@ package models.player
       public var planetsCount: int;
       [Optional]
       public var playersCount: int;
-      [Required]
+      [Optional]
       public var victoryPoints: int;
+      [Optional]
+      public var allianceVps: int;
       [Required]
       public var warPoints: int;
       [Required]

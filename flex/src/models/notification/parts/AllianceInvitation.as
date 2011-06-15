@@ -108,7 +108,7 @@ package models.notification.parts
             var errorMessage:String = "Unable to join the alliance '" + allianceName + "': "
             if (ML.player.belongsToAlliance)
             {
-               errorMessage += "player belongs to another alliance " + ML.player.alliance;
+               errorMessage += "player belongs to another alliance " + ML.player.allianceId;
             }
             else
             {

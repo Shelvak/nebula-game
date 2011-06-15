@@ -270,7 +270,7 @@ package components.movement
       
       
       /**
-       * Naivigates to a page where player can buy credits.
+       * Navigates to a page where player can buy credits.
        */
       public function buyCreds() : void
       {
@@ -370,6 +370,13 @@ package components.movement
             "message.combatCooldownInfo",
             [DateUtil.secondsToHumanString(Config.getPreBattleCooldownDuration())]
          );
+      }
+      
+      
+      [Bindable(event="willNotChange")]
+      public function get label_changeSpeed() : String
+      {
+         return getString("label.changeSpeed");
       }
       
       

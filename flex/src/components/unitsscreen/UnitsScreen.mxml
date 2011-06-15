@@ -10,6 +10,7 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.popups.ActionConfirmationPopup;
          import components.unitsscreen.events.UnitsScreenEvent;
          
          import controllers.ui.NavigationController;
@@ -36,6 +37,8 @@
          import mx.events.CollectionEvent;
          import mx.events.CollectionEventKind;
          import mx.events.FlexEvent;
+         
+         import spark.components.Button;
          
          import utils.datastructures.Collections;
          import utils.locale.Localizer;
@@ -425,12 +428,25 @@
          
          protected function confirmDismiss(e: GUnitsScreenEvent):void
          {
-            new UnitsCommand(
-               UnitsCommand.DISMISS,
-               {planetId: ML.latestPlanet.id,
-                  unitIds: selectionIds}
-            ).dispatch ();
-            new GUnitsScreenEvent(GUnitsScreenEvent.DESELECT_UNITS);
+            
+            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+            var lbl: Label = new Label();
+            lbl.minWidth = 300;
+            lbl.text = Localizer.string('Popups', 'message.dismissUnits');
+            popUp.addElement(lbl);
+            popUp.title = Localizer.string('Popups', 'title.dismissUnits');
+            popUp.confirmButtonClickHandler = function (button: Button = null): void
+            {
+               new UnitsCommand(
+                  UnitsCommand.DISMISS,
+                  {planetId: ML.latestPlanet.id,
+                     unitIds: selectionIds}
+               ).dispatch ();
+               new GUnitsScreenEvent(GUnitsScreenEvent.DESELECT_UNITS);
+            };
+            popUp.show();
          }
          
          private function get selectionIds(): Array

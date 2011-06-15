@@ -426,14 +426,15 @@
          {              
             if (canDestroyBuilding)
             {
-               var popUp: ErrorPopup = new ErrorPopup();
-               popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
+               var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+               popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
                popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-               popUp.showCancelButton = true;
-               popUp.showRetryButton = true;
-               popUp.message = Localizer.string('Popups', 'message.selfDestruct', [_selectedModel.name]);
+               var lbl: Label = new Label();
+               lbl.minWidth = 300;
+               lbl.text = Localizer.string('Popups', 'message.selfDestruct', [_selectedModel.name]);
+               popUp.addElement(lbl);
                popUp.title = Localizer.string('Popups', 'title.selfDestruct');
-               popUp.retryButtonClickHandler = function (button: Button = null): void
+               popUp.confirmButtonClickHandler = function (button: Button = null): void
                {
                   new BuildingsCommand(BuildingsCommand.SELF_DESTRUCT, {'model': _selectedModel,
                      'withCreds': false}).dispatch();
@@ -572,14 +573,15 @@
             }
             else
             {
-               var popUp: ErrorPopup = new ErrorPopup();
-               popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
+               var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+               popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
                popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-               popUp.showCancelButton = true;
-               popUp.showRetryButton = true;
-               popUp.message = Localizer.string('Popups', 'message.areYouSure');
+               var lbl: Label = new Label();
+               lbl.minWidth = 300;
+               lbl.text = Localizer.string('Popups', 'message.areYouSure');
+               popUp.addElement(lbl);
                popUp.title = Localizer.string('Popups', 'title.boostPlanet');
-               popUp.retryButtonClickHandler = function (button: Button = null): void
+               popUp.confirmButtonClickHandler = function (button: Button = null): void
                {
                   GlobalFlags.getInstance().lockApplication = true;
                   EventBroker.subscribe(GCreditEvent.BOOST_CONFIRMED, refreshResource);
@@ -645,7 +647,7 @@
                            </s:Group>
                            <s:Label text="{Localizer.string('BuildingSelectedSidebar', 'status') + 
                                     ': ' + (_selectedModel.upgradePart.upgradeEndsAt != null?
-                                    (_selectedModel.level == 0?
+                                    (_selectedModel.upgradePart.level == 0?
                                     Localizer.string('BuildingSelectedSidebar', 'constructing'):
                                     Localizer.string('BuildingSelectedSidebar', 'upgrading')):' ')}" 
                                     visible="{_selectedModel.upgradePart.upgradeEndsAt != null}"/>
@@ -826,7 +828,7 @@
                   </s:Group>
                   
                   <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
-                              'selectedUpgradeCost')}" visible="{!(_selectedModel.level == Config.getBuildingMaxLevel(_selectedModel.type) 
+                              'selectedUpgradeCost')}" visible="{!(_selectedModel.upgradePart.level == Config.getBuildingMaxLevel(_selectedModel.type) 
                                                        || _selectedModel.npc || _selectedModel.upgradePart.upgradeEndsAt != null ||
                                                        _selectedModel.isGhost)}">
                      <s:Group>
@@ -974,7 +976,7 @@
                                            (_selectedModel.energyStorage != 0) ||
                                            (_selectedModel.zetiumStorage != 0) ||
                                            (Building.getPopulation(_selectedModel.type, 
-                                           _selectedModel.level) != 0)) &amp;&amp; !_selectedModel.isGhost}">
+                                           _selectedModel.upgradePart.level) != 0)) &amp;&amp; !_selectedModel.isGhost}">
                      <base:AdvancedContainer left="0" right="0">                        
                         <s:Group visible="{_selectedModel.metalStorage != 0}">
                            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
@@ -1022,13 +1024,13 @@
                         </s:Group>
                         
                         <s:Group visible="{Building.getPopulation(_selectedModel.type, 
-                                 _selectedModel.level) != 0}">
+                                 _selectedModel.upgradePart.level) != 0}">
                            <base:ImageAndLabel type="{ResourceType.POPULATION}" 
                                                textToDisplay="{Building.getPopulation(_selectedModel.type, 
-                                               _selectedModel.level)}"
+                                               _selectedModel.upgradePart.level)}"
                                                toolTip="{Localizer.string('Resources', ResourceType.POPULATION)}"/>
                            <base:NextValueComp textToDisplay="{Building.getPopulation(_selectedModel.type, 
-                                               _selectedModel.level + 1)}"
+                                               _selectedModel.upgradePart.level + 1)}"
                                                visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
                                                toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
                            <s:layout>
@@ -1206,7 +1208,8 @@
                   <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 'move')}" 
                               visible="{_selectedModel.managable
                               &amp;&amp; !_selectedModel.npc &amp;&amp; !_selectedModel.isGhost
-                              &amp;&amp; _selectedModel.upgradePart.upgradeEndsAt == null}">
+                              &amp;&amp; _selectedModel.upgradePart.upgradeEndsAt == null
+                              &amp;&amp; _selectedModel.state != 2}">
                      <base:AdvancedContainer left="0" right="0">
                         <s:Label text="{Localizer.string('Credits', 'label.movePrice', [Config.getMoveCredits()])}"/>
                         <s:Group>

@@ -338,9 +338,11 @@
       <p>Jeigu nori įstoti į jau egzistuojančią sąjungą, turi iš tos sąjungos 
       gauti pakvietimą.</p>
     </label.noAlly>
+    <label.allianceOwner value="Sąjungos įkūrėjas:" />
+    <label.totalAllianceVps value="Sąjungos pergalės taškai:" />
     <label.name value="Sąjungos vardas:" />
     <label.editDescription value="Keisti aprašymą" />
-    <label.allianceDescription value="Sąjungos aprašymas:"/>
+    <label.allianceDescription value="Sąjungos aprašymas"/>
     <label.save value="Išsaugoti" />
     <label.cancel value="Atšaukti" />
     <label.close value="Uždaryti" />
@@ -1279,6 +1281,7 @@
     <label.unitsManagement value="Tvarkyti" />
     <label.showUnits value="Rodyti" />
     <label.move value="Judinti" />
+    <label.changeSpeed value="Greičio kontrolė:" />
     <label.flightTime value="Skrydžio laikas: {0}" />
     <label.arrivesIn value="Atvyks po: {0}" />
     <label.arrivesAt value="Atvyks: {0}" />
@@ -1450,6 +1453,12 @@
       <p>{0}</p>
       <p>Ar esi tikras?</p>
     </message.selfDestruct>
+
+    <title.dismissUnits value="Karių pašalinimas!" />
+    <message.dismissUnits>
+      <p>Pašalinus savo karius Tu negalėsi jų susigražinti atgal.</p>
+      <p>Ar esi tikras?</p>
+    </message.dismissUnits>
 
     <title.renameAlliance value="Pervadinti sąjungą" />
     <message.renameAlliance>
@@ -2843,6 +2852,9 @@
     <economyPoints value="Ekonomikos taškai" />
     <sciencePoints value="Mokslo taškai" />
     <victoryPoints value="Pergalės taškai" />
+    <allianceVictoryPoints.short value="SPT" />
+    <allianceVictoryPoints.long 
+    value="Pergalės taškai, kuriuos sąjungai uždirbo jos žaidėjai" />
     <armyPoints value="Kariuomenės taškai" />
     <online value="prisijungęs" />
     <offline value="atsijungęs" />

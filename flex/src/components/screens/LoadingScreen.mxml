@@ -196,8 +196,10 @@
                   <s:VerticalLayout horizontalAlign="left" gap="3"/>
                </s:layout>
                <s:Label id="lblTipLabel" fontWeight="bold"/>
-               <s:Label id="lblTipText" text="" lineBreak="toFit"
-                        left="0" right="0"/>
+               <s:Group width="100%">
+                  <s:Label id="lblTipText" text="" lineBreak="toFit"
+                           left="0" right="0"/>
+               </s:Group>
             </s:Group>
          </s:Group>
       </s:Group>

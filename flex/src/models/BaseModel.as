@@ -693,7 +693,7 @@ package models
       
       private var _pending:Boolean = false;
       [SkipProperty]
-      [Bindable(event="modelPendingChange")]
+      [Bindable(event="pendingChange")]
       /**
        * Indicates if this instance is in some sort of transient state. Mostly used when a message has been sent to the
        * server concerning this instance and it needs to be updated (ore something else must be done) when response

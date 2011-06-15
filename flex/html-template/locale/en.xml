@@ -338,8 +338,10 @@
       <p>If you wish to join an existing alliance you must get an invitation
       from that alliance.</p>
     </label.noAlly>
+    <label.totalAllianceVps value="Alliance victory points:" />
+    <label.allianceOwner value="Alliance owner:" />
     <label.name value="Alliance name:" />
-    <label.allianceDescription value="Alliance description:"/>
+    <label.allianceDescription value="Alliance description"/>
     <label.editDescription value="Edit description" />
     <label.save value="Save" />
     <label.cancel value="Cancel" />
@@ -1286,6 +1288,7 @@
     <label.unitsManagement value="Manage" />
     <label.showUnits value="Show" />
     <label.move value="Move" />
+    <label.changeSpeed value="Speed control:" />
     <label.flightTime value="Flight time: {0}" />
     <label.arrivesIn value="Arrives in: {0}" />
     <label.arrivesAt value="Arrives at: {0}" />
@@ -1456,6 +1459,13 @@
       <p>{0}</p>
       <p>Are you sure?</p>
     </message.selfDestruct>
+
+    <title.dismissUnits value="Dismiss units!" />
+    <message.dismissUnits>
+      <p>You are about to dismiss your units.</p>
+      <p>You won't be able to undo this action.</p>
+      <p>Are you sure?</p>
+    </message.dismissUnits>
 
     <title.renameAlliance value="Rename Alliance" />
     <message.renameAlliance>
@@ -2803,6 +2813,9 @@
     <economyPoints value="Economy points" />
     <sciencePoints value="Science points" />
     <victoryPoints value="Victory points" />
+    <allianceVictoryPoints.short value="AVP" />
+    <allianceVictoryPoints.long 
+    value="Victory points earned to alliance by it's players" />
     <armyPoints value="Army points" />
     <online value="online" />
     <offline value="offline" />

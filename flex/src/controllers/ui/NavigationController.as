@@ -651,7 +651,7 @@ package controllers.ui
          {
             createdHandler = setAlliance;
          }
-         resetToNonMapScreen(_screenProperties[MainAreaScreens.ALLIANCE]);
+         showNonMapScreen(_screenProperties[MainAreaScreens.ALLIANCE]);
       }
       
       public function showPlayer(playerId: int) :void
