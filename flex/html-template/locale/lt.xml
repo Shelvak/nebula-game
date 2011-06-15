@@ -1181,7 +1181,7 @@
   </InfoScreen>
 
   <LoadingScreen>
-    <label.tip value="TIP:"/>
+    <label.tip value="Patarimas:"/>
     <label.pleaseWait value="Kraunami paveiksliukai, prašome palaukti." />
     <label.progress value="Kraunama {0}%"/>
   </LoadingScreen>
