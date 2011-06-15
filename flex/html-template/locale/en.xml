@@ -338,6 +338,7 @@
       <p>If you wish to join an existing alliance you must get an invitation
       from that alliance.</p>
     </label.noAlly>
+    <label.allianceOwner value="Alliance owner:" />
     <label.name value="Alliance name:" />
     <label.allianceDescription value="Alliance description:"/>
     <label.editDescription value="Edit description" />
@@ -2777,6 +2778,9 @@
     <economyPoints value="Economy points" />
     <sciencePoints value="Science points" />
     <victoryPoints value="Victory points" />
+    <allianceVictoryPoints.short value="AVP" />
+    <allianceVictoryPoints.long 
+    value="Victory points earned to alliance by it's players" />
     <armyPoints value="Army points" />
     <online value="online" />
     <offline value="offline" />
