@@ -62,7 +62,7 @@ bars and so on.
          ]]>
       </fx:Script>
       <menus:MainMenu id="mnuMain" bottom="0"/>
-      <bars:ResourcesBar id="resBar" left="80" bottom="2"
+      <bars:ResourcesBar id="resBar" left="80" bottom="1"
                          visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
                                    ML.latestPlanet.ssObject.owner == Owner.PLAYER}"/>
       <raid:RaidBar id="raidBar" left="{83 + resBar.width}" bottom="2"

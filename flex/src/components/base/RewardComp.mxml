@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+   <fx:Script>
+      <![CDATA[
+         import utils.MathUtil;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         [Bindable]
+         public var type: String;
+         
+         [Bindable]
+         public var count: Number;
+      ]]>
+   </fx:Script>
+   <s:BitmapImage width="50" height="50" smooth="true"
+                  source="{ImagePreloader.getInstance().getImage(
+                  AssetNames.UI_IMAGES_FOLDER + type + '_large')}"/>
+   <s:Label width="100%" textAlign="center" fontSize="14" 
+            text="{MathUtil.round(count,4)}"/>
+   <s:layout>
+      <s:VerticalLayout/>
+   </s:layout>
+</s:Group>

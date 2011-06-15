@@ -824,6 +824,10 @@ assets:
         first_login_background.png:      Start_quest.png
         small_arrow.png:                 RatesArrow.png
         daily_bonus_panel.png:           Dailybonus_panel.png
+        metal_large.png:                 300x300_metal.png
+        energy_large.png:                300x300_energy.png
+        zetium_large.png:                300x300_zetium.png
+        creds_large.png:                 300x300_creds.png
 
       "info_screen":
         line.png: Info_name.png
