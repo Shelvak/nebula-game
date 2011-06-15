@@ -1,7 +1,7 @@
 # Same as Objective::UpgradeTo but calculates already built objects.
 #
 # Actual calculation logic is in ObjectiveProgress.
-class Objective::HaveUpgradedTo < Objective
+class Objective::HaveUpgradedTo < Objective::UpgradeTo
   # Calculate how much of the objective is completed for the player.
   # Alliance objectives also count.
   def initial_completed(player_id)

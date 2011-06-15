@@ -1,5 +1,10 @@
 # Destroy number of objects to fulfill this objective.
 class Objective::Destroy < Objective
+  def filter(models)
+    models = models.accept { |model| model.level >= level } unless level.nil?
+    models
+  end
+
   class << self
     # Save killed_by information before progressing.
     def progress(models)

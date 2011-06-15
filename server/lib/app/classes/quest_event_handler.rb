@@ -41,7 +41,7 @@ class QuestEventHandler
   def handle_created(objects, reason)
     case reason
     when EventBroker::REASON_REWARD_CLAIMED
-      Objective::HaveUpgradedTo.progress(objects)
+      Objective::HaveUpgradedTo.progress(objects, false)
     end
   end
 
@@ -49,7 +49,7 @@ class QuestEventHandler
     case reason
     when EventBroker::REASON_UPGRADE_FINISHED
       Objective::UpgradeTo.progress(objects)
-      Objective::HaveUpgradedTo.progress(objects)
+      Objective::HaveUpgradedTo.progress(objects, true)
     when EventBroker::REASON_OWNER_CHANGED
       Objective::AnnexPlanet.progress(objects)
       Objective::HavePlanets.progress(objects)
@@ -59,6 +59,6 @@ class QuestEventHandler
   def handle_destroyed(objects, reason)
     # Don't handle if it's not from combat.
     Objective::Destroy.progress(objects) if objects.is_a?(CombatArray)
-    Objective::HaveUpgradedTo.regress(objects)
+    Objective::HaveUpgradedTo.regress(objects, false)
   end
 end
