@@ -426,14 +426,15 @@
          {              
             if (canDestroyBuilding)
             {
-               var popUp: ErrorPopup = new ErrorPopup();
-               popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
+               var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+               popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
                popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-               popUp.showCancelButton = true;
-               popUp.showRetryButton = true;
-               popUp.message = Localizer.string('Popups', 'message.selfDestruct', [_selectedModel.name]);
+               var lbl: Label = new Label();
+               lbl.minWidth = 300;
+               lbl.text = Localizer.string('Popups', 'message.selfDestruct', [_selectedModel.name]);
+               popUp.addElement(lbl);
                popUp.title = Localizer.string('Popups', 'title.selfDestruct');
-               popUp.retryButtonClickHandler = function (button: Button = null): void
+               popUp.confirmButtonClickHandler = function (button: Button = null): void
                {
                   new BuildingsCommand(BuildingsCommand.SELF_DESTRUCT, {'model': _selectedModel,
                      'withCreds': false}).dispatch();
@@ -572,14 +573,15 @@
             }
             else
             {
-               var popUp: ErrorPopup = new ErrorPopup();
-               popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
+               var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+               popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
                popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-               popUp.showCancelButton = true;
-               popUp.showRetryButton = true;
-               popUp.message = Localizer.string('Popups', 'message.areYouSure');
+               var lbl: Label = new Label();
+               lbl.minWidth = 300;
+               lbl.text = Localizer.string('Popups', 'message.areYouSure');
+               popUp.addElement(lbl);
                popUp.title = Localizer.string('Popups', 'title.boostPlanet');
-               popUp.retryButtonClickHandler = function (button: Button = null): void
+               popUp.confirmButtonClickHandler = function (button: Button = null): void
                {
                   GlobalFlags.getInstance().lockApplication = true;
                   EventBroker.subscribe(GCreditEvent.BOOST_CONFIRMED, refreshResource);
