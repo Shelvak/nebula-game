@@ -119,8 +119,10 @@ describe Notification do
 
     it "should set expiration time" do
       @model.save!
-      @model.expires_at.drop_usec.should == Time.now.drop_usec +
-        CONFIG.evalproperty('notifications.expiration_time')
+      @model.expires_at.should be_close(
+        CONFIG.evalproperty('notifications.expiration_time').from_now,
+        SPEC_TIME_PRECISION
+      )
     end
 
     it "should register to CallbackManager for deletion" do

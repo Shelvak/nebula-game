@@ -146,6 +146,7 @@ describe Unit do
 
   it "should increase population when upgrading" do
     player = Factory.create(:player,
+      :population => 0,
       :population_max => Unit::TestUnit.population)
     unit = Factory.build(:unit, :player => player, :level => 0)
     lambda do

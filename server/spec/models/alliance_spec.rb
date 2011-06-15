@@ -159,7 +159,7 @@ describe Alliance do
       alliance = Factory.create(:alliance)
       p1 = Factory.create :player, :alliance => alliance
       p2 = Factory.create :player, :alliance => alliance
-      p3 = Factory.create :player
+      Factory.create :player
       p4 = Factory.create :player, :alliance => alliance
 
       Alliance.player_ids_for(alliance.id).sort.should == [

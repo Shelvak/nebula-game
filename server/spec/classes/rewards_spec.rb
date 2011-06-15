@@ -157,7 +157,7 @@ describe Rewards do
       @rewards.claim!(@planet, @player)
       Unit::Seeker.where(:player_id => @player.id,
         :location => @planet.location).first.hp.should == \
-        (Unit::Seeker.hit_points(1) * 90 / 100)
+        (Unit::Seeker.hit_points * 90 / 100)
     end
 
     it "should fire created with units" do
@@ -176,7 +176,7 @@ describe Rewards do
       units = Unit::Shocker.find(:all, :conditions => {
           :level => 2, :player_id => @player.id,
             :location => @planet.location
-      }).map(&:hp).uniq.should == [Unit::Shocker.hit_points(2)]
+      }).map(&:hp).uniq.should == [Unit::Shocker.hit_points]
     end
   end
 end

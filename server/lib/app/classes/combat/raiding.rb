@@ -43,7 +43,7 @@ module Combat::Raiding
       count.times do
         unit = klass.new(
           :level => 1,
-          :hp => klass.hit_points(1),
+          :hp => klass.hit_points,
           :location => planet,
           :galaxy_id => galaxy_id,
           :flank => flank
