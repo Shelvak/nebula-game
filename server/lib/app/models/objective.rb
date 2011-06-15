@@ -9,10 +9,7 @@ class Objective < ActiveRecord::Base
 
   # Filter model list to reject models that don't meet our constraints.
   def filter(models)
-    unless level.nil?
-      models = models.reject { |model| model.level != level }
-    end
-
+    models = models.accept { |model| model.level == level } unless level.nil?
     models
   end
 
@@ -33,6 +30,9 @@ class Objective < ActiveRecord::Base
 
   class << self
     # Update objective progresses related to given models.
+    #
+    # If _strict_ is set to true, it will use == for level comparision, while
+    # if it is set to false, it'll use >=.
     def progress(models)
       # For caching friendly player ids.
       cache = {}
@@ -54,7 +54,7 @@ class Objective < ActiveRecord::Base
         objectives = where(:key => resolve_key(klass),
                            :type => to_s.demodulize).all
         objectives.each do |objective|
-          objective_models = objective.filter(class_models)
+          objective_models = filter(objective, class_models)
 
           beneficaries = count_benefits(objective_models)
           beneficaries.each do |player_id, count|
@@ -64,6 +64,11 @@ class Objective < ActiveRecord::Base
             end
           end
         end
+      end
+
+      # Allow overriding call to Objective#filter.
+      def filter(objective, class_models)
+        objective.filter(class_models)
       end
 
       # Actually increase _completed_ on them and save them. This is
