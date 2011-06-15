@@ -31,10 +31,6 @@
          }
       ]]>
    </fx:Script>
-   
-   <!--
-   <s:Group left="5" right="8" top="5" bottom="10">
-   -->
       
       <space:layout>
          <s:VerticalLayout paddingLeft="2" paddingRight="2" paddingTop="5" paddingBottom="5"
@@ -43,9 +39,10 @@
       
       <s:Label id="lblArrivesIn" text="{model.text_arrivesInLabel}"/>
       <s:Label id="lblArrivesAt" text="{model.text_arrivesAtLabel(model.arrivalDate.occuresAt)}"/>
+      <s:Label id="lblChangeSpeed" text="{model.label_changeSpeed}" paddingTop="8" fontWeight="bold"/>
       <s:Group width="100%">
          <s:layout>
-            <s:HorizontalLayout gap="5" paddingTop="12"/>
+            <s:HorizontalLayout gap="5" verticalAlign="middle"/>
          </s:layout>
          <s:Label id="lblSpeedMin"
                   text="{sldChangeSpeed_dataTipFormatFunction(model.speedModifierMin * 100)}"/>
@@ -100,9 +97,5 @@
                    label="{model.label_cancelButton}"
                    click="model.cancel()"/>
       </s:Group>
-      
-   <!--
-   </s:Group>
-   -->
    
 </space:CSpaceMapPopup>

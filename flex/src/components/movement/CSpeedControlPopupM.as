@@ -373,6 +373,13 @@ package components.movement
       }
       
       
+      [Bindable(event="willNotChange")]
+      public function get label_changeSpeed() : String
+      {
+         return getString("label.changeSpeed");
+      }
+      
+      
       /* ###################### */
       /* ### DYNAMIC LABELS ### */
       /* ###################### */
