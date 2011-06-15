@@ -136,10 +136,10 @@
                                  import models.unit.Unit;
                               ]]>
                            </fx:Script>
-                           <unitsscreen:UnitComp deployable="{(data as Unit).deploysTo != null}" 
-                                                 stance="{(data as Unit).newStance}" level="{(data as Unit).level}" 
-                                                 hp="{(data as Unit).hp}" type="{(data as Unit).type}"
-                                                 unit="{(data as Unit)}"/>
+                           <unitsscreen:UnitComp deployable="{Unit(data).deploysTo != null}" 
+                                                 stance="{Unit(data).newStance}" level="{Unit(data).level}" 
+                                                 hp="{Unit(data).hp}" type="{Unit(data).type}"
+                                                 unit="{Unit(data)}"/>
                         </s:ItemRenderer>
                      </fx:Component>
                   </base:itemRenderer>     

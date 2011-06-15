@@ -95,10 +95,10 @@
                                  import models.unit.Unit;
                               ]]>
                            </fx:Script>
-                           <unitsscreen:UnitComp deployable="{(data as Unit).deploysTo != null}" 
-                                                 stance="{(data as Unit).newStance}" level="{(data as Unit).upgradePart.level}" 
-                                                 hp="{(data as Unit).hp}" type="{(data as Unit).type}"
-                                                 unit="{(data as Unit)}" transfer="true"/>
+                           <unitsscreen:UnitComp deployable="{Unit(data).deploysTo != null}" 
+                                                 stance="{Unit(data).newStance}" level="{Unit(data).upgradePart.level}" 
+                                                 hp="{Unit(data).hp}" type="{Unit(data).type}"
+                                                 unit="{Unit(data)}" transfer="true"/>
                         </s:ItemRenderer>
                      </fx:Component>
                   </base:itemRenderer.transfering>                  
@@ -110,10 +110,10 @@
                                  import models.unit.Unit;
                               ]]>
                            </fx:Script>
-                           <unitsscreen:UnitComp deployable="{(data as Unit).deploysTo != null}" 
-                                                 stance="{(data as Unit).newStance}" level="{(data as Unit).upgradePart.level}" 
-                                                 hp="{(data as Unit).hp}" type="{(data as Unit).type}"
-                                                 unit="{(data as Unit)}" transfer="false"/>
+                           <unitsscreen:UnitComp deployable="{Unit(data).deploysTo != null}" 
+                                                 stance="{Unit(data).newStance}" level="{Unit(data).upgradePart.level}" 
+                                                 hp="{Unit(data).hp}" type="{Unit(data).type}"
+                                                 unit="{Unit(data)}" transfer="false"/>
                         </s:ItemRenderer>
                      </fx:Component>
                   </base:itemRenderer.normal>

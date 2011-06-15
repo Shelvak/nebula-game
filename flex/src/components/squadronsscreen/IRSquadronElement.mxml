@@ -43,7 +43,7 @@
          public override function set data(value:Object):void
          {
             super.data = value;
-            route = value as MRoute;
+            route = MRoute(value);
          }
          
          

@@ -311,7 +311,6 @@
          
          private function setData(e: GUnitsScreenEvent): void
          {
-            trace ('set data');
             if (!firstTime)
             {
                cancelChanges();
