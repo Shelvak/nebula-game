@@ -14,6 +14,15 @@ class Objective::UpgradeTo < Objective
     @strict_mode = true
   end
 
+  # Same as #progress.
+  def self.regress(models, strict=true)
+    @strict_mode = strict
+    ret = super(models)
+    @strict_mode = true
+    
+    ret
+  end
+
   def self.filter(objective, class_models)
     objective.filter(class_models, @strict_mode)
   end
