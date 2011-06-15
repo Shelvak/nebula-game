@@ -144,7 +144,7 @@ class Player < ActiveRecord::Base
   POINT_ATTRIBUTES = %w{economy_points science_points army_points war_points}
 
   RATING_ATTRIBUTES_SQL = (
-    %w{id name victory_points planets_count} + POINT_ATTRIBUTES
+    %w{id name victory_points alliance_vps planets_count} + POINT_ATTRIBUTES
   ).map { |attr| "`#{table_name}`.`#{attr}`" }.join(", ")
 
   # Returns ratings for _galaxy_id_. If _player_ids_ are given then
@@ -161,6 +161,7 @@ class Player < ActiveRecord::Base
   #     "id" => Fixnum (player ID),
   #     "name" => String (player name),
   #     "victory_points" => Fixnum,
+  #     "alliance_vps" => Fixnum,
   #     "planets_count" => Fixnum,
   #     "war_points" => Fixnum,
   #     "science_points" => Fixnum,
@@ -227,6 +228,12 @@ class Player < ActiveRecord::Base
       send(:"#{attr}=", 0) if send(attr) < 0
     end
 
+    if ! alliance_id.nil? && victory_points_changed?
+      old, new = victory_points_change
+      self.alliance_vps ||= 0
+      self.alliance_vps += (new || 0) - (old || 0)
+    end
+
     true
   end
 
@@ -268,7 +275,7 @@ class Player < ActiveRecord::Base
     hub = Chat::Pool.instance.hub_for(self)
     hub.on_alliance_change(self) if alliance_id_changed?
     hub.on_language_change(self) if language_changed?
-    
+
     if victory_points_changed? && ! alliance.nil?
       old, new = victory_points_change
       alliance.victory_points += new - old

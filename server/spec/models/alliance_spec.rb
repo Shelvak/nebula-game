@@ -228,6 +228,14 @@ describe Alliance do
       end.should change(@player, :alliance).from(nil).to(@alliance)
     end
 
+    it "should reset Player#alliance_vps to 0" do
+      @player.alliance_vps = 1000
+      lambda do
+        @alliance.accept(@player)
+        @player.reload
+      end.should change(@player, :alliance_vps).to(0)
+    end
+
     it "should assimilate player Galaxy cache" do
       FowGalaxyEntry.should_receive(:assimilate_player).with(
         @alliance, @player)

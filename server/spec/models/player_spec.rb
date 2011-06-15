@@ -18,7 +18,7 @@ describe Player do
       @result = Player.ratings(@alliance.galaxy_id)
     end
 
-    (%w{id name victory_points planets_count} +
+    (%w{id name victory_points alliance_vps planets_count} +
         Player::POINT_ATTRIBUTES).each do |attr|
       it "should include #{attr}" do
         @result.each_with_index do |row, index|
@@ -62,6 +62,15 @@ describe Player do
         player.save!
         alliance.reload
       end.should change(alliance, :victory_points).by(100)
+    end
+
+    it "should add to #alliance_vps too" do
+      alliance = Factory.create(:alliance)
+      player = Factory.create(:player, :alliance => alliance)
+      player.victory_points += 100
+      lambda do
+        player.save!
+      end.should change(player, :alliance_vps).by(100)
     end
   end
   

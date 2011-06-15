@@ -142,6 +142,7 @@ class Alliance < ActiveRecord::Base
       player.alliance_id})") unless player.alliance_id.nil?
 
     player.alliance = self
+    player.alliance_vps = 0
     player.save!
 
     # Add solar systems visible to player to alliance visibility pool.
