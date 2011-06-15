@@ -1192,9 +1192,42 @@
   </LoadingScreen>
   
   <Tips>
-    <tip.0>Tip 0</tip.0>
-    <tip.1>Tip 1</tip.1>
-    <tip.2>Tip 2</tip.2>
+    <tip.0>
+      Building energy generators on this land will grant you additional energy
+      rate bonus.
+    </tip.0>
+    <tip.1>
+      Building construction buildings on a flat land will increase their
+      construction speed later.
+    </tip.1>
+    <tip.2>
+      When building on a flat land your building will be built faster.
+    </tip.2>
+    <tip.3>
+      Don't build turrets on rocky ground! They will lose armor and perish
+      in battle faster!
+    </tip.3>
+    <tip.4>
+      Look for strong dark ground to build your turrets on. This ground gives
+      them additional armor.
+    </tip.4>
+    <tip.5>
+      You can zoom in and out using your mouse wheel or plus/minus signs in
+      top-left map corner.
+    </tip.5>
+    <tip.6>
+      When in battle units in your first flank have 70% chance of being hit
+      while second flank has only 30%. Keep your important units in second
+      flank.
+    </tip.6>
+    <tip.7>
+      You can click blue arrows in unit construction window to skim through
+      available units quickly.
+    </tip.7>
+    <tip.8>
+      Occupy planets in battlegrounds and pulsars to get reinforcements,
+      victory points and creds.
+    </tip.8>
   </Tips>
 
   <Location>

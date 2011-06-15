@@ -1185,9 +1185,41 @@
   </LoadingScreen>
   
   <Tips>
-    <tip.0>Tip 0</tip.0>
-    <tip.1>Tip 1</tip.1>
-    <tip.2>Tip 2</tip.2>
+    <tip.0>
+      Jeigu statysi energijos generatorius ant šios žemės, jie gamins daugiau
+      energijos.
+    </tip.0>
+    <tip.1>
+      Gamyklos dirbs sparčiau, jeigu jas statysi ant lygios žemės.
+    </tip.1>
+    <tip.2>
+      Pastatai bus pastatyti greičiau, jeigu juos statysi ant lygios žemės.
+    </tip.2>
+    <tip.3>
+      Nestatyk gynybinių bokštelių ant akmeningos žemės! Ji nėra tvirta, todėl
+      bokšteliai turi silpnesnius šarvus ir mūšyje juos sugriaus greičiau.
+    </tip.3>
+    <tip.4>
+      Ieškok stiprios tamsios žemės, kurioje galėtum statyti savo ginybinius
+      bokštelius. Ši žemė yra ypač tvirta ir suteikia jiems papildomų šarvų.
+    </tip.4>
+    <tip.5>
+      Tu gali priartinti/nutolinti žemėlapius naudodamasis savo pelės ratuku
+      arba plius/minus ženklais viršutiniame kairiame žemėlapio kampe.
+    </tip.5>
+    <tip.6>
+      Tavo kariai mūšio metu stovintys pirmame flange turi 70% tikimybę
+      būti pašauti, o tie, kurie stovi antrame flange - tik 30%. Laikyk savo
+      svarbius karius antrame flange.
+    </tip.6>
+    <tip.7>
+      Karių statymo lange gali paspausti ant mėlynų rodyklių, jog greitai
+      prašokti per leidžiamus statyti karius.
+    </tip.7>
+    <tip.8>
+      Užimk planetas arenose ir pulsaruose, kad gautum pastiprinimų, pergalės
+      taškų ir kredų.
+    </tip.8>
   </Tips>
 
   <Location>
