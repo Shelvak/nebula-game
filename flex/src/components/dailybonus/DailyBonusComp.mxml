@@ -142,7 +142,7 @@
       <base:AdvancedContainer top="{topLbl.height + contentBackground.height + 30}" 
                               horizontalCenter="0">
          <base:Warning text="{Localizer.string('Quests', 'warning.wontFit', [notFitting])}"
-                       visible="{notFitting != null}"/>
+                       visible="{notFitting != null}" maxWidth="400"/>
          <s:Group>
             <s:Label text="{Localizer.string('Quests', 'label.choosePlanet')}" styleName="h3"/>
             <base:PlanetSelector id="planetSelector" minWidth="180" 
