@@ -81,6 +81,7 @@ package models.player
        */
       public var loggedIn:Boolean = false;
       
+      [SkipProperty]
       public var dailyBonus: Reward = null;
       
       
