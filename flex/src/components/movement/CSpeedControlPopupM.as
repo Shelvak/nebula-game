@@ -270,7 +270,7 @@ package components.movement
       
       
       /**
-       * Naivigates to a page where player can buy credits.
+       * Navigates to a page where player can buy credits.
        */
       public function buyCreds() : void
       {
