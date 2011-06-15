@@ -3,8 +3,9 @@
         xmlns:s="library://ns.adobe.com/flex/spark"
         xmlns:layouts="ext.flex.spark.layouts.*"
         xmlns:base="components.base.*"
+        xmlns:ui="components.ui.*"
         mouseEnabled="false"
-        minWidth="20" minHeight="20" xmlns:ui="components.ui.*">
+        minWidth="20" minHeight="20">
    
    <s:states>
       <s:State name="normal"/>

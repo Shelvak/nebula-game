@@ -8,7 +8,6 @@ package models
    
    import globalevents.GPlanetEvent;
    
-   import models.alliance.MAlliance;
    import models.building.Building;
    import models.folliage.BlockingFolliage;
    import models.galaxy.Galaxy;
@@ -252,8 +251,6 @@ package models
       public var ratings: ArrayCollection;
       
       public var allyRatings: ArrayCollection;
-      
-      public var alliance: MAlliance;
       
       
       /**

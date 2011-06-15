@@ -76,7 +76,7 @@ package components.movement
       {
          if (_squadron != value)
          {
-            if (_squadronOld != null)
+            if (_squadronOld == null)
             {
                _squadronOld = _squadron;
             }
@@ -104,15 +104,15 @@ package components.movement
          super.commitProperties();
          if (f_squadronChanged)
          {
-            if (_squadronOld)
+            if (_squadronOld != null)
             {
                removeSquadronEventHandlers(_squadronOld);
             }
-            if (_squadron)
+            if (_squadron != null)
             {
                addSquadronEventHandlers(_squadron);
             }
-            if (_squadron && _squadron.route)
+            if (_squadron != null && _squadron.route != null)
             {
                addGlobalEventHandlers();
             }
@@ -120,10 +120,10 @@ package components.movement
             {
                removeGlobalEventHandlers();
             }
-            lstUnits.dataProvider = _squadron ? _squadron.units : null;
-            visible = _squadron ? true : false;
-            showSourceLoc = _squadron && _squadron.route;
-            showDestLoc = _squadron && _squadron.route;
+            lstUnits.dataProvider = _squadron != null ? _squadron.units : null;
+            visible = _squadron != null ? true : false;
+            showSourceLoc = _squadron != null && _squadron.route != null;
+            showDestLoc = showSourceLoc;
             updateUnitsOrdersButtonsVisibility();
             updateUnitsManagementButtonLabel();
             updateSourceAndDestLabels();
@@ -471,7 +471,8 @@ package components.movement
       
       private function squadron_pendingChangeHandler(event:BaseModelEvent) : void
       {
-         
+         f_squadronPendingChanged = true;
+         invalidateProperties();
       }
       
       
