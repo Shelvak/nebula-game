@@ -1,15 +1,19 @@
 package controllers.objects.actions.customcontrollers
 {
-   import utils.SingletonFactory;
-   
    import controllers.objects.UpdatedReason;
    import controllers.units.OrdersController;
    import controllers.units.SquadronsController;
    
    import models.factories.UnitFactory;
+   import models.player.Player;
+   import models.player.PlayerId;
+   import models.player.PlayerMinimal;
    import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
+   
+   import utils.SingletonFactory;
+   import utils.locale.Localizer;
    
    
    public class UnitController extends BaseObjectController
@@ -20,6 +24,7 @@ package controllers.objects.actions.customcontrollers
       }
       
       
+      private const NPC_PLAYER:PlayerMinimal = new PlayerMinimal();
       private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
       private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
       
@@ -27,13 +32,21 @@ package controllers.objects.actions.customcontrollers
       public function UnitController()
       {
          super();
+         NPC_PLAYER.name =  Localizer.string("Players", "npc");
       }
       
       
       public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void
       {
          var unit:Unit = UnitFactory.fromObject(object);
-         unit.player = ML.player;
+         if (unit.playerId == PlayerId.NO_PLAYER)
+         {
+            unit.player = NPC_PLAYER;
+         }
+         else if (unit.playerId == ML.player.id)
+         {
+            unit.player = ML.player;
+         }
          if (unit.level == 0)
          {
             unit.upgradePart.startUpgrade();
