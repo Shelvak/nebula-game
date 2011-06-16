@@ -44,25 +44,27 @@ describe Objective::HavePlanets do
         :completed => 1, :player => @new)
     end
 
-    describe "BG planets" do
-      before(:each) do
-        bg = Factory.create(:battleground, :galaxy => @new.galaxy)
-        @planet.solar_system = bg
-        @planet.save!
-      end
+    [:battleground, :mini_battleground].each do |type|
+      describe "#{type} planets" do
+        before(:each) do
+          bg = Factory.create(type, :galaxy => @new.galaxy)
+          @planet.solar_system = bg
+          @planet.save!
+        end
 
-      it "should not reduce old owner progress" do
-        lambda do
-          @obj.class.progress(@models)
-          @op_old.reload
-        end.should_not change(@op_old, :completed).by(-1)
-      end
+        it "should not reduce old owner progress" do
+          lambda do
+            @obj.class.progress(@models)
+            @op_old.reload
+          end.should_not change(@op_old, :completed).by(-1)
+        end
 
-      it "should not increase new owner progress" do
-        lambda do
-          @obj.class.progress(@models)
-          @op_new.reload
-        end.should_not change(@op_new, :completed).by(1)
+        it "should not increase new owner progress" do
+          lambda do
+            @obj.class.progress(@models)
+            @op_new.reload
+          end.should_not change(@op_new, :completed).by(1)
+        end
       end
     end
 
