@@ -24,7 +24,8 @@ class Combat::Annexer
     def protect(planet, players)
       ActiveRecord::Base.transaction do
         players.each do |player|
-          Notification.create_for_planet_protected(planet, player)
+          Notification.create_for_planet_protected(planet, player) \
+            unless player.nil?
         end
         Cooldown.create_or_update!(planet,
           Cfg.planet_protection_duration.from_now)
