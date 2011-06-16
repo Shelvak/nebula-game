@@ -31,6 +31,9 @@ class EventBroker
   REASON_OWNER_PROP_CHANGE = :owner_prop_change
   # These changes are invoked by combat.
   REASON_COMBAT = :combat
+  # Some action has been completed.
+  # This is used in Route and is sent to client!
+  REASON_COMPLETED = :completed
 
   @@handlers = Set.new
 

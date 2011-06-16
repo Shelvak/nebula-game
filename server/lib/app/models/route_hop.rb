@@ -71,6 +71,7 @@ class RouteHop < ActiveRecord::Base
     in_zone(zone).scoped_by_route_id(route_id).all
   end
 
+  #noinspection RubyUnusedLocalVariable
   def as_json(options=nil)
     {
       :route_id => route_id,
@@ -125,8 +126,11 @@ class RouteHop < ActiveRecord::Base
         self.class.handle_fow_change(event) if zone_changed
 
         # Saving/destroying route dispatches event that is transmitted to
-        # Dispatcher. We need event to go in movement, route sequence, not
+        # Dispatcher. We need event to go in "movement, route" sequence, not
         # other way round
+
+        # Flag route as being completed.
+        route.completed = true
         next_hop ? route.save! : route.destroy
 
         destroy

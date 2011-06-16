@@ -94,6 +94,16 @@ describe Route do
 
     @should_not_notify_create = true
     it_should_behave_like "notifier"
+    
+    it "should dispatch destroyed with reason 'completed' if flag is set" do
+      model = @build.call
+      model.save!
+      model.completed = true
+      should_fire_event(model, EventBroker::DESTROYED, 
+          EventBroker::REASON_COMPLETED) do
+        model.destroy
+      end
+    end
   end
 
   describe "#as_json" do
