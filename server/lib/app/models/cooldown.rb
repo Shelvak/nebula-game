@@ -20,8 +20,11 @@ class Cooldown < ActiveRecord::Base
 
   # Return Cooldown#ends_at for planet.
   def self.for_planet(planet)
-    connection.select_value("SELECT `ends_at` FROM `#{table_name}` WHERE #{
+    time = connection.select_value("SELECT `ends_at` FROM `#{
+      table_name}` WHERE #{
       sanitize_sql_for_conditions(planet.location_attrs)}")
+    # JRuby compatibility fix.
+    time.is_a?(String) ? Time.parse(time) : time
   end
 
   # Create Cooldown identified by given _location_. If such record
