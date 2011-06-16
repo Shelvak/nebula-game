@@ -161,6 +161,11 @@ describe Combat::Annexer do
           @planet.should have_cooldown(
             Cfg.planet_protection_duration.from_now)
         end
+        
+        it "should not fail if one of players is npc" do
+          Combat::Annexer.annex!(@planet,
+            Combat::CheckReport::NO_CONFLICT, @alliances_npc, nil, nil)
+        end
       end
 
       describe "> 1 planet" do
