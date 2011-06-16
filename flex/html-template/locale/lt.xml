@@ -1281,7 +1281,7 @@
     <label.unitsManagement value="Tvarkyti" />
     <label.showUnits value="Rodyti" />
     <label.move value="Judinti" />
-    <label.changeSpeed value="Greičio kontrolė:" />
+    <label.changeSpeed value="Skrydžio laiko valdymas" />
     <label.flightTime value="Skrydžio laikas: {0}" />
     <label.arrivesIn value="Atvyks po: {0}" />
     <label.arrivesAt value="Atvyks: {0}" />
@@ -1346,7 +1346,7 @@
     <title.combatLog value="Mūšio ataskaita" />
     <message.combatLog>
       <p>Mūšis {0 planet[planetoje] galaxy[galaktikoje] ss[saulės sistemoje] 
-      battleground[arenoje]} {1}</p>
+      battleground[]} {1}</p>
     </message.combatLog>
     <label.combatLog.outcome.win value="Tu laimėjai!" />
     <label.combatLog.outcome.loose value="Tu pralaimėjai!" />

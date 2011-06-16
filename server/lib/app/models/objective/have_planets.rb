@@ -10,9 +10,7 @@ class Objective::HavePlanets < Objective
   end
 
   def filter(models)
-    battleground_id = Galaxy.battleground_id(
-      models[0].solar_system.galaxy_id)
-    models.reject { |p| p.solar_system_id == battleground_id }
+    models.reject { |p| p.solar_system.battleground? }
   end
 
   def self.count_benefits(models)

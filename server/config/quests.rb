@@ -9,10 +9,10 @@
 # [unit, count, level]
 
 UNITS_INFANTRY = [
-  [Unit::Trooper, 3, 3],
+  [Unit::Trooper, 2, 3],
   [Unit::Seeker, 1, 3],
   [Unit::Shocker, 1, 3],
-  [Unit::Trooper, 3, 3],
+  [Unit::Trooper, 2, 3],
   [Unit::Seeker, 1, 3],
   [Unit::Shocker, 1, 3],
 ]
@@ -247,8 +247,8 @@ definition = QuestDefinition.define(:debug => false) do
     end.define(30) do
       have_points 80000
 
-      reward_unit Unit::Avenger, :level => 1, :count => 2, :hp => 100
-      reward_unit Unit::Dart, :level => 1, :count => 2, :hp => 100
+      reward_unit Unit::Avenger, :level => 1, :count => 1, :hp => 100
+      reward_unit Unit::Dart, :level => 1, :count => 1, :hp => 100
     end.define(33) do
       have_points 150000
 

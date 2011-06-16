@@ -311,6 +311,13 @@ describe RouteHop do
           Route.find(@hop.route_id)
         end.should raise_error(ActiveRecord::RecordNotFound)
       end
+      
+      it "should dispatch destroyed with appropriate reason" do
+        should_fire_event(@hop.route, EventBroker::DESTROYED, 
+          EventBroker::REASON_COMPLETED) do
+          RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
+        end
+      end
 
       it "should fire event before destroying the route so units " +
       "still belong to it" do

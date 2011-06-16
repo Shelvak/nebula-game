@@ -90,11 +90,11 @@
     <Dirac-whos ref="Dirac-what" />
 
     <Thor value="Thor" />
-    <Thor-what value="{0 one[one thor] many[? thores]}" />
+    <Thor-what value="{0 one[one thor] many[? thors]}" />
     <Thor-whos ref="Thor-what" />
 
     <Demosis value="Demosis" />
-    <Demosis-what value="{0 one[one demosis] many[? demosises]}" />
+    <Demosis-what value="{0 one[one demosis] many[? demosis]}" />
     <Demosis-whos ref="Demosis-what" />
     
     <!-- Turrets -->
@@ -1288,7 +1288,7 @@
     <label.unitsManagement value="Manage" />
     <label.showUnits value="Show" />
     <label.move value="Move" />
-    <label.changeSpeed value="Speed control:" />
+    <label.changeSpeed value="Flight Time Control" />
     <label.flightTime value="Flight time: {0}" />
     <label.arrivesIn value="Arrives in: {0}" />
     <label.arrivesAt value="Arrives at: {0}" />
@@ -1350,8 +1350,8 @@
 
     <title.combatLog value="Combat report" />
     <message.combatLog>
-      <p>Battle in {0 planet[planet] galaxy[galaxy] ss[solar system] 
-      battleground[battleground]} {1}</p>
+      <p>Battle in {0 planet[Planet] galaxy[Galaxy] ss[Solar System] 
+      battleground[]} {1}</p>
     </message.combatLog>
     <label.combatLog.outcome.win value="You have won!" />
     <label.combatLog.outcome.loose value="You have lost!" />

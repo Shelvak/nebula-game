@@ -54,6 +54,16 @@ class Route < ActiveRecord::Base
   def self.notify_on_create?; false; end
   include Parts::Notifier
 
+  # Flags route as being completed. If this flag is set - when route destroyed
+  # is dispatched to client, it has reason attached to it.
+  attr_accessor :completed
+
+  def notify_broker_destroy
+    EventBroker.fire(self, EventBroker::DESTROYED,
+      completed ? EventBroker::REASON_COMPLETED : nil)
+    true
+  end
+
   # Returns all the hops for current zone for this route if current
   # location is +GalaxyPoint+ or +SolarSystemPoint+. Returns [] otherwise.
   def hops_in_current_zone

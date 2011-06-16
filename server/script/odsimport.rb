@@ -31,6 +31,7 @@ MAIN_TITLE_PROPS = [
   [/scientists$/, ".scientists"],
   [/war points$/, ".war_points"],
   [/population$/, ".population"],
+  [/max players$/, ".max_players"],
   [/teleported volume$/, ".teleported_volume"],
   [/time decrease$/, ".mod.movement_time_decrease"],
   [/armor mod$/, ".mod.armor"],
