@@ -11,10 +11,21 @@ package components.map.space
    
    import spark.components.Group;
    
+   import utils.Objects;
+   
    
    public class CStaticSpaceObjectsAggregator extends Group
    {
       private var _staticObjectsAggregator:MStaticSpaceObjectsAggregator;
+      /**
+       * Returns model provoded in the constructor of this class.
+       */
+      public function get staticObjectsAggregator() : MStaticSpaceObjectsAggregator
+      {
+         return _staticObjectsAggregator;
+      }
+      
+      
       private var _customComponentClasses:StaticObjectComponentClasses;
       
       
@@ -23,8 +34,8 @@ package components.map.space
       {
          super();
          mouseChildren = false;
-         _customComponentClasses = customComponentClasses;
-         _staticObjectsAggregator = staticObjectsAggregator;
+         _customComponentClasses = Objects.paramNotNull("customComponentClasses", customComponentClasses);
+         _staticObjectsAggregator = Objects.paramNotNull("staticObjectsAggregator", staticObjectsAggregator);
          width  = _staticObjectsAggregator.componentWidth;
          height = _staticObjectsAggregator.componentHeight;
          _staticObjectsAggregator.addEventListener(CollectionEvent.COLLECTION_CHANGE,

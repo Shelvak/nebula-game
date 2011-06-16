@@ -23,6 +23,7 @@ package components.map.space
    import models.BaseModel;
    import models.IMStaticSpaceObject;
    import models.MStaticSpaceObjectsAggregator;
+   import models.MWreckage;
    import models.location.LocationMinimal;
    import models.map.MMap;
    import models.map.MMapSpace;
@@ -473,6 +474,12 @@ package components.map.space
       
       
       /**
+       * Shown in the top right corner when player rolls the mouse over a wreckage.
+       */
+      private var _wreckageTooltip:CWreckageInfo;
+      
+      
+      /**
        * Invoked by <code>grid</code> to reposition <code>sectorPopups</code>.
        */
       internal function positionSectorPopups(newPosition:Point) : void
@@ -481,6 +488,12 @@ package components.map.space
          sectorPopups.x = newPosition.x;
          sectorPopups.y = newPosition.y;
       }
+      
+      
+      /**
+       * A container in the top right corner that keeps
+       */ 
+      private var _staticObjectTooltipContainer:Group
       
       
       /**
@@ -525,6 +538,18 @@ package components.map.space
             addElement(staticObjectsPopup);
          }
          objectsContainer.addElement(sectorPopups);
+         
+         // Not really a popup but makes most sense to out this code here
+         _wreckageTooltip = new CWreckageInfo();
+         _wreckageTooltip.mouseEnabled = false;
+         _wreckageTooltip.mouseChildren = false;
+         _wreckageTooltip.right = 0;
+         _wreckageTooltip.top = 0;
+         _wreckageTooltip.visible = false;
+         _wreckageTooltip.setStyle("skinClass", CWreckageTooltipSkin);
+         var overlay:Group = new Group();
+         overlay.addElement(_wreckageTooltip);
+         viewport.overlay = overlay;
       }
       
       
@@ -801,6 +826,37 @@ package components.map.space
          addEventListener(MouseEvent.CLICK, this_clickHandler, false, 0, true);
          addEventListener(MouseEvent.DOUBLE_CLICK, this_doubleClickHandler, false, 0, true);
          addEventListener(MouseEvent.MOUSE_MOVE, this_mouseMoveHandler, false, 0, true);
+         addEventListener(MouseEvent.MOUSE_OVER, this_mouseOverHandler, false, 0, true);
+         addEventListener(MouseEvent.MOUSE_OUT, this_mouseOutHandler, false, 0, true);
+      }
+      
+      
+      private function this_mouseOutHandler(event:MouseEvent) : void
+      {
+         if (event.target == this ||
+             event.target is CStaticSpaceObjectsAggregator)
+         {
+            _wreckageTooltip.visible = false;
+            _wreckageTooltip.staticObject = null;
+         }
+      }
+      
+      
+      private function this_mouseOverHandler(event:MouseEvent) : void
+      {
+         if (event.target is CStaticSpaceObjectsAggregator)
+         {
+            var wreckage:MWreckage = MWreckage(
+               CStaticSpaceObjectsAggregator(event.target)
+                  .staticObjectsAggregator
+                  .findObjectOfType(MMapSpace.STATIC_OBJECT_WRECKAGE)
+            );
+            if (wreckage != null)
+            {
+               _wreckageTooltip.staticObject = wreckage;
+               _wreckageTooltip.visible = true;
+            }
+         }
       }
       
       

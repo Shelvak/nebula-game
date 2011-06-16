@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:base="components.base.*"
+               xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               width="100%" minWidth="20" minHeight="30" xmlns:ui="components.ui.*">
+   <fx:Library>
+      <fx:Definition name="HBorderLine">
+         <s:Group height="1">
+            <s:Line left="0" right="0">
+               <s:stroke>
+                  <s:SolidColorStroke color="#0f0f0f" weight="1"/>
+               </s:stroke>
+            </s:Line>
+         </s:Group>
+      </fx:Definition>
+   </fx:Library>
+   
+   <fx:Metadata>
+      [HostComponent("components.base.Panel")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      import utils.assets.AssetNames;
+   </fx:Script>
+   
+   <base:states>
+      <s:State name="normal"/>
+      <s:State name="disabled"/>
+      <s:State name="normalWithControlBar"/>
+      <s:State name="disabledWithControlBar"/>
+   </base:states>
+   
+   <!-- background -->
+   <ui:DarkRoundedBackground left="0" right="0" top="0" bottom="0"/>
+
+   <!--- Title of the component. -->
+   <s:Label id="titleDisplay" styleName="panelTitle" top="10" horizontalCenter="0" /> 
+   
+   <s:Group left="10" right="10" top="30" bottom="10">
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="center"/>
+      </s:layout>
+      <!--- All the content goes here -->
+      <s:Group id="contentGroup" left="10" right="10" top="30" bottom="10"/>
+   </s:Group>
+   
+</base:BaseSkin>
