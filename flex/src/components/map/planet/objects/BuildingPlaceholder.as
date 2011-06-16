@@ -61,7 +61,6 @@ package components.map.planet.objects
       /* ################ */
       
       
-      private var _mainImage:BitmapImage;
       private var _basement:PlanetObjectBasementTiled;
       
       
@@ -79,9 +78,9 @@ package components.map.planet.objects
          _basement.alpha = 0.3;
          addElement(_basement);
          
-         _mainImage = new BitmapImage();
-         _mainImage.source = getBuilding().imageData;
-         addElement(_mainImage);
+         var mainImage:BitmapImage = new BitmapImage();
+         mainImage.source = getBuilding().imageData;
+         addElement(mainImage);
       }
       
       
@@ -150,7 +149,7 @@ package components.map.planet.objects
       protected override function commitProperties() : void
       {
          super.commitProperties();
-         if (f_interferingTilesChanged)
+         if (f_interferingTilesChanged && getBuilding() != null)
          {
             var width:int  = getBuilding().width  + Building.GAP_BETWEEN * 2;
             var height:int = getBuilding().height + Building.GAP_BETWEEN * 2;

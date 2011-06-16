@@ -9,8 +9,7 @@ package utils
    
    /**
     * A few static methods for working with date and time.
-    */ 
-   [Bindable]
+    */
    public class DateUtil
    {
       /**

@@ -166,14 +166,14 @@ package controllers.units
          }
          ROUTES.remove(id, true);
          var squadToStop:MSquadron = SQUADS.remove(id, true);
-         if (!squadToStop)
+         if (squadToStop == null)
          {
             return;
          }
          squadToStop.id = 0;
          squadToStop.route = null;
          var squadStationary:MSquadron = findSquad(0, squadToStop.playerId, squadToStop.currentHop.location);
-         if (squadStationary)
+         if (squadStationary != null)
          {
             squadToStop.cleanup();
          }
