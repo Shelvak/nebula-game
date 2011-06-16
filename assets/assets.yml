@@ -7,6 +7,7 @@ laser space_laser_red space_laser_blue space_laser_green
 cannon cannon_air
 plasma_gun plasma_spike
 alien_cannon thor_ground
+zeus_cannon
 } %>
 <% terrain_types = {
   0 => 'earth',
