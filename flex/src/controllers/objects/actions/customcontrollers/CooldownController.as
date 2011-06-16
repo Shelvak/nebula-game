@@ -38,7 +38,7 @@ package controllers.objects.actions.customcontrollers
             new MCooldownSpace();
          cooldown.id = object.id;
          cooldown.currentLocation = location;
-         cooldown.endsAt = DateUtil.parseServerDTF(object.endsAt, false);
+         cooldown.endsAt = DateUtil.parseServerDTF(object.endsAt); //, false);
          if (location.isSSObject)
          {
             ML.latestPlanet.ssObject.cooldown = cooldown;
