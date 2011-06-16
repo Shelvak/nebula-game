@@ -9,10 +9,10 @@
 # [unit, count, level]
 
 UNITS_INFANTRY = [
-  [Unit::Trooper, 3, 3],
+  [Unit::Trooper, 2, 3],
   [Unit::Seeker, 1, 3],
   [Unit::Shocker, 1, 3],
-  [Unit::Trooper, 3, 3],
+  [Unit::Trooper, 2, 3],
   [Unit::Seeker, 1, 3],
   [Unit::Shocker, 1, 3],
 ]
