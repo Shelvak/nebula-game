@@ -1281,7 +1281,7 @@
     <label.unitsManagement value="Tvarkyti" />
     <label.showUnits value="Rodyti" />
     <label.move value="Judinti" />
-    <label.changeSpeed value="Greičio kontrolė:" />
+    <label.changeSpeed value="Skrydžio laiko valdymas" />
     <label.flightTime value="Skrydžio laikas: {0}" />
     <label.arrivesIn value="Atvyks po: {0}" />
     <label.arrivesAt value="Atvyks: {0}" />

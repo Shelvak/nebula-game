@@ -62,7 +62,6 @@
          
          protected function dismiss_clickHandler(event:MouseEvent):void
          {
-            GlobalFlags.getInstance().lockApplication = true;
             new GUnitsScreenEvent(GUnitsScreenEvent.DISMISS_CONFIRMED);
          }
          

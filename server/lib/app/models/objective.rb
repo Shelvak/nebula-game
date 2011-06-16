@@ -66,11 +66,6 @@ class Objective < ActiveRecord::Base
         end
       end
 
-      # Allow overriding call to Objective#filter.
-      def filter(objective, class_models)
-        objective.filter(class_models)
-      end
-
       # Actually increase _completed_ on them and save them. This is
       # separated from top loop because saving progress may complete quest
       # and newly started objectives get progressed in same run.
@@ -89,6 +84,11 @@ class Objective < ActiveRecord::Base
           progress.save!
         end
       end
+    end
+
+    # Allow overriding call to Objective#filter.
+    def filter(objective, class_models)
+      objective.filter(class_models)
     end
 
     # Regress objective by given _models_ instead of progressing it.

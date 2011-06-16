@@ -47,6 +47,7 @@ function notificationsOpened() {
 }
 
 // Call me when we have unread notifications.
+//noinspection JSUnusedGlobalSymbols
 function setUnreadNotifications(count) {
   notificationsOpened();  
   notificationOldTitle = document.title;
@@ -64,6 +65,7 @@ function setUnreadNotifications(count) {
 }
 
 // Call me to know what to do.
+//noinspection JSUnusedGlobalSymbols
 function getGameOptions() {
   var server = queryString('server');
   var combatLogId = queryString('combat_log_id');
@@ -88,7 +90,7 @@ function getGameOptions() {
   }
   // Let's play the game!
   else if (authToken) {
-    document.title = URLDecode(title) + titleSuffix;
+    document.title = urlDecode(title) + titleSuffix;
     return {mode: 'game', galaxyId: galaxyId, server: server, 
       authToken: authToken, locale: locale, webHost: webHost};
   }
@@ -111,10 +113,11 @@ function getGameOptions() {
 }
 
 // Get combat log URL for log with given ID.
+//noinspection JSUnusedGlobalSymbols
 function getCombatLogUrl(id, playerId, server, webHost, locale) {
   return location.href.replace(location.search, '') + "?server=" + server +
     "&combat_log_id=" + id + "&player_id=" + playerId + "&web_host=" + webHost +
-    "locale=" + locale;
+    "&locale=" + locale;
 }
 
 // Helper functions
@@ -148,7 +151,7 @@ function queryString(parameter) {
   }
 }
 
-function URLDecode(encodedString) {
+function urlDecode(encodedString) {
   var output = encodedString;
   var binVal, thisString;
   var myregexp = /(%[^%]{2})/;
