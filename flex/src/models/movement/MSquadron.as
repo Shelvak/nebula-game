@@ -547,6 +547,19 @@ package models.movement
       }
       
       
+      /**
+       * Moves this squadron to the last hop if it has hops remaining.
+       */ 
+      public function moveToLastHop() : void
+      {
+         if (!hasHopsRemaining)
+         {
+            return;
+         }
+         moveToNextHop(new Date(2200, 0, 1).time);
+      }
+      
+      
       public function removeAllHops() : void
       {
          hops.removeAll();

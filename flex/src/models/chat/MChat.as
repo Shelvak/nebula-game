@@ -662,12 +662,12 @@ package models.chat
          if (_channels.containsChannel(member.name))
          {
             selectChannel(member.name);
+            NAV_CTRL.showChat();
             return;
          }
          
          createPrivateChannel(member);
          selectChannel(member.name);
-         
          NAV_CTRL.showChat();
       }
       

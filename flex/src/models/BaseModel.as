@@ -268,7 +268,7 @@ package models
             {
                try
                {
-                  model[propName] = DateUtil.parseServerDTF(data[propAlias]);//, false);
+                  model[propName] = DateUtil.parseServerDTF(data[propAlias], false);
                }
                catch (e:Error)
                {

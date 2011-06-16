@@ -1,7 +1,6 @@
 package controllers.units
 {
    import com.developmentarc.core.utils.EventBroker;
-   import utils.SingletonFactory;
    
    import components.map.space.SquadronsController;
    
@@ -32,6 +31,7 @@ package controllers.units
    
    import namespaces.client_internal;
    
+   import utils.SingletonFactory;
    import utils.StringUtil;
    import utils.datastructures.Collections;
    
@@ -158,7 +158,7 @@ package controllers.units
        * Use to stop a squadron which is moving. Will ignore IDs of squadrons not present in
        * <code>ModelLocator.squadrons</code>.
        */
-      public function stopSquadron(id:int) : void
+      public function stopSquadron(id:int, atLastHop:Boolean) : void
       {
          if (id <= 0)
          {
@@ -169,6 +169,10 @@ package controllers.units
          if (squadToStop == null)
          {
             return;
+         }
+         if (atLastHop)
+         {
+            squadToStop.moveToLastHop();
          }
          squadToStop.id = 0;
          squadToStop.route = null;
