@@ -29,7 +29,7 @@ package components.map.planet.objects
       
       
       /**
-       * @copy components.gameobjects.planet.PrimitivePlanetMapObject#initProperties()
+       * @copy components.map.planet.objects.PrimitivePlanetMapObject#initProperties()
        */
       protected function initProperties() : void
       {
@@ -152,8 +152,9 @@ package components.map.planet.objects
          super.commitProperties();
          if (f_interferingTilesChanged)
          {
-            var width:int  = getBuilding().width  + Building.GAP_BETWEEN * 2;
-            var height:int = getBuilding().height + Building.GAP_BETWEEN * 2;
+            var building:Building = getBuilding();
+            var width:int  = building.width  + Building.GAP_BETWEEN * 2;
+            var height:int = building.height + Building.GAP_BETWEEN * 2;
             for (var lx:int = 0; lx < width; lx++)
             {
                for (var ly:int = 0; ly < height; ly++)
