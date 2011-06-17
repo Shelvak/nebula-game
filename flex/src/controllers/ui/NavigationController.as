@@ -711,6 +711,11 @@ package controllers.ui
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.QUESTS]);
          createdScreens[MainAreaScreens.QUESTS] = true;
+         ML.quests.applyCompletedFilter(false);
+         if (ML.quests.selectedQuest == null)
+         {
+            ML.quests.select(Quest(ML.quests.getFirst()).id);
+         }
          if (ML.player.firstTime)
          {
             ML.quests.select(Quest(ML.quests.getFirst()).id);
