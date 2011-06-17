@@ -22,9 +22,13 @@ package utils
        * Time difference (in milliseconds) of client and server times (serverTime - clientTime). Is updated
        * each time a message is received from server.
        * 
-       * @default 0
+       * @default NaN
+       * 
+       * @internal
+       * This *MUST* be a NaN (NOT 0) for updateTimeDiff() to work. See the code of that method
+       * and you will see why!
        */
-      public static var timeDiff:Number = 0;
+      public static var timeDiff:Number = NaN;
       
       
       public static function updateTimeDiff(serverTimestamp:*, clientTime:Date) : void
