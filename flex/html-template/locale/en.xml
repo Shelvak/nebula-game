@@ -1302,6 +1302,7 @@
       value="Upon arrival there will be {0} cooldown before combat will ensue."/>
     <message.speedUpCost 
       value="Speed up cost: {0 one[one cred] many[? creds]}."/>
+    <message.orderComplete value="Fleet has been dispatched." />
   </Movement>
 
   <Navigator>
