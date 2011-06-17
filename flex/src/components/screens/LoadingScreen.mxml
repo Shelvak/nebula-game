@@ -124,6 +124,7 @@
          private function imageLoaded(event:ProgressEvent) : void
          {
             downloadProgress.setProgress(event.bytesLoaded, event.bytesTotal);
+            setLblDownloadProgressText(event.bytesLoaded);
          }
          
          
