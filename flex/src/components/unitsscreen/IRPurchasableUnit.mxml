@@ -188,7 +188,7 @@
                   canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
                      (selectedEnergyCost > planet.energy.currentStock) ||
                      (selectedZetiumCost > planet.zetium.currentStock) ||
-                     (Config.getUnitPopulation(type) > ML.player.populationMax - ML.player.population));
+                     (populationCost > ML.player.populationMax - ML.player.population));
                   if (!canBeUpgraded)
                   {
                      enoughStorages = !(selectedMetalCost > planet.metal.maxStock ||
@@ -297,7 +297,7 @@
                ptt.metalCost = selectedMetalCost.toString();
                ptt.energyCost = selectedEnergyCost.toString();
                ptt.zetiumCost = selectedZetiumCost.toString();
-               ptt.populationCost = Config.getUnitPopulation(type).toString();
+               ptt.populationCost = populationCost.toString();
                ptt.timeCost = selectedTimeCost;
                event.toolTip = ptt;
             }
