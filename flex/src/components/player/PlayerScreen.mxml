@@ -4,9 +4,9 @@
          xmlns:mx="library://ns.adobe.com/flex/mx" 
          xmlns:components="utils.components.*" 
          xmlns:base="components.base.*"
+         xmlns:screens="components.screens.*"
          width="100%" height="100%"
-         creationComplete="group1_creationCompleteHandler(event)" 
-         xmlns:screens="components.screens.*">
+         creationComplete="group1_creationCompleteHandler(event)" >
    <fx:Script>
       <![CDATA[
          import components.skins.LargePanelSkin;
@@ -69,7 +69,7 @@
    <s:Label fontSize="52" horizontalCenter="0" verticalCenter="0" color="#eec500"
             text="{Localizer.string('Ratings', 'label.loading')}"
             visible="{player == null || player.name == ''}"/>
-   <base:Scroller id="scroller" left="0" right="0" top="0" bottom="0" 
+   <base:Scroller id="scroller" left="0" right="0" top="0" bottom="9" 
                   stepMultiplier="15">
       <s:Group width="100%" visible="{player != null &amp;&amp; player.name != ''}">
          <s:Group width="100%">
