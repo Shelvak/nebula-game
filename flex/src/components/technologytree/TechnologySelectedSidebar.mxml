@@ -440,7 +440,7 @@
                      </s:Group>
                      
                      <s:Label text="{Localizer.string('Technologies', 'scientistsSelected') + ': ' +
-                              scientistsSelector.value.toString()}"/>
+                              scientistsSelector.value.toString()}" paddingLeft="6"/>
                      <s:Group width="100%">
                         <s:Label text="{_selectedModel.minScientists}" styleName="h3"/>
                         <s:HSlider id="scientistsSelector" width="80%" showDataTip="false" 
