@@ -112,8 +112,11 @@
                   color="#eec500" fontSize="14" horizontalCenter="0" visible="{!loaded}"/>
          <base:AdvancedContainer left="0" right="0" visible="{loaded}">
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
-               <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()" left="50"/>
-               <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()" right="50"/>
+               <base:layout>
+                  <s:HorizontalLayout gap="10" horizontalAlign="center"/>
+               </base:layout>
+               <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()"/>
+               <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()"/>
             </base:Panel>
             
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.noSelection')}"
