@@ -3,8 +3,6 @@ package utils
    import com.adobe.utils.DateUtil;
    
    import mx.formatters.DateFormatter;
-   import mx.logging.ILogger;
-   import mx.logging.Log;
    
    import utils.locale.Localizer;
    
@@ -24,34 +22,22 @@ package utils
        * Time difference (in milliseconds) of client and server times (serverTime - clientTime). Is updated
        * each time a message is received from server.
        * 
-       * @default 0
+       * @default NaN
+       * 
+       * @internal
+       * This *MUST* be a NaN (NOT 0) for updateTimeDiff() to work. See the code of that method
+       * and you will see why!
        */
-      public static var timeDiff:Number = 0;
+      public static var timeDiff:Number = NaN;
       
       
       public static function updateTimeDiff(serverTimestamp:*, clientTime:Date) : void
       {
          var serverTime:Number = new Number(serverTimestamp);
-         
-         var logger:ILogger = Log.getLogger("utils.DateUtil");
-         logger.info("######################");
-         logger.info("## TIME DIFF UPDATE ##");
-         logger.info("serverTime: {0}", new Date(serverTimestamp));
-         logger.info("clientTime: {0}", clientTime);
-         logger.info("currentDiff: {0}", timeDiff);
-         
          if (isNaN(timeDiff) || Math.abs(timeDiff) > Math.abs(serverTime - clientTime.time))
          {
             timeDiff = serverTime - clientTime.time;
-            logger.info("*UPDATED* time diff. New value: {0}", timeDiff);
          }
-         else
-         {
-            logger.info("*NOT* updated time diff. Value: {0}", serverTime - clientTime.time);
-         }
-         
-         logger.info("## TIME DIFF UPDATE ##");
-         logger.info("######################");
       }
       
       
