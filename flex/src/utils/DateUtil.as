@@ -34,9 +34,10 @@ package utils
       public static function updateTimeDiff(serverTimestamp:*, clientTime:Date) : void
       {
          var serverTime:Number = new Number(serverTimestamp);
-         if (isNaN(timeDiff) || Math.abs(timeDiff) > Math.abs(serverTime - clientTime.time))
+         var newDiff:Number = serverTime - clientTime.time;
+         if (isNaN(timeDiff) || Math.abs(timeDiff) > Math.abs(newDiff))
          {
-            timeDiff = serverTime - clientTime.time;
+            timeDiff = newDiff;
          }
       }
       
