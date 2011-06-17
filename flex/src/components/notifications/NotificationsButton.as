@@ -122,7 +122,7 @@ package components.notifications
       {
          if (playerHasNewNotifs)
          {
-            label = getLabel("hasNew", newNotifsTotal);
+            label = getLabel("hasNew", unreadNotifsTotal);
             if (!fade.isPlaying)
             {
                fade.play();
