@@ -4,6 +4,7 @@ package models.location
    
    import models.BaseModel;
    import models.map.MMap;
+   import models.solarsystem.SSKind;
    
    public class LocationMinimal extends BaseModel implements ILocation
    {
@@ -20,6 +21,8 @@ package models.location
       /* ### PROPERTIES ### */
       /* ################## */
       
+      [Optional]
+      public var kind:uint;
       
       private var _type:uint = LocationType.GALAXY;
       [Optional]
@@ -79,6 +82,13 @@ package models.location
       public function get isBattleground() : Boolean
       {
          return isSolarSystem && ML.latestGalaxy.isBattleground(id);
+      }
+      
+      
+      [Bindable(event="willNotChange")]
+      public function get isMiniBattleground() : Boolean
+      {
+         return isSolarSystem && kind == SSKind.BATTLEGROUND && !isBattleground;
       }
       
       

@@ -84,7 +84,7 @@ class Quest::DSL
 
   # Rewards units for points
   def reward_units_for_points(points, unit_list)
-    points_left = (points * 0.05).round
+    points_left = (points * 0.03).round
     units = {}
     can_exit = false
     until can_exit

@@ -20,11 +20,13 @@ rich_asteroid.zetium_rate: [2, 6]
 
 # Asteroid wreckage spawn rate ranges.
 #
-# 15 asteroids average, 3 hrs avg spawn time, 1 mule full capacity.
-asteroid.wreckage.metal.spawn: [35, 105]
-asteroid.wreckage.energy.spawn: [105, 315]
-asteroid.wreckage.zetium.spawn: [18, 53]
-asteroid.wreckage.time.spawn: [<%= 2.hours %> / speed, <%= 4.hours %> / speed]
+# 15 asteroids average, x * 3 hrs avg spawn time, 0,5 mule capacity.
+<% mult = 12 %>
+
+asteroid.wreckage.metal.spawn: [<%= mult * 18 %>, <%= mult * 52 %>]
+asteroid.wreckage.energy.spawn: [<%= mult * 52 %>, <%= mult * 160 %>]
+asteroid.wreckage.zetium.spawn: [<%= mult * 9 %>, <%= mult * 27 %>]
+asteroid.wreckage.time.spawn: [<%= (mult * 2).hours %> / speed, <%= (mult * 4).hours %> / speed]
 # After player registers when to register first cooldown on asteroids in his
 # solar system?
 asteroid.wreckage.time.first: <%= 1.week %> / speed

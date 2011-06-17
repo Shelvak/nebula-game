@@ -7,12 +7,16 @@
 #    :x => location_x,
 #    :y => location_y,
 #    :name => name,
+#    :kind => kind,
 #    :terrain => terrain,
 #    :solar_system_id => solar_system_id
 #    
 # See +LocationPoint+ for :type, :id, :x and :y explanations.
+# 
+# SolarSystem specific attributes (they should be nil for other locations):
+#   _kind_ is +Fixnum+ of solar system kind.
 #
-# SsObject specific attributes (they should be nil for other locations):
+# SsObject specific attributes:
 #   _name_ should be nil unless Location is a +SsObject+. If so, use
 #   _planet.name_ as _name_.
 #
@@ -22,7 +26,7 @@
 #   +SolarSystem+.
 #
 class ClientLocation < LocationPoint
-  ATTRIBUTES = %w{name terrain solar_system_id}
+  ATTRIBUTES = %w{name kind terrain solar_system_id}
   attr_reader *ATTRIBUTES.map(&:to_sym)
 
   def self.attributes_mapping_for(side)
@@ -31,9 +35,10 @@ class ClientLocation < LocationPoint
     end
   end
 
-  def initialize(id, type, x, y, name, terrain, solar_system_id)
+  def initialize(id, type, x, y, name, kind, terrain, solar_system_id)
     super(id, type, x, y)
-    @name, @terrain, @solar_system_id = name, terrain, solar_system_id
+    @name, @kind, @terrain, @solar_system_id = \
+      name, kind, terrain, solar_system_id
   end
 
   def eql?(other)
@@ -41,12 +46,13 @@ class ClientLocation < LocationPoint
 
     # We skip name because names of planets can be changed by players
     super(other) &&
+      @kind == other.kind &&
       @terrain == other.terrain &&
       @solar_system_id == other.solar_system_id
   end
 
   def hash
-    super + @terrain.hash * 7 + @solar_system_id.hash * 7
+    super + @kind.hash * 7 + @terrain.hash * 7 + @solar_system_id.hash * 7
   end
 
   def as_json(options=nil)

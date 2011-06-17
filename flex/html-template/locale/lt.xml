@@ -1346,7 +1346,7 @@
     <title.combatLog value="Mūšio ataskaita" />
     <message.combatLog>
       <p>Mūšis {0 planet[planetoje] galaxy[galaktikoje] ss[saulės sistemoje] 
-      battleground[arenoje]} {1}</p>
+      battleground[]} {1}</p>
     </message.combatLog>
     <label.combatLog.outcome.win value="Tu laimėjai!" />
     <label.combatLog.outcome.loose value="Tu pralaimėjai!" />

@@ -42,6 +42,6 @@ class SolarSystemPoint < LocationPoint
   # See Location#client_location
   def client_location
     ClientLocation.new(@id, Location::SOLAR_SYSTEM, position, angle,
-      nil, nil, nil)
+      nil, solar_system.kind, nil, nil)
   end
 end
