@@ -61,6 +61,7 @@ module Combat::Simulation
       save_updated_participants(units, buildings, killed_by)
       cooldown = create_cooldown(location, response['outcomes']) \
         if options[:cooldown]
+      Objective::Battle.progress(response['outcomes'])
     end
 
     Combat::Assets.new(response, combat_log, notification_ids, cooldown)

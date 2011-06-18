@@ -86,6 +86,11 @@ describe Building do
       end
     end
 
+    it "should progress objective" do
+      Objective::SelfDestruct.should_receive(:progress).with(@building)
+      @building.self_destruct!
+    end
+
     it "should destroy building" do
       @building.self_destruct!
       lambda do
@@ -201,6 +206,11 @@ describe Building do
       should_fire_event(@model, EventBroker::CHANGED) do
         @model.move!(10, 15)
       end
+    end
+
+    it "should progress objective" do
+      Objective::MoveBuilding.should_receive(:progress).with(@model)
+      @model.move!(10, 15)
     end
 
     [

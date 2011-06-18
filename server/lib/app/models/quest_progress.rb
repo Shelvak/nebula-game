@@ -94,8 +94,10 @@ class QuestProgress < ActiveRecord::Base
       self.status = STATUS_COMPLETED
       started = Quest.start_child_quests(quest_id, player_id)
       if quest.achievement?
+        Objective::CompleteAchievements.progress(self)
         Notification.create_for_achievement_completed(self)
       else
+        Objective::CompleteQuests.progress(self)
         Notification.create_for_quest_completed(self, started)
       end
     end

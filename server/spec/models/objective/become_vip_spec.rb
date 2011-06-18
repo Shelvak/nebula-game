@@ -9,22 +9,11 @@ describe Objective::BecomeVip do
       @objective = Factory.create(:o_become_vip, :level => 2, :count => 2)
       @op = Factory.create(:objective_progress, :player => @player,
         :objective => @objective)
+      @other_player_opts = {:vip_level => 2}
+      @klass = @objective.class
     end
 
-    it "should not progress for other player" do
-      player = Factory.create(:player, :vip_level => 2)
-      lambda do
-        Objective::BecomeVip.progress(player)
-        @op.reload
-      end.should_not change(@op, :completed)
-    end
-
-    it "should progress if vip level is exact" do
-      lambda do
-        Objective::BecomeVip.progress(@player)
-        @op.reload
-      end.should change(@op, :completed).by(1)
-    end
+    it_should_behave_like "player objective"
 
     it "should progress if vip level is greater" do
       @player.vip_level += 1

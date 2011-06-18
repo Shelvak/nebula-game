@@ -145,11 +145,20 @@ assets:
         [
           %w{ExploreBlock ExploreBlock},
           %w{Destroy Unit Building},
-          %w{UpgradeTo Unit Building Technology},
-          Įw{BecomeVip Vip},
+          %w{UpgradeTo Unit Building Technology Building::Radar},
+          %w{BecomeVip Vip},
           %w{Accelerate Unit Building Technology},
+          ["CompleteQuests", ""],
+          ["CompleteAchievements", ""],
+          %w{Battle 0 1},
+          %w{MoveBuilding Building},
+          %w{SelfDestruct Building},
+          ["AccellerateFlight", ""],
+          ["HealHp", ""],
         ].each do |type, *keys|
-          keys.each do |key| %>
+          keys.each do |key| 
+            key.gsub!("::", "_")
+          %>
         <%= "#{type}#{key}.jpg: Achievement#{type}#{key}.jpg" %>
           <% end %>
         <% end %>

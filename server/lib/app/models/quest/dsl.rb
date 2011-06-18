@@ -196,6 +196,109 @@ class Quest::DSL
     ])
   end
 
+  # Complete a number of quests.
+  #
+  # Usage: complete_quests :count => 10
+  #
+  # :count defaults to 1
+  def complete_quests(options={})
+    options.reverse_merge!(:count => 1)
+
+    @objectives.push([
+      Objective::CompleteQuests,
+      {:key => Objective::CompleteQuests::KEY, :count => options[:count]}
+    ])
+  end
+
+  # Complete a number of achievements.
+  #
+  # Usage: complete_achievements :count => 10
+  #
+  # :count defaults to 1
+  def complete_achievements(options={})
+    options.reverse_merge!(:count => 1)
+
+    @objectives.push([
+      Objective::CompleteAchievements,
+      {:key => Objective::CompleteAchievements::KEY,
+        :count => options[:count]}
+    ])
+  end
+
+  # Battle an enemy with _outcome_.
+  #
+  # Usage: battle Combat::OUTCOME_WIN, :count => 10
+  #
+  # :count defaults to 1
+  #
+  def battle(outcome, options)
+    options.reverse_merge!(:count => 1)
+
+    @objectives.push([
+      Objective::Battle,
+      {:key => Objective::Battle::KEY, :count => options[:count],
+        :outcome => outcome}
+    ])
+  end
+
+  # Move building.
+  #
+  # Usage: move_building :count => 10, :key => "Building::Barracks"
+  #
+  # :count defaults to 1
+  # :key defaults to "Building"
+  #
+  def move_building(options)
+    options.reverse_merge!(:count => 1, :key => Building.to_s)
+
+    @objectives.push([
+      Objective::MoveBuilding,
+      {:key => options[:key], :count => options[:count]}
+    ])
+  end
+
+  # Self destruct a building.
+  #
+  # Usage: self_destruct :count => 10, :key => "Building::Barracks"
+  #
+  # :count defaults to 1
+  # :key defaults to "Building"
+  #
+  def self_destruct(options)
+    options.reverse_merge!(:count => 1, :key => Building.to_s)
+
+    @objectives.push([
+      Objective::SelfDestruct,
+      {:key => options[:key], :count => options[:count]}
+    ])
+  end
+
+  # Accelerate flight.
+  #
+  # Usage: accelerate_flight :count => 10
+  #
+  # :count defaults to 1
+  #
+  def accelerate_flight(options)
+    options.reverse_merge!(:count => 1)
+
+    @objectives.push([
+      Objective::AccelerateFlight,
+      {:key => Objective::AccelerateFlight::KEY, :count => options[:count]}
+    ])
+  end
+
+  # Heal N HP.
+  #
+  # Usage: heal_hp 10
+  #
+  def heal_hp(count)
+    @objectives.push([
+      Objective::HealHp,
+      {:key => Objective::HealHp::KEY, :count => count}
+    ])
+  end
+
   PLANET_KEY = SsObject::Planet.to_s
 
   # Annex a planet.
