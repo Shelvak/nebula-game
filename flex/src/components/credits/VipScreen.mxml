@@ -8,10 +8,13 @@
    <fx:Script>
       <![CDATA[
          import components.popups.WaitingCredsPopup;
+         import components.skins.CreditButtonSkin;
          
          import controllers.GlobalFlags;
          import controllers.players.PlayersCommand;
          import controllers.ui.NavigationController;
+         
+         import flashx.textLayout.formats.TextAlign;
          
          import models.ModelLocator;
          import models.credit.VipLevelsData;
@@ -46,10 +49,10 @@
    <s:Group width="{header.width}" horizontalCenter="0" top="10">
       <s:Label text="{Localizer.string('Credits', 'title.becomeVIP')}" 
                fontSize="24" color="#eec500" paddingTop="20" 
-               fontWeight="bold"/>
+               fontWeight="bold" paddingLeft="5"/>
       
       <s:Label text="{Localizer.string('Credits', 'label.becomeVIP')}" 
-               fontSize="14" paddingTop="10" paddingLeft="10" paddingBottom="10"/>
+               fontSize="14" paddingTop="20" paddingLeft="5" paddingBottom="10"/>
       
       <s:Group height="100%">
          <credits:VipHeader id="header"/>
@@ -65,8 +68,12 @@
          </base:Scroller>    
       </s:Group>
       
-      <base:Warning text="{Localizer.string('Credits', 'warning.becomeVIP')}"
-                    width="100%" paddingTop="10"/>
+      <s:Group width="100%">
+         <base:Warning text="{Localizer.string('Credits', 'warning.becomeVIP')}"
+                       paddingTop="20" horizontalCenter="0" width="90%"
+                       warningTextAlign="{TextAlign.LEFT}"
+                       warningSignVerticalCenter="false"/>
+      </s:Group>
       <s:Group width="{header.width}">
          <s:Button label="{Localizer.string('Credits', 'label.cancel')}"
                    click="NavigationController.getInstance().showPreviousScreen()"/>
@@ -79,9 +86,10 @@
                    : Localizer.string('Credits', 'label.order'))
                    : Localizer.string('Credits', 'label.order')}"
                    enabled="{VipLevelsData.vipSelection.selectedValue > 0}"
-                   click="order_clickHandler(event)" />
+                   click="order_clickHandler(event)" 
+                   skinClass="components.skins.CreditButtonSkin"/>
          <s:layout>
-            <s:HorizontalLayout horizontalAlign="right"/>
+            <s:HorizontalLayout horizontalAlign="right" paddingTop="20" gap="10"/>
          </s:layout>
       </s:Group>
       <s:layout>

@@ -10,13 +10,14 @@
          import controllers.alliances.AlliancesCommand;
          
          import models.ModelLocator;
+         import models.alliance.MAlliance;
          
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
          
          [Bindable]
-         private var ML: ModelLocator = ModelLocator.getInstance();
+         public var alliance: MAlliance;
          
       ]]>
    </fx:Script>
@@ -36,14 +37,14 @@
       </s:layout>
       <s:Label text="#" width="40" textAlign="center"/>
       <s:Label width="120" text="{Localizer.string('Alliances', 'label.total', 
-               [ML.alliance.players.length])}" textAlign="center"/>
-      <s:Label text="{ML.alliance.totalPlanetsCount}" width="80" textAlign="center"/>
-      <s:Label text="{ML.alliance.totalEconomyPoints}" width="80" textAlign="center"/>
-      <s:Label text="{ML.alliance.totalSciencePoints}" width="80" textAlign="center"/>
-      <s:Label text="{ML.alliance.totalArmyPoints}" width="80" textAlign="center"/>
-      <s:Label text="{ML.alliance.totalWarPoints}" width="80" textAlign="center"/>
-      <s:Label text="{ML.alliance.totalVictoryPoints}" width="80" textAlign="center"/>
-      <s:Label text="{ML.alliance.totalPoints}" width="80" textAlign="center"/>
+               [alliance.players.length])}" textAlign="center"/>
+      <s:Label text="{alliance.totalPlanetsCount}" width="80" textAlign="center"/>
+      <s:Label text="{alliance.totalEconomyPoints}" width="80" textAlign="center"/>
+      <s:Label text="{alliance.totalSciencePoints}" width="80" textAlign="center"/>
+      <s:Label text="{alliance.totalArmyPoints}" width="80" textAlign="center"/>
+      <s:Label text="{alliance.totalWarPoints}" width="80" textAlign="center"/>
+      <s:Label text="{alliance.totalVictoryPoints}" width="80" textAlign="center"/>
+      <s:Label text="{alliance.totalPoints}" width="80" textAlign="center"/>
       <s:Group width="80"/>
    </s:Group>
 </s:Group>

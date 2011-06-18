@@ -21,5 +21,6 @@ package controllers.screens
       public static const HEAL:String = "Heal";
       public static const CHAT:String = "Chat";
       public static const VIP:String = "Vip";
+      public static const PLAYER:String = "Player";
    }
 }

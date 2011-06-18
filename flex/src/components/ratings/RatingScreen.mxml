@@ -18,6 +18,8 @@
          
          import globalevents.GRatingsEvent;
          
+         import models.player.MRatingPlayer;
+         
          import mx.collections.Sort;
          import mx.collections.SortField;
          import mx.events.FlexEvent;
@@ -30,9 +32,9 @@
          
          protected function textinput1_changeHandler(event:TextOperationEvent):void
          {
-            ML.ratings.filterFunction = function (item: Object): Boolean
+            ML.ratings.filterFunction = function (item: MRatingPlayer): Boolean
             {
-               return (String(item.name).toLowerCase().indexOf(searchText.text.toLowerCase()) != -1)
+               return (item.name.toLowerCase().indexOf(searchText.text.toLowerCase()) != -1)
                && (!onlyOnline.selected || item.online);
             };
             ML.ratings.refresh();
@@ -41,9 +43,9 @@
          private function filterPlayer(e: GRatingsEvent): void
          {
             searchText.text = e.filterName;
-            ML.ratings.filterFunction = function (item: Object): Boolean
+            ML.ratings.filterFunction = function (item: MRatingPlayer): Boolean
             {
-               return (String(item.name).toLowerCase().indexOf(searchText.text.toLowerCase()) != -1)
+               return (item.name.toLowerCase().indexOf(searchText.text.toLowerCase()) != -1)
                && (!onlyOnline.selected || item.online);
             };
             ML.ratings.refresh();
@@ -52,9 +54,9 @@
          
          protected function onlyOnline_changeHandler(event:Event):void
          {
-            ML.ratings.filterFunction = function (item: Object): Boolean
+            ML.ratings.filterFunction = function (item: MRatingPlayer): Boolean
             {
-               return (String(item.name).toLowerCase().indexOf(searchText.text.toLowerCase()) != -1)
+               return (item.name.toLowerCase().indexOf(searchText.text.toLowerCase()) != -1)
                && (!onlyOnline.selected || item.online);
             }
             ML.ratings.refresh();

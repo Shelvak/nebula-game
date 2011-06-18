@@ -5,6 +5,9 @@ package controllers.players.actions
    import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
    
+   import models.factories.RatingsPlayerFactory;
+   import models.player.MRatingPlayer;
+   
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    import mx.collections.SortField;
@@ -29,14 +32,7 @@ package controllers.players.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         ML.ratings = new ArrayCollection(cmd.parameters.ratings);
-         for each (var player:Object in ML.ratings)
-         {
-            player.points = player.warPoints +
-               player.sciencePoints +
-               player.armyPoints +
-               player.economyPoints;
-         }
+         ML.ratings = RatingsPlayerFactory.fromObjects(cmd.parameters.ratings);
          ML.ratings.sort = new Sort();
          ML.ratings.sort.fields = [new SortField('victoryPoints', true, true, true), 
             new SortField('points', true, true, true),
@@ -45,7 +41,7 @@ package controllers.players.actions
          ML.ratings.refresh();
          
          var i: int = 0;
-         for each (player in ML.ratings)
+         for each (var player: MRatingPlayer in ML.ratings)
          {
             i++;
             player.rank = i;

@@ -45,6 +45,14 @@ package controllers.players
       
       
       /**
+       * Requests player profile information
+       * 
+       * @eventType players|show_profile
+       */ 
+      public static const SHOW_PROFILE:String = "players|show_profile";
+      
+      
+      /**
        * This is sent to the server only once when a player opens quests screen from the first time login
        * screen.
        * 

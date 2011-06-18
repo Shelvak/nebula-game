@@ -5,9 +5,12 @@
                 autoDrawBackground="false" xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
+         import flashx.textLayout.elements.TextFlow;
+         
          import models.credit.VipLevelsData;
          
          import spark.components.RadioButtonGroup;
+         import spark.utils.TextFlowUtil;
          
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
@@ -36,6 +39,11 @@
          {
                return from[key];
          }
+         
+         private function getTextFlow(from: String): TextFlow
+         {
+            return TextFlowUtil.importFromString(from);
+         }
       ]]>
    </fx:Script>
    <s:Rect left="0" right="0" top="0" bottom="0">
@@ -54,9 +62,9 @@
       <s:Label text="{VipLevelsData.getVipCost(level)}" width="50" textAlign="center"/>
       <s:Label text="{VipLevelsData.getVipDailyBonus(level)}" width="120" textAlign="center"/>
       <s:Label text="{VipLevelsData.getVipDuration(level)}" width="100" textAlign="center"/>
-      <s:Label text="{Localizer.string('Credits', 'label.totalCreds', 
+      <s:RichText textFlow="{getTextFlow(Localizer.string('Credits', 'label.totalCreds', 
                [VipLevelsData.getVipDailyBonus(level), VipLevelsData.getVipDuration(level),
-               VipLevelsData.getVipTotalCreds(level), VipLevelsData.getVipBonusRate(level)])}" 
+               VipLevelsData.getVipTotalCreds(level), VipLevelsData.getVipBonusRate(level)]))}" 
                width="300" textAlign="center"/>
    </s:Group>
 </s:ItemRenderer>

@@ -11,25 +11,22 @@
          import controllers.alliances.AlliancesCommand;
          
          import models.ModelLocator;
+         import models.player.MRatingPlayer;
          
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
-         private function getProperty(from: Object, key: String): *
+         
+         [Bindable]
+         private var player: MRatingPlayer;
+         
+         public override function set data(value:Object):void
          {
-            if (key == 'alliance')
-            {
-               if (from[key])
-               {
-                  return from[key].name;
-               }
-               else
-               {
-                  return null;
-               }
-            }
-            else
-               return from[key];
+            player = MRatingPlayer(value);
+         }
+         public override function get data():Object
+         {
+            return player;
          }
          
          [Bindable]
@@ -64,25 +61,25 @@
       <s:layout>
          <s:HorizontalLayout gap="1" verticalAlign="middle"/>
       </s:layout>
-      <s:Label text="{getProperty(data, 'rank')}" width="40" textAlign="center"/>
+      <s:Label text="{player.rank}" width="40" textAlign="center"/>
       <base:AdvancedContainer width="120"
-                              toolTip="{Localizer.string('Ratings', getProperty(data, 'online')?'online':'offline')}">
+                              toolTip="{Localizer.string('Ratings', player.online?'online':'offline')}">
          <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
-                        AssetNames.getIconImageName(getProperty(data, 'online')?'online':'offline'))}"/>
-         <s:Label text="{getProperty(data, 'name')}" maxDisplayedLines="1" width="100%" textAlign="center"/>
+                        AssetNames.getIconImageName(player.online?'online':'offline'))}"/>
+         <s:Label text="{player.name}" maxDisplayedLines="1" width="100%" textAlign="center"/>
          <base:layout>
             <s:HorizontalLayout verticalAlign="middle" paddingLeft="3" paddingRight="3"/>
          </base:layout>
       </base:AdvancedContainer>
-      <s:Label text="{getProperty(data, 'planetsCount')}" width="80" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'economyPoints')}" width="80" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'sciencePoints')}" width="80" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'armyPoints')}" width="80" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'warPoints')}" width="80" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'victoryPoints')}" width="80" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'points')}" width="80" textAlign="center"/>
-      <s:Group width="80" visible="{ML.alliance.ownerId == ML.player.id 
-               &amp;&amp; ML.player.name != getProperty(data, 'name')}">
+      <s:Label text="{player.planetsCount}" width="80" textAlign="center"/>
+      <s:Label text="{player.economyPoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.sciencePoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.armyPoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.warPoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.victoryPoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.points}" width="80" textAlign="center"/>
+      <s:Group width="80" visible="{player.allianceOwnerId == ML.player.id 
+               &amp;&amp; ML.player.id != player.id}">
       <s:Button label="{Localizer.string('Alliances', 'label.kick')}" width="60" horizontalCenter="0"
                 click="button1_clickHandler(event)"/>
       </s:Group>

@@ -277,6 +277,7 @@ package controllers.startup
          bindPair(PlayersCommand.DISCONNECT, new DisconnectAction());
          bindPair(PlayersCommand.RATINGS, new controllers.players.actions.RatingsAction());
          bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
+         bindPair(PlayersCommand.SHOW_PROFILE, new controllers.players.actions.ShowProfileAction());
          bindPair(PlayersCommand.EDIT, new controllers.players.actions.EditAction());
          bindPair(PlayersCommand.VIP, new controllers.players.actions.VipAction());
       }

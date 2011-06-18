@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:components="utils.components.*" 
+         xmlns:base="components.base.*"
+         creationComplete="group1_creationCompleteHandler(event)">
+   <fx:Script>
+      <![CDATA[
+         import components.skins.LinkButtonSkin;
+         
+         import controllers.screens.MainAreaScreens;
+         import controllers.ui.NavigationController;
+         
+         import models.chat.MChat;
+         import models.player.MRatingPlayer;
+         
+         import mx.events.FlexEvent;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         [Bindable]
+         public var player: MRatingPlayer;
+         
+         private var NC: NavigationController = NavigationController.getInstance();
+
+         protected function alliance_clickHandler(event:MouseEvent):void
+         {
+            NC.showAlliance(player.alliance.id);
+         }
+
+         protected function ratings_clickHandler(event:MouseEvent):void
+         {
+            NC.showRatings(player.name);
+         }
+         
+         protected function chat_clickHandler(event:MouseEvent):void
+         {
+            NC.showChat();
+            MChat.getInstance().openPrivateChannel(player.id, player.name);
+         }
+
+
+         protected function group1_creationCompleteHandler(event:FlexEvent):void
+         {
+            NC.creationCompleteFunction(MainAreaScreens.PLAYER, this);
+         }
+
+      ]]>
+   </fx:Script>
+   <s:Group width="600">
+      <components:CenteredBitmapImage/>
+      <base:AdvancedContainer width="100%">
+         <s:Group width="100%" toolTip="{Localizer.string('Ratings', player.online
+                  ?'online':'offline')}">
+            <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+                           AssetNames.getIconImageName(player.online?'online':'offline'))}"/>
+            <s:Label text="{player.name}" fontSize="24" color="#eec500"/>
+         </s:Group>
+         <s:Group width="100%" visible="{player.alliance != null}">
+            <s:Label text="{Localizer.string('Alliances', 'label.inAlliance')}" />
+            <s:Button label="{player.alliance.name}" 
+                      skinClass="components.skins.LinkButtonSkin"
+                      click="alliance_clickHandler(event)"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Label visible="{player.alliance == null}" 
+                  text="{Localizer.string('Alliances', 'label.notInAlliance')}" />
+         <s:Group width="100%">
+            <s:Label width="100" text="{Localizer.string('Ratings', 'planetsCount')}"/>
+            <s:Label text="{player.planetsCount}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%">
+            <s:Label width="100" text="{Localizer.string('Ratings', 'economyPoints')}"/>
+            <s:Label text="{player.economyPoints}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%">
+            <s:Label width="100" text="{Localizer.string('Ratings', 'sciencePoints')}"/>
+            <s:Label text="{player.sciencePoints}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%">
+            <s:Label width="100" text="{Localizer.string('Ratings', 'armyPoints')}"/>
+            <s:Label text="{player.armyPoints}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%">
+            <s:Label width="100" text="{Localizer.string('Ratings', 'warPoints')}"/>
+            <s:Label text="{player.warPoints}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%">
+            <s:Label width="100" text="{Localizer.string('Ratings', 'victoryPoints')}"/>
+            <s:Label text="{player.victoryPoints}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%">
+            <s:Label width="100" text="{Localizer.string('Ratings', 'points')}"/>
+            <s:Label text="{player.points}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%">
+            <s:Button label="{Localizer.string('Players', 'label.inRatings')}" 
+                      click="ratings_clickHandler(event)"/>
+            <s:Button label="{Localizer.string('Players', 'label.sendMessage')}" 
+                      click="chat_clickHandler(event)"/>
+            <s:layout>
+               <s:HorizontalLayout horizontalAlign="right"/>
+            </s:layout>
+         </s:Group>
+         <base:layout>
+            <s:VerticalLayout/>
+         </base:layout>
+      </base:AdvancedContainer>
+      <s:layout>
+         <s:HorizontalLayout paddingLeft="10" paddingTop="10" gap="30"/>
+      </s:layout>
+   </s:Group>
+   <s:Group width="600">
+      <s:Label text="{Localizer.string('Players', 'title.achievements')}" 
+               fontSize="24" fontWeight="bold" color="#eec500" paddingLeft="20"/>
+      <s:layout>
+         <s:VerticalLayout/>
+      </s:layout>
+   </s:Group>
+</s:Group>

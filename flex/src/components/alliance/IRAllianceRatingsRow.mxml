@@ -5,12 +5,20 @@
                 autoDrawBackground="false" xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
+         import models.player.MRatingPlayer;
+         
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
-         private function getProperty(from: Object, key: String): *
+         [Bindable]
+         private var ally: MRatingPlayer;
+         public override function set data(value:Object):void
          {
-            return from[key];
+            ally = MRatingPlayer(value);
+         }
+         public override function get data():Object
+         {
+            return ally;
          }
       ]]>
    </fx:Script>
@@ -23,15 +31,15 @@
       <s:layout>
          <s:HorizontalLayout gap="1" verticalAlign="middle"/>
       </s:layout>
-      <s:Label text="{getProperty(data, 'rank')}" width="40" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'name')}" maxDisplayedLines="1" width="120" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'playersCount')}" width="80" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'planetsCount')}" width="80" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'economyPoints')}" width="80" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'sciencePoints')}" width="80" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'armyPoints')}" width="80" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'warPoints')}" width="80" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'victoryPoints')}" width="80" textAlign="center"/>
-      <s:Label text="{getProperty(data, 'points')}" width="80" textAlign="center"/>
+      <s:Label text="{ally.rank}" width="40" textAlign="center"/>
+      <s:Label text="{ally.name}" maxDisplayedLines="1" width="120" textAlign="center"/>
+      <s:Label text="{ally.playersCount}" width="80" textAlign="center"/>
+      <s:Label text="{ally.planetsCount}" width="80" textAlign="center"/>
+      <s:Label text="{ally.economyPoints}" width="80" textAlign="center"/>
+      <s:Label text="{ally.sciencePoints}" width="80" textAlign="center"/>
+      <s:Label text="{ally.armyPoints}" width="80" textAlign="center"/>
+      <s:Label text="{ally.warPoints}" width="80" textAlign="center"/>
+      <s:Label text="{ally.victoryPoints}" width="80" textAlign="center"/>
+      <s:Label text="{ally.points}" width="80" textAlign="center"/>
    </s:Group>
 </s:ItemRenderer>

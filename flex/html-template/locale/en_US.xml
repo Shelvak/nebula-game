@@ -740,12 +740,13 @@
       </p>
     </label.becomeVIP>
     <warning.becomeVIP>
-      <p>
-        Beware that you should spend all your daily creds.<br/>
-        Unspent creds are not transfered to other day.<br/>
-        Next day is considered to be 24 hours after your VIP 
-        has started.
-      </p>
+      <![CDATA[
+      <p>Beware that you should spend all your daily creds.</p>
+      <p/>
+      <p><span fontSize="10">Unspent creds are not transfered 
+      to other day. Next day is considered to be 24 hours after 
+      your VIP has started.</span></p>
+      ]]>
     </warning.becomeVIP>
     <tab.select value="Select" />
     <tab.vipLevel value="VIP level" />
@@ -753,9 +754,20 @@
     <tab.dailyCreds value="Daily Creds" />
     <tab.duration value="Duration" />
     <tab.totalCreds value="Total creds you get" />
-    <label.totalCreds value="{0} * {1} = {2} ({3} times more!)" />
+    <label.totalCreds>
+      <![CDATA[
+      <p>
+        {0} * {1} = {2} <span fontWeight="bold" color="#eec500">
+        ({3} times more!)</span>
+      </p>
+      ]]>
+    </label.totalCreds>
     <label.vipCreds value="VIP creds" />
     <label.nextVipTick value="VIP tick in" />
+    <tooltip.nextVipTick>
+      <p>Time when your current VIP creds will be reset to their maximum 
+      number</p>
+    </tooltip.nextVipTick>
     <label.vipEndsIn value="VIP ends in" />
     <label.whouldFinish value="Upgrade would finish in" />
     <label.selectAccelerate value="Select acceleration amount" />
@@ -995,6 +1007,8 @@
     <label.rename value="Rename" />
     <label.renameCost value="Renaming alliance will cost you {0} creds" />
     <label.total value="Total ({0} Players)" />
+    <label.inAlliance value="In alliance" />
+    <label.notInAlliance value="Not in alliance" />
   </Alliances>
 
   <MainMenu>
@@ -1140,6 +1154,9 @@
     <leftPlayer value="Lord Voldemort" />
     <noAlliance value="No alliance" />
     <alliances value="Alliances" />
+    <label.inRatings value="Show in ratings" />
+    <label.sendMessage value="Send message" />
+    <title.acievements value="ACHIEVEMENTS" />
   </Players>
 
   <Popups>
@@ -3039,7 +3056,7 @@
         location. 
       </p>
     </label.empty>
-    <label.notYours value="These units does not belong to you!" />
+    <label.notYours value="These units do not belong to you!" />
     <label.leavingSquadrons>
       <p>These fleets are currently leaving this planet.</p>
     </label.leavingSquadrons>

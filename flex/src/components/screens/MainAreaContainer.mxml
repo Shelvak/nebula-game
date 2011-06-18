@@ -19,7 +19,7 @@
                     currentState="sidebarCollapsed"
                     xmlns:firstlogin="components.firstlogin.*"
                     xmlns:healing="components.healing.*"
-                    xmlns:cchat="components.chat.*" xmlns:alliance="components.alliance.*" xmlns:credits="components.credits.*">
+                    xmlns:cchat="components.chat.*" xmlns:alliance="components.alliance.*" xmlns:credits="components.credits.*" xmlns:player="components.player.*">
    <fx:Script>
       <![CDATA[
          import controllers.screens.MainAreaScreens;
@@ -112,6 +112,9 @@
          </s:NavigatorContent>
          <s:NavigatorContent name="{MainAreaScreens.RATINGS}" width="100%" height="100%">
             <ratings:RatingScreen/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{MainAreaScreens.PLAYER}" width="100%" height="100%">
+            <player:PlayerScreen/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{MainAreaScreens.VIP}" width="100%" height="100%">
             <credits:VipScreen/>
