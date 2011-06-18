@@ -36,8 +36,6 @@ class SpecEventHandler
     end.size
   end
 end
-  
-SPEC_EVENT_HANDLER = SpecEventHandler.new
 
 def should_fire_event(object, event_name, reason=nil, count=nil)
   SPEC_EVENT_HANDLER.clear_events!

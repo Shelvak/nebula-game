@@ -495,7 +495,7 @@ definition = QuestDefinition.define(:debug => false) do
     achievement(10100 + index) { upgrade_to Unit, :count => count }
   end
 
-  [5, 10, 25, 50, 100, 250, 500].each_with_index do |count, index|
+  [25, 50, 75, 100, 150, 200, 250, 500].each_with_index do |count, index|
     achievement(10120 + index) { upgrade_to Building, :count => count }
   end
 

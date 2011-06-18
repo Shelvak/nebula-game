@@ -71,5 +71,17 @@ describe ObjectiveProgress do
         model.save!
       end
     end
+
+    it "should not dispatch updated if it's for achievement" do
+      model = @build.call.tap(&:save!)
+      quest = model.objective.quest
+      quest.achievement = true
+      quest.save!
+      should_not_fire_event(model, EventBroker::CHANGED,
+          EventBroker::REASON_UPDATED) do
+        model.completed += 1
+        model.save!
+      end
+    end
   end
 end
