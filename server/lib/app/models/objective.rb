@@ -39,9 +39,7 @@ class Objective < ActiveRecord::Base
       # Iterate through all objective progresses and collect how much
       # we have completed them.
       all_progresses = {}
-      models.group_to_hash { |model| model.class }.each do
-        |klass, class_models|
-
+      group_models(models).each do |klass, class_models|
         objectives = where(:key => resolve_key(klass)).all
         objectives.each do |objective|
           objective_models = objective.filter(class_models)
@@ -87,6 +85,26 @@ class Objective < ActiveRecord::Base
 
     def regression?; @regression; end
 
+    # Group models by class. Include parent class if class name has :: in
+    # it.
+    def group_models(models)
+      grouped = {}
+      models.each do |model|
+        klass = model.class
+        grouped[klass] ||= []
+        grouped[klass].push model
+
+        class_name = klass.to_s
+        if class_name.include?("::")
+          parent = klass.superclass
+          grouped[parent] ||= []
+          grouped[parent].push model
+        end
+      end
+
+      grouped
+    end
+
     def resolve_key(klass)
       klass.to_s
     end
@@ -95,8 +113,8 @@ class Objective < ActiveRecord::Base
       benefits = models.grouped_counts { |model| model.player_id }
 
       # Subtract from counters if regression.
-      benefits.each do |player_id, count|
-        benefits[player_id] = count * -1
+      benefits.keys.each do |player_id|
+        benefits[player_id] *= -1
       end if regression?
 
       benefits
@@ -108,8 +126,7 @@ class Objective < ActiveRecord::Base
     # should benefit to.
     def objective_progresses(player_id, objective, cache)
       if objective.alliance?
-        cache[player_id] = Player.find(player_id).friendly_ids \
-          if cache[player_id].nil?
+        cache[player_id] ||= Player.find(player_id).friendly_ids
         player_ids = cache[player_id]
       else
         player_ids = player_id

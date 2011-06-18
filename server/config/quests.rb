@@ -97,6 +97,7 @@ definition = QuestDefinition.define(:debug => false) do
     reward_unit Unit::Trooper, :level => 2, :hp => 50, :count => 2
     reward_unit Unit::Trooper, :level => 3, :hp => 30
     reward_cost Building::ResearchCenter, :count => 1.1
+    reward_creds CONFIG['creds.vip'][0][0]
   end.tap do |quest|
     # Side quest chain
     quest.define(32) do
@@ -119,6 +120,17 @@ definition = QuestDefinition.define(:debug => false) do
       reward_cost Building::CollectorT1, :level => 7, :count => 1.2
       reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
       reward_points 2000
+    end
+
+    # VIP mode quest
+    quest.define(116, "VIP players") do
+      become_vip
+
+      reward_creds CONFIG['creds.upgradable.speed_up'][-1][1]
+    end.define(117, "Accelerating") do
+      accelerate Building
+
+      reward_cost Unit::Shocker, :count => 3
     end
   end.define(11) do
     have_upgraded_to Building::ResearchCenter
@@ -455,6 +467,41 @@ definition = QuestDefinition.define(:debug => false) do
         reward_unit Unit::Mdh, :count => 2
       end
     end
+  end
+
+  [25, 50, 100, 250, 500, 1000, 2500].each_with_index do |count, index|
+    achievement(10000 + index) { explore_any_object :count => count }
+  end
+
+  [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000].each_with_index do
+    |count, index|
+    achievement(10020 + index) { destroy Unit, :count => count }
+  end
+
+  [5, 10, 25, 50, 100, 250, 500].each_with_index do |count, index|
+    achievement(10040 + index) { destroy Building, :count => count }
+  end
+
+#  [1, 5, 10, 25, 50].each_with_index do |count, index|
+#    achievement(10060 + index) { self_destruct :count => count }
+#  end
+#
+#  [1, 5, 10, 25, 50].each_with_index do |count, index|
+#    achievement(10080 + index) { self_destruct :count => count,
+#      :creds => true }
+#  end
+
+  [25, 50, 100, 250, 500, 1000, 2500, 5000, 10000].each_with_index do
+    |count, index|
+    achievement(10100 + index) { upgrade_to Unit, :count => count }
+  end
+
+  [5, 10, 25, 50, 100, 250, 500].each_with_index do |count, index|
+    achievement(10120 + index) { upgrade_to Building, :count => count }
+  end
+
+  [5, 10, 15, 20, 25].each_with_index do |count, index|
+    achievement(10140 + index) { upgrade_to Technology, :count => count }
   end
 end
 

@@ -167,6 +167,13 @@ describe "upgradable", :shared => true do
         end
       end
     end
+
+    it "should progress objective" do
+      with_config_values(@values) do
+        Objective::Accelerate.should_receive(:progress).with([@model])
+        Creds.accelerate!(@model, 2)
+      end
+    end
   end
 
   describe "#destroy" do

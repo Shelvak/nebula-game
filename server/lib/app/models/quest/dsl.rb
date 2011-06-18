@@ -2,10 +2,11 @@
 class Quest::DSL
   def id; @quest_id; end
 
-  def initialize(parent_id, quest_id, help_url_id)
+  def initialize(parent_id, quest_id, help_url_id, achievement)
     @quest_id = quest_id
     @parent_id = parent_id
     @help_url_id = help_url_id
+    @achievement = achievement
     @rewards = Rewards.new
     @objectives = []
   end
@@ -17,8 +18,12 @@ class Quest::DSL
 
   # Saves quest with it's objectives and returns Quest.
   def save!
-    quest = Quest.new(:parent_id => @parent_id,
-      :help_url_id => @help_url_id, :rewards => @rewards)
+    quest = Quest.new(
+      :parent_id => @parent_id,
+      :help_url_id => @help_url_id,
+      :rewards => @achievement ? nil : @rewards,
+      :achievement => @achievement
+    )
     quest.id = @quest_id
     quest.save!
 
@@ -37,7 +42,7 @@ class Quest::DSL
   #
   [
     Rewards::METAL, Rewards::ENERGY, Rewards::ZETIUM,
-    Rewards::POINTS, Rewards::XP, Rewards::SCIENTISTS
+    Rewards::POINTS, Rewards::XP, Rewards::SCIENTISTS, Rewards::CREDS
   ].each do |reward|
     define_method("reward_#{reward}") do |number|
       @rewards.send("add_#{reward}", number)
@@ -141,6 +146,53 @@ class Quest::DSL
       Objective::ExploreBlock,
       {:key => Objective::ExploreBlock::KEY, :count => options[:count],
         :limit => min_area}
+    ])
+  end
+
+  # Explore any tile object without area limit.
+  #
+  # Usage: explore_any_object :count => 10
+  #
+  # :count defaults to 1
+  def explore_any_object(options={})
+    options.reverse_merge!(:count => 1)
+
+    @objectives.push([
+      Objective::ExploreBlock,
+      {:key => Objective::ExploreBlock::KEY, :count => options[:count]}
+    ])
+  end
+
+  # Become a VIP player a number of times.
+  #
+  # Usage: become_vip :count => 10, :level => 1
+  #
+  # :count and :level defaults to 1
+  #
+  # :level specifies level AT LEAST needed to qualify for this objective.
+  #
+  def become_vip(options={})
+    options.reverse_merge!(:count => 1, :level => 1)
+
+    @objectives.push([
+      Objective::BecomeVip,
+      {:key => Objective::BecomeVip::KEY, :count => options[:count],
+        :level => options[:level]
+      }
+    ])
+  end
+
+  # Accelerate something with credits.
+  #
+  # Usage: accelerate Building, :count => 10
+  #
+  # :count defaults to 1
+  def accelerate(klass, options={})
+    options.reverse_merge!(:count => 1)
+
+    @objectives.push([
+      Objective::Accelerate,
+      {:key => klass.to_s, :count => options[:count]}
     ])
   end
 

@@ -131,6 +131,7 @@ module Parts
           player.save!
           save!
           EventBroker.fire(self, EventBroker::CHANGED)
+          Objective::Accelerate.progress([self])
         end
 
         seconds_reduced

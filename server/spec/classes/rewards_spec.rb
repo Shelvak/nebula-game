@@ -64,6 +64,7 @@ describe Rewards do
         Rewards::ZETIUM => zetium,
         Rewards::XP => 130,
         Rewards::POINTS => 140,
+        Rewards::CREDS => 150,
         Rewards::SCIENTISTS => 150,
         Rewards::UNITS => [
           {'type' => "Trooper", 'level' => 1, 'count' => 2, 'hp' => 100},
@@ -140,6 +141,16 @@ describe Rewards do
         @rewards.claim!(@planet, @player)
         @player.reload
       end.should change(@player, Unit.points_attribute).by(points)
+    end
+
+    it "should increase population when getting units" do
+      population = @unit_defs.map do |klass, count, level|
+        klass.population * count
+      end.sum
+      lambda do
+        @rewards.claim!(@planet, @player)
+        @player.reload
+      end.should change(@player, :population).by(population)
     end
 
     it "should reward units honoring hp" do

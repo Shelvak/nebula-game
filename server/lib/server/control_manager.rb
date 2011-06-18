@@ -86,27 +86,73 @@ class ControlManager
   end
 
   def player_destroyed(player)
-    LOGGER.block("player_destroyed invoked for #{player}",
-      :server_name => TAG) do
-      if ENV['environment'] == 'production'
-        response = Net::HTTP.post_form(URI.parse(CONFIG['control']['web_url'] +
-              '/remove_player_from_galaxy'),
-              'player_auth_token' => player.auth_token,
-              'server_galaxy_id' => player.galaxy_id,
-              'secret_key' => CONFIG['control']['token']
-        )
+    only_in_production("player_destroyed invoked for #{player}") do
+      response = post_to_web("remove_player_from_galaxy",
+        'player_auth_token' => player.auth_token,
+        'server_galaxy_id' => player.galaxy_id
+      )
 
-        if response.body == "success"
-          LOGGER.info("Success!", TAG)
-          true
-        else
-          LOGGER.error("Failure! Server said:\n\n#{response.body}", TAG)
-          false
-        end
-      else
-        LOGGER.info("Not in production, doing nothing.", TAG)
-        true
-      end
+      check_response(response)
+    end
+  end
+
+  def alliance_created(alliance)
+    only_in_production("alliance_created invoked for #{alliance}") do
+      player = alliance.owner
+      response = post_to_web("alliance_created",
+        'owner_name' => player.name,
+        'galaxy_id' => alliance.galaxy_id,
+        'alliance_id' => alliance.id,
+        'name' => alliance.name
+      )
+
+      check_response(response)
+    end
+  end
+
+  def alliance_renamed(alliance)
+    only_in_production("alliance_renamed invoked for #{alliance}") do
+      response = post_to_web("alliance_renamed",
+        'galaxy_id' => alliance.galaxy_id,
+        'alliance_id' => alliance.id,
+        'name' => alliance.name
+      )
+
+      check_response(response)
+    end
+  end
+
+  def alliance_destroyed(alliance)
+    only_in_production("alliance_destroyed invoked for #{alliance}") do
+      response = post_to_web("alliance_destroyed",
+        'alliance_id' => alliance.id
+      )
+
+      check_response(response)
+    end
+  end
+
+  def player_joined_alliance(player, alliance)
+    only_in_production("player_joined_alliance invoked for #{player}, #{
+        alliance}") do
+      response = post_to_web("player_joined_alliance",
+        'alliance_id' => alliance.id,
+        'player_name' => player.name
+      )
+
+      check_response(response)
+    end
+  end
+
+  def player_left_alliance(player, alliance)
+    only_in_production("player_left_alliance invoked for #{player}, #{
+        alliance}") do
+      response = post_to_web("player_left_alliance",
+        'alliance_id' => alliance.id,
+        'player_name' => player.name
+      )
+
+      check_response(response)
     end
   end
 
@@ -210,5 +256,37 @@ class ControlManager
   def find_player(message)
     Player.where(:galaxy_id => message['galaxy_id'],
       :auth_token => message['auth_token']).first
+  end
+
+  def post_to_web(path, params={})
+    Net::HTTP.post_form(
+      web_uri_for(path),
+      params.merge('secret_key' => CONFIG['control']['token'])
+    )
+  end
+
+  def web_uri_for(path)
+    URI.parse(CONFIG['control']['web_url'] + "/#{path}")
+  end
+
+  def only_in_production(message)
+    LOGGER.block(message, :server_name => TAG) do
+      if ENV['environment'] == 'production'
+        yield
+      else
+        LOGGER.info("Not in production, doing nothing.", TAG)
+        true
+      end
+    end
+  end
+
+  def check_response(response)
+    if response.body == "success"
+      LOGGER.info("Success!", TAG)
+      true
+    else
+      LOGGER.error("Failure! Server said:\n\n#{response.body}", TAG)
+      false
+    end
   end
 end

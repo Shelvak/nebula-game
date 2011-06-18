@@ -27,6 +27,8 @@ class Notification < ActiveRecord::Base
   # There was combat.
   EVENT_COMBAT = 2
   # Quest has been completed.
+  EVENT_ACHIEVEMENT_COMPLETED = 3
+  # Quest has been completed.
   EVENT_QUEST_COMPLETED = 4
   # Scientists came back from exploration.
   EVENT_EXPLORATION_FINISHED = 5
@@ -261,6 +263,24 @@ class Notification < ActiveRecord::Base
     model.save!
 
     model   
+  end
+
+  # EVENT_ACHIEVEMENT_COMPLETED = 3
+  #
+  # params = {
+  #   :achievement => Quest#get_achievement
+  # }
+  def self.create_for_achievement_completed(quest_progress)
+    achievement = Quest.get_achievement(quest_progress.quest_id,
+      quest_progress.player_id)
+    model = new(
+      :event => EVENT_ACHIEVEMENT_COMPLETED,
+      :player_id => quest_progress.player_id,
+      :params => {:achievement => achievement}
+    )
+    model.save!
+
+    model
   end
 
   # EVENT_QUEST_COMPLETED = 4

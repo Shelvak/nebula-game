@@ -22,6 +22,16 @@ describe Objective::ExploreBlock do
       end.should change(@op, :completed).by(1)
     end
 
+    it "should progress if area is not limited" do
+      @objective.limit = nil
+      @objective.save!
+
+      lambda do
+        Objective::ExploreBlock.progress(@planet)
+        @op.reload
+      end.should change(@op, :completed).by(1)
+    end
+
     it "should not progress if area is unsufficient" do
       @objective.limit += 1
       @objective.save!

@@ -1,6 +1,39 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Alliance do
+  describe "web integration" do
+    it "should integrate upon create" do
+      alliance = Factory.build(:alliance)
+      ControlManager.instance.should_receive(:alliance_created).
+        with(alliance)
+      alliance.save!
+    end
+
+    it "should integrate upon rename" do
+      alliance = Factory.create(:alliance)
+      alliance.name = "WOO WOO WOO"
+      ControlManager.instance.should_receive(:alliance_renamed).
+        with(alliance)
+      alliance.save!
+    end
+
+    it "should integrate upon destroy" do
+      alliance = Factory.create(:alliance)
+      ControlManager.instance.should_receive(:alliance_destroyed).
+        with(alliance)
+      alliance.destroy
+    end
+  end
+
+  describe "#player_ratings" do
+    it "should call Player.ratings" do
+      alliance = Factory.create(:alliance)
+      Player.should_receive(:ratings).with(alliance.galaxy_id,
+        Player.where(:alliance_id => alliance.id)).and_return(:ratings)
+      alliance.player_ratings.should == :ratings
+    end
+  end
+
   describe "#name" do
     before(:each) do
       @min = CONFIG['alliances.validation.name.length.min']
@@ -195,6 +228,12 @@ describe Alliance do
         @alliance, @player)
       @alliance.accept(@player)
     end
+
+    it "should integrate with web" do
+      ControlManager.instance.should_receive(:player_joined_alliance).
+        with(@player, @alliance)
+      @alliance.accept(@player)
+    end
   end
 
   describe "#throw_out" do
@@ -233,6 +272,12 @@ describe Alliance do
     it "should throw out player SS cache" do
       FowSsEntry.should_receive(:throw_out_player).with(
         @alliance, @player)
+      @alliance.throw_out(@player)
+    end
+
+    it "should integrate with web" do
+      ControlManager.instance.should_receive(:player_left_alliance).
+        with(@player, @alliance)
       @alliance.throw_out(@player)
     end
 

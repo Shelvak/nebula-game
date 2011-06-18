@@ -34,6 +34,10 @@ describe Quest do
       @questp4 = Factory.create(:quest_progress, :quest => @quest4,
         :status => QuestProgress::STATUS_STARTED, :player => @player)
 
+      @achievement = Factory.create(:achievement)
+      @achievementp = Factory.create(:quest_progress, :quest => @achievement,
+        :status => QuestProgress::STATUS_STARTED, :player => @player)
+
       @result = Quest.hash_all_for_player_id(@player.id)
     end
 
@@ -73,10 +77,63 @@ describe Quest do
       end.should be_nil
     end
 
+    it "should not include achievements" do
+      @result.find do |quest_hash|
+        quest_hash[:quest] == @achievement.as_json
+      end.should be_nil
+    end
+
     it "should return quests with claimed reward" do
       @result.find do |quest_hash|
         quest_hash[:quest] == @quest3.as_json
       end.should_not == nil.as_json
+    end
+  end
+
+  describe ".achievements_for_player_id" do
+    before(:each) do
+      Quest.delete_all
+    end
+
+    it "should not include quests" do
+      Factory.create(:quest)
+      Quest.achievements_by_player_id(1).should == []
+    end
+
+    it "should include completion status" do
+      achievement = Factory.create(:achievement)
+      qp = Factory.create(:quest_progress,
+        :quest => achievement,
+        :player => Factory.create(:player),
+        :status => QuestProgress::STATUS_COMPLETED)
+      Quest.achievements_by_player_id(qp.player_id)[0]["completed"].should \
+        be_true
+    end
+
+    it "should include objective columns" do
+      achievement = Factory.create(:achievement)
+      obj = Factory.create(:objective, :quest => achievement)
+      row = Quest.achievements_by_player_id(1)[0]
+
+      cols = (Objective.columns.map(&:name) - %w{id quest_id})
+      Hash[cols.map { |col| [col, row[col]] }].should equal_to_hash(
+        Hash[cols.map { |col| [col, obj.send(col)] }]
+      )
+    end
+  end
+
+  describe ".achievement" do
+    it "should return achievement id if given" do
+      Factory.create(:achievement)
+      achievement = Factory.create(:achievement)
+      achievement_row = Quest.achievements_by_player_id(1, achievement.id)[0]
+      Quest.get_achievement(achievement.id, 1).should == achievement_row
+    end
+
+    it "should raise AR::RecordNotFound if no such achievement exists" do
+      lambda do
+        Quest.get_achievement(0)
+      end.should raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end

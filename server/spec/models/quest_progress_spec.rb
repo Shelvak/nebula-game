@@ -17,7 +17,16 @@ describe "completed quest", :shared => true do
     ).first.should_not be_nil
   end
 
-  it "should create notification" do
+  it "should create notification for achievement completed" do
+    @qp.quest.achievement = true
+    @qp.quest.save!
+
+    Notification.should_receive(:create_for_achievement_completed).
+      with(@qp)
+    @qp.save!
+  end
+
+  it "should create notification for quest completed" do
     Quest.stub!(:start_child_quests).and_return(:quests)
     Notification.should_receive(:create_for_quest_completed).
       with(@qp, :quests)
@@ -145,6 +154,15 @@ describe QuestProgress do
     
     it "should fail if quest is not completed" do
       @qp.status = QuestProgress::STATUS_STARTED
+      lambda do
+        @qp.claim_rewards!(@planet.id)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if there is no rewards" do
+      @quest.rewards = nil
+      @quest.save!
+
       lambda do
         @qp.claim_rewards!(@planet.id)
       end.should raise_error(GameLogicError)
