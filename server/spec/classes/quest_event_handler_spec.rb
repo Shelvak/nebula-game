@@ -46,7 +46,7 @@ describe QuestEventHandler do
 
         Objective::UpgradeTo.should_receive(:progress).with(
           models
-        ).and_return(true)
+        ).at_least(1).and_return(true)
         @handler.fire(models, EventBroker::CHANGED, reason)
       end
 
@@ -84,7 +84,7 @@ describe QuestEventHandler do
 
       Objective::HaveUpgradedTo.should_receive(
         :progress
-      ).with(models).and_return(true)
+      ).with(models, false).and_return(true)
       @handler.fire(models, EventBroker::CREATED,
         EventBroker::REASON_REWARD_CLAIMED)
     end
@@ -136,7 +136,7 @@ describe QuestEventHandler do
 
       Objective::HaveUpgradedTo.should_receive(
         :regress
-      ).with(models).and_return(true)
+      ).with(models, false).and_return(true)
       @handler.fire(models, EventBroker::DESTROYED, nil)
     end
 

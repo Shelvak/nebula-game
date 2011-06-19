@@ -31,7 +31,7 @@ describe Building::HasScientistsTraitMock do
     end
     
     it "should not fail if player is nil" do
-      @rc.stub_chain(:planet, :player).and_return(nil)
+      @rc.planet.stub!(:player).and_return(nil)
       @rc.activate!
     end
   end
@@ -49,7 +49,7 @@ describe Building::HasScientistsTraitMock do
     end
 
     it "should not fail if player is nil" do
-      @rc.stub_chain(:planet, :player).and_return(nil)
+      @rc.planet.stub!(:player).and_return(nil)
       @rc.deactivate!
     end
   end
