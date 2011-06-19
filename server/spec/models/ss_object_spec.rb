@@ -39,7 +39,7 @@ describe SsObject do
       planet = Factory.create(:planet, :position => position,
         :angle => angle)
       planet.client_location.should == ClientLocation.new(planet.id,
-        Location::SS_OBJECT, position, angle, planet.name, planet.terrain,
+        Location::SS_OBJECT, position, angle, planet.name, nil, planet.terrain,
         planet.solar_system_id)
     end
   end

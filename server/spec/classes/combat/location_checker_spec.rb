@@ -65,7 +65,6 @@ describe klass do
         @planet,
         check_report.status,
         check_report.alliances,
-        nil,
         nil
       )
       Combat::LocationChecker.check_location(@location)
@@ -175,8 +174,10 @@ describe klass do
           @planet,
           check_report.status,
           check_report.alliances,
-          response['outcomes'],
-          response['statistics']
+          Combat::LocationChecker::CombatData.new(
+            response['outcomes'],
+            response['statistics']
+          )
         )
         Combat::LocationChecker.check_location(@location)
       end
