@@ -7,7 +7,7 @@ class Objective::HealHp < Objective
     super([player])
   end
 
-  def self.count_benefilts(players)
+  def self.count_benefits(players)
     player = players[0]
     {player.id => @hp_healed}
   end
