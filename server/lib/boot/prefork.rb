@@ -1,9 +1,33 @@
 ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..')) \
   unless defined?(ROOT_DIR)
 
-# Unshift current directory for factory girl (ruby 1.9)
-$LOAD_PATH.unshift File.expand_path(ROOT_DIR) \
-  if RUBY_VERSION.include?("1.9")
+if RUBY_VERSION.to_i < 1.9
+  Range.send(:alias_method, :cover?, :include?)
+  class Integer
+    alias :precisionless_round :round
+    private :precisionless_round
+
+    # Rounds the integer with the specified precision.
+    #
+    # x = 1233
+    # x.round # => 1233
+    # x.round(1) # => 1233
+    # x.round(-1) # => 1230
+    # x.round(-5) # => 0
+    def round(precision = nil)
+      if precision
+        magnitude = 10 ** precision
+        ((self * magnitude).round / magnitude).to_i
+      else
+        precisionless_round
+      end
+    end
+  end
+else
+  # Unshift current directory for factory girl (ruby 1.9)
+  $LOAD_PATH.unshift File.expand_path(ROOT_DIR)
+end
+
 
 def rake?; File.basename($0) == 'rake'; end
 
@@ -217,10 +241,10 @@ benchmark :activerecord_config do
       source_key ||= "id"
       target_key ||= "#{source_table.to_s.singularize}_id"
       puts "-- FK #{source_table}[#{source_key}] -> #{target_table}[#{
-        target_key}] (#{type})"
+      target_key}] (#{type})"
       ActiveRecord::Base.connection.execute "ALTER TABLE `#{
-        target_table}` ADD FOREIGN KEY (`#{target_key}`) REFERENCES `#{
-        source_table}` (`#{source_key}`) ON DELETE #{type}"
+      target_table}` ADD FOREIGN KEY (`#{target_key}`) REFERENCES `#{
+      source_table}` (`#{source_key}`) ON DELETE #{type}"
     end
   end
 
