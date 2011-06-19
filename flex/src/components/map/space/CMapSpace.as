@@ -556,7 +556,6 @@ package components.map.space
       /* ################################ */
       /* ### USER GESTURES PROCESSING ### */
       /* ################################ */
-
       
       
       /**
