@@ -124,6 +124,8 @@ class CallbackManager
     # Run every callback that should happen by now.
     #
     def tick
+      sleep 1 while $IRB_RUNNING
+      
       now = Time.now.to_s(:db)
 
       get_row = lambda do

@@ -15,15 +15,15 @@ module IRB # :nodoc:
     end
 
     workspace = WorkSpace.new(binding)
-
     irb = Irb.new(workspace)
 
     @CONF[:IRB_RC].call(irb.context) if @CONF[:IRB_RC]
     @CONF[:MAIN_CONTEXT] = irb.context
 
-    catch(:IRB_EXIT) do
-      irb.eval_input
-    end
+    $IRB_RUNNING = true
+    catch(:IRB_EXIT) { irb.eval_input }
+  ensure
+    $IRB_RUNNING = false
   end
 end
 
