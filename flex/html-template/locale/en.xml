@@ -1144,6 +1144,7 @@
     <gun.space_laser_blue value="Laser" />
     <gun.cannon value="Pyro Class Cannon" />
     <gun.alien_cannon value="Crusher" />
+    <gun.zeus_cannon value="Dragon" />
     <gun.railgun value="Plasma Cannon" />
     <gun.small_rocket value="P-40 Launcher" />
     <gun.heavy_rocket value="Rocket launcher" />

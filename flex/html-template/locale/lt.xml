@@ -1137,6 +1137,7 @@
     <gun.space_laser_blue ref="gun.laser" />
     <gun.cannon value="Pyro klasės pabūklas" />
     <gun.alien_cannon value="Naikintojas" />
+    <gun.zeus_cannon value="Drakonas" />
     <gun.railgun value="Plazminė patranka" />
     <gun.small_rocket value="P-40 svaidyklė" />
     <gun.heavy_rocket value="Raketų leidyklė" />
