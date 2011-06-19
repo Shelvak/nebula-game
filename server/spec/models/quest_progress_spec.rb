@@ -199,7 +199,7 @@ describe QuestProgress do
     end
 
     it "should call rewards.claim!" do
-      @qp.stub_chain(:quest, :rewards).and_return(@rewards)
+      @qp.quest.stub!(:rewards).and_return(@rewards)
       @rewards.should_receive(:claim!).with(@planet, @player)
       @qp.claim_rewards!(@planet.id)
     end
@@ -218,5 +218,23 @@ describe QuestProgress do
     @should_not_notify_create = true
     @should_not_notify_destroy = true
     it_should_behave_like "notifier"
+
+    describe "for achievement" do
+      before(:each) do
+        @model = @build.call.tap(&:save!)
+        @after_build.call(@model)
+        quest = @model.quest
+        quest.achievement = true
+        quest.save!
+      end
+
+      it "should not dispatch updated" do
+        should_not_fire_event(@model, EventBroker::CHANGED,
+            EventBroker::REASON_UPDATED) do
+          @change.call(@model)
+          @model.save!
+        end
+      end
+    end
   end
 end
