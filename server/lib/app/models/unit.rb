@@ -445,6 +445,7 @@ class Unit < ActiveRecord::Base
           unit = klass.new(:level => 1,
             :player => player, :location => location,
             :galaxy_id => player.galaxy_id)
+          unit.skip_validate_technologies = true
           points.add_unit(unit)
           population += unit.population
           units.push unit
