@@ -125,4 +125,20 @@ module Dev
       Combat::LocationChecker.check_location(planet.location_point)
     end
   end
+  
+  def self.pimp(player_id_or_name)
+    player = player_id_or_name.is_a?(Fixnum) \
+      ? Player.find(player_id_or_name) \
+      : Player.where(:name => player_id_or_name).first
+    
+    player.population = 0
+    player.population_max = player.scientists = 
+      player.scientists_total = 10000
+    player.creds = 1_000_000
+    
+    planet = player.planets.first
+    max_resources(planet.id)
+    
+    player.save!
+  end
 end
