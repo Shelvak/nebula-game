@@ -191,6 +191,9 @@ package utils.assets
       public static const DEFENSIVE_PORTAL_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "defensive_portal_screen/";
       
       
+      public static const SS_NAVIGATOR_FOLDER:String = UI_IMAGES_FOLDER + "ss_navigator/";
+      
+      
       public static const RATINGS_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "ratings/";
       
       

@@ -533,6 +533,13 @@ assets:
         center.png:                 Pinfo_center_repeat.png
         right.png:                  Pinfo_right.png
 
+      "ss_navigator":
+        bottom_left.png:            Snavig_bottom_left.png
+        center_left.png:            Snavig_center_left.png
+        top_left.png:               Snavig_top_left.png
+        top_center.png:             Snavig_top_center.png
+        top_right.png:              Snavig_top_right.png
+
       "large_panel":
         top_center_left.png:        Mainwindow_top_center(left).png
         top_center_right.png:       Mainwindow_top_center(right).png
