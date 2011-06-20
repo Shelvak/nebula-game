@@ -28,7 +28,7 @@
          {
             return player;
          }
-
+         
       ]]>
    </fx:Script>
    <s:Rect left="0" right="0" top="0" bottom="0">
@@ -49,17 +49,19 @@
          <s:Button label="{player.name}" width="100%" skinClass="components.skins.LinkButtonSkin"
                    click="NavigationController.getInstance().showPlayer(player.id)"/>
          <base:layout>
-            <s:HorizontalLayout verticalAlign="middle" paddingLeft="3" paddingRight="3"/>
+            <s:HorizontalLayout verticalAlign="middle" paddingLeft="6" paddingRight="3"/>
          </base:layout>
       </base:AdvancedContainer>
-      <s:Button label="{player.getAllianceName()}" width="80" 
-                skinClass="components.skins.LinkButtonSkin"
-                click="NavigationController.getInstance().showAlliance(player.alliance.id)"/>
+      <s:Group width="80">
+         <s:Button label="{player.getAllianceName()}" left="6" right="3" 
+                   skinClass="components.skins.LinkButtonSkin"
+                   click="NavigationController.getInstance().showAlliance(player.alliance.id)"/>
+      </s:Group>
       <s:Label text="{player.planetsCount}" width="80" textAlign="center"/>
-      <s:Label text="{player.economyPoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.economyPoints}" width="85" textAlign="center"/>
       <s:Label text="{player.sciencePoints}" width="80" textAlign="center"/>
       <s:Label text="{player.armyPoints}" width="80" textAlign="center"/>
-      <s:Label text="{player.warPoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.warPoints}" width="95" textAlign="center"/>
       <s:Label text="{player.victoryPoints}" width="80" textAlign="center"/>
       <s:Label text="{player.points}" width="80" textAlign="center"/>
    </s:Group>

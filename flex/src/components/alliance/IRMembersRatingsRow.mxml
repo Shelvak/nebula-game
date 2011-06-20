@@ -70,14 +70,14 @@
          <s:Button label="{player.name}" width="100%" skinClass="components.skins.LinkButtonSkin"
                    click="NavigationController.getInstance().showPlayer(player.id)"/>
          <base:layout>
-            <s:HorizontalLayout verticalAlign="middle" paddingLeft="3" paddingRight="3"/>
+            <s:HorizontalLayout verticalAlign="middle" paddingLeft="6" paddingRight="3"/>
          </base:layout>
       </base:AdvancedContainer>
       <s:Label text="{player.planetsCount}" width="80" textAlign="center"/>
-      <s:Label text="{player.economyPoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.economyPoints}" width="85" textAlign="center"/>
       <s:Label text="{player.sciencePoints}" width="80" textAlign="center"/>
       <s:Label text="{player.armyPoints}" width="80" textAlign="center"/>
-      <s:Label text="{player.warPoints}" width="80" textAlign="center"/>
+      <s:Label text="{player.warPoints}" width="95" textAlign="center"/>
       <s:Label text="{player.victoryPoints}" width="80" textAlign="center"/>
       <s:Label text="{player.allianceVps}" width="80" textAlign="center"/>
       <s:Label text="{player.points}" width="80" textAlign="center"/>
