@@ -76,6 +76,13 @@ describe AlliancesController do
       player.alliance.owner_id.should == player.id
     end
 
+    it "should call #accept on alliance with owner" do
+      alliance = Factory.build(:alliance, :owner => player)
+      Alliance.should_receive(:new).and_return(alliance)
+      alliance.should_receive(:accept).with(player)
+      invoke @action, @params
+    end
+
     it "should respond with alliance id otherwise" do
       invoke @action, @params
       player.reload
