@@ -959,7 +959,7 @@
   <Credits>
     <label.accelerate value="Paspartinti" />
     <label.vip value="VIP" />
-    <label.whouldFinish value="Tobulinimas baigtusi" />
+    <label.whouldFinish value="Tobulinimas baigtusi už" />
     <label.selectAccelerate value="Pasirink paspartinimą" />
     <label.credsSum value="Iš viso kredų" />
     <message.vipOrdered value="VIP sėkmingai užsakytas" />
@@ -1139,6 +1139,7 @@
     <gun.space_laser_blue ref="gun.laser" />
     <gun.cannon value="Pyro klasės pabūklas" />
     <gun.alien_cannon value="Naikintojas" />
+    <gun.zeus_cannon value="Drakonas" />
     <gun.railgun value="Plazminė patranka" />
     <gun.small_rocket value="P-40 svaidyklė" />
     <gun.heavy_rocket value="Raketų leidyklė" />
@@ -1493,7 +1494,7 @@
     <title.moveBuilding value="Perkelti pastatą"/>
     <message.moveBuilding>
        <p>Šio pastato perkėlimas tau kainuos 
-       {0 one[„?“ kredą] tens[„?“ kredų] many[„?“ kredus]}.</p>
+       {0 one[? kredą] tens[? kredų] many[? kredus]}.</p>
        <p>Ar esi tikras?</p>
     </message.moveBuilding>
 
@@ -1782,6 +1783,9 @@
       <p>Privalome pastatyti vėjo jėgainę, kad patenkintume savo energetinius 
       poreikius. Negaiškite laiko, Komandore, tuoj pat įsakykite pradėti 
       darbus.</p>
+      
+      <p>Savo planetą gali pasirinkti iš meniu viršutiniame kairiajame
+      kampe. Pradėk vykdyti savo misiją nedelsiant!</p>
     </about.1>
 
     <title.2 value="Apšilimas" />
@@ -2249,7 +2253,7 @@
 
     <title.27 value="Technologijų šukės" />
     <about.27>
-      <p>Commander!</p>
+      <p>Komandore,</p>
       <p>
         Žvalgyba aptiko keletą keistų, ateivių robotų saugomų, pastatų. Juos 
         aptikęs dalinys sugebėjo prasmukti pro išorinį jų apsaugos perimetrą 
@@ -2471,13 +2475,11 @@
 
     <title.14 value="Kristalizacija" />
     <about.14>
-      <p>Puikiai!</p>
+      <p>Komandore,</p>
       <p>
-        Jūsų kariai išvaikė ir sunaikino kristalų sergėtojus! Džiugu, kad šį 
-        sykį jie dirbo atsargiai ir po mūšio vietovje dar liko kristalų su 
-        kuriais galime padirbėti. Mokslininkai pranešė, kad jų galvose jau 
-        kristalizavosi tyrimų planas, jums beliko tik palaiminti ir finansuoti
-        jų darbą. Išraskime patikimą būdą kasti kristalus!
+        Iš žvalgų gavę zetiumo pavyzdžius mūsų mokslininkai teigia jog tai
+        labai naudinga medžiaga. Jie nekantrauja pradėti praktinius šios 
+        medžiagos panaudojimo tyrimus.
       </p>
       <p>
         Nedelskite! Užsukite į tyrimų centrą ir įsakykite pradėti darbus. 
@@ -3731,8 +3733,7 @@
       <p>Aš esu Diana, tavo pagalbininkė.</p>
       <p>Mes turime svarbių reikalų. Paspausk ant N44 logotipo apatiniame
       kairiajame kampe ir pasirink „Užduotys“, kad perskaitytum savo pirmąją
-      misiją. Kai tai padarysi, pasirink savo planetą iš viršutinio kairiojo
-      kampo ir pradėk vykdyti savo misiją.</p>
+      misiją.</p>
       <p>Sekmės, Komandore.</p>
     </instructions>
   </WelcomeScreen>

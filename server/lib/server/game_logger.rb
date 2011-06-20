@@ -100,7 +100,9 @@ class GameLogger
 
   TYPE_TO_LEVEL.each do |type, level|
     define_method("#{type}?") { @level >= level }
-    define_method(type) do |message, server_name=DEFAULT_SERVER_NAME|
+    define_method(type) do |*args|
+      message, server_name = *args
+      server_name ||= DEFAULT_SERVER_NAME
       write(server_name, type, message)
       @callbacks[type].call(message) if @callbacks[type]
     end

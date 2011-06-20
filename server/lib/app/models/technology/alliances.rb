@@ -3,6 +3,6 @@ class Technology::Alliances < Technology
 
   # Maximum number of players allowed in this alliance.
   def self.max_players(level)
-    evalproperty('max_players', nil, 'level' => level)
+    evalproperty('max_players', nil, 'level' => level).to_i
   end
 end

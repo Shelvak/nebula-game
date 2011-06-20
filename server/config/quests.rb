@@ -25,9 +25,9 @@ UNITS_TANKS = [
 UNITS_SHIPS = [
   [Unit::Rhyno, 1, 3],
   [Unit::Cyrix, 3, 3],
+  [Unit::Crow, 3, 2],
   [Unit::Dart, 1, 3], [Unit::Avenger, 1, 3],
   [Unit::Dart, 1, 3], [Unit::Avenger, 1, 3],
-  [Unit::Crow, 5, 2],
 ]
 
 definition = QuestDefinition.define(:debug => false) do
@@ -87,9 +87,9 @@ definition = QuestDefinition.define(:debug => false) do
 
       reward_cost Unit::Trooper, :count => 3.2
       reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
-    end.define_war_chain(80, 15, 500, 1.5, UNITS_INFANTRY + UNITS_TANKS +
-      UNITS_SHIPS) # Last quest ID is 94
-      .define_war_chain(106, 10, 200000, 1.15, UNITS_TANKS + UNITS_SHIPS)
+    end.define_war_chain(80, 5, 2000, 1.4, UNITS_TANKS + UNITS_INFANTRY) # Last quest ID is 84
+      .define_war_chain(85, 10, 10000, 1.37, UNITS_SHIPS + UNITS_TANKS) # Last quest ID is 94
+      .define_war_chain(106, 10, 200000, 1.15, UNITS_SHIPS)
       # Last quest ID is 115
   end.define(8, "Attacking NPC Buildings") do
     destroy_npc_building Building::NpcMetalExtractor
@@ -469,33 +469,33 @@ definition = QuestDefinition.define(:debug => false) do
     end
   end
 
-  [25, 50, 100, 250, 500, 1000, 2500].each_with_index do |count, index|
+  [50, 100, 250, 500, 1000, 2500].each_with_index do |count, index|
     achievement(10000 + index) { explore_any_object :count => count }
   end
 
-  [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000].each_with_index do
+  [100, 250, 500, 1000, 2500, 5000, 10000, 25000].each_with_index do
     |count, index|
     achievement(10020 + index) { destroy Unit, :count => count }
   end
 
-  [5, 10, 25, 50, 100, 250, 500].each_with_index do |count, index|
+  [10, 25, 50, 100, 250, 500].each_with_index do |count, index|
     achievement(10040 + index) { destroy Building, :count => count }
   end
 
-  [1, 5, 10, 25, 50, 75, 100].each_with_index do |count, index|
+  [5, 10, 25, 50, 75, 100].each_with_index do |count, index|
     achievement(10060 + index) { self_destruct :count => count }
   end
 
-  [1, 5, 10, 25, 50, 75, 100].each_with_index do |count, index|
+  [5, 10, 25, 50, 75, 100].each_with_index do |count, index|
     achievement(10080 + index) { accelerate_flight :count => count }
   end
 
-  [25, 50, 100, 250, 500, 1000, 2500, 5000, 10000].each_with_index do
+  [100, 250, 500, 1000, 2500, 5000, 10000].each_with_index do
     |count, index|
     achievement(10100 + index) { upgrade_to Unit, :count => count }
   end
 
-  [25, 50, 75, 100, 150, 200, 250, 500].each_with_index do |count, index|
+  [50, 100, 200, 500, 1000].each_with_index do |count, index|
     achievement(10120 + index) { upgrade_to Building, :count => count }
   end
 
@@ -504,11 +504,11 @@ definition = QuestDefinition.define(:debug => false) do
       :count => count }
   end
 
-  [5, 10, 15, 20, 25, 50, 100, 150, 200].each_with_index do |count, index|
+  [5, 15, 25, 50, 100, 150, 200].each_with_index do |count, index|
     achievement(10160 + index) { accelerate Unit, :count => count }
   end
 
-  [5, 10, 15, 20, 25, 50, 100, 150, 200].each_with_index do |count, index|
+  [5, 15, 25, 50, 100, 150, 200].each_with_index do |count, index|
     achievement(10180 + index) { accelerate Building, :count => count }
   end
 
@@ -537,23 +537,23 @@ definition = QuestDefinition.define(:debug => false) do
       :count => count, :level => 2 }
   end
 
-  [10, 25, 50, 75, 100].each_with_index do |count, index|
+  [25, 50, 100].each_with_index do |count, index|
     achievement(10300 + index) { complete_quests :count => count }
   end
 
-  [10, 25, 50, 75, 100].each_with_index do |count, index|
+  [25, 50, 100].each_with_index do |count, index|
     achievement(10320 + index) { complete_achievements :count => count }
   end
 
-  [10, 25, 50, 75, 100, 150, 200, 250].each_with_index do |count, index|
+  [25, 75, 150, 200, 500].each_with_index do |count, index|
     achievement(10340 + index) { battle Combat::OUTCOME_WIN, :count => count }
   end
 
-  [10, 25, 50, 75, 100, 150, 200, 250].each_with_index do |count, index|
+  [25, 75, 150, 200, 500].each_with_index do |count, index|
     achievement(10360 + index) { battle Combat::OUTCOME_LOSE, :count => count }
   end
 
-  [1, 5, 10, 25, 50, 75, 100].each_with_index do |count, index|
+  [1, 10, 25, 50, 75, 100].each_with_index do |count, index|
     achievement(10380 + index) { move_building :count => count }
   end
 

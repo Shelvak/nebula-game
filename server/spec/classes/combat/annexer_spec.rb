@@ -22,7 +22,7 @@ describe "conflict no combat", :shared => true do
   it "should not change anything if no combat was ran" do
     lambda do
       Combat::Annexer.annex!(@planet,
-        Combat::CheckReport::CONFLICT, @alliances, nil, nil)
+        Combat::CheckReport::CONFLICT, @alliances, nil)
     end.should_not change(@planet, :player_id)
   end
 end
@@ -106,7 +106,7 @@ describe Combat::Annexer do
       describe "no conflict" do
         it "should assign it to one of the players randomly" do
           Combat::Annexer.annex!(@planet,
-            Combat::CheckReport::NO_CONFLICT, @alliances, nil, nil)
+            Combat::CheckReport::NO_CONFLICT, @alliances, nil)
           @players.map(&:id).should include(@planet.player_id)
         end
       end
@@ -114,8 +114,11 @@ describe Combat::Annexer do
       describe "conflict" do
         it "should assign it to one of the winners" do
           Combat::Annexer.annex!(@planet,
-            Combat::CheckReport::CONFLICT, @alliances, @outcomes_lose,
-            @statistics)
+            Combat::CheckReport::CONFLICT, @alliances, 
+            Combat::LocationChecker::CombatData.new(
+              @outcomes_lose, @statistics
+            )
+          )
           [@nap, @enemy1, @enemy2].map(&:id).should include(
             @planet.player_id)
         end
@@ -127,8 +130,11 @@ describe Combat::Annexer do
         it "should keep npc ownership" do
           lambda do
             Combat::Annexer.annex!(@planet,
-              Combat::CheckReport::CONFLICT, @alliances_npc, @outcomes_lose,
-              @statistics)
+              Combat::CheckReport::CONFLICT, @alliances_npc, 
+              Combat::LocationChecker::CombatData.new(
+              @outcomes_lose, @statistics
+            )
+          )
           end.should_not change(@planet, :player_id)
         end
       end
@@ -143,28 +149,27 @@ describe Combat::Annexer do
         before(:each) do
           @you.planets_count = 1
           @you.save!
-          @players = @alliances.values.flatten
         end
 
-        it "should send notifications to everyone" do
-          @players.each do |player|
-            Notification.should_receive(:create_for_planet_protected).with(
-              @planet, player)
-          end
+        it "should send notification to winner & owner" do
+          Notification.should_receive(:create_for_planet_protected).
+            with(@planet, @enemy1)
+          Notification.should_receive(:create_for_planet_protected).
+            with(@planet, @you)
           Combat::Annexer.annex!(@planet,
-            Combat::CheckReport::NO_CONFLICT, @alliances, nil, nil)
+            Combat::CheckReport::NO_CONFLICT, @alliances_1enemy, nil)
         end
 
         it "should add cooldown" do
           Combat::Annexer.annex!(@planet,
-            Combat::CheckReport::NO_CONFLICT, @alliances, nil, nil)
+            Combat::CheckReport::NO_CONFLICT, @alliances, nil)
           @planet.should have_cooldown(
             Cfg.planet_protection_duration.from_now)
         end
         
         it "should not fail if one of players is npc" do
           Combat::Annexer.annex!(@planet,
-            Combat::CheckReport::NO_CONFLICT, @alliances_npc, nil, nil)
+            Combat::CheckReport::NO_CONFLICT, @alliances_npc, nil)
         end
       end
 
@@ -172,7 +177,7 @@ describe Combat::Annexer do
         describe "no conflict" do
           before(:each) do
             Combat::Annexer.annex!(@planet,
-              Combat::CheckReport::NO_CONFLICT, @alliances, nil, nil)
+              Combat::CheckReport::NO_CONFLICT, @alliances, nil)
           end
 
           it_should_behave_like "with owner (you)"
@@ -181,15 +186,20 @@ describe Combat::Annexer do
         describe "conflict" do
           before(:each) do
             Combat::Annexer.annex!(@planet,
-              Combat::CheckReport::CONFLICT, @alliances, @outcomes_lose,
-              @statistics)
+              Combat::CheckReport::CONFLICT, @alliances, 
+              Combat::LocationChecker::CombatData.new(
+                @outcomes_lose, @statistics
+              )
+            )
           end
 
           it "should assign it to npc if they won" do
             Combat::Annexer.annex!(@planet,
               Combat::CheckReport::CONFLICT, @alliances_npc,
-              @outcomes_lose_npc,
-              @statistics)
+              Combat::LocationChecker::CombatData.new(
+                @outcomes_lose_npc, @statistics
+              )
+            )
             @planet.player_id.should == nil
           end
 
@@ -201,8 +211,11 @@ describe Combat::Annexer do
           it "should keep ally ownership" do
             lambda do
               Combat::Annexer.annex!(@planet,
-                Combat::CheckReport::CONFLICT, @alliances, @outcomes_win,
-                @statistics)
+                Combat::CheckReport::CONFLICT, @alliances, 
+                Combat::LocationChecker::CombatData.new(
+                  @outcomes_win, @statistics
+                )
+              )
             end.should_not change(@planet, :player_id)
           end
         end
@@ -215,9 +228,11 @@ describe Combat::Annexer do
         planet, nil, @enemy1
       )
       Combat::Annexer.annex!(planet,
-            Combat::CheckReport::CONFLICT, @alliances_1enemy,
-            @outcomes_lose_1enemy,
-            @statistics)
+        Combat::CheckReport::CONFLICT, @alliances_1enemy,
+        Combat::LocationChecker::CombatData.new(
+          @outcomes_lose_1enemy, @statistics
+        )
+      )
     end
   end
 end

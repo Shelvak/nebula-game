@@ -13,7 +13,7 @@ zeus_cannon
   0 => 'earth',
   1 => 'desert',
   2 => 'mud',
-  3 => 'twilight'
+  #3 => 'twilight'
 } %>
 # Options can be defined in:
 #
@@ -455,7 +455,7 @@ assets:
       "buildings":
         <% each_model('building') do |base| %>
         <% if CONFIG["buildings.#{base.underscore}.guns"].blank? %>
-        <%= "#{base}.tar.gz: #{base}BattlefieldSceneryBuilding.tar.gz" %>
+        <%# "#{base}.tar.gz: #{base}BattlefieldSceneryBuilding.tar.gz" %>
         <% else %>
         <%= "#{base}.tar.gz: #{base}BattlefieldShootingBuilding.tar.gz" %>
         <% end %>

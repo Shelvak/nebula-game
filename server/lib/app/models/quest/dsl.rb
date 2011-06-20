@@ -115,7 +115,7 @@ class Quest::DSL
 #    puts "units for points #{points}"
     units.each do |key, count|
       klass, level = key
-#      puts "#{klass.to_s} (#{level}) * #{count}"
+#      puts "  #{klass.to_s} (#{level}) * #{count}"
       reward_unit klass, :count => count, :level => level
     end
   end

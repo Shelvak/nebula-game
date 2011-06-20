@@ -15,15 +15,15 @@ module IRB # :nodoc:
     end
 
     workspace = WorkSpace.new(binding)
-
     irb = Irb.new(workspace)
 
     @CONF[:IRB_RC].call(irb.context) if @CONF[:IRB_RC]
     @CONF[:MAIN_CONTEXT] = irb.context
 
-    catch(:IRB_EXIT) do
-      irb.eval_input
-    end
+    $IRB_RUNNING = true
+    catch(:IRB_EXIT) { irb.eval_input }
+  ensure
+    $IRB_RUNNING = false
   end
 end
 
@@ -78,5 +78,51 @@ module Dev
         (x - strength)..(x + strength),
         (y - strength)..(y + strength)
       ], Player.find(player_id))
+  end
+  
+  # Example:
+  # 
+  #   Dev.combat(10, "3xmule,2xzeus", "2xzeus")
+  #
+  def self.combat(planet_id, offenders, defenders="")
+    planet = SsObject::Planet.find(planet_id)
+    
+    parse = lambda do |str|
+      str.split(",").map do |part|
+        match = part.match(/(\d+)x(.+)/)
+        count = match[1].to_i
+        type = match[2]
+        
+        [type, count]
+      end
+    end
+    
+    owner = planet.player
+    raise "No planet owner in #{planet}!" if owner.nil?
+    
+    ActiveRecord::Base.transaction do
+      Unit.give_units(parse.call(defenders), planet, owner) \
+        unless defenders == ""
+
+      galaxy_id = owner.galaxy_id
+      attackers = []
+      parse.call(offenders).each do |type, count|
+        klass = "Unit::#{type.camelcase}".constantize
+        count.times do
+          unit = klass.new(
+            :level => 1,
+            :hp => klass.hit_points,
+            :location => planet,
+            :galaxy_id => galaxy_id,
+            :flank => 0
+          )
+          unit.skip_validate_technologies = true
+
+          attackers.push unit
+        end
+      end
+      Unit.save_all_units(attackers, nil, EventBroker::CREATED)
+      Combat::LocationChecker.check_location(planet.location_point)
+    end
   end
 end
