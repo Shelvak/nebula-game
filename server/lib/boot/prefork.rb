@@ -1,7 +1,7 @@
 ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..')) \
   unless defined?(ROOT_DIR)
 
-if RUBY_VERSION.to_i < 1.9
+if RUBY_VERSION.to_f < 1.9
   Range.send(:alias_method, :cover?, :include?)
   class Integer
     alias :precisionless_round :round

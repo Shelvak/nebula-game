@@ -545,20 +545,20 @@ definition = QuestDefinition.define(:debug => false) do
     achievement(10320 + index) { complete_achievements :count => count }
   end
 
-  [25, 75, 150, 200, 500].each_with_index do |count, index|
+  [50, 100, 150, 200, 500].each_with_index do |count, index|
     achievement(10340 + index) { battle Combat::OUTCOME_WIN, :count => count }
   end
 
-  [25, 75, 150, 200, 500].each_with_index do |count, index|
+  [50, 100, 150, 200, 500].each_with_index do |count, index|
     achievement(10360 + index) { battle Combat::OUTCOME_LOSE, :count => count }
   end
 
-  [1, 10, 25, 50, 75, 100].each_with_index do |count, index|
+  [5, 10, 25, 50, 75, 100].each_with_index do |count, index|
     achievement(10380 + index) { move_building :count => count }
   end
 
   [
-    500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000
+    25000, 50000, 100000, 250000, 500000, 1000000, 2000000
   ].each_with_index do |count, index|
     achievement(10400 + index) { heal_hp count }
   end
