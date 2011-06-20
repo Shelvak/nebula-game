@@ -30,8 +30,6 @@ package models.solarsystem
    import models.solarsystem.events.SSObjectEvent;
    import models.tile.TerrainType;
    
-   import mx.logging.Log;
-   
    import utils.DateUtil;
    import utils.MathUtil;
    import utils.NameResolver;

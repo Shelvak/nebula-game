@@ -356,7 +356,8 @@ package config
       
       public static function getAllianceMaxPlayers(techLevel:int) : int
       {
-         return getTechnologyProperty("Alliances", "maxPlayers");
+         return StringUtil.evalFormula
+            (getTechnologyProperty("Alliances", "maxPlayers"), {"level": techLevel});
       }
       
       
