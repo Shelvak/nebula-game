@@ -2861,8 +2861,10 @@
     <sciencePoints value="Mokslo taškai" />
     <victoryPoints value="Pergalės taškai" />
     <allianceVictoryPoints.short value="SPT" />
-    <allianceVictoryPoints.long 
-    value="Pergalės taškai, kuriuos sąjungai uždirbo jos žaidėjai" />
+    <allianceVictoryPoints.long>
+      <p>Sąjungos Pergalės Taškai</p>
+      <p>Pergalės taškai, kuriuos sąjungai uždirbo jos žaidėjai.</p>
+    </allianceVictoryPoints.long>
     <armyPoints value="Kariuomenės taškai" />
     <online value="prisijungęs" />
     <offline value="atsijungęs" />

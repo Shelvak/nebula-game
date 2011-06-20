@@ -2824,8 +2824,10 @@
     <sciencePoints value="Science points" />
     <victoryPoints value="Victory points" />
     <allianceVictoryPoints.short value="AVP" />
-    <allianceVictoryPoints.long 
-    value="Victory points earned to alliance by it's players" />
+    <allianceVictoryPoints.long>
+      <p>Alliance Victory Points</p>
+      <p>Victory points earned for alliance by its players.</p>
+    </allianceVictoryPoints.long>
     <armyPoints value="Army points" />
     <online value="online" />
     <offline value="offline" />
