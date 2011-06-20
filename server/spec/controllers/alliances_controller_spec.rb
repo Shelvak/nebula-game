@@ -127,17 +127,19 @@ describe AlliancesController do
       end.should raise_error(GameLogicError)
     end
 
-    it "should fail if it is a battleground planet" do
-      bg = Factory.create(:battleground, :galaxy => player.galaxy)
-      bg_planet = Factory.create(:planet, :solar_system => bg,
-        :player => @invitee)
+    [:battleground, :mini_battleground].each do |type|
+      it "should fail if it is a #{type} planet" do
+        bg = Factory.create(type, :galaxy => player.galaxy)
+        bg_planet = Factory.create(:planet, :solar_system => bg,
+          :player => @invitee)
 
-      wh = Factory.create(:wormhole, :galaxy => bg.galaxy)
-      Factory.create(:fse_player, :player => player, :solar_system => wh)
+        wh = Factory.create(:wormhole, :galaxy => bg.galaxy)
+        Factory.create(:fse_player, :player => player, :solar_system => wh)
 
-      lambda do
-        invoke @action, @params.merge('planet_id' => bg_planet.id)
-      end.should raise_error(GameLogicError)
+        lambda do
+          invoke @action, @params.merge('planet_id' => bg_planet.id)
+        end.should raise_error(GameLogicError)
+      end
     end
 
     it "should fail if alliance have reached max players" do

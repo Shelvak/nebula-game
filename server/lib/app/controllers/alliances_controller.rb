@@ -57,7 +57,7 @@ class AlliancesController < GenericController
     ) unless Location.visible?(player, planet)
     raise GameLogicError.new(
       "Cannot invite if planet is a battleground planet!"
-    ) if planet.solar_system_id == Galaxy.battleground_id(player.galaxy_id)
+    ) if planet.solar_system.battleground?
     
     raise GameLogicError.new(
       "Cannot invite because alliance has max players!"
