@@ -5,6 +5,7 @@ package controllers.units
    import components.map.space.SquadronsController;
    
    import controllers.GlobalFlags;
+   import controllers.Messenger;
    
    import globalevents.GlobalEvent;
    
@@ -34,6 +35,7 @@ package controllers.units
    import utils.SingletonFactory;
    import utils.StringUtil;
    import utils.datastructures.Collections;
+   import utils.locale.Localizer;
    
    
    /**
@@ -346,6 +348,7 @@ package controllers.units
             {
                ORDERS_CTRL.orderComplete();
                GF.lockApplication = false;
+               Messenger.show(Localizer.string("Movement", "message.orderComplete"), Messenger.MEDIUM);
             }
          }
          // ALLY or PLAYER units are starting to move but we don't have that map open: create route then

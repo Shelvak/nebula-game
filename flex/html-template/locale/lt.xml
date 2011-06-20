@@ -1297,6 +1297,7 @@
       value="Atvykus į vietą bus {0} pertrauka prieš prasidedant kovai."/>
     <message.speedUpCost
       value="Pagreitinimo kaina: {0 one[? kredas] tens[? kredų] many[? kredai]}."/>
+    <message.orderComplete value="Laivai sėkmingai išsiųsti." />
   </Movement>
 
   <Navigator>
