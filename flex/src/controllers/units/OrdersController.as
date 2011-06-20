@@ -271,7 +271,7 @@ package controllers.units
             function(unit:Unit, idx:int, array:Array) : int { return unit.id }
          );
          this.units = Collections.filter(ML.units,
-            function(unit:Unit) : Boolean { return _unitIds.indexOf(unit.id) >= 0 }
+            function(unit:Unit) : Boolean { return _unitIds != null ? _unitIds.indexOf(unit.id) >= 0 : false }
          );
          addUnitsListEventHandlers(this.units);
          setSourceLocations();
