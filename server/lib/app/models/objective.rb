@@ -24,7 +24,8 @@ class Objective < ActiveRecord::Base
   #   :level => Fixnum (level of key required to progress),
   #   :count => Fixnum (number of progressions required for objective),
   #   :npc => Boolean (should we do things with npc (only in some types)),
-  #   :alliance => Boolean (can alliance help with this objective)
+  #   :alliance => Boolean (can alliance help with this objective),
+  #   :outcome => Fixnum (outcome for battle),
   # }
   def as_json(options=nil)
     attributes.symbolize_keys
