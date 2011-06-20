@@ -7,14 +7,25 @@ LOGGER.info "Starting server..."
 
 callback_manager = proc { CallbackManager.tick }
 
-irb_loaded = false
-unless ENV["environment"] == "production" || defined?(DAEMONIZED)
+if ENV["environment"] == "development"
   # Initialize IRB support for drop-in development console.
   require File.expand_path(File.join(ROOT_DIR, 'lib', 'server',
       'irb_session.rb'))
   root_binding = binding
   irb_running = false
-  irb_loaded = true
+  
+  # This evil thing is needed because ctrl+c kills subprocesses too.
+  # fucking lame.
+  Thread.new {
+    loop do
+      if irb_running
+        sleep 0.1
+      else
+        input = gets.strip
+        irb_running = true if input == "con" || input == "cc"
+      end
+    end
+  }
 end
 
 LOGGER.info "Running EventMachine..."
@@ -23,24 +34,7 @@ EventMachine::run do
     LOGGER.info "Caught interrupt, shutting down..."
     EventMachine::stop_event_loop
   end
-  trap("INT") do
-    if ! irb_loaded
-      stop_server.call
-    else
-      unless irb_running
-        irb_running = true
-        puts "\n\nDropping into IRB shell. Server operation suspended."
-        puts "Press CTRL+C again to stop the server.\n\n"
-        IRB.start_session(root_binding)
-        puts "\nIRB done. Server operation resumed.\n\n"
-        irb_running = false
-      else
-        puts "\n\n"
-        stop_server.call
-        throw :IRB_EXIT
-      end
-    end
-  end
+  trap("INT", &stop_server)
   trap("TERM", &stop_server)
 
   # Initialize space mule.
@@ -56,6 +50,21 @@ EventMachine::run do
   LOGGER.info "Starting callback manager..."
   EventMachine::PeriodicTimer.new(1, &callback_manager)
 
+  if ENV["environment"] == "development"
+    EventMachine::PeriodicTimer.new(0.1) do
+      if irb_running
+        puts "\n\nDropping into IRB shell. Server operation suspended."
+        puts "Press CTRL+C to exit the shell.\n\n"
+        old_handler = trap("INT") { throw :IRB_EXIT }
+        
+        IRB.start_session(root_binding)
+        puts "\nIRB done. Server operation resumed.\n\n"
+        irb_running = false
+        trap("INT", &old_handler)
+      end
+    end
+  end
+  
   LOGGER.info "Running callback manager..."
   callback_manager.call
 
@@ -66,15 +75,6 @@ EventMachine::run do
     puts "Console is log closed for performance reasons."
     puts "Everything is logged to file."
   end
-
-#  if defined?(DAEMONIZED)
-#    # Close standard IO because otherwise net/ssh hangs forever on server
-#    # startup waiting for some mystical thing when deploying via rake
-#    # tasks.
-#    STDIN.close
-#    STDOUT.close
-#    STDERR.close
-#  end
 end
 
 LOGGER.info "Server stopped."

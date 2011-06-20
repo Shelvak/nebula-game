@@ -1112,7 +1112,7 @@
       kartą.</p>
     </message.actionCanceled>
     <message.copyToClipboardSuccessful value="Nukopijuota į iškarpinę" />
-    <label.cooldownEndsIn value="Pertrauka baigsis už" />
+    <label.cooldownEndsIn value="Kitas mūšis už" />
   </General>
 
   <InfoScreen>
@@ -2909,8 +2909,8 @@
     <type.Jumpgate value="Jumpgate" />
     <type.Asteroid value="Asteroid" />
     
-    <label.owner value="Užimta" />
-    <label.unoccupied value="Neužimta" />
+    <label.owner value="Valdytojas:" />
+    <label.unoccupied value="Neapgyvendinta" />
     <label.inviteToAlliance value="Pakviesk žaidėją į sąjungą"/>
     <label.toPlanet value="Įeiti į planetą" />
     <label.toGalaxy value="Eiti į galaktiką" />

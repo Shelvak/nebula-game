@@ -13,8 +13,10 @@ describe UnitMover do
       ]
 
       UnitMover.arrival_date(player.id, units.map(&:id), ssp1, ssp2).
-        should == UnitMover.move(player.id, units.map(&:id), ssp1, ssp2).
-        arrives_at
+        should be_close(
+          UnitMover.move(player.id, units.map(&:id), ssp1, ssp2).arrives_at,
+          SPEC_TIME_PRECISION
+        )
     end
   end
 

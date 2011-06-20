@@ -102,7 +102,7 @@ describe klass do
       describe "invocation" do
         before(:each) do
           @stubbed_assets = Combat::Assets.new(
-            {},
+            {'outcomes' => {}, 'statistics' => {}},
             mock(CombatLog),
             {},
             nil
