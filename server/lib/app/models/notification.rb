@@ -358,6 +358,13 @@ class Notification < ActiveRecord::Base
   #   :alliance => Alliance#as_json(:mode => :minimal)
   # }
   def self.create_for_alliance_invite(alliance, player)
+    # Ensure we don't get duplicate invitations.
+    where(:player_id => player.id, :event => EVENT_ALLIANCE_INVITATION).each do
+      |notification|
+
+      return notification if notification.params[:alliance]['id'] == alliance.id
+    end
+
     model = new(
       :event => EVENT_ALLIANCE_INVITATION,
       :player_id => player.id,

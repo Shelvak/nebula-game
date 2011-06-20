@@ -489,6 +489,11 @@ describe Notification do
         @method, *@args
       ).params[:alliance].should == @alliance.as_json(:mode => :minimal)
     end
+
+    it "should not create duplicate invitations" do
+      notification = Notification.send(@method, *@args)
+      Notification.send(@method, *@args).should == notification
+    end
   end
 
   describe ".create_for_planet_protected" do
