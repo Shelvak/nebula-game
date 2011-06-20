@@ -1177,8 +1177,10 @@ package controllers.battle
          {
             if (ended)
             {
+               _battleMap.resetHandlers();
                _battle.logHash.speed = fps/DEFAULT_FPS;
                showBattle(_battleId, _battle.logHash);
+               ended = false;
             }
             else
             {

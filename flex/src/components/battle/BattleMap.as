@@ -1,5 +1,7 @@
 package components.battle
 {
+   import com.developmentarc.core.utils.EventBroker;
+   
    import components.base.SetableProgressBar;
    import components.map.CMap;
    import components.skins.PauseBattleButtonSkin;
@@ -17,9 +19,13 @@ package components.battle
    
    import flash.display.BitmapData;
    import flash.events.Event;
+   import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.text.engine.FontWeight;
+   import flash.ui.Keyboard;
+   
+   import globalevents.GlobalEvent;
    
    import models.BaseModel;
    import models.IMBattleParticipant;
@@ -172,6 +178,11 @@ package components.battle
          currentGroupOrder = 0;
       }
       
+      public function resetHandlers(): void
+      {
+         EventBroker.unsubscribe(KeyboardEvent.KEY_DOWN, kDownHandler);
+      }
+      
       private function markAppearing(): void
       {
          for each (var transporterUnits: Array in _battle.appearOrders)
@@ -278,6 +289,22 @@ package components.battle
          pausePanel.visible = show;
       }
       
+      private function kDownHandler(e: KeyboardEvent): void
+      {
+         if (e.keyCode == Keyboard.ENTER)
+         {
+            dispatchTogglePauseEvent();
+         }
+      }
+      
+      private function dispatchTogglePauseEvent(e: MouseEvent = null): void
+      {
+         paused = !paused;
+         //ensure toggle button state
+         playButton.selected = !paused;
+         dispatchEvent(new BattleControllerEvent(BattleControllerEvent.TOGGLE_PAUSE));
+      }
+      
       protected override function createObjects() : void
       {
          super.createObjects();
@@ -297,14 +324,7 @@ package components.battle
          
          overallHp.right = 4;
          overallHp.top = 4;
-         overallHp.width = 300;
-         function dispatchTogglePauseEvent(e: MouseEvent): void
-         {
-            paused = !paused;
-            //ensure toggle button state
-            playButton.selected = !paused;
-            dispatchEvent(new BattleControllerEvent(BattleControllerEvent.TOGGLE_PAUSE));
-         }
+         overallHp.width = 330;
          function zoomOut(e: MouseEvent): void
          {
             viewport.zoomOut();
@@ -339,11 +359,14 @@ package components.battle
          playButton.addEventListener(MouseEvent.CLICK, dispatchTogglePauseEvent);
          playButton.top = 7;
          playButton.left = leftSide;
+         playButton.toolTip = Localizer.string('BattleMap', 'tooltip.play');
          replayButton.setStyle('skinClass', XReplayButtonSkin);
          replayButton.addEventListener(MouseEvent.CLICK, dispatchTogglePauseEvent);
          replayButton.top = 7;
          replayButton.left = leftSide;
          replayButton.visible = false;
+         replayButton.toolTip = Localizer.string('BattleMap', 'tooltip.replay');
+         EventBroker.subscribe(KeyboardEvent.KEY_DOWN, kDownHandler);
          leftSide += 30;
          x05Button.setStyle('skinClass', X05ButtonSkin);
          x05Button.left = leftSide;
@@ -909,8 +932,8 @@ package components.battle
                (groupRoot.id != participant.participantModel.id) &&
                ((hash[groupRoot.id] != null) &&
                   (hash[groupRoot.id] as BBattleParticipantComp).hidden == false)
-            && ((hash[groupRoot.id] as BBattleParticipantComp).totalGroupLength <= 
-               getMaxGrouped(participant.boxWidth, participant.boxHeight)))
+               && ((hash[groupRoot.id] as BBattleParticipantComp).totalGroupLength <= 
+                  getMaxGrouped(participant.boxWidth, participant.boxHeight)))
             {
                if (minGroup == null)
                {

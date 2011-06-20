@@ -385,7 +385,9 @@
     <tick value="Tick {0}/{1}" />
     <title.overallHp value="Total HP" />
     <pause value="PAUSED" />
-    <pressPlay value="Press PLAY to resume" />
+    <pressPlay value="Press ENTER to resume" />
+    <tooltip.play value="PLAY/PAUSE" />
+    <tooltip.replay value="REPLAY" />
   </BattleMap>
   
   <Messenger>
@@ -1451,6 +1453,9 @@
       <p>Come back every day and get your daily bonus!</p>
     </message.dailyBonus>
     <label.todayYouGot value="Today you've got:" />
+    
+    <title.stopFleet value="Stop fleet" />
+    <message.stopFleet value="Do you realy want to stop your fleet?" />
     
     <title.boostPlanet value="Boost planet resources/storage" />
     <message.areYouSure value="Are you sure?" />

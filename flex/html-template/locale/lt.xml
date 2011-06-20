@@ -384,7 +384,9 @@
     <tick value="Ėjimas {0}/{1}" />
     <title.overallHp value="Viso gyvybių" />
     <pause value="SUSTABDYTA" />
-    <pressPlay value="Paspausk PALEISTI, kad pratęsti kovą" />
+    <pressPlay value="Paspausk ENTER, kad pratęsti kovą" />
+    <tooltip.play value="PALEISTI/SUSTABDYTI" />
+    <tooltip.replay value="PALEISTI IŠ NAUJO" />
   </BattleMap>
   
   <Messenger>
@@ -1446,6 +1448,9 @@
     </message.dailyBonus>
     <label.todayYouGot value="Šiandien Tu gavai:" />
     
+    <title.stopFleet value="Sustabdyti flotilę" />
+    <message.stopFleet value="Ar tikrai nori sustabdyti savo flotilę?" />
+    
     <title.boostPlanet value="Padidinti planetos resursus/talpą" />
     <message.areYouSure value="Ar esi tikras?" />
 
@@ -1594,7 +1599,7 @@
   </Popups>
 
   <Achievements>
-    <level value="level {0}" />
+    <level value="{0} lygis" />
   </Achievements>
   
   <Objectives>
