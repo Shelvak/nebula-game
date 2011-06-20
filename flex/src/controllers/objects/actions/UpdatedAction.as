@@ -1,5 +1,7 @@
 package controllers.objects.actions
 {
+   import controllers.objects.ObjectClass;
+
    /**
     *is received after battle for every unit that was updated 
     * @author Jho
@@ -18,6 +20,10 @@ package controllers.objects.actions
             getCustomController(objectClass).objectUpdated(objectSubclass, object, reason);
          }
          ML.units.enableAutoUpdate();
+         if (objectClass == ObjectClass.UNIT && ML.latestPlanet != null)
+         {
+           ML.latestPlanet.dispatchUnitRefreshEvent();
+         }
       }
    }
 }

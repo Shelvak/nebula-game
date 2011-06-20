@@ -88,7 +88,7 @@
             <s:SolidColorStroke color="0xffffff" weight="1"/>
          </s:stroke>
       </s:Line>
-      <s:Label width="80" text="{Localizer.string('Ratings', 'economyPoints')}" textAlign="center"
+      <s:Label width="85" text="{Localizer.string('Ratings', 'economyPoints')}" textAlign="center"
                paddingLeft="6" paddingRight="6"
                rollOver="label_rollOverHandler(event)" rollOut="label_rollOutHandler(event)"
                click="label_clickHandler(event, 'economyPoints')"/>
@@ -115,7 +115,7 @@
             <s:SolidColorStroke color="0xffffff" weight="1"/>
          </s:stroke>
       </s:Line>
-      <s:Label width="80" text="{Localizer.string('Ratings', 'warPoints')}" textAlign="center"
+      <s:Label width="95" text="{Localizer.string('Ratings', 'warPoints')}" textAlign="center"
                paddingLeft="12" paddingRight="12"
                rollOver="label_rollOverHandler(event)" rollOut="label_rollOutHandler(event)"
                click="label_clickHandler(event, 'warPoints')"/>

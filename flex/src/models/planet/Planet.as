@@ -1400,7 +1400,7 @@ package models.planet
       }
       
       
-      private function dispatchUnitRefreshEvent(e: Event) : void
+      public function dispatchUnitRefreshEvent(e: Event = null) : void
       {
          if (!f_cleanupStarted &&
             !f_cleanupComplete &&
