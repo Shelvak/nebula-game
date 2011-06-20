@@ -10,11 +10,12 @@
       <![CDATA[
          import models.building.Building;
          import models.location.Location;
+         import models.location.LocationType;
          import models.tile.TerrainType;
          import models.unit.Unit;
          
-         import utils.locale.Localizer;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          
          [Bindable]
          private var _location:Location = null;
@@ -33,7 +34,23 @@
             else if (value is Unit)
             {
                _target = value;
-               _location = Unit(value).location;
+               var tUnit: Unit = Unit(value);
+               if (tUnit.location.type == LocationType.SS_OBJECT
+               && ML.latestPlanet.id == tUnit.location.id)
+               {
+                  _location = ML.latestPlanet.toLocation();
+               }
+               else if (tUnit.location.type == LocationType.SOLAR_SYSTEM
+                  && ML.latestSolarSystem.id == tUnit.location.id)
+               {
+                  _location = ML.latestSolarSystem.getLocation(
+                     tUnit.location.x, tUnit.location.y);
+               }
+               else
+               {
+                  _location = ML.latestGalaxy.getLocation(
+                     tUnit.location.x, tUnit.location.y);
+               }
             }
             else
             {

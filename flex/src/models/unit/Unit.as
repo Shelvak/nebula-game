@@ -8,6 +8,7 @@ package models.unit
    import models.Owner;
    import models.building.Building;
    import models.location.Location;
+   import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.parts.IUpgradableModel;
    import models.parts.Requirement;
@@ -21,10 +22,10 @@ package models.unit
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
    
-   import utils.locale.Localizer;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    import utils.datastructures.Collections;
+   import utils.locale.Localizer;
    
    
    [Bindable]
@@ -252,7 +253,7 @@ package models.unit
       /**
        * @default null 
        */
-      public var location:Location = null;
+      public var location:LocationMinimal = null;
       
       
       [Bindable(event="squadronIdChange")]
