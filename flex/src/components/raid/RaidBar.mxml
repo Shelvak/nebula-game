@@ -4,7 +4,8 @@
                     xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:custom="components.resourcesbar.*"
                     xmlns:base="components.base.*"
-                    xmlns:battle="components.battle.*">
+                    xmlns:battle="components.battle.*"
+                    width="{barGroup.width}">
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
