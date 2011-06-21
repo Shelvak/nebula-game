@@ -40,8 +40,8 @@
       <s:layout>
          <s:HorizontalLayout gap="1" verticalAlign="middle"/>
       </s:layout>
-      <s:Label text="{player.rank}" width="40" textAlign="center"/>
-      <base:AdvancedContainer width="120"
+      <s:Label text="{player.rank}" width="{RatingsWidths.rank}" textAlign="center"/>
+      <base:AdvancedContainer width="{RatingsWidths.player}"
                               toolTip="{Localizer.string('Ratings', player.online
                               ?'online':'offline')}">
          <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
@@ -52,17 +52,24 @@
             <s:HorizontalLayout verticalAlign="middle" paddingLeft="6" paddingRight="3"/>
          </base:layout>
       </base:AdvancedContainer>
-      <s:Group width="80">
+      <s:Group width="{RatingsWidths.playerAlliance}">
          <s:Button label="{player.getAllianceName()}" left="6" right="3" 
                    skinClass="components.skins.LinkButtonSkin"
                    click="NavigationController.getInstance().showAlliance(player.alliance.id)"/>
       </s:Group>
-      <s:Label text="{player.planetsCount}" width="80" textAlign="center"/>
-      <s:Label text="{player.economyPoints}" width="85" textAlign="center"/>
-      <s:Label text="{player.sciencePoints}" width="80" textAlign="center"/>
-      <s:Label text="{player.armyPoints}" width="80" textAlign="center"/>
-      <s:Label text="{player.warPoints}" width="95" textAlign="center"/>
-      <s:Label text="{player.victoryPoints}" width="80" textAlign="center"/>
-      <s:Label text="{player.points}" width="80" textAlign="center"/>
+      <s:Label text="{player.planetsCount}" width="{RatingsWidths.planetsCount}" 
+               textAlign="center"/>
+      <s:Label text="{player.economyPoints}" width="{RatingsWidths.economyPoints}" 
+               textAlign="center"/>
+      <s:Label text="{player.sciencePoints}" width="{RatingsWidths.sciencePoints}" 
+               textAlign="center"/>
+      <s:Label text="{player.armyPoints}" width="{RatingsWidths.armyPoints}" 
+               textAlign="center"/>
+      <s:Label text="{player.warPoints}" width="{RatingsWidths.warPoints}" 
+               textAlign="center"/>
+      <s:Label text="{player.victoryPoints}" width="{RatingsWidths.victoryPoints}" 
+               textAlign="center"/>
+      <s:Label text="{player.points}" width="{RatingsWidths.points}" 
+               textAlign="center"/>
    </s:Group>
 </s:ItemRenderer>
