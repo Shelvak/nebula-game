@@ -173,5 +173,21 @@ describe PlayersController do
         invoke @action, @params
       end
     end
+
+    describe "players|status_change" do
+      before(:each) do
+        @action = "players|status_change"
+        @params = {'changes' => :changes}
+      end
+
+      @required_params = %w{changes}
+      it_should_behave_like "with param options"
+      it_should_behave_like "only push"
+      
+      it "should respond" do
+        should_respond_with :changes => @params['changes']
+        push @action, @params
+      end
+    end
   end
 end

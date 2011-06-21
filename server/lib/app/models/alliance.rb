@@ -153,6 +153,10 @@ class Alliance < ActiveRecord::Base
     ControlManager.instance.player_joined_alliance(player, self)
     # Dispatch changed on owner because he has alliance_player_count
     EventBroker.fire(owner, EventBroker::CHANGED)
+    # Dispatch changed for status changed event
+    event = StatusChangeEvent::Alliance.new(self, player, 
+      StatusChangeEvent::Alliance::ACCEPT)
+    EventBroker.fire(event, EventBroker::CHANGED)
 
     true
   end
@@ -176,6 +180,10 @@ class Alliance < ActiveRecord::Base
     Combat::LocationChecker.check_player_locations(player)
     # Dispatch changed on owner because he has alliance_player_count
     EventBroker.fire(owner, EventBroker::CHANGED)
+    # Dispatch changed for status changed event
+    event = StatusChangeEvent::Alliance.new(self, player, 
+      StatusChangeEvent::Alliance::THROW_OUT)
+    EventBroker.fire(event, EventBroker::CHANGED)
 
     true
   end

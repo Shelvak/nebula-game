@@ -112,6 +112,15 @@ class DispatcherEventHandler
           )
         end
       end
+    elsif object.is_a?(StatusChangeEvent)
+      object.statuses.each do |player_id, changes|
+        @dispatcher.push_to_player(
+          player_id,
+          PlayersController::ACTION_STATUS_CHANGE,
+          {'changes' => changes},
+          nil
+        )
+      end
     elsif object.is_a? Technology
       # Just silently ignore it, we pass stuff manually with this one.
     else

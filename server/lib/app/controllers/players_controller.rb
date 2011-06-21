@@ -110,4 +110,24 @@ class PlayersController < GenericController
     # VIP level was incorrect.
     raise GameLogicError.new(e)
   end
+
+  ACTION_STATUS_CHANGE = 'players|status_change'
+  # Informs client that status of player has changed.
+  #
+  # Invocation: by server
+  #
+  # Parameters:
+  # - changes (Array)
+  #
+  # Response:
+  # - changes (Array): array of [player_id, status] pairs where:
+  #   - player_id (Fixnum): id of +Player+ for which status is being changed
+  #   - status (Fixnum): new status of player
+  #
+  def action_status_change
+    param_options :required => %w{changes}
+    only_push!
+
+    respond :changes => params['changes']
+  end
 end
