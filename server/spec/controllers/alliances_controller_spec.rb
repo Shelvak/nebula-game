@@ -341,6 +341,12 @@ describe AlliancesController do
       player.alliance.should_receive(:throw_out).with(@member)
       invoke @action, @params
     end
+    
+    it "should create notification" do
+      Notification.should_receive(:create_for_kicked_from_alliance).with(
+        @alliance, @member)
+      invoke @action, @params
+    end
 
     it "should work properly" do
       invoke @action, @params

@@ -150,6 +150,7 @@ class AlliancesController < GenericController
     raise GameLogicError.new("Cannot kick yourself!") \
       if member.id == player.id
     alliance.throw_out(member)
+    Notification.create_for_kicked_from_alliance(alliance, member)
   end
 
   # Shows an alliance.
