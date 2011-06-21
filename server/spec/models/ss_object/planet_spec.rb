@@ -342,9 +342,9 @@ describe SsObject::Planet do
       end
     end
 
-    describe "special planets" do
+    describe "battleground planets" do
       before(:each) do
-        @planet.special = true
+        @planet.solar_system = Factory.create(:battleground)
       end
 
       it "should increase victory points for new player" do
