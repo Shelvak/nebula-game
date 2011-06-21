@@ -65,13 +65,6 @@ package models.movement
       private var _owner:int = Owner.PLAYER;
       public function set owner(value:int) : void
       {
-         if (value != Owner.PLAYER && value != Owner.ALLY)
-         {
-            throw new ArgumentError(
-               "MRoute.owner can only be set to Owner.PLAYER (" + Owner.PLAYER + ") or Owner.ALLY (" +
-               Owner.ALLY + "): was " + value
-            );
-         }
          if (_owner != value)
          {
             _owner = value;

@@ -65,6 +65,12 @@ package controllers.players
       public static const RATINGS:String = "players|ratings";
       
       
+      /**
+       * @see controllers.players.actions.StatusChangeAction
+       */
+      public static const STATUS_CHANGE:String = "player|status_change";
+      
+      
       public function PlayersCommand(type:String, parameters:Object = null, fromServer:Boolean = false)
       {
          super (type, parameters, fromServer);

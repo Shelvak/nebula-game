@@ -566,6 +566,17 @@ package models.movement
       }
       
       
+      public function removeAllHopsButNext() : void
+      {
+         var nextHop:MHop = this.nextHop;
+         hops.removeAll();
+         if (nextHop != null)
+         {
+            addHop(nextHop);
+         }
+      }
+      
+      
       public override function equals(o:Object) : Boolean
       {
          if (!super.equals(o))
