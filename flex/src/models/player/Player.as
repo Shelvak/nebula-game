@@ -220,6 +220,19 @@ package models.player
       public var allianceCooldownEndsAt: Date;
       
       
+      public function get allianceCooldownInEffect() : Boolean
+      {
+         return allianceCooldownEndsAt != null &&
+                allianceCooldownEndsAt.time > DateUtil.now;
+      }
+      
+      
+      public function get canJoinAlliance() : Boolean
+      {
+         return !belongsToAlliance && !allianceCooldownInEffect;
+      }
+      
+      
       /**
        * <code>true</code> if this player belongs to an alliance.
        */

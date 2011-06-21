@@ -69,12 +69,6 @@ package models.notification.parts
       }
       
       
-      public function get canJoinAlliance() : Boolean
-      {
-         return !ML.player.belongsToAlliance && ML.player.allianceCooldownEndsAt == null;
-      }
-      
-      
       public function get joinRestrictionMessage() : String
       {
          if (ML.player.belongsToAlliance)
@@ -99,7 +93,7 @@ package models.notification.parts
       
       public function joinAlliance() : void
       {
-         if (canJoinAlliance)
+         if (ML.player.canJoinAlliance)
          {
             new AlliancesCommand(AlliancesCommand.JOIN, new JoinActionParams(_notification.id)).dispatch();
          }
