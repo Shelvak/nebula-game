@@ -178,7 +178,9 @@ assets:
           wiki_name: BattlegroundSun.png
           "flex": {save_as: "swf:png"}
         galaxy.png: Galaxy.png
-        background.jpg: GalaxyBackground.jpg
+        background.jpg:
+          wiki_name: GalaxyBackground.jpg
+          "flex": {save_as: "swf:100"}
         <% CONFIG["ui.solar_system.variations"].times do |i| %>
         <%= i.to_s %>.png: SolarSystem<%= i %>.png
         <% end %>
