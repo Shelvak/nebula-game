@@ -76,6 +76,13 @@ describe AlliancesController do
       player.alliance.owner_id.should == player.id
     end
 
+    it "should call #accept on alliance with owner" do
+      alliance = Factory.build(:alliance, :owner => player)
+      Alliance.should_receive(:new).and_return(alliance)
+      alliance.should_receive(:accept).with(player)
+      invoke @action, @params
+    end
+
     it "should respond with alliance id otherwise" do
       invoke @action, @params
       player.reload
@@ -332,6 +339,12 @@ describe AlliancesController do
 
     it "should throw out player" do
       player.alliance.should_receive(:throw_out).with(@member)
+      invoke @action, @params
+    end
+    
+    it "should create notification" do
+      Notification.should_receive(:create_for_kicked_from_alliance).with(
+        @alliance, @member)
       invoke @action, @params
     end
 

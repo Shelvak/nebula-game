@@ -104,7 +104,13 @@ assets:
     "*":
       ".":
         <% each_model('building') do |base| %>
+        <% if base == "NpcHall" %>
+        "<%= base %>.png":
+          wiki_name: <%= "#{base}.png" %>
+          flex: {save_as: "swf:png"}
+        <% else %>
         <%= "#{base}.png: #{base}.png" %>
+        <% end %>
         <% end %>
       "constructors":
         <% each_model('building') do |base|
@@ -178,7 +184,9 @@ assets:
           wiki_name: BattlegroundSun.png
           "flex": {save_as: "swf:png"}
         galaxy.png: Galaxy.png
-        background.jpg: GalaxyBackground.jpg
+        background.jpg:
+          wiki_name: GalaxyBackground.jpg
+          "flex": {save_as: "swf:100"}
         <% CONFIG["ui.solar_system.variations"].times do |i| %>
         <%= i.to_s %>.png: SolarSystem<%= i %>.png
         <% end %>
@@ -412,7 +420,9 @@ assets:
   "images/battlefield":
     "*":
       ".":
-        space.jpg:       Bf_galaxy.jpg
+        space.jpg:
+          wiki_name: Bf_galaxy.jpg
+          "flex": {save_as: "swf:100"}
 
       "border":
         "opts":

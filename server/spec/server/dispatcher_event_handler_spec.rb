@@ -47,120 +47,212 @@ describe DispatcherEventHandler do
     EventBroker.unregister(@handler)
   end
 
-  it "should handle created objects" do
-    test_object_receive(TestObject.new, EventBroker::CREATED)
+  describe "created" do
+    it "should handle created objects" do
+      test_object_receive(TestObject.new, EventBroker::CREATED)
+    end
   end
+  
+  describe "changed" do
+    it "should handle changed objects" do
+      test_object_receive(TestObject.new, EventBroker::CHANGED, nil,
+        DispatcherEventHandler::CONTEXT_CHANGED)
+    end
+    
+    it "should handle changed technologies" do
+      obj = Factory.create(:technology)
+      lambda do
+        @handler.fire([obj], EventBroker::CHANGED, nil)
+      end.should_not raise_error
+    end
 
-  it "should handle changed objects" do
-    test_object_receive(TestObject.new, EventBroker::CHANGED, nil,
-      DispatcherEventHandler::CONTEXT_CHANGED)
-  end
+    it "should handle changed construction queue" do
+      planet = Factory.create(:planet_with_player)
+      constructor = Factory.create(:b_constructor_test, :planet => planet)
+      obj = ConstructionQueue::Event.new(constructor.id)
 
-  it "should handle destroyed objects" do
-    test_object_receive(TestObject.new, EventBroker::DESTROYED, nil,
-      DispatcherEventHandler::CONTEXT_DESTROYED)
-  end
+      @dispatcher.should_receive(:push_to_player).with(
+        planet.player_id,
+        ConstructionQueuesController::ACTION_INDEX,
+        {'constructor_id' => constructor.id},
+        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
+      )
 
-  it "should handle changed technologies" do
-    obj = Factory.create(:technology)
-    lambda do
       @handler.fire([obj], EventBroker::CHANGED, nil)
-    end.should_not raise_error
-  end
+    end
+    
+    it "should handle changed player" do
+      obj = Factory.create :player
+      @dispatcher.stub!(:connected?).with(obj.id).and_return(true)
+      @dispatcher.should_receive(:update_player).with(obj)
+      @dispatcher.should_receive(:push_to_player).with(
+        obj.id,
+        PlayersController::ACTION_SHOW
+      )
+      @handler.fire([obj], EventBroker::CHANGED, nil)
+    end
 
-  it "should handle changed construction queue" do
-    planet = Factory.create(:planet_with_player)
-    constructor = Factory.create(:b_constructor_test, :planet => planet)
-    obj = ConstructionQueue::Event.new(constructor.id)
+    it "should not update player in dispatcher upon change if it's not " +
+    "connected" do
+      obj = Factory.create :player
+      @dispatcher.stub!(:connected?).with(obj.id).and_return(false)
+      @dispatcher.should_not_receive(:update_player)
+      @handler.fire([obj], EventBroker::CHANGED, nil)
+    end
+    
+    it "should not fail when planet owners change if there was " +
+    "no old owner" do
+      new = Factory.create(:player)
+      planet = Factory.create(:planet)
+      planet.player = new
 
-    @dispatcher.should_receive(:push_to_player).with(
-      planet.player_id,
-      ConstructionQueuesController::ACTION_INDEX,
-      {'constructor_id' => constructor.id},
-      DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
-    )
+      lambda do
+        @handler.fire([planet], EventBroker::CHANGED,
+          EventBroker::REASON_OWNER_CHANGED)
+      end.should_not raise_error
+    end
 
-    @handler.fire([obj], EventBroker::CHANGED, nil)
-  end
+    it "should dispatch planets|player_index if planet owners change" do
+      old = Factory.create(:player)
+      new = Factory.create(:player)
+      planet = Factory.create(:planet, :player => old)
+      planet.player = new
 
-  it "should dispatch to player if destroyed units are in buildings" do
-    planet = Factory.create(:planet_with_player)
-    unit = Factory.create(:unit,
-      :location => Factory.create(:b_npc_solar_plant, :planet => planet))
-    obj = [unit]
-    @dispatcher.should_receive(:push_to_player).with(
-      planet.player_id,
-      ObjectsController::ACTION_DESTROYED,
-      {'objects' => obj, 'reason' => nil},
-      DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
-    )
-    @handler.fire(obj, EventBroker::DESTROYED, nil)
-  end
+      @dispatcher.should_receive(:push_to_player).with(
+        old.id,
+        PlanetsController::ACTION_PLAYER_INDEX
+      )
+      @dispatcher.should_receive(:push_to_player).with(
+        new.id,
+        PlanetsController::ACTION_PLAYER_INDEX
+      )
 
-  it "should dispatch to player if changed units are in buildings" do
-    planet = Factory.create(:planet_with_player)
-    unit = Factory.create(:unit,
-      :location => Factory.create(:b_npc_solar_plant, :planet => planet))
-    obj = [unit]
-    @dispatcher.should_receive(:push_to_player).with(
-      planet.player_id,
-      ObjectsController::ACTION_UPDATED,
-      {'objects' => obj, 'reason' => nil},
-      DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
-    )
-    @handler.fire(obj, EventBroker::CHANGED, nil)
-  end
-
-  it "should handle changed player" do
-    obj = Factory.create :player
-    @dispatcher.stub!(:connected?).with(obj.id).and_return(true)
-    @dispatcher.should_receive(:update_player).with(obj)
-    @dispatcher.should_receive(:push_to_player).with(
-      obj.id,
-      PlayersController::ACTION_SHOW
-    )
-    @handler.fire([obj], EventBroker::CHANGED, nil)
-  end
-
-  it "should not update player in dispatcher upon change if it's not " +
-  "connected" do
-    obj = Factory.create :player
-    @dispatcher.stub!(:connected?).with(obj.id).and_return(false)
-    @dispatcher.should_not_receive(:update_player)
-    @handler.fire([obj], EventBroker::CHANGED, nil)
-  end
-
-  it "should dispatch planets|player_index if planet owners change" do
-    old = Factory.create(:player)
-    new = Factory.create(:player)
-    planet = Factory.create(:planet, :player => old)
-    planet.player = new
-
-    @dispatcher.should_receive(:push_to_player).with(
-      old.id,
-      PlanetsController::ACTION_PLAYER_INDEX
-    )
-    @dispatcher.should_receive(:push_to_player).with(
-      new.id,
-      PlanetsController::ACTION_PLAYER_INDEX
-    )
-
-    @handler.fire([planet], EventBroker::CHANGED,
-      EventBroker::REASON_OWNER_CHANGED)
-  end
-
-  it "should not fail when planet owners change if there was " +
-  "no old owner" do
-    new = Factory.create(:player)
-    planet = Factory.create(:planet)
-    planet.player = new
-
-    lambda do
       @handler.fire([planet], EventBroker::CHANGED,
         EventBroker::REASON_OWNER_CHANGED)
-    end.should_not raise_error
-  end
+    end
 
+    it "should dispatch to player if changed units are in buildings" do
+      planet = Factory.create(:planet_with_player)
+      unit = Factory.create(:unit,
+        :location => Factory.create(:b_npc_solar_plant, :planet => planet))
+      obj = [unit]
+      @dispatcher.should_receive(:push_to_player).with(
+        planet.player_id,
+        ObjectsController::ACTION_UPDATED,
+        {'objects' => obj, 'reason' => nil},
+        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
+      )
+      @handler.fire(obj, EventBroker::CHANGED, nil)
+    end
+    
+    it "should handle StatusChangeEvent" do
+      event = StatusChangeEvent.new({1 => [2, 3], 10 => [20, 1]})
+      
+      event.statuses.each do |player_id, changes|
+        @dispatcher.should_receive(:push_to_player).with(
+          player_id,
+          PlayersController::ACTION_STATUS_CHANGE,
+          {'changes' => changes},
+          nil
+        )
+      end
+      
+      @handler.fire([event], EventBroker::CHANGED, nil)
+    end
+
+    describe "fog of war changes" do
+      describe "reason galaxy" do
+        it "should send galaxy map" do
+          player_ids = [1,2,3]
+          event = FowChangeEvent.new(nil, nil)
+          event.stub!(:player_ids).and_return(player_ids)
+
+          player_ids.each do |player_id|
+            @dispatcher.should_receive(:push_to_player).with(
+              player_id,
+              GalaxiesController::ACTION_SHOW
+            )
+          end
+
+          @handler.fire(event, EventBroker::FOW_CHANGE,
+            EventBroker::REASON_GALAXY_ENTRY)
+        end
+      end
+
+      describe "reason solar system" do
+        it "should send updated metadatas" do
+          player_ids = [1,2,3]
+          metadatas = {
+            1 => 'meta1',
+            2 => 'meta2',
+            3 => 'meta3',
+          }
+          event = FowChangeEvent::SolarSystem.new(0)
+          event.stub!(:player_ids).and_return(player_ids)
+          event.stub!(:metadatas).and_return(metadatas)
+
+          player_ids.each do |player_id|
+            @dispatcher.should_receive(:push_to_player).with(
+              player_id,
+              ObjectsController::ACTION_UPDATED,
+              {
+                'objects' => [metadatas[player_id]],
+                'reason' => nil
+              }
+            )
+          end
+
+          @handler.fire(event, EventBroker::FOW_CHANGE,
+            EventBroker::REASON_SS_ENTRY)
+        end
+
+        it "should send destroyed if it was destroyed" do
+          player_ids = [1,2,3]
+          metadata = SolarSystemMetadata.new(:id => 10)
+          event = FowChangeEvent::SsDestroyed.new(10, nil, nil)
+          event.stub!(:player_ids).and_return(player_ids)
+          event.stub!(:metadata).and_return(metadata)
+
+          player_ids.each do |player_id|
+            @dispatcher.should_receive(:push_to_player).with(
+              player_id,
+              ObjectsController::ACTION_DESTROYED,
+              {
+                'objects' => [metadata],
+                'reason' => nil
+              }
+            )
+          end
+
+          @handler.fire(event, EventBroker::FOW_CHANGE,
+            EventBroker::REASON_SS_ENTRY)
+        end
+      end
+    end
+  end
+  
+  describe "destroyed" do
+    it "should handle destroyed objects" do
+      test_object_receive(TestObject.new, EventBroker::DESTROYED, nil,
+        DispatcherEventHandler::CONTEXT_DESTROYED)
+    end
+
+    it "should dispatch to player if destroyed units are in buildings" do
+      planet = Factory.create(:planet_with_player)
+      unit = Factory.create(:unit,
+        :location => Factory.create(:b_npc_solar_plant, :planet => planet))
+      obj = [unit]
+      @dispatcher.should_receive(:push_to_player).with(
+        planet.player_id,
+        ObjectsController::ACTION_DESTROYED,
+        {'objects' => obj, 'reason' => nil},
+        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
+      )
+      @handler.fire(obj, EventBroker::DESTROYED, nil)
+    end
+
+  end
+  
   describe "movement prepare" do
     before(:each) do
       location = GalaxyPoint.new(
@@ -273,76 +365,6 @@ describe DispatcherEventHandler do
     "visible area and stopped"
     it "should not send next hop from other zone if movement happened " +
     "in zone"
-  end
-
-  describe "fog of war changes" do
-    describe "reason galaxy" do
-      it "should send galaxy map" do
-        player_ids = [1,2,3]
-        event = FowChangeEvent.new(nil, nil)
-        event.stub!(:player_ids).and_return(player_ids)
-
-        player_ids.each do |player_id|
-          @dispatcher.should_receive(:push_to_player).with(
-            player_id,
-            GalaxiesController::ACTION_SHOW
-          )
-        end
-
-        @handler.fire(event, EventBroker::FOW_CHANGE,
-          EventBroker::REASON_GALAXY_ENTRY)
-      end
-    end
-
-    describe "reason solar system" do
-      it "should send updated metadatas" do
-        player_ids = [1,2,3]
-        metadatas = {
-          1 => 'meta1',
-          2 => 'meta2',
-          3 => 'meta3',
-        }
-        event = FowChangeEvent::SolarSystem.new(0)
-        event.stub!(:player_ids).and_return(player_ids)
-        event.stub!(:metadatas).and_return(metadatas)
-
-        player_ids.each do |player_id|
-          @dispatcher.should_receive(:push_to_player).with(
-            player_id,
-            ObjectsController::ACTION_UPDATED,
-            {
-              'objects' => [metadatas[player_id]],
-              'reason' => nil
-            }
-          )
-        end
-
-        @handler.fire(event, EventBroker::FOW_CHANGE,
-          EventBroker::REASON_SS_ENTRY)
-      end
-
-      it "should send destroyed if it was destroyed" do
-        player_ids = [1,2,3]
-        metadata = SolarSystemMetadata.new(:id => 10)
-        event = FowChangeEvent::SsDestroyed.new(10, nil, nil)
-        event.stub!(:player_ids).and_return(player_ids)
-        event.stub!(:metadata).and_return(metadata)
-
-        player_ids.each do |player_id|
-          @dispatcher.should_receive(:push_to_player).with(
-            player_id,
-            ObjectsController::ACTION_DESTROYED,
-            {
-              'objects' => [metadata],
-              'reason' => nil
-            }
-          )
-        end
-
-        @handler.fire(event, EventBroker::FOW_CHANGE,
-          EventBroker::REASON_SS_ENTRY)
-      end
-    end
   end
 
   describe ".resolve_location" do

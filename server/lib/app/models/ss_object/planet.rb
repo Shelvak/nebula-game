@@ -273,6 +273,8 @@ class SsObject::Planet < SsObject
 
       max_population_count += building.population \
         if building.respond_to?(:population)
+      
+      building.start_cooldown! if building.respond_to?(:start_cooldown!)
     end
 
     # Return exploring scientists if on a mission.
@@ -310,14 +312,14 @@ class SsObject::Planet < SsObject
           new_player.send(attribute) + points) if new_player
       end
     end
-
-    if new_player && special?
-      new_player.victory_points += CONFIG['battleground.planet.takeover.vps']
-      Unit.give_units(CONFIG['battleground.planet.bonus'], self, new_player)
-    end
-
+    
     solar_system = self.solar_system
-    unless solar_system.battleground?
+    if solar_system.battleground?
+      if new_player
+        new_player.victory_points += CONFIG['battleground.planet.takeover.vps']
+        Unit.give_units(CONFIG['battleground.planet.bonus'], self, new_player)
+      end
+    else
       old_player.planets_count -= 1 if old_player
       new_player.planets_count += 1 if new_player
     end

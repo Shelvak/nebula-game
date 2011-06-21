@@ -96,17 +96,17 @@ class FowSsEntry < ActiveRecord::Base
             # Resolve planets
             entry.player_planets = planet_player_ids.include?(
               entry.player_id)
-            entry.enemy_planets = !! planet_player_ids.find do |id|
+            entry.enemy_planets = !! (planet_player_ids.find do |id|
               id != entry.player_id
-            end
+            end)
             entry.alliance_planet_player_ids = nil
             entry.nap_planets = nil
 
             # Resolve ships
             entry.player_ships = unit_player_ids.include?(entry.player_id)
-            entry.enemy_ships = !! unit_player_ids.find do |id|
+            entry.enemy_ships = !! (unit_player_ids.find do |id|
               id != entry.player_id
-            end
+            end)
             entry.alliance_ship_player_ids = nil
             entry.nap_ships = nil
 
@@ -288,12 +288,17 @@ class FowSsEntry < ActiveRecord::Base
       increase_for_zone(zone, player, -decrement, should_dispatch)
     end
 
-    # Update player entries in alliance pool.
+    # Update player entries in alliance pool upon #assimilate_player or
+    # #throw_out_player.
     def update_player(alliance_id, player_id, modifier)      
       transaction do
-        find(:all, :conditions => {:player_id => player_id}).each do |entry|
+        where(:player_id => player_id).each do |entry|
           increase_for_kind(entry.solar_system_id, 'alliance_id', alliance_id,
             entry.counter * modifier)
+          # Recalculate solar system metadata, because statuses have changed.
+          # Do not dispatch events, because whole galaxy map will be resent
+          # later.
+          recalculate(entry.solar_system_id, false)
         end
       end
     end

@@ -39,15 +39,15 @@ describe ClientQuest do
     end
 
     it "should include objective progresses" do
-      @result[:objectives].find do |objective_hash|
+      @result[:objectives].find { |objective_hash|
         objective_hash[:objective] == @obj1
-      end[:progress].should == @objp1
+      }[:progress].should == @objp1
     end
 
     it "should be nil where objective has been finished" do
-      @result[:objectives].find do |objective_hash|
+      @result[:objectives].find { |objective_hash|
         objective_hash[:objective] == @obj2
-      end[:progress].should be_nil
+      }[:progress].should be_nil
     end
   end
 end

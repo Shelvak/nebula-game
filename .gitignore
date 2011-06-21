@@ -30,7 +30,7 @@ lib/flyers/output/*.pdf
 *.iml
 .rakeTasks
 
-server/nbproject
+nbproject
 server/script/odsimport/*.txt
 flex/src/flex.mxml
 server/db/snapshots/beta_keys.sql
@@ -38,5 +38,3 @@ assets/current/*
 assets/config/*.yml
 flex/assets/*
 flex/src/assets/*
-iphone/assets/*
-server/db/snapshots/beta_keys.sql

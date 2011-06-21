@@ -259,6 +259,16 @@ describe Alliance do
         @alliance.accept(@player)
       end
     end
+    
+    it "should dispatch changed with StatusChangeEvent" do
+      should_fire_event(
+        StatusChangeEvent::Alliance.new(@alliance, @player, 
+          StatusChangeEvent::Alliance::ACCEPT), 
+        EventBroker::CHANGED
+      ) do
+        @alliance.accept(@player)
+      end
+    end
   end
 
   describe "#throw_out" do
@@ -314,6 +324,16 @@ describe Alliance do
 
     it "should dispatch changed for alliance owner" do
       should_fire_event(@alliance.owner, EventBroker::CHANGED) do
+        @alliance.throw_out(@player)
+      end
+    end
+    
+    it "should dispatch changed with StatusChangeEvent" do
+      should_fire_event(
+        StatusChangeEvent::Alliance.new(@alliance, @player,
+          StatusChangeEvent::Alliance::THROW_OUT), 
+        EventBroker::CHANGED
+      ) do
         @alliance.throw_out(@player)
       end
     end

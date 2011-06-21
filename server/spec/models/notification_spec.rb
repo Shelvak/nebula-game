@@ -489,6 +489,11 @@ describe Notification do
         @method, *@args
       ).params[:alliance].should == @alliance.as_json(:mode => :minimal)
     end
+
+    it "should not create duplicate invitations" do
+      notification = Notification.send(@method, *@args)
+      Notification.send(@method, *@args).should == notification
+    end
   end
 
   describe ".create_for_planet_protected" do
@@ -520,6 +525,26 @@ describe Notification do
       Notification.send(
         @method, *@args
       ).params[:duration].should == Cfg.planet_protection_duration
+    end
+  end
+
+  describe ".create_for_kicked_from_alliance" do
+    before(:all) do
+      @alliance = Factory.create(:alliance)
+      @player = Factory.create(:player)
+      @player_id = @player.id
+
+      @event = Notification::EVENT_ALLIANCE_KICK
+      @method = :create_for_kicked_from_alliance
+      @args = [@alliance, @player]
+    end
+
+    it_should_behave_like "create for"
+
+    it "should have :alliance" do
+      Notification.send(
+        @method, *@args
+      ).params[:alliance].should == @alliance.as_json(:mode => :minimal)
     end
   end
 end

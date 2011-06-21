@@ -38,6 +38,8 @@ class Notification < ActiveRecord::Base
   EVENT_ALLIANCE_INVITATION = 7
   # Planet protection has been initiated.
   EVENT_PLANET_PROTECTED = 8
+  # You have been kicked from alliance
+  EVENT_ALLIANCE_KICK = 9
 
   # custom_serialize converts all :symbols to 'symbols'
   serialize :params
@@ -358,6 +360,13 @@ class Notification < ActiveRecord::Base
   #   :alliance => Alliance#as_json(:mode => :minimal)
   # }
   def self.create_for_alliance_invite(alliance, player)
+    # Ensure we don't get duplicate invitations.
+    where(:player_id => player.id, :event => EVENT_ALLIANCE_INVITATION).each do
+      |notification|
+
+      return notification if notification.params[:alliance]['id'] == alliance.id
+    end
+
     model = new(
       :event => EVENT_ALLIANCE_INVITATION,
       :player_id => player.id,
@@ -388,5 +397,21 @@ class Notification < ActiveRecord::Base
     model.save!
 
     model
+  end
+  
+  # EVENT_ALLIANCE_KICK = 9
+  #
+  # params = {
+  #   :alliance => Alliance#as_json(:mode => :minimal)
+  # }
+  def self.create_for_kicked_from_alliance(alliance, player)
+    model = new(
+      :event => EVENT_ALLIANCE_KICK,
+      :player_id => player.id,
+      :params => {:alliance => alliance.as_json(:mode => :minimal)}
+    )
+    model.save!
+
+    model    
   end
 end

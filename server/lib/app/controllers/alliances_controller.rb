@@ -15,8 +15,6 @@ class AlliancesController < GenericController
   def action_new
     param_options :required => %w{name}
 
-    raise GameLogicError.new("Cannot create alliance if already in one!") \
-      unless player.alliance_id.nil?
     raise GameLogicError.new(
       "Cannot create alliance if cooldown hasn't expired yet!") \
       unless player.alliance_cooldown_expired?
@@ -24,13 +22,14 @@ class AlliancesController < GenericController
       unless Technology::Alliances.exists?([
         "player_id=? AND level > 0", player.id])
 
-    alliance = Alliance.new(:name => params['name'],
-      :galaxy_id => player.galaxy_id, :owner_id => player.id)
-    alliance.save!
-    player.alliance = alliance
-    player.save!
+    ActiveRecord::Base.transaction do
+      alliance = Alliance.new(:name => params['name'],
+        :galaxy_id => player.galaxy_id, :owner_id => player.id)
+      alliance.save!
+      alliance.accept(player)
 
-    respond :id => alliance.id
+      respond :id => alliance.id
+    end
   rescue ActiveRecord::RecordNotUnique
     respond :id => 0
   end
@@ -151,6 +150,7 @@ class AlliancesController < GenericController
     raise GameLogicError.new("Cannot kick yourself!") \
       if member.id == player.id
     alliance.throw_out(member)
+    Notification.create_for_kicked_from_alliance(alliance, member)
   end
 
   # Shows an alliance.

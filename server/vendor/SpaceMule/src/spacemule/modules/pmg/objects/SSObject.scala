@@ -21,10 +21,6 @@ trait SSObject {
    * type field in db
    */
   val name: String
-  /**
-   * Is this a special kind of ss object?
-   */
-  val special = false
 
   var units = ListBuffer[Unit]()
 
