@@ -272,6 +272,20 @@ describe FowSsEntry do
         }
       end
 
+      it "should not recalculate metadata for existing alliance SSs" do
+        FowSsEntry.should_not_receive(:recalculate).with(@ss1.id, false)
+
+        FowSsEntry.assimilate_player(@player1.alliance, @player2)
+      end
+
+      it "should recalculate metadata of players solar systems" do
+        [@ss2, @ss3].each do |ss|
+          FowSsEntry.should_receive(:recalculate).with(ss.id, false)
+        end
+        
+        FowSsEntry.assimilate_player(@player1.alliance, @player2)
+      end
+
       it "should not dispatch event" do
         should_not_fire_event(anything,
             EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
