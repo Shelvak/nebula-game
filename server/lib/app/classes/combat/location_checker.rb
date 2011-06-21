@@ -1,4 +1,6 @@
 class Combat::LocationChecker
+  class CombatData < Struct.new(:outcomes, :statistics); end
+  
   class << self
     # Check location for opposing forces and initiate combat if needed.
     #
@@ -57,8 +59,11 @@ class Combat::LocationChecker
           check_report.status,
           check_report.alliances,
           # Pass nils if no combat was run.
-          assets ? assets.response['outcomes'] : nil,
-          assets ? assets.response['statistics'] : nil
+          assets ? 
+            CombatData.new(
+              assets.response['outcomes'],
+              assets.response['statistics']
+            ) : nil
         )
       end
     end

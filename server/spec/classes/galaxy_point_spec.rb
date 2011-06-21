@@ -70,7 +70,7 @@ describe GalaxyPoint do
       x = 0
       y = 12
       GalaxyPoint.new(id, x, y).client_location.should == \
-        ClientLocation.new(id, Location::GALAXY, x, y, nil, nil, nil)
+        ClientLocation.new(id, Location::GALAXY, x, y, nil, nil, nil, nil)
     end
   end
 

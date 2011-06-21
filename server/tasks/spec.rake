@@ -41,6 +41,7 @@ begin
               unless $? == 0
                 puts "Seems that these two don't work well together."
                 puts out
+                exit
               end
               puts
             end

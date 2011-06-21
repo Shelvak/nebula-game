@@ -15,6 +15,7 @@
          import components.credits.AccelerateSelector;
          import components.popups.ActionConfirmationPopup;
          import components.popups.WaitingCredsPopup;
+         import components.skins.GreenButtonSkin;
          import components.skins.PauseButtonSkin;
          
          import config.Config;
@@ -143,17 +144,20 @@
          
          public function refreshUpgradeState(e: Event = null): void
          {
-            var planet:MSSObject = ML.latestPlanet.ssObject;
-            if (_selectedModel != null)
+            if (ML.latestPlanet != null)
             {
-               canBeUpgraded = !((metalCost > planet.metal.currentStock) ||
-                  (energyCost > planet.energy.currentStock) ||
-                  (zetiumCost > planet.zetium.currentStock));
-               
-               calculateResLeft();
+               var planet:MSSObject = ML.latestPlanet.ssObject;
+               if (_selectedModel != null)
+               {
+                  canBeUpgraded = !((metalCost > planet.metal.currentStock) ||
+                     (energyCost > planet.energy.currentStock) ||
+                     (zetiumCost > planet.zetium.currentStock));
+                  
+                  calculateResLeft();
+               }
+               else
+                  resLeft = 0;
             }
-            else
-               resLeft = 0;
          }
          
          protected function recalculateCosts(): void
@@ -600,7 +604,8 @@
                                   || (ML.player.warPoints &lt; 
                                   Technology.getWarPoints(_selectedModel.type, _selectedModel.level+1)))}" 
                                   label="{Localizer.string('Technologies','upgrade')}" 
-                                  click="upgradeButton_clickHandler(event)" right="6"/>	
+                                  click="upgradeButton_clickHandler(event)" horizontalCenter="0"
+                                  skinClass="components.skins.GreenButtonSkin"/>	
                      </s:Group>
                      <base:layout>
                         <s:VerticalLayout paddingLeft="6" paddingRight="6" horizontalAlign="justify"/>

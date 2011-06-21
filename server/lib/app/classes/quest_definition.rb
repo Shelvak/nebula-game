@@ -167,6 +167,7 @@ class QuestDefinition::WithParent
       quest = quest.define(start_id + i) do
         points = (start_points * multiplier ** i).ceil
         have_war_points points
+#        puts "! #{i}"
         reward_units_for_points points, unit_list
       end
     end

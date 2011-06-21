@@ -133,6 +133,12 @@ describe Unit do
         Unit.give_units(@description, @location, @player)
       end
     end
+    
+    it "should not fail if they require technologies" do
+      lambda do
+        Unit.give_units([["avenger", 1]], @location, @player)
+      end.should_not raise_error(ActiveRecord::RecordInvalid)
+    end
   end
   
   it "should fail if we don't have enough population" do

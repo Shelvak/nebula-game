@@ -385,7 +385,9 @@
     <tick value="Tick {0}/{1}" />
     <title.overallHp value="Total HP" />
     <pause value="PAUSED" />
-    <pressPlay value="Press PLAY to resume" />
+    <pressPlay value="Press ENTER to resume" />
+    <tooltip.play value="PLAY/PAUSE" />
+    <tooltip.replay value="REPLAY" />
   </BattleMap>
   
   <Messenger>
@@ -1117,7 +1119,7 @@
       </p>
     </message.actionCanceled>
     <message.copyToClipboardSuccessful value="Copied to clipboard" />
-    <label.cooldownEndsIn value="Cooldown ends in"/>
+    <label.cooldownEndsIn value="Next battle in"/>
   </General>
 
   <InfoScreen>
@@ -1144,6 +1146,7 @@
     <gun.space_laser_blue value="Laser" />
     <gun.cannon value="Pyro Class Cannon" />
     <gun.alien_cannon value="Crusher" />
+    <gun.zeus_cannon value="Dragon" />
     <gun.railgun value="Plasma Cannon" />
     <gun.small_rocket value="P-40 Launcher" />
     <gun.heavy_rocket value="Rocket launcher" />
@@ -1450,6 +1453,9 @@
       <p>Come back every day and get your daily bonus!</p>
     </message.dailyBonus>
     <label.todayYouGot value="Today you've got:" />
+    
+    <title.stopFleet value="Stop fleet" />
+    <message.stopFleet value="Do you realy want to stop your fleet?" />
     
     <title.boostPlanet value="Boost planet resources/storage" />
     <message.areYouSure value="Are you sure?" />
@@ -1783,6 +1789,8 @@
         You must build a [reference:Buildings/CollectorT1.name] to fulfill our 
         energy needs. Do not waste time. Do it now! 
       </p>
+      <p>To enter your planet select it from selector in top-left corner and 
+      start building immediately.</p>
     </about.1>
 
     <title.2 value="Warming Up" />
@@ -2438,10 +2446,11 @@
 
     <title.14 value="Harnessing The Crystals" />
     <about.14>
-      <p>Great!</p>
+      <p>Commander,</p>
       <p>
-        You have destroyed the aliens and we can use those crystals. Of course 
-        we need to research a technology that allows us to mine those crystals. 
+        Our scientists have received zetium examples gathered by our scouts.
+        They say that it is a very powerful and useful material and wish to
+        begin research of practical application of this new material.
       </p>
       <p>
         Hurry! Go to your [reference:Buildings/ResearchCenter.name] and order 
@@ -3813,9 +3822,7 @@
       <p>I am Deyna, your assistant.</p>
       <p>
         We have some urgent matters to attend to. Click N44 logo in bottom-left 
-        corner and select quests to read your first mission. After you are done 
-        with that select your planet from selector in top-left corner and start 
-        executing it immediately. 
+        corner and select quests to read your first mission.
       </p>
       <p>Good luck, Commander.</p>
     </instructions>

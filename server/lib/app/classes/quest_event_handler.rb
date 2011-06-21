@@ -49,7 +49,7 @@ class QuestEventHandler
     case reason
     when EventBroker::REASON_UPGRADE_FINISHED
       Objective::UpgradeTo.progress(objects)
-      Objective::HaveUpgradedTo.progress(objects, true)
+      Objective::HaveUpgradedTo.progress(objects)
     when EventBroker::REASON_OWNER_CHANGED
       Objective::AnnexPlanet.progress(objects)
       Objective::HavePlanets.progress(objects)

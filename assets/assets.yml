@@ -13,7 +13,7 @@ zeus_cannon
   0 => 'earth',
   1 => 'desert',
   2 => 'mud',
-  3 => 'twilight'
+  #3 => 'twilight'
 } %>
 # Options can be defined in:
 #
@@ -455,7 +455,7 @@ assets:
       "buildings":
         <% each_model('building') do |base| %>
         <% if CONFIG["buildings.#{base.underscore}.guns"].blank? %>
-        <%= "#{base}.tar.gz: #{base}BattlefieldSceneryBuilding.tar.gz" %>
+        <%# "#{base}.tar.gz: #{base}BattlefieldSceneryBuilding.tar.gz" %>
         <% else %>
         <%= "#{base}.tar.gz: #{base}BattlefieldShootingBuilding.tar.gz" %>
         <% end %>
@@ -532,6 +532,13 @@ assets:
         left.png:                   Pinfo_left.png
         center.png:                 Pinfo_center_repeat.png
         right.png:                  Pinfo_right.png
+
+      "ss_navigator":
+        bottom_left.png:            Snavig_bottom_left.png
+        center_left.png:            Snavig_center_left.png
+        top_left.png:               Snavig_top_left.png
+        top_center.png:             Snavig_top_center.png
+        top_right.png:              Snavig_top_right.png
 
       "large_panel":
         top_center_left.png:        Mainwindow_top_center(left).png
