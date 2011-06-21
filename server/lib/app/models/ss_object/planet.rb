@@ -273,6 +273,8 @@ class SsObject::Planet < SsObject
 
       max_population_count += building.population \
         if building.respond_to?(:population)
+      
+      building.start_cooldown! if building.respond_to?(:start_cooldown!)
     end
 
     # Return exploring scientists if on a mission.

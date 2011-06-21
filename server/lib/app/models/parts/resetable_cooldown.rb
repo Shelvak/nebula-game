@@ -1,4 +1,8 @@
 module Parts::ResetableCooldown
+  def start_cooldown!
+    reset_cooldown! if cooldown_ends_at.nil?
+  end
+  
   # Resets cooldown for this building.
   def reset_cooldown!
     cooldown_registered = ! cooldown_expired?

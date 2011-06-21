@@ -342,6 +342,16 @@ describe SsObject::Planet do
       end
     end
 
+    describe "resetable cooldowns" do
+      it "should start cooldowns" do
+        building = Factory.create(:b_npc_hall, :planet => @planet)
+        lambda do
+          @planet.save!
+          building.reload
+        end.should change(building, :cooldown_ends_at).from(nil)
+      end
+    end
+    
     describe "battleground planets" do
       before(:each) do
         @planet.solar_system = Factory.create(:battleground)
