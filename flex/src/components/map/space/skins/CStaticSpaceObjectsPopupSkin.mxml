@@ -24,10 +24,10 @@
    
    <s:Rect left="10" right="10" top="10" bottom="10">
       <s:fill>
-         <s:SolidColor color="0x282828"/>
+         <s:SolidColor color="0x434343"/>
       </s:fill>
    </s:Rect>
-   <s:Group left="0" right="0" top="0" bottom="0"
+   <s:Group left="-1" right="-1" top="0" bottom="0"
             mouseEnabled="false"
             mouseChildren="false">
       <s:Group left="0" right="0" top="16" bottom="10">
@@ -36,7 +36,7 @@
       </s:Group>
       <s:Group top="0" left="0" right="0" bottom="{contentGroup.height / 2}"
                clipAndEnableScrolling="true">
-         <s:Group top="0" left="0" right="0" height="50">
+         <s:Group top="0" left="0" right="0" height="51">
             <s:layout><s:HorizontalLayout gap="0" verticalAlign="top"/></s:layout>
             <s:BitmapImage source="{getImage('top_left')}"/>
             <s:BitmapImage source="{getImage('top_center')}" fillMode="repeat" width="100%"/>
@@ -45,7 +45,7 @@
       </s:Group>
       <s:Group bottom="0" left="0" right="0" top="{contentGroup.height / 2}"
                clipAndEnableScrolling="true">
-         <s:Group bottom="0" left="0" right="0" height="50">
+         <s:Group bottom="0" left="0" right="0" height="51">
             <s:layout><s:HorizontalLayout gap="0" verticalAlign="bottom"/></s:layout>
             <s:BitmapImage source="{getImage('bottom_left')}"/>
             <s:BitmapImage source="{getImage('bottom_center')}" fillMode="repeat" width="100%"/>
