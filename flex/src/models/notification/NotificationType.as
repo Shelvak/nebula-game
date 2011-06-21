@@ -11,5 +11,6 @@ package models.notification
       public static const PLANET_ANNEXED:int = 6;
       public static const ALLIANCE_INVITATION:int = 7;
       public static const PLANET_PROTECTED: int = 8;
+      public static const KICKED_FROM_ALLIANCE: int = 9;
    }
 }

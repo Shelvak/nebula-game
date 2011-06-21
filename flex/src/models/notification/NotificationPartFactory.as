@@ -9,6 +9,7 @@ package models.notification
    import models.notification.parts.PlanetAnnexed;
    import models.notification.parts.PlanetProtected;
    import models.notification.parts.QuestCompletedLog;
+   import models.notification.parts.KickedFromAlliance;
 
 
    
@@ -33,6 +34,7 @@ package models.notification
          TYPE_TO_CLASS[PLANET_ANNEXED] = PlanetAnnexed;
          TYPE_TO_CLASS[PLANET_PROTECTED] = PlanetProtected;
          TYPE_TO_CLASS[ALLIANCE_INVITATION] =  AllianceInvitation;
+         TYPE_TO_CLASS[KICKED_FROM_ALLIANCE] = KickedFromAlliance;
       };
       
       /**
