@@ -197,7 +197,7 @@
                      enoughRates = !(selectedMetalCost > planet.metal.currentStock && planet.metal.rate <= 0
                         || selectedEnergyCost > planet.energy.currentStock && planet.energy.rate <= 0
                         || selectedZetiumCost > planet.zetium.currentStock && planet.zetium.rate <= 0
-                        || (Config.getUnitPopulation(type) > planet.player.populationMax - planet.player.population));
+                        || (Config.getUnitPopulation(type) > ML.player.populationMax - ML.player.population));
                      resLeft = DateUtil.secondsToHumanString(Resource.getTimeToReachResources
                         (planet.metal, planet.energy, planet.zetium, 
                            selectedMetalCost, selectedEnergyCost, selectedZetiumCost));

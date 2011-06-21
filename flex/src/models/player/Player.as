@@ -229,16 +229,6 @@ package models.player
       }
       
       
-      /**
-       * Checks if given player be invited to the alliance owned by the current player.
-       */
-      public function canInviteToAlliance(player:Player) : Boolean
-      {
-         return allianceOwner && player.allianceId != allianceId && 
-                alliancePlayerCount < maxAlliancePlayerCount;
-      }
-      
-      
       [SkipProperty]
       [Bindable(event="propertyChange")]
       /**
