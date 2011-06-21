@@ -96,17 +96,17 @@ class FowSsEntry < ActiveRecord::Base
             # Resolve planets
             entry.player_planets = planet_player_ids.include?(
               entry.player_id)
-            entry.enemy_planets = !! planet_player_ids.find do |id|
+            entry.enemy_planets = !! (planet_player_ids.find do |id|
               id != entry.player_id
-            end
+            end)
             entry.alliance_planet_player_ids = nil
             entry.nap_planets = nil
 
             # Resolve ships
             entry.player_ships = unit_player_ids.include?(entry.player_id)
-            entry.enemy_ships = !! unit_player_ids.find do |id|
+            entry.enemy_ships = !! (unit_player_ids.find do |id|
               id != entry.player_id
-            end
+            end)
             entry.alliance_ship_player_ids = nil
             entry.nap_ships = nil
 
