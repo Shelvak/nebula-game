@@ -365,6 +365,7 @@
     </label.total>
     <label.inAlliance value="Sąjungoje" />
     <label.notInAlliance value="Ne sąjungoje" />
+    <message.playerInvited value="Žaidėjas buvo pakviestas į sąjungą" />
   </Alliances>
 
   <BattleMap>    

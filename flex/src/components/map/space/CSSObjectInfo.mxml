@@ -30,6 +30,10 @@
             return getString("label." + labelName, parameters);
          }
          
+         private function getTooltip(tooltipName:String, parameters:Array = null) : String
+         {
+            return getString("tooltip." + tooltipName, parameters);
+         }
          
          private function getMessage(messageName:String, parameters:Array = null) : String
          {
@@ -68,20 +72,26 @@
                         !ssObject.ownerIsPlayer &amp;&amp;
                         !ssObject.canInviteOwnerToAlliance}">
          <s:Label
-            text="{getMessage('playerInAlliance')}" left="0" right="0" lineBreak="toFit"
+            text="{getMessage('playerInAlliance')}" 
+            toolTip="{getTooltip('playerInAlliance')}"
+            left="0" right="0" lineBreak="toFit"
             visible="{ML.player.allianceOwner &amp;&amp; ssObject.ownerIsAlly}"/>
          <s:Label
-            text="{getMessage('allianceFull')}" left="0" right="0" lineBreak="toFit"
+            text="{getMessage('allianceFull')}"  
+            toolTip="{getTooltip('allianceFull')}"
+            left="0" right="0" lineBreak="toFit"
+            left="0" right="0" lineBreak="toFit"
             visible="{ML.player.allianceOwner &amp;&amp; ML.player.allianceFull &amp;&amp; !ssObject.ownerIsAlly}"/>
          <s:Label
-            text="{getMessage('createAlliance')}" left="0" right="0" lineBreak="toFit"
-            visible="{!ML.player.belongsToAlliance &amp;&amp; ML.player.hasAllianceTechnology}"/>
+            text="{getMessage('createAlliance')}" 
+            toolTip="{getTooltip('createAlliance')}"
+            left="0" right="0" lineBreak="toFit"
+            visible="{!ML.player.belongsToAlliance}"/>
          <s:Label
-            text="{getMessage('notOwnerOfAlliance')}" left="0" right="0" lineBreak="toFit"
+            text="{getMessage('notOwnerOfAlliance')}"  
+            toolTip="{getTooltip('notOwnerOfAlliance')}"
+            left="0" right="0" lineBreak="toFit"
             visible="{ML.player.belongsToAlliance &amp;&amp; !ML.player.allianceOwner}"/>
-         <s:Label
-            text="{getMessage('researchAlliance')}" left="0" right="0" lineBreak="toFit"
-            visible="{!ML.player.hasAllianceTechnology}"/>
       </s:Group>
       <!--- Button that lets view the object. Disabled if a player does not own the object. -->
       <s:Button id="btnEnter"

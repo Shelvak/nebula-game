@@ -29,7 +29,7 @@
       ]]>
    </fx:Script>
    <space:layout>
-      <s:VerticalLayout/>
+      <s:VerticalLayout paddingLeft="5"/>
    </space:layout>
    <base:ImageAndLabel visible="{MWreckage(staticObject).metal > 0}"
                        includeInLayout="{MWreckage(staticObject).metal > 0}"
