@@ -107,7 +107,7 @@ assets:
         <% if base == "NpcHall" %>
         "<%= base %>.png":
           wiki_name: <%= "#{base}.png" %>
-          flex: {save_as: "swf:90"}
+          flex: {save_as: "swf:png"}
         <% else %>
         <%= "#{base}.png: #{base}.png" %>
         <% end %>
