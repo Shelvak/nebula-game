@@ -8,19 +8,24 @@
    <fx:Metadata>
       [HostComponent("components.gameobjects.solarsystem.SSObjectImage")]
    </fx:Metadata>
+   <fx:Script>
+      <![CDATA[
+         import models.OwnerColor;
+      ]]>
+   </fx:Script>
    
    <fx:Declarations>
       <fx:Array id="filtersPlayer">
-         <s:GlowFilter strength="3" blurX="8" blurY="8" color="0x00FF00"/>
+         <s:GlowFilter strength="3" blurX="8" blurY="8" color="{OwnerColor.PLAYER}"/>
       </fx:Array>
       <fx:Array id="filtersAlly">
-         <s:GlowFilter strength="3" blurX="8" blurY="8" color="0x0000FF"/>
+         <s:GlowFilter strength="3" blurX="8" blurY="8" color="{OwnerColor.ALLY}"/>
       </fx:Array>
       <fx:Array id="filtersNap">
-         <s:GlowFilter strength="3" blurX="8" blurY="8" color="0xFFFFFF"/>
+         <s:GlowFilter strength="3" blurX="8" blurY="8" color="{OwnerColor.NAP}"/>
       </fx:Array>
       <fx:Array id="filtersEnemy">
-         <s:GlowFilter strength="3" blurX="8" blurY="8" color="0xFF0000"/>
+         <s:GlowFilter strength="3" blurX="8" blurY="8" color="{OwnerColor.ENEMY}"/>
       </fx:Array>
    </fx:Declarations>
    

@@ -3,14 +3,20 @@
                 xmlns:fx="http://ns.adobe.com/mxml/2009"
                 xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:ss="components.gameobjects.solarsystem.*"
-                height="60">
+                xmlns:base="components.base.*"
+                height="76">
+   <fx:Binding source="SolarSystem(data)" destination="ss"/>
    <fx:Script>
       <![CDATA[
          import models.solarsystem.SolarSystem;
          
-         import utils.locale.Localizer;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         
+         
+         [Bindable]
+         private var ss:SolarSystem;
          
          
          private function get IMG() : ImagePreloader
@@ -51,23 +57,27 @@
    </s:Rect>
    
    <!-- image -->
-   <s:BitmapImage left="5" top="5" width="50" height="50" fillMode="scale"
-                  source="{SolarSystem(data).imageData}"/>
+   <s:BitmapImage left="5" verticalCenter="0" width="50" height="50" fillMode="scale"
+                  source="{ss.imageData}"/>
    
    <!-- shield image -->
-   <s:BitmapImage left="0" top="0" width="60" height="60" fillMode="scale"
-                  visible="{SolarSystem(data).isShielded}"
-                  includeInLayout="{SolarSystem(data).isShielded}"
+   <s:BitmapImage left="0" verticalCenter="0" width="60" height="60" fillMode="scale"
+                  visible="{ss.isShielded}"
+                  includeInLayout="{ss.isShielded}"
                   source="{shieldImage}"/>
    
-   <!-- name -->
-   <s:Label left="55" top="5" text="{SolarSystem(data).name}"/>
-   
-   <!-- coordinates -->
-   <s:Label left="55" top="25" text="{getSectorName(SolarSystem(data))}"/>
-   
-   <!-- status icons -->
-   <ss:SSPlanetsStatusIcons left="55" top="40" solarSystem="{SolarSystem(data)}"/>
-   <ss:SSShipsStatusIcons left="85" top="40" solarSystem="{SolarSystem(data)}"/>
+   <base:AdvancedContainer left="60" top="0" bottom="0">
+      <base:layout>
+         <s:VerticalLayout gap="4" verticalAlign="middle" horizontalAlign="left"/>
+      </base:layout>
+      <!-- name -->
+      <s:Label text="{ss.name}"/>
+      <!-- coordinates -->
+      <s:Label text="{getSectorName(ss)}"/>
+      
+      <!-- status icons -->
+      <ss:SSPlanetsStatusIcons solarSystem="{ss}"/>
+      <ss:SSShipsStatusIcons solarSystem="{ss}"/>
+   </base:AdvancedContainer>
    
 </s:ItemRenderer>

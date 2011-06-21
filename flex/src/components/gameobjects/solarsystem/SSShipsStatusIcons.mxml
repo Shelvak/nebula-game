@@ -4,6 +4,11 @@
                         xmlns:mx="library://ns.adobe.com/flex/halo"
                         xmlns:base="components.base.*"
                         xmlns:ss="components.gameobjects.solarsystem.*">
+   <fx:Binding source="solarSystem.metadata.playerShips ||
+                       solarSystem.metadata.allianceShips ||
+                       solarSystem.metadata.napShips ||
+                       solarSystem.metadata.enemyShips"
+               destination="visible"/>
    <fx:Script>
       <![CDATA[
          import models.solarsystem.SSMetadataType;
