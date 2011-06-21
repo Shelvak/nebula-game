@@ -26,7 +26,7 @@
    
    <!-- background -->
    <s:Rect left="22" top="22" right="20" bottom="20">
-      <s:fill><s:SolidColor color="0x282828"/></s:fill>
+      <s:fill><s:SolidColor color="0x434343"/></s:fill>
    </s:Rect>
    
    <!-- borders -->

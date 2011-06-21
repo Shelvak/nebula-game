@@ -10,7 +10,7 @@
    </fx:Script>
    
    <s:states>
-      <s:State name="normal" />            
+      <s:State name="normal" />
       <s:State name="hovered" />
       <s:State name="normalAndShowsCaret"/>
       <s:State name="hoveredAndShowsCaret"/>

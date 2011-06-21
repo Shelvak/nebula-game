@@ -7,11 +7,16 @@
                               xmlns:ui="components.ui.*"
                               title="{getString('title.info', [(MSSObject(staticObject).typeName)])}">
    
+   <fx:Binding source="MSSObject(staticObject)" destination="ssObject"/>
    <fx:Script>
       <![CDATA[
          import models.solarsystem.MSSObject;
          
          import utils.locale.Localizer;
+         
+         
+         [Bindable]
+         private var ssObject:MSSObject;
          
          
          private function getString(key:String, parameters:Array = null) : String
@@ -24,40 +29,65 @@
          {
             return getString("label." + labelName, parameters);
          }
+         
+         
+         private function getMessage(messageName:String, parameters:Array = null) : String
+         {
+            return getString("message." + messageName, parameters);
+         }
       ]]>
    </fx:Script>
    
    <!--- Full size palnet image -->
-   <s:BitmapImage id="bmpImage" horizontalCenter="0" source="{MSSObject(staticObject).imageData}"/>
+   <s:BitmapImage id="bmpImage" horizontalCenter="0" source="{ssObject.imageData}"/>
    <base:AdvancedContainer left="0" right="0" top="{MSSObject.IMAGE_HEIGHT + 10}">
       <base:layout>
          <s:VerticalLayout horizontalAlign="center"/>
       </base:layout>
       
       <!--- Name of the the object -->
-      <s:Label id="lblName" text="{MSSObject(staticObject).typeName} {MSSObject(staticObject).name}"/>
+      <s:Label id="lblName" text="{ssObject.typeName} {ssObject.name}"/>
       <!--- Player name who owns this planet. -->
-      <base:AdvancedContainer minWidth="0" minHeight="0" visible="{MSSObject(staticObject).isPlanet}">
+      <base:AdvancedContainer minWidth="0" minHeight="0" visible="{ssObject.isPlanet}">
          <base:layout>
             <s:HorizontalLayout verticalAlign="middle" gap="5"/>
          </base:layout>
          <s:Label id="lblOwner" 
-                  text="{MSSObject(staticObject).isOwned ?
-                              getLabel('owner') :
-                              getLabel('unoccupied')}"/>
-         <ui:PlayerProfileButton id="btnOwner" player="{MSSObject(staticObject).player}" 
-                                 visible="{MSSObject(staticObject).isOwned}"/>
+                  text="{ssObject.isOwned ? getLabel('owner') : getLabel('unoccupied')}"/>
+         <ui:PlayerProfileButton id="btnOwner" player="{ssObject.player}" 
+                                 visible="{ssObject.isOwned}"/>
       </base:AdvancedContainer>
       <!--- Allows player to invite the owner of this planet to the alliance -->
       <s:Button id="btnIviteToAlliance"
                 label="{getLabel('inviteToAlliance')}"
-                visible="{MSSObject(staticObject).canInviteOwnerToAlliance}"
-                click="MSSObject(staticObject).inviteOwnerToAlliance()"/>
+                visible="{ssObject.canInviteOwnerToAlliance}"
+                click="ssObject.inviteOwnerToAlliance()"/>
+      <!-- Labels that tells why user can't invite owner of the planet to the alliance -->
+      <s:Group textAlign="center" width="100%"
+               visible="{ssObject.isOwned &amp;&amp;
+                        !ssObject.ownerIsPlayer &amp;&amp;
+                        !ssObject.canInviteOwnerToAlliance}">
+         <s:Label
+            text="{getMessage('playerInAlliance')}" left="0" right="0" lineBreak="toFit"
+            visible="{ML.player.allianceOwner &amp;&amp; ssObject.ownerIsAlly}"/>
+         <s:Label
+            text="{getMessage('allianceFull')}" left="0" right="0" lineBreak="toFit"
+            visible="{ML.player.allianceOwner &amp;&amp; ML.player.allianceFull &amp;&amp; !ssObject.ownerIsAlly}"/>
+         <s:Label
+            text="{getMessage('createAlliance')}" left="0" right="0" lineBreak="toFit"
+            visible="{!ML.player.belongsToAlliance &amp;&amp; ML.player.hasAllianceTechnology}"/>
+         <s:Label
+            text="{getMessage('notOwnerOfAlliance')}" left="0" right="0" lineBreak="toFit"
+            visible="{ML.player.belongsToAlliance &amp;&amp; !ML.player.allianceOwner}"/>
+         <s:Label
+            text="{getMessage('researchAlliance')}" left="0" right="0" lineBreak="toFit"
+            visible="{!ML.player.hasAllianceTechnology}"/>
+      </s:Group>
       <!--- Button that lets view the object. Disabled if a player does not own the object. -->
       <s:Button id="btnEnter"
-                visible="{MSSObject(staticObject).isNavigable}"
-                label="{MSSObject(staticObject).isJumpgate ? getLabel('toGalaxy') : getLabel('toPlanet')}"
-                enabled="{MSSObject(staticObject).viewable || MSSObject(staticObject).isJumpgate}"
-                click="MSSObject(staticObject).navigateTo()"/>
+                visible="{ssObject.isNavigable}"
+                label="{ssObject.isJumpgate ? getLabel('toGalaxy') : getLabel('toPlanet')}"
+                enabled="{ssObject.viewable || ssObject.isJumpgate}"
+                click="ssObject.navigateTo()"/>
    </base:AdvancedContainer>
 </space:CStaticSpaceObjectInfo>

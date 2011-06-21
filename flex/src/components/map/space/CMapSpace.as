@@ -518,6 +518,7 @@ package components.map.space
          passivateTargetLocationPopup();
          
          speedControlPopup = new CSpeedControlPopup();
+         speedControlPopup.percentWidth = 100;
          passivateSpeedControlPopup();
          
          staticObjectsPopup = new CStaticSpaceObjectsPopup(customComponentClasses);
@@ -528,7 +529,7 @@ package components.map.space
          vLayout.horizontalAlign = HorizontalAlign.JUSTIFY;
          vLayout.gap = 5;
          sectorPopups = new Group();
-         sectorPopups.width = 216;
+         sectorPopups.width = 222;
          with (sectorPopups)
          {
             mouseEnabled = false;

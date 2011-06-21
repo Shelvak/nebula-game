@@ -131,7 +131,6 @@ package components.map.space
          super.createChildren();
          
          var vLayout:VerticalLayout;
-         var hLayout:HorizontalLayout;
          var ss:SolarSystem = SolarSystem(staticObject);
          
          _bmpImage = new BitmapImage();
@@ -160,15 +159,15 @@ package components.map.space
             addElement(_lblName);
          }
          
-         hLayout = new HorizontalLayout();
-         hLayout.verticalAlign = VerticalAlign.MIDDLE;
-         hLayout.gap = 2;
+         vLayout = new VerticalLayout();
+         vLayout.verticalAlign = HorizontalAlign.CENTER;
+         vLayout.gap = 2;
          _planetIcons = new SSPlanetsStatusIcons();
          with (_planetIcons)
          {
             top         = 0;
             left        = 0;
-            layout      = hLayout;
+            layout      = vLayout;
             solarSystem = ss;
          }
          addElement(_planetIcons);

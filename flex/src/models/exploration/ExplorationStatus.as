@@ -228,7 +228,7 @@ package models.exploration
          {
             return false;
          }
-         return ML.latestPlanet.ssObject.belongsToPlayer;
+         return ML.latestPlanet.ssObject.ownerIsPlayer;
       }
       
       
