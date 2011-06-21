@@ -19,9 +19,17 @@ package controllers.alliances.actions
     */
    public class ShowAction extends CommunicationAction
    {
+      private var allyId: int;
+      
+      public override function applyClientAction(cmd:CommunicationCommand):void
+      {
+         allyId = cmd.parameters.id;
+         sendMessage(new ClientRMO(cmd.parameters));
+      }
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
+         cmd.parameters.id = allyId;
          var ally: MAlliance = new MAlliance(cmd.parameters);
          for each (var player:MRatingPlayer in ally.players)
          {

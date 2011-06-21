@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:unitsscreen="components.unitsscreen.*">
+   <fx:Script>
+      <![CDATA[
+         import controllers.objects.ObjectClass;
+         
+         import models.achievement.MAchievement;
+         import models.objectives.BecomeVip;
+         
+         import utils.StringUtil;
+         import utils.locale.Localizer;
+         [Bindable]
+         public var achievement: MAchievement;
+      ]]>
+   </fx:Script>
+   <s:BitmapImage source="{achievement.image}"/>
+   <s:Label horizontalCenter="0" text="{achievement.count}"/>
+   <s:Group width="100%" visible="{achievement.level > 1 || (achievement.objectivePart is BecomeVip)}">
+      <s:Label text="{Localizer.string('Achievements', 'level', [achievement.level])}"
+               visible="{achievement.key.indexOf(
+               StringUtil.firstToUpperCase(ObjectClass.UNIT)) != 0}"
+               left="0" right="0" textAlign="center"/>
+      <unitsscreen:StarsContainer starCount="{achievement.level - 1}" 
+                                  visible="{achievement.key.indexOf(
+                                  StringUtil.firstToUpperCase(ObjectClass.UNIT)) == 0}"
+                                  horizontalCenter="0"/>
+   </s:Group>
+   <s:layout>
+      <s:VerticalLayout horizontalAlign="center"/>
+   </s:layout>
+</s:Group>

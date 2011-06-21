@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         width="100%" height="100%">
+   <fx:Script>
+      <![CDATA[
+         import components.skins.InfoButtonSkin;
+         
+         import flash.net.navigateToURL;
+         
+         import mx.collections.ArrayCollection;
+         
+         import utils.locale.Localizer;
+         public var maxVolume: int;
+         [Bindable]
+         public var allUnits: ArrayCollection;
+      ]]>
+   </fx:Script>
+   <s:Group width="600">
+      <s:Group width="100%">
+         <s:Label text="{Localizer.string('Units', 'title.'+
+                  (allUnits.length > 0?'defensivePool':'emptyDefensivePool'))}" 
+                  fontSize="18" color="#eec500"/>
+         <s:Button skinClass="components.skins.InfoButtonSkin"
+                   click="navigateToURL(
+                   new URLRequest('http://nebula44.com/info/defensive_portal'))"/>
+         <s:layout>
+            <s:HorizontalLayout  verticalAlign="middle"/>
+         </s:layout>
+      </s:Group>
+      <s:DataGroup width="100%" dataProvider="{allUnits}" 
+                   visible="{allUnits.length > 0}"
+                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+         <s:layout>
+            <s:TileLayout requestedColumnCount="11"/>
+         </s:layout>
+      </s:DataGroup>
+      <s:Label text="{Localizer.string('Units', 'title.'+
+               (allUnits.length > 0?'defensivePool':'emptyDefensivePool'))}" 
+               visible="{allUnits.length > 0}"
+               fontSize="18" color="#eec500"/>
+   </s:Group>
+</s:Group>

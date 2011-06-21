@@ -21,6 +21,7 @@ package models.quest
    import mx.events.CollectionEventKind;
    
    import utils.datastructures.Collections;
+   import models.objectives.QuestObjective;
    
    
    /**

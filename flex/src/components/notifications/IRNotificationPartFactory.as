@@ -1,5 +1,6 @@
 package components.notifications
 {
+   import components.notifications.parts.IRAchievementCompleted;
    import components.notifications.parts.IRBuildingsDeactivated;
    import components.notifications.parts.IRCombatLog;
    import components.notifications.parts.IRExplorationFinished;
@@ -20,6 +21,7 @@ package components.notifications
       private static const TYPE_TO_CLASS:Object = {
          (String (NotificationType.NOT_ENOUGH_RESOURCES)): IRNotEnoughResources,
          (String (NotificationType.COMBAT_LOG)): IRCombatLog,
+         (String (NotificationType.ACHIEVEMENT_COMPLETED)): IRAchievementCompleted,
          (String (NotificationType.QUEST_COMPLETED)): IRQuestLog,
          (String (NotificationType.BUILDINGS_DEACTIVATED)): IRBuildingsDeactivated,
          (String (NotificationType.EXPLORATION_FINISHED)): IRExplorationFinished,

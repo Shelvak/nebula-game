@@ -80,7 +80,8 @@
          <s:Group width="100%">
             <s:Button label="{ML.player.name}" top="6" fontSize="18"
                      bottom="6" maxWidth="150" click="NC.showPlayer(ML.player.id)"
-                     skinClass="components.skins.LinkButtonSkin"/>
+                     skinClass="components.skins.LinkButtonSkin"
+                     horizontalCenter="0"/>
          </s:Group>
          <s:Group width="100%">
             <base:AdvancedContainer horizontalCenter="0">

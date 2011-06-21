@@ -51,6 +51,7 @@ package controllers.ui
    import models.unit.Unit;
    import models.unit.UnitKind;
    
+   import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
    import mx.containers.ViewStack;
    import mx.events.FlexEvent;
@@ -656,20 +657,22 @@ package controllers.ui
          new PlayersCommand(PlayersCommand.SHOW_PROFILE, {'id': playerId}).dispatch();
       }
       
-      public function openPlayerScreen(player: MRatingPlayer): void
+      public function openPlayerScreen(player: MRatingPlayer, 
+                                       achievements: ArrayCollection): void
       {
-         function setPlayer(): void
+         function setData(): void
          {
             GlobalFlags.getInstance().lockApplication = false;
             PlayerScreen(getScreen(MainAreaScreens.PLAYER)).player = player;
+            PlayerScreen(getScreen(MainAreaScreens.PLAYER)).achievements = achievements;
          }
          if (isCreated(MainAreaScreens.PLAYER))
          {
-            setPlayer();
+            setData();
          }
          else
          {
-            createdHandler = setPlayer;
+            createdHandler = setData;
          }
          showNonMapScreen(_screenProperties[MainAreaScreens.PLAYER]);
       }

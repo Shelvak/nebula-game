@@ -26,6 +26,8 @@ package models.player
       public var points: int;
       public var rank: int;
       public var allianceOwnerId: int;
+      [Optional]
+      public var allianceId: int;
       [Required]
       public var name: String;
       [Required]

@@ -178,7 +178,7 @@
                                  <s:ItemRenderer>
                                     <fx:Script>
                                        <![CDATA[
-                                          import models.quest.QuestObjective;
+                                          import models.objectives.QuestObjective;
                                        ]]>
                                     </fx:Script>
                                     <s:Label text="{(data as QuestObjective).objectiveText}"/>

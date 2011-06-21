@@ -5,7 +5,11 @@
                 autoDrawBackground="false" xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
+         import controllers.ui.NavigationController;
+         
          import models.player.MRatingPlayer;
+         
+         import mx.managers.ToolTipManager;
          
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
@@ -32,7 +36,8 @@
          <s:HorizontalLayout gap="1" verticalAlign="middle"/>
       </s:layout>
       <s:Label text="{ally.rank}" width="40" textAlign="center"/>
-      <s:Label text="{ally.name}" maxDisplayedLines="1" width="120" textAlign="center"/>
+      <s:Button label="{ally.name}" width="120" skinClass="components.skins.LinkButtonSkin"
+                click="NavigationController.getInstance().showAlliance(ally.allianceId)"/>
       <s:Label text="{ally.playersCount}" width="80" textAlign="center"/>
       <s:Label text="{ally.planetsCount}" width="80" textAlign="center"/>
       <s:Label text="{ally.economyPoints}" width="80" textAlign="center"/>

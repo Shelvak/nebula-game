@@ -54,6 +54,21 @@
     <Point1 value="point" />
     <Point2 value="points" />
 
+    <Building1 value="building" />
+    <Building2 value="buildings" />
+
+    <Technology1 value="technology" />
+    <Technology2 value="technologies" />
+
+    <Unit1 value="unit" />
+    <Unit2 value="units" />
+    
+    <Time1 value="time" />
+    <Time2 value="times" />
+    
+    <Battle1 value="battle" />
+    <Battle2 value="battles" />
+
     <Object1 value="object" />
     <Object2 value="objects" />
 
@@ -1111,6 +1126,9 @@
     <message.questCompleted value="Quest '{0}' was completed." />
     <message.newQuests value="Following quests were started:" />
 
+    <title.achievementCompleted value="Achievement completed" />
+    <message.achievementCompleted value="Achievement completed" />
+
     <title.notEnoughResources value="Not enough resources" />
     <message.notEnoughResources value="Not enough resources" />
 
@@ -1156,7 +1174,8 @@
     <alliances value="Alliances" />
     <label.inRatings value="Show in ratings" />
     <label.sendMessage value="Send message" />
-    <title.acievements value="ACHIEVEMENTS" />
+    <title.achievements value="ACHIEVEMENTS" />
+    <label.close value="Close" />
   </Players>
 
   <Popups>
@@ -1317,6 +1336,112 @@
     <label.clientCrash.forum value="Report Bug" />
     <label.clientCrash.wiki value="Get Debugger" />
   </Popups>
+  
+  <Achievements>
+    <level value="level {0}" />
+  </Achievements>
+  
+  <Objectives>
+    <toLevel value="to level {0}" />
+    <level value=" level {0}" />
+    <ofLevel value="of level {0}" />
+    <npc value="neutral" />
+    <enemy value="enemy" />
+    <technology value="technology researched" />
+    <of value="of" />
+    
+    <!-- 0: "Subclass or class to upgrade, 
+    1: count of objects to upgrade, 
+    2: "ofLevel" or "level" from Objectives or '' if less than 2 
+    3: word "Technology" from Objectives-->
+    <objectiveText.HaveUpgradedTo1 value="Have {1} {0}{2}" />
+    <objectiveText.HaveUpgradedTo2 value="Have {2} {0} {3}" />
+
+    <!-- 0: "objectiveLvlx.UpgradeTo" from Objectives, 
+    1: count of objects to destroy, 
+    2: "level" from Objectives or '' if less than 2 -->
+    <objectiveLvl1.UpgradeTo value="Build" />
+    <objectiveLvl2.UpgradeTo value="Upgrade" />
+    <objectiveText.UpgradeTo value="{0} {2} {1}{3}" />
+
+    <!-- 0: Subclass or class to destroy, 1: count of objects to destroy, 
+    2: "level" from Objectives or '' if less than 2 -->
+    <objectiveText.Destroy value="Destroy {1}{2} {0}" />
+    <objectiveText.DestroyNpcBuilding value="Destroy {1}{2} {0}" />
+    
+    <!-- 0: count of planets to occupy, 1: word "npc" or 
+    "enemy" from Objectives, 2: word "Planet" from Objects -->
+    <objectiveText.AnnexPlanet value="Occupy {0} {1} {2}" />
+    
+    <!-- 0: count of planets to have, 1: word "Planet" 
+    from Objects -->
+    <objectiveText.HavePlanets value="Have {0} {1}" />
+    
+    <!-- 0: count of points to have, 1: word "Point" 
+    from Objects -->
+    <objectiveText.HaveSciencePoints value="Have {0} Science {1}" />
+    <objectiveText.HaveEconomyPoints value="Have {0} Economy {1}" />
+    <objectiveText.HaveVictoryPoints value="Have {0} Victory {1}" />
+    <objectiveText.HaveArmyPoints value="Have {0} Army {1}" />
+    <objectiveText.HaveWarPoints value="Have {0} War {1}" />
+    <objectiveText.HavePoints value="Have {0} {1}" />
+
+    <!-- 0: count of hit points to heal -->
+    <objectiveText.HealHp value="Heal {0} HP" />
+    
+    <!-- 0: count of times to move building, 1: word "Time" 
+    from Objects -->
+    <objectiveText.MoveBuilding value="Move building {0} {1}" />
+
+    <!-- 0: VIP level, 1: count of times to become VIP, 2: word "Time" 
+    from Objects -->
+    <objectiveText.BecomeVip value="Become level {0} VIP {1} {2}" />
+
+    <!-- 0: count of times to accelerate flight, 1: word "Time" 
+    from Objects -->
+    <objectiveText.AccelerateFlight value="Accelerate flight {0} {1}" />
+
+    <!-- 0: count of times to win battle, 1: word "Battle" 
+    from Objects -->
+    <objectiveText.Battle0 value="Win {0} {1}" />    
+    <!-- 0: count of times to loose battle, 1: word "Battle" 
+    from Objects -->
+    <objectiveText.Battle1 value="Loose {0} {1}" />
+
+    <!-- 0: count of quests to complete -->
+    <objectiveText.CompleteQuests value="Complete {0} quests" />
+
+    <!-- 0: count of achievements to complete -->
+    <objectiveText.CompleteAchievements value="Complete {0} achievements" />
+
+    <!-- 0: count of times to accelerate object, 1: word "Time" 
+    from Objects -->
+    <objectiveText.AccelerateBuilding>
+      <p>Accelerate building construction {0} {1}</p>
+    </objectiveText.AccelerateBuilding>
+    <objectiveText.AccelerateUnit>
+      <p>Accelerate unit training {0} {1}</p>
+    </objectiveText.AccelerateUnit>
+    <objectiveText.AccelerateTechnology>
+      <p>Accelerate technology research {0} {1}</p>
+    </objectiveText.AccelerateTechnology>
+
+    <!-- 0: count of buildings to self destruct, 1: word "Building" 
+    from Objects -->
+    <objectiveText.SelfDestruct value="Destroy {0} {1} that belongs to you" />
+
+    <!-- 0: count of times to explore object, 1: word "Time" 
+    from Objects, 2: count of minimum scientists to use -->
+    <objectiveText.ExploreBlock1>
+      <p>Explore any object {0} {1} with at least {2} scientists</p>
+    </objectiveText.ExploreBlock1>
+    
+    <!-- 0: count of times to explore object, 1: word "Time" 
+    from Objects -->
+    <objectiveText.ExploreBlock0>
+      <p>Explore any object {0} {1}</p>
+    </objectiveText.ExploreBlock0>
+  </Objectives>
 
   <Quests>
     <label.current value="Current" />
@@ -1352,60 +1477,8 @@
     <title.newQuest value="New quest: {0}" />
     <title.questCompleted value="Quest completed: {0}" />
 
-    <toLevel value="to level {0}" />
-    <level value=" level {0}" />
     <units value="Units" />
     <points value="Economy Points" />
-    <npc value="neutral" />
-    <enemy value="enemy" />
-    <technology value="technology researched" />
-    <of value="of" />
-
-    <objectiveLvl1.HaveUpgradedTo value="Have" />
-    <objectiveLvl2.HaveUpgradedTo value="Have" />
-    <objectiveText.HaveUpgradedTo1 value="{0} {2} {1}{4} ({3}/{2})" />
-    <objectiveText.HaveUpgradedTo2 value="{0} {4} {1} {5} ({3}/{2})" />
-
-    <objectiveLvl1.UpgradeTo value="Build" />
-    <objectiveLvl2.UpgradeTo value="Upgrade" />
-    <objectiveText.UpgradeTo value="{0} {2} {1}{4} ({3}/{2})" />
-
-    <objectiveLvl1.Destroy value="Destroy" />
-    <objectiveLvl2.Destroy value="Destroy" />
-    <objectiveText.Destroy value="{0} {2}{4} {1} ({3}/{2})" />
-
-    <objectiveLvl1.DestroyNpcBuilding value="Destroy " />
-    <objectiveLvl2.DestroyNpcBuilding value="Destroy" />
-    <objectiveText.DestroyNpcBuilding value="{0} {2}{4} {1} ({3}/{2})" />
-
-    <objective.AnnexPlanet value="Occupy" />
-    <objectiveText.AnnexPlanet value="{0} {1} {2} {3} ({4}/{1})" />
-
-    <objective.HavePlanets value="Have" />
-    <objectiveText.HavePlanets value="{0} {1} {2} ({3}/{1})" />
-
-    <objective.HaveSciencePoints value="Have" />
-    <objectiveText.HaveSciencePoints value="{0} {1} Science {2} ({3}/{4})" />
-
-    <objective.HaveEconomyPoints value="Have" />
-    <objectiveText.HaveEconomyPoints value="{0} {1} Economy {2} ({3}/{4})" />
-
-    <objective.HaveVictoryPoints value="Have" />
-    <objectiveText.HaveVictoryPoints value="{0} {1} Victory {2} ({3}/{4})" />
-
-    <objective.HaveArmyPoints value="Have" />
-    <objectiveText.HaveArmyPoints value="{0} {1} Army {2} ({3}/{4})" />
-
-    <objective.HaveWarPoints value="Have" />
-    <objectiveText.HaveWarPoints value="{0} {1} War {2} ({3}/{4})" />
-
-    <objective.HavePoints value="Have" />
-    <objectiveText.HavePoints value="{0} {1} {2} ({3}/{4})" />
-
-    <objective.ExploreBlock value="You must explore" />
-    <objectiveText.ExploreBlock>
-      <p>{0} any object {1} times with at least {2} scientists ({3}/{4})</p>
-    </objectiveText.ExploreBlock>
 
     <Destroy value="Destroy" />
 
@@ -3017,6 +3090,16 @@
     <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
+    
+    <title.defensivePortal value="Your defensive army pool" />
+    <title.emptyDefensivePool>
+      <p>Your defensive pool is empty. That means no units will be teleported
+      to your defense in case this planet is attacked.</p>
+      <p>Build [reference:Objects/DefensivePortal2] in other planets or join an
+      alliance which has [reference:Objects/DefensivePortal2] built to enable
+      teleporting units from planets with [reference:Objects/DefensivePortal2]
+      built.</p>
+    </title.emptyDefensivePool>
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
