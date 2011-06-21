@@ -349,7 +349,7 @@
     <label.cooldown value="Tu galėsi įkurti sąjungą po {0}" />
     <label.create value="Įkurti sąjungą" />
     <label.allyExists value="Sąjunga su tokiu vardu jau yra." />
-    <label.kick value="Išspirti" />
+    <label.kick value="Išmesti" />
     <label.action value="Veiksmas" />
     <label.refresh value="Atnaujinti" />
     <label.leave value="Palikti" />
@@ -2936,13 +2936,30 @@
     <message.planetRenamed 
       value="Tavo planetos vardas buvo pakeistas į „{0}“." />
 
-    <!-- Following messages are show if player can't invite owner of a planet to alliance -->
-    <message.playerInAlliance value="Player is already in your alliance."/>
-    <message.allianceFull value="Your alliance is full."/>
-    <message.createAlliance value="Create an alliance first."/>
-    <message.notOwnerOfAlliance value="You are not the creator of your alliance."/>
-    <message.researchAlliance value="You must research Alliances technology."/>
+    <!-- Following messages and tooltips are show if player 
+    can't invite owner of a planet to alliance -->
+    <message.playerInAlliance value="Sąjungos narys"/>
+    <tooltip.playerInAlliance value="Šis žaidėjas jau yra tavo sąjungoje."/>
     
+    <message.allianceFull value="Sąjunga pilna"/>
+    <tooltip.allianceFull>
+      <p>Tavo sąjunga pilna.</p>
+      <p>Kad galėtum pakviestį šį žaidėją į savo sąjungą, išmesk ęsamus žaidėjus
+      arba patobulink savo sąjungų technologiją.</p>
+    </tooltip.allianceFull>
+    
+    <message.createAlliance value="Nesi sąjungoje"/>
+    <tooltip.createAlliance>
+      <p>Tu nesi sąjungoje.</p>
+      <p>Jog įkurtum savo sąjungą, paspausk mygtuką „sąjunga“ apatiniame N44
+      meniu.</p>
+    </tooltip.createAlliance> 
+    
+    <message.notOwnerOfAlliance value="Nesi sąjungos įkūrėjas"/>
+    <tooltip.notOwnerOfAlliance>
+      <p>Tu nesi sąjungos, kurioje esi, įkūrėjas.</p>
+      <p>Paprašyk sąjungos įkūrėjo, jog pakviestų šį žaidėją į sąjungą.</p>
+    </tooltip.notOwnerOfAlliance>
   </SSObjects>
 
   <SpinnerContainer>

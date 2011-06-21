@@ -2910,7 +2910,7 @@
     
     <message.createAlliance value="Not in alliance"/>
     <tooltip.createAlliance>
-      <p>You are not an alliance owner.</p>
+      <p>You are not in alliance.</p>
       <p>Click Alliance button in N44 menu to create your alliance.</p>
     </tooltip.createAlliance> 
     
@@ -2919,7 +2919,6 @@
       <p>You are not the creator of your alliance.</p>
       <p>Ask your alliance owner to invite this player.</p>
     </tooltip.notOwnerOfAlliance>
-
   </SSObjects>
 
   <SpinnerContainer>
