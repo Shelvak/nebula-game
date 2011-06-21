@@ -198,6 +198,24 @@ package models.player
       public var alliancePlayerCount:int = 0;
       
       
+      public function get hasAllianceTechnology() : Boolean
+      {
+         return maxAlliancePlayerCount > 0;
+      }
+      
+      
+      public function get maxAlliancePlayerCount() : int
+      {
+         return Config.getAllianceMaxPlayers(ML.technologies.getTechnologyByType('alliances').level);
+      }
+      
+      
+      public function get allianceFull() : Boolean
+      {
+         return maxAlliancePlayerCount == alliancePlayerCount;
+      }
+      
+      
       [Optional]
       public var allianceCooldownEndsAt: Date;
       
@@ -216,10 +234,8 @@ package models.player
        */
       public function canInviteToAlliance(player:Player) : Boolean
       {
-         var maxAlliancePlayers:int = Config.getAllianceMaxPlayers(
-            ML.technologies.getTechnologyByType('alliances').level
-         );
-         return allianceOwner && player.allianceId != allianceId && alliancePlayerCount < maxAlliancePlayers;
+         return allianceOwner && player.allianceId != allianceId && 
+                alliancePlayerCount < maxAlliancePlayerCount;
       }
       
       

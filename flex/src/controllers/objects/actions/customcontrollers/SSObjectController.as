@@ -51,7 +51,7 @@ package controllers.objects.actions.customcontrollers
          if (planetOld)
          {
             // planet does not belong to the player anymore so remove it from the list
-            if (!planetNew.belongsToPlayer)
+            if (!planetNew.ownerIsPlayer)
             {
                planets.removeItemAt(planets.getItemIndex(planetOld));
                planetOld.cleanup();
