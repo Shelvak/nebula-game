@@ -414,7 +414,9 @@ assets:
   "images/battlefield":
     "*":
       ".":
-        space.jpg:       Bf_galaxy.jpg
+        space.jpg:
+          wiki_name: Bf_galaxy.jpg
+          "flex": {save_as: "swf:100"}
 
       "border":
         "opts":
