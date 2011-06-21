@@ -73,7 +73,7 @@
             <s:BitmapImage source="{getImg('owner_center')}" fillMode="repeat" width="100%"/>
             <s:BitmapImage source="{getImg('owner_right')}"/>
          </s:Group>
-         <s:Group left="30" right="0" top="2" bottom="0" mouseEnabled="false">
+         <s:Group left="30" right="0" top="4" bottom="0" mouseEnabled="false">
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle" gap="5"/>
             </s:layout>
