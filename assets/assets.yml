@@ -104,7 +104,13 @@ assets:
     "*":
       ".":
         <% each_model('building') do |base| %>
+        <% if base == "NpcHall" %>
+        "<%= base %>.png":
+          wiki_name: <%= "#{base}.png" %>
+          flex: {save_as: "swf:90"}
+        <% else %>
         <%= "#{base}.png: #{base}.png" %>
+        <% end %>
         <% end %>
       "constructors":
         <% each_model('building') do |base|
