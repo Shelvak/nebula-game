@@ -2894,12 +2894,29 @@
     </message.battleground>
     <message.planetRenamed value="Your planet name has been changed to {0}." />
 
-    <!-- Following messages are show if player can't invite owner of a planet to alliance -->
-    <message.playerInAlliance value="Player is already in your alliance."/>
-    <message.allianceFull value="Your alliance is full."/>
-    <message.createAlliance value="Create an alliance first."/>
-    <message.notOwnerOfAlliance value="You are not the creator of your alliance."/>
-    <message.researchAlliance value="You must research Alliances technology."/>
+    <!-- Following messages and tooltips are show if player 
+    can't invite owner of a planet to alliance -->
+    <message.playerInAlliance value="Alliance member"/>
+    <tooltip.playerInAlliance value="This player is already in your alliance."/>
+    
+    <message.allianceFull value="Alliance full"/>
+    <tooltip.allianceFull>
+      <p>Your alliance is full.</p>
+      <p>Kick existing players or upgrade your Alliances technology to invite
+      this player.</p>
+    </tooltip.allianceFull>
+    
+    <message.createAlliance value="Not in alliance"/>
+    <tooltip.createAlliance>
+      <p>You are not an alliance owner.</p>
+      <p>Click Alliance button in N44 menu to create your alliance.</p>
+    </tooltip.createAlliance> 
+    
+    <message.notOwnerOfAlliance value="Not alliance owner"/>
+    <tooltip.notOwnerOfAlliance>
+      <p>You are not the creator of your alliance.</p>
+      <p>Ask your alliance owner to invite this player.</p>
+    </tooltip.notOwnerOfAlliance>
 
   </SSObjects>
 
