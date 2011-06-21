@@ -113,7 +113,7 @@
             {
                leftTime = 0;
             }
-         }        
+         }
          
          private var sortKey: String;
          

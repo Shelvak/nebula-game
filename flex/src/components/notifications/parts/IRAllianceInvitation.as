@@ -11,6 +11,7 @@ package components.notifications.parts
    
    import globalevents.GlobalEvent;
    
+   import models.ModelLocator;
    import models.notification.parts.AllianceInvitation;
    
    import spark.components.Button;
@@ -29,6 +30,10 @@ package components.notifications.parts
          addEventListener(Event.REMOVED_FROM_STAGE, this_removedFromStageHandler);
       }
       
+      private function get ML(): ModelLocator
+      {
+         return ModelLocator.getInstance();
+      }
       
       private function get model() : AllianceInvitation
       {
@@ -54,10 +59,10 @@ package components.notifications.parts
          if (joinRestrictionMessage != null && joinButton != null && model != null)
          {
             joinButton.visible =
-            joinButton.includeInLayout = model.canJoinAlliance;
+            joinButton.includeInLayout = ML.player.canJoinAlliance;
             joinRestrictionMessage.visible =
-            joinRestrictionMessage.includeInLayout = !model.canJoinAlliance;
-            if (model.canJoinAlliance)
+            joinRestrictionMessage.includeInLayout = !ML.player.canJoinAlliance;
+            if (ML.player.canJoinAlliance)
             {
                joinRestrictionMessage.text = model.joinRestrictionMessage;
             }
