@@ -98,14 +98,14 @@
                         <s:HorizontalLayout/>
                      </s:layout>
                   </s:Group>
-                  <s:Group width="100%" visible="{player.alliance != null}">
+                  <s:Group width="180" visible="{player.alliance != null}">
                      <s:Label text="{Localizer.string('Alliances', 'label.inAlliance')}" 
-                              fontSize="14" width="120"/>
+                              fontSize="14"/>
                      <s:Button label="{player.alliance.name}" fontSize="14" 
                                skinClass="components.skins.LinkButtonSkin"
                                click="alliance_clickHandler(event)" width="100%"/>
                      <s:layout>
-                        <s:HorizontalLayout paddingBottom="8" paddingTop="3"/>
+                        <s:HorizontalLayout paddingBottom="8" gap="4" paddingTop="3"/>
                      </s:layout>
                   </s:Group>
                   <s:Label visible="{player.alliance == null}" paddingBottom="8" paddingTop="3" 
