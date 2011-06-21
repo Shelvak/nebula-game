@@ -366,7 +366,8 @@
     <label.inAlliance value="Sąjungoje" />
     <label.notInAlliance value="Ne sąjungoje" />
     <message.playerInvited value="Žaidėjas buvo pakviestas į sąjungą" />
-    <message.joined value="Tu sėkmingai įstojai į sąjungą" />
+    <message.joinSuccess value="Tu sėkmingai įstojai į sąjungą" />
+    <message.joinFail value="Tu negali įstoti į šią sąjungą, nes ji yra pilna" />
   </Alliances>
 
   <BattleMap>    

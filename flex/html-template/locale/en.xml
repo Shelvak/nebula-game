@@ -366,7 +366,8 @@
     <label.inAlliance value="In alliance" />
     <label.notInAlliance value="Not in alliance" />
     <message.playerInvited value="Player has been invited to alliance" />
-    <message.joined value="You have successfully joined alliance" />
+    <message.joinSuccess value="You have successfully joined alliance" />
+    <message.joinFail value="You can't join this alliance because it is already full" />
   </Alliances>
 
   <BattleMap>

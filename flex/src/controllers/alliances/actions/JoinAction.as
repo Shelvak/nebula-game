@@ -16,6 +16,13 @@ package controllers.alliances.actions
     * Client -->> Server: <code>JoinActionParams</code>
     * </p>
     * 
+    * <p>
+    * Client <<-- Server
+    * <ul>
+    *    <li><code>success</code> - <code>true</code> if the player has joined an alliance</li>
+    * </ul>
+    * </p>
+    * 
     * @see JoinActionParams
     */
    public class JoinAction extends CommunicationAction
@@ -27,6 +34,7 @@ package controllers.alliances.actions
       
       private var notifId: int;
       
+      
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
          GlobalFlags.getInstance().lockApplication = true;
@@ -35,18 +43,31 @@ package controllers.alliances.actions
          sendMessage(new ClientRMO({"notificationId": notifId}));
       }
       
+      
+      public override function applyServerAction(cmd:CommunicationCommand) : void
+      {
+         if (cmd.parameters["success"])
+         {
+            Messenger.show(Localizer.string('Alliances', 'message.joinSuccess'), Messenger.MEDIUM);
+            ML.notifications.remove(notifId);
+         }
+         else
+         {
+            Messenger.show(Localizer.string('Alliances', 'message.joinFail'), Messenger.MEDIUM);
+         }
+      }
+      
+      
       public override function result(rmo:ClientRMO):void
       {
          GlobalFlags.getInstance().lockApplication = false;
-         Messenger.show(Localizer.string('Alliances', 'message.joined'),
-            Messenger.MEDIUM);
-         ML.notifications.remove(notifId);
       }
+      
       
       public override function cancel(rmo:ClientRMO):void
       {
-         super.cancel(rmo);
          GlobalFlags.getInstance().lockApplication = false;
+         super.cancel(rmo);
       }
    }
 }
