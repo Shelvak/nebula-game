@@ -365,6 +365,7 @@
     </label.total>
     <label.inAlliance value="In alliance" />
     <label.notInAlliance value="Not in alliance" />
+    <message.playerInvited value="Player has been invited to alliance" />
   </Alliances>
 
   <BattleMap>
