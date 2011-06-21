@@ -1347,6 +1347,11 @@
     <label.notReadColor value="Neperskaityti pranešimai" />
     <label.readColor value="Perskaityti pranešimai" />
 
+    <!-- Mykolas logic:
+    title: HUGE label when you OPEN notification
+    message: notification header which is shown in bubbles and closed notifs
+    -->
+
     <title.combatLog value="Mūšio ataskaita" />
     <message.combatLog>
       <p>Mūšis {0 planet[planetoje] galaxy[galaktikoje] ss[saulės sistemoje] 
@@ -1375,7 +1380,7 @@
 
     <title.explorationFinished value="Ekspedicija grįžo" />
     <message.explorationFinished 
-      value="Planetoje {0} tyrinėjimai baigti." />
+      value="Planetoje {0} tyrinėjimai baigti" />
 
     <title.planetAnnexed.win value="Tu užkariavai planetą!" />
     <title.planetAnnexed.lose value="Tu praradai planetą!" />
