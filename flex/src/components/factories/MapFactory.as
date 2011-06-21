@@ -77,7 +77,7 @@ package components.factories
             with (viewport)
             {
                underlayImage = getImage(AssetNames.getSpaceBackgroundImageName());
-               underlayScrollSpeedRatio = 0.2;
+               underlayScrollSpeedRatio = 0.07;
                viewport.paddingHorizontal = 50;
                viewport.paddingVertical   = 50;
             }
@@ -89,7 +89,7 @@ package components.factories
             with (viewport)
             {
                underlayImage = getImage(AssetNames.getSpaceBackgroundImageName());
-               underlayScrollSpeedRatio = 0.2;
+               underlayScrollSpeedRatio = 0.07;
                paddingHorizontal = 300;
                paddingVertical = 300;
             }

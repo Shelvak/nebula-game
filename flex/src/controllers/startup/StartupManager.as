@@ -316,13 +316,17 @@ package controllers.startup
       }
       private static function bindPlayerCommands() : void
       {
-         bindPair(PlayersCommand.LOGIN, new LoginAction());
-         bindPair(PlayersCommand.DISCONNECT, new DisconnectAction());
-         bindPair(PlayersCommand.RATINGS, new controllers.players.actions.RatingsAction());
-         bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
-         bindPair(PlayersCommand.SHOW_PROFILE, new controllers.players.actions.ShowProfileAction());
-         bindPair(PlayersCommand.EDIT, new controllers.players.actions.EditAction());
-         bindPair(PlayersCommand.VIP, new controllers.players.actions.VipAction());
+         with (PlayersCommand)
+         {
+            bindPair(LOGIN, new LoginAction());
+            bindPair(DISCONNECT, new DisconnectAction());
+            bindPair(RATINGS, new controllers.players.actions.RatingsAction());
+            bindPair(SHOW, new controllers.players.actions.ShowAction());
+            bindPair(SHOW_PROFILE, new controllers.players.actions.ShowProfileAction());
+            bindPair(EDIT, new controllers.players.actions.EditAction());
+            bindPair(VIP, new controllers.players.actions.VipAction());
+            bindPair(STATUS_CHANGE, new StatusChangeAction());
+         }
       }
       private static function bindAlliancesCommands() : void
       {

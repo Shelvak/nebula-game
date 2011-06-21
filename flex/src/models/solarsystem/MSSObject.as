@@ -23,8 +23,8 @@ package models.solarsystem
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
    import models.map.MMapSpace;
-   import models.player.Player;
    import models.player.PlayerId;
+   import models.player.PlayerMinimal;
    import models.resource.Resource;
    import models.resource.ResourceType;
    import models.solarsystem.events.SSObjectEvent;
@@ -564,7 +564,7 @@ package models.solarsystem
       }
       
       
-      private var _player:Player = null;
+      private var _player:PlayerMinimal = null;
       [Optional]
       [Bindable(event="playerChange")]
       /**
@@ -576,7 +576,7 @@ package models.solarsystem
        * 
        * @default null
        */
-      public function set player(value:Player) : void
+      public function set player(value:PlayerMinimal) : void
       {
          if (_player != value)
          {
@@ -588,7 +588,7 @@ package models.solarsystem
       /**
        * @private
        */
-      public function get player() : Player
+      public function get player() : PlayerMinimal
       {
          return _player;
       }
@@ -630,7 +630,7 @@ package models.solarsystem
        */
       public function get canInviteOwnerToAlliance() : Boolean
       {
-         return isOwned && !inBattleground && ML.player.canInviteToAlliance(_player);
+         return isOwned && !inBattleground && !ownerIsAlly && !ownerIsPlayer;
       }
       
       

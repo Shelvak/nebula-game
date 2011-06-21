@@ -76,7 +76,7 @@ package models.solarsystem
             }
             // check if both solar systems are wormholes
             if (ML.latestGalaxy.hasWormholes && (isWormhole || isGlobalBattleground) &&
-               ML.latestSolarSystem.isGlobalBattleground)
+                ML.latestSolarSystem.isGlobalBattleground)
             {
                return true;
             }
