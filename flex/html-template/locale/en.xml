@@ -366,6 +366,7 @@
     <label.inAlliance value="In alliance" />
     <label.notInAlliance value="Not in alliance" />
     <message.playerInvited value="Player has been invited to alliance" />
+    <message.joined value="You have successfully joined alliance" />
   </Alliances>
 
   <BattleMap>
@@ -1367,6 +1368,11 @@
     <title.questCompleted value="Quest competed" />
     <message.questCompleted value="Quest '{0}' was completed." />
     <message.newQuests value="Following quests were started:" />
+
+    <title.kickedFromAlliance value="Kicked from alliance" />
+    <message.kickedFromAlliance value="Kicked from alliance {0}" />
+    <label.kickedFromAlliance 
+    value="You have been kicked from alliance" />
 
     <title.achievementCompleted value="Achievement completed" />
     <message.achievementCompleted ref="title.achievementCompleted" />

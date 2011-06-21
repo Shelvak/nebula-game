@@ -366,6 +366,7 @@
     <label.inAlliance value="Sąjungoje" />
     <label.notInAlliance value="Ne sąjungoje" />
     <message.playerInvited value="Žaidėjas buvo pakviestas į sąjungą" />
+    <message.joined value="Tu sėkmingai įstojai į sąjungą" />
   </Alliances>
 
   <BattleMap>    
@@ -1362,6 +1363,11 @@
     <title.questCompleted value="Užduotis įvykdyta" />
     <message.questCompleted value="Užduotis „{0}“ buvo įvykdyta." />
     <message.newQuests value="Tu pradejai vykdyti šias užduotis:" />
+
+    <title.kickedFromAlliance value="Buvai pašalintas iš sąjungos" />
+    <message.kickedFromAlliance value="Buvai pašalintas iš sąjungos {0}" />
+    <label.kickedFromAlliance 
+    value="Tu buvai pašalintas iš sąjungos" />
 
     <title.achievementCompleted value="Pasiekimas įgytas" />
     <message.achievementCompleted ref="title.achievementCompleted" />
