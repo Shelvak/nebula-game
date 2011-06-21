@@ -6,6 +6,7 @@
    <fx:Script>
       <![CDATA[
          import components.popups.ErrorPopup;
+         import components.ratings.RatingsWidths;
          
          import controllers.alliances.AlliancesCommand;
          
@@ -35,17 +36,26 @@
       <s:layout>
          <s:HorizontalLayout gap="1" verticalAlign="middle"/>
       </s:layout>
-      <s:Label text="#" width="40" textAlign="center"/>
-      <s:Label width="120" text="{Localizer.string('Alliances', 'label.total', 
+      <s:Label text="#" width="{RatingsWidths.rank}" textAlign="center"/>
+      <s:Label width="{RatingsWidths.player}" 
+               text="{Localizer.string('Alliances', 'label.total', 
                [alliance.players.length])}" textAlign="center"/>
-      <s:Label text="{alliance.totalPlanetsCount}" width="80" textAlign="center"/>
-      <s:Label text="{alliance.totalEconomyPoints}" width="80" textAlign="center"/>
-      <s:Label text="{alliance.totalSciencePoints}" width="80" textAlign="center"/>
-      <s:Label text="{alliance.totalArmyPoints}" width="80" textAlign="center"/>
-      <s:Label text="{alliance.totalWarPoints}" width="80" textAlign="center"/>
-      <s:Label text="{alliance.totalVictoryPoints}" width="80" textAlign="center"/>
-      <s:Label text="{alliance.totalAllianceVps}" width="80" textAlign="center"/>
-      <s:Label text="{alliance.totalPoints}" width="80" textAlign="center"/>
-      <s:Group width="80"/>
+      <s:Label text="{alliance.totalPlanetsCount}" width="{RatingsWidths.planetsCount}" 
+               textAlign="center"/>
+      <s:Label text="{alliance.totalEconomyPoints}" width="{RatingsWidths.economyPoints}" 
+               textAlign="center"/>
+      <s:Label text="{alliance.totalSciencePoints}" width="{RatingsWidths.sciencePoints}" 
+               textAlign="center"/>
+      <s:Label text="{alliance.totalArmyPoints}" width="{RatingsWidths.armyPoints}" 
+               textAlign="center"/>
+      <s:Label text="{alliance.totalWarPoints}" width="{RatingsWidths.warPoints}" 
+               textAlign="center"/>
+      <s:Label text="{alliance.totalVictoryPoints}" width="{RatingsWidths.victoryPoints}" 
+               textAlign="center"/>
+      <s:Label text="{alliance.totalAllianceVps}" width="{RatingsWidths.allianceVictoryPoints}" 
+               textAlign="center"/>
+      <s:Label text="{alliance.totalPoints}" width="{RatingsWidths.points}" 
+               textAlign="center"/>
+      <s:Group width="{RatingsWidths.action}"/>
    </s:Group>
 </s:Group>

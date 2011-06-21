@@ -551,7 +551,7 @@ package models.solarsystem
             dispatchSimpleEvent(SSObjectEvent, SSObjectEvent.OWNER_CHANGE);
             dispatchPropertyUpdateEvent("owner", _owner);
             dispatchPropertyUpdateEvent("isOwned", isOwned);
-            dispatchPropertyUpdateEvent("belongsToPlayer", belongsToPlayer);
+            dispatchPropertyUpdateEvent("ownerIsPlayer", ownerIsPlayer);
             registerOrUnregisterTimedUpdateHandler();
          }
       }
@@ -616,7 +616,7 @@ package models.solarsystem
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="ownerChange")]</i></p>
        */
-      public function get belongsToPlayer() : Boolean
+      public function get ownerIsPlayer() : Boolean
       {
          return _owner == Owner.PLAYER;
       }
@@ -624,8 +624,6 @@ package models.solarsystem
       
       [Bindable(event="playerChange")]
       /**
-       * Will be <code>true</code> if current player can intite the owner of this planet to the alliance.
-       * 
        * <p>Metadata:</br>
        * [Bindable(event="playerChange")]
        * </p>
@@ -633,6 +631,13 @@ package models.solarsystem
       public function get canInviteOwnerToAlliance() : Boolean
       {
          return isOwned && !inBattleground && ML.player.canInviteToAlliance(_player);
+      }
+      
+      
+      [Bindable(event="ownerChange")]
+      public function get ownerIsAlly() : Boolean
+      {
+         return _owner == Owner.ALLY;
       }
       
       
@@ -708,7 +713,7 @@ package models.solarsystem
       private var timedUpdateHandlerRegistered:Boolean = false;
       private function registerOrUnregisterTimedUpdateHandler() : void
       {
-         if (isPlanet && belongsToPlayer)
+         if (isPlanet && ownerIsPlayer)
          {
             registerTimedUpdateHandler();
          }

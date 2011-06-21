@@ -6,6 +6,7 @@
    <fx:Script>
       <![CDATA[
          import components.popups.ErrorPopup;
+         import components.ratings.RatingsWidths;
          
          import controllers.GlobalFlags;
          import controllers.alliances.AlliancesCommand;
@@ -32,7 +33,7 @@
          
          [Bindable]
          private var ML: ModelLocator = ModelLocator.getInstance();
-
+         
          protected function button1_clickHandler(event:MouseEvent):void
          {
             var popUp: ErrorPopup = new ErrorPopup();
@@ -50,7 +51,7 @@
             };
             popUp.show();
          }
-
+         
       ]]>
    </fx:Script>
    <s:Rect left="0" right="0" top="0" bottom="0">
@@ -62,8 +63,8 @@
       <s:layout>
          <s:HorizontalLayout gap="1" verticalAlign="middle"/>
       </s:layout>
-      <s:Label text="{player.rank}" width="40" textAlign="center"/>
-      <base:AdvancedContainer width="120"
+      <s:Label text="{player.rank}" width="{RatingsWidths.rank}" textAlign="center"/>
+      <base:AdvancedContainer width="{RatingsWidths.player}"
                               toolTip="{Localizer.string('Ratings', player.online?'online':'offline')}">
          <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
                         AssetNames.getIconImageName(player.online?'online':'offline'))}"/>
@@ -73,18 +74,27 @@
             <s:HorizontalLayout verticalAlign="middle" paddingLeft="6" paddingRight="3"/>
          </base:layout>
       </base:AdvancedContainer>
-      <s:Label text="{player.planetsCount}" width="80" textAlign="center"/>
-      <s:Label text="{player.economyPoints}" width="85" textAlign="center"/>
-      <s:Label text="{player.sciencePoints}" width="80" textAlign="center"/>
-      <s:Label text="{player.armyPoints}" width="80" textAlign="center"/>
-      <s:Label text="{player.warPoints}" width="95" textAlign="center"/>
-      <s:Label text="{player.victoryPoints}" width="80" textAlign="center"/>
-      <s:Label text="{player.allianceVps}" width="80" textAlign="center"/>
-      <s:Label text="{player.points}" width="80" textAlign="center"/>
-      <s:Group width="80" visible="{player.allianceOwnerId == ML.player.id 
+      <s:Label text="{player.planetsCount}" width="{RatingsWidths.planetsCount}" 
+               textAlign="center"/>
+      <s:Label text="{player.economyPoints}" width="{RatingsWidths.economyPoints}" 
+               textAlign="center"/>
+      <s:Label text="{player.sciencePoints}" width="{RatingsWidths.sciencePoints}" 
+               textAlign="center"/>
+      <s:Label text="{player.armyPoints}" width="{RatingsWidths.armyPoints}" 
+               textAlign="center"/>
+      <s:Label text="{player.warPoints}" width="{RatingsWidths.warPoints}" 
+               textAlign="center"/>
+      <s:Label text="{player.victoryPoints}" width="{RatingsWidths.victoryPoints}" 
+               textAlign="center"/>
+      <s:Label text="{player.allianceVps}" width="{RatingsWidths.allianceVictoryPoints}" 
+               textAlign="center"/>
+      <s:Label text="{player.points}" width="{RatingsWidths.points}" 
+               textAlign="center"/>
+      <s:Group width="{RatingsWidths.action}" 
+               visible="{player.allianceOwnerId == ML.player.id 
                &amp;&amp; ML.player.id != player.id}">
-      <s:Button label="{Localizer.string('Alliances', 'label.kick')}" width="60" horizontalCenter="0"
-                click="button1_clickHandler(event)"/>
+         <s:Button label="{Localizer.string('Alliances', 'label.kick')}" width="60" horizontalCenter="0"
+                   click="button1_clickHandler(event)"/>
       </s:Group>
    </s:Group>
 </s:ItemRenderer>

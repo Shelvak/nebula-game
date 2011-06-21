@@ -40,13 +40,16 @@
          
          import mx.events.EffectEvent;
          
-         import utils.locale.Localizer;
          import utils.ModelUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.datastructures.Collections;
+         import utils.locale.Localizer;
          
          private static const IMG:ImagePreloader = ImagePreloader.getInstance();
+         
+         [Bindable]
+         private var ML:ModelLocator = ModelLocator.getInstance();
          
          [Bindable]
          public var stance: int;
@@ -232,8 +235,8 @@
          <s:Button id="deploy" click="deploy_clickHandler(event)" 
                    visible="{!(!deployable
                    || (unitModel.owner != Owner.PLAYER)
-                   || (!ModelLocator.getInstance().latestPlanet)
-                   || (ModelLocator.getInstance().latestPlanet.ssObject.owner != Owner.PLAYER))}"
+                   || (!ML.latestPlanet)
+                   || (ML.latestPlanet.ssObject.owner != Owner.PLAYER))}"
                    skinClass="components.skins.DeployButtonSkin" 
                    toolTip="{Localizer.string('Units', 'label.deploy')}"/>
          
@@ -244,18 +247,21 @@
             <s:Button id="load" click="show_inside(true)" visible="{!(
                       (unitModel.storage == 0)
                       || (!unitModel.location.isSSObject)
-                      || (!ModelLocator.getInstance().latestPlanet)
-                      || (unitModel.owner != Owner.PLAYER))}"
+                      || (!ML.latestPlanet)
+                      || (unitModel.owner != Owner.PLAYER)
+                      || (ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length == 0
+                      &amp;&amp; (ML.latestPlanet.ssObject.owner == 
+                      Owner.ALLY)))}"
                       toolTip="{Localizer.string('Units', 'label.load')}"
                       skinClass="components.skins.LoadButtonSkin"/>
             <s:Button id="unload" click="show_inside(false)" visible="{!(unitModel.stored == 0 
                       || !unitModel.location.isSSObject
                       || (unitModel.owner != Owner.PLAYER)
-                      || (!ModelLocator.getInstance().latestPlanet)
+                      || (!ML.latestPlanet)
                       || (!(
-                      (ModelLocator.getInstance().latestPlanet.ssObject.owner == Owner.PLAYER)
+                      (ML.latestPlanet.ssObject.owner == Owner.PLAYER)
                       ||
-                      (ModelLocator.getInstance().latestPlanet.ssObject.owner == Owner.ALLY))))}"
+                      (ML.latestPlanet.ssObject.owner == Owner.ALLY))))}"
                       toolTip="{Localizer.string('Units', 'label.unload')}"
                       skinClass="components.skins.UnloadButtonSkin"/>
             <s:Button id="show" click="showStorage()" visible="{!(unitModel.location.isSSObject || 

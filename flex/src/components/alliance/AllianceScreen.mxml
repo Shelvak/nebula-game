@@ -256,7 +256,7 @@
       
       <s:Group left="0" right="0">
          
-         <s:Group horizontalCenter="0">
+         <base:AdvancedContainer horizontalCenter="0">
             
             <!-- Description -->
             <base:Panel title="{alliance.name}" skinClass="components.skins.LargePanelSkin"
@@ -337,44 +337,49 @@
             </base:Panel>
             
             <!-- Management -->
-            <base:Panel title="{alliance.name}" width="100%"
+            <base:Panel title="{alliance.name}" width="100%" minHeight="200"
                         visible="{tabManagement.selected &amp;&amp; alliance != null}"
                         skinClass="components.skins.LargePanelSkin">
-               <base:layout>
-                  <s:VerticalLayout horizontalAlign="center" gap="20"/>
-               </base:layout>
                
-               <s:Group visible="{alliance.ownerId == ML.player.id}" width="60%">
-                  <s:layout>
-                     <s:VerticalLayout horizontalAlign="center" gap="6"/>
-                  </s:layout>
-                  <s:Label text="{getString('label.renameAlliance')}" fontSize="16"/>
-                  <s:Group width="100%">
+               <base:AdvancedContainer left="0" right="0" bottom="0" top="0">
+                  
+                  <base:layout>
+                     <s:VerticalLayout horizontalAlign="center" gap="20"/>
+                  </base:layout>
+                  
+                  <s:Group visible="{alliance.ownerId == ML.player.id}" width="60%">
+                     <s:layout>
+                        <s:VerticalLayout horizontalAlign="center" gap="6"/>
+                     </s:layout>
+                     <s:Label text="{getString('label.renameAlliance')}" fontSize="16"/>
+                     <s:Group width="100%">
+                        <s:layout>
+                           <s:HorizontalLayout verticalAlign="middle"/>
+                        </s:layout>
+                        <base:BaseTextInput width="100%" id="allyNewName" enter="createAlliance(event)"
+                                            maxChars="{Config.getMaxAllyNameLength()}"/>
+                        <s:Button enabled="{ML.player.creds &lt; Config.getEditAllianceCredits() ||
+                                  allyNewName.text.length >= Config.getMinAllyNameLength()
+                                  &amp;&amp; !allyPending}"
+                                  skinClass="components.skins.CreditButtonSkin"
+                                  click="renameAlliance(event)" 
+                                  label="{ML.player.creds &lt; Config.getEditAllianceCredits() ?
+                                  Localizer.string('Credits', 'label.buy') :
+                                  getString('label.rename')}"/>
+                     </s:Group>
+                     <s:Label text="{getString('label.renameCost', [Config.getEditAllianceCredits()])}" fontSize="14"/>
+                  </s:Group>
+                  
+                  <s:Group>
                      <s:layout>
                         <s:HorizontalLayout verticalAlign="middle"/>
                      </s:layout>
-                     <base:BaseTextInput width="100%" id="allyNewName" enter="createAlliance(event)"
-                                         maxChars="{Config.getMaxAllyNameLength()}"/>
-                     <s:Button enabled="{ML.player.creds &lt; Config.getEditAllianceCredits() ||
-                               allyNewName.text.length >= Config.getMinAllyNameLength()
-                               &amp;&amp; !allyPending}"
-                               skinClass="components.skins.CreditButtonSkin"
-                               click="renameAlliance(event)" 
-                               label="{ML.player.creds &lt; Config.getEditAllianceCredits() ?
-                               Localizer.string('Credits', 'label.buy') :
-                               getString('label.rename')}"/>
+                     <s:Label text="{getString('label.leaveAlliance')}" fontSize="16"/>
+                     <s:Button label="{getString('label.leave')}"
+                               click="leave_clickHandler(event)"/>
                   </s:Group>
-                  <s:Label text="{getString('label.renameCost', [Config.getEditAllianceCredits()])}" fontSize="14"/>
-               </s:Group>
-               
-               <s:Group>
-                  <s:layout>
-                     <s:HorizontalLayout verticalAlign="middle"/>
-                  </s:layout>
-                  <s:Label text="{getString('label.leaveAlliance')}" fontSize="16"/>
-                  <s:Button label="{getString('label.leave')}"
-                            click="leave_clickHandler(event)"/>
-               </s:Group>
+                  
+               </base:AdvancedContainer>
                
             </base:Panel>
             
@@ -401,15 +406,23 @@
                </s:Group>
             </base:Panel>
             
-         </s:Group>
+         </base:AdvancedContainer>
          
-         <!-- Error message when palyer does not have required technology -->
-         <base:Warning text="{getString('label.noTech')}" width="60%" top="100" horizontalCenter="0"
-                       visible="{allianceTech.upgradePart.level &lt; 1 &amp;&amp; ML.player.allianceId == 0}"/>
-         
-         <!-- Cooldown warning -->
-         <base:Warning text="{getString('label.cooldown', [DateUtil.secondsToHumanString(leftTime / 1000, 2)])}" 
-                       top="100" horizontalCenter="0" width="60%" visible="{leftTime > 0}"/>
+         <base:AdvancedContainer top="100" width="100%">
+            
+            <base:layout>
+               <s:VerticalLayout horizontalAlign="center"/>
+            </base:layout>
+            
+            <!-- Error message when palyer does not have required technology -->
+            <base:Warning text="{getString('label.noTech')}" width="60%"
+                          visible="{allianceTech.upgradePart.level &lt; 1 &amp;&amp; ML.player.allianceId == 0}"/>
+            
+            <!-- Cooldown warning -->
+            <base:Warning text="{getString('label.cooldown', [DateUtil.secondsToHumanString(leftTime / 1000, 2)])}" 
+                          width="60%" visible="{leftTime > 0}"/>
+            
+         </base:AdvancedContainer>
          
       </s:Group>
    </base:Scroller>

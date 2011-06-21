@@ -2934,6 +2934,14 @@
     </message.battleground>
     <message.planetRenamed 
       value="Tavo planetos vardas buvo pakeistas į „{0}“." />
+
+    <!-- Following messages are show if player can't invite owner of a planet to alliance -->
+    <message.playerInAlliance value="Player is already in your alliance."/>
+    <message.allianceFull value="Your alliance is full."/>
+    <message.createAlliance value="Create an alliance first."/>
+    <message.notOwnerOfAlliance value="You are not the creator of your alliance."/>
+    <message.researchAlliance value="You must research Alliances technology."/>
+    
   </SSObjects>
 
   <SpinnerContainer>
