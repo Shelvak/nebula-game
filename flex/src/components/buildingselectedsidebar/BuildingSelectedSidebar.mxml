@@ -828,9 +828,11 @@
                   </s:Group>
                   
                   <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
-                              'selectedUpgradeCost')}" visible="{!(_selectedModel.upgradePart.level == Config.getBuildingMaxLevel(_selectedModel.type) 
-                                                       || _selectedModel.npc || _selectedModel.upgradePart.upgradeEndsAt != null ||
-                                                       _selectedModel.isGhost)}">
+                              'selectedUpgradeCost')}" 
+                              visible="{!(_selectedModel.upgradePart.level == Config.getBuildingMaxLevel(_selectedModel.type) 
+                              || !_selectedModel.managable
+                              || _selectedModel.npc || _selectedModel.upgradePart.upgradeEndsAt != null ||
+                              _selectedModel.isGhost)}">
                      <s:Group>
                         <s:Group width="40%">
                            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCost.toFixed(2)}"
@@ -897,77 +899,77 @@
                   
                   <base:Panel title="{Localizer.string('BuildingSelectedSidebar', 
                               'title.rates')}" visible="{((_selectedModel.metalRate != 0) ||
-                                         (_selectedModel.energyRate != 0) ||
-                                         (_selectedModel.zetiumRate != 0)) 
+                                               (_selectedModel.energyRate != 0) ||
+                                               (_selectedModel.zetiumRate != 0)) 
                                                &amp;&amp; !_selectedModel.isGhost
                                                &amp;&amp; 
                                                (_selectedModel.state != Building.INACTIVE)}">
-                        <base:AdvancedContainer left="0" right="0">
-                           <s:Group visible="{_selectedModel.metalRate != 0}">
-                              <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
-                                                  (_selectedModel.metalRate >= 0? 
-                                                  ('+' + NumberUtil.toShortString(_selectedModel.metalRate * 
-                                                  ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600, PRECISION)):
-                                                  NumberUtil.toShortString(_selectedModel.metalRate * 3600, PRECISION))+ ' / ' +
-                                                  Localizer.string('General', 'hour.short')}"
-                                                  toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
-                              <base:NextValueComp textToDisplay="{(_selectedModel.nextMetalRate >= 0? 
-                                                  ('+' + NumberUtil.toShortString(_selectedModel.nextMetalRate * 
-                                                  ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600, PRECISION)):
-                                                  NumberUtil.toShortString(_selectedModel.nextMetalRate * 3600, PRECISION))+ ' / ' +
-                                                  Localizer.string('General', 'hour.short')}"
-                                                  lblColor="{_selectedModel.nextMetalRate &lt; 0?0xff0000:0x00ff00}"
-                                                  visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
-                                                  toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
-                              <s:layout>
-                                 <s:HorizontalLayout/>
-                              </s:layout>
-                           </s:Group>
-                           <s:Group visible="{_selectedModel.energyRate != 0}">
-                              <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{
-                                                  (_selectedModel.energyRate >= 0? 
-                                                  ('+' + NumberUtil.toShortString(_selectedModel.energyRate * 
-                                                  ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600, PRECISION)):
-                                                  NumberUtil.toShortString(_selectedModel.energyRate * 3600, PRECISION))+ ' / ' +
-                                                  Localizer.string('General', 'hour.short')}"
-                                                  toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
-                              <base:NextValueComp textToDisplay="{(_selectedModel.nextEnergyRate >= 0? 
-                                                  ('+' + NumberUtil.toShortString(_selectedModel.nextEnergyRate * 
-                                                  ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600, PRECISION)):
-                                                  NumberUtil.toShortString(_selectedModel.nextEnergyRate * 3600, PRECISION))+ ' / ' +
-                                                  Localizer.string('General', 'hour.short')}"
-                                                  lblColor="{_selectedModel.nextEnergyRate &lt; 0?0xff0000:0x00ff00}"
-                                                  visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
-                                                  toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
-                              <s:layout>
-                                 <s:HorizontalLayout/>
-                              </s:layout>
-                           </s:Group>                        
-                           <s:Group visible="{_selectedModel.zetiumRate != 0}">
-                              <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{
-                                                  (_selectedModel.zetiumRate >= 0? 
-                                                  ('+' + NumberUtil.toShortString(_selectedModel.zetiumRate * 
-                                                  ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600, PRECISION)):
-                                                  NumberUtil.toShortString(_selectedModel.zetiumRate * 3600, PRECISION))+ ' / ' +
-                                                  Localizer.string('General', 'hour.short')}"
-                                                  toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
-                              <base:NextValueComp textToDisplay="{(_selectedModel.nextZetiumRate >= 0? 
-                                                  ('+' + NumberUtil.toShortString(_selectedModel.nextZetiumRate * 
-                                                  ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600, PRECISION)):
-                                                  NumberUtil.toShortString(_selectedModel.nextZetiumRate * 3600, PRECISION))+ ' / ' +
-                                                  Localizer.string('General', 'hour.short')}"
-                                                  lblColor="{_selectedModel.nextZetiumRate &lt; 0?0xff0000:0x00ff00}"
-                                                  visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
-                                                  toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
-                              <s:layout>
-                                 <s:HorizontalLayout/>
-                              </s:layout>
-                           </s:Group>
-                           
-                           <base:layout>
-                              <s:VerticalLayout gap="3" paddingLeft="6" horizontalAlign="justify"/>
-                           </base:layout>
-                        </base:AdvancedContainer>
+                     <base:AdvancedContainer left="0" right="0">
+                        <s:Group visible="{_selectedModel.metalRate != 0}">
+                           <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
+                                               (_selectedModel.metalRate >= 0? 
+                                               ('+' + NumberUtil.toShortString(_selectedModel.metalRate * 
+                                               ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600, PRECISION)):
+                                               NumberUtil.toShortString(_selectedModel.metalRate * 3600, PRECISION))+ ' / ' +
+                                               Localizer.string('General', 'hour.short')}"
+                                               toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+                           <base:NextValueComp textToDisplay="{(_selectedModel.nextMetalRate >= 0? 
+                                               ('+' + NumberUtil.toShortString(_selectedModel.nextMetalRate * 
+                                               ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600, PRECISION)):
+                                               NumberUtil.toShortString(_selectedModel.nextMetalRate * 3600, PRECISION))+ ' / ' +
+                                               Localizer.string('General', 'hour.short')}"
+                                               lblColor="{_selectedModel.nextMetalRate &lt; 0?0xff0000:0x00ff00}"
+                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                               toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
+                           <s:layout>
+                              <s:HorizontalLayout/>
+                           </s:layout>
+                        </s:Group>
+                        <s:Group visible="{_selectedModel.energyRate != 0}">
+                           <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{
+                                               (_selectedModel.energyRate >= 0? 
+                                               ('+' + NumberUtil.toShortString(_selectedModel.energyRate * 
+                                               ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600, PRECISION)):
+                                               NumberUtil.toShortString(_selectedModel.energyRate * 3600, PRECISION))+ ' / ' +
+                                               Localizer.string('General', 'hour.short')}"
+                                               toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+                           <base:NextValueComp textToDisplay="{(_selectedModel.nextEnergyRate >= 0? 
+                                               ('+' + NumberUtil.toShortString(_selectedModel.nextEnergyRate * 
+                                               ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600, PRECISION)):
+                                               NumberUtil.toShortString(_selectedModel.nextEnergyRate * 3600, PRECISION))+ ' / ' +
+                                               Localizer.string('General', 'hour.short')}"
+                                               lblColor="{_selectedModel.nextEnergyRate &lt; 0?0xff0000:0x00ff00}"
+                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                               toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
+                           <s:layout>
+                              <s:HorizontalLayout/>
+                           </s:layout>
+                        </s:Group>                        
+                        <s:Group visible="{_selectedModel.zetiumRate != 0}">
+                           <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{
+                                               (_selectedModel.zetiumRate >= 0? 
+                                               ('+' + NumberUtil.toShortString(_selectedModel.zetiumRate * 
+                                               ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600, PRECISION)):
+                                               NumberUtil.toShortString(_selectedModel.zetiumRate * 3600, PRECISION))+ ' / ' +
+                                               Localizer.string('General', 'hour.short')}"
+                                               toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+                           <base:NextValueComp textToDisplay="{(_selectedModel.nextZetiumRate >= 0? 
+                                               ('+' + NumberUtil.toShortString(_selectedModel.nextZetiumRate * 
+                                               ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600, PRECISION)):
+                                               NumberUtil.toShortString(_selectedModel.nextZetiumRate * 3600, PRECISION))+ ' / ' +
+                                               Localizer.string('General', 'hour.short')}"
+                                               lblColor="{_selectedModel.nextZetiumRate &lt; 0?0xff0000:0x00ff00}"
+                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                               toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
+                           <s:layout>
+                              <s:HorizontalLayout/>
+                           </s:layout>
+                        </s:Group>
+                        
+                        <base:layout>
+                           <s:VerticalLayout gap="3" paddingLeft="6" horizontalAlign="justify"/>
+                        </base:layout>
+                     </base:AdvancedContainer>
                   </base:Panel>
                   
                   

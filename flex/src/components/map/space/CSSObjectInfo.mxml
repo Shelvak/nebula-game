@@ -80,7 +80,6 @@
             text="{getMessage('allianceFull')}"  
             toolTip="{getTooltip('allianceFull')}"
             left="0" right="0" lineBreak="toFit"
-            left="0" right="0" lineBreak="toFit"
             visible="{ML.player.allianceOwner &amp;&amp; ML.player.allianceFull &amp;&amp; !ssObject.ownerIsAlly}"/>
          <s:Label
             text="{getMessage('createAlliance')}" 
