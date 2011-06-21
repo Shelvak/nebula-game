@@ -256,7 +256,7 @@
       
       <s:Group left="0" right="0">
          
-         <base:AdvancedContainer horizontalCenter="0">
+         <base:AdvancedContainer horizontalCenter="0" width="{pnlPlayers.width}">
             
             <!-- Description -->
             <base:Panel title="{alliance.name}" skinClass="components.skins.LargePanelSkin"
@@ -314,7 +314,7 @@
             </base:Panel>
             
             <!-- Players -->
-            <base:Panel title="{alliance.name}" width="100%"
+            <base:Panel id="pnlPlayers" title="{alliance.name}"
                         visible="{tabPlayers.selected &amp;&amp; alliance != null}"
                         skinClass="components.skins.LargePanelSkin">
                <base:layout>
