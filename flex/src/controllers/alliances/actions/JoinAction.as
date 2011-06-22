@@ -32,29 +32,20 @@ package controllers.alliances.actions
          super();
       }
       
-      private var notifId: int;
-      
       
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
          GlobalFlags.getInstance().lockApplication = true;
-         var params:JoinActionParams = JoinActionParams(cmd.parameters);
-         notifId = params.notificationId;
-         sendMessage(new ClientRMO({"notificationId": notifId}));
+         sendMessage(new ClientRMO({"notificationId": JoinActionParams(cmd.parameters).notificationId}));
       }
       
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
          if (cmd.parameters["success"])
-         {
             Messenger.show(Localizer.string('Alliances', 'message.joinSuccess'), Messenger.MEDIUM);
-            ML.notifications.remove(notifId);
-         }
          else
-         {
             Messenger.show(Localizer.string('Alliances', 'message.joinFail'), Messenger.MEDIUM);
-         }
       }
       
       
