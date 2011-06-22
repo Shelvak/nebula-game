@@ -1,5 +1,7 @@
 package controllers.alliances.actions
 {
+   import components.alliance.AllianceScreenM;
+   
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
@@ -25,6 +27,7 @@ package controllers.alliances.actions
       {
          allyId = cmd.parameters.id;
          sendMessage(new ClientRMO(cmd.parameters));
+         GlobalFlags.getInstance().lockApplication = true;
       }
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
@@ -56,7 +59,8 @@ package controllers.alliances.actions
             i++;
             player.rank = i;
          }
-         NavigationController.getInstance().openAlliance(ally);
+         AllianceScreenM.getInstance().alliance = ally;
+         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

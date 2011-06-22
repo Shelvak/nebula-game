@@ -27,6 +27,12 @@ package controllers.alliances.actions
     */
    public class JoinAction extends CommunicationAction
    {
+      private function get GF() : GlobalFlags
+      {
+         return GlobalFlags.getInstance();
+      }
+      
+      
       public function JoinAction()
       {
          super();
@@ -35,7 +41,7 @@ package controllers.alliances.actions
       
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
-         GlobalFlags.getInstance().lockApplication = true;
+         GF.lockApplication = true;
          sendMessage(new ClientRMO({"notificationId": JoinActionParams(cmd.parameters).notificationId}));
       }
       
@@ -51,13 +57,13 @@ package controllers.alliances.actions
       
       public override function result(rmo:ClientRMO):void
       {
-         GlobalFlags.getInstance().lockApplication = false;
+         GF.lockApplication = false;
       }
       
       
       public override function cancel(rmo:ClientRMO):void
       {
-         GlobalFlags.getInstance().lockApplication = false;
+         GF.lockApplication = false;
          super.cancel(rmo);
       }
    }

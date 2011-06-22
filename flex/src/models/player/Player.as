@@ -23,14 +23,33 @@ package models.player
    
    /**
     * @see models.player.events.PlayerEvent#CREDS_CHANGE
+    * @eventType models.player.events.PlayerEvent.CREDS_CHANGE
     */
    [Event(name="credsChange", type="models.player.events.PlayerEvent")]
    
-   
    /**
     * @see models.player.events.PlayerEvent#SCIENTISTS_CHANGE
+    * @eventType models.player.events.PlayerEvent.SCIENTISTS_CHANGE
     */
    [Event(name="scientistsChange", type="models.player.events.PlayerEvent")]
+   
+   /**
+    * @see models.player.events.PlayerEvent#ALLIANCE_ID_CHANGE
+    * @eventType models.player.events.PlayerEvent.ALLIANCE_ID_CHANGE
+    */
+   [Event(name="allianceIdChange", type="models.player.events.PlayerEvent")]
+   
+   /**
+    * @see models.player.events.PlayerEvent#ALLIANCE_OWNER_CHANGE
+    * @eventType models.player.events.PlayerEvent.ALLIANCE_OWNER_CHANGE
+    */
+   [Event(name="allianceOwnerChange", type="models.player.events.PlayerEvent")]
+   
+   /**
+    * @see models.player.events.PlayerEvent#ALLIANCE_PLAYER_COUNT_CHANGE
+    * @eventType models.player.events.PlayerEvent.ALLIANCE_PLAYER_COUNT_CHANGE
+    */
+   [Event(name="alliancePlayerCountChange", type="models.player.events.PlayerEvent")]
    
    
    [Bindable]
@@ -176,42 +195,82 @@ package models.player
       /* ################ */
       
       
+      
+      private var _allianceId:int = 0;
       [Optional]
+      [Bindable(event="allianceIdChange")]
       /**
        * Id of an alliance the player belongs to.
        */
-      public var allianceId:int = 0;
+      public function set allianceId(value:int) : void {
+         if (_allianceId != value)
+         {
+            _allianceId = value;
+            dispatchPlayerEvent(PlayerEvent.ALLIANCE_ID_CHANGE);
+         }
+      }
+      /**
+       * @private
+       */
+      public function get allianceId() : int {
+         return _allianceId;
+      }
       
       
+      private var _allianceOwner:Boolean = false;
       [Optional]
+      [Bindable(event="allianceOwnerChange")]
       /**
        * Does the player owns his alliance?
        */
-      public var allianceOwner:Boolean = false;
+      public function set allianceOwner(value:Boolean) : void {
+         if (_allianceOwner != value)
+         {
+            _allianceOwner = value;
+            dispatchPlayerEvent(PlayerEvent.ALLIANCE_OWNER_CHANGE);
+         }
+      }
+      /**
+       * @private
+       */
+      public function get allianceOwner() : Boolean {
+         return _allianceOwner;
+      }
       
       
+      private var _alliancePlayerCount:int = 0;
       [Optional]
+      [Bindable(event="alliancePlayerCountChange")]
       /**
        * Number of members in the player's alliance. This is only not <code>0</code> if the player owns
        * the alliance.
        */
-      public var alliancePlayerCount:int = 0;
+      public function set alliancePlayerCount(value:int) : void {
+         if (_alliancePlayerCount != value)
+         {
+            _alliancePlayerCount = value;
+            dispatchPlayerEvent(PlayerEvent.ALLIANCE_PLAYER_COUNT_CHANGE);
+         }
+      }
+      /**
+       * @private
+       */
+      public function get alliancePlayerCount() : int {
+         return _alliancePlayerCount;
+      }
       
       
-      public function get hasAllianceTechnology() : Boolean
-      {
+      public function get hasAllianceTechnology() : Boolean {
          return maxAlliancePlayerCount > 0;
       }
       
-      
-      public function get maxAlliancePlayerCount() : int
-      {
+      public function get maxAlliancePlayerCount() : int {
          return Config.getAllianceMaxPlayers(ML.technologies.getTechnologyByType('alliances').level);
       }
       
-      
-      public function get allianceFull() : Boolean
-      {
+      // TODO: this also changes if maxAlliancePlayerCount changes
+      [Bindable(event="alliancePlayerCountChange")]
+      public function get allianceFull() : Boolean {
          return maxAlliancePlayerCount == alliancePlayerCount;
       }
       
@@ -233,6 +292,7 @@ package models.player
       }
       
       
+      [Bindable(event="allianceIdChange")]
       /**
        * <code>true</code> if this player belongs to an alliance.
        */
@@ -240,6 +300,23 @@ package models.player
       {
          return allianceId > 0;
       }
+      
+      
+      public function belongsTo(allianceId:int) : Boolean
+      {
+         return this.allianceId == allianceId;
+      }
+      
+      
+      public function ownsAlliance(allianceId:int) : Boolean
+      {
+         return belongsTo(allianceId) && allianceOwner;
+      }
+      
+      
+      /* ############# */
+      /* ### STATS ### */
+      /* ############# */
       
       
       [SkipProperty]
@@ -404,14 +481,21 @@ package models.player
          return "[class: " + className + ", id: " + id + ", name: " + name + "]";
       }
       
-      private function dispatchScientistsChangeEvent(): void
-      {
-         dispatchSimpleEvent(PlayerEvent, PlayerEvent.SCIENTISTS_CHANGE);
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+      
+      
+      private function dispatchPlayerEvent(type:String) : void {
+         dispatchSimpleEvent(PlayerEvent, type);
       }
       
-      private function dispatchCredsChangeEvent(): void
-      {
-         dispatchSimpleEvent(PlayerEvent, PlayerEvent.CREDS_CHANGE);
+      private function dispatchScientistsChangeEvent(): void {
+         dispatchPlayerEvent(PlayerEvent.SCIENTISTS_CHANGE);
+      }
+      
+      private function dispatchCredsChangeEvent(): void {
+         dispatchPlayerEvent(PlayerEvent.CREDS_CHANGE);
       }
    }
 }

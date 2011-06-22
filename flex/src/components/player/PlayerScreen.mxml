@@ -9,6 +9,7 @@
          creationComplete="group1_creationCompleteHandler(event)" >
    <fx:Script>
       <![CDATA[
+         import components.alliance.AllianceScreenM;
          import components.skins.LargePanelSkin;
          import components.skins.LinkButtonSkin;
          
@@ -20,7 +21,6 @@
          import models.ModelLocator;
          import models.chat.MChat;
          import models.player.MRatingPlayer;
-         import models.player.Player;
          
          import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
@@ -44,7 +44,7 @@
          
          protected function alliance_clickHandler(event:MouseEvent):void
          {
-            NC.showAlliance(player.alliance.id);
+            AllianceScreenM.getInstance().showScreen(player.alliance.id);
          }
          
          protected function ratings_clickHandler(event:MouseEvent):void

@@ -611,17 +611,9 @@ package controllers.ui
          showNonMapScreen(_screenProperties[MainAreaScreens.VIP]);
       }
       
-      public function showAlliance(allianceId: int) :void
+      public function showAllianceScreen() :void
       {
-         GlobalFlags.getInstance().lockApplication = true;
-         if (allianceId != 0)
-         {
-            new AlliancesCommand(AlliancesCommand.SHOW, {'id': allianceId}).dispatch();
-         }
-         else
-         {
-            openAlliance();
-         }
+         showNonMapScreen(_screenProperties[MainAreaScreens.ALLIANCE]);
       }
       
       private function isCreated(screenName: String): Boolean
@@ -635,24 +627,6 @@ package controllers.ui
       }
       
       private var createdHandler: Function;
-      
-      public function openAlliance(ally: MAlliance = null) :void
-      {
-         function setAlliance(): void
-         {
-            GlobalFlags.getInstance().lockApplication = false;
-            AllianceScreen(getScreen(MainAreaScreens.ALLIANCE)).alliance = ally;
-         }
-         if (isCreated(MainAreaScreens.ALLIANCE))
-         {
-            setAlliance();
-         }
-         else
-         {
-            createdHandler = setAlliance;
-         }
-         showNonMapScreen(_screenProperties[MainAreaScreens.ALLIANCE]);
-      }
       
       public function showPlayer(playerId: int) :void
       {

@@ -16,6 +16,7 @@
    
    <fx:Script>
       <![CDATA[
+         import components.alliance.AllianceScreenM;
          import components.skins.CreditButtonSkin;
          import components.skins.LinkButtonSkin;
          import components.skins.StartButtonSkin;
@@ -97,8 +98,8 @@
          <!--- Button for viewing alliance screen. -->
          <s:Group width="100%">
             <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-            <s:Button id="btnAlliance" click="NC.showAlliance(ML.player.allianceId)" left="22" right="0" top="5" bottom="5"
-                      label="{Localizer.string('MainMenu', 'label.alliance')}"/>
+            <s:Button id="btnAlliance" click="AllianceScreenM.getInstance().showScreen(ML.player.allianceId)"
+                      left="22" right="0" top="5" bottom="5" label="{Localizer.string('MainMenu', 'label.alliance')}"/>
          </s:Group>
          <!--- Button for viewing quest screen. -->
          <s:Group width="100%">

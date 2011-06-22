@@ -1,13 +1,11 @@
 package components.notifications.parts
 {
+   import components.alliance.AllianceScreenM;
    import components.notifications.IRNotificationPartBase;
    import components.notifications.parts.skins.KickedFromAllianceSkin;
    
-   import controllers.ui.NavigationController;
-   
    import flash.events.MouseEvent;
    
-   import models.ModelLocator;
    import models.notification.parts.KickedFromAlliance;
    
    import spark.components.Button;
@@ -53,8 +51,7 @@ package components.notifications.parts
             btnAlly.addEventListener(MouseEvent.CLICK, 
                function (e: MouseEvent): void
                {
-                  NavigationController.getInstance().showAlliance(
-                     kickedFromAlliance.alliance.id);
+                  AllianceScreenM.getInstance().showScreen(kickedFromAlliance.alliance.id);
                });
          }
       }

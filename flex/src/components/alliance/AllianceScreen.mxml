@@ -7,6 +7,7 @@
          xmlns:base="components.base.*"
          xmlns:screens="components.screens.*"
          creationComplete="this_creationCompleteHandler(event)">
+   <fx:Binding source="model.alliance" destination="alliance"/>
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
@@ -31,18 +32,28 @@
          
          import mx.collections.Sort;
          import mx.collections.SortField;
-         import mx.controls.Alert;
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
          import utils.UrlNavigate;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
-         import utils.components.ToggleButtonsGroup;
          import utils.locale.Localizer;
          
+         
+         [Bindable(event="willNotChange")]
+         private function get ML() : ModelLocator {
+            return ModelLocator.getInstance();
+         }
+         
+         
+         [Bindable(event="willNotChange")]
+         private function get model() : AllianceScreenM {
+            return AllianceScreenM.getInstance();
+         }
+         
          [Bindable]
-         public var alliance: MAlliance;
+         private var alliance: MAlliance;
          
          [Bindable (event="willNotChange")]
          private function get allianceTech(): Technology
@@ -80,11 +91,6 @@
          [Bindable]
          private var allyPending: Boolean = false;
          
-         [Bindable]
-         private var ML: ModelLocator = ModelLocator.getInstance();
-         
-         private var tabGroup:ToggleButtonsGroup;
-         
          protected function this_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshCurrentTime);
@@ -92,11 +98,6 @@
             
             tabDescription.width =
             tabManagement.width = Math.max(tabDescription.width, tabManagement.width);
-            tabGroup = new ToggleButtonsGroup();
-            tabGroup.registerButton(tabDescription);
-            tabGroup.registerButton(tabPlayers);
-            tabGroup.registerButton(tabManagement);
-            tabGroup.select(tabDescription);
          }
          
          [Bindable]
@@ -241,14 +242,20 @@
       </s:layout>
       <!-- "name" is used by skin -->
       <s:ToggleButton id="tabDescription" name="descr" skinClass="components.alliance.SectionTabSkin"
-                      label="{getString('title.section.description')}" minWidth="210"
-                      fontSize="15" enabled="{alliance != null}"/>
-      <s:ToggleButton id="tabPlayers"     name="players" skinClass="components.alliance.SectionTabSkin"
-                      label="{getString('title.section.players')}"     minWidth="276" depth="10"
-                      fontSize="18" enabled="{alliance != null}"/>  
+                      label="{getString('title.section.description')}" minWidth="210" fontSize="15"
+                      enabled="{model.descriptionTabEnabled}"
+                      selected="{model.descriptionTabSelected}"
+                      click="model.selectDescriptionTab()"/>
+      <s:ToggleButton id="tabPlayers" name="players" skinClass="components.alliance.SectionTabSkin"
+                      label="{getString('title.section.players')}" minWidth="276" depth="10" fontSize="18"
+                      enabled="{model.playersTabEnabled}"
+                      selected="{model.playersTabSelected}"
+                      click="model.selectPlayersTab()"/>  
       <s:ToggleButton id="tabManagement"  name="manage" skinClass="components.alliance.SectionTabSkin"
-                      label="{getString('title.section.management')}"  minWidth="210"
-                      fontSize="15" enabled="{alliance != null}"/>
+                      label="{getString('title.section.management')}" minWidth="210" fontSize="15"
+                      enabled="{model.managementTabEnabled}"
+                      selected="{model.managementTabSelected}"
+                      click="model.selectManagementTab()"/>
    </s:Group>
    
    <base:Scroller id="contentScroller" top="230" bottom="10" width="100%" horizontalScrollPolicy="off"
@@ -260,7 +267,7 @@
             
             <!-- Description -->
             <base:Panel title="{alliance.name}" skinClass="components.skins.LargePanelSkin"
-                        visible="{tabDescription.selected &amp;&amp; alliance != null}" width="100%">
+                        visible="{model.descriptionPanelVisible}" width="100%">
                <base:layout>
                   <s:VerticalLayout/>
                </base:layout>
@@ -315,7 +322,7 @@
             
             <!-- Players -->
             <base:Panel id="pnlPlayers" title="{alliance.name}"
-                        visible="{tabPlayers.selected &amp;&amp; alliance != null}"
+                        visible="{model.playersPanelVisible}"
                         skinClass="components.skins.LargePanelSkin">
                <base:layout>
                   <s:VerticalLayout horizontalAlign="right"/>
@@ -338,7 +345,7 @@
             
             <!-- Management -->
             <base:Panel title="{alliance.name}" width="100%" minHeight="200"
-                        visible="{tabManagement.selected &amp;&amp; alliance != null}"
+                        visible="{model.managementPanelVisible}"
                         skinClass="components.skins.LargePanelSkin">
                
                <base:AdvancedContainer left="0" right="0" bottom="0" top="0">
@@ -364,8 +371,8 @@
                                   skinClass="components.skins.CreditButtonSkin"
                                   click="renameAlliance(event)" 
                                   label="{ML.player.creds &lt; Config.getEditAllianceCredits() ?
-                                  Localizer.string('Credits', 'label.buy') :
-                                  getString('label.rename')}"/>
+                                             Localizer.string('Credits', 'label.buy') :
+                                             getString('label.rename')}"/>
                      </s:Group>
                      <s:Label text="{getString('label.renameCost', [Config.getEditAllianceCredits()])}" fontSize="14"/>
                   </s:Group>
@@ -387,7 +394,7 @@
             <base:Panel title="{getString('title.section.newAlliance')}"
                         skinClass="components.skins.LargePanelSkin" width="100%"
                         visible="{allianceTech.upgradePart.level > 0 &amp;&amp;
-                        ML.player.allianceId == 0 &amp;&amp; leftTime == 0}">
+                                  ML.player.allianceId == 0 &amp;&amp; leftTime == 0}">
                <base:layout>
                   <s:VerticalLayout gap="5" horizontalAlign="justify"/>
                </base:layout>

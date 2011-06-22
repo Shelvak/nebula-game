@@ -1,5 +1,7 @@
 package controllers.alliances.actions
 {
+   import components.alliance.AllianceScreenM;
+   
    import controllers.CommunicationAction;
    import controllers.GlobalFlags;
    
@@ -15,6 +17,7 @@ package controllers.alliances.actions
    {
       public override function result(rmo:ClientRMO):void
       {
+         AllianceScreenM.getInstance().alliance = null;
          GlobalFlags.getInstance().lockApplication = false;
       }
       

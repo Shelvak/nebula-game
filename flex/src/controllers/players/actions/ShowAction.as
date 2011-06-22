@@ -1,13 +1,12 @@
 package controllers.players.actions
 {
-
-
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    
    import models.BaseModel;
    import models.player.Player;
-
+   
+   
    /**
     * Gets player data. 
     */
