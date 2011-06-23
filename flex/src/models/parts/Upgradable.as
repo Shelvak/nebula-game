@@ -430,13 +430,13 @@ package models.parts
       
       private function dispatchLevelChangeEvent() : void
       {
-         if (hasEventListener(UpgradeEvent.LVL_CHANGE))
+         if (hasEventListener(UpgradeEvent.LEVEL_CHANGE))
          {
-            dispatchEvent(new UpgradeEvent(UpgradeEvent.LVL_CHANGE));
+            dispatchEvent(new UpgradeEvent(UpgradeEvent.LEVEL_CHANGE));
          }
-         if (_parent.hasEventListener(UpgradeEvent.LVL_CHANGE))
+         if (_parent.hasEventListener(UpgradeEvent.LEVEL_CHANGE))
          {
-            _parent.dispatchEvent(new UpgradeEvent(UpgradeEvent.LVL_CHANGE));
+            _parent.dispatchEvent(new UpgradeEvent(UpgradeEvent.LEVEL_CHANGE));
          }
       }
       

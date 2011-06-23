@@ -10,7 +10,7 @@ package models.parts.events
        * 
        * @eventType levelChange
        */
-      public static const LVL_CHANGE:String="levelChange";
+      public static const LEVEL_CHANGE:String="levelChange";
       
       /**
        * Dispached when <code>hpMax</code> property changes.

@@ -366,7 +366,7 @@ package components.map.planet.objects
          b.addEventListener(BuildingEvent.HP_CHANGE, model_hpChangeHandler, false, 0, true);
          b.addEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler, false, 0, true);
          b.addEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler, false, 0, true);
-         b.addEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler, false, 0, true);
+         b.addEventListener(UpgradeEvent.LEVEL_CHANGE, model_levelChangeHandler, false, 0, true);
          b.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler, false, 0, true);
       }
       
@@ -380,7 +380,7 @@ package components.map.planet.objects
          b.removeEventListener(BuildingEvent.HP_CHANGE, model_hpChangeHandler, false);
          b.removeEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler, false);
          b.removeEventListener(BaseModelEvent.ID_CHANGE, model_idChangeHandler, false);
-         b.removeEventListener(UpgradeEvent.LVL_CHANGE, model_levelChangeHandler, false);
+         b.removeEventListener(UpgradeEvent.LEVEL_CHANGE, model_levelChangeHandler, false);
          b.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler, false);
       }
       

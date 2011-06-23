@@ -65,7 +65,7 @@
             {
                if (_selectedModel != null)
                {
-                  _selectedModel.upgradePart.removeEventListener(UpgradeEvent.LVL_CHANGE, 
+                  _selectedModel.upgradePart.removeEventListener(UpgradeEvent.LEVEL_CHANGE, 
                      refreshPriceOrientatedProperties);
                   _selectedModel.removeEventListener(TechnologyEvent.SELECTED_CHANGE, 
                      refreshPriceOrientatedProperties);
@@ -81,7 +81,7 @@
                _selectedModel = value;
                if (_selectedModel != null)
                {
-                  _selectedModel.upgradePart.addEventListener(UpgradeEvent.LVL_CHANGE,
+                  _selectedModel.upgradePart.addEventListener(UpgradeEvent.LEVEL_CHANGE,
                      refreshPriceOrientatedProperties);
                   _selectedModel.addEventListener(TechnologyEvent.SELECTED_CHANGE, 
                      refreshPriceOrientatedProperties);

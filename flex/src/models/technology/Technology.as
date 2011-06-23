@@ -36,9 +36,9 @@ package models.technology
    /**
     * Dispatched when <code>level</code> property has changed.
     * 
-    * @eventType models.parts.events.UpgradeEvent.LVL_CHANGE
+    * @eventType models.parts.events.UpgradeEvent.LEVEL_CHANGE
     */
-   [Event(name="lvlChange", type="models.parts.events.UpgradeEvent")]
+   [Event(name="levelChange", type="models.parts.events.UpgradeEvent")]
    
    [Bindable]
    public class Technology extends BaseModel implements IUpgradableModel
@@ -63,7 +63,7 @@ package models.technology
       {
          super();
          _upgradePart = new TechnologyUpgradable(this);
-         addEventListener(UpgradeEvent.LVL_CHANGE, handleLevelChange);
+         addEventListener(UpgradeEvent.LEVEL_CHANGE, handleLevelChange);
          _upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, handleProgressChange);
          EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, dispatchValidChangeEvent);
       }

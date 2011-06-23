@@ -8,6 +8,7 @@
          xmlns:screens="components.screens.*"
          creationComplete="this_creationCompleteHandler(event)">
    <fx:Binding source="model.alliance" destination="alliance"/>
+   <fx:Binding source="ML.player.allianceCooldown.occuresIn" destination="leftTime"/>
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
@@ -24,7 +25,6 @@
          import controllers.ui.NavigationController;
          
          import globalevents.GAllianceEvent;
-         import globalevents.GlobalEvent;
          
          import models.ModelLocator;
          import models.alliance.MAlliance;
@@ -93,7 +93,6 @@
          
          protected function this_creationCompleteHandler(event:FlexEvent):void
          {
-            EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshCurrentTime);
             NavigationController.getInstance().creationCompleteFunction(MainAreaScreens.ALLIANCE, this);
             
             tabDescription.width =
@@ -102,19 +101,6 @@
          
          [Bindable]
          private var leftTime: Number = 0;
-         
-         private function refreshCurrentTime(e: GlobalEvent): void
-         {
-            var cTime: Number = new Date().time;
-            if (ML.player.allianceCooldownEndsAt && ML.player.allianceCooldownEndsAt.time > cTime)
-            {
-               leftTime = ML.player.allianceCooldownEndsAt.time - cTime;
-            }
-            else
-            {
-               leftTime = 0;
-            }
-         }
          
          private var sortKey: String;
          
@@ -426,7 +412,7 @@
                           visible="{allianceTech.upgradePart.level &lt; 1 &amp;&amp; ML.player.allianceId == 0}"/>
             
             <!-- Cooldown warning -->
-            <base:Warning text="{getString('label.cooldown', [DateUtil.secondsToHumanString(leftTime / 1000, 2)])}" 
+            <base:Warning text="{getString('label.cooldown', [DateUtil.secondsToHumanString(leftTime, 2)])}" 
                           width="60%" visible="{leftTime > 0}"/>
             
          </base:AdvancedContainer>

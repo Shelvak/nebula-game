@@ -83,8 +83,8 @@ package models.notification.parts
             return getString(
                "message." + KEY_PART + ".cooldown",
                [
-                  DateUtil.secondsToHumanString(ML.player.allianceCooldownEndsAt.time / 1000),
-                  DateUtil.formatShortDateTime(ML.player.allianceCooldownEndsAt)
+                  DateUtil.secondsToHumanString(ML.player.allianceCooldown.occuresIn),
+                  DateUtil.formatShortDateTime(ML.player.allianceCooldown.occuresAt)
                ]
             );
          }
@@ -106,7 +106,7 @@ package models.notification.parts
             }
             else
             {
-               errorMessage += "alliance cooldown is in effect until " + ML.player.allianceCooldownEndsAt;
+               errorMessage += "alliance cooldown is in effect until " + ML.player.allianceCooldown.occuresAt;
             }
             throw new IllegalOperationError(errorMessage);
          }

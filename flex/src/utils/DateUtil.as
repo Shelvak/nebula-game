@@ -13,6 +13,12 @@ package utils
    public class DateUtil
    {
       /**
+       * January 1, 1970
+       */
+      public static const BEGINNING:Date = new Date(0);
+      
+      
+      /**
        * Current time of the client machine in milliseconds.
        */
       public static var now:Number;
