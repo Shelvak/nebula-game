@@ -1430,6 +1430,15 @@
       If you want to leave your alliance to join this one there will be a {0}
       gap where you won't belong to any alliance at all.
     </message.allianceInvitation.alreadyInAlliance>
+    
+    <title.allianceJoined value="New player joined alliance" />
+    <message.allianceJoined>
+      Player "{0}" has joined "{1}"
+    </message.allianceJoined>
+    <content.allianceJoined>
+      <p>Player "{0}" has joined your alliance "{1}".</p>
+      <p>Please give him or her a warm welcome!</p>
+    </content.allianceJoined>
 
     <prop.alive value="Alive" />
     <prop.destroyed value="Destroyed" />

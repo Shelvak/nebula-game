@@ -45,15 +45,7 @@ package models.building
     * 
     * @eventType models.parts.events.UpgradeEvent.LVL_CHANGE
     */
-   [Event(name="lvlChange", type="models.parts.events.UpgradeEvent")]
-   
-   /**
-    * Dispatched when any of positioning properties - and as a result dimension (size)
-    * properties - have changed.
-    * 
-    * @eventType models.building.events.BuildingEvent.DIMENSION_CHANGE
-    */
-   [Event (name="dimensionChange", type="models.building.events.BuildingEvent")]
+   [Event(name="levelChange", type="models.parts.events.UpgradeEvent")]
    
    /**
     * Dispatched when any health points properties - and as a result <code>isDamaged</code>

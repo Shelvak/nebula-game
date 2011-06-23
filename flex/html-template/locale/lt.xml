@@ -53,7 +53,7 @@
     <Rhyno-what value="{0 one[raganosio klasės laivą] 1sts[? raganosio klasės laivą] tens[? raganosio klasės laivų] many[? raganosio klasės laivus]}" />
     <Rhyno-whos value="{0 one[raganosio klasės laivo] 1sts[? raganosio klasės laivo] tens[? raganosio klasės laivų] many[? raganosio klasės laivų]}" />
     
-    <Dart value="Strelė" />
+    <Dart value="Strėlė" />
     <Dart-what value="{0 one[strėlės klasės laivą] 1sts[? strėlės klasės laivą] tens[? strėlės klasės laivų] many[? strėlės klasės laivus]}" />
     <Dart-whos value="{0 one[strėlės klasės laivo] 1sts[? strėlės klasės laivo] tens[? strėlės klasės laivų] many[? strėlės klasės laivų]}" />
     
@@ -1428,6 +1428,15 @@
       Jeigu nori pereiti į šią sąjungą, gali išeiti iš savo sąjungos, tačiau
       negalėsi būti jokioje sąjungoje {0}.
     </message.allianceInvitation.alreadyInAlliance>
+    
+    <title.allianceJoined value="Naujas žaidėjas (-a) prisijungė prie sąjungos" />
+    <message.allianceJoined>
+      Žaidėjas (-a) "{0}" prisijungė prie "{1}"
+    </message.allianceJoined>
+    <content.allianceJoined>
+      <p>Žaidėjas (-a) "{0}" prisijungė prie tavo sąjungos "{1}".</p>
+      <p>Prašome jį ar ją šilai sutikti!</p>
+    </content.allianceJoined>
 
     <prop.alive value="Gyvi" />
     <prop.destroyed value="Sunaikinti" />

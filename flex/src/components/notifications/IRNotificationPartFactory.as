@@ -1,15 +1,6 @@
 package components.notifications
 {
-   import components.notifications.parts.IRAchievementCompleted;
-   import components.notifications.parts.IRAllianceInvitation;
-   import components.notifications.parts.IRBuildingsDeactivated;
-   import components.notifications.parts.IRCombatLog;
-   import components.notifications.parts.IRExplorationFinished;
-   import components.notifications.parts.IRKickedFromAlliance;
-   import components.notifications.parts.IRNotEnoughResources;
-   import components.notifications.parts.IRPlanetAnnexed;
-   import components.notifications.parts.IRPlanetProtected;
-   import components.notifications.parts.IRQuestLog;
+   import components.notifications.parts.*;
    
    import models.notification.NotificationType;
 
@@ -33,6 +24,7 @@ package components.notifications
          TYPE_TO_CLASS[PLANET_PROTECTED] = IRPlanetProtected;
          TYPE_TO_CLASS[ALLIANCE_INVITATION] = IRAllianceInvitation;
          TYPE_TO_CLASS[KICKED_FROM_ALLIANCE] = IRKickedFromAlliance;
+         TYPE_TO_CLASS[ALLIANCE_JOINED] = IRAllianceJoined;
       }
       
       
