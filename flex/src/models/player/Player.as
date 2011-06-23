@@ -1,19 +1,20 @@
 package models.player
 {
-   import com.developmentarc.core.utils.EventBroker;
-   
    import config.Config;
    
-   import globalevents.GlobalEvent;
+   import interfaces.IUpdatable;
    
    import models.Reward;
-   import models.alliance.MAlliance;
+   import models.parts.events.UpgradeEvent;
    import models.player.events.PlayerEvent;
    import models.solarsystem.MSSObject;
+   import models.technology.TechnologiesModel;
+   import models.technology.Technology;
+   import models.time.MTimeEventFixedMoment;
+   import models.time.events.MTimeEventEvent;
    
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
-   import mx.logging.Log;
    import mx.utils.ObjectUtil;
    
    import utils.DateUtil;
@@ -51,9 +52,21 @@ package models.player
     */
    [Event(name="alliancePlayerCountChange", type="models.player.events.PlayerEvent")]
    
+   /**
+    * @see models.player.events.PlayerEvent#MAX_ALLIANCE_PLAYER_COUNT_CHANGE
+    * @eventType models.player.events.PlayerEvent.MAX_ALLIANCE_PLAYER_COUNT_CHANGE
+    */
+   [Event(name="maxAlliancePlayerCountChange", type="models.player.events.PlayerEvent")]
+   
+   /**
+    * @see models.player.events.PlayerEvent#ALLIANCE_COOLDOWN_CHANGE
+    * @eventType models.player.events.PlayerEvent.ALLIANCE_COOLDOWN_CHANGE
+    */
+   [Event(name="allianceCooldownChange", type="models.player.events.PlayerEvent")]
+   
    
    [Bindable]
-   public class Player extends PlayerMinimal
+   public class Player extends PlayerMinimal implements IUpdatable
    {
       public function Player()
       {
@@ -62,7 +75,11 @@ package models.player
          planets.sort = new Sort();
          planets.sort.compareFunction = compareFunction_planets;
          planets.refresh();
-         EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, timedUpdateHandler);
+         
+         _allianceCooldown = new MTimeEventFixedMoment();
+         _allianceCooldown.occuresAt = DateUtil.BEGINNING;
+         _allianceCooldown.addEventListener
+            (MTimeEventEvent.HAS_OCCURED_CHANGE, allianceCooldown_hasOccuredChange, false, 0, true);
       }
       
       
@@ -195,6 +212,17 @@ package models.player
       /* ################ */
       
       
+      private var _alliancesTechnology:Technology = null; 
+      private function get alliancesTechnology() : Technology {
+         if (_alliancesTechnology == null)
+         {
+            _alliancesTechnology = ML.technologies.getTechnologyByType(TechnologiesModel.TECH_ALLIANCES);
+            _alliancesTechnology.addEventListener
+               (UpgradeEvent.LEVEL_CHANGE, alliancesTech_levelChangeHandler, false, 0, true);
+         }
+         return _alliancesTechnology;
+      }
+      
       
       private var _allianceId:int = 0;
       [Optional]
@@ -214,6 +242,15 @@ package models.player
        */
       public function get allianceId() : int {
          return _allianceId;
+      }
+      
+      
+      [Bindable(event="allianceIdChange")]
+      /**
+       * <code>true</code> if this player belongs to an alliance.
+       */
+      public function get belongsToAlliance() : Boolean {
+         return allianceId > 0;
       }
       
       
@@ -260,57 +297,66 @@ package models.player
       }
       
       
+      private function alliancesTech_levelChangeHandler(event:UpgradeEvent) : void {
+         dispatchPlayerEvent(PlayerEvent.MAX_ALLIANCE_PLAYER_COUNT_CHANGE);
+      }
+      
+      
+      [Bindable(event="maxAlliancePlayerCountChange")]
+      public function get maxAlliancePlayerCount() : int {
+         return Config.getAllianceMaxPlayers(alliancesTechnology.level);
+      }
+      
+      [Bindable(event="maxAlliancePlayerCountChange")]
       public function get hasAllianceTechnology() : Boolean {
          return maxAlliancePlayerCount > 0;
       }
       
-      public function get maxAlliancePlayerCount() : int {
-         return Config.getAllianceMaxPlayers(ML.technologies.getTechnologyByType('alliances').level);
-      }
-      
-      // TODO: this also changes if maxAlliancePlayerCount changes
       [Bindable(event="alliancePlayerCountChange")]
+      [Bindable(event="maxAlliancePlayerCountChange")]
       public function get allianceFull() : Boolean {
          return maxAlliancePlayerCount == alliancePlayerCount;
       }
       
       
-      [Optional]
-      public var allianceCooldownEndsAt: Date;
-      
-      
-      public function get allianceCooldownInEffect() : Boolean
-      {
-         return allianceCooldownEndsAt != null &&
-                allianceCooldownEndsAt.time > DateUtil.now;
-      }
-      
-      
-      public function get canJoinAlliance() : Boolean
-      {
+      [Bindable(event="allianceIdChange")]
+      [Bindable(event="allianceCooldownChange")]
+      public function get canJoinAlliance() : Boolean {
          return !belongsToAlliance && !allianceCooldownInEffect;
       }
       
       
-      [Bindable(event="allianceIdChange")]
-      /**
-       * <code>true</code> if this player belongs to an alliance.
-       */
-      public function get belongsToAlliance() : Boolean
-      {
-         return allianceId > 0;
-      }
-      
-      
-      public function belongsTo(allianceId:int) : Boolean
-      {
+      public function belongsTo(allianceId:int) : Boolean {
          return this.allianceId == allianceId;
       }
       
       
-      public function ownsAlliance(allianceId:int) : Boolean
-      {
+      public function ownsAlliance(allianceId:int) : Boolean {
          return belongsTo(allianceId) && allianceOwner;
+      }
+      
+      
+      /* ######################### */
+      /* ### ALLIANCE COOLDOWN ### */
+      /* ######################### */
+      
+      
+      private var _allianceCooldown:MTimeEventFixedMoment;
+      [Bindable(event="willNotChange")]
+      public function get allianceCooldown() : MTimeEventFixedMoment {
+         return _allianceCooldown;
+      }
+      
+      
+      private function allianceCooldown_hasOccuredChange(event:MTimeEventEvent) : void
+      {
+         dispatchPlayerEvent(PlayerEvent.ALLIANCE_COOLDOWN_CHANGE);
+      }
+      
+      
+      [Bindable(event="allianceCooldownChange")]
+      public function get allianceCooldownInEffect() : Boolean {
+         return !allianceCooldown.hasOccured;
       }
       
       
@@ -450,36 +496,51 @@ package models.player
          armyPoints = 0;
          economyPoints = 0;
          planetsCount = 0;
-         allianceId = 0;
-         allianceCooldownEndsAt = null;
+         if (_alliancesTechnology != null)
+         {
+            _alliancesTechnology.removeEventListener
+               (UpgradeEvent.LEVEL_CHANGE, alliancesTech_levelChangeHandler, false);
+            _alliancesTechnology = null;
+         }
       }
       
-      private function timedUpdateHandler(e: GlobalEvent): void
-      {
-         var cTime: Date = new Date();
-         if (vipCredsUntil != null && vipCredsUntil.time > cTime.time)
-         {
-            vipCredsTime = 
-               DateUtil.secondsToHumanString((vipCredsUntil.time - cTime.time)/1000, 2);
-         }
+      
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+      
+      
+      public function update() : void {
+         var now:Number = DateUtil.now;
+         
+         _allianceCooldown.update();
+         
+         if (vipCredsUntil != null && vipCredsUntil.time > now)
+            vipCredsTime = DateUtil.secondsToHumanString((vipCredsUntil.time - now) / 1000, 2);
          else
-         {
             vipCredsTime = null;
-         }
-         if (vipUntil && vipUntil.time > cTime.time)
-         {
-            vipTime = DateUtil.secondsToHumanString((vipUntil.time - cTime.time)/1000, 2);
-         }
+         
+         if (vipUntil != null && vipUntil.time > now)
+            vipTime = DateUtil.secondsToHumanString((vipUntil.time - now) / 1000, 2);
          else
-         {
             vipTime = null;
-         }
       }
       
-      public override function toString() : String
-      {
+      
+      public function resetChangeFlags() : void {
+         _allianceCooldown.resetChangeFlags();
+      }
+      
+      
+      /* ########################### */
+      /* ### BaseModel OVERRIDES ### */
+      /* ########################### */
+      
+      
+      public override function toString() : String {
          return "[class: " + className + ", id: " + id + ", name: " + name + "]";
       }
+      
       
       /* ############### */
       /* ### HELPERS ### */

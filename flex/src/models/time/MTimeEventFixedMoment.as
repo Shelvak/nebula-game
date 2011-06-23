@@ -6,7 +6,7 @@ package models.time
    import utils.Objects;
    import utils.DateUtil;
    
-   
+
    /**
     * Marks a fixed moment in time.
     * 

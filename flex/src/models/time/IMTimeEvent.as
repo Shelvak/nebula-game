@@ -8,18 +8,21 @@ package models.time
    
    /**
     * @see models.time.events.MTimeEventEvent#HAS_OCCURED_CHANGE
+    * @eventType models.time.events.MTimeEventEvent.HAS_OCCURED_CHANGE
     */
    [Event(name="hasOccuredChange", type="models.time.events.MTimeEventEvent")]
    
    
    /**
     * @see models.time.events.MTimeEventEvent#OCCURES_IN_CHANGE
+    * @eventType models.time.events.MTimeEventEvent.OCCURES_IN_CHANGE
     */
    [Event(name="occuresInChange", type="models.time.events.MTimeEventEvent")]
    
    
    /**
     * @see models.time.events.MTimeEventEvent#OCCURES_AT_CHANGE
+    * @eventType models.time.events.MTimeEventEvent.OCCURES_AT_CHANGE
     */
    [Event(name="occuresAtChange", type="models.time.events.MTimeEventEvent")]
    
@@ -48,7 +51,8 @@ package models.time
       
       /**
        * Point in time when this event will occure (or already has occured). When this property changes
-       * <code>models.time.event.MTimeEventEvent.OCCURES_AT_CHANGE</code> event is dispatched. 
+       * <code>models.time.event.MTimeEventEvent.OCCURES_AT_CHANGE</code> event is dispatched. Default is
+       * <code>null</code>. 
        */
       function get occuresAt() : Date;
    }

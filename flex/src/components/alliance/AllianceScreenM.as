@@ -68,6 +68,12 @@ package components.alliance
       }
       
       
+      public function reset() : void {
+         alliance = null;
+         selectDescriptionTab();
+      }
+      
+      
       private var _alliance:MAlliance = null;
       [Bindable(event="allianceChange")]
       public function set alliance(value:MAlliance) : void {
@@ -196,9 +202,7 @@ package components.alliance
       private function player_allianceIdChangeHandler(event:PlayerEvent) : void
       {
          if (_alliance != null && !ML.player.belongsTo(_alliance.id) && managementTabSelected)
-         {
             selectDescriptionTab();
-         }
          dispatchSimpleEvent(AllianceScreenMEvent.MANAGEMENT_TAB_ENABLED_CHANGE);
       }
       

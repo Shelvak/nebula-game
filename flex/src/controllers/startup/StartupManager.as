@@ -6,6 +6,8 @@ package controllers.startup
    import com.developmentarc.core.actions.actions.AbstractAction;
    import com.developmentarc.core.utils.EventBroker;
    
+   import components.alliance.AllianceScreenM;
+   
    import controllers.GlobalFlags;
    import controllers.alliances.AlliancesCommand;
    import controllers.alliances.actions.*;
@@ -148,6 +150,7 @@ package controllers.startup
          EventBroker.broadcast(new GlobalEvent(GlobalEvent.APP_RESET));
          ML.reset();
          MChat.getInstance().reset();
+         AllianceScreenM.getInstance().reset();
          ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
          GlobalFlags.getInstance().lockApplication = false;
       }

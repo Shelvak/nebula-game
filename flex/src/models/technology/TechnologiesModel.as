@@ -14,6 +14,9 @@ package models.technology
    [Bindable]
    public class TechnologiesModel extends BaseModel
    {
+      public static const TECH_ALLIANCES:String = "Alliances";
+      
+      
       private var coordsHash: Object;
       
       public var technologies:ArrayCollection = new ArrayCollection();

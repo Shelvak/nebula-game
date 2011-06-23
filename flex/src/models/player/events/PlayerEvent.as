@@ -28,6 +28,20 @@ package models.player.events
        */
       public static const ALLIANCE_PLAYER_COUNT_CHANGE:String = "alliancePlayerCountChange";
       
+      /**
+       * Dispatched when <code>Player.maxAlliancePlayerCount</code> property changes.
+       * 
+       * @eventType maxAlliancePlayerCountChange
+       */
+      public static const MAX_ALLIANCE_PLAYER_COUNT_CHANGE:String = "maxAlliancePlayerCountChange";
+      
+      /**
+       * Dispached when <code>Player.allianceCooldown</code> starts or ends.
+       * 
+       * @eventType allianceCooldownChange
+       */
+      public static const ALLIANCE_COOLDOWN_CHANGE:String = "allianceCooldownChange";
+      
       
       public function PlayerEvent(type:String)
       {

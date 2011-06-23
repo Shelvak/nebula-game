@@ -171,14 +171,14 @@
                if (oldOriginModel is Building)
                {
                   oldOriginModel.upgradePart.removeEventListener(
-                     UpgradeEvent.LVL_CHANGE, 
+                     UpgradeEvent.LEVEL_CHANGE, 
                      dealWithPropertiesChange
                   );
                }
                if (oldOriginModel is Technology)
                {
                   oldOriginModel.upgradePart.removeEventListener(
-                     UpgradeEvent.LVL_CHANGE, 
+                     UpgradeEvent.LEVEL_CHANGE, 
                      dealWithPropertiesChange
                   );
                }
@@ -190,7 +190,7 @@
                if (value is Building || value is Technology)
                {
                   value.upgradePart.addEventListener(
-                     UpgradeEvent.LVL_CHANGE, 
+                     UpgradeEvent.LEVEL_CHANGE, 
                      dealWithPropertiesChange
                   );
                }

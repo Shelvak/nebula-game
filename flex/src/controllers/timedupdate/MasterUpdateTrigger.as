@@ -42,7 +42,8 @@ package controllers.timedupdate
          _triggers = Vector.<IUpdateTrigger>([
             TemporaryUpdateTrigger.getInstance(),
             new CooldownsUpdateTrigger(),
-            new SSUpdateTrigger()
+            new SSUpdateTrigger(),
+            new PlayersUpdateTrigger()
          ]);
          _triggersToReset = new Vector.<IUpdateTrigger>();
       }
