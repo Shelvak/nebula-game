@@ -9,6 +9,8 @@
 # * Notification#create_for_planet_annexed
 # * Notification#create_for_alliance_invite
 # * Notification#create_for_planet_protected
+# * Notification#create_for_kicked_from_alliance
+# * Notification#create_for_alliance_joined
 #
 class Notification < ActiveRecord::Base
   # These methods must be defined before the include.
@@ -40,6 +42,8 @@ class Notification < ActiveRecord::Base
   EVENT_PLANET_PROTECTED = 8
   # You have been kicked from alliance
   EVENT_ALLIANCE_KICK = 9
+  # Player has joined alliance.
+  EVENT_ALLIANCE_JOINED = 10
 
   # custom_serialize converts all :symbols to 'symbols'
   serialize :params
@@ -413,5 +417,31 @@ class Notification < ActiveRecord::Base
     model.save!
 
     model    
+  end
+  
+  # EVENT_ALLIANCE_JOINED = 10
+  #
+  # params = {
+  #   :alliance => Alliance#as_json(:mode => :minimal),
+  #   :player => Player#as_json(:mode => :minimal)
+  # }
+  def self.create_for_alliance_joined(alliance, player)
+    alliance.players.map do |alliance_player|
+      if alliance_player == player
+        nil
+      else
+        model = new(
+          :event => EVENT_ALLIANCE_JOINED,
+          :player_id => alliance_player.id,
+          :params => {
+            :alliance => alliance.as_json(:mode => :minimal),
+            :player => player.as_json(:mode => :minimal)
+          }
+        )
+        model.save!
+
+        model
+      end
+    end.compact
   end
 end

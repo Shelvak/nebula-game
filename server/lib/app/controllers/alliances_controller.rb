@@ -95,6 +95,7 @@ class AlliancesController < GenericController
       alliance.accept(player)
       notification.destroy
       EventBroker.fire(notification, EventBroker::DESTROYED)
+      Notification.create_for_alliance_joined(alliance, player)
       respond :success => true
     end
   end
