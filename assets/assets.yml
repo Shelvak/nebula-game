@@ -315,36 +315,36 @@ assets:
         11.tar.gz: Mudp12.tar.gz
         12.tar.gz: Mudp13.tar.gz
         13.tar.gz: Mudp14.tar.gz
-      "3/blocking":
-        # 6x6
-        12.png: TwilightTerrainBlockingFolliage6x6.png
-        # 6x2
-        13.png: TwilightTerrainBlockingFolliage6x2.png
-        # 4x4
-        10.png: TwilightTerrainBlockingFolliage4x4.png
-        # 4x3
-        9.png: TwilightTerrainBlockingFolliage4x3.png
-        # 4x6
-        11.png: TwilightTerrainBlockingFolliage4x6.png
-        # 3x3
-        8.png: TwilightTerrainBlockingFolliage3x3.png
-        # 3x4
-        14.png: TwilightTerrainBlockingFolliage3x4.png
-      "3/nonblocking":
-        0.tar.gz: TwilightTerrainNonblockingFolliage01.tar.gz
-        1.tar.gz: TwilightTerrainNonblockingFolliage02.tar.gz
-        2.tar.gz: TwilightTerrainNonblockingFolliage03.tar.gz
-        3.tar.gz: TwilightTerrainNonblockingFolliage04.tar.gz
-        4.tar.gz: TwilightTerrainNonblockingFolliage05.tar.gz
-        5.tar.gz: TwilightTerrainNonblockingFolliage06.tar.gz
-        6.tar.gz: TwilightTerrainNonblockingFolliage07.tar.gz
-        7.tar.gz: TwilightTerrainNonblockingFolliage08.tar.gz
-        8.tar.gz: TwilightTerrainNonblockingFolliage09.tar.gz
-        9.tar.gz: TwilightTerrainNonblockingFolliage10.tar.gz
-        10.tar.gz: TwilightTerrainNonblockingFolliage11.tar.gz
-        11.tar.gz: TwilightTerrainNonblockingFolliage12.tar.gz
-        12.tar.gz: TwilightTerrainNonblockingFolliage13.tar.gz
-        13.tar.gz: TwilightTerrainNonblockingFolliage14.tar.gz
+#      "3/blocking":
+#        # 6x6
+#        12.png: TwilightTerrainBlockingFolliage6x6.png
+#        # 6x2
+#        13.png: TwilightTerrainBlockingFolliage6x2.png
+#        # 4x4
+#        10.png: TwilightTerrainBlockingFolliage4x4.png
+#        # 4x3
+#        9.png: TwilightTerrainBlockingFolliage4x3.png
+#        # 4x6
+#        11.png: TwilightTerrainBlockingFolliage4x6.png
+#        # 3x3
+#        8.png: TwilightTerrainBlockingFolliage3x3.png
+#        # 3x4
+#        14.png: TwilightTerrainBlockingFolliage3x4.png
+#      "3/nonblocking":
+#        0.tar.gz: TwilightTerrainNonblockingFolliage01.tar.gz
+#        1.tar.gz: TwilightTerrainNonblockingFolliage02.tar.gz
+#        2.tar.gz: TwilightTerrainNonblockingFolliage03.tar.gz
+#        3.tar.gz: TwilightTerrainNonblockingFolliage04.tar.gz
+#        4.tar.gz: TwilightTerrainNonblockingFolliage05.tar.gz
+#        5.tar.gz: TwilightTerrainNonblockingFolliage06.tar.gz
+#        6.tar.gz: TwilightTerrainNonblockingFolliage07.tar.gz
+#        7.tar.gz: TwilightTerrainNonblockingFolliage08.tar.gz
+#        8.tar.gz: TwilightTerrainNonblockingFolliage09.tar.gz
+#        9.tar.gz: TwilightTerrainNonblockingFolliage10.tar.gz
+#        10.tar.gz: TwilightTerrainNonblockingFolliage11.tar.gz
+#        11.tar.gz: TwilightTerrainNonblockingFolliage12.tar.gz
+#        12.tar.gz: TwilightTerrainNonblockingFolliage13.tar.gz
+#        13.tar.gz: TwilightTerrainNonblockingFolliage14.tar.gz
 
   "images/solar_system_object":
     "*":
@@ -398,7 +398,7 @@ assets:
         0.jpg: Grass.jpg
         1.jpg: Tile_texture_desert.jpg
         2.jpg: Tile_texture_mud.jpg
-        3.jpg: Tile_texture_twilight.jpg
+#        3.jpg: Tile_texture_twilight.jpg
 
       "3d":
         0_width.png:  3dground_earth_right.png
@@ -407,8 +407,8 @@ assets:
         1_height.png: 3dground_desert_left.png
         2_width.png:  3dground_mud_right.png
         2_height.png: 3dground_mud_left.png
-        3_width.png:  3dground_twilight_right.png
-        3_height.png: 3dground_twilight_left.png
+#        3_width.png:  3dground_twilight_right.png
+#        3_height.png: 3dground_twilight_left.png
 
       "mask":
         tile.png: Tile_mask_none.png
