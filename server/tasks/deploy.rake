@@ -29,8 +29,8 @@ DEPLOY_CONFIG = {
       :server => ["nebula44.com"],
     },
     :beta3 => {
-      :client => ["beta3.nebula44.com"],
-      :server => ["beta3.nebula44.com"],
+      :client => ["lt-ssh.nebula44.com:1022"],
+      :server => ["lt-ssh.nebula44.com:1022"],
     },
   },
 
@@ -104,12 +104,19 @@ class DeployHelpers; class << self
     ) unless DEPLOY_CONFIG[:servers].has_key?(env)
     env
   end
+  
+  def start(klass, server, &block)
+    server, port = server.split(":")
+    options = port ? {:port => port.to_i} : nil
+    
+    klass.start(server, DEPLOY_CONFIG[:username], options, &block)
+  end
 
   def deploy(ssh, server, part)
     deploy_dir = "#{DEPLOY_CONFIG[:paths][:remote][part]}/#{
       Time.now.strftime("%Y%m%d%H%M%S")}"
-
-    Net::SFTP.start(server, DEPLOY_CONFIG[:username]) do |sftp|
+      
+    start(Net::SFTP, server) do |sftp|
       DEPLOY_CONFIG[:paths][:local][part].each do
         |remote_path, local_path|
 
@@ -185,7 +192,7 @@ class DeployHelpers; class << self
     end
   end
 
-  START_SERVER_CMD = "rvmauthbind ruby lib/daemon.rb start"
+  START_SERVER_CMD = "ruby lib/daemon.rb start"
   START_SERVER_TIMEOUT = 10
 
   def start_server(ssh)
@@ -261,8 +268,8 @@ namespace :deploy do
 
       DEPLOY_CONFIG[:servers][env][:client].each do |server|
         DeployHelpers.info env, "Deploying locales to #{server}" do
-          Net::SSH.start(server, DEPLOY_CONFIG[:username]) do |ssh|
-            Net::SFTP.start(server, DEPLOY_CONFIG[:username]) do |sftp|
+          DeployHelpers.start(Net::SSH, server) do |ssh|
+            DeployHelpers.start(Net::SFTP, server) do |sftp|
               ssh.exec!("rm -rf #{DEPLOY_CONFIG_CLIENT_CURRENT}/locale")
               DeployHelpers.deploy_path(ssh, sftp,
                 DEPLOY_CONFIG_CLIENT_CURRENT,
@@ -287,7 +294,7 @@ namespace :deploy do
 
     DEPLOY_CONFIG[:servers][env][:client].each do |server|
       DeployHelpers.info env, "Deploying client to #{server}" do
-        Net::SSH.start(server, DEPLOY_CONFIG[:username]) do |ssh|
+        DeployHelpers.start(Net::SSH, server) do |ssh|
           deploy_dir = DeployHelpers.deploy(ssh, server, :client)
           DeployHelpers.symlink(ssh, deploy_dir)
         end
@@ -301,7 +308,7 @@ namespace :deploy do
       env = DeployHelpers.get_env(args[:env])
       DEPLOY_CONFIG[:servers][env][:server].each do |server|
         DeployHelpers.info(env, "Starting server on #{server}") do
-          Net::SSH.start(server, DEPLOY_CONFIG[:username]) do |ssh|
+          DeployHelpers.start(Net::SSH, server) do |ssh|
             DeployHelpers.start_server(ssh)
           end
         end
@@ -313,7 +320,7 @@ namespace :deploy do
       env = DeployHelpers.get_env(args[:env])
       DEPLOY_CONFIG[:servers][env][:server].each do |server|
         DeployHelpers.info(env, "Restarting server on #{server}") do
-          Net::SSH.start(server, DEPLOY_CONFIG[:username]) do |ssh|
+          DeployHelpers.start(Net::SSH, server) do |ssh|
             DeployHelpers.restart_server(ssh)
           end
         end
@@ -325,7 +332,7 @@ namespace :deploy do
       env = DeployHelpers.get_env(args[:env])
       DEPLOY_CONFIG[:servers][env][:server].each do |server|
         DeployHelpers.info(env, "Stopping server on #{server}") do
-          Net::SSH.start(server, DEPLOY_CONFIG[:username]) do |ssh|
+          DeployHelpers.start(Net::SSH, server) do |ssh|
             DeployHelpers.stop_server(ssh)
           end
         end
@@ -336,7 +343,7 @@ namespace :deploy do
     task :status, [:env] do |task, args|
       env = DeployHelpers.get_env(args[:env])
       DEPLOY_CONFIG[:servers][env][:server].each do |server|
-        Net::SSH.start(server, DEPLOY_CONFIG[:username]) do |ssh|
+        DeployHelpers.start(Net::SSH, server) do |ssh|
           running = DeployHelpers.server_running?(ssh)
           puts "Server on #{server} is " + (
             running ? "running." : "NOT RUNNING!")
@@ -355,7 +362,7 @@ namespace :deploy do
           env = DeployHelpers.get_env(args[:env])
           DEPLOY_CONFIG[:servers][env][:server].each do |server|
             DeployHelpers.info(env, "#{running_msg} on #{server}") do
-              Net::SSH.start(server, DEPLOY_CONFIG[:username]) do |ssh|
+              DeployHelpers.start(Net::SSH, server) do |ssh|
                 DeployHelpers.exec_server(ssh, remote_cmd)
               end
             end
@@ -373,7 +380,7 @@ namespace :deploy do
     DEPLOY_CONFIG[:servers][env][:server].each do |server|
       DeployHelpers.info env, "Deploying server to #{server}" do
         puts "..."
-        Net::SSH.start(server, DEPLOY_CONFIG[:username]) do |ssh|
+        DeployHelpers.start(Net::SSH, server) do |ssh|
           deploy_dir = DeployHelpers.info env, "  Sending files" do
             DeployHelpers.deploy(ssh, server, :server)
           end
@@ -411,4 +418,4 @@ namespace :deploy do
 end
 
 desc "Deploy client and server to given environment"
-task :deploy, [:env] => ["deploy:server", "deploy:client"]
+task :deploy, [:env] => ["deploy:client", "deploy:server"]
