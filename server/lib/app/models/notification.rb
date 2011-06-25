@@ -347,8 +347,10 @@ class Notification < ActiveRecord::Base
           :player_id => player.id,
           :params => {
             :planet => planet_json,
-            :old_player => old_player.as_json(:mode => :minimal),
-            :new_player => new_player.as_json(:mode => :minimal)
+            :old_player => 
+              old_player ? old_player.as_json(:mode => :minimal) : nil,
+            :new_player => 
+              new_player ? new_player.as_json(:mode => :minimal) : nil
           }
         )
         model.save!

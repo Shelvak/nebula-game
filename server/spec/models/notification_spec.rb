@@ -419,7 +419,7 @@ describe Notification do
         @new_player).size.should == 2
     end
 
-    it "should only returns 1 notification if old_player is nil" do
+    it "should only return 1 notification if old_player is nil" do
       Notification.create_for_planet_annexed(@planet, nil,
         @new_player).size.should == 1
     end
@@ -468,6 +468,18 @@ describe Notification do
             :mode => :minimal)
         end
       end
+    end
+  
+    it "should set params[:old_player] to nil if he is nil" do
+      notification = Notification.create_for_planet_annexed(@planet,
+        nil, @new_player)[0]
+      notification.params[:old_player].should be_nil
+    end
+    
+    it "should set params[:new_player] to nil if he is nil" do
+      notification = Notification.create_for_planet_annexed(@planet,
+        @old_player, nil)[0]
+      notification.params[:new_player].should be_nil
     end
   end
 

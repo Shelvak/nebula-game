@@ -1608,7 +1608,7 @@
 
     <label.clientCrash.copy value="Kopijuoti" />
     <label.clientCrash.forum value="Pranešti klaidą" />
-    <label.clientCrash.wiki value="Parsisiųsti derintuvą" />
+    <label.clientCrash.wiki value="Gauti derintuvą" />
   </Popups>
 
   <Achievements>
