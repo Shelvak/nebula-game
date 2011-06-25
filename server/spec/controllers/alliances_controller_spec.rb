@@ -232,6 +232,12 @@ describe AlliancesController do
         invoke @action, @params
       end
     end
+    
+    it "should create alliance joined notification" do
+      Notification.should_receive(:create_for_alliance_joined).
+        with(@alliance, player)
+      invoke @action, @params
+    end
   end
 
   describe "alliances|leave" do

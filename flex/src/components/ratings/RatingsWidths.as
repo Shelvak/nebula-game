@@ -10,11 +10,11 @@ package components.ratings
       public static const planetsCount: int = 80;
       public static const economyPoints: int = 85;
       public static const sciencePoints: int = 80;
-      public static const armyPoints: int = 95;
+      public static const armyPoints: int = 110;
       public static const warPoints: int = 80;
       public static const victoryPoints: int = 80;
       public static const allianceVictoryPoints: int = 80;
       public static const points: int = 80;
-      public static const action: int = 80;
+      public static const action: int = 90;
    }
 }

@@ -547,4 +547,64 @@ describe Notification do
       ).params[:alliance].should == @alliance.as_json(:mode => :minimal)
     end
   end
+  
+  describe ".create_for_kicked_from_alliance" do
+    before(:all) do
+      @alliance = Factory.create(:alliance)
+      @members = [
+        Factory.create(:player, :alliance => @alliance),
+        Factory.create(:player, :alliance => @alliance),
+        Factory.create(:player, :alliance => @alliance),
+        Factory.create(:player, :alliance => @alliance),
+      ]
+      @player = Factory.create(:player)
+    end
+
+    it "should have :alliance" do
+      Notification.create_for_alliance_joined(@alliance, @player).each do 
+        |notification|
+        notification.params[:alliance].should == 
+          @alliance.as_json(:mode => :minimal)
+      end
+    end
+
+    it "should have :player" do
+      Notification.create_for_alliance_joined(@alliance, @player).each do 
+        |notification|
+        notification.params[:player].should == 
+          @player.as_json(:mode => :minimal)
+      end
+    end
+    
+    it "should be sent for every alliance member" do
+      notifications = 
+        Notification.create_for_alliance_joined(@alliance, @player)
+      @members.each do |member|
+        notifications.find do |notification|
+          notification.player_id == member.id
+        end.should_not be_nil
+      end
+    end
+    
+    it "should not be sent for player who joined" do
+      notifications = 
+        Notification.create_for_alliance_joined(@alliance, @player)
+      notifications.find do |notification|
+        notification.player_id == @player.id
+      end.should be_nil
+    end
+    
+    it "should save all notifications" do
+      Notification.create_for_alliance_joined(@alliance, @player).each do
+        |notification| notification.should_not be_new_record
+      end
+    end
+    
+    it "should have event set" do
+      Notification.create_for_alliance_joined(@alliance, @player).each do
+        |notification| notification.event.should == 
+          Notification::EVENT_ALLIANCE_JOINED
+      end
+    end
+  end
 end

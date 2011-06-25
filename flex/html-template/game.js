@@ -1,5 +1,5 @@
 var developmentAuthToken = "0000000000000000000000000000000000000000000000000000000000000000";
-var developmentServers = ["", "localhost", "spacegame.busiu.lt"];
+var developmentServers = ["", "localhost"];
 // Read cookies immediatly because other window might overwrite them.
 var galaxyId = readCookie('galaxy_id');
 var authToken = readCookie('auth_token');
@@ -21,7 +21,8 @@ if (! Array.prototype.indexOf) {
 }
 
 function isDevelopmentMode() {
-  return developmentServers.indexOf(location.hostname) != -1;
+  return queryString('dev') == '1' || 
+    developmentServers.indexOf(location.hostname) != -1;
 }
 
 function developmentServer() {
