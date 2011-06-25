@@ -1780,6 +1780,8 @@
         planet due to insufficient storage.
       </p>
     </warning.wontFit>
+    <warning.cantClaimReward
+      value="You cant claim this reward due to insufficient population." />
     <label.notCompletedColor value="Not completed quests" />
     <label.completedColor value="Completed quests" />
 

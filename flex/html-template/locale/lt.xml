@@ -1779,6 +1779,8 @@
       <p>Atsiimdamas atlygį į pasirinktą planetą dėl nepakankamų talpyklų
       tu prarasi {0}.</p>
     </warning.wontFit>
+    <warning.cantClaimReward
+      value="Dėl nepakankamos populiacijos Tu negali atsiimti atlygio." />
     <label.notCompletedColor value="Neįvykdytos užduotys" />
     <label.completedColor value="Įvykdytos užduotys" />
 

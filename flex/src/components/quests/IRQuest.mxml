@@ -280,8 +280,15 @@
                <base:Warning text="{Localizer.string('Quests', 'warning.wontFit', [notFitting])}"
                              visible="{notFitting != null &amp;&amp; completed}"/>
                
+               <base:Warning text="{Localizer.string('Quests', 'warning.cantClaimReward')}"
+                             visible="{completed
+                             &amp;&amp; ML.player.population >= ML.player.populationMax
+                             &amp;&amp; quest.rewards.units.length > 0}"/>
+               
                <s:Button label="{Localizer.string('Quests', 'label.claimReward')}" 
-                         click="claim_clickHandler(event)" visible="{completed}"
+                         click="claim_clickHandler(event)" visible="{completed
+                         &amp;&amp; (ML.player.population &lt; ML.player.populationMax
+                         || quest.rewards.units.length == 0)}"
                          skinClass="components.skins.GreenButtonSkin"/>
                
                <s:Button label="{Localizer.string('Quests', 'label.tutorial')}" 
