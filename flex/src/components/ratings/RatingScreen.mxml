@@ -48,7 +48,7 @@
          }
          
          
-         private var _searchText:String;
+         private var _searchText:String = '';
          private function setSearchText(value:String) : void
          {
             if (_searchText != value)
