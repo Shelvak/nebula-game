@@ -3,11 +3,11 @@ cooldown: <%= 1.day %>
 
 # Point ranges for rewards.
 ranges:
-  - ["noob", 0, 10000]
-  - ["beginner", 10000, 25000]
-  - ["intermediate", 25000, 50000]
-  - ["advanced", 50000, 150000]
-  - ["expert", 150000, null]
+  - ["noob", 0, 20000]
+  - ["beginner", 20000, 50000]
+  - ["intermediate", 50000, 100000]
+  - ["advanced", 100000, 250000]
+  - ["expert", 250000, null]
   
 # types:
 #  ["unit", _type_, _level_]
