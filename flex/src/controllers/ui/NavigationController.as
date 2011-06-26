@@ -700,7 +700,7 @@ package controllers.ui
       
       public function showSquadrons() :void
       {
-         resetToNonMapScreen(_screenProperties[MainAreaScreens.SQUADRONS]);
+         showNonMapScreen(_screenProperties[MainAreaScreens.SQUADRONS]);
       }
       
       

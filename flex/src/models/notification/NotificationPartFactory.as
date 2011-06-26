@@ -1,16 +1,6 @@
 package models.notification
 {
-   import models.notification.parts.AchievementCompleted;
-   import models.notification.parts.AllianceInvitation;
-   import models.notification.parts.BuildingsDeactivated;
-   import models.notification.parts.CombatLog;
-   import models.notification.parts.ExplorationFinished;
-   import models.notification.parts.NotEnoughResources;
-   import models.notification.parts.PlanetAnnexed;
-   import models.notification.parts.PlanetProtected;
-   import models.notification.parts.QuestCompletedLog;
-   import models.notification.parts.KickedFromAlliance;
-
+   import models.notification.parts.*;
 
    
    /**
@@ -35,6 +25,7 @@ package models.notification
          TYPE_TO_CLASS[PLANET_PROTECTED] = PlanetProtected;
          TYPE_TO_CLASS[ALLIANCE_INVITATION] =  AllianceInvitation;
          TYPE_TO_CLASS[KICKED_FROM_ALLIANCE] = KickedFromAlliance;
+         TYPE_TO_CLASS[ALLIANCE_JOINED] = AllianceJoined;
       };
       
       /**
