@@ -84,6 +84,10 @@ class Player < ActiveRecord::Base
     end
   end
   
+  def overpopulated?
+    population >= population_max
+  end
+  
   # Is daily bonus available for this player?
   def daily_bonus_available?
     ! first_time? && (daily_bonus_at.nil? || daily_bonus_at <= Time.now)

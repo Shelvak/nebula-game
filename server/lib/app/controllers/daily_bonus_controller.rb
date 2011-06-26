@@ -32,7 +32,7 @@ class DailyBonusController < GenericController
     planet = SsObject::Planet.where(:player_id => player.id).
       find(params['planet_id'])
     
-    get_bonus.claim!(planet, player)
+    get_bonus.claim!(planet, player, true)
     player.set_next_daily_bonus!
   end
   

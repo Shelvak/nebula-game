@@ -105,7 +105,7 @@ describe Rewards do
         end
       end
     end
-
+    
     it "should reward units" do
       @rewards.claim!(@planet, @player)
       @unit_defs.each do |klass, count, level|
@@ -114,6 +114,39 @@ describe Rewards do
       end
     end
 
+    describe "when population is exausted" do
+      before(:each) do
+        @player = Factory.create(:player, :population => 100, 
+          :population_max => 100)
+        @planet = Factory.create(:planet, :player => @player)
+      end
+      
+      it "should fail if rewarding units" do
+        rewards = Rewards.new(Rewards::UNITS => [
+          {'type' => "Seeker", 'level' => 1, 'count' => 1, 'hp' => 90},
+        ])
+        lambda do
+          rewards.claim!(@planet, @player)
+        end.should raise_error(GameLogicError)
+      end
+      
+      it "should not fail not rewarding units" do
+        rewards = Rewards.new(Rewards::METAL => 1000)
+        lambda do
+          rewards.claim!(@planet, @player)
+        end.should_not raise_error(GameLogicError)
+      end
+      
+      it "should not fail if rewarding units with overpopulation enabled" do
+        rewards = Rewards.new(Rewards::UNITS => [
+          {'type' => "Seeker", 'level' => 1, 'count' => 1, 'hp' => 90},
+        ])
+        lambda do
+          rewards.claim!(@planet, @player, true)
+        end.should_not raise_error(GameLogicError)
+      end
+    end
+    
     it "should increase fow counter for space units" do
       @rewards.add_unit(Unit::Crow, :count => 2)
       lambda do

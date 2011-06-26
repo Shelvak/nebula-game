@@ -103,11 +103,12 @@ class Rewards
     )
   end
 
-  def claim!(planet, player)
-    increase_values(planet, REWARD_RESOURCES)
-    increase_values(player, REWARD_PLAYER)
-
-    if @data[UNITS]
+  def claim!(planet, player, allow_overpopulation=false)
+    if @data[UNITS] && @data[UNITS].size > 0
+      raise GameLogicError.new(
+        "Cannot give units if player is overpopulated!"
+      ) if ! allow_overpopulation && player.overpopulated?
+      
       units = []
       counter_increasement = 0
       points = UnitPointsCounter.new
@@ -142,6 +143,9 @@ class Rewards
       EventBroker.fire(units, EventBroker::CREATED,
         EventBroker::REASON_REWARD_CLAIMED)
     end
+    
+    increase_values(planet, REWARD_RESOURCES)
+    increase_values(player, REWARD_PLAYER)
   end
 
   private

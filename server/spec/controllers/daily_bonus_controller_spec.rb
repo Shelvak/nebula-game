@@ -55,7 +55,7 @@ describe DailyBonusController do
       bonus = mock(Rewards)
       DailyBonus.should_receive(:get_bonus).with(player.id, player.points).
         and_return(bonus)
-      bonus.should_receive(:claim!).with(@planet, player)
+      bonus.should_receive(:claim!).with(@planet, player, true)
       invoke @action, @params
     end
     
