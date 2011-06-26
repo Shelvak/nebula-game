@@ -1780,7 +1780,7 @@
       tu prarasi {0}.</p>
     </warning.wontFit>
     <warning.cantClaimReward
-      value="Dėl nepakankamos populiacijos Tu negali atsiimti atlygio." />
+      value="Dėl nepakankamo laisvų gyventojų kiekio tu negali atsiimti atlygio." />
     <label.notCompletedColor value="Neįvykdytos užduotys" />
     <label.completedColor value="Įvykdytos užduotys" />
 
