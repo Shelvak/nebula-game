@@ -98,17 +98,26 @@ function getGameOptions() {
   // Allow for quick launch in dev mode
   else if (isDevelopmentMode()) {
     document.title = "Dev Mode" + titleSuffix;
-    server = developmentServer();
+    if (! server)
+      server = developmentServer();
     
     return {'mode': 'game', 'galaxyId': 1, 'server': server, 
       'authToken': developmentAuthToken, locale: locale, webHost: webHost};
   }
   // This should not happen.
   else {
-    window.alert("You authentification cookie has expired. You must press" +
-      " play in the main page again. You will be redirected to " +
-      "nebula44.com now.");
-    window.location = "http://nebula44.com";
+    if (locale == "lt") {
+      window.alert(
+        "Tavo autorizacijos sausainiuko galiojimo laikas pasibaigė. " +
+        "Pagrindiniame puslapyje vėl paspausk žaisti, jog prisijungtum prie " +
+        "žaidimo. Dabar būsi nukreiptas į " + webHost + ".");
+    }
+    else {
+      window.alert("You authentification cookie has expired. You must press" +
+        " play in the main page again. You will be redirected to " +
+        webHost + " now.");
+    }
+    window.location = "http://" + webHost;
     return null;
   }
 }
