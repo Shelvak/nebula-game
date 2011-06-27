@@ -7,6 +7,12 @@
                     width="100%" height="100%"
                     creationComplete="this_creationCompleteHandler()"
                     addedToStage="this_addedToStageHandler(event)">
+   <fx:Metadata>
+      /**
+      * Dispatched when data has been loaded successfully or when an error occured.
+      */
+      [Event (name="localeBundlesLoaded", type="models.events.LocaleEvent")]
+   </fx:Metadata>
    
    <fx:Script>
       <![CDATA[
@@ -15,6 +21,8 @@
          import controllers.screens.ScreensSwitch;
          import controllers.startup.StartupInfo;
          import controllers.startup.StartupManager;
+         
+         import models.events.LocaleEvent;
          
          import mx.binding.utils.BindingUtils;
          import mx.controls.Alert;
@@ -76,6 +84,7 @@
          {
             if (_bundlesLoader.loadSuccessful)
             {
+               dispatchBundlesLoadedEvent();
                lblPleaseWait.text = getString('label.pleaseWait');
                lblTipLabel.text = getString('label.tip');
                BindingUtils.bindSetter(setLblDownloadProgressText, downloadProgress, "value", false, true);
@@ -156,6 +165,14 @@
          private function setLblDownloadProgressText(value:Number) : void
          {
             lblDownloadProgress.text = getString('label.progress', [downloadProgress.value]);
+         }
+         
+         private function dispatchBundlesLoadedEvent() : void
+         {
+            if (hasEventListener(LocaleEvent.BUNDLES_LOADED))
+            {
+               dispatchEvent(new LocaleEvent(LocaleEvent.BUNDLES_LOADED));
+            }
          }
       ]]>
    </fx:Script>

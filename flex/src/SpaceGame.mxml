@@ -9,7 +9,7 @@
                width="100%" height="100%"
                initialize="StartupManager.loadStartupInfo()"
                applicationComplete="this_applicationCompleteHandler(event)"
-               keyDown="this_keyDownHandler(event)">
+               keyDown="this_keyDownHandler(event)" xmlns:popups="components.popups.*">
    
    
    <fx:Declarations>
@@ -26,7 +26,7 @@
       <ns:ViewStack x="0" y="0" id="vstTopLevelScreens" width="100%" height="100%"
                     creationComplete="vstTopLevelScreens_creationCompleteHandler(event)">
          <s:NavigatorContent name="{Screens.LOADING}" width="100%" height="100%">
-            <scr:LoadingScreen/>
+            <scr:LoadingScreen localeBundlesLoaded="loadingscreen1_localeBundlesLoadedHandler(event)"/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{Screens.LOGIN}" width="100%" height="100%"/>
          <s:NavigatorContent id="navcontMain" name="{Screens.MAIN}" width="100%" height="100%">
@@ -37,6 +37,9 @@
       </ns:ViewStack>
    </base:SpinnerContainer>
    
+   <popups:ClientCrashPopup id="globalErrorPopUp" visible="{crashed}"
+                            horizontalCenter="0" verticalCenter="0"
+                            creationPolicy="all"/>
    
    <fx:Script>
       <![CDATA[
@@ -53,10 +56,25 @@
          
          import globalevents.GlobalEvent;
          
+         import models.events.LocaleEvent;
+         
          import mx.events.FlexEvent;
          
          import utils.profiler.Profiler;
          
+         [Bindable]
+         private var crashed: Boolean = false;
+         
+         public function crash(msg: String, showDebugWarning: Boolean): void
+         {
+            if (!crashed)
+            {
+               crashed = true;
+               globalErrorPopUp.messageText = msg;
+               globalErrorPopUp.showDebugPlayerWarning = showDebugWarning;
+               GlobalFlags.getInstance().lockApplication = true;
+            }
+         }
          
          private function vstTopLevelScreens_creationCompleteHandler(event:FlexEvent) : void
          {
@@ -131,12 +149,19 @@
           * not been received in time.</p>
           */
          private function mainTimer_timerHandler(event:TimerEvent):void
-//         private function this_enterFrameHandler(event:Event):void
+            //         private function this_enterFrameHandler(event:Event):void
          {
             EventBroker.broadcast(_timedUpdateEvent);
             _messagesProcessor.process();
             _respMsgTracker.checkWaitingMessages();
          }
+         
+         
+         protected function loadingscreen1_localeBundlesLoadedHandler(event:LocaleEvent):void
+         {
+            globalErrorPopUp.setLabels();
+         }
+         
       ]]>
    </fx:Script>
    

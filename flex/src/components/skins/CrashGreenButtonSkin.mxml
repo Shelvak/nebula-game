@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:base="components.base.*"
+               minWidth="16" minHeight="16" mouseEnabled="false"
+               mouseChildren="false" >
+   
+   <fx:Metadata>
+      [HostComponent("spark.components.Button")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      import utils.assets.AssetNames;
+   </fx:Script>
+   
+   <!-- states -->
+   <base:states>
+      <s:State name="up" />
+      <s:State name="over" />
+      <s:State name="down" />
+      <s:State name="disabled" />
+   </base:states>
+   
+   <!-- layer 1: fill -->
+   <s:BitmapImage source="@Embed(source='/debugger_up.png')"
+                  source.down="@Embed(source='/debugger_down.png')"
+                  source.over="@Embed(source='/debugger_over.png')"
+                  source.disabled="@Embed(source='/debugger_disabled.png')"/>
+   
+   <!-- layer 2: text -->
+   <!--- @copy spark.components.supportClasses.ButtonBase#labelDisplay -->
+   <s:Label id="labelDisplay" textAlign="center" verticalAlign="middle"
+            maxDisplayedLines="1" horizontalCenter="0" verticalCenter="1"
+            left="10" right="10" top="2" bottom="2" fontWeight="bold"
+            fontSize="18"
+            color="#12c01e" color.down="#11911a" color.disabled="#8e8e8e"/>
+   
+</base:BaseSkin>

@@ -2,6 +2,8 @@ package utils.locale
 {
    import com.adobe.utils.StringUtil;
    
+   import controllers.GlobalFlags;
+   
    import mx.resources.IResourceBundle;
    import mx.resources.IResourceManager;
    import mx.resources.ResourceManager;
@@ -33,12 +35,19 @@ package utils.locale
       
       public static function string(bundle: String, property: String, parameters: Array = null): String
       {
-         var resultString: String = RM.getString(
-            bundle, property, parameters, Locale.currentLocale
-         );
-         // resultString == "undefined" is needed due to a wrong implementation of IResourceManager
+         
+         // using workaround for wrong implementation of IResourceManager
          // see http://bugs.adobe.com/jira/browse/SDK-17041
-         if (resultString == null || resultString == "undefined")
+         var resultString: String;
+         if (property in RM.getResourceBundle(Locale.currentLocale, bundle).content) 
+         {
+            resultString = RM.getResourceBundle(
+               Locale.currentLocale, bundle).content[property];
+            if (parameters)
+               resultString = mx.utils.StringUtil.substitute(
+                  resultString, parameters);
+         } 
+         else
          {
             throw new Error('Resource ' + property + ' for bundle ' + bundle + ' not found!');
          }

@@ -10,13 +10,17 @@ package utils
    
    import models.ModelLocator;
    
+   import mx.core.FlexGlobals;
+   
    
    public class GlobalErrorHandler implements GlobalExceptionHandlerAction
    {
+      private var crashed: Boolean = false;
       public function handle(error:Object):void
       {
-         if (error is Error)
+         if (error is Error && !crashed)
          {
+            crashed = true;
             var ML:ModelLocator = ModelLocator.getInstance();
             var message:String = 'Client error!\n\n';
             message += "Exception data:\n";
@@ -33,10 +37,11 @@ package utils
 //            message += "Global squads list:\n" + ML.squadrons + "\n\n";
 //            message += "Global routes list:\n" + ML.routes + "\n\n";
 //            message += "Global notifications list:\n" + ML.notifications;
-            var popup:ClientCrashPopup = new ClientCrashPopup();
-            popup.messageText = message;
-            popup.showDebugPlayerWarning = !Capabilities.isDebugger;
-            popup.show();
+//            var popup:ClientCrashPopup = new ClientCrashPopup();
+//            popup.messageText = message;
+//            popup.showDebugPlayerWarning = !Capabilities.isDebugger;
+//            popup.show();
+            FlexGlobals.topLevelApplication.crash(message, !Capabilities.isDebugger);
          }
          StartupManager.resetApp();
       }

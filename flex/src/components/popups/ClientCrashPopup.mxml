@@ -3,25 +3,51 @@
                   xmlns:s="library://ns.adobe.com/flex/spark" 
                   xmlns:mx="library://ns.adobe.com/flex/mx"
                   xmlns:popups="components.popups.*"
-                  width="640" height="480"
-                  title="{getString('title.clientCrash')}">
+                  width="640" height="480">
    
    
    <fx:Script>
       <![CDATA[
-         import components.skins.GreenButtonSkin;
+         import components.skins.CrashPopupSkin;
+         import components.skins.CrashTextAreaSkin;
+         
+         import mx.events.FlexEvent;
          
          import utils.UrlNavigate;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
          
-         
-         [Bindable]
+         public function setLabels(): void
+         {
+            msgGeneral.text = getString('message.clientCrash.general');
+            msgDebug.text = getString('message.clientCrash.debugPlayer');
+            lblCopiedToClipboard.text = Localizer.string(
+               'General', 'message.copyToClipboardSuccessful');
+            btnCopy.label = getString('label.clientCrash.copy');
+            btnForum.label = getString('label.clientCrash.forum');
+            btnGetDebugger.label = getString('label.clientCrash.wiki');
+            title = getString('title.clientCrash');
+         }
          /**
           * Information about the error.
           */
-         public var messageText:String = "";
+         public function set messageText(value:String): void
+         {
+            msgArea.text = value;
+            //after some crashes update list gets not updated
+            //invalidate display list does not work either
+            //the only way to make text to be visible is validateNow()
+            //also there are other conditions that apear after crash
+            //and all of them made this class to be the way it is now
+            //Jho
+            validateText();
+         }
+         
+         public function get messageText(): String
+         {
+            return msgArea.text;
+         }
          
          
          [Bindable]
@@ -49,7 +75,7 @@
             System.setClipboard(messageText);
          }
          
-
+         
          private function btnForum_clickHandler(event:MouseEvent):void
          {
             UrlNavigate.getInstance().showUrl('client-crashed/');
@@ -59,6 +85,11 @@
          private function btnDebugWiki_clickHandler(event:MouseEvent):void
          {
             UrlNavigate.getInstance().showUrl('lash-player-debug/');
+         }
+         
+         private function validateText(): void
+         {
+            msgArea.validateNow();
          }
       ]]>
    </fx:Script>
@@ -73,10 +104,10 @@
       <s:layout>
          <s:HorizontalLayout gap="10" verticalAlign="top"/>
       </s:layout>
-      <s:BitmapImage source="{getImage('popup_bug')}"/>
-      <s:Label text="{getString('message.clientCrash.general')}" width="100%"
+      <s:BitmapImage source="@Embed(source='/popup_bug.png')"/>
+      <s:Label id="msgGeneral" width="100%"
                visible="{!showDebugPlayerWarning}" includeInLayout="{!showDebugPlayerWarning}"/>
-      <s:Label text="{getString('message.clientCrash.debugPlayer')}" width="100%"
+      <s:Label id="msgDebug" width="100%"
                visible="{showDebugPlayerWarning}" includeInLayout="{showDebugPlayerWarning}"/>
    </s:Group>
    <s:Group  minWidth="0" minHeight="0" visible="{!showDebugPlayerWarning}" 
@@ -85,21 +116,18 @@
          <s:HorizontalLayout horizontalAlign="right" verticalAlign="middle"/>
       </s:layout>
       <s:Group width="100%" minWidth="0" minHeight="0">
-         <s:Label id="lblCopiedToClipboard" visible="false" fontWeight="bold" horizontalCenter="0"
-                  text="{Localizer.string('General', 'message.copyToClipboardSuccessful')}"/>
+         <s:Label id="lblCopiedToClipboard" visible="false" fontWeight="bold" horizontalCenter="0"/>
       </s:Group>
-      <s:Button id="btnCopy" label="{getString('label.clientCrash.copy')}"
-                click="btnCopy_clickHandler(event)"/>
-      <s:Button id="btnForum" label="{getString('label.clientCrash.forum')}"
-                click="btnForum_clickHandler(event)"/>
+      <s:Button id="btnCopy" click="btnCopy_clickHandler(event)"/>
+      <s:Button id="btnForum" click="btnForum_clickHandler(event)"/>
    </s:Group>
-   <s:TextArea text="{messageText}" height="100%" editable="false" visible="{!showDebugPlayerWarning}"
-               includeInLayout="{!showDebugPlayerWarning}"/>
+   <s:TextArea id="msgArea" text="" height="100%" editable="false" visible="{!showDebugPlayerWarning}"
+               includeInLayout="{!showDebugPlayerWarning}" skinClass="components.skins.CrashTextAreaSkin"/>
    <s:Group visible="{showDebugPlayerWarning}" includeInLayout="{showDebugPlayerWarning}" height="100%">
-      <s:Button horizontalCenter="0" skinClass="components.skins.GreenButtonSkin" 
-                label="{getString('label.clientCrash.wiki')}" verticalCenter="0"
+      <s:Button horizontalCenter="0" skinClass="components.skins.CrashGreenButtonSkin" 
+                id="btnGetDebugger" verticalCenter="0"
                 click="btnDebugWiki_clickHandler(event)"/>
    </s:Group>
-      
+   
    
 </popups:BasePopup>

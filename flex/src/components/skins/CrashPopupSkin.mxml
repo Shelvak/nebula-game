@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+             xmlns:s="library://ns.adobe.com/flex/spark"
+             blendMode="normal"
+             mouseEnabled="false" 
+             minWidth="131"
+             minHeight="127" 
+             alpha.disabled="0.5"
+             alpha.disabledWithControlBar="0.5">
+   
+   <fx:Metadata>
+      [HostComponent("components.popups.BasePopup")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         
+         private static function getImage(name:String) : BitmapData
+         {
+            return ImagePreloader.getInstance().getImage(name);
+         }
+      ]]>
+   </fx:Script>
+   
+   <s:states>
+      <s:State name="normal" />
+      <s:State name="disabled" />
+      <s:State name="normalWithControlBar" stateGroups="withControls" />
+      <s:State name="disabledWithControlBar" stateGroups="withControls" />
+   </s:states>
+   
+   <!-- drop shadow can't be hittable so it stays sibling of other graphics -->
+   <!--- @private -->
+   <s:RectangularDropShadow blurX="20" blurY="20" alpha="0.32" distance="11" 
+                            angle="90" color="#000000" left="0" top="0" right="0" bottom="0"/>
+   
+   <!-- drop shadow can't be hittable so all other graphics go in this group -->
+   <s:Group left="0" right="0" top="0" bottom="0">
+      
+      <!-- layer 1: border -->
+      <s:Rect left="0" right="0" top="0" bottom="0" >
+         <s:stroke>
+            <s:SolidColorStroke id="borderStroke" weight="1"/>
+         </s:stroke>
+      </s:Rect>
+      
+      <!-- layer 2: background -->
+      <s:BitmapImage left="1" right="1" top="1" bottom="1" fillMode="repeat"
+                     source="@Embed(source='/main_background.png')"/>
+      
+      <!-- layer 3: contents -->
+      <s:Group left="1" right="1" top="1" bottom="1">
+         
+         <s:layout>
+            <s:VerticalLayout gap="0" horizontalAlign="justify" />
+         </s:layout>
+         
+         <s:Group minHeight="0" minWidth="0">
+            <!-- layer 3: title background -->
+            <s:Group left="0" right="0" minWidth="0" minHeight="0">
+               <s:layout>
+                  <s:HorizontalLayout gap="0"/>
+               </s:layout>
+               <s:BitmapImage source="@Embed(source='/crash_title_left.png')"/>
+               <s:BitmapImage source="@Embed(source='/crash_title_center.png')"
+                              fillMode="repeat" width="100%"/>
+               <s:BitmapImage source="@Embed(source='/crash_title_right.png')"/>
+            </s:Group>
+            <!-- layer 3: text -->
+            <s:Label id="titleDisplay" maxDisplayedLines="1"
+                     left="9" right="3" top="2" bottom="12"
+                     verticalAlign="middle" textAlign="start" fontWeight="bold"/>
+         </s:Group>
+         
+         <s:Group minWidth="0" minHeight="0" height="100%">
+            <s:layout>
+               <s:VerticalLayout gap="10" horizontalAlign="justify"
+                                 paddingLeft="10" paddingRight="10" paddingBottom="10"/>
+            </s:layout>
+            <s:Group id="contentGroup" height="100%" minWidth="0" minHeight="0">
+            </s:Group>
+            <s:Group id="grpActionButtons" minWidth="0" minHeight="0">
+               <s:layout>
+                  <s:HorizontalLayout horizontalAlign="right" verticalAlign="middle"/>
+               </s:layout>
+            </s:Group>
+         </s:Group>
+         
+      </s:Group>
+      
+   </s:Group>
+</s:SparkSkin>

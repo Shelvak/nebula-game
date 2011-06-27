@@ -1,6 +1,7 @@
 package components.popups
 {
    import components.popups.skins.BasePopupSkin;
+   import components.skins.CrashPopupSkin;
    
    import flash.events.MouseEvent;
    
@@ -39,7 +40,14 @@ package components.popups
       public function BasePopup() : void
       {
          super();
-         setStyle("skinClass", BasePopupSkin);
+         if (this is ClientCrashPopup)
+         {
+            setStyle("skinClass", CrashPopupSkin);
+         }
+         else
+         {
+            setStyle("skinClass", BasePopupSkin);
+         }
          addEventListener(MouseEvent.CLICK, this_clickHandler);
          addEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
       }
@@ -47,7 +55,10 @@ package components.popups
       
       private function this_creationCompleteHandler(event:FlexEvent) : void
       {
-         PopUpManager.centerPopUp(this);
+         if (!(this is ClientCrashPopup))
+         {
+            PopUpManager.centerPopUp(this);
+         }
       }
       
       
