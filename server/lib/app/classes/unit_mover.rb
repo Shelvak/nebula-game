@@ -4,13 +4,16 @@
 #
 class UnitMover
   class << self
-    # Calculate arrival date for units that would travel from source
-    # to target.
-    def arrival_date(player_id, unit_ids, source, target, avoid_npc=true)
+    # Calculate arrival date and hop count for units that would travel 
+    # from source to target.
+    # 
+    # Returns: [arrival_date, hop_count]
+    #
+    def move_meta(player_id, unit_ids, source, target, avoid_npc=true)
       units, route, hops = calculate_route(
         player_id, unit_ids, source, target, avoid_npc, 1)
 
-      route.arrives_at
+      [route.arrives_at, hops.size]
     end
 
     # Move given units from _source_ to _target_, optionally passing through

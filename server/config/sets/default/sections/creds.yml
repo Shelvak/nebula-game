@@ -22,7 +22,8 @@ building.destroy: 300
 alliance.change: 1000
 
 # How much creds does speeding up down to 0 cost?
-move.speed_up: 1000
+move.speed_up: percentage * 200 * hop_count
+move.speed_up.max_cost: 2500
 
 # How much % does boost give to resources?
 planet.resources.boost: 25

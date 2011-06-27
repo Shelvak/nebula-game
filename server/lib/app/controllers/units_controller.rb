@@ -118,9 +118,9 @@ class UnitsController < GenericController
     end
   end
 
-  # Calculate arrival date of selected space units. All units must be space
-  # units, ground units cannot be moved. All units also
-  # must be in same source location.
+  # Calculate arrival date and number of hop times of selected space units.
+  # All units must be space units, ground units cannot be moved. 
+  # All units also must be in same source location.
   #
   # Parameters:
   # - unit_ids (Array of Fixnum): unit ids that should be moved
@@ -146,17 +146,18 @@ class UnitsController < GenericController
   #
   # Response:
   # - arrival_date (Time): when would these units arrive.
+  # - hop_count (Fixnum): number of hops to get to the target
   #
-  def action_arrival_date
+  def action_move_meta
     param_options :required => %w{unit_ids source target avoid_npc}
 
     source, target = resolve_location
 
-    arrival_date = UnitMover.arrival_date(
+    arrival_date, hop_count = UnitMover.move_meta(
       player.id, params['unit_ids'], source, target, params['avoid_npc']
     )
 
-    respond :arrival_date => arrival_date
+    respond :arrival_date => arrival_date, :hop_count => hop_count
   end
 
   ACTION_MOVE = 'units|move'
@@ -182,29 +183,15 @@ class UnitsController < GenericController
 
     source, target = resolve_location
 
-    sm = params['speed_modifier']
-    sm_min = CONFIG['units.move.modifier.min']
-    sm_max = CONFIG['units.move.modifier.max']
-    raise GameLogicError.new("Speed Modifier #{sm} cannot be < #{sm_min}") \
-      if sm < sm_min
-    raise GameLogicError.new("Speed Modifier #{sm} cannot be > #{sm_max}") \
-      if sm > sm_max
-
+    sm = MoveSpeedModifier.new(params['speed_modifier'])
+    
     ActiveRecord::Base.transaction do
-      # Speeding units up requires creds.
-      if sm < 1
-        creds_needed = ((1 - sm) * CONFIG['creds.move.speed_up']).round
-        raise GameLogicError.new("Not enough creds for speed up! Needed: #{
-          creds_needed}, has: #{player.creds}") if player.creds < creds_needed
-        player.creds -= creds_needed
-        player.save!
-        Objective::AccelerateFlight.progress(player)
-        CredStats.movement_speed_up!(player, creds_needed)
-      end
+      sm.deduct_creds!(player, params['unit_ids'], source, target, 
+        params['avoid_npc'])
 
       UnitMover.move(
         player.id, params['unit_ids'], source, target, params['avoid_npc'],
-        sm
+        sm.to_f
       )
     end
   end

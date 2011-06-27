@@ -199,9 +199,9 @@ describe UnitsController do
     end
   end
 
-  describe "units|arrival_date" do
+  describe "units|move_meta" do
     before(:each) do
-      @action = "units|arrival_date"
+      @action = "units|move_meta"
       @unit_ids = [1, 2, 3]
       @source = SolarSystemPoint.new(10, 1, 0)
       @target = SolarSystemPoint.new(
@@ -224,19 +224,27 @@ describe UnitsController do
     it_should_behave_like "checking visibility"
 
     it "should invoke UnitMover" do
-      UnitMover.should_receive(:arrival_date).with(player.id, @unit_ids,
-        @source, @target, @params['avoid_npc']
-      ).and_return(20.minutes.from_now)
+      UnitMover.should_receive(:move_meta).with(
+        player.id, @unit_ids, @source, @target, @params['avoid_npc']
+      ).and_return([20.minutes.from_now, 20])
       invoke @action, @params
     end
 
     it "should return arrival date" do
       date = 20.minutes.from_now
-      UnitMover.should_receive(:arrival_date).with(player.id, @unit_ids,
-        @source, @target, @params['avoid_npc']
-      ).and_return(date)
+      UnitMover.should_receive(:move_meta).with(
+        player.id, @unit_ids, @source, @target, @params['avoid_npc']
+      ).and_return([date, 10])
       invoke @action, @params
       response_should_include(:arrival_date => date)
+    end
+    
+    it "should return hop count" do
+      UnitMover.should_receive(:move_meta).with(player.id, @unit_ids,
+        @source, @target, @params['avoid_npc']
+      ).and_return([20.minutes.from_now, 10])
+      invoke @action, @params
+      response_should_include(:hop_count => 10)
     end
   end
 
@@ -273,65 +281,23 @@ describe UnitsController do
       ).and_return(Factory.create(:route))
       invoke @action, @params
     end
-
-    it "should fail if speed modifier is more than max" do
-      @params['speed_modifier'] = CONFIG['units.move.modifier.max'] + 0.01
-
-      lambda do
-        invoke @action, @params
-      end.should raise_error(GameLogicError)
+    
+    it "should create speed modifier object" do
+      modifier = MoveSpeedModifier.new(@params['speed_modifier'])
+      MoveSpeedModifier.should_receive(:new).
+        with(@params['speed_modifier']).and_return(modifier)
+      invoke @action, @params
     end
-
-    it "should fail if speed modifier is less than min" do
-      player.creds += CONFIG['creds.move.speed_up']
-      player.save!
-
-      @params['speed_modifier'] = CONFIG['units.move.modifier.min'] - 0.01
-
-      lambda do
-        invoke @action, @params
-      end.should raise_error(GameLogicError)
+    
+    it "should call #deduct_creds! on that" do
+      modifier = MoveSpeedModifier.new(@params['speed_modifier'])
+      MoveSpeedModifier.stub!(:new).
+        with(@params['speed_modifier']).and_return(modifier)
+      modifier.should_receive(:deduct_creds!).with(player, 
+        @params['unit_ids'], @source, @target, @params['avoid_npc'])
+      invoke @action, @params
     end
-
-    describe "creds" do
-      before(:each) do
-        @params['speed_modifier'] = CONFIG['units.move.modifier.min']
-        @creds_needed = (
-          (1 - @params['speed_modifier']) * CONFIG['creds.move.speed_up']
-        ).round
-
-        player.creds = @creds_needed
-        player.save!
-      end
-
-      it "should fail if player does not have enough credits" do
-        player.creds -= 1
-        player.save!
-
-        lambda do
-          invoke @action, @params
-        end.should raise_error(GameLogicError)
-      end
-
-      it "should reduce creds from player" do
-        lambda do
-          invoke @action, @params
-          player.reload
-        end.should change(player, :creds).to(0)
-      end
-
-      it "should record cred stats" do
-        CredStats.should_receive(:movement_speed_up!).with(player,
-          @creds_needed)
-        invoke @action, @params
-      end
-
-      it "should progress achievement" do
-        Objective::AccelerateFlight.should_receive(:progress).with(player)
-        invoke @action, @params
-      end
-    end
-
+    
     it "should not return anything" do
       route = Factory.create(:route)
       UnitMover.should_receive(:move).and_return(route)
