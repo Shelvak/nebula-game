@@ -1266,7 +1266,7 @@
     <label.alliances value="Sąjungų reitingai" />
     <label.alliance value="Sąjunga" />
     <label.forum value="Forumas" />
-    <panelWidth value="85" />
+    <panelWidth value="95" />
   </MainMenu>
 
   <MapViewportControls>
@@ -2905,7 +2905,11 @@
     <population value="Populiacija" />
     <scientists value="Mokslininkai" />
     <points value="Taškai" />
+    <!-- used in N44 menu -->
     <warPoints value="Karo taškai" />
+    <economyPoints value="Eko. taškai" />
+    <sciencePoints value="Mokslo taškai" />
+    <armyPoints value="Kariuom. taškai" />
     <vps value="PT" />
     <timer value="Laikas iki kito padidėjimo" />
     <resources value="Resursai" />

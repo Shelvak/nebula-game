@@ -1273,7 +1273,7 @@
     <label.alliances value="Alliance ratings" />
     <label.alliance value="Alliance" />
     <label.forum value="Forum" />
-    <panelWidth value="65" />
+    <panelWidth value="85" />
   </MainMenu>
 
   <MapViewportControls>
@@ -2863,7 +2863,11 @@
     <scientists value="Scientists" />
     <population value="Population" />
     <points value="Points" />
+    <!-- used in N44 menu -->
     <warPoints value="War points" />
+    <economyPoints value="Eco. points" />
+    <sciencePoints value="Science points" />
+    <armyPoints value="Army points" />
     <vps value="VPs" />
     <timer value="Time till next increasement" />
     <resources value="Resources" />

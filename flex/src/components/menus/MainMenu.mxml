@@ -86,7 +86,7 @@
    
    <!--- Styled container for menu buttons. -->
    <s:SkinnableContainer bottom="{btnStart.height + 3}" id="menuItems" enabled="false" click="toggleStartButton(event)">
-      <base:AdvancedContainer>
+      <base:AdvancedContainer height="100%">
          <!--- Button for viewing vip screen. -->
          <s:Group width="100%" visible="{ML.player.vipLevel == 0}">
             <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
@@ -136,7 +136,7 @@
                       label="{Localizer.string('Credits', 'label.buy')}"
                       skinClass="components.skins.CreditButtonSkin"/>
          </s:Group>
-         <s:Group height="10"/>
+         <s:Group height="14"/>
          <!--- Button for logging out from the game. -->
          <s:Group width="100%">
             <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
@@ -145,7 +145,7 @@
                       label="{Localizer.string('MainMenu', 'label.forum')}"/>
          </s:Group>
          <base:layout>
-            <s:VerticalLayout gap="1"/>
+            <s:VerticalLayout gap="1" paddingTop="6" verticalAlign="middle"/>
          </base:layout>
       </base:AdvancedContainer>
       <base:AdvancedContainer height="100%">
@@ -209,12 +209,39 @@
                </s:layout>
             </s:Group>
             <s:Group>
+               <s:Label text="{Localizer.string('Resources','economyPoints') + ':'}" 
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
+               <s:Label text="{ML.player.economyPoints}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="13" paddingBottom="2"/>
+               </s:layout>
+            </s:Group>
+            <s:Group>
+               <s:Label text="{Localizer.string('Resources','sciencePoints') + ':'}" 
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
+               <s:Label text="{ML.player.sciencePoints}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="2" paddingBottom="2"/>
+               </s:layout>
+            </s:Group>
+            <s:Group>
+               <s:Label text="{Localizer.string('Resources','armyPoints') + ':'}" 
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
+               <s:Label text="{ML.player.armyPoints}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="2" paddingBottom="2"/>
+               </s:layout>
+            </s:Group>
+            <s:Group>
                <s:Label text="{Localizer.string('Resources','warPoints') + ':'}" 
                         width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
                         color="#eec500"/>
                <s:Label text="{ML.player.warPoints}"/>
                <s:layout>
-                  <s:HorizontalLayout paddingLeft="6" paddingTop="6" paddingBottom="3"/>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="2" paddingBottom="2"/>
                </s:layout>
             </s:Group>
             <s:Group>
@@ -223,7 +250,7 @@
                         color="#eec500"/>
                <s:Label text="{ML.player.points}"/>
                <s:layout>
-                  <s:HorizontalLayout paddingLeft="6" paddingTop="3" paddingBottom="6"/>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="2" paddingBottom="6"/>
                </s:layout>
             </s:Group>
             <s:Group toolTip="{Localizer.string('Ratings','victoryPoints')}">
@@ -232,7 +259,7 @@
                         color="#eec500"/>
                <s:Label text="{ML.player.victoryPoints}"/>
                <s:layout>
-                  <s:HorizontalLayout paddingLeft="6" paddingTop="13" paddingBottom="6"/>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="10" paddingBottom="6"/>
                </s:layout>
             </s:Group>               
             <s:Group>
@@ -245,7 +272,7 @@
                         :'---')}"
                         color="{ML.player.vipLevel > 0?0xffffff:0x636363}"/>
                <s:layout>
-                  <s:HorizontalLayout paddingLeft="6" paddingTop="13"/>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="10"/>
                </s:layout>
             </s:Group>
             <s:Group>
