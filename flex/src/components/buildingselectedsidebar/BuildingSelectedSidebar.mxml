@@ -983,11 +983,13 @@
                         <s:Group visible="{_selectedModel.metalStorage != 0}">
                            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
                                                NumberUtil.toShortString(_selectedModel.metalStorage* 
-                                               ML.resourcesMods.getStorageMod(ResourceType.METAL), PRECISION)}"
+                                               ML.resourcesMods.getStorageMod(ResourceType.METAL)* 
+                                               ML.latestPlanet.ssObject.metal.boost.getStorageBoost(), PRECISION)}"
                                                toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
                            <base:NextValueComp textToDisplay="{
                                                NumberUtil.toShortString(_selectedModel.nextMetalStorage* 
-                                               ML.resourcesMods.getStorageMod(ResourceType.METAL), PRECISION)}"
+                                               ML.resourcesMods.getStorageMod(ResourceType.METAL)* 
+                                               ML.latestPlanet.ssObject.metal.boost.getStorageBoost(), PRECISION)}"
                                                visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
                                                toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
                            <s:layout>
@@ -998,11 +1000,13 @@
                         <s:Group visible="{_selectedModel.energyStorage != 0}">
                            <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{
                                                NumberUtil.toShortString(_selectedModel.energyStorage* 
-                                               ML.resourcesMods.getStorageMod(ResourceType.ENERGY), PRECISION)}"
+                                               ML.resourcesMods.getStorageMod(ResourceType.ENERGY)* 
+                                               ML.latestPlanet.ssObject.energy.boost.getStorageBoost(), PRECISION)}"
                                                toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
                            <base:NextValueComp textToDisplay="{
                                                NumberUtil.toShortString(_selectedModel.nextEnergyStorage* 
-                                               ML.resourcesMods.getStorageMod(ResourceType.ENERGY), PRECISION)}"
+                                               ML.resourcesMods.getStorageMod(ResourceType.ENERGY)* 
+                                               ML.latestPlanet.ssObject.energy.boost.getStorageBoost(), PRECISION)}"
                                                visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
                                                toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
                            <s:layout>
@@ -1013,11 +1017,13 @@
                         <s:Group visible="{_selectedModel.zetiumStorage != 0}">
                            <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{
                                                NumberUtil.toShortString(_selectedModel.zetiumStorage* 
-                                               ML.resourcesMods.getStorageMod(ResourceType.ZETIUM), PRECISION)}"
+                                               ML.resourcesMods.getStorageMod(ResourceType.ZETIUM)* 
+                                               ML.latestPlanet.ssObject.zetium.boost.getStorageBoost(), PRECISION)}"
                                                toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
                            <base:NextValueComp textToDisplay="{
                                                NumberUtil.toShortString(_selectedModel.nextZetiumStorage* 
-                                               ML.resourcesMods.getStorageMod(ResourceType.ZETIUM), PRECISION)}"
+                                               ML.resourcesMods.getStorageMod(ResourceType.ZETIUM)* 
+                                               ML.latestPlanet.ssObject.zetium.boost.getStorageBoost(), PRECISION)}"
                                                visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
                                                toolTip="{Localizer.string('BuildingSelectedSidebar', 'toolTip.afterUpgrade')}"/>
                            <s:layout>

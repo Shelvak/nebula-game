@@ -241,6 +241,12 @@ package models.technology
          return TechnologyUpgradable.getMinScientists(type, upgradePart.level + 1);
       }
       
+      [Bindable (event="levelChange")]
+      public function get warPoints(): int
+      {
+         return getWarPoints(type, upgradePart.level + 1);
+      }
+      
       private function handleLevelChange(e: UpgradeEvent): void
       {
          ModelLocator.getInstance().constructable = Building.getConstructableBuildings();
