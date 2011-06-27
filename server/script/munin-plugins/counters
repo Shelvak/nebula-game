@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+SERVER_DIR = "/home/spacegame/nebula-server/current"
+
+mode = File.basename(__FILE__).sub(/^nebula44_/, '')
+arg = ARGV[0]
+
+ARGV.clear
+ARGV[0] = mode
+ARGV[1] = arg || File.join(SERVER_DIR, 'log', 'production.log')
+
+require File.join(SERVER_DIR, 'script', 'log_analyzer.rb')
