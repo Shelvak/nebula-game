@@ -557,6 +557,16 @@ describe SsObject::Planet do
               "hp" => 8}
         ]}
       ]
+      @lucky_wo_units = [
+        {'weight' => 10, 'rewards' => [
+            {"kind" => Rewards::METAL, "count" => 100}
+        ]}
+      ]
+      @unlucky_wo_units = [
+        {'weight' => 5, 'rewards' => [
+            {"kind" => Rewards::ENERGY, "count" => 10}
+        ]}
+      ]
     end
     
     it "should get winning chance based on width and height" do
@@ -599,25 +609,27 @@ describe SsObject::Planet do
       end
 
       it "should take win rewards without units if lucky roll" do
+        reward = @lucky_wo_units
         with_config_values(
           'tiles.exploration.winning_chance' => 100,
-          'tiles.exploration.rewards.win.without_units' => @lucky
+          'tiles.exploration.rewards.win.without_units' => reward
         ) do
-          rewards = Rewards.from_exploration(@lucky[0]['rewards'])
+          rewards = Rewards.from_exploration(reward[0]['rewards'])
           Rewards.should_receive(:from_exploration).with(
-            @lucky[0]['rewards']).and_return(rewards)
+            reward[0]['rewards']).and_return(rewards)
           @planet.finish_exploration!
         end
       end
 
       it "should take lose rewards if unlucky roll" do
+        reward = @unlucky_wo_units
         with_config_values(
           'tiles.exploration.winning_chance' => 0,
-          'tiles.exploration.rewards.lose.without_units' => @unlucky
+          'tiles.exploration.rewards.lose.without_units' => reward
         ) do
-          rewards = Rewards.from_exploration(@unlucky[0]['rewards'])
+          rewards = Rewards.from_exploration(reward[0]['rewards'])
           Rewards.should_receive(:from_exploration).with(
-            @unlucky[0]['rewards']).and_return(rewards)
+            reward[0]['rewards']).and_return(rewards)
           @planet.finish_exploration!
         end
       end

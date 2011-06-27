@@ -1,22 +1,34 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe UnitMover do
-  describe ".arrival_date" do
-    it "should give you arrival date" do
-      player = Factory.create(:player)
+  describe ".move_meta" do
+    before(:each) do
+      @player = Factory.create(:player)
       ss = Factory.create(:solar_system)
-      ssp1 = SolarSystemPoint.new(ss.id, 0, 0)
-      ssp2 = SolarSystemPoint.new(ss.id, 3, 0)
+      @ssp1 = SolarSystemPoint.new(ss.id, 0, 0)
+      @ssp2 = SolarSystemPoint.new(ss.id, 3, 0)
 
-      units = [
-        Factory.create(:u_mule, :player => player, :location => ssp1)
+      @units = [
+        Factory.create(:u_mule, :player => @player, :location => @ssp1)
       ]
-
-      UnitMover.arrival_date(player.id, units.map(&:id), ssp1, ssp2).
+    end
+    
+    it "should give you arrival date" do
+      arrives_at, _ = 
+        UnitMover.move_meta(@player.id, @units.map(&:id), @ssp1, @ssp2)
+      arrives_at.
         should be_close(
-          UnitMover.move(player.id, units.map(&:id), ssp1, ssp2).arrives_at,
+          UnitMover.move(@player.id, @units.map(&:id), @ssp1, @ssp2).
+            arrives_at,
           SPEC_TIME_PRECISION
         )
+    end
+    
+    it "should give you hop count" do
+      _, hop_count = 
+        UnitMover.move_meta(@player.id, @units.map(&:id), @ssp1, @ssp2)
+      hop_count.should ==
+        UnitMover.move(@player.id, @units.map(&:id), @ssp1, @ssp2).hops.size
     end
   end
 
@@ -233,33 +245,32 @@ describe UnitMover do
 
     it "should make use of the speed multiplier" do
       mult = 1.237849263597
+      arrives_at, _ = 
+        UnitMover.move_meta(@player.id, @unit_ids, @source, @target)
       UnitMover.move(
         @player.id, @unit_ids, @source, @target, true, mult
       ).arrives_at.should be_close(
-        ((
-          UnitMover.arrival_date(@player.id, @unit_ids, @source, @target) -
-          Time.now
-        ) * mult).seconds.from_now,
+        ((arrives_at - Time.now) * mult).seconds.from_now,
         30.seconds
       )
     end
 
     it "should use slowest of the units speed for movements" do
-      route_with_all = UnitMover.arrival_date(
+      route_with_all, _ = UnitMover.move_meta(
         @player.id, @units.map(&:id), @source, @target)
-      slow_route = UnitMover.arrival_date(
+      slow_route, _ = UnitMover.move_meta(
         @player.id, @units_slow.map(&:id), @source, @target)
 
       route_with_all.should == slow_route
     end
 
     it "should use technologies for movement" do
-      without_tech = UnitMover.arrival_date(
+      without_tech, _ = UnitMover.move_meta(
         @player.id, @units_slow.map(&:id), @source, @target)
 
       tech = Factory.create!(:t_heavy_flight, :level => 5,
         :player => @player)
-      with_tech = UnitMover.arrival_date(
+      with_tech, _ = UnitMover.move_meta(
         @player.id, @units_slow.map(&:id), @source, @target)
 
       decreasement = (without_tech - Time.now) *
@@ -277,9 +288,9 @@ describe UnitMover do
       t2 = SolarSystemPoint.new(@ss1.id, 1, 45)
 
       @units.each { |u| u.location = s1; u.save! }
-      inner = UnitMover.arrival_date(@player.id, @unit_ids, s1, t1)
+      inner, _ = UnitMover.move_meta(@player.id, @unit_ids, s1, t1)
       @units.each { |u| u.location = s2; u.save! }
-      outer = UnitMover.arrival_date(@player.id, @unit_ids, s2, t2)
+      outer, _ = UnitMover.move_meta(@player.id, @unit_ids, s2, t2)
 
       (outer - inner).should > 0
     end
