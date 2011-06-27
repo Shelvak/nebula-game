@@ -702,7 +702,8 @@
                               <s:Label text="{Localizer.string('InfoScreen', 'deploysTo')}"
                                        fontWeight="bold" fontSize="15"/>
                               <components:CenteredBitmapImage height="70" width="100" 
-                                                              toolTip="{Localizer.string('Buildings', _infoModel.infoData.deploysTo+'.name')}" 
+                                                              toolTip="{_infoModel.infoData.deploysTo != null
+                                                              ?Localizer.string('Buildings', _infoModel.infoData.deploysTo+'.name'):''}" 
                                                               source="{IMG.getImage(AssetNames.getBuildingImageName(_infoModel.infoData.deploysTo))}"/>
                               <s:layout>
                                  <s:HorizontalLayout verticalAlign="middle" horizontalAlign="center" paddingTop="10"/>
