@@ -157,10 +157,10 @@
       <base:Panel height="100%" horizontalCenter="0" 
                   skinClass="components.skins.LargePanelSkin"
                   title="{Localizer.string('Ratings', 'label.ratings')}">
-         <ratings:RatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)" horizontalCenter="0"/>
+         <ratings:RatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)"/>
          <base:Scroller id="contScroller" left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10">
             <s:Group width="100%">
-               <s:DataGroup dataProvider="{ML.ratings}" horizontalCenter="0"
+               <s:DataGroup dataProvider="{ML.ratings}"
                             itemRenderer="components.ratings.IRRatingsRow">
                   <s:layout>
                      <s:VerticalLayout gap="0"/>

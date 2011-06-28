@@ -130,11 +130,11 @@
          <s:Label fontSize="24" text="{Localizer.string('Ratings', 'label.noAlliances')}"
                   horizontalCenter="0" verticalCenter="0" visible="{ML.allyRatings.length == 0}"/>
          <alliance:AllianceRatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)" 
-                                         visible="{ML.allyRatings.length > 0}" horizontalCenter="0"/>
+                                         visible="{ML.allyRatings.length > 0}"/>
          <base:Scroller left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10"
                         id="contScroller">
             <s:Group width="100%">
-               <s:DataGroup dataProvider="{ML.allyRatings}" horizontalCenter="0"
+               <s:DataGroup dataProvider="{ML.allyRatings}"
                             itemRenderer="components.alliance.IRAllianceRatingsRow">
                   <s:layout>
                      <s:VerticalLayout gap="0"/>
