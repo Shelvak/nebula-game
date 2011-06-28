@@ -29,7 +29,7 @@ DEPLOY_CONFIG = {
       :server => ["nebula44.com"],
     },
     :beta3 => {
-      :client => ["lt-ssh.nebula44.com:1022"],
+      :client => ["static-beta3.nebula44.com:2022"],
       :server => ["lt-ssh.nebula44.com:1022"],
     },
   },
@@ -51,7 +51,8 @@ DEPLOY_CONFIG = {
         "tasks",
         File.join("script", "log_analyzer.rb"),
         File.join("script", "munin_logged_in.rb"),
-        File.join("script", "fix_visibility.rb"),
+        File.join("script", "munin-plugins"),
+        #File.join("script", "fix_visibility.rb"),
         "vendor",
         "Rakefile",
         ".rvmrc",
@@ -107,7 +108,7 @@ class DeployHelpers; class << self
   
   def start(klass, server, &block)
     server, port = server.split(":")
-    options = port ? {:port => port.to_i} : nil
+    options = port ? {:port => port.to_i} : {}
     
     klass.start(server, DEPLOY_CONFIG[:username], options, &block)
   end

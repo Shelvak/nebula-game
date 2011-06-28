@@ -74,6 +74,8 @@ benchmark :autoloader do
 end
 
 benchmark :logger do
+  email_from = "server-#{Socket.gethostname}@nebula44.com"
+  email_to = 'arturas@nebula44.com'
   LOGGER = GameLogger.new(
     File.expand_path(
       File.join(ROOT_DIR, 'log', "#{ENV['environment']}.log")
@@ -85,8 +87,8 @@ benchmark :logger do
     LOGGER.on_fatal = lambda do |fatal|
       begin
         Mail.deliver do
-          from 'server@nebula44.com'
-          to 'arturas@nebula44.com'
+          from email_from
+          to email_to
           subject "[FATAL] #{fatal.split("\n")[0]}"
           body "Server has encountered an FATAL error!\n\n#{fatal}"
         end
@@ -97,8 +99,8 @@ benchmark :logger do
     LOGGER.on_error = lambda do |error|
       begin
         Mail.deliver do
-          from 'server@nebula44.com'
-          to 'arturas@nebula44.com'
+          from email_from
+          to email_to
           subject "[ERROR] #{error.split("\n")[0]}"
           body "Server has encountered an error!\n\n#{error}"
         end
@@ -109,8 +111,8 @@ benchmark :logger do
     LOGGER.on_warn = lambda do |warn|
       begin
         Mail.deliver do
-          from 'server@nebula44.com'
-          to 'arturas@nebula44.com'
+          from email_from
+          to email_to
           subject "[WARN] #{warn.split("\n")[0]}"
           body "Server has issued a warning!\n\n#{warn}"
         end

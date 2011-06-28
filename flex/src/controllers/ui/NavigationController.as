@@ -728,7 +728,7 @@ package controllers.ui
          {
             createdScreens[MainAreaScreens.RATINGS] = true;
          }
-         resetToNonMapScreen(_screenProperties[MainAreaScreens.RATINGS]);
+         showNonMapScreen(_screenProperties[MainAreaScreens.RATINGS]);
          new GRatingsEvent(GRatingsEvent.RATINGS_REFRESH);
       }
       
@@ -757,7 +757,7 @@ package controllers.ui
          {
             createdScreens[MainAreaScreens.ALLY_RATINGS] = true;
          }
-         resetToNonMapScreen(_screenProperties[MainAreaScreens.ALLY_RATINGS]);
+         showNonMapScreen(_screenProperties[MainAreaScreens.ALLY_RATINGS]);
          new GRatingsEvent(GRatingsEvent.ALLIANCE_RATINGS_REFRESH);
       }
       

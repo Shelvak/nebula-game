@@ -4,4 +4,14 @@ class Cfg; class << self
   def planet_protection_duration
     CONFIG.evalproperty('combat.cooldown.protection.duration')
   end
+  
+  def units_speed_up(speed_modifier, hop_count)
+    [
+      CONFIG.evalproperty('creds.move.speed_up', 
+        'percentage' => (1.0 - speed_modifier),
+        'hop_count' => hop_count
+      ).round,
+      CONFIG['creds.move.speed_up.max_cost']
+    ].min
+  end
 end; end
