@@ -371,15 +371,19 @@
                    click="info_clickHandler(event)"/>
          
          <s:Label id="bottomLabel" horizontalCenter="0" text="{
-                  facility.constructableType == null?
-                  ((canBeUpgraded || !isValid)?
-                  (type==null?'':Localizer.string('Units', type+'.name')):
-                  (enoughRates?(enoughStorages?Localizer.string('Units', 'label.enoughIn', [resLeft])
-                  :Localizer.string('Units', 'label.notEnoughStorage'))
-                  :Localizer.string('Units', 'label.notEnoughResources'))):
-                  (facility.getQueueEmptySpace() &lt; 1?
-                  Localizer.string('Units', 'label.fullQueue'):
-                  Localizer.string('Units', type+'.name'))}" bottom="5"/>
+                  type==null
+                  ?''
+                  :(facility.constructableType == null
+                     ?((canBeUpgraded || !isValid)
+                        ?Localizer.string('Units', type+'.name')
+                        :(enoughRates
+                           ?(enoughStorages
+                              ?Localizer.string('Units', 'label.enoughIn', [resLeft])
+                              :Localizer.string('Units', 'label.notEnoughStorage'))
+                           :Localizer.string('Units', 'label.notEnoughResources')))
+                     :(facility.getQueueEmptySpace() &lt; 1
+                        ?Localizer.string('Units', 'label.fullQueue')
+                        :Localizer.string('Units', type+'.name')))}" bottom="5"/>
          
          <s:Group id="priceGroup" top="10" left="158" toolTip=" " creationComplete="priceGroup_creationCompleteHandler(event)" 
                   toolTipCreate="createCustomToolTip(event)">
