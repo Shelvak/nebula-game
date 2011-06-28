@@ -35,12 +35,16 @@ package controllers.units.events
       
       /**
        * Constructor.
+       * 
+       * @param _hopCount - used for showing speed up popup
        */
-      public function OrdersControllerEvent(type:String)
+      public function OrdersControllerEvent(type:String, _hopCount: int = 0)
       {
+         hopCount = _hopCount;
          super(type, false, false);
       }
       
+      public var hopCount: int = 0;
       
       /**
        * Marks the time (in seconds; without speed modifier applied) units whould reach their destination if

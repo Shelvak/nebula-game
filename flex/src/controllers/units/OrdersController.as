@@ -5,7 +5,7 @@ package controllers.units
    import components.movement.CTargetLocationPopup;
    
    import controllers.ui.NavigationController;
-   import controllers.units.actions.ArrivalDateActionParams;
+   import controllers.units.actions.MoveMetaActionParams;
    import controllers.units.actions.MoveActionParams;
    import controllers.units.events.OrdersControllerEvent;
    
@@ -305,7 +305,7 @@ package controllers.units
       public function commitTargetLocation(location:LocationMinimal) : void
       {
          _locTarget = Objects.paramNotNull("location", location);
-         new UnitsCommand(UnitsCommand.ARRIVAL_DATE, new ArrivalDateActionParams(
+         new UnitsCommand(UnitsCommand.MOVE_META, new MoveMetaActionParams(
             _unitIds,
             locationSource,
             _locTarget,
@@ -320,12 +320,13 @@ package controllers.units
        * 
        * @param time when units would reach their destination if they are dispatched right away.
        */
-      public function showSpeedUpPopup(arrivalTime:Number) : void
+      public function showSpeedUpPopup(arrivalTime:Number, hopCount: int) : void
       {
          if (hasEventListener(OrdersControllerEvent.UICMD_ACTIVATE_SPEED_UP_POPUP))
          {
             var event:OrdersControllerEvent = new OrdersControllerEvent(
-               OrdersControllerEvent.UICMD_ACTIVATE_SPEED_UP_POPUP
+               OrdersControllerEvent.UICMD_ACTIVATE_SPEED_UP_POPUP,
+               hopCount
             );
             event.arrivalTime = arrivalTime;
             dispatchEvent(event);

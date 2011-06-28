@@ -44,9 +44,9 @@ package controllers.units
       
       
       /**
-       * @see controllers.units.actions.ArrivalDateAction
+       * @see controllers.units.actions.MoveMetaAction
        */
-      public static const ARRIVAL_DATE:String = "units|arrival_date";
+      public static const MOVE_META:String = "units|move_meta";
       
       
       public function UnitsCommand(type:String,

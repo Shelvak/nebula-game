@@ -11,6 +11,7 @@ package tests.movement
    
    import models.ModelLocator;
    import models.player.Player;
+   import models.unit.Unit;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.number.closeTo;
@@ -38,9 +39,10 @@ package tests.movement
             "units.move.modifier.min": 0.1,
             "units.move.modifier.max": 2.0,
             "combat.cooldown.afterJump.duration": 60,
-            "creds.move.speedUp": 1000
+            "creds.move.speedUp": "200 * percentage * hop_count",
+            "creds.move.speedUp.maxCost": 2500
          });
-         scpModel = new CSpeedControlPopupM(10);
+         scpModel = new CSpeedControlPopupM(10, 5);
          player = ModelLocator.getInstance().player;
       };
       
@@ -101,9 +103,7 @@ package tests.movement
       
       [Test]
       public function arrivalDate_should_have_speed_modifier_applied() : void
-      {
-         scpModel = new CSpeedControlPopupM(10);
-         
+      {  
          scpModel.speedModifier = 1.0;
          assertThat(
             "should be equal to base trip time when modifier is 1.0",
@@ -138,9 +138,7 @@ package tests.movement
       
       [Test]
       public function speedUpCost_should_depend_on_speed_modifier_and_baseTripTime() : void
-      {
-         scpModel = new CSpeedControlPopupM(10);
-         
+      {         
          scpModel.speedModifier = 1.0;
          assertThat(
             "speedUpCost should be 0 if speedModifier is 1.0",
@@ -156,13 +154,15 @@ package tests.movement
          scpModel.speedModifier = 0.5;
          assertThat(
             "speedUpCost should be calculated using values from config",
-            scpModel.speedUpCost, equals (Math.round(0.5 * Config.getMovementSpeedUpCredsCost()))
+            scpModel.speedUpCost, equals (Unit.getMovementSpeedUpCredsCost(0.5,
+               scpModel.hopCount))
          );
          
          scpModel.speedModifier = 0.25;
          assertThat(
             "speedUpCost should be calculated using values from config",
-            scpModel.speedUpCost, equals (Math.round(0.75 * Config.getMovementSpeedUpCredsCost()))
+            scpModel.speedUpCost, equals (Unit.getMovementSpeedUpCredsCost(0.75,
+               scpModel.hopCount))
          );
       };
       
@@ -187,7 +187,7 @@ package tests.movement
       [Test]
       public function playerHasEnoughCreds() : void
       {
-         player.creds = Config.getMovementSpeedUpCredsCost() * 0.5;
+         player.creds = Unit.getMovementSpeedUpCredsCost(0.5, scpModel.hopCount);
          
          scpModel.speedModifier = 1.0;
          assertThat(
@@ -209,7 +209,7 @@ package tests.movement
          
          assertThat(
             "should dispatch PLAYER_CREDS_CHANGE event when ModelLocator.player.creds changes",
-            function():void{ player.creds = Config.getMovementSpeedUpCredsCost() },
+            function():void{ player.creds =  Unit.getMovementSpeedUpCredsCost(0.75, scpModel.hopCount)},
             causesTarget (scpModel) .toDispatchEvent (CSpeedControlPopupMEvent.PLAYER_CREDS_CHANGE)
          );
          assertThat(

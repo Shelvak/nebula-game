@@ -13,8 +13,10 @@ package components.movement
    import interfaces.IUpdatable;
    
    import models.ModelLocator;
+   import models.parts.UnitUpgradable;
    import models.player.events.PlayerEvent;
    import models.time.MTimeEventFixedInterval;
+   import models.unit.Unit;
    
    import utils.DateUtil;
    import utils.EventUtils;
@@ -54,16 +56,23 @@ package components.movement
        * 
        * @param baseTripTime time (number of seconds) needed for squad to reach its destination without
        *                     modifier applied. <b>Must be positive non-zero number.</b>
+       * @param hopCount int total hops to complete the trip 
+       *                 <b>Must be positive non-zero integer.</b>
        */
-      public function CSpeedControlPopupM(baseTripTime:Number)
+      public function CSpeedControlPopupM(baseTripTime:Number, hopCount: int)
       {
          if (baseTripTime <= 0)
          {
             throw new ArgumentError("[param tripTime] must be positive non-zero mumber");
          }
+         if (hopCount <= 0)
+         {
+            throw new ArgumentError("[param hopCount] must be positive non-zero int");
+         }
          _baseTripTime = baseTripTime;
          _arrivalDate = new MTimeEventFixedInterval();
          _arrivalDate.occuresIn = _baseTripTime;
+         _hopCount = hopCount;
          ML.player.addEventListener(PlayerEvent.CREDS_CHANGE, player_credsChangeHandler, false, 0, true);
       }
       
@@ -78,7 +87,15 @@ package components.movement
          onConfirm = null;
       }
       
+      private var _hopCount: int;
       
+      /**
+       * for test cases 
+       */      
+      public function get hopCount(): int
+      {
+         return _hopCount;
+      }
       /* ############ */
       /* ### TIME ### */
       /* ############ */
@@ -126,8 +143,8 @@ package components.movement
        */
       public function get speedUpCost() : int
       {
-         var cost:int = (1.0 - speedModifier) * Config.getMovementSpeedUpCredsCost(); 
-         return cost < 0 ? 0 : cost;
+         return Unit.getMovementSpeedUpCredsCost(
+            1.0 - speedModifier, _hopCount);
       }
       
       
@@ -274,6 +291,7 @@ package components.movement
        */
       public function buyCreds() : void
       {
+         UrlNavigate.getInstance().showBuyCreds();
       }
       
       

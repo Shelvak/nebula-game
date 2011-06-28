@@ -520,12 +520,20 @@ package config
       
       
       /**
-       * Returns amount of credits required to instantly move (teleport) one squadron (number of units is
-       * not important) to its destination (distance is also not important).
+       * Returns formula to calculate creds cost.
+       * formula requires params 'percentage' and 'hop_count'
        */
-      public static function getMovementSpeedUpCredsCost() : int
+      public static function getMovementSpeedUpCredsCost() : String
       {
          return getValue("creds.move.speedUp");
+      }
+      
+      /**
+       * Returns max movement speed up creds cost
+       */
+      public static function getMovementSpeedUpMaxCredsCost() : int
+      {
+         return getValue("creds.move.speedUp.maxCost");
       }
       
       

@@ -810,7 +810,8 @@ package components.map.space
          passivateTargetLocationPopup();
          
          activateSpeedControlPopup(
-            new CSpeedControlPopupM((event.arrivalTime - DateUtil.now) / 1000)
+            new CSpeedControlPopupM(
+               (event.arrivalTime - DateUtil.now) / 1000, event.hopCount)
          );
       }
       

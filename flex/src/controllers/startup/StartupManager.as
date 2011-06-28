@@ -277,7 +277,7 @@ package controllers.startup
          bindPair(UnitsCommand.MOVE, new controllers.units.actions.MoveAction());
          bindPair(UnitsCommand.MOVEMENT, new MovementAction());
          bindPair(UnitsCommand.MOVEMENT_PREPARE, new MovementPrepareAction());
-         bindPair(UnitsCommand.ARRIVAL_DATE, new ArrivalDateAction());
+         bindPair(UnitsCommand.MOVE_META, new MoveMetaAction());
       }
       private static function bindObjectsCommands() : void
       {

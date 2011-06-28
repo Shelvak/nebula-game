@@ -46,6 +46,24 @@ package models.unit
          return resultList;
       }
       
+      public static function getMovementSpeedUpCredsCost(
+         percentage: Number, hopCount: int): int
+      {
+         return Math.max(
+            0, 
+            Math.min(
+               Math.round(
+                  StringUtil.evalFormula(Config.getMovementSpeedUpCredsCost(),
+                  {
+                     'percentage': percentage,
+                     'hop_count': hopCount
+                  })
+               ),
+               Config.getMovementSpeedUpMaxCredsCost()
+            )
+         );
+      }
+      
       public static function getStoredResourcesPercent(_storage: int, _metal: Number, 
                                                 _energy: Number, _zetium: Number): int
       {

@@ -15,7 +15,7 @@ package controllers.units.actions
     * @see #speedModifier
     * @see #squadron
     */
-   public class MoveActionParams extends ArrivalDateActionParams
+   public class MoveActionParams extends MoveMetaActionParams
    {
       /**
        * See documentation of corresponding variables for information about parameters.
