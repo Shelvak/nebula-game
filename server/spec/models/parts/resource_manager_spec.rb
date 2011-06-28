@@ -45,18 +45,20 @@ describe Building::ResourceManagerPartTest do
     }.each do |method, data|
       opts, modifier = data
       
-      it "should add rate * #{modifier} in resources rate entry " +
-      "on ##{method}" do
-        model = Factory.create(:b_resource_manager_test,
-          opts + {:level => 4})
-        planet = model.planet
+      %w{generation usage}.each do |kind|
+        it "should add #{kind}_rate * #{modifier} in resources rate entry " +
+        "on ##{method}" do
+          res = "#{resource}_#{kind}_rate"
+          
+          planet = Factory.create(:planet, res => 10000)
+          model = Factory.create(:b_resource_manager_test,
+            opts + {:level => 4, :planet => planet})
 
-        lambda {
-          model.send(method)
-          planet.reload
-        }.should change(
-          planet, "#{resource}_rate"
-        ).by(model.send("#{resource}_rate") * modifier)
+          lambda {
+            model.send(method)
+            planet.reload
+          }.should change(planet, res).by(model.send(res) * modifier)
+        end
       end
     end
   end

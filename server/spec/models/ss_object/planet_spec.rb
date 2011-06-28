@@ -375,18 +375,15 @@ describe SsObject::Planet do
       end
     end
   end
-
-  describe ".increase" do
-    before(:each) do
-      @model = Factory.create(:planet, :player => Factory.create(:player))
-    end
-
-    it "should dispatch event" do
-      should_fire_event(@model, EventBroker::CHANGED,
+  
+  describe "#increase" do
+    it "should dispatch event when saved" do
+      model = Factory.create(:planet)
+      model.increase(:metal_generation_rate => 10)
+      
+      should_fire_event(model, EventBroker::CHANGED,
         EventBroker::REASON_OWNER_PROP_CHANGE) do
-
-        SsObject::Planet.increase(@model.id,
-          :metal_rate => 10)
+        model.save!
       end
     end
   end
@@ -824,9 +821,10 @@ describe SsObject::Planet do
       end
 
       @required_fields = %w{name terrain}
-      @ommited_fields = %w{width height metal metal_rate metal_storage
-        energy energy_rate energy_storage
-        zetium zetium_rate zetium_storage
+      @ommited_fields = %w{width height 
+        metal metal_generation_rate metal_usage_rate metal_storage
+        energy energy_generation_rate energy_usage_rate energy_storage
+        zetium zetium_generation_rate metal_usage_rate zetium_storage
         last_resources_update energy_diminish_registered status
         exploration_x exploration_y exploration_ends_at}
       it_should_behave_like "to json"
@@ -846,9 +844,10 @@ describe SsObject::Planet do
         @options = {:resources => true}
       end
 
-      @required_fields = %w{metal metal_rate metal_storage
-        energy energy_rate energy_storage
-        zetium zetium_rate zetium_storage
+      @required_fields = %w{
+        metal metal_generation_rate metal_usage_rate metal_storage
+        energy energy_generation_rate energy_usage_rate energy_storage
+        zetium zetium_generation_rate metal_usage_rate zetium_storage
         metal_rate_boost_ends_at metal_storage_boost_ends_at
         energy_rate_boost_ends_at energy_storage_boost_ends_at
         zetium_rate_boost_ends_at zetium_storage_boost_ends_at
@@ -1030,7 +1029,7 @@ describe SsObject::Planet do
       before(:each) do
         @model = Factory.create :planet,
           :last_resources_update => Time.now.drop_usec,
-          :energy_rate => -3
+          :energy_generation_rate => 0, :energy_usage_rate => 3
         @model.energy_storage = 1000
         @seconds = 200
         @model.energy = @model.energy_rate * -1 * @seconds - 1
@@ -1068,7 +1067,7 @@ describe SsObject::Planet do
       before(:each) do
         @model = Factory.create :planet,
           :last_resources_update => Time.now.drop_usec,
-          :energy_rate => 3
+          :energy_generation_rate => 3, :energy_usage_rate => 0
         @model.energy_storage = 1000
         @model.energy = 29
       end
@@ -1111,7 +1110,8 @@ describe SsObject::Planet do
       @planet.energy_storage = 10000
       @planet.energy = 1000
       @planet.last_resources_update = Time.now
-      @planet.energy_rate = -7
+      @planet.energy_generation_rate = 0
+      @planet.energy_usage_rate = 7
       @planet.save!
 
       @b0 = Factory.create :building_built, opts_active + {
@@ -1190,7 +1190,7 @@ describe SsObject::Planet do
     it "should consider time diff since last update" do
       diff = 30
       model = Factory.build :planet,
-        :metal_rate => @rate,
+        :metal_generation_rate => @rate,
         :last_resources_update => diff.seconds.ago.drop_usec
 
       model.metal_storage = @resource * 100
@@ -1213,9 +1213,11 @@ describe SsObject::Planet do
     end
 
     %w{metal energy zetium}.each do |type|
+      rate_str = "#{type}_generation_rate"
+      
       it "should update #{type}" do
         model = Factory.build :planet,
-          "#{type}_rate" => @rate,
+          rate_str => @rate,
           :last_resources_update => 1.second.ago.drop_usec
 
         model.send("#{type}_storage=", @resource + @rate * 2000)
@@ -1234,7 +1236,8 @@ describe SsObject::Planet do
       it "should not store more resources than storage allows" do
         storage_max = @resource + @rate / 2
         model = Factory.build :planet,
-          "#{type}_rate" => @rate, :last_resources_update => 1.minute.ago
+          rate_str => @rate, 
+          :last_resources_update => 1.minute.ago
 
         model.send("#{type}_storage=", storage_max)
         model.send("#{type}=", @resource)
@@ -1248,7 +1251,7 @@ describe SsObject::Planet do
       it "should not go to negative numbers" do
         resource = 10
         model = Factory.build :planet,
-          "#{type}_rate" => -30, :last_resources_update => 1.minute.ago
+          rate_str => -30, :last_resources_update => 1.minute.ago
 
         model.send("#{type}_storage=", resource)
         model.send("#{type}=", resource)
@@ -1263,7 +1266,7 @@ describe SsObject::Planet do
         rate = 0.02
         percent = 34
         model = Factory.create :planet, :"#{type}_storage" => 10000,
-          type => 0, :"#{type}_rate" => rate,
+          type => 0, rate_str => rate,
           :last_resources_update => 5.minutes.ago
         model.stub!(:resource_modifiers).and_return(type.to_sym => percent)
 

@@ -302,7 +302,13 @@ describe Parts::Transportation do
     describe "unloading" do
       before(:each) do
         @planet.metal = @planet.energy = @planet.zetium =
-          @planet.metal_rate = @planet.energy_rate = @planet.zetium_rate = 0
+          @planet.metal_generation_rate = 
+          @planet.energy_generation_rate = 
+          @planet.zetium_generation_rate = 
+          @planet.metal_usage_rate = 
+          @planet.energy_usage_rate = 
+          @planet.zetium_usage_rate = 
+          0
         @planet.metal_storage = @planet.energy_storage =
           @planet.zetium_storage = 1000
         @planet.save!

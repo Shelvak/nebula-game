@@ -98,7 +98,7 @@ module Parts::PlanetExploration
       win_chance = CONFIG.evalproperty("tiles.exploration.winning_chance",
         'width' => width, 'height' => height).round
       win_lose_key = Random.chance(win_chance) ? "win" : "lose"
-      units_key = player.population_free > 0  ? "with_units" : "without_units"
+      units_key = player.overpopulated? ? "without_units" : "with_units"
       rewards = Rewards.from_exploration(
         (
           CONFIG["tiles.exploration.rewards.#{win_lose_key}.#{units_key}"]

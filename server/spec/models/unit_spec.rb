@@ -24,7 +24,6 @@ describe Unit do
       @player = Factory.create(:player)
       @planet = Factory.create(:planet, :player => @player,
         :metal => 0, :energy => 0, :zetium => 0,
-        :metal_rate => 0, :energy_rate => 0, :zetium_rate => 0,
         :metal_storage => 10000, :energy_storage => 10000, 
           :zetium_storage => 10000
       )

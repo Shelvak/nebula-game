@@ -84,10 +84,6 @@ class Player < ActiveRecord::Base
     end
   end
   
-  def overpopulated?
-    population >= population_max
-  end
-  
   # Is daily bonus available for this player?
   def daily_bonus_available?
     ! first_time? && (daily_bonus_at.nil? || daily_bonus_at <= Time.now)
@@ -197,6 +193,10 @@ class Player < ActiveRecord::Base
   end
 
   def population_free; population_max - population; end
+  
+  def overpopulated?; 
+    population >= population_max
+  end
 
   def alliance_cooldown_expired?
     alliance_cooldown_ends_at.nil? || alliance_cooldown_ends_at < Time.now
