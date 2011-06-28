@@ -23,7 +23,8 @@ package models.resource
       public var type: String = "";
       private var _currentStock: Number = 0;
       private var _maxStock: Number = 0;
-      private var _rate: Number = 0;
+      private var _generationRate: Number = 0;
+      private var _usageRate: Number = 0;
       
       public static function getMissingStoragesString(planet: MSSObject,
                                               metalCost: Number, 
@@ -250,8 +251,8 @@ package models.resource
       [Bindable (event="resourceRateChanged")]
       public function get rate(): Number
       {
-         return _rate * ModelLocator.getInstance().resourcesMods.getRateMod(type)
-            * boost.getRateBoost();
+         return _generationRate * ModelLocator.getInstance().resourcesMods.getRateMod(type)
+            * boost.getRateBoost() - _usageRate;
       }
       
       public function set maxStock(value: Number): void
@@ -260,9 +261,15 @@ package models.resource
          dispatchStorageChangeEvent();
       }
       
-      public function set rate(value: Number): void
+      public function set usageRate(value: Number): void
       {
-         _rate = value;
+         _usageRate = value;
+         dispatchRateChangeEvent();
+      }
+      
+      public function set generationRate(value: Number): void
+      {
+         _generationRate = value;
          dispatchRateChangeEvent();
       }
       

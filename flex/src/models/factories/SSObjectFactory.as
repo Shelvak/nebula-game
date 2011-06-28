@@ -30,7 +30,8 @@ package models.factories
             resource.type = type;
             resource.currentStock = data[type];
             resource.maxStock = data[type + "Storage"];
-            resource.rate = data[type + "Rate"];
+            resource.usageRate = data[type + "UsageRate"];
+            resource.generationRate = data[type + "GenerationRate"];
             if (object[type] != null)
             {
                resource.boost = object[type].boost;
