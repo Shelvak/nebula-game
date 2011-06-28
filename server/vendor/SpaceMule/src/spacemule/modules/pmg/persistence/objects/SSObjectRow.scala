@@ -12,9 +12,9 @@ import spacemule.persistence.DB
 object SSObjectRow {
   val columns = "`id`, `type`, `solar_system_id`, `angle`, `position`," +
           "`width`, `height`, `terrain`, `player_id`, `name`, `size`, " +
-          "`metal`, `metal_rate`, `metal_storage`, " +
-          "`energy`, `energy_rate`, `energy_storage`, " +
-          "`zetium`, `zetium_rate`, `zetium_storage`, " +
+          "`metal`, `metal_generation_rate`, `metal_storage`, " +
+          "`energy`, `energy_generation_rate`, `energy_storage`, " +
+          "`zetium`, `zetium_generation_rate`, `zetium_storage`, " +
           "`last_resources_update`"
 }
 

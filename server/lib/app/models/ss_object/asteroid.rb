@@ -1,10 +1,8 @@
 class SsObject::Asteroid < SsObject
   def to_s
-    super + "Asteroid " +
-      "  metal: #{metal_rate}/#{metal_storage}\n" +
-      "  energy: #{energy_rate}/#{energy_storage}\n" +
-      "  zetium: #{zetium_rate}/#{zetium_storage}\n" +
-      ">"
+    (super + "Asteroid m: %3.4f, e: %3.4f, z: %3.4f>") % [
+      metal_generation_rate, energy_generation_rate, zetium_generation_rate
+    ]
   end
 
   # Attributes which are also included for Asteroid subtype.
@@ -27,11 +25,11 @@ class SsObject::Asteroid < SsObject
   end
 
   def spawn_resources!
-    metal = metal_rate * CONFIG.rangerand(
+    metal = metal_generation_rate * CONFIG.rangerand(
       "ss_object.asteroid.wreckage.metal.spawn")
-    energy = energy_rate * CONFIG.rangerand(
+    energy = energy_generation_rate * CONFIG.rangerand(
       "ss_object.asteroid.wreckage.energy.spawn")
-    zetium = zetium_rate * CONFIG.rangerand(
+    zetium = zetium_generation_rate * CONFIG.rangerand(
       "ss_object.asteroid.wreckage.zetium.spawn")
     Wreckage.add(solar_system_point, metal, energy, zetium)
     CallbackManager.register(self, CallbackManager::EVENT_SPAWN,

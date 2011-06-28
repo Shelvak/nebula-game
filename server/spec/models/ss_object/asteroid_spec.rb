@@ -46,7 +46,7 @@ describe SsObject::Asteroid do
           @model.spawn_resources!
           wreckage = Wreckage.in_location(@model.solar_system_point).first
           wreckage.send(resource).should == @model.send(
-            "#{resource}_rate") * CONFIG[
+            "#{resource}_generation_rate") * CONFIG[
             "ss_object.asteroid.wreckage.#{resource}.spawn"][0]
         end
       end
@@ -55,10 +55,10 @@ describe SsObject::Asteroid do
         @model.spawn_resources!
         wreckage = Wreckage.in_location(@model.solar_system_point).first
         (@model.send(
-          "#{resource}_rate") * CONFIG[
+          "#{resource}_generation_rate") * CONFIG[
           "ss_object.asteroid.wreckage.#{resource}.spawn"
         ][0]..@model.send(
-          "#{resource}_rate") * CONFIG[
+          "#{resource}_generation_rate") * CONFIG[
           "ss_object.asteroid.wreckage.#{resource}.spawn"
         ][1]).should include(wreckage.send(resource))
       end

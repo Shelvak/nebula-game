@@ -11,6 +11,7 @@ class SsObject::Planet < SsObject
   include Parts::PlanetExploration
   include Parts::PlanetBoosts
   include Parts::Shieldable
+  include Parts::DelayedEventDispatcher
 
   scope :for_player, Proc.new { |player|
     player_id = player.is_a?(Player) ? player.id : player
@@ -60,11 +61,11 @@ class SsObject::Planet < SsObject
   # Attributes which are included when :resources => true is passed to 
   # #as_json
   RESOURCE_ATTRIBUTES = %w{
-    metal metal_rate metal_storage
+    metal metal_generation_rate metal_usage_rate metal_storage
     metal_rate_boost_ends_at metal_storage_boost_ends_at
-    energy energy_rate energy_storage
+    energy energy_generation_rate energy_usage_rate energy_storage
     energy_rate_boost_ends_at energy_storage_boost_ends_at
-    zetium zetium_rate zetium_storage
+    zetium zetium_generation_rate metal_usage_rate zetium_storage
     zetium_rate_boost_ends_at zetium_storage_boost_ends_at
     last_resources_update exploration_ends_at can_destroy_building_at
     next_raid_at}
@@ -149,11 +150,16 @@ class SsObject::Planet < SsObject
     options.symbolize_keys!
 
     [:metal, :energy, :zetium].each do |resource|
-      [:storage, :rate].each do |type|
+      [:storage, :generation_rate, :usage_rate].each do |type|
         name = "#{resource}_#{type}".to_sym
         send("#{name}=", send(name) + (options[name] || 0))
       end
     end
+    
+    # Reason is specified here because dispatcher event handler must
+    # behave differently for this particular reason.
+    delayed_fire(self, EventBroker::CHANGED,
+      EventBroker::REASON_OWNER_PROP_CHANGE)
   end
 
   # #increase and #save!
@@ -406,20 +412,27 @@ class SsObject::Planet < SsObject
 
     @resource_modifiers
   end
+  
+  RESOURCES = [:metal, :energy, :zetium]
+  
+  RESOURCES.each do |resource|
+    define_method("#{resource}_rate") do
+      generation_rate = send("#{resource}_generation_rate")
+      usage_rate = send("#{resource}_usage_rate")
+      generation_rate * resource_modifier(resource) - usage_rate
+    end
+  end
 
   # Calculate new values.
   def recalculate
     now = Time.now
     time_diff = (now - last_resources_update).to_i
     self.last_resources_update = now
-    [:metal, :energy, :zetium].each do |resource|
+    RESOURCES.each do |resource|
       value = send(resource)
       rate = send("#{resource}_rate")
 
-      send(
-        "#{resource}=",
-        value + rate * time_diff * resource_modifier(resource)
-      )
+      send("#{resource}=", value + rate * time_diff)
     end
   end
 
@@ -455,16 +468,6 @@ class SsObject::Planet < SsObject
       else
         raise CallbackManager::UnknownEvent.new(self, id, event)
       end
-    end
-
-    # Increase rates and storages for _planet_id_.
-    def increase(planet_id, options)
-      model = find(planet_id)
-      model.increase!(options)
-      # Reason is specified here because dispatcher event handler must
-      # behave differently for this particular reason.
-      EventBroker.fire(model, EventBroker::CHANGED,
-        EventBroker::REASON_OWNER_PROP_CHANGE)
     end
 
     # Increases resources in the planet and fires EventBroker::CHANGED.

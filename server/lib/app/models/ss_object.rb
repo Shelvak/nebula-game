@@ -2,6 +2,7 @@
 class SsObject < ActiveRecord::Base
   include Location
   include Parts::Object
+  include Parts::DelayedEventDispatcher
 
   # Only planets belong to player, however for optimization purposes we 
   # define this here to allow including this relationship when querying
