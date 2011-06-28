@@ -643,8 +643,8 @@
     <MetalExtractorT2.name ref="Objects/MetalExtractorT2" />
     <MetalExtractorT2.tooltip ref="MetalExtractor.tooltip" />
     <MetalExtractorT2.common>
-      <p>Geresnė, greitesnė ir brangesnė [reference:Objects/MetalExtractor]
-      versija.</p>
+      <p>Geresnė, greitesnė ir brangesnė 
+      [reference:Objects/MetalExtractor] versija.</p>
     </MetalExtractorT2.common>
 
     <MetalExtractorT2.about>
