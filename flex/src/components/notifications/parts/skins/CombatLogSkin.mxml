@@ -24,7 +24,7 @@
          import utils.assets.ImagePreloader;
       ]]>
    </fx:Script>
-   <base:AdvancedContainer width="100%" minWidth="0" minHeight="0">
+   <base:AdvancedContainer id="mainCont" left="0" right="0" minWidth="0" minHeight="0">
       <base:layout><s:VerticalLayout/></base:layout>
       <s:Group width="100%" minWidth="0" minHeight="0">
          <s:layout>
@@ -211,7 +211,8 @@
       
       
       <s:Label id="lblLeveled" visible="{leveledList.dataProvider.length != 0}" styleName="h3"/>
-      <s:Group width="100%" height="{lvlLayout.rowCount * 78}" visible="{leveledList.dataProvider.length != 0}">
+      <s:Group width="{mainGroup.width}" height="{lvlLayout.rowCount * 78}" 
+               visible="{leveledList.dataProvider.length != 0}">
          <s:DataGroup id="leveledList" height="100%" left="6" right="6">
             <s:itemRenderer>
                <fx:Component>
@@ -221,7 +222,8 @@
                </fx:Component>
             </s:itemRenderer>
             <s:layout>
-               <s:TileLayout id="lvlLayout" verticalGap="2" horizontalGap="2"/>
+               <s:TileLayout id="lvlLayout" verticalGap="2" horizontalGap="2"
+                             requestedColumnCount="{Math.round(Math.max(1,mainGroup.width/102))}"/>
             </s:layout>
          </s:DataGroup>
       </s:Group>
