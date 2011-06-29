@@ -110,9 +110,28 @@ package components.map.planet
       
       protected override function measure() : void
       {
-         var size:Point = map.getSize();
-         measuredWidth = size.x;
-         measuredHeight = size.y;
+//         voiding NPE, here is log:
+//         Client error!
+//            
+//            Exception data:
+//         Error id: 1009
+//         Stacktrace:
+//         TypeError: Error #1009: Cannot access a property or method of a null object reference.
+//            at components.map.planet::PlanetObjectsLayer/measure()[/home/arturas/work/spacegame/flex/src/components/map/planet/PlanetObjectsLayer.as:113]
+//               at mx.core::UIComponent/measureSizes()
+//         at mx.core::UIComponent/validateSize()
+//         at spark.components::Group/validateSize()
+//         at mx.managers::LayoutManager/validateSize()
+//         at mx.managers::LayoutManager/doPhasedInstantiation()
+//         at mx.managers::LayoutManager/doPhasedInstantiationCallback()
+//         at flash.utils::Timer/_timerDispatch()
+//         at flash.utils::Timer/tick()
+         if (map != null)
+         {
+            var size:Point = map.getSize();
+            measuredWidth = size.x;
+            measuredHeight = size.y;
+         }
       }
       
       
@@ -356,7 +375,7 @@ package components.map.planet
             objectUnderMouse = object;
          }
             
-         // No object under mouse pointer
+            // No object under mouse pointer
          else
          {
             if (objectUnderMouse)
@@ -422,12 +441,12 @@ package components.map.planet
       
       
       /*
-       * The reason I have decided to realize these handlers in this class rather than
-       * in PlanetMapObject class itself is that there is too much going on with (considering 
-       * mouse interaction) related with all objects on the map and very little with
-       * the object that is targeted by the mouse.
-       * In all of these handlers the case were parameter object is null should be considered.
-       */
+      * The reason I have decided to realize these handlers in this class rather than
+      * in PlanetMapObject class itself is that there is too much going on with (considering 
+      * mouse interaction) related with all objects on the map and very little with
+      * the object that is targeted by the mouse.
+      * In all of these handlers the case were parameter object is null should be considered.
+      */
       
       
       private function object_mouseOverHandler(object:IInteractivePlanetMapObject, event:MouseEvent) : void
@@ -437,10 +456,10 @@ package components.map.planet
             return;
          }
          object.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_OVER));
-//         for each (var current:IInteractivePlanetMapObject in getOverlappingObjects(object))
-//         {
-//            current.faded = true;
-//         }
+         //         for each (var current:IInteractivePlanetMapObject in getOverlappingObjects(object))
+         //         {
+         //            current.faded = true;
+         //         }
       }
       
       
@@ -710,9 +729,9 @@ package components.map.planet
          for each (var comp:IInteractivePlanetMapObject in interactiveObjects)
          {
             if (// Logical horizontal area of tiles that might have overlaping objects
-                comp.model.fallsIntoArea(xMinEnd, xMax, yMinEnd, yMinStart) ||
-                // Logical vertical area of tiles that might have overlaping objects
-                comp.model.fallsIntoArea(xMinEnd, xMinStart, yMinEnd, yMax))
+               comp.model.fallsIntoArea(xMinEnd, xMax, yMinEnd, yMinStart) ||
+               // Logical vertical area of tiles that might have overlaping objects
+               comp.model.fallsIntoArea(xMinEnd, xMinStart, yMinEnd, yMax))
             {
                result.push (comp);
             }
@@ -745,7 +764,7 @@ package components.map.planet
          var model:PlanetObject = object.model;
          object.x = map.coordsTransform.logicalToReal_X(model.x, model.yEnd);
          object.y = map.coordsTransform.logicalToReal_Y(model.xEnd, model.yEnd)
-                    - (object.height - model.realBasementHeight);
+            - (object.height - model.realBasementHeight);
       }
       
       
