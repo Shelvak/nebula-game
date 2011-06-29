@@ -143,8 +143,8 @@ package components.movement
        */
       public function get speedUpCost() : int
       {
-         return Unit.getMovementSpeedUpCredsCost(
-            1.0 - speedModifier, _hopCount);
+         return speedModifier < 1?Unit.getMovementSpeedUpCredsCost(
+            1.0 - speedModifier, _hopCount):0;
       }
       
       

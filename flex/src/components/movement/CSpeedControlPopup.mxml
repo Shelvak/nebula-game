@@ -12,6 +12,7 @@
    
    <fx:Script>
       <![CDATA[
+         import mx.events.FlexEvent;
          private function sldChangeSpeed_dataTipFormatFunction(value:Number) : String
          {
             return fmtSliderDataTip.format(value) + "%";
@@ -19,83 +20,98 @@
          
          
          [Bindable]
-         public var model:CSpeedControlPopupM;
+         private var _model:CSpeedControlPopupM;
+         
+         public function set model(value: CSpeedControlPopupM): void
+         {
+            _model = value;
+            if (sldChangeSpeed != null)
+            {
+               sldChangeSpeed.value = 100;
+            }
+         }
+         
+         public function get model(): CSpeedControlPopupM
+         {
+            return _model;
+         }
          
          
          private function sldChangeSpeed_changeHandler(event:Event):void
          {
-            if (model != null)
+            if (_model != null)
             {
-               model.speedModifier = sldChangeSpeed.value / 100;
+               _model.speedModifier = sldChangeSpeed.value / 100;
             }
          }
+
       ]]>
    </fx:Script>
-      
-      <space:layout>
-         <s:VerticalLayout paddingLeft="2" paddingRight="2" paddingTop="5" paddingBottom="5"
-                           horizontalAlign="center"/>
-      </space:layout>
-      
-      <s:Label id="lblArrivesIn" text="{model.text_arrivesInLabel}"/>
-      <s:Label id="lblArrivesAt" text="{model.text_arrivesAtLabel(model.arrivalDate.occuresAt)}"/>
-      <s:Label id="lblChangeSpeed" text="{model.label_changeSpeed}" paddingTop="8" fontWeight="bold"/>
-      <s:Group width="100%">
-         <s:layout>
-            <s:HorizontalLayout gap="5" verticalAlign="middle"/>
-         </s:layout>
-         <s:Label id="lblSpeedMin"
-                  text="{sldChangeSpeed_dataTipFormatFunction(model.speedModifierMin * 100)}"/>
-         <s:HSlider id="sldChangeSpeed" width="100%"
-                    minimum="{model.speedModifierMin * 100}"
-                    maximum="{model.speedModifierMax * 100}"
-                    value="{model.speedModifier * 100}"
-                    stepSize="0.1"
-                    dataTipFormatFunction="sldChangeSpeed_dataTipFormatFunction"
-                    change="sldChangeSpeed_changeHandler(event)"/>
-         <s:Label id="lblSpeedMax"
-                  text="{sldChangeSpeed_dataTipFormatFunction(model.speedModifierMax * 100)}"/>
+   
+   <space:layout>
+      <s:VerticalLayout paddingLeft="2" paddingRight="2" paddingTop="5" paddingBottom="5"
+                        horizontalAlign="center"/>
+   </space:layout>
+   
+   <s:Label id="lblArrivesIn" text="{_model.text_arrivesInLabel}"/>
+   <s:Label id="lblArrivesAt" text="{_model.text_arrivesAtLabel(_model.arrivalDate.occuresAt)}"/>
+   <s:Label id="lblChangeSpeed" text="{_model.label_changeSpeed}" paddingTop="8" fontWeight="bold"/>
+   <s:Group width="100%">
+      <s:layout>
+         <s:HorizontalLayout gap="5" verticalAlign="middle"/>
+      </s:layout>
+      <s:Label id="lblSpeedMin"
+               text="{sldChangeSpeed_dataTipFormatFunction(_model.speedModifierMin * 100)}"/>
+      <s:HSlider id="sldChangeSpeed" width="100%"
+                 minimum="{_model.speedModifierMin * 100}"
+                 maximum="{_model.speedModifierMax * 100}"
+                 value="100"
+                 stepSize="0.1"
+                 dataTipFormatFunction="sldChangeSpeed_dataTipFormatFunction"
+                 change="sldChangeSpeed_changeHandler(event)"/>
+      <s:Label id="lblSpeedMax"
+               text="{sldChangeSpeed_dataTipFormatFunction(_model.speedModifierMax * 100)}"/>
+   </s:Group>
+   <s:Button id="btnReset" width="100%" label="{_model.label_resetButton}" click="_model.reset()"/>
+   <s:Group width="100%">
+      <s:layout>
+         <s:VerticalLayout paddingTop="12" gap="10"/>
+      </s:layout>
+      <s:Group width="100%" visible="{_model.showSpeedUpCost}" includeInLayout="{_model.showSpeedUpCost}">
+         <s:Label id="lblSpeedUpCost" left="0" right="0" lineBreak="toFit" textAlign="center"
+                  text="{_model.text_speedUpCostLabel}"/>
       </s:Group>
-      <s:Button id="btnReset" width="100%" label="{model.label_resetButton}" click="model.reset()"/>
       <s:Group width="100%">
          <s:layout>
-            <s:VerticalLayout paddingTop="12" gap="10"/>
+            <s:VerticalLayout horizontalAlign="center"/>
          </s:layout>
-         <s:Group width="100%" visible="{model.showSpeedUpCost}" includeInLayout="{model.showSpeedUpCost}">
-            <s:Label id="lblSpeedUpCost" left="0" right="0" lineBreak="toFit" textAlign="center"
-                     text="{model.text_speedUpCostLabel}"/>
-         </s:Group>
          <s:Group width="100%">
-            <s:layout>
-               <s:VerticalLayout horizontalAlign="center"/>
-            </s:layout>
-            <s:Group width="100%">
-               <s:Label id="lblCooldownInfo" textAlign="center" lineBreak="toFit" 
-                        left="0" right="0" text="{model.text_cooldownInfoLabel}"/>
-            </s:Group>
-            <s:Button id="btnCooldownInfo" 
-                      label="{model.label_cooldownInfoButton}"
-                      skinClass="components.skins.LinkButtonSkin"
-                      click="model.openPreBattleCooldownInfo()"/>
+            <s:Label id="lblCooldownInfo" textAlign="center" lineBreak="toFit" 
+                     left="0" right="0" text="{_model.text_cooldownInfoLabel}"/>
          </s:Group>
+         <s:Button id="btnCooldownInfo" 
+                   label="{_model.label_cooldownInfoButton}"
+                   skinClass="components.skins.LinkButtonSkin"
+                   click="_model.openPreBattleCooldownInfo()"/>
       </s:Group>
-      <s:Group width="100%">
-         <s:layout>
-            <s:VerticalLayout paddingTop="5" horizontalAlign="justify"/>
-         </s:layout>
-         <s:Button id="btnConfirm"
-                   visible="{model.playerHasEnoughCreds}"
-                   includeInLayout="{model.playerHasEnoughCreds}"
-                   label="{model.label_confirmButton}"
-                   click="model.confirm()"/>
-         <s:Button id="btnBuyCreds"
-                   visible="{!model.playerHasEnoughCreds}"
-                   includeInLayout="{!model.playerHasEnoughCreds}"
-                   label="{model.label_buyCredsButton}"
-                   click="model.buyCreds()"/>
-         <s:Button id="btnCancel"
-                   label="{model.label_cancelButton}"
-                   click="model.cancel()"/>
-      </s:Group>
+   </s:Group>
+   <s:Group width="100%">
+      <s:layout>
+         <s:VerticalLayout paddingTop="5" horizontalAlign="justify"/>
+      </s:layout>
+      <s:Button id="btnConfirm"
+                visible="{_model.playerHasEnoughCreds}"
+                includeInLayout="{_model.playerHasEnoughCreds}"
+                label="{_model.label_confirmButton}"
+                click="_model.confirm()"/>
+      <s:Button id="btnBuyCreds"
+                visible="{!_model.playerHasEnoughCreds}"
+                includeInLayout="{!_model.playerHasEnoughCreds}"
+                label="{_model.label_buyCredsButton}"
+                click="_model.buyCreds()"/>
+      <s:Button id="btnCancel"
+                label="{_model.label_cancelButton}"
+                click="_model.cancel()"/>
+   </s:Group>
    
 </space:CSpaceMapPopup>
