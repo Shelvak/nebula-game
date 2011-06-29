@@ -72,7 +72,9 @@
       <s:Label id="lblSpeedMax"
                text="{sldChangeSpeed_dataTipFormatFunction(_model.speedModifierMax * 100)}"/>
    </s:Group>
-   <s:Button id="btnReset" width="100%" label="{_model.label_resetButton}" click="_model.reset()"/>
+   <s:Button id="btnReset" width="100%" label="{_model.label_resetButton}" 
+             click="sldChangeSpeed.value = 100;
+             _model.reset()"/>
    <s:Group width="100%">
       <s:layout>
          <s:VerticalLayout paddingTop="12" gap="10"/>
