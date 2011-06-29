@@ -413,33 +413,44 @@ object Config {
 
   // End of unit attributes
 
+  // Ground units configuration
+  
+  lazy val regularPlanetGroundUnits = unitsEntry(
+    "ss_object.regular.planet.units")
+  lazy val homeworldPlanetGroundUnits = unitsEntry(
+    "ss_object.homeworld.planet.units")
+  lazy val battlegroundPlanetGroundUnits = unitsEntry(
+    "ss_object.battleground.planet.units")
+  
+  // End of ground units configuration
+  
   // Orbit units configuration
 
-  lazy val regularPlanetUnits = unitsEntry(
+  lazy val regularPlanetOrbitUnits = unitsEntry(
     "ss_object.regular.orbit.planet.units")
-  lazy val regularRichAsteroidUnits = unitsEntry(
+  lazy val regularRichAsteroidOrbitUnits = unitsEntry(
     "ss_object.regular.orbit.rich_asteroid.units")
-  lazy val regularAsteroidUnits = unitsEntry(
+  lazy val regularAsteroidOrbitUnits = unitsEntry(
     "ss_object.regular.orbit.asteroid.units")
-  lazy val regularJumpgateUnits = unitsEntry(
+  lazy val regularJumpgateOrbitUnits = unitsEntry(
     "ss_object.regular.orbit.jumpgate.units")
 
-  lazy val homeworldPlanetUnits = unitsEntry(
+  lazy val homeworldPlanetOrbitUnits = unitsEntry(
     "ss_object.homeworld.orbit.planet.units")
-  lazy val homeworldRichAsteroidUnits = unitsEntry(
+  lazy val homeworldRichAsteroidOrbitUnits = unitsEntry(
     "ss_object.homeworld.orbit.rich_asteroid.units")
-  lazy val homeworldAsteroidUnits = unitsEntry(
+  lazy val homeworldAsteroidOrbitUnits = unitsEntry(
     "ss_object.homeworld.orbit.asteroid.units")
-  lazy val homeworldJumpgateUnits = unitsEntry(
+  lazy val homeworldJumpgateOrbitUnits = unitsEntry(
     "ss_object.homeworld.orbit.jumpgate.units")
 
-  lazy val battlegroundPlanetUnits = unitsEntry(
+  lazy val battlegroundPlanetOrbitUnits = unitsEntry(
     "ss_object.battleground.orbit.planet.units")
-  lazy val battlegroundRichAsteroidUnits = unitsEntry(
+  lazy val battlegroundRichAsteroidOrbitUnits = unitsEntry(
     "ss_object.battleground.orbit.rich_asteroid.units")
-  lazy val battlegroundAsteroidUnits = unitsEntry(
+  lazy val battlegroundAsteroidOrbitUnits = unitsEntry(
     "ss_object.battleground.orbit.asteroid.units")
-  lazy val battlegroundJumpgateUnits = unitsEntry(
+  lazy val battlegroundJumpgateOrbitUnits = unitsEntry(
     "ss_object.battleground.orbit.jumpgate.units")
 
   // End of orbit units configuration

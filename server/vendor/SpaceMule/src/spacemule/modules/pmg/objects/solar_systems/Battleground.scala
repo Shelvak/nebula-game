@@ -18,6 +18,7 @@ class Battleground extends SolarSystem {
     Config.battlegroundPlanetPositions.foreachWithIndex {
       case (coords, index) => 
         val planet = new BgPlanet(index)
+        planet.createUnits(groundUnits(planet))
         planet.createOrbitUnits(orbitUnits(planet))
         initializeAndAdd(planet, coords)
     }
@@ -28,11 +29,16 @@ class Battleground extends SolarSystem {
       initializeAndAdd(new Jumpgate(), coords)
     }
   }
+  
+  override protected def groundUnits(obj: SSObject) = obj match {
+    case planet: Planet => Config.battlegroundPlanetGroundUnits
+    case _ => Nil
+  }
 
   override protected def orbitUnits(obj: SSObject) = obj match {
-    case planet: Planet => Config.battlegroundPlanetUnits
-    case asteroid: RichAsteroid => Config.battlegroundRichAsteroidUnits
-    case asteroid: Asteroid => Config.battlegroundAsteroidUnits
-    case jumpgate: Jumpgate => Config.battlegroundJumpgateUnits
+    case planet: Planet => Config.battlegroundPlanetOrbitUnits
+    case asteroid: RichAsteroid => Config.battlegroundRichAsteroidOrbitUnits
+    case asteroid: Asteroid => Config.battlegroundAsteroidOrbitUnits
+    case jumpgate: Jumpgate => Config.battlegroundJumpgateOrbitUnits
   }
 }

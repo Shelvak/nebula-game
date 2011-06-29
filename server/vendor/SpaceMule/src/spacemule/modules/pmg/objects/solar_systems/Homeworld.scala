@@ -34,12 +34,17 @@ class Homeworld(val player: Player) extends SolarSystem {
       )
     }
   }
+  
+  override protected def groundUnits(obj: SSObject) = obj match {
+    case planet: Planet => Config.homeworldPlanetGroundUnits
+    case _ => Nil
+  }
 
   override protected def orbitUnits(obj: SSObject) = obj match {
-    case homeworld: ss_objects.Homeworld => List()
-    case planet: Planet => Config.homeworldPlanetUnits
-    case asteroid: RichAsteroid => Config.homeworldRichAsteroidUnits
-    case asteroid: Asteroid => Config.homeworldAsteroidUnits
-    case jumpgate: Jumpgate => Config.homeworldJumpgateUnits
+    case homeworld: ss_objects.Homeworld => Nil
+    case planet: Planet => Config.homeworldPlanetOrbitUnits
+    case asteroid: RichAsteroid => Config.homeworldRichAsteroidOrbitUnits
+    case asteroid: Asteroid => Config.homeworldAsteroidOrbitUnits
+    case jumpgate: Jumpgate => Config.homeworldJumpgateOrbitUnits
   }
 }

@@ -16,6 +16,7 @@ class SolarSystem < ActiveRecord::Base
   # Foreign keys take care of the destruction
   has_many :ss_objects
   has_many :planets, :class_name => "SsObject::Planet"
+  has_many :asteroids, :class_name => "SsObject::Asteroid"
   has_many :jumpgates, :class_name => "SsObject::Jumpgate"
   has_many :fow_ss_entries
 

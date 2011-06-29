@@ -22,16 +22,32 @@ trait SSObject {
    */
   val name: String
 
+  /**
+   * Ground units.
+   */
   var units = ListBuffer[Unit]()
+  
+  /**
+   * Units in orbit.
+   */
+  var orbitUnits = ListBuffer[Unit]()
 
   /**
    * Provide initialization code here.
    */
   def initialize = {}
 
-  def createOrbitUnits(entries: Iterable[UnitsEntry]): scala.Unit = {
+  def createUnits(entries: Iterable[UnitsEntry]): scala.Unit = 
+    createUnits(entries, units)
+  
+  def createOrbitUnits(entries: Iterable[UnitsEntry]): scala.Unit =
+    createUnits(entries, orbitUnits)
+  
+  private def createUnits(
+    entries: Iterable[UnitsEntry], target: ListBuffer[Unit]
+  ): scala.Unit = {
     UnitsEntry.foreach(entries) { case (name, flank) =>
-      units += Unit(name, flank)
+      target += Unit(name, flank)
     }
   }
 }

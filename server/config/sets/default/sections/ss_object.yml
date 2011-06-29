@@ -31,6 +31,23 @@ asteroid.wreckage.time.spawn: [<%= (mult * 2).hours %> / speed, <%= (mult * 4).h
 # solar system?
 asteroid.wreckage.time.first: <%= 1.week %> / speed
 
+### Planet units configuration. Not overridable.
+# This is needed so that people cannot take planets with only space units.
+
+regular.planet.units:
+  - [gnawer, [1, 2], 0]
+  - [gnawer, [0, 1], 1]
+  - [spudder, [2, 5], [0, 1]]
+  - [glancer, [2, 5], 1]
+  - [gnat, [5, 8], [0, 1]]
+battleground.planet.units:
+  - [gnawer, [2, 4], 0]
+  - [gnawer, [0, 2], 1]
+  - [spudder, [5, 10], [0, 1]]
+  - [glancer, [5, 10], 1]
+  - [gnat, [10, 15], [0, 1]]
+homeworld.planet.units: []
+
 ### Orbit units configuration. Not overridable.
 
 # [type, range, flank]
@@ -75,3 +92,5 @@ battleground.orbit.planet.units:
 battleground.orbit.asteroid.units: []
 battleground.orbit.rich_asteroid.units: []
 battleground.orbit.jumpgate.units: []
+
+  

@@ -145,6 +145,7 @@ class SolarSystem {
   protected def createObjectType(count: Int)(create: () => SSObject) = {
     (1 to count).foreach { index =>
       val obj = create()
+      obj.createUnits(groundUnits(obj))
       obj.createOrbitUnits(orbitUnits(obj))
       initializeAndAdd(obj, randCoordinateFor(obj))
     }
@@ -154,15 +155,23 @@ class SolarSystem {
     obj.initialize
     objects(coords) = obj
   }
+  
+  /**
+   * What units will appear in SS object?
+   */
+  protected def groundUnits(obj: SSObject) = obj match {
+    case planet: Planet => Config.regularPlanetGroundUnits
+    case _ => Nil
+  }
 
   /**
    * What units will appear on solar system orbit?
    */
   protected def orbitUnits(obj: SSObject) = obj match {
-    case planet: Planet => Config.regularPlanetUnits
-    case asteroid: RichAsteroid => Config.regularRichAsteroidUnits
-    case asteroid: Asteroid => Config.regularAsteroidUnits
-    case jumpgate: Jumpgate => Config.regularJumpgateUnits
+    case planet: Planet => Config.regularPlanetOrbitUnits
+    case asteroid: RichAsteroid => Config.regularRichAsteroidOrbitUnits
+    case asteroid: Asteroid => Config.regularAsteroidOrbitUnits
+    case jumpgate: Jumpgate => Config.regularJumpgateOrbitUnits
   }
 }
 

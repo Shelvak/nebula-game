@@ -38,6 +38,51 @@ describe "adding new solar systems", :shared => true do
   end
 end
 
+describe "with orbit units", :shared => true do
+  it "should have correct number of planet orbit units" do
+    @solar_systems.each do |solar_system|
+      (@planets || solar_system.planets).each do |planet|
+        planet.solar_system_point.should have_correct_unit_count(
+          "ss_object.#{@type}.orbit.planet.units"
+        )
+      end
+    end
+  end
+
+  it "should have correct number of asteroid orbit units" do
+    @solar_systems.each do |solar_system|
+      solar_system.asteroids.each do |asteroid|
+        asteroid.solar_system_point.should have_correct_unit_count(
+          "ss_object.#{@type}.orbit.asteroid.units",
+          "ss_object.#{@type}.orbit.rich_asteroid.units"
+        )
+      end
+    end
+  end
+
+  it "should have correct number of jumpgate orbit units" do
+    @solar_systems.each do |solar_system|
+      solar_system.jumpgates.each do |jumpgate|
+        jumpgate.solar_system_point.should have_correct_unit_count(
+          "ss_object.#{@type}.orbit.jumpgate.units"
+        )
+      end
+    end
+  end
+end
+
+describe "with planet units", :shared => true do
+  it "should have correct number of planet ground units" do
+    @solar_systems.each do |solar_system|
+      (@planets || solar_system.planets).each do |planet|
+        planet.should have_correct_unit_count(
+          "ss_object.#{@type}.planet.units"
+        )
+      end
+    end
+  end
+end
+
 describe SpaceMule do
   before(:all) do
     @mule = SpaceMule.instance
@@ -74,6 +119,8 @@ describe SpaceMule do
     describe "battleground ss" do
       before(:all) do
         @ss = @galaxy.solar_systems.where(:x => nil, :y => nil).first
+        @solar_systems = [@ss]
+        @type = 'battleground'
       end
 
       it "should create battleground ss" do
@@ -110,6 +157,9 @@ describe SpaceMule do
           end
         end
       end
+      
+      it_should_behave_like "with planet units"
+      it_should_behave_like "with orbit units"
     end
   
     it "should have spawn callback for first convoy" do
@@ -140,6 +190,7 @@ describe SpaceMule do
       }
       @player_id = (Player.maximum(:id) || 0) + 1
       @result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
+      @player = Player.find(@player_id)
     end
 
     it "should start quests for player" do
@@ -316,6 +367,62 @@ describe SpaceMule do
       end
     end
 
+    describe "units" do
+      describe "home solar system" do
+        before(:each) do
+          @homeworld = SsObject::Planet.where(:player_id => @player_id).
+            first
+          @ss = @homeworld.solar_system
+          @solar_systems = [@ss]
+          @type = 'homeworld'
+        end
+        
+        it_should_behave_like "with planet units"
+
+        describe "orbit units" do
+          before(:each) do
+            @planets = @ss.planets - [@homeworld]
+          end
+          
+          it "should not have any units in homeworld orbit" do
+            Unit.in_location(@homeworld.solar_system_point).size.should == 0
+          end
+          
+          it_should_behave_like "with orbit units"
+        end
+      end
+        
+      describe "regular solar systems" do
+        before(:each) do
+          homeworld_ss_id = SsObject::Planet.
+            where(:player_id => @player_id).first.solar_system_id
+          @solar_systems = SolarSystem.where(
+            "galaxy_id=? AND kind=? AND id!=?", 
+            @galaxy.id, SolarSystem::KIND_NORMAL, homeworld_ss_id
+          )
+          @type = 'regular'
+        end
+        
+        it_should_behave_like "with planet units"
+        it_should_behave_like "with orbit units"
+      end
+      
+      describe "mini battleground solar system" do
+        before(:each) do
+          homeworld_ss_id = SsObject::Planet.
+            where(:player_id => @player_id).first.solar_system_id
+          @solar_systems = SolarSystem.where(
+            "galaxy_id=? AND kind=? AND x IS NOT NULL AND y IS NOT NULL", 
+            @galaxy.id, SolarSystem::KIND_BATTLEGROUND
+          )
+          @type = 'battleground'
+        end
+        
+        it_should_behave_like "with planet units"
+        it_should_behave_like "with orbit units"
+      end
+    end
+    
     it "should create fow ss entry" do
       fse = FowSsEntry.where(:player_id => @player_id).first
       {
