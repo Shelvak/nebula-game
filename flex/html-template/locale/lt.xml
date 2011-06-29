@@ -3797,6 +3797,7 @@
      <format.time value="HH:NN:SS"/>
      <message.channelJoin  value="[ {0} prisijungė ]"/>
      <message.channelLeave value="[ {0} išėjo ]"/>
+     <message.friendOffline value="Šis žaidėjas šiuo metu neprisijungęs"/>
      <label.send value="Siųsti" />
      <label.mainChannel value="#galaktika"/>
      <label.allianceChannel value="#sąjunga"/>
