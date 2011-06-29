@@ -45,6 +45,10 @@
    color: #ff0000;
 }
 
+.positive {
+   color: #00ff00;
+}
+
 s|List {
    content-background-color: #000000;
    selection-color: #222222;

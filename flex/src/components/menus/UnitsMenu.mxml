@@ -17,7 +17,7 @@
                        toolTip="{Localizer.string('Units','tooltip.populationLeft',
                        [ML.player.populationMax - ML.player.population])}"
                        paddingRight="9" paddingTop="3" textTopPadding="3"
-                       styleName="{ML.player.population >= ML.player.populationMax?'unsatisfied':null}"/>
+                       labelStyleName="{ML.player.population >= ML.player.populationMax?'unsatisfied':null}"/>
    <menus:KindUnitsMenu id="space" kind="{UnitKind.SPACE}" visible="{!((width &lt; (space.width + ground.width))
                         || (ML.activeMapType != MapType.PLANET) 
                         || (!ML.latestPlanet.hasActiveSpaceUnits))}"/>
