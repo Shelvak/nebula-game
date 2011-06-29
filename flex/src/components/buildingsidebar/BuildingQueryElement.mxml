@@ -67,7 +67,7 @@
                         }
                      }
                   }
-                  timeLeft = DateUtil.secondsToHumanString(totalTime, 2);
+                  timeLeft = DateUtil.secondsToHumanString(totalTime, 1);
                }
             }
          }
