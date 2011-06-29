@@ -111,6 +111,7 @@
             ML.latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
             EventBroker.subscribe(GlobalEvent.APP_RESET, removeEventListeners);
+            recalculateCosts();
             dispatchRefreshValidEvent();
             var temp: String = type;
             type = null;
