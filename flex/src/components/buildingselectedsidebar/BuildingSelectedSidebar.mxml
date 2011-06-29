@@ -909,13 +909,15 @@
                            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
                                                (_selectedModel.metalRate >= 0? 
                                                ('+' + NumberUtil.toShortString(_selectedModel.metalRate * 
-                                               ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600, PRECISION)):
+                                               ML.resourcesMods.getRateMod(ResourceType.METAL)* 
+                                               ML.latestPlanet.ssObject.metal.boost.getRateBoost() * 3600, PRECISION)):
                                                NumberUtil.toShortString(_selectedModel.metalRate * 3600, PRECISION))+ ' / ' +
                                                Localizer.string('General', 'hour.short')}"
                                                toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
                            <base:NextValueComp textToDisplay="{(_selectedModel.nextMetalRate >= 0? 
                                                ('+' + NumberUtil.toShortString(_selectedModel.nextMetalRate * 
-                                               ML.resourcesMods.getRateMod(ResourceType.METAL) * 3600, PRECISION)):
+                                               ML.resourcesMods.getRateMod(ResourceType.METAL)* 
+                                               ML.latestPlanet.ssObject.metal.boost.getRateBoost() * 3600, PRECISION)):
                                                NumberUtil.toShortString(_selectedModel.nextMetalRate * 3600, PRECISION))+ ' / ' +
                                                Localizer.string('General', 'hour.short')}"
                                                lblColor="{_selectedModel.nextMetalRate &lt; 0?0xff0000:0x00ff00}"
@@ -929,13 +931,15 @@
                            <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{
                                                (_selectedModel.energyRate >= 0? 
                                                ('+' + NumberUtil.toShortString(_selectedModel.energyRate * 
-                                               ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600, PRECISION)):
+                                               ML.resourcesMods.getRateMod(ResourceType.ENERGY)* 
+                                               ML.latestPlanet.ssObject.energy.boost.getRateBoost() * 3600, PRECISION)):
                                                NumberUtil.toShortString(_selectedModel.energyRate * 3600, PRECISION))+ ' / ' +
                                                Localizer.string('General', 'hour.short')}"
                                                toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
                            <base:NextValueComp textToDisplay="{(_selectedModel.nextEnergyRate >= 0? 
                                                ('+' + NumberUtil.toShortString(_selectedModel.nextEnergyRate * 
-                                               ML.resourcesMods.getRateMod(ResourceType.ENERGY) * 3600, PRECISION)):
+                                               ML.resourcesMods.getRateMod(ResourceType.ENERGY)* 
+                                               ML.latestPlanet.ssObject.energy.boost.getRateBoost() * 3600, PRECISION)):
                                                NumberUtil.toShortString(_selectedModel.nextEnergyRate * 3600, PRECISION))+ ' / ' +
                                                Localizer.string('General', 'hour.short')}"
                                                lblColor="{_selectedModel.nextEnergyRate &lt; 0?0xff0000:0x00ff00}"
@@ -949,13 +953,15 @@
                            <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{
                                                (_selectedModel.zetiumRate >= 0? 
                                                ('+' + NumberUtil.toShortString(_selectedModel.zetiumRate * 
-                                               ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600, PRECISION)):
+                                               ML.resourcesMods.getRateMod(ResourceType.ZETIUM)* 
+                                               ML.latestPlanet.ssObject.zetium.boost.getRateBoost() * 3600, PRECISION)):
                                                NumberUtil.toShortString(_selectedModel.zetiumRate * 3600, PRECISION))+ ' / ' +
                                                Localizer.string('General', 'hour.short')}"
                                                toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
                            <base:NextValueComp textToDisplay="{(_selectedModel.nextZetiumRate >= 0? 
                                                ('+' + NumberUtil.toShortString(_selectedModel.nextZetiumRate * 
-                                               ML.resourcesMods.getRateMod(ResourceType.ZETIUM) * 3600, PRECISION)):
+                                               ML.resourcesMods.getRateMod(ResourceType.ZETIUM)* 
+                                               ML.latestPlanet.ssObject.zetium.boost.getRateBoost() * 3600, PRECISION)):
                                                NumberUtil.toShortString(_selectedModel.nextZetiumRate * 3600, PRECISION))+ ' / ' +
                                                Localizer.string('General', 'hour.short')}"
                                                lblColor="{_selectedModel.nextZetiumRate &lt; 0?0xff0000:0x00ff00}"
@@ -978,7 +984,9 @@
                                            (_selectedModel.energyStorage != 0) ||
                                            (_selectedModel.zetiumStorage != 0) ||
                                            (Building.getPopulation(_selectedModel.type, 
-                                           _selectedModel.upgradePart.level) != 0)) &amp;&amp; !_selectedModel.isGhost}">
+                                           _selectedModel.upgradePart.level) != 0)) 
+                                           &amp;&amp; !_selectedModel.isGhost
+                                           &amp;&amp; !(_selectedModel.upgradePart.level == 0)}">
                      <base:AdvancedContainer left="0" right="0">                        
                         <s:Group visible="{_selectedModel.metalStorage != 0}">
                            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
