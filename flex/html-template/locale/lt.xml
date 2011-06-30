@@ -1104,10 +1104,10 @@
   </Galaxy>
 
   <General>
-    <day.short value="d." />
-    <hour.short value="v." />
-    <minute.short value="m." />
-    <second.short value="s." />
+    <day.short value="d" />
+    <hour.short value="v" />
+    <minute.short value="m" />
+    <second.short value="s" />
     <day.long value="diena" />
     <hour.long value="valanda" />
     <message.actionCanceled>
