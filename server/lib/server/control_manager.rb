@@ -3,6 +3,8 @@ require 'uri'
 
 # Monolithic class for controlling server.
 class ControlManager
+  class Error < RuntimeError; end
+  
   TAG = "ControlManager"
 
   include Singleton
@@ -297,7 +299,7 @@ class ControlManager
       LOGGER.info("Success!", TAG)
       true
     else
-      LOGGER.error("Failure! Server said:\n\n#{response.body}", TAG)
+      raise Error.new("Failure! Server said:\n\n#{response.body}")
       false
     end
   end
