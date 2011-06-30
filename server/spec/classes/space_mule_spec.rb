@@ -261,7 +261,8 @@ describe SpaceMule do
 
       it "should have correct shield time" do
         @ss.shield_ends_at.should be_close(
-          CONFIG['galaxy.player.shield_duration'].seconds.from_now,
+          CONFIG.evalproperty('galaxy.player.shield_duration').
+            seconds.from_now,
           10
         )
       end
@@ -284,7 +285,7 @@ describe SpaceMule do
       it "should register callback for inactivity check" do
         @ss.should have_callback(
           CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
-          CONFIG['galaxy.player.inactivity_check'].from_now)
+          CONFIG.evalproperty('galaxy.player.inactivity_check').from_now)
       end
     end
 
@@ -407,7 +408,7 @@ describe SpaceMule do
         it_should_behave_like "with orbit units"
       end
       
-      describe "mini battleground solar system" do
+      describe "mini battleground solar systems" do
         before(:each) do
           homeworld_ss_id = SsObject::Planet.
             where(:player_id => @player_id).first.solar_system_id

@@ -9,15 +9,15 @@ zone.diameter: 8
 zone.players: 20
 
 # How long initial shield lasts on players home solar system?
-player.shield_duration: <%= 2.weeks %>
+player.shield_duration: <%= 2.weeks %> / speed
 # Free population given to player upon creation
 player.population: 60
 # When should the inactivity check be scheduled for?
-player.inactivity_check: <%= 1.week %>
+player.inactivity_check: <%= 1.week %> / speed
 # How much points must player have to be considered active?
 player.inactivity_check.points: 15000
 # How recent should last player login be if he doesn't have enough points?
-player.inactivity_check.last_login_in: <%= 3.days %>
+player.inactivity_check.last_login_in: <%= 3.days %> / speed
 
 # All positions are relative to zone and not overridable in other sets!
 

@@ -145,13 +145,13 @@ class SolarSystem {
   protected def createObjectType(count: Int)(create: () => SSObject) = {
     (1 to count).foreach { index =>
       val obj = create()
-      obj.createUnits(groundUnits(obj))
-      obj.createOrbitUnits(orbitUnits(obj))
       initializeAndAdd(obj, randCoordinateFor(obj))
     }
   }
 
   protected def initializeAndAdd(obj: SSObject, coords: Coords) = {
+    obj.createUnits(groundUnits(obj))
+    obj.createOrbitUnits(orbitUnits(obj))
     obj.initialize
     objects(coords) = obj
   }
