@@ -16,6 +16,7 @@ class SolarSystem < ActiveRecord::Base
   # Foreign keys take care of the destruction
   has_many :ss_objects
   has_many :planets, :class_name => "SsObject::Planet"
+  has_many :asteroids, :class_name => "SsObject::Asteroid"
   has_many :jumpgates, :class_name => "SsObject::Jumpgate"
   has_many :fow_ss_entries
 
@@ -175,8 +176,8 @@ class SolarSystem < ActiveRecord::Base
     player = Player.find(player_ids[0])
     if player.last_login.nil? || ! (
         player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
-        player.last_login >= CONFIG[
-        'galaxy.player.inactivity_check.last_login_in'].ago)
+        player.last_login >= CONFIG.evalproperty(
+        'galaxy.player.inactivity_check.last_login_in').ago)
       # This player is inactive. Destroy him with his solar system.
       player.destroy
       # This must be fired before deleting solar system because we need

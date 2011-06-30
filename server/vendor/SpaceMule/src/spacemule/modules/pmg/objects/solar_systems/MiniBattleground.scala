@@ -9,8 +9,6 @@ class MiniBattleground extends Battleground {
   override def createPlanets() = {
     val coords = Config.battlegroundPlanetPositions.random
     val index = Random.nextInt(Config.battlegroundPlanetPositions.size)
-    val planet = new MiniBgPlanet(index)
-    planet.createOrbitUnits(orbitUnits(planet))
-    initializeAndAdd(planet, coords)
+    initializeAndAdd(new MiniBgPlanet(index), coords)
   }
 }

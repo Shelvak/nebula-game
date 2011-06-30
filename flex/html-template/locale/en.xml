@@ -515,6 +515,7 @@
     <property.healing.time.mod value="Seconds to heal 1 hp" />
     <property.healing.cost.mod value="Healing price modifier" />
     <property.population value="Population" />
+    <property.teleportedVolume value="Volume teleported" />
 
     <text.deactivated>
       <p>

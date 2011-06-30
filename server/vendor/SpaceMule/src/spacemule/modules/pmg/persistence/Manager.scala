@@ -363,8 +363,17 @@ object Manager {
 
     ssObjects += ssoRow.values
 
-    // Create units in orbit
+    // Create units in ground
     obj.units.foreach { unit =>
+      val unitRow = new UnitRow(
+        ssRow.galaxyId,
+        Location(ssoRow.id, Location.Planet, None, None),
+        unit
+      )
+      units += unitRow.values
+    }
+    // Create units in orbit
+    obj.orbitUnits.foreach { unit =>
       val unitRow = new UnitRow(
         ssRow.galaxyId,
         Location(ssRow.id, Location.SolarSystem,

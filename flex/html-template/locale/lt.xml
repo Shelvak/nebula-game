@@ -512,6 +512,7 @@
     <property.mod.construction value="Konstravimo greičio daugiklis" />
     <property.healing.time.mod value="Sekundžių pagyditi 1 GT" />
     <property.healing.cost.mod value="Gydymo kainos daugiklis" />
+    <property.teleportedVolume value="Perkeliamas tūris" />
 
     <text.deactivated>
       <p>
@@ -1104,10 +1105,10 @@
   </Galaxy>
 
   <General>
-    <day.short value="d." />
-    <hour.short value="v." />
-    <minute.short value="m." />
-    <second.short value="s." />
+    <day.short value="d" />
+    <hour.short value="v" />
+    <minute.short value="m" />
+    <second.short value="s" />
     <day.long value="diena" />
     <hour.long value="valanda" />
     <message.actionCanceled>
