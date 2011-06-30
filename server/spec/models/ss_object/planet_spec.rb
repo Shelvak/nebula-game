@@ -10,23 +10,35 @@ Factory.define :t_test_resource_mod, :class => Technology::TestResourceMod,
 end
 
 describe SsObject::Planet do
-  describe "#boosted?" do
-    it "should return false if nil" do
-      Factory.build(:planet, :metal_rate_boost_ends_at => nil).
-        boosted?(:metal, :rate).should be_false
+  describe "boosts" do
+    describe "#boosted?" do
+      it "should return false if nil" do
+        Factory.build(:planet, :metal_rate_boost_ends_at => nil).
+          boosted?(:metal, :rate).should be_false
+      end
+
+      it "should return false if in past" do
+        Factory.build(:planet, :metal_rate_boost_ends_at => 10.minutes.ago).
+          boosted?(:metal, :rate).should be_false
+      end
+
+      it "should return true otherwise" do
+        Factory.build(:planet, :metal_rate_boost_ends_at => 10.minutes.from_now).
+          boosted?(:metal, :rate).should be_true
+      end
     end
 
-    it "should return false if in past" do
-      Factory.build(:planet, :metal_rate_boost_ends_at => 10.minutes.ago).
-        boosted?(:metal, :rate).should be_false
-    end
-
-    it "should return true otherwise" do
-      Factory.build(:planet, :metal_rate_boost_ends_at => 10.minutes.from_now).
-        boosted?(:metal, :rate).should be_true
+    SsObject::Planet::RESOURCES.each do |resource|
+      it "should not boost negative #{resource} rate" do
+        Factory.build(:planet, 
+          :"#{resource}_rate_boost_ends_at" => 10.minutes.from_now,
+          :"#{resource}_generation_rate" => 0,
+          :"#{resource}_usage_rate" => 10
+        ).send(:"#{resource}_rate").should == -10
+      end
     end
   end
-
+  
   describe "#name" do
     before(:each) do
       @min = CONFIG['planet.validation.name.length.min']
