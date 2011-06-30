@@ -254,7 +254,7 @@
     <!-- Calculate sha1 checksums to assets/checksums file -->
     <checksum algorithm="sha1" pattern="{1} {0}"
     todir="${dist.loc.assets}">
-      <fileset dir="${main.src.loc}/assets" includes="*.swf" />
+      <fileset dir="${dist.loc.assets}" includes="*.swf" />
     </checksum>
     
     <concat destfile="${dist.loc.assets}/checksums">
