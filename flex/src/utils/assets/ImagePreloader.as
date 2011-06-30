@@ -266,7 +266,9 @@ package utils.assets
       public function startDownload () :void
       {
          var _assetsModuleInfo: IModuleInfo;
-         _assetsModuleInfo = ModuleManager.getModule("assets/AssetsConfig.swf");
+         _assetsModuleInfo = ModuleManager.getModule("assets/AssetsConfig.swf"
+         +getModuleChecksum('AssetsConfig'));
+         
          _assetsModuleInfo.addEventListener(
             ModuleEvent.READY,
             function(event:ModuleEvent) : void
@@ -279,6 +281,12 @@ package utils.assets
          );
          _assetsModuleInfo.load();
          
+      }
+      private function getModuleChecksum(moduleName: String): String
+      {
+         return STARTUP_INFO.assetsSums == null
+            ? '?0'
+            : '?'+STARTUP_INFO.assetsSums[moduleName + '.swf'];
       }
       private function downloadNextModule() : void
       {
@@ -298,7 +306,8 @@ package utils.assets
          
          _currentModule = getModules().pop();
          setCurrentModuleLabel();
-         _moduleInfo = ModuleManager.getModule("assets/" + _currentModule + ".swf");
+         _moduleInfo = ModuleManager.getModule("assets/" + _currentModule + ".swf"
+         +getModuleChecksum(_currentModule));
          _moduleInfo.addEventListener(
             ModuleEvent.READY,
             function(event:ModuleEvent) : void

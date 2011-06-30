@@ -233,5 +233,22 @@ package tests.utils.tests
             "my_big_dog", StringUtil.camelCaseToUnderscore("myBigDog")
          );
       }
+      
+      
+      [Test]
+      public function parseChecksums () : void
+      {
+         var parsed: Object = StringUtil.parseChecksums(
+         'dog.swf af0e256\ncat.swf 2ec45');
+         assertEquals(
+            "Should parse correct checksums.",
+            'af0e256', parsed['dog.swf']
+         );
+         
+         assertEquals(
+            "Should parse not only first line checksums.",
+            '2ec45', parsed['cat.swf']
+         );
+      }
    }
 }

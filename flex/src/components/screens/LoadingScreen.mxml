@@ -23,6 +23,7 @@
          import controllers.startup.StartupManager;
          
          import models.events.LocaleEvent;
+         import models.events.StartupEvent;
          
          import mx.binding.utils.BindingUtils;
          import mx.controls.Alert;
@@ -55,7 +56,18 @@
          {
             if (STARTUP_INFO.loadSuccessful)
             {
-               loadLocaleXML();
+               if (STARTUP_INFO.checksumsDownloaded)
+               {
+                  loadLocaleXML();
+               }
+               else
+               {
+                  STARTUP_INFO.addEventListener(StartupEvent.CHECKSUMS_DOWNLOADED,
+                     function (e: StartupEvent): void
+                     {
+                        loadLocaleXML();
+                     });
+               }
             }
             else
             {
