@@ -139,7 +139,7 @@ package controllers.startup
             function (e: ResultEvent): void
             {
                trace('Content of locale checksum: ' + e.result);
-               startupInfo.assetsSums = StringUtil.parseChecksums(String(e.result));
+               startupInfo.localeSums = StringUtil.parseChecksums(String(e.result));
                responses++;
                checkIfDone();
             });
@@ -151,7 +151,7 @@ package controllers.startup
             function (e: ResultEvent): void
             {
                trace('Content of assets checksum: ' + e.result);
-               startupInfo.localeSums = StringUtil.parseChecksums(String(e.result));
+               startupInfo.assetsSums = StringUtil.parseChecksums(String(e.result));
                responses++;
                checkIfDone();
             });
