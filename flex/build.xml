@@ -252,9 +252,7 @@
     <!-- Copy assets -->
     <mkdir dir="${dist.loc.assets}" />
     <copy todir="${dist.loc.assets}">
-      <fileset dir="${dist.loc.assets}">
-        <include name="*.swf" />
-      </fileset>
+      <fileset dir="${main.src.loc}/assets" includes="*.swf" />
     </copy>
     
     <!-- Calculate sha1 checksums to assets/checksums file -->
