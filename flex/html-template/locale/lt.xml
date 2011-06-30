@@ -512,6 +512,7 @@
     <property.mod.construction value="Konstravimo greičio daugiklis" />
     <property.healing.time.mod value="Sekundžių pagyditi 1 GT" />
     <property.healing.cost.mod value="Gydymo kainos daugiklis" />
+    <property.teleportedVolume value="Perkeliamas tūris" />
 
     <text.deactivated>
       <p>
