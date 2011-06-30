@@ -253,6 +253,11 @@ describe Alliance do
         with(@player, @alliance)
       @alliance.accept(@player)
     end
+    
+    it "should not call control manager if we're accepting alliance owner" do
+      ControlManager.instance.should_not_receive(:player_joined_alliance)
+      @alliance.accept(@alliance.owner)
+    end
 
     it "should dispatch changed for alliance owner" do
       should_fire_event(@alliance.owner, EventBroker::CHANGED) do

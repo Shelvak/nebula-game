@@ -150,7 +150,10 @@ class Alliance < ActiveRecord::Base
     FowSsEntry.assimilate_player(self, player)
     FowGalaxyEntry.assimilate_player(self, player)
 
-    ControlManager.instance.player_joined_alliance(player, self)
+    # Dispatch that this player joined the alliance, unless he is owner
+    # of that alliance.
+    ControlManager.instance.player_joined_alliance(player, self) \
+      unless player.id == owner_id
     # Dispatch changed on owner because he has alliance_player_count
     EventBroker.fire(owner, EventBroker::CHANGED)
     # Dispatch changed for status changed event
