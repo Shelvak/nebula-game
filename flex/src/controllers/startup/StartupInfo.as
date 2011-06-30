@@ -1,6 +1,7 @@
 package controllers.startup
 {
    import models.BaseModel;
+   import models.events.StartupEvent;
    
    import mx.utils.ObjectUtil;
    
@@ -48,6 +49,25 @@ package controllers.startup
       [Optional]
       public var playerId:int = 0;
       
+      public var assetsSums: Object;
+      
+      public var localeSums: Object;
+      
+      public function get checksumsDownloaded(): Boolean
+      {
+         return _checksumsDownloaded;
+      }
+      
+      private var _checksumsDownloaded: Boolean = false;
+      
+      public function handleChecksumsDownloaded(): void
+      {
+         _checksumsDownloaded = true;
+         if (hasEventListener(StartupEvent.CHECKSUMS_DOWNLOADED))
+         {
+            dispatchEvent(new StartupEvent(StartupEvent.CHECKSUMS_DOWNLOADED));
+         }
+      }
       
       public override function toString() : String
       {

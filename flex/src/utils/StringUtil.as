@@ -181,5 +181,27 @@ package utils
 			
 			return transfValue; 
 		}
+      
+      /**
+       *Used to get checksum object from file downloaded by startup 
+       */      
+      public static function parseChecksums(from: String): Object
+      {
+         var obj: Object = {};
+         try
+         {
+            var lines: Array = from.split('\n');
+            for each (var line: String in lines)
+            {
+               var parts: Array = line.split(' ');
+               obj[parts[0]] = parts[1];
+            }
+         }
+         catch (err: Error)
+         {
+            throw new Error ('cant parse checksum file ' + err.message);
+         }
+         return obj;
+      }
 	}
 }

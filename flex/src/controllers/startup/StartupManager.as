@@ -61,12 +61,18 @@ package controllers.startup
    import mx.logging.LogEventLevel;
    import mx.logging.targets.TraceTarget;
    import mx.managers.ToolTipManager;
+   import mx.rpc.events.FaultEvent;
+   import mx.rpc.events.ResultEvent;
+   import mx.rpc.http.HTTPService;
    
    import namespaces.client_internal;
+   
+   import org.flexunit.internals.runners.statements.Fail;
    
    import utils.DateUtil;
    import utils.Objects;
    import utils.SingletonFactory;
+   import utils.StringUtil;
    import utils.logging.targets.InMemoryTarget;
    
    
@@ -112,6 +118,44 @@ package controllers.startup
          {
             ML.player.id = startupInfo.playerId;
          }
+         
+         //=============DOWNLOADING CHECKSUM FILES===============
+         var tStamp: String = (int(new Date().time)).toString();
+         var responces: int = 0;
+         function checkIfDone(): void
+         {
+            if (responces == 2)
+            {
+               startupInfo.handleChecksumsDownloaded();
+            }
+         }
+         function handleFail(e: FaultEvent): void
+         {
+            responces++;
+            checkIfDone();
+         }
+         var checksumForLocale: HTTPService = new HTTPService();
+         checksumForLocale.url = 'locale/checksums?'+tStamp;
+         checksumForLocale.addEventListener(ResultEvent.RESULT, 
+            function (e: ResultEvent): void
+            {
+               startupInfo.assetsSums = StringUtil.parseChecksums(String(e.result));
+               responces++;
+               checkIfDone();
+            });
+         checksumForLocale.addEventListener(FaultEvent.FAULT, handleFail);
+         checksumForLocale.send();
+         var checksumForAssets: HTTPService = new HTTPService();
+         checksumForAssets.url = 'assets/checksums?'+tStamp;
+         checksumForAssets.addEventListener(ResultEvent.RESULT, 
+            function (e: ResultEvent): void
+            {
+               startupInfo.localeSums = StringUtil.parseChecksums(String(e.result));
+               responces++;
+               checkIfDone();
+            });
+         checksumForAssets.addEventListener(FaultEvent.FAULT, handleFail);
+         checksumForAssets.send();
          
          return true;
       }

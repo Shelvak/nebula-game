@@ -1,5 +1,7 @@
 package utils.locale
 {
+   import controllers.startup.StartupInfo;
+   
    import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.events.IOErrorEvent;
@@ -74,7 +76,11 @@ package utils.locale
        */
       public function load() : void
       {
-         _loader.load(new URLRequest("locale/" + _locale + ".xml"));
+         var SI: StartupInfo = StartupInfo.getInstance();
+         _loader.load(new URLRequest("locale/" + _locale + ".xml?" +
+         (SI.localeSums == null
+            ? '0'
+            : SI.localeSums[_locale + ".xml"])));
       }
       
       
