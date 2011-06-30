@@ -118,7 +118,7 @@ package controllers.startup
          }
          
          //=============DOWNLOADING CHECKSUM FILES===============
-         var tStamp: String = (int(new Date().time)).toString();
+         var tStamp: String = (new Date().time).toString();
          var responces: int = 0;
          function checkIfDone(): void
          {
@@ -129,6 +129,7 @@ package controllers.startup
          }
          function handleFail(e: FaultEvent): void
          {
+            trace('Checksum download failed');
             responces++;
             checkIfDone();
          }
@@ -137,6 +138,7 @@ package controllers.startup
          checksumForLocale.addEventListener(ResultEvent.RESULT, 
             function (e: ResultEvent): void
             {
+               trace('Content of locale checksum: ' + e.result);
                startupInfo.assetsSums = StringUtil.parseChecksums(String(e.result));
                responces++;
                checkIfDone();
@@ -148,6 +150,7 @@ package controllers.startup
          checksumForAssets.addEventListener(ResultEvent.RESULT, 
             function (e: ResultEvent): void
             {
+               trace('Content of assets checksum: ' + e.result);
                startupInfo.localeSums = StringUtil.parseChecksums(String(e.result));
                responces++;
                checkIfDone();
