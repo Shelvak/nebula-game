@@ -47,7 +47,7 @@
             attributes.name = "${application}";
             attributes.align = "middle";
             swfobject.embedSWF(
-                "${swf}", "flashContent", 
+                "${swf}.swf?${swf.checksum}", "flashContent", 
                 "${width}", "${height}", 
                 swfVersionStr, xiSwfUrlStr, 
                 flashvars, params, attributes);
@@ -74,13 +74,13 @@
          
          <noscript>
             <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="${width}" height="${height}" id="${application}">
-                <param name="movie" value="${swf}" />
+                <param name="movie" value="${swf}.swf?${swf.checksum}" />
                 <param name="quality" value="high" />
                 <param name="bgcolor" value="${bgcolor}" />
                 <param name="allowScriptAccess" value="sameDomain" />
                 <param name="allowFullScreen" value="true" />
                 <!--[if !IE]>-->
-                <object type="application/x-shockwave-flash" data="${swf}" width="${width}" height="${height}">
+                <object type="application/x-shockwave-flash" data="${swf}.swf?${swf.checksum}" width="${width}" height="${height}">
                     <param name="quality" value="high" />
                     <param name="bgcolor" value="${bgcolor}" />
                     <param name="allowScriptAccess" value="sameDomain" />

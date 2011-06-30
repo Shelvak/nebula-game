@@ -187,15 +187,21 @@
     
     <!-- Generate proper index.html -->
     <replace file="${index.html}">
+      <!-- We must leave ${swf} for flash builder compatibility -->
       <replacefilter>
         <replacetoken expandproperties="false">${swf}</replacetoken>
         <replacevalue expandproperties="true"
-          >${swf.name}.swf?${swf.checksum}</replacevalue>
+          >${swf.name}</replacevalue>
       </replacefilter>
       <replacefilter>
         <replacetoken expandproperties="false">${gamejs.checksum}</replacetoken>
         <replacevalue expandproperties="true"
           >${gamejs.checksum}</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${swf.checksum}</replacetoken>
+        <replacevalue expandproperties="true"
+          >${swf.checksum}</replacevalue>
       </replacefilter>
       <replacefilter>
         <replacetoken expandproperties="false">${width}</replacetoken>
@@ -254,7 +260,7 @@
     <!-- Calculate sha1 checksums to assets/checksums file -->
     <checksum algorithm="sha1" pattern="{1} {0}"
     todir="${dist.loc.assets}">
-      <fileset dir="${main.src.loc}/assets" includes="*.swf" />
+      <fileset dir="${dist.loc.assets}" includes="*.swf" />
     </checksum>
     
     <concat destfile="${dist.loc.assets}/checksums">
