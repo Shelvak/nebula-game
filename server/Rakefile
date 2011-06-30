@@ -1,16 +1,16 @@
 require 'rubygems'
 require 'rake'
 require 'rake/clean'
-require 'rdoc/task'
+#require 'rdoc/task'
 
-Rake::RDocTask.new do |rdoc|
-  files =['README', 'LICENSE', 'lib/**/*.rb']
-  rdoc.rdoc_files.add(files)
-  rdoc.main = "README" # page to start on
-  rdoc.title = "space_server Docs"
-  rdoc.rdoc_dir = 'doc/rdoc' # rdoc output folder
-  rdoc.options << '--line-numbers'
-end
+#Rake::RDocTask.new do |rdoc|
+#  files =['README', 'LICENSE', 'lib/**/*.rb']
+#  rdoc.rdoc_files.add(files)
+#  rdoc.main = "README" # page to start on
+#  rdoc.title = "space_server Docs"
+#  rdoc.rdoc_dir = 'doc/rdoc' # rdoc output folder
+#  rdoc.options << '--line-numbers'
+#end
 
 class TemplatesBuilder
   TEMPLATE_DIR = File.join(File.dirname(__FILE__), 'tasks', 'templates')
