@@ -18,6 +18,8 @@
   <property name="bin.loc" location="${output.loc}/bin" />
   <property name="report.loc" location="${output.loc}/report" />
   <property name="dist.loc" location="${output.loc}/dist" />
+  <property name="dist.loc.assets" location="${dist.loc}/assets" />
+  <property name="dist.loc.locales" location="${dist.loc}/locale" />
 
   <!-- Setup Flex and FlexUnit ant tasks -->
   <!-- You can set this directly so mxmlc will work correctly, or set FLEX_HOME as an environment variable and use as below -->
@@ -162,10 +164,38 @@
     
     <property name="index.html" location="${dist.loc}/index.html" />
     <move file="${dist.loc}/index.template.html" tofile="${index.html}" />
+    
+    <!-- Calculate checksums -->
+    <checksum file="${dist.loc}/${swf.name}.swf" algorithm="sha1"
+      property="swf.checksum" />
+    <checksum file="${dist.loc}/game.js" algorithm="sha1"
+      property="gamejs.checksum" />
+      
+    <!-- Calculate sha1 checksums to assets/checksums file -->
+    <checksum algorithm="sha1" pattern="{1} {0}"
+    todir="${dist.loc.locales}">
+      <fileset dir="${dist.loc.locales}" includes="*.xml" />
+    </checksum>
+    
+    <concat destfile="${dist.loc.locales}/checksums">
+      <fileset dir="${dist.loc.locales}" includes="*.sha1"/>
+    </concat>
+    
+    <delete>
+      <fileset dir="${dist.loc.locales}" includes="*.sha1"/>
+    </delete>
+    
+    <!-- Generate proper index.html -->
     <replace file="${index.html}">
       <replacefilter>
         <replacetoken expandproperties="false">${swf}</replacetoken>
-        <replacevalue expandproperties="true">${swf.name}</replacevalue>
+        <replacevalue expandproperties="true"
+          >${swf.name}.swf?${swf.checksum}</replacevalue>
+      </replacefilter>
+      <replacefilter>
+        <replacetoken expandproperties="false">${gamejs.checksum}</replacetoken>
+        <replacevalue expandproperties="true"
+          >${gamejs.checksum}</replacevalue>
       </replacefilter>
       <replacefilter>
         <replacetoken expandproperties="false">${width}</replacetoken>
@@ -214,13 +244,26 @@
     <exec executable="rake" osfamily="unix"><arg value="wiki:sync" /></exec>
     
     <!-- Copy assets -->
-    <property name="assetsdir" location="${dist.loc}/assets" />
-    <mkdir dir="${assetsdir}" />
-    <copy todir="${assetsdir}">
-      <fileset dir="${main.src.loc}/assets">
+    <mkdir dir="${dist.loc.assets}" />
+    <copy todir="${dist.loc.assets}">
+      <fileset dir="${dist.loc.assets}">
         <include name="*.swf" />
       </fileset>
     </copy>
+    
+    <!-- Calculate sha1 checksums to assets/checksums file -->
+    <checksum algorithm="sha1" pattern="{1} {0}"
+    todir="${dist.loc.assets}">
+      <fileset dir="${main.src.loc}/assets" includes="*.swf" />
+    </checksum>
+    
+    <concat destfile="${dist.loc.assets}/checksums">
+      <fileset dir="${dist.loc.assets}" includes="*.sha1"/>
+    </concat>
+    
+    <delete>
+      <fileset dir="${dist.loc.assets}" includes="*.sha1"/>
+    </delete>
   </target>
 
   <target name="build" depends="build-swf,build-assets" />
