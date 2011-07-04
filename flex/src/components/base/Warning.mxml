@@ -66,7 +66,9 @@
                      visible="{showSign}"/>
       
       <s:RichText right="{topRight.width + 10}" 
-                  left="{topLeft.width + (showSign?sign.width + 20:10)}" 
+                  left="{topLeft.width + (showSign
+                  ?sign.width + 20
+                  :10)}" 
                   fontSize="14" textFlow="{getTextFlow(text)}" 
                verticalCenter="0" textAlign="{warningTextAlign}" 
                color="#ffcc00" paddingTop="15" paddingBottom="15" paddingLeft="6"/>
