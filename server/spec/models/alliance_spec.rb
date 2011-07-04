@@ -116,7 +116,7 @@ describe Alliance do
       @ratings.find { |h| h['alliance_id'].nil? }.should be_nil
     end
 
-    (Player::POINT_ATTRIBUTES + %w{victory_points planets_count}).each do
+    (Player::POINT_ATTRIBUTES + %w{planets_count}).each do
       |attr|
 
       it "should sum #{attr}" do
@@ -150,6 +150,15 @@ describe Alliance do
       end.should equal_to_hash(
         @a[0].id => @a0_players.size,
         @a[1].id => @a1_players.size
+      )
+    end
+
+    it "should include alliance victory points" do
+      @ratings.map_into_hash do |hash|
+        [hash['alliance_id'], hash['victory_points']]
+      end.should equal_to_hash(
+        @a[0].id => @a[0].victory_points,
+        @a[1].id => @a[1].victory_points
       )
     end
   end
