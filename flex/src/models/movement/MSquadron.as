@@ -331,12 +331,12 @@ package models.movement
       }
       
       
-      [Bindable(event="idChange")]
+      [Bindable(event="modelIdChange")]
       /**
        * Indicates if a squadron is moving.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="idChange")]</i></p>
+       * [Bindable(event="modelIdChange")]</i></p>
        */
       public function get isMoving() : Boolean
       {
