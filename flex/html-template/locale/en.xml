@@ -1749,7 +1749,7 @@
     <!-- SELF_DESTRUCT
     0: count of buildings to self destruct -->
     <objectiveText.SelfDestruct 
-    value="Destroy {0 one[building] many[? buildings]} that belongs to you" />
+    value="Destroy {0 one[building] many[? buildings]} that belong to you" />
 
 
     <!-- EXPLORE_BLOCK
