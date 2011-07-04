@@ -47,6 +47,11 @@ package models.chat
     */
    [Event(name="hasUnreadPrivateMsgChange", type="models.chat.events.MChatEvent")]
    
+   /**
+    * @see MChatEvent#HAS_UNREAD_MAIN_MSG_CHANGE
+    */
+   [Event(name="hasUnreadMainMsgChange", type="models.chat.events.MChatEvent")]
+   
    
    /**
     * Chat singleton.
@@ -60,12 +65,10 @@ package models.chat
        */
       public static const MAIN_CHANNEL_NAME:String = "galaxy";
       
-      
       /**
        * Index of a main public channel (galaxy) in the channels list (0).
        */
       public static const MAIN_CHANNEL_INDEX:int = 0;
-      
       
       /**
        * Prefix used for alliance channel names (alliance-). If present, alliance channel is always the
@@ -73,33 +76,27 @@ package models.chat
        */
       public static const ALLIANCE_CHANNEL_PREFIX:String = "alliance-";
       
-      
       /**
        * Index of an alliance channel in the channels list (1).
        */
       public static const ALLIANCE_CHANNEL_INDEX:int = 1;
       
       
-      public static function getInstance() : MChat
-      {
+      public static function getInstance() : MChat {
          return SingletonFactory.getSingletonInstance(MChat);
       }
       
       
-      private function get NAV_CTRL() : NavigationController
-      {
+      private function get NAV_CTRL() : NavigationController {
          return NavigationController.getInstance();
       }
       
-      
-      private function get ML() : ModelLocator
-      {
+      private function get ML() : ModelLocator {
          return ModelLocator.getInstance();
       }
       
       
-      public function MChat()
-      {
+      public function MChat() {
          _messagePool = new StackObjectPoolFactory(new MChatMessageFactory()).createPool();
          _members  = new MChatMembersList();
          _channels = new MChatChannelsList();
@@ -110,8 +107,7 @@ package models.chat
       /**
        * Returns <code>MChatMessage</code> pool for the chat.
        */
-      public function get messagePool() : IObjectPool
-      {
+      public function get messagePool() : IObjectPool {
          return _messagePool;
       }
       
@@ -184,9 +180,7 @@ package models.chat
       private function addMembersToChannel(channel:MChatChannel, memberIds:Array) : void
       {
          for each (var id:int in memberIds)
-         {
             channel.memberJoin(_members.getMember(id), false);
-         }
       }
       
       
@@ -207,12 +201,31 @@ package models.chat
          setPrivateChannelOpen(false);
          setHasUnreadAllianceMsg(false);
          setHasUnreadPrivateMsg(false);
+         setHasUnreadMainMsg(false);
       }
       
       
       /* ########## */
       /* ### UI ### */
       /* ########## */
+      
+      
+      private var _hasUnreadMainMsg:Boolean = false;
+      /**
+       * <code>true</code> if there is at least one unread message in main channel. When this property
+       * changes, <code>MChatEvent.HAS_UNREAD_MAIN_MSG_CHANGE</code> event is dispatched.
+       * 
+       * <p>No property change event.</p>
+       */
+      public function get hasUnreadMainMsg() : Boolean {
+         return _hasUnreadMainMsg;
+      }
+      private function setHasUnreadMainMsg(value:Boolean) : void {
+         if (_hasUnreadMainMsg != value) {
+            _hasUnreadMainMsg = value;
+            dispatchSimpleEvent(MChatEvent, MChatEvent.HAS_UNREAD_MAIN_MSG_CHANGE);
+         }
+      }
       
       
       private var _hasUnreadAllianceMsg:Boolean = false;
@@ -223,14 +236,11 @@ package models.chat
        * 
        * <p>No property change event.</p>
        */
-      public function get hasUnreadAllianceMsg() : Boolean
-      {
+      public function get hasUnreadAllianceMsg() : Boolean {
          return _hasUnreadAllianceMsg;
       }
-      private function setHasUnreadAllianceMsg(value:Boolean) : void
-      {
-         if (_hasUnreadAllianceMsg != value)
-         {
+      private function setHasUnreadAllianceMsg(value:Boolean) : void {
+         if (_hasUnreadAllianceMsg != value) {
             _hasUnreadAllianceMsg = value;
             dispatchSimpleEvent(MChatEvent, MChatEvent.HAS_UNREAD_ALLIANCE_MSG_CHANGE);
          }
@@ -245,27 +255,20 @@ package models.chat
        * 
        * <p>No property change event.</p>
        */
-      public function get hasUnreadPrivateMsg() : Boolean
-      {
+      public function get hasUnreadPrivateMsg() : Boolean {
          return _hasUnreadPrivateMsg;
       }
-      private function updateHasUnreadPrivateMsg() : void
-      {
+      private function updateHasUnreadPrivateMsg() : void {
          var hasUnreadMsg:Boolean = false;
          for each (var chan:MChatChannel in _channels)
-         {
-            if (chan is MChatChannelPrivate && chan.hasUnreadMessages)
-            {
+            if (chan is MChatChannelPrivate && chan.hasUnreadMessages) {
                hasUnreadMsg = true;
                break;
             }
-         }
          setHasUnreadPrivateMsg(hasUnreadMsg);
       }
-      private function setHasUnreadPrivateMsg(value:Boolean) : void
-      {
-         if (_hasUnreadPrivateMsg != value)
-         {
+      private function setHasUnreadPrivateMsg(value:Boolean) : void {
+         if (_hasUnreadPrivateMsg != value) {
             _hasUnreadPrivateMsg = value;
             dispatchSimpleEvent(MChatEvent, MChatEvent.HAS_UNREAD_PRIVATE_MSG_CHANGE);
          }
@@ -278,31 +281,24 @@ package models.chat
        * @param channelName name of a channel to select.
        *                    <b>Not null. Not empty string.</b>
        */
-      public function selectChannel(channelName:String) : void
-      {
+      public function selectChannel(channelName:String) : void {
          Objects.paramNotEquals("channelName", channelName, [null, ""]);
          
          var toSelect:MChatChannel = _channels.getChannel(channelName);
          if (toSelect == null)
-         {
             throwChannelNotFoundError("Unable to select channel", channelName);
-         }
          if (_selectedChannel == toSelect)
-         {
             return;
-         }
-         if (_visible)
-         {
+         if (_visible) {
             _selectedChannel.visible = false;
             toSelect.visible = true;
-            if (toSelect is MChatChannelPublic && MChatChannelPublic(toSelect).isAlliance)
-            {
-               setHasUnreadAllianceMsg(toSelect.hasUnreadMessages);
-            }
             if (toSelect is MChatChannelPrivate)
-            {
                updateHasUnreadPrivateMsg();
-            }
+            else
+               if (MChatChannelPublic(toSelect).isAlliance)
+                  setHasUnreadAllianceMsg(toSelect.hasUnreadMessages);
+               else
+                  setHasUnreadMainMsg(toSelect.hasUnreadMessages);
          }
          _selectedChannel = toSelect;
          dispatchSimpleEvent(MChatEvent, MChatEvent.SELECTED_CHANNEL_CHANGE);
@@ -323,30 +319,24 @@ package models.chat
       /**
        * Indicates if player is looking at the chat screen right now.
        */
-      public function set visible(value:Boolean) : void
-      {
-         if (_visible != value)
-         {
+      public function set visible(value:Boolean) : void {
+         if (_visible != value) {
             _visible = value;
             selectedChannel.visible = value;
             if (_visible)
-            {
                if (selectedChannel is MChatChannelPrivate)
-               {
                   updateHasUnreadPrivateMsg();
-               }
-               else if (MChatChannelPublic(selectedChannel).isAlliance)
-               {
-                  setHasUnreadAllianceMsg(false);
-               }
-            }
+               else
+                  if (MChatChannelPublic(selectedChannel).isAlliance)
+                     setHasUnreadAllianceMsg(false);
+                  else
+                     setHasUnreadMainMsg(false);
          }
       }
       /**
        * @private
        */
-      public function get visible() : Boolean
-      {
+      public function get visible() : Boolean {
          return _visible;
       }
       
@@ -354,8 +344,7 @@ package models.chat
       /**
        * Called when chat screen is switched and shown for the player.
        */
-      public function screenShowHandler() : void
-      {
+      public function screenShowHandler() : void {
          visible = true;
       }
       
@@ -363,8 +352,7 @@ package models.chat
       /**
        * Called when chat screen is hidden and not shown to the player.
        */
-      public function screenHideHandler() : void
-      {
+      public function screenHideHandler() : void {
          visible = false;
       }
       
@@ -372,8 +360,7 @@ package models.chat
       /**
        * Selects main channel if it is not currently selected.
        */
-      public function selectMainChannel() : void
-      {
+      public function selectMainChannel() : void {
          selectChannel(MAIN_CHANNEL_NAME);
       }
       
@@ -381,15 +368,10 @@ package models.chat
       /**
        * Selects alliance channel if there is one and it is not currently selected.
        */
-      public function selectAllianceChannel() : void
-      {
+      public function selectAllianceChannel() : void {
          for each (var channel:MChatChannel in _channels)
-         {
             if (channel is MChatChannelPublic && MChatChannelPublic(channel).isAlliance)
-            {
                selectChannel(channel.name);
-            }
-         }
       }
       
       
@@ -403,29 +385,19 @@ package models.chat
          var firstPrivate:MChatChannel = null;
          var firstPrivateWithMsg:MChatChannel = null;
          for each (var channel:MChatChannel in _channels)
-         {
-            if (channel is MChatChannelPrivate)
-            {
+            if (channel is MChatChannelPrivate) {
                if (firstPrivate == null)
-               {
                   firstPrivate = channel;
-               }
-               if (channel.hasUnreadMessages && firstPrivateWithMsg == null)
-               {
+               if (channel.hasUnreadMessages && firstPrivateWithMsg == null) {
                   firstPrivateWithMsg = channel;
                   break;
                }
             }
-         }
          
          if (firstPrivateWithMsg != null)
-         {
             selectChannel(firstPrivateWithMsg.name);
-         }
          else if (firstPrivate != null)
-         {
             selectChannel(firstPrivate.name);
-         }
       }
       
       
@@ -438,8 +410,7 @@ package models.chat
       /**
        * Lits of all chat members.
        */
-      public function get members() : MChatMembersList
-      {
+      public function get members() : MChatMembersList {
          return _members;
       }
       
@@ -449,13 +420,10 @@ package models.chat
        * 
        * @see mx.collections.Sort#compareFunction
        */
-      public static function compareFunction_members(m1:MChatMember, m2:MChatMember, fields:Array = null) : int
-      {
+      public static function compareFunction_members(m1:MChatMember, m2:MChatMember, fields:Array = null) : int {
          var compareResult:int = ObjectUtil.stringCompare(m1.name, m2.name, true);
          if (compareResult != 0)
-         {
             return compareResult;
-         }
          return ObjectUtil.numericCompare(m1.id, m2.id);
       }
       
@@ -814,18 +782,14 @@ package models.chat
          
          var channel:MChatChannelPublic = MChatChannelPublic(_channels.getChannel(message.channel));
          if (channel == null)
-         {
             throwChannelNotFoundError("Unable to process message " + message, message.channel);
-         }
          
          var member:MChatMember = _members.getMember(message.playerId);
          if (member == null)
-         {
             throw new Error(
                "Unable to process message " + message + ": member with id " + message.playerId +
                " is not joined to chat"
             );
-         }
          
          message.playerName = member.name;
          message.time = new Date();
@@ -833,9 +797,9 @@ package models.chat
          channel.receiveMessage(message);
          
          if (channel.isAlliance)
-         {
             setHasUnreadAllianceMsg(channel.hasUnreadMessages);
-         }
+         else
+            setHasUnreadMainMsg(channel.hasUnreadMessages);
       }
       
       

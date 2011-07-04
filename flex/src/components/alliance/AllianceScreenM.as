@@ -1,19 +1,32 @@
 package components.alliance
 {
    import components.alliance.events.AllianceScreenMEvent;
+   import components.popups.ErrorPopup;
+   import components.ratings.events.RatingsEvent;
    
+   import config.Config;
+   
+   import controllers.GlobalFlags;
    import controllers.alliances.AlliancesCommand;
    import controllers.ui.NavigationController;
    
    import flash.events.Event;
    import flash.events.EventDispatcher;
+   import flash.events.MouseEvent;
    
    import models.ModelLocator;
    import models.alliance.MAlliance;
    import models.player.events.PlayerEvent;
    
+   import mx.collections.Sort;
+   import mx.collections.SortField;
+   
+   import spark.components.Button;
+   
+   import utils.DateUtil;
    import utils.EventUtils;
    import utils.SingletonFactory;
+   import utils.locale.Localizer;
    
    
    /**
@@ -45,6 +58,32 @@ package components.alliance
       private static const TAB_PLAYERS:int = 1;
       private static const TAB_MANAGEMENT:int = 2;
       
+      private static const nameField: SortField = new SortField('name', true);
+      private static const rankField: SortField = new SortField('rank', false, false, true);
+      private static const allianceField: SortField = new SortField('alliance', true);
+      private static const victoryPtsField: SortField = new SortField('victoryPoints', false, true, true);
+      private static const allianceVpsField: SortField = new SortField('allianceVps', false, true, true);
+      private static const pointsField: SortField = new SortField('points', false, true, true);
+      private static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
+      private static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);
+      private static const sciencePtsField: SortField = new SortField('sciencePoints', false, true, true);
+      private static const armyPtsField: SortField = new SortField('armyPoints', false, true, true);
+      private static const warPtsField: SortField = new SortField('warPoints', false, true, true);
+      
+      private static const sortFields: Object = 
+         {
+            'rank':[rankField],
+            'name':[nameField],
+            'alliance':[allianceField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'planetsCount':[planetsCountField, allianceVpsField, victoryPtsField, pointsField, nameField],
+            'economyPoints':[economyPtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'sciencePoints':[sciencePtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'armyPoints':[armyPtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'warPoints':[warPtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'victoryPoints':[victoryPtsField, allianceVpsField, pointsField, planetsCountField, nameField],
+            'allianceVps':[allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'points':[pointsField, allianceVpsField, victoryPtsField, planetsCountField, nameField]
+         }
       
       public static function getInstance() : AllianceScreenM {
          return SingletonFactory.getSingletonInstance(AllianceScreenM);
@@ -67,6 +106,7 @@ package components.alliance
             (PlayerEvent.ALLIANCE_ID_CHANGE, player_allianceIdChangeHandler, false, 0, true); 
       }
       
+      private var sortKey: String;
       
       public function reset() : void {
          alliance = null;
@@ -206,6 +246,43 @@ package components.alliance
          dispatchSimpleEvent(AllianceScreenMEvent.MANAGEMENT_TAB_ENABLED_CHANGE);
       }
       
+      /* ################ */
+      /* ### HANDLERS ### */
+      /* ################ */
+      
+      
+      public function header_ratingsSortHandler(event:RatingsEvent):void
+      {
+         _alliance.players.sort = new Sort();
+         _alliance.players.sort.fields = sortFields[event.key];
+         _alliance.players.refresh();
+      }
+      
+      public function refresh_clickHandler(event:MouseEvent):void
+      {
+         new AlliancesCommand(AlliancesCommand.SHOW, {'id': ML.player.allianceId}).dispatch();
+      }
+      
+      public function leave_clickHandler(event:MouseEvent):void
+      {
+         var popUp: ErrorPopup = new ErrorPopup();
+         popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
+         popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+         popUp.showCancelButton = true;
+         popUp.showRetryButton = true;
+         popUp.message = alliance.ownerId == ML.player.id
+            ? Localizer.string('Popups', 'message.leaveSelfAlly')
+            : Localizer.string('Popups', 'message.leaveAlly', 
+               [DateUtil.secondsToHumanString(Config.getAllianceLeaveCooldown())]);
+         popUp.title = Localizer.string('Popups', 'title.leaveAlly');
+         popUp.retryButtonClickHandler = function (button: Button = null): void
+         {
+            GlobalFlags.getInstance().lockApplication = true;
+            new AlliancesCommand(AlliancesCommand.LEAVE).dispatch();
+            alliance = null;
+         };
+         popUp.show();
+      }
       
       /* ############### */
       /* ### HELPERS ### */

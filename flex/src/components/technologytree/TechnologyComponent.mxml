@@ -94,7 +94,8 @@
             fadeResearch.alphaFrom = 1;
             fadeResearch.alphaTo = FADE_TO;
             fadeResearch.repeatBehavior = RepeatBehavior.REVERSE;
-            fadeResearch.repeatCount = 0;      
+            fadeResearch.repeatCount = 0; 
+            refreshBlinking();     
          }
          
          protected function handleTechClick(e: MouseEvent): void

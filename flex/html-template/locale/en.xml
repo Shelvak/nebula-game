@@ -446,6 +446,10 @@
     <message.pressOnEmpty>
       <p>Click on empty map space to enter building construction mode</p>
     </message.pressOnEmpty>
+    <warning.buildingWorking>
+      <p>Anything this building is constructing will be destroyed if you 
+      initiate self-destruct on this building.</p>
+    </warning.buildingWorking>
     <toolTip.afterUpgrade value="After upgrade" />
     <title.boost value="Boost" />
     <title.buildingBonus value="Building bonus" />
