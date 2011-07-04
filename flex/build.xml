@@ -270,7 +270,7 @@
     </delete>
   </target>
 
-  <target name="build" depends="build-swf,build-assets" />
+  <target name="build" depends="build-assets,build-swf" />
 
   <target name="release" depends="test,build" />
 </project>

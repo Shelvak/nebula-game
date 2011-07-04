@@ -65,17 +65,6 @@ package models.location
       
       
       [Bindable(event="willNotChange")]
-      public function get sectorName() :String
-      {
-         if (isBattleground)
-         {
-            return "";
-         }
-         return x + ":" + y;
-      }
-      
-      
-      [Bindable(event="willNotChange")]
       public function get solarSystemName() : String
       {
          if (isMiniBattleground || isSSObject && ML.latestSolarSystem.isMiniBattleground)

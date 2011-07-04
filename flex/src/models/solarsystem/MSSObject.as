@@ -821,6 +821,7 @@ package models.solarsystem
       
       
       private var _cooldown:MCooldown;
+      [SkipProperty]
       [Bindable(event="cooldownChange")]
       /**
        * Cooldown after a battle in a planet. <code>null</code> means there is no cooldown.
