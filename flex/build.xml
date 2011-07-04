@@ -155,23 +155,8 @@
     </junitreport>
   </target>
   
-  <target name="copy-swf">
-    <!-- Assemble final website -->
-    <copy file="${bin.loc}/${swf.name}.swf" todir="${dist.loc}" />
-    <copy todir="${dist.loc}">
-      <fileset dir="${html.src.loc}" />
-    </copy>
-    
-    <property name="index.html" location="${dist.loc}/index.html" />
-    <move file="${dist.loc}/index.template.html" tofile="${index.html}" />
-    
-    <!-- Calculate checksums -->
-    <checksum file="${dist.loc}/${swf.name}.swf" algorithm="sha1"
-      property="swf.checksum" />
-    <checksum file="${dist.loc}/game.js" algorithm="sha1"
-      property="gamejs.checksum" />
-      
-    <!-- Calculate sha1 checksums to assets/checksums file -->
+  <target name="checksum-locales">
+    <!-- Calculate sha1 checksums to locates/checksums file -->
     <checksum algorithm="sha1" pattern="{1} {0}"
     todir="${dist.loc.locales}">
       <fileset dir="${dist.loc.locales}" includes="*.xml" />
@@ -184,6 +169,25 @@
     <delete>
       <fileset dir="${dist.loc.locales}" includes="*.sha1"/>
     </delete>
+  </target>
+  
+  <target name="copy-swf">
+    <!-- Assemble final website -->
+    <copy file="${bin.loc}/${swf.name}.swf" todir="${dist.loc}" />
+    <copy todir="${dist.loc}">
+      <fileset dir="${html.src.loc}" />
+    </copy>
+    
+    <property name="index.html" location="${dist.loc}/index.html" />
+    <move file="${dist.loc}/index.template.html" tofile="${index.html}" />
+    
+    <antcall target="checksum-locales" />
+    
+    <!-- Calculate checksums -->
+    <checksum file="${dist.loc}/${swf.name}.swf" algorithm="sha1"
+      property="swf.checksum" />
+    <checksum file="${dist.loc}/game.js" algorithm="sha1"
+      property="gamejs.checksum" />
     
     <!-- Generate proper index.html -->
     <replace file="${index.html}">
