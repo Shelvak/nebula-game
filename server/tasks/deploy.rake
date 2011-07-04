@@ -52,7 +52,7 @@ DEPLOY_CONFIG = {
         File.join("script", "log_analyzer.rb"),
         File.join("script", "munin_logged_in.rb"),
         File.join("script", "munin-plugins"),
-        #File.join("script", "fix_visibility.rb"),
+        File.join("script", "fixes"),
         "vendor",
         "Rakefile",
         ".rvmrc",
