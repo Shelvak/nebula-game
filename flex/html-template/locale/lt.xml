@@ -445,6 +445,10 @@
       <p>Paspausk ant tuščios žemėlapio vietos, jog įeitum į statybų 
       režimą.</p>
     </message.pressOnEmpty>
+    <warning.buildingWorking>
+      <p>Jeigu liepsi šiam pastatui susinaikinti, tada tai, 
+      ką stato šis pastatas, bus taip pat sunaikinta.</p>
+    </warning.buildingWorking>
     <toolTip.afterUpgrade value="Po patobulinimo" />
 
     <title.boost value="Padidinti" />

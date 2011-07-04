@@ -19,6 +19,9 @@
          public var paddingTop: int = 0;
          
          [Bindable]
+         public var showSign: Boolean = true;
+         
+         [Bindable]
          public var warningSignVerticalCenter: Boolean = true;
          
          [Bindable]
@@ -59,10 +62,13 @@
       <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_sign')}" 
                      left="{topLeft.width + 10}" id="sign" 
                      top="{warningSignVerticalCenter?((height-sign.height)/2) 
-                     :(topLeft.height + 6)}"/>
+                     :(topLeft.height + 6)}"
+                     visible="{showSign}"/>
       
-      <s:RichText right="{topRight.width + 10}" left="{topLeft.width + sign.width + 20}" fontSize="14"
-               textFlow="{getTextFlow(text)}" verticalCenter="0" textAlign="{warningTextAlign}" 
+      <s:RichText right="{topRight.width + 10}" 
+                  left="{topLeft.width + (showSign?sign.width + 20:10)}" 
+                  fontSize="14" textFlow="{getTextFlow(text)}" 
+               verticalCenter="0" textAlign="{warningTextAlign}" 
                color="#ffcc00" paddingTop="15" paddingBottom="15" paddingLeft="6"/>
    </s:Group>
    
