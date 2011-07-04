@@ -6,11 +6,19 @@ package models.location
    import models.map.MMap;
    import models.solarsystem.SSKind;
    
+   import utils.locale.Localizer;
+   
    public class LocationMinimal extends BaseModel implements ILocation
    {
       /**
-       * Constructor.
+       * Returns label of a sector of the form: <code>Sector {loc.sectorName}</code>.
+       * This method handles <code>nulls</code> silently: returns empty strings.
        */
+      public static function getSectorLabel(loc:LocationMinimal) : String {
+         return loc == null ? "" : Localizer.string('Location', 'sector') + loc.sectorName;
+      }
+      
+      
       public function LocationMinimal()
       {
          super();
@@ -96,6 +104,17 @@ package models.location
       public function get isGalaxy() : Boolean
       {
          return type == LocationType.GALAXY;
+      }
+      
+      
+      [Bindable(event="willNotChange")]
+      /**
+       * Name of a sector defined by this instance of <code>LocationMinimal</code>. Returned string
+       * is of the form: <code>x:y</code>. Make sense for <code>LocationType.GALAXY</code> and
+       * <code>LocationType.GALAXY<code> types only.
+       */
+      public function get sectorName() : String {
+         return isBattleground ? "" : x + ":" + y;
       }
       
       

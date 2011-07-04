@@ -10,6 +10,7 @@
    <fx:Binding source="MSSObject(staticObject)" destination="ssObject"/>
    <fx:Script>
       <![CDATA[
+         import models.location.LocationMinimal;
          import models.solarsystem.MSSObject;
          
          import utils.locale.Localizer;
@@ -19,25 +20,24 @@
          private var ssObject:MSSObject;
          
          
-         private function getString(key:String, parameters:Array = null) : String
-         {
+         private function getString(key:String, parameters:Array = null) : String {
             return Localizer.string("SSObjects", key, parameters);
          }
          
-         
-         private function getLabel(labelName:String, parameters:Array = null) : String
-         {
+         private function getLabel(labelName:String, parameters:Array = null) : String {
             return getString("label." + labelName, parameters);
          }
          
-         private function getTooltip(tooltipName:String, parameters:Array = null) : String
-         {
+         private function getTooltip(tooltipName:String, parameters:Array = null) : String {
             return getString("tooltip." + tooltipName, parameters);
          }
          
-         private function getMessage(messageName:String, parameters:Array = null) : String
-         {
+         private function getMessage(messageName:String, parameters:Array = null) : String {
             return getString("message." + messageName, parameters);
+         }
+         
+         private function getSectorLabel(ssObject:MSSObject) : String {
+            return ssObject == null ? "" : LocationMinimal.getSectorLabel(ssObject.currentLocation);
          }
       ]]>
    </fx:Script>
@@ -51,6 +51,8 @@
       
       <!--- Name of the the object -->
       <s:Label id="lblName" text="{ssObject.typeName} {ssObject.name}"/>
+      <!--- Sector -->
+      <s:Label id="lblSector" text="{getSectorLabel(ssObject)}"/>
       <!--- Player name who owns this planet. -->
       <base:AdvancedContainer minWidth="0" minHeight="0" visible="{ssObject.isPlanet}">
          <base:layout>
