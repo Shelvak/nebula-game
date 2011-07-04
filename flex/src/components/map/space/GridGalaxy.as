@@ -39,7 +39,7 @@ package components.map.space
       {
          return new Point(
             (location.x + _galaxy.offset.x + 0.5) * SECTOR_WIDTH,
-            (location.y + _galaxy.offset.y + 0.5) * SECTOR_HEIGHT
+            (_galaxy.bounds.height - (location.y + _galaxy.offset.y) - 0.5) * SECTOR_HEIGHT
          );
       }
       
@@ -56,7 +56,7 @@ package components.map.space
          _locWrapper.type = LocationType.GALAXY;
          _locWrapper.id = _galaxy.id;
          _locWrapper.x = Math.round(coordinates.x / SECTOR_WIDTH - _galaxy.offset.x - 0.5);
-         _locWrapper.y = Math.round(coordinates.y / SECTOR_HEIGHT - _galaxy.offset.y - 0.5);
+         _locWrapper.y = Math.round(_galaxy.bounds.height - 0.5 - coordinates.y / SECTOR_HEIGHT - _galaxy.offset.y);
          if (_galaxy.locationIsVisible(_locWrapper.location))
          {
             return _locWrapper.location;
