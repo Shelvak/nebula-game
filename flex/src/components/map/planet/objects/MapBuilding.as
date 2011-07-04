@@ -77,6 +77,15 @@ package components.map.planet.objects
       /* ################## */
       
       
+      public override function set faded(v:Boolean) : void {
+         var b:Building = getBuilding();
+         if (b != null && b.isGhost)
+            super.faded = false;
+         else
+            super.faded = v;
+      }
+      
+      
       public override function set selected(value:Boolean) : void
       {
          if (super.selected != value)
@@ -305,9 +314,9 @@ package components.map.planet.objects
          
          _npcIndicator = new BitmapImage();
          _npcIndicator.depth = 900;
-         _npcIndicator.source = ImagePreloader.getInstance().getImage(
-            AssetNames.getLevelDisplayImageName('npc'));
-		 _npcIndicator.visible = !b.isGhost && b.npc;;
+         _npcIndicator.source = ImagePreloader.getInstance()
+            .getImage(AssetNames.getLevelDisplayImageName('npc'));
+         _npcIndicator.visible = !b.isGhost && b.npc;
          addElement(_npcIndicator);
          
          _hpBar = new ProgressBar();
