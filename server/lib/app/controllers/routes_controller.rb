@@ -16,9 +16,7 @@ class RoutesController < GenericController
   def action_index
     only_push!
 
-    # TODO: include support in client
-    #routes = Route.where(:player_id => player.friendly_ids).all
-    routes = Route.where(:player_id => player.id).all
+    routes = Route.where(:player_id => player.friendly_ids).all
 
     respond :routes => routes.map(&:as_json),
       :players => Player.minimal_from_objects(routes)
