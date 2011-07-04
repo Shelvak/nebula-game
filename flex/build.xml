@@ -270,6 +270,8 @@
     </delete>
   </target>
 
+  <!-- First build assets so that build-swf would build AssetsBundle.as into
+  target. -->
   <target name="build" depends="build-assets,build-swf" />
 
   <target name="release" depends="test,build" />
