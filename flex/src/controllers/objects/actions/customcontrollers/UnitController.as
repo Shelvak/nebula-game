@@ -32,7 +32,7 @@ package controllers.objects.actions.customcontrollers
       public function UnitController()
       {
          super();
-         NPC_PLAYER.name =  Localizer.string("Players", "npc");
+         NPC_PLAYER.name = Localizer.string("Players", "npc");
       }
       
       
