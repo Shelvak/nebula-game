@@ -265,8 +265,7 @@ namespace :deploy do
     task :locales, [:env] do |task, args|
       env = DeployHelpers.get_env(args[:env])
       DeployHelpers.check_git_branch!(env)
-      Rake::Task['flex:locales:check'].invoke
-      `cd #{PROJECT_ROOT}/flex && ant copy-swf`
+      `cd #{PROJECT_ROOT}/flex && ant copy-locales`
 
       DEPLOY_CONFIG[:servers][env][:client].each do |server|
         DeployHelpers.info env, "Deploying locales to #{server}" do
@@ -288,11 +287,6 @@ namespace :deploy do
   task :client, [:env] do |task, args|
     env = DeployHelpers.get_env(args[:env])
     DeployHelpers.check_git_branch!(env)
-    Rake::Task['flex:locales:check'].invoke
-    
-    dst = File.join(CLIENT_TARGET, 'locale')
-    FileUtils.remove_dir(dst) if File.exist?(dst)
-    FileUtils.cp_r(FLEX_LOCALES_DIR, dst, :verbose => true)
 
     DEPLOY_CONFIG[:servers][env][:client].each do |server|
       DeployHelpers.info env, "Deploying client to #{server}" do
