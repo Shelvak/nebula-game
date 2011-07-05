@@ -251,6 +251,13 @@ describe Combat do
       @dsl.run
     end
 
+    it "should update alive buildings" do
+      vulcan = @location.buildings.where(:type => "Vulcan").first
+      should_fire_event([vulcan], EventBroker::CHANGED) do
+        @dsl.run
+      end
+    end
+    
     it "should calculate wreckages" do
       Wreckage.should_receive(:calculate).and_return do |units|
         Set.new(units).should == Set.new([3, 4, 5].map { |i| @units[i] })

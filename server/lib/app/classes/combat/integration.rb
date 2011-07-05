@@ -59,12 +59,14 @@ module Combat::Integration
       unless dead.blank?
 
     # Save updated buildings
-    buildings.each do |building|
-      if building.dead?
-        building.destroy
-      else
-        building.save!
-      end
+    dead, alive = buildings.partition { |building| building.dead? }
+    # This dispatches event via Parts::Notifier
+    dead.each { |building| building.destroy }
+    # This does not dispatch event so we need to dispatch those manually. 
+    # Blargh, stupid me.
+    unless alive.blank?
+      alive.each { |building| building.save! }
+      EventBroker.fire(alive, EventBroker::CHANGED)
     end
   end
 
