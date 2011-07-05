@@ -84,11 +84,6 @@
             left="0" right="0" lineBreak="toFit"
             visible="{ML.player.allianceOwner &amp;&amp; ML.player.allianceFull &amp;&amp; !ssObject.ownerIsAlly}"/>
          <s:Label
-            text="{getMessage('createAlliance')}" 
-            toolTip="{getTooltip('createAlliance')}"
-            left="0" right="0" lineBreak="toFit"
-            visible="{!ML.player.belongsToAlliance}"/>
-         <s:Label
             text="{getMessage('notOwnerOfAlliance')}"  
             toolTip="{getTooltip('notOwnerOfAlliance')}"
             left="0" right="0" lineBreak="toFit"

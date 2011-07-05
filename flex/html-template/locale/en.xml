@@ -1318,6 +1318,7 @@
   </Navigator>
 
   <Notifications>
+    <screenTitle value="Notifications" />
     <label.notifications.normal value="{0}" />
     <label.notifications.hasUnread value="{0}" />
     <label.notifications.hasNew value="{0}" />
@@ -1327,7 +1328,6 @@
     <label.createdAt value="Received at" />
     <label.expiresAt value="Expires at" />
     <label.planet value="Planet" />
-    <label.constructable value="Constructable" />
     <label.showPlanet value="Show planet" />
     <label.yours value="Yours" />
     <label.alliances value="Alliances" />
@@ -1349,13 +1349,12 @@
     <label.noPlayer value="This planet was uninhabitated." />
     <label.newPlayer value="It was conquered by" />
     <label.npcAnexed value="This planet was occupied by NPC raiders." />
-    <label.title value="Notifications" />
     <label.readAll value="Read all" />
     <label.resourcesGained value="Resources gained" />
     <label.wreckageLeft value="Wreckage left" />
-    <label.newColor value="New notifications" />
-    <label.notReadColor value="Unread notifications" />
-    <label.readColor value="Read notifications" />
+    <label.newColor value="● New notifications" />
+    <label.notReadColor value="● Unread notifications" />
+    <label.readColor value="● Read notifications" />
 
     <title.combatLog value="Combat report" />
     <message.combatLog>
@@ -2922,8 +2921,6 @@
 
     <!-- Following messages and tooltips are show if player 
     can't invite owner of a planet to alliance -->
-    <message.playerInAlliance value="Alliance member"/>
-    <tooltip.playerInAlliance value="This player is already in your alliance."/>
     
     <message.allianceFull value="Alliance full"/>
     <tooltip.allianceFull>
@@ -2932,17 +2929,6 @@
       this player.</p>
     </tooltip.allianceFull>
     
-    <message.createAlliance value="Not in alliance"/>
-    <tooltip.createAlliance>
-      <p>You are not in alliance.</p>
-      <p>Click Alliance button in N44 menu to create your alliance.</p>
-    </tooltip.createAlliance> 
-    
-    <message.notOwnerOfAlliance value="Not alliance owner"/>
-    <tooltip.notOwnerOfAlliance>
-      <p>You are not the creator of your alliance.</p>
-      <p>Ask your alliance owner to invite this player.</p>
-    </tooltip.notOwnerOfAlliance>
   </SSObjects>
 
   <SpinnerContainer>

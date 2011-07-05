@@ -1310,6 +1310,7 @@
   </Navigator>
 
   <Notifications>
+    <screenTitle value="Pranešimai" />
     <label.notifications.normal value="{0}" />
     <label.notifications.hasUnread value="{0}" />
     <label.notifications.hasNew value="{0}" />
@@ -1319,8 +1320,6 @@
     <label.createdAt value="Gautas" />
     <label.expiresAt value="Susinaikins" />
     <label.planet value="Planeta" />
-    <!-- TODO: wtf? -->
-    <label.constructable value="Constructable" />
     <label.showPlanet value="Atidaryti planetą" />
     <label.yours value="Tavo" />
     <label.alliances value="Sąjungininkų" />
@@ -1343,13 +1342,12 @@
     <label.noPlayer value="Ši planeta buvo neapgyvendinta." />
     <label.newPlayer value="Planetą užkariavo" />
     <label.npcAnexed value="Planetą užkariavo ateivių plėšikai." />
-    <label.title value="Pranešimai" />
     <label.readAll value="Perskaityti visus" />
     <label.resourcesGained value="Gauta resursų" />
     <label.wreckageLeft value="Liko nuolaužų" />
-    <label.newColor value="Nauji pranešimai" />
-    <label.notReadColor value="Neperskaityti pranešimai" />
-    <label.readColor value="Perskaityti pranešimai" />
+    <label.newColor value="● Nauji pranešimai" />
+    <label.notReadColor value="● Neperskaityti pranešimai" />
+    <label.readColor value="● Perskaityti pranešimai" />
 
     <!-- Mykolas logic:
     title: HUGE label when you OPEN notification
@@ -2961,8 +2959,6 @@
 
     <!-- Following messages and tooltips are show if player 
     can't invite owner of a planet to alliance -->
-    <message.playerInAlliance value="Sąjungos narys"/>
-    <tooltip.playerInAlliance value="Šis žaidėjas jau yra tavo sąjungoje."/>
     
     <message.allianceFull value="Sąjunga pilna"/>
     <tooltip.allianceFull>
@@ -2971,18 +2967,6 @@
       arba patobulink savo sąjungų technologiją.</p>
     </tooltip.allianceFull>
     
-    <message.createAlliance value="Nesi sąjungoje"/>
-    <tooltip.createAlliance>
-      <p>Tu nesi sąjungoje.</p>
-      <p>Jog įkurtum savo sąjungą, paspausk mygtuką „sąjunga“ apatiniame N44
-      meniu.</p>
-    </tooltip.createAlliance> 
-    
-    <message.notOwnerOfAlliance value="Nesi sąjungos įkūrėjas"/>
-    <tooltip.notOwnerOfAlliance>
-      <p>Tu nesi sąjungos, kurioje esi, įkūrėjas.</p>
-      <p>Paprašyk sąjungos įkūrėjo, jog pakviestų šį žaidėją į sąjungą.</p>
-    </tooltip.notOwnerOfAlliance>
   </SSObjects>
 
   <SpinnerContainer>
