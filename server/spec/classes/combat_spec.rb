@@ -112,6 +112,13 @@ describe Combat do
       @planet.reload
       @planet.player.should be_nil
     end
+    
+    it "should dispatch changed with planet" do
+      should_fire_event(@planet, EventBroker::CHANGED, 
+          EventBroker::REASON_OWNER_PROP_CHANGE) do
+        Combat.npc_raid!(@planet)
+      end
+    end
 
     describe "raid cleared", :shared => true do
       it "should not register raid" do
