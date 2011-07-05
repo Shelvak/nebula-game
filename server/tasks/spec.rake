@@ -55,6 +55,6 @@ begin
 rescue LoadError
   desc "RSpec not installed."
   task :spec do
-    echo "RSpec not installed. Run `gem install rspec` to enable this task."
+    puts "RSpec not installed. Run `gem install rspec` to enable this task."
   end
 end
