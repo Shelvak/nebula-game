@@ -8,16 +8,13 @@ require File.dirname(__FILE__) + '/../../lib/initializer.rb'
 c = ActiveRecord::Base.connection
 
 c.transaction do
-  SolarSystem.all.each do |ss|
-    $stdout.write("S")
-    Unit.where(
-      "location_type=? AND player_id IS NOT NULL", Location::SOLAR_SYSTEM
-    ).all do |unit|
-      if SolarSystem.where(:id => unit.location.id).first.nil?
-        $stdout.write(".")
-        unit.location = unit.player.planets.first
-        unit.save!
-      end
+  Unit.where(
+    "location_type=? AND player_id IS NOT NULL", Location::SOLAR_SYSTEM
+  ).all.each do |unit|
+    if SolarSystem.where(:id => unit.location.id).first.nil?
+      $stdout.write(".")
+      unit.location = unit.player.planets.first
+      unit.save!
     end
   end
 end
