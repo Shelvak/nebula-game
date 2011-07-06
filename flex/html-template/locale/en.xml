@@ -455,8 +455,11 @@
     <title.buildingBonus value="Building bonus" />
     <label.nextBonus value="Next bonus in:" />
     <label.victoryPoint>
-      <p>In {2} you will get {1} victory points and {0} creds.</p>
+      <p>{0 one[? victory point] many[? victory points]}</p>
     </label.victoryPoint>
+    <label.cred>
+      <p>{0 one[? cred] many[? creds]}</p>
+    </label.cred>
     <tileBonuses value="Tile bonuses" />
     <armor.bonus value="Armor" />
     <energy.bonus value="Energy output" />

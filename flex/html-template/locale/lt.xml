@@ -454,7 +454,12 @@
     <title.boost value="Padidinti" />
     <title.buildingBonus value="Pastato privalumai" />
     <label.nextBonus value="Sekantis pliusas už:" />
-    <label.victoryPoint value="1 laimėjimo taškas" />
+    <label.victoryPoint>
+      <p>{0 one[? laimėjimo taškas] 1sts[? laimėjimo taškas] tens[? laimėjimo taškų] many[? laimėjimo taškai]}</p>
+    </label.victoryPoint>
+    <label.cred>
+      <p>{0 one[? kredas] 1sts[? kredas] tens[? kredų] many[? kredai]}</p>
+    </label.cred>
     <tileBonuses value="Žemėlapio privalumai" />
     <armor.bonus value="Šarvai" />
     <energy.bonus value="Energijos gamyba" />

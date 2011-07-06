@@ -54,7 +54,9 @@
          import models.solarsystem.MSSObject;
          import models.unit.Unit;
          
+         import mx.core.ScrollPolicy;
          import mx.events.DragEvent;
+         import mx.events.FlexEvent;
          import mx.managers.DragManager;
          
          import spark.utils.TextFlowUtil;
@@ -332,7 +334,18 @@
          {
             if (_selectedModel)
             {
-               constructor = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
+               if (_selectedModel.isGhost)
+               {
+                  constructor = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
+               }
+               else if (_selectedModel.constructionQueueEntries.length > 0)
+               {
+                  constructor = _selectedModel;
+               }
+               else
+               {
+                  constructor = null;
+               }
                if (constructor)
                {
                   constructable = ML.latestPlanet.getBuildingById(constructor.constructableId);
@@ -368,17 +381,16 @@
          
          protected function queueList_dragCompleteHandler(event:DragEvent):void
          {
-            var selectedFacility: Building = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
             if (queueList.dragMoveEnabled)
             {
                var tempElement: ConstructionQueueEntry = (event.dragInitiator as List).selectedItems[0] as ConstructionQueueEntry;
-               if (selectedFacility.constructionQueueEntries.getItemIndex(tempElement) != 
+               if (constructor.constructionQueueEntries.getItemIndex(tempElement) != 
                   tempElement.position)
                {
                   EventBroker.subscribe(GBuildingEvent.QUEUE_APROVED, restoreSelection);
-                  var newPosition: int = tempElement.position> selectedFacility.constructionQueueEntries.getItemIndex(tempElement)? 
-                     selectedFacility.constructionQueueEntries.getItemIndex(tempElement): 
-                     selectedFacility.constructionQueueEntries.getItemIndex(tempElement) + 1;
+                  var newPosition: int = tempElement.position> constructor.constructionQueueEntries.getItemIndex(tempElement)? 
+                     constructor.constructionQueueEntries.getItemIndex(tempElement): 
+                     constructor.constructionQueueEntries.getItemIndex(tempElement) + 1;
                   new ConstructionQueuesCommand(
                      ConstructionQueuesCommand.MOVE,
                      {id: tempElement.id,
@@ -604,6 +616,13 @@
             return TextFlowUtil.importFromString(from);
          }
          
+         
+         protected function queueList_creationCompleteHandler(event:FlexEvent):void
+         {
+            queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
+            queueList.scroller.setStyle('horizontalScrollPolicy', ScrollPolicy.OFF);
+         }
+         
       ]]>
    </fx:Script>
    <s:Group id="sidebarContainer" left="0" right="0" bottom="0" top="0">
@@ -744,7 +763,7 @@
                         <s:Group visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}"
                                  width="100%">
                            <s:Label textAlign="left" text="{getString('label.nextBonus')}"/>
-                           <s:Label text="{bonusTime}" textAlign="right"/>
+                           <base:TimeLabel text="{bonusTime}" textAlign="right"/>
                            <s:layout>
                               <s:VerticalLayout horizontalAlign="justify" paddingLeft="10" paddingRight="10"/>
                            </s:layout>
@@ -756,7 +775,9 @@
                      </base:AdvancedContainer>
                   </base:Panel>
                   
-                  <base:Panel title="{getString('queueInfo')}" visible="{_selectedModel.isGhost}">
+                  <base:Panel title="{getString('queueInfo')}" 
+                              visible="{_selectedModel.isGhost
+                              || _selectedModel.constructionQueueEntries.length > 0}">
                      <buildingsidebar:BuildingProgressElement id="progressElement"
                                                               buildingModel="{constructable}"/>
                      <s:List id="queueList" 
@@ -765,6 +786,7 @@
                              rollOverColor="#0f0f0f" selectionColor="#0f0f0f" 
                              dragEnabled="true" borderVisible="false" 
                              dragStart="queueList_dragStartHandler(event)"
+                             creationComplete="queueList_creationCompleteHandler(event)"
                              contentBackgroundAlpha="0"
                              dragComplete="queueList_dragCompleteHandler(event)"
                              height="{constructor.constructionQueueEntries.length > 0?52:0}">
@@ -905,11 +927,11 @@
                   
                   <base:Panel title="{getString('title.rates')}" 
                               visible="{((_selectedModel.metalRate != 0) ||
-                                               (_selectedModel.energyRate != 0) ||
-                                               (_selectedModel.zetiumRate != 0)) 
-                                               &amp;&amp; !_selectedModel.isGhost
-                                               &amp;&amp; 
-                                               (_selectedModel.state != Building.INACTIVE)}">
+                              (_selectedModel.energyRate != 0) ||
+                              (_selectedModel.zetiumRate != 0)) 
+                              &amp;&amp; !_selectedModel.isGhost
+                              &amp;&amp; 
+                              (_selectedModel.state != Building.INACTIVE)}">
                      <base:AdvancedContainer left="0" right="0">
                         <s:Group visible="{_selectedModel.metalRate != 0}">
                            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
@@ -987,12 +1009,12 @@
                   
                   <base:Panel title="{getString('storage')}" 
                               visible="{((_selectedModel.metalStorage != 0) ||
-                                           (_selectedModel.energyStorage != 0) ||
-                                           (_selectedModel.zetiumStorage != 0) ||
-                                           (Building.getPopulation(_selectedModel.type, 
-                                           _selectedModel.upgradePart.level) != 0)) 
-                                           &amp;&amp; !_selectedModel.isGhost
-                                           &amp;&amp; !(_selectedModel.upgradePart.level == 0)}">
+                              (_selectedModel.energyStorage != 0) ||
+                              (_selectedModel.zetiumStorage != 0) ||
+                              (Building.getPopulation(_selectedModel.type, 
+                              _selectedModel.upgradePart.level) != 0)) 
+                              &amp;&amp; !_selectedModel.isGhost
+                              &amp;&amp; !(_selectedModel.upgradePart.level == 0)}">
                      <base:AdvancedContainer left="0" right="0">                        
                         <s:Group visible="{_selectedModel.metalStorage != 0}">
                            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
@@ -1068,8 +1090,8 @@
                   
                   <base:Panel title="{getString('scientists')}" 
                               visible="{!((_selectedModel.type != BuildingType.RESEARCH_CENTER) ||
-                                              (_selectedModel.upgradePart.upgradeEndsAt != null) ||
-                                              (_selectedModel.isGhost))}">
+                              (_selectedModel.upgradePart.upgradeEndsAt != null) ||
+                              (_selectedModel.isGhost))}">
                      <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" paddingLeft="6"
                                          textToDisplay="{_selectedModel.scientists}"
                                          toolTip="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
@@ -1083,8 +1105,8 @@
                   
                   <base:Panel title="{getString('special')}" 
                               visible="{(_selectedModel.radarStrength != 0) &amp;&amp;
-                                           (_selectedModel.upgradePart.upgradeEndsAt == null) &amp;&amp;
-                                           (!_selectedModel.isGhost)}">
+                              (_selectedModel.upgradePart.upgradeEndsAt == null) &amp;&amp;
+                              (!_selectedModel.isGhost)}">
                      <s:Label text="{Localizer.string('Buildings', 'property.radar.strength') + ': ' + 
                               _selectedModel.radarStrength.toString()}" paddingLeft="6"/>
                      <base:NextValueComp textToDisplay="{_selectedModel.nextRadarStrength.toString()}"
@@ -1097,13 +1119,13 @@
                   
                   <base:Panel title="{getString('title.boost')}" 
                               visible="{(_selectedModel.energyRate > 0
-                                               || _selectedModel.metalRate > 0
-                                               || _selectedModel.zetiumRate > 0
-                                               || _selectedModel.metalStorage > 0
-                                               || _selectedModel.energyStorage > 0
-                                               || _selectedModel.zetiumStorage > 0)
-                                               &amp;&amp; _selectedModel.type != BuildingType.MOTHERSHIP
-                                               &amp;&amp; _selectedModel.type != BuildingType.HQ}">
+                              || _selectedModel.metalRate > 0
+                              || _selectedModel.zetiumRate > 0
+                              || _selectedModel.metalStorage > 0
+                              || _selectedModel.energyStorage > 0
+                              || _selectedModel.zetiumStorage > 0)
+                              &amp;&amp; _selectedModel.type != BuildingType.MOTHERSHIP
+                              &amp;&amp; _selectedModel.type != BuildingType.HQ}">
                      <base:AdvancedContainer left="0" right="0"> 
                         <!-- RATES BOOST -->
                         <s:RichText textFlow="{getTextFlow(
@@ -1173,8 +1195,8 @@
                   
                   <base:Panel title="{getString('tileBonuses')}" 
                               visible="{_selectedModel.constructorMod != 0
-                                               || _selectedModel.energyMod != 0
-                                               || _selectedModel.armorMod != 0}">
+                              || _selectedModel.energyMod != 0
+                              || _selectedModel.armorMod != 0}">
                      <base:AdvancedContainer left="0" right="0">
                         <s:Label text="{getString('construction.bonus') + ': ' + (_selectedModel.constructorMod > 0?'+':'')
                                  +_selectedModel.constructorMod + '%'}" visible="{_selectedModel.constructorMod != 0}"
@@ -1241,7 +1263,8 @@
                            <s:Button right="6" label="{Localizer.string('Credits',
                                      ML.player.creds &lt; Config.getMoveCredits()?'label.buy':'label.move')}"
                                      enabled="{!_selectedModel.pending}"
-                                     skinClass="components.skins.CreditButtonSkin" click="moveButton_click(event)"/>
+                                     skinClass="components.skins.CreditButtonSkin" 
+                                     click="moveButton_click(event)"/>
                         </s:Group>
                         <s:Label visible="{ML.player.creds &lt; Config.getMoveCredits()}"
                                  text="{Localizer.string('Credits', 'label.notEnough', 
@@ -1265,10 +1288,11 @@
                            || Config.getBuildingVictoryPtsBonus(_selectedModel.type) > 0}">
                   <base:AdvancedContainer left="0" right="0">
                      <s:Label visible="{_selectedModel.type == BuildingType.NPC_HALL}" 
-                              text="{getString('label.victoryPoint',
-                              [Config.getBuildingCredsBonus(_selectedModel.type),
-                              Config.getBuildingVictoryPtsBonus(_selectedModel.type),
-                              bonusTime])}"/>
+                              text="{'\u2022 '+getString('label.victoryPoint',
+                              [Config.getBuildingVictoryPtsBonus(_selectedModel.type)])}"/>
+                     <s:Label visible="{_selectedModel.type == BuildingType.NPC_HALL}" 
+                              text="{'\u2022 '+getString('label.cred',
+                              [Config.getBuildingCredsBonus(_selectedModel.type)])}"/>
                      <s:DataGroup visible="{_selectedModel.unitBonus != null}"
                                   dataProvider="{_selectedModel.unitBonus}" id="uBonusGroup"
                                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
