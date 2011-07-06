@@ -20,8 +20,9 @@
          
          import spark.events.IndexChangeEvent;
          
-         import utils.locale.Localizer;
+         import utils.assets.AssetNames;
          import utils.datastructures.Collections;
+         import utils.locale.Localizer;
          
          
          private var _filterFunctions:ArrayCollection = null;
@@ -59,48 +60,51 @@
          
          [Bindable]
          private var notReadNotifs: ListCollectionView;
+         
+         
+         private function getImage(name:String) : BitmapData {
+            return IMG.getImage(AssetNames.NOTIFICATION_IMAGE_FOLDER + name);
+         }
+         
+         private function getString(property:String, parameters:Array = null) : String {
+            return Localizer.string("Notifications", property, parameters);
+         }
       ]]>
    </fx:Script>
    
-   <!-- top artwork -->
-   <s:Path width="420" height="34" data="M 0 0 L 386 0 L 420 33 L 0 33 Z">
+   <s:Rect left="0" right="0" top="0" bottom="0">
       <s:fill>
-         <s:SolidColor color="0x323232"/>
-      </s:fill>
-   </s:Path>
-   <s:Line left="386" width="34" height="34"
-           xFrom="0" yFrom="0" xTo="33" yTo="33">
-      <s:stroke>
-         <s:SolidColorStroke color="0x020202" />
-      </s:stroke>
-   </s:Line>
-   <s:Line left="420" right="0" top="33"
-           xFrom="0" yFrom="0" xTo="10" yTo="0">
-      <s:stroke>
-         <s:SolidColorStroke color="0x808080"/>
-      </s:stroke>
-   </s:Line>
-   <s:Rect left="0" right="0" top="34" height="4">
-      <s:fill>
-         <s:SolidColor color="{getStyle('chromeColor')}"/>
+         <s:SolidColor color="0x080C08"/>
       </s:fill>
    </s:Rect>
    
-   <!-- no notifications indicator: shown only if there are no notifications -->
-   <s:Label id="lblNoNotifs" text="{ML.notifications.isEmpty
-            ? Localizer.string('Notifications', 'label.noNotifications')
-            : Localizer.string('Notifications', 'label.title')}"
-            fontSize="20" left="10" top="10"/>
+   <!-- top artwork -->
+   <s:Group left="0" right="0" top="0">
+      <s:layout>
+         <s:HorizontalLayout gap="0"/>
+      </s:layout>
+      <s:BitmapImage source="{getImage('screen_top_left')}"/>
+      <s:BitmapImage source="{getImage('screen_top_right')}" width="100%"/>
+   </s:Group>
    
-   <!-- shown only if there are no notifications -->
-   <s:Line visible="{ModelLocator.getInstance().notifications.length == 0}"
-           left="0" right="0" top="39" xFrom="0" xTo="10">
-      <s:stroke>
-         <s:SolidColorStroke color="0x191919"/>
-      </s:stroke>
-   </s:Line>
+   <!-- screen title -->
+   <s:Label id="lblScreenTitle" text="{getString('screenTitle')}" styleName="screenTitle"
+            left="10" top="20" width="375"/>
+   
+   <!-- color legend -->
+   <s:Group left="0" top="55"
+            visible="{barFilterButtons.selectedIndex == 0 || barFilterButtons.selectedIndex == 2}">
+      <s:Label text="{getString('label.notReadColor')}" color="#eec500"/>
+      <s:Label text="{getString('label.newColor')}" color="#00D8E3"/>
+      <s:Label text="{getString('label.readColor')}" color="#ffffff"/>
+      <s:layout>
+         <s:HorizontalLayout paddingLeft="10" gap="10"/>
+      </s:layout>
+   </s:Group>
+   
+   <!-- buttons -->
    <s:Group right="5" top="5">
-      <s:Button label="{Localizer.string('Notifications', 'label.readAll')}" enabled="{notReadNotifs.length > 0}"
+      <s:Button label="{getString('label.readAll')}" enabled="{notReadNotifs.length > 0}"
                 click="new NotificationsCommand(NotificationsCommand.READ, {'notifications': notReadNotifs.toArray()}).dispatch()"/>
       <s:ButtonBar id="barFilterButtons" requireSelection="true"
                    change="barFilterButtons_changeHandler(event)"/>
@@ -108,23 +112,19 @@
          <s:HorizontalLayout gap="3"/>
       </s:layout>
    </s:Group>
-   <s:Group width="100%" visible="{barFilterButtons.selectedIndex == 0 || barFilterButtons.selectedIndex == 2}" 
-            top="38" id="colorsGroup">
-      <s:Rect left="0" right="0" top="0" bottom="0">
-         <s:fill>
-            <s:SolidColor color="#323232"/>
-         </s:fill>
-      </s:Rect>
-      <s:Group width="100%">
-         <s:Label text="{Localizer.string('Notifications', 'label.notReadColor')}" color="#eec500"/>
-         <s:Label text="{Localizer.string('Notifications', 'label.newColor')}" color="#00D8E3"/>
-         <s:Label text="{Localizer.string('Notifications', 'label.readColor')}" color="#ffffff"/>
-         <s:layout>
-            <s:VerticalLayout paddingTop="6" paddingBottom="6" paddingLeft="6" paddingRight="6"/>
-         </s:layout>
-      </s:Group>
-   </s:Group>
-   <base:Scroller left="0" right="0" top="{colorsGroup.visible?38+colorsGroup.height:38}" bottom="0" 
+   
+   <!-- no notifications indicator: shown only if there are no notifications -->
+   <s:Label id="lblNoNotifs" visible="{ML.notifications.isEmpty}" text="{getString('label.noNotifications')}"
+            verticalCenter="0" horizontalCenter="0" styleName="emptyListMessage"/>
+   
+   <!-- shown only if there are no notifications -->
+   <s:Line visible="{ML.notifications.isEmpty}" left="0" right="0" top="71" xFrom="0" xTo="10">
+      <s:stroke>
+         <s:SolidColorStroke color="0x040404"/>
+      </s:stroke>
+   </s:Line>
+   
+   <base:Scroller left="0" right="0" top="71" bottom="0" 
                   stepMultiplier="10"
                   skinClass="components.notifications.skins.NotificationsScrollerSkin">
       <s:Group height="100%" width="100%">

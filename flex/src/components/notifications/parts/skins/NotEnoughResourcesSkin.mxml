@@ -3,7 +3,8 @@
         xmlns:s="library://ns.adobe.com/flex/spark" 
         xmlns:mx="library://ns.adobe.com/flex/mx"
         xmlns:notifications="components.notifications.*"
-        xmlns:parts="components.notifications.parts.*" xmlns:location="components.location.*">
+        xmlns:parts="components.notifications.parts.*"
+        xmlns:location="components.location.*">
    
    <fx:Metadata>
       [HostComponent("components.notifications.parts.IRNotEnoughResources")]
