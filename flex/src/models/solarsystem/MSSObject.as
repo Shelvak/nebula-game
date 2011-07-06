@@ -630,7 +630,12 @@ package models.solarsystem
        */
       public function get canInviteOwnerToAlliance() : Boolean
       {
-         return isOwned && !inBattleground && !ownerIsAlly && !ownerIsPlayer;
+         return isOwned &&
+               !inBattleground &&
+               !ownerIsAlly &&
+               !ownerIsPlayer &&
+                ML.player.hasAllianceTechnology &&
+                ML.player.allianceOwner;
       }
       
       

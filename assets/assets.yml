@@ -905,16 +905,25 @@ assets:
         mini_location_<%= name %>.jpg:  Window_mini_<%= name %>.jpg
         unit_background_<%= name %>.jpg:     Res_<%= name %>.jpg
         <% end %>
-        pborder_top_left.png:        Msg-board_left_top.png
-        pborder_top_center.png:      Msg-board_center_top_repeat.png
-        pborder_top_right.png:       Msg-board_right_top.png
-        pborder_middle_left.png:     Msg-board_left_center_repeat.png
-        pborder_middle_right.png:    Msg-board_right_center_repeat.png
-        pborder_bottom_left.png:     Msg-board_left_bottom.png
-        pborder_bottom_center.png:   Msg-board_center_bottom_repeat.png
-        pborder_btn_left.png:        Buttons_left.png
-        pborder_btn_center.png:      Buttons_center.png
-        pborder_btn_right.png:       Buttons_right.png
+        screen_top_left.png:         Notifications_top_left.png
+        screen_top_right.png:        Notifications_top_right.png
+        pborder_top_left.png:        Notifications_msg_top_left.png
+        pborder_top_center.png:      Notifications_msg_top_center.png
+        pborder_top_right.png:       Notifications_msg_top_right.png
+        pborder_middle_left.png:     Notifications_msg_center_left.png
+        pborder_middle_right.png:    Notifications_msg_center_right.png 
+        pborder_bottom_left.png:     Notifications_msg_bottom_left.png
+        pborder_bottom_center.png:   Notifications_msg_bottom_center.png
+        pborder_btn_left.png:        Notifications_button_left.png
+        pborder_btn_center.png:      Notifications_button_center.png
+        pborder_btn_right.png:       Notifications_button_right.png
+        head_msg_left.png:           Notifications_title_name_left.png
+        head_msg_center.png:         Notifications_title_name_center.png
+        head_msg_right.png:          Notifications_title_name_right.png
+        head_center.png:             Notifications_title_center.png
+        head_time_left.png:          Notifications_title_time_left.png
+        head_time_center.png:        Notifications_title_time_center.png
+        head_time_right.png:         Notifications_title_time_right.png
 
       "movement":
         order_bottom_left.png:            Locator_bottom_left.png

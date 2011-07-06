@@ -74,25 +74,10 @@
                         !ssObject.ownerIsPlayer &amp;&amp;
                         !ssObject.canInviteOwnerToAlliance}">
          <s:Label
-            text="{getMessage('playerInAlliance')}" 
-            toolTip="{getTooltip('playerInAlliance')}"
-            left="0" right="0" lineBreak="toFit"
-            visible="{ML.player.allianceOwner &amp;&amp; ssObject.ownerIsAlly}"/>
-         <s:Label
             text="{getMessage('allianceFull')}"  
             toolTip="{getTooltip('allianceFull')}"
             left="0" right="0" lineBreak="toFit"
             visible="{ML.player.allianceOwner &amp;&amp; ML.player.allianceFull &amp;&amp; !ssObject.ownerIsAlly}"/>
-         <s:Label
-            text="{getMessage('createAlliance')}" 
-            toolTip="{getTooltip('createAlliance')}"
-            left="0" right="0" lineBreak="toFit"
-            visible="{!ML.player.belongsToAlliance}"/>
-         <s:Label
-            text="{getMessage('notOwnerOfAlliance')}"  
-            toolTip="{getTooltip('notOwnerOfAlliance')}"
-            left="0" right="0" lineBreak="toFit"
-            visible="{ML.player.belongsToAlliance &amp;&amp; !ML.player.allianceOwner}"/>
       </s:Group>
       <!--- Button that lets view the object. Disabled if a player does not own the object. -->
       <s:Button id="btnEnter"

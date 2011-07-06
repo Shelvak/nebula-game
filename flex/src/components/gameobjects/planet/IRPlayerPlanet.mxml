@@ -63,13 +63,13 @@
       <s:Label text="{MSSObject(data).name}" styleName="h3"/>
       <base:ImageAndLabel type="{ResourceType.METAL}"
                           textToDisplay="{format(MSSObject(data).metal.currentStock)} / {format(MSSObject(data).metal.maxStock)}"
-                          styleName="{getResourceLabelStyle(MSSObject(data).metal.currentStock, MSSObject(data).metal.maxStock)}"/>
+                          labelStyleName="{getResourceLabelStyle(MSSObject(data).metal.currentStock, MSSObject(data).metal.maxStock)}"/>
       <base:ImageAndLabel type="{ResourceType.ENERGY}" 
                           textToDisplay="{format(MSSObject(data).energy.currentStock)} / {format(MSSObject(data).energy.maxStock)}"
-                          styleName="{getResourceLabelStyle(MSSObject(data).energy.currentStock, MSSObject(data).energy.maxStock)}"/>
+                          labelStyleName="{getResourceLabelStyle(MSSObject(data).energy.currentStock, MSSObject(data).energy.maxStock)}"/>
       <base:ImageAndLabel type="{ResourceType.ZETIUM}"
                           textToDisplay="{format(MSSObject(data).zetium.currentStock)} / {format(MSSObject(data).zetium.maxStock)}"
-                          styleName="{getResourceLabelStyle(MSSObject(data).zetium.currentStock, MSSObject(data).zetium.maxStock)}"/>
+                          labelStyleName="{getResourceLabelStyle(MSSObject(data).zetium.currentStock, MSSObject(data).zetium.maxStock)}"/>
       <base:ImageAndLabel type="{ResourceType.RAID_TIME}" textToDisplay="{MSSObject(data).raidTime}" 
                           visible="{MSSObject(data).raidTime != null}"/>
    </s:Group>

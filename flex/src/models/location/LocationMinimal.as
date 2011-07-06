@@ -15,7 +15,7 @@ package models.location
        * This method handles <code>nulls</code> silently: returns empty strings.
        */
       public static function getSectorLabel(loc:LocationMinimal) : String {
-         return loc == null ? "" : Localizer.string('Location', 'sector') + loc.sectorName;
+         return loc == null ? "" : Localizer.string('Location', 'sector') + " " + loc.sectorName;
       }
       
       
@@ -111,10 +111,10 @@ package models.location
       /**
        * Name of a sector defined by this instance of <code>LocationMinimal</code>. Returned string
        * is of the form: <code>x:y</code>. Make sense for <code>LocationType.GALAXY</code> and
-       * <code>LocationType.GALAXY<code> types only.
+       * <code>LocationType.SOLAR_SYSTEM<code> types only.
        */
       public function get sectorName() : String {
-         return isBattleground ? "" : x + ":" + y;
+         return x + ":" + y;
       }
       
       
