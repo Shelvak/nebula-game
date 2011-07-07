@@ -182,16 +182,6 @@ quests|QuestsList {
 
 /* NOTIFICATIONS */
 
-notif|NotificationsScreen,
-notif|NotificationsList {
-   chrome-color:#363636;
-}
-
-notif|NotificationsList {
-   border-visible:false;
-   content-background-alpha:0;
-}
-
 .notificationTitle {
    typographic-case:uppercase;
    font-size:28;

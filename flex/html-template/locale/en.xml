@@ -1316,6 +1316,10 @@
   <Navigator>
     <label.currentGalaxy value="Galaxy" />
   </Navigator>
+  
+  <ListScreen>
+    <label.colorLegend value="Legend:" />
+  </ListScreen>
 
   <Notifications>
     <screenTitle value="Notifications" />

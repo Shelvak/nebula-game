@@ -1308,6 +1308,10 @@
   <Navigator>
     <label.currentGalaxy value="Galaktika" />
   </Navigator>
+  
+  <ListScreen>
+    <label.colorLegend value="Legenda:" />
+  </ListScreen>
 
   <Notifications>
     <screenTitle value="Pranešimai" />
