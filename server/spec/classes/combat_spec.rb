@@ -366,6 +366,21 @@ describe Combat do
   end
 
   it "should include buildings in alive/dead stats" do
+     player = nil
+     dsl = CombatDsl.new do
+       location(:planet) { buildings { thunder } }
+       player = self.player :planet_owner => true
+       player { units { crow } }
+     end
+ 
+     assets = dsl.run
+     notification = Notification.find(
+       assets.notification_ids[player.player.id])
+     notification.params['units']['yours']['alive'].should include(
+       "Building::Thunder")
+  end
+
+  it "should not include other player leveled up units in stats" do
     player = crow_unit = nil
     dsl = CombatDsl.new do
       location(:solar_system)
@@ -382,10 +397,6 @@ describe Combat do
     notification.params['leveled_up'].find do |unit_hash|
       unit_hash[:type] == "Unit::Crow"
     end.should be_nil
-  end
-
-  it "should not include other player leveled up units in stats" do
-    
   end
   
   describe "teleported units" do
