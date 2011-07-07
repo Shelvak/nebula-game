@@ -182,6 +182,19 @@ describe klass do
         Combat::LocationChecker.check_location(@location)
       end
     end
+  
+    describe "#735 when units vs towers" do
+      it "should invoke combat" do
+        player = Factory.create(:player)
+        planet = Factory.create(:planet, :player => player)
+        Factory.create(:unit, :location => planet, :player => nil, 
+          :level => 1)
+        Factory.create!(:b_vulcan, :planet => planet, :x => 10,
+          :state => Building::STATE_ACTIVE, :level => 1)
+        Combat::LocationChecker.check_location(planet.location_point).
+          should be_true
+      end
+    end
   end
 
   describe ".check_player_locations" do
