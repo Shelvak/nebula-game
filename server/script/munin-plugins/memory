@@ -5,10 +5,13 @@ if [ "$1" == "config" ]; then
   echo graph_category nebula44
   echo graph_args -l 0 --base 1024
   echo "graph_vlabel Memory (bytes)"
+  echo tmem.label Total memory used
+  echo tmem.type GAUGE
+  echo tmem.min 0
   echo mem.label Memory used by server
   echo mem.type GAUGE
   echo mem.min 0
-  echo jmem.label Memory used by Java
+  echo jmem.label Memory used by SpaceMule
   echo jmem.type GAUGE
   echo jmem.min 0
 else
@@ -21,4 +24,5 @@ else
   fi
   jmem=$(($jmem * 1024))
   echo "jmem.value $jmem"
+  echo "tmem.value " $(($mem + $jmem))
 fi
