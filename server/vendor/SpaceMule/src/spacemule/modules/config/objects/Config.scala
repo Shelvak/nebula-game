@@ -15,6 +15,7 @@ import spacemule.modules.pmg.objects.solar_systems._
 import spacemule.modules.pmg.objects.ss_objects.{RichAsteroid, Asteroid}
 import spacemule.modules.pmg.objects.planet._
 import spacemule.modules.pmg.objects.planet.buildings._
+import spacemule.modules.pathfinder.{objects => pfo}
 import net.java.dev.eval.Expression
 import scala.collection.Map
 
@@ -203,6 +204,11 @@ object Config {
     "solar_system.links.parent.weight",
     Map("position" -> new BigDecimal(position)))
   def planetLinkWeight = double("solar_system.links.planet.weight")
+  def wormholeHopMultiplier(ss: pfo.SolarSystem) = 
+    if (ss.isGlobalBattleground)
+      double("solar_system.battleground.jump.multiplier") 
+    else 
+      double("solar_system.regular.jump.multiplier")
 
   def planetCount(solarSystem: SolarSystem) = solarSystem match {
     case ss: Wormhole => 0

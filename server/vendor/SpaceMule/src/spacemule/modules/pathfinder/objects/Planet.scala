@@ -12,9 +12,10 @@ import spacemule.modules.config.objects.Config
 case class Planet(
   id: Int, solarSystem: SolarSystem, coords: Coords
 ) extends Locatable with InSolarSystem {
-  def toServerLocation = ServerLocation(id, objects.Location.Planet,
-                                        None, None,
-                                        Config.planetLinkWeight)
+  override def toServerLocation = toServerLocation(Config.planetLinkWeight)
+  def toServerLocation(timeModifier: Double) = 
+    ServerLocation(id, objects.Location.Planet,
+      None, None, timeModifier)
   def solarSystemId = solarSystem.id
   def solarSystemPoint = SolarSystemPoint(solarSystem, coords)
 }

@@ -229,7 +229,7 @@ class DeployHelpers; class << self
 
   def chmod(ssh)
     current_dir = DEPLOY_CONFIG_SERVER_CURRENT
-    ssh.exec!("chmod +xr #{current_dir}/lib/main.rb #{current_dir
+    ssh.exec!("chmod -R +x #{current_dir}/lib/main.rb #{current_dir
       }/lib/daemon.rb #{current_dir}/lib/console.rb #{current_dir
       }/script/*")
   end

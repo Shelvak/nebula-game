@@ -6,5 +6,6 @@
 package spacemule.modules.pathfinder.objects
 
 trait Locatable {
-  def toServerLocation: ServerLocation
+  def toServerLocation(timeMultiplier: Double): ServerLocation
+  def toServerLocation: ServerLocation = toServerLocation(1.0)
 }
