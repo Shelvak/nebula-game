@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+   <fx:Script>
+      <![CDATA[
+         import utils.MathUtil;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         [Bindable]
+         public var typeFrom: String;
+         
+         [Bindable]
+         public var typeTo: String;
+         
+         [Bindable]
+         public var amountTo: Number;
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:HorizontalLayout/>
+   </s:layout>
+   <s:Label text="1"/>
+   <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+                  AssetNames.getIconImageName(typeFrom))}"/>
+   <s:Label text="{' = ' + MathUtil.round(amountTo, 2)}"/>
+   <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+                  AssetNames.getIconImageName(typeTo))}"/>
+</s:Group>

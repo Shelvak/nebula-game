@@ -2868,6 +2868,7 @@
     <metal value="Metal" />
     <energy value="Energy" />
     <zetium value="Zetium" />
+    <creds value="Creds" />
     <time value="Upgrade time" />
     <scientists value="Scientists" />
     <population value="Population" />
@@ -3889,5 +3890,16 @@
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Players"/>
   </Chat>
+  
+  <Market>
+    <label.submit value="Submit" />
+    <label.fee value="Fee:" />
+    <label.wantToSell value="You want to sell:" />
+    <label.howMuch value="How much?" />
+    <label.sellFor value="For:" />
+    <label.marketValue value="{0} market value" />
+    <label.rate value="At rate of {0}" />
+    <title.sell value="Sell"/>
+  </Market>
 
 </locale>

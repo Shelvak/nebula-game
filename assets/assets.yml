@@ -511,6 +511,7 @@ assets:
         metal.png:         MetalIcon.png
         energy.png:        EnergyIcon.png
         zetium.png:        ZetiumIcon.png
+        creds.png:         CredsIcon.png
         wreckage.png:      ResourceIcon.png
         <% gun_types.each do |gun| %>
         <%= "#{gun}.png: #{gun.camelcase}Icon.png" %>

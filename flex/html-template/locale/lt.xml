@@ -2911,6 +2911,7 @@
     <metal value="Metalas" />
     <energy value="Energija" />
     <zetium value="Zetiumas" />
+    <creds value="Kredai" />
     <time value="Tobulinimo laikas" />
     <population value="Populiacija" />
     <scientists value="Mokslininkai" />
@@ -3814,5 +3815,16 @@
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Žaidėjai"/>
   </Chat>
+  
+  <Market>
+    <label.submit value="Patvirtinti" />
+    <label.fee value="Mokesčiai:" />
+    <label.wantToSell value="Tu nori parduoti:" />
+    <label.howMuch value="Kiek?" />
+    <label.sellFor value="Už:" />
+    <label.marketValue value="{0} rinkos kainos" />
+    <label.rate value="Santykiu {0}" />
+    <title.sell value="Parduoti"/>
+  </Market>
 
 </locale>

@@ -738,6 +738,12 @@
                                         click="NC.showDefensivePortal(ML.latestPlanet.id)"
                                         right="6"/>
                            </s:Group>
+                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                                    _selectedModel.type != 'MetalStorage')}">
+                              <s:Button label="{getString('open')}"
+                                        click="NC.showMarket()"
+                                        right="6"/>
+                           </s:Group>
                            
                            
                            

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                        xmlns:s="library://ns.adobe.com/flex/spark" 
+                        xmlns:mx="library://ns.adobe.com/flex/mx" 
+                        xmlns:market="components.market.*" 
+                        xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         import components.skins.GreenButtonSkin;
+      ]]>
+   </fx:Script>
+   <base:layout>
+      <s:VerticalLayout horizontalAlign="justify"/>
+   </base:layout>
+   <fx:Script>
+      <![CDATA[
+         import utils.locale.Localizer;
+         
+         private function getText(prop: String, params: Array = null): String
+         {
+            return Localizer.string('Market', prop, params);
+         }
+      ]]>
+   </fx:Script>
+   <s:Label text="{getText('label.wantToSell')}"/>
+   <market:CMarketResourceSelector id="what"/>
+   <s:Label text="{getText('label.howMuch')}" visible="{what.selected != null}"/>
+   <base:ResourceSelectorComp maxAmmount="500" resourceType="{what.selected}"
+                              visible="{what.selected != null}" id="sellSelector"/>
+   <market:CMarketFee type="{what.selected}" 
+                      selectedAmmount="{sellSelector.selectedVal}"
+                      visible="{what.selected != null}"/>
+   <s:Label text="{getText('label.sellFor')}" visible="{what.selected != null 
+            &amp;&amp; sellSelector.selectedVal > 0}"/>
+   <market:CMarketResourceSelector id="forWhat" visible="{what.selected != null
+                                   &amp;&amp; sellSelector.selectedVal > 0}"
+                                   disabledType="{what.selected}"/>
+   <base:ResourceSelectorComp maxAmmount="500" resourceType="{what.selected}"
+                              visible="{what.selected != null}" id="forSelector"/>
+   <s:Label text="{getText('label.marketValue', [25])}" 
+            visible="{forWhat.selected != null}"/>
+   <s:Label text="{getText('label.rate', [0.25])}" 
+            visible="{forWhat.selected != null}"/>
+   <market:CMarketCompare typeFrom="{what.selected}" typeTo="{forWhat.selected}"
+                          amountTo="0.25" visible="{forWhat.selected != null}"/>
+   <s:Group visible="{forWhat.selected != null}">
+      <s:Button skinClass="components.skins.GreenButtonSkin" 
+                label="{getText('label.submit')}" horizontalCenter="0"/>
+   </s:Group>
+</base:AdvancedContainer>

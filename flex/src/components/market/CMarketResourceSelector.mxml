@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:market="components.market.*"
+         creationComplete="group1_creationCompleteHandler(event)">
+   <s:layout>
+      <s:HorizontalLayout/>
+   </s:layout>
+   <fx:Script>
+      <![CDATA[
+         import models.resource.ResourceType;
+         
+         import mx.events.FlexEvent;
+         
+         import spark.components.RadioButtonGroup;
+         [Bindable]
+         private var rGroup: RadioButtonGroup;
+         
+         [Bindable]
+         public var selected: String;
+         
+         [Bindable]
+         public var disabledType: String = null;
+         
+         private function selectedChangeHandler(e: Event): void
+         {
+            selected = String(rGroup.selectedValue);
+         }
+
+         protected function group1_creationCompleteHandler(event:FlexEvent):void
+         {
+            rGroup = new RadioButtonGroup();
+            rGroup.addEventListener(Event.CHANGE, selectedChangeHandler);
+         }
+
+      ]]>
+   </fx:Script>
+   <market:CMarketResource type="{ResourceType.METAL}" gr="{rGroup}"
+                           enabled="{disabledType != ResourceType.METAL}"/>
+   <market:CMarketResource type="{ResourceType.ENERGY}" gr="{rGroup}"
+                           enabled="{disabledType != ResourceType.ENERGY}"/>
+   <market:CMarketResource type="{ResourceType.ZETIUM}" gr="{rGroup}"
+                           enabled="{disabledType != ResourceType.ZETIUM}"/>
+   <market:CMarketResource type="{ResourceType.CREDS}" gr="{rGroup}"
+                           enabled="{disabledType != ResourceType.CREDS}"/>
+</s:Group>
