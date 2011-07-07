@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ "$1" == "config" ]; then
+  echo graph_title Memory used by server
+  echo graph_category nebula44
+  echo graph_args -l 0 --base 1024
+  echo "graph_vlabel Memory (bytes)"
+  echo mem.label Memory used by server
+  echo mem.type GAUGE
+  echo mem.min 0
+  echo jmem.label Memory used by Java
+  echo jmem.type GAUGE
+  echo jmem.min 0
+else
+  mem=$(ps aux | grep nebula_server | grep -v grep | awk {'print $6'})
+  mem=$(($mem * 1024))
+  echo "mem.value $mem" 
+  jmem=$(ps aux | grep SpaceMule.jar | grep -v sh | grep -v grep | awk {'print $6'})
+  if [ "$jmem" == "" ]; then
+    jmem=0
+  fi
+  jmem=$(($jmem * 1024))
+  echo "jmem.value $jmem"
+fi
