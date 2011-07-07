@@ -128,33 +128,32 @@ module Combat::Simulation
     end]
   end
 
-  # Filters units leaving only those that can level up.
+  # Filters units leaving only those that can level up, grouping by player 
+  # id.
   #
   # Example output:
-  # [
-  #   {:type => "Unit::Trooper", :hp => 10, :level => 3,
-  #     :stance => Combat::STANCE_*},
+  # {
+  #   10 => [
+  #     {:type => "Unit::Trooper", :hp => 10, :level => 3,
+  #       :stance => Combat::STANCE_*},
+  #     ...
+  #   ],
   #   ...
-  # ]
+  # }
   #
   def filter_leveled_up(units)
-    units.map do |unit|
-      if unit.dead?
-        nil
-      else
-        level_count = unit.can_upgrade_by
-        if level_count == 0
-          nil
-        else
-          {
-            :type => unit.class.to_s,
-            :hp => unit.hp,
-            :level => unit.level + level_count,
-            :stance => unit.stance
-          }
-        end
+    units.inject({}) do |hash, unit|
+      hash[unit.player_id] ||= []
+      unless unit.dead? or (level_count = unit.can_upgrade_by).zero?
+        hash[unit.player_id] << {
+          :type => unit.class.to_s,
+          :hp => unit.hp,
+          :level => unit.level + level_count,
+          :stance => unit.stance
+        }
       end
-    end.compact
+      hash
+    end
   end
 
   # Prepares arguments for SpaceMule.

@@ -21,7 +21,7 @@ module Combat::Integration
             client_location.as_json,
             response['outcomes'][player_id.to_s],
             response['yane'][player_id.to_s],
-            leveled_up_units,
+            leveled_up_units[player_id],
             response['statistics'][player_id.to_s],
             wreckages
           )
