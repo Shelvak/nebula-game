@@ -165,29 +165,7 @@ rbar|ResourceBar mx|ProgressBar {
    color:#ffffff;
 }
 
-
-/* ###### */
-/* QUESTS */
-/* ###### */
-
-quests|QuestsScreen,
-quests|QuestsList {
-   chrome-color:#363636;
-}
-
-quests|QuestsList {
-   border-visible:false;
-   content-background-alpha:0;
-}
-
 /* NOTIFICATIONS */
-
-.notificationTitle {
-   typographic-case:uppercase;
-   font-size:28;
-   font-weight:bold;
-   color:#eec500;
-}
 
 .locationHeader {
    font-size:12;

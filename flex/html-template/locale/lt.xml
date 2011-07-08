@@ -1311,6 +1311,7 @@
   
   <ListScreen>
     <label.colorLegend value="Legenda:" />
+    <label.close value="Close" />
   </ListScreen>
 
   <Notifications>
@@ -1321,8 +1322,8 @@
     <label.notifications.all value="Visi" />
     <label.notifications.unread value="Tik neperskaityti" />
     <label.notifications.starred value="Tik pažymėti" />
-    <label.createdAt value="Gautas" />
-    <label.expiresAt value="Susinaikins" />
+    <label.createdAt value="Gautas: {0}" />
+    <label.expiresAt value="Susinaikins: {0}" />
     <label.planet value="Planeta" />
     <label.showPlanet value="Atidaryti planetą" />
     <label.yours value="Tavo" />
@@ -1765,8 +1766,8 @@
 
   <Quests>
     <rewardsWidth value="120" />
-    <label.current value="Dabartinės" />
-    <label.completed value="Įvykdytos" />
+    <label.current value="Dabartinės ({0})" />
+    <label.completed value="Įvykdytos ({0})" />
     <label.showQuest value="Parodyti užduotį" />
     <label.noQuests value="Užduočių nėra" />
     <label.progress value="{0}/{1} pabaigta" />
@@ -1784,8 +1785,8 @@
     </warning.wontFit>
     <warning.cantClaimReward
       value="Dėl nepakankamo laisvų gyventojų kiekio tu negali atsiimti atlygio." />
-    <label.notCompletedColor value="Neįvykdytos užduotys" />
-    <label.completedColor value="Įvykdytos užduotys" />
+    <label.notCompletedColor value="● Neįvykdytos užduotys" />
+    <label.completedColor value="● Įvykdytos užduotys" />
 
     <message.rewardClaimed value="Atlygis buvo pasiimtas į planetą „{0}“" />
 

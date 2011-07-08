@@ -41,7 +41,7 @@
          import utils.datastructures.Collections;
          import utils.locale.Localizer;
          
-         private function get ML() : ModelLocator {
+         private static function get ML() : ModelLocator {
             return ModelLocator.getInstance();
          }
          

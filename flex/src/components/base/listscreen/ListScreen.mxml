@@ -166,11 +166,11 @@
       <s:BitmapImage source="{getImage('screen_top_right')}" width="100%"/>
    </s:Group>
    
-   <!-- screen title -->
+   <!--- Label for screen title -->
    <s:Label id="lblScreenTitle" left="10" top="20" width="375"
             fontSize="20" fontWeight="bold" color="0xEEC500" textAlign="center"/>
    
-   <!-- color legend -->
+   <!--- Group that holds legend of list colors -->
    <s:Group id="grpColorLegend" left="0" top="55" visible="{colorLegendVisible}">
       <s:layout>
          <s:HorizontalLayout paddingLeft="10" gap="10"/>
@@ -178,7 +178,7 @@
       <s:Label text="{getString('label.colorLegend')}"/>
    </s:Group>
    
-   <!-- empty list message -->
+   <!--- Empty list message label -->
    <s:Label id="lblEmptyListMessage" visible="{_dataProviderEmpty}" verticalCenter="0" horizontalCenter="0"
             fontSize="36" fontWeight="bold" color="0x1C1C1C"/>
    
@@ -194,6 +194,7 @@
          </s:stroke>
       </s:Line>
       <base:Scroller stepMultiplier="10" skinClass="components.base.listscreen.ListScreenScrollerSkin">
+         <!--- Container of a list (viewport of list scroller) -->
          <s:Group id="grpListContainer" height="100%" width="100%"/>
       </base:Scroller>
    </s:Group>
