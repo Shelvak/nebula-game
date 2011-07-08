@@ -1,17 +1,9 @@
 #!/usr/bin/env ruby
-require "rubygems"
-require 'robustthread'
 
 SERVER_NAME = 'nebula_server'
 SERVER_PATH = File.expand_path(File.join(File.dirname(__FILE__), 'main.rb'))
 LOG_PATH = File.expand_path(File.join(File.dirname(__FILE__), '..', 'log',
   'daemon.log'))
-
-log_file = File.open(LOG_PATH, 'a+')
-RobustThread.logger = Logger.new(log_file)
-#RobustThread.exception_handler do |exception|
-#  email_me_the_exception(exception)
-#end
 
 def server_process_line
   `ps aux`.split("\n").grep(/#{SERVER_NAME}/)[0]
@@ -43,6 +35,15 @@ when "start"
     ARGV.clear
 
     pid = fork do
+      log_file = File.open(LOG_PATH, 'a+')
+      
+      require "rubygems"
+      require 'robustthread'
+      RobustThread.logger = Logger.new(log_file)
+      #RobustThread.exception_handler do |exception|
+      #  email_me_the_exception(exception)
+      #end
+      
       STDIN.close
       STDOUT.reopen(log_file)
       STDERR.reopen(log_file)
