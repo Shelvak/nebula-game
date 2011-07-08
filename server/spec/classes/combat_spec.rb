@@ -171,6 +171,26 @@ describe Combat do
     end
   end
 
+  describe "simulation" do
+    describe "#parse_killed_by" do
+      it "should return units" do
+        unit = Factory.create(:unit)
+        player_id = 30
+        Combat.parse_killed_by(
+          {unit.id => unit}, {}, {"t#{unit.id}" => player_id}
+        ).should == {unit => player_id}
+      end
+      
+      it "should return buildings" do
+        building = Factory.create(:building)
+        player_id = 30
+        Combat.parse_killed_by(
+          {}, {building.id => building}, {"b#{building.id}" => player_id}
+        ).should == {building => player_id}
+      end
+    end
+  end
+  
   describe "combat" do
     before(:each) do
       @dsl = CombatDsl.new do

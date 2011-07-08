@@ -1,4 +1,4 @@
-module Combat::Simulation
+module Combat::Simulation  
   # Runs combat, creates notifications for players and creates cooldown if
   # required.
   #
@@ -121,7 +121,7 @@ module Combat::Simulation
   # {unit/building => player_id} hash.
   def parse_killed_by(hashed_units, hashed_buildings, killed_by)
     Hash[killed_by.map do |string_key, player_id|
-      type = string_key[0]
+      type = string_key[0..0] # Ruby 1.8 compatibility
       id = string_key[1..-1].to_i
 
       [type == "t" ? hashed_units[id] : hashed_buildings[id], player_id]
