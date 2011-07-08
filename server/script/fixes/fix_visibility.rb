@@ -12,6 +12,8 @@ c.transaction do
   end.compact
 
   SolarSystem.all.each do |ss|
+    next if ss.main_battleground? || ss.wormhole?
+    
     puts "SS: #{ss.inspect}"
     planets = ss.planets
     planet_ids = planets.map(&:id)
