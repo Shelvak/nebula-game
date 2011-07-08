@@ -124,11 +124,14 @@ class Building::DefensivePortal < Building
       planet_ids = SsObject::Planet.connection.select_values(%{
         SELECT id FROM `#{SsObject.table_name}`
         WHERE #{sanitize_sql_for_conditions(
-          ["type=? AND player_id IN (?) AND id != ?",
-          SsObject::Planet.to_s.demodulize, player_ids, planet.id],
-          SsObject.table_name
+          ["player_id IN (?) AND id != ?", player_ids, planet.id],
+          SsObject::Planet.table_name
         )}
       })
+      planet_ids.reject! do |planet_id|
+        Building::DefensivePortal.active.where(:planet_id => planet_id).
+          count == 0
+      end
       raise NoUnitsError if planet_ids.blank?
 
       [player_ids, planet_ids]
