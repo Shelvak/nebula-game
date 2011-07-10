@@ -2,7 +2,7 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                 xmlns:s="library://ns.adobe.com/flex/spark" 
                 xmlns:mx="library://ns.adobe.com/flex/mx"
-                minWidth="5" minHeight="27"
+                minWidth="5" minHeight="{HEIGHT_NORMAL}"
                 autoDrawBackground="false"
                 initialize="this_initializeHandler(event)">
    
@@ -23,6 +23,10 @@
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
          
+         /**
+          * Height of the <code>ItemRendereBase</code> in normal state (used by <code>QuestsScreen</code>).
+          */ 
+         public static const HEIGHT_NORMAL:int = 26;
          
          private static const PBORDER:String = "pborder_";         
          private static const HEAD:String = "head_";
@@ -68,6 +72,17 @@
                headerRightContent.layout = hrLayout;
                grpHeaderRight.addElement(headerRightContent);
             }
+            
+            contentGroup.left = 18;
+            contentGroup.right = 18;
+            contentGroup.bottom = 4;
+            contentGroup.top = 16;
+         }
+         
+         protected override function stateChanged(oldState:String, newState:String, recursive:Boolean) : void {
+            super.stateChanged(oldState, newState, recursive);
+            if (newState == "selected" && grpContent.numElements == 2)
+               grpContent.addElement(contentGroup);
          }
          
          private var _oldData:Object = null;
@@ -90,52 +105,22 @@
                var oldValue:Object = _oldData;
                var newValue:Object = data;
                _oldData = null;
-               reinstallCustomPart();
                dataCommit(oldValue, newValue);
             }
             _fDataChanged = false;
          }
          
          /**
-          * Invoked after <code>data</code> property has been changed and a custom part has been reinstalled.
-          * Both parameters may be <code>null</code>.
+          * Invoked after <code>data</code> property has been changed and the rendere should reacth to
+          * this change. Both parameters may be <code>null</code>.
           */
          protected function dataCommit(oldValue:Object, newValue:Object) : void {}
-         
-         private function reinstallCustomPart() : void {
-            if (grpCustomPart != null && data != null) {
-               grpCustomPart.removeAllElements();
-               var part:IVisualElement = createCustomPart();
-               part.left = 0;
-               part.right = 0;
-               part.top = 0;
-               part.bottom = 0;
-               if (part != null) grpCustomPart.addElement(part);
-               if (data != null)
-                  lblTitle.text = title;
-            }
-         }
          
          /**
           * Handler of the close button click event. You must override this handler.
           */
          protected function btnClose_clickHandler(event:MouseEvent) : void {
             throw new IllegalOperationError("method is abstract");
-         }
-         
-         /**
-          * Creates custom part of an item renderer. This factory method must always return new instance of
-          * <code>IVisualElement</code>. This method may return <code>null</code>.
-          */ 
-         protected function createCustomPart() : IVisualElement {
-            throw new IllegalOperationError("Method is abstract");
-         }
-         
-         /**
-          * Title of the renderer. Visible in selected state. Required.
-          */
-         protected function get title() : String {
-            throw new IllegalOperationError("Property is abstract");
          }
          
          /**
@@ -150,6 +135,13 @@
           */
          protected function get headerRightContent() : Group {
             return null;
+         }
+         
+         /**
+          * Main content group of the renderer. Must always return the same instance. Required.
+          */
+         protected function get contentGroup() : Group {
+            throw new IllegalOperationError("Property is abstract");
          }
       ]]>
    </fx:Script>
@@ -232,32 +224,11 @@
       </s:Group>
       
       <!-- middle -->
-      <s:Group>
-         
-         <!-- artwork -->
+      <s:Group id="grpContent">
          <s:BitmapImage left="0" top="0" bottom="0"
                         source="{getImage(PBORDER + 'middle_left')}" fillMode="repeat"/>
          <s:BitmapImage right="0" top="0" bottom="0"
                         source="{getImage(PBORDER + 'middle_right')}" fillMode="repeat"/>
-         
-         <!-- content -->
-         <s:Group left="18" right="18" bottom="4" top="30">
-            
-            <s:layout>
-               <s:VerticalLayout horizontalAlign="justify"/>
-            </s:layout>
-            
-            <!-- title -->
-            <s:Label id="lblTitle" typographicCase="uppercase" fontSize="28"
-                     fontWeight="bold" color="0xEEC500"/>
-            
-            <!-- custom content -->
-            <s:Group id="grpCustomPart">
-               <s:initialize>reinstallCustomPart()</s:initialize>
-            </s:Group>
-            
-         </s:Group>
-         
       </s:Group>
       
       <!-- bottom -->
@@ -289,10 +260,11 @@
                <s:layout>
                   <s:HorizontalLayout gap="5" verticalAlign="bottom"/>
                </s:layout>
-               <s:Button id="btnClose" label="{getString('label.close')}" click="btnClose_clickHandler(event)"/>
+               <s:Button id="btnClose" minWidth="75" label="{getString('label.close')}"
+                         click="btnClose_clickHandler(event)"/>
             </s:Group>
             
-         </s:Group>               
+         </s:Group>
          
       </s:Group>
       

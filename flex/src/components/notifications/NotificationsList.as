@@ -35,13 +35,6 @@ package components.notifications
       {
          super();
          itemRenderer = new ClassFactory(IRNotification);
-         dataProvider = ModelLocator.getInstance().notifications;
-         useVirtualLayout = false;
-         var layout:VerticalLayout = new VerticalLayout();
-         layout.horizontalAlign = HorizontalAlign.JUSTIFY;
-         layout.variableRowHeight = true;
-         layout.gap = 0;
-         this.layout = layout;
          addSelfEventHandlers();
          EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, removeNewStates);
       }

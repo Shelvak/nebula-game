@@ -15,6 +15,18 @@
          <s:Label id="lblCreatedAt" color="{_textColor}"/>
          <s:Label id="lblExpiresAt" color="{_textColor}"/>
       </s:Group>
+      <s:Group id="_contentGroup">
+         <s:layout>
+            <s:VerticalLayout horizontalAlign="justify"/>
+         </s:layout>
+         <!-- title -->
+         <s:Label id="lblTitle" typographicCase="uppercase" fontSize="28"
+                  fontWeight="bold" color="0xEEC500" text="{Notification(data).title}"/>
+         <!-- custom content -->
+         <s:Group id="grpCustomPart">
+            <s:initialize>createCustomPart()</s:initialize>
+         </s:Group>
+      </s:Group>
    </fx:Declarations>
    <fx:Binding source="itemIndex == ML.notifications.length - 1" destination="bottomLineVisible"/>
    <fx:Script>
@@ -69,6 +81,7 @@
                notif.addEventListener(NotificationEvent.ISNEW_CHANGE, notification_isNewChange, false, 0, true);
                notif.addEventListener(NotificationEvent.READ_CHANGE,  notification_readChange,  false, 0, true);
             }
+            createCustomPart();
             setCreatedAtLabel();
             setExpiresAtLabel();
             setTextColor();
@@ -76,12 +89,6 @@
          
          protected override function btnClose_clickHandler(event:MouseEvent) : void {
             ML.notifications.deselect();
-         }
-         
-         protected override function createCustomPart() : IVisualElement {
-            var part:IIRNotificationPart = IRNotificationPartFactory.createPartIR(notification.event);
-            part.setNotificationPart(notification.customPart);
-            return part;
          }
          
          protected override function get headerLeftContent() : Group {
@@ -92,8 +99,8 @@
             return _headerRightContent;
          }
          
-         protected override function get title() : String {
-            return notification.title;
+         protected override function get contentGroup() : Group {
+            return _contentGroup;
          }
          
          
@@ -102,6 +109,19 @@
                lblCreatedAt.text = getString(
                   'label.createdAt', [DateUtil.formatShortDateTime(notification.createdAt)]
                );
+         }
+         
+         private function createCustomPart() : void {
+            if (grpCustomPart != null && notification != null) {
+               var part:IIRNotificationPart = IRNotificationPartFactory.createPartIR(notification.event);
+               part.setNotificationPart(notification.customPart);
+               part.left = 0;
+               part.right = 0;
+               part.bottom = 0;
+               part.top = 0;
+               grpCustomPart.removeAllElements();
+               grpCustomPart.addElement(part);
+            }
          }
          
          private function setExpiresAtLabel() : void {
@@ -113,7 +133,7 @@
          
          private function setTextColor() : void {
             if (notification != null) {
-               if (notification.isNew)      _textColor = TEXT_COLOR_NEW;
+               if      (notification.isNew) _textColor = TEXT_COLOR_NEW;
                else if (!notification.read) _textColor = TEXT_COLOR_UNREAD;
                else                         _textColor = TEXT_COLOR_READ;
             }
