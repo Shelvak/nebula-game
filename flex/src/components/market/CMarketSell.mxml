@@ -6,7 +6,22 @@
                         xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
+         import components.market.events.MarketEvent;
          import components.skins.GreenButtonSkin;
+         
+         import models.building.Building;
+         import models.resource.ResourceType;
+         
+         import utils.MathUtil;
+
+         protected function what_selectedResourceChangeHandler(event:MarketEvent):void
+         {
+            if (forWhat.selected == what.selected)
+            {
+               forWhat.deselect();
+            }
+         }
+
       ]]>
    </fx:Script>
    <base:layout>
@@ -14,20 +29,76 @@
    </base:layout>
    <fx:Script>
       <![CDATA[
+         import config.Config;
+         import models.resource.Resource;
          import utils.locale.Localizer;
          
          private function getText(prop: String, params: Array = null): String
          {
             return Localizer.string('Market', prop, params);
          }
+         
+         [Bindable]
+         public var taxRate: Number;
+         
+         [Bindable]
+         public var metal: Resource;
+         [Bindable]
+         public var energy: Resource;
+         [Bindable]
+         public var zetium: Resource;
+         [Bindable]
+         public var creds: int;
+         
+         public var marketRates: Object = {'metal-energy': 1.1,
+            'metal-zetium': 1.1,
+            'metal-creds': 1.3,
+            'energy-metal': 1.0,
+            'energy-zetium': 0.7,
+            'energy-creds': 0.9,
+            'zetium-metal': 1.2,
+            'zetium-energy': 1.1,
+            'zetium-creds': 1.5,
+            'creds-metal': 1.2,
+            'creds-energy': 1.7,
+            'creds-zetium': 1.9};
+         
+         private function getResource(res: String): Resource
+         {
+            return Resource(this[res]);
+         }
+         
+         private function getMarketValue(fromRes: String, toRes: String): Number
+         {
+            return marketRates[fromRes + '-' + toRes];
+         }
+         
+         private function getMarketRate(fromRes: String, toRes: String, 
+                                                         currentRate: Number): int
+         {
+            var rate: Number = (currentRate/getMarketValue(fromRes, toRes));
+            return Math.round(100 - (rate * 100));
+         }
+         
+         private function getMaxOffer(fromRes: String, toRes: String, amount: int): int
+         {
+            return Math.round((getMarketValue(fromRes, toRes) + Config.getMarketRange()) * amount);
+         }
+         
+         private function getMinOffer(fromRes: String, toRes: String, amount: int): int
+         {
+            return Math.round((getMarketValue(fromRes, toRes) - Config.getMarketRange()) * amount);
+         }
       ]]>
    </fx:Script>
    <s:Label text="{getText('label.wantToSell')}"/>
-   <market:CMarketResourceSelector id="what"/>
+   <market:CMarketResourceSelector id="what" selectedResourceChange="what_selectedResourceChangeHandler(event)"/>
    <s:Label text="{getText('label.howMuch')}" visible="{what.selected != null}"/>
-   <base:ResourceSelectorComp maxAmmount="500" resourceType="{what.selected}"
+   <market:CMarketResourceSlider maxAmmount="{what.selected==ResourceType.CREDS
+                                 ?creds - (creds/(1+taxRate))
+                                 :getResource(what.selected).getWithoutTaxes(taxRate)}" 
                               visible="{what.selected != null}" id="sellSelector"/>
-   <market:CMarketFee type="{what.selected}" 
+   <market:CMarketFee type="{what.selected}" taxRate="{taxRate}"
                       selectedAmmount="{sellSelector.selectedVal}"
                       visible="{what.selected != null}"/>
    <s:Label text="{getText('label.sellFor')}" visible="{what.selected != null 
@@ -35,14 +106,18 @@
    <market:CMarketResourceSelector id="forWhat" visible="{what.selected != null
                                    &amp;&amp; sellSelector.selectedVal > 0}"
                                    disabledType="{what.selected}"/>
-   <base:ResourceSelectorComp maxAmmount="500" resourceType="{what.selected}"
-                              visible="{what.selected != null}" id="forSelector"/>
-   <s:Label text="{getText('label.marketValue', [25])}" 
-            visible="{forWhat.selected != null}"/>
-   <s:Label text="{getText('label.rate', [0.25])}" 
+   <market:CMarketResourceSlider maxAmmount="{getMaxOffer(what.selected, forWhat.selected,
+                                 sellSelector.selectedVal)}" 
+                                 minAmmount="{getMinOffer(what.selected, forWhat.selected,
+                                 sellSelector.selectedVal)}"
+                              visible="{forWhat.selected != null}" id="forSelector"/>
+   <s:Label text="{getText('label.marketValue', 
+            [getMarketRate(what.selected, forWhat.selected,
+            forSelector.selectedVal/sellSelector.selectedVal)])}" 
             visible="{forWhat.selected != null}"/>
    <market:CMarketCompare typeFrom="{what.selected}" typeTo="{forWhat.selected}"
-                          amountTo="0.25" visible="{forWhat.selected != null}"/>
+                          amountTo="{forSelector.selectedVal/sellSelector.selectedVal}" 
+                          visible="{forWhat.selected != null}"/>
    <s:Group visible="{forWhat.selected != null}">
       <s:Button skinClass="components.skins.GreenButtonSkin" 
                 label="{getText('label.submit')}" horizontalCenter="0"/>

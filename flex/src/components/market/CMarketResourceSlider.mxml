@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         width="100%">
+   <fx:Metadata>
+      /**
+      * Dispatched when slider value property has changed.
+      * 
+      * @eventType models.unit.events.UnitEvent.SELECTED_RESOURCES_CHANGE
+      */
+      [Event(name="selectedResourcesChange", type="models.unit.events.UnitEvent")]
+   </fx:Metadata>
+   <fx:Script>
+      <![CDATA[
+         import models.unit.events.UnitEvent;
+         
+         import mx.events.FlexEvent;
+         import spark.events.TextOperationEvent;
+         
+         import utils.locale.Localizer;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         public function get minAmmount(): Number
+         {
+            return _maxAmmount;
+         }
+         
+         public function set minAmmount(value: Number): void
+         {
+            if (value != _minAmmount)
+            {
+               if (selectedVal < value)
+               {
+                  setValue(value);
+               }
+               _minAmmount = value;
+               
+            }
+         }
+         
+         public function get maxAmmount(): Number
+         {
+            return _maxAmmount;
+         }
+         
+         public function set maxAmmount(value: Number): void
+         {
+            if (value != _maxAmmount)
+            {
+               if (selectedVal > value)
+               {
+                  setValue(value);
+               }
+               _maxAmmount = value;
+               
+            }
+         }
+         
+         [Bindable]
+         private var _maxAmmount: Number;
+         [Bindable]
+         private var _minAmmount: Number = 0;
+         
+         [Bindable]
+         public var selectedVal: Number = 0;
+         
+         public function setValue(value: Number): void
+         {
+//            input.value = value;
+            slider.value = value;
+            hslider1_changeHandler();
+         }
+         
+         protected function hslider1_changeHandler(event:Event = null):void
+         {
+            if (slider.value)
+            {
+               selectedVal = slider.value;
+            }
+            else
+            {
+               selectedVal = 0;
+            }
+//            input.value = selectedVal;
+            dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
+         }
+         
+//         protected function input_changeHandler(event:Event):void
+//         {
+//            if (slider.value != input.value)
+//            {
+//               slider.value = input.value;
+//               hslider1_changeHandler();
+//            }
+//         }
+         
+         public function reset(): void
+         {
+//            input.value = 0;
+            slider.value = 0;
+            hslider1_changeHandler();
+         }
+         
+//         protected function input_creationCompleteHandler(event:FlexEvent):void
+//         {
+//            input.textDisplay.editable = false;
+//            input.textDisplay.selectable = false;
+//         }
+         
+      ]]>
+   </fx:Script>
+   <s:Label text="{_minAmmount}"/>
+   <s:HSlider id="slider" minimum="{_minAmmount}" width="100%" maximum="{_maxAmmount}" value="0"
+              changeEnd="hslider1_changeHandler(event)"/>
+   <s:Label text="{_maxAmmount}" width="50"/>
+   <!--s:NumericStepper stepSize="1" minimum="0" maximum="{_maxAmmount}" id="input" snapInterval="1"
+                     change="input_changeHandler(event)" width="100" focusEnabled="false"
+                     creationComplete="input_creationCompleteHandler(event)"/-->
+   <s:layout>
+      <s:HorizontalLayout/>
+   </s:layout>
+</s:Group>

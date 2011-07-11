@@ -285,6 +285,12 @@ package models.resource
       }
       
       [Bindable (event="resourceAmmountChanged")]
+      public function getWithoutTaxes(taxRate: Number): Number
+      {
+         return _currentStock - (_currentStock / (1 + taxRate));
+      }
+      
+      [Bindable (event="resourceAmmountChanged")]
       public function get currentStock(): Number
       {
          return _currentStock;

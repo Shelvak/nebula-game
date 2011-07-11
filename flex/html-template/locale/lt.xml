@@ -3822,8 +3822,8 @@
     <label.wantToSell value="Tu nori parduoti:" />
     <label.howMuch value="Kiek?" />
     <label.sellFor value="Už:" />
-    <label.marketValue value="{0} rinkos kainos" />
-    <label.rate value="Santykiu {0}" />
+    <!-- 1 cheaper or more -->
+    <label.marketValue value="{0}% {1 cheaper[mažiau] more[daugiau]} nei rinkos kaina" />
     <title.sell value="Parduoti"/>
   </Market>
 

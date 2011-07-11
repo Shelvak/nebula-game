@@ -7,8 +7,18 @@
    <s:layout>
       <s:HorizontalLayout/>
    </s:layout>
+   <fx:Metadata>
+      /**
+      * Dispatched when selected resource in radio group changes
+      * 
+      * @eventType components.market.events.MarketEvent.SELECTED_CHANGE
+      */
+      [Event(name="selectedResourceChange", type="components.market.events.MarketEvent")]
+   </fx:Metadata>
    <fx:Script>
       <![CDATA[
+         import components.market.events.MarketEvent;
+         
          import models.resource.ResourceType;
          
          import mx.events.FlexEvent;
@@ -23,15 +33,31 @@
          [Bindable]
          public var disabledType: String = null;
          
-         private function selectedChangeHandler(e: Event): void
+         private function selectedChangeHandler(e: Event = null): void
          {
             selected = String(rGroup.selectedValue);
+            dispatchSelectedChangeEvent();
+         }
+         
+         public function deselect(): void
+         {
+            rGroup.selection = null;
+            selected = null;
+            dispatchSelectedChangeEvent();
          }
 
          protected function group1_creationCompleteHandler(event:FlexEvent):void
          {
             rGroup = new RadioButtonGroup();
             rGroup.addEventListener(Event.CHANGE, selectedChangeHandler);
+         }
+         
+         private function dispatchSelectedChangeEvent(): void
+         {
+            if (hasEventListener(MarketEvent.SELECTED_CHANGE))
+            {
+               dispatchEvent(new MarketEvent(MarketEvent.SELECTED_CHANGE));
+            }
          }
 
       ]]>

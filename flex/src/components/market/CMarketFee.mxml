@@ -9,7 +9,8 @@
          [Bindable]
          public var type: String;
          
-         public var buildingLevel: int;
+         [Bindable]
+         public var taxRate: Number;
          
          [Bindable]
          public var selectedAmmount: int;
@@ -25,6 +26,6 @@
    </s:layout>
    <s:Label text="{getText('label.fee')}"/>
    <base:ImageAndLabel type="{type}" 
-                       textToDisplay="{Math.ceil((selectedAmmount * 0.3)).toString()}"/>
-   <s:Label text="{'('+'30%'+')'}"/>
+                       textToDisplay="{Math.ceil((selectedAmmount * taxRate)).toString()}"/>
+   <s:Label text="{'('+Math.round(taxRate*100)+'%'+')'}"/>
 </s:Group>

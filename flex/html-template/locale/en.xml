@@ -3897,8 +3897,8 @@
     <label.wantToSell value="You want to sell:" />
     <label.howMuch value="How much?" />
     <label.sellFor value="For:" />
-    <label.marketValue value="{0} market value" />
-    <label.rate value="At rate of {0}" />
+    <!-- 1 cheaper or more -->
+    <label.marketValue value="{0}% {1} than market value" />
     <title.sell value="Sell"/>
   </Market>
 

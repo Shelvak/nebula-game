@@ -6,10 +6,23 @@
          xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
+         import models.ModelLocator;
+         import models.building.Building;
+         
          import utils.locale.Localizer;
+         
+         [Bindable]
+         private var marketLevel: int = 1;
+         
+         [Bindable]
+         private var ML: ModelLocator = ModelLocator.getInstance();
       ]]>
    </fx:Script>
    <base:Panel title="{Localizer.string('Market', 'title.sell')}" left="6" right="6">
-      <market:CMarketSell left="3" right="3"/>
+      <market:CMarketSell left="3" right="3" metal="{ML.latestPlanet.ssObject.metal}"
+                          energy="{ML.latestPlanet.ssObject.energy}"
+                          zetium="{ML.latestPlanet.ssObject.zetium}"
+                          creds="{ML.player.creds - ML.player.vipCreds}"
+                          taxRate="{Building.getMarketTaxRate(marketLevel)}"/>
    </base:Panel>
 </s:Group>
