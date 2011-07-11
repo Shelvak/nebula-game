@@ -39,10 +39,6 @@ class QuestEventHandler
   end
 
   def handle_created(objects, reason)
-    case reason
-    when EventBroker::REASON_REWARD_CLAIMED
-      Objective::HaveUpgradedTo.progress(objects, false)
-    end
   end
 
   def handle_changed(objects, reason)

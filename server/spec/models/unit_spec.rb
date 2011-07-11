@@ -18,6 +18,110 @@ describe Unit do
       end
     end
   end
+  describe ".give_units" do
+    before(:each) do
+      @description = [["dirac", 3]]
+      @player = Factory.create(:player)
+      @location = Factory.create(:planet)
+    end
+    
+    it "should call #give_units_raw with correct units" do
+      Unit.should_receive(:give_units_raw).and_return do 
+        |units, location, player|
+        
+        units.size.should == 3
+        
+        units.each do |unit|
+          unit.should be_instance_of(Unit::Dirac)
+          unit.level.should == 1
+        end
+        
+        location.should == @location
+        player.should == @player
+        
+        units
+      end
+      
+      Unit.give_units(@description, @location, @player)
+    end
+  end
+  
+  describe ".give_units_raw" do
+    before(:each) do
+      @player = Factory.create(:player)
+      @location = Factory.create(:planet, :player => @player)
+      @units = [
+        Factory.build(:u_dirac, :level => 1),
+        Factory.build(:u_thor, :level => 1),
+        # This one requires technology but should not fail.
+        Factory.build(:u_avenger, :level => 1),
+        # This should not increase FOW.
+        Factory.build(:u_trooper, :level => 1),
+      ]
+      @fse = Factory.create(:fse_player,
+        :solar_system_id => @location.solar_system_id,
+        :player => @player)
+    end
+
+    it "should place them in location" do
+      Unit.give_units_raw(@units, @location, @player).each do |unit|
+        unit.location.should == @location.location_point
+      end
+    end
+
+    it "should give them to player" do
+      Unit.give_units_raw(@units, @location, @player).each do |unit|
+        unit.player.should == @player
+      end
+    end
+    
+    it "should set their galaxy id" do
+      Unit.give_units_raw(@units, @location, @player).each do |unit|
+        unit.galaxy_id.should == @player.galaxy_id
+      end
+    end
+    
+    it "should save them" do
+      Unit.give_units_raw(@units, @location, @player).each do |unit|
+        unit.should be_saved
+      end
+    end
+
+    it "should increase players army points" do
+      points = @units.inject(0) { |sum, u| sum + u.points_on_upgrade }
+      lambda do
+        Unit.give_units_raw(@units, @location, @player)
+        @player.reload
+      end.should change(@player, Unit.points_attribute).by(points)
+    end
+
+    it "should increase players population" do
+      population = @units.inject(0) { |sum, u| sum + u.population }
+      lambda do
+        Unit.give_units_raw(@units, @location, @player)
+        @player.reload
+      end.should change(@player, :population).by(population)
+    end
+    
+    it "should increase fow counter for space units & ! for ground units" do
+      count = @units.inject(0) { |sum, u| sum + (u.space? ? 1 : 0) }
+      lambda do
+        Unit.give_units_raw(@units, @location, @player)
+        @fse.reload
+      end.should change(@fse, :counter).by(count)
+    end
+
+    it "should fire created event" do
+      should_fire_event(@units, EventBroker::CREATED) do
+        Unit.give_units_raw(@units, @location, @player)
+      end
+    end
+    
+    it "should return same units" do
+      Unit.give_units_raw(@units, @location, @player).should == @units
+    end
+  end
+  
   
   describe ".dismiss_units" do
     before(:each) do
@@ -32,7 +136,12 @@ describe Unit do
           :hp => Unit::Gnat.hit_points / 2, :player => @player),
         Factory.create(:u_trooper, :level => 1, :location => @planet,
           :player => @player),
+        Factory.create(:u_dirac, :level => 1, :location => @planet,
+          :player => @player),
       ]
+      @fse = Factory.create(:fse_player,
+        :solar_system_id => @planet.solar_system_id,
+        :player => @player)
     end
 
     it "should check if all of the units are in same planet" do
@@ -60,15 +169,15 @@ describe Unit do
       energy = @planet.energy
       zetium = @planet.zetium
 
-      metal_diff = ((
-        @units[0].metal_cost * @units[0].alive_percentage + @units[1].metal_cost
-      ) * CONFIG['units.self_destruct.resource_gain'] / 100.0).round
-      energy_diff = ((
-        @units[0].energy_cost * @units[0].alive_percentage + @units[1].energy_cost
-      ) * CONFIG['units.self_destruct.resource_gain'] / 100.0).round
-      zetium_diff = ((
-        @units[0].zetium_cost * @units[0].alive_percentage + @units[1].zetium_cost
-      ) * CONFIG['units.self_destruct.resource_gain'] / 100.0).round
+      metal_diff = (
+        @units.inject(0.0) { |s, u| s + u.metal_cost * u.alive_percentage } *
+        CONFIG['units.self_destruct.resource_gain'] / 100.0).round
+      energy_diff = (
+        @units.inject(0.0) { |s, u| s + u.energy_cost * u.alive_percentage } *
+        CONFIG['units.self_destruct.resource_gain'] / 100.0).round
+      zetium_diff = (
+        @units.inject(0.0) { |s, u| s + u.zetium_cost * u.alive_percentage } *
+        CONFIG['units.self_destruct.resource_gain'] / 100.0).round
 
       [metal, energy, zetium].should == [metal_diff, energy_diff, zetium_diff]
     end
@@ -81,65 +190,11 @@ describe Unit do
     end
 
     it "should destroy units" do
+      Unit.should_receive(:delete_all_units).with(@units)
       Unit.dismiss_units(@planet, @units.map(&:id))
-      @units.each do |unit|
-        lambda do
-          unit.reload
-        end.should raise_error(ActiveRecord::RecordNotFound)
-      end
     end
   end
 
-  describe ".give_units" do
-    before(:each) do
-      @description = [["dirac", 3]]
-      @player = Factory.create(:player)
-      @location = Factory.create(:planet)
-    end
-
-    it "should place them in location" do
-      Unit.give_units(@description, @location, @player)
-      @location.units.grouped_counts { |u| u.type }.should == {"Dirac" => 3}
-    end
-
-    it "should give them to player" do
-      Unit.give_units(@description, @location, @player)
-      @player.units.grouped_counts { |u| u.type }.should == {"Dirac" => 3}
-    end
-
-    it "should increase players army points" do
-      Unit.give_units(@description, @location, @player)
-      @player.reload
-      @player.send(Unit.points_attribute).should_not == 0
-    end
-
-    it "should increase players population" do
-      lambda do
-        Unit.give_units(@description, @location, @player)
-        @player.reload
-      end.should change(@player, :population).by(Unit::Dirac.population * 3)
-    end
-
-    it "should save them" do
-      Unit.give_units(@description, @location, @player).each do |unit|
-        unit.should be_saved
-      end
-    end
-
-    it "should fire created event" do
-      units = [an_instance_of(Unit::Dirac)] * 3
-      should_fire_event(units, EventBroker::CREATED) do
-        Unit.give_units(@description, @location, @player)
-      end
-    end
-    
-    it "should not fail if they require technologies" do
-      lambda do
-        Unit.give_units([["avenger", 1]], @location, @player)
-      end.should_not raise_error(ActiveRecord::RecordInvalid)
-    end
-  end
-  
   it "should fail if we don't have enough population" do
     player = Factory.create(:player, 
       :population_max => Unit::TestUnit.population - 1)
