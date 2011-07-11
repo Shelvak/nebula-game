@@ -577,6 +577,10 @@ package models.movement
       }
       
       
+      /* ########################### */
+      /* ### BaseModel OVERRIDES ### */
+      /* ########################### */
+      
       public override function equals(o:Object) : Boolean
       {
          if (!super.equals(o))
