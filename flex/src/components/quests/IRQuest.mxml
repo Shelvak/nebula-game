@@ -203,9 +203,9 @@
          }
          
          
-         private static const TEXT_COLOR_STARTED:uint = 0xFFFFFF;
-         private static const TEXT_COLOR_COMPLETED:uint = 0xEEC500;
-         private static const TEXT_COLOR_REWARD_CLAIMED:uint = 0x11FF11;
+         internal static const TEXT_COLOR_STARTED:uint = 0xFFFFFF;
+         internal static const TEXT_COLOR_COMPLETED:uint = 0xEEC500;
+         internal static const TEXT_COLOR_REWARD_CLAIMED:uint = 0x11FF11;
          
          [Bindable]
          private var textColor:uint = TEXT_COLOR_REWARD_CLAIMED;

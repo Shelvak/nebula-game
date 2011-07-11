@@ -9,15 +9,18 @@
    
    <fx:Script>
       <![CDATA[
-         import components.skins.ListNonScrollableSkin;
-         
          import mx.collections.IList;
+         import mx.core.IVisualElement;
+         import mx.core.UIComponent;
          import mx.events.CollectionEvent;
          import mx.events.FlexEvent;
          
-         import spark.components.List;
+         import spark.components.DataGroup;
+         import spark.components.SkinnableContainer;
+         import spark.components.SkinnableDataContainer;
          import spark.layouts.HorizontalAlign;
          
+         import utils.Objects;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
@@ -63,10 +66,10 @@
          }
          
          /**
-          * A component that will render items in the data provider. Required.
-          * Should always return the same instance.
+          * A component that will render items in the data provider (either <code>DataGroup</code> or
+          * <code>SkinnableDataContainer</code>). Required. Should always return the same instance.
           */
-         protected function get list() : List {
+         protected function get dataContainer() : IVisualElement {
             throw new IllegalOperationError("This property is abstract");
          };
          
@@ -107,20 +110,24 @@
          protected override function createChildren() : void {
             super.createChildren();
             
-            list.dataProvider = dataProvider;
-            list.left = 0;
-            list.right = 0;
-            list.percentHeight = 100;
-            list.setStyle("skinClass", ListNonScrollableSkin);
-            list.setStyle("borderVisible", false);
-            list.setStyle("contentBackgroundAlpha", 0);
-            list.useVirtualLayout = false;
+            if (!dataContainer is SkinnableDataContainer &&
+                !dataContainer is DataGroup)
+               throw new Error(
+                  "Incorrect implementation of [prop dataContainer] in [class: " + 
+                  Objects.getClassName(this) + "] must return either instance of SkinnableDataContainer " +
+                  "or DataGroup but was " + dataContainer
+               );
+            
+            dataContainer.left = 0;
+            dataContainer.right = 0;
+            dataContainer.percentHeight = 100;
             var layout:VerticalLayout = new VerticalLayout();
             layout.horizontalAlign = HorizontalAlign.JUSTIFY;
             layout.variableRowHeight = true;
             layout.gap = 0;
-            list.layout = layout;
-            grpListContainer.addElement(list);
+            dataContainer["layout"] = layout;
+            dataContainer["dataProvider"] = dataProvider;
+            grpListContainer.addElement(dataContainer);
             
             if (colorLegend != null) {
                var colorLegendLayout:HorizontalLayout = new HorizontalLayout();
@@ -128,6 +135,8 @@
                colorLegend.layout = colorLegendLayout;
                grpColorLegend.addElement(colorLegend);
             }
+            else
+               colorLegendVisible = false;
             
             if (controlButtons != null) {
                var controlButtonsLayout:HorizontalLayout = new HorizontalLayout();
@@ -193,9 +202,11 @@
             <s:SolidColorStroke color="0x040404"/>
          </s:stroke>
       </s:Line>
-      <base:Scroller stepMultiplier="10" skinClass="components.base.listscreen.ListScreenScrollerSkin">
+      <!--- Scroller for scrolling the content of the list -->
+      <base:Scroller id="contentScroller" stepMultiplier="10" height="100%"
+                     skinClass="components.base.listscreen.ListScreenScrollerSkin">
          <!--- Container of a list (viewport of list scroller) -->
-         <s:Group id="grpListContainer" height="100%" width="100%"/>
+         <s:Group id="grpListContainer" width="100%"/>
       </base:Scroller>
    </s:Group>
 </s:Group>

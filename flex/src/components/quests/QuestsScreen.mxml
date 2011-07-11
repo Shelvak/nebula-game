@@ -6,14 +6,16 @@
                        xmlns:quests="components.quests.*"
                        initialize="this_initializeHandler(event)">
    <fx:Declarations>
-      <quests:QuestsList id="_list" scrollRequested="list_scrollRequestedHandler(event)"/>
+      <quests:QuestsList id="_list" scrollRequested="list_scrollRequestedHandler(event)"
+                         skinClass="components.skins.ListNonScrollableSkin"
+                         borderVisible="false" contentBackgroundAlpha="0"/>
       <s:Group id="_controlButtons">
          <s:ButtonBar id="_barFilterButtons" requireSelection="true" focusEnabled="false"
                       change="barFilterButtons_changeHandler(event)"/>
       </s:Group>
       <s:Group id="_colorLegend">
-         <s:Label text="{getString('label.completedColor')}"    color="#EEC500"/>
-         <s:Label text="{getString('label.notCompletedColor')}" color="#FFFFFF"/>
+         <s:Label text="{getString('label.completedColor')}"    color="{IRQuest.TEXT_COLOR_COMPLETED}"/>
+         <s:Label text="{getString('label.notCompletedColor')}" color="{IRQuest.TEXT_COLOR_STARTED}"/>
       </s:Group>
    </fx:Declarations>
    <fx:Binding source="_barFilterButtons.selectedIndex == 0" destination="colorLegendVisible"/>
@@ -28,10 +30,10 @@
          
          import mx.collections.ArrayCollection;
          import mx.collections.IList;
+         import mx.core.IVisualElement;
          import mx.events.FlexEvent;
          
          import spark.components.Group;
-         import spark.components.List;
          import spark.events.IndexChangeEvent;
          
          import utils.locale.Localizer;
@@ -75,7 +77,7 @@
          }
          
          
-         private var _filterFunctions:ArrayCollection = new ArrayCollection([
+         private const _filterFunctions:ArrayCollection = new ArrayCollection([
             {"apply": filterCurrentQuests,   "label": getString("label.current",   [ML.quests.currentTotal])},
             {"apply": filterCompletedQuests, "label": getString("label.completed", [ML.quests.completedTotal])}
          ]);
@@ -101,7 +103,7 @@
             return ML.quests;
          }
          
-         protected override function get list() : List {
+         protected override function get dataContainer() : IVisualElement {
             return _list;
          }
          

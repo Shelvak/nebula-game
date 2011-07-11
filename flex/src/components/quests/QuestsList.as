@@ -27,6 +27,7 @@ package components.quests
       public function QuestsList()
       {
          super();
+         useVirtualLayout = false;
          itemRenderer = new ClassFactory(IRQuest);
          addSelfEventHandlers();
       }

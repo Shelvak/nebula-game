@@ -5,7 +5,8 @@
                  xmlns:base="components.base.listscreen.*"
                  xmlns:notifs="components.notifications.*">
    <fx:Declarations>
-      <notifs:NotificationsList id="_list"/>
+      <notifs:NotificationsList id="_list" skinClass="components.skins.ListNonScrollableSkin"
+                                borderVisible="false" contentBackgroundAlpha="0"/>
       <s:Group id="_controlButtons">
          <s:Button id="_btnReadAll" label="{getString('label.readAll')}" enabled="{_notReadNotifs.length != 0}"
                    click="btnReadAll_clickHandler(event)"/>
@@ -13,9 +14,9 @@
                       change="barFilterButtons_changeHandler(event)"/>
       </s:Group>
       <s:Group id="_colorLegend">
-         <s:Label text="{getString('label.notReadColor')}" color="0xEEC500"/>
-         <s:Label text="{getString('label.newColor')}" color="0x00D8E3"/>
-         <s:Label text="{getString('label.readColor')}" color="0xFFFFFF"/>
+         <s:Label text="{getString('label.notReadColor')}" color="{IRNotification.TEXT_COLOR_UNREAD}"/>
+         <s:Label text="{getString('label.newColor')}"     color="{IRNotification.TEXT_COLOR_NEW}"/>
+         <s:Label text="{getString('label.readColor')}"    color="{IRNotification.TEXT_COLOR_READ}"/>
       </s:Group>
    </fx:Declarations>
    <fx:Binding source="ML.notifications.length == 0" destination="headerFromListSeparatorVisible"/>
@@ -31,11 +32,12 @@
          import mx.collections.ArrayCollection;
          import mx.collections.IList;
          import mx.collections.ListCollectionView;
+         import mx.core.IVisualElement;
          
          import spark.components.Button;
          import spark.components.ButtonBar;
          import spark.components.Group;
-         import spark.components.List;
+         import spark.components.SkinnableDataContainer;
          import spark.events.IndexChangeEvent;
          
          import utils.datastructures.Collections;
@@ -49,8 +51,7 @@
             return Localizer.string("Notifications", property, parameters);
          }
          
-         [Bindable(event="willNotChange")]
-         private var _filterFunctions:ArrayCollection = new ArrayCollection([
+         private const _filterFunctions:ArrayCollection = new ArrayCollection([
             {"apply": filterAllNotifs,     "label": getString("label.notifications.all")},
             {"apply": filterStarredNotifs, "label": getString("label.notifications.starred")},
             {"apply": filterUnreadNotifs,  "label": getString("label.notifications.unread")}
@@ -69,7 +70,7 @@
          }
          
          [Bindable(event="willNotChange")]
-         private var _notReadNotifs:ListCollectionView =
+         private const _notReadNotifs:ListCollectionView =
             Collections.filter(ML.notifications, filterFunction_unreadNotifs);
          
          private function filterFunction_unreadNotifs(notif:Notification) : Boolean {
@@ -99,7 +100,7 @@
             return ML.notifications;
          }
          
-         protected override function get list() : List {
+         protected override function get dataContainer() : IVisualElement {
             return _list;
          }
          

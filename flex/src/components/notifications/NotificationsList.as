@@ -34,6 +34,7 @@ package components.notifications
       public function NotificationsList()
       {
          super();
+         useVirtualLayout = false;
          itemRenderer = new ClassFactory(IRNotification);
          addSelfEventHandlers();
          EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, removeNewStates);

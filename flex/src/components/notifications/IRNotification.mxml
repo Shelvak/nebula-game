@@ -53,9 +53,9 @@
          }
          
          
-         private static const TEXT_COLOR_NEW:uint = 0x00D8E3;
-         private static const TEXT_COLOR_UNREAD:uint = 0xEEC500;
-         private static const TEXT_COLOR_READ:uint = 0xFFFFFF;
+         internal static const TEXT_COLOR_NEW:uint = 0x00D8E3;
+         internal static const TEXT_COLOR_UNREAD:uint = 0xEEC500;
+         internal static const TEXT_COLOR_READ:uint = 0xFFFFFF;
          
          [Bindable]
          private var _textColor:uint = TEXT_COLOR_READ;
