@@ -2,6 +2,11 @@
 #
 # Having record associate those two means that User is enrolled and playing
 # in Galaxy.
+# 
+# Beware! Gotchas:
+# 
+# #creds include normal creds + vip creds if player is a VIP.
+#
 class Player < ActiveRecord::Base
   belongs_to :alliance
   belongs_to :galaxy
@@ -210,6 +215,36 @@ class Player < ActiveRecord::Base
 
   def inspect
     to_s
+  end
+  
+  # Returns conversion rate from VIP creds to regular creds. It is dependant
+  # from players #vip_level.
+  #
+  # Returned number is how much VIP creds 1 regular cred is worth.
+  #
+  def vip_conversion_rate
+    raise GameLogicError.new("Non-vips do not have vip conversion rate!") \
+      if vip_level == 0
+    
+    cost, per_day, duration = CONFIG['creds.vip'][vip_level - 1]
+    (per_day * duration / 1.day / cost).floor + 0.5
+  end
+  
+  # Convert given amount of VIP creds into regular creds using 
+  # #vip_conversion_rate. End amount is floored.
+  def vip_convert(amount)
+    raise GameLogicError.new("Cannot convert negative amount of creds (#{
+      amount}!") unless amount > 0
+    raise GameLogicError.new("Not enough VIP creds! Wanted: #{amount
+      }, had #{vip_creds}.") unless vip_creds >= amount
+    
+    converted_creds = (amount / vip_conversion_rate).floor
+    # Because self.creds have both vip and regular creds we must subtract
+    # vip creds amount too.
+    self.creds += converted_creds - amount
+    self.vip_creds -= amount
+    
+    self
   end
 
   # Returns array of player ids which are friendly to this player (self and

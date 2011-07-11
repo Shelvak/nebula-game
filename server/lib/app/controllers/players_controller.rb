@@ -130,4 +130,22 @@ class PlayersController < GenericController
 
     respond :changes => params['changes']
   end
+
+  # Convert creds from VIP creds to normal creds.
+  # 
+  # Rate is determined by your VIP level. See Player#vip_conversion_rate
+  # 
+  # Invocation: by client
+  # 
+  # Parameters:
+  # - amount (Fixnum): number of VIP creds to convert
+  # 
+  # Response: None
+  #
+  def action_convert_creds
+    param_options :required => %w{amount}
+    
+    player.vip_convert(params['amount'].to_i)
+    player.save!
+  end
 end

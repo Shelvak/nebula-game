@@ -101,7 +101,24 @@ s|HScrollBar {
 }
 
 
+/* COMMON SCREEN STYLES */
+
+.emptyListMessage {
+   fontSize: 36;
+   fontWeight: bold;
+   color: #1C1C1C;
+}
+
+.screenTitle {
+   fontSize: 20;
+   fontWeight: bold;
+   color: #EEC500;
+   textAlign: center;
+}
+
+
 /* PANEL FONTS */
+
 s|Label.panelTitle {
    font-size:13;
    font-weight:bold;
@@ -110,6 +127,7 @@ s|Label.panelTitle {
 mx|Alert {
    color:#000000;
 }
+
 s|TextArea {
    color: #000000;
 }
@@ -154,7 +172,7 @@ rbar|ResourceBar mx|ProgressBar {
 
 quests|QuestsScreen,
 quests|QuestsList {
-   chrome-color:#323232;
+   chrome-color:#363636;
 }
 
 quests|QuestsList {
@@ -166,7 +184,7 @@ quests|QuestsList {
 
 notif|NotificationsScreen,
 notif|NotificationsList {
-   chrome-color:#323232;
+   chrome-color:#363636;
 }
 
 notif|NotificationsList {

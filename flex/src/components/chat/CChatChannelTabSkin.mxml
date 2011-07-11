@@ -12,7 +12,6 @@
    
    <fx:Declarations>
       <s:AnimateFilter id="newMessageAnim"
-                       target="{grpArtwork}"
                        bitmapFilter="{new GlowFilter(0x38D9EB)}"
                        duration="500"
                        repeatCount="0"
@@ -50,7 +49,7 @@
             }
             if (newState == "newMessage")
             {
-               newMessageAnim.play();
+               newMessageAnim.play([grpArtwork]);
             }
          }
       ]]>

@@ -1,4 +1,4 @@
-module Combat::Simulation
+module Combat::Simulation  
   # Runs combat, creates notifications for players and creates cooldown if
   # required.
   #
@@ -121,40 +121,39 @@ module Combat::Simulation
   # {unit/building => player_id} hash.
   def parse_killed_by(hashed_units, hashed_buildings, killed_by)
     Hash[killed_by.map do |string_key, player_id|
-      type = string_key[0]
+      type = string_key[0..0] # Ruby 1.8 compatibility
       id = string_key[1..-1].to_i
 
       [type == "t" ? hashed_units[id] : hashed_buildings[id], player_id]
     end]
   end
 
-  # Filters units leaving only those that can level up.
+  # Filters units leaving only those that can level up, grouping by player 
+  # id.
   #
   # Example output:
-  # [
-  #   {:type => "Unit::Trooper", :hp => 10, :level => 3,
-  #     :stance => Combat::STANCE_*},
+  # {
+  #   10 => [
+  #     {:type => "Unit::Trooper", :hp => 10, :level => 3,
+  #       :stance => Combat::STANCE_*},
+  #     ...
+  #   ],
   #   ...
-  # ]
+  # }
   #
   def filter_leveled_up(units)
-    units.map do |unit|
-      if unit.dead?
-        nil
-      else
-        level_count = unit.can_upgrade_by
-        if level_count == 0
-          nil
-        else
-          {
-            :type => unit.class.to_s,
-            :hp => unit.hp,
-            :level => unit.level + level_count,
-            :stance => unit.stance
-          }
-        end
+    units.inject({}) do |hash, unit|
+      hash[unit.player_id] ||= []
+      unless unit.dead? or (level_count = unit.can_upgrade_by).zero?
+        hash[unit.player_id] << {
+          :type => unit.class.to_s,
+          :hp => unit.hp,
+          :level => unit.level + level_count,
+          :stance => unit.stance
+        }
       end
-    end.compact
+      hash
+    end
   end
 
   # Prepares arguments for SpaceMule.

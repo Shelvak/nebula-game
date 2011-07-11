@@ -78,7 +78,8 @@ class Building::HealingCenter < Building
       planet.save!
       
       EventBroker.fire(self, EventBroker::CHANGED)
-      EventBroker.fire(planet, EventBroker::CHANGED)
+      EventBroker.fire(planet, EventBroker::CHANGED, 
+        EventBroker::REASON_OWNER_PROP_CHANGE)
       Objective::HealHp.progress(player, damaged_hp)
     end
   end

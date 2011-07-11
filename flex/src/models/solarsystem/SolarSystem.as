@@ -153,6 +153,7 @@ package models.solarsystem
       /* ######################## */
       
       
+      [Bindable(event="willNotChange")]
       /**
        * Location of the solar system in a galaxy.
        */

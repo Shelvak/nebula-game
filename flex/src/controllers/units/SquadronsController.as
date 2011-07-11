@@ -29,6 +29,7 @@ package controllers.units
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
+   import mx.utils.ObjectUtil;
    
    import namespaces.client_internal;
    
@@ -140,16 +141,16 @@ package controllers.units
       public function updateRoute(routeData:Object) : void
       {
          if (routeData.id <= 0)
-         {
             throwIllegalMovingSquadId(routeData.id);
-         }
+         
          // TODO: Figure out a correct way for updating the corresponding MSquadron
          var route:MRoute = findRoute(routeData.id);
-         if (!route)
-         {
-            throw new ArgumentError("Unable to update route and squadron: route with id " +
-                                    routeData.id + " could not be found");
-         }
+         if (route == null)
+            throw new ArgumentError(
+               "Unable to update route and squadron: route with id " + routeData.id + " could not be found." +
+               "New route data was: " + ObjectUtil.toString(routeData)
+            );
+         
          route.currentLocation = BaseModel.createModel(Location, routeData.current);
          route.cachedUnits.removeAll();
          route.cachedUnits.addAll(createCachedUnits(routeData.cachedUnits));

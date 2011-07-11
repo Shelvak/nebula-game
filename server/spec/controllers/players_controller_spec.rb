@@ -189,5 +189,34 @@ describe PlayersController do
         push @action, @params
       end
     end
+  
+    describe "players|convert_creds" do
+      before(:each) do
+        @action = "players|convert_creds"
+        @params = {'amount' => 1000}
+        player.vip_level = 1
+        player.vip_creds = @params['amount']
+        player.creds = @params['amount'] + 100
+      end
+      
+      @required_params = %w{amount}
+      it_should_behave_like "with param options"
+      
+      it "should call player#vip_convert" do
+        player.should_receive(:vip_convert).with(@params['amount'])
+        invoke @action, @params
+      end
+      
+      it "should convert amount to int" do
+        player.should_receive(:vip_convert).with(@params['amount'])
+        @params['amount'] = @params['amount'].to_s
+        invoke @action, @params
+      end
+      
+      it "should save player" do
+        invoke @action, @params
+        player.should be_saved
+      end
+    end
   end
 end

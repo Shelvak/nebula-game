@@ -9,10 +9,14 @@ describe Chat::Message do
       target = Factory.create(:player)
       message = "FOOO!"
       Chat::Message.store!(source.id, target.id, message)
-      ActiveRecord::Base.connection.select_one(
+      actual = ActiveRecord::Base.connection.select_one(
         "SELECT * FROM `#{Chat::Message.table_name}` WHERE source_id=#{
         source.id}"
-      ).should equal_to_hash(
+      )
+      # JRuby compatibility
+      actual["created_at"] = Time.parse(actual["created_at"]) \
+        unless actual["created_at"].is_a?(Time)
+      actual.should equal_to_hash(
         'source_id' => source.id,
         'target_id' => target.id,
         'message' => message,
@@ -29,12 +33,15 @@ describe Chat::Message do
         :message => "BAR!", :created_at => 5.minutes.ago).save!
       Chat::Message.new(:source_id => source.id, :target_id => target.id,
         :message => "FOO!", :created_at => 10.minutes.ago).save!
-      Chat::Message.retrieve(target.id).should == [
+      expected = [
         {'source_id' => source.id, 'message' => "FOO!",
           'created_at' => 10.minutes.ago},
         {'source_id' => source.id, 'message' => "BAR!",
           'created_at' => 5.minutes.ago}
       ]
+      Chat::Message.retrieve(target.id).each_with_index do |row, item|
+        row.should equal_to_hash(expected[item])
+      end
     end
   end
 

@@ -16,6 +16,11 @@ links.parent.weight: (0.3 * position) + 0.7
 # How much time does it take to land to the planet. Does not support formulas!
 links.planet.weight: 1.1
 
+# How much time should jump from/to regular solar system take?
+regular.jump.multiplier: 1.5
+# How much time should jump from/to global battleground take?
+battleground.jump.multiplier: 4
+
 # Number of planets in homeworld ss. Not a range! Does not include homeworld
 # planet!
 homeworld.planet.count: 1

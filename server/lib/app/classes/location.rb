@@ -10,6 +10,11 @@ module Location
   # checked.
   #
   def self.fighting_player_ids(location)
+    # Should have used Scala...
+    raise ArgumentError.new(
+      "Expecting LocationPoint but #{location.inspect} given!") \
+      unless location.is_a?(LocationPoint)
+    
     player_ids = []
     player_ids.push SsObject.find(location.id).player_id if \
       location.type == SS_OBJECT && \

@@ -70,6 +70,8 @@ module Combat::Raiding
     else
       planet.clear_raid!
     end
+    EventBroker.fire(planet, EventBroker::CHANGED, 
+      EventBroker::REASON_OWNER_PROP_CHANGE)
   end
 
   # Should NPC raiders raid player if he has _planets_count_?

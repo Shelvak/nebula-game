@@ -1,6 +1,11 @@
 ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..')) \
   unless defined?(ROOT_DIR)
 
+# REE tweaks
+if GC.respond_to?(:copy_on_write_friendly=)
+  GC.copy_on_write_friendly = true
+end
+
 if RUBY_VERSION.to_f < 1.9
   Range.send(:alias_method, :cover?, :include?)
   class Integer
@@ -82,44 +87,33 @@ benchmark :logger do
     )
   )
   LOGGER.level = GameLogger::LEVEL_INFO
+  
+  mailer_block = lambda do |short, long|
+    lambda do |error|
+      Thread.new do
+        begin
+          Mail.deliver do
+            from email_from
+            to email_to
+            subject "[#{short}] #{error.split("\n")[0]}"
+            body "#{long}\n\n#{error}"
+          end
+        rescue Errno::ENETUNREACH, Net::SMTPServerBusy
+          sleep 60
+          retry
+        end
+      end
+    end
+  end
+  
   # Error reporting by mail.
   if ENV['environment'] == 'production'
-    LOGGER.on_fatal = lambda do |fatal|
-      begin
-        Mail.deliver do
-          from email_from
-          to email_to
-          subject "[FATAL] #{fatal.split("\n")[0]}"
-          body "Server has encountered an FATAL error!\n\n#{fatal}"
-        end
-      rescue Errno::ENETUNREACH
-        # Well, what can we do...
-      end
-    end
-    LOGGER.on_error = lambda do |error|
-      begin
-        Mail.deliver do
-          from email_from
-          to email_to
-          subject "[ERROR] #{error.split("\n")[0]}"
-          body "Server has encountered an error!\n\n#{error}"
-        end
-      rescue Errno::ENETUNREACH
-        # Well, what can we do...
-      end
-    end
-    LOGGER.on_warn = lambda do |warn|
-      begin
-        Mail.deliver do
-          from email_from
-          to email_to
-          subject "[WARN] #{warn.split("\n")[0]}"
-          body "Server has issued a warning!\n\n#{warn}"
-        end
-      rescue Errno::ENETUNREACH
-        # Well, what can we do...
-      end
-    end
+    LOGGER.on_fatal = mailer_block.call("FATAL", 
+      "Server has encountered an FATAL error!")
+    LOGGER.on_error = mailer_block.call("ERROR", 
+      "Server has encountered an error!")
+    LOGGER.on_warn = mailer_block.call("WARN", 
+      "Server has issued a warning!")
   end
 end
 

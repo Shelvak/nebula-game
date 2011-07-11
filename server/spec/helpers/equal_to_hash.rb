@@ -1,6 +1,23 @@
 Spec::Matchers.define :equal_to_hash do |target|
   match do |actual|
-    actual == target
+    equal = true
+    
+    actual.each do |key, actual_value|
+      target_value = target[key]
+      if actual_value.is_a?(Time) && target_value.is_a?(Time)
+        equal = false unless (
+          (
+            target_value - SPEC_TIME_PRECISION
+          )..(
+            target_value + SPEC_TIME_PRECISION
+          )
+        ).cover?(actual_value)
+      else
+        equal = false unless actual_value == target_value
+      end
+    end
+    
+    equal
   end
   failure_message_for_should do |actual|
     msg = "target and actual hashes should have been equal but these " +

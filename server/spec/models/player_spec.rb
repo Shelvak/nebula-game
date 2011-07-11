@@ -53,6 +53,53 @@ describe Player do
     end
   end
 
+  describe "#vip_conversion_rate" do
+    it "should raise error if vip_level is 0" do
+      lambda do
+        Factory.build(:player).vip_conversion_rate
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should return deal value + 0.5" do
+      with_config_values 'creds.vip' => [[1000, 100, 10.days]] do
+        Factory.build(:player, :vip_level => 1).vip_conversion_rate.
+          should == (100 * 10 / 1000).round + 0.5
+      end
+    end
+  end
+  
+  describe "#vip_convert" do
+    it "should fail if given negative amount" do
+      lambda do
+        Factory.build(:player, :vip_level => 1).vip_convert(-1)
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should fail if player does not have enough vip creds" do
+      lambda do
+        Factory.build(:player, :vip_level => 1, :vip_creds => 100).
+          vip_convert(101)
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should add floored converted creds - amount" do
+      creds = 100; rate = 1.3
+      player = Factory.build(:player, :vip_level => 1, :vip_creds => creds,
+        :creds => 10000)
+      player.stub!(:vip_conversion_rate).and_return(rate)
+      lambda do
+        player.vip_convert(creds)
+      end.should change(player, :creds).by((creds / rate).floor - creds)
+    end
+    
+    it "should reduce amount from vip creds" do
+      player = Factory.build(:player, :vip_level => 1, :vip_creds => 100)
+      lambda do
+        player.vip_convert(10)
+      end.should change(player, :vip_creds).by(-10)
+    end
+  end
+  
   describe "#victory_points" do
     it "should add to alliance victory points too" do
       alliance = Factory.create(:alliance)

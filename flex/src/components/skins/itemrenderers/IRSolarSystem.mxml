@@ -8,33 +8,28 @@
    <fx:Binding source="SolarSystem(data)" destination="ss"/>
    <fx:Script>
       <![CDATA[
+         import models.location.LocationMinimal;
          import models.solarsystem.SolarSystem;
          
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
-         import utils.locale.Localizer;
          
          
          [Bindable]
          private var ss:SolarSystem;
          
          
-         private function get IMG() : ImagePreloader
-         {
+         private function get IMG() : ImagePreloader {
             return ImagePreloader.getInstance();
          }
          
-         
          [Bindable("willNotChange")]
-         private function get shieldImage() : BitmapData
-         {
+         private function get shieldImage() : BitmapData {
             return IMG.getImage(AssetNames.SS_SHIELD_IMAGE_NAME);
          }
          
-         
-         private static function getSectorName(ss:SolarSystem) : String
-         {
-            return Localizer.string('Location', 'sector') + " " + ss.x + ":" + ss.y;
+         private function getSectorLabel(ss:SolarSystem) : String {
+            return ss == null ? "" : LocationMinimal.getSectorLabel(ss.currentLocation);
          }
       ]]>
    </fx:Script>
@@ -73,7 +68,7 @@
       <!-- name -->
       <s:Label text="{ss.name}"/>
       <!-- coordinates -->
-      <s:Label text="{getSectorName(ss)}"/>
+      <s:Label text="{getSectorLabel(ss)}"/>
       
       <!-- status icons -->
       <ss:SSPlanetsStatusIcons solarSystem="{ss}"/>

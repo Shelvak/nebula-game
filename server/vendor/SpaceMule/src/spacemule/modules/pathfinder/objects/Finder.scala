@@ -32,7 +32,7 @@ object Finder {
       val planet = source.asInstanceOf[Planet]
       current = SolarSystemPoint(planet)
 
-      locations += current.toServerLocation
+      locations += current.toServerLocation(Config.planetLinkWeight)
     }
 
     // Now we are in solar system or galaxy for sure.
@@ -72,7 +72,8 @@ object Finder {
           )
         },
         // Ensure ss->galaxy hop takes as long as galaxy->ss hop.
-        1.0 / Config.unitGalaxySsHopTimeRatio
+        1.0 / Config.unitGalaxySsHopTimeRatio * 
+          fromPoint.solarSystem.wormholeHopMultiplier
       )
       // Add the point in galaxy.
       locations += current.toServerLocation
@@ -112,8 +113,9 @@ object Finder {
         )
       )
 
-      // Add jumpgate.
-      locations += toJumpgate.toServerLocation
+      // Add jumpgate. Ensure hop takes normal amount of time.
+      locations += toJumpgate.toServerLocation(
+        toJumpgate.solarSystem.wormholeHopMultiplier)
 
       // Travel from jumpgate to our destination
       locations ++= travelToSolarSystemPointOrPlanet(toJumpgate, target,

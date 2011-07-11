@@ -13,6 +13,7 @@ package tests.chat.models.chat
       public var tcMChat_ui:TCMChat_ui;
       public var tcMChat_hasUnreadAllianceMsg:TCMChat_hasUnreadAllianceMsg;
       public var tcMChat_hasUnreadPrivateMsg:TCMChat_hasUnreadPrivateMsg;
+      public var tcMChat_hasUnreadMainMsg:TCMChat_hasUnreadMainMsg;
       public var tcMChat_openPrivateChannel:TCMChat_openPrivateChannel;
       public var tcMChat_closeChannel:TCMChat_closeChannel;
       public var tcMChat:TCMChat;

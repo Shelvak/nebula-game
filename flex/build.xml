@@ -154,7 +154,7 @@
       <report format="frames" todir="${report.loc}/html" />
     </junitreport>
   </target>
-  
+ 
   <target name="copy-swf">
     <!-- Assemble final website -->
     <copy file="${bin.loc}/${swf.name}.swf" todir="${dist.loc}" />
@@ -170,20 +170,6 @@
       property="swf.checksum" />
     <checksum file="${dist.loc}/game.js" algorithm="sha1"
       property="gamejs.checksum" />
-      
-    <!-- Calculate sha1 checksums to assets/checksums file -->
-    <checksum algorithm="sha1" pattern="{1} {0}"
-    todir="${dist.loc.locales}">
-      <fileset dir="${dist.loc.locales}" includes="*.xml" />
-    </checksum>
-    
-    <concat destfile="${dist.loc.locales}/checksums">
-      <fileset dir="${dist.loc.locales}" includes="*.sha1"/>
-    </concat>
-    
-    <delete>
-      <fileset dir="${dist.loc.locales}" includes="*.sha1"/>
-    </delete>
     
     <!-- Generate proper index.html -->
     <replace file="${index.html}">
@@ -237,7 +223,38 @@
       </replacefilter>
     </replace>
   </target>
-
+  
+  <target name="copy-locales">
+    <exec executable="cmd" osfamily="windows">
+       <arg value="/c" />
+       <arg value="rake.bat" />
+       <arg value="flex:locales:check" />
+    </exec>
+    <exec executable="rake" osfamily="unix">
+      <arg value="flex:locales:check" />
+    </exec>
+    
+    <!-- Copy locales -->
+    <mkdir dir="${dist.loc.locales}" />
+    <copy todir="${dist.loc.locales}">
+      <fileset dir="${html.src.loc}/locale" includes="*.xml" />
+    </copy>
+    
+    <!-- Calculate sha1 checksums to locates/checksums file -->
+    <checksum algorithm="sha1" pattern="{1} {0}"
+    todir="${dist.loc.locales}">
+      <fileset dir="${dist.loc.locales}" includes="*.xml" />
+    </checksum>
+    
+    <concat destfile="${dist.loc.locales}/checksums">
+      <fileset dir="${dist.loc.locales}" includes="*.sha1"/>
+    </concat>
+    
+    <delete>
+      <fileset dir="${dist.loc.locales}" includes="*.sha1"/>
+    </delete>
+  </target>
+  
   <target name="build-swf" depends="compile,copy-swf" />
   
   <target name="build-assets">
@@ -270,7 +287,9 @@
     </delete>
   </target>
 
-  <target name="build" depends="build-swf,build-assets" />
+  <!-- First build assets so that build-swf would build AssetsBundle.as into
+  target. -->
+  <target name="build" depends="build-assets,build-swf,copy-locales" />
 
   <target name="release" depends="test,build" />
 </project>

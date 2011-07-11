@@ -31,7 +31,7 @@
          
          private function allTestSuites() : Array
          {
-            return new Array(
+            return [
                TSModels,
                TSAnimation,
                TSNotifications,
@@ -46,15 +46,15 @@
                CommunicationsTestSuite,
                ModelsTestSuite,
                UtilsTestSuite
-            );
+            ];
          }
          
          
          public function currentRunTestSuite():Array
          {
-            var testsToRun:Array = new Array(
-               TSMovement
-            );
+            var testsToRun:Array = [
+               TSChat
+            ];
             return testsToRun;
          }
          
