@@ -2943,14 +2943,17 @@
   <Squadrons>
     <title.squadrons value="Fleets" />
     <title.noSquadrons value="No moving fleets detected." />
-    <label.currentLocation value="Current location" />
-    <label.sourceLocation value="Flying from" />
-    <label.targetLocation value="Traveling to" />
+    <label.currentLocation value="Current location:" />
+    <label.sourceLocation value="Flying from:" />
+    <label.targetLocation value="Traveling to:" />
     <label.units value="Fleet units" />
-    <label.arrivesAt value="Arrives at" />
+    <label.arrivesAt value="Arrives at:" />
     <label.leavesPlanet value="Leaves planet at" />
     <label.inTime value="(in {0})" />
     <label.close value="Close" />
+    <label.playerFleets value="Your fleets" />
+    <label.allianceFleets value="Alliance fleets" />
+    <label.stop value="Stop" />
   </Squadrons>
 
   <Technologies>
