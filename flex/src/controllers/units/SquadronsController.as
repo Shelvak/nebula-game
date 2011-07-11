@@ -44,8 +44,7 @@ package controllers.units
     */
    public class SquadronsController
    {
-      public static function getInstance() : SquadronsController
-      {
+      public static function getInstance() : SquadronsController {
          return SingletonFactory.getSingletonInstance(SquadronsController);
       }
       
@@ -129,6 +128,23 @@ package controllers.units
          if (removeRoute)
          {
             ROUTES.remove(id, true);
+         }
+      }
+      
+      /**
+       * Used by routes|index action to remove all moving friendly squadrons.
+       */
+      public function destroyAllMovingFriendlySquadrons() : void {
+         var toRemove:ArrayCollection = new ArrayCollection();
+         toRemove.addAll(SQUADS);
+         Collections.applyFilter(
+            toRemove,
+            function(squad:MSquadron) : Boolean {
+               return squad.isFriendly && squad.isMoving
+            }
+         );
+         for each (var squad:MSquadron in toRemove) {
+            destroySquadron(squad.id);
          }
       }
       
