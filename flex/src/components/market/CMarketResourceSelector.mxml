@@ -31,6 +31,9 @@
          public var selected: String;
          
          [Bindable]
+         public var hidenType: String = null;
+         
+         [Bindable]
          public var disabledType: String = null;
          
          private function selectedChangeHandler(e: Event = null): void
@@ -63,11 +66,15 @@
       ]]>
    </fx:Script>
    <market:CMarketResource type="{ResourceType.METAL}" gr="{rGroup}"
-                           enabled="{disabledType != ResourceType.METAL}"/>
+                           enabled="{disabledType != ResourceType.METAL}"
+                           visible="{hidenType != ResourceType.METAL}"/>
    <market:CMarketResource type="{ResourceType.ENERGY}" gr="{rGroup}"
-                           enabled="{disabledType != ResourceType.ENERGY}"/>
+                           enabled="{disabledType != ResourceType.ENERGY}"
+                           visible="{hidenType != ResourceType.ENERGY}"/>
    <market:CMarketResource type="{ResourceType.ZETIUM}" gr="{rGroup}"
-                           enabled="{disabledType != ResourceType.ZETIUM}"/>
+                           enabled="{disabledType != ResourceType.ZETIUM}"
+                           visible="{hidenType != ResourceType.ZETIUM}"/>
    <market:CMarketResource type="{ResourceType.CREDS}" gr="{rGroup}"
-                           enabled="{disabledType != ResourceType.CREDS}"/>
+                           enabled="{disabledType != ResourceType.CREDS}"
+                           visible="{hidenType != ResourceType.CREDS}"/>
 </s:Group>

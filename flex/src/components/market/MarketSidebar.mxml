@@ -15,14 +15,22 @@
          private var marketLevel: int = 1;
          
          [Bindable]
+         private var freeSlots: int = 20;
+         
+         [Bindable]
          private var ML: ModelLocator = ModelLocator.getInstance();
       ]]>
    </fx:Script>
    <base:Panel title="{Localizer.string('Market', 'title.sell')}" left="6" right="6">
-      <market:CMarketSell left="3" right="3" metal="{ML.latestPlanet.ssObject.metal}"
+      <market:CMarketSell left="6" right="6" top="6" bottom="6"
+                          metal="{ML.latestPlanet.ssObject.metal}"
                           energy="{ML.latestPlanet.ssObject.energy}"
                           zetium="{ML.latestPlanet.ssObject.zetium}"
                           creds="{ML.player.creds - ML.player.vipCreds}"
-                          taxRate="{Building.getMarketTaxRate(marketLevel)}"/>
+                          taxRate="{Building.getMarketTaxRate(marketLevel)}"
+                          visible="{freeSlots > 0}"/>
+      <base:Warning top="6" left="6" right="6" bottom="6" 
+                    visible="{freeSlots == 0}"
+                    text="{Localizer.string('Market', 'warning.noSlots')}"/>
    </base:Panel>
 </s:Group>

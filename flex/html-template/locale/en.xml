@@ -3900,6 +3900,7 @@
     <!-- 1 cheaper or more -->
     <label.marketValue value="{0}% {1} than market value" />
     <title.sell value="Sell"/>
+    <warning.noSlots value="Offers limit reached" />
   </Market>
 
 </locale>
