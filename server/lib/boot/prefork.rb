@@ -1,6 +1,11 @@
 ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..')) \
   unless defined?(ROOT_DIR)
 
+# REE tweaks
+if GC.respond_to?(:copy_on_write_friendly=)
+  GC.copy_on_write_friendly = true
+end
+
 if RUBY_VERSION.to_f < 1.9
   Range.send(:alias_method, :cover?, :include?)
   class Integer
