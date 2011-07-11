@@ -18,38 +18,38 @@
          import globalevents.GCreditEvent;
          
          import models.building.Building;
+         import models.objectives.ObjectiveType;
          import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
-         import models.objectives.ObjectiveType;
          
          import utils.assets.AssetNames;
          import utils.locale.Localizer;
          
          [Bindable]
-         private var _buildingModel: Building;
+         private var _constructableModel: *;
          
-         public function set buildingModel(value: Building): void
+         public function set constructableModel(value: *): void
          {
-            if (_buildingModel != null && _buildingModel.upgradePart != null)
+            if (_constructableModel != null && _constructableModel.upgradePart != null)
             {
-               _buildingModel.upgradePart.removeEventListener(
+               _constructableModel.upgradePart.removeEventListener(
                   UpgradeEvent.UPGRADE_PROGRESS,
                   model_upgradeProgressHandler
                );
             }
-            _buildingModel = value;
-            if (_buildingModel != null && _buildingModel.upgradePart != null)
+            _constructableModel = value;
+            if (_constructableModel != null && _constructableModel.upgradePart != null)
             {
-               _buildingModel.upgradePart.addEventListener(
+               _constructableModel.upgradePart.addEventListener(
                   UpgradeEvent.UPGRADE_PROGRESS,
                   model_upgradeProgressHandler
                );
             }
          }
          
-         public function get buildingModel(): Building
+         public function get constructableModel(): *
          {
-            return _buildingModel;
+            return _constructableModel;
          }
          
          private static const imageHeight: int = 28;
@@ -58,11 +58,11 @@
          override protected function updateDisplayList(uw:Number, uh:Number) : void
          {
             super.updateDisplayList(uw, uh);
-            if (_buildingModel != null &&
-               _buildingModel.upgradePart != null &&
-               _buildingModel.upgradePart.upgradeEndsAt != null)
+            if (_constructableModel != null &&
+               _constructableModel.upgradePart != null &&
+               _constructableModel.upgradePart.upgradeEndsAt != null)
             {
-               buildingProgressBar.setProgress(_buildingModel.upgradePart.upgradeProgress, 1);
+               buildingProgressBar.setProgress(_constructableModel.upgradePart.upgradeProgress, 1);
             }
          }
          
@@ -75,7 +75,7 @@
          protected function coincomp1_clickHandler(event:MouseEvent):void
          {
             var accelerator: AccelerateSelector = new AccelerateSelector();
-            accelerator.upgradePart = _buildingModel.upgradePart;
+            accelerator.upgradePart = _constructableModel.upgradePart;
             var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
             accelerator.popUp = speedPopUp;
             speedPopUp.confirmButtonEnabled = false;
@@ -85,7 +85,8 @@
                {
                   GlobalFlags.getInstance().lockApplication = true;
                   new BuildingsCommand(BuildingsCommand.ACCELERATE_CONSTRUCTOR, 
-                     {'id': ML.latestPlanet.getBuildingByConstructable(_buildingModel.id, ObjectClass.BUILDING).id, 
+                     {'id': ML.latestPlanet.getBuildingByConstructable(_constructableModel.id, 
+                        _constructableModel is Building?ObjectClass.BUILDING:ObjectClass.UNIT).id, 
                         'index': accelerator.selectedAccelerateType}).dispatch();
                }
                if (accelerator.hasEnoughCredits())
@@ -113,7 +114,9 @@
       <s:Group left="0" right="0" top="0" bottom="0">
          <s:Group width="{imageWidth}" height="100%" id="imageGroup">
             <components:CenteredBitmapImage 
-               source="{IMG.getImage(AssetNames.getBuildingImageName(_buildingModel.type))}" 
+               source="{IMG.getImage(_constructableModel is Building
+               ?AssetNames.getBuildingImageName(_constructableModel.type)
+               :AssetNames.getUnitImageName(_constructableModel.type))}" 
                width="100%" height="{imageHeight}" verticalCenter="0"/>
          </s:Group>
          <s:Group left="{imageGroup.width}" right="0" height="100%"> <!--  verticalCenter="0" -->
@@ -132,7 +135,7 @@
                                   + '%'}"/>
                   <s:Group width="100%">
                      <s:Label fontSize="10" text="{Localizer.string('Buildings', 'property.timeToFinish.long', 
-                              [_buildingModel.upgradePart.timeToFinishString])}" horizontalCenter="0"/>
+                             [_constructableModel.upgradePart.timeToFinishString])}" horizontalCenter="0"/>
                   </s:Group>
                   <s:layout>
                      <s:VerticalLayout gap="4"/>

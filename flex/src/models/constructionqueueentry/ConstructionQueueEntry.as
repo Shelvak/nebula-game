@@ -1,11 +1,13 @@
 package models.constructionqueueentry
 {
+   import controllers.objects.ObjectClass;
+   
    import flash.events.Event;
    
    import models.BaseModel;
    
-   import utils.locale.Localizer;
    import utils.ModelUtil;
+   import utils.locale.Localizer;
    
    [Bindable]
    public class ConstructionQueueEntry extends BaseModel
@@ -53,6 +55,11 @@ package models.constructionqueueentry
          return _count;
       }
       
+      public function get isUnit(): Boolean
+      {
+         return ModelUtil.getModelClass(constructableType, false) == ObjectClass.UNIT;
+      }
+      
       [Bindable (event='constructableTypeChanged')]
       public function get title(): String
       {
@@ -61,7 +68,7 @@ package models.constructionqueueentry
          {
             constName = constructableType;
          } 
-         return Localizer.string('Units',  constName + '.name');
+         return Localizer.string(isUnit?'Units':'Buildings',  constName + '.name');
       }
       
       private var _count: int;
