@@ -1008,6 +1008,7 @@
     <label.instant value="Iš karto" />
     <label.confirm value="Patvirtinti" />
     <label.cancel value="Atšaukti" />
+    <label.close value="Uždaryti" />
     <label.order value="Užsakyti" />
     <label.buy value="Pirkti kredus" />
     <label.move value="Perkelti" />

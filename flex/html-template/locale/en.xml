@@ -1010,6 +1010,7 @@
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />
     <label.cancel value="Cancel" />
+    <label.close value="Close" />
     <label.order value="Order" />
     <label.buy value="Buy Creds" />
     <label.move value="Move" />

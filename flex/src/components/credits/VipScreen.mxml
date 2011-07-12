@@ -4,7 +4,7 @@
          xmlns:mx="library://ns.adobe.com/flex/mx"
          width="100%" height="100%" 
          xmlns:credits="components.credits.*" 
-         xmlns:base="components.base.*">
+         xmlns:base="components.base.*" xmlns:screens="components.screens.*">
    <fx:Script>
       <![CDATA[
          import components.popups.WaitingCredsPopup;
@@ -21,8 +21,18 @@
          
          import utils.locale.Localizer;
          
-         [Bindable]
-         private var ML: ModelLocator = ModelLocator.getInstance();
+         
+         private static function get ML() : ModelLocator {
+            return ModelLocator.getInstance();
+         }
+         
+         private static function get NAV_CTRL() : NavigationController {
+            return NavigationController.getInstance();
+         }
+         
+         private function getString(property:String, parameters:Array = null) : String {
+            return Localizer.string("Credits", property, parameters);
+         }
          
          private function order_clickHandler(e: Event): void
          {
@@ -33,7 +43,7 @@
                GlobalFlags.getInstance().lockApplication = true;
                new PlayersCommand(PlayersCommand.VIP, 
                   {'vipLevel': VipLevelsData.getSelectedLevel()}).dispatch();
-               NavigationController.getInstance().showPreviousScreen();
+               NAV_CTRL.showPreviousScreen();
             }
             if (cost > ML.player.creds)
             {
@@ -46,12 +56,11 @@
          }
       ]]>
    </fx:Script>
-   <s:Group width="{header.width}" horizontalCenter="0" top="10">
-      <s:Label text="{Localizer.string('Credits', 'title.becomeVIP')}" 
-               fontSize="24" color="#eec500" paddingTop="20" 
-               fontWeight="bold" paddingLeft="5"/>
+   <screens:GradientBackground gradientWidth="{(width - header.width) / 2}"/>
+   <base:Panel horizontalCenter="0" skinClass="components.skins.LargePanelSkin"
+               title="{getString('title.becomeVIP')}">
       
-      <s:Label text="{Localizer.string('Credits', 'label.becomeVIP')}" 
+      <s:Label text="{getString('label.becomeVIP')}" 
                fontSize="14" paddingTop="20" paddingLeft="5" paddingBottom="10"/>
       
       <s:Group height="100%">
@@ -69,22 +78,20 @@
       </s:Group>
       
       <s:Group width="100%">
-         <base:Warning text="{Localizer.string('Credits', 'warning.becomeVIP')}"
+         <base:Warning text="{getString('warning.becomeVIP')}"
                        paddingTop="20" horizontalCenter="0" width="90%"
                        warningTextAlign="{TextAlign.LEFT}"
                        warningSignVerticalCenter="false"/>
       </s:Group>
       <s:Group width="{header.width}">
-         <s:Button label="{Localizer.string('Credits', 'label.cancel')}"
-                   click="NavigationController.getInstance().showPreviousScreen()"/>
          <s:Button label="{VipLevelsData.getSelectedLevel() > 0
                    ?
                    ( VipLevelsData.getVipCost(
                    int(VipLevelsData.vipSelection.selectedValue))
                    > ML.player.creds
-                   ? Localizer.string('Credits', 'label.buy')
-                   : Localizer.string('Credits', 'label.order'))
-                   : Localizer.string('Credits', 'label.order')}"
+                   ? getString('label.buy')
+                   : getString('label.order'))
+                   : getString('label.order')}"
                    enabled="{VipLevelsData.vipSelection.selectedValue > 0}"
                    click="order_clickHandler(event)" 
                    skinClass="components.skins.CreditButtonSkin"/>
@@ -92,8 +99,10 @@
             <s:HorizontalLayout horizontalAlign="right" paddingTop="20" gap="10"/>
          </s:layout>
       </s:Group>
-      <s:layout>
+      <base:layout>
          <s:VerticalLayout/>
-      </s:layout>
-   </s:Group>
+      </base:layout>
+   </base:Panel>
+   <screens:ScreenCloseButton right="0" bottom="0" click="NAV_CTRL.showPreviousScreen()"
+                              label="{getString('label.close')}"/>
 </s:Group>
