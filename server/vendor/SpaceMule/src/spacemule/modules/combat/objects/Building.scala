@@ -14,7 +14,10 @@ extends Combatant {
   val kind = Kind.Ground
   val armor = Armor.Fortified
   val armorModifier = 0.0
-  val flank = Config.maxFlankIndex - 1
+  /**
+   * Buildings stand in first flank.
+   */
+  val flank = 0
   val initiative = Config.buildingInitiative(name)
   val stance = Stance.Normal
   val hitPoints = Config.buildingHp(name)
