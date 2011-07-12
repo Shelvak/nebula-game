@@ -15,32 +15,31 @@
          import spark.events.IndexChangeEvent;
          
          
-         private function get MCHAT() : MChat
-         {
+         private function get MCHAT() : MChat {
             return MChat.getInstance();
          }
          
          
-         private function this_creationCompleteHandler(event:FlexEvent):void
-         {
+         private function this_creationCompleteHandler(event:FlexEvent) : void {
             channelButtons.dataProvider = MCHAT.channels;
-            channel.model = MCHAT.selectedChannel;
             MCHAT.addEventListener(
                MChatEvent.SELECTED_CHANNEL_CHANGE,
-               model_selectedChannelChangeHandler
+               model_selectedChannelChangeHandler, false, 0, true
             );
+            selectedChannelChanged();
          }
          
          
-         private function model_selectedChannelChangeHandler(event:MChatEvent) : void
-         {
+         private function model_selectedChannelChangeHandler(event:MChatEvent) : void {
+            selectedChannelChanged();
+         }
+         
+         private function selectedChannelChanged() : void {
             channel.model = MCHAT.selectedChannel;
             channelButtons.selectedItem = MCHAT.selectedChannel;
          }
          
-         
-         private function channelButtons_changeHandler(event:IndexChangeEvent):void
-         {
+         private function channelButtons_changeHandler(event:IndexChangeEvent) : void {
             MCHAT.selectChannel(MChatChannel(channelButtons.selectedItem).name);
          }
       ]]>

@@ -54,13 +54,13 @@ package models.movement
       public var player:PlayerMinimal = null;
       
       private var _owner:int = Owner.PLAYER;
-      [Required]
+      [Optional]
       [Bindable]
       /**
        * Owner type of this route.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Required]<br/>
+       * [Optional]<br/>
        * [Bindable]</i></p>
        * 
        * Will throw <code>IllegalArgumentError</code> if you try setting this to something other that

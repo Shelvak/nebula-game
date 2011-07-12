@@ -24,11 +24,10 @@ package components.chat
     */
    public class CChatChannelTab extends ButtonBarButton
    {
-      private static const SKIN_STATE_NEW_MESSAGE:String = "newMessage";
+      internal static const SKIN_STATE_NEW_MESSAGE:String = "newMessage";
       
       
-      public function CChatChannelTab()
-      {
+      public function CChatChannelTab() {
          super();
          setStyle("skinClass", CChatChannelTabSkin);
          mouseChildren = true;
@@ -43,10 +42,8 @@ package components.chat
       /* ########################### */
       
       
-      private function this_clickHandler(event:MouseEvent) : void
-      {
-         if (event.target == btnClose)
-         {
+      private function this_clickHandler(event:MouseEvent) : void {
+         if (event.target == btnClose) {
             event.stopImmediatePropagation();
             closeChannel();
          }
@@ -64,13 +61,9 @@ package components.chat
        */
       public var btnClose:Button;
       
-      
-      protected override function getCurrentSkinState() : String
-      {
+      protected override function getCurrentSkinState() : String {
          if (channel != null && channel.hasUnreadMessages)
-         {
             return SKIN_STATE_NEW_MESSAGE;
-         }
          return super.getCurrentSkinState();
       }
       
@@ -83,15 +76,13 @@ package components.chat
       private var _channelOld:MChatChannel = null;
       public override function set data(value:Object) : void
       {
-         if (super.data != value)
-         {
+         if (super.data != value) {
             if (_channelOld == null)
-            {
                _channelOld = channel;
-            }
             super.data = value;
             f_dataChanged = true;
             invalidateProperties();
+            invalidateSkinState();
          }
       }
       
@@ -103,10 +94,8 @@ package components.chat
       {
          super.commitProperties();
          
-         if (f_dataChanged)
-         {
-            if (_channelOld != null)
-            {
+         if (f_dataChanged) {
+            if (_channelOld != null) {
                _channelOld.removeEventListener(
                   MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE,
                   model_hasUnreadMessagesChangeHandler, false
@@ -114,14 +103,11 @@ package components.chat
                _channelOld = null;
             }
             if (channel != null)
-            {
                channel.addEventListener(
                   MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE,
                   model_hasUnreadMessagesChangeHandler, false, 0, true
                );
-            }
             btnClose.visible = channel != null && channel is MChatChannelPrivate;
-            invalidateSkinState();
          }
          
          f_dataChanged = false;
@@ -133,8 +119,7 @@ package components.chat
       /* ############################ */
       
       
-      private function model_hasUnreadMessagesChangeHandler(event:MChatChannelEvent) : void
-      {
+      private function model_hasUnreadMessagesChangeHandler(event:MChatChannelEvent) : void {
          invalidateSkinState();
       }
       
@@ -147,17 +132,14 @@ package components.chat
       /**
        * Typed alias for <code>data</code> property.
        */
-      private function get channel() : MChatChannel
-      {
-         return MChatChannel(super.data);
+      private function get channel() : MChatChannel {
+         return MChatChannel(data);
       }
-      
       
       /**
        * Closes the channel associated with this button.
        */
-      private function closeChannel() : void
-      {
+      private function closeChannel() : void {
          MChat.getInstance().closePrivateChannel(channel.name);
       }
    }
