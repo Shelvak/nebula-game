@@ -84,7 +84,7 @@
          
          private function btnDebugWiki_clickHandler(event:MouseEvent):void
          {
-            UrlNavigate.getInstance().showUrl('lash-player-debug/');
+            UrlNavigate.getInstance().showUrl('flash-player-debug/');
          }
          
          private function validateText(): void
