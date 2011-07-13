@@ -1,9 +1,10 @@
 package controllers.messages
 {
-   import utils.SingletonFactory;
-   
    import controllers.CommunicationCommand;
    
+   import mx.logging.Log;
+   
+   import utils.SingletonFactory;
    import utils.remote.IServerProxy;
    import utils.remote.ServerProxyInstance;
    import utils.remote.rmo.ClientRMO;
@@ -49,6 +50,7 @@ package controllers.messages
             }
             else
             {
+               Log.getLogger("controllers.messages.MessagesProcessor").info("Processing message {0}", rmo.id);
                new CommunicationCommand(rmo.action, rmo.parameters, true, false, rmo).dispatch();
             }
          }
