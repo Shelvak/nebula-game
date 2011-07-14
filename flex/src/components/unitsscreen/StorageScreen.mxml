@@ -10,6 +10,7 @@
    
    <fx:Script>
       <![CDATA[
+         import components.base.ResourceSelectorComp;
          import com.developmentarc.core.utils.EventBroker;
          
          import components.skins.RedButtonSkin;
@@ -198,7 +199,7 @@
          
          private function getResourceDiff(resource: String): int
          {
-            return LoadResourceComp(this[resource + 'Selector']).selectedVal - int(transporter[resource]);
+            return ResourceSelectorComp(this[resource + 'Selector']).selectedVal - int(transporter[resource]);
          }
          
          
@@ -301,7 +302,7 @@
                                    Localizer.string('Units', 'label.transferResources')}" 
                                    panelButtonClick="transfer_clickHandler(event)">
             <s:Group width="80%">
-               <unitsscreen:LoadResourceComp resourceType="{ResourceType.METAL}" 
+               <base:ResourceSelectorComp resourceType="{ResourceType.METAL}" 
                                              maxAmmount="{getMaxStock(ResourceType.METAL)}"
                                              id="metalSelector" 
                                              selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
@@ -315,7 +316,7 @@
                </s:layout>
             </s:Group>
             <s:Group width="80%">
-               <unitsscreen:LoadResourceComp resourceType="{ResourceType.ENERGY}" 
+               <base:ResourceSelectorComp resourceType="{ResourceType.ENERGY}" 
                                              maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
                                              id="energySelector"
                                              selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
@@ -329,7 +330,7 @@
                </s:layout>
             </s:Group>
             <s:Group width="80%">
-               <unitsscreen:LoadResourceComp resourceType="{ResourceType.ZETIUM}"
+               <base:ResourceSelectorComp resourceType="{ResourceType.ZETIUM}"
                                              maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
                                              id="zetiumSelector"
                                              selectedResourcesChange="selectedResourcesChangeHandler(event)"/>

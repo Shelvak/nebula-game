@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         import utils.locale.Localizer;
+         [Bindable]
+         public var type: String;
+         
+         [Bindable]
+         public var taxRate: Number;
+         
+         [Bindable]
+         public var selectedAmmount: int;
+         
+         private function getText(prop: String, params: Array = null): String
+         {
+            return Localizer.string('Market', prop, params);
+         }
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:HorizontalLayout/>
+   </s:layout>
+   <s:Label text="{getText('label.fee')}"/>
+   <base:ImageAndLabel type="{type}" 
+                       textToDisplay="{Math.ceil((selectedAmmount * taxRate)).toString()}"/>
+   <s:Label text="{'('+Math.round(taxRate*100)+'%'+')'}"/>
+</s:Group>

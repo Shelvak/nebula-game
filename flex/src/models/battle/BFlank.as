@@ -38,6 +38,11 @@ package models.battle
       }
       
       /**
+       * List of all buildings in this flank.
+       */
+      public var buildings:ModelsCollection = new ModelsCollection();
+      
+      /**
        * List of all ground units in this flank.
        */
       public var groundUnits:ModelsCollection = new ModelsCollection();
@@ -47,50 +52,6 @@ package models.battle
        * List of all space units in this flank.
        */
       public var spaceUnits:ModelsCollection = new ModelsCollection();
-      
-      public function getAllUnits(): ModelsCollection
-      {
-         var source:Array = new Array();
-         var item:Object;
-         for each (item in groundUnits) source.push(item);
-         for each (item in spaceUnits)  source.push(item);
-         return new ModelsCollection(source);
-      }
-      
-      
-      /**
-       * Removes unit with a given id from this flank. This method assumes that all units
-       * have unique values of <code>id</code> property.
-       * 
-       * @param id id of a unit to remove
-       * 
-       * @return a unit which has been removed or <code>null</code> if nothing has been removed
-       */
-      public function removeUnitWithId(id:int) : BUnit
-      {
-         var unitsList:ModelsCollection = groundUnits;
-         var unitToRemove:BUnit = BUnit(groundUnits.find(id));
-         if (!unitToRemove)
-         {
-            unitsList = spaceUnits;
-            unitToRemove = BUnit(spaceUnits.find(id));
-         }
-         return BUnit(unitsList.removeExact(unitToRemove));
-      }
-      
-      
-      /**
-       * Removes given unit form units list.
-       * 
-       * @param unit a unit to remove
-       * 
-       * @return instance of <code>BUnit</code> which has been removed or <code>null</code> if
-       * nothing has been removed
-       */
-      public function removeUnit(unit:BUnit) : BUnit
-      {
-         return removeUnitWithId(unit.id);
-      }
       
       
       /**
@@ -108,6 +69,15 @@ package models.battle
       public function get hasSpaceUnits() : Boolean
       {
          return !spaceUnits.isEmpty;
+      }
+      
+      
+      /**
+       * Indicates if there are buildings in this flank.
+       */
+      public function get hasBuildings() : Boolean
+      {
+         return !buildings.isEmpty;
       }
       
       

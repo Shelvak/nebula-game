@@ -15,6 +15,7 @@ package components.battle
    import models.IAnimatedModel;
    import models.IMBattleParticipant;
    import models.ModelsCollection;
+   import models.battle.BFlank;
    import models.battle.BGun;
    import models.battle.BUnit;
    import models.battle.FireOrder;
@@ -32,6 +33,9 @@ package components.battle
    {
       private static const HP_ROW_HEIGHT: int = 3;
       private static const MIN_BAR_WIDTH: int = 25;
+      
+      
+      public var flank: BFlank;
       /**
        * Constructor.
        */ 

@@ -148,20 +148,12 @@ package components.battle
          unitsMatrix = new BattleMatrix();
          unitsMatrix.rowCount = rowCount;
          currentCell = new Point(0, 0);
-         if (_battle.buildings.length != 0 && (_battle.buildings.getFirst() as BBuilding).playerStatus == 0)
-         {
-            placeFolliages(currentCell.x + 1, currentCell.x + FLANK_OFFSET_IN_CELLS - 1);
-            createBuildings(false);
-         }
-         placeFolliages(currentCell.x + 1, currentCell.x + FLANK_OFFSET_IN_CELLS - 1);
+         
+         addFolliageGap();
          
          createUnits();
          
-         if (_battle.buildings.length != 0 && (_battle.buildings.getFirst() as BBuilding).playerStatus != 0)
-         {
-            createBuildings(true);
-            placeFolliages(currentCell.x + 1, currentCell.x + FLANK_OFFSET_IN_CELLS - 1);
-         }
+         addFolliageGap();
          
          unitsMatrix.isFree(currentCell, new Point(currentCell.x, 1));
          calculateSize();
@@ -176,6 +168,11 @@ package components.battle
          super(battle);
          setTick(0);
          currentGroupOrder = 0;
+      }
+      
+      private function addFolliageGap(): void
+      {
+         placeFolliages(currentCell.x + 1, currentCell.x + FLANK_OFFSET_IN_CELLS - 1);
       }
       
       public function resetHandlers(): void
@@ -677,110 +674,16 @@ package components.battle
          return buildings[id];
       }
       
-      
-      private function createBuildings(flip: Boolean): void
-      {
-         if (_battle.buildings.length != 0)
-         {
-            var finder: PlaceFinder = new PlaceFinder(MAX_BUILDINGS_WIDTH, groundUnitsHeight, _battle.rand);
-            Profiler.start("shuffle buildings");
-            _battle.buildings.shuffle(_battle.rand);
-            Profiler.end();
-            
-            var building: BBuilding;
-            var distinctTypes: ArrayCollection = new ArrayCollection();
-            var distinctBuildings: ArrayCollection = new ArrayCollection();
-            var later: Array = [];
-            
-            Profiler.start("find distinct buildings");
-            for each (building in _battle.buildings)
-            {
-               if (distinctTypes.getItemIndex(building.type) == -1)
-               {
-                  distinctTypes.addItem(building.type);
-                  distinctBuildings.addItem(building);
-               }
-               else
-               {
-                  later.push(building);
-               }
-            }
-            Profiler.end();
-            
-            Profiler.start("sort distinct buildings");
-            distinctBuildings.sort = new Sort();
-            distinctBuildings.sort.compareFunction = function (a:Object, b:Object, fields:Array = null):int
-            {
-               if (a.box.width > b.box.width)
-                  return -1;
-               else
-                  if (a.box.width == b.box.width)
-                     return 0;
-               return 1;
-            }
-            distinctBuildings.refresh();
-            Profiler.end();
-            
-            Profiler.start("place distinct buildings");
-            for each (building in distinctBuildings)
-            {            
-               createBuilding(building, finder, flip, true);
-            }
-            Profiler.end();
-            Profiler.start("place other buildings");
-            for each (building in later)
-            {      
-               createBuilding(building, finder, flip); 
-            }
-            Profiler.end();
-            
-            
-            Profiler.start("refresh prepared objects");
-            var xStart: int = finder.getXStartFree();
-            var xEnd: int = finder.getXEndFree();
-            buildingsWidth = finder.maxWidth - xEnd - xStart;
-            for each (var obj: * in preparedObjects)
-            {
-               obj.xGridPos += (currentCell.x - xStart);
-               obj.yGridPos += groundStart;
-               var leftTop: Point = new Point(obj.xGridPos, obj.yGridPos);
-               var rightBottom: Point = new Point(obj.getWidthInCells(GRID_CELL_WIDTH) + obj.xGridPos - 1, 
-                  obj.getHeightInCells(GRID_CELL_HEIGHT) + obj.yGridPos - 1);
-               obj.depth = obj.yGridPos;
-               if (unitsMatrix.isFree(leftTop, rightBottom))
-               {
-                  unitsMatrix.occupy(leftTop,rightBottom);
-               }
-               else
-               {
-                  throw new Error('you have tried to occupy the cell that has already been occupied');
-               }
-               obj.x = obj.xGridPos * GRID_CELL_WIDTH
-                  + (_battle.rand.random() * (GRID_CELL_WIDTH * obj.getWidthInCells(GRID_CELL_WIDTH) 
-                     - obj.boxWidth)) - obj.xOffset + X_START_OFFSET;
-               obj.y = obj.yGridPos * GRID_CELL_HEIGHT
-                  + (_battle.rand.random() * (GRID_CELL_HEIGHT * obj.getHeightInCells(GRID_CELL_HEIGHT) 
-                     - obj.boxHeight)) - obj.yOffset + Y_START_OFFSET;
-            }
-            currentCell.x += buildingsWidth;
-            unitsMatrix.isFree(currentCell, new Point(currentCell.x, 1) );
-            preparedObjects = [];
-            Profiler.end();
-         }
-      }
-      
-      private function createBuilding(building:BBuilding, finder: PlaceFinder, flip: Boolean, distinct: Boolean = false) : void
+      private function createBuilding(building:BBuilding, finder: PlaceFinder,
+                                      flank: BFlank, distinct: Boolean = false) : void
       {
          Profiler.start("Create building " + building.toString());
          
          Profiler.start('Creating component');
          var buildingComp:BBuildingComp = new BBuildingComp(building);
-         if (flip)
-         {
-            buildingComp.flipHorizontally();
-         }
          Profiler.end();
-         building.hpActual = building.hp;         
+         building.hpActual = building.hp; 
+         buildingComp.flank = flank;
          
          var hpEntry: BOverallHp;
          switch (building.playerStatus)
@@ -920,12 +823,13 @@ package components.battle
       private function groupObject(participant: BBattleParticipantComp, hash: Hash): Boolean
       {
          var minGroup: BBattleParticipantComp = null;
+         
          for each (
             var groupRoot: IMBattleParticipant in participant is BBuildingComp
-            ? _battle.buildings
+            ? participant.flank.buildings
             : (participant.participantModel.kind == UnitKind.GROUND
-               ? (participant as BUnitComp).flank.groundUnits
-               : (participant as BUnitComp).flank.spaceUnits)
+               ? participant.flank.groundUnits
+               : participant.flank.spaceUnits)
          )
          {
             if ((groupRoot.type == participant.participantModel.type) && 
@@ -985,11 +889,11 @@ package components.battle
          alliance.flanks.refresh();
          for (var i: int = 0; i<alliance.flanks.length; i++)
          {
-            if ((alliance.flanks.getItemAt(i) as BFlank).hasUnits)
+            var flank: BFlank = BFlank(alliance.flanks.getItemAt(i));
+            if (flank.hasUnits || flank.hasBuildings)
             {
                Profiler.start("prepare flank " + i);
-               oldFlankEnd = prepareFlank(alliance.flanks.getItemAt(i) as BFlank, 
-                  defaultDirection, oldFlankEnd);
+               oldFlankEnd = prepareFlank(flank, defaultDirection, oldFlankEnd);
                Profiler.end();
             }
          }
@@ -1024,7 +928,7 @@ package components.battle
             flank.cellsToFree.end = currentCell.x + FLANK_OFFSET_IN_CELLS;
          }
          //place trees between flanks
-         placeFolliages(currentCell.x+1, currentCell.x + FLANK_OFFSET_IN_CELLS - 1);
+         addFolliageGap();
          currentCell.x += 1;
          //increase x by the size of flank offset
          unitsMatrix.isFree(currentCell, new Point(currentCell.x, 1));
@@ -1032,7 +936,7 @@ package components.battle
       }
       
       
-      private function placeUnitKind(kind:String, flank:BFlank, flankUnits:ModelsCollection, 
+      private function placeUnitKind(kind:String, flank:BFlank,
                                      defaultDirection: int, flankStart: int): void {
          // Ensure first unit is always at the bottom from middle line.
          flank.placeFinder = new PlaceFinder(MAX_FLANK_WIDTH, (kind == UnitKind.GROUND
@@ -1040,6 +944,7 @@ package components.battle
             : spaceUnitsHeight), _battle.rand);
          var unit: BUnit;
          var isGround: Boolean = kind == UnitKind.GROUND;
+         var flankUnits: ModelsCollection = isGround?flank.groundUnits:flank.spaceUnits;
          
          flankUnits.sort = new Sort();
          flankUnits.sort.compareFunction = function (a:Object, b:Object, fields:Array = null):int
@@ -1087,33 +992,96 @@ package components.battle
          {            
             createUnit(unit, isGround, flank, true);
          }
+         
+         //===========================
+         
+         if (isGround && flank.hasBuildings)
+         {
+            Profiler.start("shuffle buildings");
+            flank.buildings.shuffle(_battle.rand);
+            Profiler.end();
+            
+            var building: BBuilding;
+            var bDistinctTypes: ArrayCollection = new ArrayCollection();
+            var distinctBuildings: ArrayCollection = new ArrayCollection();
+            var bLater: Array = [];
+            
+            Profiler.start("find distinct buildings");
+            for each (building in flank.buildings)
+            {
+               if (bDistinctTypes.getItemIndex(building.type) == -1)
+               {
+                  bDistinctTypes.addItem(building.type);
+                  distinctBuildings.addItem(building);
+               }
+               else
+               {
+                  bLater.push(building);
+               }
+            }
+            Profiler.end();
+            
+            Profiler.start("sort distinct buildings");
+            distinctBuildings.sort = new Sort();
+            distinctBuildings.sort.compareFunction = function (a:Object, b:Object, fields:Array = null):int
+            {
+               if (a.box.width > b.box.width)
+                  return -1;
+               else
+                  if (a.box.width == b.box.width)
+                     return 0;
+               return 1;
+            }
+            distinctBuildings.refresh();
+            Profiler.end();
+            
+            Profiler.start("place distinct buildings");
+            for each (building in distinctBuildings)
+            {            
+               createBuilding(building, flank.placeFinder, flank, true);
+            }
+            Profiler.end();
+            Profiler.start("place other buildings");
+            for each (building in bLater)
+            {      
+               createBuilding(building, flank.placeFinder, flank); 
+            }
+            Profiler.end();
+         }
+         //=============================
+         
          for each (unit in later)
          {      
             createUnit(unit, isGround, flank);
          }
          
+         //==============================
+         Profiler.start("refresh prepared objects");
          var xStart: int = flank.placeFinder.getXStartFree();
          var xEnd: int = flank.placeFinder.getXEndFree();
-         var unitsWidth: int = flank.placeFinder.maxWidth - xEnd - xStart;
-         flank.flankEnd = Math.max(flankStart + unitsWidth-1, flank.flankEnd);
+         var flankWidth: int = flank.placeFinder.maxWidth - xEnd - xStart;
+         flank.flankEnd = Math.max(flankStart + flankWidth-1, flank.flankEnd);
+         
          for each (var obj: * in preparedObjects)
          {
             obj.xGridPos += (flankStart - xStart);
             obj.yGridPos += isGround
                ? groundStart
                : SPACE_UNITS_TOP;
+            
             var leftTop: Point = new Point(obj.xGridPos, obj.yGridPos);
             var rightBottom: Point = new Point(obj.getWidthInCells(GRID_CELL_WIDTH) + obj.xGridPos - 1, 
                obj.getHeightInCells(GRID_CELL_HEIGHT) + obj.yGridPos - 1);
             obj.depth = obj.yGridPos;
+            
             if (unitsMatrix.isFree(leftTop, rightBottom))
             {
                unitsMatrix.occupy(leftTop,rightBottom);
             }
             else
             {
-               throw new Error('you have tried to occupy the cell that has already been occupied, x:' + leftTop.x +
-                  ' y:'+ leftTop.y+' xEnd:'+rightBottom.x+' yEnd:'+rightBottom.y);
+               throw new Error('you have tried to occupy the cell that has already been occupied, x:'
+                  + leftTop.x + ' y:'+ leftTop.y+' xEnd:'+rightBottom.x+' yEnd:'+rightBottom.y);
             }
             if (obj is BFoliageComp)
             {
@@ -1136,7 +1104,10 @@ package components.battle
                      - obj.boxHeight)) - obj.yOffset + Y_START_OFFSET;
             }
          }
+         currentCell.x += flankWidth;
+         unitsMatrix.isFree(currentCell, new Point(currentCell.x, 1) );
          preparedObjects = [];
+         Profiler.end();
       }
       
       /**
@@ -1148,8 +1119,8 @@ package components.battle
        */
       private function createFlank(flank:BFlank, defaultDirection: int, flankStart: int) : void
       {
-         placeUnitKind(UnitKind.SPACE, flank, flank.spaceUnits, defaultDirection, flankStart);
-         placeUnitKind(UnitKind.GROUND, flank, flank.groundUnits, defaultDirection, flankStart);
+         placeUnitKind(UnitKind.SPACE, flank, defaultDirection, flankStart);
+         placeUnitKind(UnitKind.GROUND, flank, defaultDirection, flankStart);
          currentCell.x = flank.flankEnd;
       }
       

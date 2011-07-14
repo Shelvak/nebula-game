@@ -99,6 +99,11 @@ package models.building
       public static const HEALING_COST_MOD: String = 'healing.cost.mod';
       public static const HEALING_TIME_MOD: String = 'healing.time.mod';
       
+      public static function getMarketTaxRate(marketLevel: Number): Number
+      {
+         //TODO grab formula from config
+         return 0.3 / marketLevel;
+      }
       
       /**
        * Calculates and returns given resource generation rate for the given building. The value returned has

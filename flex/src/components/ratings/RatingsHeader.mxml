@@ -3,11 +3,11 @@
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx">  
    <fx:Metadata>
-      [Event (name="ratingsSort", type="components.ratings.events.RatingsEvent")]
+      [Event (name="listSort", type="models.events.HeaderEvent")]
    </fx:Metadata>
    <fx:Script>
       <![CDATA[
-         import components.ratings.events.RatingsEvent;
+         import models.events.HeaderEvent;
          
          import flash.text.engine.FontWeight;
          
@@ -36,7 +36,7 @@
                currentSortLabel.setStyle('fontWeight', FontWeight.NORMAL);
             }
             currentSortLabel = Label(event.currentTarget);
-            dispatchEvent(new RatingsEvent(RatingsEvent.RATINGS_SORT, key));
+            dispatchEvent(new HeaderEvent(HeaderEvent.LIST_SORT, key));
          }
          
          public function reset(): void

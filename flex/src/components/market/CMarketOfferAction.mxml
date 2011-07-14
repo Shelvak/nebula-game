@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:base="components.base.*"
+         skinClass="components.skins.LargePanelSkin"
+         title="{ML.player.id != selectedOffer.fromId
+         ?getText('title.buy')
+         :getText('title.cancel')}">
+   <fx:Script>
+      <![CDATA[
+         import components.skins.GreenButtonSkin;
+         import components.skins.LargePanelSkin;
+         
+         import models.market.MarketOffer;
+         
+         import utils.assets.AssetNames;
+         import utils.locale.Localizer;
+         
+         [Bindable]
+         public var selectedOffer: MarketOffer;
+         
+         private function getText(prop: String, params: Array = null): String
+         {
+            return Localizer.string('Market', prop, params);
+         }
+         
+         [Bindable]
+         private var cost: int = 0;
+
+         protected function selector_changeHandler(event:Event):void
+         {
+            cost = Math.ceil(selector.value * selectedOffer.rate);
+         }
+
+      ]]>
+   </fx:Script>
+   <s:HSlider minimum="0" maximum="{selectedOffer.forWhat}" stepSize="1"
+              id="selector" change="selector_changeHandler(event)"/>
+   <s:Group>
+      <s:layout>
+         <s:HorizontalLayout verticalAlign="middle"/>
+      </s:layout>
+      <s:Label text="{getText('label.willPay', [])}"/>
+      <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + selectedOffer.toResource)}"/>
+   </s:Group>
+   <s:Group>
+      <s:Button label="{ML.player.id != selectedOffer.fromId
+                ?getText('label.buy')
+                :getText('label.cancel')}" right="6"
+                skinClass="components.skins.GreenButtonSkin"/>
+   </s:Group>
+   <base:layout>
+   <s:VerticalLayout horizontalAlign="justify" paddingBottom="3" paddingLeft="6"
+                     paddingRight="6" paddingTop="6"/>
+   </base:layout>
+</base:Panel>

@@ -511,6 +511,7 @@ assets:
         metal.png:         MetalIcon.png
         energy.png:        EnergyIcon.png
         zetium.png:        ZetiumIcon.png
+        creds.png:         CredsIcon.png
         wreckage.png:      ResourceIcon.png
         <% gun_types.each do |gun| %>
         <%= "#{gun}.png: #{gun.camelcase}Icon.png" %>
@@ -883,9 +884,9 @@ assets:
         unit_over.png:         Unit_over.png
         unit_ready.png:        Unit_ready.png
         unit_ready_over.png: Unit_ready_over.png
-        unit_counter.png:      Unit_counter.png
+        unit_counter_left.png:      Unit_delete_left.png
+        unit_counter_repeat.png:      Unit_delete_right.png
         unit_ready_lights.png: Unit_ready_lights.png
-        delete_counter.png: Unit_delete.png
         arrow_select_units.png:   Arrow_selectunits.png
         hint_top_left.png:        Hint_top_left.png
         hint_top_center.png:      Hint_top_center.png
