@@ -46,7 +46,7 @@
    </fx:Script>
    
    <!-- layer 1: background -->
-   <s:Rect left="0" right="0" top="0" bottom="0">
+   <s:Rect left="0" right="240" top="0" bottom="0">
       <s:fill>
          <s:SolidColor color="0x080808"/>
       </s:fill>
