@@ -204,7 +204,7 @@
       </s:Line>
       <!--- Scroller for scrolling the content of the list -->
       <base:Scroller id="contentScroller" stepMultiplier="10" height="100%"
-                     skinClass="components.base.listscreen.ListScreenScrollerSkin">
+                     skinClass="components.base.screen.ListScreenScrollerSkin">
          <!--- Container of a list (viewport of list scroller) -->
          <s:Group id="grpListContainer" width="100%"/>
       </base:Scroller>

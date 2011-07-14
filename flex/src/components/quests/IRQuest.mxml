@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<lsbase:ItemRendererBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<screen:ItemRendererBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
                          xmlns:s="library://ns.adobe.com/flex/spark" 
                          xmlns:mx="library://ns.adobe.com/flex/mx"
                          xmlns:base="components.base.*"
-                         xmlns:lsbase="components.base.listscreen.*"
+                         xmlns:screen="components.base.screen.*"
                          xmlns:menus="components.menus.*"
                          addedToStage="this_addedToStageHandler(event)"
                          removedFromStage="this_removedFromStageHandler(event)">
@@ -340,4 +340,4 @@
          }
       ]]>
    </fx:Script>
-</lsbase:ItemRendererBase>
+</screen:ItemRendererBase>

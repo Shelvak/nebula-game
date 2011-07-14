@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:ListScreen xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<screen:ListScreen xmlns:fx="http://ns.adobe.com/mxml/2009" 
                  xmlns:s="library://ns.adobe.com/flex/spark" 
                  xmlns:mx="library://ns.adobe.com/flex/mx"
-                 xmlns:base="components.base.listscreen.*"
+                 xmlns:screen="components.base.screen.*"
                  xmlns:notifs="components.notifications.*">
    <fx:Declarations>
       <notifs:NotificationsList id="_list" skinClass="components.skins.ListNonScrollableSkin"
@@ -113,4 +113,4 @@
          }         
       ]]>
    </fx:Script>
-</base:ListScreen>
+</screen:ListScreen>

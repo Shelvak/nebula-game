@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:ListScreen xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<screen:ListScreen xmlns:fx="http://ns.adobe.com/mxml/2009" 
                        xmlns:s="library://ns.adobe.com/flex/spark" 
                        xmlns:mx="library://ns.adobe.com/flex/mx"
-                       xmlns:base="components.base.listscreen.*"
+                       xmlns:screen="components.base.screen.*"
                        xmlns:quests="components.quests.*"
                        initialize="this_initializeHandler(event)">
    <fx:Declarations>
@@ -22,7 +22,7 @@
    <fx:Binding source="ML.quests.isEmpty" destination="headerFromListSeparatorVisible"/>
    <fx:Script>
       <![CDATA[
-         import components.base.listscreen.ItemRendererBase;
+         import components.base.screen.ItemRendererBase;
          
          import models.ModelLocator;
          import models.quest.events.QuestCollectionEvent;
@@ -116,4 +116,4 @@
          }
       ]]>
    </fx:Script>
-</base:ListScreen>
+</screen:ListScreen>
