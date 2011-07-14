@@ -2,6 +2,8 @@ package controllers.buildings.actions
 {
    import models.building.Building;
    
+   import utils.Objects;
+   
    
    /**
     * Aggregates parameters of <code>controllers.buildings.actions.MoveAction</code> client command.
@@ -17,7 +19,7 @@ package controllers.buildings.actions
        */
       public function MoveActionParams(building:Building, newX:int, newY:int)
       {
-         this.building = building;
+         this.building = Objects.paramNotNull("building", building);
          this.newX = newX;
          this.newY = newY;
       }

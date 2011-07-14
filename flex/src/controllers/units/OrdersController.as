@@ -285,7 +285,12 @@ package controllers.units
                NAV_CTRL.toSolarSystem(locationSource.id);
                break;
             case LocationType.SS_OBJECT:
-               NAV_CTRL.toSolarSystem(ML.latestPlanet.solarSystemId);
+               NAV_CTRL.toSolarSystem(
+                  ML.latestPlanet.solarSystemId,
+                  function() : void {
+                     ML.latestSolarSystem.moveTo(ML.latestPlanet.currentLocation);
+                  }
+               );
                break;
          }
       }

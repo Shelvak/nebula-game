@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                    xmlns:s="library://ns.adobe.com/flex/spark" 
-                    xmlns:mx="library://ns.adobe.com/flex/mx"
-                    xmlns:base="components.base.*"
-                    xmlns:notifs="components.notifications.*"
-                    width="100%" height="100%"
-                    initialize="this_initializeHandler(event)">
-   
+<base:ListScreen xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                 xmlns:s="library://ns.adobe.com/flex/spark" 
+                 xmlns:mx="library://ns.adobe.com/flex/mx"
+                 xmlns:base="components.base.listscreen.*"
+                 xmlns:notifs="components.notifications.*">
+   <fx:Declarations>
+      <notifs:NotificationsList id="_list" skinClass="components.skins.ListNonScrollableSkin"
+                                borderVisible="false" contentBackgroundAlpha="0"/>
+      <s:Group id="_controlButtons">
+         <s:Button id="_btnReadAll" label="{getString('label.readAll')}" enabled="{_notReadNotifs.length != 0}"
+                   click="btnReadAll_clickHandler(event)"/>
+         <s:ButtonBar id="_barFilterButtons" requireSelection="true" dataProvider="{_filterFunctions}"
+                      change="barFilterButtons_changeHandler(event)"/>
+      </s:Group>
+      <s:Group id="_colorLegend">
+         <s:Label text="{getString('label.notReadColor')}" color="{IRNotification.TEXT_COLOR_UNREAD}"/>
+         <s:Label text="{getString('label.newColor')}"     color="{IRNotification.TEXT_COLOR_NEW}"/>
+         <s:Label text="{getString('label.readColor')}"    color="{IRNotification.TEXT_COLOR_READ}"/>
+      </s:Group>
+   </fx:Declarations>
+   <fx:Binding source="ML.notifications.length == 0" destination="headerFromListSeparatorVisible"/>
+   <fx:Binding source="_barFilterButtons.selectedIndex == 0 || _barFilterButtons.selectedIndex == 2"
+               destination="colorLegendVisible"/>
    <fx:Script>
       <![CDATA[
          import controllers.notifications.NotificationsCommand;
@@ -15,122 +30,87 @@
          import models.notification.Notification;
          
          import mx.collections.ArrayCollection;
+         import mx.collections.IList;
          import mx.collections.ListCollectionView;
-         import mx.events.FlexEvent;
+         import mx.core.IVisualElement;
          
+         import spark.components.Button;
+         import spark.components.ButtonBar;
+         import spark.components.Group;
+         import spark.components.SkinnableDataContainer;
          import spark.events.IndexChangeEvent;
          
-         import utils.assets.AssetNames;
          import utils.datastructures.Collections;
          import utils.locale.Localizer;
          
-         
-         private var _filterFunctions:ArrayCollection = null;
-         
-         
-         private function this_initializeHandler(event:FlexEvent):void
-         {
-            _filterFunctions = new ArrayCollection([
-               {
-                  "apply": function():void{ ML.notifications.removeFilter() },
-                  "label": Localizer.string("Notifications", "label.notifications.all")
-               },
-               {
-                  "apply": function():void{ ML.notifications.applyStarredFilter(true) },
-                  "label": Localizer.string("Notifications", "label.notifications.starred")
-               },
-               {
-                  "apply": function():void{ ML.notifications.applyReadFilter(false) },
-                  "label": Localizer.string("Notifications", "label.notifications.unread")
-               }
-            ]);
-            barFilterButtons.dataProvider = _filterFunctions; 
-            notReadNotifs = Collections.filter(ML.notifications, 
-               function(item: Notification): Boolean
-               {
-                  return !item.read;
-               });
-         }
-         
-         
-         private function barFilterButtons_changeHandler(event:IndexChangeEvent):void
-         {
-            _filterFunctions.getItemAt(event.newIndex).apply();
-         }
-         
-         [Bindable]
-         private var notReadNotifs: ListCollectionView;
-         
-         
-         private function getImage(name:String) : BitmapData {
-            return IMG.getImage(AssetNames.NOTIFICATION_IMAGE_FOLDER + name);
+         private static function get ML() : ModelLocator {
+            return ModelLocator.getInstance();
          }
          
          private function getString(property:String, parameters:Array = null) : String {
             return Localizer.string("Notifications", property, parameters);
          }
+         
+         private const _filterFunctions:ArrayCollection = new ArrayCollection([
+            {"apply": filterAllNotifs,     "label": getString("label.notifications.all")},
+            {"apply": filterStarredNotifs, "label": getString("label.notifications.starred")},
+            {"apply": filterUnreadNotifs,  "label": getString("label.notifications.unread")}
+         ]);
+         
+         private function filterAllNotifs() : void {
+            ML.notifications.removeFilter();
+         }
+         
+         private function filterStarredNotifs() : void {
+            ML.notifications.applyStarredFilter(true);
+         }
+         
+         private function filterUnreadNotifs() : void {
+            ML.notifications.applyReadFilter(false)
+         }
+         
+         [Bindable(event="willNotChange")]
+         private const _notReadNotifs:ListCollectionView =
+            Collections.filter(ML.notifications, filterFunction_unreadNotifs);
+         
+         private function filterFunction_unreadNotifs(notif:Notification) : Boolean {
+            return !notif.read;
+         }
+         
+         private function btnReadAll_clickHandler(event:MouseEvent) : void {
+            new NotificationsCommand(
+               NotificationsCommand.READ,
+               {"notifications": _notReadNotifs.toArray()}
+            ).dispatch()
+         }
+         
+         private function barFilterButtons_changeHandler(event:IndexChangeEvent) : void {
+            _filterFunctions.getItemAt(event.newIndex).apply();
+         }
+         
+         protected override function get title() : String {
+            return getString("screenTitle");
+         }
+         
+         protected override function get emptyListMessage() : String {
+            return getString("label.noNotifications");
+         }
+         
+         protected override function get dataProvider() : IList {
+            return ML.notifications;
+         }
+         
+         protected override function get dataContainer() : IVisualElement {
+            return _list;
+         }
+         
+         protected override function get colorLegend() : Group {
+            return _colorLegend;
+         }
+         
+         protected override function get controlButtons() : Group {
+            return _controlButtons;
+         }         
       ]]>
    </fx:Script>
-   
-   <s:Rect left="0" right="0" top="0" bottom="0">
-      <s:fill>
-         <s:SolidColor color="0x080C08"/>
-      </s:fill>
-   </s:Rect>
-   
-   <!-- top artwork -->
-   <s:Group left="0" right="0" top="0">
-      <s:layout>
-         <s:HorizontalLayout gap="0"/>
-      </s:layout>
-      <s:BitmapImage source="{getImage('screen_top_left')}"/>
-      <s:BitmapImage source="{getImage('screen_top_right')}" width="100%"/>
-   </s:Group>
-   
-   <!-- screen title -->
-   <s:Label id="lblScreenTitle" text="{getString('screenTitle')}" styleName="screenTitle"
-            left="10" top="20" width="375"/>
-   
-   <!-- color legend -->
-   <s:Group left="0" top="55"
-            visible="{barFilterButtons.selectedIndex == 0 || barFilterButtons.selectedIndex == 2}">
-      <s:Label text="{getString('label.notReadColor')}" color="#eec500"/>
-      <s:Label text="{getString('label.newColor')}" color="#00D8E3"/>
-      <s:Label text="{getString('label.readColor')}" color="#ffffff"/>
-      <s:layout>
-         <s:HorizontalLayout paddingLeft="10" gap="10"/>
-      </s:layout>
-   </s:Group>
-   
-   <!-- buttons -->
-   <s:Group right="5" top="5">
-      <s:Button label="{getString('label.readAll')}" enabled="{notReadNotifs.length > 0}"
-                click="new NotificationsCommand(NotificationsCommand.READ, {'notifications': notReadNotifs.toArray()}).dispatch()"/>
-      <s:ButtonBar id="barFilterButtons" requireSelection="true"
-                   change="barFilterButtons_changeHandler(event)"/>
-      <s:layout>
-         <s:HorizontalLayout gap="3"/>
-      </s:layout>
-   </s:Group>
-   
-   <!-- no notifications indicator: shown only if there are no notifications -->
-   <s:Label id="lblNoNotifs" visible="{ML.notifications.isEmpty}" text="{getString('label.noNotifications')}"
-            verticalCenter="0" horizontalCenter="0" styleName="emptyListMessage"/>
-   
-   <!-- shown only if there are no notifications -->
-   <s:Line visible="{ML.notifications.isEmpty}" left="0" right="0" top="71" xFrom="0" xTo="10">
-      <s:stroke>
-         <s:SolidColorStroke color="0x040404"/>
-      </s:stroke>
-   </s:Line>
-   
-   <base:Scroller left="0" right="0" top="71" bottom="0" 
-                  stepMultiplier="10"
-                  skinClass="components.notifications.skins.NotificationsScrollerSkin">
-      <s:Group height="100%" width="100%">
-         <notifs:NotificationsList left="0" right="0" id="lstNotifications" height="100%"
-                                   skinClass="components.skins.ListNonScrollableSkin"/>
-      </s:Group>
-   </base:Scroller>
-   
-</base:BaseContainer>
+</base:ListScreen>

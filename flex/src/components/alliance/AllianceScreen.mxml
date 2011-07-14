@@ -314,7 +314,7 @@
             <!-- New alliance creation -->
             <base:Panel title="{getString('title.section.newAlliance')}"
                         skinClass="components.skins.LargePanelSkin" width="100%"
-                        visible="{allianceTech.upgradePart.level > 0 &amp;&amp;
+                        visible="{alliance == null &amp;&amp; allianceTech.upgradePart.level > 0 &amp;&amp;
                                   ML.player.allianceId == 0 &amp;&amp; leftTime == 0}">
                <base:layout>
                   <s:VerticalLayout gap="5" horizontalAlign="justify"/>
@@ -350,7 +350,7 @@
             
             <!-- Cooldown warning -->
             <base:Warning text="{getString('label.cooldown', [DateUtil.secondsToHumanString(leftTime, 2)])}" 
-                          width="60%" visible="{leftTime > 0}"/>
+                          width="60%" visible="{alliance == null &amp;&amp; leftTime > 0}"/>
             
          </base:AdvancedContainer>
          

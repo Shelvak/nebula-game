@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lsbase:ListScreen xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                   xmlns:s="library://ns.adobe.com/flex/spark" 
+                   xmlns:mx="library://ns.adobe.com/flex/mx" 
+                   xmlns:base="components.base.*"
+                   xmlns:lsbase="components.base.listscreen.*"
+                   xmlns:screens="components.screens.*"
+                   headerFromListSeparatorVisible="true"
+                   initialize="this_initializeHandler(event)">
+   <fx:Declarations>
+      <s:DataGroup id="_list" itemRenderer="components.squadronsscreen.IRSquadronElement"/>
+      <s:Group id="_controlButtons">
+         <s:ToggleButton id="btnPlayerRoutes" label="{getString('label.playerFleets')}"/>
+         <s:ToggleButton id="btnAllianceRoutes" label="{getString('label.allianceFleets')}"/>
+      </s:Group>
+   </fx:Declarations>
+   <fx:Script>
+      <![CDATA[
+         import components.screens.ScreenCloseButton;
+         
+         import controllers.ui.NavigationController;
+         
+         import models.ModelLocator;
+         import models.Owner;
+         import models.movement.MRoute;
+         
+         import mx.collections.IList;
+         import mx.collections.ListCollectionView;
+         import mx.core.IVisualElement;
+         import mx.events.FlexEvent;
+         
+         import spark.components.Group;
+         
+         import utils.components.ToggleButtonsGroup;
+         import utils.components.events.ToggleButtonsGroupEvent;
+         import utils.datastructures.Collections;
+         import utils.locale.Localizer;
+         
+         
+         private function getString(property:String, parameters:Array = null) : String {
+            return Localizer.string("Squadrons", property, parameters);
+         }
+         
+         
+         private const _filterButtons:ToggleButtonsGroup = new ToggleButtonsGroup();
+         private const _routes:ListCollectionView = new ListCollectionView(ModelLocator.getInstance().routes);
+         private const _btnCloseScreen:ScreenCloseButton = new ScreenCloseButton();
+         
+         private function this_initializeHandler(event:FlexEvent):void {
+            _filterButtons.registerButton(btnPlayerRoutes);
+            _filterButtons.registerButton(btnAllianceRoutes);
+            _filterButtons.addEventListener(
+               ToggleButtonsGroupEvent.SELECTION_CHANGE, 
+               filterButtons_selectionChangeHandler, false, 0, true
+            );
+            _filterButtons.select(btnPlayerRoutes);
+            
+            _btnCloseScreen.label = getString("label.close");
+            _btnCloseScreen.scroller = contentScroller;
+            _btnCloseScreen.right = 0;
+            _btnCloseScreen.bottom = 0;
+            _btnCloseScreen.addEventListener(MouseEvent.CLICK, btnCloseScreen_clickHandler, false, 0, true);
+            addElement(_btnCloseScreen);
+         }
+         
+         private function filterButtons_selectionChangeHandler(event:ToggleButtonsGroupEvent) : void {
+            if (event.selectedButton == btnPlayerRoutes)
+               applyFilterFunction(ff_playerRoutes);
+            else
+               applyFilterFunction(ff_allianceRoutes);
+         }
+         
+         private function btnCloseScreen_clickHandler(event:MouseEvent) : void {
+            NavigationController.getInstance().showPreviousScreen();
+         }
+         
+         private function applyFilterFunction(ff:Function) : void {
+            Collections.applyFilter(_routes, ff);
+         }
+         
+         private function ff_playerRoutes(route:MRoute) : Boolean {
+            return route.owner == Owner.PLAYER;
+         }
+         
+         private function ff_allianceRoutes(route:MRoute) : Boolean {
+            return route.owner == Owner.ALLY;
+         }
+         
+         
+         protected override function get title() : String {
+            return getString("title.squadrons");
+         }
+         
+         protected override function get emptyListMessage() : String {
+            return getString("title.noSquadrons");
+         }
+         
+         protected override function get dataProvider() : IList {
+            return _routes;
+         }
+         
+         protected override function get dataContainer() : IVisualElement {
+            return _list;
+         }
+         
+         protected override function get controlButtons() : Group {
+            return _controlButtons;
+         }
+      ]]>
+   </fx:Script>
+</lsbase:ListScreen>

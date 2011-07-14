@@ -1,150 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                    xmlns:s="library://ns.adobe.com/flex/spark" 
-                    xmlns:mx="library://ns.adobe.com/flex/mx"
-                    xmlns:base="components.base.*"
-                    xmlns:quests="components.quests.*"
-                    width="100%" height="100%"
-                    initialize="this_initializeHandler(event)">
+<base:ListScreen xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                       xmlns:s="library://ns.adobe.com/flex/spark" 
+                       xmlns:mx="library://ns.adobe.com/flex/mx"
+                       xmlns:base="components.base.listscreen.*"
+                       xmlns:quests="components.quests.*"
+                       initialize="this_initializeHandler(event)">
+   <fx:Declarations>
+      <quests:QuestsList id="_list" scrollRequested="list_scrollRequestedHandler(event)"
+                         skinClass="components.skins.ListNonScrollableSkin"
+                         borderVisible="false" contentBackgroundAlpha="0"/>
+      <s:Group id="_controlButtons">
+         <s:ButtonBar id="_barFilterButtons" requireSelection="true" focusEnabled="false"
+                      change="barFilterButtons_changeHandler(event)"/>
+      </s:Group>
+      <s:Group id="_colorLegend">
+         <s:Label text="{getString('label.completedColor')}"    color="{IRQuest.TEXT_COLOR_COMPLETED}"/>
+         <s:Label text="{getString('label.notCompletedColor')}" color="{IRQuest.TEXT_COLOR_STARTED}"/>
+      </s:Group>
+   </fx:Declarations>
+   <fx:Binding source="_barFilterButtons.selectedIndex == 0" destination="colorLegendVisible"/>
+   <fx:Binding source="ML.quests.isEmpty" destination="headerFromListSeparatorVisible"/>
    <fx:Script>
       <![CDATA[
-         import components.notifications.skins.NotificationsScrollerSkin;
-         import components.skins.ListNonScrollableSkin;
+         import components.base.listscreen.ItemRendererBase;
          
+         import models.ModelLocator;
          import models.quest.events.QuestCollectionEvent;
          import models.quest.events.QuestEvent;
          
          import mx.collections.ArrayCollection;
+         import mx.collections.IList;
+         import mx.core.IVisualElement;
          import mx.events.FlexEvent;
          
+         import spark.components.Group;
          import spark.events.IndexChangeEvent;
          
          import utils.locale.Localizer;
          
          
-         private var _filterFunctions:ArrayCollection = null;
-         
-         private var dontApply: Boolean = false;
-         
-         private function updateButtonState(e: QuestCollectionEvent): void
-         {
-            if (barFilterButtons.selectedIndex != ML.quests.selectedFilter)
-            {
-               barFilterButtons.selectedIndex = ML.quests.selectedFilter;
-               dontApply = true;
-            }
+         private static function get ML() : ModelLocator {
+            return ModelLocator.getInstance();
          }
          
-         private function this_initializeHandler(event:FlexEvent):void
-         {
-            ML.quests.addEventListener(QuestCollectionEvent.FILTER, updateButtonState);
-            _filterFunctions = new ArrayCollection([
-               {
-                  "apply": function():void{ ML.quests.applyCompletedFilter(false) },
-                  "label": Localizer.string("Quests", "label.current")+' ('+ML.quests.currentTotal+')'
-               },
-               {
-                  "apply": function():void{ ML.quests.applyCompletedFilter(true) },
-                  "label": Localizer.string("Quests", "label.completed")+' ('+ML.quests.completedTotal+')'
-               }
-            ]);
-            ML.quests.addEventListener(QuestCollectionEvent.COUNTERS_UPDATED, refreshCounters);
-            barFilterButtons.dataProvider = _filterFunctions; 
+         private function getString(property:String, parameters:Array = null) : String {
+            return Localizer.string("Quests", property, parameters);
          }
          
-         private function refreshCounters(e: QuestCollectionEvent): void
-         {
-            var current: Object = _filterFunctions.getItemAt(0);
-            current.label = Localizer.string("Quests", "label.current") 
-               + ' ('+ML.quests.currentTotal+')';
+         
+         private function barFilterButtons_changeHandler(event:IndexChangeEvent) : void {
+            _filterFunctions.getItemAt(event.newIndex).apply();
+         }
+         
+         private function list_scrollRequestedHandler(event:QuestEvent) : void {
+            grpListContainer.verticalScrollPosition = event.index * ItemRendererBase.HEIGHT_NORMAL;
+         }
+         
+         private function this_initializeHandler(event:FlexEvent) : void {
+            ML.quests.addEventListener(QuestCollectionEvent.FILTER, updateButtonState, false, 0, true);
+            ML.quests.addEventListener(QuestCollectionEvent.COUNTERS_UPDATED, refreshCounters, false, 0, true);
+            _barFilterButtons.dataProvider = _filterFunctions;
+         }
+         
+         private function updateButtonState(event:QuestCollectionEvent) : void {
+            if (_barFilterButtons.selectedIndex != ML.quests.selectedFilter)
+               _barFilterButtons.selectedIndex = ML.quests.selectedFilter;
+         }
+         
+         private function refreshCounters(event:QuestCollectionEvent) : void {
+            var current:Object = _filterFunctions.getItemAt(0);
+            current["label"] = getString("label.current", [ML.quests.currentTotal]);
             _filterFunctions.setItemAt(current, 0);
-            
-            var completed: Object = _filterFunctions.getItemAt(1);
-            completed.label = Localizer.string("Quests", "label.completed") 
-               + ' ('+ML.quests.completedTotal+')';
+            var completed:Object = _filterFunctions.getItemAt(1);
+            completed["label"] = getString("label.completed", [ML.quests.completedTotal]);
             _filterFunctions.setItemAt(completed, 1);
          }
          
          
-         private function barFilterButtons_changeHandler(event:IndexChangeEvent):void
-         {
-            _filterFunctions.getItemAt(event.newIndex).apply();
+         private const _filterFunctions:ArrayCollection = new ArrayCollection([
+            {"apply": filterCurrentQuests,   "label": getString("label.current",   [ML.quests.currentTotal])},
+            {"apply": filterCompletedQuests, "label": getString("label.completed", [ML.quests.completedTotal])}
+         ]);
+         
+         private function filterCurrentQuests() : void {
+            ML.quests.applyCompletedFilter(false);
          }
          
-         protected function lstQuests_scrollRequestedHandler(event:QuestEvent):void
-         {
-            vPort.verticalScrollPosition = event.index * IRQuest.TITLE_HEIGHT;
+         private function filterCompletedQuests() : void {
+            ML.quests.applyCompletedFilter(true);
          }
          
+         
+         protected override function get title() : String {
+            return getString("label.title");
+         }
+         
+         protected override function get emptyListMessage() : String {
+            return getString("label.noQuests");
+         }
+         
+         protected override function get dataProvider() : IList {
+            return ML.quests;
+         }
+         
+         protected override function get dataContainer() : IVisualElement {
+            return _list;
+         }
+         
+         protected override function get controlButtons():Group {
+            return _controlButtons;
+         }
+         
+         protected override function get colorLegend() : Group {
+            return _colorLegend;
+         }
       ]]>
    </fx:Script>
-   
-   <!-- top artwork -->
-   <s:Path width="420" height="34" data="M 0 0 L 386 0 L 420 33 L 0 33 Z">
-      <s:fill>
-         <s:SolidColor color="0x323232"/>
-      </s:fill>
-   </s:Path>
-   <s:Line left="386" width="34" height="34"
-           xFrom="0" yFrom="0" xTo="33" yTo="33">
-      <s:stroke>
-         <s:SolidColorStroke color="0x020202" />
-      </s:stroke>
-   </s:Line>
-   <s:Line left="420" right="0" top="33"
-           xFrom="0" yFrom="0" xTo="10" yTo="0">
-      <s:stroke>
-         <s:SolidColorStroke color="0x808080"/>
-      </s:stroke>
-   </s:Line>
-   <s:Rect left="0" right="0" top="34" height="4">
-      <s:fill>
-         <s:SolidColor color="{getStyle('chromeColor')}"/>
-      </s:fill>
-   </s:Rect>
-   
-   <s:Label id="lblNoQuests" text="{ML.quests.isEmpty
-            ? Localizer.string('Quests', 'label.noQuests')
-            : Localizer.string('Quests', 'label.title')}"
-            fontSize="20" top="10" left="10"/>
-   
-   <!-- shown only if there are no quests -->
-   <s:Line visible="{ML.quests.isEmpty}"
-           left="0" right="0" top="39" xFrom="0" xTo="10">
-      <s:stroke>
-         <s:SolidColorStroke color="0x191919"/>
-      </s:stroke>
-   </s:Line>
-   <s:Group right="{barFilterButtons.width + 20}" top="5">
-      <s:layout>
-         <s:HorizontalLayout/>
-      </s:layout>
-   </s:Group>
-   
-   <s:ButtonBar id="barFilterButtons" requireSelection="true" right="5" top="5"
-                change="barFilterButtons_changeHandler(event)" focusEnabled="false"/>
-   <s:Group width="100%" visible="{barFilterButtons.selectedIndex == 0}" top="38" id="colorsGroup">
-      <s:Rect left="0" right="0" top="0" bottom="0">
-         <s:fill>
-            <s:SolidColor color="#323232"/>
-         </s:fill>
-      </s:Rect>
-      <s:Group width="100%">
-         <s:Label text="{Localizer.string('Quests', 'label.completedColor')}" color="#eec500"/>
-         <s:Label text="{Localizer.string('Quests', 'label.notCompletedColor')}" color="#ffffff"/>
-         <s:layout>
-            <s:VerticalLayout paddingTop="6" paddingBottom="6" paddingLeft="6" paddingRight="6"/>
-         </s:layout>
-      </s:Group>
-   </s:Group>
-   <base:Scroller left="0" right="0" top="{colorsGroup.visible?38+colorsGroup.height:38}" bottom="0" 
-                  stepMultiplier="5"
-                  skinClass="components.notifications.skins.NotificationsScrollerSkin">
-      <s:Group left="0" right="0" height="100%" id="vPort">
-         <quests:QuestsList scrollRequested="lstQuests_scrollRequestedHandler(event)" useVirtualLayout="false" 
-                            width="100%" height="100%" skinClass="components.skins.ListNonScrollableSkin"
-                            id="lstQuests"/>
-      </s:Group>
-   </base:Scroller>
-   
-</base:BaseContainer>
+</base:ListScreen>
