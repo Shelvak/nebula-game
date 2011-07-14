@@ -133,6 +133,9 @@ package controllers.ui
          (String (MainAreaScreens.HEAL)): new ScreenProperties(
             MainAreaScreens.HEAL, SidebarScreens.HEAL
          ),
+         (String (MainAreaScreens.MARKET)): new ScreenProperties(
+            MainAreaScreens.MARKET, SidebarScreens.MARKET
+         ),
          (String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.GROUND)): new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
          ),
@@ -609,6 +612,11 @@ package controllers.ui
       public function showVip() :void
       {
          showNonMapScreen(_screenProperties[MainAreaScreens.VIP]);
+      }
+      
+      public function showMarket() :void
+      {
+         showNonMapScreen(_screenProperties[MainAreaScreens.MARKET]);
       }
       
       public function showAllianceScreen() :void

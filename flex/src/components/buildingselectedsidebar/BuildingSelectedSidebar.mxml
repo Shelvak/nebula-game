@@ -62,6 +62,7 @@
          import spark.utils.TextFlowUtil;
          
          import utils.DateUtil;
+         import utils.ModelUtil;
          import utils.NumberUtil;
          import utils.UrlNavigate;
          import utils.assets.AssetNames;
@@ -338,7 +339,7 @@
                {
                   constructor = ML.latestPlanet.getBuildingById(_selectedModel.constructorId);
                }
-               else if (_selectedModel.constructionQueueEntries.length > 0)
+               else if (_selectedModel.constructableType != null)
                {
                   constructor = _selectedModel;
                }
@@ -348,7 +349,14 @@
                }
                if (constructor)
                {
-                  constructable = ML.latestPlanet.getBuildingById(constructor.constructableId);
+                  if (ModelUtil.getModelClass(constructor.constructableType) == ObjectClass.UNIT)
+                  {
+                     constructable = ML.latestPlanet.getUnitById(constructor.constructableId);
+                  }
+                  else
+                  {
+                     constructable = ML.latestPlanet.getBuildingById(constructor.constructableId);
+                  }
                   if (_selectedModel.isGhost)
                   {
                      for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries)
@@ -368,7 +376,7 @@
          }
          
          [Bindable]
-         private var constructable: Building = null;
+         private var constructable: * = null;
          
          [Bindable]
          private var constructor: Building = null;
@@ -738,6 +746,12 @@
                                         click="NC.showDefensivePortal(ML.latestPlanet.id)"
                                         right="6"/>
                            </s:Group>
+                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                                    _selectedModel.type != 'MetalStorage')}">
+                              <s:Button label="{getString('open')}"
+                                        click="NC.showMarket()"
+                                        right="6"/>
+                           </s:Group>
                            
                            
                            
@@ -777,9 +791,9 @@
                   
                   <base:Panel title="{getString('queueInfo')}" 
                               visible="{_selectedModel.isGhost
-                              || _selectedModel.constructionQueueEntries.length > 0}">
+                              || _selectedModel.constructableType != null}">
                      <buildingsidebar:BuildingProgressElement id="progressElement"
-                                                              buildingModel="{constructable}"/>
+                                                              constructableModel="{constructable}"/>
                      <s:List id="queueList" 
                              dataProvider="{constructor.constructionQueueEntries}"
                              useVirtualLayout="false"

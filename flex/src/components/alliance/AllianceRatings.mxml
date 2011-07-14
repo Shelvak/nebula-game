@@ -12,7 +12,7 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
-         import components.ratings.events.RatingsEvent;
+         import models.events.HeaderEvent;
          
          import config.Config;
          
@@ -108,7 +108,7 @@
                'points':[pointsField, victoryPtsField, planetsCountField, nameField]
             }
          
-         protected function header_ratingsSortHandler(event:RatingsEvent):void
+         protected function header_ratingsSortHandler(event:HeaderEvent):void
          {
             ML.allyRatings.sort = new Sort();
             ML.allyRatings.sort.fields = sortFields[event.key];
@@ -129,7 +129,7 @@
                   title="{Localizer.string('Ratings', 'label.allyRatings')}">
          <s:Label fontSize="24" text="{Localizer.string('Ratings', 'label.noAlliances')}"
                   horizontalCenter="0" verticalCenter="0" visible="{ML.allyRatings.length == 0}"/>
-         <alliance:AllianceRatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)" 
+         <alliance:AllianceRatingsHeader id="header" listSort="header_ratingsSortHandler(event)" 
                                          visible="{ML.allyRatings.length > 0}"/>
          <base:Scroller left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10"
                         id="contScroller">

@@ -176,6 +176,11 @@ package config
       /* ### OTHER CONFIG GETTERS ### */
       /* ############################ */
       
+      public static function getMarketRange(): Number
+      {
+         return 0.3;
+      }
+      
       public static function getAllianceLeaveCooldown(): int
       {
          return getValue("alliances.leave.cooldown");

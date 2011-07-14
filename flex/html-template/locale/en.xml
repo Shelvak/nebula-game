@@ -2867,6 +2867,7 @@
     <metal value="Metal" />
     <energy value="Energy" />
     <zetium value="Zetium" />
+    <creds value="Creds" />
     <time value="Upgrade time" />
     <scientists value="Scientists" />
     <population value="Population" />
@@ -3875,5 +3876,33 @@
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Players"/>
   </Chat>
+  
+  <Market>
+    <label.submit value="Submit" />
+    <label.fee value="Fee:" />
+    <label.wantToSell value="You want to sell:" />
+    <label.howMuch value="How much?" />
+    <label.sellFor value="For:" />
+    <!-- 1 cheaper or more -->
+    <label.marketValue value="{0}% {1} than market value" />
+    <title.sell value="Sell"/>
+    <warning.noSlots value="Offers limit reached" />
+    <title.currentOffers value="Current offers" />
+    <title.filterOffers value="Filter offers" />
+    <filter.show value="Show" />
+    <filter.for value="for" />
+    <title.offers value="Offers" />
+    <header.from value="From" />
+    <header.what value="Selling" />
+    <header.forWhat value="For" />
+    <header.rate value="Rate" />
+    <header.createdAt value="Created at" />
+    <title.buy value="Buy offer" />
+    <title.cancel value="Cancel offer" />
+    <!-- resource image goes after this string -->
+    <label.willPay value="You will pay {0}" />
+    <label.buy value="Buy" />
+    <label.cancel value="Cancel" />
+  </Market>
 
 </locale>

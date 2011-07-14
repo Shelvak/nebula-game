@@ -522,19 +522,19 @@
                                    title="{Localizer.string('Units', 'label.resources')}">
             <base:AdvancedContainer width="100%">
                <s:Group width="80%">
-                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.METAL}" 
+                  <base:ResourceSelectorComp resourceType="{ResourceType.METAL}" 
                                                 maxAmmount="{getMaxStock(ResourceType.METAL)}"
                                                 id="metalSelector" 
                                                 selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
                </s:Group>
                <s:Group width="80%">
-                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.ENERGY}" 
+                  <base:ResourceSelectorComp resourceType="{ResourceType.ENERGY}" 
                                                 maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
                                                 id="energySelector"
                                                 selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
                </s:Group>
                <s:Group width="80%">
-                  <unitsscreen:LoadResourceComp resourceType="{ResourceType.ZETIUM}"
+                  <base:ResourceSelectorComp resourceType="{ResourceType.ZETIUM}"
                                                 maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
                                                 id="zetiumSelector"
                                                 selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
