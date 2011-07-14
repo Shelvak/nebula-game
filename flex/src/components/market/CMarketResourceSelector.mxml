@@ -7,8 +7,18 @@
    <s:layout>
       <s:HorizontalLayout/>
    </s:layout>
+   <fx:Metadata>
+      /**
+      * Dispatched when selected resource in radio group changes
+      * 
+      * @eventType components.market.events.MarketEvent.SELECTED_CHANGE
+      */
+      [Event(name="selectedResourceChange", type="components.market.events.MarketEvent")]
+   </fx:Metadata>
    <fx:Script>
       <![CDATA[
+         import components.market.events.MarketEvent;
+         
          import models.resource.ResourceType;
          
          import mx.events.FlexEvent;
@@ -21,11 +31,22 @@
          public var selected: String;
          
          [Bindable]
+         public var hidenType: String = null;
+         
+         [Bindable]
          public var disabledType: String = null;
          
-         private function selectedChangeHandler(e: Event): void
+         private function selectedChangeHandler(e: Event = null): void
          {
             selected = String(rGroup.selectedValue);
+            dispatchSelectedChangeEvent();
+         }
+         
+         public function deselect(): void
+         {
+            rGroup.selection = null;
+            selected = null;
+            dispatchSelectedChangeEvent();
          }
 
          protected function group1_creationCompleteHandler(event:FlexEvent):void
@@ -33,15 +54,27 @@
             rGroup = new RadioButtonGroup();
             rGroup.addEventListener(Event.CHANGE, selectedChangeHandler);
          }
+         
+         private function dispatchSelectedChangeEvent(): void
+         {
+            if (hasEventListener(MarketEvent.SELECTED_RESOURCE_CHANGE))
+            {
+               dispatchEvent(new MarketEvent(MarketEvent.SELECTED_RESOURCE_CHANGE));
+            }
+         }
 
       ]]>
    </fx:Script>
    <market:CMarketResource type="{ResourceType.METAL}" gr="{rGroup}"
-                           enabled="{disabledType != ResourceType.METAL}"/>
+                           enabled="{disabledType != ResourceType.METAL}"
+                           visible="{hidenType != ResourceType.METAL}"/>
    <market:CMarketResource type="{ResourceType.ENERGY}" gr="{rGroup}"
-                           enabled="{disabledType != ResourceType.ENERGY}"/>
+                           enabled="{disabledType != ResourceType.ENERGY}"
+                           visible="{hidenType != ResourceType.ENERGY}"/>
    <market:CMarketResource type="{ResourceType.ZETIUM}" gr="{rGroup}"
-                           enabled="{disabledType != ResourceType.ZETIUM}"/>
+                           enabled="{disabledType != ResourceType.ZETIUM}"
+                           visible="{hidenType != ResourceType.ZETIUM}"/>
    <market:CMarketResource type="{ResourceType.CREDS}" gr="{rGroup}"
-                           enabled="{disabledType != ResourceType.CREDS}"/>
+                           enabled="{disabledType != ResourceType.CREDS}"
+                           visible="{hidenType != ResourceType.CREDS}"/>
 </s:Group>

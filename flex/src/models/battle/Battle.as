@@ -117,13 +117,9 @@ package models.battle
        */
       protected function get hasGroundUnits() : Boolean
       {
-         if (buildings.length > 0)
-         {
-            return true;
-         }
          for each (var flank:BFlank in allFlanks)
          {
-            if (flank.hasGroundUnits)
+            if (flank.hasGroundUnits || flank.hasBuildings)
             {
                return true;
             }
@@ -169,11 +165,6 @@ package models.battle
        * containing instance of <code>BAliance</code>.
        */
       public var alliances:ArrayCollection = new ArrayCollection();
-      
-      /**
-       * All defender buildings participating in the battle 
-       */      
-      public var buildings:ModelsCollection = new ModelsCollection();
       
       /**
        * All teleport orders 

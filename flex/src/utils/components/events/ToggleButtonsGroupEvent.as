@@ -7,11 +7,11 @@ package utils.components.events
    public class ToggleButtonsGroupEvent extends Event
    {
       /**
-       * @eventType buttonSelectionChange
+       * @eventType selectionChange
        * 
        * @see utils.components.ToggleButtonsGroup
        */
-      public static const SELECTION_CHANGE:String = "buttonSelectionChange";
+      public static const SELECTION_CHANGE:String = "selectionChange";
       
       
       /**
@@ -26,6 +26,8 @@ package utils.components.events
                                               bubbles:Boolean = false, cancelable:Boolean = false)
       {
          super(type, bubbles, cancelable);
+         _selectedButton = selectedButton;
+         _deselectedButton = deselectedButton;
       }
       
       

@@ -290,13 +290,12 @@ package components.movement
       public var lblArrivesIn:Label;
       
       
-      private function updateArrivesInLabel() : void
-      {
-         if (lblArrivesIn && _squadron && _squadron.route)
-         {
-            var timeLeft:Number = Math.ceil(Math.max(_squadron.route.arrivesAt.time - new Date().time, 0) / 1000);
-            lblArrivesIn.text = getString("label.location.arrivesIn", [DateUtil.secondsToHumanString(timeLeft)]);
-         }
+      private function updateArrivesInLabel() : void {
+         if (lblArrivesIn != null && _squadron != null && _squadron.route != null)
+            lblArrivesIn.text = getString(
+               "label.location.arrivesIn",
+               [DateUtil.secondsToHumanString(_squadron.route.arrivalEvent.occuresIn)]
+            );
       }
       
       

@@ -3,7 +3,7 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:base="components.base.*"
                     xmlns:mx="library://ns.adobe.com/flex/mx"
-                    xmlns:components="utils.components.*">
+                    xmlns:components="utils.components.*" xmlns:ui="components.ui.*">
    
    <fx:Script>
       <![CDATA[
@@ -12,6 +12,7 @@
          import components.skins.DeleteButtonSkin;
          
          import controllers.constructionqueues.ConstructionQueuesCommand;
+         import controllers.objects.ObjectClass;
          
          import globalevents.GUnitEvent;
          
@@ -48,7 +49,10 @@
          {
             if (ML.latestPlanet && constructor)
             {
-               var constructable: Building = ML.latestPlanet.getBuildingById(constructor.constructableId);
+               var constructable: * = ModelUtil.getModelClass(
+                  constructor.constructableType) == ObjectClass.UNIT
+                  ? ML.latestPlanet.getUnitById(constructor.constructableId)
+                  : ML.latestPlanet.getBuildingById(constructor.constructableId);
                if (constructable != null)
                {
                   var totalTime: Number = 0;
@@ -57,13 +61,23 @@
                   {
                      if (queueEntry.position < _queryElementModel.position)
                      {
-                        var ghost: Building = ML.latestPlanet.getObject(queueEntry.params.x, queueEntry.params.y) as Building;
-                        if (ghost != null)
+                        if (queueEntry.isUnit)
                         {
-                           totalTime += Upgradable.calculateUpgradeTime(
-                              UpgradableType.BUILDINGS, ModelUtil.getModelSubclass(queueEntry.constructableType),
-                              {"level": 1}, ghost.constructionMod + constructor.constructorMod
+                           totalTime += queueEntry.count * Upgradable.calculateUpgradeTime(
+                              UpgradableType.UNITS, ModelUtil.getModelSubclass(queueEntry.constructableType),
+                              {"level": 1}, constructor.constructorMod
                            );
+                        }
+                        else
+                        {
+                           var ghost: Building = ML.latestPlanet.getObject(queueEntry.params.x, queueEntry.params.y) as Building;
+                           if (ghost != null)
+                           {
+                              totalTime += Upgradable.calculateUpgradeTime(
+                                 UpgradableType.BUILDINGS, ModelUtil.getModelSubclass(queueEntry.constructableType),
+                                 {"level": 1}, ghost.constructionMod + constructor.constructorMod
+                              );
+                           }
                         }
                      }
                   }
@@ -102,6 +116,11 @@
             deletePending = false;
          }
          
+         private function get isUnit(): Boolean
+         {
+            return _queryElementModel.isUnit;
+         }
+         
          protected function button1_clickHandler(event:MouseEvent):void
          {
             deletePending = true;
@@ -109,7 +128,7 @@
             new ConstructionQueuesCommand(
                ConstructionQueuesCommand.REDUCE,
                {id: _queryElementModel.id,
-                  count: 1}
+                  count: isUnit?_queryElementModel.count :1}
             ).dispatch ();
             // Got bug report from someone, that object was not found. So i add null check.
             var obj: PlanetObject =  ML.latestPlanet.getObject(_queryElementModel.params.x, _queryElementModel.params.y);
@@ -135,13 +154,24 @@
             <s:SolidColor color="{_queryElementModel.selected ? 0x2f2f2f : 0x0f0f0f}"/>
          </s:fill>
       </s:Rect>
-      <components:CenteredBitmapImage left="1" top="1" right="1" bottom="11" id="buildingImage"
-                                      source="{IMG.getImage(AssetNames.getConstructableImageName(_queryElementModel.constructableType))}" 
-                                      width="{imageWidth}" height="{imageHeight}"
+      <components:CenteredBitmapImage left="1" top="1" right="1" bottom="1" id="buildingImage"
+                                      source="{IMG.getImage(AssetNames.getConstructableImageName(_queryElementModel.constructableType))}"
                                       rollOver="hovered = true" rollOut="hovered = false"/>
+      <s:Group visible="{_queryElementModel.count > 1}" top="0" left="0" 
+               width="{countLbl.width + 2}">
+         <ui:DarkRoundedBackground top="0" bottom="0" left="0" right="0"/>
+         <s:Label id="countLbl" fontSize="12" fontWeight="bold"
+                  text="{_queryElementModel.count.toString()}"
+                  horizontalCenter="0" top="1" bottom="1"/>
+      </s:Group>
       <s:Button skinClass="components.skins.DeleteButtonSkin" top="1" right="1" visible="{hovered}"
                 rollOver="hovered = true" rollOut="hovered = false" click="button1_clickHandler(event)"
                 enabled="{!deletePending}"/>
-      <s:Label fontSize="10" text="{timeLeft}" horizontalCenter="0" bottom="1"/>
+      <s:Group bottom="0" horizontalCenter="0" 
+               width="{timeLbl.width + 4}">
+         <ui:DarkRoundedBackground top="0" bottom="0" left="0" right="0"/>
+         <s:Label id="timeLbl" fontSize="10" horizontalCenter="0" 
+                  text="{timeLeft}"  bottom="1" top="1"/>
+      </s:Group>
    </s:BorderContainer>
 </base:BaseContainer>

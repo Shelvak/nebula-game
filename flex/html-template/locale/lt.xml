@@ -522,6 +522,8 @@
     <property.healing.time.mod value="Sekundžių pagyditi 1 GT" />
     <property.healing.cost.mod value="Gydymo kainos daugiklis" />
     <property.teleportedVolume value="Perkeliamas tūris" />
+    <property.creds value="Kredai" />
+    <property.victoryPoints value="Pergalės taškai" />
 
     <text.deactivated>
       <p>
@@ -1017,6 +1019,7 @@
     <label.instant value="Iš karto" />
     <label.confirm value="Patvirtinti" />
     <label.cancel value="Atšaukti" />
+    <label.close value="Uždaryti" />
     <label.order value="Užsakyti" />
     <label.buy value="Pirkti kredus" />
     <label.move value="Perkelti" />
@@ -1317,6 +1320,11 @@
   <Navigator>
     <label.currentGalaxy value="Galaktika" />
   </Navigator>
+  
+  <ListScreen>
+    <label.colorLegend value="Legenda:" />
+    <label.close value="Close" />
+  </ListScreen>
 
   <Notifications>
     <screenTitle value="Pranešimai" />
@@ -1326,8 +1334,8 @@
     <label.notifications.all value="Visi" />
     <label.notifications.unread value="Tik neperskaityti" />
     <label.notifications.starred value="Tik pažymėti" />
-    <label.createdAt value="Gautas" />
-    <label.expiresAt value="Susinaikins" />
+    <label.createdAt value="Gautas: {0}" />
+    <label.expiresAt value="Susinaikins: {0}" />
     <label.planet value="Planeta" />
     <label.showPlanet value="Atidaryti planetą" />
     <label.yours value="Tavo" />
@@ -1770,8 +1778,8 @@
 
   <Quests>
     <rewardsWidth value="120" />
-    <label.current value="Dabartinės" />
-    <label.completed value="Įvykdytos" />
+    <label.current value="Dabartinės ({0})" />
+    <label.completed value="Įvykdytos ({0})" />
     <label.showQuest value="Parodyti užduotį" />
     <label.noQuests value="Užduočių nėra" />
     <label.progress value="{0}/{1} pabaigta" />
@@ -1789,8 +1797,8 @@
     </warning.wontFit>
     <warning.cantClaimReward
       value="Dėl nepakankamo laisvų gyventojų kiekio tu negali atsiimti atlygio." />
-    <label.notCompletedColor value="Neįvykdytos užduotys" />
-    <label.completedColor value="Įvykdytos užduotys" />
+    <label.notCompletedColor value="● Neįvykdytos užduotys" />
+    <label.completedColor value="● Įvykdytos užduotys" />
 
     <message.rewardClaimed value="Atlygis buvo pasiimtas į planetą „{0}“" />
 
@@ -2994,6 +3002,9 @@
     <label.leavesPlanet value="Iš planetos išvyksta" />
     <label.inTime value="(už {0})" />
     <label.close value="Uždaryti" />
+    <label.playerFleets value="Tavo lvynai" />
+    <label.allianceFleets value="Sąjungininkų laivynai" />
+    <label.stop value="Sustabdyti" />
   </Squadrons>
 
   <Technologies>
@@ -3806,9 +3817,26 @@
     <label.wantToSell value="Tu nori parduoti:" />
     <label.howMuch value="Kiek?" />
     <label.sellFor value="Už:" />
-    <label.marketValue value="{0} rinkos kainos" />
-    <label.rate value="Santykiu {0}" />
+    <!-- 1 cheaper or more -->
+    <label.marketValue value="{0}% {1 cheaper[mažiau] more[daugiau]} nei rinkos kaina" />
     <title.sell value="Parduoti"/>
+    <warning.noSlots value="Pasiekei pasiūlymų limitą" />
+    <title.currentOffers value="Dabartiniai pasiūlymai" />
+    <title.filterOffers value="Filtruoti pasiūlymus" />
+    <filter.show value="Rodyti" />
+    <filter.for value="už" />
+    <title.offers value="Pasiūlymai" />
+    <header.from value="Įkėlė" />
+    <header.what value="Parduoda" />
+    <header.forWhat value="Nori" />
+    <header.rate value="Santykis" />
+    <header.createdAt value="Įkelta" />
+    <title.buy value="Priimti pasiūlymą" />
+    <title.cancel value="Atšaukti pasiūlymą" />
+    <!-- resource image goes after this string -->
+    <label.willPay value="Tu turėsi sumokėti {0}" />
+    <label.buy value="Pirkti" />
+    <label.cancel value="Atšaukti" />
   </Market>
 
 </locale>

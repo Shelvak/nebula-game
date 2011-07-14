@@ -523,6 +523,8 @@
     <property.healing.cost.mod value="Healing price modifier" />
     <property.population value="Population" />
     <property.teleportedVolume value="Volume teleported" />
+    <property.creds value="Creds" />
+    <property.victoryPoints value="Victory points" />
 
     <text.deactivated>
       <p>
@@ -1017,6 +1019,7 @@
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />
     <label.cancel value="Cancel" />
+    <label.close value="Close" />
     <label.order value="Order" />
     <label.buy value="Buy Creds" />
     <label.move value="Move" />
@@ -1323,6 +1326,11 @@
   <Navigator>
     <label.currentGalaxy value="Galaxy" />
   </Navigator>
+  
+  <ListScreen>
+    <label.colorLegend value="Legend:" />
+    <label.close value="Close" />
+  </ListScreen>
 
   <Notifications>
     <screenTitle value="Notifications" />
@@ -1332,8 +1340,8 @@
     <label.notifications.all value="All" />
     <label.notifications.unread value="Unread only" />
     <label.notifications.starred value="Starred only" />
-    <label.createdAt value="Received at" />
-    <label.expiresAt value="Expires at" />
+    <label.createdAt value="Received at: {0}" />
+    <label.expiresAt value="Expires at: {0}" />
     <label.planet value="Planet" />
     <label.showPlanet value="Show planet" />
     <label.yours value="Yours" />
@@ -1769,8 +1777,8 @@
 
   <Quests>
     <rewardsWidth value="100" />
-    <label.current value="Current" />
-    <label.completed value="Completed" />
+    <label.current value="Current ({0})" />
+    <label.completed value="Completed ({0})" />
     <label.showQuest value="Show quest" />
     <label.noQuests value="There are no quests" />
     <label.progress value="{0}/{1} completed" />
@@ -1790,8 +1798,8 @@
     </warning.wontFit>
     <warning.cantClaimReward
       value="You cant claim this reward due to insufficient population." />
-    <label.notCompletedColor value="Not completed quests" />
-    <label.completedColor value="Completed quests" />
+    <label.notCompletedColor value="● Not completed quests" />
+    <label.completedColor value="● Completed quests" />
 
     <message.rewardClaimed value="Reward has been claimed to planet {0}" />
 
@@ -2946,14 +2954,17 @@
   <Squadrons>
     <title.squadrons value="Fleets" />
     <title.noSquadrons value="No moving fleets detected." />
-    <label.currentLocation value="Current location" />
-    <label.sourceLocation value="Flying from" />
-    <label.targetLocation value="Traveling to" />
+    <label.currentLocation value="Current location:" />
+    <label.sourceLocation value="Flying from:" />
+    <label.targetLocation value="Traveling to:" />
     <label.units value="Fleet units" />
-    <label.arrivesAt value="Arrives at" />
+    <label.arrivesAt value="Arrives at:" />
     <label.leavesPlanet value="Leaves planet at" />
     <label.inTime value="(in {0})" />
     <label.close value="Close" />
+    <label.playerFleets value="Your fleets" />
+    <label.allianceFleets value="Alliance fleets" />
+    <label.stop value="Stop" />
   </Squadrons>
 
   <Technologies>
@@ -3883,9 +3894,26 @@
     <label.wantToSell value="You want to sell:" />
     <label.howMuch value="How much?" />
     <label.sellFor value="For:" />
-    <label.marketValue value="{0} market value" />
-    <label.rate value="At rate of {0}" />
+    <!-- 1 cheaper or more -->
+    <label.marketValue value="{0}% {1} than market value" />
     <title.sell value="Sell"/>
+    <warning.noSlots value="Offers limit reached" />
+    <title.currentOffers value="Current offers" />
+    <title.filterOffers value="Filter offers" />
+    <filter.show value="Show" />
+    <filter.for value="for" />
+    <title.offers value="Offers" />
+    <header.from value="From" />
+    <header.what value="Selling" />
+    <header.forWhat value="For" />
+    <header.rate value="Rate" />
+    <header.createdAt value="Created at" />
+    <title.buy value="Buy offer" />
+    <title.cancel value="Cancel offer" />
+    <!-- resource image goes after this string -->
+    <label.willPay value="You will pay {0}" />
+    <label.buy value="Buy" />
+    <label.cancel value="Cancel" />
   </Market>
 
 </locale>

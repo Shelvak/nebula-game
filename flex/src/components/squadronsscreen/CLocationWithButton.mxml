@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:location="components.location.*">
+   <fx:Script>
+      <![CDATA[
+         import models.location.Location;
+         
+         [Bindable]
+         public var location:Location = null;
+      ]]>
+   </fx:Script>
+   
+   <s:layout>
+      <s:HorizontalLayout gap="5" verticalAlign="middle"/>
+   </s:layout>
+   
+   <location:CLocationOneLine location="{this.location}" width="100%"/>
+   <location:CLocationButton location="{this.location}"/>
+</s:Group>

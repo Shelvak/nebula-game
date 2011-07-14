@@ -2,7 +2,7 @@ package components.alliance
 {
    import components.alliance.events.AllianceScreenMEvent;
    import components.popups.ErrorPopup;
-   import components.ratings.events.RatingsEvent;
+   import models.events.HeaderEvent;
    
    import config.Config;
    
@@ -251,7 +251,7 @@ package components.alliance
       /* ################ */
       
       
-      public function header_ratingsSortHandler(event:RatingsEvent):void
+      public function header_ratingsSortHandler(event:HeaderEvent):void
       {
          _alliance.players.sort = new Sort();
          _alliance.players.sort.fields = sortFields[event.key];

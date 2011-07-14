@@ -1,12 +1,19 @@
 package models.movement
 {
+   import interfaces.IUpdatable;
+   
    import models.BaseModel;
    import models.ModelsCollection;
    import models.Owner;
    import models.location.Location;
    import models.player.PlayerMinimal;
+   import models.time.MTimeEventFixedMoment;
    import models.unit.UnitBuildingEntry;
    
+   import mx.utils.ObjectUtil;
+   
+   import utils.DateUtil;
+   import utils.Objects;
    import utils.datastructures.Collections;
    
    
@@ -14,13 +21,11 @@ package models.movement
     * Should only be used to store additional information about squadrons belonging to either the
     * palyer or his/her allies.
     */
-   public class MRoute extends BaseModel
+   public class MRoute extends BaseModel implements IUpdatable
    {
-      public function MRoute()
-      {
+      public function MRoute() {
          super();
       }
-      
       
       [Required]
       [Bindable]
@@ -35,7 +40,6 @@ package models.movement
        */
       public var playerId:int = 0;
       
-      
       [Optional]
       [Bindable]
       /**
@@ -49,46 +53,35 @@ package models.movement
        */
       public var player:PlayerMinimal = null;
       
-      
-      [Required]
+      private var _owner:int = Owner.PLAYER;
+      [Optional]
       [Bindable]
       /**
        * Owner type of this route.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Required]<br/>
+       * [Optional]<br/>
        * [Bindable]</i></p>
        * 
        * Will throw <code>IllegalArgumentError</code> if you try setting this to something other that
        * <code>Owner.PLAYER</code> or <code>Owner.ALLY</code>
        */
-      private var _owner:int = Owner.PLAYER;
-      public function set owner(value:int) : void
-      {
+      public function set owner(value:int) : void {
          if (_owner != value)
-         {
             _owner = value;
-         }
       }
-      public function get owner() : int
-      {
+      /**
+       * @private
+       */
+      public function get owner() : int {
          return _owner;
       }
       
       
-      [Required]
-      [Bindable]
       /**
-       * Time (local) when this squadron will reach its destination.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Required]<br/>
-       * [Bindable]
-       * </i></p>
-       * 
-       * @default null
+       * Time (local) when this squadron will reach its destination. Never <code>null</code>.
        */
-      public var arrivesAt:Date = null;
+      public const arrivalEvent:MTimeEventFixedMoment = new MTimeEventFixedMoment();
       
       
       [Required]
@@ -170,14 +163,24 @@ package models.movement
        * 
        * @throws ArgumentError if <code>unitType</code> is <code>null</code>
        */
-      public function findEntryByType(unitType:String) : UnitBuildingEntry
-      {
+      public function findEntryByType(unitType:String) : UnitBuildingEntry {
          return Collections.findFirst(cachedUnits,
-            function(entry:UnitBuildingEntry) : Boolean
-            {
+            function(entry:UnitBuildingEntry) : Boolean {
                return entry.type == unitType;
             }
          );
+      }
+      
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+      
+      public function resetChangeFlags() : void {
+         arrivalEvent.resetChangeFlags();
+      }
+      
+      public function update() : void {
+         arrivalEvent.update();
       }
       
       
@@ -185,25 +188,15 @@ package models.movement
       /* ### BaseModel OVERRIDES ### */
       /* ########################### */
       
-      
-      /**
-       * Sets coordinates of all three locations (<code>sourceLocation, currentLocation,
-       * targetLocation</code>) to their default values if <code>isSSObect<code> returns <code>true</code>.
-       */
-      override protected function afterCreateModel(data:Object) : void
-      {
-         if (sourceLocation.isSSObject)
-         {
-            sourceLocation.setDefaultCoordinates();
-         }
-         if (currentLocation.isSSObject)
-         {
-            currentLocation.setDefaultCoordinates();
-         }
-         if (targetLocation.isSSObject)
-         {
-            currentLocation.setDefaultCoordinates();
-         }
+      protected override function afterCreateModel(data:Object) : void {
+         if (sourceLocation.isSSObject)  sourceLocation.setDefaultCoordinates();
+         if (currentLocation.isSSObject) currentLocation.setDefaultCoordinates();
+         if (targetLocation.isSSObject)  currentLocation.setDefaultCoordinates();
+         arrivalEvent.occuresAt = DateUtil.parseServerDTF(Objects.notNull(
+            data["arrivesAt"],
+            "[prop arrivesAt] is required by [class: MRoute] but was not present in source object. " +
+            "The object was:\n" + ObjectUtil.toString(data)
+         ));
       }
    }
 }

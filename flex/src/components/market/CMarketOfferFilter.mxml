@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:base="components.base.*"
+         skinClass="components.skins.LargePanelSkin"
+         title="{getText('title.filterOffers')}" 
+         xmlns:market="components.market.*">
+   <fx:Script>
+      <![CDATA[
+         import components.skins.LargePanelSkin;
+         
+         import models.resource.ResourceType;
+         
+         import utils.locale.Localizer;
+         
+         private function getText(prop: String, params: Array = null): String
+         {
+            return Localizer.string('Market', prop, params);
+         }
+      ]]>
+   </fx:Script>
+   <s:Label text="{getText('filter.show')}"/>
+   <market:CMarketResourceSelector hidenType="{ResourceType.CREDS}" id="from"/>
+   <s:Label text="{getText('filter.for')}"/>
+   <market:CMarketResourceSelector disabledType="{from.selected}"/>
+   <base:layout>
+      <s:HorizontalLayout paddingBottom="10" paddingTop="10" horizontalAlign="center"
+                          verticalAlign="middle"/>
+   </base:layout>
+</base:Panel>

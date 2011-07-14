@@ -18,6 +18,7 @@ package components.quests
     * @eventType models.quest.events.QuestEvent.SCROLL_REQUESTED
     */
    [Event(name="scrollRequested", type="models.quest.events.QuestEvent")]
+   
    /**
     * List specializes in displaying quests.
     */
@@ -26,13 +27,8 @@ package components.quests
       public function QuestsList()
       {
          super();
+         useVirtualLayout = false;
          itemRenderer = new ClassFactory(IRQuest);
-         dataProvider = ModelLocator.getInstance().quests;
-         var layout:VerticalLayout = new VerticalLayout();
-         layout.horizontalAlign = HorizontalAlign.JUSTIFY;
-         layout.variableRowHeight = true;
-         layout.gap = 0;
-         this.layout = layout;
          addSelfEventHandlers();
       }
       

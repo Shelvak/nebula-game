@@ -7,6 +7,7 @@ package models.time
    
    import namespaces.change_flag;
    
+   import utils.DateUtil;
    import utils.EventUtils;
    import utils.NumberUtil;
    import utils.Objects;
@@ -30,23 +31,28 @@ package models.time
       
       
       change_flag var hasOccured:Boolean = true;
-      public function get hasOccured() : Boolean
-      {
+      public function get hasOccured() : Boolean {
          throw new IllegalOperationError("Property is abstract");
       }
-      
       
       change_flag var occuresIn:Boolean = true;
-      public function get occuresIn() : Number
-      {
+      public function get occuresIn() : Number {
          throw new IllegalOperationError("Property is abstract");
       }
       
+      [Bindable(event="occuresInChange")]
+      public function get occuresInString() : String {
+         return DateUtil.secondsToHumanString(occuresIn, 2);
+      }
       
       change_flag var occuresAt:Boolean = true;
-      public function get occuresAt() : Date
-      {
+      public function get occuresAt() : Date {
          throw new IllegalOperationError("Property is abstract");
+      }
+      
+      [Bindable(event="occuresAtChange")]
+      public function get occuresAtString() : String {
+         return occuresAt.toString();
       }
       
       
@@ -55,13 +61,9 @@ package models.time
       /* ######################### */
       
       
-      public function equals(o:Object):Boolean
-      {
-         if (!(o is MTimeEvent) ||
-             Objects.getClassName(this) != Objects.getClassName(o))
-         {
+      public function equals(o:Object):Boolean {
+         if (!(o is MTimeEvent) || Objects.getClassName(this) != Objects.getClassName(o))
             return false;
-         }
          return NumberUtil.equal(this.occuresAt.time, MTimeEvent(o).occuresAt.time, 10);
       }
       
@@ -71,14 +73,12 @@ package models.time
       /* ###################### */
       
       
-      public function update() : void
-      {
+      public function update() : void {
          throw new IllegalOperationError("Method is abstract");
       }
       
       
-      public function resetChangeFlags() : void
-      {
+      public function resetChangeFlags() : void {
          change_flag::hasOccured = false;
          change_flag::occuresAt = false;
          change_flag::occuresIn = false;
@@ -89,9 +89,7 @@ package models.time
       /* ### Object ### */
       /* ############## */
       
-      
-      public override function toString() : String
-      {
+      public override function toString() : String {
          return "[class: " + Objects.getClassName(this) +
                 ", occuresIn: " + occuresIn +
                 ", occuresAt: " + occuresAt + "]";
@@ -106,26 +104,19 @@ package models.time
       /**
        * @see utils.EventUtils#dispatchSimpleEvent()
        */
-      protected function dispatchSimpleEvent(CLASS:Class, type:String) : void
-      {
+      protected function dispatchSimpleEvent(CLASS:Class, type:String) : void {
          EventUtils.dispatchSimpleEvent(this, CLASS, type);
       }
       
-      
-      protected function occuresInUpdated() : void
-      {
+      protected function occuresInUpdated() : void {
          dispatchSimpleEvent(MTimeEventEvent, MTimeEventEvent.OCCURES_IN_CHANGE);
       }
       
-      
-      protected function occuresAtUpdated() : void
-      {
+      protected function occuresAtUpdated() : void {
          dispatchSimpleEvent(MTimeEventEvent, MTimeEventEvent.OCCURES_AT_CHANGE);
       }
       
-      
-      protected function hasOccuredUpdated() : void
-      {
+      protected function hasOccuredUpdated() : void {
          dispatchSimpleEvent(MTimeEventEvent, MTimeEventEvent.HAS_OCCURED_CHANGE);
       }
    }

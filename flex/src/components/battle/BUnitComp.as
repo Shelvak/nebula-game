@@ -19,8 +19,6 @@ package components.battle
    {
       private static const MAX_STILL_DELAY: int = 10000;
       
-      public var flank: BFlank;
-      
       public function appear(unitId: int): void
       {
          var appearUnit: BUnit = getGroupedParticipantModel(unitId) as BUnit;

@@ -884,9 +884,9 @@ assets:
         unit_over.png:         Unit_over.png
         unit_ready.png:        Unit_ready.png
         unit_ready_over.png: Unit_ready_over.png
-        unit_counter.png:      Unit_counter.png
+        unit_counter_left.png:      Unit_delete_left.png
+        unit_counter_repeat.png:      Unit_delete_right.png
         unit_ready_lights.png: Unit_ready_lights.png
-        delete_counter.png: Unit_delete.png
         arrow_select_units.png:   Arrow_selectunits.png
         hint_top_left.png:        Hint_top_left.png
         hint_top_center.png:      Hint_top_center.png
@@ -950,23 +950,13 @@ assets:
         squad_popup_owner_left.png:       Owner_left.png
         squad_popup_owner_right.png:      Owner_right.png
         squad_popup_owner_center.png:     Owner_center.png
-        screen_bottom_center_left.png:    Squadrons_bottom_center_left.png
-        screen_bottom_center_repeat.png:    Squadrons_bottom_center_repeat.png
-        screen_bottom_center_right.png:    Squadrons_bottom_center_right.png
-        screen_bottom_left.png:    Squadrons_bottom_left.png
-        screen_bottom_leftright_repeat.png:    Squadrons_bottom_leftright_repeat.png
-        screen_bottom_right.png:    Squadrons_bottom_right.png
-        screen_center_left.png:    Squadrons_center_left.png
-        screen_center_right.png:    Squadrons_center_right.png
-        screen_top_center_left.png:    Squadrons_top_center_left.png
-        screen_top_center_repeat.png:    Squadrons_top_center_repeat.png
-        screen_top_center_right.png:    Squadrons_top_center_right.png
-        screen_top_right.png:    Squadrons_top_right.png
-        screen_top_left.png:    Squadrons_top_left.png
-        screen_top_leftright_repeat.png:    Squadrons_top_leftright_repeat.png
-        screen_line_center.png:    Squadrons_line_center.png
-        screen_line_right_repeat.png:    Squadrons_line_left_repeat.png
-        screen_line_left_repeat.png:    Squadrons_line_right_repeat.png
+        routeir_info_left.png:            Fleets_info_left.png
+        routeir_info_center.png:          Fleets_info_center.png
+        routeir_info_right.png:           Fleets_info_right.png
+        routeir_units.png:                Fleets_squadron_center.png
+        routeir_btn_left.png:             Fleets_button_left.png
+        routeir_btn_center.png:           Fleets_button_center.png
+        routeir_btn_right.png:            Fleets_button_right.png
 
       "maps/space/static_object":
         popup_top_left.png:            Sp_top_left.png
