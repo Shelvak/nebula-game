@@ -2,6 +2,7 @@ package controllers.messages
 {
    import controllers.CommunicationCommand;
    
+   import mx.logging.ILogger;
    import mx.logging.Log;
    
    import utils.SingletonFactory;
@@ -42,15 +43,17 @@ package controllers.messages
          {
             return;
          }
+         var logger:ILogger = Log.getLogger("controllers.messages.MessagesProcessor");
          for each (var rmo:ServerRMO in messages)
          {
             if (rmo.isReply)
             {
+               logger.info("Processing response message {0}", rmo.id);
                RESP_MSG_TRACKER.removeRMO(rmo);
             }
             else
             {
-               Log.getLogger("controllers.messages.MessagesProcessor").info("Processing message {0}", rmo.id);
+               logger.info("Processing message {0}", rmo.id);
                new CommunicationCommand(rmo.action, rmo.parameters, true, false, rmo).dispatch();
             }
          }
