@@ -6,8 +6,17 @@
          skinClass="components.skins.LargePanelSkin"
          title="{getText('title.filterOffers')}" 
          xmlns:market="components.market.*">
+   <fx:Metadata>
+      /**
+      * Dispatched when selected resource in radio group changes
+      * 
+      * @eventType components.market.events.MarketEvent.SELECTED_CHANGE
+      */
+      [Event(name="selectedResourceChange", type="components.market.events.MarketEvent")]
+   </fx:Metadata>
    <fx:Script>
       <![CDATA[
+         import components.market.events.MarketEvent;
          import components.skins.LargePanelSkin;
          
          import models.resource.ResourceType;
@@ -18,12 +27,40 @@
          {
             return Localizer.string('Market', prop, params);
          }
+         
+         public var selectedFrom: String;
+         
+         public var selectedTo: String;
+
+         protected function from_selectedResourceChangeHandler(event:MarketEvent):void
+         {
+            selectedFrom = from.selected;
+            dispatchSelectedChangeEvent();
+         }
+
+
+         protected function to_selectedResourceChangeHandler(event:MarketEvent):void
+         {
+            selectedTo = toRes.selected;
+            dispatchSelectedChangeEvent();
+         }
+         
+         private function dispatchSelectedChangeEvent(): void
+         {
+            if (hasEventListener(MarketEvent.SELECTED_RESOURCE_CHANGE))
+            {
+               dispatchEvent(new MarketEvent(MarketEvent.SELECTED_RESOURCE_CHANGE));
+            }
+         }
+
       ]]>
    </fx:Script>
    <s:Label text="{getText('filter.show')}"/>
-   <market:CMarketResourceSelector hidenType="{ResourceType.CREDS}" id="from"/>
+   <market:CMarketResourceSelector hidenType="{ResourceType.CREDS}" id="from"
+                                   selectedResourceChange="from_selectedResourceChangeHandler(event)"/>
    <s:Label text="{getText('filter.for')}"/>
-   <market:CMarketResourceSelector disabledType="{from.selected}"/>
+   <market:CMarketResourceSelector disabledType="{from.selected}" id="toRes"
+                                   selectedResourceChange="to_selectedResourceChangeHandler(event)"/>
    <base:layout>
       <s:HorizontalLayout paddingBottom="10" paddingTop="10" horizontalAlign="center"
                           verticalAlign="middle"/>
