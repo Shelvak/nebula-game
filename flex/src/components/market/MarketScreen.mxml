@@ -23,19 +23,43 @@
                new MarketOffer(ResourceType.ZETIUM, ResourceType.METAL),
                new MarketOffer(ResourceType.ENERGY, ResourceType.CREDS)]);
          
+         
+         private var _filterWhat:String;
+         private var _filterTo:String;
+         private function setTypeFilter(_what: String, _to: String) : void
+         {
+            if (_filterWhat != _what || _filterTo != _to)
+            {
+               _filterWhat = _what;
+               _filterTo = _to;
+            }
+         }
+         
          private function getText(prop: String, params: Array = null): String
          {
             return Localizer.string('Market', prop, params);
          }
          
+
+         protected function cFilter_selectedResourceChangeHandler(event:MarketEvent):void
+         {
+            setTypeFilter(cFilter.selectedFrom, cFilter.selectedTo);
+            offersCollection.filterFunction = function (item: MarketOffer): Boolean
+            {
+               return (_filterWhat == null || item.whatResource == _filterWhat)
+               && (_filterTo == null || item.toResource == _filterTo);
+            }
+            offersCollection.refresh();
+         }
+
       ]]>
    </fx:Script>
-   <s:Label text="{getText('title.currentOffers')}" fontSize="18" color="#eec500"/>
-   <market:CMarketOfferFilter/>
-   <market:CMarketOffers id="offersList" offers="{offersCollection}"/>
-   <market:CMarketOfferAction selectedOffer="{offersList.selected}"/>
-   <s:layout>
-      <s:VerticalLayout paddingTop="10" paddingLeft="10" paddingRight="10"
-                        horizontalAlign="justify"/>
-   </s:layout>
+   <market:CMarketOfferFilter top="10" id="cFilter" left="10" right="10"
+                              selectedResourceChange="cFilter_selectedResourceChangeHandler(event)"/>
+   <market:CMarketOffers id="offersList" top="{cFilter.height + 20}" 
+                         bottom="{offersList.selected != null?cAction.height + 20:10}"
+                         offers="{offersCollection}" left="10" right="10"/>
+   <market:CMarketOfferAction selectedOffer="{offersList.selected}" 
+                              visible="{offersList.selected != null}"
+                              id="cAction" bottom="10" left="10" right="10"/>
 </s:Group>

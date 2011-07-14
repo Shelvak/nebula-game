@@ -35,23 +35,26 @@
 
       ]]>
    </fx:Script>
+   <s:Group>
    <s:HSlider minimum="0" maximum="{selectedOffer.forWhat}" stepSize="1"
               id="selector" change="selector_changeHandler(event)"/>
    <s:Group>
       <s:layout>
          <s:HorizontalLayout verticalAlign="middle"/>
       </s:layout>
-      <s:Label text="{getText('label.willPay', [])}"/>
+      <s:Label text="{getText('label.willPay', [cost])}"/>
       <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + selectedOffer.toResource)}"/>
    </s:Group>
-   <s:Group>
-      <s:Button label="{ML.player.id != selectedOffer.fromId
-                ?getText('label.buy')
-                :getText('label.cancel')}" right="6"
-                skinClass="components.skins.GreenButtonSkin"/>
-   </s:Group>
-   <base:layout>
+   <s:layout>
    <s:VerticalLayout horizontalAlign="justify" paddingBottom="3" paddingLeft="6"
                      paddingRight="6" paddingTop="6"/>
+   </s:layout>
+   </s:Group>
+   <s:Button label="{ML.player.id != selectedOffer.fromId
+             ?getText('label.buy')
+             :getText('label.cancel')}" right="6"
+                                        skinClass="components.skins.GreenButtonSkin"/>
+   <base:layout>
+      <s:HorizontalLayout verticalAlign="middle"/>
    </base:layout>
 </base:Panel>

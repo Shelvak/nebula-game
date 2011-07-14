@@ -67,6 +67,7 @@
          private function selectedChange(e: GMarketEvent): void
          {
             selected = e.offer;
+            selected.selected = true;
             for each (var offer: MarketOffer in offers)
             {
                if (offer.selected && offer != selected)
