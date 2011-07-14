@@ -13,7 +13,7 @@
          import com.developmentarc.core.utils.EventBroker;
          
          import components.popups.ErrorPopup;
-         import components.ratings.events.RatingsEvent;
+         import models.events.HeaderEvent;
          import components.skins.LinkButtonSkin;
          
          import config.Config;
@@ -252,7 +252,7 @@
                      <s:VerticalLayout gap="0" horizontalAlign="contentJustify"/>
                   </s:layout>
                   <alliance:MembersRatingsHeader id="header" 
-                                                 ratingsSort="model.header_ratingsSortHandler(event)"/>
+                                                 listSort="model.header_ratingsSortHandler(event)"/>
                   <s:DataGroup dataProvider="{model.alliance.players}"
                                itemRenderer="components.alliance.IRMembersRatingsRow">
                      <s:layout>

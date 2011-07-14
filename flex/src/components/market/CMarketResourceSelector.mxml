@@ -57,9 +57,9 @@
          
          private function dispatchSelectedChangeEvent(): void
          {
-            if (hasEventListener(MarketEvent.SELECTED_CHANGE))
+            if (hasEventListener(MarketEvent.SELECTED_RESOURCE_CHANGE))
             {
-               dispatchEvent(new MarketEvent(MarketEvent.SELECTED_CHANGE));
+               dispatchEvent(new MarketEvent(MarketEvent.SELECTED_RESOURCE_CHANGE));
             }
          }
 

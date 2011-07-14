@@ -3826,6 +3826,22 @@
     <label.marketValue value="{0}% {1 cheaper[mažiau] more[daugiau]} nei rinkos kaina" />
     <title.sell value="Parduoti"/>
     <warning.noSlots value="Pasiekei pasiūlymų limitą" />
+    <title.currentOffers value="Dabartiniai pasiūlymai" />
+    <title.filterOffers value="Filtruoti pasiūlymus" />
+    <filter.show value="Rodyti" />
+    <filter.for value="už" />
+    <title.offers value="Pasiūlymai" />
+    <header.from value="Įkėlė" />
+    <header.what value="Parduoda" />
+    <header.forWhat value="Nori" />
+    <header.rate value="Santykis" />
+    <header.createdAt value="Įkelta" />
+    <title.buy value="Priimti pasiūlymą" />
+    <title.cancel value="Atšaukti pasiūlymą" />
+    <!-- resource image goes after this string -->
+    <label.willPay value="Tu turėsi sumokėti {0}" />
+    <label.buy value="Pirkti" />
+    <label.cancel value="Atšaukti" />
   </Market>
 
 </locale>
