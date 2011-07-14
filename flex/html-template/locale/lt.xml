@@ -522,6 +522,8 @@
     <property.healing.time.mod value="Sekundžių pagyditi 1 GT" />
     <property.healing.cost.mod value="Gydymo kainos daugiklis" />
     <property.teleportedVolume value="Perkeliamas tūris" />
+    <property.creds value="Kredai" />
+    <property.victoryPoints value="Pergalės taškai" />
 
     <text.deactivated>
       <p>

@@ -523,6 +523,8 @@
     <property.healing.cost.mod value="Healing price modifier" />
     <property.population value="Population" />
     <property.teleportedVolume value="Volume teleported" />
+    <property.creds value="Creds" />
+    <property.victoryPoints value="Victory points" />
 
     <text.deactivated>
       <p>
