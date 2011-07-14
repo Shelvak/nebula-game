@@ -217,6 +217,11 @@ class Player < ActiveRecord::Base
     to_s
   end
   
+  # Number of creds without VIP creds.
+  def pure_creds; creds - vip_creds; end
+  # Setter for pure creds.
+  def pure_creds=(value); self.creds = value + vip_creds; end
+  
   # Returns conversion rate from VIP creds to regular creds. It is dependant
   # from players #vip_level.
   #
