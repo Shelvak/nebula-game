@@ -446,13 +446,20 @@
     <message.pressOnEmpty>
       <p>Click on empty map space to enter building construction mode</p>
     </message.pressOnEmpty>
+    <warning.buildingWorking>
+      <p>Anything this building is constructing will be destroyed if you 
+      initiate self-destruct on this building.</p>
+    </warning.buildingWorking>
     <toolTip.afterUpgrade value="After upgrade" />
     <title.boost value="Boost" />
     <title.buildingBonus value="Building bonus" />
     <label.nextBonus value="Next bonus in:" />
     <label.victoryPoint>
-      <p>In {2} you will get {1} victory points and {0} creds.</p>
+      <p>{0 one[? victory point] many[? victory points]}</p>
     </label.victoryPoint>
+    <label.cred>
+      <p>{0 one[? cred] many[? creds]}</p>
+    </label.cred>
     <tileBonuses value="Tile bonuses" />
     <armor.bonus value="Armor" />
     <energy.bonus value="Energy output" />
@@ -516,6 +523,8 @@
     <property.healing.cost.mod value="Healing price modifier" />
     <property.population value="Population" />
     <property.teleportedVolume value="Volume teleported" />
+    <property.creds value="Creds" />
+    <property.victoryPoints value="Victory points" />
 
     <text.deactivated>
       <p>
@@ -1246,7 +1255,7 @@
     <label.openLocation value="Open location" />
     <label.storage value="{0}/{1}" />
 
-    <sector value="Sector" />
+    <sector value="Sector " />
 
     <header.galaxy value="Galaxy sector" />
     <header.solarSystem value="Solar System" />
@@ -1754,7 +1763,7 @@
     <!-- SELF_DESTRUCT
     0: count of buildings to self destruct -->
     <objectiveText.SelfDestruct 
-    value="Destroy {0 one[building] many[? buildings]} that belongs to you" />
+    value="Destroy {0 one[building] many[? buildings]} that belong to you" />
 
 
     <!-- EXPLORE_BLOCK
@@ -2866,6 +2875,7 @@
     <metal value="Metal" />
     <energy value="Energy" />
     <zetium value="Zetium" />
+    <creds value="Creds" />
     <time value="Upgrade time" />
     <scientists value="Scientists" />
     <population value="Population" />
@@ -3877,5 +3887,33 @@
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Players"/>
   </Chat>
+  
+  <Market>
+    <label.submit value="Submit" />
+    <label.fee value="Fee:" />
+    <label.wantToSell value="You want to sell:" />
+    <label.howMuch value="How much?" />
+    <label.sellFor value="For:" />
+    <!-- 1 cheaper or more -->
+    <label.marketValue value="{0}% {1} than market value" />
+    <title.sell value="Sell"/>
+    <warning.noSlots value="Offers limit reached" />
+    <title.currentOffers value="Current offers" />
+    <title.filterOffers value="Filter offers" />
+    <filter.show value="Show" />
+    <filter.for value="for" />
+    <title.offers value="Offers" />
+    <header.from value="From" />
+    <header.what value="Selling" />
+    <header.forWhat value="For" />
+    <header.rate value="Rate" />
+    <header.createdAt value="Created at" />
+    <title.buy value="Buy offer" />
+    <title.cancel value="Cancel offer" />
+    <!-- resource image goes after this string -->
+    <label.willPay value="You will pay {0}" />
+    <label.buy value="Buy" />
+    <label.cancel value="Cancel" />
+  </Market>
 
 </locale>

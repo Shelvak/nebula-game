@@ -97,37 +97,46 @@
                countSelector.value = _queryElementModel.countSelected;
             }
          }
-
+         
       ]]>
    </fx:Script>
-   <s:Group>
-      
-      <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready')}"/>
-      <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
-         <components:CenteredBitmapImage 
-            source="{IMG.getImage(AssetNames.getConstructableImageName(_queryElementModel.constructableType))}" 
-                   width="100%" height="100%"/>
-      </s:Group>
-      
-      <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready_over')}"
-                     id="lights" alpha="0"/>
-      
-      <s:BitmapImage source="{(!_queryElementModel.selected || (_queryElementModel.count == 1))?
-                     IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_counter'):
-                     IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'delete_counter')}"
-                     left="{(!_queryElementModel.selected || (_queryElementModel.count == 1))?131:86}" top="8"/>
-      
-      <s:Label  left="137" top="10" styleName="h3" visible="{!_queryElementModel.selected}"
+   <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready')}"/>
+   
+   <components:CenteredBitmapImage left="16" top="9"
+                                   source="{IMG.getImage(AssetNames.getConstructableImageName(
+                                   _queryElementModel.constructableType))}" 
+                                   width="{imageSize}" height="{imageSize}"/>
+   
+   <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready_over')}"
+                  id="lights" alpha="0"/>
+   
+   <s:Group right="16" top="8">
+      <s:BitmapImage source="{IMG.getImage(
+                     AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_counter_left')}"
+                     left="0" top="0" id="countLeft"/>
+      <s:BitmapImage source="{IMG.getImage(
+                     AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_counter_repeat')}"
+                     right="0" left="{countLeft.width}" top="0"/>
+      <s:Group left="8" top="1" bottom="2" right="3">
+      <s:Label  right="0" top="2" styleName="h3"
+                includeInLayout="{!_queryElementModel.selected}"
+                visible="{!_queryElementModel.selected}"
                 text="{_queryElementModel.count.toString()}"/>
-      
-      
+      <s:Button skinClass="components.skins.DeleteButtonSkin" 
+                click="button1_clickHandler(event)" 
+                right="0" top="1"
+                visible="{_queryElementModel.selected}"
+                includeInLayout="{_queryElementModel.selected}"
+                enabled="{!deletePending}"/> 
+      <s:NumericStepper id="countSelector" 
+                        visible="{!(!(_queryElementModel.count > 1) || !(_queryElementModel.selected))}"
+                        includeInLayout="{!(!(_queryElementModel.count > 1) || !(_queryElementModel.selected))}"
+                        right="20" top="0" maximum="{_queryElementModel.count}" minimum="1" 
+                        change="countSelector_changeHandler(event)"/> 
+      </s:Group>
    </s:Group>
-   <s:Button skinClass="components.skins.DeleteButtonSkin" click="button1_clickHandler(event)" 
-             left="{(_queryElementModel.count == 1)?132:90}" top="{(_queryElementModel.count == 1)?8:10}"
-             visible="{_queryElementModel.selected}" enabled="{!deletePending}"/>   
-   <s:NumericStepper id="countSelector" visible="{!(!(_queryElementModel.count > 1) || !(_queryElementModel.selected))}" 
-                     left="109" top="8" maximum="{_queryElementModel.count}" minimum="1" 
-                     change="countSelector_changeHandler(event)"/>
+   
+    
    
    <s:Label text="{_queryElementModel.title}"  left="42" top="148" width="89" height="9" textAlign="center"/>
    

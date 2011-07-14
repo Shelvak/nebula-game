@@ -13,5 +13,6 @@ package models.building
       public static const HEALING_CENTER: String = "HealingCenter";
       public static const NPC_HALL: String = "NpcHall";
       public static const DEFENSIVE_PORTAL: String = "DefensivePortal";
+      public static const MARKET: String = "Market";
    }
 }

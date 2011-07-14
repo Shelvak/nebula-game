@@ -75,7 +75,7 @@ class Alliance < ActiveRecord::Base
   end
 
   RATING_SUMS = \
-    (Player::POINT_ATTRIBUTES + %w{victory_points planets_count}).map {
+    (Player::POINT_ATTRIBUTES + %w{planets_count}).map {
     |attr| "CAST(SUM(p.#{attr}) as SIGNED) as #{attr}" }.join(", ")
 
   # Returns array of Hashes:
@@ -96,6 +96,7 @@ class Alliance < ActiveRecord::Base
     connection.select_all(
       """
       SELECT COUNT(*) as players_count, alliance_id, a.name as name,
+        a.victory_points as victory_points,
         #{RATING_SUMS} FROM `#{Player.table_name}` p
       LEFT JOIN `#{table_name}` a ON p.alliance_id=a.id
       WHERE p.galaxy_id=#{galaxy_id.to_i} AND alliance_id IS NOT NULL
@@ -150,7 +151,10 @@ class Alliance < ActiveRecord::Base
     FowSsEntry.assimilate_player(self, player)
     FowGalaxyEntry.assimilate_player(self, player)
 
-    ControlManager.instance.player_joined_alliance(player, self)
+    # Dispatch that this player joined the alliance, unless he is owner
+    # of that alliance.
+    ControlManager.instance.player_joined_alliance(player, self) \
+      unless player.id == owner_id
     # Dispatch changed on owner because he has alliance_player_count
     EventBroker.fire(owner, EventBroker::CHANGED)
     # Dispatch changed for status changed event

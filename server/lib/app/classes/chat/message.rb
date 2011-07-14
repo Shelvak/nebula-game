@@ -28,7 +28,12 @@ class Chat::Message < ActiveRecord::Base
       "SELECT source_id, message, created_at FROM `#{
         table_name}` WHERE target_id=#{player_id.to_i
         } ORDER BY created_at"
-    )
+    ).map do |hash|
+      # JRuby compatibility
+      hash["created_at"] = Time.parse(hash["created_at"]) \
+        unless hash["created_at"].is_a?(Time)
+      hash
+    end
   end
 
   # Retrieves messages for _player_id_ and deletes them from DB.

@@ -110,38 +110,20 @@ class Rewards
       ) if ! allow_overpopulation && player.overpopulated?
       
       units = []
-      counter_increasement = 0
-      points = UnitPointsCounter.new
-      population = 0
 
       @data[UNITS].each do |specification|
         klass = "Unit::#{specification['type']}".constantize
-        population += klass.population * specification['count']
         specification['count'].times do
-          unit = klass.new(
+          units << klass.new(
             :level => specification['level'],
             :hp_percentage => specification['hp'].to_f / 100,
-            :location => planet,
             :player => player,
             :galaxy_id => player.galaxy_id
           )
-          points.add_unit(unit)
-          counter_increasement += 1 if unit.space?
-          unit.skip_validate_technologies = true
-          unit.save!
-          units.push unit
         end
       end
-
-      points.increase(player)
-      player.population += population
-      player.save!
-
-      FowSsEntry.increase(planet.solar_system_id, player,
-        counter_increasement) if counter_increasement > 0
-
-      EventBroker.fire(units, EventBroker::CREATED,
-        EventBroker::REASON_REWARD_CLAIMED)
+      
+      Unit.give_units_raw(units, planet, player)
     end
     
     increase_values(planet, REWARD_RESOURCES)

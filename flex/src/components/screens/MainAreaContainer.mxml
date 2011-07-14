@@ -23,7 +23,7 @@
                     xmlns:alliance="components.alliance.*"
                     xmlns:credits="components.credits.*"
                     xmlns:player="components.player.*"
-                    xmlns:defensiveportal="components.defensiveportal.*">
+                    xmlns:defensiveportal="components.defensiveportal.*" xmlns:market="components.market.*">
    <fx:Script>
       <![CDATA[
          import components.dailybonus.DailyBonusComp;
@@ -153,6 +153,9 @@
          <s:NavigatorContent name="{MainAreaScreens.RATINGS}" width="100%" height="100%">
             <ratings:RatingScreen/>
          </s:NavigatorContent>
+         <s:NavigatorContent name="{MainAreaScreens.MARKET}" width="100%" height="100%">
+            <market:MarketScreen/>
+         </s:NavigatorContent>
          <s:NavigatorContent name="{MainAreaScreens.PLAYER}" width="100%" height="100%">
             <player:PlayerScreen/>
          </s:NavigatorContent>
@@ -213,6 +216,9 @@
          </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.HEAL}" width="100%" height="100%">
             <healing:HealingSidebar width="100%" height="100%"/>
+         </s:NavigatorContent>
+         <s:NavigatorContent name="{SidebarScreens.MARKET}" width="100%" height="100%">
+            <market:MarketSidebar width="100%" height="100%"/>
          </s:NavigatorContent>
       </mx:ViewStack>
    </s:SkinnableContainer>

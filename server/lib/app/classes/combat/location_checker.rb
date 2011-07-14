@@ -18,7 +18,7 @@ class Combat::LocationChecker
       return_status = false
       if check_report.status == Combat::CheckReport::CONFLICT
         assets = on_conflict(location_point, check_report)
-        return_status = true
+        return_status = !! assets
       end
 
       try_to_annex(location_point, check_report, assets)
@@ -74,18 +74,22 @@ class Combat::LocationChecker
       units = Unit.in_location(location_point.location_attrs).where(
         "level > 0").all
 
-      if location.is_a?(SsObject)
-        units += Building::DefensivePortal.portal_units_for(location)
+      # Get players from alliances.
+      players = check_report.alliances.values.flatten
+      
+      if location.is_a?(SsObject::Planet)
+        dp_units = Building::DefensivePortal.portal_units_for(location)
+        units += dp_units
         buildings = location.buildings.shooting.active.all
 
-        # Gather players from included units. We use same nap rules because
-        # defensive portal players are from same alliance.
-        players = Player.find(units.map(&:player_id).uniq.compact)
+        # Add players that have units from defensive portal.
+        players = players | Player.find(dp_units.map(&:player_id))
       else
         buildings = []
-        # Do not include NPCs in players listing.
-        players = check_report.alliances.values.flatten.compact
       end
+      
+      # Do not include NPCs in players listing.
+      players = players.compact  
 
       assets = Combat.run(location, players, check_report.nap_rules,
         units, buildings)

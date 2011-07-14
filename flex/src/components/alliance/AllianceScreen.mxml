@@ -7,14 +7,13 @@
          xmlns:base="components.base.*"
          xmlns:screens="components.screens.*"
          creationComplete="this_creationCompleteHandler(event)">
-   <fx:Binding source="model.alliance" destination="alliance"/>
    <fx:Binding source="ML.player.allianceCooldown.occuresIn" destination="leftTime"/>
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
          import components.popups.ErrorPopup;
-         import components.ratings.events.RatingsEvent;
+         import models.events.HeaderEvent;
          import components.skins.LinkButtonSkin;
          
          import config.Config;
@@ -52,9 +51,6 @@
             return AllianceScreenM.getInstance();
          }
          
-         [Bindable]
-         private var alliance: MAlliance;
-         
          [Bindable (event="willNotChange")]
          private function get allianceTech(): Technology
          {
@@ -65,7 +61,7 @@
          {
             if (allyName.text.length >= Config.getMinAllyNameLength())
             {
-               allyPending = true;
+               GlobalFlags.getInstance().lockApplication = true;
                allianceExists = false;
                EventBroker.subscribe(GAllianceEvent.ALLIANCE_CONFIRMED, removeAlliancePending);
                EventBroker.subscribe(GAllianceEvent.ALLIANCE_FAILED, removeAlliancePending);
@@ -82,14 +78,11 @@
             {
                allianceExists = true;
             }
-            allyPending = false;
+            GlobalFlags.getInstance().lockApplication = false;
          }
          
          [Bindable]
          private var allianceExists: Boolean = false;
-         
-         [Bindable]
-         private var allyPending: Boolean = false;
          
          protected function this_creationCompleteHandler(event:FlexEvent):void
          {
@@ -101,69 +94,6 @@
          
          [Bindable]
          private var leftTime: Number = 0;
-         
-         private var sortKey: String;
-         
-         private static const nameField: SortField = new SortField('name', true);
-         private static const rankField: SortField = new SortField('rank', false, false, true);
-         private static const allianceField: SortField = new SortField('alliance', true);
-         private static const victoryPtsField: SortField = new SortField('victoryPoints', false, true, true);
-         private static const allianceVpsField: SortField = new SortField('allianceVps', false, true, true);
-         private static const pointsField: SortField = new SortField('points', false, true, true);
-         private static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
-         private static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);
-         private static const sciencePtsField: SortField = new SortField('sciencePoints', false, true, true);
-         private static const armyPtsField: SortField = new SortField('armyPoints', false, true, true);
-         private static const warPtsField: SortField = new SortField('warPoints', false, true, true);
-         
-         
-         private static const sortFields: Object = 
-            {
-               'rank':[rankField],
-               'name':[nameField],
-               'alliance':[allianceField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'planetsCount':[planetsCountField, allianceVpsField, victoryPtsField, pointsField, nameField],
-               'economyPoints':[economyPtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'sciencePoints':[sciencePtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'armyPoints':[armyPtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'warPoints':[warPtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'victoryPoints':[victoryPtsField, allianceVpsField, pointsField, planetsCountField, nameField],
-               'allianceVps':[allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'points':[pointsField, allianceVpsField, victoryPtsField, planetsCountField, nameField]
-            }
-         
-         protected function header_ratingsSortHandler(event:RatingsEvent):void
-         {
-            alliance.players.sort = new Sort();
-            alliance.players.sort.fields = sortFields[event.key];
-            alliance.players.refresh();
-         }
-         
-         protected function refresh_clickHandler(event:MouseEvent):void
-         {
-            new AlliancesCommand(AlliancesCommand.SHOW, {'id': ML.player.allianceId}).dispatch();
-         }
-         
-         protected function leave_clickHandler(event:MouseEvent):void
-         {
-            var popUp: ErrorPopup = new ErrorPopup();
-            popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
-            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-            popUp.showCancelButton = true;
-            popUp.showRetryButton = true;
-            popUp.message = alliance.ownerId == ML.player.id
-               ? Localizer.string('Popups', 'message.leaveSelfAlly')
-               : Localizer.string('Popups', 'message.leaveAlly', 
-                  [DateUtil.secondsToHumanString(Config.getAllianceLeaveCooldown())]);
-            popUp.title = Localizer.string('Popups', 'title.leaveAlly');
-            popUp.retryButtonClickHandler = function (button: Button = null): void
-            {
-               GlobalFlags.getInstance().lockApplication = true;
-               new AlliancesCommand(AlliancesCommand.LEAVE).dispatch();
-               alliance = null;
-            };
-            popUp.show();
-         }
          
          private function renameAlliance(e: MouseEvent): void
          {
@@ -186,7 +116,7 @@
                   GlobalFlags.getInstance().lockApplication = true;
                   new AlliancesCommand(AlliancesCommand.EDIT, 
                      {'name': allyNewName.text}).dispatch();
-                  alliance.name = allyNewName.text;
+                  model.alliance.name = allyNewName.text;
                   allyNewName.text = '';
                };
                popUp.show();
@@ -199,9 +129,9 @@
          protected function save_clickHandler(event:MouseEvent):void
          {
             GlobalFlags.getInstance().lockApplication = true;
-            alliance.newDescription = desc.text;
+            model.alliance.newDescription = desc.text;
             new AlliancesCommand(AlliancesCommand.EDIT_DESCRIPTION, 
-               alliance).dispatch();
+               model.alliance).dispatch();
             editing = false;
          }
          
@@ -233,7 +163,8 @@
                       selected="{model.descriptionTabSelected}"
                       click="model.selectDescriptionTab()"/>
       <s:ToggleButton id="tabPlayers" name="players" skinClass="components.alliance.SectionTabSkin"
-                      label="{getString('title.section.players')}" minWidth="276" depth="10" fontSize="18"
+                      label="{getString('title.section.players')}" 
+                      minWidth="276" depth="10" fontSize="18"
                       enabled="{model.playersTabEnabled}"
                       selected="{model.playersTabSelected}"
                       click="model.selectPlayersTab()"/>  
@@ -252,7 +183,7 @@
          <base:AdvancedContainer horizontalCenter="0" width="{pnlPlayers.width}">
             
             <!-- Description -->
-            <base:Panel title="{alliance.name}" skinClass="components.skins.LargePanelSkin"
+            <base:Panel title="{model.alliance.name}" skinClass="components.skins.LargePanelSkin"
                         visible="{model.descriptionPanelVisible}" width="100%">
                <base:layout>
                   <s:VerticalLayout/>
@@ -263,9 +194,9 @@
                   </s:layout>
                   <s:Label text="{getString('label.allianceOwner')}" 
                            fontSize="14" width="150"/>
-                  <s:Button label="{alliance.getPlayerName(alliance.ownerId)}"
+                  <s:Button label="{model.alliance.getPlayerName(model.alliance.ownerId)}"
                             click="NavigationController.getInstance().showPlayer(
-                            alliance.ownerId)"
+                            model.alliance.ownerId)"
                             skinClass="components.skins.LinkButtonSkin"/>
                </s:Group>
                <s:Group>
@@ -274,18 +205,20 @@
                   </s:layout>
                   <s:Label text="{getString('label.totalAllianceVps')}"
                            fontSize="14" width="150"/>
-                  <s:Label text="{alliance.totalAllianceVps}" fontSize="14"/>
+                  <s:Label text="{model.alliance.totalAllianceVps}" fontSize="14"/>
                </s:Group>
                
                <s:Label text="{getString('label.allianceDescription')}" fontSize="14"
                         paddingTop="6" fontWeight="bold"/>
-               <s:TextArea id="desc" paddingBottom="6" width="100%" height="150" editable="{editing}"
+               <s:TextArea id="desc" paddingBottom="6" width="100%" height="150" 
+                           editable="{editing}"
                            fontSize="12" color="#eec500" fontWeight="bold"
                            verticalScrollPolicy="off" horizontalScrollPolicy="off"
                            maxChars="{Config.getMaxAllyDescriptionLength()}"
-                           text="{alliance.newDescription}"/>
+                           text="{model.alliance.newDescription}"/>
                <base:AdvancedContainer width="100%"
-                                       visible="{alliance != null &amp;&amp; alliance.ownerId == ML.player.id}">
+                                       visible="{model.alliance != null 
+                                       &amp;&amp; model.alliance.ownerId == ML.player.id}">
                   <base:layout>
                      <s:HorizontalLayout horizontalAlign="right"/>
                   </base:layout>
@@ -296,18 +229,19 @@
                         desc.setFocus();
                      </s:click>
                   </s:Button>
-                  <s:Button label="{getString('label.save')}" click="save_clickHandler(event)" visible="{editing}"/>
+                  <s:Button label="{getString('label.save')}" click="save_clickHandler(event)" 
+                            visible="{editing}"/>
                   <s:Button label="{getString('label.cancel')}" visible="{editing}">
                      <s:click>
                         editing = false;
-                        alliance.newDescription = alliance.description;
+                        model.alliance.newDescription = model.alliance.description;
                      </s:click>
                   </s:Button>
                </base:AdvancedContainer>
             </base:Panel>
             
             <!-- Players -->
-            <base:Panel id="pnlPlayers" title="{alliance.name}"
+            <base:Panel id="pnlPlayers" title="{model.alliance.name}"
                         visible="{model.playersPanelVisible}"
                         skinClass="components.skins.LargePanelSkin">
                <base:layout>
@@ -317,20 +251,22 @@
                   <s:layout>
                      <s:VerticalLayout gap="0" horizontalAlign="contentJustify"/>
                   </s:layout>
-                  <alliance:MembersRatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)"/>
-                  <s:DataGroup dataProvider="{alliance.players}"
+                  <alliance:MembersRatingsHeader id="header" 
+                                                 listSort="model.header_ratingsSortHandler(event)"/>
+                  <s:DataGroup dataProvider="{model.alliance.players}"
                                itemRenderer="components.alliance.IRMembersRatingsRow">
                      <s:layout>
                         <s:VerticalLayout gap="0"/>
                      </s:layout>
                   </s:DataGroup>
-                  <alliance:TotalAliancePointsComp bottom="0" id="total" alliance="{alliance}"/>
+                  <alliance:TotalAliancePointsComp bottom="0" id="total" alliance="{model.alliance}"/>
                </s:Group>
-               <s:Button label="{getString('label.refresh')}" click="refresh_clickHandler(event)"/>
+               <s:Button label="{getString('label.refresh')}" 
+                         click="model.refresh_clickHandler(event)"/>
             </base:Panel>
             
             <!-- Management -->
-            <base:Panel title="{alliance.name}" width="100%" minHeight="200"
+            <base:Panel title="{model.alliance.name}" width="100%" minHeight="200"
                         visible="{model.managementPanelVisible}"
                         skinClass="components.skins.LargePanelSkin">
                
@@ -340,7 +276,7 @@
                      <s:VerticalLayout horizontalAlign="center" gap="20"/>
                   </base:layout>
                   
-                  <s:Group visible="{alliance.ownerId == ML.player.id}" width="60%">
+                  <s:Group visible="{model.alliance.ownerId == ML.player.id}" width="60%">
                      <s:layout>
                         <s:VerticalLayout horizontalAlign="center" gap="6"/>
                      </s:layout>
@@ -352,8 +288,7 @@
                         <base:BaseTextInput width="100%" id="allyNewName" enter="createAlliance(event)"
                                             maxChars="{Config.getMaxAllyNameLength()}"/>
                         <s:Button enabled="{ML.player.creds &lt; Config.getEditAllianceCredits() ||
-                                  allyNewName.text.length >= Config.getMinAllyNameLength()
-                                  &amp;&amp; !allyPending}"
+                                  allyNewName.text.length >= Config.getMinAllyNameLength()}"
                                   skinClass="components.skins.CreditButtonSkin"
                                   click="renameAlliance(event)" 
                                   label="{ML.player.creds &lt; Config.getEditAllianceCredits() ?
@@ -369,7 +304,7 @@
                      </s:layout>
                      <s:Label text="{getString('label.leaveAlliance')}" fontSize="16"/>
                      <s:Button label="{getString('label.leave')}"
-                               click="leave_clickHandler(event)"/>
+                               click="model.leave_clickHandler(event)"/>
                   </s:Group>
                   
                </base:AdvancedContainer>
@@ -393,7 +328,7 @@
                   <s:Label text="{getString('label.name')}" fontSize="14"/>
                   <base:BaseTextInput width="100%" id="allyName" enter="createAlliance(event)"
                                       maxChars="{Config.getMaxAllyNameLength()}"/>
-                  <s:Button enabled="{allyName.text.length >= Config.getMinAllyNameLength() &amp;&amp; !allyPending}"
+                  <s:Button enabled="{allyName.text.length >= Config.getMinAllyNameLength()}"
                             click="createAlliance(event)" label="{getString('label.create')}"/>
                   
                </s:Group>
@@ -409,7 +344,9 @@
             
             <!-- Error message when palyer does not have required technology -->
             <base:Warning text="{getString('label.noTech')}" width="60%"
-                          visible="{allianceTech.upgradePart.level &lt; 1 &amp;&amp; ML.player.allianceId == 0}"/>
+                          visible="{allianceTech.upgradePart.level &lt; 1 
+                          &amp;&amp; ML.player.allianceId == 0
+                          &amp;&amp; model.alliance == null}"/>
             
             <!-- Cooldown warning -->
             <base:Warning text="{getString('label.cooldown', [DateUtil.secondsToHumanString(leftTime, 2)])}" 

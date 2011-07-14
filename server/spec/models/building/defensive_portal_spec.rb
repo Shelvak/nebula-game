@@ -21,7 +21,9 @@ describe Building::DefensivePortal do
     it "should use player friendly ids for player ids" do
       planet = Factory.create(:planet_with_player)
       # Second planet for planet ids.
-      Factory.create(:planet, :player => planet.player)
+      Factory.create!(:b_defensive_portal, 
+        opts_active + 
+          {:planet => Factory.create(:planet, :player => planet.player)})
       player = planet.player
       player_ids = [player.id, 10, 20]
       player.should_receive(:friendly_ids).and_return(player_ids)
@@ -32,9 +34,33 @@ describe Building::DefensivePortal do
     it "should use all friendly planet ids except original planet" do
       planet1 = Factory.create(:planet_with_player)
       planet2 = Factory.create(:planet, :player => planet1.player)
+      Factory.create!(:b_defensive_portal, opts_active + {:planet => planet2})
       planet3 = Factory.create(:planet, :player => planet1.player)
+      Factory.create!(:b_defensive_portal, opts_active + {:planet => planet3})
       Building::DefensivePortal.send(:get_ids_from_planet, planet1)[1].
         should == [planet2.id, planet3.id]
+    end
+    
+    it "should not return planets which have no portals" do
+      planet1 = Factory.create(:planet_with_player)
+      planet2 = Factory.create(:planet, :player => planet1.player)
+      planet3 = Factory.create(:planet, :player => planet1.player)
+      Factory.create!(:b_defensive_portal, 
+        opts_active + {:planet => planet3})
+      Building::DefensivePortal.send(:get_ids_from_planet, planet1)[1].
+        should == [planet3.id]
+    end
+    
+    it "should not return planets without active portals" do
+      planet1 = Factory.create(:planet_with_player)
+      planet2 = Factory.create(:planet, :player => planet1.player)
+      Factory.create!(:b_defensive_portal, 
+        opts_inactive + {:planet => planet2})
+      planet3 = Factory.create(:planet, :player => planet1.player)
+      Factory.create!(:b_defensive_portal, 
+        opts_active + {:planet => planet3})
+      Building::DefensivePortal.send(:get_ids_from_planet, planet1)[1].
+        should == [planet3.id]
     end
   end
 

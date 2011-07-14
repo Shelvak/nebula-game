@@ -10,6 +10,7 @@ package controllers.screens
       public static const UNITS_ACTIONS:String = "UnitsActionsSidebar";
       public static const LOAD_UNLOAD:String = "LoadUnloadSidebar";
       public static const HEAL:String = "HealSidebar";
+      public static const MARKET:String = "MarketSidebar";
       public static const EMPTY:String = "Empty";
    }
 }

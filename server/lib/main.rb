@@ -75,6 +75,15 @@ EventMachine::run do
     puts "Console is log closed for performance reasons."
     puts "Everything is logged to file."
   end
+  
+#  EventMachine::PeriodicTimer.new(15.minutes) { MEM_PROF.run }
+#  MEM_PROF = MemProf.new
+#  MEM_PROF.run
+#  trap("USR1") do
+#    File.open("memprof-#{Time.now.strftime("%Y%m%d_%H%M%S")}", "w") do |f| 
+#      MEM_PROF.stats(0, f)
+#    end
+#  end
 end
 
 LOGGER.info "Server stopped."

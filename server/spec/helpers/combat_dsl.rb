@@ -71,6 +71,7 @@ class CombatDsl
 
     def method_missing(name, *args, &block)
       options = args.last || {}
+      units = []
       (options[:count] || 1).times do
         unit = Factory.build!("u_#{name}", :location => @location,
           :galaxy_id => @galaxy_id,
@@ -98,7 +99,10 @@ class CombatDsl
 
 
         @units.push unit
+        units.push unit
       end
+      
+      units.size == 1 ? units[0] : units
     end
   end
 

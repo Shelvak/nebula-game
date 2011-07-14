@@ -7,7 +7,6 @@ package spacemule.modules.pathfinder.objects
 
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects
-import spacemule.modules.config.objects.Config
 
 object SolarSystemPoint {
   def apply(planet: Planet) = new SolarSystemPoint(planet)
@@ -18,11 +17,12 @@ case class SolarSystemPoint(
 ) extends Locatable with InSolarSystem {
   def this(planet: Planet) = this(planet.solarSystem, planet.coords)
   
-  def toServerLocation = ServerLocation(solarSystem.id,
-                                        objects.Location.SolarSystem,
-                                        Some(coords.position),
-                                        Some(coords.angle),
-                                        Config.planetLinkWeight)
+  def toServerLocation(timeMultiplier: Double) = 
+    ServerLocation(solarSystem.id,
+                   objects.Location.SolarSystem,
+                   Some(coords.position),
+                   Some(coords.angle),
+                   timeMultiplier)
   def solarSystemId = solarSystem.id
   def solarSystemPoint = this
 }

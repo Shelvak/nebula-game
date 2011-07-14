@@ -5,6 +5,7 @@
 
 package spacemule.modules.pathfinder.objects
 
+import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
 
 case class SolarSystem(id: Int, coords: Option[Coords], galaxyId: Int) {
@@ -12,6 +13,16 @@ case class SolarSystem(id: Int, coords: Option[Coords], galaxyId: Int) {
     case Some(coords) => GalaxyPoint(galaxyId, coords)
     case None => error("Cannot give galaxy point for battleground solar system!")
   }
+  
+  /**
+   * Is this solar system a global battleground?
+   */
+  def isGlobalBattleground = coords.isEmpty
+  
+  /**
+   * Return time multiplier for solar system.
+   */
+  def wormholeHopMultiplier = Config.wormholeHopMultiplier(this)
 
   /**
    * Filter points and return coords that belong to this solar system.

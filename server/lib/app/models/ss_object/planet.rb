@@ -224,6 +224,16 @@ class SsObject::Planet < SsObject
     save!
     EventBroker::fire(self, EventBroker::CHANGED)
   end
+  
+  RESOURCES = [:metal, :energy, :zetium]
+  
+  RESOURCES.each do |resource|
+    define_method("#{resource}_rate") do
+      generation_rate = send("#{resource}_generation_rate")
+      usage_rate = send("#{resource}_usage_rate")
+      generation_rate * resource_modifier(resource) - usage_rate
+    end
+  end
 
   private
   # Set #next_raid_at.
@@ -411,16 +421,6 @@ class SsObject::Planet < SsObject
     end
 
     @resource_modifiers
-  end
-  
-  RESOURCES = [:metal, :energy, :zetium]
-  
-  RESOURCES.each do |resource|
-    define_method("#{resource}_rate") do
-      generation_rate = send("#{resource}_generation_rate")
-      usage_rate = send("#{resource}_usage_rate")
-      generation_rate * resource_modifier(resource) - usage_rate
-    end
   end
 
   # Calculate new values.

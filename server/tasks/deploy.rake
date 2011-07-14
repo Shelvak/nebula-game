@@ -52,7 +52,7 @@ DEPLOY_CONFIG = {
         File.join("script", "log_analyzer.rb"),
         File.join("script", "munin_logged_in.rb"),
         File.join("script", "munin-plugins"),
-        #File.join("script", "fix_visibility.rb"),
+        File.join("script", "fixes"),
         "vendor",
         "Rakefile",
         ".rvmrc",
@@ -71,7 +71,7 @@ DEPLOY_CONFIG_CLIENT_CURRENT = "#{
   DEPLOY_CONFIG[:paths][:remote][:client]}/current"
 DEPLOY_CONFIG_SERVER_CURRENT = "#{
   DEPLOY_CONFIG[:paths][:remote][:server]}/current"
-HTML_TEMPLATE_LOCALE = File.join(PROJECT_ROOT, 'flex', 'html-template',
+FLEX_LOCALES_DIR = File.join(PROJECT_ROOT, 'flex', 'target', 'dist',
   'locale')
 
 class DeployHelpers; class << self
@@ -229,7 +229,7 @@ class DeployHelpers; class << self
 
   def chmod(ssh)
     current_dir = DEPLOY_CONFIG_SERVER_CURRENT
-    ssh.exec!("chmod +x #{current_dir}/lib/main.rb #{current_dir
+    ssh.exec!("chmod -R +x #{current_dir}/lib/main.rb #{current_dir
       }/lib/daemon.rb #{current_dir}/lib/console.rb #{current_dir
       }/script/*")
   end
@@ -265,7 +265,7 @@ namespace :deploy do
     task :locales, [:env] do |task, args|
       env = DeployHelpers.get_env(args[:env])
       DeployHelpers.check_git_branch!(env)
-      Rake::Task['flex:locales:check'].invoke
+      `cd #{PROJECT_ROOT}/flex && ant copy-locales`
 
       DEPLOY_CONFIG[:servers][env][:client].each do |server|
         DeployHelpers.info env, "Deploying locales to #{server}" do
@@ -274,7 +274,7 @@ namespace :deploy do
               ssh.exec!("rm -rf #{DEPLOY_CONFIG_CLIENT_CURRENT}/locale")
               DeployHelpers.deploy_path(ssh, sftp,
                 DEPLOY_CONFIG_CLIENT_CURRENT,
-                HTML_TEMPLATE_LOCALE,
+                FLEX_LOCALES_DIR,
                 "locale")
             end
           end
@@ -287,11 +287,6 @@ namespace :deploy do
   task :client, [:env] do |task, args|
     env = DeployHelpers.get_env(args[:env])
     DeployHelpers.check_git_branch!(env)
-    Rake::Task['flex:locales:check'].invoke
-    
-    dst = File.join(CLIENT_TARGET, 'locale')
-    FileUtils.remove_dir(dst) if File.exist?(dst)
-    FileUtils.cp_r(HTML_TEMPLATE_LOCALE, dst, :verbose => true)
 
     DEPLOY_CONFIG[:servers][env][:client].each do |server|
       DeployHelpers.info env, "Deploying client to #{server}" do

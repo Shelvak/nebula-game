@@ -146,45 +146,6 @@ describe Rewards do
         end.should_not raise_error(GameLogicError)
       end
     end
-    
-    it "should increase fow counter for space units" do
-      @rewards.add_unit(Unit::Crow, :count => 2)
-      lambda do
-        @rewards.claim!(@planet, @player)
-        @fse.reload
-      end.should change(@fse, :counter).by(2)
-    end
-
-    it "should not increase fow counter for ground units" do
-      lambda do
-        @rewards.claim!(@planet, @player)
-        @fse.reload
-      end.should_not change(@fse, :counter)
-    end
-
-    it "should increase #{Unit.points_attribute} when getting units" do
-      points = @unit_defs.map do |klass, count, level|
-        Resources.total_volume(
-          klass.metal_cost(level),
-          klass.energy_cost(level),
-          klass.zetium_cost(level)
-        ) * count
-      end.sum
-      lambda do
-        @rewards.claim!(@planet, @player)
-        @player.reload
-      end.should change(@player, Unit.points_attribute).by(points)
-    end
-
-    it "should increase population when getting units" do
-      population = @unit_defs.map do |klass, count, level|
-        klass.population * count
-      end.sum
-      lambda do
-        @rewards.claim!(@planet, @player)
-        @player.reload
-      end.should change(@player, :population).by(population)
-    end
 
     it "should reward units honoring hp" do
       @rewards.claim!(@planet, @player)
@@ -193,20 +154,9 @@ describe Rewards do
         (Unit::Seeker.hit_points * 90 / 100)
     end
 
-    it "should fire created with units" do
-      should_fire_event(
-        [an_instance_of(Unit::Trooper), an_instance_of(Unit::Trooper),
-          an_instance_of(Unit::Shocker), an_instance_of(Unit::Seeker)],
-        EventBroker::CREATED,
-        EventBroker::REASON_REWARD_CLAIMED
-      ) do
-        @rewards.claim!(@planet, @player)
-      end
-    end
-
     it "should reward experienced units" do
       @rewards.claim!(@planet, @player)
-      units = Unit::Shocker.find(:all, :conditions => {
+      Unit::Shocker.find(:all, :conditions => {
           :level => 2, :player_id => @player.id,
             :location => @planet.location
       }).map(&:hp).uniq.should == [Unit::Shocker.hit_points]

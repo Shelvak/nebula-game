@@ -98,7 +98,7 @@ package models.factories
                      {
                         alliance.status = building.playerStatus;
                      }
-                     battle.buildings.addItem(building);
+                     flank.buildings.addItem(building);
                   }
                }
             }

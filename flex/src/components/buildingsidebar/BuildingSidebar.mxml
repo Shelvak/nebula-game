@@ -683,7 +683,7 @@
                         width="100%" id="queueGroup">
                   <elements:BuildingProgressElement id="progressElement"
                                                     width="100%"
-                                                    buildingModel="{selectedConstructionModel}"/>
+                                                    constructableModel="{selectedConstructionModel}"/>
                   <s:List id="queueList" dataProvider="{selectedFacility.constructionQueueEntries}"
                           useVirtualLayout="false"
                           width="100%" rollOverColor="#0f0f0f" selectionColor="#0f0f0f" 

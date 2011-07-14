@@ -127,15 +127,21 @@ module Dev
     end
   end
   
-  def self.pimp(player_id_or_name)
+  def self.pimp(player_id_or_name, opts={})
     player = player_id_or_name.is_a?(Fixnum) \
       ? Player.find(player_id_or_name) \
       : Player.where(:name => player_id_or_name).first
     
-    player.population = 0
-    player.population_max = player.scientists = 
-      player.scientists_total = 10000
-    player.creds = 1_000_000
+    opts.reverse_merge! :population => true, :scientists => true, 
+      :creds => true, :war_points => true
+    
+    if opts[:population]
+      player.population = 0
+      player.population_max = 10_000
+    end
+    player.scientists = player.scientists_total = 10_000 if opts[:scientists]
+    player.creds = 1_000_000 if opts[:creds]
+    player.war_points = 1_000_000 if opts[:war_points]
     
     planet = player.planets.first
     max_resources(planet.id)

@@ -445,12 +445,21 @@
       <p>Paspausk ant tuščios žemėlapio vietos, jog įeitum į statybų 
       režimą.</p>
     </message.pressOnEmpty>
+    <warning.buildingWorking>
+      <p>Jeigu liepsi šiam pastatui susinaikinti, tada tai, 
+      ką stato šis pastatas, bus taip pat sunaikinta.</p>
+    </warning.buildingWorking>
     <toolTip.afterUpgrade value="Po patobulinimo" />
 
     <title.boost value="Padidinti" />
     <title.buildingBonus value="Pastato privalumai" />
     <label.nextBonus value="Sekantis pliusas už:" />
-    <label.victoryPoint value="1 laimėjimo taškas" />
+    <label.victoryPoint>
+      <p>{0 one[? laimėjimo taškas] 1sts[? laimėjimo taškas] tens[? laimėjimo taškų] many[? laimėjimo taškai]}</p>
+    </label.victoryPoint>
+    <label.cred>
+      <p>{0 one[? kredas] 1sts[? kredas] tens[? kredų] many[? kredai]}</p>
+    </label.cred>
     <tileBonuses value="Žemėlapio privalumai" />
     <armor.bonus value="Šarvai" />
     <energy.bonus value="Energijos gamyba" />
@@ -513,6 +522,8 @@
     <property.healing.time.mod value="Sekundžių pagyditi 1 GT" />
     <property.healing.cost.mod value="Gydymo kainos daugiklis" />
     <property.teleportedVolume value="Perkeliamas tūris" />
+    <property.creds value="Kredai" />
+    <property.victoryPoints value="Pergalės taškai" />
 
     <text.deactivated>
       <p>
@@ -1237,7 +1248,7 @@
     <label.openLocation value="Atidaryti vietą" />
     <label.storage value="{0}/{1}" />
 
-    <sector value="Sektorius" />
+    <sector value="Sektorius " />
 
     <header.galaxy value="Galaktikos sektorius" />
     <header.solarSystem value="Saulės sistema" />
@@ -2906,6 +2917,7 @@
     <metal value="Metalas" />
     <energy value="Energija" />
     <zetium value="Zetiumas" />
+    <creds value="Kredai" />
     <time value="Tobulinimo laikas" />
     <population value="Populiacija" />
     <scientists value="Mokslininkai" />
@@ -3798,5 +3810,33 @@
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Žaidėjai"/>
   </Chat>
+  
+  <Market>
+    <label.submit value="Patvirtinti" />
+    <label.fee value="Mokesčiai:" />
+    <label.wantToSell value="Tu nori parduoti:" />
+    <label.howMuch value="Kiek?" />
+    <label.sellFor value="Už:" />
+    <!-- 1 cheaper or more -->
+    <label.marketValue value="{0}% {1 cheaper[mažiau] more[daugiau]} nei rinkos kaina" />
+    <title.sell value="Parduoti"/>
+    <warning.noSlots value="Pasiekei pasiūlymų limitą" />
+    <title.currentOffers value="Dabartiniai pasiūlymai" />
+    <title.filterOffers value="Filtruoti pasiūlymus" />
+    <filter.show value="Rodyti" />
+    <filter.for value="už" />
+    <title.offers value="Pasiūlymai" />
+    <header.from value="Įkėlė" />
+    <header.what value="Parduoda" />
+    <header.forWhat value="Nori" />
+    <header.rate value="Santykis" />
+    <header.createdAt value="Įkelta" />
+    <title.buy value="Priimti pasiūlymą" />
+    <title.cancel value="Atšaukti pasiūlymą" />
+    <!-- resource image goes after this string -->
+    <label.willPay value="Tu turėsi sumokėti {0}" />
+    <label.buy value="Pirkti" />
+    <label.cancel value="Atšaukti" />
+  </Market>
 
 </locale>

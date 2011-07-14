@@ -112,6 +112,13 @@ describe Combat do
       @planet.reload
       @planet.player.should be_nil
     end
+    
+    it "should dispatch changed with planet" do
+      should_fire_event(@planet, EventBroker::CHANGED, 
+          EventBroker::REASON_OWNER_PROP_CHANGE) do
+        Combat.npc_raid!(@planet)
+      end
+    end
 
     describe "raid cleared", :shared => true do
       it "should not register raid" do
@@ -164,6 +171,26 @@ describe Combat do
     end
   end
 
+  describe "simulation" do
+    describe "#parse_killed_by" do
+      it "should return units" do
+        unit = Factory.create(:unit)
+        player_id = 30
+        Combat.parse_killed_by(
+          {unit.id => unit}, {}, {"t#{unit.id}" => player_id}
+        ).should == {unit => player_id}
+      end
+      
+      it "should return buildings" do
+        building = Factory.create(:building)
+        player_id = 30
+        Combat.parse_killed_by(
+          {}, {building.id => building}, {"b#{building.id}" => player_id}
+        ).should == {building => player_id}
+      end
+    end
+  end
+  
   describe "combat" do
     before(:each) do
       @dsl = CombatDsl.new do
@@ -244,6 +271,13 @@ describe Combat do
       @dsl.run
     end
 
+    it "should update alive buildings" do
+      vulcan = @location.buildings.where(:type => "Vulcan").first
+      should_fire_event([vulcan], EventBroker::CHANGED) do
+        @dsl.run
+      end
+    end
+    
     it "should calculate wreckages" do
       Wreckage.should_receive(:calculate).and_return do |units|
         Set.new(units).should == Set.new([3, 4, 5].map { |i| @units[i] })
@@ -352,20 +386,39 @@ describe Combat do
   end
 
   it "should include buildings in alive/dead stats" do
-    player = nil
+     player = nil
+     dsl = CombatDsl.new do
+       location(:planet) { buildings { thunder } }
+       player = self.player :planet_owner => true
+       player { units { crow } }
+     end
+ 
+     assets = dsl.run
+     notification = Notification.find(
+       assets.notification_ids[player.player.id])
+     notification.params['units']['yours']['alive'].should include(
+       "Building::Thunder")
+  end
+
+  it "should not include other player leveled up units in stats" do
+    player = crow_unit = nil
     dsl = CombatDsl.new do
-      location(:planet) { buildings { thunder } }
-      player = self.player :planet_owner => true
-      player { units { crow } }
+      location(:solar_system)
+      player = self.player { units { crow :hp => 10 } }
+      self.player { units { crow_unit = crow } }
     end
+    
+    crow_unit.xp = crow_unit.xp_needed(2) - 1
+    crow_unit.save!
 
     assets = dsl.run
     notification = Notification.find(
       assets.notification_ids[player.player.id])
-    notification.params['units']['yours']['alive'].should include(
-      "Building::Thunder")
+    notification.params['leveled_up'].find do |unit_hash|
+      unit_hash[:type] == "Unit::Crow"
+    end.should be_nil
   end
-
+  
   describe "teleported units" do
     before(:each) do
       player = nil

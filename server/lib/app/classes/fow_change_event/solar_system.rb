@@ -32,7 +32,7 @@ class FowChangeEvent::SolarSystem < FowChangeEvent
     metadatas = {}
     player_ids = Set.new
     fow_ss_entries.each do |fse|
-      if fse.alliance_id
+      if fse.alliance
         fse.alliance.member_ids.each do |player_id|
           player_ids.add(player_id)
           metadatas[player_id] ||= {}

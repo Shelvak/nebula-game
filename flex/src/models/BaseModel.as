@@ -38,9 +38,9 @@ package models
    
    
    /**
-    * @see models.events.BaseModelEvent#ID_CHANGE
+    * @see models.events.BaseModelEvent#MODEL_ID_CHANGE
     */
-   [Event(name="idChange", type="models.events.BaseModelEvent")]
+   [Event(name="modelIdChange", type="models.events.BaseModelEvent")]
    
    
    /**
@@ -869,7 +869,7 @@ package models
        */
       protected function dispatchIdChangeEvent() : void
       {
-         dispatchSimpleEvent(BaseModelEvent, BaseModelEvent.ID_CHANGE);
+         dispatchSimpleEvent(BaseModelEvent, BaseModelEvent.MODEL_ID_CHANGE);
       }
       
       

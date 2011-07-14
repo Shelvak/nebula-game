@@ -11,7 +11,7 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
-         import components.ratings.events.RatingsEvent;
+         import models.events.HeaderEvent;
          import components.skins.LargePanelSkin;
          
          import config.Config;
@@ -138,7 +138,7 @@
                'points':[pointsField, victoryPtsField, planetsCountField, nameField]
             }
          
-         protected function header_ratingsSortHandler(event:RatingsEvent):void
+         protected function header_ratingsSortHandler(event:HeaderEvent):void
          {
             ML.ratings.sort = new Sort();
             ML.ratings.sort.fields = sortFields[event.key];
@@ -157,7 +157,7 @@
       <base:Panel height="100%" horizontalCenter="0" 
                   skinClass="components.skins.LargePanelSkin"
                   title="{Localizer.string('Ratings', 'label.ratings')}">
-         <ratings:RatingsHeader id="header" ratingsSort="header_ratingsSortHandler(event)"/>
+         <ratings:RatingsHeader id="header" listSort="header_ratingsSortHandler(event)"/>
          <base:Scroller id="contScroller" left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10">
             <s:Group width="100%">
                <s:DataGroup dataProvider="{ML.ratings}"

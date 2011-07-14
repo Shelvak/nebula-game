@@ -30,9 +30,9 @@ package models.events
        * Dispatched when <code>id</code> property of <code>BaseModel</code>
        * changes.
        * 
-       * @eventType idChange
+       * @eventType modelIdChange
        */
-      public static const ID_CHANGE:String = "idChange";
+      public static const MODEL_ID_CHANGE:String = "modelIdChange";
       
       
       /**

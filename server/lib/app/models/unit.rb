@@ -436,28 +436,52 @@ class Unit < ActiveRecord::Base
     #
     def give_units(description, location, player)
       units = []
-      points = UnitPointsCounter.new
-      population = 0
 
       description.each do |type, count|
         klass = "Unit::#{type.camelcase}".constantize
         count.times do
-          unit = klass.new(:level => 1,
-            :player => player, :location => location,
-            :galaxy_id => player.galaxy_id)
-          unit.skip_validate_technologies = true
-          points.add_unit(unit)
-          population += unit.population
-          units.push unit
+          units << klass.new(:level => 1)
         end
       end
 
-      points.increase(player)
-      player.population += population
-      player.save!
-      save_all_units(units, nil, EventBroker::CREATED)
+      give_units_raw(units, location, player)
+    end
+    
+    # Give _units_ to player.
+    #
+    # Units is a collection of unsaved +Unit+ objects.
+    def give_units_raw(units, location, player)
+      fse_counter = 0
+      points = UnitPointsCounter.new
+      population = 0
 
-      units
+      units.each do |unit|
+        points.add_unit(unit)
+        population += unit.population
+        fse_counter += 1 if unit.space?
+        unit.galaxy_id = player.galaxy_id unless player.nil?
+        unit.player = player
+        unit.location = location
+        unit.skip_validate_technologies = true
+      end
+
+      transaction do
+        if player
+          points.increase(player)
+          player.population += population
+          player.save!
+
+          FowSsEntry.increase(
+            location.solar_system_id, player, fse_counter
+          ) if fse_counter > 0 && location.is_a?(SsObject::Planet)
+          Objective::HaveUpgradedTo.progress(units, false)
+        end
+
+        save_all_units(units, nil, EventBroker::CREATED)
+        EventBroker.fire(units, EventBroker::CREATED)
+        
+        units
+      end
     end
 
     def dismiss_units(planet, unit_ids)
