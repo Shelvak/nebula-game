@@ -12,6 +12,14 @@ Spec::Matchers.define :equal_to_hash do |target|
             target_value + SPEC_TIME_PRECISION
           )
         ).cover?(actual_value)
+      elsif actual_value.is_a?(Float) && target_value.is_a?(Float)
+        (
+          (
+            target_value - SPEC_FLOAT_PRECISION
+          )..(
+            target_value + SPEC_FLOAT_PRECISION
+          )
+        ).cover?(actual_value)
       else
         equal = false unless actual_value == target_value
       end

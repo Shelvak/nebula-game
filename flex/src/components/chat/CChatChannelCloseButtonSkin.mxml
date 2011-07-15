@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
              xmlns:s="library://ns.adobe.com/flex/spark" 
-             width="12"
-             height="12">
+             width="12" height="12">
    
    <fx:Metadata>
       [HostComponent("spark.components.Button")]
@@ -14,15 +13,8 @@
          import utils.assets.ImagePreloader;
          
          
-         private function get IMG() : ImagePreloader
-         {
-            return ImagePreloader.getInstance();
-         }
-         
-         
-         private function getImage(key:String) : BitmapData
-         {
-            return IMG.getImage(AssetNames.CHAT_IMAGES_FOLDER + "btn_chan_close_" + key);
+         private function getImage(key:String) : BitmapData {
+            return ImagePreloader.getInstance().getImage(AssetNames.CHAT_IMAGES_FOLDER + "btn_chan_close_" + key);
          }
       ]]>
    </fx:Script>
@@ -34,7 +26,6 @@
       <s:State name="disabled" />
    </s:states>
    
-   <s:BitmapImage source="{getImage('up')}"
-                  source.down="{getImage('down')}"/>
+   <s:BitmapImage source="{getImage('up')}" source.down="{getImage('down')}"/>
    
 </s:SparkSkin>

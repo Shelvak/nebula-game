@@ -79,16 +79,6 @@ describe QuestEventHandler do
       end
     end
 
-    it "should update HaveUpgradedTo objectives on reward claimed" do
-      models = [Factory.create(:unit)]
-
-      Objective::HaveUpgradedTo.should_receive(
-        :progress
-      ).with(models, false).and_return(true)
-      @handler.fire(models, EventBroker::CREATED,
-        EventBroker::REASON_REWARD_CLAIMED)
-    end
-
     it "should update Destroy objectives on destroyed" do
       models = CombatArray.new([Factory.create(:building)], {})
 

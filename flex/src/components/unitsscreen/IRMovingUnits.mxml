@@ -67,15 +67,12 @@
             new RoutesCommand(RoutesCommand.DESTROY, squad).dispatch();
          }
          
-         private function recalcTimeLeft(e: GlobalEvent = null): void
-         {
-            if (route && route.arrivesAt)
-            {
-               arrivalTimeLeft = Localizer.string('Squadrons', 
-                  'label.inTime', [DateUtil.secondsToHumanString(((route.arrivesAt.time - new Date().time)/1000))]);
-               leavingTimeLeft = Localizer.string('Squadrons', 
-                  'label.inTime', [DateUtil.secondsToHumanString(((route.firstHop.time - new Date().time)/1000))]);
-            }
+         private function recalcTimeLeft(e:GlobalEvent = null) : void {
+            if (route != null)
+               leavingTimeLeft = Localizer.string(
+                  'Squadrons', 'label.inTime',
+                  [DateUtil.secondsToHumanString(((route.firstHop.time - new Date().time)/1000))]
+               );
          }
          
          protected function itemrenderer1_addedToStageHandler(event:Event):void
@@ -89,9 +86,6 @@
          {
             EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, recalcTimeLeft);
          }
-         
-         [Bindable]
-         private var arrivalTimeLeft: String = '';
          
          [Bindable]
          private var leavingTimeLeft: String = '';
@@ -197,7 +191,8 @@
          <s:Group width="100%" maxWidth="{targetLoc.maxWidth}">
             <s:Label text="{Localizer.string('Squadrons', 'label.arrivesAt') + ':'}" 
                      styleName="squadronInfo" width="146"/>
-            <s:Label id="arrivesAt" text="{route.arrivesAt.toString() + ' ' + arrivalTimeLeft}" 
+            <s:Label id="arrivesAt" text="{route.arrivalEvent.occuresAtString + ' ' +
+                                           route.arrivalEvent.occuresInString}" 
                      styleName="squadronInfo"/>
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle" paddingTop="5"/>

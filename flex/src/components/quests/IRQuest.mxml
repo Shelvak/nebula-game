@@ -1,361 +1,165 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                xmlns:s="library://ns.adobe.com/flex/spark" 
-                xmlns:mx="library://ns.adobe.com/flex/mx"
-                xmlns:base="components.base.*"
-                xmlns:menus="components.menus.*"
-                addedToStage="itemrenderer1_addedToStageHandler(event)"
-                removedFromStage="itemrenderer1_removedFromStageHandler(event)"
-                minWidth="5" minHeight="{TITLE_HEIGHT}"
-                autoDrawBackground="false">
-   <!--enabled="{!quest.pending}"-->
-   
-   <s:states>
-      <s:State name="normal"/>
-      <s:State name="selected"/>
-      <s:State name="hovered"/>
-   </s:states>
-   
-   <!-- background -->
-   <s:Rect left="0" right="0" top="0" bottom="0">
-      <s:fill>
-         <s:SolidColor color="{getStyle('chromeColor')}"/>
-      </s:fill>
-   </s:Rect>
-   
-   <!-- description and star button -->
-   <s:Group id="grpDescription" left="0" top="0" height="24">
-      
-      <s:Line left="0" top="0" bottom="-5" yFrom="0" yTo="28">
-         <s:stroke>
-            <s:SolidColorStroke color="0x808080"/>
-         </s:stroke>
-      </s:Line>
-      <s:Line left="0" right="0" xFrom="0" yFrom="0" xTo="10" yTo="0">
-         <s:stroke>
-            <s:SolidColorStroke color="0x808080"/>
-         </s:stroke>
-      </s:Line>
-      
-      <s:Label id="lblTitle" text="{title}" left="5" top="10"
-               color="{textColor}"/>
-      
-   </s:Group>   
-   
-   <s:Group id="grpProgress" top="0" right="0" height="24">
-      
-      <s:Line right="0" top="0" bottom="-5" yFrom="0" yTo="28">
-         <s:stroke>
-            <s:SolidColorStroke color="0x191919"/>
-         </s:stroke>
-      </s:Line>
-      <s:Line left="0" right="0" top="0" xFrom="0" yFrom="0" xTo="10" yTo="0">
-         <s:stroke>
-            <s:SolidColorStroke color="0x808080"/>
-         </s:stroke>
-      </s:Line>
-      
-      <s:Label id="lblProgress" color="{textColor}" right="5" top="10"
-               text="{progress}"/>
-      
-   </s:Group>
-   
-   <!-- middle part artwork -->
-   <s:Group id="grpMiddleArt" left="{grpDescription.width}" right="{grpProgress.width}" top="0" height="24">
-      
-      <s:layout>
-         <s:HorizontalLayout gap="0" verticalAlign="bottom"/>
-      </s:layout>
-      
-      <!-- skew connecting line -->
-      <s:Group width="24" height="24">
-         <s:Path left="0" right="0" top="0" bottom="0" data="M 0 0 L 23 23 L 0 23 Z">
-            <s:fill>
-               <s:SolidColor color="{getStyle('chromeColor')}"/>
-            </s:fill>
-         </s:Path>
-         <s:Line left="0" right="0" top="0" bottom="0"
-                 xFrom="0" yFrom="0" xTo="23" yTo="23">
-            <s:stroke>
-               <s:SolidColorStroke color="0x020202"/>
-            </s:stroke>
-         </s:Line>
+<screen:ItemRendererBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                         xmlns:s="library://ns.adobe.com/flex/spark" 
+                         xmlns:mx="library://ns.adobe.com/flex/mx"
+                         xmlns:base="components.base.*"
+                         xmlns:screen="components.base.screen.*"
+                         xmlns:menus="components.menus.*"
+                         addedToStage="this_addedToStageHandler(event)"
+                         removedFromStage="this_removedFromStageHandler(event)">
+   <fx:Declarations>
+      <s:Group id="_headerLeftContent">
+         <s:Label id="lblTitle" text="{title}" left="5" top="10" color="{textColor}"/>
       </s:Group>
-      
-      <s:Group width="100%" height="18" depth="-5">
-         <!-- shadow -->
-         <s:Rect left="-23" right="-23" height="18"
-                 alpha.normal="0.3"
-                 alpha.hovered="0.6"
-                 alpha.selected="0.6">
-            <s:fill>
-               <s:LinearGradient rotation="-90">
-                  <s:GradientEntry color="0x000000" color.selected="0xEFC501" alpha="1"/>
-                  <s:GradientEntry color="0x000000" color.selected="0xEFC501" alpha="0"/>
-               </s:LinearGradient>
-            </s:fill>
-         </s:Rect>
-         <!-- middle line -->
-         <s:Line left="0" right="0" bottom="0" xFrom="0" yFrom="0" xTo="10" yTo="0">
-            <s:stroke>
-               <s:SolidColorStroke color="0x808080"/>
-            </s:stroke>
-         </s:Line>
+      <s:Group id="_headerRrightContent">
+         <s:Label id="lblProgress" color="{textColor}" right="5" top="10" text="{progress}"/>
       </s:Group>
-      
-      <!-- skew connecting line -->
-      <s:Group width="24" height="24">
-         <s:Path left="0" right="0" top="0" bottom="0" data="M 0 23 L 23 0 L 23 23 Z">
-            <s:fill>
-               <s:SolidColor color="{getStyle('chromeColor')}"/>
-            </s:fill>
-         </s:Path>
-         <s:Line left="0" right="0" top="0" bottom="0" xFrom="0" yFrom="23" xTo="23" yTo="0">
-            <s:stroke>
-               <s:SolidColorStroke color="0x808080"/>
-            </s:stroke>
-         </s:Line>
-      </s:Group>
-      
-   </s:Group>
-   
-   
-   <!-- ############################### -->
-   <!-- ### CUSTOM PART STARTS HERE ### -->
-   
-   <s:Rect left="0" right="0" top="28" bottom="0" includeIn="selected">
-      <s:fill>
-         <s:SolidColor color="0x1D1D1D"/>
-      </s:fill>
-   </s:Rect>
-   
-   <s:Group left="0" right="0" top="28" bottom="0" includeIn="selected">
-      
-      <s:layout>
-         <s:VerticalLayout horizontalAlign="justify" gap="0"/>
-      </s:layout>
-      
-      <!-- artwork: top -->
-      <s:Group>
+      <s:Group id="_contentGroup">
          <s:layout>
-            <s:HorizontalLayout verticalAlign="top" gap="0"/>
+            <s:VerticalLayout horizontalAlign="justify"/>
          </s:layout>
-         <s:BitmapImage source="{IMG.getImage(PBORDER + 'top_left')}"/>
-         <s:BitmapImage source="{IMG.getImage(PBORDER + 'top_center')}" width="100%" fillMode="repeat"/>
-         <s:BitmapImage source="{IMG.getImage(PBORDER + 'top_right')}"/>
-      </s:Group>
-      
-      <!-- middle -->
-      <s:Group height="100%">
-         
-         <!-- artwork -->
-         <s:BitmapImage left="0" top="0" bottom="0"
-                        source="{IMG.getImage(PBORDER + 'middle_left')}" fillMode="repeat"/>
-         <s:BitmapImage right="0" top="0" bottom="0"
-                        source="{IMG.getImage(PBORDER + 'middle_right')}" fillMode="repeat"/>
-         
-         <!-- content -->
-         <s:Group left="0" right="0" top="0">
+         <s:Group>
+            <s:BitmapImage source="{getImage(AssetNames.UI_IMAGES_FOLDER + 'quest_advisor')}"/>
+            
             <s:Group width="100%">
-               <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'quest_advisor')}"/>
                
+               <s:layout>
+                  <s:VerticalLayout horizontalAlign="justify" gap="5"/>
+               </s:layout>
                
-               <s:Group width="100%">
-                  
+               <s:Label text="{quest.about}" color="#D6CA8D" fontSize="15" paddingBottom="20" />
+               
+               <s:Group>
                   <s:layout>
-                     <s:VerticalLayout horizontalAlign="justify" gap="5"/>
+                     <s:HorizontalLayout paddingTop="6"/>
                   </s:layout>
-                  
-                  <s:Label text="{quest.about}" color="#D6CA8D" fontSize="15"
-                           paddingBottom="20" />
-                  
-                  <s:Group>
-                     <s:Label text="{Localizer.string('Quests', 'label.objectives')}" fontWeight="bold"
-                              fontSize="15" width="90"/>
-                     <s:Group id="grpObjectives" width="100%">
-                        <s:DataGroup dataProvider="{quest.objectives}">
-                           <s:itemRenderer>
-                              <fx:Component>
-                                 <s:ItemRenderer>
-                                    <fx:Script>
-                                       <![CDATA[
-                                          import models.objectives.QuestObjective;
-                                       ]]>
-                                    </fx:Script>
-                                    <s:Label text="{(data as QuestObjective).objectiveText}"/>
-                                 </s:ItemRenderer>
-                              </fx:Component>
-                           </s:itemRenderer>
+                  <s:Label text="{getString('label.objectives')}" fontWeight="bold" fontSize="15" width="90"/>
+                  <s:Group id="grpObjectives" width="100%">
+                     <s:DataGroup dataProvider="{quest.objectives}">
+                        <s:itemRenderer>
+                           <fx:Component>
+                              <s:ItemRenderer>
+                                 <fx:Script>
+                                    import models.objectives.QuestObjective;
+                                 </fx:Script>
+                                 <s:Label text="{QuestObjective(data).objectiveText}"/>
+                              </s:ItemRenderer>
+                           </fx:Component>
+                        </s:itemRenderer>
+                        <s:layout>
+                           <s:VerticalLayout/>
+                        </s:layout>
+                     </s:DataGroup>
+                  </s:Group>
+               </s:Group>                  
+               
+               <s:Group>
+                  <s:Label text="{getString('label.rewards')}" fontWeight="bold" paddingTop="6"
+                           fontSize="14" width="90"/>
+                  <base:AdvancedContainer id="grpRewards" width="100%">
+                     <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{quest.rewards.metal}"
+                                         visible="{quest.rewards.metal != 0}"
+                                         toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+                     <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{quest.rewards.energy}"
+                                         visible="{quest.rewards.energy != 0}"
+                                         toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+                     <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{quest.rewards.zetium}"
+                                         visible="{quest.rewards.zetium != 0}"
+                                         toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+                     <s:Group width="100%" visible="{quest.rewards.points != 0}">
+                        <s:Label width="{int(getString('rewardsWidth'))}" 
+                                 text="{getString('points')}"/>
+                        <s:Label text="{quest.rewards.points}"/>
+                        <s:layout>
+                           <s:HorizontalLayout/>
+                        </s:layout>
+                     </s:Group>
+                     <s:Group width="100%" visible="{quest.rewards.scientists != 0}">
+                        <s:Label width="{int(getString('rewardsWidth'))}" 
+                                 text="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
+                        <s:Label text="{quest.rewards.scientists}"/>
+                        <s:layout>
+                           <s:HorizontalLayout/>
+                        </s:layout>
+                     </s:Group>
+                     <s:Group width="100%" visible="{quest.rewards.creds != 0}">
+                        <s:Label width="{int(getString('rewardsWidth'))}" 
+                                 text="{StringUtil.firstToUpperCase(Localizer.string('Credits', 'label.creds'))}"/>
+                        <s:Label text="{quest.rewards.creds}"/>
+                        <s:layout>
+                           <s:HorizontalLayout/>
+                        </s:layout>
+                     </s:Group>
+                     <s:Group width="100%" visible="{quest.rewards.units.length > 0}">
+                        <s:Label text="{getString('units')}" fontWeight="bold"/>
+                        <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" width="100%" 
+                                     dataProvider="{new ArrayCollection(quest.rewards.units)}"
+                                     height="{85 * unitsLayout.rowCount}">
                            <s:layout>
-                              <s:VerticalLayout/>
+                              <s:TileLayout id="unitsLayout"/>
                            </s:layout>
                         </s:DataGroup>
+                        <s:layout>
+                           <s:VerticalLayout/>
+                        </s:layout>
                      </s:Group>
-                     <s:layout>
-                        <s:HorizontalLayout paddingTop="6"/>
-                     </s:layout>
-                  </s:Group>
-                  
-                  
-                  <s:Group>
-                     <s:Label text="{Localizer.string('Quests', 'label.rewards')}" fontWeight="bold" paddingTop="6"
-                              fontSize="14" width="90"/>
-                     <base:AdvancedContainer id="grpRewards" width="100%">
-                        <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{quest.rewards.metal}"
-                                            visible="{quest.rewards.metal != 0}"
-                                            toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
-                        <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{quest.rewards.energy}"
-                                            visible="{quest.rewards.energy != 0}"
-                                            toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
-                        <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{quest.rewards.zetium}"
-                                            visible="{quest.rewards.zetium != 0}"
-                                            toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
-                        <s:Group width="100%" visible="{quest.rewards.points != 0}">
-                           <s:Label width="{int(Localizer.string('Quests', 'rewardsWidth'))}" 
-                                    text="{Localizer.string('Quests', 'points')}"/>
-                           <s:Label text="{quest.rewards.points}"/>
-                           <s:layout>
-                              <s:HorizontalLayout/>
-                           </s:layout>
-                        </s:Group>
-                        <s:Group width="100%" visible="{quest.rewards.scientists != 0}">
-                           <s:Label width="{int(Localizer.string('Quests', 'rewardsWidth'))}" 
-                                    text="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
-                           <s:Label text="{quest.rewards.scientists}"/>
-                           <s:layout>
-                              <s:HorizontalLayout/>
-                           </s:layout>
-                        </s:Group>
-                        <s:Group width="100%" visible="{quest.rewards.creds != 0}">
-                           <s:Label width="{int(Localizer.string('Quests', 'rewardsWidth'))}" 
-                                    text="{StringUtil.firstToUpperCase(
-                                    Localizer.string('Credits', 'label.creds'))}"/>
-                           <s:Label text="{quest.rewards.creds}"/>
-                           <s:layout>
-                              <s:HorizontalLayout/>
-                           </s:layout>
-                        </s:Group>
-                        <s:Group width="100%" visible="{quest.rewards.units.length > 0}">
-                           <s:Label text="{Localizer.string('Quests', 'units')}" fontWeight="bold"/>
-                           <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" width="100%" 
-                                        dataProvider="{new ArrayCollection(quest.rewards.units)}"
-                                        height="{85 * unitsLayout.rowCount}">
-                              <s:layout>
-                                 <s:TileLayout id="unitsLayout"/>
-                              </s:layout>
-                           </s:DataGroup>
-                           <s:layout>
-                              <s:VerticalLayout/>
-                           </s:layout>
-                        </s:Group>
-                        <base:layout>
-                           <s:VerticalLayout paddingTop="6"/>
-                        </base:layout>
-                     </base:AdvancedContainer>
-                     <s:layout>
-                        <s:HorizontalLayout paddingTop="6"/>
-                     </s:layout>
-                  </s:Group>
-               </s:Group>
-               
-               <s:layout>
-                  <s:HorizontalLayout gap="10" paddingTop="12" paddingLeft="22" paddingRight="18" 
-                                      paddingBottom="18"/>
-               </s:layout>
-            </s:Group>
-            <base:AdvancedContainer width="100%">
-               <base:layout>
-                  <s:VerticalLayout horizontalAlign="center"/>
-               </base:layout>
-               <s:Group visible="{completed}">
-                  <s:Label text="{Localizer.string('Quests', 'label.choosePlanet')}" styleName="h3"/>
-                  <base:PlanetSelector id="planetSelector" minWidth="180" dataProvider="{ML.player.planets}"
-                                       itemRenderer="components.gameobjects.planet.IRPlayerPlanet"
-                                       change="planetSelector_changeHandler(event)"/>
+                     <base:layout>
+                        <s:VerticalLayout paddingTop="6"/>
+                     </base:layout>
+                  </base:AdvancedContainer>
                   <s:layout>
-                     <s:HorizontalLayout/>
+                     <s:HorizontalLayout paddingTop="6"/>
                   </s:layout>
                </s:Group>
-               
-               <base:Warning text="{Localizer.string('Quests', 'warning.wontFit', [notFitting])}"
-                             visible="{notFitting != null &amp;&amp; completed}"/>
-               
-               <base:Warning text="{Localizer.string('Quests', 'warning.cantClaimReward')}"
-                             visible="{completed
-                             &amp;&amp; ML.player.population >= ML.player.populationMax
-                             &amp;&amp; quest.rewards.units.length > 0}"/>
-               
-               <s:Button label="{Localizer.string('Quests', 'label.claimReward')}" 
-                         click="claim_clickHandler(event)" visible="{completed
-                         &amp;&amp; (ML.player.population &lt; ML.player.populationMax
-                         || quest.rewards.units.length == 0)}"
-                         skinClass="components.skins.GreenButtonSkin"/>
-               
-               <s:Button label="{Localizer.string('Quests', 'label.tutorial')}" 
-                         click="tutorial_clickHandler(event)" visible="{!completed &amp;&amp; 
-                         (quest.helpUrlId != null)}" skinClass="components.skins.YellowButtonSkin"/>
-            </base:AdvancedContainer>
+            </s:Group>
+            
             <s:layout>
-               <s:VerticalLayout/>
+               <s:HorizontalLayout gap="10" paddingTop="12" paddingLeft="22" paddingRight="18" 
+                                   paddingBottom="18"/>
             </s:layout>
          </s:Group>
-         
-         
-         
-      </s:Group>
-      
-      <!-- bottom -->
-      <s:Group>
-         
-         <s:layout>
-            <s:HorizontalLayout verticalAlign="bottom" gap="0"/>
-         </s:layout>
-         
-         <!-- artwork -->
-         <s:BitmapImage source="{IMG.getImage(PBORDER + 'bottom_left')}"/>
-         <s:BitmapImage source="{IMG.getImage(PBORDER + 'bottom_center')}" width="100%" fillMode="repeat"/>
-         
-         <!-- buttons -->
-         <s:Group>
-            
-            <!-- artwork -->
-            <s:Group left="0" right="0" bottom="0" top="0">
+         <base:AdvancedContainer>
+            <base:layout>
+               <s:VerticalLayout horizontalAlign="center"/>
+            </base:layout>
+            <s:Group visible="{completed}">
+               <s:Label text="{getString('label.choosePlanet')}" styleName="h3"/>
+               <base:PlanetSelector id="planetSelector" minWidth="180" dataProvider="{ML.player.planets}"
+                                    itemRenderer="components.gameobjects.planet.IRPlayerPlanet"
+                                    change="planetSelector_changeHandler(event)"/>
                <s:layout>
-                  <s:HorizontalLayout verticalAlign="bottom" gap="0"/>
+                  <s:HorizontalLayout/>
                </s:layout>
-               <s:BitmapImage source="{IMG.getImage(PBORDER + 'btn_left')}"/>
-               <s:BitmapImage source="{IMG.getImage(PBORDER + 'btn_center')}" width="100%" fillMode="repeat"/>
-               <s:BitmapImage source="{IMG.getImage(PBORDER + 'btn_right')}"/>
             </s:Group>
             
-            <!-- actual buttons -->
-            <s:Group left="15" right="7" bottom="7" top="7">
-               <s:layout>
-                  <s:HorizontalLayout gap="5" verticalAlign="bottom"/>
-               </s:layout>
-               <s:Button id="btnClose" label="{Localizer.string('Quests', 'label.close')}"
-                         click="btnClose_clickHandler(event)"/>
-            </s:Group>
+            <base:Warning text="{getString('warning.wontFit', [notFitting])}"
+                          visible="{notFitting != null &amp;&amp; completed}"/>
             
-         </s:Group>               
-         
+            <base:Warning text="{getString('warning.cantClaimReward')}"
+                          visible="{completed &amp;&amp;
+                                    ML.player.population >= ML.player.populationMax &amp;&amp;
+                                    quest.rewards.units.length > 0}"/>
+            
+            <s:Button label="{getString('label.claimReward')}" 
+                      click="btnClaim_clickHandler(event)"
+                      visible="{completed &amp;&amp;
+                               (ML.player.population &lt; ML.player.populationMax ||
+                                quest.rewards.units.length == 0)}"
+                      skinClass="components.skins.GreenButtonSkin"/>
+            
+            <s:Button label="{getString('label.tutorial')}" 
+                      click="btnTutorial_clickHandler(event)"
+                      visible="{!completed &amp;&amp; (quest.helpUrlId != null)}" 
+                      skinClass="components.skins.YellowButtonSkin"/>
+         </base:AdvancedContainer>
+
       </s:Group>
-      
-   </s:Group>
-   <!-- ### CUSTOM PART ENDS HERE ### -->
-   <!-- ############################# -->
-   
-   <!-- shown only if this is the last element -->
-   <s:Line visible="{itemIndex == ML.quests.length - 1}"
-           left="0" right="0" bottom="-1" xFrom="0" xTo="10">
-      <s:stroke>
-         <s:SolidColorStroke color="0x191919"/>
-      </s:stroke>
-   </s:Line>
-   
-   
+   </fx:Declarations>
+   <fx:Binding source="itemIndex == ML.quests.length - 1" destination="bottomLineVisible"/>
+   <fx:Binding source="Quest(data).title" destination="title"/>
    <fx:Script>
       <![CDATA[
+         import utils.assets.ImagePreloader;
          import utils.UrlNavigate;
          import models.resource.Resource;
          import utils.StringUtil;
@@ -365,8 +169,6 @@
          import controllers.Messenger;
          import globalevents.GQuestEvent;
          import com.developmentarc.core.utils.EventBroker;
-         import components.skins.YellowButtonSkin;
-         import components.skins.GreenButtonSkin;
          import utils.assets.AssetNames;
          import controllers.GlobalFlags;
          import utils.locale.Localizer;
@@ -382,148 +184,95 @@
          
          import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
-         import mx.graphics.SolidColor;
-         
-         import utils.assets.ImagePreloader;
          
          
-         private static const ML:ModelLocator = ModelLocator.getInstance();
-         private static const IMG:ImagePreloader = ImagePreloader.getInstance();
+         private static function get GF() : GlobalFlags {
+            return GlobalFlags.getInstance();
+         }
+         
+         private static function get ML() : ModelLocator {
+            return ModelLocator.getInstance();
+         }
+         
+         private function getImage(name:String) : BitmapData {
+            return ImagePreloader.getInstance().getImage(name);
+         }
+         
+         private function getString(property:String, parameters:Array = null) : String {
+            return Localizer.string("Quests", property, parameters);
+         }
          
          
-         /**
-          * Prefix to use for border artwork lookup in <code>ImagePreloader</code>.
-          * Ends with 'pborder_'.
-          */ 
-         private static const PBORDER:String = "images/ui/notifications/pborder_";
-         
-         
-         /* ############# */
-         /* ### STYLE ### */
-         /* ############# */
-         
-         
-         private static const TEXT_COLOR_STARTED:uint = 0xFFFFFF;
-         private static const TEXT_COLOR_COMPLETED:uint = 0xEEC500;
-         private static const TEXT_COLOR_REWARD_CLAIMED:uint = 0x11FF11;
-         
+         internal static const TEXT_COLOR_STARTED:uint = 0xFFFFFF;
+         internal static const TEXT_COLOR_COMPLETED:uint = 0xEEC500;
+         internal static const TEXT_COLOR_REWARD_CLAIMED:uint = 0x11FF11;
          
          [Bindable]
          private var textColor:uint = TEXT_COLOR_REWARD_CLAIMED;
          
+         protected override function get contentGroup() : Group {
+            return _contentGroup;
+         }
          
-         /* ################## */
-         /* ### PROPERTIES ### */
-         /* ################## */
+         protected override function get headerLeftContent() : Group {
+            return _headerLeftContent;
+         }
+         
+         protected override function get headerRightContent() : Group {
+            return _headerRrightContent;
+         }
          
          
          [Bindable (event="questChanged")]
          /**
           * Typed alias of <code>data</code> property.
           */ 
-         public function get quest() : Quest
-         {
-            return data as Quest;
+         public function get quest() : Quest {
+            return Quest(data);
          }
          
          [Bindable]
-         private var title: String;
+         private var title:String;
          
          [Bindable]
-         private var qTitle: String;
-         
-         public static const TITLE_HEIGHT: int = 28;
+         private var progress:String;
          
          [Bindable]
-         private var progress: String;
+         private var completed:Boolean;
          
-         [Bindable]
-         private var completed: Boolean;
-         
-         private var _oldData:Object = null;
-         [Bindable(event="dataChange")]
-         public override function set data(value:Object) : void
-         {
-            if (data != value)
-            {
-               if (_oldData == null)
-               {
-                  _oldData = data;
-               }
-               super.data = value;
-               _fDataChanged = true;
-               invalidateProperties();
-               invalidateDisplayList();
-               refreshNotFitting();
+         protected override function dataCommit(oldValue:Object, newValue:Object) : void {
+            var quest:Quest;
+            if (oldValue != null) {
+               quest = Quest(oldValue);
+               quest.removeEventListener(QuestEvent.STATUS_CHANGE, quest_statusChange);
+               quest.removeEventListener(QuestEvent.REFRESH_REQUESTED, refreshQuest);
             }
-         }
-         
-         
-         private var _fDataChanged:Boolean = true;
-         protected override function commitProperties() : void
-         {
-            super.commitProperties();
-            
-            if (_fDataChanged)
-            {
-               if (_oldData)
-               {
-                  removeQuestEventHandlers(_oldData as Quest);
-                  _oldData = null
-               }
-               if (data)
-               {
-                  addQuestEventHandlers(data as Quest);
-                  refreshTitle();
-               }
-               setTextColor();
+            if (newValue != null) {
+               quest = Quest(newValue);
+               quest.addEventListener(QuestEvent.STATUS_CHANGE, quest_statusChange);
+               quest.addEventListener(QuestEvent.REFRESH_REQUESTED, refreshQuest);
+               refreshTitle();
             }
-            
-            _fDataChanged = false;
+            refreshNotFitting();
+            setTextColor();
          }
          
-         private function refreshTitle(e: Event = null): void
-         {
+         private function refreshTitle(event:Event = null) : void {
             title = quest.title;
-            progress = Localizer.string('Quests', 'label.progress', 
-               [quest.completed, quest.objectives.length]);
-            qTitle = quest.title;
+            progress = getString('label.progress', [quest.completed, quest.objectives.length]);
             completed = (quest.status == Quest.STATUS_COMPLETED);
             ML.quests.applyCurrentFilter();
          }
          
-         protected override function createChildren() : void
-         {
-            super.createChildren();
-            setTextColor();
-         }
-         
-         
-         /* ############### */
-         /* ### HELPERS ### */
-         /* ############### */
-         
-         private function setTextColor() : void
-         {
-            if (data != null)
-            {
-               if (quest.status == Quest.STATUS_STARTED)
-               {
-                  textColor = TEXT_COLOR_STARTED;
-               }
-               else if (quest.status == Quest.STATUS_COMPLETED)
-               {
-                  textColor = TEXT_COLOR_COMPLETED;
-               }
-               else
-               {
-                  textColor = TEXT_COLOR_REWARD_CLAIMED;
-               }
+         private function setTextColor() : void {
+            if (data != null) {
+               if      (quest.status == Quest.STATUS_STARTED)   textColor = TEXT_COLOR_STARTED;
+               else if (quest.status == Quest.STATUS_COMPLETED) textColor = TEXT_COLOR_COMPLETED;
+               else                                             textColor = TEXT_COLOR_REWARD_CLAIMED;
             }
          }
          
-         private function quest_statusChange(e: QuestEvent): void
-         {
+         private function quest_statusChange(event:QuestEvent) : void {
             setTextColor();
             refreshTitle();
          }
@@ -533,53 +282,32 @@
          /* ### EVENT HANDLERS ### */
          /* ###################### */
          
-         
-         private function addQuestEventHandlers(quest:Quest) : void
-         {
-            quest.addEventListener(QuestEvent.STATUS_CHANGE, quest_statusChange);
-            quest.addEventListener(QuestEvent.REFRESH_REQUESTED, refreshQuest);
-         }
-         
-         private function refreshQuest(e: QuestEvent): void
-         {
-            dispatchEvent(new Event("questChanged"));
-         }
-         
-         
-         private function removeQuestEventHandlers(quest:Quest) : void
-         {
-            quest.removeEventListener(QuestEvent.STATUS_CHANGE, quest_statusChange);
-            quest.removeEventListener(QuestEvent.REFRESH_REQUESTED, refreshQuest);
-         }
-         
-         private function btnClose_clickHandler(event:MouseEvent):void
-         {
+         protected override function btnClose_clickHandler(event:MouseEvent) : void {
             ML.quests.deselect();
          }
          
+         private function refreshQuest(event:QuestEvent) : void {
+            dispatchEvent(new Event("questChanged"));
+         }
          
-         protected function tutorial_clickHandler(event:MouseEvent):void
-         {
+         private function btnTutorial_clickHandler(event:MouseEvent) : void {
             UrlNavigate.getInstance().showWikiUrl(quest.helpUrlId + " (Tutorial)");
          }
          
-         protected function claim_clickHandler(event:MouseEvent):void
-         {
-            GlobalFlags.getInstance().lockApplication = true;
+         private function btnClaim_clickHandler(event:MouseEvent) : void {
+            GF.lockApplication = true;
             EventBroker.subscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
             new QuestsCommand(
                QuestsCommand.CLAIM_REWARDS,
-               {
-                  planetId: (planetSelector.selectedItem as MSSObject).id,
-                  id: quest.id
-               }
+               {"planetId": MSSObject(planetSelector.selectedItem).id, "id": quest.id}
             ).dispatch ();
          }
          
-         private function approveClaim(e: GQuestEvent): void
-         {
-            Messenger.show(Localizer.string('Quests', 'message.rewardClaimed', 
-               [(planetSelector.selectedItem as MSSObject).name]), Messenger.MEDIUM);
+         private function approveClaim(event:GQuestEvent) : void {
+            Messenger.show(
+               getString('message.rewardClaimed', [MSSObject(planetSelector.selectedItem).name]),
+               Messenger.MEDIUM
+            );
             EventBroker.unsubscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
             refreshNotFitting();
          }
@@ -590,38 +318,26 @@
          private var missingStorages: Array = [];
          private var missingAmounts: Array = [];
          
-         private function refreshNotFitting(e: GlobalEvent = null): void
-         {
-            if (quest && planetSelector)
-            {
+         private function refreshNotFitting(event:GlobalEvent = null) : void {
+            if (quest != null && planetSelector != null) {
                var planet:MSSObject = MSSObject(planetSelector.selectedItem);
                notFitting = Resource.getNotFittingReward(planet, quest.rewards);
             }
             else
-            {
                notFitting = null;
-            }
          }
          
-         protected function itemrenderer1_addedToStageHandler(event:Event):void
-         {
+         private function this_addedToStageHandler(event:Event) : void {
             EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshNotFitting);
          }
          
-         
-         protected function itemrenderer1_removedFromStageHandler(event:Event):void
-         {
+         private function this_removedFromStageHandler(event:Event) : void {
             EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, refreshNotFitting);
          }
          
-         
-         protected function planetSelector_changeHandler(event:IndexChangeEvent):void
-         {
+         private function planetSelector_changeHandler(event:IndexChangeEvent) : void {
             refreshNotFitting();
          }
-         
       ]]>
    </fx:Script>
-   
-   
-</s:ItemRenderer>
+</screen:ItemRendererBase>

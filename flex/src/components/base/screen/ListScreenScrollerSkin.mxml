@@ -47,7 +47,7 @@
            height="{verticalScrollBar.height}"
            visible="{verticalScrollBar.visible}">
       <s:fill>
-         <s:SolidColor color="0x323232"/>
+         <s:SolidColor color="0x363636"/>
       </s:fill>
    </s:Rect>
    

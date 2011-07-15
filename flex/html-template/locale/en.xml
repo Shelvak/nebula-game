@@ -238,6 +238,10 @@
     <SpaceFactory-whos ref="SpaceFactory-what" />
     
     <!-- Other buildings -->
+    
+    <Market value="Market" />
+    <Market-what value="{0 one[one market] many[? markets]}" />
+    <Market-whos ref="Market-what" />
 
     <Radar value="Radar" />
     <Radar-what value="{0 one[one radar] many[? radars]}" />
@@ -525,6 +529,7 @@
     <property.teleportedVolume value="Volume teleported" />
     <property.creds value="Creds" />
     <property.victoryPoints value="Victory points" />
+    <property.fee value="Fee percentage" />
 
     <text.deactivated>
       <p>
@@ -810,6 +815,19 @@
         few days. 
       </p>
     </Crane.about>
+    
+    <Market.name ref="Objects/Market" />
+    <Market.tooltip value="Allows trading with other players" />
+    <Market.common>
+      <p>Market allows you to trade with other players in this galaxy. 
+      Matter converters allow sending and receiving goods 
+      instantaneously, however galaxy market dealers will require a fee to
+      list your offers on their networks.</p>
+    </Market.common>
+    <Market.about>
+      <p>[reference:Market.common]</p>
+      <p>Each upgrade level decreases offer submission fee.</p>
+    </Market.about>
 
     <Radar.name ref="Objects/Radar" />
     <Radar.tooltip value="Increases visible galaxy area" />
@@ -1019,6 +1037,7 @@
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />
     <label.cancel value="Cancel" />
+    <label.close value="Close" />
     <label.order value="Order" />
     <label.buy value="Buy Creds" />
     <label.move value="Move" />
@@ -1325,6 +1344,11 @@
   <Navigator>
     <label.currentGalaxy value="Galaxy" />
   </Navigator>
+  
+  <ListScreen>
+    <label.colorLegend value="Legend:" />
+    <label.close value="Close" />
+  </ListScreen>
 
   <Notifications>
     <screenTitle value="Notifications" />
@@ -1334,8 +1358,8 @@
     <label.notifications.all value="All" />
     <label.notifications.unread value="Unread only" />
     <label.notifications.starred value="Starred only" />
-    <label.createdAt value="Received at" />
-    <label.expiresAt value="Expires at" />
+    <label.createdAt value="Received at: {0}" />
+    <label.expiresAt value="Expires at: {0}" />
     <label.planet value="Planet" />
     <label.showPlanet value="Show planet" />
     <label.yours value="Yours" />
@@ -1771,8 +1795,8 @@
 
   <Quests>
     <rewardsWidth value="100" />
-    <label.current value="Current" />
-    <label.completed value="Completed" />
+    <label.current value="Current ({0})" />
+    <label.completed value="Completed ({0})" />
     <label.showQuest value="Show quest" />
     <label.noQuests value="There are no quests" />
     <label.progress value="{0}/{1} completed" />
@@ -1792,8 +1816,8 @@
     </warning.wontFit>
     <warning.cantClaimReward
       value="You cant claim this reward due to insufficient population." />
-    <label.notCompletedColor value="Not completed quests" />
-    <label.completedColor value="Completed quests" />
+    <label.notCompletedColor value="● Not completed quests" />
+    <label.completedColor value="● Completed quests" />
 
     <message.rewardClaimed value="Reward has been claimed to planet {0}" />
 
@@ -2255,6 +2279,17 @@
 
     <title.79 value="[reference:ThirstForKnowledge.title] (VIII)" />
     <about.79 ref="ThirstForKnowledge.about" />
+    
+    <title.118 value="Fulfilling our needs" />
+    <about.118>
+      <p>Hello, Commander.</p>
+      <p>In different times we need different things and it's not always
+      easy to plan ahead. Research a market so that we could trade with
+      other inhabitants of this galaxy.</p>
+      <p>Afterall they might be in need of something we have surplus and
+      vice verca. Why shouldn't we help each other? We could even make
+      a friend or two in this way.</p>
+    </about.118>
 
     <title.27 value="Shards of Technology" />
     <about.27>
@@ -2949,14 +2984,17 @@
   <Squadrons>
     <title.squadrons value="Fleets" />
     <title.noSquadrons value="No moving fleets detected." />
-    <label.currentLocation value="Current location" />
-    <label.sourceLocation value="Flying from" />
-    <label.targetLocation value="Traveling to" />
+    <label.currentLocation value="Current location:" />
+    <label.sourceLocation value="Flying from:" />
+    <label.targetLocation value="Traveling to:" />
     <label.units value="Fleet units" />
-    <label.arrivesAt value="Arrives at" />
+    <label.arrivesAt value="Arrives at:" />
     <label.leavesPlanet value="Leaves planet at" />
     <label.inTime value="(in {0})" />
     <label.close value="Close" />
+    <label.playerFleets value="Your fleets" />
+    <label.allianceFleets value="Alliance fleets" />
+    <label.stop value="Stop" />
   </Squadrons>
 
   <Technologies>
@@ -3194,6 +3232,9 @@
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
+    
+    <Market.name ref="Buildings/Market.name" />
+    <Market.about ref="Buildings/Market.common" />
 
     <Radar.name ref="Buildings/Radar.name" />
     <Radar.about ref="Buildings/Radar.common" />

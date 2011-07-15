@@ -167,6 +167,8 @@ describe SsObject::Planet do
       end
 
       it_should_behave_like "clearing raid data"
+      
+      it "should cancel market offers"
     end
 
     describe "new player has < threshold planets" do

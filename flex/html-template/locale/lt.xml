@@ -238,6 +238,10 @@
     <SpaceFactory-whos value="{0 one[laivų gamyklos] 1sts[? laivų gamyklos] tens[? laivų gamyklų] many[? laivų gamyklų]}" />
     
     <!-- Kiti pastatai -->
+    
+    <Market value="Turgus" />
+    <Market-what value="{0 one[turgų] 1sts[? turgų] tens[? turgų] many[? turgus]}" />
+    <Market-whos value="{0 one[turgaus] 1sts[? turgaus] tens[? turgų] many[? turgų]}" />
 
     <Radar value="Radaras" />
     <Radar-what value="{0 one[radarą] 1sts[? radarą] tens[? radarų] many[? radarus]}" />
@@ -524,6 +528,7 @@
     <property.teleportedVolume value="Perkeliamas tūris" />
     <property.creds value="Kredai" />
     <property.victoryPoints value="Pergalės taškai" />
+    <property.fee value="Mokesčio procentas" />
 
     <text.deactivated>
       <p>
@@ -809,6 +814,19 @@
         dienų.
       </p>
     </Crane.about>
+    
+    <Market.name ref="Objects/Market" />
+    <Market.tooltip value="Leidžia prekiauti su kitais žaidėjais" />
+    <Market.common>
+      <p>Turgus leidžia tau prekiauti su kitais šios galaktikos žaidėjais.
+      Materijos vertikliai įgalina akimirksniu persiųsti ir gauti prekes,
+      tačiau norint į galaktikos rinką įkelti savo pasiūlymus reikės 
+      atseikėti mokesčius galaktikos prekeivių sandraugai.</p>
+    </Market.common>
+    <Market.about>
+      <p>[reference:Market.common]</p>
+      <p>Kiekvienas patobulinimo lygis sumažina įkėlimo mokestį.</p>
+    </Market.about>
 
     <Radar.name ref="Objects/Radar" />
     <Radar.tooltip value="Atskleidžia galaktikos zoną" />
@@ -1019,6 +1037,7 @@
     <label.instant value="Iš karto" />
     <label.confirm value="Patvirtinti" />
     <label.cancel value="Atšaukti" />
+    <label.close value="Uždaryti" />
     <label.order value="Užsakyti" />
     <label.buy value="Pirkti kredus" />
     <label.move value="Perkelti" />
@@ -1319,6 +1338,11 @@
   <Navigator>
     <label.currentGalaxy value="Galaktika" />
   </Navigator>
+  
+  <ListScreen>
+    <label.colorLegend value="Legenda:" />
+    <label.close value="Close" />
+  </ListScreen>
 
   <Notifications>
     <screenTitle value="Pranešimai" />
@@ -1328,8 +1352,8 @@
     <label.notifications.all value="Visi" />
     <label.notifications.unread value="Tik neperskaityti" />
     <label.notifications.starred value="Tik pažymėti" />
-    <label.createdAt value="Gautas" />
-    <label.expiresAt value="Susinaikins" />
+    <label.createdAt value="Gautas: {0}" />
+    <label.expiresAt value="Susinaikins: {0}" />
     <label.planet value="Planeta" />
     <label.showPlanet value="Atidaryti planetą" />
     <label.yours value="Tavo" />
@@ -1772,8 +1796,8 @@
 
   <Quests>
     <rewardsWidth value="120" />
-    <label.current value="Dabartinės" />
-    <label.completed value="Įvykdytos" />
+    <label.current value="Dabartinės ({0})" />
+    <label.completed value="Įvykdytos ({0})" />
     <label.showQuest value="Parodyti užduotį" />
     <label.noQuests value="Užduočių nėra" />
     <label.progress value="{0}/{1} pabaigta" />
@@ -1791,8 +1815,8 @@
     </warning.wontFit>
     <warning.cantClaimReward
       value="Dėl nepakankamo laisvų gyventojų kiekio tu negali atsiimti atlygio." />
-    <label.notCompletedColor value="Neįvykdytos užduotys" />
-    <label.completedColor value="Įvykdytos užduotys" />
+    <label.notCompletedColor value="● Neįvykdytos užduotys" />
+    <label.completedColor value="● Įvykdytos užduotys" />
 
     <message.rewardClaimed value="Atlygis buvo pasiimtas į planetą „{0}“" />
 
@@ -2284,6 +2308,17 @@
 
     <title.79 value="[reference:ThirstForKnowledge.title] (VIII)" />
     <about.79 ref="ThirstForKnowledge.about" />
+    
+    <title.118 value="Poreikių patenkinimas" />
+    <about.118>
+      <p>Sveikas, Komandore.</p>
+      <p>Skirtingais laikais mums reikia skirtingų dalykų, ir deja nei vienas
+      iš mūsų negali tobulai numatyti ateities. Išrask turgų jog galėtume
+      vykdyti mainus su kitais šios galaktikos gyventojais.</p>
+      <p>Juk jiems gali reikėti to, ko mes turime, ir atvirkščiai. Kodėl mes
+      neturėtume padėti vieni kitiems? Galbūt besimainydami netgi susirasim
+      ir vieną kitą draugą? Kas žino...</p>
+    </about.118>
 
     <title.27 value="Technologijų šukės" />
     <about.27>
@@ -2997,6 +3032,9 @@
     <label.leavesPlanet value="Iš planetos išvyksta" />
     <label.inTime value="(už {0})" />
     <label.close value="Uždaryti" />
+    <label.playerFleets value="Tavo lvynai" />
+    <label.allianceFleets value="Sąjungininkų laivynai" />
+    <label.stop value="Sustabdyti" />
   </Squadrons>
 
   <Technologies>
@@ -3205,6 +3243,9 @@
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
+    
+    <Market.name ref="Buildings/Market.name" />
+    <Market.about ref="Buildings/Market.common" />
 
     <Radar.name ref="Buildings/Radar.name" />
     <Radar.about ref="Buildings/Radar.common" />

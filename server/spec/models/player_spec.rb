@@ -554,11 +554,11 @@ describe Player do
     end
 
     it "should return id" do
-      Player.minimal(@player.id)[:id].should == @player.id
+      Player.minimal(@player.id)["id"].should == @player.id
     end
 
     it "should return name" do
-      Player.minimal(@player.id)[:name].should == @player.name
+      Player.minimal(@player.id)["name"].should == @player.name
     end
 
     it "should return nil if id is nil" do

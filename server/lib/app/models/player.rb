@@ -31,6 +31,7 @@ class Player < ActiveRecord::Base
   has_many :units
   # FK :dependent => :nullify
   has_many :planets, :class_name => "SsObject::Planet"
+  has_many :market_offers, :through => :planets
   # FK with NO ACTION, because we need to dispatch changed events in code
   # for alliance members.
   has_one :owned_alliance, :dependent => :destroy, 
@@ -71,12 +72,18 @@ class Player < ActiveRecord::Base
     grouped
   end
 
+  # Returns minimal representation of +Player+ with _id_.
+  #
+  # Either _nil_ if _id_ is nil or:
+  # 
+  # {"id" => Fixnum, "name" => String}
+  #
   def self.minimal(id)
     if id
       name = connection.select_one(
         "SELECT name FROM `#{table_name}` WHERE id=#{id.to_i}"
       )['name']
-      {:id => id, :name => name}
+      {"id" => id, "name" => name}
     else
       nil
     end
@@ -216,6 +223,11 @@ class Player < ActiveRecord::Base
   def inspect
     to_s
   end
+  
+  # Number of creds without VIP creds.
+  def pure_creds; creds - vip_creds; end
+  # Setter for pure creds.
+  def pure_creds=(value); self.creds = value + vip_creds; end
   
   # Returns conversion rate from VIP creds to regular creds. It is dependant
   # from players #vip_level.

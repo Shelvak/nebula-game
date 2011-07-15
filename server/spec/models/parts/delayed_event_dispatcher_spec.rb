@@ -14,6 +14,14 @@ CREATE TABLE `ded_tests` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY
 ) ENGINE = MEMORY
 EOF
+    # Ensure that only SPEC_EVENT_HANDLER gets our test objects.
+    handlers = nil
+    EventBroker.class_eval do
+      handlers = class_variable_get(:"@@handlers")
+      class_variable_set(:"@@handlers", Set.new)
+      register SPEC_EVENT_HANDLER
+    end
+    @handlers = handlers
   end
   
   describe "#delayed_fire" do
@@ -45,6 +53,8 @@ EOF
   end
   
   after(:all) do
+    # Restore original handlers
+    EventBroker.send(:class_variable_set, :"@@handlers", @handlers)
     ActiveRecord::Base.connection.execute "DROP TABLE IF EXISTS `ded_tests`"
   end
 end

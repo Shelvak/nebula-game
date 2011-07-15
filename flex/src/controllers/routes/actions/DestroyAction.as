@@ -25,21 +25,19 @@ package controllers.routes.actions
       public override function applyClientAction(cmd:CommunicationCommand):void
       {
          var model:BaseModel = BaseModel(cmd.parameters);
+         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+         popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+         var lbl: Label = new Label();
+         lbl.minWidth = 300;
+         lbl.text = Localizer.string('Popups', 'message.stopFleet');
+         popUp.addElement(lbl);
+         popUp.title = Localizer.string('Popups', 'title.stopFleet');
+         popUp.confirmButtonClickHandler = function (button: Button = null): void
          {
-            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
-            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
-            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-            var lbl: Label = new Label();
-            lbl.minWidth = 300;
-            lbl.text = Localizer.string('Popups', 'message.stopFleet');
-            popUp.addElement(lbl);
-            popUp.title = Localizer.string('Popups', 'title.stopFleet');
-            popUp.confirmButtonClickHandler = function (button: Button = null): void
-            {
-               sendMessage(new ClientRMO({"id": model.id}, model));
-            };
-            popUp.show();
-         }
+            sendMessage(new ClientRMO({"id": model.id}, model));
+         };
+         popUp.show();
       }
    }
 }
