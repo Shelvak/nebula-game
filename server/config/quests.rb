@@ -3,7 +3,7 @@
 # New quests can be added here but do not edit old ones!
 
 # Please update this if you add new quests ;)
-# Last quest id: 115
+# Last quest id: 118
 #
 
 # [unit, count, level]
@@ -206,6 +206,14 @@ definition = QuestDefinition.define(:debug => false) do
       have_science_points 200000
 
       reward_scientists 150
+    end
+    
+    quest.define(118) do
+      have_upgraded_to Technology::Market
+      have_upgraded_to Building::Market
+      
+      reward_cost Technology::Market, :count => 1.1
+      reward_cost Building::Market, :count => 2.5
     end
   end.tap do |quest|
     quest.define(27, "Zetium Crystals") do

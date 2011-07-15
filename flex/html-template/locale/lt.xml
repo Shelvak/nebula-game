@@ -528,6 +528,7 @@
     <property.teleportedVolume value="Perkeliamas tūris" />
     <property.creds value="Kredai" />
     <property.victoryPoints value="Pergalės taškai" />
+    <property.fee value="Mokesčio procentas" />
 
     <text.deactivated>
       <p>
@@ -2307,6 +2308,17 @@
 
     <title.79 value="[reference:ThirstForKnowledge.title] (VIII)" />
     <about.79 ref="ThirstForKnowledge.about" />
+    
+    <title.118 value="Poreikių patenkinimas" />
+    <about.118>
+      <p>Sveikas, Komandore.</p>
+      <p>Skirtingais laikais mums reikia skirtingų dalykų, ir deja nei vienas
+      iš mūsų negali tobulai numatyti ateities. Išrask turgų jog galėtume
+      vykdyti mainus su kitais šios galaktikos gyventojais.</p>
+      <p>Juk jiems gali reikėti to, ko mes turime, ir atvirkščiai. Kodėl mes
+      neturėtume padėti vieni kitiems? Galbūt besimainydami netgi susirasim
+      ir vieną kitą draugą? Kas žino...</p>
+    </about.118>
 
     <title.27 value="Technologijų šukės" />
     <about.27>

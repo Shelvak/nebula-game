@@ -529,6 +529,7 @@
     <property.teleportedVolume value="Volume teleported" />
     <property.creds value="Creds" />
     <property.victoryPoints value="Victory points" />
+    <property.fee value="Fee percentage" />
 
     <text.deactivated>
       <p>
@@ -2278,6 +2279,17 @@
 
     <title.79 value="[reference:ThirstForKnowledge.title] (VIII)" />
     <about.79 ref="ThirstForKnowledge.about" />
+    
+    <title.118 value="Fulfilling our needs" />
+    <about.118>
+      <p>Hello, Commander.</p>
+      <p>In different times we need different things and it's not always
+      easy to plan ahead. Research a market so that we could trade with
+      other inhabitants of this galaxy.</p>
+      <p>Afterall they might be in need of something we have surplus and
+      vice verca. Why shouldn't we help each other? We could even make
+      a friend or two in this way.</p>
+    </about.118>
 
     <title.27 value="Shards of Technology" />
     <about.27>
