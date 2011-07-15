@@ -3458,6 +3458,8 @@
   </Technologies>
 
   <Units>
+    <title.storageScreen value="Load / Unload"/>
+  
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Ready in {0}" />
     <property.hp value="Hit Points" />

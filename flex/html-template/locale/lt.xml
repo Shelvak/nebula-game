@@ -3437,6 +3437,8 @@
   </Technologies>
 
   <Units>
+    <title.storageScreen value="Įkrauti / Iškrauti"/>
+  
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Bus už {0}" />
     <property.hp value="Gyvybės taškai" />

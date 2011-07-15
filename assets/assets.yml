@@ -584,6 +584,16 @@ assets:
         top_left3.png:                 St_window_top_left3.png
         top_center.png:                St_window_top_center.png
         top_right.png:                 St_window_top_right.png
+        scont_top_left.png:         Load_top_left.png
+        scont_top_center.png:       Load_top_center.png
+        scont_top_right.png:        Load_top_right.png
+        scont_middle_left.png:      Load_center_left.png
+        scont_middle_right.png:     Load_center_right.png
+        scont_bottom_left.png:      Load_bottom_left.png
+        scont_bottom_center.png:    Load_bottom_center.png
+        scont_button_left.png:      Load_button_left.png
+        scont_button_center.png:    Load_button_center.png
+        scont_button_right.png:     Load_button_right.png
 
       "defensive_portal_screen":
         table_top.png:                Portal_top_table_top.png
