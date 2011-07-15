@@ -26,6 +26,7 @@ package components.unitsscreen
       }
       
       private var _buttonLabel:String = "";
+      [Bindable]
       /**
        * Text of a button. Default is empty string.
        */
@@ -70,7 +71,7 @@ package components.unitsscreen
          f_buttonEnabledChanged = f_buttonLabelChanged = false;
       }
       
-      [SkinPart (required="true")]
+      [SkinPart(required="true")]
       public var actionButton:Button;
       
       protected override function partAdded(partName:String, instance:Object) : void {

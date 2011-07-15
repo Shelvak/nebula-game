@@ -33,9 +33,6 @@
       <s:State name="disabledWithControlBar"/>
    </base:states>
    
-   
-   
-   
    <s:Group left="0" right="0" top="19" bottom="0">
       
       <!-- Main background of the panel -->

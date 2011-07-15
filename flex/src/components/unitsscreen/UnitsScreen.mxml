@@ -3,18 +3,17 @@
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx"
          xmlns:base="components.base.*" 
-         creationComplete="basecontainer1_creationCompleteHandler(event)"
          xmlns:location="components.location.*" 
-         xmlns:unitsscreen="components.unitsscreen.*">
+         xmlns:unitsscreen="components.unitsscreen.*"
+         creationComplete="this_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
          import components.popups.ActionConfirmationPopup;
          import components.unitsscreen.events.UnitsScreenEvent;
-
+         
          import controllers.GlobalFlags;
-
          import controllers.ui.NavigationController;
          import controllers.units.OrdersController;
          import controllers.units.UnitsCommand;
@@ -41,6 +40,7 @@
          import mx.events.FlexEvent;
          
          import spark.components.Button;
+         import spark.components.Label;
          
          import utils.datastructures.Collections;
          import utils.locale.Localizer;
@@ -264,7 +264,7 @@
             }
          }
          
-         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         protected function this_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GUnitsScreenEvent.OPEN_SCREEN, setData);
             EventBroker.subscribe(GUnitsScreenEvent.UNITS_UPDATED, updateUnits);
@@ -673,45 +673,24 @@
       ]]>
    </fx:Script>
    <s:layout>
-      <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6" paddingRight="6"/>
+      <s:VerticalLayout gap="0" horizontalAlign="justify"/>
    </s:layout>
-   <s:Group width="100%">
-      <s:Group id="locationGroup" width="100%" maxWidth="{locComp.maxWidth}">
-         <s:Label text="{Localizer.string('Units', 'label.location')}" styleName="h3"/>
-         <location:MiniLocationComp id="locComp" location="{location}"/>
-         <s:layout>
-            <s:VerticalLayout/>
-         </s:layout>
-      </s:Group> 
-      <s:Group id="targetGroup" visible="{target != null}"  
-               width="100%" maxWidth="{tarComp.maxWidth}">
-         <s:Label text="{Localizer.string('Units', 'label.target')}" styleName="h3"/>
-         <location:MiniLocationComp id="tarComp" location="{target}"/>
-         <s:layout>
-            <s:VerticalLayout/>
-         </s:layout>
-      </s:Group>
-      <s:layout>
-         <s:HorizontalLayout gap="10"/>
-      </s:layout>
-   </s:Group>
-   
-   <s:Group width="100%" height="100%">
-      <base:AdvancedContainer width="100%">
-         <s:ToggleButton id="groundButton" click="groundButton_clickHandler(event)"
-                         label="{Localizer.string('Units', 'kind.ground',[getUnitCount(groundFlanks)])}"/>
-         <s:ToggleButton id="spaceButton" click="groundButton_clickHandler(event)"
-                         label="{Localizer.string('Units', 'kind.space', [getUnitCount(spaceFlanks)])}"/>
-         <s:ToggleButton id="moveButton" click="groundButton_clickHandler(event)"
-                         label="{Localizer.string('Units', 'kind.launch')}"/>
-         <s:ToggleButton id="squadronButton" click="groundButton_clickHandler(event)"
-                         label="{Localizer.string('Units', 'kind.squadron')}"/>
-         <base:layout>
-            <s:HorizontalLayout gap="1"/>
-         </base:layout>
-      </base:AdvancedContainer>
-      
-      <s:Group width="100%" height="100%">
+   <unitsscreen:ScreenLocations location="{location}" target="{target}"/>
+   <unitsscreen:ScreenContent height="100%">
+      <unitsscreen:leftControls>
+         <base:AdvancedContainer>
+            <base:layout><s:HorizontalLayout gap="1"/></base:layout>
+            <s:ToggleButton id="groundButton" click="groundButton_clickHandler(event)"
+                            label="{Localizer.string('Units', 'kind.ground',[getUnitCount(groundFlanks)])}"/>
+            <s:ToggleButton id="spaceButton" click="groundButton_clickHandler(event)"
+                            label="{Localizer.string('Units', 'kind.space', [getUnitCount(spaceFlanks)])}"/>
+            <s:ToggleButton id="moveButton" click="groundButton_clickHandler(event)"
+                            label="{Localizer.string('Units', 'kind.launch')}"/>
+            <s:ToggleButton id="squadronButton" click="groundButton_clickHandler(event)"
+                            label="{Localizer.string('Units', 'kind.squadron')}"/>
+         </base:AdvancedContainer>
+      </unitsscreen:leftControls>
+      <unitsscreen:content>
          <s:DataGroup visible="{groundButton.selected}" id="unitsGroundList" dataProvider="{groundFlanks}" 
                       left="0" right="0" top="0" bottom="0"> 
             <s:itemRenderer>
@@ -768,10 +747,6 @@
                <s:VerticalLayout rowHeight="120"/>
             </s:layout>
          </s:DataGroup>
-      </s:Group>
-      <s:layout>
-         <s:VerticalLayout/>
-      </s:layout>
-   </s:Group>
-   
+      </unitsscreen:content>
+   </unitsscreen:ScreenContent>
 </s:Group>

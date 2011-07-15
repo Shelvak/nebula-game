@@ -906,6 +906,23 @@ assets:
         hint_bottom_right.png:    Hint_bottom_right.png
         hint_center_left.png:     Hint_center_left.png
         hint_center_right.png:    Hint_center_right.png
+        locs_left.png:        Uss_bar_left.png
+        locs_center.png:      Uss_bar_repeat.png
+        locs_right.png:       Uss_bar_right.png
+        locs_location.png:    Uss_bar_location.png
+        cont_top_lctrls_left.png:      Uss_window_top_buttons_left.png
+        cont_top_lctrls_center.png:    Uss_window_top_buttons_center.png
+        cont_top_lctrls_right.png:     Uss_window_top_buttons_right.png
+        cont_top_center.png:           Uss_window_top_center.png
+        cont_top_right.png:            Uss_window_top_end.png
+        cont_top_rctrls_left.png:      Uss_window_top_storage_left.png
+        cont_top_rctrls_center.png:    Uss_window_top_storage_center.png
+        cont_top_rctrls_right.png:     Uss_window_top_storage_right.png
+        cont_middle_left.png:          Uss_window_center_left.png
+        cont_middle_right.png:         Uss_window_center_right.png
+        cont_bottom_left.png:          Uss_window_bottom_left.png
+        cont_bottom_center.png:        Uss_window_bottom_center.png
+        cont_bottom_right.png:         Uss_window_bottom_right.png 
 
       "notifications":
         location_background.jpg:     Window.jpg

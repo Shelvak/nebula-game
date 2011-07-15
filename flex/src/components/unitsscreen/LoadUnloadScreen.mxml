@@ -4,8 +4,8 @@
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*" 
                     xmlns:location="components.location.*"
-                    creationComplete="basecontainer1_creationCompleteHandler(event)" 
-                    xmlns:unitsscreen="components.unitsscreen.*">
+                    xmlns:unitsscreen="components.unitsscreen.*"
+                    creationComplete="this_creationCompleteHandler(event)" >
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
@@ -251,7 +251,7 @@
          }
          
          
-         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
+         protected function this_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GLoadUnloadScreenEvent.OPEN_SCREEN, setData);
             EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
@@ -442,67 +442,42 @@
       ]]>
    </fx:Script>
    <base:layout>
-      <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6" paddingRight="6"/>
+      <s:VerticalLayout gap="0" horizontalAlign="justify"/>
    </base:layout>
-   <!--s:Label text="{Localizer.string('Units', 'label.currentUnits')}" fontSize="26" color="#3bc133"/-->
-   <s:Group width="100%">
-      <s:Group id="locationGroup" width="100%" maxWidth="{locComp.maxWidth}">
-         <s:Label text="{Localizer.string('Units', 'label.location')}" styleName="h3"/>
-         <location:MiniLocationComp id="locComp" location="{location}"/>
-         <s:layout>
-            <s:VerticalLayout/>
-         </s:layout>
-      </s:Group> 
-      <s:Group id="targetGroup" visible="{target != null}"  
-               width="100%" maxWidth="{tarComp.maxWidth}">
-         <s:Label text="{Localizer.string('Units', 'label.target')}" styleName="h3"/>
-         <location:MiniLocationComp id="tarComp" location="{target}"/>
-         <s:layout>
-            <s:VerticalLayout/>
-         </s:layout>
-      </s:Group>
-      <s:layout>
-         <s:HorizontalLayout gap="10"/>
-      </s:layout>
-   </s:Group>
    
-   <s:Group height="100%" width="100%">
-      <s:Group width="100%">
+   <unitsscreen:ScreenLocations location="{location}" target="{target}"/>
+   <unitsscreen:ScreenContent height="100%">
+      <unitsscreen:rightControls>
+         <s:Group>
+            <s:Label styleName="locationHeader" id="lblStorage"
+                     text="{Localizer.string('Location', 'header.storage')}" verticalCenter="0"/>
+            <base:DoubleProgressBar text="{Localizer.string('Location', 'label.storage',
+                                    target is Unit
+                                    ? [(target as Unit).stored + (target as Unit).selectedVolume, (target as Unit).storage]
+                                    : [(location as Unit).stored + (location as Unit).selectedVolume, (location as Unit).storage])}"
+                                    full="{target is Unit
+                                    ? (target as Unit).stored + (target as Unit).selectedVolume &gt; (target as Unit).storage
+                                    : (location as Unit).stored + (location as Unit).selectedVolume &gt; (location as Unit).storage}"
+                                    currentStock="{target is Unit ? (target as Unit).stored : (location as Unit).stored}"
+                                    addStock="{target is Unit ? (target as Unit).selectedVolume : (location as Unit).selectedVolume}"
+                                    maxStock="{target is Unit ? (target as Unit).storage : (location as Unit).storage}" 
+                                    specialHeight="20" left="0" right="0" width="200"/>
+         </s:Group>
+      </unitsscreen:rightControls>
+      <unitsscreen:leftControls>
          <base:AdvancedContainer left="0">
+            <base:layout>
+               <s:HorizontalLayout gap="1"/>
+            </base:layout>
             <s:ToggleButton id="landButton"
                             label="{Localizer.string('Units', 'kind.' + (location is Unit?'stored':'land'), 
                             [getUnitCount(flanks)])}"
                             click="tglButton_clickHandler(event)"/>
             <s:ToggleButton id="resourcesButton" label="{Localizer.string('Units', 'kind.resources')}"
                             click="tglButton_clickHandler(event)"/>
-            <base:layout>
-               <s:HorizontalLayout gap="1"/>
-            </base:layout>
          </base:AdvancedContainer>
-         <s:Group right="0">
-            <s:Label styleName="locationHeader" id="lblStorage"
-                     text="{Localizer.string('Location', 'header.storage')}" verticalCenter="0"/>
-            <s:Group width="200">
-               <base:DoubleProgressBar text="{Localizer.string('Location', 'label.storage',
-                                       target is Unit
-                                       ? [(target as Unit).stored + (target as Unit).selectedVolume, (target as Unit).storage]
-                                       : [(location as Unit).stored + (location as Unit).selectedVolume, (location as Unit).storage])}"
-                                       full="{target is Unit
-                                       ? (target as Unit).stored + (target as Unit).selectedVolume &gt; (target as Unit).storage
-                                       : (location as Unit).stored + (location as Unit).selectedVolume &gt; (location as Unit).storage}"
-                                       currentStock="{target is Unit ? (target as Unit).stored : (location as Unit).stored}"
-                                       addStock="{target is Unit ? (target as Unit).selectedVolume : (location as Unit).selectedVolume}"
-                                       maxStock="{target is Unit ? (target as Unit).storage : (location as Unit).storage}" 
-                                       specialHeight="20" left="0" right="0"/>
-            </s:Group>
-            <s:layout>
-               <s:HorizontalLayout gap="3" verticalAlign="middle"/>
-            </s:layout>
-         </s:Group>
-         
-      </s:Group>
-      
-      <s:Group width="100%" height="100%">
+      </unitsscreen:leftControls>
+      <unitsscreen:content>
          <s:DataGroup visible="{landButton.selected}" dataProvider="{flanks}" 
                       left="0" right="0" top="0" bottom="0"> 
             <s:itemRenderer>
@@ -523,21 +498,21 @@
             <base:AdvancedContainer width="100%">
                <s:Group width="80%">
                   <base:ResourceSelectorComp resourceType="{ResourceType.METAL}" 
-                                                maxAmmount="{getMaxStock(ResourceType.METAL)}"
-                                                id="metalSelector" 
-                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+                                             maxAmmount="{getMaxStock(ResourceType.METAL)}"
+                                             id="metalSelector" 
+                                             selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
                </s:Group>
                <s:Group width="80%">
                   <base:ResourceSelectorComp resourceType="{ResourceType.ENERGY}" 
-                                                maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
-                                                id="energySelector"
-                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+                                             maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
+                                             id="energySelector"
+                                             selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
                </s:Group>
                <s:Group width="80%">
                   <base:ResourceSelectorComp resourceType="{ResourceType.ZETIUM}"
-                                                maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
-                                                id="zetiumSelector"
-                                                selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+                                             maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
+                                             id="zetiumSelector"
+                                             selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
                </s:Group>
                <base:Warning text="{missingStorageString}" paddingTop="10" 
                              horizontalCenter="0" maxWidth="{storagePanel.width - 60}" 
@@ -553,10 +528,6 @@
                </base:layout>
             </base:AdvancedContainer>
          </unitsscreen:StoragePanel>
-      </s:Group>
-      
-      <s:layout>
-         <s:VerticalLayout/>
-      </s:layout>
-   </s:Group>
+      </unitsscreen:content>
+   </unitsscreen:ScreenContent>
 </base:BaseContainer>
