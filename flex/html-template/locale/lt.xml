@@ -238,6 +238,10 @@
     <SpaceFactory-whos value="{0 one[laivų gamyklos] 1sts[? laivų gamyklos] tens[? laivų gamyklų] many[? laivų gamyklų]}" />
     
     <!-- Kiti pastatai -->
+    
+    <Market value="Turgus" />
+    <Market-what value="{0 one[turgų] 1sts[? turgų] tens[? turgų] many[? turgus]}" />
+    <Market-whos value="{0 one[turgaus] 1sts[? turgaus] tens[? turgų] many[? turgų]}" />
 
     <Radar value="Radaras" />
     <Radar-what value="{0 one[radarą] 1sts[? radarą] tens[? radarų] many[? radarus]}" />
@@ -809,6 +813,19 @@
         dienų.
       </p>
     </Crane.about>
+    
+    <Market.name ref="Objects/Market" />
+    <Market.tooltip value="Leidžia prekiauti su kitais žaidėjais" />
+    <Market.common>
+      <p>Turgus leidžia tau prekiauti su kitais šios galaktikos žaidėjais.
+      Materijos vertikliai įgalina akimirksniu persiųsti ir gauti prekes,
+      tačiau norint į galaktikos rinką įkelti savo pasiūlymus reikės 
+      atseikėti mokesčius galaktikos prekeivių sandraugai.</p>
+    </Market.common>
+    <Market.about>
+      <p>[reference:Market.common]</p>
+      <p>Kiekvienas patobulinimo lygis sumažina įkėlimo mokestį.</p>
+    </Market.about>
 
     <Radar.name ref="Objects/Radar" />
     <Radar.tooltip value="Atskleidžia galaktikos zoną" />
@@ -3213,6 +3230,9 @@
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
+    
+    <Market.name ref="Buildings/Market.name" />
+    <Market.about ref="Buildings/Market.common" />
 
     <Radar.name ref="Buildings/Radar.name" />
     <Radar.about ref="Buildings/Radar.common" />

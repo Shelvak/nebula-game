@@ -238,6 +238,10 @@
     <SpaceFactory-whos ref="SpaceFactory-what" />
     
     <!-- Other buildings -->
+    
+    <Market value="Market" />
+    <Market-what value="{0 one[one market] many[? markets]}" />
+    <Market-whos ref="Market-what" />
 
     <Radar value="Radar" />
     <Radar-what value="{0 one[one radar] many[? radars]}" />
@@ -810,6 +814,19 @@
         few days. 
       </p>
     </Crane.about>
+    
+    <Market.name ref="Objects/Market" />
+    <Market.tooltip value="Allows trading with other players" />
+    <Market.common>
+      <p>Market allows you to trade with other players in this galaxy. 
+      Matter converters allow sending and receiving goods 
+      instantaneously, however galaxy market dealers will require a fee to
+      list your offers on their networks.</p>
+    </Market.common>
+    <Market.about>
+      <p>[reference:Market.common]</p>
+      <p>Each upgrade level decreases offer submission fee.</p>
+    </Market.about>
 
     <Radar.name ref="Objects/Radar" />
     <Radar.tooltip value="Increases visible galaxy area" />
@@ -3202,6 +3219,9 @@
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
+    
+    <Market.name ref="Buildings/Market.name" />
+    <Market.about ref="Buildings/Market.common" />
 
     <Radar.name ref="Buildings/Radar.name" />
     <Radar.about ref="Buildings/Radar.common" />
