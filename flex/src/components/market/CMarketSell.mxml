@@ -13,7 +13,7 @@
          import models.resource.ResourceType;
          
          import utils.MathUtil;
-
+         
          protected function what_selectedResourceChangeHandler(event:MarketEvent):void
          {
             if (forWhat.selected == what.selected)
@@ -21,7 +21,7 @@
                forWhat.deselect();
             }
          }
-
+         
       ]]>
    </fx:Script>
    <base:layout>
@@ -81,7 +81,7 @@
          }
          
          private function getCheaper(fromRes: String, toRes: String, 
-                                                      currentRate: Number): Boolean
+                                     currentRate: Number): Boolean
          {
             return currentRate < getMarketValue(fromRes, toRes);
          }
@@ -100,39 +100,40 @@
    <s:Label text="{getText('label.wantToSell')}"/>
    <market:CMarketResourceSelector id="what" selectedResourceChange="what_selectedResourceChangeHandler(event)"
                                    hidenType="{ResourceType.CREDS}"/>
-   <s:Label text="{getText('label.howMuch')}" visible="{what.selected != null}"/>
-   <market:CMarketResourceSlider maxAmmount="{what.selected==ResourceType.CREDS
-                                 ?creds - (creds/(1+taxRate))
-                                 :getResource(what.selected).getWithoutTaxes(taxRate)}" 
-                              visible="{what.selected != null}" id="sellSelector"/>
-   <market:CMarketFee type="{what.selected}" taxRate="{taxRate}"
-                      selectedAmmount="{sellSelector.selectedVal}"
-                      visible="{what.selected != null}"/>
-   <s:Label text="{getText('label.sellFor')}" visible="{what.selected != null 
-            &amp;&amp; sellSelector.selectedVal > 0}"/>
-   <market:CMarketResourceSelector id="forWhat" visible="{what.selected != null
-                                   &amp;&amp; sellSelector.selectedVal > 0}"
-                                   disabledType="{what.selected}"/>
-   <market:CMarketResourceSlider maxAmmount="{getMaxOffer(what.selected, forWhat.selected,
-                                 sellSelector.selectedVal)}" 
-                                 minAmmount="{getMinOffer(what.selected, forWhat.selected,
-                                 sellSelector.selectedVal)}"
-                              visible="{forWhat.selected != null
-                              &amp;&amp; sellSelector.selectedVal > 0}" id="forSelector"/>
-   <s:Label text="{getText('label.marketValue', 
-            [getMarketRate(what.selected, forWhat.selected,
-            forSelector.selectedVal/sellSelector.selectedVal),
-            getCheaper(what.selected, forWhat.selected,
-            forSelector.selectedVal/sellSelector.selectedVal)?'cheaper':'more'])}" 
-            visible="{forWhat.selected != null
-            &amp;&amp; sellSelector.selectedVal > 0}"/>
-   <market:CMarketCompare typeFrom="{what.selected}" typeTo="{forWhat.selected}"
-                          amountTo="{forSelector.selectedVal/sellSelector.selectedVal}" 
-                          visible="{forWhat.selected != null
-                          &amp;&amp; sellSelector.selectedVal > 0}"/>
-   <s:Group visible="{forWhat.selected != null
-            &amp;&amp; sellSelector.selectedVal > 0}">
-      <s:Button skinClass="components.skins.GreenButtonSkin" 
-                label="{getText('label.submit')}" horizontalCenter="0"/>
-   </s:Group>
+   <base:AdvancedContainer visible="{what.selected != null 
+                           &amp;&amp; getResource(what.selected).getWithoutTaxes(taxRate)
+                           >= Config.getMinMarketOffer()}">
+      <s:Label text="{getText('label.howMuch')}"/>
+      <market:CMarketResourceSlider maxAmmount="{getResource(what.selected).getWithoutTaxes(taxRate)}"
+                                    minAmmount="{Config.getMinMarketOffer()}" id="sellSelector"/>
+      <market:CMarketFee type="{what.selected}" taxRate="{taxRate}"
+                         selectedAmmount="{sellSelector.selectedVal}"/>
+      <s:Label text="{getText('label.sellFor')}"/>
+      <market:CMarketResourceSelector id="forWhat" disabledType="{what.selected}"/>
+      <market:CMarketResourceSlider maxAmmount="{getMaxOffer(what.selected, forWhat.selected,
+                                    sellSelector.selectedVal)}" 
+                                    minAmmount="{getMinOffer(what.selected, forWhat.selected,
+                                    sellSelector.selectedVal)}"
+                                    visible="{forWhat.selected != null}" id="forSelector"/>
+      <s:Label text="{getText('label.marketValue', 
+               [getMarketRate(what.selected, forWhat.selected,
+               forSelector.selectedVal/sellSelector.selectedVal),
+               getCheaper(what.selected, forWhat.selected,
+               forSelector.selectedVal/sellSelector.selectedVal)?'cheaper':'more'])}" 
+               visible="{forWhat.selected != null}"/>
+      <market:CMarketCompare typeFrom="{what.selected}" typeTo="{forWhat.selected}"
+                             amountTo="{forSelector.selectedVal/sellSelector.selectedVal}" 
+                             visible="{forWhat.selected != null}"/>
+      <s:Group visible="{forWhat.selected != null}">
+         <s:Button skinClass="components.skins.GreenButtonSkin" 
+                   label="{getText('label.submit')}" horizontalCenter="0"/>
+      </s:Group>
+      <base:layout>
+         <s:VerticalLayout horizontalAlign="justify"/>
+      </base:layout>
+   </base:AdvancedContainer>
+   <base:Warning text="{getText('warning.noMinResource', [what.selected])}" 
+                 visible="{what.selected != null 
+                 &amp;&amp; getResource(what.selected).getWithoutTaxes(taxRate)
+                 &lt; Config.getMinMarketOffer()}"/>
 </base:AdvancedContainer>

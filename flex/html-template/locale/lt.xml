@@ -2908,6 +2908,7 @@
   </Ratings>
 
   <Resources>
+    <all value="Visi" />
     <metal value="Metalas" />
     <energy value="Energija" />
     <zetium value="Zetiumas" />
@@ -3828,6 +3829,10 @@
     <label.willPay value="Tu turėsi sumokėti {0}" />
     <label.buy value="Pirkti" />
     <label.cancel value="Atšaukti" />
+    <warning.noMinResource>
+      <p>Tu neturi pakankamai {0 metal[metalo] energy[energijos] zetium[zetiumo]} 
+      minimaliam pasiūlymui</p>
+    </warning.noMinResource>
   </Market>
 
 </locale>

@@ -47,7 +47,7 @@
             offersCollection.filterFunction = function (item: MarketOffer): Boolean
             {
                return (_filterWhat == null || item.whatResource == _filterWhat)
-               && (_filterTo == null || item.toResource == _filterTo);
+               && (_filterTo == null || _filterTo == ResourceType.ALL || item.toResource == _filterTo);
             }
             offersCollection.refresh();
          }

@@ -2866,6 +2866,7 @@
   </Ratings>
 
   <Resources>
+    <all value="All" />
     <metal value="Metal" />
     <energy value="Energy" />
     <zetium value="Zetium" />
@@ -3905,6 +3906,7 @@
     <label.willPay value="You will pay {0}" />
     <label.buy value="Buy" />
     <label.cancel value="Cancel" />
+    <warning.noMinResource value="You dont have enough {0} for minimal offer"/>
   </Market>
 
 </locale>

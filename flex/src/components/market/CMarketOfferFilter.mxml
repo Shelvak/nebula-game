@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
-         xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx" 
-         xmlns:base="components.base.*"
-         skinClass="components.skins.LargePanelSkin"
-         title="{getText('title.filterOffers')}" 
-         xmlns:market="components.market.*">
+            xmlns:s="library://ns.adobe.com/flex/spark" 
+            xmlns:mx="library://ns.adobe.com/flex/mx" 
+            xmlns:base="components.base.*"
+            skinClass="components.skins.LargePanelSkin"
+            title="{getText('title.filterOffers')}" 
+            xmlns:market="components.market.*"
+            creationComplete="panel1_creationCompleteHandler(event)">
    <fx:Metadata>
       /**
       * Dispatched when selected resource in radio group changes
@@ -16,10 +17,18 @@
    </fx:Metadata>
    <fx:Script>
       <![CDATA[
+         import components.base.IRResource;
          import components.market.events.MarketEvent;
          import components.skins.LargePanelSkin;
          
          import models.resource.ResourceType;
+         
+         import mx.collections.ArrayCollection;
+         import mx.collections.Sort;
+         import mx.events.CollectionEvent;
+         import mx.events.FlexEvent;
+         
+         import spark.events.IndexChangeEvent;
          
          import utils.locale.Localizer;
          
@@ -31,19 +40,6 @@
          public var selectedFrom: String;
          
          public var selectedTo: String;
-
-         protected function from_selectedResourceChangeHandler(event:MarketEvent):void
-         {
-            selectedFrom = from.selected;
-            dispatchSelectedChangeEvent();
-         }
-
-
-         protected function to_selectedResourceChangeHandler(event:MarketEvent):void
-         {
-            selectedTo = toRes.selected;
-            dispatchSelectedChangeEvent();
-         }
          
          private function dispatchSelectedChangeEvent(): void
          {
@@ -52,15 +48,129 @@
                dispatchEvent(new MarketEvent(MarketEvent.SELECTED_RESOURCE_CHANGE));
             }
          }
+         
+         [Bindable]
+         private var toKinds: ArrayCollection = new ArrayCollection(ALL_KINDS);
+         
+         protected function from_changeHandler(event:IndexChangeEvent):void
+         {
+            var deselected: Boolean = false;
+            if (toRes.selectedItem == from.selectedItem && toRes.selectedItem != null
+               && toRes.selectedItem != ResourceType.ALL)
+            {
+               toRes.selectedIndex = -1;
+               deselected = true;
+            }
+            if (selectedFrom != null && selectedFrom != 'null' && selectedFrom != 'undefined' && selectedFrom != ResourceType.ALL)
+            {
+               toKinds.addItem(selectedFrom);
+            }
+            selectedFrom = from.selectedItem;
+            var temp: String;
+            if (selectedFrom != ResourceType.ALL)
+            {
+               temp = toRes.selectedItem;
+               toKinds.removeItemAt(toKinds.getItemIndex(selectedFrom));
+            }
+            toKinds.refresh();
+            if (temp != null)
+            {
+               toRes.selectedIndex = toKinds.getItemIndex(temp);
+            }
+            if (deselected)
+            {
+               toRes.selectedIndex = 3;
+               selectedTo = ResourceType.ALL;
+            }
+            dispatchSelectedChangeEvent();
+         }
+         
+         private static const ALL_KINDS: Array = [
+            ResourceType.METAL,
+            ResourceType.ENERGY,
+            ResourceType.ZETIUM,
+            ResourceType.CREDS,
+            ResourceType.ALL];
+         
+         
+         protected function panel1_creationCompleteHandler(event:FlexEvent):void
+         {
+            toKinds.sort = new Sort();
+            toKinds.sort.compareFunction = function (a:String, b:String, fields: Array = null):int
+            {
+               if (a == b)
+               {
+                  return 0;
+               }
+               if (a == ResourceType.METAL)
+               {
+                  return -1;
+               }
+               else if (a == ResourceType.ENERGY)
+               {
+                  if (b == ResourceType.METAL)
+                  {
+                     return 1;
+                  }
+                  else
+                  {
+                     return -1;
+                  }
+               }
+               else if (a == ResourceType.ZETIUM)
+               {
+                  if (b == ResourceType.METAL || b == ResourceType.ENERGY)
+                  {
+                     return 1;
+                  }
+                  else
+                  {
+                     return -1;
+                  }
+               }
+               else if (a == ResourceType.CREDS)
+               {
+                  if (b == ResourceType.ALL)
+                  {
+                     return -1;
+                  }
+                  else
+                  {
+                     return 1;
+                  }
+               }
+               else
+                  return 1;
+            };
+            toKinds.refresh();
+            from.selectedIndex = 3;
+            toRes.selectedIndex = 4;
+         }
+         
+
+         protected function toRes_changeHandler(event:IndexChangeEvent):void
+         {
+            selectedTo = toRes.selectedItem;
+            dispatchSelectedChangeEvent();
+         }
 
       ]]>
    </fx:Script>
    <s:Label text="{getText('filter.show')}"/>
-   <market:CMarketResourceSelector hidenType="{ResourceType.CREDS}" id="from"
-                                   selectedResourceChange="from_selectedResourceChangeHandler(event)"/>
+   <s:DropDownList dataProvider="{new ArrayCollection([
+                   ResourceType.METAL,
+                   ResourceType.ENERGY,
+                   ResourceType.ZETIUM,
+                   ResourceType.ALL])}" 
+                   id="from"
+                   width="100"
+                   change="from_changeHandler(event)"
+                   itemRenderer="components.base.IRResource"/>
    <s:Label text="{getText('filter.for')}"/>
-   <market:CMarketResourceSelector disabledType="{from.selected}" id="toRes"
-                                   selectedResourceChange="to_selectedResourceChangeHandler(event)"/>
+   <s:DropDownList id="toRes" dataProvider="{toKinds}"
+                   width="100"
+                   change="toRes_changeHandler(event)"
+                   itemRenderer="components.base.IRResource"/>
    <base:layout>
       <s:HorizontalLayout paddingBottom="10" paddingTop="10" horizontalAlign="center"
                           verticalAlign="middle"/>

@@ -5,6 +5,7 @@ package models.resource
     */ 
    public final class ResourceType
    {
+      public static const ALL: String = "all";
       public static const METAL: String = "metal";
       public static const ENERGY: String = "energy";
       public static const ZETIUM: String = "zetium";

@@ -181,6 +181,11 @@ package config
          return 0.3;
       }
       
+      public static function getMinMarketOffer(): int
+      {
+         return 1000;
+      }
+      
       public static function getAllianceLeaveCooldown(): int
       {
          return getValue("alliances.leave.cooldown");

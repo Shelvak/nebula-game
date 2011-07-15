@@ -93,7 +93,7 @@
             oldLocation = e.destination;
             cachedUnits.removeAll();
             var tempUnits: Object = {};
-            transporter = (e.location as Unit);
+            transporter = Unit(e.location);
             filtered = (transporter.location.isSolarSystem
                ? ML.latestSolarSystem.wreckages
                : ML.latestGalaxy.wreckages);
