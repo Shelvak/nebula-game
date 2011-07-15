@@ -183,3 +183,6 @@ Factory.define :b_housing, :parent => :building_built,
 
 Factory.define :b_defensive_portal, :parent => :building_built,
 :class => Building::DefensivePortal do |m|; end
+
+Factory.define :b_market, :parent => :building_built,
+:class => Building::Market do |m|; end

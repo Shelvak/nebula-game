@@ -1,5 +1,11 @@
 ---
 
+# Maximum number of active simulateneous offers for player.
+offers.max: 15
+
+# Minimal amount of resource you are able to offer.
+offer.min_amount: 500
+
 # Float percentage that we allow user submitted rate to vary from average market
 # value.
 avg_rate.offset: 0.10

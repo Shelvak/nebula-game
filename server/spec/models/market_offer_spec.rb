@@ -9,10 +9,34 @@ describe MarketOffer do
         should_not be_valid
     end
     
+    it "should fail if user has too much offers" do
+      with_config_values('market.offers.max' => 1) do
+        player = Factory.create(:market_offer).player
+        offer = Factory.build(:market_offer, 
+          :planet => Factory.create(:planet, :player => player))
+        offer.should_not be_valid
+      end
+    end
+    
+    describe "when #from_amount is below minimal amount" do
+      it "should fail if creating a record" do
+        Factory.build(:market_offer, 
+          :from_amount => CONFIG['market.offer.min_amount'] - 1).
+          should_not be_valid
+      end
+      
+      it "should not fail if record is being updated" do
+        offer = Factory.create(:market_offer)
+        offer.from_amount = CONFIG['market.offer.min_amount'] - 1
+        offer.should be_valid
+      end
+    end
+    
     describe "to_rate ajustment to fit avg. market rate" do
       it "should adjust it if it's too low" do
         offer = Factory.build(:market_offer, :to_rate => 1)
-        offer.class.stub!(:avg_rate).with(offer.from_kind, offer.to_kind).
+        offer.class.stub!(:avg_rate).
+          with(offer.player.galaxy_id, offer.from_kind, offer.to_kind).
           and_return(7)
         offer.save!
         offer.to_rate.should == 7 * (1 - CONFIG['market.avg_rate.offset'])
@@ -20,12 +44,25 @@ describe MarketOffer do
       
       it "should adjust it if it's too big" do
         offer = Factory.build(:market_offer, :to_rate => 10)
-        offer.class.stub!(:avg_rate).with(offer.from_kind, offer.to_kind).
+        offer.class.stub!(:avg_rate).
+          with(offer.player.galaxy_id, offer.from_kind, offer.to_kind).
           and_return(7)
         offer.save!
         offer.to_rate.should == 7 * (1 + CONFIG['market.avg_rate.offset'])
       end
     end
+  end
+  
+  describe "#as_json" do
+    before(:each) do
+      @model = Factory.create(:market_offer)
+    end
+    
+    @required_params = %w{id player from_kind from_amount to_kind to_rate
+      created_at}
+    @ommited_params = MarketOffer.columns.map(&:name) - @required_params
+    
+    it_should_behave_like "to json"
   end
   
   describe "#buy!" do    
@@ -195,6 +232,12 @@ describe MarketOffer do
           @offer.reload
         end.should raise_error(ActiveRecord::RecordNotFound)
       end
+      
+      it "should return amount bought" do
+        amount = @offer.from_amount
+        @offer.buy!(@buyer_planet, @offer.from_amount + 10).
+          should == amount
+      end
 
       it "should create notification"
     end
@@ -229,10 +272,42 @@ describe MarketOffer do
     end
   end
   
+  describe ".fast_offers" do
+    it "should return offers in same format as #as_json" do
+      offers = [
+        Factory.create(:market_offer),
+        Factory.create(:market_offer),
+        Factory.create(:market_offer),
+      ]
+      
+      MarketOffer.fast_offers(
+        "`#{MarketOffer.table_name}`.id IN (?)", offers.map(&:id)).
+        each_with_index do |row, index|
+          row.should equal_to_hash(offers[index].as_json)
+        end
+    end
+    
+    it "should work with conditions" do
+      planet = Factory.create(:planet_with_player)
+      
+      offers = [
+        Factory.create(:market_offer, :planet => planet),
+        Factory.create(:market_offer, :planet => planet),
+        Factory.create(:market_offer),
+      ]
+      
+      fetched = MarketOffer.fast_offers("planet_id=?", planet.id)
+      fetched.each_with_index do |row, index|
+        row.should equal_to_hash(offers[index].as_json)
+      end
+      fetched.size.should == offers.size - 1
+    end
+  end
+  
   describe ".avg_rate" do
     it "should raise error if no such config value exists" do
       lambda do
-        MarketOffer.avg_rate(-1, -1)
+        MarketOffer.avg_rate(0, -1, -1)
       end.should raise_error(ArgumentError)
     end
     
@@ -246,7 +321,8 @@ describe MarketOffer do
         MarketOffer::KIND_ENERGY}"
       ]
       MarketOffer.
-        avg_rate(MarketOffer::KIND_METAL, MarketOffer::KIND_ENERGY).
+        avg_rate(offer.galaxy_id, 
+          MarketOffer::KIND_METAL, MarketOffer::KIND_ENERGY).
         should be_close(
           (
             offer.from_amount * offer.to_rate + seed_amount * seed_rate
