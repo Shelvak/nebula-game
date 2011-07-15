@@ -346,7 +346,7 @@ market.zetium.cost: 200 * (level + 1)
 market.fee: 0.2 - 0.03 * (level - 1)
 
 # Technology requirements
-#market.requirement.market.level: 1
+market.requirement.market.level: 1
 
 # Position in constructable list
 market.constructable.position: 205

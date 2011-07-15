@@ -197,3 +197,6 @@ Factory.define :t_defensive_portal, :parent => :technology,
 
 Factory.define :t_zeus, :parent => :technology,
 :class => Technology::Zeus do |m|; end
+
+Factory.define :t_market, :parent => :technology,
+:class => Technology::Market do |m|; end
