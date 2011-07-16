@@ -47,8 +47,6 @@ package components.unitsscreen
       private var _buttonEnabled:Boolean = true;
       /**
        * Should the button be enabled. Default is <code>true</code>.
-       * 
-       * @default true
        */
       public function set buttonEnabled(value:Boolean) : void {
          if (_buttonEnabled != value) {
@@ -57,12 +55,23 @@ package components.unitsscreen
             invalidateProperties();
          }
       }
+      /**
+       * @private
+       */
       public function get buttonEnabled() : Boolean {
          return _buttonEnabled;
       }
       
+      [Bindable]
+      /**
+       * Should the button be visible.
+       * 
+       * @default true
+       */
+      public var buttonVisible:Boolean = true;
+      
       private var f_buttonLabelChanged:Boolean = true,
-         f_buttonEnabledChanged:Boolean = true;
+                  f_buttonEnabledChanged:Boolean = true;
       
       protected override function commitProperties() : void {
          super.commitProperties();

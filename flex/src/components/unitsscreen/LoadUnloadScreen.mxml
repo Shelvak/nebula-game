@@ -494,7 +494,8 @@
          
          <unitsscreen:StoragePanel visible="{resourcesButton.selected}" 
                                    left="0" right="0" top="0" id="storagePanel"
-                                   title="{Localizer.string('Units', 'label.resources')}">
+                                   skinClass="components.unitsscreen.StorageScreenSectionPanelSkin"
+                                   buttonVisible="false">
             <base:AdvancedContainer width="100%">
                <s:Group width="80%">
                   <base:ResourceSelectorComp resourceType="{ResourceType.METAL}" 

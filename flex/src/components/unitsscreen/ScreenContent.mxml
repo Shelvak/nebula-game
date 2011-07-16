@@ -17,11 +17,12 @@
          
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
+         
+         
          /**
           * Controls at the top left of the container. Required.
           */
          public var leftControls:Group = null;
-         
          
          /**
           * Controls at the top right of the container. Optional. 
@@ -117,7 +118,7 @@
       </s:Group>
       <s:Group height="100%">
          <s:Rect left="0" right="0" top="0" bottom="0">
-            <s:fill><s:SolidColor color="0x0F0F0F"/></s:fill>
+            <s:fill><s:SolidColor color="0x0A0A0A"/></s:fill>
          </s:Rect>
          <s:BitmapImage left="0"  top="0" bottom="0" source="{getMiddleImage('left')}"  fillMode="repeat"/>
          <s:BitmapImage right="0" top="0" bottom="0" source="{getMiddleImage('right')}" fillMode="repeat"/>

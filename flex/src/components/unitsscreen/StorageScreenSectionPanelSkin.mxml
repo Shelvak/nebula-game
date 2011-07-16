@@ -44,7 +44,7 @@
          <s:layout><s:HorizontalLayout gap="0" verticalAlign="bottom"/></s:layout>
          <s:BitmapImage source="{getImage('bottom_left')}"/>
          <s:BitmapImage source="{getImage('bottom_center')}" fillMode="repeat" width="100%"/>
-         <s:Group>
+         <s:Group visible="{hostComponent.buttonVisible}" includeInLayout="{hostComponent.buttonVisible}">
             <s:Group left="0" right="0" top="0" bottom="0">
                <s:layout><s:HorizontalLayout gap="0"/></s:layout>
                <s:BitmapImage source="{getImage('button_left')}"/>
@@ -53,6 +53,8 @@
             </s:Group>
             <s:Button id="actionButton" left="17" right="5" bottom="5"/>
          </s:Group>
+         <s:BitmapImage visible="{!hostComponent.buttonVisible}" includeInLayout="{!hostComponent.visible}"
+                        source="{getImage('bottom_right')}"/>
       </s:Group>
    </s:Group>
    <s:Group id="contentGroup" left="30" right="30" top="25" bottom="55">

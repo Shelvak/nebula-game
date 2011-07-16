@@ -2994,17 +2994,18 @@
   <Squadrons>
     <title.squadrons value="Laivynai" />
     <title.noSquadrons value="Judančių laivynų neaptikta." />
-    <label.currentLocation value="Dabartinė pozicija" />
-    <label.sourceLocation value="Skrenda iš" />
-    <label.targetLocation value="Skrenda į" />
+    <label.currentLocation value="Dabartinė pozicija:" />
+    <label.sourceLocation value="Skrenda iš:" />
+    <label.targetLocation value="Skrenda į:" />
     <label.units value="Laivyno nariai" />
-    <label.arrivesAt value="Atvyks" />
-    <label.leavesPlanet value="Iš planetos išvyksta" />
+    <label.arrivesAt value="Atvyks:" />
+    <label.leavesPlanetAt value="Iš planetos išvyksta:" />
     <label.inTime value="(už {0})" />
     <label.close value="Uždaryti" />
     <label.playerFleets value="Tavo lvynai" />
     <label.allianceFleets value="Sąjungininkų laivynai" />
     <label.stop value="Sustabdyti" />
+    <label.manage value="Tvarkyti" />
   </Squadrons>
 
   <Technologies>
