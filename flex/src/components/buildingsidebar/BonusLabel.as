@@ -1,6 +1,7 @@
 package components.buildingsidebar
 {
    import components.base.BaseSkinnableComponent;
+   import components.skins.BonusLabelSkin;
    
    import spark.components.Label;
    
@@ -9,6 +10,11 @@ package components.buildingsidebar
 
    public class BonusLabel extends BaseSkinnableComponent
    {
+      public function BonusLabel() {
+         super();
+         setStyle("skinClass", BonusLabelSkin);
+      }
+      
       [Bindable]
       public var type: String;
       

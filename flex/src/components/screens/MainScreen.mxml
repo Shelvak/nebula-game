@@ -22,18 +22,14 @@ bars and so on.
       <![CDATA[
          import config.Config;
          
-         import controllers.screens.MainAreaScreens;
          import controllers.ui.NavigationController;
          
          import models.Owner;
          import models.map.MapType;
-         import models.planet.Planet;
-         
-         import mx.events.FlexEvent;
-         
          
          import utils.DateUtil;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          
          
          private function getPlanetCooldownLabel(seconds:int) : String
@@ -50,34 +46,29 @@ bars and so on.
       </screens:creationComplete>
    </screens:MainAreaContainer>
    
-   <s:SkinnableContainer id="topToolbarContainer" left="0" right="0" top="0" height="26">
+   <s:SkinnableContainer id="topToolbarContainer" left="0" right="0" top="0" height="26"
+                         skinClass="components.skins.TopToolbarContainerSkin">
       <menus:Navigator left="0" right="0" top="0" bottom="0"/>
    </s:SkinnableContainer>
    
    <s:SkinnableContainer id="bottomToolbarContainer" mouseEnabled="false"
-                         left="0" bottom="0" right="0" height="24">
-      <fx:Script>
-         <![CDATA[
-            import utils.locale.Localizer;
-         ]]>
-      </fx:Script>
-      <menus:MainMenu id="mnuMain" bottom="0"/>
-      <bars:ResourcesBar id="resBar" left="80" bottom="1"
-                         visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
-                                   ML.latestPlanet.ssObject.owner == Owner.PLAYER}"/>
-      <raid:RaidBar id="raidBar" left="{83 + resBar.width}" bottom="2"
-                    visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
-                              ML.player.planetsCount >= Config.getRaidingPlanetLimit() &amp;&amp;
-                              ML.latestPlanet.ssObject.owner == Owner.PLAYER &amp;&amp;
-                              ML.latestPlanet.ssObject.nextRaidAt}"/>
-      <ui:IconWithLabel id="icoPlanetCooldown"
-                        left="{(resBar.visible ? raidBar.x : 80) + (raidBar.visible ? raidBar.width : 0) + 5}"
-                        bottom="2"
-                        toolTip="{Localizer.string('General', 'label.cooldownEndsIn')}"
-                        icon="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 'cooldown')}"
-                        text="{getPlanetCooldownLabel(ML.latestPlanet.ssObject.cooldown.endsIn)}"
-                        visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
-                                  ML.latestPlanet.ssObject.cooldown != null}"/>
+                         left="0" bottom="0" right="0" height="24"
+                         skinClass="components.skins.BottomToolbarContainerSkin">
+      <base:AdvancedContainer bottom="0" top="0">
+         <base:layout><s:HorizontalLayout verticalAlign="bottom" gap="10"/></base:layout>
+         <menus:MainMenu id="mnuMain"/>
+         <bars:ResourcesBar id="resBar" visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
+                                                  ML.latestPlanet.ssObject.owner == Owner.PLAYER}"/>
+         <raid:RaidBar id="raidBar" visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
+                                              ML.player.planetsCount >= Config.getRaidingPlanetLimit() &amp;&amp;
+                                              ML.latestPlanet.ssObject.owner == Owner.PLAYER &amp;&amp;
+                                              ML.latestPlanet.ssObject.nextRaidAt}"/>
+         <ui:IconWithLabel id="icoPlanetCooldown" toolTip="{Localizer.string('General', 'label.cooldownEndsIn')}"
+                           icon="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 'cooldown')}"
+                           text="{getPlanetCooldownLabel(ML.latestPlanet.ssObject.cooldown.endsIn)}"
+                           visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
+                                     ML.latestPlanet.ssObject.cooldown != null}"/>
+      </base:AdvancedContainer>
       <cchat:CChatOpenChanButtons right="0" bottom="0"/>
    </s:SkinnableContainer>
    

@@ -1,5 +1,7 @@
 package components.base
 {
+   import components.skins.PanelSkin;
+   
    import spark.components.Panel;
    
    
@@ -14,6 +16,7 @@ package components.base
       public function Panel()
       {
          super();
+         setStyle("skinClass", PanelSkin);
          minWidth = 20;
          minHeight = 20;
       }
