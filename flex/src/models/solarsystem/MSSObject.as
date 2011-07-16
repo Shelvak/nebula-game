@@ -635,7 +635,8 @@ package models.solarsystem
                !ownerIsAlly &&
                !ownerIsPlayer &&
                 ML.player.hasAllianceTechnology &&
-                ML.player.allianceOwner;
+                ML.player.allianceOwner &&
+               !ML.player.allianceFull;
       }
       
       
