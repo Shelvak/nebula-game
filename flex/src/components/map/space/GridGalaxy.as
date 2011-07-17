@@ -10,6 +10,8 @@ package components.map.space
    import models.location.LocationMinimalGalaxy;
    import models.location.LocationType;
    
+   import utils.Objects;
+   
    
    public class GridGalaxy extends Grid
    {
@@ -37,6 +39,7 @@ package components.map.space
        */
       public override function getSectorRealCoordinates(location:LocationMinimal) : Point
       {
+         Objects.paramNotNull("location", location);
          return new Point(
             (location.x + _galaxy.offset.x + 0.5) * SECTOR_WIDTH,
             (_galaxy.bounds.height - (location.y + _galaxy.offset.y) - 0.5) * SECTOR_HEIGHT
