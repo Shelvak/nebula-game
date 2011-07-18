@@ -10,54 +10,7 @@ package tests._old.utils
    public class ObjectsTest extends TestCase
    {
       [Test]
-      public function hasMetadata_object() : void
-      {
-         var o:* = new WithoutMetadata();
-         assertEquals(
-            "Null should have no metadata",
-            false, Objects.hasMetadata(null, "Custom")
-         );
-         assertEquals(
-            "Should have no metadata 'Custom'",
-            false, Objects.hasMetadata(o, "Custom")
-         );
-         assertEquals(
-            "Should have no metadata 'Unknown'",
-            false, Objects.hasMetadata(o, "Unknown")
-         );
-         
-         o = new WithOneMetadataTag();
-         assertEquals(
-            "Should have metadata 'Required'",
-            true, Objects.hasMetadata(o, "Required")
-         );
-         assertEquals(
-            "Should not have metadata 'Unknown'",
-            false, Objects.hasMetadata(o, "Unknown")
-         );
-         
-         o = new WithLotsOfMetadata();
-         assertEquals(
-            "Should have metadata 'Required'",
-            true, Objects.hasMetadata(o, "Required")
-         );
-         assertEquals(
-            "Should have metadata 'Optional'",
-            true, Objects.hasMetadata(o, "Optional")
-         );
-         assertEquals(
-            "Should have metadata 'ArrayElementType'",
-            true, Objects.hasMetadata(o, "ArrayElementType")
-         );
-         assertEquals(
-            "Should not have metadata 'Whatever'",
-            false, Objects.hasMetadata(o, "Whatever")
-         );
-      };
-      
-      
-      [Test]
-      public function hasMetadata_class() : void
+      public function hasMetadata() : void
       {
          assertEquals(
             "Should have no metadata 'Required'",
@@ -104,7 +57,7 @@ package tests._old.utils
          var instance:ClassWithVariables = new ClassWithVariables();
          var props:Array;
          
-         props = Objects.getPublicProperties(instance);
+         props = Objects.getPublicProperties(ClassWithVariables);
          assertEquals(
             "2 properties should be public and writable",
             2, props.length
@@ -118,7 +71,7 @@ package tests._old.utils
             ArrayUtil.arrayContainsValue(props, "publicVar2")
          );
          
-         props = Objects.getPublicProperties(instance, false);
+         props = Objects.getPublicProperties(ClassWithVariables, false);
          assertEquals(
             "Only 2 writable/readable properties should be public",
             2, props.length
@@ -140,7 +93,7 @@ package tests._old.utils
          var instance:ClassWithAccessors = new ClassWithAccessors();
          var props:Array;
          
-         props = Objects.getPublicProperties(instance);
+         props = Objects.getPublicProperties(ClassWithAccessors);
          assertEquals(
             "There should be 4 public writable properties",
             4, props.length
@@ -162,7 +115,7 @@ package tests._old.utils
             ArrayUtil.arrayContainsValue(props, "publicWriteOnlyProp1")
          );
          
-         props = Objects.getPublicProperties(instance, false);
+         props = Objects.getPublicProperties(ClassWithAccessors, false);
          assertEquals(
             "There should be 6 public writable or readable properties",
             6, props.length
@@ -200,7 +153,7 @@ package tests._old.utils
          var instance:ClassMixedProps = new ClassMixedProps();
          var props:Array;
          
-         props = Objects.getPublicProperties(instance);
+         props = Objects.getPublicProperties(ClassMixedProps);
          assertEquals(
             "There should be 2 public writable properties",
             2, props.length
@@ -214,7 +167,7 @@ package tests._old.utils
             ArrayUtil.arrayContainsValue(props, 'publicWriteOnlyProp')
          );
          
-         props = Objects.getPublicProperties(instance, false);
+         props = Objects.getPublicProperties(ClassMixedProps, false);
          assertEquals(
             "There should be 3 public writable properties",
             3, props.length
@@ -240,7 +193,7 @@ package tests._old.utils
          var instance:ExtensionOfMixed = new ExtensionOfMixed();
          var props:Array;
          
-         props = Objects.getPublicProperties(instance);
+         props = Objects.getPublicProperties(ExtensionOfMixed);
          assertEquals(
             "There should be 4 public writable properties",
             4, props.length
@@ -262,7 +215,7 @@ package tests._old.utils
             ArrayUtil.arrayContainsValue(props, 'newPublicWriteOnlyProp')
          );
          
-         props = Objects.getPublicProperties(instance, false);
+         props = Objects.getPublicProperties(ExtensionOfMixed, false);
          assertEquals(
             "There should be 5 public writable properties",
             5, props.length
