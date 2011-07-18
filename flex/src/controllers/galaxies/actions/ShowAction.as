@@ -48,15 +48,15 @@ package controllers.galaxies.actions
    public class ShowAction extends CommunicationAction
    {
       private function get GF() : GlobalFlags {
-         GlobalFlags.getInstance();
+         return GlobalFlags.getInstance();
       }
       
       private function get SQUADS_CTRL() : SquadronsController {
-         SquadronsController.getInstance();
+         return SquadronsController.getInstance();
       }
       
       private function get NAV_CTRL() : NavigationController {
-         NavigationController.getInstance();
+         return NavigationController.getInstance();
       }
       
       

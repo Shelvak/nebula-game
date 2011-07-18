@@ -341,15 +341,22 @@ package utils.assets
       
       
       /**
-       * Builds and returns full name of a given solar system image.
+       * Builds and returns full name of a solar system image.
        * 
-       * @param variation Variation of a solar system.
+       * @param variation variation of a solar system
        * 
-       * @return Name of a solar system image.
+       * @return name of a solar system image
        */
-      public static function getSSImageName(variation:int) : String
-      {
+      public static function getSSImageName(variation:int) : String {
          return SS_IMAGE_FOLDER + variation;
+      }
+      
+      
+      /**
+       * Builds and returns full name of a dead start (kind of solar system) image.
+       */
+      public static function getDeadStarImageName(variation:int) : String {
+         return SS_IMAGE_FOLDER + "dead_star_" + variation;
       }
       
       
