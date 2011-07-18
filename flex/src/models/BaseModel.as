@@ -154,9 +154,7 @@ package models
       public static function createModel(type:Class, data:Object) : *
       {
          if (data == null)
-         {
             return null;
-         }
          
          var model:BaseModel = new type();
          var info:XML = describeType(model);

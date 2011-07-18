@@ -18,7 +18,6 @@ package models.map
    
    import utils.datastructures.Collections;
    
-   
    /**
     * Signals component to zoom a given object in.
     * 
@@ -26,14 +25,12 @@ package models.map
     */
    [Event(name="uicmdZoomObject", type="models.map.events.MMapEvent")]
    
-   
    /**
     * Signals component to select a given object.
     * 
     * @eventType models.map.events.MMapEvent.UICMD_SELECT_OBJECT
     */
    [Event(name="uicmdSelectObject", type="models.map.events.MMapEvent")]
-   
    
    /**
     * Signals component to move the map to given location. <code>object</code> property holds
@@ -43,14 +40,12 @@ package models.map
     */
    [Event(name="uicmdMoveTo", type="models.map.events.MMapEvent")]
    
-   
    /**
     * Dispatched when a squadron enters (is added to) this map.
     * 
     * @eventType models.map.events.MMapEvent.SQUADRON_ENTER
     */
    [Event(name="squadronEnter", type="models.map.events.MMapEvent")]
-   
    
    /**
     * Dispatched when a squadron leaves (is removed from) this map.
@@ -59,14 +54,12 @@ package models.map
     */
    [Event(name="squadronLeave", type="models.map.events.MMapEvent")]
    
-   
    /**
     * Dispatched when static objects has been added to the map.
     * 
     * @eventType models.map.events.MMapEvent.OBJECT_ADD
     */
    [Event(name="objectAdd", type="models.map.events.MMapEvent")]
-   
    
    /**
     * Dispatched when static objects has been added to the map.
@@ -75,28 +68,23 @@ package models.map
     */
    [Event(name="objectRemove", type="models.map.events.MMapEvent")]
    
-   
    public class MMap extends BaseModel implements ICleanable
    {
-      public function MMap()
-      {
+      public function MMap() {
          super();
          _squadrons = Collections.filter(ML.squadrons,
-            function(squad:MSquadron) : Boolean
-            {
+            function(squad:MSquadron) : Boolean {
                return definesLocation(squad.currentHop.location);
             }
          );
          _units = Collections.filter(ML.units,
-            function(unit:Unit) : Boolean
-            {
+            function(unit:Unit) : Boolean {
                return definesLocation(unit.location);
             }
          );
          addSquadronsCollectionEventHandlers(_squadrons);
          addObjectsCollectionEventHandlers(_objects);
       }
-      
       
       /**
        * <ul>
@@ -107,10 +95,8 @@ package models.map
        * 
        * @see ICleanable#cleanup()
        */
-      public function cleanup() : void
-      {
-         if (_squadrons != null)
-         {
+      public function cleanup() : void {
+         if (_squadrons != null) {
             _squadrons.disableAutoUpdate();
             Collections.cleanListOfICleanables(_squadrons);
             _squadrons.enableAutoUpdate();
@@ -118,8 +104,7 @@ package models.map
             _squadrons.filterFunction = null;
             _squadrons = null;
          }
-         if (_units != null)
-         {
+         if (_units != null) {
             ML.units.disableAutoUpdate();
             _units.disableAutoUpdate();
             Collections.cleanListOfICleanables(_units);
@@ -129,8 +114,7 @@ package models.map
             _units.filterFunction = null;
             _units = null;
          }
-         if (_objects != null)
-         {
+         if (_objects != null) {
             _objects.disableAutoUpdate();
             Collections.cleanListOfICleanables(_objects);
             _objects.enableAutoUpdate();
@@ -140,9 +124,7 @@ package models.map
          }
       }
       
-      
-      protected override function get collectionsFilterProperties() : Object
-      {
+      protected override function get collectionsFilterProperties() : Object {
          return {
             "squadrons": ["id"],
             "units":     ["id"]
@@ -154,7 +136,6 @@ package models.map
       /* ### PROPERTIES ### */
       /* ################## */
       
-      
       /**
        * Returns <code>true</code> if this instance has a valid cached map instance in
        * <code>ModelLocator</code>. However this <b>does not</b> necessary mean that <code>this</code>
@@ -163,42 +144,34 @@ package models.map
        *  
        * <p>Getter in <code>MMap</code> throws <code>IllegalOperationError</code> if not overriden.</p>
        */
-      public function get cached() : Boolean
-      {
+      public function get cached() : Boolean {
          throw new IllegalOperationError("Getter is abstract!");
          return false;  // unreachable
       }
-      
       
       /**
        * Type of the map. Use values form <code>MapType</code>.
        * 
        * @default <code>MapType.GALAXY</code>
        */
-      public function get mapType():int
-      {
+      public function get mapType():int {
          return MapType.GALAXY;
       }
-      
       
       /**
        * Type of locations this map defines inside itself.
        */
-      protected function get definedLocationType() : int
-      {
+      protected function get definedLocationType() : int {
          throwAbstractMethodError();
          return 0;   // unreachable
       }
       
-      
       /**
        * Location of this map-like object in the parent map object. Returns <code>null</code> by default.
        */
-      public function get currentLocation() : LocationMinimal
-      {
+      public function get currentLocation() : LocationMinimal {
          return null;
       }
-      
       
       [Bindable(event="willNotChange")]
       /**
@@ -206,11 +179,9 @@ package models.map
        * 
        * @param type Type of a map to test. Use values from <code>MapType</code>.
        */
-      public function isOfType(type:int) : Boolean
-      {
+      public function isOfType(type:int) : Boolean {
          return mapType == type;
       }
-      
       
       private var _objects:ArrayCollection = new ArrayCollection();
       [Bindable(event="willNotChange")]
@@ -219,31 +190,30 @@ package models.map
        * 
        * @default empty collection
        */
-      public function get objects() : ArrayCollection
-      {
+      public function get objects() : ArrayCollection {
          return _objects;
       }
-      
       
       private var _squadrons:ListCollectionView;
       [Bindable(event="willNotChange")]
       /**
        * Collection of squadrons in this map.
        */
-      public function get squadrons() : ListCollectionView
-      {
+      public function get squadrons() : ListCollectionView {
          return _squadrons;
       }
-      
       
       private var _units:ListCollectionView;
       [Bindable(event="willNotChange")]
       /**
        * Collection of units in this map.
        */
-      public function get units() : ListCollectionView
-      {
+      public function get units() : ListCollectionView {
          return _units
+      }
+      
+      public function get hasUnits() : Boolean {
+         return _units.length > 0;
       }
       
       
@@ -251,15 +221,12 @@ package models.map
       /* ### INTERFACE METHODS ### */
       /* ######################### */
       
-      
       /**
        * Adds given object to objects list.
        */
-      public function addObject(object:BaseModel) : void
-      {
+      public function addObject(object:BaseModel) : void {
          _objects.addItem(object);
       }
-      
       
       /**
        * Removes an object equal to the given one from objects list and returns it.
@@ -267,50 +234,38 @@ package models.map
        * @throws IllegalOperationError if object to remove could not be found and <code>silent</code>
        * is <code>false</code>
        */
-      public function removeObject(object:BaseModel, silent:Boolean = false) : *
-      {
+      public function removeObject(object:BaseModel, silent:Boolean = false) : * {
          var objectIdx:int = Collections.findFirstIndexEqualTo(_objects, object);
          if (objectIdx >= 0)
-         {
             return _objects.removeItemAt(objectIdx);
-         }
          else if (!silent)
-         {
             throw new IllegalOperationError("Can't remove object " + object + ": the equal object " +
                                             "could not be found");
-         }
       }
-      
       
       /**
        * Creates and returns location in this map with given coordinates.
        */
-      public function getLocation(x:int, y:int) : Location
-      {
+      public function getLocation(x:int, y:int) : Location {
          var loc:Location = new Location();
          loc.type = definedLocationType;
          loc.id = id;
          loc.x = x;
          loc.y = y;
          if (!definesLocation(loc))
-         {
             throw new IllegalOperationError("Map " + this + " does not define location with " +
                                             "coordinates [x: " + x + ", y: " + y + "]");
-         }
          setCustomLocationFields(loc);
          return loc;
       }
-      
       
       /**
        * Called by <code>getLocation()</code>. You should set fields of given <code>Location</code>
        * relevant to concrete type of <code>Map</code>.
        */
-      protected function setCustomLocationFields(location:Location) : void
-      {
+      protected function setCustomLocationFields(location:Location) : void {
          throwAbstractMethodError();
       }
-      
       
       /**
        * Returns <code>true</code> if given location is defined in this map only.
@@ -318,23 +273,18 @@ package models.map
        * <p>Override <code>definesLocationImpl()</code> rather than this method: it will only be
        * called if <code>location</code> is not <code>null</code>.</p>
        */
-      public function definesLocation(location:LocationMinimal) : Boolean
-      {
-         if (!location)
-         {
+      public function definesLocation(location:LocationMinimal) : Boolean {
+         if (location == null)
             return false;
-         }
          return definesLocationImpl(location);
       }
-      
       
       /**
        * @param location will never be <code>null</code>
        * 
        * @see #definesLocation()
        */
-      protected function definesLocationImpl(location:LocationMinimal) : Boolean
-      {
+      protected function definesLocationImpl(location:LocationMinimal) : Boolean {
          throwAbstractMethodError();
          return false;   // unreachable
       }
@@ -344,29 +294,20 @@ package models.map
       /* ### UI COMMANDS ### */
       /* ################### */
       
-      
-      public function zoomObject(object:*, operationCompleteHandler:Function = null) : void
-      {
+      public function zoomObject(object:*, operationCompleteHandler:Function = null) : void {
          dispatchUiCommand(MMapEvent.UICMD_ZOOM_OBJECT, object, operationCompleteHandler);
       }
       
-      
-      public function selectObject(object:*, operationCompleteHandler:Function = null) : void
-      {
+      public function selectObject(object:*, operationCompleteHandler:Function = null) : void{
          dispatchUiCommand(MMapEvent.UICMD_SELECT_OBJECT, object, operationCompleteHandler);
       }
       
-      
-      public function moveTo(location:LocationMinimal, operationCompleteHandler:Function = null) : void
-      {
+      public function moveTo(location:LocationMinimal, operationCompleteHandler:Function = null) : void {
          dispatchUiCommand(MMapEvent.UICMD_MOVE_TO, location, operationCompleteHandler);
       }
       
-      
-      protected function dispatchUiCommand(type:String, object:*, operationCompleteHandler:Function) : void
-      {
-         if (hasEventListener(type))
-         {
+      protected function dispatchUiCommand(type:String, object:*, operationCompleteHandler:Function) : void {
+         if (hasEventListener(type)) {
             var event:MMapEvent = new MMapEvent(type);
             event.object = object;
             event.operationCompleteHandler = operationCompleteHandler;
@@ -379,25 +320,17 @@ package models.map
       /* ### SQUADRONS COLLECTION EVENT HANDLERS ### */
       /* ########################################### */
       
-      
-      private function addSquadronsCollectionEventHandlers(squadrons:ListCollectionView) : void
-      {
+      private function addSquadronsCollectionEventHandlers(squadrons:ListCollectionView) : void {
          squadrons.addEventListener(CollectionEvent.COLLECTION_CHANGE, squadrons_collectionChangeHandler,
                                     false, 0, true);
       }
       
-      
-      private function squadrons_collectionChangeHandler(event:CollectionEvent) : void
-      {
+      private function squadrons_collectionChangeHandler(event:CollectionEvent) : void {
          if (event.kind != CollectionEventKind.ADD &&
              event.kind != CollectionEventKind.REMOVE)
-         {
             return;
-         }
-         for each (var squad:MSquadron in event.items)
-         {
-            switch (event.kind)
-            {
+         for each (var squad:MSquadron in event.items) {
+            switch (event.kind) {
                case CollectionEventKind.ADD:
                   dispatchSquadronEnterEvent(squad);
                   break;
@@ -414,24 +347,19 @@ package models.map
       /* ######################################### */
       
       
-      private function addObjectsCollectionEventHandlers(objects:ListCollectionView) : void
-      {
+      private function addObjectsCollectionEventHandlers(objects:ListCollectionView) : void {
          objects.addEventListener(CollectionEvent.COLLECTION_CHANGE, objects_collectionChangeHandler,
                                   false, 0, true);
       }
       
       
-      private function objects_collectionChangeHandler(event:CollectionEvent) : void
-      {
+      private function objects_collectionChangeHandler(event:CollectionEvent) : void {
          if (event.kind != CollectionEventKind.ADD &&
-             event.kind != CollectionEventKind.REMOVE)
-         {
+             event.kind != CollectionEventKind.REMOVE) {
             return;
          }
-         for each (var object:* in event.items)
-         {
-            switch (event.kind)
-            {
+         for each (var object:* in event.items) {
+            switch (event.kind) {
                case CollectionEventKind.ADD:
                   dispatchObjectAddEvent(object);
                   break;
@@ -447,44 +375,32 @@ package models.map
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
       
-      
-      private function dispatchObjectAddEvent(object:*) : void
-      {
-         if (hasEventListener(MMapEvent.OBJECT_ADD))
-         {
+      private function dispatchObjectAddEvent(object:*) : void {
+         if (hasEventListener(MMapEvent.OBJECT_ADD)) {
             var event:MMapEvent = new MMapEvent(MMapEvent.OBJECT_ADD);
             event.object = object;
             dispatchEvent(event);
          }
       }
       
-      
-      private function dispatchObjectRemoveEvent(object:*) : void
-      {
-         if (hasEventListener(MMapEvent.OBJECT_REMOVE))
-         {
+      private function dispatchObjectRemoveEvent(object:*) : void {
+         if (hasEventListener(MMapEvent.OBJECT_REMOVE)) {
             var event:MMapEvent = new MMapEvent(MMapEvent.OBJECT_REMOVE);
             event.object = object;
             dispatchEvent(event);
          }
       }
       
-      
-      private function dispatchSquadronEnterEvent(squadron:MSquadron) : void
-      {
-         if (hasEventListener(MMapEvent.SQUADRON_ENTER))
-         {
+      private function dispatchSquadronEnterEvent(squadron:MSquadron) : void {
+         if (hasEventListener(MMapEvent.SQUADRON_ENTER)) {
             var event:MMapEvent = new MMapEvent(MMapEvent.SQUADRON_ENTER);
             event.squadron = squadron;
             dispatchEvent(event);
          }
       }
       
-      
-      private function dispatchSquadronLeaveEvent(squadron:MSquadron) : void
-      {
-         if (hasEventListener(MMapEvent.SQUADRON_LEAVE))
-         {
+      private function dispatchSquadronLeaveEvent(squadron:MSquadron) : void {
+         if (hasEventListener(MMapEvent.SQUADRON_LEAVE)) {
             var event:MMapEvent = new MMapEvent(MMapEvent.SQUADRON_LEAVE);
             event.squadron = squadron;
             dispatchEvent(event);
@@ -496,9 +412,7 @@ package models.map
       /* ### HELPERS ### */
       /* ############### */
       
-      
-      private function throwAbstractMethodError() : void
-      {
+      private function throwAbstractMethodError() : void {
          throw new IllegalOperationError("This method is abstract");
       }
    }
