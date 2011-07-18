@@ -13,11 +13,11 @@
          <s:ToggleButton id="btnPlayerRoutes" label="{getString('label.playerFleets')}"/>
          <s:ToggleButton id="btnAllianceRoutes" label="{getString('label.allianceFleets')}"/>
       </s:Group>
+      <screens:ScreenCloseButton id="_btnClose" click="btnCloseScreen_clickHandler(event)"
+                                 label="{getString('label.close')}"/>
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
-         import components.screens.ScreenCloseButton;
-         
          import controllers.ui.NavigationController;
          
          import models.ModelLocator;
@@ -44,7 +44,6 @@
          
          private const _filterButtons:ToggleButtonsGroup = new ToggleButtonsGroup();
          private const _routes:ListCollectionView = new ListCollectionView(ModelLocator.getInstance().routes);
-         private const _btnCloseScreen:ScreenCloseButton = new ScreenCloseButton();
          
          private function this_initializeHandler(event:FlexEvent):void {
             _filterButtons.registerButton(btnPlayerRoutes);
@@ -54,13 +53,6 @@
                filterButtons_selectionChangeHandler, false, 0, true
             );
             _filterButtons.select(btnPlayerRoutes);
-            
-            _btnCloseScreen.label = getString("label.close");
-            _btnCloseScreen.scroller = contentScroller;
-            _btnCloseScreen.right = 0;
-            _btnCloseScreen.bottom = 0;
-            _btnCloseScreen.addEventListener(MouseEvent.CLICK, btnCloseScreen_clickHandler, false, 0, true);
-            addElement(_btnCloseScreen);
          }
          
          private function filterButtons_selectionChangeHandler(event:ToggleButtonsGroupEvent) : void {
@@ -105,6 +97,10 @@
          
          protected override function get controlButtons() : Group {
             return _controlButtons;
+         }
+         
+         protected override function get closeButton() : Group {
+            return _btnClose;
          }
       ]]>
    </fx:Script>

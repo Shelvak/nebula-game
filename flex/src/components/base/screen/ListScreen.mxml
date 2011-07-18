@@ -94,6 +94,14 @@
             return null;
          }
          
+         /**
+          * A button that will be placed at the bottom right corner of the screen. Optional.
+          * Should allways return the same instance.
+          */
+         protected function get closeButton() : Group {
+            return null;
+         }
+         
          private function this_initializeHandler(event:FlexEvent) : void {
             dataProvider.addEventListener(
                CollectionEvent.COLLECTION_CHANGE,
@@ -143,6 +151,13 @@
                controlButtons.top = 5;
                header.controls = controlButtons;
             }
+            
+            if (closeButton != null) {
+               closeButton.right = 0;
+               var grpCloseButton:Group = new Group();
+               grpCloseButton.addElement(closeButton);
+               grpContent.addElement(grpCloseButton);
+            }
          }
          
          private function getString(property:String, parameters:Array = null) : String {
@@ -153,7 +168,7 @@
    
    <screen:ScreenBackground/>
    
-   <s:Group left="0" right="0" top="0" bottom="0">
+   <s:Group id="grpContent" left="0" right="0" top="0" bottom="0">
       <s:layout>
          <s:VerticalLayout horizontalAlign="justify" gap="0"/>
       </s:layout>
