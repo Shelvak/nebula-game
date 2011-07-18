@@ -687,6 +687,16 @@ class Object
   end
 end
 
+class Range
+  def *(value)
+    (first * value)..(last * value)
+  end
+  
+  def /(value)
+    (first / value)..(last / value)
+  end
+end
+
 class Random
   # Return boolean value based on integer _chance_.
   def self.chance(chance)
