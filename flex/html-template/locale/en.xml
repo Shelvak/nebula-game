@@ -1322,6 +1322,13 @@
     <message.speedUpCost 
       value="Speed up cost: {0 one[one cred] many[? creds]}."/>
     <message.orderComplete value="Fleet has been dispatched." />
+    <label.avoidNpc value="Avoid battles with NPC" />
+    <description.avoidNpc>
+      <p>Checked: Your fleet will try to avoid any battles with NPC spaceships. This
+      will result in longer travel time if there are NPC units in your way.</p>
+      <p>Not checked: Your fleet will take the shortest route to its destination. It will
+      engage any NPC ships that are on its way.</p>
+    </description.avoidNpc>
   </Movement>
 
   <Navigator>
@@ -3579,19 +3586,6 @@
     <label.leavingSquadrons>
       <p>These fleets are currently leaving this planet.</p>
     </label.leavingSquadrons>
-    <label.avoidBattles value="Avoid battles with NPC" />
-    <description.avoidBattles>
-      <p>
-        Your fleet will try to avoid any battles with NPC spaceships. This
-        will result in longer travel time if there are NPC units in your way. 
-      </p>
-    </description.avoidBattles>
-    <description.dontAvoidBattles>
-      <p>
-        Your fleet will take the shortest route to its destination. It will
-        engage any NPC ships that are on its way. 
-      </p>
-    </description.dontAvoidBattles>
     <warning.noFleets>
       <p>There are currently no ships leaving this planet.</p>
     </warning.noFleets>

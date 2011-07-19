@@ -428,7 +428,7 @@
             }
             else
             {
-               OrdersController.getInstance().issueOrder(new ArrayCollection(selection), e.avoid);
+               OrdersController.getInstance().issueOrder(new ArrayCollection(selection));
             }
          }
          
