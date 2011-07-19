@@ -229,7 +229,7 @@ package controllers.units
          for each (var routeData:Object in routes)
          {
             var route:MRoute = createRoute
-               (routeData, route.playerId == ML.player.id ? Owner.PLAYER : Owner.ALLY);
+               (routeData, routeData["playerId"] == ML.player.id ? Owner.PLAYER : Owner.ALLY);
             route.player = players[route.playerId];
          }
       }
