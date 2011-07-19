@@ -162,6 +162,7 @@ class SolarSystem < ActiveRecord::Base
     self.kind = KIND_DEAD
     save!
     delete_assets!
+    fow_ss_entries.update_all(:enemy_planets => false, :enemy_ships => false)
     
     EventBroker.fire(self, EventBroker::CHANGED)
   end

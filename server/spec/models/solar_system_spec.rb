@@ -217,6 +217,14 @@ describe SolarSystem do
       @ss.die!
     end
     
+    it "should update metadata" do
+      fse = Factory.create(:fse_player, :solar_system => @ss,
+        :enemy_planets => true, :enemy_ships => true)
+      @ss.die!
+      fse.reload
+      [fse.enemy_planets, fse.enemy_ships].should == [false, false]
+    end
+    
     it "should dispatch changed" do
       should_fire_event(@ss, EventBroker::CHANGED) do
         @ss.die!
