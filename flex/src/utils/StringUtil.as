@@ -1,7 +1,5 @@
 package utils
 {
-	import mx.collections.Sort;
-	
 	import utils.bkde.as3.parsers.CompiledObject;
 	import utils.bkde.as3.parsers.MathParser;
 	
@@ -10,7 +8,6 @@ package utils
 	 */   
 	public class StringUtil
 	{
-      private static const mathParser: MathParser = new MathParser([]);
 		/**
 		 * Transforms first letter of a given string to UPPERCASE and returns resulting string.
 		 *  
@@ -75,19 +72,37 @@ package utils
       private static const POWER_REGEXP:RegExp = /\*\*/g;
       private static const EMPTY_ARRAY:Array = [];
       public static function evalFormula(formula:String, params:Object = null) : Number {
-         if (formula == null)
+         if (formula == null || formula == "")
             return 0;
-         var cachedParser:CachedMathParser = CACHED_PARSERS[formula];
+         var result:Number = Number(formula);
+         if (!isNaN(result))
+            return result;
          var paramNames:Array = getParamNames(params);
          var paramVals:Array  = getParamVals(params, paramNames);
+         var parserKey:String = formula + "::" + paramNames.join(";");
+         var cachedParser:CachedMathParser = CACHED_PARSERS[parserKey];
          if (cachedParser == null) {
             var usableFormula:String = formula.replace(POWER_REGEXP, "^");
             var parser:MathParser = new MathParser(paramNames);
-            var polishArray:Array = parser.doCompile(usableFormula).PolishArray;
+            var compObject:CompiledObject = parser.doCompile(usableFormula);
+//            if (compObject.errorStatus != 0) {
+//               trace("Formula CMOPILE error!");
+//               trace("   Formula:", usableFormula);
+//               trace("   Error status:", compObject.errorStatus);
+//               trace("   Error message:", compObject.errorMes);
+//            }
+            var polishArray:Array = compObject.PolishArray;
             cachedParser = new CachedMathParser(parser, polishArray)
-            CACHED_PARSERS[formula] = cachedParser;
+            CACHED_PARSERS[parserKey] = cachedParser;
          }
-         return cachedParser.parser.doEval(cachedParser.polishArray, paramVals);
+         result = cachedParser.parser.doEval(cachedParser.polishArray, paramVals);
+//         if (isNaN(result)) {
+//            trace("Formula EVAL error!")
+//            trace("   Formula:", formula);
+//            trace("   Params:", ObjectUtil.toString(paramNames));
+//            trace("   Param values:", ObjectUtil.toString(paramVals));
+//         }
+         return result;
       }
       
       private static function getParamNames(paramsObj:Object) : Array {
@@ -95,7 +110,8 @@ package utils
             return EMPTY_ARRAY;
          var namesArray:Array = new Array();
          for (var name:String in paramsObj) {
-            namesArray.push(name);
+            if (paramsObj[name] != null)
+               namesArray.push(name);
          }
          namesArray.sort();
          return namesArray;
