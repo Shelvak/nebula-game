@@ -19,28 +19,20 @@
          import utils.locale.Localizer;
          
          
-         private function get IMG() : ImagePreloader
-         {
+         private function get IMG() : ImagePreloader {
             return ImagePreloader.getInstance();
          }
          
-         
-         private function getImage(key:String) : BitmapData
-         {
+         private function getImage(key:String) : BitmapData {
             return IMG.getImage(AssetNames.CHAT_IMAGES_FOLDER + "ctrl_area_" + key);
          }
          
-         
-         private function getString(property:String) : String
-         {
+         private function getString(property:String) : String {
             return Localizer.string("Chat", property);
          }
          
-         
-         protected override function initializationComplete() : void
-         {
+         protected override function initializationComplete() : void {
             super.initializationComplete();
-            
             bmpFriendOfflineWarningSign.source =
                IMG.getImage(AssetNames.UI_IMAGES_FOLDER + "warning_sign");
             bmpFriendOfflineBackground.source =
@@ -55,12 +47,14 @@
          <s:VerticalLayout gap="4" horizontalAlign="justify"/>
       </s:layout>
       
-      <s:Group id="grpFriendOfflineWarningContainer" minWidth="0" minHeight="0">
-         <s:BitmapImage id="bmpFriendOfflineBackground" left="0" right="0" top="0" bottom="0"
-                        fillMode="repeat"/>
-         <s:BitmapImage id="bmpFriendOfflineWarningSign" left="20" verticalCenter="0"/>
-         <s:Label id="lblFriendOfflineWarning" left="80" verticalCenter="0"
-                  fontSize="16" color="0xFFCC00" fontWeight="bold"/>
+      <s:Group minWidth="0" minHeight="0">
+         <s:Group id="grpFriendOfflineWarningContainer" left="-5" right="-5" top="-5">
+            <s:BitmapImage id="bmpFriendOfflineBackground" left="0" right="0" top="0" bottom="0"
+                           fillMode="repeat"/>
+            <s:BitmapImage id="bmpFriendOfflineWarningSign" left="20" verticalCenter="0"/>
+            <s:Label id="lblFriendOfflineWarning" left="80" verticalCenter="0"
+                     fontSize="16" color="0xFFCC00" fontWeight="bold"/>
+         </s:Group>
       </s:Group>
       
       <s:TextArea id="txtContent" height="100%"

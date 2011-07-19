@@ -4,15 +4,21 @@
                 xmlns:mx="library://ns.adobe.com/flex/mx"
                 xmlns:squadscr="components.squadronsscreen.*"
                 autoDrawBackground="false" width="100%">
+   <fx:Binding source="model.currentLocation.isSSObject" destination="_currentLocIsPlanet"/>
    <fx:Script>
       <![CDATA[
          import controllers.routes.RoutesCommand;
          
+         import globalevents.GUnitsScreenEvent;
+         
+         import models.ModelLocator;
          import models.Owner;
          import models.movement.MRoute;
+         import models.unit.Unit;
          
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
+         import utils.datastructures.Collections;
          import utils.locale.Localizer;
          
          
@@ -25,6 +31,25 @@
             return Localizer.string("Squadrons", property, parameters);
          }
          
+         private function get ML() : ModelLocator {
+            return ModelLocator.getInstance();
+         }
+         
+         
+         /**
+          * Should the management button be visible? Default is <code>false</code>. Property effects the
+          * component only during its initialization.
+          */
+         public var managementButtonVisible:Boolean = false;
+         
+         protected override function childrenCreated() : void {
+            super.childrenCreated();
+            btnManage.visible = btnManage.includeInLayout = managementButtonVisible;
+         }
+         
+         [Bindable]
+         private var _currentLocIsPlanet:Boolean = false;         
+         
          [Bindable(event="dataChange")]
          private function get model() : MRoute {
             return MRoute(data);
@@ -32,6 +57,16 @@
          
          private function btnStop_clickHandler(event:MouseEvent) : void {
             new RoutesCommand(RoutesCommand.DESTROY, model).dispatch();
+         }
+         
+         private function btnManage_clickHandler(event:MouseEvent) : void {
+            new GUnitsScreenEvent(GUnitsScreenEvent.MANAGE_UNITS, 
+               Collections.filter(ML.units,
+                  function(unit:Unit) : Boolean {
+                     return unit.squadronId == model.id;
+                  }
+               )
+            );
          }
       ]]>
    </fx:Script>
@@ -50,17 +85,22 @@
          <s:Group>
             <s:layout><s:VerticalLayout horizontalAlign="contentJustify" gap="15" paddingTop="9"/></s:layout>
             <s:Label text="{getString('label.sourceLocation')}"/>
-            <s:Label text="{getString('label.currentLocation')}"/>
+            <s:Label text="{getString('label.currentLocation')}"
+                     visible="{!_currentLocIsPlanet}" includeInLayout="{!_currentLocIsPlanet}"/>
             <s:Label text="{getString('label.targetLocation')}"/>
+            <s:Label text="{getString('label.leavesPlanetAt')}"
+                     visible="{_currentLocIsPlanet}" includeInLayout="{_currentLocIsPlanet}"/>
             <s:Label text="{getString('label.arrivesAt')}"/>
          </s:Group>
          <s:Group>
             <s:layout><s:VerticalLayout horizontalAlign="contentJustify" gap="3"/></s:layout>
             <squadscr:CLocationWithButton location="{model.sourceLocation}"/>
-            <squadscr:CLocationWithButton location="{model.currentLocation}"/>
+            <squadscr:CLocationWithButton location="{model.currentLocation}"
+                                          visible="{!_currentLocIsPlanet}" includeInLayout="{!_currentLocIsPlanet}"/>
             <squadscr:CLocationWithButton location="{model.targetLocation}"/>
-            <s:Label paddingTop="9"
-                     text="{model.arrivalEvent.occuresAtString} ({model.arrivalEvent.occuresInString})"/>
+            <s:Label paddingTop="9" text="{model.firstHop}"
+                     visible="{_currentLocIsPlanet}" includeInLayout="{_currentLocIsPlanet}"/>
+            <s:Label paddingTop="9" text="{model.arrivalEvent.occuresAtString} ({model.arrivalEvent.occuresInString})"/>
          </s:Group>
       </s:Group>
    </s:Group>
@@ -69,16 +109,20 @@
       <s:Group left="0" right="0" top="0" bottom="0">
          <s:layout><s:HorizontalLayout gap="0"/></s:layout>
          <s:BitmapImage source="{getImage('units')}" fillMode="repeat" width="100%"/>
-         <s:Group>
+         <s:Group minWidth="65">
             <s:Group left="0" right="0" top="0" bottom="0">
                <s:layout><s:HorizontalLayout gap="0"/></s:layout>
                <s:BitmapImage source="{getImage('btn_left')}"/>
-               <s:BitmapImage source="{getImage('btn_center')}"/>
+               <s:BitmapImage source="{getImage('btn_center')}" width="100%"/>
                <s:BitmapImage source="{getImage('btn_right')}"/>
             </s:Group>
-            <!-- stop button -->
-            <s:Button id="btnStop" label="{getString('label.stop')}" right="5" bottom="5" minWidth="65"
-                      enabled="{model.owner == Owner.PLAYER}" click="btnStop_clickHandler(event)"/>
+            <!-- stop and manage button -->
+            <s:Group left="17" right="5" bottom="5">
+               <s:layout><s:HorizontalLayout gap="5" horizontalAlign="right"/></s:layout>
+               <s:Button id="btnManage" label="{getString('label.manage')}" click="btnManage_clickHandler(event)"/>
+               <s:Button id="btnStop" label="{getString('label.stop')}" click="btnStop_clickHandler(event)"
+                         enabled="{model.owner == Owner.PLAYER}"/>
+            </s:Group>
          </s:Group>
       </s:Group>
       <!-- units -->

@@ -67,6 +67,11 @@
          </solarsystem:layout>
       </solarsystem:SSPlanetsStatusIcons>
    </s:Group>
+   
+   <s:Label id="txtDeadStar" text="{getString('label.deadStar')}"
+            visible="{ss.isDead}" includeInLayout="{ss.isDead}"
+            width="{MSSObject.IMAGE_WIDTH}"
+            lineBreak="toFit" textAlign="center"/>
    <s:RichText id="txtShield"
                textFlow="{TextFlowUtil.importFromString(getString('label.shield', [formatTime(ss.shieldEndsIn)]))}"
                visible="{ss.isShielded}" includeInLayout="{ss.isShielded}"

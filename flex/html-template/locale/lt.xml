@@ -1110,6 +1110,7 @@
     <label.openWormhole value="Įeiti į areną" />
     <label.wormhole value="Arena" />
     <label.pulsar value="Pulsaras-{0}"/>
+    <label.deadStar value="This star is dead"/>
     <label.shield>
       <![CDATA[Ši saulės sistema yra apsaugota<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
@@ -2994,17 +2995,18 @@
   <Squadrons>
     <title.squadrons value="Laivynai" />
     <title.noSquadrons value="Judančių laivynų neaptikta." />
-    <label.currentLocation value="Dabartinė pozicija" />
-    <label.sourceLocation value="Skrenda iš" />
-    <label.targetLocation value="Skrenda į" />
+    <label.currentLocation value="Dabartinė pozicija:" />
+    <label.sourceLocation value="Skrenda iš:" />
+    <label.targetLocation value="Skrenda į:" />
     <label.units value="Laivyno nariai" />
-    <label.arrivesAt value="Atvyks" />
-    <label.leavesPlanet value="Iš planetos išvyksta" />
+    <label.arrivesAt value="Atvyks:" />
+    <label.leavesPlanetAt value="Iš planetos išvyksta:" />
     <label.inTime value="(už {0})" />
     <label.close value="Uždaryti" />
     <label.playerFleets value="Tavo lvynai" />
     <label.allianceFleets value="Sąjungininkų laivynai" />
     <label.stop value="Sustabdyti" />
+    <label.manage value="Tvarkyti" />
   </Squadrons>
 
   <Technologies>
@@ -3437,6 +3439,8 @@
   </Technologies>
 
   <Units>
+    <title.storageScreen value="Įkrauti / Iškrauti"/>
+  
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Bus už {0}" />
     <property.hp value="Gyvybės taškai" />

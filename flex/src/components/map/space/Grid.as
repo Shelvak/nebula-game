@@ -132,17 +132,18 @@ package components.map.space
       internal function issueOrderToLocationUnderMouse(locationUnderMouse:LocationMinimal = null) : void
       {
          if (!sectorIndicator.visible)
-         {
             return;
-         }
          if (locationUnderMouse == null)
-         {
             locationUnderMouse = this.locationUnderMouse;
-         }
          else
-         {
             this.locationUnderMouse = locationUnderMouse;
-         }
+         
+         // Somehow a map which is cached but not currently visible sometimes gets to this point
+         // and since it is not active, the call to getSectorRealCoordinates() bellow fails. So for now we
+         // just ignore such calls as they seem to be very rare.
+         if (locationUnderMouse == null)
+            return;
+         
          var position:Point = getSectorRealCoordinates(locationUnderMouse);
          _map.positionSectorPopups(position);
          var objectsAggregator:CStaticSpaceObjectsAggregator = getStaticObjectInSector(locationUnderMouse);

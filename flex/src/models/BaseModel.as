@@ -4,7 +4,6 @@ package models
    
    import flash.events.EventDispatcher;
    import flash.utils.Dictionary;
-   import flash.utils.describeType;
    import flash.utils.getDefinitionByName;
    import flash.utils.getQualifiedClassName;
    
@@ -154,12 +153,10 @@ package models
       public static function createModel(type:Class, data:Object) : *
       {
          if (data == null)
-         {
             return null;
-         }
          
          var model:BaseModel = new type();
-         var info:XML = describeType(model);
+         var info:XML = Objects.describeType(type).factory[0];
          
          var errors:Array = [];
          function pushPropAbsenceError(prop:String, alias:String) : void
@@ -527,15 +524,15 @@ package models
          {   
             return;
          }
-         var typeInfo:XML = describeType(this);
          if (!(source is CLASS))
          {
             throw new Error("'source' is " + source.className + " but " + className + " was expected.");
          }
+         var typeInfo:XML = Objects.describeType(CLASS).factory[0];
          ignoreSkipProperty = ignoreSkipProperty || props && props.length > 0;
          if (!props || props.length == 0)
          {
-            props = Objects.getPublicProperties(this);
+            props = Objects.getPublicProperties(CLASS);
          }
          for each (var prop:String in props)
          {
