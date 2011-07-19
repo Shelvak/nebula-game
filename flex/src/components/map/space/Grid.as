@@ -245,7 +245,11 @@ package components.map.space
       public function getStaticObjectInSector(location:LocationMinimal) : CStaticSpaceObjectsAggregator
       {
          var list:ArrayCollection = getObjectsInSector(location, _map.getStaticObjects());
-         return list.length != 0 ? CStaticSpaceObjectsAggregator(list.getItemAt(0)) : null;
+         var object:CStaticSpaceObjectsAggregator =
+            list.length != 0 ? CStaticSpaceObjectsAggregator(list.getItemAt(0)) : null;
+         list.filterFunction = null;
+         list.removeAll();
+         return object; 
       }
       
       
