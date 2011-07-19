@@ -429,6 +429,8 @@ class DispatcherEventHandler
       ]
     when Notification, ClientQuest, QuestProgress, ObjectiveProgress
       [[object.player_id], nil]
+    when SolarSystem
+      resolve_location(object.galaxy_point)
     when SolarSystemMetadata
       ss = SolarSystem.find(object.id)
       resolve_location(ss.galaxy_point)

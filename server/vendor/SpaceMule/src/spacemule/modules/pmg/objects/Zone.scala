@@ -82,7 +82,7 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
    */
   def playerCount = if (solarSystems.size == 0) 0 else solarSystems.size -
     Config.resourceSolarSystems.size - Config.expansionSolarSystems.size -
-    Config.wormholes.size
+    Config.wormholes.size - Config.miniBattlegrounds.size
 
   /**
    * Does this zone have new players we need to create?

@@ -4,6 +4,7 @@ class SolarSystem < ActiveRecord::Base
 
   include Parts::CleanAsJson
   include Parts::Shieldable
+  include Parts::Object
   include Zone
 
   # Regular kind of solar system
@@ -12,6 +13,8 @@ class SolarSystem < ActiveRecord::Base
   KIND_WORMHOLE = 1
   # Battleground solar system
   KIND_BATTLEGROUND = 2
+  # Dead solar system
+  KIND_DEAD = 3
 
   # Foreign keys take care of the destruction
   has_many :ss_objects
@@ -153,6 +156,22 @@ class SolarSystem < ActiveRecord::Base
     SsObject.maximum(:position,
       :conditions => {:solar_system_id => id}) + 1
   end
+  
+  # Kill solar system. Turns it into dead solar system.
+  def die!
+    self.kind = KIND_DEAD
+    save!
+    delete_assets!
+    
+    EventBroker.fire(self, EventBroker::CHANGED)
+  end
+  
+  # Removes all ss_objects/wreckages/units in this solar system.
+  def delete_assets!
+    SsObject.in_solar_system(self).delete_all
+    Wreckage.in_zone(self).delete_all
+    Unit.in_zone(self).delete_all
+  end
 
   def self.on_callback(id, event)
     case event
@@ -178,13 +197,11 @@ class SolarSystem < ActiveRecord::Base
         player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
         player.last_login >= CONFIG.evalproperty(
         'galaxy.player.inactivity_check.last_login_in').ago)
-      # This player is inactive. Destroy him with his solar system.
+      # This player is inactive. Destroy him.
       player.destroy
-      # This must be fired before deleting solar system because we need
-      # solar system to determine which players will receive that event.
-      EventBroker.fire(SolarSystemMetadata.new({:id => id}),
-        EventBroker::DESTROYED)
-      delete(id)
+      
+      # Change solar system into a dead one.
+      find(id).die!
     end
    end
 end

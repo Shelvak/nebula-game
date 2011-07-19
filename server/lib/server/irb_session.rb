@@ -63,14 +63,20 @@ module Dev
     puts "All quests started!"
   end
 
-  def self.seed(player_id=1, player_count=200)
+  def self.seed(player_id=1, player_count=10)
     players = {}
-    player_count.times { |i| players["player #{i}"] = "player #{i}" }
+    player_count.times do |i|
+      name = "p #{Time.now.to_f}"
+      players[name] = name
+    end
 
     player = Player.find(player_id)
     SpaceMule.instance.create_players(player.galaxy_id,
       player.galaxy.ruleset, players)
-    radar(player_id)
+    event_dispatched = radar(player_id)
+    FowGalaxyEntry.dispatch_changed(player) unless event_dispatched
+    
+    true
   end
 
   def self.radar(player_id=1, x=0, y=0, strength=10)

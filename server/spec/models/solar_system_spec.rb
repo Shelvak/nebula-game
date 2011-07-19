@@ -164,6 +164,65 @@ describe SolarSystem do
       end
     end
   end
+  
+  describe "#delete_assets!" do
+    before(:all) do
+      @ss = Factory.create(:solar_system)
+    end
+    
+    it "should delete ss objects" do
+      sso = Factory.create(:ss_object, :solar_system => @ss)
+      @ss.delete_assets!
+      lambda do
+        sso.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+    
+    it "should delete wreckages" do
+      wreckage = Factory.create(:wreckage, :location => 
+          SolarSystemPoint.new(@ss.id, 0, 0))
+      @ss.delete_assets!
+      lambda do
+        wreckage.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+    
+    it "should delete units" do
+      unit = Factory.create(:u_dirac, :location => 
+          SolarSystemPoint.new(@ss.id, 0, 0))
+      @ss.delete_assets!
+      lambda do
+        unit.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+  
+  describe "#die!" do
+    before(:each) do
+      @ss = Factory.create(:solar_system)
+    end
+    
+    it "should change kind to KIND_DEAD" do
+      @ss.die!
+      @ss.kind.should == SolarSystem::KIND_DEAD
+    end
+    
+    it "should save record" do
+      @ss.die!
+      @ss.should be_saved
+    end
+    
+    it "should delete all assets" do
+      @ss.should_receive(:delete_assets!)
+      @ss.die!
+    end
+    
+    it "should dispatch changed" do
+      should_fire_event(@ss, EventBroker::CHANGED) do
+        @ss.die!
+      end
+    end
+  end
 
   describe ".on_callback" do
     describe "player inactivity check" do
@@ -193,46 +252,18 @@ describe SolarSystem do
           @player.save!
         end
 
-        it "should erase solar system" do
-          SolarSystem.on_callback(@ss.id,
-            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
-          lambda do
-            @ss.reload
-          end.should raise_error(ActiveRecord::RecordNotFound)
-        end
-
-        it "should fire event before destroying SS" do
-          EventBroker.should_receive(:fire).with(
-            an_instance_of(SolarSystemMetadata), EventBroker::DESTROYED
-          ).and_return do |metadata, event, reason|
-            lambda do
-              SolarSystem.find(metadata.id)
-            end.should_not raise_error(ActiveRecord::RecordNotFound)
-
-            true
-          end
-
+        it "should kill solar system" do
+          SolarSystem.should_receive(:find).with(@ss.id).and_return(@ss)
+          @ss.should_receive(:die!)
           SolarSystem.on_callback(@ss.id,
             CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
         end
 
-        it "should erase solar system if last_login is nil" do
+        it "should not fail if last_login is nil" do
           @player.last_login = nil
           @player.save!
           SolarSystem.on_callback(@ss.id,
             CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
-          lambda do
-            @ss.reload
-          end.should raise_error(ActiveRecord::RecordNotFound)
-        end
-
-        it "should dispatch SS metadata destroyed" do
-          should_fire_event(
-            an_instance_of(SolarSystemMetadata), EventBroker::DESTROYED
-          ) do
-            SolarSystem.on_callback(@ss.id,
-              CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
-          end
         end
 
         it "should destroy player" do
