@@ -1316,6 +1316,13 @@
     <message.speedUpCost
       value="Pagreitinimo kaina: {0 one[? kredas] tens[? kredų] many[? kredai]}."/>
     <message.orderComplete value="Laivai sėkmingai išsiųsti." />
+    <label.avoidNpc value="Vengti mūšių su ateiviais" />
+    <description.avoidNpc>
+      <p>Pažymėta: tavo laivynas stengsis išvengti nebūtinų mūšių su ateivių laivais,
+      todėl jis gali užtrukti ilgiau, jeigu tavo kelyje stovi ateiviai.</p>
+      <p>Nepažymėta: tavo laivynas skris greičiausiu maršrutu ir kausis su ateiviais 
+      ęsančiais jo kelyje.</p>
+    </description.avoidNpc>
   </Movement>
 
   <Navigator>
@@ -3558,15 +3565,6 @@
     <label.leavingSquadrons>
       <p>Šie laivynai šiuo metu iškrenda iš planetos.</p>
     </label.leavingSquadrons>
-    <label.avoidBattles value="Vengti mūšių su ateiviais" />
-    <description.avoidBattles>
-      <p>Tavo laivynas stengsis išvengti nebūtinų mūšių su ateivių laivais,
-      todėl jis gali užtrukti ilgiau, jeigu tavo kelyje stovi ateiviai.</p>
-    </description.avoidBattles>
-    <description.dontAvoidBattles>
-      <p>Tavo laivynas skris greičiausiu maršrutu ir kausis su ateiviais 
-      ęsančiais jo kelyje.</p>
-    </description.dontAvoidBattles>
     <warning.noFleets>
       <p>Šiuo metu nėra išskrendančių laivynų.</p>
     </warning.noFleets>

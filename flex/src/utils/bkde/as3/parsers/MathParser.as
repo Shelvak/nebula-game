@@ -52,7 +52,7 @@ package utils.bkde.as3.parsers {
   private var tokenlength:Number;
 
   private var nums:String="0123456789.";
-  private var lets:String="abcdefghijklmnopqrstuwvxzy";
+  private var lets:String="abcdefghijklmnopqrstuwvxzy_";
   private var opers:String="^*+-/(),";
 	
   private var aVarNames:Array;

@@ -12,8 +12,7 @@
       import utils.assets.ImagePreloader;
       
       
-      private static function getImg(name:String) : BitmapData
-      {
+      private static function getImg(name:String) : BitmapData {
          return ImagePreloader.getInstance().getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + "order_" + name);
       }
    </fx:Script>
@@ -53,6 +52,9 @@
       <s:layout>
          <s:VerticalLayout horizontalAlign="justify" gap="5"/>
       </s:layout>
+      <s:Group>
+         <s:CheckBox id="chkAvoidNpc" horizontalCenter="0"/>
+      </s:Group>
       <s:Button id="btnToSector" includeIn="spaceGroup"/>
       <s:Button id="btnToPlanet" includeIn="planetGroup"/>
       <s:Button id="btnCancel"/>

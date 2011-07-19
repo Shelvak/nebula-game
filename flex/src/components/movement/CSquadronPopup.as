@@ -27,7 +27,6 @@ package components.movement
    import spark.components.Label;
    import spark.components.List;
    
-   import utils.DateUtil;
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
    
@@ -318,7 +317,7 @@ package components.movement
       }
       
       private function moveButton_clickHandler(event:MouseEvent) : void {
-         OrdersController.getInstance().issueOrder(_squadron.units, true, _squadron);
+         OrdersController.getInstance().issueOrder(_squadron.units, _squadron);
       }
       
       private function stopButton_clickHandler(event:MouseEvent) : void {
