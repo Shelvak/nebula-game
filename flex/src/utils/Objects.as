@@ -411,7 +411,7 @@ package utils
        * 
        * @see Array#join()
        */
-      private static function arrayJoin(array:Array, sep:String) : void
+      private static function arrayJoin(array:Array, sep:String) : String
       {
          var strings:Array = array.map(
             function(item:*, index:int, array:Array) : String
@@ -427,6 +427,7 @@ package utils
                return Object(item).toString();
             }
          );
+         return strings.join(sep);
       }
       
       
