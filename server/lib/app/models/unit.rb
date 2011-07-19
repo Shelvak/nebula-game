@@ -478,7 +478,6 @@ class Unit < ActiveRecord::Base
         end
 
         save_all_units(units, nil, EventBroker::CREATED)
-        EventBroker.fire(units, EventBroker::CREATED)
         
         units
       end
