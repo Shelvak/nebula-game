@@ -10,6 +10,8 @@ class GameController < GenericController
     |
     creds\.
     |
+    market\.
+    |
     battleground\.
     |
     raiding\.
