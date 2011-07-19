@@ -30,6 +30,7 @@ class MarketController < GenericController
   # - public_offers (Hash[]): offers that you can buy. 
   # See MarketOffer#as_json for +Hash+ format.
   # - planet_offers (Hash[]): offers being offered by you in this planet.
+  # - offer_count (Fixnum): total number of your offers.
   #
   def action_index
     param_options :required => {:planet_id => Fixnum}
@@ -43,7 +44,8 @@ class MarketController < GenericController
         fast_offers(
           "#{MarketOffer.table_name}.galaxy_id=? AND planet_id NOT IN (?)", 
           player.galaxy_id, planet_ids), 
-      :planet_offers => MarketOffer.fast_offers("planet_id=?", planet.id)
+      :planet_offers => MarketOffer.fast_offers("planet_id=?", planet.id),
+      :offer_count => MarketOffer.where(:planet_id => planet_ids).count
   end
   
   # Create a new offer.

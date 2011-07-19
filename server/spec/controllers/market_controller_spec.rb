@@ -77,6 +77,11 @@ describe MarketController do
       end
       response[:planet_offers].size.should == @planet_offers.size
     end
+  
+    it "should have a number of your offers" do
+      invoke @action, @params
+      response_should_include(:offer_count => 3)
+    end
   end
   
   describe "market|new" do
