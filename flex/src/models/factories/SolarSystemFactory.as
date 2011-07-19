@@ -5,6 +5,8 @@ package models.factories
    import models.solarsystem.SSMetadata;
    import models.solarsystem.SolarSystem;
    
+   import mx.core.mx_internal;
+   
    
    /**
     * Lets easily create instaces of solar systems. 
@@ -25,7 +27,8 @@ package models.factories
          }
          
          var ss:SolarSystem = BaseModel.createModel(SolarSystem, data);
-         ss.metadata = BaseModel.createModel(SSMetadata, data.metadata);
+         if (data["metadata"] != null)
+            ss.metadata = BaseModel.createModel(SSMetadata, data.metadata);
          for each (var object:Object in data.ssObjects) {
             ss.objects.addItem(SSObjectFactory.fromObject(object));
          }
