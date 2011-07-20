@@ -445,6 +445,8 @@
       <p>Paspausk ant tuščios žemėlapio vietos, jog įeitum į statybų 
       režimą.</p>
     </message.pressOnEmpty>
+    <panelTitle.scientists value="Mokslininkai" />
+    <message.scientistsNotAvailable value="Pastatas yra tobulinimas, jame dirbantys mokslininkai yra nepasiekiami.""/>
     <warning.buildingWorking>
       <p>Jeigu liepsi šiam pastatui susinaikinti, tada tai, 
       ką stato šis pastatas, bus taip pat sunaikinta.</p>
