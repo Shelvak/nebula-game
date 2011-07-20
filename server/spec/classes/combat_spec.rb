@@ -113,10 +113,15 @@ describe Combat do
       @planet.player.should be_nil
     end
     
-    it "should dispatch changed with planet" do
-      should_fire_event(@planet, EventBroker::CHANGED, 
-          EventBroker::REASON_OWNER_PROP_CHANGE) do
-        Combat.npc_raid!(@planet)
+    describe "dispatching event", :shared => true do
+      it "should dispatch changed with planet" do
+        # Check if event is fired twice. This is necessary evil, because
+        # one time it's fired from Wreckage, and second time from planet 
+        # itself.
+        should_fire_event(@planet, EventBroker::CHANGED, 
+            EventBroker::REASON_OWNER_PROP_CHANGE, 2) do
+          Combat.npc_raid!(@planet)
+        end
       end
     end
 
@@ -140,16 +145,12 @@ describe Combat do
         Factory.create!(:u_rhyno, :location => @planet,
           :player => @player, :level => 10)
       end
+      
+      it_should_behave_like "dispatching event"
 
       it "should register next raid if player has enough planets" do
         @planet.should_receive(:register_raid!)
         Combat.npc_raid!(@planet)
-      end
-
-      it "should dispatch changed with planet" do
-        should_fire_event(@planet, EventBroker::CHANGED) do
-          Combat.npc_raid!(@planet)
-        end
       end
 
       describe "when there is no next raid" do
@@ -167,6 +168,7 @@ describe Combat do
         @unit.destroy
       end
 
+      it_should_behave_like "dispatching event"
       it_should_behave_like "raid cleared"
     end
   end
