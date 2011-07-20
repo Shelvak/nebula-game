@@ -112,7 +112,7 @@ class SmartMap[K, +V](map: sc.Map[K, V]) {
 
   def getOrError(key: K): V = getOrError(
     key, "%s must be defined for %s!".format(key, map.toString))
-
+  
   def toJson() = Json.toJson[K, V](map)
 }
 

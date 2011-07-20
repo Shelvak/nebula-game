@@ -22,7 +22,7 @@ describe "conflict no combat", :shared => true do
   it "should not change anything if no combat was ran" do
     lambda do
       Combat::Annexer.annex!(@planet,
-        Combat::CheckReport::CONFLICT, @alliances, nil)
+        Combat::CheckReport::COMBAT, @alliances, nil)
     end.should_not change(@planet, :player_id)
   end
 end
@@ -114,7 +114,7 @@ describe Combat::Annexer do
       describe "conflict" do
         it "should assign it to one of the winners" do
           Combat::Annexer.annex!(@planet,
-            Combat::CheckReport::CONFLICT, @alliances, 
+            Combat::CheckReport::COMBAT, @alliances, 
             Combat::LocationChecker::CombatData.new(
               @outcomes_lose, @statistics
             )
@@ -130,7 +130,7 @@ describe Combat::Annexer do
         it "should keep npc ownership" do
           lambda do
             Combat::Annexer.annex!(@planet,
-              Combat::CheckReport::CONFLICT, @alliances_npc, 
+              Combat::CheckReport::COMBAT, @alliances_npc, 
               Combat::LocationChecker::CombatData.new(
               @outcomes_lose, @statistics
             )
@@ -186,7 +186,7 @@ describe Combat::Annexer do
         describe "conflict" do
           before(:each) do
             Combat::Annexer.annex!(@planet,
-              Combat::CheckReport::CONFLICT, @alliances, 
+              Combat::CheckReport::COMBAT, @alliances, 
               Combat::LocationChecker::CombatData.new(
                 @outcomes_lose, @statistics
               )
@@ -195,7 +195,7 @@ describe Combat::Annexer do
 
           it "should assign it to npc if they won" do
             Combat::Annexer.annex!(@planet,
-              Combat::CheckReport::CONFLICT, @alliances_npc,
+              Combat::CheckReport::COMBAT, @alliances_npc,
               Combat::LocationChecker::CombatData.new(
                 @outcomes_lose_npc, @statistics
               )
@@ -211,7 +211,7 @@ describe Combat::Annexer do
           it "should keep ally ownership" do
             lambda do
               Combat::Annexer.annex!(@planet,
-                Combat::CheckReport::CONFLICT, @alliances, 
+                Combat::CheckReport::COMBAT, @alliances, 
                 Combat::LocationChecker::CombatData.new(
                   @outcomes_win, @statistics
                 )
@@ -228,7 +228,7 @@ describe Combat::Annexer do
         planet, nil, @enemy1
       )
       Combat::Annexer.annex!(planet,
-        Combat::CheckReport::CONFLICT, @alliances_1enemy,
+        Combat::CheckReport::COMBAT, @alliances_1enemy,
         Combat::LocationChecker::CombatData.new(
           @outcomes_lose_1enemy, @statistics
         )

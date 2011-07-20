@@ -1,6 +1,4 @@
-class Combat::LocationChecker
-  class CombatData < Struct.new(:outcomes, :statistics); end
-  
+class Combat::LocationChecker  
   class << self
     # Check location for opposing forces and initiate combat if needed.
     #
@@ -16,12 +14,18 @@ class Combat::LocationChecker
       check_report = check_for_enemies(location_point)
       assets = nil
       return_status = false
-      if check_report.status == Combat::CheckReport::CONFLICT
+      if check_report.status == Combat::CheckReport::COMBAT
+        # _assets_ can be nil if nobody can shoot anyone. E.g. 
+        # in only-ground vs only-space combat.
         assets = on_conflict(location_point, check_report)
         return_status = !! assets
       end
 
-      try_to_annex(location_point, check_report, assets)
+      # Only annex planet if there was actual combat in it.
+      Combat::Annexer.annex!(
+        location_point.object, check_report, 
+        assets ? assets.response['outcomes'] : nil
+      ) if location_point.type == Location::SS_OBJECT
 
       return_status
     end
@@ -49,25 +53,7 @@ class Combat::LocationChecker
       end
     end
     
-    protected
-    # Try to annex location point if it is SS_OBJECT.
-    def try_to_annex(location_point, check_report, assets)
-      case location_point.type
-      when Location::SS_OBJECT
-        Combat::Annexer.annex!(
-          location_point.object,
-          check_report.status,
-          check_report.alliances,
-          # Pass nils if no combat was run.
-          assets ? 
-            CombatData.new(
-              assets.response['outcomes'],
-              assets.response['statistics']
-            ) : nil
-        )
-      end
-    end
-    
+    protected    
     def on_conflict(location_point, check_report)
       location = location_point.object
 
@@ -100,15 +86,14 @@ class Combat::LocationChecker
       assets
     end
 
-    # Check +Location+ for opposing forces. If there are none, return false,
-    # else - return Combat::CheckReport.
+    # Check +Location+ for opposing forces. Return Combat::CheckReport.
     #
     # Opposing forces are different players (when they are in different
     # alliances and those alliances don't have a +Nap+ between them) with
     # units in same location.
     #
-    def check_for_enemies(location_attrs)
-      player_ids = Location.fighting_player_ids(location_attrs)
+    def check_for_enemies(location_point)
+      player_ids = Location.combat_player_id(location_point)
       alliances = Player.grouped_by_alliance(player_ids)
       nap_rules = {}
 
@@ -121,7 +106,7 @@ class Combat::LocationChecker
 
         # No alliances means war between players, so no nap rules to check.
         if alliance_ids.blank?
-          status = Combat::CheckReport::CONFLICT
+          status = Combat::CheckReport::COMBAT
         else
           # Even canceled naps still count as naps in combat.
           nap_rules = Nap.get_rules(
@@ -141,7 +126,7 @@ class Combat::LocationChecker
             end.nil?
 
           status = conflicts \
-            ? Combat::CheckReport::CONFLICT \
+            ? Combat::CheckReport::COMBAT \
             : Combat::CheckReport::NO_CONFLICT
         end
       end

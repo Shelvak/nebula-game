@@ -9,17 +9,18 @@ module Location
   # If the location is a +SsObject+, existence of shooting buildings is also
   # checked.
   #
-  def self.fighting_player_ids(location)
+  def self.combat_player_id(location_point)
     # Should have used Scala...
     raise ArgumentError.new(
-      "Expecting LocationPoint but #{location.inspect} given!") \
-      unless location.is_a?(LocationPoint)
+      "Expecting LocationPoint but #{location_point.inspect} given!") \
+      unless location_point.is_a?(LocationPoint)
     
     player_ids = []
-    player_ids.push SsObject.find(location.id).player_id if \
-      location.type == SS_OBJECT && \
-      Building.defensive.active.where(:planet_id => location.id).count > 0
-    player_ids | Unit.player_ids_in_location(location)
+    if location_point.type == SS_OBJECT
+      planet = location_point.object
+      player_ids.push planet.player_id unless planet.player_id.nil?
+    end
+    player_ids | Unit.player_ids_in_location(location_point)
   end
 
   # Returns +Location+ object for given _attrs_ as obtained by

@@ -174,7 +174,7 @@ describe Combat do
   end
 
   describe "simulation" do
-    describe "#parse_killed_by" do
+    describe ".parse_killed_by" do
       it "should return units" do
         unit = Factory.create(:unit)
         player_id = 30
@@ -189,6 +189,13 @@ describe Combat do
         Combat.parse_killed_by(
           {}, {building.id => building}, {"b#{building.id}" => player_id}
         ).should == {building => player_id}
+      end
+    end
+  
+    describe ".unwrap_json_hash" do
+      it "should unwrap string keys" do
+        Combat.unwrap_json_hash('1' => 'foo', Combat::NPC_SM => 'bar').
+          should == {1 => 'foo', Combat::NPC => 'bar'}
       end
     end
   end
@@ -419,6 +426,29 @@ describe Combat do
     notification.params['leveled_up'].find do |unit_hash|
       unit_hash[:type] == "Unit::Crow"
     end.should be_nil
+  end
+  
+  it "should win a battle where one player has nothing" do
+    winner = loser = nil
+    
+    assets = CombatDsl.new do
+      location(:planet)
+      loser = player(:planet_owner => true).player
+      winner = (player { units { crow } }).player
+    end.run
+    
+    assets.response['outcomes'][loser.id].should == Combat::OUTCOME_LOSE
+    assets.response['outcomes'][winner.id].should == Combat::OUTCOME_WIN
+  end
+  
+  it "should do no combat where both players can't reach" do
+    assets = CombatDsl.new do
+      location(:planet)
+      player(:planet_owner => true) { units { trooper } }
+      player { units { crow } }
+    end.run
+    
+    assets.should be_nil
   end
   
   describe "teleported units" do

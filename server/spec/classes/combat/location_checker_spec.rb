@@ -23,7 +23,7 @@ describe klass do
     it "should invoke SS metadata recalc if location is ss point" do
       ssp = SolarSystemPoint.new(@planet.solar_system_id, 0, 0)
       check_report = Combat::CheckReport.new(
-        Combat::CheckReport::CONFLICT, {}
+        Combat::CheckReport::COMBAT, {}
       )
       Combat::LocationChecker.stub!(:check_for_enemies).and_return(check_report)
       Combat.stub!(:run).and_return(true)
@@ -34,7 +34,7 @@ describe klass do
     it "should not invoke SS metadata recalc if location is not " +
     "a ss point" do
       check_report = Combat::CheckReport.new(
-        Combat::CheckReport::CONFLICT, {}
+        Combat::CheckReport::COMBAT, {}
       )
       Combat::LocationChecker.stub!(:check_for_enemies).and_return(check_report)
       Combat.stub!(:run).and_return(true)
@@ -44,7 +44,7 @@ describe klass do
 
     it "should not invoke SS metadata recalc if no combat was ran" do
       check_report = Combat::CheckReport.new(
-        Combat::CheckReport::CONFLICT, {}
+        Combat::CheckReport::COMBAT, {}
       )
       Combat::LocationChecker.stub!(:check_for_enemies).
         and_return(check_report)
@@ -61,7 +61,7 @@ describe klass do
       )
       Combat::LocationChecker.stub!(:check_for_enemies).
         and_return(check_report)
-      Combat::Annexer.should_receive(:annex!).with(
+      Combat::Annexer.should_not_receive(:annex!).with(
         @planet,
         check_report.status,
         check_report.alliances,
@@ -75,6 +75,8 @@ describe klass do
       Combat::LocationChecker.check_location(
         SolarSystemPoint.new(@planet.solar_system_id, 0, 0))
     end
+    
+    
 
     describe "opposing players" do
       before(:each) do
@@ -159,7 +161,7 @@ describe klass do
 
       it "should invoke annexer if location is planet" do
         check_report = Combat::CheckReport.new(
-          Combat::CheckReport::CONFLICT, {}
+          Combat::CheckReport::COMBAT, {}
         )
         Combat::LocationChecker.stub!(:check_for_enemies).
           and_return(check_report)
@@ -284,7 +286,7 @@ describe klass do
       Factory.create(:unit, :location => @route_hop.location,
         :player => player3)
       Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).
-        status == Combat::CheckReport::CONFLICT
+        status == Combat::CheckReport::COMBAT
     end
 
     it "should not return false if there are enemies (players)" do
@@ -303,7 +305,7 @@ describe klass do
         :location => @route_hop.location, :player => player3
       )
       Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).status ==
-        Combat::CheckReport::CONFLICT
+        Combat::CheckReport::COMBAT
     end
 
     it "should return alliances" do

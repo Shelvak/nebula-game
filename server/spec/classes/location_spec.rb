@@ -1,41 +1,40 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Location do
-  describe ".fighting_player_ids" do
+  describe ".combat_player_ids" do
     before(:each) do
       @planet = Factory.create :planet_with_player
       @location = @planet.location
     end
+    
+    it "should return distinct array" do
+      player_ids = Location.combat_player_id(@location)
+      player_ids.should == player_ids.uniq
+    end
 
-    it "should return distinct ids" do
+    it "should return include players from units" do
       player = Factory.create(:player)
       Factory.create(:unit, :location => @location, :player => player)
       Factory.create(:unit, :location => @location, :player => player)
 
-      Location.fighting_player_ids(@location).should == [player.id]
+      Location.combat_player_id(@location).should include(player.id)
     end
 
     it "should include nils" do
       player = Factory.create(:player)
       Factory.create(:unit, :location => @location, :player => nil)
 
-      Location.fighting_player_ids(@location).should == [nil]
+      Location.combat_player_id(@location).should include(nil)
     end
 
-    it "should include planet owner if it has shooting buildings" do
-      Factory.create!(:b_vulcan, opts_active + {:planet => @planet})
-      Location.fighting_player_ids(@location).should == [@planet.player_id]
+    it "should include planet owner" do
+      Location.combat_player_id(@location).should include(@planet.player_id)
     end
-
-    it "should include planet owner if it has defensive portal" do
-      Factory.create!(:b_defensive_portal, opts_active + {:planet => @planet})
-      Location.fighting_player_ids(@location).should == [@planet.player_id]
-    end
-
-    it "should not include planet owner if it does not have active " +
-    "shooting buildings" do
-      Factory.create!(:b_vulcan, opts_inactive + {:planet => @planet})
-      Location.fighting_player_ids(@location).should == []
+    
+    it "should not include planet owner if it's NPC" do
+      @planet.player = nil
+      @planet.save!
+      Location.combat_player_id(@location).should_not include(nil)
     end
   end
 

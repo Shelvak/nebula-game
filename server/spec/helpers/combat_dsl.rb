@@ -184,19 +184,15 @@ class CombatDsl
 
   def players
     player_containers.accept do |player_container|
-      # Only include player if he has any units or buildings.
+      # Only include player if he has any units or is a planet owner.
       has_units = (player_container.read_units.try(:units).try(:size) || 0) > 0
       location = @location.location
       if location.is_a?(SsObject::Planet)
         planet_owner = player_container.player == location.player
-        has_buildings = (
-          planet_owner &&
-          (location_container.read_buildings.try(:size) || 0) > 0
-        )
       else
-        has_buildings = false
+        planet_owner = false
       end
-      has_units || has_buildings
+      has_units || planet_owner
     end.map(&:player)
   end
 

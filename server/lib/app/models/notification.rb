@@ -333,31 +333,24 @@ class Notification < ActiveRecord::Base
   #
   # params = {
   #   :planet => ClientLocation#as_json,
-  #   :old_player => Player#as_json(:mode => :minimal) or nil
-  #   :new_player => Player#as_json(:mode => :minimal) or nil
+  #   :owner => Player#as_json(:mode => :minimal) | nil,
+  #   :outcome => Fixnum | nil (whether you lost or won battle for that 
+  #   planet, nil if no battle was fought)
   # }
-  def self.create_for_planet_annexed(planet, old_player, new_player)
-    planet_json = planet.client_location.as_json
+  def self.create_for_planet_annexed(player_id, planet, outcome)
+    model = new(
+      :event => EVENT_PLANET_ANNEXED,
+      :player_id => player_id,
+      :params => {
+        :planet => planet.client_location.as_json,
+        :owner => planet.player \
+          ? planet.player.as_json(:mode => :minimal) : nil,
+        :outcome => outcome,
+      }
+    )
+    model.save!
 
-    transaction do
-      # old_player may be nil, so compact the array.
-      [old_player, new_player].compact.map do |player|
-        model = new(
-          :event => EVENT_PLANET_ANNEXED,
-          :player_id => player.id,
-          :params => {
-            :planet => planet_json,
-            :old_player => 
-              old_player ? old_player.as_json(:mode => :minimal) : nil,
-            :new_player => 
-              new_player ? new_player.as_json(:mode => :minimal) : nil
-          }
-        )
-        model.save!
-
-        model
-      end
-    end
+    model
   end
 
   # EVENT_ALLIANCE_INVITATION = 7
@@ -388,16 +381,18 @@ class Notification < ActiveRecord::Base
   # params = {
   #   :planet => ClientLocation#as_json,
   #   :owner_id => Fixnum (ID of planet owner),
-  #   :duration => Fixnum (duration of protection)
+  #   :duration => Fixnum (duration of protection),
+  #   :outcome => Fixnum (what was the outcome of that battle for you)
   # }
-  def self.create_for_planet_protected(planet, player)
+  def self.create_for_planet_protected(player_id, planet, outcome)
     model = new(
       :event => EVENT_PLANET_PROTECTED,
-      :player_id => player.id,
+      :player_id => player_id,
       :params => {
         :planet => planet.client_location.as_json,
         :owner_id => planet.player_id,
-        :duration => Cfg.planet_protection_duration
+        :duration => Cfg.planet_protection_duration,
+        :outcome => outcome
       }
     )
     model.save!
