@@ -3948,6 +3948,9 @@
     <label.buy value="Buy" />
     <label.cancel value="Cancel" />
     <warning.noMinResource value="You dont have enough {0} for minimal offer"/>
+    <message.offerSubmited value="Offer submited" />
+    <message.offerGone value="Sorry, offer is already gone" />
+    <label.onlyPlanet value="Show orders from this planet only" />
   </Market>
 
 </locale>

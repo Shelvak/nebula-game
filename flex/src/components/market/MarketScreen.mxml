@@ -3,25 +3,18 @@
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx" 
          xmlns:ui="components.ui.*"
-         width="100%" height="100%" xmlns:market="components.market.*">
+         width="100%" height="100%" 
+         xmlns:market="components.market.*">
    <fx:Script>
       <![CDATA[
          import components.market.events.MarketEvent;
          
          import models.ModelsCollection;
+         import models.market.MCMarketScreen;
          import models.market.MarketOffer;
          import models.resource.ResourceType;
          
          import utils.locale.Localizer;
-         
-         [Bindable]
-         private var offersCollection: ModelsCollection = new ModelsCollection(
-            [new MarketOffer(ResourceType.METAL, ResourceType.ZETIUM),
-               new MarketOffer(ResourceType.METAL, ResourceType.ENERGY),
-               new MarketOffer(ResourceType.ENERGY, ResourceType.CREDS),
-               new MarketOffer(ResourceType.METAL, ResourceType.ZETIUM),
-               new MarketOffer(ResourceType.ZETIUM, ResourceType.METAL),
-               new MarketOffer(ResourceType.ENERGY, ResourceType.CREDS)]);
          
          
          private var _filterWhat:String;
@@ -43,14 +36,22 @@
 
          protected function cFilter_selectedResourceChangeHandler(event:MarketEvent):void
          {
-            setTypeFilter(cFilter.selectedFrom, cFilter.selectedTo);
-            offersCollection.filterFunction = function (item: MarketOffer): Boolean
+            function filterList(list: ModelsCollection): void
             {
-               return (_filterWhat == null || item.whatResource == _filterWhat)
-               && (_filterTo == null || _filterTo == ResourceType.ALL || item.toResource == _filterTo);
+               setTypeFilter(cFilter.selectedFrom, cFilter.selectedTo);
+               list.filterFunction = function (item: MarketOffer): Boolean
+               {
+                  return (_filterWhat == null || item.fromKind == _filterWhat)
+                  && (_filterTo == null || _filterTo == ResourceType.ALL || item.toKind == _filterTo);
+               }
+               list.refresh();
             }
-            offersCollection.refresh();
+            filterList(mScreen.privateOffers);
+            filterList(mScreen.publicOffers);
          }
+         
+         [Bindable]
+         private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
 
       ]]>
    </fx:Script>
@@ -58,7 +59,9 @@
                               selectedResourceChange="cFilter_selectedResourceChangeHandler(event)"/>
    <market:CMarketOffers id="offersList" top="{cFilter.height + 20}" 
                          bottom="{offersList.selected != null?cAction.height + 20:10}"
-                         offers="{offersCollection}" left="10" right="10"/>
+                         offers="{cFilter.onlyPrivateOffers
+                         ? mScreen.privateOffers
+                         : mScreen.publicOffers}" left="10" right="10"/>
    <market:CMarketOfferAction selectedOffer="{offersList.selected}" 
                               visible="{offersList.selected != null}"
                               id="cAction" bottom="10" left="10" right="10"/>

@@ -99,10 +99,10 @@ package models.building
       public static const HEALING_COST_MOD: String = 'healing.cost.mod';
       public static const HEALING_TIME_MOD: String = 'healing.time.mod';
       
-      public static function getMarketTaxRate(marketLevel: Number): Number
+      public static function getMarketTaxRate(marketLevel: int): Number
       {
-         //TODO grab formula from config
-         return 0.3 / marketLevel;
+         return StringUtil.evalFormula(Config.getMarketFee(), 
+            {'level': marketLevel});
       }
       
       /**

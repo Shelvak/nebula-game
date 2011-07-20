@@ -147,32 +147,48 @@
             toRes.selectedIndex = 4;
          }
          
-
+         
          protected function toRes_changeHandler(event:IndexChangeEvent):void
          {
             selectedTo = toRes.selectedItem;
             dispatchSelectedChangeEvent();
          }
-
+         
+         [Bindable]
+         public var onlyPrivateOffers: Boolean = false;
+         
+         protected function checkbox1_changeHandler(event:Event):void
+         {
+            onlyPrivateOffers = selfOnly.selected;
+         }
+         
       ]]>
    </fx:Script>
-   <s:Label text="{getText('filter.show')}"/>
-   <s:DropDownList dataProvider="{new ArrayCollection([
-                   ResourceType.METAL,
-                   ResourceType.ENERGY,
-                   ResourceType.ZETIUM,
-                   ResourceType.ALL])}" 
-                   id="from"
-                   width="100"
-                   change="from_changeHandler(event)"
-                   itemRenderer="components.base.IRResource"/>
-   <s:Label text="{getText('filter.for')}"/>
-   <s:DropDownList id="toRes" dataProvider="{toKinds}"
-                   width="100"
-                   change="toRes_changeHandler(event)"
-                   itemRenderer="components.base.IRResource"/>
+   <s:Group>
+      <s:Label text="{getText('filter.show')}"/>
+      <s:DropDownList dataProvider="{new ArrayCollection([
+                      ResourceType.METAL,
+                      ResourceType.ENERGY,
+                      ResourceType.ZETIUM,
+                      ResourceType.ALL])}" 
+                      id="from"
+                      width="100"
+                      change="from_changeHandler(event)"
+                      itemRenderer="components.base.IRResource"/>
+      <s:Label text="{getText('filter.for')}"/>
+      <s:DropDownList id="toRes" dataProvider="{toKinds}"
+                      width="100"
+                      change="toRes_changeHandler(event)"
+                      itemRenderer="components.base.IRResource"/>
+      <s:layout>
+         <s:HorizontalLayout paddingBottom="10" paddingTop="10" horizontalAlign="center"
+                             verticalAlign="middle"/>
+      </s:layout>
+      
+   </s:Group>
+   <s:CheckBox id="selfOnly" label="{getText('label.onlyPlanet')}"
+               change="checkbox1_changeHandler(event)"/>
    <base:layout>
-      <s:HorizontalLayout paddingBottom="10" paddingTop="10" horizontalAlign="center"
-                          verticalAlign="middle"/>
+      <s:VerticalLayout horizontalAlign="left"/>
    </base:layout>
 </base:Panel>

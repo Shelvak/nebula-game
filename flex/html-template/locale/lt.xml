@@ -3874,6 +3874,9 @@
       <p>Tu neturi pakankamai {0 metal[metalo] energy[energijos] zetium[zetiumo]} 
       minimaliam pasiūlymui</p>
     </warning.noMinResource>
+    <message.offerSubmited value="Pasiūlymas priimtas" />
+    <message.offerGone value="Atsiprašome, šio pasiūlymo nebėra" />
+    <label.onlyPlanet value="Rodyti pasiūlymus iš šios planetos" />
   </Market>
 
 </locale>

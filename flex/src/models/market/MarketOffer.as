@@ -14,16 +14,17 @@ package models.market
          player = new PlayerMinimal();
          player.id = Math.round(Math.random() * 100 + 3);
          player.name = 'Žaidėjas'+player.id;
-         what = Math.round(Math.random() * 1000);
-         forWhat = Math.round(Math.random() * 1000);
-         whatResource = _from;
-         toResource = _to;
+         fromAmount = Math.round(Math.random() * 1000);
+         toAmount = Math.round(Math.random() * 1000);
+         fromKind = _from;
+         toKind = _to;
          createdAt = new Date();
          super();
       }
       
       private var _player: PlayerMinimal;
       
+      [Required]
       public function set player(value: PlayerMinimal): void
       {
          _player = value;
@@ -51,22 +52,36 @@ package models.market
       [Bindable]
       public var selected: Boolean = false;
       
+      [Required]
       [Bindable]
-      public var what: int;
+      public var fromAmount: int;
       
       [Bindable]
-      public var forWhat: int;
+      public var toAmount: int;
       
+      [Required]
       [Bindable]
-      public var whatResource: String;
+      public var fromKind: String;
       
+      [Required]
       [Bindable]
-      public var toResource: String;
+      public var toKind: String;
       
-      public function get rate(): Number
+      private var rate: Number;
+      
+      [Required]
+      public function set toRate(value: Number): void
       {
-         return MathUtil.round(Number(forWhat)/what, 2);
+         rate = value;
+         dispatchRateChangeEvent();
       }
+      [Bindable (event="offerRateChange")]
+      public function get toRate(): Number
+      {
+         return rate;
+      }
+      
+      [Required]
       [Bindable]
       public var createdAt: Date;
       
@@ -75,6 +90,14 @@ package models.market
          if (hasEventListener(MarketEvent.OFFER_OWNER_CHANGE))
          {
             dispatchEvent(new MarketEvent(MarketEvent.OFFER_OWNER_CHANGE));
+         }
+      }
+      
+      private function dispatchRateChangeEvent(): void
+      {
+         if (hasEventListener(MarketEvent.OFFER_RATE_CHANGE))
+         {
+            dispatchEvent(new MarketEvent(MarketEvent.OFFER_RATE_CHANGE));
          }
       }
    }

@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
-         xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx" 
-         xmlns:base="components.base.*"
-         skinClass="components.skins.LargePanelSkin"
-         title="{ML.player.id != selectedOffer.fromId
-         ?getText('title.buy')
-         :getText('title.cancel')}">
+            xmlns:s="library://ns.adobe.com/flex/spark" 
+            xmlns:mx="library://ns.adobe.com/flex/mx" 
+            xmlns:base="components.base.*"
+            skinClass="components.skins.LargePanelSkin"
+            title="{ML.player.id != selectedOffer.fromId
+            ?getText('title.buy')
+            :getText('title.cancel')}">
    <fx:Script>
       <![CDATA[
          import components.skins.GreenButtonSkin;
          import components.skins.LargePanelSkin;
          
+         import controllers.GlobalFlags;
+         import controllers.market.MarketCommand;
+         
+         import models.market.MCMarketScreen;
          import models.market.MarketOffer;
          
          import utils.assets.AssetNames;
@@ -27,33 +31,54 @@
          
          [Bindable]
          private var cost: int = 0;
-
+         
          protected function selector_changeHandler(event:Event):void
          {
-            cost = Math.ceil(selector.value * selectedOffer.rate);
+            cost = Math.ceil(selector.value * selectedOffer.toRate);
          }
-
+         
+         private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
+         
+         private function confirm(e: MouseEvent): void
+         {
+            GlobalFlags.getInstance().lockApplication = true;
+            if (selectedOffer.fromId == ML.player.id)
+            {
+               new MarketCommand(MarketCommand.CANCEL, selectedOffer.id).dispatch();
+            }
+            else
+            {
+               new MarketCommand(MarketCommand.BUY, {
+                  'offerId': selectedOffer.id,
+                  'planetId': mScreen.planetId,
+                  'amount': Math.round(selector.value)
+               }).dispatch();
+            }
+         }
+         
       ]]>
    </fx:Script>
-   <s:Group>
-   <s:HSlider minimum="0" maximum="{selectedOffer.forWhat}" stepSize="1"
-              id="selector" change="selector_changeHandler(event)"/>
-   <s:Group>
+   <s:Group visible="{ML.player.id != selectedOffer.fromId}">
+      <s:HSlider minimum="0" maximum="{selectedOffer.fromAmount}" stepSize="1"
+                 id="selector" change="selector_changeHandler(event)"/>
+      <s:Group>
+         <s:layout>
+            <s:HorizontalLayout verticalAlign="middle"/>
+         </s:layout>
+         <s:Label text="{getText('label.willPay', [cost])}"/>
+         <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + selectedOffer.toKind)}"/>
+      </s:Group>
       <s:layout>
-         <s:HorizontalLayout verticalAlign="middle"/>
+         <s:VerticalLayout horizontalAlign="justify" paddingBottom="3" paddingLeft="6"
+                           paddingRight="6" paddingTop="6"/>
       </s:layout>
-      <s:Label text="{getText('label.willPay', [cost])}"/>
-      <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + selectedOffer.toResource)}"/>
-   </s:Group>
-   <s:layout>
-   <s:VerticalLayout horizontalAlign="justify" paddingBottom="3" paddingLeft="6"
-                     paddingRight="6" paddingTop="6"/>
-   </s:layout>
    </s:Group>
    <s:Button label="{ML.player.id != selectedOffer.fromId
              ?getText('label.buy')
-             :getText('label.cancel')}" right="6"
-                                        skinClass="components.skins.GreenButtonSkin"/>
+             :getText('label.cancel')}" 
+             right="6"
+             skinClass="components.skins.GreenButtonSkin"
+             click="confirm(event)"/>
    <base:layout>
       <s:HorizontalLayout verticalAlign="middle"/>
    </base:layout>

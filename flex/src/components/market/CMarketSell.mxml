@@ -3,7 +3,8 @@
                         xmlns:s="library://ns.adobe.com/flex/spark" 
                         xmlns:mx="library://ns.adobe.com/flex/mx" 
                         xmlns:market="components.market.*" 
-                        xmlns:base="components.base.*">
+                        xmlns:base="components.base.*"
+                        creationComplete="advancedcontainer1_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[
          import components.market.events.MarketEvent;
@@ -11,6 +12,8 @@
          
          import models.building.Building;
          import models.resource.ResourceType;
+         
+         import mx.events.FlexEvent;
          
          import utils.MathUtil;
          
@@ -20,8 +23,41 @@
             {
                forWhat.deselect();
             }
+            updateRate();
          }
          
+
+         protected function forWhat_selectedResourceChangeHandler(event:MarketEvent):void
+         {
+            updateRate();
+         }
+
+
+         protected function advancedcontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            mScreen.addEventListener(MarketEvent.AVG_RATE_CHANGE, dispatchAvgRateChangeEvent);
+         }
+         
+         private function dispatchAvgRateChangeEvent(e: MarketEvent): void
+         {
+            if (hasEventListener(MarketEvent.AVG_RATE_CHANGE))
+            {
+               dispatchEvent(new MarketEvent(MarketEvent.AVG_RATE_CHANGE));
+            }
+         }
+
+         protected function confirm_clickHandler(event:MouseEvent):void
+         {
+            GlobalFlags.getInstance().lockApplication = true;
+            new MarketCommand(MarketCommand.NEW, {
+            'marketId': mScreen.market.id,
+            'fromAmount': sellSelector.selectedVal,
+            'fromKind': OfferResourceKind[what.selected],
+            'toRate': forSelector.selectedVal/sellSelector.selectedVal,
+            'toKind': OfferResourceKind[forWhat.selected]
+            }).dispatch();
+         }
+
       ]]>
    </fx:Script>
    <base:layout>
@@ -29,6 +65,10 @@
    </base:layout>
    <fx:Script>
       <![CDATA[
+         import models.market.MCMarketScreen;
+         import models.market.OfferResourceKind;
+         import controllers.market.MarketCommand;
+         import controllers.GlobalFlags;
          import config.Config;
          import models.resource.Resource;
          import utils.locale.Localizer;
@@ -47,53 +87,49 @@
          public var energy: Resource;
          [Bindable]
          public var zetium: Resource;
-         [Bindable]
-         public var creds: int;
-         
-         public var marketRates: Object = {'metal-energy': 1.1,
-            'metal-zetium': 1.1,
-            'metal-creds': 1.3,
-            'energy-metal': 1.0,
-            'energy-zetium': 0.7,
-            'energy-creds': 0.9,
-            'zetium-metal': 1.2,
-            'zetium-energy': 1.1,
-            'zetium-creds': 1.5,
-            'creds-metal': 1.2,
-            'creds-energy': 1.7,
-            'creds-zetium': 1.9};
          
          private function getResource(res: String): Resource
          {
             return Resource(this[res]);
          }
          
-         private function getMarketValue(fromRes: String, toRes: String): Number
+         private function updateRate(): void
          {
-            return marketRates[fromRes + '-' + toRes];
+            if (what.selected != null && forWhat.selected != null)
+            {
+               GlobalFlags.getInstance().lockApplication = true;
+               new MarketCommand(MarketCommand.AVG_RATE, {
+                  'fromKind': int(OfferResourceKind[what.selected]),
+                  'toKind': int(OfferResourceKind[forWhat.selected])
+               }).dispatch();
+            }
          }
          
-         private function getMarketRate(fromRes: String, toRes: String, 
-                                                         currentRate: Number): int
+         [Bindable (event="avgRateChange")]
+         private function getMarketRate(currentRate: Number): int
          {
-            var rate: Number = (currentRate/getMarketValue(fromRes, toRes));
+            var rate: Number = (currentRate/mScreen.avgRate);
             return Math.abs(Math.round(100 - (rate * 100)));
          }
          
-         private function getCheaper(fromRes: String, toRes: String, 
-                                     currentRate: Number): Boolean
+         private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
+         
+         [Bindable (event="avgRateChange")]
+         private function getCheaper(currentRate: Number): Boolean
          {
-            return currentRate < getMarketValue(fromRes, toRes);
+            return currentRate < mScreen.avgRate;
          }
          
-         private function getMaxOffer(fromRes: String, toRes: String, amount: int): int
+         [Bindable (event="avgRateChange")]
+         private function getMaxOffer(amount: int): int
          {
-            return Math.round((getMarketValue(fromRes, toRes) * (1 + Config.getMarketRange())) * amount);
+            return Math.round((mScreen.avgRate * (1 + Config.getMarketRange())) * amount);
          }
          
-         private function getMinOffer(fromRes: String, toRes: String, amount: int): int
+         [Bindable (event="avgRateChange")]
+         private function getMinOffer(amount: int): int
          {
-            return Math.round((getMarketValue(fromRes, toRes) * (1 - Config.getMarketRange())) * amount);
+            return Math.round((mScreen.avgRate * (1 - Config.getMarketRange())) * amount);
          }
       ]]>
    </fx:Script>
@@ -109,24 +145,23 @@
       <market:CMarketFee type="{what.selected}" taxRate="{taxRate}"
                          selectedAmmount="{sellSelector.selectedVal}"/>
       <s:Label text="{getText('label.sellFor')}"/>
-      <market:CMarketResourceSelector id="forWhat" disabledType="{what.selected}"/>
-      <market:CMarketResourceSlider maxAmmount="{getMaxOffer(what.selected, forWhat.selected,
-                                    sellSelector.selectedVal)}" 
-                                    minAmmount="{getMinOffer(what.selected, forWhat.selected,
-                                    sellSelector.selectedVal)}"
+      <market:CMarketResourceSelector id="forWhat" disabledType="{what.selected}"
+                                      selectedResourceChange="forWhat_selectedResourceChangeHandler(event)"/>
+      <market:CMarketResourceSlider maxAmmount="{getMaxOffer(sellSelector.selectedVal)}" 
+                                    minAmmount="{getMinOffer(sellSelector.selectedVal)}"
                                     visible="{forWhat.selected != null}" id="forSelector"/>
       <s:Label text="{getText('label.marketValue', 
-               [getMarketRate(what.selected, forWhat.selected,
-               forSelector.selectedVal/sellSelector.selectedVal),
-               getCheaper(what.selected, forWhat.selected,
-               forSelector.selectedVal/sellSelector.selectedVal)?'cheaper':'more'])}" 
+               [getMarketRate(forSelector.selectedVal/sellSelector.selectedVal),
+               getCheaper(forSelector.selectedVal/sellSelector.selectedVal)
+               ?'cheaper':'more'])}" 
                visible="{forWhat.selected != null}"/>
       <market:CMarketCompare typeFrom="{what.selected}" typeTo="{forWhat.selected}"
                              amountTo="{forSelector.selectedVal/sellSelector.selectedVal}" 
                              visible="{forWhat.selected != null}"/>
       <s:Group visible="{forWhat.selected != null}">
          <s:Button skinClass="components.skins.GreenButtonSkin" 
-                   label="{getText('label.submit')}" horizontalCenter="0"/>
+                   label="{getText('label.submit')}" horizontalCenter="0"
+                   click="confirm_clickHandler(event)"/>
       </s:Group>
       <base:layout>
          <s:VerticalLayout horizontalAlign="justify"/>

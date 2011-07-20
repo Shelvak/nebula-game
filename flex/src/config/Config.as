@@ -176,14 +176,24 @@ package config
       /* ### OTHER CONFIG GETTERS ### */
       /* ############################ */
       
+      public static function getMarketFee(): String
+      {
+         return getValue("buildings.market.fee");
+      }
+      
       public static function getMarketRange(): Number
       {
-         return 0.3;
+         return getValue("market.avgRate.offset");
       }
       
       public static function getMinMarketOffer(): int
       {
-         return 1000;
+         return getValue("market.offer.minAmount");
+      }
+      
+      public static function getMaxMarketOffers(): int
+      {
+         return getValue("market.offers.max");
       }
       
       public static function getAllianceLeaveCooldown(): int
