@@ -211,6 +211,8 @@ package utils.assets
       public static var ALLIANCE_SCREEN_IMAGE_FOLDER:String = UI_IMAGES_FOLDER + "alliance/";
       
       
+      public static var MARKET_SCREEN_IMAGE_FOLDER:String = UI_IMAGES_FOLDER + "market/";
+      
       /**
        * Path to the folder where battlefield folliage (blocking and non-blocking) images reside.
        */

@@ -19,6 +19,9 @@ package models.market
       }
       
       [Bindable]
+      public var currentTab: String = 'left';
+      
+      [Bindable]
       public var publicOffers: ModelsCollection;
       
       [Bindable]

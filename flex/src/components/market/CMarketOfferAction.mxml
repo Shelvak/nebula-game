@@ -1,25 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
             xmlns:s="library://ns.adobe.com/flex/spark" 
             xmlns:mx="library://ns.adobe.com/flex/mx" 
-            xmlns:base="components.base.*"
-            skinClass="components.skins.LargePanelSkin"
-            title="{ML.player.id != selectedOffer.fromId
-            ?getText('title.buy')
-            :getText('title.cancel')}">
+            xmlns:base="components.base.*">   
+   <fx:Metadata>
+      /**
+      * Dispatched when selected resource in radio group changes
+      * 
+      * @eventType components.market.events.MarketEvent.DESELECT_OFFER
+      */
+      [Event(name="deselectOffer", type="components.market.events.MarketEvent")]
+   </fx:Metadata>
    <fx:Script>
       <![CDATA[
+         import components.market.events.MarketEvent;
          import components.skins.GreenButtonSkin;
          import components.skins.LargePanelSkin;
          
          import controllers.GlobalFlags;
          import controllers.market.MarketCommand;
          
+         import models.ModelLocator;
          import models.market.MCMarketScreen;
          import models.market.MarketOffer;
          
          import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
+         
+         [Bindable]
+         private var IMG: ImagePreloader = ImagePreloader.getInstance();
+         
+         [Bindable]
+         private var ML: ModelLocator = ModelLocator.getInstance();
          
          [Bindable]
          public var selectedOffer: MarketOffer;
@@ -56,30 +69,58 @@
             }
          }
          
+         private function cancel(e: MouseEvent): void
+         {
+            dispatchEvent(new MarketEvent(MarketEvent.DESELECT_OFFER));
+         }
+         
+         private function getImage(name:String) : BitmapData
+         {
+            return IMG.getImage(AssetNames.MARKET_SCREEN_IMAGE_FOLDER + name);
+         }
+         
       ]]>
    </fx:Script>
-   <s:Group visible="{ML.player.id != selectedOffer.fromId}">
+   <!-- background -->
+   <s:Group left="0" right="0">
+      <s:BitmapImage width="{(width - 500)/2}" id="leftRepeat"
+                     source="{getImage('buy_repeat')}" fillMode="repeat"/>
+      <s:BitmapImage source="{getImage('buy_left')}"/>
+      <s:BitmapImage width="100%" fillMode="repeat"
+                     source="{getImage('buy_center')}"/>
+      <s:BitmapImage source="{getImage('buy_right')}"/>
+      <s:BitmapImage width="{leftRepeat.width}"
+                     source="{getImage('buy_repeat')}" fillMode="repeat"/>
+      <s:layout>
+         <s:HorizontalLayout gap="0"/>
+      </s:layout>
+   </s:Group>
+   <base:AdvancedContainer horizontalCenter="0" bottom="15">
       <s:HSlider minimum="0" maximum="{selectedOffer.fromAmount}" stepSize="1"
-                 id="selector" change="selector_changeHandler(event)"/>
-      <s:Group>
+                 id="selector" change="selector_changeHandler(event)"
+                 visible="{ML.player.id != selectedOffer.fromId}" />
+      <s:Group visible="{ML.player.id != selectedOffer.fromId}" >
          <s:layout>
             <s:HorizontalLayout verticalAlign="middle"/>
          </s:layout>
          <s:Label text="{getText('label.willPay', [cost])}"/>
-         <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + selectedOffer.toKind)}"/>
+         <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
+                        (ML.player.id != selectedOffer.fromId
+                        ?selectedOffer.toResource
+                        :selectedOffer.fromResource))}"/>
       </s:Group>
-      <s:layout>
-         <s:VerticalLayout horizontalAlign="justify" paddingBottom="3" paddingLeft="6"
-                           paddingRight="6" paddingTop="6"/>
-      </s:layout>
-   </s:Group>
-   <s:Button label="{ML.player.id != selectedOffer.fromId
-             ?getText('label.buy')
-             :getText('label.cancel')}" 
-             right="6"
-             skinClass="components.skins.GreenButtonSkin"
-             click="confirm(event)"/>
-   <base:layout>
-      <s:HorizontalLayout verticalAlign="middle"/>
-   </base:layout>
-</base:Panel>
+      <s:Button label="{ML.player.id != selectedOffer.fromId
+                ?getText('label.buy')
+                :getText('label.cancel')}" 
+                right="6"
+                skinClass="components.skins.GreenButtonSkin"
+                click="confirm(event)"/>
+      <s:Button label="{getText('label.close')}" 
+                right="6"
+                skinClass="components.skins.RedButtonSkin"
+                click="cancel(event)"/>
+      <base:layout>
+         <s:HorizontalLayout verticalAlign="middle"/>
+      </base:layout>
+   </base:AdvancedContainer>
+</s:Group>

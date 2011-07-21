@@ -14,6 +14,8 @@
          import models.market.MarketOffer;
          import models.resource.ResourceType;
          
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
          
          
@@ -41,8 +43,8 @@
                setTypeFilter(cFilter.selectedFrom, cFilter.selectedTo);
                list.filterFunction = function (item: MarketOffer): Boolean
                {
-                  return (_filterWhat == null || item.fromKind == _filterWhat)
-                  && (_filterTo == null || _filterTo == ResourceType.ALL || item.toKind == _filterTo);
+                  return (_filterWhat == null || item.fromResource == _filterWhat)
+                  && (_filterTo == null || _filterTo == ResourceType.ALL || item.toResource == _filterTo);
                }
                list.refresh();
             }
@@ -52,17 +54,52 @@
          
          [Bindable]
          private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
+         
+         
+         private function getImage(name:String) : BitmapData
+         {
+            return ImagePreloader.getInstance().getImage(
+               AssetNames.MARKET_SCREEN_IMAGE_FOLDER + name);
+         }
+
+         protected function tab_clickHandler(event:MouseEvent):void
+         {
+            mScreen.currentTab = 'left';
+         }
 
       ]]>
    </fx:Script>
-   <market:CMarketOfferFilter top="10" id="cFilter" left="10" right="10"
+   <market:CMarketOfferFilter top="0" id="cFilter" left="0" right="0"
                               selectedResourceChange="cFilter_selectedResourceChangeHandler(event)"/>
-   <market:CMarketOffers id="offersList" top="{cFilter.height + 20}" 
-                         bottom="{offersList.selected != null?cAction.height + 20:10}"
+   <market:CMarketOffers id="offersList" top="{cFilter.height}"
+                         maxHeight="{height - (cFilter.height + 
+                         (offersList.selected != null?cAction.height:0))}"
                          offers="{cFilter.onlyPrivateOffers
                          ? mScreen.privateOffers
-                         : mScreen.publicOffers}" left="10" right="10"/>
+                         : mScreen.publicOffers}" 
+                         left="0" right="0"
+                         visible="{!(cFilter.onlyPrivateOffers
+                         ? mScreen.privateOffers.isEmpty
+                         : mScreen.publicOffers.isEmpty)}"/>
+   <s:Rect left="0" right="0" bottom="{offersList.selected != null?cAction.height:0}" 
+           top="{cFilter.height + ((cFilter.onlyPrivateOffers
+           ? mScreen.privateOffers.isEmpty
+           : mScreen.publicOffers.isEmpty)
+           ?0:offersList.height)}">
+      <s:fill>
+         <s:SolidColor color="#0a0a0a"/>
+      </s:fill>
+   </s:Rect>
+   <s:Label visible="{cFilter.onlyPrivateOffers
+            ? mScreen.privateOffers.isEmpty
+            : mScreen.publicOffers.isEmpty}"
+            top="{cFilter.height}" 
+            bottom="{offersList.selected != null?cAction.height:0}"
+            verticalAlign="middle" horizontalCenter="0"
+            fontSize="36" fontWeight="bold" color="0x1C1C1C"
+            text="{getText('label.noOffers')}"/>
    <market:CMarketOfferAction selectedOffer="{offersList.selected}" 
                               visible="{offersList.selected != null}"
-                              id="cAction" bottom="10" left="10" right="10"/>
+                              id="cAction" bottom="0" 
+                              left="0" right="0"/>
 </s:Group>
