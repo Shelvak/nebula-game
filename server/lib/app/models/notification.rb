@@ -337,6 +337,15 @@ class Notification < ActiveRecord::Base
   #   :outcome => Fixnum | nil (whether you lost or won battle for that 
   #   planet, nil if no battle was fought)
   # }
+  #
+  # Variations:
+  #   with owner:
+  #     outcome win: player conquered other players planet.
+  #     outcome lose: player or his ally lost control of planet.
+  #   owner == nil:
+  #     outcome win: player conquered this planet in a combat from NPC
+  #     outcome nil: player arrived at empty annexable planet
+  #
   def self.create_for_planet_annexed(player_id, planet, outcome)
     model = new(
       :event => EVENT_PLANET_ANNEXED,
