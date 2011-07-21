@@ -421,6 +421,25 @@ describe Combat do
     end.should be_nil
   end
   
+  describe "#572: Update transporters after battle" do
+    it "should dispatch transporters even if they didn't get damage" do
+      mule = nil
+      dsl = CombatDsl.new do
+        planet = location(:planet).location
+        player = self.player(:planet_owner => true) do
+          units { mule = self.mule { trooper :hp => 1 } }
+        end
+        player { units { shocker } }
+      end
+      
+      SPEC_EVENT_HANDLER.clear_events!
+      dsl.run
+      SPEC_EVENT_HANDLER.events.find do |objects, event, reason|
+        event == EventBroker::CHANGED && objects.include?(mule)
+      end.should_not be_nil
+    end
+  end
+  
   describe "teleported units" do
     before(:each) do
       player = nil
