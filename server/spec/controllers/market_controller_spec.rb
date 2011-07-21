@@ -88,7 +88,7 @@ describe MarketController do
     before(:each) do
       @action = "market|new"
       @planet = Factory.create(:planet, :player => player)
-      @market = Factory.create(:b_market, :planet => @planet)
+      @market = Factory.create!(:b_market, :planet => @planet)
       @params = {
         'market_id' => @market.id, 
         'from_kind' => MarketOffer::KIND_METAL,

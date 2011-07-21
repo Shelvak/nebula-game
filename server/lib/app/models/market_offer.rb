@@ -147,7 +147,7 @@ class MarketOffer < ActiveRecord::Base
       
       # JRuby compatibility
       row["created_at"] = Time.parse(row['created_at']) \
-        if row['create_at'].is_a?(String)
+        if row['created_at'].is_a?(String)
       
       row
     end
