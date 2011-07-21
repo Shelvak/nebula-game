@@ -102,8 +102,9 @@ describe Combat do
     end
 
     it "should run combat" do
-      Combat.should_receive(:run)
-      Combat.npc_raid!(@planet)
+      Combat.should_execute(:run) do
+        Combat.npc_raid!(@planet)
+      end
     end
 
     it "should take away planet" do
@@ -202,6 +203,9 @@ describe Combat do
   
   describe "combat" do
     before(:each) do
+      survivors = []
+      dead_people = []
+      
       @dsl = CombatDsl.new do
         location :planet do
           buildings { vulcan }
@@ -209,24 +213,32 @@ describe Combat do
 
         alliance do
           player :planet_owner => true do
-            units { trooper; trooper :flank => 1 }
+            units do
+              survivors.push trooper
+              survivors.push trooper(:flank => 1)
+            end
           end
-          player { units { trooper } }
+          player { units { survivors.push trooper } }
         end
 
         a2 = alliance do
           player do
-            units { trooper :hp => 10; trooper :flank => 1, :hp => 10 }
+            units do
+              dead_people.push trooper(:hp => 10)
+              dead_people.push trooper(:flank => 1, :hp => 10)
+            end
           end
         end
 
         a3 = alliance do
-          player { units { trooper :hp => 10 } }
+          player { units { dead_people.push trooper(:hp => 10) } }
         end
 
         nap(a2, a3)
       end
 
+      @survivors = survivors
+      @dead_people = dead_people
       @units = @dsl.units
       @players = @dsl.players
       @location = @dsl.location_container.location
@@ -267,14 +279,14 @@ describe Combat do
 
     it "should save updated units" do
       Unit.should_receive(:save_all_units).with(
-        [0, 1, 2].map { |i| @units[i] }, EventBroker::REASON_COMBAT
+        @survivors, EventBroker::REASON_COMBAT
       )
       @dsl.run
     end
 
     it "should destroy dead units" do
       Unit.should_receive(:delete_all_units).with(
-        [3, 4, 5].map { |i| @units[i] }, an_instance_of(Hash),
+        @dead_people, an_instance_of(Hash),
         EventBroker::REASON_COMBAT
       )
       @dsl.run
@@ -289,7 +301,7 @@ describe Combat do
     
     it "should calculate wreckages" do
       Wreckage.should_receive(:calculate).and_return do |units|
-        Set.new(units).should == Set.new([3, 4, 5].map { |i| @units[i] })
+        Set.new(units).should == Set.new(@dead_people)
         [1, 2, 3]
       end
       @dsl.run
@@ -376,13 +388,13 @@ describe Combat do
       player { units { rhyno } }
     end
 
-    rhyno = dsl.units[0]
+    rhyno = dsl.units.to_a[0]
     rhyno.xp = 100
     player = rhyno.player
 
     assets = dsl.run
     rhyno.xp.should == 100 +
-      assets.response['statistics'][player.id.to_s]['xp_earned']
+      assets.response['statistics'][player.id]['xp_earned']
   end
 
   it "should run combat if there is nothing to fire, but units " +

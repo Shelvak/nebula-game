@@ -8,7 +8,7 @@ describe Location do
     end
     
     it "should return distinct array" do
-      player_ids = Location.combat_player_id(@location)
+      player_ids = Location.combat_player_ids(@location)
       player_ids.should == player_ids.uniq
     end
 
@@ -17,24 +17,24 @@ describe Location do
       Factory.create(:unit, :location => @location, :player => player)
       Factory.create(:unit, :location => @location, :player => player)
 
-      Location.combat_player_id(@location).should include(player.id)
+      Location.combat_player_ids(@location).should include(player.id)
     end
 
     it "should include nils" do
       player = Factory.create(:player)
       Factory.create(:unit, :location => @location, :player => nil)
 
-      Location.combat_player_id(@location).should include(nil)
+      Location.combat_player_ids(@location).should include(nil)
     end
 
     it "should include planet owner" do
-      Location.combat_player_id(@location).should include(@planet.player_id)
+      Location.combat_player_ids(@location).should include(@planet.player_id)
     end
     
     it "should not include planet owner if it's NPC" do
       @planet.player = nil
       @planet.save!
-      Location.combat_player_id(@location).should_not include(nil)
+      Location.combat_player_ids(@location).should_not include(nil)
     end
   end
 

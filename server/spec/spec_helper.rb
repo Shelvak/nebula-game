@@ -118,8 +118,35 @@ Spork.prefork do
 
       model
     end
+    
+    class Object
+      # Almost the same as #should_receive but instead actually executes
+      # the call.
+      def should_execute(method_name, args=nil)
+        # Save old method
+        old_method = method(method_name)
+        
+        # Create new stub method that records the call.
+        method_ran = false
+        metaclass = class << self; self; end
+        metaclass.instance_eval do
+          define_method(method_name) do |*call_args|
+            method_ran = args.nil? ? true : args == call_args
+            old_method.call(*call_args)
+          end
+        end
+        
+        ret_val = yield
+        
+        raise "#{self} expected to receive #{method_name} with args #{
+          args.inspect}!" unless method_ran
+          
+        ret_val
+      ensure
+        define_method(method_name, &old_method)
+      end
+    end
   end
-  
 end
 
 Spork.each_run do

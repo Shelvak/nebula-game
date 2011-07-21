@@ -52,39 +52,6 @@ class Combat::LocationChecker
         check_location(location_point)
       end
     end
-    
-    protected    
-    def on_conflict(location_point, check_report)
-      location = location_point.object
-
-      units = Unit.in_location(location_point.location_attrs).where(
-        "level > 0").all
-
-      # Get players from alliances.
-      players = check_report.alliances.values.flatten
-      
-      if location.is_a?(SsObject::Planet)
-        dp_units = Building::DefensivePortal.portal_units_for(location)
-        units += dp_units
-        buildings = location.buildings.shooting.active.all
-
-        # Add players that have units from defensive portal.
-        players = players | Player.find(dp_units.map(&:player_id))
-      else
-        buildings = []
-      end
-      
-      # Do not include NPCs in players listing.
-      players = players.compact  
-
-      assets = Combat.run(location, players, check_report.nap_rules,
-        units, buildings)
-
-      FowSsEntry.recalculate(location_point.id, true) \
-        if ! assets.nil? && location_point.type == Location::SOLAR_SYSTEM
-      
-      assets
-    end
 
     # Check +Location+ for opposing forces. Return Combat::CheckReport.
     #
@@ -93,7 +60,7 @@ class Combat::LocationChecker
     # units in same location.
     #
     def check_for_enemies(location_point)
-      player_ids = Location.combat_player_id(location_point)
+      player_ids = Location.combat_player_ids(location_point)
       alliances = Player.grouped_by_alliance(player_ids)
       nap_rules = {}
 
@@ -132,6 +99,42 @@ class Combat::LocationChecker
       end
 
       Combat::CheckReport.new(status, alliances, nap_rules)
+    end
+    
+    protected    
+    def on_conflict(location_point, check_report)
+      location = location_point.object
+
+      units = Unit.in_location(location_point.location_attrs).where(
+        "level > 0").all
+
+      # Get players from alliances.
+      players = check_report.alliances.values.flatten
+      
+      if location.is_a?(SsObject::Planet)
+        dp_units = Building::DefensivePortal.portal_units_for(location)
+        units += dp_units
+        buildings = location.buildings.shooting.active.all
+
+        # Add players that have units from defensive portal.
+        players = players | Player.find(dp_units.map(&:player_id))
+      else
+        buildings = []
+      end
+      
+      # Do not include NPCs in players listing. Create a set from our
+      # players array.
+      players = Set.new(players.compact)
+      units = Set.new(units)
+      buildings = Set.new(buildings)
+
+      assets = Combat.run(location, players, check_report.nap_rules,
+        units, buildings)
+
+      FowSsEntry.recalculate(location_point.id, true) \
+        if ! assets.nil? && location_point.type == Location::SOLAR_SYSTEM
+      
+      assets
     end
   end
 end

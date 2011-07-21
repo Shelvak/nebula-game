@@ -486,11 +486,13 @@ describe Unit do
   describe ".save_all_units" do
     before(:each) do
       @route = Factory.create(:route)
+      @mule = Factory.create!(:u_mule)
       @units = [
         Factory.create!(:u_dart, :route => @route),
         Factory.create!(:u_dart, :route => @route),
         Factory.create!(:u_crow, :route => @route),
         Factory.create!(:u_crow),
+        @mule,
       ]
       @units.each { |unit| unit.hp -= 1 }
     end
@@ -510,6 +512,14 @@ describe Unit do
 
     it "should fire changed" do
       should_fire_event(@units, EventBroker::CHANGED, :reason) do
+        Unit.save_all_units(@units, :reason)
+      end
+    end
+    
+    it "should exclude units within other units from changed event" do
+      event_units = @units.dup
+      @units.push Factory.create(:u_trooper, :location => @mule)
+      should_fire_event(event_units, EventBroker::CHANGED, :reason) do
         Unit.save_all_units(@units, :reason)
       end
     end

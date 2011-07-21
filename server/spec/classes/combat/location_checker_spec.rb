@@ -61,10 +61,9 @@ describe klass do
       )
       Combat::LocationChecker.stub!(:check_for_enemies).
         and_return(check_report)
-      Combat::Annexer.should_not_receive(:annex!).with(
+      Combat::Annexer.should_receive(:annex!).with(
         @planet,
-        check_report.status,
-        check_report.alliances,
+        check_report,
         nil
       )
       Combat::LocationChecker.check_location(@location)
@@ -74,31 +73,29 @@ describe klass do
       Combat::Annexer.should_not_receive(:annex!)
       Combat::LocationChecker.check_location(
         SolarSystemPoint.new(@planet.solar_system_id, 0, 0))
-    end
-    
-    
+    end    
 
     describe "opposing players" do
       before(:each) do
         @player1 = Factory.create :player
         @player2 = Factory.create :player
-        @players = [@planet.player, @player1, @player2].compact
+        @players = Set.new([@planet.player, @player1, @player2].compact)
         @alliances = Player.grouped_by_alliance(
           [@planet.player_id, @player1.id, @player2.id]
         )
         @nap_rules = {}
-        @units = [          
+        @units = Set.new([          
           Factory.create(:unit, :location => @location,
             :player => @player1, :level => 1),
           Factory.create(:unit, :location => @location,
             :player => @player2, :level => 1),
-        ]
-        @buildings = [
+        ])
+        @buildings = Set.new([
           Factory.create!(:b_vulcan, :planet => @planet, :x => 10,
             :state => Building::STATE_ACTIVE, :level => 1),
           Factory.create!(:b_thunder, :planet => @planet, :x => 20,
             :state => Building::STATE_ACTIVE, :level => 1),
-        ]
+        ])
       end
 
       describe "invocation" do
@@ -125,8 +122,9 @@ describe klass do
           Building::DefensivePortal.should_receive(:portal_units_for).
             with(@planet).and_return(portal_units)
 
-          units = @units + portal_units
-          players = Player.find(units.map(&:player_id).uniq.compact)
+          units = @units + Set.new(portal_units)
+          players = Set.new(
+            Player.find(units.map(&:player_id).uniq.compact))
           Combat.should_receive(:run).with(@planet, players, @nap_rules,
             units, @buildings).and_return(@stubbed_assets)
           Combat::LocationChecker.check_location(@location)
@@ -174,12 +172,8 @@ describe klass do
         Combat.stub!(:run).and_return(assets)
         Combat::Annexer.should_receive(:annex!).with(
           @planet,
-          check_report.status,
-          check_report.alliances,
-          Combat::LocationChecker::CombatData.new(
-            response['outcomes'],
-            response['statistics']
-          )
+          check_report,
+          response['outcomes']
         )
         Combat::LocationChecker.check_location(@location)
       end

@@ -11,8 +11,8 @@ class Combat::Annexer
     def annex!(planet, check_report, outcomes)
       if check_report.status == Combat::CheckReport::COMBAT
         # There was a combat. Lets check if the owner of that planet lost.
-        if outcomes[planet.player_id] == Combat::CheckReport::OUTCOME_LOSE
-          if planet.player && planet.player.planet_count == 1
+        if outcomes[planet.player_id] == Combat::OUTCOME_LOSE
+          if planet.player && planet.player.planets_count == 1
             # Don't take players last planet.
             protect(planet, outcomes)
           else
@@ -24,7 +24,7 @@ class Combat::Annexer
         planet.player_id.nil?
         # No conflict, it's a free annexable planet. Create notifications 
         # for all players who are in the planet.
-        planet_free(planet, check_report)
+        planet_free(planet, check_report.alliances)
       end
     end
 
@@ -59,11 +59,8 @@ class Combat::Annexer
     # Planet is free, send notifications for everyone in alliances.
     def planet_free(planet, alliances)
       ActiveRecord::Base.transaction do
-        alliances.each do |_, players|
-          players.each do |player|
-            Notification.create_for_planet_annexed(player.id, planet, nil) \
-              unless player.nil?
-          end
+        alliances.values.flatten.compact.each do |player|
+          Notification.create_for_planet_annexed(player.id, planet, nil)
         end
       end
     end

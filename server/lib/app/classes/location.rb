@@ -9,7 +9,7 @@ module Location
   # If the location is a +SsObject+, existence of shooting buildings is also
   # checked.
   #
-  def self.combat_player_id(location_point)
+  def self.combat_player_ids(location_point)
     # Should have used Scala...
     raise ArgumentError.new(
       "Expecting LocationPoint but #{location_point.inspect} given!") \
