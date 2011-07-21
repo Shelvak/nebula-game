@@ -31,8 +31,13 @@ class MarketOffer < ActiveRecord::Base
     self.galaxy_id ||= player.galaxy_id
     avg_rate = self.class.avg_rate(galaxy_id, from_kind, to_kind)
     offset = CONFIG['market.avg_rate.offset']
-    if to_rate < (low = avg_rate * (1 - offset)) then self.to_rate = low
-    elsif to_rate > (high = avg_rate * (1 + offset)) then self.to_rate = high
+    
+    low = avg_rate * (1 - offset)
+    high = avg_rate * (1 + offset)
+    if to_rate < low 
+      self.to_rate = low
+    elsif to_rate > high
+      self.to_rate = high
     end
     
     true
@@ -167,7 +172,7 @@ class MarketOffer < ActiveRecord::Base
                 :galaxy_id => galaxy_id).
           select("from_amount as amount, to_rate as rate").to_sql}
       ) as subselect
-    ")
+    ").to_f # JRuby compatibility.
   end
   
   # Save _object_ and dispatch event if is a planet.
