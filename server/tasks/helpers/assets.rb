@@ -577,8 +577,9 @@ class WikiMechanize
     end
   end
 
-  def store_wiki_page(name, content)
+  def store_wiki_page(name, content=nil, &block)
     login
+    content ||= block.call
 
     info "Submitting content to '#{name}'" do
       @mw.create(name, content, :overwrite => true)
