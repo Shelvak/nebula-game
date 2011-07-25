@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:location="components.location.*">
+   <fx:Library>
+      <fx:Definition name="CLocation">
+         <s:Group visible="{location != null}" includeInLayout="{location != null}">
+            <fx:Script>
+               <![CDATA[
+                  import flash.display.BitmapData;
+                  
+                  [Bindable] public var location:*;
+                  [Bindable] public var label:String;
+                  [Bindable] public var image:BitmapData;
+               ]]>
+            </fx:Script>
+            <s:BitmapImage source="{image}" left="0" top="0" right="0" bottom="0"/>
+            <s:Label text="{label}" horizontalCenter="0" top="4" styleName="h3"/>
+            <location:MiniLocationComp location="{location}" horizontalCenter="0" bottom="9"/>
+         </s:Group>
+      </fx:Definition>
+   </fx:Library>
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         
+         
+         [Bindable]
+         public var location:*;
+         
+         [Bindable]
+         public var target:*;
+          
+         private function getImage(name:String) : BitmapData {
+            return ImagePreloader.getInstance().getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + "locs_" + name);
+         }
+         
+         private function getString(property:String) : String {
+            return Localizer.string("Units", "label." + property);
+         }
+      ]]>
+   </fx:Script>
+   <s:BitmapImage left="0" right="0" source="{getImage('center')}" fillMode="repeat"/>
+   <s:BitmapImage left="0" source="{getImage('left')}"/>
+   <s:BitmapImage right="0" source="{getImage('right')}"/>
+   <s:Group horizontalCenter="0">
+      <s:layout><s:HorizontalLayout gap="35"/></s:layout>
+      <fx:CLocation location="{location}" image="{getImage('location')}" label="{getString('location')}"/>
+      <fx:CLocation location="{target}" image="{getImage('location')}" label="{getString('target')}"/>
+   </s:Group>
+   
+</s:Group>

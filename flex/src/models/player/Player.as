@@ -137,6 +137,13 @@ package models.player
          return res == 0 ? NumberUtil.compare(p0.id, p1.id) : res;
       }
       
+      /**
+       * Number of planets owned by the player (including the ones in battlegrounds).
+       */ 
+      public function get planetsCountAll() : int {
+         return planets != null ? planets.length : 0;
+      }
+      
       
       private var _creds: int = 0;
       [Bindable(event="credsChange")]
@@ -211,18 +218,15 @@ package models.player
       /* ### ALLIANCE ### */
       /* ################ */
       
-      
       private var _alliancesTechnology:Technology = null; 
       private function get alliancesTechnology() : Technology {
-         if (_alliancesTechnology == null)
-         {
+         if (_alliancesTechnology == null) {
             _alliancesTechnology = ML.technologies.getTechnologyByType(TechnologiesModel.TECH_ALLIANCES);
             _alliancesTechnology.addEventListener
                (UpgradeEvent.LEVEL_CHANGE, alliancesTech_levelChangeHandler, false, 0, true);
          }
          return _alliancesTechnology;
       }
-      
       
       private var _allianceId:int = 0;
       [Optional]
@@ -231,8 +235,7 @@ package models.player
        * Id of an alliance the player belongs to.
        */
       public function set allianceId(value:int) : void {
-         if (_allianceId != value)
-         {
+         if (_allianceId != value) {
             _allianceId = value;
             dispatchPlayerEvent(PlayerEvent.ALLIANCE_ID_CHANGE);
          }
@@ -244,7 +247,6 @@ package models.player
          return _allianceId;
       }
       
-      
       [Bindable(event="allianceIdChange")]
       /**
        * <code>true</code> if this player belongs to an alliance.
@@ -252,7 +254,6 @@ package models.player
       public function get belongsToAlliance() : Boolean {
          return allianceId > 0;
       }
-      
       
       private var _allianceOwner:Boolean = false;
       [Optional]
@@ -273,7 +274,6 @@ package models.player
       public function get allianceOwner() : Boolean {
          return _allianceOwner;
       }
-      
       
       private var _alliancePlayerCount:int = 0;
       [Optional]
@@ -296,11 +296,9 @@ package models.player
          return _alliancePlayerCount;
       }
       
-      
       private function alliancesTech_levelChangeHandler(event:UpgradeEvent) : void {
          dispatchPlayerEvent(PlayerEvent.MAX_ALLIANCE_PLAYER_COUNT_CHANGE);
       }
-      
       
       [Bindable(event="maxAlliancePlayerCountChange")]
       public function get maxAlliancePlayerCount() : int {
@@ -318,18 +316,15 @@ package models.player
          return maxAlliancePlayerCount == alliancePlayerCount;
       }
       
-      
       [Bindable(event="allianceIdChange")]
       [Bindable(event="allianceCooldownChange")]
       public function get canJoinAlliance() : Boolean {
          return !belongsToAlliance && !allianceCooldownInEffect;
       }
       
-      
       public function belongsTo(allianceId:int) : Boolean {
          return this.allianceId == allianceId;
       }
-      
       
       public function ownsAlliance(allianceId:int) : Boolean {
          return belongsTo(allianceId) && allianceOwner;
@@ -340,19 +335,15 @@ package models.player
       /* ### ALLIANCE COOLDOWN ### */
       /* ######################### */
       
-      
       private var _allianceCooldown:MTimeEventFixedMoment;
       [Bindable(event="willNotChange")]
       public function get allianceCooldown() : MTimeEventFixedMoment {
          return _allianceCooldown;
       }
       
-      
-      private function allianceCooldown_hasOccuredChange(event:MTimeEventEvent) : void
-      {
+      private function allianceCooldown_hasOccuredChange(event:MTimeEventEvent) : void {
          dispatchPlayerEvent(PlayerEvent.ALLIANCE_COOLDOWN_CHANGE);
       }
-      
       
       [Bindable(event="allianceCooldownChange")]
       public function get allianceCooldownInEffect() : Boolean {
@@ -480,6 +471,9 @@ package models.player
       
       
       [Optional]
+      /**
+       * Number of planets in normal solar systems owned by the player.
+       */ 
       public var planetsCount:int = 0;
       
       

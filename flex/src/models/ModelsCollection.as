@@ -159,21 +159,21 @@ package models
       public override function addItemAt(item:Object, index:int) : void
       {
          checkItemType(item);
-         var newModel:BaseModel = BaseModel(item);
-         if (newModel.id == 0)
-         {
+//         var newModel:BaseModel = BaseModel(item);
+//         if (newModel.id == 0)
+//         {
+//            super.addItemAt(item, index);
+//            return;
+//         }
+//         var model:BaseModel = findExact(newModel);
+//         if (model)
+//         {
+//            model.copyProperties(newModel);
+//         }
+//         else
+//         {
             super.addItemAt(item, index);
-            return;
-         }
-         var model:BaseModel = findExact(newModel);
-         if (model)
-         {
-            model.copyProperties(newModel);
-         }
-         else
-         {
-            super.addItemAt(item, index);
-         }
+//         }
       }
       
       

@@ -11,6 +11,7 @@ package components.map.space
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
    
+   import utils.Objects;
    import utils.datastructures.Collections;
    
    
@@ -47,8 +48,8 @@ package components.map.space
       
       public override function getSectorRealCoordinates(location:LocationMinimal) : Point
       {
+         _locWrapper.location = Objects.paramNotNull("location", location);
          var mapSize:Point = getRealMapSize();
-         _locWrapper.location = location;
          
          // Orbit and planet radius
          var radius:Number = CMapSolarSystem.STAR_WH / 2 + CMapSolarSystem.ORBIT_SUN_GAP +

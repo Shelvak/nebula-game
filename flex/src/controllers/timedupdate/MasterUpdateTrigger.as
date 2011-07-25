@@ -7,8 +7,7 @@ package controllers.timedupdate
 
    public class MasterUpdateTrigger
    {
-      public function MasterUpdateTrigger()
-      {
+      public function MasterUpdateTrigger() {
          // triggers must be initialized before the timer as we need to number of triggers
          // to determine delay interval of the timer
          initTriggers();
@@ -36,14 +35,14 @@ package controllers.timedupdate
       private var _triggerIndex:int;
       
       
-      private function initTriggers() : void
-      {
+      private function initTriggers() : void {
          _triggerIndex = -1;
          _triggers = Vector.<IUpdateTrigger>([
             TemporaryUpdateTrigger.getInstance(),
             new CooldownsUpdateTrigger(),
             new SSUpdateTrigger(),
-            new PlayersUpdateTrigger()
+            new PlayersUpdateTrigger(),
+            new MovementUpdateTrigger()
          ]);
          _triggersToReset = new Vector.<IUpdateTrigger>();
       }
@@ -55,8 +54,7 @@ package controllers.timedupdate
       private var _timer:Timer;
       
       
-      private function initTimer() : void
-      {
+      private function initTimer() : void {
          // Simplest way to devide work: each trigger gets the same amount of time to
          // execute. Therefore all triggers should get the equal amount of workload and
          // I expect that to be difficult to atchieve.
@@ -65,8 +63,7 @@ package controllers.timedupdate
       }
       
       
-      private function timer_timerHandler(event:TimerEvent) : void
-      {
+      private function timer_timerHandler(event:TimerEvent) : void {
          // For now we call this each time before triggering next batch of updates.
          // Later this will be called by the rendering mechanism after all display objects are updated.
          resetChangeFlags();
@@ -77,33 +74,24 @@ package controllers.timedupdate
       /**
        * Reset the flags that were (possibly) set by the previous updates.
        */
-      private function resetChangeFlags() : void
-      {
-         if (_triggersToReset.length == 0)
-         {
-            return;
-         }
+      private function resetChangeFlags() : void {
+         if (_triggersToReset.length == 0) return;
          for each (var trigger:IUpdateTrigger in _triggersToReset.splice(0, _triggersToReset.length))
-         {
             trigger.resetChangeFlags();
-         }
       }
       
       
       /**
        * Updates the next batch of objects.
        */
-      private function triggerUpdate() : void
-      {
+      private function triggerUpdate() : void {
          // grab current time
          DateUtil.now = new Date().time;
          
          // advance to the next trigger
          _triggerIndex++;
          if (_triggerIndex == _triggers.length)
-         {
             _triggerIndex = 0;
-         }
          _triggers[_triggerIndex].update();
          
          _triggersToReset.push(_triggers[_triggerIndex]);

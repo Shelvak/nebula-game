@@ -358,6 +358,7 @@ package components.map.planet
       
       private var _buildingMoveProcessStarted:Boolean = false;
       private var _waitingUserConfirmationForMove:Boolean = false;
+      private var _waitingServerResponse:Boolean = false;
       private var _oldX:int;
       private var _oldY:int;
       
@@ -370,12 +371,14 @@ package components.map.planet
       
       private function global_moveConfirmHandler(event:GBuildingEvent) : void
       {
+         _waitingServerResponse = false;
          confirmBuildingMoveProcess();
       }
       
       
       private function global_moveCancelHandler(event:GBuildingEvent) : void
       {
+         _waitingServerResponse = false;
          cancelBuildingMoveProcess(false, true);
       }
       
@@ -419,6 +422,7 @@ package components.map.planet
       private function movePopup_confirmButtonHandler(button:Button) : void
       {
          _waitingUserConfirmationForMove = false;
+         _waitingServerResponse = true;
          var b:Building = _buildingPH.getBuilding();
          var newX:int = b.x;
          var newY:int = b.y;
@@ -460,25 +464,19 @@ package components.map.planet
       private function cancelBuildingMoveProcess(dispatchEvent:Boolean, rollback:Boolean) : void
       {
          if (!_buildingMoveProcessStarted)
-         {
             return;
-         }
          _buildingMoveProcessStarted = false;
          _waitingUserConfirmationForMove = false;
-         var b:Building = _buildingPH.getBuilding();
-         if (rollback)
-         {
-            planet.moveBuilding(b, _oldX, _oldY);
+         if (!_waitingServerResponse) {
+            var b:Building = _buildingPH.getBuilding();
+            if (rollback)
+               planet.moveBuilding(b, _oldX, _oldY);
+            else
+               b.moveTo(_oldX, _oldY);
+            destroyBuildingPH();
          }
-         else
-         {
-            b.moveTo(_oldX, _oldY);
-         }
-         destroyBuildingPH();
          if (dispatchEvent)
-         {
             new GBuildingEvent(GBuildingEvent.MOVE_CANCEL, b);
-         }
       }
       
       

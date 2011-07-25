@@ -8,11 +8,5 @@ class Combat::LocationCheckerAj < Combat::LocationChecker
       Cooldown.create_or_update!(location_point, 
         CONFIG['combat.cooldown.after_jump.duration'].from_now)
     end
-    
-    def try_to_annex(location_point, check_report, assets)
-      # Only annex immediately if after jump there is no conflict.
-      super(location_point, check_report, assets) \
-        if check_report.status == Combat::CheckReport::NO_CONFLICT
-    end
   end
 end

@@ -23,7 +23,8 @@
                     xmlns:alliance="components.alliance.*"
                     xmlns:credits="components.credits.*"
                     xmlns:player="components.player.*"
-                    xmlns:defensiveportal="components.defensiveportal.*" xmlns:market="components.market.*">
+                    xmlns:defensiveportal="components.defensiveportal.*"
+                    xmlns:market="components.market.*">
    <fx:Script>
       <![CDATA[
          import components.dailybonus.DailyBonusComp;
@@ -148,7 +149,7 @@
             <quests:QuestsScreen/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{MainAreaScreens.SQUADRONS}" width="100%" height="100%">
-            <squadronsscreen:SquadronsScreen/>
+            <squadronsscreen:CSquadronsScreen/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{MainAreaScreens.RATINGS}" width="100%" height="100%">
             <ratings:RatingScreen/>
@@ -184,6 +185,7 @@
    </s:Group>
    
    <s:SkinnableContainer id="rightSidebarContainer"
+                         styleName="rightSidebarContainer"
                          top="0" bottom="0" right="0"
                          width.sidebarCollapsed="0"
                          width.sidebarExpanded="240"

@@ -1,5 +1,8 @@
 package models.planet
 {
+   import com.adobe.errors.IllegalStateError;
+   
+   import utils.Objects;
    
 
    /**
@@ -25,11 +28,7 @@ package models.planet
        */
       public function ZIndexCalculator(map:Planet)
       {
-         if (map == null)
-         {
-            throw new Error("map must be a valid instance of Map");
-         }
-         this.map = map;
+         this.map = Objects.paramNotNull("map", map);
       }
       
       

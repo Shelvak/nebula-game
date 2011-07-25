@@ -31,6 +31,12 @@ asteroid.wreckage.time.spawn: [<%= (mult * 2).hours %> / speed, <%= (mult * 4).h
 # solar system?
 asteroid.wreckage.time.first: <%= 1.week %> / speed
 
+# Maximum values of each resource that can be on asteroid. Spawning will get
+# slower when reaching these values
+asteroid.wreckage.metal.spawn.max: 32000
+asteroid.wreckage.energy.spawn.max: 90000
+asteroid.wreckage.zetium.spawn.max: 16000
+
 ### Planet units configuration. Not overridable.
 # This is needed so that people cannot take planets with only space units.
 

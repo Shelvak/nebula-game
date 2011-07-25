@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:base="components.base.*"
+         xmlns:notifs="components.notifications.*"
+         xmlns:screen="components.base.screen.*"
+         width="100%" height="100%"
+         initialize="this_initializeHandler(event)">
+   
+   <fx:Script>
+      <![CDATA[
+         import mx.collections.IList;
+         import mx.core.IVisualElement;
+         import mx.events.CollectionEvent;
+         import mx.events.FlexEvent;
+         
+         import spark.components.DataGroup;
+         import spark.components.SkinnableDataContainer;
+         import spark.layouts.HorizontalAlign;
+         
+         import utils.Objects;
+         import utils.locale.Localizer;
+         
+         
+         /**
+          * Title of the screen. Default is empty string.
+          */
+         protected function get title() : String {
+            return "";
+         };
+         
+         /**
+          * Message to be shown when the list is empty. Default is empty string.
+          */
+         protected function get emptyListMessage() : String {
+            return "";
+         }
+         
+         [Bindable]
+         /**
+          * Should the line separating header of the screen and the list be visible.
+          * 
+          * @default false;
+          */ 
+         protected var headerFromListSeparatorVisible:Boolean = false; 
+         
+         /**
+          * A List with data to be rendered. Required. Should always return the same instance.
+          */
+         protected function get dataProvider() : IList {
+            throw new IllegalOperationError("This property is abstract");
+         }
+         
+         private function dataProvider_collectionChangeHandler(event:CollectionEvent) : void {
+            updateDataProviderEmpty();
+         };
+         
+         [Bindable]
+         private var _dataProviderEmpty:Boolean = false;
+         private function updateDataProviderEmpty() : void {
+            _dataProviderEmpty = dataProvider == null || dataProvider.length == 0;
+         }
+         
+         /**
+          * A component that will render items in the data provider (either <code>DataGroup</code> or
+          * <code>SkinnableDataContainer</code>). Required. Should always return the same instance.
+          */
+         protected function get dataContainer() : IVisualElement {
+            throw new IllegalOperationError("This property is abstract");
+         };
+         
+         [Bindable]
+         /**
+          * Should the <code>colorLegend</code> container be visible.
+          * 
+          * @default true
+          */
+         protected var colorLegendVisible:Boolean = true;
+         
+         /**
+          * A group that holds legend of list item colors just below the screen title. Optional.
+          * Should allways return the same instance.
+          */
+         protected function get colorLegend() : Group {
+            return null;
+         }
+         
+         /**
+          * A container that holds list control buttons (to the right of the screen title). Optional.
+          * Should allways return the same instance.
+          */
+         protected function get controlButtons() : Group {
+            return null;
+         }
+         
+         /**
+          * A button that will be placed at the bottom right corner of the screen. Optional.
+          * Should allways return the same instance.
+          */
+         protected function get closeButton() : Group {
+            return null;
+         }
+         
+         private function this_initializeHandler(event:FlexEvent) : void {
+            dataProvider.addEventListener(
+               CollectionEvent.COLLECTION_CHANGE,
+               dataProvider_collectionChangeHandler, false, 0, true
+            );
+            updateDataProviderEmpty();
+            header.title = title;
+            lblEmptyListMessage.text = emptyListMessage;
+         }
+         
+         protected override function createChildren() : void {
+            super.createChildren();
+            
+            if (!dataContainer is SkinnableDataContainer &&
+                !dataContainer is DataGroup)
+               throw new Error(
+                  "Incorrect implementation of [prop dataContainer] in [class: " + 
+                  Objects.getClassName(this) + "] must return either instance of SkinnableDataContainer " +
+                  "or DataGroup but was " + dataContainer
+               );
+            
+            dataContainer.left = 0;
+            dataContainer.right = 0;
+            dataContainer.percentHeight = 100;
+            var layout:VerticalLayout = new VerticalLayout();
+            layout.horizontalAlign = HorizontalAlign.JUSTIFY;
+            layout.variableRowHeight = true;
+            layout.gap = 0;
+            dataContainer["layout"] = layout;
+            dataContainer["dataProvider"] = dataProvider;
+            grpListContainer.addElement(dataContainer);
+            
+            if (colorLegend != null) {
+               var colorLegendLayout:HorizontalLayout = new HorizontalLayout();
+               colorLegendLayout.gap = 10;
+               colorLegend.layout = colorLegendLayout;
+               grpColorLegend.addElement(colorLegend);
+            }
+            else
+               colorLegendVisible = false;
+            
+            if (controlButtons != null) {
+               var controlButtonsLayout:HorizontalLayout = new HorizontalLayout();
+               controlButtonsLayout.gap = 3;
+               controlButtons.layout = controlButtonsLayout;
+               controlButtons.right = 5;
+               controlButtons.top = 5;
+               header.controls = controlButtons;
+            }
+            
+            if (closeButton != null) {
+               closeButton.right = 0;
+               var grpCloseButton:Group = new Group();
+               grpCloseButton.addElement(closeButton);
+               grpContent.addElement(grpCloseButton);
+            }
+         }
+         
+         private function getString(property:String, parameters:Array = null) : String {
+            return Localizer.string("ListScreen", property, parameters);
+         }
+      ]]>
+   </fx:Script>
+   
+   <screen:ScreenBackground/>
+   
+   <s:Group id="grpContent" left="0" right="0" top="0" bottom="0">
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="justify" gap="0"/>
+      </s:layout>
+      <screen:ScreenHeader id="header" headerFromContentSeparatorVisible="{headerFromListSeparatorVisible}"/>
+      <s:Group height="100%">
+         <!--- Scroller for scrolling the content of the list -->
+         <base:Scroller id="contentScroller" stepMultiplier="10" left="0" right="0" top="0" bottom="0"
+                        skinClass="components.base.screen.ListScreenScrollerSkin">
+            <!--- Container of a list (viewport of list scroller) -->
+            <s:Group id="grpListContainer" width="100%"/>
+         </base:Scroller>
+      </s:Group>
+   </s:Group>
+   
+   <!--- Group that holds legend of list colors -->
+   <s:Group id="grpColorLegend" left="0" top="55" visible="{colorLegendVisible}">
+      <s:layout>
+         <s:HorizontalLayout paddingLeft="10" gap="10"/>
+      </s:layout>
+      <s:Label text="{getString('label.colorLegend')}"/>
+   </s:Group>
+   
+   <!--- Empty list message label -->
+   <s:Label id="lblEmptyListMessage" visible="{_dataProviderEmpty}" verticalCenter="0" horizontalCenter="0"
+            fontSize="36" fontWeight="bold" color="0x1C1C1C"/>
+</s:Group>

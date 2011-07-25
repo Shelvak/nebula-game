@@ -5,8 +5,8 @@ package controllers.units
    import components.movement.CTargetLocationPopup;
    
    import controllers.ui.NavigationController;
-   import controllers.units.actions.MoveMetaActionParams;
    import controllers.units.actions.MoveActionParams;
+   import controllers.units.actions.MoveMetaActionParams;
    import controllers.units.events.OrdersControllerEvent;
    
    import flash.errors.IllegalOperationError;
@@ -233,11 +233,6 @@ package controllers.units
          }
       }
       
-      /**
-       * flag marking if next order should avoid battles with NPC
-       */      
-      private var _avoid: Boolean = true;
-      
       
       /* ################## */
       /* ### FIRST STEP ### */
@@ -249,13 +244,11 @@ package controllers.units
        * must be called after user has selected units he wants to give orders to.
        * 
        * @param units List of units you want to give order to
-       * @param location current location of given units
        * @param squad pass the suqadron model if units to be moved are already moving
        */
-      public function issueOrder(units:IList, avoid: Boolean = true, squad:MSquadron = null) : void
+      public function issueOrder(units:IList, squad:MSquadron = null) : void
       {
          Objects.paramNotNull("units", units);
-         _avoid = avoid;
          if (units.length == 0)
          {
             throwNoUnitsError();
@@ -285,7 +278,12 @@ package controllers.units
                NAV_CTRL.toSolarSystem(locationSource.id);
                break;
             case LocationType.SS_OBJECT:
-               NAV_CTRL.toSolarSystem(ML.latestPlanet.solarSystemId);
+               NAV_CTRL.toSolarSystem(
+                  ML.latestPlanet.solarSystemId,
+                  function() : void {
+                     ML.latestSolarSystem.moveTo(ML.latestPlanet.currentLocation);
+                  }
+               );
                break;
          }
       }
@@ -296,20 +294,24 @@ package controllers.units
       /* ################### */
       
       
+      private var _avoidNpc:Boolean = true;
+      
       /**
        * Selects given location as destination. Then asks server to calculate trip time and lets user to
        * speed up or slow down the squad. This is the third step of squad order initiation process.
        * 
-       * @param location destination of the order: location to which units will be moved.
+       * @param location destination of the order: location to which units will be moved
+       * @param avoidNpc should the fleet avoid NPC units while travelling
        */
-      public function commitTargetLocation(location:LocationMinimal) : void
+      public function commitTargetLocation(location:LocationMinimal, avoidNpc:Boolean) : void
       {
+         _avoidNpc = avoidNpc;
          _locTarget = Objects.paramNotNull("location", location);
          new UnitsCommand(UnitsCommand.MOVE_META, new MoveMetaActionParams(
             _unitIds,
             locationSource,
             _locTarget,
-            _avoid
+            _avoidNpc
          )).dispatch();
       }
       
@@ -361,7 +363,7 @@ package controllers.units
             _unitIds,
             locationSource,
             _locTarget,
-            _avoid,
+            _avoidNpc,
             speedModifier,
             _squad
          )).dispatch();

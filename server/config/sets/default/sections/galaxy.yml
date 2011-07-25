@@ -20,6 +20,9 @@ player.inactivity_check.points: 15000
 player.inactivity_check.last_login_in: <%= 3.days %> / speed
 
 # All positions are relative to zone and not overridable in other sets!
+#
+# If you add any position types here, don't forget to add them to SpaceMules
+# Zone#playerCount method.
 
 # Positions of expansion systems.
 expansion_systems.positions:

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+   <fx:Metadata>
+      [DefaultProperty("content")]
+   </fx:Metadata>
+   <fx:Declarations>
+      
+   </fx:Declarations>
+   <fx:Script>
+      <![CDATA[
+         import mx.core.IVisualElement;
+         
+         import spark.layouts.HorizontalLayout;
+         import spark.layouts.VerticalAlign;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         
+         /**
+          * Controls at the top left of the container. Required.
+          */
+         public var leftControls:Group = null;
+         
+         /**
+          * Controls at the top right of the container. Optional. 
+          */
+         public var rightControls:Group = null;
+         
+         [ArrayElementType("mx.core.IVisualElement")]
+         /**
+          * Content of the container. Required.
+          */
+         public var content:Array = null;
+         
+         protected override function childrenCreated() : void {
+            super.childrenCreated();
+            
+            if (leftControls == null) throw new Error("[prop leftControls] must not be null");
+            if (content == null) throw new Error("[prop content] must not be null");
+            
+            var leftControlsLayout:HorizontalLayout = new HorizontalLayout();
+            leftControlsLayout.gap = 5;
+            leftControlsLayout.verticalAlign = VerticalAlign.MIDDLE;
+            leftControls.layout = leftControlsLayout;
+            leftControls.left = 5;
+            leftControls.right = 20;
+            leftControls.top = 4;
+            grpLControls.addElement(leftControls);
+            
+            if (rightControls != null) {
+               artRControlsWhenMissing.visible = false;
+               artRControlsWhenMissing.includeInLayout = false;
+               var rightControlsLayout:HorizontalLayout = new HorizontalLayout();
+               rightControlsLayout.gap = 5;
+               rightControlsLayout.verticalAlign = VerticalAlign.MIDDLE;
+               rightControls.layout = rightControlsLayout;
+               rightControls.right = 5;
+               rightControls.left = 20;
+               rightControls.top = 4;
+               grpRControls.addElement(rightControls);
+            }
+            else {
+               artRControlsWhenPresent.visible = false;
+               artRControlsWhenPresent.includeInLayout = false;
+            }
+            
+            for each (var element:IVisualElement in content) {
+               grpContent.addElement(element);
+            }
+         }
+         
+         private function getImage(name:String) : BitmapData {
+            return ImagePreloader.getInstance().getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + "cont_" + name);
+         }
+         
+         private function getTopImage(name:String) : BitmapData {
+            return getImage("top_" + name);
+         }
+         
+         private function getMiddleImage(name:String) : BitmapData {
+            return getImage("middle_" + name);
+         }
+         
+         private function getBottomImage(name:String) : BitmapData {
+            return getImage("bottom_" + name);
+         }
+      ]]>
+   </fx:Script>
+   
+   <s:Group left="0" right="0" top="0" bottom="0">
+      <s:layout><s:VerticalLayout gap="0" horizontalAlign="justify"/></s:layout>
+      <s:Group>
+         <s:layout><s:HorizontalLayout gap="0"/></s:layout>
+         <s:Group id="grpLControls">
+            <s:Group left="0" right="0" top="0" bottom="0">
+               <s:layout><s:HorizontalLayout gap="0"/></s:layout>
+               <s:BitmapImage source="{getTopImage('lctrls_left')}"/>
+               <s:BitmapImage source="{getTopImage('lctrls_center')}" fillMode="repeat" width="100%"/>
+               <s:BitmapImage source="{getTopImage('lctrls_right')}"/>
+            </s:Group>
+         </s:Group>
+         <s:BitmapImage source="{getTopImage('center')}" fillMode="repeat" width="100%"/>
+         <s:Group id="grpRControls">
+            <s:Group left="0" right="0" top="0" bottom="0">
+               <s:Group id="artRControlsWhenPresent" left="0" right="0" top="0" bottom="0">
+                  <s:layout><s:HorizontalLayout gap="0"/></s:layout>
+                  <s:BitmapImage source="{getTopImage('rctrls_left')}"/>
+                  <s:BitmapImage source="{getTopImage('rctrls_center')}" fillMode="repeat" width="100%"/>
+                  <s:BitmapImage source="{getTopImage('rctrls_right')}"/>
+               </s:Group>
+               <s:BitmapImage id="artRControlsWhenMissing" source="{getTopImage('right')}"
+                              left="0" right="0" top="0" bottom="0"/>
+            </s:Group>
+         </s:Group>
+      </s:Group>
+      <s:Group height="100%">
+         <s:Rect left="0" right="0" top="0" bottom="0">
+            <s:fill><s:SolidColor color="0x0A0A0A"/></s:fill>
+         </s:Rect>
+         <s:BitmapImage left="0"  top="0" bottom="0" source="{getMiddleImage('left')}"  fillMode="repeat"/>
+         <s:BitmapImage right="0" top="0" bottom="0" source="{getMiddleImage('right')}" fillMode="repeat"/>
+      </s:Group>
+      <s:Group>
+         <s:layout><s:HorizontalLayout gap="0"/></s:layout>
+         <s:BitmapImage source="{getBottomImage('left')}"/>
+         <s:BitmapImage source="{getBottomImage('center')}" width="100%"/>
+         <s:BitmapImage source="{getBottomImage('right')}"/>
+      </s:Group>
+   </s:Group>
+   <s:Group id="grpContent" left="7" right="7" top="32" bottom="7"/>
+   
+</s:Group>

@@ -1020,6 +1020,7 @@
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />
     <label.cancel value="Cancel" />
+    <label.close value="Close" />
     <label.order value="Order" />
     <label.buy value="Buy Creds" />
     <label.move value="Move" />
@@ -1114,6 +1115,11 @@
     <label.openWormhole value="Enter battleground" />
     <label.wormhole value="Battleground"/>
     <label.pulsar value="Pulsar-{0}"/>
+    <label.deadStar>
+      <p>This star is dead. A civilization once lived here but now it's
+      long gone.</p>
+      <p>Visiting this star is forbidden.</p>
+    </label.deadStar>
     <label.shield>
       <![CDATA[This solar system is shielded for<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
@@ -1322,11 +1328,23 @@
     <message.speedUpCost 
       value="Speed up cost: {0 one[one cred] many[? creds]}."/>
     <message.orderComplete value="Fleet has been dispatched." />
+    <label.avoidNpc value="Avoid battles with NPC" />
+    <description.avoidNpc>
+      <p>Checked: Your fleet will try to avoid any battles with NPC spaceships. This
+      will result in longer travel time if there are NPC units in your way.</p>
+      <p>Not checked: Your fleet will take the shortest route to its destination. It will
+      engage any NPC ships that are on its way.</p>
+    </description.avoidNpc>
   </Movement>
 
   <Navigator>
     <label.currentGalaxy value="Galaxy" />
   </Navigator>
+  
+  <ListScreen>
+    <label.colorLegend value="Legend:" />
+    <label.close value="Close" />
+  </ListScreen>
 
   <Notifications>
     <screenTitle value="Notifications" />
@@ -1336,8 +1354,8 @@
     <label.notifications.all value="All" />
     <label.notifications.unread value="Unread only" />
     <label.notifications.starred value="Starred only" />
-    <label.createdAt value="Received at" />
-    <label.expiresAt value="Expires at" />
+    <label.createdAt value="Received at: {0}" />
+    <label.expiresAt value="Expires at: {0}" />
     <label.planet value="Planet" />
     <label.showPlanet value="Show planet" />
     <label.yours value="Yours" />
@@ -1798,8 +1816,8 @@
 
   <Quests>
     <rewardsWidth value="100" />
-    <label.current value="Current" />
-    <label.completed value="Completed" />
+    <label.current value="Current ({0})" />
+    <label.completed value="Completed ({0})" />
     <label.showQuest value="Show quest" />
     <label.noQuests value="There are no quests" />
     <label.progress value="{0}/{1} completed" />
@@ -1819,8 +1837,8 @@
     </warning.wontFit>
     <warning.cantClaimReward
       value="You cant claim this reward due to insufficient population." />
-    <label.notCompletedColor value="Not completed quests" />
-    <label.completedColor value="Completed quests" />
+    <label.notCompletedColor value="● Not completed quests" />
+    <label.completedColor value="● Completed quests" />
 
     <message.rewardClaimed value="Reward has been claimed to planet {0}" />
 
@@ -2637,8 +2655,7 @@
       <p>Hello, Commander.</p>
       <p>
         As we have built our [reference:Buildings/SpaceFactory.name] we should 
-        start amassing our space fleet right now! As an easy first task go pick 
-        on some Diracs. 
+        train our pilots a bit! As an easy first task go pick on some Diracs. 
       </p>
     </about.35>
 
@@ -2975,14 +2992,18 @@
   <Squadrons>
     <title.squadrons value="Fleets" />
     <title.noSquadrons value="No moving fleets detected." />
-    <label.currentLocation value="Current location" />
-    <label.sourceLocation value="Flying from" />
-    <label.targetLocation value="Traveling to" />
+    <label.currentLocation value="Current location:" />
+    <label.sourceLocation value="Flying from:" />
+    <label.targetLocation value="Traveling to:" />
     <label.units value="Fleet units" />
-    <label.arrivesAt value="Arrives at" />
-    <label.leavesPlanet value="Leaves planet at" />
+    <label.arrivesAt value="Arrives at:" />
+    <label.leavesPlanetAt value="Leaves planet at:" />
     <label.inTime value="(in {0})" />
     <label.close value="Close" />
+    <label.playerFleets value="Your fleets" />
+    <label.allianceFleets value="Alliance fleets" />
+    <label.stop value="Stop" />
+    <label.manage value="Manage" />
   </Squadrons>
 
   <Technologies>
@@ -3476,6 +3497,8 @@
   </Technologies>
 
   <Units>
+    <title.storageScreen value="Load / Unload"/>
+  
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Ready in {0}" />
     <property.hp value="Hit Points" />
@@ -3593,19 +3616,6 @@
     <label.leavingSquadrons>
       <p>These fleets are currently leaving this planet.</p>
     </label.leavingSquadrons>
-    <label.avoidBattles value="Avoid battles with NPC" />
-    <description.avoidBattles>
-      <p>
-        Your fleet will try to avoid any battles with NPC spaceships. This
-        will result in longer travel time if there are NPC units in your way. 
-      </p>
-    </description.avoidBattles>
-    <description.dontAvoidBattles>
-      <p>
-        Your fleet will take the shortest route to its destination. It will
-        engage any NPC ships that are on its way. 
-      </p>
-    </description.dontAvoidBattles>
     <warning.noFleets>
       <p>There are currently no ships leaving this planet.</p>
     </warning.noFleets>

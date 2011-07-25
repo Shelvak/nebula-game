@@ -1020,6 +1020,7 @@
     <label.instant value="Iš karto" />
     <label.confirm value="Patvirtinti" />
     <label.cancel value="Atšaukti" />
+    <label.close value="Uždaryti" />
     <label.order value="Užsakyti" />
     <label.buy value="Pirkti kredus" />
     <label.move value="Perkelti" />
@@ -1110,6 +1111,11 @@
     <label.openWormhole value="Įeiti į areną" />
     <label.wormhole value="Arena" />
     <label.pulsar value="Pulsaras-{0}"/>
+    <label.deadStar>
+      <p>Tai - mirusi žvaigždė. Joje kažkada gyveno civilizacija, tačiau
+      jos jau seniai nebėra.</p>
+      <p>Įeiti į šią žvaigždę negalima.</p>
+    </label.deadStar>
     <label.shield>
       <![CDATA[Ši saulės sistema yra apsaugota<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
@@ -1316,11 +1322,23 @@
     <message.speedUpCost
       value="Pagreitinimo kaina: {0 one[? kredas] tens[? kredų] many[? kredai]}."/>
     <message.orderComplete value="Laivai sėkmingai išsiųsti." />
+    <label.avoidNpc value="Vengti mūšių su ateiviais" />
+    <description.avoidNpc>
+      <p>Pažymėta: tavo laivynas stengsis išvengti nebūtinų mūšių su ateivių laivais,
+      todėl jis gali užtrukti ilgiau, jeigu tavo kelyje stovi ateiviai.</p>
+      <p>Nepažymėta: tavo laivynas skris greičiausiu maršrutu ir kausis su ateiviais 
+      ęsančiais jo kelyje.</p>
+    </description.avoidNpc>
   </Movement>
 
   <Navigator>
     <label.currentGalaxy value="Galaktika" />
   </Navigator>
+  
+  <ListScreen>
+    <label.colorLegend value="Legenda:" />
+    <label.close value="Close" />
+  </ListScreen>
 
   <Notifications>
     <screenTitle value="Pranešimai" />
@@ -1330,8 +1348,8 @@
     <label.notifications.all value="Visi" />
     <label.notifications.unread value="Tik neperskaityti" />
     <label.notifications.starred value="Tik pažymėti" />
-    <label.createdAt value="Gautas" />
-    <label.expiresAt value="Susinaikins" />
+    <label.createdAt value="Gautas: {0}" />
+    <label.expiresAt value="Susinaikins: {0}" />
     <label.planet value="Planeta" />
     <label.showPlanet value="Atidaryti planetą" />
     <label.yours value="Tavo" />
@@ -1797,8 +1815,8 @@
 
   <Quests>
     <rewardsWidth value="120" />
-    <label.current value="Dabartinės" />
-    <label.completed value="Įvykdytos" />
+    <label.current value="Dabartinės ({0})" />
+    <label.completed value="Įvykdytos ({0})" />
     <label.showQuest value="Parodyti užduotį" />
     <label.noQuests value="Užduočių nėra" />
     <label.progress value="{0}/{1} pabaigta" />
@@ -1816,8 +1834,8 @@
     </warning.wontFit>
     <warning.cantClaimReward
       value="Dėl nepakankamo laisvų gyventojų kiekio tu negali atsiimti atlygio." />
-    <label.notCompletedColor value="Neįvykdytos užduotys" />
-    <label.completedColor value="Įvykdytos užduotys" />
+    <label.notCompletedColor value="● Neįvykdytos užduotys" />
+    <label.completedColor value="● Įvykdytos užduotys" />
 
     <message.rewardClaimed value="Atlygis buvo pasiimtas į planetą „{0}“" />
 
@@ -2656,171 +2674,129 @@
       </p>
     </about.19>
 
-    <title.31 value="Threatening Space" />
+    <title.31 value="Kosmoso grėsmės" />
     <about.31>
-      <p>Hello, Commander.</p>
-      <p>
-        We have built our [reference:Buildings/SpaceFactory.name]. Now we need 
-        ships to travel space. Unfortunately we cannot rely only on our 
-        [reference:Units/Mule.name] class transporter ships. They are strongly 
-        armored however without any offensive power they will be ripped apart 
-        in seconds by alien ships hovering planets and other objects in our 
-        solar system. 
-      </p>
-      <p>
-        We need combat ships to counter them. Go to your 
-        [reference:Buildings/SpaceFactory.name] and order construction now. 
-      </p>
+      <p>Sveikas, Komandore.</p>
+      <p>Štai, mūsų laivų gamykla jau stovi. Galėtume kilti į kosmosą, tačiau
+      mums reikia laivų! Žinome mes galėtume naudotis mulo klasės laivais, 
+      tačiau jų pagrindinė paskirtis - gabenti krovinius. Nors jie ir turi
+      stiprius šarvus, tačiau beveik neturi puolamosios galios.</p>
+      <p>Ne, tam, kad įveiktumėme ateivių laivus, stovinčius prie asteroidų ir
+      planetų, mums prireiks kovinių laivų! Keliaukite į savo laivų gamyklą ir
+      liepkite pradėti gamybą!</p>
     </about.31>
 
-    <title.35 value="Cleansing" />
+    <title.35 value="Išvalymas" />
     <about.35>
-      <p>Hello, Commander.</p>
-      <p>
-        As we have built our [reference:Buildings/SpaceFactory.name] we should 
-        start amassing our space fleet right now! As an easy first task go pick 
-        on some Diracs. 
-      </p>
+      <p>Sveikas, Komandore.</p>
+      <p>Kadangi jau turime funkcionuojančia laivų gamyklą, galime truputi 
+      patreniruoti savo pilotus. Nusiųskite juos sumedžioti keletos dirakų. Tai
+      neturėtų jiems būti sunki užduotis.</p>
     </about.35>
 
-    <title.36 value="Boiling Waters" />
+    <title.36 value="Verdantys vandenys" />
     <about.36>
-      <p>Commander.</p>
-      <p>
-        Your recent activity in this region has made alien ships more cautious. 
-        Some rumors even tell they are planning a rebellion! Go and destroy 
-        their powerful [reference:Units/Thor.name] class ships. Show them who 
-        rules this galaxy! 
-      </p>
+      <p>Komandore,</p>
+      <p>jūsų aktyvumas šiame regione privertė ateivius būti atsargesniais.
+      Sklinda gandai, kad jie netgi planuoja atsakomajį smūgį! Sunaikinkite jų
+      galinguosius toro klasės laivus, parodykite jiems kas valdo šią 
+      galaktiką!</p>
     </about.36>
 
-    <title.37 value="Fire Against Fire" />
+    <title.37 value="Ugnimi prieš ugnį" />
     <about.37>
-      <p>Greetings, Commander.</p>
-      <p>
-        It seems there is no stopping these alien ships. You must strike at 
-        their strongest spot to make them bow down to your might! It is the 
-        only way to stop the rebellion! 
-      </p>
+      <p>Komandore,</p>
+      <p>panašu kad tie ateiviai yra beatodariški fanatikai. Jūs privalote 
+      smogti triuškinantį smūgį į jų stipriausius laivus, jog parodytumėte savo
+      galia! Tai vienintėlis būdas juos sustabdyti!</p>
     </about.37>
 
-    <title.20 value="Expanding Ground" />
+    <title.20 value="Plečiant valdas" />
     <about.20>
-      <p>Commander.</p>
-      <p>
-        Now that we have mastered space travel we should start expanding to 
-        other planets. Our sensors indicate there is a nearby life supporting 
-        planet. However it is guarded by alien ships. 
-      </p>
-      <p>
-        Use fleet you just built to annex that planet and take over its 
-        control. 
-      </p>
-      <p>To annex a planet we must land with our ships on its soil.</p>
+      <p>Komandore,</p>
+      <p>Dabar, kai jau įvaldėme skrydžius po kosmosą, turėtume pradėti plėstis
+      į kitas planetas. Mūsų sensoriai aptiko gretimais esančią gyvybei tinkamą
+      planetą, tačiau ją saugo ateivių laivai.</p>
+      <p>Pasinaudokite mūsų kosmoso laivynu, nušluokite juos ir užimkite tą 
+      planetą!</p>
+      <p>Planetos užėmimui jums reikės nusileisti su mūsų laivais ant tos 
+      planetos žemės.</p>
     </about.20>
 
-    <title.21 value="The Second Outpost" />
+    <title.21 value="Antroji stovykla" />
     <about.21>
-      <p>Great job, Commander!</p>
-      <p>
-        We now control two planets! We should start building immediately! Load 
-        your Mobile Deployable Headquarters into our 
-        [reference:Units/Mule.name] and travel to our new colony. 
-      </p>
-      <p>
-        Deploy that [reference:Units/Mdh.name] to 
-        [reference:Buildings/Headquarters.name] and start constructing. 
-      </p>
-      <p>
-        Oh, and I suggest we take as many resources as we can with that 
-        [reference:Units/Mule.name] to our new colony. They will prove to be 
-        very useful there. 
-      </p>
+      <p>Komandore, puikiai padirbėta!</p>
+      <p>Dabar mes valdome dvi planetas! Pradėkime statybas antrojoje planetoje!
+      Įkraukite savo mobilų štabą į mulą ir nukeliaukite į savo naujają 
+      koloniją. Tuo pačiu pasiimkite ir resursų bei karių!</p>
+      <p>Nukeliavę, išskleiskite savo mobilų štabą ir pradėkite įkurtuves 
+      naujoje planetoje.</p>
     </about.21>
 
-    <title.34 value="Eye in the Sky" />
+    <title.34 value="Akis danguje" />
     <about.34>
-      <p>Commander!</p>
-      <p>
-        We now have plenty of space in our new colony. After establishing an 
-        operational base we should begin exploring our galaxy. 
-      </p>
-      <p>
-        Build a [reference:Buildings/Radar.name]. It will reveal a sector of 
-        galaxy map and show other solar systems with ship movement within that 
-        sector. 
-      </p>
-      <p>
-        Keep in mind that running a [reference:Buildings/Radar.name] requires 
-        substantial amount of energy. It will drain your energy storage quickly 
-        if you do not have enough energy generated. And if it runs out of 
-        energy - it will simply shut down keeping you blind from enemy actions. 
-      </p>
+      <p>Komandore!</p>
+      <p>Naujoje mūsų planetoje turime nemažai laisvos vietos. Manau, kad po to,
+      kai joje saugiai įsikursime, reikėtų pradėti tyrinėti mūsų galaktiką.</p>
+      <p>Pastatykite radarą, kuris atvers mums dalelę galaktikos žemėlapio. Jūs
+      matysite kitų žaidėjų saulės sistemas, planetas ir jų laivus.</p>
+      <p>Beje, atminkite, kad radaras reikalauja nemažai energijos. Jeigu 
+      neužtikrinsite pakankamos jos gavybos, jūsų energijos ištekliai bus kaip
+      mat ištuštinti. O jeigu jam pasibaigs energija - jis paprasčiausiai 
+      nebeveiks.</p>
     </about.34>
 
-    <title.38 value="Gaining Ground" />
+    <title.38 value="Teritorijos plėtimas" />
     <about.38>
-      <p>Commander.</p>
-      <p>
-        It is time to expand your empire. Gain another colony so we could 
-        thrive there! Make our ancestors proud. 
-      </p>
+      <p>Komandore.</p>
+      <p>Atėjo laikas išplėsti mūsų imperiją! Užimkite dar vieną koloniją, esu
+      tikra, jog mes puikiai joje įsikursime.</p>
     </about.38>
     
-    <expanding_empire.title value="Expanding Empire" />
+    <expanding_empire.title value="Auganti imperija" />
 
     <title.39 value="[reference:expanding_empire.title]" />
     <about.39>
-      <p>Good job, Commander.</p>
-      <p>
-        Even if we have conquered that pesky world we should not stop with it. 
-        There is much ground to cover. Go and conquer yet another world. Make 
-        it fall to the might of our empire! 
-      </p>
+      <p>Komandore, šauniai padirbėta!</p>
+      <p>Netgi užvaldžius dar vieną pasaulį aš jaučiu valdžios alkį. 
+      Neapsiribokime anuo pasauliu, juk yra dar tiek laisvų planetų... Užimkite
+      dar vieną! Tegul ji dreba prieš mūsų galią!</p>
     </about.39>
 
     <title.40 value="[reference:expanding_empire.title] (II)" />
     <about.40>
-      <p>Commander.</p>
-      <p>I am sure you are happy with our empire. But will you stop at this?</p>
+      <p>Komandore,</p>
+      <p>manau, kad mūsų imperija jau pakankamai įspūdinga. Bet negi jūs
+      dabar sustosite?</p>
     </about.40>
 
     <title.41 value="[reference:expanding_empire.title] (III)" />
     <about.41>
-      <p>Commander.</p>
-      <p>
-        It is astonishing work you have done! But we need more ground to live 
-        on, our population is growing. You need to acquire more planets! 
-      </p>
+      <p>Komandore,</p>
+      <p>jūsų darbai - neįtikėtini. Tačiau, kad ir kaip bebūtų, mūsų gyventojų
+      skaičius auga, mums reikia daugiau vietos! Užimkite dar vieną planetą.</p>
     </about.41>
 
     <title.42 value="[reference:expanding_empire.title] (IV)" />
     <about.42>
-      <p>Commander.</p>
-      <p>
-        We have ultimate empire, all our puny neighbors are in fear. I say - 
-        lets take one more planet from them, just to show them our might. Shall 
-        we? 
-      </p>
+      <p>Komandore,</p>
+      <p>mūsų imperija praktiškai nenugalima, visi mūsų kaimynai dreba iš 
+      baimės! Sakau gal paimkime dar vieną planetą iš jų, vien tam, kad parodyti
+      savo galią? Ką manote?</p>
     </about.42>
 
-    <title.43 value="Corrupting Transport Lines" />
+    <title.43 value="Transporto linijų sabotažas" />
     <about.43>
-      <p>Commander.</p>
-      <p>
-        We should destroy some enemy transporters and corrupt their supplies. 
-        Hunt down some Mules and cripple their transport
-        lines. 
-      </p>
+      <p>Komandore,</p>
+      <p>mums derėtų sumedžioti keletą priešininko transportinių laivų. Tai 
+      sutrikdys jų resursų tiekimą ir pakenks jų vystimuisi.</p>
     </about.43>
 
-    <destroying_enemy_will.title value="Destroying Enemy Will" />
+    <destroying_enemy_will.title value="Naikinant priešo valią" />
     <destroying_enemy_will.about>
-      <p>Commander.</p>
-      <p>
-        We have spotted nearby enemy activity. Destroy their fleet and troops 
-        to crush the resistance and show them our true power! 
-      </p>
+      <p>Komandore,</p>
+      <p>netoliese pastebėjome priešo aktyvumą. Sunaikinkite jų laivyną ir 
+      karius! Sutriuškinkite pasipriešinimą! Parodykite mūsų tikrą galią!</p>
     </destroying_enemy_will.about>
 
     <title.44 ref="destroying_enemy_will.title" />
@@ -2856,13 +2832,11 @@
     <title.54 value="[reference:destroying_enemy_will.title] (XI)" />
     <about.54 ref="destroying_enemy_will.about" />
 
-    <crushing_enemy_defenses.title value="Crushing Enemy Defenses" />
+    <crushing_enemy_defenses.title value="Griūvanti gynyba" />
     <crushing_enemy_defenses.about>
-      <p>Commander.</p>
-      <p>
-        We cannot allow our enemies to reign for no more! Attack their planets 
-        and crush their defenses! Hurry! 
-      </p>
+      <p>Komandore,</p>
+      <p>negalime daugiau delsti! Paskubėkite, užpulkite mūsų priešų planetas 
+      ir sunaikinkite jų gynybą!</p>
     </crushing_enemy_defenses.about>
 
     <title.55 ref="crushing_enemy_defenses.title" />
@@ -2892,14 +2866,11 @@
     <title.63 value="[reference:crushing_enemy_defenses.title] (IX)" />
     <about.63 ref="crushing_enemy_defenses.about" />
 
-    <title.65 value="Overtaking Enemies" />
+    <title.65 value="Priešų perėmimas" />
     <about.65>
-      <p>Commander!</p>
-      <p>
-        We have enemies at our front lines! We must stop them! Go ahead and 
-        conquer one of their worlds. That will most certainly stop them from 
-        advancing on us. 
-      </p>
+      <p>Komandore!</p>
+      <p>Prie mūsų durų stovi priešai! Privalome juos sustabyti! Užpulkite ir
+      užvaldykite vieną iš jų pasaulių! Tai turėtų nuraminti jų įkarštį.</p>
     </about.65>
   </Quests>
 
@@ -3013,14 +2984,18 @@
   <Squadrons>
     <title.squadrons value="Laivynai" />
     <title.noSquadrons value="Judančių laivynų neaptikta." />
-    <label.currentLocation value="Dabartinė pozicija" />
-    <label.sourceLocation value="Skrenda iš" />
-    <label.targetLocation value="Skrenda į" />
+    <label.currentLocation value="Dabartinė pozicija:" />
+    <label.sourceLocation value="Skrenda iš:" />
+    <label.targetLocation value="Skrenda į:" />
     <label.units value="Laivyno nariai" />
-    <label.arrivesAt value="Atvyks" />
-    <label.leavesPlanet value="Iš planetos išvyksta" />
+    <label.arrivesAt value="Atvyks:" />
+    <label.leavesPlanetAt value="Iš planetos išvyksta:" />
     <label.inTime value="(už {0})" />
     <label.close value="Uždaryti" />
+    <label.playerFleets value="Tavo lvynai" />
+    <label.allianceFleets value="Sąjungininkų laivynai" />
+    <label.stop value="Sustabdyti" />
+    <label.manage value="Tvarkyti" />
   </Squadrons>
 
   <Technologies>
@@ -3453,6 +3428,8 @@
   </Technologies>
 
   <Units>
+    <title.storageScreen value="Įkrauti / Iškrauti"/>
+  
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Bus už {0}" />
     <property.hp value="Gyvybės taškai" />
@@ -3570,15 +3547,6 @@
     <label.leavingSquadrons>
       <p>Šie laivynai šiuo metu iškrenda iš planetos.</p>
     </label.leavingSquadrons>
-    <label.avoidBattles value="Vengti mūšių su ateiviais" />
-    <description.avoidBattles>
-      <p>Tavo laivynas stengsis išvengti nebūtinų mūšių su ateivių laivais,
-      todėl jis gali užtrukti ilgiau, jeigu tavo kelyje stovi ateiviai.</p>
-    </description.avoidBattles>
-    <description.dontAvoidBattles>
-      <p>Tavo laivynas skris greičiausiu maršrutu ir kausis su ateiviais 
-      ęsančiais jo kelyje.</p>
-    </description.dontAvoidBattles>
     <warning.noFleets>
       <p>Šiuo metu nėra išskrendančių laivynų.</p>
     </warning.noFleets>

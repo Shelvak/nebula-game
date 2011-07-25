@@ -50,7 +50,7 @@ package controllers.objects.actions.customcontrollers
       {
          var tempQuery:ConstructionQueueEntry = ConstructionQueryEntryFactory.fromObject(object);
          var constructor:Building = ML.latestPlanet.getBuildingById(tempQuery.constructorId);
-         constructor.constructionQueueEntries.addItem(tempQuery); 
+         constructor.constructionQueueEntries.addOrUpdate(tempQuery); 
          constructor.dispatchQueryChangeEvent();
          new GObjectEvent(GObjectEvent.OBJECT_APPROVED);
       }

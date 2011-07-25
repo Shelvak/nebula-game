@@ -33,9 +33,6 @@
       <s:State name="disabledWithControlBar"/>
    </base:states>
    
-   
-   
-   
    <s:Group left="0" right="0" top="19" bottom="0">
       
       <!-- Main background of the panel -->
@@ -64,18 +61,18 @@
       <s:Group width="100%" bottom="0" id="bottomGroup">
          <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + BOTTOM_LEFT)}" left="0" id="bottomLeft"/>
          <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + BOTTOM_RIGHT)}" right="0" id="bottomRight"
-                        visible="{hostComponent.buttonText == null}"/>
-         <s:Group right="0" id="buttonGroup" visible="{hostComponent.buttonText != null}">
+                        visible="{hostComponent.buttonLabel == null}"/>
+         <s:Group right="0" id="buttonGroup" visible="{hostComponent.buttonLabel != null}">
             <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + BOTTOM_RIGHT_BUTTONS)}" left="0" 
                            id="bottomButtonLeft"/>
             <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + BOTTOM_RIGHT_BTN)}" right="0" 
                            id="bottomRightBtn"/>
             <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + BOTTOM_RIGHT_BUTTONS_LINE)}" 
                            right="{bottomRightBtn.width}" left="{bottomButtonLeft.width}" fillMode="repeat"/>
-            <s:Button left="6" right="6" verticalCenter="0" label="{hostComponent.buttonText}" id="actionButton"/>
+            <s:Button left="6" right="6" verticalCenter="0" id="actionButton"/>
          </s:Group>
          <s:BitmapImage source="{IMG.getImage(AssetNames.STORAGE_SCREEN_FOLDER + BOTTOM_LEFT_LINE)}" 
-                        left="{bottomLeft.width}" right="{(hostComponent.buttonText != null?
+                        left="{bottomLeft.width}" right="{(hostComponent.buttonLabel != null?
                         buttonGroup.width:bottomRight.width)}" 
                         fillMode="repeat" id="bottomCenter"/>
       </s:Group>

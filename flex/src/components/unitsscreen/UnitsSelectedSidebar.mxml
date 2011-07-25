@@ -12,15 +12,11 @@
          import components.skins.GreenButtonSkin;
          import components.skins.RedButtonSkin;
          import components.skins.StanceButtonSkin;
-         import components.skins.YellowButtonSkin;
-         import components.unitsscreen.events.UnitsScreenEvent;
          
          import config.BattleConfig;
-         import config.Config;
          
          import controllers.GlobalFlags;
          import controllers.ui.NavigationController;
-         import controllers.units.UnitsCommand;
          
          import globalevents.GUnitEvent;
          import globalevents.GUnitsScreenEvent;
@@ -33,7 +29,6 @@
          import models.unit.Unit;
          import models.unit.UnitKind;
          
-         import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
          
          import utils.assets.AssetNames;
@@ -57,7 +52,7 @@
          protected function order_clickHandler(event:MouseEvent):void
          {
             GlobalFlags.getInstance().lockApplication = true;
-            new GUnitsScreenEvent(GUnitsScreenEvent.ORDER_CONFIRMED, avoid.selected);
+            new GUnitsScreenEvent(GUnitsScreenEvent.ORDER_CONFIRMED);
          }
          
          protected function dismiss_clickHandler(event:MouseEvent):void
@@ -192,18 +187,6 @@
                             visible="{target is Building}"
                             enabled="{selection.length > 0}" click="order_clickHandler(event)"
                             skinClass="components.skins.RedButtonSkin"/>
-
-                  <s:Group width="100%"
-                           visible="{currentKind == UnitKind.SPACE || currentKind == UnitKind.SQUADRON}">
-                     <s:CheckBox id="avoid" label="{(Localizer.string('Units', 'label.avoidBattles'))}"
-                                 selected="true"/>
-                     <s:Label text="{avoid.selected?
-                              Localizer.string('Units', 'description.avoidBattles')
-                              :(Localizer.string('Units', 'description.dontAvoidBattles'))}"/>
-                     <s:layout>
-                        <s:VerticalLayout paddingLeft="6" paddingRight="6" horizontalAlign="justify"/>
-                     </s:layout>
-                  </s:Group>
                   <s:Button label="{Localizer.string ('Units', 'label.issueOrder')}" horizontalCenter="0"
                             visible="{currentKind == UnitKind.SPACE || currentKind == UnitKind.SQUADRON}"
                             enabled="{selection.length > 0}" click="order_clickHandler(event)"

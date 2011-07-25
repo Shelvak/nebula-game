@@ -2,8 +2,7 @@
 <s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
              xmlns:s="library://ns.adobe.com/flex/spark"
              xmlns:base="components.base.*"
-             minWidth="50"
-             height="15"
+             minWidth="50" height="15"
              mouseEnabled="false">
    
    <fx:Metadata>
@@ -28,29 +27,14 @@
          import utils.assets.ImagePreloader;
          
          
-         private function get IMG() : ImagePreloader
-         {
-            return ImagePreloader.getInstance();
+         private function getImage(key:String) : BitmapData {
+            return ImagePreloader.getInstance().getImage(AssetNames.CHAT_IMAGES_FOLDER + "tab_chan_" + key);
          }
          
-         
-         private function getImage(key:String) : BitmapData
-         {
-            return IMG.getImage(AssetNames.CHAT_IMAGES_FOLDER + "tab_chan_" + key);
-         }
-         
-         
-         protected override function stateChanged(oldState:String, newState:String, recursive:Boolean) : void
-         {
+         protected override function stateChanged(oldState:String, newState:String, recursive:Boolean) : void {
             super.stateChanged(oldState, newState, recursive);
-            if (oldState == "newMessage")
-            {
-               newMessageAnim.end();
-            }
-            if (newState == "newMessage")
-            {
-               newMessageAnim.play([grpArtwork]);
-            }
+            if (oldState == CChatChannelTab.SKIN_STATE_NEW_MESSAGE) newMessageAnim.end();
+            if (newState == CChatChannelTab.SKIN_STATE_NEW_MESSAGE) newMessageAnim.play([grpArtwork]);
          }
       ]]>
    </fx:Script>
@@ -91,7 +75,6 @@
    
    <s:Button id="btnClose" right="12" bottom="1"
              skinClass="components.chat.CChatChannelCloseButtonSkin"/>
-   
    
    
 </s:SparkSkin>

@@ -32,17 +32,15 @@ class Assets
 
   def self.store_hashes(destination, hashes=nil)
     hashes ||= WikiMechanize.instance.asset_hashes
-    File.open(destination, "wb") do |file|
-      file.write hashes.to_a.sort.to_yaml
-    end
+    # Serialize first and only then write to minimize corruption if 
+    # canceled.
+    data = hashes.to_a.sort.to_yaml
+    File.open(destination, "wb") { |file| file.write data }
   end
 
   def self.load_hashes(source)
-    if File.exists?(source)
-      Hash[ *YAML.load(File.read(source)).flatten ]
-    else
-      {}
-    end
+    contents = File.exists?(source) ? File.read(source).strip : ""
+    contents == "" ? {} : Hash[ *YAML.load(contents).flatten ]
   end
 
   # Return hash of one asset or +Hash+ of hashes if directory is given.
@@ -174,8 +172,8 @@ class AssetBase
   def opts_string(remote)
     infos = @remote_files[remote]
     type = Asset.type(remote)
-    all_opts = []
-    infos.each do |info|
+    
+    infos.map do |info|
       part_opts = {}
       decode_target(info[:target]) do |target, target_dir|
         merge_opts(target, info).each do |key, value|
@@ -185,10 +183,13 @@ class AssetBase
           end
         end
       end
-      all_opts.push part_opts
-    end
-
-    all_opts.inspect
+      
+      # Ensure that options always look the same.
+      part_opts.keys.each do |target|
+        part_opts[target] = part_opts[target].to_a.sort
+      end
+      part_opts.to_a.sort
+    end.inspect
   end
 
   # Merge given options with _target_ specific options.

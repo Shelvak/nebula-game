@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark" 
+                xmlns:mx="library://ns.adobe.com/flex/mx"
+                minWidth="5" minHeight="{HEIGHT_NORMAL}"
+                autoDrawBackground="false"
+                initialize="this_initializeHandler(event)">
+   
+   <s:states>
+      <s:State name="normal"/>
+      <s:State name="selected"/>
+      <s:State name="hovered"/>
+   </s:states>
+   
+   <fx:Script>
+      <![CDATA[
+         import mx.core.IVisualElement;
+         import mx.events.FlexEvent;
+         
+         import spark.layouts.VerticalAlign;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         
+         /**
+          * Height of the <code>ItemRendereBase</code> in normal state (used by <code>QuestsScreen</code>).
+          */ 
+         public static const HEIGHT_NORMAL:int = 26;
+         
+         private static const PBORDER:String = "pborder_";         
+         private static const HEAD:String = "head_";
+         
+         private function getImage(name:String) : BitmapData {
+            return ImagePreloader.getInstance().getImage(AssetNames.NOTIFICATION_IMAGE_FOLDER + name);
+         }
+         
+         private function getString(property:String, parameters:Array = null) : String {
+            return Localizer.string("ListScreen", property, parameters);
+         };
+         
+         
+         [Bindable]
+         /**
+          * Should the dark line at the bottom of the component be visible.
+          * 
+          * @default false
+          */
+         protected var bottomLineVisible:Boolean = false;
+         
+         private function this_initializeHandler(event:FlexEvent) : void {
+            if (headerLeftContent != null) {
+               headerLeftContent.left = 10;
+               headerLeftContent.right = 30;
+               headerLeftContent.top = 10;
+               headerLeftContent.bottom = 0;
+               var hlLayout:HorizontalLayout = new HorizontalLayout();
+               hlLayout.gap = 5;
+               hlLayout.verticalAlign = VerticalAlign.TOP;
+               headerLeftContent.layout = hlLayout;
+               grpHeaderLeft.addElement(headerLeftContent);
+            }
+            
+            if (headerRightContent != null) {
+               headerRightContent.left = 38;
+               headerRightContent.right = 8;
+               headerRightContent.top = 10;
+               headerRightContent.bottom = 0;
+               var hrLayout:HorizontalLayout = new HorizontalLayout();
+               hrLayout.gap = 5;
+               hrLayout.verticalAlign = VerticalAlign.TOP;
+               headerRightContent.layout = hrLayout;
+               grpHeaderRight.addElement(headerRightContent);
+            }
+            
+            contentGroup.left = 18;
+            contentGroup.right = 18;
+            contentGroup.bottom = 4;
+            contentGroup.top = 16;
+         }
+         
+         protected override function stateChanged(oldState:String, newState:String, recursive:Boolean) : void {
+            super.stateChanged(oldState, newState, recursive);
+            if (newState == "selected" && grpContent.numElements == 2)
+               grpContent.addElement(contentGroup);
+         }
+         
+         private var _oldData:Object = null;
+         [Bindable(event="dataChange")]
+         public override function set data(value:Object) : void {
+            if (data != value) {
+               if (_oldData == null)
+                  _oldData = super.data;
+               super.data = value;
+               _fDataChanged = true;
+               invalidateProperties();
+               invalidateDisplayList();
+            }
+         }
+         
+         private var _fDataChanged:Boolean = true;
+         protected override function commitProperties() : void {
+            super.commitProperties();
+            if (_fDataChanged) {
+               var oldValue:Object = _oldData;
+               var newValue:Object = data;
+               _oldData = null;
+               dataCommit(oldValue, newValue);
+            }
+            _fDataChanged = false;
+         }
+         
+         /**
+          * Invoked after <code>data</code> property has been changed and the rendere should reacth to
+          * this change. Both parameters may be <code>null</code>.
+          */
+         protected function dataCommit(oldValue:Object, newValue:Object) : void {}
+         
+         /**
+          * Handler of the close button click event. You must override this handler.
+          */
+         protected function btnClose_clickHandler(event:MouseEvent) : void {
+            throw new IllegalOperationError("method is abstract");
+         }
+         
+         /**
+          * Content on the left of the renderer header. Should always return the same instance. Optional.
+          */
+         protected function get headerLeftContent() : Group {
+            return null;
+         }
+         
+         /**
+          * Content on the right renderer header. Should always return the same instance. Optional.
+          */
+         protected function get headerRightContent() : Group {
+            return null;
+         }
+         
+         /**
+          * Main content group of the renderer. Must always return the same instance. Required.
+          */
+         protected function get contentGroup() : Group {
+            throw new IllegalOperationError("Property is abstract");
+         }
+      ]]>
+   </fx:Script>
+   
+   <!-- background -->
+   <s:Rect left="0" right="0" top="0" height="26">
+      <s:fill>
+         <s:SolidColor color="0x363636"/>
+      </s:fill>
+   </s:Rect>
+   
+   <!-- shadow of a header -->
+   <s:Rect left="10" right="10" top="2" height="18"
+           alpha.normal="0.3" alpha.hovered="0.6" alpha.selected="0.6">
+      <s:fill>
+         <s:LinearGradient rotation="-90">
+            <s:GradientEntry color="0x000000" color.selected="0xEFC501" alpha="1"/>
+            <s:GradientEntry color="0x000000" color.selected="0xEFC501" alpha="0"/>
+         </s:LinearGradient>
+      </s:fill>
+   </s:Rect>
+   
+   <!-- header -->
+   <s:Group left="0" right="0">
+      <s:layout>
+         <s:HorizontalLayout gap="0" verticalAlign="bottom"/>
+      </s:layout>
+      
+      <!-- header: left -->
+      <s:Group id="grpHeaderLeft">
+         <s:Group left="0" right="0">
+            <s:layout>
+               <s:HorizontalLayout gap="0"/>
+            </s:layout>
+            <s:BitmapImage source="{getImage(HEAD + 'msg_left')}"/>
+            <s:BitmapImage source="{getImage(HEAD + 'msg_center')}" width="100%" fillMode="repeat"/>
+            <s:BitmapImage source="{getImage(HEAD + 'msg_right')}"/>
+         </s:Group>
+      </s:Group>
+      
+      <s:BitmapImage source="{getImage(HEAD + 'center')}" width="100%" fillMode="repeat"/>
+      
+      <!-- header: right -->
+      <s:Group id="grpHeaderRight">
+         <s:Group left="0" right="0">
+            <s:layout>
+               <s:HorizontalLayout gap="0"/>
+            </s:layout>
+            <s:BitmapImage source="{getImage(HEAD + 'time_left')}"/>
+            <s:BitmapImage source="{getImage(HEAD + 'time_center')}" width="100%" fillMode="repeat"/>
+            <s:BitmapImage source="{getImage(HEAD + 'time_right')}"/>
+         </s:Group>
+      </s:Group>
+      
+   </s:Group>
+   
+   <!-- ############################### -->
+   <!-- ### CUSTOM PART STARTS HERE ### -->
+   
+   <s:Rect left="0" right="0" top="27" bottom="0" includeIn="selected">
+      <s:fill>
+         <s:SolidColor color="0x1D1D1D"/>
+      </s:fill>
+   </s:Rect>
+   
+   <s:Group left="0" right="0" top="27" bottom="0" includeIn="selected">
+      
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="justify" gap="0"/>
+      </s:layout>
+      
+      <!-- artwork: top -->
+      <s:Group>
+         <s:layout>
+            <s:HorizontalLayout verticalAlign="top" gap="0"/>
+         </s:layout>
+         <s:BitmapImage source="{getImage(PBORDER + 'top_left')}"/>
+         <s:BitmapImage source="{getImage(PBORDER + 'top_center')}" width="100%" fillMode="repeat"/>
+         <s:BitmapImage source="{getImage(PBORDER + 'top_right')}"/>
+      </s:Group>
+      
+      <!-- middle -->
+      <s:Group id="grpContent">
+         <s:BitmapImage left="0" top="0" bottom="0"
+                        source="{getImage(PBORDER + 'middle_left')}" fillMode="repeat"/>
+         <s:BitmapImage right="0" top="0" bottom="0"
+                        source="{getImage(PBORDER + 'middle_right')}" fillMode="repeat"/>
+      </s:Group>
+      
+      <!-- bottom -->
+      <s:Group>
+         
+         <s:layout>
+            <s:HorizontalLayout verticalAlign="bottom" gap="0"/>
+         </s:layout>
+         
+         <!-- artwork -->
+         <s:BitmapImage source="{getImage(PBORDER + 'bottom_left')}"/>
+         <s:BitmapImage source="{getImage(PBORDER + 'bottom_center')}" width="100%" fillMode="repeat"/>
+         
+         <!-- buttons -->
+         <s:Group>
+            
+            <!-- artwork -->
+            <s:Group left="0" right="0" bottom="0" top="0">
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="bottom" gap="0"/>
+               </s:layout>
+               <s:BitmapImage source="{getImage(PBORDER + 'btn_left')}"/>
+               <s:BitmapImage source="{getImage(PBORDER + 'btn_center')}" width="100%" fillMode="repeat"/>
+               <s:BitmapImage source="{getImage(PBORDER + 'btn_right')}"/>
+            </s:Group>
+            
+            <!-- actual buttons -->
+            <s:Group left="43" right="7" bottom="6" top="8">
+               <s:layout>
+                  <s:HorizontalLayout gap="5" verticalAlign="bottom"/>
+               </s:layout>
+               <s:Button id="btnClose" minWidth="75" label="{getString('label.close')}"
+                         click="btnClose_clickHandler(event)"/>
+            </s:Group>
+            
+         </s:Group>
+         
+      </s:Group>
+      
+   </s:Group>
+   
+   <!-- ### CUSTOM PART ENDS HERE ### -->
+   <!-- ############################# -->
+   
+   <s:Line visible="{bottomLineVisible}" left="0" right="0" bottom="-1" xFrom="0" xTo="10">
+      <s:stroke>
+         <s:SolidColorStroke color="0x040404"/>
+      </s:stroke>
+   </s:Line>
+
+</s:ItemRenderer>

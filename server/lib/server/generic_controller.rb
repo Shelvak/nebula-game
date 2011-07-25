@@ -141,20 +141,32 @@ class GenericController
   #
   def param_options(options={})
     required = (options[:required] || [])
-    required = [required] unless required.is_a?(Array)
-    required.each do |param|
-      unless params.has_key?(param)
+    if required.is_a?(Array)
+      required = required.inject({}) { |hash, item| hash[item] = true; hash }
+    elsif ! required.is_a?(Hash)
+      required = {required => true}
+    end
+    
+    required.each do |param, type|
+      param = param.to_s
+      
+      raise ControllerArgumentError.new(
+        "#{param} is required, but was not provided for action #{
+          @current_message['action']}"
+      ) unless params.has_key?(param)
+      
+      if type != true
         raise ControllerArgumentError.new(
-          "#{param} is required, but was not provided for action #{
-            @current_message['action']}"
-        )
+          "#{param} should have been #{type}, but was #{params[param].class
+            } for action #{@current_message['action']}"
+        ) unless params[param].is_a?(type)
       end
     end
 
     if options[:valid]
       valid = (options[:valid] || [])
       valid = [valid] unless valid.is_a?(Array)
-      valid += required
+      valid += required.stringify_keys.keys
       params.assert_valid_keys(valid)
     end
   end

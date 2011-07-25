@@ -193,6 +193,7 @@ package controllers.startup
       {
          _inMemoryLog.clear();
          EventBroker.broadcast(new GlobalEvent(GlobalEvent.APP_RESET));
+         StringUtil.reset();
          ML.reset();
          MChat.getInstance().reset();
          AllianceScreenM.getInstance().reset();

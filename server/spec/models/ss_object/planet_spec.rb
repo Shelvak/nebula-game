@@ -1358,8 +1358,8 @@ describe SsObject::Planet do
 
       it "should fire changed on planet if observer ids changed" do
         should_fire_event(@planet, EventBroker::CHANGED) do
-          SsObject::Planet.changing_viewable(@planet.location_point) do
-            @unit.destroy
+          SsObject::Planet.changing_viewable(@unit.location) do
+            @unit.delete
           end
         end
       end
@@ -1371,7 +1371,7 @@ describe SsObject::Planet do
               @planet.location_point,
               Factory.create(:planet).location_point
           ]) do
-            @unit.destroy
+            @unit.delete
           end
         end
       end
@@ -1383,7 +1383,7 @@ describe SsObject::Planet do
       end
     end
 
-    describe "location is not a planet" do
+    describe "location is not a planet" do      
       it "should simply return block value" do
         SsObject::Planet.changing_viewable(GalaxyPoint.new(1, 0, 0)) do
           "a"

@@ -112,9 +112,6 @@ package globalevents
             case (MANAGE_UNITS):
                unitsCollection = params;
                break;
-            case (ORDER_CONFIRMED):
-               avoid = params;
-               break;
          }
          super(type, eagerDispatch);
       }
