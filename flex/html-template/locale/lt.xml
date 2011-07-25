@@ -3847,12 +3847,11 @@
   <Market>
     <label.submit value="Patvirtinti" />
     <label.fee value="Mokesčiai:" />
-    <label.wantToSell value="Tu nori parduoti:" />
-    <label.howMuch value="Kiek?" />
-    <label.sellFor value="Už:" />
+    <label.wantToSell value="Parduoti" />
+    <label.sellFor value="Už" />
     <!-- 1 cheaper or more -->
     <label.marketValue value="{0}% {1 cheaper[mažiau] more[daugiau]} nei rinkos kaina" />
-    <title.sell value="Parduoti"/>
+    <title.sell value="Sukurti pasiūlymą"/>
     <warning.noSlots value="Pasiekei pasiūlymų limitą" />
     <title.currentOffers value="Dabartiniai pasiūlymai" />
     <title.filterOffers value="Filtruoti pasiūlymus" />
@@ -3870,6 +3869,8 @@
     <label.willPay value="Tu turėsi sumokėti {0}" />
     <label.buy value="Pirkti" />
     <label.cancel value="Atšaukti" />
+    <label.close value="Uždaryti" />
+    <label.noOffers value="Nėra pasiūlymų" />
     <warning.noMinResource>
       <p>Tu neturi pakankamai {0 metal[metalo] energy[energijos] zetium[zetiumo]} 
       minimaliam pasiūlymui</p>
@@ -3877,6 +3878,9 @@
     <message.offerSubmited value="Pasiūlymas priimtas" />
     <message.offerGone value="Atsiprašome, šio pasiūlymo nebėra" />
     <label.onlyPlanet value="Rodyti pasiūlymus iš šios planetos" />
+    <title.section.resources value="RESURSAI" />
+    <title.section.units value="KARIAI" />
+    <title.section.current value="{0 left[RESURSŲ] right[KARIŲ]} TURGUS" />
   </Market>
 
 </locale>

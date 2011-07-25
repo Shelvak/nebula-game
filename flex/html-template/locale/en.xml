@@ -3924,12 +3924,11 @@
   <Market>
     <label.submit value="Submit" />
     <label.fee value="Fee:" />
-    <label.wantToSell value="You want to sell:" />
-    <label.howMuch value="How much?" />
-    <label.sellFor value="For:" />
+    <label.wantToSell value="Selling" />
+    <label.sellFor value="For" />
     <!-- 1 cheaper or more -->
     <label.marketValue value="{0}% {1} than market value" />
-    <title.sell value="Sell"/>
+    <title.sell value="Create offer"/>
     <warning.noSlots value="Offers limit reached" />
     <title.currentOffers value="Current offers" />
     <title.filterOffers value="Filter offers" />
@@ -3947,10 +3946,15 @@
     <label.willPay value="You will pay {0}" />
     <label.buy value="Buy" />
     <label.cancel value="Cancel" />
+    <label.close value="Close" />
+    <label.noOffers value="No offers" />
     <warning.noMinResource value="You dont have enough {0} for minimal offer"/>
     <message.offerSubmited value="Offer submited" />
     <message.offerGone value="Sorry, offer is already gone" />
     <label.onlyPlanet value="Show orders from this planet only" />
+    <title.section.resources value="RESOURCES" />
+    <title.section.units value="UNITS" />
+    <title.section.current value="{0 left[RESOURCES] right[UNITS]} MARKET" />
   </Market>
 
 </locale>

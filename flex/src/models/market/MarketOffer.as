@@ -9,16 +9,8 @@ package models.market
    
    public class MarketOffer extends BaseModel
    {
-      public function MarketOffer(_from: String, _to: String)
+      public function MarketOffer()
       {
-         player = new PlayerMinimal();
-         player.id = Math.round(Math.random() * 100 + 3);
-         player.name = 'Žaidėjas'+player.id;
-         fromAmount = Math.round(Math.random() * 1000);
-         toAmount = Math.round(Math.random() * 1000);
-         fromKind = _from;
-         toKind = _to;
-         createdAt = new Date();
          super();
       }
       
@@ -60,12 +52,32 @@ package models.market
       public var toAmount: int;
       
       [Required]
+      public function set fromKind(value: int): void
+      {
+         fromResource = OfferResourceKind.KINDS[value];
+      }
+      
+      public function get fromKind(): int
+      {
+         return int(OfferResourceKind[fromResource]);
+      }
+      
       [Bindable]
-      public var fromKind: String;
+      public var fromResource: String;
       
       [Required]
+      public function set toKind(value: int): void
+      {
+         toResource = OfferResourceKind.KINDS[value];
+      }
+      
+      public function get toKind(): int
+      {
+         return int(OfferResourceKind[toResource]);
+      }
+      
       [Bindable]
-      public var toKind: String;
+      public var toResource: String;
       
       private var rate: Number;
       

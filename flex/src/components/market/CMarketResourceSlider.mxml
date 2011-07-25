@@ -114,11 +114,11 @@
    <s:Label text="{_minAmmount}"/>
    <s:HSlider id="slider" minimum="{_minAmmount}" width="100%" maximum="{_maxAmmount}" value="0"
               changeEnd="hslider1_changeHandler(event)" stepSize="1"/>
-   <s:Label text="{_maxAmmount}" width="50"/>
+   <s:Label text="{_maxAmmount}"/>
    <!--s:NumericStepper stepSize="1" minimum="0" maximum="{_maxAmmount}" id="input" snapInterval="1"
                      change="input_changeHandler(event)" width="100" focusEnabled="false"
                      creationComplete="input_creationCompleteHandler(event)"/-->
    <s:layout>
-      <s:HorizontalLayout/>
+      <s:HorizontalLayout paddingBottom="6" paddingTop="6"/>
    </s:layout>
 </s:Group>

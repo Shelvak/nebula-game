@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
             xmlns:s="library://ns.adobe.com/flex/spark" 
             xmlns:mx="library://ns.adobe.com/flex/mx" 
             xmlns:base="components.base.*"
-            skinClass="components.skins.LargePanelSkin"
-            title="{getText('title.filterOffers')}" 
             xmlns:market="components.market.*"
             creationComplete="panel1_creationCompleteHandler(event)">
    <fx:Metadata>
@@ -21,6 +19,7 @@
          import components.market.events.MarketEvent;
          import components.skins.LargePanelSkin;
          
+         import models.market.MCMarketScreen;
          import models.resource.ResourceType;
          
          import mx.collections.ArrayCollection;
@@ -30,6 +29,8 @@
          
          import spark.events.IndexChangeEvent;
          
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
          
          private function getText(prop: String, params: Array = null): String
@@ -162,9 +163,71 @@
             onlyPrivateOffers = selfOnly.selected;
          }
          
+         [Bindable]
+         private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
+         
+         
+         private function getImage(name:String) : BitmapData
+         {
+            return ImagePreloader.getInstance().getImage(
+               AssetNames.MARKET_SCREEN_IMAGE_FOLDER + name);
+         }
+         
+         protected function tab_clickHandler(event:MouseEvent):void
+         {
+            mScreen.currentTab = 'left';
+         }
+         
       ]]>
    </fx:Script>
-   <s:Group>
+   <!-- background -->
+   <s:Group left="0" right="0">
+      <s:BitmapImage width="{(width - 500)/2}" id="leftRepeat"
+                     source="{getImage('top_repeat')}" fillMode="repeat"/>
+      <s:BitmapImage source="{getImage('top_left')}"/>
+      <s:BitmapImage width="100%" fillMode="repeat"
+                     source="{getImage('top_center')}"/>
+      <s:BitmapImage source="{getImage('top_right')}"/>
+      <s:BitmapImage width="{leftRepeat.width}"
+                     source="{getImage('top_repeat')}" fillMode="repeat"/>
+      <s:layout>
+         <s:HorizontalLayout gap="0"/>
+      </s:layout>
+   </s:Group>
+   <!-- Market logo and tabs -->
+   <s:Group top="0" horizontalCenter="0" id="topGroup">
+      <s:layout>
+         <s:HorizontalLayout gap="-45"/>
+      </s:layout>
+      <!-- "name" is used by skin -->
+      <s:ToggleButton id="tabResources" name="left" 
+                      skinClass="components.market.skins.SectionTabSkin"
+                      label="{getText('title.section.resources')}" 
+                      minWidth="210" fontSize="15"
+                      enabled="{mScreen.currentTab != 'left'}"
+                      selected="{mScreen.currentTab == 'left'}"
+                      click="tab_clickHandler(event)"/>
+      <s:Group width="276" depth="10">
+         <s:BitmapImage id="tabLeft" left="0" source="{getImage('tab_center_left')}"/>
+         <s:BitmapImage id="tabRight" right="0" source="{getImage('tab_center_right')}"/>
+         <s:BitmapImage left="{tabLeft.width}" right="{tabRight.width}" 
+                        fillMode="repeat"
+                        source="{getImage('tab_center_center')}"/>
+         <s:BitmapImage source="{getImage('logo')}" verticalCenter="0" 
+                        left="{tabLeft.width - 7}" id="logo"/>
+         <s:Label verticalCenter="0" left="{tabLeft.width + logo.width + 3}"
+                  right="{tabRight.width - 7}"
+                  fontWeight="bold" fontSize="18"
+                  text="{getText('title.section.current', [mScreen.currentTab])}"/>
+      </s:Group> 
+      <s:ToggleButton id="tabUnits"  name="right" 
+                      skinClass="components.market.skins.SectionTabSkin"
+                      label="{getText('title.section.units')}" 
+                      minWidth="210" fontSize="15"
+                      enabled="{mScreen.currentTab != 'right'}"
+                      selected="{mScreen.currentTab == 'right'}"/>
+   </s:Group>
+   <s:Group horizontalCenter="0" bottom="20">
       <s:Label text="{getText('filter.show')}"/>
       <s:DropDownList dataProvider="{new ArrayCollection([
                       ResourceType.METAL,
@@ -180,15 +243,10 @@
                       width="100"
                       change="toRes_changeHandler(event)"
                       itemRenderer="components.base.IRResource"/>
+      <s:CheckBox id="selfOnly" label="{getText('label.onlyPlanet')}"
+                  change="checkbox1_changeHandler(event)"/>
       <s:layout>
-         <s:HorizontalLayout paddingBottom="10" paddingTop="10" horizontalAlign="center"
-                             verticalAlign="middle"/>
+         <s:HorizontalLayout verticalAlign="middle"/>
       </s:layout>
-      
    </s:Group>
-   <s:CheckBox id="selfOnly" label="{getText('label.onlyPlanet')}"
-               change="checkbox1_changeHandler(event)"/>
-   <base:layout>
-      <s:VerticalLayout horizontalAlign="left"/>
-   </base:layout>
-</base:Panel>
+</s:Group>

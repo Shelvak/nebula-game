@@ -4,6 +4,7 @@
                 xmlns:mx="library://ns.adobe.com/flex/mx"
                 autoDrawBackground="false" 
                 xmlns:base="components.base.*"
+                width="100%"
                 click="itemrenderer1_clickHandler(event)">
    <fx:Script>
       <![CDATA[
@@ -17,6 +18,7 @@
          import models.market.MarketOffer;
          import models.player.MRatingPlayer;
          
+         import utils.MathUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
@@ -47,7 +49,7 @@
                        :(itemIndex%2==0?0x0e0e0e:0x141414)}"/>
       </s:fill>
    </s:Rect>
-   <s:Group top="3" bottom="3">
+   <s:Group top="3" bottom="3" horizontalCenter="0">
       <s:layout>
          <s:HorizontalLayout gap="1" verticalAlign="middle"/>
       </s:layout>
@@ -55,12 +57,12 @@
          <s:Button label="{offer.from}" width="100%" skinClass="components.skins.LinkButtonSkin"
                    click="NavigationController.getInstance().showPlayer(offer.fromId)"/>
       </s:Group>
-      <base:ImageAndLabel textToDisplay="{offer.fromAmount}" type="{offer.fromKind}"
+      <base:ImageAndLabel textToDisplay="{offer.fromAmount}" type="{offer.fromResource}"
                           width="{OffersColumnsWidths.fromAmount}"/>
       <base:ImageAndLabel textToDisplay="{Math.ceil(offer.toRate * offer.fromAmount)}"
-                          type="{offer.toKind}"
+                          type="{offer.toResource}"
                           width="{OffersColumnsWidths.toAmount}"/>
-      <s:Label text="{offer.toRate.toString()}" width="{OffersColumnsWidths.rate}" 
+      <s:Label text="{MathUtil.round(offer.toRate,2).toString()}" width="{OffersColumnsWidths.rate}" 
                textAlign="center"/>
       <s:Label text="{offer.createdAt.toString()}" width="{OffersColumnsWidths.createdAt}"
                textAlign="center"/>

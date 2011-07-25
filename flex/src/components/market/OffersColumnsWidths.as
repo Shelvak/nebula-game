@@ -8,6 +8,6 @@ package components.market
       public static const fromAmount: int = 100;
       public static const toAmount: int = 100;
       public static const rate: int = 80;
-      public static const createdAt: int = 180;
+      public static const createdAt: int = 220;
    }
 }

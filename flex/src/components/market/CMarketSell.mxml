@@ -56,6 +56,8 @@
             'toRate': forSelector.selectedVal/sellSelector.selectedVal,
             'toKind': OfferResourceKind[forWhat.selected]
             }).dispatch();
+            forWhat.deselect();
+            what.deselect();
          }
 
       ]]>
@@ -133,18 +135,19 @@
          }
       ]]>
    </fx:Script>
-   <s:Label text="{getText('label.wantToSell')}"/>
+   <s:Label text="{getText('label.wantToSell')}" styleName="h3" paddingBottom="3"
+            color="#eec500"/>
    <market:CMarketResourceSelector id="what" selectedResourceChange="what_selectedResourceChangeHandler(event)"
                                    hidenType="{ResourceType.CREDS}"/>
    <base:AdvancedContainer visible="{what.selected != null 
                            &amp;&amp; getResource(what.selected).getWithoutTaxes(taxRate)
                            >= Config.getMinMarketOffer()}">
-      <s:Label text="{getText('label.howMuch')}"/>
       <market:CMarketResourceSlider maxAmmount="{getResource(what.selected).getWithoutTaxes(taxRate)}"
                                     minAmmount="{Config.getMinMarketOffer()}" id="sellSelector"/>
       <market:CMarketFee type="{what.selected}" taxRate="{taxRate}"
                          selectedAmmount="{sellSelector.selectedVal}"/>
-      <s:Label text="{getText('label.sellFor')}"/>
+      <s:Label text="{getText('label.sellFor')}" styleName="h3" paddingBottom="3" paddingTop="12"
+               color="#eec500"/>
       <market:CMarketResourceSelector id="forWhat" disabledType="{what.selected}"
                                       selectedResourceChange="forWhat_selectedResourceChangeHandler(event)"/>
       <market:CMarketResourceSlider maxAmmount="{getMaxOffer(sellSelector.selectedVal)}" 
@@ -167,7 +170,8 @@
          <s:VerticalLayout horizontalAlign="justify"/>
       </base:layout>
    </base:AdvancedContainer>
-   <base:Warning text="{getText('warning.noMinResource', [what.selected])}" 
+   <base:Warning text="{what.selected == null?''
+                 :getText('warning.noMinResource', [what.selected])}" 
                  visible="{what.selected != null 
                  &amp;&amp; getResource(what.selected).getWithoutTaxes(taxRate)
                  &lt; Config.getMinMarketOffer()}"/>

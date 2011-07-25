@@ -63,7 +63,7 @@
          </s:LinearGradient>
       </s:fill>
    </s:Rect>
-   <s:Group>
+   <s:Group horizontalCenter="0">
       <s:Label width="{OffersColumnsWidths.from}" 
                text="{getText('header.from')}" textAlign="center"
                rollOver="label_rollOverHandler(event)" 
