@@ -44,6 +44,8 @@ class Notification < ActiveRecord::Base
   EVENT_ALLIANCE_KICK = 9
   # Player has joined alliance.
   EVENT_ALLIANCE_JOINED = 10
+  # Some piece of market offer was bought.
+  EVENT_MARKET_OFFER_BOUGHT = 11
 
   # custom_serialize converts all :symbols to 'symbols'
   serialize :params
@@ -445,5 +447,34 @@ class Notification < ActiveRecord::Base
         model
       end
     end.compact
+  end
+  
+  # EVENT_MARKET_OFFER_BOUGHT = 11
+  #
+  # params = {
+  #   :buyer => Player#as_json(:mode => :minimal),
+  #   :planet => ClientLocation#as_json,
+  #   :from_kind => Fixnum (resource which buyer has bought),
+  #   :amount => Fixnum (amount which buyer has bought),
+  #   :to_kind => Fixnum (resource which buyer has paid with),
+  #   :cost => Fixnum (amount which buyer has paid),
+  #   :amount_left => Fixnum (amount left in the offer. Offer is depleted if
+  #   this is 0)
+  # }
+  def self.create_for_market_offer_bought(market_offer, buyer, amount, cost)
+    model = new(
+      :event => EVENT_MARKET_OFFER_BOUGHT,
+      :player_id => market_offer.player_id,
+      :params => {
+        :buyer => buyer.as_json(:mode => :minimal),
+        :planet => market_offer.planet.client_location.as_json,
+        :from_kind => market_offer.from_kind,
+        :amount => amount,
+        :to_kind => market_offer.to_kind,
+        :cost => cost,
+        :amount_left => market_offer.from_amount
+      }
+    )
+    model.save!
   end
 end

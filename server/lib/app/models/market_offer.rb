@@ -85,6 +85,9 @@ class MarketOffer < ActiveRecord::Base
       }! Wanted #{cost} #{bs_attr} but it only had #{buyer_has}."
     ) if buyer_has < cost
     
+    # Used to determine whether to send notification or not.
+    original_amount = from_amount
+    
     # Subtract resource that buyer is paying with from him.
     buyer_source.send(:"#{bs_attr}=", buyer_has - cost)
     # Add resource that buyer has bought from seller.
@@ -101,6 +104,10 @@ class MarketOffer < ActiveRecord::Base
         self.class.save_obj_with_event(obj)
       end
       from_amount == 0 ? destroy : save!
+      percentage_bought = amount.to_f / original_amount
+      Notification.create_for_market_offer_bought(
+        self, buyer_planet.player, amount, cost
+      ) if percentage_bought >= CONFIG['market.buy.notification.threshold']
     end
     
     amount

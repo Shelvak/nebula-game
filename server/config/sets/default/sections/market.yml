@@ -10,6 +10,9 @@ offer.min_amount: 500
 # value.
 avg_rate.offset: 0.10
 
+# How much of the offer person should buy so that seller would get notified?
+buy.notification.threshold: 0.03
+
 ### 
 # Seed values for market values.
 # 

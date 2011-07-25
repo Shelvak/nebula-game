@@ -192,6 +192,7 @@ describe MarketOffer do
         
         @to_amount = (@offer.from_amount * @offer.to_rate).ceil
         @buyer_planet = Factory.create(:planet_with_player)
+        @buyer = @buyer_planet.player
         # We must increase this separately because of the storage/resource
         # order :/
         @buyer_planet.zetium_storage = @buyer_planet.zetium = 
@@ -239,7 +240,19 @@ describe MarketOffer do
           should == amount
       end
 
-      it "should create notification"
+      it "should create notification" do
+        Notification.should_receive(:create_for_market_offer_bought).
+          with(@offer, @buyer, @offer.from_amount, @to_amount)
+        @offer.buy!(@buyer_planet, @offer.from_amount)
+      end
+      
+      it "should not create notif. if buying amount below threshold" do
+        Notification.should_not_receive(:create_for_market_offer_bought)
+        @offer.buy!(@buyer_planet, 
+          @offer.from_amount * CONFIG['market.buy.notification.threshold'] -
+            1
+        )
+      end
     end
   end
   
