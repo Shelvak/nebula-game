@@ -16,6 +16,7 @@ package models.notification.parts
       //         # :planet => ClientLocation#as_json,
       //         # :owner_id => Fixnum (ID of planet owner),
       //         # :duration => Fixnum (duration of protection)
+      //         # :outcome => Fixnum (what was the outcome of that battle for you)
       //      # }
       public function PlanetProtected(notif:Notification=null)
       {
@@ -26,7 +27,10 @@ package models.notification.parts
          endsAt = new Date(notif.createdAt.time);
          endsAt.setSeconds(params.duration + notif.createdAt.seconds);
          location = BaseModel.createModel(Location, params.planet);
+         outcome = params.outcome;
       }
+      
+      public var outcome: int;
       
       public var owner: Boolean;
       
@@ -48,10 +52,18 @@ package models.notification.parts
       
       public function get labelText() : String
       {
-         if (owner)
+         if (outcome == CombatOutcomeType.LOOSE)
          {
-            return Localizer.string("Notifications", "label.planetProtected.yours", 
-               [duration, endsAt.toString()]);
+            if (owner)
+            {
+               return Localizer.string("Notifications", "label.planetProtected.yours", 
+                  [duration, endsAt.toString()]);
+            }
+            else
+            {
+               return Localizer.string("Notifications", "label.planetProtected.ally", 
+                  [duration, endsAt.toString()]);
+            }
          }
          else
          {

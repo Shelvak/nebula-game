@@ -408,6 +408,7 @@ package controllers.startup
       private static function bindPlanetCommands() : void
       {
          bindPair(PlanetsCommand.SHOW, new controllers.planets.actions.ShowAction());
+         bindPair(PlanetsCommand.TAKE, new controllers.planets.actions.TakeAction());
          bindPair(PlanetsCommand.EDIT, new controllers.planets.actions.EditAction());
          bindPair(PlanetsCommand.BOOST, new controllers.planets.actions.BoostAction());
          bindPair(PlanetsCommand.PLAYER_INDEX, new PlayerIndexAction());

@@ -1,5 +1,7 @@
 package models.notification.parts
 {
+   import components.notifications.parts.IRCombatLog;
+   
    import models.BaseModel;
    import models.location.Location;
    import models.notification.INotificationPart;
@@ -17,7 +19,14 @@ package models.notification.parts
          oldPlayer = params.oldPlayer?BaseModel.createModel(PlayerMinimal, params.oldPlayer):null;
          newPlayer = params.newPlayer?BaseModel.createModel(PlayerMinimal, params.newPlayer):null;
          location = BaseModel.createModel(Location, params.planet);
+         owner = params.owner?BaseModel.createModel(PlayerMinimal, params.owner):null;
+         //if outcome is null this means there was no battle fought
+         outcome = params.outcome==null?-1:params.outcome;
       }
+      
+      public var outcome: int;
+      
+      public var owner: PlayerMinimal;
       
       public var oldPlayer: PlayerMinimal;
       
@@ -39,7 +48,44 @@ package models.notification.parts
       
       public function get won(): Boolean
       {
-         return newPlayer && newPlayer.id == ML.player.id;
+         return outcome == CombatOutcomeType.WIN;
+      }
+      
+      public function get notifText(): String
+      {
+         if (won)
+         {
+            if (owner != null)
+            {
+               return Localizer.string("Notifications", "label.planetAnnexed.win1");
+            }
+            else
+            {
+               if (outcome == -1)
+               {
+                  return Localizer.string("Notifications", "label.planetAnnexed.emptyWin",
+                     [location.planetName]);
+               }
+               else
+               {
+                  return Localizer.string("Notifications", "label.planetAnnexed.npcWin",
+                     [location.planetName]);
+               }
+            }
+         }
+         else
+         {
+            if (owner.id == oldPlayer.id)
+            {
+               return Localizer.string("Notifications", "label.planetAnnexed.selfLose",
+                  [location.planetName]);
+            }
+            else
+            {
+               return Localizer.string("Notifications", "label.planetAnnexed.allyLose",
+                  [location.planetName]);
+            }
+         }
       }
       
       

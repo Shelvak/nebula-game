@@ -476,6 +476,7 @@
     <notApplicable value="Not applicable:" />
     <pressEsc value="To deselect press ESC" />
     <notYourPlanet value="This planet does not belong to you!" />
+    <label.claimPlanet value="Claim planet" />
 
     <deselectButtonText value="deselect building" />
 
@@ -1133,6 +1134,7 @@
       </p>
     </message.actionCanceled>
     <message.copyToClipboardSuccessful value="Copied to clipboard" />
+    <message.planetClaimed value="Planet claimed" />
     <label.cooldownEndsIn value="Next battle in"/>
   </General>
 
@@ -1354,10 +1356,6 @@
     <label.players value="Players" />
     <label.noNotifications value="There are no notifications" />
     <label.questCompleted value="Quest '{0}' was completed." />
-    <label.oldPlayer value="You have ceased it's control from" />
-    <label.noPlayer value="This planet was uninhabitated." />
-    <label.newPlayer value="It was conquered by" />
-    <label.npcAnexed value="This planet was occupied by NPC raiders." />
     <label.readAll value="Read all" />
     <label.resourcesGained value="Resources gained" />
     <label.wreckageLeft value="Wreckage left" />
@@ -1402,7 +1400,28 @@
     <title.planetAnnexed.win value="You have conquered this planet!" />
     <title.planetAnnexed.lose value="You have lost this planet!" />
     <message.planetAnnexed.win value="Planet {0} conquered" />
-    <message.planetAnnexed.lose value="Planet {0} lost" />
+    <message.planetAnnexed.lose value="Your planet {0} lost" />
+    <message.planetAnnexed.loseAlly value="Alliances planet {0} lost" />
+    <!-- two lines in notification, link button after first line-->
+    <label.planetAnnexed.win1 value="You won a battle against" />
+    <label.planetAnnexed.win2 
+    value="for planet '{0}'. You can now claim this planet for yourself." />
+    <label.planetAnnexed.npcWin>
+      <p>You have won against aliens in planet '{0}'. 
+      You can now claim it for yourself.</p>
+    </label.planetAnnexed.npcWin>
+    <label.planetAnnexed.selfLose>
+      <p>You have lost a battle for your planet '{0}'. 
+      You no longer control it.</p>
+    </label.planetAnnexed.selfLose>
+    <label.planetAnnexed.allyLose>
+      <p>Your ally have lost a battle for his planet '{0}'. 
+      He does not control it anymore.</p>
+    </label.planetAnnexed.allyLose>
+    <label.planetAnnexed.emptyWin>
+      <p>Your units have arrived to unclaimed planet '{0}'. 
+      You can claim this planet if you want.</p>
+    </label.planetAnnexed.emptyWin>
     
     <title.planetProtected value="Planet protected!" />
     <message.planetProtected ref="title.planetProtected" />
@@ -1426,6 +1445,14 @@
       </p>
       <p>[reference:label.planetProtected.explained]</p>
     </label.planetProtected.yours>
+    <label.planetProtected.ally>
+      <p>
+      Your alliance members last planet was under attack and you have lost. 
+      Due to interstellar treaties his/hers planet has been placed 
+      under protection for {0} until {1}.
+      </p>
+      <p>[reference:label.planetProtected.explained]</p>
+    </label.planetProtected.ally>
     
     <title.allianceInvitation value="Alliance invitation"/>
     <message.allianceInvitation value="Invitation to join alliance '{0}'"/>

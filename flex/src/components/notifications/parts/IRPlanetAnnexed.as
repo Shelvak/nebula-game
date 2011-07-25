@@ -12,6 +12,7 @@ package components.notifications.parts
    
    import models.notification.parts.PlanetAnnexed;
    
+   import spark.components.Button;
    import spark.components.Label;
    
    import utils.locale.Localizer;
@@ -30,61 +31,41 @@ package components.notifications.parts
       public var location:MiniLocationComp;
       
       [SkinPart(required="true")]
-      public var lblConquere:Label;
+      public var lblOutcome:Label;
       
       [SkinPart(required="true")]
-      public var lblRelatedPlayer: Label;
+      public var lblRelatedPlayer: Button;
+      
+      [SkinPart(required="true")]
+      public var lblAfterLink:Label;
       
       
       protected override function commitProperties() : void
       {
          super.commitProperties();
-         function addLinkListeners(): void
-         {
-            lblRelatedPlayer.addEventListener(MouseEvent.ROLL_OVER, function(e: MouseEvent): void
-            {
-               lblRelatedPlayer.setStyle('color', 0xffffff);
-            });
-            lblRelatedPlayer.addEventListener(MouseEvent.ROLL_OUT, function(e: MouseEvent): void
-            {
-               lblRelatedPlayer.setStyle('color', 0xff0000);
-            });
-            lblRelatedPlayer.addEventListener(MouseEvent.CLICK, function(e: MouseEvent): void
-            {
-               GlobalFlags.getInstance().lockApplication = true;
-               new PlayersCommand(PlayersCommand.RATINGS, part.oldPlayer?part.oldPlayer.name:
-                  part.newPlayer.name).dispatch();
-            });
-         }
          if (f_NotificationPartChange)
          {
             var part: PlanetAnnexed = PlanetAnnexed(notificationPart);
-            location.location = part.location;
-            if (part.won)
+            function addLinkListeners(): void
             {
-               if (part.oldPlayer)
+               lblRelatedPlayer.addEventListener(MouseEvent.CLICK, function(e: MouseEvent): void
                {
-                  lblConquere.text = Localizer.string('Notifications', 'label.oldPlayer');
-                  lblRelatedPlayer.text = part.oldPlayer.name;
-                  addLinkListeners();
-               }
-               else
-               {
-                  lblConquere.text = Localizer.string('Notifications', 'label.noPlayer');
-               }
+                  GlobalFlags.getInstance().lockApplication = true;
+                  new PlayersCommand(PlayersCommand.RATINGS, part.owner.name).dispatch();
+               });
             }
-            else
+            lblRelatedPlayer.visible = false;
+            lblAfterLink.visible = false;
+            location.location = part.location;
+            lblOutcome.text = part.notifText;
+            if (part.won && part.owner != null)
             {
-               if (part.newPlayer)
-               {
-                  lblConquere.text = Localizer.string('Notifications', 'label.newPlayer');
-                  lblRelatedPlayer.text = part.newPlayer.name;
-                  addLinkListeners();
-               }
-               else
-               {
-                  lblConquere.text = Localizer.string('Notifications', 'label.npcAnexed');
-               }
+               lblRelatedPlayer.label = part.owner.name;
+               lblRelatedPlayer.visible = true;
+               lblAfterLink.text = Localizer.string("Notifications", "label.planetAnnexed.win2",
+               [part.location.planetName]);
+               lblAfterLink.visible = true;
+               addLinkListeners();
             }
          }
          f_NotificationPartChange = false;

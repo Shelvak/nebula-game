@@ -476,6 +476,7 @@
     <notApplicable value="Nesvarbūs:" />
     <pressEsc value="Spausk ESC klavišą, jog atžymėtum savo pasirinkimą" />
     <notYourPlanet value="Ši planeta tau nepriklauso!" />
+    <label.claimPlanet value="Perimti planetą" />
 
     <deselectButtonText value="atžymėti pastatą" />
 
@@ -1127,6 +1128,7 @@
       kartą.</p>
     </message.actionCanceled>
     <message.copyToClipboardSuccessful value="Nukopijuota į iškarpinę" />
+    <message.planetClaimed value="Planeta perimta" />
     <label.cooldownEndsIn value="Kitas mūšis už" />
   </General>
 
@@ -1349,10 +1351,6 @@
     <label.noNotifications value="Pranešimų nėra" />
     <label.claimReward value="Pasiimk atlygį!" />
     <label.questCompleted value="Užduotis „{0}“ buvo atlikta." />
-    <label.oldPlayer value="Tu atėmei planetą iš" />
-    <label.noPlayer value="Ši planeta buvo neapgyvendinta." />
-    <label.newPlayer value="Planetą užkariavo" />
-    <label.npcAnexed value="Planetą užkariavo ateivių plėšikai." />
     <label.readAll value="Perskaityti visus" />
     <label.resourcesGained value="Gauta resursų" />
     <label.wreckageLeft value="Liko nuolaužų" />
@@ -1404,6 +1402,27 @@
     <title.planetAnnexed.lose value="Tu praradai planetą!" />
     <message.planetAnnexed.win value="Planeta {0} užkariauta" />
     <message.planetAnnexed.lose value="Planeta {0} prarasta" />
+    <message.planetAnnexed.loseAlly value="Sąjungininko planeta {0} prarasta" />
+    <!-- two lines in notification, link button after first line-->
+    <label.planetAnnexed.win1 value="Tu laimėjai kovą prieš" />
+    <label.planetAnnexed.win2 
+    value="dėl planetos '{0}'. Dabar tu gali perimti šią planetą." />
+    <label.planetAnnexed.npcWin>
+      <p>Tu laimėjai kovą prieš ateivius planetoje '{0}'. 
+      Dabar tu gali perimti šią planetą.</p>
+    </label.planetAnnexed.npcWin>
+    <label.planetAnnexed.selfLose>
+      <p>Tu pralaimėjai kovą dėl planetos '{0}'. 
+      Tu daugiau jos nebekontroliuoji.</p>
+    </label.planetAnnexed.selfLose>
+    <label.planetAnnexed.allyLose>
+      <p>Tavo sąjungininkas pralaimėjo kovą dėl savo planetos '{0}'. 
+      Jam nebepriklauso ši planeta.</p>
+    </label.planetAnnexed.allyLose>
+    <label.planetAnnexed.emptyWin>
+      <p>Tavo kariai atvyko į neapgyvendintą planetą '{0}'. 
+      Jei nori Tu gali pasisavinti šią planetą.</p>
+    </label.planetAnnexed.emptyWin>
     
     <title.planetProtected value="Planeta apsaugota!" />
     <message.planetProtected ref="title.planetProtected" />
@@ -1418,10 +1437,16 @@
     </label.planetProtected.enemies>
     <label.planetProtected.yours>
       <p>Tavo paskutinė planeta buvo užpulta ir tu buvai nugalėtas, tačiau 
-      remiantis tarpžvaigždinės paktais tau buvo suteikta planetos apsauga {0}
+      remiantis tarpžvaigždiniais paktais tau buvo suteikta planetos apsauga {0}
       (iki {1})</p>
       <p>[reference:label.planetProtected.explained]</p>
     </label.planetProtected.yours>
+    <label.planetProtected.ally>
+      <p>Tavo sąjungos nario paskutinė planeta buvo užpulta ir jūs buvote nugalėti, 
+      tačiau remiantis tarpžvaigždiniais paktais jam buvo suteikta planetos apsauga {0}
+      (iki {1})</p>
+      <p>[reference:label.planetProtected.explained]</p>
+    </label.planetProtected.ally>
     
     <title.allianceInvitation value="Pakvietimas į sąjungą"/>
     <message.allianceInvitation 
