@@ -1415,6 +1415,9 @@
     <title.explorationFinished value="Exploration finished" />
     <message.explorationFinished value="Exploration finished in planet {0}" />
 
+    <title.marketOfferBought value="Market offer bought" />
+    <message.marketOfferBought value="Market offer bought" />
+
     <title.planetAnnexed.win value="You have conquered this planet!" />
     <title.planetAnnexed.lose value="You have lost this planet!" />
     <message.planetAnnexed.win value="Planet {0} conquered" />

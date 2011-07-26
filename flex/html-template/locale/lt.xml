@@ -1416,6 +1416,9 @@
     <message.explorationFinished 
       value="Planetoje {0} tyrinėjimai baigti" />
 
+    <title.marketOfferBought value="Pasiūlymas turguje nupirktas" />
+    <message.marketOfferBought value="Pasiūlymas turguje buvo nupirktas" />
+
     <title.planetAnnexed.win value="Tu užkariavai planetą!" />
     <title.planetAnnexed.lose value="Tu praradai planetą!" />
     <message.planetAnnexed.win value="Planeta {0} užkariauta" />
