@@ -1559,6 +1559,21 @@
     <label.yes value="Taip" />
     <label.no value="Ne" />
     
+    <title.cancelOffer value="Atšaukti pasiūlymą" />
+    <message.cancelOffer>
+      <p>Ar tikrai nori atšaukti savo pasiūlymą?</p>
+    </message.cancelOffer>
+    
+    <title.buyOffer value="Priimti pasiūlymą" />
+    <message.buyOffer>
+      <p>Ar tikrai nori pirkti iš šito pasiūlymo?</p>
+    </message.buyOffer>
+    
+    <title.createOffer value="Sukurti pasiūlymą" />
+    <message.createOffer>
+      <p>Ar tikrai nori sukurti šį pasiūlymą?</p>
+    </message.createOffer>
+    
     <title.convertCreds value="Iškeisti kredus" />
     <message.convertCreds>
       <p>Ar tikrai nori iškeisti 
@@ -3880,8 +3895,13 @@
     <header.createdAt value="Įkelta" />
     <title.buy value="Priimti pasiūlymą" />
     <title.cancel value="Atšaukti pasiūlymą" />
+    
     <!-- resource image goes after this string -->
+    <label.youBuy value="Tu perki {0}" />
+    <label.youSell value="Tu parduodi {0}" />
+    <label.willBuy value="Tu perki {0}" />
     <label.willPay value="Tu turėsi sumokėti {0}" />
+    
     <label.buy value="Pirkti" />
     <label.cancel value="Atšaukti" />
     <label.close value="Uždaryti" />

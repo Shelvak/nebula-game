@@ -1564,6 +1564,21 @@
       to {1 one[one cred] many[? creds]}?</p>
     </message.convertCreds>
     
+    <title.cancelOffer value="Cancel offer" />
+    <message.cancelOffer>
+      <p>Do you realy want to cancel your offer?</p>
+    </message.cancelOffer>
+    
+    <title.buyOffer value="Buy offer" />
+    <message.buyOffer>
+      <p>Do you realy want to buy from this offer?</p>
+    </message.buyOffer>
+    
+    <title.createOffer value="Create offer" />
+    <message.createOffer>
+      <p>Do you realy want to create that offer?</p>
+    </message.createOffer>
+    
     <title.dailyBonus value="Daily bonus" />
     <message.dailyBonus>
       <p>Come back every day and get your daily bonus!</p>
@@ -3996,8 +4011,13 @@
     <header.createdAt value="Created at" />
     <title.buy value="Buy offer" />
     <title.cancel value="Cancel offer" />
+    
     <!-- resource image goes after this string -->
+    <label.youBuy value="You are buying {0}" />
+    <label.youSell value="You are selling {0}" />
+    <label.willBuy value="You buy {0}" />
     <label.willPay value="You will pay {0}" />
+    
     <label.buy value="Buy" />
     <label.cancel value="Cancel" />
     <label.close value="Close" />

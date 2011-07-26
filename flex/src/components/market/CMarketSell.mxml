@@ -8,31 +8,61 @@
    <fx:Script>
       <![CDATA[
          import components.market.events.MarketEvent;
+         import components.popups.ActionConfirmationPopup;
          import components.skins.GreenButtonSkin;
          
          import models.building.Building;
          import models.resource.ResourceType;
          
+         import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
          
          import utils.MathUtil;
          
-         protected function what_selectedResourceChangeHandler(event:MarketEvent):void
+         protected function what_selectedResourceChangeHandler(event:Event):void
          {
-            if (forWhat.selected == what.selected)
+            if (forWhat.selectedItem == what.selectedItem)
             {
-               forWhat.deselect();
+               forWhat.selectedIndex = -1;
+               buildForWhat();
+            }
+            else
+            {
+               var oldSel: String = forWhat.selectedItem;
+               buildForWhat();
+               if (oldSel != null)
+               {
+                  forWhat.selectedIndex = availableResList.getItemIndex(oldSel);
+               }
             }
             updateRate();
          }
          
-
-         protected function forWhat_selectedResourceChangeHandler(event:MarketEvent):void
+         [Bindable]
+         private var availableResList: ArrayCollection = new ArrayCollection();
+         
+         private function buildForWhat(): void
+         {
+            availableResList.removeAll();
+            function addResource(res: String): void
+            {
+               if (what.selectedItem != res)
+               {
+                  availableResList.addItem(res);
+               }
+            }
+            addResource(ResourceType.METAL);
+            addResource(ResourceType.ENERGY);
+            addResource(ResourceType.ZETIUM);
+            addResource(ResourceType.CREDS);
+         }
+         
+         protected function forWhat_selectedResourceChangeHandler(event:Event):void
          {
             updateRate();
          }
-
-
+         
+         
          protected function advancedcontainer1_creationCompleteHandler(event:FlexEvent):void
          {
             mScreen.addEventListener(MarketEvent.AVG_RATE_CHANGE, dispatchAvgRateChangeEvent);
@@ -45,21 +75,33 @@
                dispatchEvent(new MarketEvent(MarketEvent.AVG_RATE_CHANGE));
             }
          }
-
+         
          protected function confirm_clickHandler(event:MouseEvent):void
          {
-            GlobalFlags.getInstance().lockApplication = true;
-            new MarketCommand(MarketCommand.NEW, {
-            'marketId': mScreen.market.id,
-            'fromAmount': sellSelector.selectedVal,
-            'fromKind': OfferResourceKind[what.selected],
-            'toRate': forSelector.selectedVal/sellSelector.selectedVal,
-            'toKind': OfferResourceKind[forWhat.selected]
-            }).dispatch();
-            forWhat.deselect();
-            what.deselect();
+            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+            var lbl: Label = new Label();
+            lbl.minWidth = 300;
+            lbl.text = Localizer.string('Popups', 'message.createOffer');
+            popUp.addElement(lbl);
+            popUp.title = Localizer.string('Popups', 'title.createOffer');
+            popUp.confirmButtonClickHandler = function (button: Button = null): void
+            {
+               GlobalFlags.getInstance().lockApplication = true;
+               new MarketCommand(MarketCommand.NEW, {
+                  'marketId': mScreen.market.id,
+                  'fromAmount': sellSelector.selectedVal,
+                  'fromKind': OfferResourceKind[what.selectedItem],
+                  'toRate': forSelector.selectedVal/sellSelector.selectedVal,
+                  'toKind': OfferResourceKind[forWhat.selectedItem]
+               }).dispatch();
+               forWhat.selectedIndex = -1;
+               what.selectedIndex = -1;
+            };
+            popUp.show();
          }
-
+         
       ]]>
    </fx:Script>
    <base:layout>
@@ -97,12 +139,12 @@
          
          private function updateRate(): void
          {
-            if (what.selected != null && forWhat.selected != null)
+            if (what.selectedItem != null && forWhat.selectedItem != null)
             {
                GlobalFlags.getInstance().lockApplication = true;
                new MarketCommand(MarketCommand.AVG_RATE, {
-                  'fromKind': int(OfferResourceKind[what.selected]),
-                  'toKind': int(OfferResourceKind[forWhat.selected])
+                  'fromKind': int(OfferResourceKind[what.selectedItem]),
+                  'toKind': int(OfferResourceKind[forWhat.selectedItem])
                }).dispatch();
             }
          }
@@ -137,31 +179,41 @@
    </fx:Script>
    <s:Label text="{getText('label.wantToSell')}" styleName="h3" paddingBottom="3"
             color="#eec500"/>
-   <market:CMarketResourceSelector id="what" selectedResourceChange="what_selectedResourceChangeHandler(event)"
-                                   hidenType="{ResourceType.CREDS}"/>
-   <base:AdvancedContainer visible="{what.selected != null 
-                           &amp;&amp; getResource(what.selected).getWithoutTaxes(taxRate)
+   <s:DropDownList dataProvider="{new ArrayCollection([
+                   ResourceType.METAL,
+                   ResourceType.ENERGY,
+                   ResourceType.ZETIUM])}" 
+                   id="what"
+                   width="95%"
+                   change="what_selectedResourceChangeHandler(event)"
+                   itemRenderer="components.base.IRResource"/>
+   <base:AdvancedContainer visible="{what.selectedItem != null 
+                           &amp;&amp; getResource(what.selectedItem).getWithoutTaxes(taxRate)
                            >= Config.getMinMarketOffer()}">
-      <market:CMarketResourceSlider maxAmmount="{getResource(what.selected).getWithoutTaxes(taxRate)}"
+      <market:CMarketResourceSlider maxAmmount="{getResource(what.selectedItem).getWithoutTaxes(taxRate)}"
                                     minAmmount="{Config.getMinMarketOffer()}" id="sellSelector"/>
-      <market:CMarketFee type="{what.selected}" taxRate="{taxRate}"
+      <market:CMarketFee type="{what.selectedItem}" taxRate="{taxRate}"
                          selectedAmmount="{sellSelector.selectedVal}"/>
       <s:Label text="{getText('label.sellFor')}" styleName="h3" paddingBottom="3" paddingTop="12"
                color="#eec500"/>
-      <market:CMarketResourceSelector id="forWhat" disabledType="{what.selected}"
-                                      selectedResourceChange="forWhat_selectedResourceChangeHandler(event)"/>
+      
+      <s:DropDownList dataProvider="{availableResList}" 
+                      id="forWhat"
+                      width="95%"
+                      change="forWhat_selectedResourceChangeHandler(event)"
+                      itemRenderer="components.base.IRResource"/>
       <market:CMarketResourceSlider maxAmmount="{getMaxOffer(sellSelector.selectedVal)}" 
                                     minAmmount="{getMinOffer(sellSelector.selectedVal)}"
-                                    visible="{forWhat.selected != null}" id="forSelector"/>
+                                    visible="{forWhat.selectedItem != null}" id="forSelector"/>
       <s:Label text="{getText('label.marketValue', 
                [getMarketRate(forSelector.selectedVal/sellSelector.selectedVal),
                getCheaper(forSelector.selectedVal/sellSelector.selectedVal)
                ?'cheaper':'more'])}" 
-               visible="{forWhat.selected != null}"/>
-      <market:CMarketCompare typeFrom="{what.selected}" typeTo="{forWhat.selected}"
+               visible="{forWhat.selectedItem != null}"/>
+      <market:CMarketCompare typeFrom="{what.selectedItem}" typeTo="{forWhat.selectedItem}"
                              amountTo="{forSelector.selectedVal/sellSelector.selectedVal}" 
-                             visible="{forWhat.selected != null}"/>
-      <s:Group visible="{forWhat.selected != null}">
+                             visible="{forWhat.selectedItem != null}"/>
+      <s:Group visible="{forWhat.selectedItem != null}">
          <s:Button skinClass="components.skins.GreenButtonSkin" 
                    label="{getText('label.submit')}" horizontalCenter="0"
                    click="confirm_clickHandler(event)"/>
@@ -170,9 +222,9 @@
          <s:VerticalLayout horizontalAlign="justify"/>
       </base:layout>
    </base:AdvancedContainer>
-   <base:Warning text="{what.selected == null?''
-                 :getText('warning.noMinResource', [what.selected])}" 
-                 visible="{what.selected != null 
-                 &amp;&amp; getResource(what.selected).getWithoutTaxes(taxRate)
+   <base:Warning text="{what.selectedItem == null?''
+                 :getText('warning.noMinResource', [what.selectedItem])}" 
+                 visible="{what.selectedItem != null 
+                 &amp;&amp; getResource(what.selectedItem).getWithoutTaxes(taxRate)
                  &lt; Config.getMinMarketOffer()}"/>
 </base:AdvancedContainer>

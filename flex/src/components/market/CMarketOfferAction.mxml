@@ -14,6 +14,7 @@
    <fx:Script>
       <![CDATA[
          import components.market.events.MarketEvent;
+         import components.popups.ActionConfirmationPopup;
          import components.skins.GreenButtonSkin;
          import components.skins.LargePanelSkin;
          
@@ -54,22 +55,38 @@
          
          private function confirm(e: MouseEvent): void
          {
-            GlobalFlags.getInstance().lockApplication = true;
-            if (selectedOffer.fromId == ML.player.id)
+            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+            var lbl: Label = new Label();
+            lbl.minWidth = 300;
+            lbl.text = Localizer.string('Popups', 'message.'+
+               (selectedOffer.fromId == ML.player.id?'cancelOffer':'buyOffer'));
+            popUp.addElement(lbl);
+            popUp.title = Localizer.string('Popups', 'title.'+
+               (selectedOffer.fromId == ML.player.id?'cancelOffer':'buyOffer'));
+            popUp.confirmButtonClickHandler = function (button: Button = null): void
             {
-               new MarketCommand(MarketCommand.CANCEL, selectedOffer.id).dispatch();
-            }
-            else
-            {
-               new MarketCommand(MarketCommand.BUY, {
-                  'offerId': selectedOffer.id,
-                  'planetId': mScreen.planetId,
-                  'amount': Math.round(selector.value)
-               }).dispatch();
-            }
+               GlobalFlags.getInstance().lockApplication = true;
+               if (selectedOffer.fromId == ML.player.id)
+               {
+                  new MarketCommand(MarketCommand.CANCEL, selectedOffer.id).dispatch();
+               }
+               else
+               {
+                  new MarketCommand(MarketCommand.BUY, {
+                     'offerId': selectedOffer.id,
+                     'planetId': mScreen.planetId,
+                     'amount': Math.round(selector.value)
+                  }).dispatch();
+                  selector.value = 0;
+                  cancel();
+               }
+            };
+            popUp.show();
          }
          
-         private function cancel(e: MouseEvent): void
+         private function cancel(e: MouseEvent = null): void
          {
             dispatchEvent(new MarketEvent(MarketEvent.DESELECT_OFFER));
          }
@@ -96,23 +113,71 @@
       </s:layout>
    </s:Group>
    <base:AdvancedContainer horizontalCenter="0" bottom="15">
-      <s:HSlider minimum="0" maximum="{selectedOffer.fromAmount}" stepSize="1"
-                 id="selector" change="selector_changeHandler(event)"
-                 visible="{ML.player.id != selectedOffer.fromId}" />
-      <s:Group visible="{ML.player.id != selectedOffer.fromId}" >
+      <s:Group visible="{ML.player.id != selectedOffer.fromId}">
+         <s:Group>
+            <s:Label text="0"/>
+            <s:HSlider minimum="0" maximum="{selectedOffer.fromAmount}" stepSize="1"
+                       id="selector" change="selector_changeHandler(event)"/>
+            <s:Label text="{selectedOffer.fromAmount.toString()}"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         <s:Group>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle" gap="20"/>
+            </s:layout>
+            <s:Group>
+               <s:Label text="{getText('label.willBuy', [selector.value])}"/>
+               <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
+                              selectedOffer.fromResource)}"/>
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="middle"/>
+               </s:layout>
+            </s:Group>
+            <s:Group>
+               <s:Label text="{getText('label.willPay', [cost])}"/>
+               <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
+                              selectedOffer.toResource)}"/>
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="middle"/>
+               </s:layout>
+            </s:Group>
+         </s:Group>
          <s:layout>
-            <s:HorizontalLayout verticalAlign="middle"/>
+            <s:VerticalLayout horizontalAlign="center"/>
          </s:layout>
-         <s:Label text="{getText('label.willPay', [cost])}"/>
-         <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
-                        (ML.player.id != selectedOffer.fromId
-                        ?selectedOffer.toResource
-                        :selectedOffer.fromResource))}"/>
       </s:Group>
+      
+      <s:Group visible="{ML.player.id == selectedOffer.fromId}">
+         <s:layout>
+            <s:HorizontalLayout verticalAlign="middle" gap="20"/>
+         </s:layout>
+         <s:Group>
+            <s:Label text="{getText('label.youSell', [selectedOffer.fromAmount])}"/>
+            <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
+                           selectedOffer.fromResource)}"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         <s:Group>
+            <s:Label text="{getText('label.youBuy', 
+                     [Math.ceil(selectedOffer.toRate * selectedOffer.fromAmount)])}"/>
+            <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
+                           selectedOffer.toResource)}"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+      </s:Group>
+      
       <s:Button label="{ML.player.id != selectedOffer.fromId
                 ?getText('label.buy')
                 :getText('label.cancel')}" 
                 right="6"
+                enabled="{ML.player.id == selectedOffer.fromId?true
+                :selector.value > 0}"
                 skinClass="components.skins.GreenButtonSkin"
                 click="confirm(event)"/>
       <s:Button label="{getText('label.close')}" 

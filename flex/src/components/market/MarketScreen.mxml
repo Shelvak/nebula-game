@@ -101,5 +101,6 @@
    <market:CMarketOfferAction selectedOffer="{offersList.selected}" 
                               visible="{offersList.selected != null}"
                               id="cAction" bottom="0" 
-                              left="0" right="0"/>
+                              left="0" right="0"
+                              deselectOffer="offersList.deselect()"/>
 </s:Group>

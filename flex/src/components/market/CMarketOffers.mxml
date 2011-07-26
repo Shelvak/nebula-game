@@ -51,7 +51,7 @@
                'rate':[rateField, fromField, createdAtField, idField],
                'createdAt':[createdAtField, fromField, idField]
             }
-
+         
          protected function header_listSortHandler(event:HeaderEvent):void
          {
             offers.sort = new Sort();
@@ -61,38 +61,44 @@
          
          [Bindable]
          public var selected: MarketOffer;
-
+         
          private function selectedChange(e: GMarketEvent): void
          {
+            if (selected != null)
+            {
+               selected.selected = false;
+            }
             selected = e.offer;
             selected.selected = true;
-            for each (var offer: MarketOffer in offers)
-            {
-               if (offer.selected && offer != selected)
-               {
-                  offer.selected = false;
-               }
-            }
          }
-
+         
          protected function panel1_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GMarketEvent.OFFER_SELECTED, selectedChange);
          }
-
+         
+         public function deselect(): void
+         {
+            if (selected != null)
+            {
+               selected.selected = false;
+               selected = null;
+            }
+         }
+         
       ]]>
    </fx:Script>
-      <market:CMarketOffersHeader id="header" left="0" right="0"
-                                  listSort="header_listSortHandler(event)"/>
-      <base:Scroller id="contScroller" left="0" right="0" 
-                     top="{header.height}" bottom="0" stepMultiplier="10">
-         <s:Group left="0" right="0">
-            <s:DataGroup dataProvider="{offers}" left="0" right="0"
-                         itemRenderer="components.market.IRMarketOffer">
-               <s:layout>
-                  <s:VerticalLayout gap="0"/>
-               </s:layout>
-            </s:DataGroup>
-         </s:Group>
-      </base:Scroller>
+   <market:CMarketOffersHeader id="header" left="0" right="0"
+                               listSort="header_listSortHandler(event)"/>
+   <base:Scroller id="contScroller" left="0" right="0" 
+                  top="{header.height}" bottom="0" stepMultiplier="10">
+      <s:Group left="0" right="0">
+         <s:DataGroup dataProvider="{offers}" left="0" right="0"
+                      itemRenderer="components.market.IRMarketOffer">
+            <s:layout>
+               <s:VerticalLayout gap="0"/>
+            </s:layout>
+         </s:DataGroup>
+      </s:Group>
+   </base:Scroller>
 </s:Group>

@@ -48,9 +48,6 @@ package models.market
       [Bindable]
       public var fromAmount: int;
       
-      [Bindable]
-      public var toAmount: int;
-      
       [Required]
       public function set fromKind(value: int): void
       {

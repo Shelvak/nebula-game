@@ -58,8 +58,8 @@
                getVip();
             }
          }
-
-
+         
+         
          protected function button1_clickHandler(event:MouseEvent):void
          {
             var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
@@ -81,7 +81,7 @@
             };
             popUp.show();
          }
-
+         
       ]]>
    </fx:Script>
    <screens:GradientBackground gradientWidth="{(width - header.width) / 2}"/>
@@ -157,9 +157,9 @@
          <s:Label text="0"/>
          <s:HSlider width="250" minimum="0" maximum="{ML.player.vipCreds}"
                     id="credSelector" stepSize="1"/>
-            <s:Label text="{ML.player.vipCreds}"/>
+         <s:Label text="{ML.player.vipCreds}"/>
          <s:layout>
-            <s:HorizontalLayout/>
+            <s:HorizontalLayout verticalAlign="middle"/>
          </s:layout>
       </s:Group>
       <s:Label fontSize="14" color="#eec500" text="{getString('label.selectedConvert',
