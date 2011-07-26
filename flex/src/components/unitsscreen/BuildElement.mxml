@@ -135,7 +135,8 @@
                    labelPlacement="center" mode="manual"
                    label="{Localizer.string('Units','property.timeToFinish.short', 
                    [_unitModel.upgradePart.timeToFinishString])}"/>
-   <credits:CoinComp top="144" left="139" click="coincomp1_clickHandler(event)"/>
+   <credits:CoinComp top="144" left="139" click="coincomp1_clickHandler(event)"
+                     enabled="{_unitModel.upgradePart.upgradeProgress &lt; 1}"/>
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready_lights')}"
                   id="lights"/>
 </base:BaseContainer>
