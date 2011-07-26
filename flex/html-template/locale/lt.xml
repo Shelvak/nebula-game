@@ -525,6 +525,7 @@
     <property.teleportedVolume value="Perkeliamas tūris" />
     <property.creds value="Kredai" />
     <property.victoryPoints value="Pergalės taškai" />
+    <property.fee value="Mokęstis" />
 
     <text.deactivated>
       <p>

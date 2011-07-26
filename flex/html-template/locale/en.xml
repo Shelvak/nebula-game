@@ -526,6 +526,7 @@
     <property.teleportedVolume value="Volume teleported" />
     <property.creds value="Creds" />
     <property.victoryPoints value="Victory points" />
+    <property.fee value="Trading fee" />
 
     <text.deactivated>
       <p>
