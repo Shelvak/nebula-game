@@ -17,12 +17,6 @@ package models.player
          super();
       }
       
-      [Bindable (event="modelIdChange")]
-      public function get isNpc(): Boolean
-      {
-         return id == 0;
-      }
-      
       [Bindable]
       [Optional]
       /**

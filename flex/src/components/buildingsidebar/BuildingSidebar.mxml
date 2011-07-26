@@ -684,7 +684,7 @@
          <base:Warning text="{Localizer.string ('BuildingSidebar','notYourPlanet')}"
                        width="100%"/>
          <s:Button label="{Localizer.string ('BuildingSidebar','label.claimPlanet')}"
-                   visible="{ML.latestPlanet.ssObject.player.isNpc
+                   visible="{ML.latestPlanet.ssObject.player == null
                    &amp;&amp; ML.latestPlanet.getActiveUnits(Owner.ENEMY).length == 0}"
                    skinClass="components.skins.GreenButtonSkin"
                    click="button1_clickHandler(event)"/>
