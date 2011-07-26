@@ -1422,8 +1422,7 @@
     <message.planetAnnexed.loseAlly value="Alliances planet {0} lost" />
     <!-- two lines in notification, link button after first line-->
     <label.planetAnnexed.win1 value="You won a battle against" />
-    <label.planetAnnexed.win2 
-    value="for planet '{0}'. You can now claim this planet for yourself." />
+    <label.planetAnnexed.win2 value="for planet '{0}'." />
     <label.planetAnnexed.npcWin>
       <p>You have won against aliens in planet '{0}'. 
       You can now claim it for yourself.</p>
@@ -1440,6 +1439,8 @@
       <p>Your units have arrived to unclaimed planet '{0}'. 
       You can claim this planet if you want.</p>
     </label.planetAnnexed.emptyWin>
+    <label.planetAnnexed.claimPlanet 
+    value="You can now claim this planet for yourself." />
     
     <title.planetProtected value="Planet protected!" />
     <message.planetProtected ref="title.planetProtected" />

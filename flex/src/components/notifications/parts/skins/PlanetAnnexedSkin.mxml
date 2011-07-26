@@ -24,7 +24,8 @@
          </base:layout>
          <s:Label id="lblOutcome"/>
          <s:Button skinClass="components.skins.LinkButtonSkin" id="lblRelatedPlayer"/>
+         <s:Label id="lblAfterLink"/>
       </base:AdvancedContainer>
-      <s:Label id="lblAfterLink" paddingLeft="6" paddingTop="6"/>
+      <s:Label id="lblClaimPlanet" paddingLeft="6" paddingTop="6"/>
    </base:AdvancedContainer>
 </s:SparkSkin>

@@ -39,6 +39,9 @@ package components.notifications.parts
       [SkinPart(required="true")]
       public var lblAfterLink:Label;
       
+      [SkinPart(required="true")]
+      public var lblClaimPlanet:Label;
+      
       
       protected override function commitProperties() : void
       {
@@ -56,6 +59,7 @@ package components.notifications.parts
             }
             lblRelatedPlayer.visible = false;
             lblAfterLink.visible = false;
+            lblClaimPlanet.visible = false;
             location.location = part.location;
             lblOutcome.text = part.notifText;
             if (part.won && part.owner != null)
@@ -64,6 +68,8 @@ package components.notifications.parts
                lblRelatedPlayer.visible = true;
                lblAfterLink.text = Localizer.string("Notifications", "label.planetAnnexed.win2",
                [part.location.planetName]);
+               lblClaimPlanet.text = Localizer.string("Notifications", "label.planetAnnexed.claimPlanet");
+               lblClaimPlanet.visible = true;
                lblAfterLink.visible = true;
                addLinkListeners();
             }

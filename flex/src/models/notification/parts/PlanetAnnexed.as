@@ -48,7 +48,7 @@ package models.notification.parts
       
       public function get won(): Boolean
       {
-         return outcome == CombatOutcomeType.WIN;
+         return outcome == CombatOutcomeType.WIN || outcome == CombatOutcomeType.NO_COMBAT;
       }
       
       public function get notifText(): String
@@ -61,7 +61,7 @@ package models.notification.parts
             }
             else
             {
-               if (outcome == -1)
+               if (outcome == CombatOutcomeType.NO_COMBAT)
                {
                   return Localizer.string("Notifications", "label.planetAnnexed.emptyWin",
                      [location.planetName]);
@@ -75,7 +75,7 @@ package models.notification.parts
          }
          else
          {
-            if (owner.id == oldPlayer.id)
+            if (owner != null && owner.id == oldPlayer.id)
             {
                return Localizer.string("Notifications", "label.planetAnnexed.selfLose",
                   [location.planetName]);

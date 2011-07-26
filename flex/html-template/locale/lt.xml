@@ -1423,8 +1423,7 @@
     <message.planetAnnexed.loseAlly value="Sąjungininko planeta {0} prarasta" />
     <!-- two lines in notification, link button after first line-->
     <label.planetAnnexed.win1 value="Tu laimėjai kovą prieš" />
-    <label.planetAnnexed.win2 
-    value="dėl planetos '{0}'. Dabar tu gali perimti šią planetą." />
+    <label.planetAnnexed.win2 value="dėl planetos '{0}'." />
     <label.planetAnnexed.npcWin>
       <p>Tu laimėjai kovą prieš ateivius planetoje '{0}'. 
       Dabar tu gali perimti šią planetą.</p>
@@ -1441,6 +1440,7 @@
       <p>Tavo kariai atvyko į neapgyvendintą planetą '{0}'. 
       Jei nori Tu gali pasisavinti šią planetą.</p>
     </label.planetAnnexed.emptyWin>
+    <label.planetAnnexed.claimPlanet value="Dabar tu gali perimti šią planetą." />
     
     <title.planetProtected value="Planeta apsaugota!" />
     <message.planetProtected ref="title.planetProtected" />
