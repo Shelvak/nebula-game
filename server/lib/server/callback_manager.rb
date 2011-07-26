@@ -87,11 +87,9 @@ class CallbackManager
     end
 
     def register_or_update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
-      if has?(object, event)
-        update(object, event, time)
-      else
-        register(object, event, time)
-      end
+      register(object, event, time)
+    rescue ActiveRecord::RecordNotUnique
+      update(object, event, time)
     end
 
     def has?(object, event, time=nil)

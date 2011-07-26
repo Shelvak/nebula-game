@@ -1,6 +1,5 @@
 # Class for combat simulation
 class Combat
-  extend Combat::Raiding
   extend Combat::Simulation
   extend Combat::Integration
 

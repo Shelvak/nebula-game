@@ -47,10 +47,12 @@ class SolarSystem < ActiveRecord::Base
   # Is this solar system a global battleground?
   def main_battleground?; x.nil? && y.nil?; end
   
+  def normal?; kind == KIND_NORMAL; end
+  scope :normal, where(:kind => KIND_NORMAL)
   def battleground?; kind == KIND_BATTLEGROUND; end
-  scope :battleground, :conditions => {:kind => KIND_BATTLEGROUND}
+  scope :battleground, where(:kind => KIND_BATTLEGROUND)
   def wormhole?; kind == KIND_WORMHOLE; end
-  scope :wormhole, :conditions => {:kind => KIND_WORMHOLE}
+  scope :wormhole, where(:kind => KIND_WORMHOLE)
 
   # Return +SolarSystemPoint+s where NPC units are standing.
   def npc_unit_locations
