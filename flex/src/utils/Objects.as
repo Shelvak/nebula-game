@@ -1,11 +1,10 @@
 package utils
 {
-   import flash.utils.describeType;
+   import flash.utils.Dictionary;
    import flash.utils.getDefinitionByName;
    import flash.utils.getQualifiedClassName;
    
    import mx.collections.ArrayCollection;
-   import mx.graphics.Stroke;
    
 
    /**
@@ -93,50 +92,38 @@ package utils
       
       
       /**
-       * Lets you find out if a given class (or class of an object) has got a given metadata tag.
+       * Lets you find out if a given class has got a given metadata tag.
        * This method uses ActionScript reflection feature.
        * 
-       * @param value a Class or any object to be examined.
-       * @param tag Name of metadata tag.
+       * @param value a Class to be examined
+       * @param tag Name of metadata tag
        * 
-       * @return <code>true</code> if the given class or object has a given metadata tag
-       * defined or <code>false</code> otherwise.
+       * @return <code>true</code> if the given class has a given metadata tag defined or <code>false</code>
+       * otherwise.
        */
-      public static function hasMetadata(value:*, tag:String) : Boolean
+      public static function hasMetadata(type:Class, tag:String) : Boolean
       {
-         if (value == null) return false;
-         
-         var typeData:XML = describeType(value);
-         
-         if (typeData.@isStatic == "true")
-         {
-            typeData = typeData.factory[0];
-         }
+         if (type == null) return false;
+         var typeData:XML = describeType(type).factory[0];
          if (typeData.metadata.(@name == tag)[0] != null)
-         {
             return true;
-         }
          else
-         {
             return false;
-         }
       }
       
       
       /**
-       * Returns array all public properties of a given object.
+       * Returns array all public properties of a given type.
        *  
-       * @param value Any not simple object.
-       * @param writeOnly If <code>true</code> only writable properties
-       * will be returned.
+       * @param type a class you want to introspect
+       * @param writeOnly If <code>true</code> only writable properties will be returned
        * 
-       * @return Array of properties that are defined either as variables
-       * or setter/getter pairs.
+       * @return Array of properties that are defined either as variables or setter/getter pairs.
        */      
-      public static function getPublicProperties(value:*, writeOnly:Boolean=true) : Array
+      public static function getPublicProperties(type:Class, writeOnly:Boolean=true) : Array
       {
          var result:Array = [];
-         var info:XML = describeType(value);
+         var info:XML = describeType(type).factory[0];
          for each (var prop:XML in info.accessor)
          {
             if (!writeOnly || prop.@access != "readonly")
@@ -424,7 +411,7 @@ package utils
        * 
        * @see Array#join()
        */
-      private static function arrayJoin(array:Array, sep:String) : void
+      private static function arrayJoin(array:Array, sep:String) : String
       {
          var strings:Array = array.map(
             function(item:*, index:int, array:Array) : String
@@ -440,6 +427,33 @@ package utils
                return Object(item).toString();
             }
          );
+         return strings.join(sep);
+      }
+      
+      
+      /* ##################### */
+      /* ### DESCRIBE TYPE ### */
+      /* ##################### */
+      
+      
+      private static const DT_CACHE:Dictionary = new Dictionary(true);
+      
+      /**
+       * Does the same as global function <code>describeType()</code> just caches the results of this function
+       * and returns the same <code>XML</code> instance for the same argument. You should always use this
+       * function instead of <code>flash.utils.describeType()</code> because the latter each time creates
+       * new XML object and does not cache them (caching makes things a lot faster).
+       */
+      public static function describeType(type:Class) : XML
+      {
+         var typeInfo:XML = null
+         if (DT_CACHE[type] !== undefined)
+            typeInfo = DT_CACHE[type];
+         else {
+            typeInfo = flash.utils.describeType(type);
+            DT_CACHE[type] = typeInfo;
+         }
+         return typeInfo;
       }
    }
 }

@@ -56,16 +56,16 @@ Spec::Matchers.define :have_fired_event do
 
   match do |handler|
     @times = handler.fired?(object, event_name, reason)
-    count.nil? ? @times > 0 : @times == count
+    @times == (count || 1)
   end
 
   failure_message_for_should do |handler|
-    times = count.nil? ? "at least once" : "#{count} times"
+    times = count.nil? ? "once" : "#{count} times"
     "#{object} should have fired event '#{event_name}' (reason: #{
     reason}) #{times} but it did it #{@times} times"
   end
   failure_message_for_should_not do |handler|
-    times = count.nil? ? "any number of times" : "#{count} times"
+    times = count.nil? ? "once" : "#{count} times"
 
     "#{object} should not have fired event '#{event_name}' (reason: #{
     reason}) #{times} but it did fire it #{@times} times"

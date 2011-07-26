@@ -228,7 +228,8 @@ package controllers.units
          var players:Object = PlayerFactory.fromHash(playersHash);
          for each (var routeData:Object in routes)
          {
-            var route:MRoute = createRoute(routeData);
+            var route:MRoute = createRoute
+               (routeData, routeData["playerId"] == ML.player.id ? Owner.PLAYER : Owner.ALLY);
             route.player = players[route.playerId];
          }
       }
@@ -240,10 +241,12 @@ package controllers.units
        * 
        * @return route model which has been created.
        */
-      public function createRoute(data:Object) : MRoute
+      public function createRoute(data:Object, owner:int = Owner.UNDEFINED) : MRoute
       {
          var route:MRoute = BaseModel.createModel(MRoute, data);
          route.cachedUnits.addAll(createCachedUnits(data.cachedUnits));
+         if (owner != Owner.UNDEFINED)
+            route.owner = owner;
          ROUTES.addItem(route);
          return route;
       }

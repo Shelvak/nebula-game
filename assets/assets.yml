@@ -176,7 +176,12 @@ assets:
   "images/solar_system":
     "*":
       ".":
-        shield.png: EnergyShield.png
+        shield.png: 
+          wiki_name: EnergyShield.png
+          "flex": {save_as: "swf:png"}
+        dead_star_0.png: DeadSystem0.png
+        dead_star_1.png: DeadSystem1.png
+        dead_star_2.png: DeadSystem2.png
         wormhole.png:
           wiki_name: Wormhole.png
           "flex": {save_as: "swf:png"}
@@ -584,6 +589,17 @@ assets:
         top_left3.png:                 St_window_top_left3.png
         top_center.png:                St_window_top_center.png
         top_right.png:                 St_window_top_right.png
+        scont_top_left.png:         Load_top_left.png
+        scont_top_center.png:       Load_top_center.png
+        scont_top_right.png:        Load_top_right.png
+        scont_middle_left.png:      Load_center_left.png
+        scont_middle_right.png:     Load_center_right.png
+        scont_bottom_left.png:      Load_bottom_left.png
+        scont_bottom_center.png:    Load_bottom_center.png
+        scont_bottom_right.png:     Load_bottom_end.png
+        scont_button_left.png:      Load_button_left.png
+        scont_button_center.png:    Load_button_center.png
+        scont_button_right.png:     Load_button_right.png
 
       "defensive_portal_screen":
         table_top.png:                Portal_top_table_top.png
@@ -928,6 +944,23 @@ assets:
         hint_bottom_right.png:    Hint_bottom_right.png
         hint_center_left.png:     Hint_center_left.png
         hint_center_right.png:    Hint_center_right.png
+        locs_left.png:        Uss_bar_left.png
+        locs_center.png:      Uss_bar_repeat.png
+        locs_right.png:       Uss_bar_right.png
+        locs_location.png:    Uss_bar_location.png
+        cont_top_lctrls_left.png:      Uss_window_top_buttons_left.png
+        cont_top_lctrls_center.png:    Uss_window_top_buttons_center.png
+        cont_top_lctrls_right.png:     Uss_window_top_buttons_right.png
+        cont_top_center.png:           Uss_window_top_center.png
+        cont_top_right.png:            Uss_window_top_end.png
+        cont_top_rctrls_left.png:      Uss_window_top_storage_left.png
+        cont_top_rctrls_center.png:    Uss_window_top_storage_center.png
+        cont_top_rctrls_right.png:     Uss_window_top_storage_right.png
+        cont_middle_left.png:          Uss_window_center_left.png
+        cont_middle_right.png:         Uss_window_center_right.png
+        cont_bottom_left.png:          Uss_window_bottom_left.png
+        cont_bottom_center.png:        Uss_window_bottom_center.png
+        cont_bottom_right.png:         Uss_window_bottom_right.png 
 
       "notifications":
         location_background.jpg:     Window.jpg

@@ -15,18 +15,10 @@
 
 
 /* UI ELEMENTS SKINS */ 
-s|Application {
-   skin-class: ClassReference("components.skins.ApplicationContainerSkin");
-}
-s|SkinnableContainer #topToolbarContainer {
-   skin-class: ClassReference("components.skins.TopToolbarContainerSkin");
-}
-s|SkinnableContainer #rightSidebarContainer {
+s|SkinnableContainer .rightSidebarContainer {
    skin-class: ClassReference("components.skins.RightSidebarContainerSkin");
 }
-s|SkinnableContainer #bottomToolbarContainer {
-   skin-class: ClassReference("components.skins.BottomToolbarContainerSkin");
-}
+
 mx|ProgressBar {
    bar-skin: ClassReference("components.skins.ProgressBarSkin");
    mask-skin: ClassReference("components.skins.ProgressMaskSkin");
@@ -65,26 +57,4 @@ s|TabBar {
 }
 s|List {
    skin-class: ClassReference("components.skins.ListScrollableSkin");
-}
-
-
-/* CUSTOM COMPONENTS SKINS */
-base|Panel {
-   skin-class: ClassReference("components.skins.PanelSkin");
-}
-menus|MainMenu #menuItems,
-menus|DeveloperMenu #menuItems {
-   skin-class: ClassReference("components.menus.skins.MainMenuItemsSkin");
-}
-viewport|ViewportZoomable {
-   skin-class: ClassReference("components.base.skins.ViewportSkin");
-}
-buildingsidebar|FacilitiesElement {
-	skin-class: ClassReference("components.skins.FacilitiesElementSkin");
-}
-buildingsidebar|BonusLabel {
-   skin-class: ClassReference("components.skins.BonusLabelSkin");
-}
-menus|NavigatorButton {
-   skin-class: ClassReference("components.menus.skins.NavigatorButtonSkin");
 }

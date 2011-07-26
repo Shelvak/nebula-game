@@ -528,6 +528,12 @@ describe DispatcherEventHandler do
         DispatcherEventHandler.resolve_location(obj.location)
     end
 
+    it "should resolve SolarSystem" do
+      ss = Factory.create(:solar_system)
+      DispatcherEventHandler.resolve_objects(ss, :reason).should ==
+        DispatcherEventHandler.resolve_location(ss.galaxy_point)
+    end
+
     it "should resolve SolarSystemMetadata" do
       ss = Factory.create(:solar_system)
       obj = SolarSystemMetadata.new(:id => ss.id)

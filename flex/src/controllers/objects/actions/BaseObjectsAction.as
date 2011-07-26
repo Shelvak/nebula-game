@@ -14,8 +14,7 @@ package controllers.objects.actions
    public class BaseObjectsAction extends CommunicationAction
    {
       protected static const CUSTOM_CONTROLLERS:Object = new Object();
-      with (ObjectClass)
-      {
+      with (ObjectClass) {
          CUSTOM_CONTROLLERS[UNIT]                     = UnitController.getInstance();
          CUSTOM_CONTROLLERS[ROUTE]                    = RouteController.getInstance();
          CUSTOM_CONTROLLERS[WRECKAGE]                 = WreckageController.getInstance();
@@ -28,6 +27,7 @@ package controllers.objects.actions
          CUSTOM_CONTROLLERS[CONSTRUCTION_QUEUE_ENTRY] = ConstructionQueueEntryController.getInstance();
          CUSTOM_CONTROLLERS[SS_METADATA]              = SSMetadataController.getInstance();
          CUSTOM_CONTROLLERS[COOLDOWN]                 = CooldownController.getInstace();
+         CUSTOM_CONTROLLERS[SOLAR_SYSTEM]             = SolarSystemController.getInstance();
       }
       
       

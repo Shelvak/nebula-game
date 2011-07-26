@@ -92,129 +92,6 @@ module Arturaz
       self.replace shuffle
     end
 
-    # Hash by given block.
-    #
-    # Example:
-    # [
-    #   {:id => 1, :name => '1'},
-    #   {:id => 2, :name => '2'},
-    #   {:id => 3, :name => '3'},
-    # ].hash_by { |item| item[:id] }.should == {
-    #   1 => {:id => 1, :name => '1'},
-    #   2 => {:id => 2, :name => '2'},
-    #   3 => {:id => 3, :name => '3'}
-    # }
-    #
-    def hash_by
-      hash = {}
-      each do |item|
-        hash[yield item] = item
-      end
-      hash
-    end
-
-    # Acts as #group_by. Groups array by given block but retuns Hash instead
-    # of Array.
-    #
-    # Example:
-    #  class GroupToHashTest
-    #    def initialize(num); @num = num; end
-    #    def test; "%03d" % @num; end
-    #  end
-    #
-    #  g1 = GroupToHashTest.new(1)
-    #  g2 = GroupToHashTest.new(3)
-    #  g3 = GroupToHashTest.new(1)
-    #
-    #  [g1, g2, g3].group_to_hash { |i| i.test }.should == {
-    #    "001" => [g1, g3],
-    #    "003" => [g2]
-    #  }
-    #
-    def group_to_hash
-      grouped = {}
-
-      each do |item|
-        group_id = yield item
-        grouped[group_id] ||= []
-        grouped[group_id].push item
-      end
-
-      grouped
-    end
-
-    # Groups given array members and returns a hash consisting of
-    # type => count pairs. If block is given it determines type by block
-    # return value. Members are used otherwise.
-    # 
-    # Example:
-    #  class GroupedCountsByTest
-    #    def initialize(num); @num = num; end
-    #    def test; "%03d" % @num; end
-    #  end
-    #
-    #  [
-    #    GroupedCountsByTest.new(1),
-    #    GroupedCountsByTest.new(3),
-    #    GroupedCountsByTest.new(3),
-    #    GroupedCountsByTest.new(1),
-    #    GroupedCountsByTest.new(5),
-    #    GroupedCountsByTest.new(5),
-    #    GroupedCountsByTest.new(1)
-    #  ].grouped_counts { |i| i.test }.should == {
-    #    "001" => 3,
-    #    "003" => 2,
-    #    "005" => 2
-    #  }
-    def grouped_counts(&block)
-      grouped = {}
-
-      each do |item|
-        item = block_given? ? block.call(item) : item
-        grouped[item] ||= 0
-        grouped[item] += 1
-      end
-
-      grouped
-    end
-
-    # Acts like #map but returns +Hash+ of {original => mapped} pairs
-    # instead of +Array+.
-    #
-    # Example:
-    # [1,2,3].map_to_hash { |i| i ** 2 }.should == {
-    #   1 => 1,
-    #   2 => 4,
-    #   3 => 9
-    # }
-    #
-    def map_to_hash
-      hash = {}
-      each do |item|
-        hash[item] = yield(item)
-      end
-      hash
-    end
-
-    # Acts like #map but returns +Hash+ of {key => value} pairs
-    # instead of +Array+. Your block must return [key, value] pairs.
-    #
-    # Example:
-    #  [1,2,3].map_into_hash { |i| [i.to_s, i ** 2] }.should == {
-    #    "1" => 1,
-    #    "2" => 4,
-    #    "3" => 9
-    #  }
-    #
-    def map_into_hash
-      hash = {}
-      each do |item|
-        key, value = yield(item)
-        hash[key] = value
-      end
-      hash
-    end
-
     # Same as Array#uniq but accepts block argument which result will
     # be used for determining which values are unique.
     #
@@ -687,6 +564,16 @@ class Object
   end
 end
 
+class Range
+  def *(value)
+    (first * value)..(last * value)
+  end
+  
+  def /(value)
+    (first / value)..(last / value)
+  end
+end
+
 class Random
   # Return boolean value based on integer _chance_.
   def self.chance(chance)
@@ -695,6 +582,129 @@ class Random
 end
 
 module Enumerable
+  # Hash by given block.
+  #
+  # Example:
+  # [
+  #   {:id => 1, :name => '1'},
+  #   {:id => 2, :name => '2'},
+  #   {:id => 3, :name => '3'},
+  # ].hash_by { |item| item[:id] }.should == {
+  #   1 => {:id => 1, :name => '1'},
+  #   2 => {:id => 2, :name => '2'},
+  #   3 => {:id => 3, :name => '3'}
+  # }
+  #
+  def hash_by
+    hash = {}
+    each do |item|
+      hash[yield item] = item
+    end
+    hash
+  end
+
+  # Acts as #group_by. Groups array by given block but retuns Hash instead
+  # of Array.
+  #
+  # Example:
+  #  class GroupToHashTest
+  #    def initialize(num); @num = num; end
+  #    def test; "%03d" % @num; end
+  #  end
+  #
+  #  g1 = GroupToHashTest.new(1)
+  #  g2 = GroupToHashTest.new(3)
+  #  g3 = GroupToHashTest.new(1)
+  #
+  #  [g1, g2, g3].group_to_hash { |i| i.test }.should == {
+  #    "001" => [g1, g3],
+  #    "003" => [g2]
+  #  }
+  #
+  def group_to_hash
+    grouped = {}
+
+    each do |item|
+      group_id = yield item
+      grouped[group_id] ||= []
+      grouped[group_id].push item
+    end
+
+    grouped
+  end
+
+  # Groups given array members and returns a hash consisting of
+  # type => count pairs. If block is given it determines type by block
+  # return value. Members are used otherwise.
+  # 
+  # Example:
+  #  class GroupedCountsByTest
+  #    def initialize(num); @num = num; end
+  #    def test; "%03d" % @num; end
+  #  end
+  #
+  #  [
+  #    GroupedCountsByTest.new(1),
+  #    GroupedCountsByTest.new(3),
+  #    GroupedCountsByTest.new(3),
+  #    GroupedCountsByTest.new(1),
+  #    GroupedCountsByTest.new(5),
+  #    GroupedCountsByTest.new(5),
+  #    GroupedCountsByTest.new(1)
+  #  ].grouped_counts { |i| i.test }.should == {
+  #    "001" => 3,
+  #    "003" => 2,
+  #    "005" => 2
+  #  }
+  def grouped_counts(&block)
+    grouped = {}
+
+    each do |item|
+      item = block_given? ? block.call(item) : item
+      grouped[item] ||= 0
+      grouped[item] += 1
+    end
+
+    grouped
+  end
+
+  # Acts like #map but returns +Hash+ of {original => mapped} pairs
+  # instead of +Array+.
+  #
+  # Example:
+  # [1,2,3].map_to_hash { |i| i ** 2 }.should == {
+  #   1 => 1,
+  #   2 => 4,
+  #   3 => 9
+  # }
+  #
+  def map_to_hash
+    hash = {}
+    each do |item|
+      hash[item] = yield(item)
+    end
+    hash
+  end
+
+  # Acts like #map but returns +Hash+ of {key => value} pairs
+  # instead of +Array+. Your block must return [key, value] pairs.
+  #
+  # Example:
+  #  [1,2,3].map_into_hash { |i| [i.to_s, i ** 2] }.should == {
+  #    "1" => 1,
+  #    "2" => 4,
+  #    "3" => 9
+  #  }
+  #
+  def map_into_hash
+    hash = {}
+    each do |item|
+      key, value = yield(item)
+      hash[key] = value
+    end
+    hash
+  end
+  
   def accept
     reject { |item| ! yield(item) }
   end

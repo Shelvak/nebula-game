@@ -1,5 +1,6 @@
 package utils
 {
+	import utils.bkde.as3.parsers.CompiledObject;
 	import utils.bkde.as3.parsers.MathParser;
 	
 	/**
@@ -7,7 +8,6 @@ package utils
 	 */   
 	public class StringUtil
 	{
-      private static const mathParser: MathParser = new MathParser([]);
 		/**
 		 * Transforms first letter of a given string to UPPERCASE and returns resulting string.
 		 *  
@@ -60,22 +60,82 @@ package utils
 			formula = formula.replace(/[^\d\s()+-\\*\/]/g, '');
 			return formula;
 		}
-		
-		public static function evalFormula(formula: String, params: Object = null): Number 
-		{
-         if (formula == null)
-         {
+      
+      
+      /* ########################## */
+      /* ### EVAL FORMULA START ### */
+      
+      // this variant of evalFormula is approx. 25x faster than the old one
+      // but more memory is required in return
+      
+      private static var CACHED_PARSERS:Object = new Object();
+      private static const POWER_REGEXP:RegExp = /\*\*/g;
+      private static const EMPTY_ARRAY:Array = [];
+      public static function evalFormula(formula:String, params:Object = null) : Number {
+         if (formula == null || formula == "")
             return 0;
+         var result:Number = Number(formula);
+         if (!isNaN(result))
+            return result;
+         var paramNames:Array = getParamNames(params);
+         var paramVals:Array  = getParamVals(params, paramNames);
+         var parserKey:String = formula + "::" + paramNames.join(";");
+         var cachedParser:CachedMathParser = CACHED_PARSERS[parserKey];
+         if (cachedParser == null) {
+            var usableFormula:String = formula.replace(POWER_REGEXP, "^");
+            var parser:MathParser = new MathParser(paramNames);
+            var compObject:CompiledObject = parser.doCompile(usableFormula);
+//            if (compObject.errorStatus != 0) {
+//               trace("Formula CMOPILE error!");
+//               trace("   Formula:", usableFormula);
+//               trace("   Error status:", compObject.errorStatus);
+//               trace("   Error message:", compObject.errorMes);
+//            }
+            var polishArray:Array = compObject.PolishArray;
+            cachedParser = new CachedMathParser(parser, polishArray)
+            CACHED_PARSERS[parserKey] = cachedParser;
          }
-         params['**'] = '^';
-         for (var key: String in params)
-         {
-            var formulaParts: Array = formula.split(key);
-            formula = formulaParts.join(params[key]);
+         result = cachedParser.parser.doEval(cachedParser.polishArray, paramVals);
+//         if (isNaN(result)) {
+//            trace("Formula EVAL error!")
+//            trace("   Formula:", formula);
+//            trace("   Params:", ObjectUtil.toString(paramNames));
+//            trace("   Param values:", ObjectUtil.toString(paramVals));
+//         }
+         return result;
+      }
+      
+      private static function getParamNames(paramsObj:Object) : Array {
+         if (paramsObj == null)
+            return EMPTY_ARRAY;
+         var namesArray:Array = new Array();
+         for (var name:String in paramsObj) {
+            if (paramsObj[name] != null)
+               namesArray.push(name);
          }
-         return mathParser.doEval(mathParser.doCompile(formula).PolishArray, []);
-			//return D.evalToNumber(filterFormula(formula, params));
-		}
+         namesArray.sort();
+         return namesArray;
+      }
+      
+      private static function getParamVals(paramsObj:Object, paramNames:Array) : Array {
+         if (paramsObj === null || paramNames.length == 0)
+            return EMPTY_ARRAY;
+         var vals:Array = new Array();
+         for each (var name:String in paramNames) {
+            vals.push(paramsObj[name]);
+         }
+         return vals;
+      }
+      
+      /**
+       * Clears all cached objects.
+       */
+      public static function reset() : void {
+         CACHED_PARSERS = new Object();
+      }
+      
+      /* ### EVAL FORMULA END ### */
+      /* ######################## */
 		
 		
 		/**
@@ -128,6 +188,7 @@ package utils
 		}
 		
 		
+      private static const UCLETTER_REGEXP:RegExp = /[A-Z]/;
 		/**
 		 * Transforms a given string form CamelCase to under_score notation.
 		 *  
@@ -138,13 +199,11 @@ package utils
 		public static function camelCaseToUnderscore(value:String) : String
 		{
 			if (value == null)
-			{
 				return null;
-			}
 			
-			var pattern: RegExp = /[A-Z]/;
-			
-			var transfValue: String = "";
+			var pattern:RegExp = UCLETTER_REGEXP;
+         pattern.lastIndex = -1;
+			var transfValue:String = "";
 			
 			// Each word must be in lowercase and separated using underscore
 			while (true)
@@ -204,4 +263,19 @@ package utils
          return obj;
       }
 	}
+}
+
+
+import utils.bkde.as3.parsers.MathParser;
+
+
+class CachedMathParser
+{
+   public function CachedMathParser(parser:MathParser, polishArray:Array) {
+      this.parser      = parser;
+      this.polishArray = polishArray;
+   }
+   
+   public var parser:MathParser = null;
+   public var polishArray:Array = null;
 }

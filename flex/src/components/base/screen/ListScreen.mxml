@@ -4,6 +4,7 @@
          xmlns:mx="library://ns.adobe.com/flex/mx"
          xmlns:base="components.base.*"
          xmlns:notifs="components.notifications.*"
+         xmlns:screen="components.base.screen.*"
          width="100%" height="100%"
          initialize="this_initializeHandler(event)">
    
@@ -11,18 +12,14 @@
       <![CDATA[
          import mx.collections.IList;
          import mx.core.IVisualElement;
-         import mx.core.UIComponent;
          import mx.events.CollectionEvent;
          import mx.events.FlexEvent;
          
          import spark.components.DataGroup;
-         import spark.components.SkinnableContainer;
          import spark.components.SkinnableDataContainer;
          import spark.layouts.HorizontalAlign;
          
          import utils.Objects;
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
          
          
@@ -97,13 +94,21 @@
             return null;
          }
          
+         /**
+          * A button that will be placed at the bottom right corner of the screen. Optional.
+          * Should allways return the same instance.
+          */
+         protected function get closeButton() : Group {
+            return null;
+         }
+         
          private function this_initializeHandler(event:FlexEvent) : void {
             dataProvider.addEventListener(
                CollectionEvent.COLLECTION_CHANGE,
                dataProvider_collectionChangeHandler, false, 0, true
             );
             updateDataProviderEmpty();
-            lblScreenTitle.text = title;
+            header.title = title;
             lblEmptyListMessage.text = emptyListMessage;
          }
          
@@ -144,13 +149,15 @@
                controlButtons.layout = controlButtonsLayout;
                controlButtons.right = 5;
                controlButtons.top = 5;
-               addElement(controlButtons);
+               header.controls = controlButtons;
             }
-         }
-         
-         
-         private function getImage(name:String) : BitmapData {
-            return ImagePreloader.getInstance().getImage(AssetNames.NOTIFICATION_IMAGE_FOLDER + name);
+            
+            if (closeButton != null) {
+               closeButton.right = 0;
+               var grpCloseButton:Group = new Group();
+               grpCloseButton.addElement(closeButton);
+               grpContent.addElement(grpCloseButton);
+            }
          }
          
          private function getString(property:String, parameters:Array = null) : String {
@@ -159,25 +166,22 @@
       ]]>
    </fx:Script>
    
-   <!-- background -->
-   <s:Rect left="0" right="0" top="0" bottom="0">
-      <s:fill>
-         <s:SolidColor color="0x080C08"/>
-      </s:fill>
-   </s:Rect>
+   <screen:ScreenBackground/>
    
-   <!-- top artwork -->
-   <s:Group left="0" right="0" top="0">
+   <s:Group id="grpContent" left="0" right="0" top="0" bottom="0">
       <s:layout>
-         <s:HorizontalLayout gap="0"/>
+         <s:VerticalLayout horizontalAlign="justify" gap="0"/>
       </s:layout>
-      <s:BitmapImage source="{getImage('screen_top_left')}"/>
-      <s:BitmapImage source="{getImage('screen_top_right')}" width="100%"/>
+      <screen:ScreenHeader id="header" headerFromContentSeparatorVisible="{headerFromListSeparatorVisible}"/>
+      <s:Group height="100%">
+         <!--- Scroller for scrolling the content of the list -->
+         <base:Scroller id="contentScroller" stepMultiplier="10" left="0" right="0" top="0" bottom="0"
+                        skinClass="components.base.screen.ListScreenScrollerSkin">
+            <!--- Container of a list (viewport of list scroller) -->
+            <s:Group id="grpListContainer" width="100%"/>
+         </base:Scroller>
+      </s:Group>
    </s:Group>
-   
-   <!--- Label for screen title -->
-   <s:Label id="lblScreenTitle" left="10" top="20" width="375"
-            fontSize="20" fontWeight="bold" color="0xEEC500" textAlign="center"/>
    
    <!--- Group that holds legend of list colors -->
    <s:Group id="grpColorLegend" left="0" top="55" visible="{colorLegendVisible}">
@@ -190,23 +194,4 @@
    <!--- Empty list message label -->
    <s:Label id="lblEmptyListMessage" visible="{_dataProviderEmpty}" verticalCenter="0" horizontalCenter="0"
             fontSize="36" fontWeight="bold" color="0x1C1C1C"/>
-   
-   <s:Group left="0" right="0" top="71" bottom="0">
-      <s:layout>
-         <s:VerticalLayout horizontalAlign="justify" gap="0"/>
-      </s:layout>
-      <s:Line xFrom="0" xTo="10"
-              visible="{headerFromListSeparatorVisible}"
-              includeInLayout="{headerFromListSeparatorVisible}">
-         <s:stroke>
-            <s:SolidColorStroke color="0x040404"/>
-         </s:stroke>
-      </s:Line>
-      <!--- Scroller for scrolling the content of the list -->
-      <base:Scroller id="contentScroller" stepMultiplier="10" height="100%"
-                     skinClass="components.base.screen.ListScreenScrollerSkin">
-         <!--- Container of a list (viewport of list scroller) -->
-         <s:Group id="grpListContainer" width="100%"/>
-      </base:Scroller>
-   </s:Group>
 </s:Group>

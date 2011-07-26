@@ -160,12 +160,9 @@ package models
       /**
        * A solar system that user is acting in at the time (or recently was). 
        */
-      public function set latestSolarSystem(value:SolarSystem) : void
-      {
-         if (_latestSolarSystem != value)
-         {
-            if (_latestSolarSystem)
-            {
+      public function set latestSolarSystem(value:SolarSystem) : void {
+         if (_latestSolarSystem != value) {
+            if (_latestSolarSystem) {
                NAV_CTRL.destroyOldMap(MainAreaScreens.SOLAR_SYSTEM);
                _latestSolarSystem.setFlag_destructionPending();
                _latestSolarSystem.cleanup();
@@ -176,8 +173,7 @@ package models
       /**
        * @private
        */
-      public function get latestSolarSystem() : SolarSystem
-      {
+      public function get latestSolarSystem() : SolarSystem {
          return _latestSolarSystem;
       }
       

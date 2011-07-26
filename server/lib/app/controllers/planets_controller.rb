@@ -16,7 +16,7 @@ class PlanetsController < GenericController
   # - cooldown_ends_at (Time): date for cooldown for this planet or nil
   #
   def action_show
-    param_options :required => %w{id}
+    param_options :required => {:id => Fixnum}
 
     planet = SsObject::Planet.find(params['id'])
 
@@ -81,7 +81,8 @@ class PlanetsController < GenericController
   # - y (Fixnum): y of foliage end
   #
   def action_explore
-    param_options :required => %w{planet_id x y}
+    param_options :required => {:planet_id => Fixnum, :x => Fixnum,
+      :y => Fixnum}
 
     planet = SsObject::Planet.where(:player_id => player.id).find(
       params['planet_id'])
@@ -112,7 +113,7 @@ class PlanetsController < GenericController
   # Pushes: objects|updated with planet
   #
   def action_edit
-    param_options :required => %w{id}, :valid => %w{name}
+    param_options :required => {:id => Fixnum}, :valid => %w{name}
 
     planet = SsObject::Planet.where(:player_id => player.id).find(
       params['id'])
@@ -144,7 +145,8 @@ class PlanetsController < GenericController
   # Response: None
   #
   def action_boost
-    param_options :required => %w{id resource attribute}
+    param_options :required => {:id => Fixnum, :resource => String,
+      :attribute => String}
 
     raise GameLogicError.new("Unknown resource #{params['resource']}!") \
       unless %w{metal energy zetium}.include?(params['resource'])
@@ -185,7 +187,7 @@ class PlanetsController < GenericController
   # - teleport_volume (Fixnum): max volume of units that can be teleported
   #
   def action_portal_units
-    param_options :required => %w{id}
+    param_options :required => {:id => Fixnum}
 
     planet = SsObject::Planet.where(:player_id => player.id).
       find(params['id'])
@@ -193,5 +195,34 @@ class PlanetsController < GenericController
     respond \
       :unit_counts => Building::DefensivePortal.portal_unit_counts_for(planet),
       :teleport_volume => Building::DefensivePortal.teleported_volume_for(planet)
+  end
+  
+  # Take ownership of a free planet. To take a planet, it must belong to 
+  # NPC, you should not have enemies in that planet and you or your alliance
+  # should have units there.
+  # 
+  # Invocation: by client
+  # 
+  # Parameters:
+  # - id (Fixnum): ID of the planet you want to take
+  # 
+  # Response: None
+  #
+  def action_take
+    param_options :required => {:id => Fixnum}
+    
+    planet = SsObject::Planet.where("player_id IS NULL").find(params['id'])
+    raise GameLogicError.new(
+      "To take planet ownership you must have units in that planet!"
+    ) unless Unit.in_location(planet).where(:player_id => player.id).
+      limit(1).count > 0
+    
+    report = Combat::LocationChecker.check_for_enemies(planet.location_point)
+    raise GameLogicError.new(
+      "You cannot have any enemies to take planet ownership!"
+    ) unless report.status == Combat::CheckReport::NO_CONFLICT
+    
+    planet.player = player
+    planet.save!
   end
 end

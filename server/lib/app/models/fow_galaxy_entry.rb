@@ -86,13 +86,19 @@ class FowGalaxyEntry < ActiveRecord::Base
       should_dispatch = status == :created || status == :destroyed
 
       # Dispatch event to send new vision to players.
-      EventBroker.fire(
-        FowChangeEvent.new(player, player.alliance),
-        EventBroker::FOW_CHANGE,
-        EventBroker::REASON_GALAXY_ENTRY
-      ) if should_dispatch
+      dispatch_changed(player) if should_dispatch
 
       should_dispatch
+    end
+    
+    # Dispatches changed for galaxy map, which updates whole galaxy map in
+    # client.
+    def dispatch_changed(player, alliance=nil)
+      EventBroker.fire(
+        FowChangeEvent.new(player, alliance || player.alliance),
+        EventBroker::FOW_CHANGE,
+        EventBroker::REASON_GALAXY_ENTRY
+      )
     end
 
     # Deletes entry for _player_ at zone _rectangle_. Also removes entry
@@ -118,21 +124,13 @@ class FowGalaxyEntry < ActiveRecord::Base
     # Add all entries currently belonging to player to alliance pool.
     def assimilate_player(alliance, player)
       change_player(alliance.id, player.id, 1)
-
-      EventBroker.fire(
-        FowChangeEvent.new(player, alliance),
-        EventBroker::FOW_CHANGE,
-        EventBroker::REASON_GALAXY_ENTRY
-      )
+      dispatch_changed(player, alliance)
     end
 
     # Remove all player entries from alliance pool.
     def throw_out_player(alliance, player)
       change_player(alliance.id, player.id, -1)
-
-      EventBroker.fire(
-        FowChangeEvent.new(player, alliance),
-        EventBroker::FOW_CHANGE, EventBroker::REASON_GALAXY_ENTRY)
+      dispatch_changed(player, alliance)
     end
 
     # Returns SQL for conditions that limits things on table identified by

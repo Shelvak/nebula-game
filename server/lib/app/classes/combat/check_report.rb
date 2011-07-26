@@ -12,7 +12,7 @@ class Combat::CheckReport
   # Nothing interesting is going on in this place.
   NO_CONFLICT = :no_conflict
   # Let there be combat in this place!
-  CONFLICT = :conflict
+  COMBAT = :combat
 
   def initialize(status, alliances, nap_rules={})
     @status = status

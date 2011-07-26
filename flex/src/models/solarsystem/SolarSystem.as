@@ -33,7 +33,6 @@ package models.solarsystem
     */
    [Event(name="shieldOwnerChange", type="models.solarSystem.events.SolarSystemEvent")]
    
-   
    /**
     * Dispatched when <code>shieldEndsAt</code> property changes.
     * 
@@ -41,14 +40,12 @@ package models.solarsystem
     */
    [Event(name="shieldEndsAtChange", type="models.solarSystem.events.SolarSystemEvent")]
    
-   
    /**
     * Dispatched when <code>shieldEndsIn</code> property changes.
     * 
     * @eventType models.solarSystem.events.SolarSystemEvent.SHIELD_ENDS_IN_CHANGE
     */
    [Event(name="shieldEndsInChange", type="models.solarSystem.events.SolarSystemEvent")]
-   
    
    [Bindable]
    public class SolarSystem extends MMapSpace implements IMStaticSpaceObject, IUpdatable
@@ -178,7 +175,7 @@ package models.solarsystem
        */
       public function get isNavigable() : Boolean
       {
-         return !isShielded || _shieldOwnerId == ML.player.id;
+         return !isDead && (!isShielded || _shieldOwnerId == ML.player.id);
       }
       
       
@@ -340,6 +337,11 @@ package models.solarsystem
          return kind == SSKind.WORMHOLE;
       }
       
+      [Bindable(event="willNotChange")]
+      public function get isDead() : Boolean {
+         return kind == SSKind.DEAD_STAR;
+      }
+      
       
       /**
        * Indicates if this solar systems is global battleground system. Wormholes are not battlegrounds: just
@@ -372,7 +374,9 @@ package models.solarsystem
        */
       public function get variation() : int
       {
-         return id % Config.getSolarSystemVariations();
+         return isDead ?
+            id % 3 :
+            id % Config.getSolarSystemVariations();
       }
       
       
@@ -380,17 +384,13 @@ package models.solarsystem
       public function get imageData() : BitmapData
       {
          if (isMiniBattleground)
-         {
             return IMG.getImage(AssetNames.MINI_BATTLEGROUND_IMAGE_NAME);
-         }
          else if (isWormhole || isGlobalBattleground)
-         {
             return IMG.getImage(AssetNames.WORMHOLE_IMAGE_NAME);
-         }
+         else if (isDead)
+            return IMG.getImage(AssetNames.getDeadStarImageName(variation));
          else
-         {
             return IMG.getImage(AssetNames.getSSImageName(variation));
-         }
       }
       
       

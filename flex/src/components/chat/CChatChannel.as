@@ -13,15 +13,12 @@ package components.chat
    import models.chat.MChatChannelPrivate;
    import models.chat.events.MChatChannelEvent;
    
-   import mx.core.ClassFactory;
-   
    import spark.components.Button;
    import spark.components.Group;
    import spark.components.Label;
    import spark.components.TextArea;
    import spark.components.TextInput;
    import spark.components.supportClasses.SkinnableComponent;
-   import spark.skins.spark.DefaultItemRenderer;
    
    import utils.locale.Localizer;
    
@@ -37,8 +34,7 @@ package components.chat
     */
    public class CChatChannel extends SkinnableComponent
    {
-      public function CChatChannel()
-      {
+      public function CChatChannel() {
          super();
          minWidth = 0;
          minHeight = 0;
@@ -54,14 +50,10 @@ package components.chat
       
       private var _modelOld:MChatChannel;
       private var _model:MChatChannel;
-      public function set model(value:MChatChannel) : void
-      {
-         if (_model != value)
-         {
+      public function set model(value:MChatChannel) : void {
+         if (_model != value) {
             if (_modelOld == null)
-            {
                _modelOld = _model;
-            }
             _model = value;
             f_modelChanged = true;
             invalidateProperties();
@@ -70,8 +62,7 @@ package components.chat
       /**
        * @private
        */
-      public function get model() : MChatChannel
-      {
+      public function get model() : MChatChannel {
          return _model;
       }
       
@@ -82,25 +73,20 @@ package components.chat
       protected override function commitProperties() : void
       {
          super.commitProperties();
-         if (f_modelChanged)
-         {
-            if (_modelOld != null)
-            {
+         if (f_modelChanged) {
+            if (_modelOld != null) {
                _modelOld.content.text.removeEventListener(
                   CompositionCompleteEvent.COMPOSITION_COMPLETE,
                   textFlow_compositionCompleteHandler
                );
                txtContent.textFlow = null;
                if (_modelOld is MChatChannelPrivate)
-               {
                   MChatChannelPrivate(_modelOld).removeEventListener(
                      MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE, model_isFriendOnlineChangeHandler, false
                   );
-               }
                _modelOld = null;
             }
-            if (_model != null)
-            {
+            if (_model != null) {
                _model.content.text.addEventListener(
                   CompositionCompleteEvent.COMPOSITION_COMPLETE,
                   textFlow_compositionCompleteHandler
@@ -109,14 +95,11 @@ package components.chat
                lstMembers.model = _model.members;
                lstMembers.itemRendererFunction = _model.membersListIRFactory;
                if (_model is MChatChannelPrivate)
-               {
                   MChatChannelPrivate(_model).addEventListener(
                      MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE, model_isFriendOnlineChangeHandler, false, 0, true
                   );
-               }
             }
-            else
-            {
+            else {
                lstMembers.model = null;
                lstMembers.itemRendererFunction = null;
             }
@@ -132,13 +115,11 @@ package components.chat
       /* ### SKIN ### */
       /* ############ */
       
-      
       [SkinPart(required="true")]
       /**
        * All messages are put here.
        */
       public var txtContent:TextArea;
-      
       
       [SkinPart(required="true")]
       /**
@@ -146,13 +127,11 @@ package components.chat
        */
       public var lstMembers:CChatChannelMembers;
       
-      
       [SkinPart(required="true")]
       /**
        * Input field for entering messages.
        */
       public var inpMessage:TextInput;
-      
       
       [SkinPart(required="true")]
       /**
@@ -160,14 +139,12 @@ package components.chat
        */
       public var btnSend:Button;
       
-      
       [SkinPart(required="true")]
       /**
        * Container for <code>lblFriendOfflineWarning</code> and corresponding artwork.
        */
       public var grpFriendOfflineWarningContainer:Group;
-      private function updateGrpFriendOfflineWarningContainer() : void
-      {
+      private function updateGrpFriendOfflineWarningContainer() : void {
          grpFriendOfflineWarningContainer.visible =
          grpFriendOfflineWarningContainer.includeInLayout =
             _model != null &&
@@ -175,18 +152,14 @@ package components.chat
             !MChatChannelPrivate(_model).isFriendOnline;
       }
       
-      
       [SkinPart(required="true")]
       /**
        * A warning that a friend in a private channel is offline.
        */
       public var lblFriendOfflineWarning:Label;
       
-      
-      protected override function partAdded(partName:String, instance:Object) : void
-      {
+      protected override function partAdded(partName:String, instance:Object) : void {
          super.partAdded(partName, instance);
-         
          switch (instance)
          {
             case txtContent:
@@ -214,11 +187,8 @@ package components.chat
          }
       }
       
-      
-      protected override function partRemoved(partName:String, instance:Object) : void
-      {
+      protected override function partRemoved(partName:String, instance:Object) : void {
          super.partRemoved(partName, instance);
-         
          switch (instance)
          {
             case inpMessage:
@@ -248,27 +218,18 @@ package components.chat
       /* ################################# */
       
       
-      private function textFlow_compositionCompleteHandler(event:CompositionCompleteEvent) : void
-      {
+      private function textFlow_compositionCompleteHandler(event:CompositionCompleteEvent) : void {
          if (txtContent.scroller != null &&
              txtContent.scroller.verticalScrollBar != null)
-         {
             txtContent.scroller.verticalScrollBar.value = Number.MAX_VALUE;
-         }
       }
       
-      
-      private function inpMessage_keyUpHandler(event:KeyboardEvent) : void
-      {
+      private function inpMessage_keyUpHandler(event:KeyboardEvent) : void {
          if (event.keyCode == Keyboard.ENTER)
-         {
             sendMessage();
-         }
       }
       
-      
-      private function btnSend_clickHandler(event:MouseEvent) : void
-      {
+      private function btnSend_clickHandler(event:MouseEvent) : void {
          sendMessage();
       }
       
@@ -277,21 +238,10 @@ package components.chat
       /* ### LOGIC ### */
       /* ############# */
       
-      
-      private function sendMessage() : void
-      {
-         // send message if it's not empty
+      private function sendMessage() : void {
          var message:String = StringUtil.trim(inpMessage.text);
          if (message.length > 0)
-         {
             _model.sendMessage(message);
-//            var msg:MChatMessage = MChatMessage(MChat.getInstance().messagePool.borrowObject());
-//            msg.playerId = 1;
-//            msg.playerName = "mikism";
-//            msg.time = new Date();
-//            msg.message = message;
-//            _model.messageSendSuccess(msg);
-         }
          inpMessage.text = "";
       }
       
@@ -300,9 +250,7 @@ package components.chat
       /* ### HELPERS ### */
       /* ############### */
       
-      
-      private function getString(property:String, parameters:Array = null) : String
-      {
+      private function getString(property:String, parameters:Array = null) : String {
          return Localizer.string("Chat", property, parameters);
       }
    }

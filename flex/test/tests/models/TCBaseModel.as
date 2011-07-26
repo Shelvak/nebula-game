@@ -7,7 +7,6 @@ package tests.models
    import org.hamcrest.assertThat;
    import org.hamcrest.core.throws;
    import org.hamcrest.object.equalTo;
-   import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.notNullValue;
    
    import tests.models.classes.ModelNested;
@@ -109,7 +108,7 @@ package tests.models
          assertThat( model.required, equalTo ("required") );
          assertThat( model.optional, equalTo ("optional") );
          assertThat( model.requiredModel, notNullValue() );
-      }
+      };
    }
 }
 
@@ -117,8 +116,6 @@ package tests.models
 import flash.geom.Point;
 
 import models.BaseModel;
-
-import mx.collections.ArrayCollection;
 
 
 class ModelInvalidMetadata extends BaseModel

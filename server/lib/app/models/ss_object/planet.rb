@@ -204,12 +204,13 @@ class SsObject::Planet < SsObject
     self.next_raid_at = CONFIG.eval_hashrand('raiding.delay').from_now
     CallbackManager.register(self, CallbackManager::EVENT_RAID,
       self.next_raid_at)
+    delayed_fire(self, EventBroker::CHANGED, 
+      EventBroker::REASON_OWNER_PROP_CHANGE)
   end
 
   def register_raid!
     register_raid
     save!
-    EventBroker::fire(self, EventBroker::CHANGED)
   end
 
   def raid_registered?; ! next_raid_at.nil?; end
@@ -218,12 +219,13 @@ class SsObject::Planet < SsObject
     CallbackManager.unregister(self, CallbackManager::EVENT_RAID) if \
       raid_registered?
     self.next_raid_at = nil
+    delayed_fire(self, EventBroker::CHANGED, 
+      EventBroker::REASON_OWNER_PROP_CHANGE)
   end
 
   def clear_raid!
     clear_raid
     save!
-    EventBroker::fire(self, EventBroker::CHANGED)
   end
   
   RESOURCES = [:metal, :energy, :zetium]

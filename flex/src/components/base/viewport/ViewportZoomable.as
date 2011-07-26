@@ -1,5 +1,7 @@
 package components.base.viewport
 {
+   import components.base.skins.ViewportSkin;
+   
    import flash.events.Event;
    import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
@@ -24,14 +26,13 @@ package components.base.viewport
       /* ###################### */
       
       
-      public function ViewportZoomable()
-      {
+      public function ViewportZoomable() {
          super();
+         setStyle("skinClass", ViewportSkin);
       }
       
       
-      protected override function createScroller() : Scroller
-      {
+      protected override function createScroller() : Scroller {
          return null;
       }
       

@@ -4,12 +4,14 @@
                xmlns:ns="library://ns.adobe.com/flex/mx"
                xmlns:base="components.base.*"
                xmlns:scr="components.screens.*"
-               xmlns:logging="com.adobe.ac.logging.*" 
+               xmlns:logging="com.adobe.ac.logging.*"
+               xmlns:popups="components.popups.*"
                xmlns:utils="utils.*"
+               skinClass="components.skins.ApplicationContainerSkin"
                width="100%" height="100%"
                initialize="StartupManager.loadStartupInfo()"
                applicationComplete="this_applicationCompleteHandler(event)"
-               keyDown="this_keyDownHandler(event)" xmlns:popups="components.popups.*">
+               keyDown="this_keyDownHandler(event)">
    
    
    <fx:Declarations>

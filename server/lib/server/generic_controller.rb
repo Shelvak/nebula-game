@@ -166,7 +166,7 @@ class GenericController
     if options[:valid]
       valid = (options[:valid] || [])
       valid = [valid] unless valid.is_a?(Array)
-      valid += required.keys
+      valid += required.stringify_keys.keys
       params.assert_valid_keys(valid)
     end
   end

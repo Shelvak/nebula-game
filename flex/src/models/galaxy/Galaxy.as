@@ -25,7 +25,6 @@ package models.galaxy
     */
    [Event(name="resize", type="models.galaxy.events.GalaxyEvent")]
    
-   
    /**
     * Dispatched when <code>hasWormholes</code> property have changed.
     * 
@@ -33,29 +32,20 @@ package models.galaxy
     */
    [Event(name="hasWormholesChange", type="models.galaxy.events.GalaxyEvent")]
    
-   
-   /**
-    * A galaxy. 
-    */
    public class Galaxy extends MMapSpace
    {
       private var _fowMatrixBuilder:FOWMatrixBuilder;
       
-      
-      public function Galaxy()
-      {
+      public function Galaxy() {
          super();
          _wormholes = Collections.filter(naturalObjects, filterFunction_wormholes);
          _wormholes.addEventListener(CollectionEvent.COLLECTION_CHANGE, wormholes_collectionChangeHandler);
          _solarSystems = Collections.filter(naturalObjects, filterFunction_solarSystems);
       }
       
-      
-      public override function get cached() : Boolean
-      {
+      public override function get cached() : Boolean {
          return ML.latestGalaxy != null && !ML.latestGalaxy.fake && id == ML.latestGalaxy.id;
       }
-      
       
       [Required]
       [Bindable(event="willNotChange")]
@@ -71,10 +61,8 @@ package models.galaxy
        */
       public var battlegroundId:int = 0;
       
-      
       private var _solarSystems:ListCollectionView;
-      private function filterFunction_solarSystems(ss:SolarSystem) : Boolean
-      {
+      private function filterFunction_solarSystems(ss:SolarSystem) : Boolean {
          return !ss.isWormhole;
       }
       [Bindable(event="willNotChange")]
@@ -86,15 +74,12 @@ package models.galaxy
        * [Bindable(event="willNotChange")]
        * </i></p>
        */
-      public function get solarSystems() : ListCollectionView
-      {
+      public function get solarSystems() : ListCollectionView {
          return _solarSystems;
       }
       
-      
       private var _wormholes:ListCollectionView;
-      private function filterFunction_wormholes(ss:SolarSystem) : Boolean
-      {
+      private function filterFunction_wormholes(ss:SolarSystem) : Boolean {
          return ss.isWormhole;
       }
       [Bindable(event="willNotChange")]
@@ -106,36 +91,33 @@ package models.galaxy
        * [Bindable(event="willNotChange")]
        * </i></p>
        */
-      public function get wormholes() : ListCollectionView
-      {
+      public function get wormholes() : ListCollectionView {
          return _wormholes;
       }
       
+      public function get hasMoreThanOneObject() : Boolean {
+         return objects.length > 1;
+      }
       
       /**
        * Determines if a solar system with given id, if exists, is a wormhole. If there is not such solar
        * system returns <code>false</code>.
        */
-      public function isWormhole(ssId:int) : Boolean
-      {
+      public function isWormhole(ssId:int) : Boolean {
          var ss:SolarSystem = Collections.findFirst(_wormholes,
-            function(ss:SolarSystem) : Boolean
-            {
+            function(ss:SolarSystem) : Boolean {
                return ss.id == ssId;
             }
          );
          return ss != null && ss.isWormhole;
       }
       
-      
       /**
        * Determines if the given solar system id is that of a battleground solar system.
        */
-      public function isBattleground(ssId:int) : Boolean
-      {
+      public function isBattleground(ssId:int) : Boolean {
          return ssId == battlegroundId;
       }
-      
       
       [Bindable(event="hasWormholesChange")]
       /**
@@ -145,45 +127,33 @@ package models.galaxy
        * [Bindable(event="hasWormholesChange")]
        * </i></p>
        */
-      public function get hasWormholes() : Boolean
-      {
+      public function get hasWormholes() : Boolean {
          return _wormholes.length > 0;
       }
       
-      
       [Bindable(event="resize")]
-      public function get bounds() : Rectangle
-      {
+      public function get bounds() : Rectangle {
          return _fowMatrixBuilder.getBounds();
       }
       
-      
       [Bindable(event="resize")]
-      public function get offset() : Point
-      {
+      public function get offset() : Point {
          return _fowMatrixBuilder.getCoordsOffset();
       }
       
-      
       [Bindable(event="resize")]
-      public function get canBeExplored() : Boolean
-      {
+      public function get canBeExplored() : Boolean {
          return _fowMatrixBuilder.matrixHasVisibleTiles;
       }
       
-      
-      public function get fowMatrix() : Vector.<Vector.<Boolean>>
-      {
+      public function get fowMatrix() : Vector.<Vector.<Boolean>> {
          return _fowMatrixBuilder.getMatrix();
       }
       
-      
-      public function setFOWEntries(fowEntries:Vector.<Rectangle>, units:IList) : void
-      {
+      public function setFOWEntries(fowEntries:Vector.<Rectangle>, units:IList) : void {
          _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries, naturalObjects, units);
          dispatchResizeEvent();
       }
-      
       
       /**
        * Looks and returns for a solar system with a given id.
@@ -193,16 +163,13 @@ package models.galaxy
        * @return instance of <code>SolarSystem</code> or <code>null</code>
        * if a solar system with given id does not exists.
        */
-      public function getSSById(id:int) : SolarSystem
-      {
+      public function getSSById(id:int) : SolarSystem {
          return Collections.findFirst(naturalObjects,
-            function (ss:SolarSystem) : Boolean
-            {
+            function (ss:SolarSystem) : Boolean {
                return ss.id == id;
             }
          );
       }
-      
       
       [Bindable(event="willNotChange")]
       /**
@@ -210,71 +177,49 @@ package models.galaxy
        * 
        * @see models.map.Map#mapType
        */
-      override public function get mapType() : int
-      {
+      override public function get mapType() : int {
          return MapType.GALAXY;
       };
-      
       
       /**
        * Galaxy locations are not bounded to visible map square.
        */
-      protected override function definesLocationImpl(location:LocationMinimal) : Boolean
-      {
+      protected override function definesLocationImpl(location:LocationMinimal) : Boolean {
          return location.type == LocationType.GALAXY && location.id == id;
       }
-      
       
       /**
        * Basicly does the same as <code>definesLocation()</code> but takes fog of war into account.
        */
-      public function locationIsVisible(location:LocationMinimal) : Boolean
-      {
-         if (definesLocation(location))
-         {
+      public function locationIsVisible(location:LocationMinimal) : Boolean {
+         if (definesLocation(location)) {
             var fowMatrix:Vector.<Vector.<Boolean>> = _fowMatrixBuilder.getMatrix(); 
             var x:int = location.x + offset.x;
             var y:int = location.y + offset.y;
             if (x >= 0 && x < bounds.width && y >= 0 && y < bounds.height)
-            {
                return fowMatrix[x][y];
-            }
          }
          return false;
       }
       
-      
-      protected override function get definedLocationType() : int
-      {
+      protected override function get definedLocationType() : int {
          return LocationType.GALAXY;
       }
-      
       
       protected override function setCustomLocationFields(location:Location) : void
       {
       }
       
-      
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
       
-      
-      private function wormholes_collectionChangeHandler(event:CollectionEvent) : void
-      {
-         if (hasEventListener(GalaxyEvent.HAS_WORMHOLES_CHANGE))
-         {
-            dispatchEvent(new GalaxyEvent(GalaxyEvent.HAS_WORMHOLES_CHANGE));
-         }
+      private function wormholes_collectionChangeHandler(event:CollectionEvent) : void {
+         dispatchSimpleEvent(GalaxyEvent, GalaxyEvent.HAS_WORMHOLES_CHANGE);
       }
       
-      
-      private function dispatchResizeEvent() : void
-      {
-         if (hasEventListener(GalaxyEvent.RESIZE))
-         {
-            dispatchEvent(new GalaxyEvent(GalaxyEvent.RESIZE));
-         }
+      private function dispatchResizeEvent() : void {
+         dispatchSimpleEvent(GalaxyEvent, GalaxyEvent.RESIZE);
       }
    }
 }

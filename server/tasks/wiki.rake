@@ -43,6 +43,8 @@ namespace :wiki do
               and old_opts == current_opts
             in_sync += 1
           else
+            opts_differ = old_opts != current_opts
+            
             puts
             puts "+" + ("-" * 79)
             puts "| File no.   : #{current} / #{remote_count}"
@@ -50,7 +52,11 @@ namespace :wiki do
             puts "| Remote hash: #{remote_hashes[wiki]}"
             puts "| Local file : #{local}"
             puts "| Local hash : #{local_hash}"
-            puts "| Opts differ: #{old_opts != current_opts}"
+            puts "| Opts differ: #{opts_differ}"
+            if opts_differ
+              puts "| Old: #{old_opts}"
+              puts "| New: #{current_opts}"
+            end
             puts "+" + ("-" * 79)
 
             success, hash, file = nil, nil, nil
