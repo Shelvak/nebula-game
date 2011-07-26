@@ -508,7 +508,8 @@
                         <s:Button skinClass="components.skins.CreditButtonSkin" 
                                   click="coin_clickHandler(event)"
                                   label="{Localizer.string('Credits', 'label.accelerate')}"
-                                  right="0"/>
+                                  right="0"
+                                  enabled="{_selectedModel.upgradePart.upgradeProgress &lt; 1}"/>
                      </s:Group>
                      <base:layout>
                         <s:VerticalLayout horizontalAlign="justify"/>
