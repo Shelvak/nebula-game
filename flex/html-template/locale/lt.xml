@@ -979,6 +979,7 @@
     <label.selectAccelerate value="Pasirink paspartinimą" />
     <label.credsSum value="Iš viso kredų" />
     <message.vipOrdered value="VIP sėkmingai užsakytas" />
+    <message.credsConverted value="Vip kredai sėkmingai iškeisti" />
     <title.becomeVIP value="Tapk VIP" />
     <label.becomeVIP>
       <p>Tapimas VIP nariu tau suteikia VIP dienpinigių, kuriuos gali 

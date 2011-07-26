@@ -29,6 +29,11 @@ package models.credit
          }
       }
       
+      public static function getVipConvertRate(): Number
+      {
+         
+      }
+      
       public static function getVipCost(level: int): int
       {
          return Config.getVipBonus(level)[COST];

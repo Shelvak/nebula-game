@@ -974,6 +974,7 @@
   <Credits>
     <label.accelerate value="Accelerate" />
     <message.vipOrdered value="VIP ordered successfully" />
+    <message.credsConverted value="Vip creds converted successfully" />
     <title.becomeVIP value="Become a VIP" />
     <label.becomeVIP>
       <p>
