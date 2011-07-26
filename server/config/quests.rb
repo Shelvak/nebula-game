@@ -219,7 +219,7 @@ definition = QuestDefinition.define(:debug => false) do
     have_upgraded_to Technology::ZetiumExtraction
 
     reward_cost Building::ZetiumExtractor, :count => 1.2
-  end.define(15, "Extracting Zetium") do
+  end.define(15) do
     have_upgraded_to Building::ZetiumExtractor
 
     reward_cost Building::MetalStorage, :level => 1, :count => 1
