@@ -34,13 +34,6 @@ Spork.prefork do
     )
     Dir[glob].each { |file| require file }
 
-    # Include factories
-    require 'factory_girl'
-    glob = File.expand_path(
-      File.join(File.dirname(__FILE__), 'factories', '*.rb')
-    )
-    Dir[glob].each { |file| require file }
-
     # Truncate test tables
     def cleanup_database
       ActiveRecord::Base.connection.tables.each do |table|
@@ -101,23 +94,6 @@ Spork.prefork do
     rescue Exception => e
       puts e.backtrace
     end
-
-    # Build and stub out all unnecessary validation methods
-    def Factory.build!(*args)
-      model = Factory.build(*args)
-      model.stub!(:validate_technologies).and_return(true)
-
-      model
-    end
-
-    # Create but stub out all unnecessary validation methods
-    def Factory.create!(*args)
-      model = Factory.build(*args)
-      model.stub!(:validate_technologies).and_return(true)
-      model.save!
-
-      model
-    end
     
     class Object
       # Almost the same as #should_receive but instead actually executes
@@ -155,6 +131,30 @@ Spork.each_run do
 
   ActiveRecord::Base.establish_connection(DB_CONFIG['test'])
   cleanup_database
+  
+  # Include factories
+  require 'factory_girl'
+  glob = File.expand_path(
+    File.join(File.dirname(__FILE__), 'factories', '*.rb')
+  )
+  Dir[glob].each { |file| require file }
+
+  # Build and stub out all unnecessary validation methods
+  def Factory.build!(*args)
+    model = Factory.build(*args)
+    model.stub!(:validate_technologies).and_return(true)
+
+    model
+  end
+
+  # Create but stub out all unnecessary validation methods
+  def Factory.create!(*args)
+    model = Factory.build(*args)
+    model.stub!(:validate_technologies).and_return(true)
+    model.save!
+
+    model
+  end
 
   SPEC_EVENT_HANDLER = SpecEventHandler.new
 end

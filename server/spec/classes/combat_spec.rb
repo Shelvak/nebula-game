@@ -1,179 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Combat do
-  describe ".npc_raid_unit_count" do
-    before(:all) do
-      @values = {
-        'raiding.raiders' => [
-          [3, "gnat", 5, 0],
-          [3, "gnat", 4, 1],
-          [4, "gnat", 3, 0],
-          [4, "glancer", 4, 0],
-        ]
-      }
-    end
-
-    it "should return empty array if player has too few planets" do
-      with_config_values(@values) do
-        Combat.npc_raid_unit_count(2).should == []
-      end
-    end
-
-    it "should return units when we meet threshold" do
-      with_config_values(@values) do
-        Combat.npc_raid_unit_count(3).should == [
-          ["gnat", 5, 0],
-          ["gnat", 4, 1],
-        ]
-      end
-    end
-
-    it "should return units when we meed threshold (4 planets)" do
-      with_config_values(@values) do
-        Combat.npc_raid_unit_count(4).should == [
-          ["gnat", 5 * 2 + 3, 0],
-          ["gnat", 4 * 2, 1],
-          ["glancer", 4, 0],
-        ]
-      end
-    end
-  end
-
-  describe ".npc_raid_units" do
-    before(:all) do
-      @player = Factory.create(:player, :planets_count => 3)
-      @planet = Factory.create(:planet, :player => @player)
-      Combat.should_receive(:npc_raid_unit_count).
-        with(@player.planets_count).and_return([
-          ["gnat", 2, 0],
-          ["glancer", 1, 1],
-        ])
-      @units = Combat.npc_raid_units(@planet)
-    end
-
-    it "should place units in planet" do
-      @units.each { |unit| unit.location.should == @planet.location_point }
-    end
-
-    it "should set unit flanks" do
-      @units.map(&:flank).should == [0, 0, 1]
-    end
-
-    it "should set unit levels" do
-      @units.each { |unit| unit.level.should == 1 }
-    end
-
-    it "should set unit to full hp" do
-      @units.each { |unit| unit.hp.should == unit.hit_points }
-    end
-
-    it "should not belong to any player" do
-      @units.each { |unit| unit.player.should be_nil }
-    end
-
-    it "should be correct types" do
-      @units.map { |u| u.class.to_s }.should == [
-        "Unit::Gnat",
-        "Unit::Gnat",
-        "Unit::Glancer",
-      ]
-    end
-
-    it "should not be saved" do
-      @units.each { |unit| unit.id.should be_nil }
-    end
-  end
-
-  describe ".npc_raid!" do
-    before(:each) do
-      @player = Factory.create(:player, :planets_count => 
-          CONFIG['raiding.planet.threshold'])
-      @planet = Factory.create(:planet, :player => @player)
-      @unit = Factory.create(:u_trooper, :location => @planet,
-        :player => @player, :level => 1)
-    end
-
-    it "should create npc units in planet" do
-      Combat.should_receive(:npc_raid_units).with(@planet).and_return([
-          Factory.build(:u_gnat, :location => @planet, :player => nil,
-            :level => 1)
-      ])
-      Combat.npc_raid!(@planet)
-    end
-
-    it "should run combat" do
-      Combat.should_execute(:run) do
-        Combat.npc_raid!(@planet)
-      end
-    end
-
-    it "should take away planet" do
-      @unit.destroy
-      Combat.npc_raid!(@planet)
-      @planet.reload
-      @planet.player.should be_nil
-    end
-    
-    describe "dispatching event", :shared => true do
-      it "should dispatch changed with planet" do
-        # Check if event is fired twice. This is necessary evil, because
-        # one time it's fired from Wreckage, and second time from planet 
-        # itself.
-        should_fire_event(@planet, EventBroker::CHANGED, 
-            EventBroker::REASON_OWNER_PROP_CHANGE, 2) do
-          Combat.npc_raid!(@planet)
-        end
-      end
-    end
-
-    describe "raid cleared", :shared => true do
-      it "should not register raid" do
-        @planet.should_not_receive(:register_raid!)
-        Combat.npc_raid!(@planet)
-      end
-
-      it "should clear #next_raid_at" do
-        @planet.should_receive(:clear_raid!)
-        Combat.npc_raid!(@planet)
-      end
-    end
-
-    describe "raid survived" do
-      before(:each) do
-        # Ensure player survives the raid
-        Factory.create!(:u_azure, :location => @planet,
-          :player => @player, :level => 10)
-        Factory.create!(:u_rhyno, :location => @planet,
-          :player => @player, :level => 10)
-      end
-      
-      it_should_behave_like "dispatching event"
-
-      it "should register next raid if player has enough planets" do
-        @planet.should_receive(:register_raid!)
-        Combat.npc_raid!(@planet)
-      end
-
-      describe "when there is no next raid" do
-        before(:each) do
-          @player.planets_count -= 1
-          @player.save!
-        end
-
-        it_should_behave_like "raid cleared"
-      end
-    end
-
-    describe "when npc takes the planet" do
-      before(:each) do
-        @unit.destroy
-      end
-
-      it_should_behave_like "dispatching event"
-      it_should_behave_like "raid cleared"
-    end
-  end
-
   describe "simulation" do
     describe ".parse_killed_by" do
       it "should return units" do
@@ -439,7 +266,7 @@ describe Combat do
       unit_hash[:type] == "Unit::Crow"
     end.should be_nil
   end
-  
+
   it "should win a battle where one player has nothing" do
     winner = loser = nil
     
@@ -461,6 +288,25 @@ describe Combat do
     end.run
     
     assets.should be_nil
+  end
+  
+  describe "#572: Update transporters after battle" do
+    it "should dispatch transporters even if they didn't get damage" do
+      mule = nil
+      dsl = CombatDsl.new do
+        planet = location(:planet).location
+        player = self.player(:planet_owner => true) do
+          units { mule = self.mule { trooper :hp => 1 } }
+        end
+        player { units { shocker } }
+      end
+      
+      SPEC_EVENT_HANDLER.clear_events!
+      dsl.run
+      SPEC_EVENT_HANDLER.events.find do |objects, event, reason|
+        event == EventBroker::CHANGED && objects.include?(mule)
+      end.should_not be_nil
+    end
   end
   
   describe "teleported units" do
