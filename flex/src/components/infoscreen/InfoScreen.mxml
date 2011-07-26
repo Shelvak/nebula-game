@@ -272,8 +272,8 @@
                      }
                      else if (element == Building.FEE)
                      {
-//                        currentValue = Building.getMarketTaxRate( .getWarPoints(_infoModel.type, _infoModel.usefulLevel);
-//                        newValue = Technology.getWarPoints(_infoModel.type, lvlSelector.value);
+                        currentValue = Math.round(Building.getMarketTaxRate(_infoModel.usefulLevel) * 100);
+                        newValue = Math.round(Building.getMarketTaxRate(lvlSelector.value) * 100);
                      }
                      else if (element == Building.RADAR_STRENGTH)
                      {
@@ -366,7 +366,8 @@
                         diffString = DateUtil.secondsToHumanString(newValue - currentValue);
                      }
                      
-                     if (element.indexOf(TechnologyUpgradable.MOD) == 0)
+                     if (element.indexOf(TechnologyUpgradable.MOD) == 0
+                     || element == Building.FEE)
                      {
                         newValueString += '%';
                         currentValueString += '%';
