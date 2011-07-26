@@ -75,7 +75,7 @@ package models.notification.parts
          }
          else
          {
-            if (owner != null && owner.id == oldPlayer.id)
+            if (owner != null && oldPlayer != null && owner.id == oldPlayer.id)
             {
                return Localizer.string("Notifications", "label.planetAnnexed.selfLose",
                   [location.planetName]);
