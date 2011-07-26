@@ -35,6 +35,11 @@ module Parts
       def vip_creds_per_tick
         vip_level == 0 ? 0 : CONFIG['creds.vip'][vip_level - 1][1]
       end
+  
+      # Number of creds without VIP creds.
+      def pure_creds; creds - vip_creds; end
+      # Setter for pure creds.
+      def pure_creds=(value); self.creds = value + vip_creds; end
 
       # Start VIP membership.
       def vip_start!(vip_level)
@@ -92,6 +97,38 @@ module Parts
           CallbackManager.unregister(self, CallbackManager::EVENT_VIP_STOP)
           CallbackManager.unregister(self, CallbackManager::EVENT_VIP_TICK)
         end
+      end
+  
+      # Returns conversion rate from VIP creds to regular creds. It is 
+      # dependant from players #vip_level.
+      #
+      # Returned number is how much VIP creds 1 regular cred is worth.
+      #
+      def vip_conversion_rate
+        raise GameLogicError.new("Non-vips do not have vip conversion rate!") \
+          if vip_level == 0
+
+        cost, per_day, duration = CONFIG['creds.vip'][vip_level - 1]
+        (per_day * duration / 1.day / cost).floor + 0.5
+      end
+
+      # Convert given amount of VIP creds into regular creds using 
+      # #vip_conversion_rate. End amount is floored.
+      def vip_convert(amount)
+        raise GameLogicError.new(
+          "Cannot convert negative amount of creds (#{amount}!"
+        ) unless amount > 0
+        raise GameLogicError.new("Not enough VIP creds! Wanted: #{amount
+          }, had #{vip_creds}.") unless vip_creds >= amount
+
+        converted_creds = (amount / vip_conversion_rate).floor
+        # Because self.creds have both vip and regular creds we must 
+        # subtract vip creds amount too.
+        self.creds += converted_creds - amount
+        # or else before_save handler dies.
+        self.vip_creds -= converted_creds
+
+        self
       end
     end
   end

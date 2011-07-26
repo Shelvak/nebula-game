@@ -89,6 +89,7 @@ describe Player do
       player.stub!(:vip_conversion_rate).and_return(rate)
       lambda do
         player.vip_convert(creds)
+        player.save!
       end.should change(player, :creds).by((creds / rate).floor - creds)
     end
     
@@ -96,6 +97,7 @@ describe Player do
       player = Factory.build(:player, :vip_level => 1, :vip_creds => 100)
       lambda do
         player.vip_convert(10)
+        player.save!
       end.should change(player, :vip_creds).by(-10)
     end
   end

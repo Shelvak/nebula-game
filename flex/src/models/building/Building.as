@@ -96,6 +96,7 @@ package models.building
       public static const USE: String = 'use';
       public static const STORE: String = 'store';
       public static const RADAR_STRENGTH: String = 'radar.strength';
+      public static const FEE: String = 'fee';
       public static const HEALING_COST_MOD: String = 'healing.cost.mod';
       public static const HEALING_TIME_MOD: String = 'healing.time.mod';
       

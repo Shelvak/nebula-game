@@ -120,6 +120,10 @@ class DispatcherEventHandler
           {'changes' => changes},
           nil
         )
+        @dispatcher.push_to_player(
+          player_id,
+          RoutesController::ACTION_INDEX
+        )
       end
     elsif object.is_a? Technology
       # Just silently ignore it, we pass stuff manually with this one.

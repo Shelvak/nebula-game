@@ -990,8 +990,15 @@
   </Buildings>
 
   <Credits>
+    <title.vip value="VIP" />
+    <label.currentVipLvl value="You are currently VIP level {0}" />
+    <label.convertRate value="You can trade {0} VIP creds for 1 cred" />
+    <label.selectedConvert 
+    value="{0} VIP creds selected, you would get {1 one[one cred] many[? creds]}" />
+    <label.convert value="Convert" />
     <label.accelerate value="Accelerate" />
     <message.vipOrdered value="VIP ordered successfully" />
+    <message.credsConverted value="Vip creds converted successfully" />
     <title.becomeVIP value="Become a VIP" />
     <label.becomeVIP>
       <p>
@@ -1550,6 +1557,12 @@
     <label.ok value="Ok" />
     <label.yes value="Yes" />
     <label.no value="No" />
+    
+    <title.convertCreds value="Convert creds" />
+    <message.convertCreds>
+      <p>Are you sure you want to convert {0 one[one VIP cred] many[? VIP creds]} 
+      to {1 one[one cred] many[? creds]}?</p>
+    </message.convertCreds>
     
     <title.dailyBonus value="Daily bonus" />
     <message.dailyBonus>

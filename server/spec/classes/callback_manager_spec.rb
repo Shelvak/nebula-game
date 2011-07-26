@@ -25,6 +25,28 @@ describe CallbackManager do
     end
   end
 
+  describe ".register_or_update" do
+    it "should register if requested" do
+      player = Factory.create(:player)
+      time = 10.minutes.from_now
+      CallbackManager.register_or_update(player, 
+        CallbackManager::EVENT_CHECK_INACTIVE_PLAYER, time)
+      player.should have_callback(
+        CallbackManager::EVENT_CHECK_INACTIVE_PLAYER, time)
+    end
+    
+    it "should update if already registered" do
+      player = Factory.create(:player)
+      time = 10.minutes.from_now
+      CallbackManager.register_or_update(player, 
+        CallbackManager::EVENT_CHECK_INACTIVE_PLAYER, time - 2.minutes)
+      CallbackManager.register_or_update(player, 
+        CallbackManager::EVENT_CHECK_INACTIVE_PLAYER, time)
+      player.should have_callback(
+        CallbackManager::EVENT_CHECK_INACTIVE_PLAYER, time)
+    end
+  end
+  
   describe ".tick" do
     it "should run callbacks in correct order if one callback inserts " +
     "other in the middle of timeline" do

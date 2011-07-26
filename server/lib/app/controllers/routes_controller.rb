@@ -2,6 +2,7 @@
 # Updated routes are sent via objects controller.
 #
 class RoutesController < GenericController
+  ACTION_INDEX = 'routes|index'
   # Return an array of all routes for current player and his alliance.
   #
   # Invocation: by server

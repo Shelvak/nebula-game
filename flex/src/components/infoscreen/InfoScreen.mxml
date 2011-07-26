@@ -270,6 +270,11 @@
                         currentValue = Technology.getWarPoints(_infoModel.type, _infoModel.usefulLevel);
                         newValue = Technology.getWarPoints(_infoModel.type, lvlSelector.value);
                      }
+                     else if (element == Building.FEE)
+                     {
+//                        currentValue = Building.getMarketTaxRate( .getWarPoints(_infoModel.type, _infoModel.usefulLevel);
+//                        newValue = Technology.getWarPoints(_infoModel.type, lvlSelector.value);
+                     }
                      else if (element == Building.RADAR_STRENGTH)
                      {
                         currentValue = Building.calculateRadarStrenth(_infoModel.type,

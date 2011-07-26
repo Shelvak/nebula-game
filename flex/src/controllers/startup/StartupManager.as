@@ -386,6 +386,7 @@ package controllers.startup
             bindPair(RATINGS, new controllers.players.actions.RatingsAction());
             bindPair(SHOW, new controllers.players.actions.ShowAction());
             bindPair(SHOW_PROFILE, new controllers.players.actions.ShowProfileAction());
+            bindPair(CONVERT_CREDS, new controllers.players.actions.ConvertCredsAction());
             bindPair(EDIT, new controllers.players.actions.EditAction());
             bindPair(VIP, new controllers.players.actions.VipAction());
             bindPair(STATUS_CHANGE, new StatusChangeAction());

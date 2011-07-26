@@ -12,6 +12,7 @@ class SsObject::Planet < SsObject
   include Parts::PlanetBoosts
   include Parts::Shieldable
   include Parts::DelayedEventDispatcher
+  include Parts::Raiding
 
   scope :for_player, Proc.new { |player|
     player_id = player.is_a?(Player) ? player.id : player
@@ -202,7 +203,7 @@ class SsObject::Planet < SsObject
   # Registers raid on this planet.
   def register_raid
     self.next_raid_at = CONFIG.eval_hashrand('raiding.delay').from_now
-    CallbackManager.register(self, CallbackManager::EVENT_RAID,
+    CallbackManager.register_or_update(self, CallbackManager::EVENT_RAID,
       self.next_raid_at)
     delayed_fire(self, EventBroker::CHANGED, 
       EventBroker::REASON_OWNER_PROP_CHANGE)
@@ -241,16 +242,7 @@ class SsObject::Planet < SsObject
   private
   # Set #next_raid_at.
   before_update :if => Proc.new { |r| r.player_id_changed? } do
-    old_player, new_player = player_change
-
-    # +1 is needed because counter is increased after this callback.
-    if new_player.nil? || ! Combat.should_raid?(new_player.planets_count + 1)
-      # Stop raiding if player is too weak or is NPC.
-      clear_raid
-    else
-      # Start raiding if player is getting strong.
-      register_raid unless raid_registered?
-    end
+    should_raid? ? register_raid : clear_raid
   end
 
   # Update things if player changed.
