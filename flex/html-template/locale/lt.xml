@@ -1436,6 +1436,16 @@
 
     <title.marketOfferBought value="Pasiūlymas turguje nupirktas" />
     <message.marketOfferBought value="Pasiūlymas turguje buvo nupirktas" />
+    <!-- message with link button between -->
+    <label.marketOfferBought.message1 value="Žaidėjas" />
+    <label.marketOfferBought.message2 value="nusipirko:" />
+    <label.marketOfferBought.for value="Už:" />
+    <label.marketOfferBought.amountLeft>
+    <!-- 1: metal, energy or zetium -->
+      <p>Tavo pasiūlyme dar liko {0} 
+      {1 metal[metalo] energy[energijos] zetium[zetiumo]}</p>
+    </label.marketOfferBought.amountLeft>
+    <label.allBought value="Tavo pasiūlymas buvo pilnai nupirktas." />
 
     <title.planetAnnexed.win value="Tu užkariavai planetą!" />
     <title.planetAnnexed.lose value="Tu praradai planetą!" />

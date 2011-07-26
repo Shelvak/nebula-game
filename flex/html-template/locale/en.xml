@@ -1435,6 +1435,15 @@
 
     <title.marketOfferBought value="Market offer bought" />
     <message.marketOfferBought value="Market offer bought" />
+    <!-- message with link button between -->
+    <label.marketOfferBought.message1 value="Player" />
+    <label.marketOfferBought.message2 value="has bought:" />
+    <label.marketOfferBought.for value="For:" />
+    <label.marketOfferBought.amountLeft>
+    <!-- 1: metal, energy or zetium -->
+      <p>Your offer still has {0} {1} left.</p>
+    </label.marketOfferBought.amountLeft>
+    <label.allBought value="Your offer has been bought out." />
 
     <title.planetAnnexed.win value="You have conquered this planet!" />
     <title.planetAnnexed.lose value="You have lost this planet!" />

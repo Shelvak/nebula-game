@@ -25,6 +25,7 @@ package components.notifications
          TYPE_TO_CLASS[ALLIANCE_INVITATION] = IRAllianceInvitation;
          TYPE_TO_CLASS[KICKED_FROM_ALLIANCE] = IRKickedFromAlliance;
          TYPE_TO_CLASS[ALLIANCE_JOINED] = IRAllianceJoined;
+         TYPE_TO_CLASS[MARKET_OFFER_BOUGHT] = IRMarketOfferBought;
       }
       
       
