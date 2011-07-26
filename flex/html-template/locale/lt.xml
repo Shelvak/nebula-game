@@ -973,6 +973,16 @@
   </Buildings>
 
   <Credits>
+    <title.vip value="VIP" />
+    <label.currentVipLvl value="Dabar Tu esi {0} lygio VIP" />
+    <label.convertRate value="Tu gali iškeisti {0} VIP kredų į 1 kredą" />
+    <label.selectedConvert>
+      <p>Parinkta 
+      {0 one[1 VIP kredas] 1sts[? VIP kredas] tens[? VIP kredų] many[? VIP kredai]}, 
+      už juos tu gautum {1 one[1 kredą] 1sts[? kredą] tens[? kredų] many[? kredus]}
+      </p>
+    </label.selectedConvert>
+    <label.convert value="Iškeisti" />
     <label.accelerate value="Paspartinti" />
     <label.vip value="VIP" />
     <label.whouldFinish value="Tobulinimas baigtusi už" />
@@ -1520,6 +1530,13 @@
     <label.ok value="Gerai" />
     <label.yes value="Taip" />
     <label.no value="Ne" />
+    
+    <title.convertCreds value="Iškeisti kredus" />
+    <message.convertCreds>
+      <p>Ar tikrai nori iškeisti 
+      {0 one[? VIP kredą] 1sts[? VIP kredą] tens[? VIP kredų] many[? VIP kredus]} 
+      į {1 one[? kredą] 1sts[? kredą] tens[? kredų] many[? kredus]} ?</p>
+    </message.convertCreds>
     
     <title.dailyBonus value="Dienos prizas" />
     <message.dailyBonus>
