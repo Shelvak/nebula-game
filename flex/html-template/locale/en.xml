@@ -3019,6 +3019,9 @@
   <SSObjects>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    
     <title.info value="{0} info" />
+    <!-- {0}: Planet/Jumpgate/Asteroid  
+         {1}: item name -->
+    <typeAndName value="{0} {1}" />
     <!-- TODO: fix code -->
     <type.Planet value="Planet" />
     <type.Jumpgate value="Jumpgate" />

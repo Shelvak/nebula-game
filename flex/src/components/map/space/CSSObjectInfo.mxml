@@ -50,7 +50,7 @@
       </base:layout>
       
       <!--- Name of the the object -->
-      <s:Label id="lblName" text="{ssObject.typeName} {ssObject.name}"/>
+      <s:Label id="lblName" text="{getString('typeAndName', [ssObject.typeName, ssObject.name])}"/>
       <!--- Sector -->
       <s:Label id="lblSector" text="{getSectorLabel(ssObject)}"/>
       <!--- Player name who owns this planet. -->

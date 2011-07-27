@@ -3017,6 +3017,10 @@
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->
     <title.info 
       value="{0 Planet[Planetos] Jumpgate[Šuolio vartų] Asteroid[Asteroido] Wreckage[Nuolaužų] Cooldown[Pertraukos]} informacija" />
+    <!-- {0}: Planet/Jumpgate/Asteroid  
+         {1}: item name -->
+    <typeAndName 
+      value="{0 Planet[Planeta] Jumpgate[Šuolio vartai] Asteroid[Asteroidas]} {1}" />
     <!-- TODO: fix code -->
     <type.Planet value="Planet" />
     <type.Jumpgate value="Jumpgate" />
@@ -3605,7 +3609,7 @@
     <label.deploy value="Išskleisti" />
     <label.manage value="Tvarkyti" />
     <label.withPlanets 
-      value="Su {0 one[? planeta] tens[? planetų] many[? planetų]}" />
+      value="Su {0 one[? planeta] tens[? planetų] many[? planetomis]}" />
     <label.resources value="Resursai" />
     <label.transferResources value="Perkelti" />
     <!-- 0 - resources string, 1 - 'is' or 'are' 
