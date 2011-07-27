@@ -33,7 +33,7 @@
    <base:Panel title="{Localizer.string('Market', 'title.sell')}" left="6" right="6">
       <s:RichText textFlow="{getTextFlow(
                   Localizer.string('Market', 'label.offerCount',
-                  [mScreen.offerCount, Config.getMaxMarketOffers()]))]))}"
+                  [mScreen.offerCount, Config.getMaxMarketOffers()]))}"
                   color="{mScreen.freeSlots > 0?0xffffff:0xff0000}"
                   paddingBottom="6"/>
       <s:Group>
