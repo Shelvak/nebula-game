@@ -12,7 +12,7 @@ describe klass do
     end
 
     it "should return false if there is cooldown" do
-      Cooldown.create_or_update!(@location, 1.minute.since)
+      Cooldown.create_unless_exists(@location, 1.minute.since)
       Combat::LocationChecker.check_location(@location).should be_false
     end
 

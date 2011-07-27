@@ -44,7 +44,7 @@ describe Cooldown do
     end
 
     it "should create new record if no such record exists" do
-      model = Cooldown.create_or_update!(@location, @expires_at)
+      model = Cooldown.create_unless_exists(@location, @expires_at)
       model.should_not be_new_record
     end
 
@@ -53,15 +53,16 @@ describe Cooldown do
         an_instance_of(Cooldown), CallbackManager::EVENT_DESTROY,
         @expires_at
       )
-      Cooldown.create_or_update!(@location, @expires_at)
+      Cooldown.create_unless_exists(@location, @expires_at)
     end
-
-    it "should update at callback manager if being updated" do
+    
+    it "should not do anything if record exists" do
       expires_at = @expires_at + 10.minutes
-      original = Cooldown.create_or_update!(@location, @expires_at)
-      CallbackManager.should_receive(:update).with(original,
-        CallbackManager::EVENT_DESTROY, expires_at)
-      Cooldown.create_or_update!(@location, expires_at)
+      original = Cooldown.create_unless_exists(@location, @expires_at)
+      lambda do
+        Cooldown.create_unless_exists(@location, expires_at)
+        original.reload
+      end.should_not change(original, :ends_at)
     end
   end
 

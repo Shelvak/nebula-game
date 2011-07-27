@@ -21,11 +21,8 @@ class Combat::LocationChecker
         return_status = !! assets
       end
 
-      # Only annex planet if there was actual combat in it.
-      Combat::Annexer.annex!(
-        location_point.object, check_report, 
-        assets ? assets.response['outcomes'] : nil
-      ) if location_point.type == Location::SS_OBJECT
+      annex_planet(location_point, check_report, assets) \
+        if location_point.type == Location::SS_OBJECT
 
       return_status
     end
@@ -135,6 +132,13 @@ class Combat::LocationChecker
         if ! assets.nil? && location_point.type == Location::SOLAR_SYSTEM
       
       assets
+    end
+    
+    def annex_planet(location_point, check_report, assets)
+      Combat::Annexer.annex!(
+        location_point.object, check_report, 
+        assets ? assets.response['outcomes'] : nil
+      )
     end
   end
 end

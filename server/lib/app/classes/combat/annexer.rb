@@ -38,7 +38,7 @@ class Combat::Annexer
             outcome) unless player_id.nil?
         end
         
-        Cooldown.create_or_update!(planet,
+        Cooldown.create_unless_exists(planet,
           Cfg.planet_protection_duration.from_now)
       end
     end

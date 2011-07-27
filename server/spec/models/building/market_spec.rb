@@ -5,7 +5,7 @@ require File.expand_path(
 describe Building::Market do
   describe "#full_cost" do
     it "should return amount + fee ceiled" do
-      market = Factory.create(:b_market)
+      market = Factory.create!(:b_market)
       market.should_receive(:fee).and_return(0.033)
       market.full_cost(1000).should == (1000 * 1.033).ceil
     end

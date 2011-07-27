@@ -207,12 +207,6 @@ describe PlayersController do
         invoke @action, @params
       end
       
-      it "should convert amount to int" do
-        player.should_receive(:vip_convert).with(@params['amount'])
-        @params['amount'] = @params['amount'].to_s
-        invoke @action, @params
-      end
-      
       it "should save player" do
         invoke @action, @params
         player.should be_saved
