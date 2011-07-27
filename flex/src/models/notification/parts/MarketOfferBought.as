@@ -36,7 +36,7 @@ package models.notification.parts
          if (notif != null)
          {
             var params: Object = notif.params;
-            buyer = params.buyer;
+            buyer = BaseModel.createModel(PlayerMinimal, params.buyer);
             location = BaseModel.createModel(Location, params.planet);
             fromKind = params.fromKind;
             toKind = params.toKind;
