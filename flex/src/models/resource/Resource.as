@@ -71,6 +71,57 @@ package models.resource
          return '';
       }
       
+      public static function getNotFittingResourcesString(planet: MSSObject,
+                                                          metal: Number, 
+                                                          energy: Number, 
+                                                          zetium: Number): String
+      {
+         var missingStorages: Array = [];
+         var missingAmounts: Array = [];
+         var tempStorageString: String = '';
+         if (metal + planet.metal.currentStock > planet.metal.maxStock)
+         {
+            missingStorages.push(ResourceType.METAL);
+            missingAmounts.push(metal + planet.metal.currentStock - planet.metal.maxStock);
+         }
+         if (energy + planet.energy.currentStock > planet.energy.maxStock)
+         {
+            missingStorages.push(ResourceType.ENERGY);
+            missingAmounts.push(energy + planet.energy.currentStock - planet.energy.maxStock);
+         }
+         if (zetium + planet.zetium.currentStock > planet.zetium.maxStock)
+         {
+            missingStorages.push(ResourceType.ZETIUM);
+            missingAmounts.push(zetium + planet.zetium.currentStock - planet.zetium.maxStock);
+         }
+         if (missingStorages.length == 0)
+         {
+            return null;
+         }
+         else
+         {
+            var i: int = 0;
+            for each (var res: String in missingStorages)
+            {
+               if (i > 0)
+               {
+                  if (i == missingStorages.length - 1)
+                  {
+                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
+                  }
+                  else
+                  {
+                     tempStorageString += ', ';
+                  }
+               }
+               tempStorageString += MathUtil.round(missingAmounts[i], 2).toString();
+               i++;
+               tempStorageString += ' '+Localizer.string('Resources', 'wontFit.resource', [res]);
+            }
+            return tempStorageString;
+         }
+      }
+      
       /**
        * 
        * @param planet
@@ -84,50 +135,8 @@ package models.resource
          
          if (reward && planet)
          {
-            var missingStorages: Array = [];
-            var missingAmounts: Array = [];
-            var tempStorageString: String = '';
-            if (reward.metal + planet.metal.currentStock > planet.metal.maxStock)
-            {
-               missingStorages.push(ResourceType.METAL);
-               missingAmounts.push(reward.metal + planet.metal.currentStock - planet.metal.maxStock);
-            }
-            if (reward.energy + planet.energy.currentStock > planet.energy.maxStock)
-            {
-               missingStorages.push(ResourceType.ENERGY);
-               missingAmounts.push(reward.energy + planet.energy.currentStock - planet.energy.maxStock);
-            }
-            if (reward.zetium + planet.zetium.currentStock > planet.zetium.maxStock)
-            {
-               missingStorages.push(ResourceType.ZETIUM);
-               missingAmounts.push(reward.zetium + planet.zetium.currentStock - planet.zetium.maxStock);
-            }
-            if (missingStorages.length == 0)
-            {
-               return null;
-            }
-            else
-            {
-               var i: int = 0;
-               for each (var res: String in missingStorages)
-               {
-                  if (i > 0)
-                  {
-                     if (i == missingStorages.length - 1)
-                     {
-                        tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
-                     }
-                     else
-                     {
-                        tempStorageString += ', ';
-                     }
-                  }
-                  tempStorageString += MathUtil.round(missingAmounts[i], 2).toString();
-                  i++;
-                  tempStorageString += ' '+Localizer.string('Resources', 'wontFit.resource', [res]);
-               }
-               return tempStorageString;
-            }
+            return getNotFittingResourcesString(planet, reward.metal, 
+               reward.energy, reward.zetium);
          }
          else
          {
