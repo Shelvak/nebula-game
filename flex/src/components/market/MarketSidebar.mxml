@@ -6,9 +6,15 @@
          xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
+         import config.Config;
+         
+         import flashx.textLayout.elements.TextFlow;
+         
          import models.ModelLocator;
          import models.building.Building;
          import models.market.MCMarketScreen;
+         
+         import spark.utils.TextFlowUtil;
          
          import utils.locale.Localizer;
          
@@ -17,20 +23,33 @@
          
          [Bindable]
          private var ML: ModelLocator = ModelLocator.getInstance();
+         
+         private function getTextFlow(from: String): TextFlow
+         {
+            return TextFlowUtil.importFromString(from);
+         }
       ]]>
    </fx:Script>
    <base:Panel title="{Localizer.string('Market', 'title.sell')}" left="6" right="6">
-      <market:CMarketSell left="6" right="6" top="6" bottom="6"
-                          metal="{ML.latestPlanet.ssObject.metal}"
-                          energy="{ML.latestPlanet.ssObject.energy}"
-                          zetium="{ML.latestPlanet.ssObject.zetium}"
-                          taxRate="{Building.getMarketTaxRate(
-                          mScreen.market.upgradePart.level)}"
-                          visible="{mScreen.freeSlots > 0}"
-                          includeInLayout="{mScreen.freeSlots > 0}"/>
-      <base:Warning top="6" left="6" right="6" bottom="6" 
-                    visible="{mScreen.freeSlots == 0}"
-                    includeInLayout="{mScreen.freeSlots == 0}"
-                    text="{Localizer.string('Market', 'warning.noSlots')}"/>
+      <s:RichText textFlow="{getTextFlow(
+                  Localizer.string('Market', 'label.offerCount',
+                  [mScreen.offerCount, Config.getMaxMarketOffers()]))}"
+                  color="{mScreen.freeSlots > 0?0xffffff:0xff0000}"
+                  paddingBottom="6"/>
+      <s:Group>
+         <market:CMarketSell left="0" right="0"
+            taxRate="{Building.getMarketTaxRate(
+            mScreen.market.upgradePart.level)}"
+            visible="{mScreen.freeSlots > 0}"
+            includeInLayout="{mScreen.freeSlots > 0}"/>
+         <base:Warning left="0" right="0"
+            visible="{mScreen.freeSlots == 0}"
+            includeInLayout="{mScreen.freeSlots == 0}"
+            text="{Localizer.string('Market', 'warning.noSlots')}"/>
+      </s:Group>
+      <base:layout>
+         <s:VerticalLayout paddingBottom="6" paddingLeft="6" paddingRight="6"
+                           paddingTop="6" horizontalAlign="justify"/>
+      </base:layout>
    </base:Panel>
 </s:Group>

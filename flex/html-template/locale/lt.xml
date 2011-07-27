@@ -3910,9 +3910,9 @@
     <label.cancel value="Atšaukti" />
     <label.close value="Uždaryti" />
     <label.noOffers value="Nėra pasiūlymų" />
-    <warning.noMinResource>
+    <warning.noMinResource> 
       <p>Tu neturi pakankamai {0 metal[metalo] energy[energijos] zetium[zetiumo]} 
-      minimaliam pasiūlymui</p>
+      minimaliam pasiūlymui, minimalus pasiūlymas yra {1}</p>
     </warning.noMinResource>
     <message.offerSubmited value="Pasiūlymas priimtas" />
     <message.offerGone value="Atsiprašome, šio pasiūlymo nebėra" />
@@ -3924,6 +3924,13 @@
     value="Karių turgus bus sukurtas ateityje." />
     <tooltip.notEnoughStorage value="Tavo talpyklose netilps {0}" />
     <warning.doNotAfford value="Tu neįperki šio pasiūlymo" />
+    <label.offerCount>
+      <![CDATA[
+      <p>
+        Pateikta pasiūlymų: <span fontWeight="bold">{0}/{1}</span>
+      </p>
+      ]]>
+    </label.offerCount>
   </Market>
 
 </locale>

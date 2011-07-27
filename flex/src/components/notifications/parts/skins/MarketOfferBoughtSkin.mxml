@@ -21,11 +21,11 @@
    <location:MiniLocationComp id="location"/>
    <s:Group>
       <s:layout>
-         <s:HorizontalLayout verticalAlign="middle"/>
+         <s:HorizontalLayout verticalAlign="middle" paddingTop="6"/>
       </s:layout>
-      <s:Label id="message1" fontWeight="bold"/>
+      <s:Label id="message1"/>
       <s:Button skinClass="components.skins.LinkButtonSkin" id="lblInvolvedPlayer"/>
-      <s:Label id="message2" fontWeight="bold"/>
+      <s:Label id="message2"/>
    </s:Group>
    <s:Group>
       <base:ImageAndLabel paddingLeft="10" id="fromResource" paddingRight="10"/>

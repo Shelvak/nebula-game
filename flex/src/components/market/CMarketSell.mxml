@@ -129,16 +129,9 @@
          [Bindable]
          public var taxRate: Number;
          
-         [Bindable]
-         public var metal: Resource;
-         [Bindable]
-         public var energy: Resource;
-         [Bindable]
-         public var zetium: Resource;
-         
          private function getResource(res: String): Resource
          {
-            return Resource(this[res]);
+            return Resource(ML.latestPlanet.ssObject[res]);
          }
          
          private function updateRate(): void
@@ -238,8 +231,9 @@
       </base:layout>
    </base:AdvancedContainer>
    <base:Warning text="{what.selectedItem == null?''
-                 :getText('warning.noMinResource', [what.selectedItem])}" 
+                 :getText('warning.noMinResource', [what.selectedItem, Config.getMinMarketOffer()])}" 
                  visible="{what.selectedItem != null 
-                 &amp;&amp; getResource(what.selectedItem).getWithoutTaxes(taxRate)
-                 &lt; Config.getMinMarketOffer()}"/>
+                 &amp;&amp; (getResource(what.selectedItem).getWithoutTaxes(taxRate)
+                 &lt; Config.getMinMarketOffer())}"
+                 showSign="false"/>
 </base:AdvancedContainer>
