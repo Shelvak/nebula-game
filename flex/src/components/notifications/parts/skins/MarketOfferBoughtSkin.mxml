@@ -27,9 +27,14 @@
       <s:Button skinClass="components.skins.LinkButtonSkin" id="lblInvolvedPlayer"/>
       <s:Label id="message2" fontWeight="bold"/>
    </s:Group>
-   <base:ImageAndLabel paddingLeft="10" id="fromResource"/>
-   <s:Label id="lblFor" fontWeight="bold"/>
-   <base:ImageAndLabel paddingLeft="10" id="toResource"/>
+   <s:Group>
+      <base:ImageAndLabel paddingLeft="10" id="fromResource" paddingRight="10"/>
+      <s:Label id="lblFor" fontWeight="bold"/>
+      <base:ImageAndLabel paddingLeft="10" id="toResource"/>
+      <s:layout>
+         <s:HorizontalLayout verticalAlign="middle"/>
+      </s:layout>
+   </s:Group>
    <s:Label id="lblResourcesLeft"/>
    
 </s:SparkSkin>
