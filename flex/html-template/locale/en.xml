@@ -4032,6 +4032,10 @@
     <title.section.resources value="RESOURCES" />
     <title.section.units value="UNITS" />
     <title.section.current value="{0 left[RESOURCES] right[UNITS]} MARKET" />
+    <tooltip.unitsDisabled 
+    value="Units market is currently under development." />
+    <tooltip.notEnoughStorage value="There are no enough storage for {0}" />
+    <warning.doNotAfford value="You do not afford this offer" />
   </Market>
 
 </locale>
