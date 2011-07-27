@@ -140,7 +140,7 @@
          <s:HorizontalLayout gap="0"/>
       </s:layout>
    </s:Group>
-   <base:AdvancedContainer horizontalCenter="0" bottom="8">
+   <base:AdvancedContainer horizontalCenter="0" bottom="14">
       <s:Group visible="{(ML.player.id != selectedOffer.fromId)
                &amp;&amp; !(selectedOffer.toResource == ResourceType.CREDS
                ? ML.player.creds &lt; Math.ceil(1 * selectedOffer.toRate)
