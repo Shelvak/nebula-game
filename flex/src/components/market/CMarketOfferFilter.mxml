@@ -237,13 +237,14 @@
                   fontWeight="bold" fontSize="18"
                   text="{getText('title.section.current', [mScreen.currentTab])}"/>
       </s:Group> 
-      <s:ToggleButton id="tabUnits"  name="right" 
-                      toolTip="{getText('tooltip.unitsDisabled')}"
-                      skinClass="components.market.skins.SectionTabSkin"
-                      label="{getText('title.section.units')}" 
-                      minWidth="210" fontSize="15"
-                      enabled="false"
-                      selected="{mScreen.currentTab == 'right'}"/>
+      <s:Group toolTip="{getText('tooltip.unitsDisabled')}">
+         <s:ToggleButton id="tabUnits"  name="right" 
+                         skinClass="components.market.skins.SectionTabSkin"
+                         label="{getText('title.section.units')}" 
+                         minWidth="210" fontSize="15"
+                         enabled="false"
+                         selected="{mScreen.currentTab == 'right'}"/>
+      </s:Group>
    </s:Group>
    <s:Group horizontalCenter="0" bottom="20">
       <s:Label text="{getText('filter.show')}"/>

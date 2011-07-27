@@ -1450,13 +1450,13 @@
     <!-- message with link button between -->
     <label.marketOfferBought.message1 value="Žaidėjas" />
     <label.marketOfferBought.message2 value="nusipirko:" />
-    <label.marketOfferBought.for value="Už:" />
+    <label.marketOfferBought.for value="už" />
     <label.marketOfferBought.amountLeft>
     <!-- 1: metal, energy or zetium -->
       <p>Tavo pasiūlyme dar liko {0} 
-      {1 metal[metalo] energy[energijos] zetium[zetiumo]}</p>
+      {1 metal[metalo] energy[energijos] zetium[zetiumo]}.</p>
     </label.marketOfferBought.amountLeft>
-    <label.allBought value="Tavo pasiūlymas buvo pilnai nupirktas." />
+    <label.marketOfferBought.allBought value="Tavo pasiūlymas buvo pilnai nupirktas." />
 
     <title.planetAnnexed.win value="Tu užkariavai planetą!" />
     <title.planetAnnexed.lose value="Tu praradai planetą!" />

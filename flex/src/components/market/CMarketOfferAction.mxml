@@ -55,15 +55,12 @@
             var selVal: int = selector.value;
             cost = Math.ceil(selVal * selectedOffer.toRate);
             var cPlanet: MSSObject = ML.latestPlanet.ssObject;
-            var storString: String = Resource.getMissingStoragesString(
+            var storString: String = Resource.getNotFittingResourcesString(
                cPlanet, 
-               selectedOffer.fromResource == ResourceType.METAL?
-               cPlanet.metal.currentStock + selVal:0,
-               selectedOffer.fromResource == ResourceType.ENERGY?
-               cPlanet.energy.currentStock + selVal:0,
-               selectedOffer.fromResource == ResourceType.ZETIUM?
-               cPlanet.zetium.currentStock + selVal:0);
-            if (storString == '')
+               selectedOffer.fromResource == ResourceType.METAL?selVal:0,
+               selectedOffer.fromResource == ResourceType.ENERGY?selVal:0,
+               selectedOffer.fromResource == ResourceType.ZETIUM?selVal:0);
+            if (storString == null)
             {
                missingString = null;
             }
@@ -158,7 +155,7 @@
                        / selectedOffer.toRate))}" 
                        stepSize="1"
                        id="selector" change="selector_changeHandler(event)"
-                       width="100%"/>
+                       width="250"/>
             <s:Label text="{selectedOffer.fromAmount.toString()}"/>
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle"/>
@@ -168,23 +165,21 @@
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle" gap="20"/>
             </s:layout>
-            <base:AdvancedContainer toolTip="{missingString == null?'':missingString}">
-               <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_sign')}" 
-                              width="16" height="16" smooth="true"
-                              visible="{missingString != null}"/>
-               <s:Label text="{getText('label.willBuy', [selector.value])}"/>
+            <s:Group toolTip="{missingString == null?'':missingString}">
+               <s:Label text="{getText('label.willBuy', [selector.value])}"
+                        styleName="{missingString==null?null:'unsatisfied'}"/>
                <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
                               selectedOffer.fromResource)}"/>
-               <base:layout>
-                  <s:HorizontalLayout verticalAlign="middle"/>
-               </base:layout>
-            </base:AdvancedContainer>
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="middle" gap="3"/>
+               </s:layout>
+            </s:Group>
             <s:Group>
                <s:Label text="{getText('label.willPay', [cost])}"/>
                <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
                               selectedOffer.toResource)}"/>
                <s:layout>
-                  <s:HorizontalLayout verticalAlign="middle"/>
+                  <s:HorizontalLayout verticalAlign="middle" gap="3"/>
                </s:layout>
             </s:Group>
          </s:Group>
@@ -192,7 +187,7 @@
             <s:VerticalLayout horizontalAlign="center"/>
          </s:layout>
       </s:Group>
-      <base:Warning text="{getText('warning.doNotAfford')}"
+      <base:Warning text="{getText('warning.doNotAfford')}" paddingTop="5"
                     visible="{(selectedOffer.toResource == ResourceType.CREDS
                     ? ML.player.creds &lt; Math.ceil(1 * selectedOffer.toRate)
                     : planetResource(selectedOffer.toResource).currentStock
