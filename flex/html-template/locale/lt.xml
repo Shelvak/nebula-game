@@ -3916,7 +3916,7 @@
     </warning.noMinResource>
     <message.offerSubmited value="Pasiūlymas priimtas" />
     <message.offerGone value="Atsiprašome, šio pasiūlymo nebėra" />
-    <label.onlyPlanet value="Rodyti pasiūlymus iš šios planetos" />
+    <label.onlyPlanet value="Rodyti pasiūlymus tik iš šios planetos" />
     <title.section.resources value="RESURSAI" />
     <title.section.units value="KARIAI" />
     <title.section.current value="{0 left[RESURSŲ] right[KARIŲ]} TURGUS" />
