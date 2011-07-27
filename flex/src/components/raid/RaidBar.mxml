@@ -81,7 +81,8 @@
             
             <s:Group top="25" left="10" right="10">
                <s:Label fontSize="12" fontWeight="bold" 
-                  text="{DateUtil.formatShortDateTime(ML.latestPlanet.ssObject.nextRaidAt)}" 
+                  text="{ML.latestPlanet.ssObject.nextRaidAt == null?''
+                  :DateUtil.formatShortDateTime(ML.latestPlanet.ssObject.nextRaidAt)}" 
                   left="0" right="0" textAlign="center"/>
             </s:Group>
             
