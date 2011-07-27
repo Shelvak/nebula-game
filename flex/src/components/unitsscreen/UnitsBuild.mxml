@@ -140,7 +140,12 @@
          
       ]]>
    </fx:Script>
-   <base:Scroller id="scrollCont" top="6" bottom="6" left="0"
+   <s:Rect top="0" bottom="0" left="0" right="0">
+      <s:fill>
+         <s:SolidColor color="#080808"/>
+      </s:fill>
+   </s:Rect>
+   <base:Scroller id="scrollCont" top="0" bottom="0" left="0"
                   right="0" horizontalScrollPolicy="off" 
                   stepMultiplier="5">
       <s:Group left="0" right="0" height="100%" id="vPort">
