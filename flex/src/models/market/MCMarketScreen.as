@@ -43,8 +43,10 @@ package models.market
       {
          _offerCount = value;
          freeSlots = Math.max(0, (Config.getMaxMarketOffers() - _offerCount));
+         dispatchOfferCountChangeEvent();
       }
       
+      [Bindable (event="offerCountChange")]
       public function get offerCount(): int
       {
          return _offerCount;
@@ -67,6 +69,14 @@ package models.market
          if (hasEventListener(MarketEvent.AVG_RATE_CHANGE))
          {
             dispatchEvent(new MarketEvent(MarketEvent.AVG_RATE_CHANGE));
+         }
+      }
+      
+      private function dispatchOfferCountChangeEvent(): void
+      {
+         if (hasEventListener(MarketEvent.OFFER_COUNT_CHANGE))
+         {
+            dispatchEvent(new MarketEvent(MarketEvent.OFFER_COUNT_CHANGE));
          }
       }
    }

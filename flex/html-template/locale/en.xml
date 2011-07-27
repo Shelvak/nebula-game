@@ -4025,7 +4025,9 @@
     <label.cancel value="Cancel" />
     <label.close value="Close" />
     <label.noOffers value="No offers" />
-    <warning.noMinResource value="You dont have enough {0} for minimal offer"/>
+    <warning.noMinResource> 
+      <p>You dont have enough {0} for minimal offer, minimal offer is {1}</p>
+    </warning.noMinResource>
     <message.offerSubmited value="Offer submited" />
     <message.offerGone value="Sorry, offer is already gone" />
     <label.onlyPlanet value="Show orders from this planet only" />
@@ -4036,6 +4038,13 @@
     value="Units market is currently under development." />
     <tooltip.notEnoughStorage value="There are no enough storage for {0}" />
     <warning.doNotAfford value="You do not afford this offer" />
+    <label.offerCount>
+      <![CDATA[
+      <p>
+        Currently offering: <span fontWeight="bold">{0}/{1}</span>
+      </p>
+      ]]>
+    </label.offerCount>
   </Market>
 
 </locale>
