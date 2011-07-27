@@ -10,6 +10,9 @@ class Combat::Annexer
     #
     def annex!(planet, check_report, outcomes)
       if check_report.status == Combat::CheckReport::COMBAT
+        # Don't do anything if no shots were shot.
+        return if outcomes.nil?
+        
         # There was a combat. Lets check if the owner of that planet lost.
         if outcomes[planet.player_id] == Combat::OUTCOME_LOSE
           if planet.player && planet.player.planets_count == 1

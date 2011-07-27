@@ -46,6 +46,19 @@ describe Combat::Annexer do
         end
       end
       
+      describe "when no shots were shot" do
+        before(:each) do
+          @outcomes = nil
+        end
+        
+        it "should not change planet ownership" do
+          lambda do
+            Combat::Annexer.annex!(@planet, @check_report, @outcomes)
+            @planet.reload
+          end.should_not change(@planet, :player)
+        end
+      end
+      
       describe "when owner won" do
         before(:each) do
           @outcomes[@owner.id] = Combat::OUTCOME_WIN
