@@ -297,7 +297,7 @@ package models.resource
       [Bindable (event="resourceAmmountChanged")]
       public function getWithoutTaxes(taxRate: Number): Number
       {
-         return Math.floor(_currentStock - (_currentStock / (1 + taxRate)));
+         return Math.floor(_currentStock / (1 + taxRate));
       }
       
       [Bindable (event="resourceAmmountChanged")]

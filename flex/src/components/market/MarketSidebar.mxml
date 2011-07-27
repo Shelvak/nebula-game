@@ -38,9 +38,6 @@
                   paddingBottom="6"/>
       <s:Group>
          <market:CMarketSell left="0" right="0"
-            metal="{ML.latestPlanet.ssObject.metal}"
-            energy="{ML.latestPlanet.ssObject.energy}"
-            zetium="{ML.latestPlanet.ssObject.zetium}"
             taxRate="{Building.getMarketTaxRate(
             mScreen.market.upgradePart.level)}"
             visible="{mScreen.freeSlots > 0}"
