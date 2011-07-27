@@ -29,7 +29,8 @@ package models.resource
       public static function getMissingStoragesString(planet: MSSObject,
                                               metalCost: Number, 
                                               energyCost: Number, 
-                                              zetiumCost: Number): String
+                                              zetiumCost: Number,
+                                              credsCost: Number = 0): String
       {
          var missingStorages: Array = [];
          if (ML.latestPlanet)

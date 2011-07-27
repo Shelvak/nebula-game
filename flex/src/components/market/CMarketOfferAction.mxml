@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-            xmlns:s="library://ns.adobe.com/flex/spark" 
-            xmlns:mx="library://ns.adobe.com/flex/mx" 
-            xmlns:base="components.base.*">   
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:base="components.base.*">   
    <fx:Metadata>
       /**
       * Dispatched when selected resource in radio group changes
@@ -24,6 +24,9 @@
          import models.ModelLocator;
          import models.market.MCMarketScreen;
          import models.market.MarketOffer;
+         import models.market.OfferResourceKind;
+         import models.resource.Resource;
+         import models.resource.ResourceType;
          
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
@@ -48,7 +51,21 @@
          
          protected function selector_changeHandler(event:Event):void
          {
-            cost = Math.ceil(selector.value * selectedOffer.toRate);
+            var selVal: int = selector.value;
+            cost = Math.ceil(selVal * selectedOffer.toRate);
+            var storString: String = Resource.getMissingStoragesString(
+               ML.latestPlanet.ssObject, 
+               selectedOffer.fromKind == OfferResourceKind.metal?selVal:0,
+               selectedOffer.fromKind == OfferResourceKind.energy?selVal:0,
+               selectedOffer.fromKind == OfferResourceKind.zetium?selVal:0);
+            if (storString == '')
+            {
+               missingString = null;
+            }
+            else
+            {
+               missingString = getText('tooltip.notEnoughStorage', [storString]);
+            }
          }
          
          private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
@@ -76,7 +93,7 @@
                else
                {
                   new MarketCommand(MarketCommand.BUY, {
-                     'offerId': selectedOffer.id,
+                     'offer': selectedOffer,
                      'planetId': mScreen.planetId,
                      'amount': Math.round(selector.value)
                   }).dispatch();
@@ -96,6 +113,14 @@
          {
             return IMG.getImage(AssetNames.MARKET_SCREEN_IMAGE_FOLDER + name);
          }
+
+         [Bindable]
+         private var missingString: String = null;
+         
+         private function planetResource(res: String): Resource
+         {
+            return Resource(ML.latestPlanet.ssObject[res]);
+         }
          
       ]]>
    </fx:Script>
@@ -114,11 +139,21 @@
       </s:layout>
    </s:Group>
    <base:AdvancedContainer horizontalCenter="0" bottom="15">
-      <s:Group visible="{ML.player.id != selectedOffer.fromId}">
-         <s:Group>
+      <s:Group visible="{(ML.player.id != selectedOffer.fromId)
+               &amp;&amp; !(selectedOffer.toResource == ResourceType.CREDS
+               ? ML.player.creds &lt; Math.ceil(1 * selectedOffer.toRate)
+               : planetResource(selectedOffer.toResource).currentStock
+               &lt; Math.ceil(1 * selectedOffer.toRate))}">
+         <s:Group width="100%">
             <s:Label text="0"/>
-            <s:HSlider minimum="0" maximum="{selectedOffer.fromAmount}" stepSize="1"
-                       id="selector" change="selector_changeHandler(event)"/>
+            <s:HSlider minimum="0" maximum="{Math.min(selectedOffer.fromAmount, 
+                       Math.floor(selectedOffer.toResource == ResourceType.CREDS
+                       ? ML.player.creds/selectedOffer.toRate
+                       : planetResource(selectedOffer.toResource).currentStock
+                       / selectedOffer.toRate))}" 
+                       stepSize="1"
+                       id="selector" change="selector_changeHandler(event)"
+                       width="100%"/>
             <s:Label text="{selectedOffer.fromAmount.toString()}"/>
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle"/>
@@ -128,14 +163,17 @@
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle" gap="20"/>
             </s:layout>
-            <s:Group>
+            <base:AdvancedContainer toolTip="{missingString == null?'':missingString}">
+               <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_sign')}" 
+                              width="16" height="16" smooth="true"
+                              visible="{missingString != null}"/>
                <s:Label text="{getText('label.willBuy', [selector.value])}"/>
                <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
                               selectedOffer.fromResource)}"/>
-               <s:layout>
+               <base:layout>
                   <s:HorizontalLayout verticalAlign="middle"/>
-               </s:layout>
-            </s:Group>
+               </base:layout>
+            </base:AdvancedContainer>
             <s:Group>
                <s:Label text="{getText('label.willPay', [cost])}"/>
                <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
@@ -149,13 +187,21 @@
             <s:VerticalLayout horizontalAlign="center"/>
          </s:layout>
       </s:Group>
-      
+      <base:Warning text="{getText('warning.doNotAfford')}"
+                    visible="{(selectedOffer.toResource == ResourceType.CREDS
+                    ? ML.player.creds &lt; Math.ceil(1 * selectedOffer.toRate)
+                    : planetResource(selectedOffer.toResource).currentStock
+                    &lt; Math.ceil(1 * selectedOffer.toRate))}"/>
       <s:Button label="{ML.player.id != selectedOffer.fromId
                 ?getText('label.buy')
                 :getText('label.cancel')}" 
                 right="6"
                 enabled="{ML.player.id == selectedOffer.fromId?true
                 :selector.value > 0}"
+                visible="{!(selectedOffer.toResource == ResourceType.CREDS
+                ? ML.player.creds &lt; Math.ceil(1 * selectedOffer.toRate)
+                : planetResource(selectedOffer.toResource).currentStock
+                &lt; Math.ceil(1 * selectedOffer.toRate))}"
                 skinClass="components.skins.GreenButtonSkin"
                 click="confirm(event)"/>
       <s:Button label="{getText('label.close')}" 

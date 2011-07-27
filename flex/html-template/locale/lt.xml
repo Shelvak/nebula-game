@@ -3920,6 +3920,10 @@
     <title.section.resources value="RESURSAI" />
     <title.section.units value="KARIAI" />
     <title.section.current value="{0 left[RESURSŲ] right[KARIŲ]} TURGUS" />
+    <tooltip.unitsDisabled 
+    value="Karių turgus bus sukurtas ateityje." />
+    <tooltip.notEnoughStorage value="Tavo talpyklose netilps {0}" />
+    <warning.doNotAfford value="Tu neįperki šio pasiūlymo" />
   </Market>
 
 </locale>

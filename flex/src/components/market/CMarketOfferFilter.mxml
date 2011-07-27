@@ -90,6 +90,7 @@
                selectedTo = ResourceType.ALL;
             }
             dispatchSelectedChangeEvent();
+            cancel();
          }
          
          private static const ALL_KINDS: Array = [
@@ -159,6 +160,7 @@
          {
             selectedTo = toRes.selectedItem;
             dispatchSelectedChangeEvent();
+            cancel();
          }
          
          [Bindable]
@@ -234,6 +236,7 @@
                   text="{getText('title.section.current', [mScreen.currentTab])}"/>
       </s:Group> 
       <s:ToggleButton id="tabUnits"  name="right" 
+                      toolTip="{getText('tooltip.unitsDisabled')}"
                       skinClass="components.market.skins.SectionTabSkin"
                       label="{getText('title.section.units')}" 
                       minWidth="210" fontSize="15"
