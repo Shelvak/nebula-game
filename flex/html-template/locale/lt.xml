@@ -3910,9 +3910,14 @@
     <label.cancel value="Atšaukti" />
     <label.close value="Uždaryti" />
     <label.noOffers value="Nėra pasiūlymų" />
+    <!-- {0}: metal/energy/zetium
+         {1}: minimal amount -->
     <warning.noMinResource> 
-      <p>Tu neturi pakankamai {0 metal[metalo] energy[energijos] zetium[zetiumo]} 
-      minimaliam pasiūlymui, minimalus pasiūlymas yra {1}</p>
+      <p>Tu neturi pakankamai 
+      {0 metal[metalo] energy[energijos] zetium[zetiumo]} minimaliam 
+      pasiūlymui.</p>
+      <p>Minimalus pasiūlymas yra {1} 
+      {0 metal[metalo] energy[energijos] zetium[zetiumo]}.</p>
     </warning.noMinResource>
     <message.offerSubmited value="Pasiūlymas priimtas" />
     <message.offerGone value="Atsiprašome, šio pasiūlymo nebėra" />

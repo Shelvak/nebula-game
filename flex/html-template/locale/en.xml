@@ -4025,8 +4025,11 @@
     <label.cancel value="Cancel" />
     <label.close value="Close" />
     <label.noOffers value="No offers" />
+    <!-- {0}: metal/energy/zetium
+         {1}: minimal amount -->
     <warning.noMinResource> 
-      <p>You dont have enough {0} for minimal offer, minimal offer is {1}</p>
+      <p>You dont have enough {0} for minimal offer.</p>
+      <p>Minimal offer is {1} {0}.</p>
     </warning.noMinResource>
     <message.offerSubmited value="Offer submited" />
     <message.offerGone value="Sorry, offer is already gone" />
