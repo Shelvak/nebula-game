@@ -27,6 +27,7 @@
          import models.market.OfferResourceKind;
          import models.resource.Resource;
          import models.resource.ResourceType;
+         import models.solarsystem.MSSObject;
          
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
@@ -53,11 +54,15 @@
          {
             var selVal: int = selector.value;
             cost = Math.ceil(selVal * selectedOffer.toRate);
+            var cPlanet: MSSObject = ML.latestPlanet.ssObject;
             var storString: String = Resource.getMissingStoragesString(
-               ML.latestPlanet.ssObject, 
-               selectedOffer.fromKind == OfferResourceKind.metal?selVal:0,
-               selectedOffer.fromKind == OfferResourceKind.energy?selVal:0,
-               selectedOffer.fromKind == OfferResourceKind.zetium?selVal:0);
+               cPlanet, 
+               selectedOffer.fromResource == ResourceType.METAL?
+               cPlanet.metal.currentStock + selVal:0,
+               selectedOffer.fromResource == ResourceType.ENERGY?
+               cPlanet.energy.currentStock + selVal:0,
+               selectedOffer.fromResource == ResourceType.ZETIUM?
+               cPlanet.zetium.currentStock + selVal:0);
             if (storString == '')
             {
                missingString = null;
@@ -138,7 +143,7 @@
          <s:HorizontalLayout gap="0"/>
       </s:layout>
    </s:Group>
-   <base:AdvancedContainer horizontalCenter="0" bottom="15">
+   <base:AdvancedContainer horizontalCenter="0" bottom="8">
       <s:Group visible="{(ML.player.id != selectedOffer.fromId)
                &amp;&amp; !(selectedOffer.toResource == ResourceType.CREDS
                ? ML.player.creds &lt; Math.ceil(1 * selectedOffer.toRate)
