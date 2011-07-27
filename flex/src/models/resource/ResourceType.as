@@ -1,5 +1,7 @@
 package models.resource
 {
+   import utils.locale.Localizer;
+
    /**
     * Defines constants of available resource types in the game. 
     */ 
@@ -14,6 +16,11 @@ package models.resource
       public static const TIME: String = "time";
       public static const RAID_TIME: String = "raidTime";
       public static const SCIENTISTS: String = "scientists";
+      
+      public static function resourceLabelFunction(item:Object):String
+      {
+         return Localizer.string('Resources', String(item));
+      }
    }
    
 }

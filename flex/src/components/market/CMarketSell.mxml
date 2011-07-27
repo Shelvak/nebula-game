@@ -21,6 +21,10 @@
          
          protected function what_selectedResourceChangeHandler(event:Event):void
          {
+            if (sellSelector.selectedVal < Config.getMinMarketOffer())
+            {
+               sellSelector.selectedVal = Config.getMinMarketOffer();
+            }
             if (forWhat.selectedItem == what.selectedItem)
             {
                forWhat.selectedIndex = -1;
@@ -179,14 +183,18 @@
    </fx:Script>
    <s:Label text="{getText('label.wantToSell')}" styleName="h3" paddingBottom="3"
             color="#eec500"/>
-   <s:DropDownList dataProvider="{new ArrayCollection([
-                   ResourceType.METAL,
-                   ResourceType.ENERGY,
-                   ResourceType.ZETIUM])}" 
-                   id="what"
-                   width="95%"
-                   change="what_selectedResourceChangeHandler(event)"
-                   itemRenderer="components.base.IRResource"/>
+   <s:Group>
+      <s:DropDownList dataProvider="{new ArrayCollection([
+                      ResourceType.METAL,
+                      ResourceType.ENERGY,
+                      ResourceType.ZETIUM])}" 
+                      labelFunction="{ResourceType.resourceLabelFunction}"
+                      id="what"
+                      horizontalCenter="0"
+                      width="152"
+                      change="what_selectedResourceChangeHandler(event)"
+                      itemRenderer="components.base.IRResource"/>
+   </s:Group>
    <base:AdvancedContainer visible="{what.selectedItem != null 
                            &amp;&amp; getResource(what.selectedItem).getWithoutTaxes(taxRate)
                            >= Config.getMinMarketOffer()}">
@@ -196,12 +204,15 @@
                          selectedAmmount="{sellSelector.selectedVal}"/>
       <s:Label text="{getText('label.sellFor')}" styleName="h3" paddingBottom="3" paddingTop="12"
                color="#eec500"/>
-      
-      <s:DropDownList dataProvider="{availableResList}" 
-                      id="forWhat"
-                      width="95%"
-                      change="forWhat_selectedResourceChangeHandler(event)"
-                      itemRenderer="components.base.IRResource"/>
+      <s:Group>
+         <s:DropDownList dataProvider="{availableResList}" 
+                         id="forWhat"
+                         width="152"
+                         horizontalCenter="0"
+                         labelFunction="{ResourceType.resourceLabelFunction}"
+                         change="forWhat_selectedResourceChangeHandler(event)"
+                         itemRenderer="components.base.IRResource"/>
+      </s:Group>
       <market:CMarketResourceSlider maxAmmount="{getMaxOffer(sellSelector.selectedVal)}" 
                                     minAmmount="{getMinOffer(sellSelector.selectedVal)}"
                                     visible="{forWhat.selectedItem != null}" id="forSelector"/>

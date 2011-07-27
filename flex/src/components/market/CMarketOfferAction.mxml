@@ -71,6 +71,7 @@
                if (selectedOffer.fromId == ML.player.id)
                {
                   new MarketCommand(MarketCommand.CANCEL, selectedOffer.id).dispatch();
+                  cancel();
                }
                else
                {
@@ -149,29 +150,6 @@
          </s:layout>
       </s:Group>
       
-      <s:Group visible="{ML.player.id == selectedOffer.fromId}">
-         <s:layout>
-            <s:HorizontalLayout verticalAlign="middle" gap="20"/>
-         </s:layout>
-         <s:Group>
-            <s:Label text="{getText('label.youSell', [selectedOffer.fromAmount])}"/>
-            <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
-                           selectedOffer.fromResource)}"/>
-            <s:layout>
-               <s:HorizontalLayout verticalAlign="middle"/>
-            </s:layout>
-         </s:Group>
-         <s:Group>
-            <s:Label text="{getText('label.youBuy', 
-                     [Math.ceil(selectedOffer.toRate * selectedOffer.fromAmount)])}"/>
-            <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
-                           selectedOffer.toResource)}"/>
-            <s:layout>
-               <s:HorizontalLayout verticalAlign="middle"/>
-            </s:layout>
-         </s:Group>
-      </s:Group>
-      
       <s:Button label="{ML.player.id != selectedOffer.fromId
                 ?getText('label.buy')
                 :getText('label.cancel')}" 
@@ -185,7 +163,7 @@
                 skinClass="components.skins.RedButtonSkin"
                 click="cancel(event)"/>
       <base:layout>
-         <s:HorizontalLayout verticalAlign="middle"/>
+         <s:HorizontalLayout verticalAlign="middle" gap="30"/>
       </base:layout>
    </base:AdvancedContainer>
 </s:Group>

@@ -18,6 +18,7 @@
          import models.market.MarketOffer;
          import models.player.MRatingPlayer;
          
+         import utils.DateUtil;
          import utils.MathUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
@@ -64,7 +65,8 @@
                           width="{OffersColumnsWidths.toAmount}"/>
       <s:Label text="{MathUtil.round(offer.toRate,2).toString()}" width="{OffersColumnsWidths.rate}" 
                textAlign="center"/>
-      <s:Label text="{offer.createdAt.toString()}" width="{OffersColumnsWidths.createdAt}"
+      <s:Label text="{DateUtil.formatShortDateTime(offer.createdAt)}" 
+               width="{OffersColumnsWidths.createdAt}"
                textAlign="center"/>
    </s:Group>
 </s:ItemRenderer>

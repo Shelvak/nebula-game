@@ -215,8 +215,8 @@
                         source="{getImage('tab_center_center')}"/>
          <s:BitmapImage source="{getImage('logo')}" verticalCenter="0" 
                         left="{tabLeft.width - 7}" id="logo"/>
-         <s:Label verticalCenter="0" left="{tabLeft.width + logo.width + 3}"
-                  right="{tabRight.width - 7}"
+         <s:Label verticalCenter="0" left="{tabLeft.width + logo.width}"
+                  right="{tabRight.width - 14}"
                   fontWeight="bold" fontSize="18"
                   text="{getText('title.section.current', [mScreen.currentTab])}"/>
       </s:Group> 
@@ -224,7 +224,7 @@
                       skinClass="components.market.skins.SectionTabSkin"
                       label="{getText('title.section.units')}" 
                       minWidth="210" fontSize="15"
-                      enabled="{mScreen.currentTab != 'right'}"
+                      enabled="false"
                       selected="{mScreen.currentTab == 'right'}"/>
    </s:Group>
    <s:Group horizontalCenter="0" bottom="20">
@@ -234,13 +234,15 @@
                       ResourceType.ENERGY,
                       ResourceType.ZETIUM,
                       ResourceType.ALL])}" 
+                      labelFunction="{ResourceType.resourceLabelFunction}"
                       id="from"
-                      width="100"
+                      width="152"
                       change="from_changeHandler(event)"
                       itemRenderer="components.base.IRResource"/>
       <s:Label text="{getText('filter.for')}"/>
       <s:DropDownList id="toRes" dataProvider="{toKinds}"
-                      width="100"
+                      width="152"
+                      labelFunction="{ResourceType.resourceLabelFunction}"
                       change="toRes_changeHandler(event)"
                       itemRenderer="components.base.IRResource"/>
       <s:CheckBox id="selfOnly" label="{getText('label.onlyPlanet')}"

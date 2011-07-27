@@ -4,7 +4,7 @@
                 xmlns:mx="library://ns.adobe.com/flex/mx" 
                 autoDrawBackground="true" 
                 xmlns:base="components.base.*"
-                width="100%">
+                width="150">
    <fx:Script>
       <![CDATA[
          import models.resource.ResourceType;
@@ -34,12 +34,12 @@
    <s:BitmapImage source="{type != ResourceType.ALL
                   ?ImagePreloader.getInstance().getImage(
                   AssetNames.getIconImageName(type))
-                  :null}"
-                  width="16"
+                  :null}" width="16"
+                  smooth="true"
                   visible="{type != ResourceType.ALL}"/>
    <s:Label text="{type != null?Localizer.string('Resources', type):''}" verticalCenter="1"/>
    <s:layout>
       <s:HorizontalLayout verticalAlign="middle"
-                          paddingLeft="2" paddingBottom="2" paddingRight="2" paddingTop="2"/>
+                          paddingLeft="6" paddingBottom="6" paddingRight="4" paddingTop="6"/>
    </s:layout>
 </s:ItemRenderer>
