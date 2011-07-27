@@ -45,8 +45,19 @@ package models.market
       public var selected: Boolean = false;
       
       [Required]
-      [Bindable]
-      public var fromAmount: int;
+      [Bindable (event="fromAmountChange")]
+      public function get fromAmount(): int
+      {
+         return _fromAmount;
+      }
+      
+      public function set fromAmount(value: int): void
+      {
+         _fromAmount = value;
+         dispatchFromAmountChangeEvent();
+      }
+      
+      private var _fromAmount: int;
       
       [Required]
       public function set fromKind(value: int): void
@@ -71,6 +82,12 @@ package models.market
       public function get toKind(): int
       {
          return int(OfferResourceKind[toResource]);
+      }
+      
+      [Bindable (event="fromAmountChange")]
+      public function get toAmount(): int
+      {
+         return _fromAmount * rate;
       }
       
       [Bindable]
@@ -107,6 +124,14 @@ package models.market
          if (hasEventListener(MarketEvent.OFFER_RATE_CHANGE))
          {
             dispatchEvent(new MarketEvent(MarketEvent.OFFER_RATE_CHANGE));
+         }
+      }
+      
+      private function dispatchFromAmountChangeEvent(): void
+      {
+         if (hasEventListener(MarketEvent.FROM_AMOUNT_CHANGE))
+         {
+            dispatchEvent(new MarketEvent(MarketEvent.FROM_AMOUNT_CHANGE));
          }
       }
    }

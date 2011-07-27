@@ -39,7 +39,7 @@
          private static const fromField: SortField = new SortField('from', true);
          private static const whatField: SortField = new SortField('fromAmount', false, true, true);
          private static const forWhatField: SortField = new SortField('toAmount', false, true, true);
-         private static const rateField: SortField = new SortField('rateTo', false, false, true);
+         private static const rateField: SortField = new SortField('toRate', false, false, true);
          private static const createdAtField: SortField = new SortField('createdAt', false, true);
          
          
