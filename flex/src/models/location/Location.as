@@ -67,7 +67,7 @@ package models.location
       [Bindable(event="willNotChange")]
       public function get solarSystemName() : String
       {
-         if (isMiniBattleground || isSSObject && ML.latestSolarSystem.isMiniBattleground)
+         if (isMiniBattleground || isSSObject && ML.latestGalaxy.getSSById(solarSystemId).isMiniBattleground)
          {
             return Localizer.string("Galaxy", "label.pulsar", [solarSystemId]);
          }

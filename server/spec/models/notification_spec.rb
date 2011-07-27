@@ -409,77 +409,33 @@ describe Notification do
 
   describe ".create_for_planet_annexed" do
     before(:all) do
+      @player_id = Factory.create(:player).id
       @planet = Factory.create(:planet_with_player)
-      @old_player = @planet.player
-      @new_player = Factory.create(:player)
+      @outcome = Combat::OUTCOME_LOSE
+
+      @event = Notification::EVENT_PLANET_ANNEXED
+      @method = :create_for_planet_annexed
+      @args = [@player_id, @planet, @outcome]
     end
 
-    it "should return 2 notifications" do
-      Notification.create_for_planet_annexed(@planet, @old_player,
-        @new_player).size.should == 2
-    end
+    it_should_behave_like "create for"
 
-    it "should only return 1 notification if old_player is nil" do
-      Notification.create_for_planet_annexed(@planet, nil,
-        @new_player).size.should == 1
-    end
-
-    it "should create a notification for each player" do
-      Notification.create_for_planet_annexed(
-        @planet, @old_player, @new_player
-      ).map(&:player_id).sort.should == [@old_player.id, @new_player.id]
-    end
-
-    describe "properties" do
-      before(:all) do
-        @notifications = Notification.create_for_planet_annexed(@planet,
-          @old_player, @new_player)
-      end
-
-      it "should set event on those notifications" do
-        @notifications.each do |notification|
-          notification.event.should == Notification::EVENT_PLANET_ANNEXED
-        end
-      end
-
-      it "should be saved" do
-        @notifications.each do |notification|
-          notification.should_not be_new_record
-        end
-      end
-
-      it "should set planet" do
-        planet_json = @planet.client_location.as_json
-        @notifications.each do |notification|
-          notification.params[:planet].should == planet_json
-        end
-      end
-
-      it "should set old player" do
-        @notifications.each do |notification|
-          notification.params[:old_player].should == @old_player.as_json(
-            :mode => :minimal)
-        end
-      end
-
-      it "should set new player" do
-        @notifications.each do |notification|
-          notification.params[:new_player].should == @new_player.as_json(
-            :mode => :minimal)
-        end
-      end
-    end
-  
-    it "should set params[:old_player] to nil if he is nil" do
-      notification = Notification.create_for_planet_annexed(@planet,
-        nil, @new_player)[0]
-      notification.params[:old_player].should be_nil
+    it "should have :planet" do
+      Notification.send(
+        @method, *@args
+      ).params[:planet].should == @planet.client_location.as_json
     end
     
-    it "should set params[:new_player] to nil if he is nil" do
-      notification = Notification.create_for_planet_annexed(@planet,
-        @old_player, nil)[0]
-      notification.params[:new_player].should be_nil
+    it "should have :owner" do
+      Notification.send(
+        @method, *@args
+      ).params[:owner].should == @planet.player.as_json(:mode => :minimal)
+    end
+    
+    it "should have :outcome" do
+      Notification.send(
+        @method, *@args
+      ).params[:outcome].should == @outcome
     end
   end
 
@@ -511,12 +467,12 @@ describe Notification do
   describe ".create_for_planet_protected" do
     before(:all) do
       @planet = Factory.create(:planet_with_player)
-      @player = Factory.create(:player)
-      @player_id = @player.id
+      @player_id = Factory.create(:player).id
+      @outcome = Combat::OUTCOME_LOSE
 
       @event = Notification::EVENT_PLANET_PROTECTED
       @method = :create_for_planet_protected
-      @args = [@planet, @player]
+      @args = [@player_id, @planet, @outcome]
     end
 
     it_should_behave_like "create for"
@@ -537,6 +493,12 @@ describe Notification do
       Notification.send(
         @method, *@args
       ).params[:duration].should == Cfg.planet_protection_duration
+    end
+    
+    it "should have :outcome" do
+      Notification.send(
+        @method, *@args
+      ).params[:outcome].should == @outcome
     end
   end
 

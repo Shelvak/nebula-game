@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx" 
          xmlns:base="components.base.*" 
          xmlns:market="components.market.*"
-         skinClass="components.skins.LargePanelSkin"
-         creationComplete="panel1_creationCompleteHandler(event)"
-         title="{getText('title.offers')}">
+         creationComplete="panel1_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
@@ -39,9 +37,9 @@
          
          private static const idField: SortField = new SortField('id', false, false, true);
          private static const fromField: SortField = new SortField('from', true);
-         private static const whatField: SortField = new SortField('what', false, true, true);
-         private static const forWhatField: SortField = new SortField('forWhat', false, true, true);
-         private static const rateField: SortField = new SortField('rate', false, false, true);
+         private static const whatField: SortField = new SortField('fromAmount', false, true, true);
+         private static const forWhatField: SortField = new SortField('toAmount', false, true, true);
+         private static const rateField: SortField = new SortField('rateTo', false, false, true);
          private static const createdAtField: SortField = new SortField('createdAt', false, true);
          
          
@@ -53,7 +51,7 @@
                'rate':[rateField, fromField, createdAtField, idField],
                'createdAt':[createdAtField, fromField, idField]
             }
-
+         
          protected function header_listSortHandler(event:HeaderEvent):void
          {
             offers.sort = new Sort();
@@ -63,37 +61,44 @@
          
          [Bindable]
          public var selected: MarketOffer;
-
+         
          private function selectedChange(e: GMarketEvent): void
          {
-            selected = e.offer;
-            for each (var offer: MarketOffer in offers)
+            if (selected != null)
             {
-               if (offer.selected && offer != selected)
-               {
-                  offer.selected = false;
-               }
+               selected.selected = false;
             }
+            selected = e.offer;
+            selected.selected = true;
          }
-
+         
          protected function panel1_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GMarketEvent.OFFER_SELECTED, selectedChange);
          }
-
+         
+         public function deselect(): void
+         {
+            if (selected != null)
+            {
+               selected.selected = false;
+               selected = null;
+            }
+         }
+         
       ]]>
    </fx:Script>
-      <market:CMarketOffersHeader id="header" 
-                                  listSort="header_listSortHandler(event)"/>
-      <base:Scroller id="contScroller" left="0" right="0" 
-                     top="{header.height}" bottom="0" stepMultiplier="10">
-         <s:Group width="100%">
-            <s:DataGroup dataProvider="{offers}"
-                         itemRenderer="components.market.IRMarketOffer">
-               <s:layout>
-                  <s:VerticalLayout gap="0"/>
-               </s:layout>
-            </s:DataGroup>
-         </s:Group>
-      </base:Scroller>
-</base:Panel>
+   <market:CMarketOffersHeader id="header" left="0" right="0"
+                               listSort="header_listSortHandler(event)"/>
+   <base:Scroller id="contScroller" left="0" right="0" 
+                  top="{header.height}" bottom="0" stepMultiplier="10">
+      <s:Group left="0" right="0">
+         <s:DataGroup dataProvider="{offers}" left="0" right="0"
+                      itemRenderer="components.market.IRMarketOffer">
+            <s:layout>
+               <s:VerticalLayout gap="0"/>
+            </s:layout>
+         </s:DataGroup>
+      </s:Group>
+   </base:Scroller>
+</s:Group>

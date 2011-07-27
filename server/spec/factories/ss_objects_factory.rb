@@ -23,13 +23,13 @@ Factory.define :planet, :class => SsObject::Planet,
   end
 
   # Order is important here, storage must be increased first.
-  m.metal_storage 10000
+  m.metal_storage 100000
   m.metal 9000
 
-  m.energy_storage 10000
+  m.energy_storage 100000
   m.energy 9000
 
-  m.zetium_storage 10000
+  m.zetium_storage 100000
   m.zetium 9000
 
   m.last_resources_update { Time.now }

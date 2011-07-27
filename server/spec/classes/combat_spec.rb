@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb
 
 describe Combat do
   describe "simulation" do
-    describe "#parse_killed_by" do
+    describe ".parse_killed_by" do
       it "should return units" do
         unit = Factory.create(:unit)
         player_id = 30
@@ -19,10 +19,20 @@ describe Combat do
         ).should == {building => player_id}
       end
     end
+  
+    describe ".unwrap_json_hash" do
+      it "should unwrap string keys" do
+        Combat.unwrap_json_hash('1' => 'foo', Combat::NPC_SM => 'bar').
+          should == {1 => 'foo', Combat::NPC => 'bar'}
+      end
+    end
   end
   
   describe "combat" do
     before(:each) do
+      survivors = []
+      dead_people = []
+      
       @dsl = CombatDsl.new do
         location :planet do
           buildings { vulcan }
@@ -30,24 +40,32 @@ describe Combat do
 
         alliance do
           player :planet_owner => true do
-            units { trooper; trooper :flank => 1 }
+            units do
+              survivors.push trooper
+              survivors.push trooper(:flank => 1)
+            end
           end
-          player { units { trooper } }
+          player { units { survivors.push trooper } }
         end
 
         a2 = alliance do
           player do
-            units { trooper :hp => 10; trooper :flank => 1, :hp => 10 }
+            units do
+              dead_people.push trooper(:hp => 10)
+              dead_people.push trooper(:flank => 1, :hp => 10)
+            end
           end
         end
 
         a3 = alliance do
-          player { units { trooper :hp => 10 } }
+          player { units { dead_people.push trooper(:hp => 10) } }
         end
 
         nap(a2, a3)
       end
 
+      @survivors = survivors
+      @dead_people = dead_people
       @units = @dsl.units
       @players = @dsl.players
       @location = @dsl.location_container.location
@@ -88,14 +106,14 @@ describe Combat do
 
     it "should save updated units" do
       Unit.should_receive(:save_all_units).with(
-        [0, 1, 2].map { |i| @units[i] }, EventBroker::REASON_COMBAT
+        @survivors, EventBroker::REASON_COMBAT
       )
       @dsl.run
     end
 
     it "should destroy dead units" do
       Unit.should_receive(:delete_all_units).with(
-        [3, 4, 5].map { |i| @units[i] }, an_instance_of(Hash),
+        @dead_people, an_instance_of(Hash),
         EventBroker::REASON_COMBAT
       )
       @dsl.run
@@ -110,7 +128,7 @@ describe Combat do
     
     it "should calculate wreckages" do
       Wreckage.should_receive(:calculate).and_return do |units|
-        Set.new(units).should == Set.new([3, 4, 5].map { |i| @units[i] })
+        Set.new(units).should == Set.new(@dead_people)
         [1, 2, 3]
       end
       @dsl.run
@@ -197,13 +215,13 @@ describe Combat do
       player { units { rhyno } }
     end
 
-    rhyno = dsl.units[0]
+    rhyno = dsl.units.to_a[0]
     rhyno.xp = 100
     player = rhyno.player
 
     assets = dsl.run
     rhyno.xp.should == 100 +
-      assets.response['statistics'][player.id.to_s]['xp_earned']
+      assets.response['statistics'][player.id]['xp_earned']
   end
 
   it "should run combat if there is nothing to fire, but units " +
@@ -247,6 +265,29 @@ describe Combat do
     notification.params['leveled_up'].find do |unit_hash|
       unit_hash[:type] == "Unit::Crow"
     end.should be_nil
+  end
+
+  it "should win a battle where one player has nothing" do
+    winner = loser = nil
+    
+    assets = CombatDsl.new do
+      location(:planet)
+      loser = player(:planet_owner => true).player
+      winner = (player { units { crow } }).player
+    end.run
+    
+    assets.response['outcomes'][loser.id].should == Combat::OUTCOME_LOSE
+    assets.response['outcomes'][winner.id].should == Combat::OUTCOME_WIN
+  end
+  
+  it "should do no combat where both players can't reach" do
+    assets = CombatDsl.new do
+      location(:planet)
+      player(:planet_owner => true) { units { trooper } }
+      player { units { crow } }
+    end.run
+    
+    assets.should be_nil
   end
   
   describe "#572: Update transporters after battle" do

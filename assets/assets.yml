@@ -889,6 +889,38 @@ assets:
         top_right.png: Panel_top_right.png
         top_repeat.png: Panel_top_repeat.png
 
+      "market":
+        logo.png:               Market_logo.png
+        tab_center_center.png:  Market_tabcenter_center.png
+        tab_center_left.png:    Market_tabcenter_left.png
+        tab_center_right.png:   Market_tabcenter_right.png
+        tab_left_center.png:    Market_tableft_center.png
+        tab_left_left.png:      Market_tableft_left.png
+        tab_left_right.png:     Market_tableft_right.png
+        tab_right_center.png:   Market_tabright_center.png
+        tab_right_left.png:     Market_tabright_left.png
+        tab_right_right.png:    Market_tabright_right.png
+        tab_left_center_over.png:    Market_tableft_center_over.png
+        tab_left_left_over.png:      Market_tableft_left_over.png
+        tab_left_right_over.png:     Market_tableft_right_over.png
+        tab_right_center_over.png:   Market_tabright_center_over.png
+        tab_right_left_over.png:     Market_tabright_left_over.png
+        tab_right_right_over.png:    Market_tabright_right_over.png
+        tab_left_center_down.png:    Market_tableft_center_down.png
+        tab_left_left_down.png:      Market_tableft_left_down.png
+        tab_left_right_down.png:     Market_tableft_right_down.png
+        tab_right_center_down.png:   Market_tabright_center_down.png
+        tab_right_left_down.png:     Market_tabright_left_down.png
+        tab_right_right_down.png:    Market_tabright_right_down.png
+        top_center.png:         Market_top_center.png
+        top_left.png:           Market_top_left.png
+        top_repeat.png:         Market_top_leftright_repeat.png
+        top_right.png:          Market_top_right.png
+        buy_center.png:         Market_buy_center.png
+        buy_left.png:           Market_buy_left.png
+        buy_right.png:          Market_buy_right.png
+        buy_repeat.png:         Market_buy_leftright_repeat.png
+
       "units_screen":
         top_left.png:           Top_left.png
         top_right.png:         Top_right.png

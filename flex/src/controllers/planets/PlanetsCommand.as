@@ -26,6 +26,12 @@ package controllers.planets
       
       
       /**
+       * @see controllers.planets.actions.TakeAction
+       */ 
+      public static const TAKE:String = "planets|take";
+      
+      
+      /**
        * @see controllers.planets.action.ExploreAction
        */
       public static const EXPLORE:String = "planets|explore";

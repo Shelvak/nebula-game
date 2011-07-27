@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+             xmlns:s="library://ns.adobe.com/flex/spark" 
+             xmlns:mx="library://ns.adobe.com/flex/mx"
+             xmlns:notifications="components.notifications.*"
+             xmlns:location="components.location.*" xmlns:base="components.base.*">
+   
+   <fx:Metadata>
+      [HostComponent("components.notifications.parts.IRMarketOfferBought")]
+   </fx:Metadata>
+   
+   <s:layout>
+      <s:VerticalLayout gap="10"/>
+   </s:layout>
+   <fx:Script>
+      <![CDATA[
+         import components.skins.LinkButtonSkin;
+      ]]>
+   </fx:Script>
+   
+   <location:MiniLocationComp id="location"/>
+   <s:Group>
+      <s:layout>
+         <s:HorizontalLayout verticalAlign="middle"/>
+      </s:layout>
+      <s:Label id="message1" fontWeight="bold"/>
+      <s:Button skinClass="components.skins.LinkButtonSkin" id="lblInvolvedPlayer"/>
+      <s:Label id="message2" fontWeight="bold"/>
+   </s:Group>
+   <base:ImageAndLabel paddingLeft="10" id="fromResource"/>
+   <s:Label id="lblFor" fontWeight="bold"/>
+   <base:ImageAndLabel paddingLeft="10" id="toResource"/>
+   <s:Label id="lblResourcesLeft"/>
+   
+</s:SparkSkin>

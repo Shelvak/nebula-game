@@ -388,7 +388,9 @@ class Unit < ActiveRecord::Base
       return true if units.blank?
 
       transaction { units.each { |unit| unit.save! } }
-      EventBroker.fire(units, event, reason)
+      # Don't dispatch units which are inside other units.
+      updated = units.reject { |u| u.location_type == Location::UNIT }
+      EventBroker.fire(updated, event, reason)
       true
     end
 

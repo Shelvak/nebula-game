@@ -17,7 +17,6 @@ package models.player
          super();
       }
       
-      
       [Bindable]
       [Optional]
       /**

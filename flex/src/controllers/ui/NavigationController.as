@@ -15,6 +15,7 @@ package controllers.ui
    
    import controllers.GlobalFlags;
    import controllers.alliances.AlliancesCommand;
+   import controllers.market.MarketCommand;
    import controllers.planets.PlanetsCommand;
    import controllers.players.PlayersCommand;
    import controllers.screens.MainAreaScreens;
@@ -44,6 +45,7 @@ package controllers.ui
    import models.galaxy.Galaxy;
    import models.map.MMap;
    import models.map.MapType;
+   import models.market.MCMarketScreen;
    import models.planet.Planet;
    import models.player.MRatingPlayer;
    import models.quest.Quest;
@@ -614,9 +616,15 @@ package controllers.ui
          showNonMapScreen(_screenProperties[MainAreaScreens.VIP]);
       }
       
-      public function showMarket() :void
+      public function showMarket(market: Building) :void
       {
+         var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
+         mScreen.market = market;
+         mScreen.planetId = ML.latestPlanet.id;
+         GlobalFlags.getInstance().lockApplication = true;
          showNonMapScreen(_screenProperties[MainAreaScreens.MARKET]);
+         new MarketCommand(MarketCommand.INDEX, {
+            'planetId': mScreen.planetId}).dispatch();
       }
       
       public function showAllianceScreen() :void

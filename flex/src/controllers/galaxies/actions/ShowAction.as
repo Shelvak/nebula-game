@@ -109,8 +109,8 @@ package controllers.galaxies.actions
             }
             // now if we don't see any wormholes and we have a cached wormhole - invalidate
             if (!ML.latestGalaxy.hasWormholes &&
-                 ML.latestSolarSystem != null &&
-                 ML.latestSolarSystem.isWormhole)
+               ML.latestSolarSystem != null &&
+               ML.latestSolarSystem.isWormhole)
                destroyCachedSolarSystem();
             
             var wreckListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.wreckages);
@@ -166,12 +166,15 @@ package controllers.galaxies.actions
          if (ML.latestGalaxy == null) {
             galaxy.setFOWEntries(fowEntries, units);
             if (ML.player.firstTime ||
-                !galaxy.hasMoreThanOneObject && !galaxy.hasUnits && ML.player.planetsCountAll == 1) {
+               !galaxy.hasMoreThanOneObject && !galaxy.hasUnits && ML.player.planetsCountAll == 1) {
                NAV_CTRL.toGalaxy(galaxy,
                   function() : void {
                      NAV_CTRL.toPlanet(MSSObject(ML.player.planets.getItemAt(0)),
                         function() : void {
-                           NAV_CTRL.showWelcomeScreen();
+                           if (ML.player.firstTime)
+                           {
+                              NAV_CTRL.showWelcomeScreen();
+                           }
                         });
                   });
             }

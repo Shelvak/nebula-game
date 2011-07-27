@@ -191,9 +191,10 @@ class SolarSystem < ActiveRecord::Base
       "SELECT DISTINCT(player_id) FROM `#{SsObject.table_name
         }` WHERE `solar_system_id`=#{id.to_i} AND `player_id` IS NOT NULL"
     )
-    raise GameLogicError.new(
-      "Cannot check player activity if more than one player exists in SS #{
-      id}! Player IDs: #{player_ids.inspect}") if player_ids.size > 1
+#    raise GameLogicError.new(
+#      "Cannot check player activity if more than one player exists in SS #{
+#      id}! Player IDs: #{player_ids.inspect}#") if player_ids.size > 1
+    return if player_ids.size > 1
 
     player = Player.find(player_ids[0])
     if player.last_login.nil? || ! (

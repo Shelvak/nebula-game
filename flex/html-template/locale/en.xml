@@ -238,6 +238,10 @@
     <SpaceFactory-whos ref="SpaceFactory-what" />
     
     <!-- Other buildings -->
+    
+    <Market value="Market" />
+    <Market-what value="{0 one[one market] many[? markets]}" />
+    <Market-whos ref="Market-what" />
 
     <Radar value="Radar" />
     <Radar-what value="{0 one[one radar] many[? radars]}" />
@@ -476,6 +480,7 @@
     <notApplicable value="Not applicable:" />
     <pressEsc value="To deselect press ESC" />
     <notYourPlanet value="This planet does not belong to you!" />
+    <label.claimPlanet value="Claim planet" />
 
     <deselectButtonText value="deselect building" />
 
@@ -525,6 +530,7 @@
     <property.teleportedVolume value="Volume teleported" />
     <property.creds value="Creds" />
     <property.victoryPoints value="Victory points" />
+    <property.fee value="Fee percentage" />
 
     <text.deactivated>
       <p>
@@ -810,6 +816,19 @@
         few days. 
       </p>
     </Crane.about>
+    
+    <Market.name ref="Objects/Market" />
+    <Market.tooltip value="Allows trading with other players" />
+    <Market.common>
+      <p>Market allows you to trade with other players in this galaxy. 
+      Matter converters allow sending and receiving goods 
+      instantaneously, however galaxy market dealers will require a fee to
+      list your offers on their networks.</p>
+    </Market.common>
+    <Market.about>
+      <p>[reference:Market.common]</p>
+      <p>Each upgrade level decreases offer submission fee.</p>
+    </Market.about>
 
     <Radar.name ref="Objects/Radar" />
     <Radar.tooltip value="Increases visible galaxy area" />
@@ -971,8 +990,15 @@
   </Buildings>
 
   <Credits>
+    <title.vip value="VIP" />
+    <label.currentVipLvl value="You are currently VIP level {0}" />
+    <label.convertRate value="You can trade {0} VIP creds for 1 cred" />
+    <label.selectedConvert 
+    value="{0} VIP creds selected, you would get {1 one[one cred] many[? creds]}" />
+    <label.convert value="Convert" />
     <label.accelerate value="Accelerate" />
     <message.vipOrdered value="VIP ordered successfully" />
+    <message.credsConverted value="Vip creds converted successfully" />
     <title.becomeVIP value="Become a VIP" />
     <label.becomeVIP>
       <p>
@@ -1139,6 +1165,7 @@
       </p>
     </message.actionCanceled>
     <message.copyToClipboardSuccessful value="Copied to clipboard" />
+    <message.planetClaimed value="Planet claimed" />
     <label.cooldownEndsIn value="Next battle in"/>
   </General>
 
@@ -1372,10 +1399,6 @@
     <label.players value="Players" />
     <label.noNotifications value="There are no notifications" />
     <label.questCompleted value="Quest '{0}' was completed." />
-    <label.oldPlayer value="You have ceased it's control from" />
-    <label.noPlayer value="This planet was uninhabitated." />
-    <label.newPlayer value="It was conquered by" />
-    <label.npcAnexed value="This planet was occupied by NPC raiders." />
     <label.readAll value="Read all" />
     <label.resourcesGained value="Resources gained" />
     <label.wreckageLeft value="Wreckage left" />
@@ -1417,10 +1440,44 @@
     <title.explorationFinished value="Exploration finished" />
     <message.explorationFinished value="Exploration finished in planet {0}" />
 
+    <title.marketOfferBought value="Market offer bought" />
+    <message.marketOfferBought value="Market offer bought" />
+    <!-- message with link button between -->
+    <label.marketOfferBought.message1 value="Player" />
+    <label.marketOfferBought.message2 value="has bought:" />
+    <label.marketOfferBought.for value="For:" />
+    <label.marketOfferBought.amountLeft>
+    <!-- 1: metal, energy or zetium -->
+      <p>Your offer still has {0} {1} left.</p>
+    </label.marketOfferBought.amountLeft>
+    <label.allBought value="Your offer has been bought out." />
+
     <title.planetAnnexed.win value="You have conquered this planet!" />
     <title.planetAnnexed.lose value="You have lost this planet!" />
     <message.planetAnnexed.win value="Planet {0} conquered" />
-    <message.planetAnnexed.lose value="Planet {0} lost" />
+    <message.planetAnnexed.lose value="Your planet {0} lost" />
+    <message.planetAnnexed.loseAlly value="Alliances planet {0} lost" />
+    <!-- two lines in notification, link button after first line-->
+    <label.planetAnnexed.win1 value="You won a battle against" />
+    <label.planetAnnexed.win2 value="for planet '{0}'." />
+    <label.planetAnnexed.npcWin>
+      <p>You have won against aliens in planet '{0}'. 
+      You can now claim it for yourself.</p>
+    </label.planetAnnexed.npcWin>
+    <label.planetAnnexed.selfLose>
+      <p>You have lost a battle for your planet '{0}'. 
+      You no longer control it.</p>
+    </label.planetAnnexed.selfLose>
+    <label.planetAnnexed.allyLose>
+      <p>Your ally have lost a battle for his planet '{0}'. 
+      He does not control it anymore.</p>
+    </label.planetAnnexed.allyLose>
+    <label.planetAnnexed.emptyWin>
+      <p>Your units have arrived to unclaimed planet '{0}'. 
+      You can claim this planet if you want.</p>
+    </label.planetAnnexed.emptyWin>
+    <label.planetAnnexed.claimPlanet 
+    value="You can now claim this planet for yourself." />
     
     <title.planetProtected value="Planet protected!" />
     <message.planetProtected ref="title.planetProtected" />
@@ -1444,6 +1501,14 @@
       </p>
       <p>[reference:label.planetProtected.explained]</p>
     </label.planetProtected.yours>
+    <label.planetProtected.ally>
+      <p>
+      Your alliance members last planet was under attack and you have lost. 
+      Due to interstellar treaties his/hers planet has been placed 
+      under protection for {0} until {1}.
+      </p>
+      <p>[reference:label.planetProtected.explained]</p>
+    </label.planetProtected.ally>
     
     <title.allianceInvitation value="Alliance invitation"/>
     <message.allianceInvitation value="Invitation to join alliance '{0}'"/>
@@ -1492,6 +1557,27 @@
     <label.ok value="Ok" />
     <label.yes value="Yes" />
     <label.no value="No" />
+    
+    <title.convertCreds value="Convert creds" />
+    <message.convertCreds>
+      <p>Are you sure you want to convert {0 one[one VIP cred] many[? VIP creds]} 
+      to {1 one[one cred] many[? creds]}?</p>
+    </message.convertCreds>
+    
+    <title.cancelOffer value="Cancel offer" />
+    <message.cancelOffer>
+      <p>Do you realy want to cancel your offer?</p>
+    </message.cancelOffer>
+    
+    <title.buyOffer value="Buy offer" />
+    <message.buyOffer>
+      <p>Do you realy want to buy from this offer?</p>
+    </message.buyOffer>
+    
+    <title.createOffer value="Create offer" />
+    <message.createOffer>
+      <p>Do you realy want to create that offer?</p>
+    </message.createOffer>
     
     <title.dailyBonus value="Daily bonus" />
     <message.dailyBonus>
@@ -2273,6 +2359,17 @@
 
     <title.79 value="[reference:ThirstForKnowledge.title] (VIII)" />
     <about.79 ref="ThirstForKnowledge.about" />
+    
+    <title.118 value="Fulfilling our needs" />
+    <about.118>
+      <p>Hello, Commander.</p>
+      <p>In different times we need different things and it's not always
+      easy to plan ahead. Research a market so that we could trade with
+      other inhabitants of this galaxy.</p>
+      <p>Afterall they might be in need of something we have surplus and
+      vice verca. Why shouldn't we help each other? We could even make
+      a friend or two in this way.</p>
+    </about.118>
 
     <title.27 value="Shards of Technology" />
     <about.27>
@@ -2883,6 +2980,7 @@
   </Ratings>
 
   <Resources>
+    <all value="All" />
     <metal value="Metal" />
     <energy value="Energy" />
     <zetium value="Zetium" />
@@ -3217,6 +3315,9 @@
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
+    
+    <Market.name ref="Buildings/Market.name" />
+    <Market.about ref="Buildings/Market.common" />
 
     <Radar.name ref="Buildings/Radar.name" />
     <Radar.about ref="Buildings/Radar.common" />
@@ -3895,12 +3996,11 @@
   <Market>
     <label.submit value="Submit" />
     <label.fee value="Fee:" />
-    <label.wantToSell value="You want to sell:" />
-    <label.howMuch value="How much?" />
-    <label.sellFor value="For:" />
+    <label.wantToSell value="Selling" />
+    <label.sellFor value="For" />
     <!-- 1 cheaper or more -->
     <label.marketValue value="{0}% {1} than market value" />
-    <title.sell value="Sell"/>
+    <title.sell value="Create offer"/>
     <warning.noSlots value="Offers limit reached" />
     <title.currentOffers value="Current offers" />
     <title.filterOffers value="Filter offers" />
@@ -3914,10 +4014,24 @@
     <header.createdAt value="Created at" />
     <title.buy value="Buy offer" />
     <title.cancel value="Cancel offer" />
+    
     <!-- resource image goes after this string -->
+    <label.youBuy value="You are buying {0}" />
+    <label.youSell value="You are selling {0}" />
+    <label.willBuy value="You buy {0}" />
     <label.willPay value="You will pay {0}" />
+    
     <label.buy value="Buy" />
     <label.cancel value="Cancel" />
+    <label.close value="Close" />
+    <label.noOffers value="No offers" />
+    <warning.noMinResource value="You dont have enough {0} for minimal offer"/>
+    <message.offerSubmited value="Offer submited" />
+    <message.offerGone value="Sorry, offer is already gone" />
+    <label.onlyPlanet value="Show orders from this planet only" />
+    <title.section.resources value="RESOURCES" />
+    <title.section.units value="UNITS" />
+    <title.section.current value="{0 left[RESOURCES] right[UNITS]} MARKET" />
   </Market>
 
 </locale>

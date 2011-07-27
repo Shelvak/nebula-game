@@ -35,6 +35,11 @@ module Parts
       def vip_creds_per_tick
         vip_level == 0 ? 0 : CONFIG['creds.vip'][vip_level - 1][1]
       end
+  
+      # Number of creds without VIP creds.
+      def pure_creds; creds - vip_creds; end
+      # Setter for pure creds.
+      def pure_creds=(value); self.creds = value + vip_creds; end
 
       # Start VIP membership.
       def vip_start!(vip_level)

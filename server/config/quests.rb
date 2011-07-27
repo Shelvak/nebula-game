@@ -3,7 +3,7 @@
 # New quests can be added here but do not edit old ones!
 
 # Please update this if you add new quests ;)
-# Last quest id: 115
+# Last quest id: 118
 #
 
 # [unit, count, level]
@@ -87,9 +87,9 @@ definition = QuestDefinition.define(:debug => false) do
 
       reward_cost Unit::Trooper, :count => 3.2
       reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
-    end.define_war_chain(80, 5, 2000, 1.4, UNITS_TANKS + UNITS_INFANTRY) # Last quest ID is 84
-      .define_war_chain(85, 10, 10000, 1.37, UNITS_SHIPS + UNITS_TANKS) # Last quest ID is 94
-      .define_war_chain(106, 10, 200000, 1.15, UNITS_SHIPS)
+    end.define_war_chain(80, 5, 2000, 1.4, UNITS_TANKS + UNITS_INFANTRY).  # Last quest ID is 84
+      define_war_chain(85, 10, 10000, 1.37, UNITS_SHIPS + UNITS_TANKS). # Last quest ID is 94
+      define_war_chain(106, 10, 200000, 1.15, UNITS_SHIPS)
       # Last quest ID is 115
   end.define(8, "Attacking NPC Buildings") do
     destroy_npc_building Building::NpcMetalExtractor
@@ -207,14 +207,22 @@ definition = QuestDefinition.define(:debug => false) do
 
       reward_scientists 150
     end
+    
+    quest.define(118) do
+      have_upgraded_to Technology::Market
+      have_upgraded_to Building::Market
+      
+      reward_cost Technology::Market, :count => 1.1
+      reward_cost Building::Market, :count => 2.5
+    end
   end.tap do |quest|
     quest.define(27, "Zetium Crystals") do
       destroy_npc_building Building::NpcZetiumExtractor
 
       reward_cost Technology::ZetiumExtraction, :count => 1.2
-    end.define_army_chain(66, 4, 500, 1.7)
-      .define_army_chain(70, 2, 5000, 1.7)
-      .define_army_chain(95, 8, 15000, 1.4) # Last Quest ID is 102
+    end.define_army_chain(66, 4, 500, 1.7).
+      define_army_chain(70, 2, 5000, 1.7).
+      define_army_chain(95, 8, 15000, 1.4) # Last Quest ID is 102
   end.define(14) do
     have_upgraded_to Technology::ZetiumExtraction
 
@@ -458,7 +466,7 @@ definition = QuestDefinition.define(:debug => false) do
       end.define(63) do
         destroy Building::Thunder, :count => 10
 
-        reward_unit Unit::Cyrix, count: 6, level: 5
+        reward_unit Unit::Cyrix, :count => 6, :level => 5
       end
 
       q2.define(65) do

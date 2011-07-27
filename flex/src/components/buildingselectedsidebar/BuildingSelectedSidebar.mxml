@@ -700,7 +700,8 @@
                               <s:Button skinClass="components.skins.CreditButtonSkin" 
                                         click="coin_clickHandler(event)"
                                         label="{Localizer.string('Credits', 'label.accelerate')}"
-                                        right="6"/>
+                                        right="6"
+                                        enabled="{_selectedModel.upgradePart.upgradeProgress &lt; 1}"/>
                            </s:Group>
                            
                            <s:Group visible="{
@@ -749,10 +750,9 @@
                            <s:Group visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
                                     _selectedModel.type != BuildingType.MARKET)}">
                               <s:Button label="{getString('open')}"
-                                        click="NC.showMarket()"
+                                        click="NC.showMarket(_selectedModel)"
                                         right="6"/>
                            </s:Group>
-                           
                            
                            
                            <base:AdvancedContainer visible="{_selectedModel.npc}">

@@ -429,4 +429,47 @@ describe PlanetsController do
       response_should_include(:teleport_volume => :volume)
     end
   end
+  
+  describe "planets|take" do
+    before(:each) do
+      @action = "planets|take"
+      @planet = Factory.create(:planet)
+      @unit = Factory.create(:u_trooper, :location => @planet, 
+        :player => player)
+      @params = {'id' => @planet.id}
+    end
+    
+    @required_params = %w{id}
+    it_should_behave_like "with param options"
+    
+    it "should fail if planet does not belong to npc" do
+      @planet.player = Factory.create(:player)
+      @planet.save!
+      
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+    
+    it "should fail if you have no units in the planet" do
+      @unit.destroy
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should fail if there are enemy units in the planet" do
+      Factory.create(:u_trooper, :location => @planet)
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should change planet owner" do
+      lambda do
+        invoke @action, @params
+        @planet.reload
+      end.should change(@planet, :player).from(nil).to(player)
+    end
+  end
 end

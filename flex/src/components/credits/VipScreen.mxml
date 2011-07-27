@@ -7,8 +7,11 @@
          xmlns:base="components.base.*" xmlns:screens="components.screens.*">
    <fx:Script>
       <![CDATA[
+         import components.popups.ActionConfirmationPopup;
          import components.popups.WaitingCredsPopup;
          import components.skins.CreditButtonSkin;
+         import components.skins.GreenButtonSkin;
+         import components.skins.LargePanelSkin;
          
          import controllers.GlobalFlags;
          import controllers.players.PlayersCommand;
@@ -19,6 +22,8 @@
          import models.ModelLocator;
          import models.credit.VipLevelsData;
          
+         import utils.MathUtil;
+         import utils.StringUtil;
          import utils.locale.Localizer;
          
          
@@ -43,7 +48,6 @@
                GlobalFlags.getInstance().lockApplication = true;
                new PlayersCommand(PlayersCommand.VIP, 
                   {'vipLevel': VipLevelsData.getSelectedLevel()}).dispatch();
-               NAV_CTRL.showPreviousScreen();
             }
             if (cost > ML.player.creds)
             {
@@ -54,11 +58,122 @@
                getVip();
             }
          }
+         
+         
+         protected function button1_clickHandler(event:MouseEvent):void
+         {
+            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+            var lbl: Label = new Label();
+            lbl.minWidth = 300;
+            lbl.text = Localizer.string('Popups', 'message.convertCreds', 
+               [credSelector.value, VipLevelsData.getVipConvertedCreds(
+                  ML.player.vipLevel, credSelector.value)]);
+            popUp.addElement(lbl);
+            popUp.title = Localizer.string('Popups', 'title.convertCreds');
+            popUp.confirmButtonClickHandler = function (button: Button = null): void
+            {
+               GlobalFlags.getInstance().lockApplication = true;
+               new PlayersCommand(PlayersCommand.CONVERT_CREDS, 
+                  {'amount': credSelector.value}).dispatch();
+               credSelector.value = 0;
+            };
+            popUp.show();
+         }
+         
       ]]>
    </fx:Script>
    <screens:GradientBackground gradientWidth="{(width - header.width) / 2}"/>
    <base:Panel horizontalCenter="0" skinClass="components.skins.LargePanelSkin"
-               title="{getString('title.becomeVIP')}">
+               title="{getString('title.vip')}"
+               visible="{ML.player.vipLevel != 0}">
+      <base:layout>
+         <s:VerticalLayout horizontalAlign="center"/>
+      </base:layout>
+      <s:Label text="{getString('label.currentVipLvl', [ML.player.vipLevel])}"
+               fontSize="14" paddingTop="20" paddingLeft="5" paddingBottom="10"/>
+      <s:Group>
+         <s:Group toolTip="{getString('tooltip.nextVipTick')}">
+            <s:Label text="{getString('label.nextVipTick') + ':'}" 
+                     width="{int(Localizer.string('MainMenu', 'panelWidth'))}" 
+                     color="{ML.player.vipLevel > 0?0xeec500:0x636363}"/>
+            <s:Label text="{ML.player.vipLevel > 0?ML.player.vipCredsTime:'---'}"
+                     color="{ML.player.vipLevel > 0?0xffffff:0x636363}"/>
+            <s:layout>
+               <s:HorizontalLayout paddingLeft="6" paddingTop="6"/>
+            </s:layout>
+         </s:Group>
+         <s:Group>
+            <s:Label text="{getString('label.vipEndsIn') + ':'}" 
+                     width="{int(Localizer.string('MainMenu', 'panelWidth'))}"  
+                     color="{ML.player.vipLevel > 0?0xeec500:0x636363}"/>
+            <s:Label text="{ML.player.vipLevel > 0?ML.player.vipTime:'---'}"
+                     color="{ML.player.vipLevel > 0?0xffffff:0x636363}"/>
+            <s:layout>
+               <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+            </s:layout>
+         </s:Group>
+         <s:Group>
+            <s:Label text="{getString('label.vipCreds') + ':'}" 
+                     width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                     color="{ML.player.vipLevel > 0?0xeec500:0x636363}"/>
+            <s:Label text="{(ML.player.vipLevel > 0?ML.player.vipCreds:'---') + ' / ' + 
+                     (ML.player.vipLevel > 0
+                     ?VipLevelsData.getVipDailyBonus(ML.player.vipLevel)
+                     :'---')}"
+                     color="{ML.player.vipLevel > 0?0xffffff:0x636363}"/>
+            <s:layout>
+               <s:HorizontalLayout paddingLeft="6" paddingTop="10"/>
+            </s:layout>
+         </s:Group>
+         <s:Group>
+            <s:Label text="{StringUtil.firstToUpperCase(getString('label.creds')) + ':'}" 
+                     width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                     color="#eec500"/>
+            <s:Label text="{ML.player.creds - ML.player.vipCreds}"/>
+            <s:layout>
+               <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+            </s:layout>
+         </s:Group>
+         <s:Group visible="{ML.player.vipLevel > 0}">
+            <s:Label text="{StringUtil.firstToUpperCase(getString('label.credsSum')) + ':'}" 
+                     width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                     color="#eec500"/>
+            <s:Label text="{ML.player.creds}"/>
+            <s:layout>
+               <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+            </s:layout>
+         </s:Group>
+         <s:layout>
+            <s:VerticalLayout gap="1" paddingTop="6" paddingBottom="13"/>
+         </s:layout>
+      </s:Group>
+      <s:Label fontSize="14" color="#eec500" 
+               text="{getString('label.convertRate', 
+               [MathUtil.round(VipLevelsData.getVipConvertRate(
+               ML.player.vipLevel),1)])}" />
+      <s:Group>
+         <s:Label text="0"/>
+         <s:HSlider width="250" minimum="0" maximum="{ML.player.vipCreds}"
+                    id="credSelector" stepSize="1"/>
+         <s:Label text="{ML.player.vipCreds}"/>
+         <s:layout>
+            <s:HorizontalLayout verticalAlign="middle"/>
+         </s:layout>
+      </s:Group>
+      <s:Label fontSize="14" color="#eec500" text="{getString('label.selectedConvert',
+               [credSelector.value, VipLevelsData.getVipConvertedCreds(
+               ML.player.vipLevel, credSelector.value)])}"/>
+      <s:Button skinClass="components.skins.GreenButtonSkin" 
+                label="{getString('label.convert')}"
+                click="button1_clickHandler(event)"
+                enabled="{credSelector.value >= VipLevelsData.getVipConvertRate(
+                ML.player.vipLevel)}"/>
+   </base:Panel>
+   <base:Panel horizontalCenter="0" skinClass="components.skins.LargePanelSkin"
+               title="{getString('title.becomeVIP')}" 
+               visible="{ML.player.vipLevel == 0}">
       
       <s:Label text="{getString('label.becomeVIP')}" 
                fontSize="14" paddingTop="20" paddingLeft="5" paddingBottom="10"/>

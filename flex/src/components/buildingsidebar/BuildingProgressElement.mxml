@@ -141,7 +141,8 @@
                      <s:VerticalLayout gap="4"/>
                   </s:layout>
                </s:Group>
-               <credits:CoinComp top="2" right="2" click="coincomp1_clickHandler(event)"/>
+               <credits:CoinComp top="2" right="2" click="coincomp1_clickHandler(event)"
+                                 enabled="{_constructableModel.upgradePart.upgradeProgress &lt; 1}"/>
             </s:Group>
          </s:Group>
          
