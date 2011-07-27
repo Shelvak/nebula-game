@@ -43,7 +43,7 @@
                setTypeFilter(cFilter.selectedFrom, cFilter.selectedTo);
                list.filterFunction = function (item: MarketOffer): Boolean
                {
-                  return (_filterWhat == null || item.fromResource == _filterWhat)
+                  return (_filterWhat == null || _filterWhat == ResourceType.ALL || item.fromResource == _filterWhat)
                   && (_filterTo == null || _filterTo == ResourceType.ALL || item.toResource == _filterTo);
                }
                list.refresh();
@@ -70,6 +70,7 @@
       ]]>
    </fx:Script>
    <market:CMarketOfferFilter top="0" id="cFilter" left="0" right="0"
+                              deselectOffer="offersList.deselect()"
                               selectedResourceChange="cFilter_selectedResourceChangeHandler(event)"/>
    <market:CMarketOffers id="offersList" top="{cFilter.height}"
                          maxHeight="{height - (cFilter.height + 
