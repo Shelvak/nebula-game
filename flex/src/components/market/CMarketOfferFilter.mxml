@@ -12,6 +12,12 @@
       * @eventType components.market.events.MarketEvent.SELECTED_CHANGE
       */
       [Event(name="selectedResourceChange", type="components.market.events.MarketEvent")]
+      /**
+      * Dispatched when selected resource in radio group changes
+      * 
+      * @eventType components.market.events.MarketEvent.DESELECT_OFFER
+      */
+      [Event(name="deselectOffer", type="components.market.events.MarketEvent")]
    </fx:Metadata>
    <fx:Script>
       <![CDATA[
@@ -161,6 +167,12 @@
          protected function checkbox1_changeHandler(event:Event):void
          {
             onlyPrivateOffers = selfOnly.selected;
+            cancel();
+         }
+         
+         private function cancel(): void
+         {
+            dispatchEvent(new MarketEvent(MarketEvent.DESELECT_OFFER));
          }
          
          [Bindable]
@@ -217,6 +229,7 @@
                         left="{tabLeft.width - 7}" id="logo"/>
          <s:Label verticalCenter="0" left="{tabLeft.width + logo.width}"
                   right="{tabRight.width - 14}"
+                  textAlign="center"
                   fontWeight="bold" fontSize="18"
                   text="{getText('title.section.current', [mScreen.currentTab])}"/>
       </s:Group> 

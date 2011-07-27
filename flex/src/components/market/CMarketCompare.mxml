@@ -23,7 +23,7 @@
    <s:Label text="1"/>
    <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
                   AssetNames.getIconImageName(typeFrom))}"/>
-   <s:Label text="{' = ' + MathUtil.round(amountTo, 2)}"/>
+   <s:Label text="{' = ' + MathUtil.round(amountTo, 4)}"/>
    <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
                   AssetNames.getIconImageName(typeTo))}"/>
 </s:Group>

@@ -165,7 +165,7 @@
          [Bindable (event="avgRateChange")]
          private function getCheaper(currentRate: Number): Boolean
          {
-            return currentRate < mScreen.avgRate;
+            return currentRate <= mScreen.avgRate;
          }
          
          [Bindable (event="avgRateChange")]
@@ -219,13 +219,17 @@
       <s:Label text="{getText('label.marketValue', 
                [getMarketRate(forSelector.selectedVal/sellSelector.selectedVal),
                getCheaper(forSelector.selectedVal/sellSelector.selectedVal)
-               ?'cheaper':'more'])}" 
-               visible="{forWhat.selectedItem != null}"/>
+               ?'cheaper':'more'])}"
+               color="{getCheaper(forSelector.selectedVal/sellSelector.selectedVal)
+               ?0x00ff00
+               :0xff0000}"
+               visible="{forWhat.selectedItem != null}"
+               paddingBottom="2"/>
       <market:CMarketCompare typeFrom="{what.selectedItem}" typeTo="{forWhat.selectedItem}"
                              amountTo="{forSelector.selectedVal/sellSelector.selectedVal}" 
                              visible="{forWhat.selectedItem != null}"/>
       <s:Group visible="{forWhat.selectedItem != null}">
-         <s:Button skinClass="components.skins.GreenButtonSkin" 
+         <s:Button skinClass="components.skins.GreenButtonSkin" top="6" 
                    label="{getText('label.submit')}" horizontalCenter="0"
                    click="confirm_clickHandler(event)"/>
       </s:Group>

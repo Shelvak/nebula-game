@@ -59,11 +59,13 @@
                    click="NavigationController.getInstance().showPlayer(offer.fromId)"/>
       </s:Group>
       <base:ImageAndLabel textToDisplay="{offer.fromAmount}" type="{offer.fromResource}"
-                          width="{OffersColumnsWidths.fromAmount}"/>
+                          width="{OffersColumnsWidths.fromAmount}"
+                          paddingLeft="6"/>
       <base:ImageAndLabel textToDisplay="{Math.ceil(offer.toRate * offer.fromAmount)}"
                           type="{offer.toResource}"
-                          width="{OffersColumnsWidths.toAmount}"/>
-      <s:Label text="{MathUtil.round(offer.toRate,2).toString()}" width="{OffersColumnsWidths.rate}" 
+                          width="{OffersColumnsWidths.toAmount}"
+                          paddingLeft="6"/>
+      <s:Label text="{MathUtil.round(offer.toRate,4).toString()}" width="{OffersColumnsWidths.rate}" 
                textAlign="center"/>
       <s:Label text="{offer.createdAt==null?''
                :DateUtil.formatShortDateTime(offer.createdAt)}" 

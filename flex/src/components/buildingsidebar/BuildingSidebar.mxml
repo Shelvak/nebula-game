@@ -513,6 +513,11 @@
                NC.showTechnologies();
                return;
             }
+            if (e.building.type == BuildingType.MARKET)
+            {
+               NC.showMarket(e.building);
+               return;
+            }
             if (e.building.type == BuildingType.DEFENSIVE_PORTAL &&
                 e.building.state == Building.ACTIVE)
             {
