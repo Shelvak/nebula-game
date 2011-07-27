@@ -30,7 +30,7 @@ DEPLOY_CONFIG = {
     },
     :beta3 => {
       :client => ["static-beta3.nebula44.com:2022"],
-      :server => ["lt-ssh.nebula44.com:1022"],
+      :server => ["beta3.nebula44.com:1022"],
     },
   },
 
