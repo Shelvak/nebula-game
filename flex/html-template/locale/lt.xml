@@ -2394,7 +2394,7 @@
     
     <title.118 value="Poreikių patenkinimas" />
     <about.118>
-      <p>Sveikas, Komandore.</p>
+      <p>Sveiki, Komandore.</p>
       <p>Skirtingais laikais mums reikia skirtingų dalykų, ir deja nei vienas
       iš mūsų negali tobulai numatyti ateities. Išrask turgų jog galėtume
       vykdyti mainus su kitais šios galaktikos gyventojais.</p>
@@ -2751,7 +2751,7 @@
 
     <title.31 value="Kosmoso grėsmės" />
     <about.31>
-      <p>Sveikas, Komandore.</p>
+      <p>Sveiki, Komandore.</p>
       <p>Štai, mūsų laivų gamykla jau stovi. Galėtume kilti į kosmosą, tačiau
       mums reikia laivų! Žinome mes galėtume naudotis mulo klasės laivais, 
       tačiau jų pagrindinė paskirtis - gabenti krovinius. Nors jie ir turi
@@ -2763,7 +2763,7 @@
 
     <title.35 value="Išvalymas" />
     <about.35>
-      <p>Sveikas, Komandore.</p>
+      <p>Sveiki, Komandore.</p>
       <p>Kadangi jau turime funkcionuojančia laivų gamyklą, galime truputi 
       patreniruoti savo pilotus. Nusiųskite juos sumedžioti keletos dirakų. Tai
       neturėtų jiems būti sunki užduotis.</p>
@@ -3855,8 +3855,8 @@
   </Units>
 
   <WelcomeScreen>
-    <title value="Sveikas!" />
-    <greeting value="Sveikas, Komandore!" />
+    <title value="Sveiki!" />
+    <greeting value="Sveiki, Komandore!" />
     <instructions>
       <p>Aš esu Diana, tavo pagalbininkė.</p>
       <p>Mes turime svarbių reikalų. Paspausk ant N44 logotipo apatiniame
