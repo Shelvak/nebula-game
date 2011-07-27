@@ -38,6 +38,8 @@
          private static const idField: SortField = new SortField('id', false, false, true);
          private static const fromField: SortField = new SortField('from', true);
          private static const whatField: SortField = new SortField('fromAmount', false, true, true);
+         private static const fromResourceField: SortField = new SortField('fromKind', false, false, true);
+         private static const toResourceField: SortField = new SortField('toKind', false, false, true);
          private static const forWhatField: SortField = new SortField('toAmount', false, true, true);
          private static const rateField: SortField = new SortField('toRate', false, false, true);
          private static const createdAtField: SortField = new SortField('createdAt', false, true);
@@ -46,8 +48,8 @@
          private static const sortFields: Object = 
             {
                'from':[fromField, createdAtField, idField],
-               'what':[whatField, fromField, createdAtField, idField],
-               'forWhat':[forWhatField, fromField, createdAtField, idField],
+               'what':[fromResourceField, whatField, fromField, createdAtField, idField],
+               'forWhat':[toResourceField, forWhatField, fromField, createdAtField, idField],
                'rate':[rateField, fromField, createdAtField, idField],
                'createdAt':[createdAtField, fromField, idField]
             }

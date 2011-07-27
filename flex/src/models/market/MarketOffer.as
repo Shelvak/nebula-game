@@ -60,6 +60,7 @@ package models.market
       private var _fromAmount: int;
       
       [Required]
+      [Bindable (event="willNotChange")]
       public function set fromKind(value: int): void
       {
          fromResource = OfferResourceKind.KINDS[value];
@@ -74,6 +75,7 @@ package models.market
       public var fromResource: String;
       
       [Required]
+      [Bindable (event="willNotChange")]
       public function set toKind(value: int): void
       {
          toResource = OfferResourceKind.KINDS[value];
