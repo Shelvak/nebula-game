@@ -1099,6 +1099,8 @@
      <p>Nepakanka kredų.<br/>Tau dar reikia 
        {0 one[vieno kredo] tens[? kredų] many[? kredų]}.</p>
     </label.notEnough>
+    <warning.notEnoughVipCreds 
+    value="Tu turi turėti bent {0} VIP kredus, kad galėtum juos keisti" />
   </Credits>
 
   <Exploration>

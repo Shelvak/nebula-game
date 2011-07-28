@@ -1093,6 +1093,8 @@
       Not enough creds.<br/>You need {0} more
      </p>
     </label.notEnough>
+    <warning.notEnoughVipCreds 
+    value="To convert VIP creds you must at least have {0} of them" />
   </Credits>
 
   <Exploration>
