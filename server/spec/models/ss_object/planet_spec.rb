@@ -1131,11 +1131,11 @@ describe SsObject::Planet do
     end
 
     describe "npc raid" do
-      it "should call Combat.npc_raid!" do
+      it "should call #npc_raid!" do
         id = 10
         mock = Factory.create(:planet_with_player)
         SsObject::Planet.should_receive(:find).with(id).and_return(mock)
-        Combat.should_receive(:npc_raid!).with(mock)
+        mock.should_receive(:npc_raid!)
         SsObject::Planet.on_callback(id, CallbackManager::EVENT_RAID)
       end
 
@@ -1143,7 +1143,7 @@ describe SsObject::Planet do
         id = 10
         mock = Factory.create(:planet)
         SsObject::Planet.should_receive(:find).with(id).and_return(mock)
-        Combat.should_not_receive(:npc_raid!)
+        mock.should_not_receive(:npc_raid!)
         SsObject::Planet.on_callback(id, CallbackManager::EVENT_RAID)
       end
     end

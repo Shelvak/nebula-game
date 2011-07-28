@@ -32,6 +32,7 @@ MAIN_TITLE_PROPS = [
   [/war points$/, ".war_points"],
   [/population$/, ".population"],
   [/max players$/, ".max_players"],
+  [/fee$/, ".fee"],
   [/teleported volume$/, ".teleported_volume"],
   [/time decrease$/, ".mod.movement_time_decrease"],
   [/armor mod$/, ".mod.armor"],

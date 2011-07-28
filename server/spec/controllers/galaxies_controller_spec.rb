@@ -29,6 +29,8 @@ describe GalaxiesController do
       @unit3 = Factory.create :u_mule, :location => GalaxyPoint.new(
         player.galaxy_id, 0, 3)
     end
+    
+    it_should_behave_like "only push"
 
     it "should allow listing visible SS in galaxy" do
       visible_solar_systems = :visible_ss
@@ -36,19 +38,19 @@ describe GalaxiesController do
         visible_solar_systems
       )
 
-      invoke @action, @params
+      push @action, @params
       response_should_include(
         :solar_systems => visible_solar_systems.as_json
       )
     end
 
     it "should include battleground id" do
-      invoke @action, @params
+      push @action, @params
       response[:battleground_id].should == @battleground.id
     end
 
     it "should include units" do
-      invoke @action, @params
+      push @action, @params
       resolver = StatusResolver.new(player)
       response[:units].should == Galaxy.units(player).map do |unit|
         unit.as_json(:perspective => resolver)
@@ -56,14 +58,14 @@ describe GalaxiesController do
     end
 
     it "should include players" do
-      invoke @action, @params
+      push @action, @params
       response[:players].should equal_to_hash(
         Player.minimal_from_objects(Galaxy.units(player))
       )
     end
 
     it "should include route hops" do
-      invoke @action, @params
+      push @action, @params
       response_should_include(
         :route_hops => RouteHop.find_all_for_player(player, player.galaxy,
           [@unit1, @unit2]
@@ -72,7 +74,7 @@ describe GalaxiesController do
     end
 
     it "should include fow galaxy entries" do
-      invoke @action, @params
+      push @action, @params
       response[:fow_entries].should == FowGalaxyEntry.for(player).map(
         &:as_json)
     end
@@ -92,13 +94,13 @@ describe GalaxiesController do
 
         it "should include wreckages" do
           wreckage = Factory.create(:wreckage, :location => @location)
-          invoke @action, @params
+          push @action, @params
           response[:wreckages].should include(wreckage.as_json)
         end
 
         it "should include cooldowns" do
           cooldown = Factory.create(:cooldown, :location => @location)
-          invoke @action, @params
+          push @action, @params
           response[:cooldowns].should include(cooldown.as_json)
         end
       end
@@ -110,13 +112,13 @@ describe GalaxiesController do
 
         it "should not include wreckages" do
           wreckage = Factory.create(:wreckage, :location => @location)
-          invoke @action, @params
+          push @action, @params
           response[:wreckages].should_not include(wreckage.as_json)
         end
 
         it "should not include cooldowns" do
           cooldown = Factory.create(:cooldown, :location => @location)
-          invoke @action, @params
+          push @action, @params
           response[:cooldowns].should_not include(cooldown.as_json)
         end
       end

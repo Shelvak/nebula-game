@@ -78,7 +78,7 @@ module Combat::Integration
           ? 'combat.cooldown.planet.duration' \
           : 'combat.cooldown.duration'
       ).from_now
-      Cooldown.create_or_update!(location, ends_at)
+      Cooldown.create_unless_exists(location, ends_at)
     end
   end
 

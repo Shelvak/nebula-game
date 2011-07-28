@@ -29,12 +29,10 @@ class Cooldown < ActiveRecord::Base
 
   # Create Cooldown identified by given _location_. If such record
   # already exists, update its _ends_at_.
-  def self.create_or_update!(location, ends_at)
+  def self.create_unless_exists(location, ends_at)
     model = in_location(location.location_attrs).first
 
-    if model
-      CallbackManager.update(model, CallbackManager::EVENT_DESTROY, ends_at)
-    else
+    unless model
       model = new(:location => location, :ends_at => ends_at)
       model.save!
       CallbackManager.register(model, CallbackManager::EVENT_DESTROY,
