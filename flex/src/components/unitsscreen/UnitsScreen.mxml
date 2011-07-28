@@ -5,7 +5,8 @@
          xmlns:base="components.base.*" 
          xmlns:location="components.location.*" 
          xmlns:unitsscreen="components.unitsscreen.*"
-         creationComplete="this_creationCompleteHandler(event)" xmlns:squadronsscreen="components.squadronsscreen.*">
+         creationComplete="this_creationCompleteHandler(event)" 
+         xmlns:squadronsscreen="components.squadronsscreen.*">
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;

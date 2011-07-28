@@ -25,7 +25,16 @@
          import utils.locale.Localizer;
          
          [Bindable]
-         public var offers: ModelsCollection;
+         private var _offers: ModelsCollection;
+         public function set offers(value: ModelsCollection): void
+         {
+            _offers = value;
+            defaultSort();
+         }
+         public function get offers(): ModelsCollection
+         {
+            return _offers;
+         }
          
          
          private function getText(prop: String, params: Array = null): String
@@ -56,9 +65,20 @@
          
          protected function header_listSortHandler(event:HeaderEvent):void
          {
-            offers.sort = new Sort();
-            offers.sort.fields = sortFields[event.key];
-            offers.refresh();
+            _offers.sort = new Sort();
+            _offers.sort.fields = sortFields[event.key];
+            _offers.refresh();
+         }
+         
+         public function defaultSort(e: MarketEvent = null): void
+         {
+            if (_offers != null)
+            {
+               _offers.sort = new Sort();
+               _offers.sort.fields = sortFields['createdAt'];
+               _offers.refresh();
+               header.reset();
+            }
          }
          
          [Bindable]
@@ -99,12 +119,12 @@
    
    <market:CMarketOffersHeader id="header" left="0" right="0"
                                listSort="header_listSortHandler(event)"
-                               visible="{!offers.isEmpty}"/>
+                               visible="{!_offers.isEmpty}"/>
    <base:Scroller id="contScroller" left="0" right="0" 
                   top="{header.height}" bottom="0" stepMultiplier="10"
-                  visible="{!offers.isEmpty}">
+                  visible="{!_offers.isEmpty}">
       <s:Group width="100%" id="contGroup">
-         <s:DataGroup dataProvider="{offers}" left="0" right="0"
+         <s:DataGroup dataProvider="{_offers}" left="0" right="0"
                       itemRenderer="components.market.IRMarketOffer">
             <s:layout>
                <s:VerticalLayout gap="0"/>
@@ -113,7 +133,7 @@
       </s:Group>
    </base:Scroller>
    
-   <s:Label visible="{offers.isEmpty}"
+   <s:Label visible="{_offers.isEmpty}"
             top="0" 
             bottom="0"
             verticalAlign="middle" horizontalCenter="0"

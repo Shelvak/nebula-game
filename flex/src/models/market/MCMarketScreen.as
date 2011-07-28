@@ -64,6 +64,14 @@ package models.market
          return _avgRate;
       }
       
+      public function resetScreen(): void
+      {
+         if (hasEventListener(MarketEvent.RESET_FILTER))
+         {
+            dispatchEvent(new MarketEvent(MarketEvent.RESET_FILTER));
+         } 
+      }
+      
       private function dispatchAvgRateChangeEvent(): void
       {
          if (hasEventListener(MarketEvent.AVG_RATE_CHANGE))

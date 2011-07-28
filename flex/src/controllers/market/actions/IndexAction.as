@@ -37,6 +37,7 @@ package controllers.market.actions
          mScreen.privateOffers = new ModelsCollection(MarketOfferFactory.fromArray(
             cmd.parameters.planetOffers));
          mScreen.offerCount = cmd.parameters.offerCount;
+         mScreen.resetScreen();
       }
       
       public override function cancel(rmo:ClientRMO):void

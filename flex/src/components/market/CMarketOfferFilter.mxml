@@ -150,11 +150,7 @@
                else
                   return 1;
             };
-            toKinds.refresh();
-            from.selectedIndex = 3;
-            selectedFrom = ResourceType.ALL;
-            toRes.selectedIndex = 4;
-            selectedTo = ResourceType.ALL;
+            reset();
          }
          
          
@@ -192,6 +188,26 @@
          protected function tab_clickHandler(event:MouseEvent):void
          {
             mScreen.currentTab = 'left';
+         }
+         
+         public function reset(e: MarketEvent = null): void
+         {
+            for each (var res: String in ALL_KINDS)
+            {
+               if (toKinds.getItemIndex(res) == -1)
+               {
+                  toKinds.addItem(res);
+               }
+            }
+            toKinds.refresh();
+            from.selectedIndex = 3;
+            selectedFrom = ResourceType.ALL;
+            toRes.selectedIndex = 4;
+            selectedTo = ResourceType.ALL;
+            selfOnly.selected = false;
+            onlyPrivateOffers = false;
+            dispatchSelectedChangeEvent();
+            cancel();
          }
          
       ]]>

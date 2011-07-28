@@ -5,7 +5,8 @@
                         xmlns:ui="components.ui.*"
                         width="100%" height="100%" 
                         xmlns:market="components.market.*" 
-                        xmlns:base="components.base.*">
+                        xmlns:base="components.base.*"
+                        creationComplete="advancedcontainer1_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[
          import components.market.events.MarketEvent;
@@ -14,6 +15,8 @@
          import models.market.MCMarketScreen;
          import models.market.MarketOffer;
          import models.resource.ResourceType;
+         
+         import mx.events.FlexEvent;
          
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
@@ -41,13 +44,16 @@
          {
             function filterList(list: ModelsCollection): void
             {
-               setTypeFilter(cFilter.selectedFrom, cFilter.selectedTo);
-               list.filterFunction = function (item: MarketOffer): Boolean
+               if (list != null)
                {
-                  return (_filterWhat == null || _filterWhat == ResourceType.ALL || item.fromResource == _filterWhat)
-                  && (_filterTo == null || _filterTo == ResourceType.ALL || item.toResource == _filterTo);
+                  setTypeFilter(cFilter.selectedFrom, cFilter.selectedTo);
+                  list.filterFunction = function (item: MarketOffer): Boolean
+                  {
+                     return (_filterWhat == null || _filterWhat == ResourceType.ALL || item.fromResource == _filterWhat)
+                     && (_filterTo == null || _filterTo == ResourceType.ALL || item.toResource == _filterTo);
+                  }
+                  list.refresh();
                }
-               list.refresh();
             }
             filterList(mScreen.privateOffers);
             filterList(mScreen.publicOffers);
@@ -66,6 +72,15 @@
          protected function tab_clickHandler(event:MouseEvent):void
          {
             mScreen.currentTab = 'left';
+         }
+         
+         
+         protected function advancedcontainer1_creationCompleteHandler(event:FlexEvent):void
+         {
+            cFilter.reset();
+            offersList.defaultSort();
+            mScreen.addEventListener(MarketEvent.RESET_FILTER, cFilter.reset);
+            mScreen.addEventListener(MarketEvent.RESET_FILTER, offersList.defaultSort);
          }
          
       ]]>
