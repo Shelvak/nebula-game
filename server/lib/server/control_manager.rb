@@ -232,7 +232,7 @@ class ControlManager
   def action_add_creds(io, message)
     player = find_player(message)
     if player
-      player.creds += message['creds']
+      player.pure_creds += message['creds']
       player.save!
       io.send_message :success => true
     else
