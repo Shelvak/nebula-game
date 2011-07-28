@@ -4045,6 +4045,12 @@
       </p>
       ]]>
     </label.offerCount>
+    <label.selected value="Selected: {0}" />
+    <!-- link button "here" goes after this label -->
+    <label.changeVip value="You cant pay with VIP creds, you can convert them" />
+    <label.here value="here" />
+    <warning.notFromPlanet 
+    value="This offer that you submited is not from this planet" />
   </Market>
 
 </locale>

@@ -17,9 +17,11 @@
          import components.popups.ActionConfirmationPopup;
          import components.skins.GreenButtonSkin;
          import components.skins.LargePanelSkin;
+         import components.skins.LinkButtonSkin;
          
          import controllers.GlobalFlags;
          import controllers.market.MarketCommand;
+         import controllers.ui.NavigationController;
          
          import models.ModelLocator;
          import models.market.MCMarketScreen;
@@ -70,6 +72,7 @@
             }
          }
          
+         [Bindable]
          private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
          
          private function confirm(e: MouseEvent): void
@@ -141,12 +144,18 @@
       </s:layout>
    </s:Group>
    <base:AdvancedContainer horizontalCenter="0" bottom="14">
-      <s:Group visible="{(ML.player.id != selectedOffer.fromId)
-               &amp;&amp; !(selectedOffer.toResource == ResourceType.CREDS
-               ? ML.player.creds &lt; Math.ceil(1 * selectedOffer.toRate)
-               : planetResource(selectedOffer.toResource).currentStock
-               &lt; Math.ceil(1 * selectedOffer.toRate))}">
-         <s:Group width="100%">
+      <base:AdvancedContainer visible="{ML.player.id != selectedOffer.fromId}">
+         <base:Warning text="{getText('warning.doNotAfford')}" paddingTop="5"
+                       showSign="false" minWidth="250"
+                       verticalPaddings="6"
+                       visible="{(selectedOffer.toResource == ResourceType.CREDS
+                       ? ML.player.creds - ML.player.vipCreds &lt; Math.ceil(1 * selectedOffer.toRate)
+                       : planetResource(selectedOffer.toResource).currentStock
+                       &lt; Math.ceil(1 * selectedOffer.toRate))}"/>
+         <s:Group width="100%" visible="{!(selectedOffer.toResource == ResourceType.CREDS
+                  ? ML.player.creds - ML.player.vipCreds &lt; Math.ceil(1 * selectedOffer.toRate)
+                  : planetResource(selectedOffer.toResource).currentStock
+                  &lt; Math.ceil(1 * selectedOffer.toRate))}">
             <s:Label text="0"/>
             <s:HSlider minimum="0" maximum="{Math.min(selectedOffer.fromAmount, 
                        Math.floor(selectedOffer.toResource == ResourceType.CREDS
@@ -161,7 +170,10 @@
                <s:HorizontalLayout verticalAlign="middle"/>
             </s:layout>
          </s:Group>
-         <s:Group>
+         <s:Group visible="{!(selectedOffer.toResource == ResourceType.CREDS
+            ? ML.player.creds - ML.player.vipCreds &lt; Math.ceil(1 * selectedOffer.toRate)
+            : planetResource(selectedOffer.toResource).currentStock
+            &lt; Math.ceil(1 * selectedOffer.toRate))}">
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle" gap="20"/>
             </s:layout>
@@ -183,25 +195,35 @@
                </s:layout>
             </s:Group>
          </s:Group>
-         <s:layout>
+         <s:Group visible="{selectedOffer.toResource == ResourceType.CREDS
+                  &amp;&amp; ML.player.vipLevel > 0}">
+            <s:Label color="#eec500" text="{getText('label.changeVip')}" />
+            <s:Button skinClass="components.skins.LinkButtonSkin" 
+                      label="{getText('label.here')}"
+                      click="NavigationController.getInstance().showVip()"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         <base:layout>
             <s:VerticalLayout horizontalAlign="center"/>
-         </s:layout>
-      </s:Group>
-      <base:Warning text="{getText('warning.doNotAfford')}" paddingTop="5"
-                    visible="{(selectedOffer.toResource == ResourceType.CREDS
-                    ? ML.player.creds &lt; Math.ceil(1 * selectedOffer.toRate)
-                    : planetResource(selectedOffer.toResource).currentStock
-                    &lt; Math.ceil(1 * selectedOffer.toRate))}"/>
+         </base:layout>
+      </base:AdvancedContainer>
+      <base:Warning text="{getText('warning.notFromPlanet')}"
+                    visible="{mScreen.privateOffers.find(selectedOffer.id) == -1}"/>
       <s:Button label="{ML.player.id != selectedOffer.fromId
                 ?getText('label.buy')
                 :getText('label.cancel')}" 
                 right="6"
-                enabled="{ML.player.id == selectedOffer.fromId?true
+                enabled="{ML.player.id == selectedOffer.fromId
+                ?true
                 :selector.value > 0}"
-                visible="{!(selectedOffer.toResource == ResourceType.CREDS
-                ? ML.player.creds &lt; Math.ceil(1 * selectedOffer.toRate)
+                visible="{ML.player.id == selectedOffer.fromId
+                ?(mScreen.privateOffers.find(selectedOffer.id) != -1)
+                :(!(selectedOffer.toResource == ResourceType.CREDS
+                ? ML.player.creds - ML.player.vipCreds &lt; Math.ceil(1 * selectedOffer.toRate)
                 : planetResource(selectedOffer.toResource).currentStock
-                &lt; Math.ceil(1 * selectedOffer.toRate))}"
+                &lt; Math.ceil(1 * selectedOffer.toRate)))}"
                 skinClass="components.skins.GreenButtonSkin"
                 click="confirm(event)"/>
       <s:Button label="{getText('label.close')}" 

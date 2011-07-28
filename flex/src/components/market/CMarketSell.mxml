@@ -191,6 +191,8 @@
    <base:AdvancedContainer visible="{what.selectedItem != null 
                            &amp;&amp; getResource(what.selectedItem).getWithoutTaxes(taxRate)
                            >= Config.getMinMarketOffer()}">
+      <s:Label text="{getText('label.selected',[sellSelector.selectedVal.toString()])}"
+               paddingTop="6" textAlign="center"/>
       <market:CMarketResourceSlider maxAmmount="{getResource(what.selectedItem).getWithoutTaxes(taxRate)}"
                                     minAmmount="{Config.getMinMarketOffer()}" id="sellSelector"/>
       <market:CMarketFee type="{what.selectedItem}" taxRate="{taxRate}"
@@ -206,6 +208,9 @@
                          change="forWhat_selectedResourceChangeHandler(event)"
                          itemRenderer="components.base.IRResource"/>
       </s:Group>
+      <s:Label text="{getText('label.selected',[forSelector.selectedVal.toString()])}"
+               visible="{forWhat.selectedItem != null}" paddingTop="6"
+               textAlign="center"/>
       <market:CMarketResourceSlider maxAmmount="{getMaxOffer(sellSelector.selectedVal)}" 
                                     minAmmount="{getMinOffer(sellSelector.selectedVal)}"
                                     visible="{forWhat.selectedItem != null}" id="forSelector"/>

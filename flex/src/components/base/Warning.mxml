@@ -27,6 +27,9 @@
          [Bindable]
          public var warningTextAlign: String = TextAlign.CENTER;
          
+         [Bindable]
+         public var verticalPaddings: int = 15;
+         
          private function getTextFlow(from: String): TextFlow
          {
             return TextFlowUtil.importFromString(from);
@@ -71,7 +74,8 @@
                   :10)}" 
                   fontSize="14" textFlow="{getTextFlow(text)}" 
                verticalCenter="0" textAlign="{warningTextAlign}" 
-               color="#ffcc00" paddingTop="15" paddingBottom="15" paddingLeft="6"/>
+               color="#ffcc00" paddingTop="{verticalPaddings}" 
+               paddingBottom="{verticalPaddings}" paddingLeft="6"/>
    </s:Group>
    
 </base:BaseContainer>
