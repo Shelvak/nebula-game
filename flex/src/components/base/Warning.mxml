@@ -2,7 +2,7 @@
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx"
-                    xmlns:base="components.base.*" minHeight="88">
+                    xmlns:base="components.base.*" minHeight="{defMinHeight}">
    <fx:Script>
       <![CDATA[
          import flashx.textLayout.elements.TextFlow;
@@ -11,6 +11,9 @@
          import spark.utils.TextFlowUtil;
          
          import utils.assets.AssetNames;
+         
+         [Bindable]
+         public var defMinHeight: int = 88;
          
          [Bindable]
          public var text: String = '';
@@ -73,9 +76,9 @@
                   ?sign.width + 20
                   :10)}" 
                   fontSize="14" textFlow="{getTextFlow(text)}" 
-               verticalCenter="0" textAlign="{warningTextAlign}" 
-               color="#ffcc00" paddingTop="{verticalPaddings}" 
-               paddingBottom="{verticalPaddings}" paddingLeft="6"/>
+                  verticalAlign="middle" textAlign="{warningTextAlign}" 
+                  color="#ffcc00" top="{verticalPaddings}" 
+                  bottom="{verticalPaddings}" paddingLeft="6"/>
    </s:Group>
    
 </base:BaseContainer>

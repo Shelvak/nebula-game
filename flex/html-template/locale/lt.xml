@@ -3938,8 +3938,8 @@
     </label.offerCount>
     <label.selected value="Parinkta: {0}" />
     <!-- link button "here" goes after this label -->
-    <label.changeVip value="Negalima atsiskaityti VIP kredais, Tu gali išsikeisti juos" />
-    <label.here value="čia" />
+    <label.changeVip value="Negalima atsiskaityti VIP kredais," />
+    <label.here value="Tu gali išsikeisti juos čia" />
     <warning.notFromPlanet 
     value="Šis Tavo pasiūlymas yra ne iš šitos planetos" />
   </Market>

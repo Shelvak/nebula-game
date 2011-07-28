@@ -145,9 +145,9 @@
    </s:Group>
    <base:AdvancedContainer horizontalCenter="0" bottom="14">
       <base:AdvancedContainer visible="{ML.player.id != selectedOffer.fromId}">
-         <base:Warning text="{getText('warning.doNotAfford')}" paddingTop="5"
+         <base:Warning text="{getText('warning.doNotAfford')}" paddingTop="3"
                        showSign="false" minWidth="250"
-                       verticalPaddings="6"
+                       verticalPaddings="6" defMinHeight="50"
                        visible="{(selectedOffer.toResource == ResourceType.CREDS
                        ? ML.player.creds - ML.player.vipCreds &lt; Math.ceil(1 * selectedOffer.toRate)
                        : planetResource(selectedOffer.toResource).currentStock
@@ -159,7 +159,7 @@
             <s:Label text="0"/>
             <s:HSlider minimum="0" maximum="{Math.min(selectedOffer.fromAmount, 
                        Math.floor(selectedOffer.toResource == ResourceType.CREDS
-                       ? ML.player.creds/selectedOffer.toRate
+                       ? ML.player.creds - ML.player.vipCreds/selectedOffer.toRate
                        : planetResource(selectedOffer.toResource).currentStock
                        / selectedOffer.toRate))}" 
                        stepSize="1"
@@ -210,7 +210,9 @@
          </base:layout>
       </base:AdvancedContainer>
       <base:Warning text="{getText('warning.notFromPlanet')}"
-                    visible="{mScreen.privateOffers.find(selectedOffer.id) == -1}"/>
+                    paddingTop="6"
+                    visible="{ML.player.id == selectedOffer.fromId
+                    &amp;&amp; mScreen.privateOffers.find(selectedOffer.id) == null}"/>
       <s:Button label="{ML.player.id != selectedOffer.fromId
                 ?getText('label.buy')
                 :getText('label.cancel')}" 
@@ -219,7 +221,7 @@
                 ?true
                 :selector.value > 0}"
                 visible="{ML.player.id == selectedOffer.fromId
-                ?(mScreen.privateOffers.find(selectedOffer.id) != -1)
+                ?(mScreen.privateOffers.find(selectedOffer.id) != null)
                 :(!(selectedOffer.toResource == ResourceType.CREDS
                 ? ML.player.creds - ML.player.vipCreds &lt; Math.ceil(1 * selectedOffer.toRate)
                 : planetResource(selectedOffer.toResource).currentStock
