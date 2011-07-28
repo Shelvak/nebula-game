@@ -4,6 +4,7 @@ package controllers.game.actions
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.GlobalFlags;
    import controllers.galaxies.GalaxiesCommand;
    import controllers.startup.StartupInfo;
    import controllers.startup.StartupMode;
@@ -20,7 +21,8 @@ package controllers.game.actions
          Config.setConfig(cmd.parameters.config);
          if (StartupInfo.getInstance().mode == StartupMode.GAME)
          {
-            new GalaxiesCommand(GalaxiesCommand.SHOW).dispatch();
+            GlobalFlags.getInstance().lockApplication = true;
+            //new GalaxiesCommand(GalaxiesCommand.SHOW).dispatch();
          }
       }
    }
