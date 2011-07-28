@@ -65,7 +65,7 @@ package utils.components
       }
       
       
-      override public function showScreen(name:String) : void
+      override public function showScreen(name:String, unlockAfter: Boolean = true) : void
       {
          if (currentName == name)
             return;

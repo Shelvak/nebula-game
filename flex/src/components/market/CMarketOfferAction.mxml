@@ -149,29 +149,33 @@
                        showSign="false" minWidth="250"
                        verticalPaddings="6" defMinHeight="50"
                        visible="{(selectedOffer.toResource == ResourceType.CREDS
-                       ? ML.player.creds - ML.player.vipCreds &lt; Math.ceil(1 * selectedOffer.toRate)
+                       ? (ML.player.creds - ML.player.vipCreds) &lt; Math.ceil(1 * selectedOffer.toRate)
                        : planetResource(selectedOffer.toResource).currentStock
                        &lt; Math.ceil(1 * selectedOffer.toRate))}"/>
          <s:Group width="100%" visible="{!(selectedOffer.toResource == ResourceType.CREDS
-                  ? ML.player.creds - ML.player.vipCreds &lt; Math.ceil(1 * selectedOffer.toRate)
+                  ? (ML.player.creds - ML.player.vipCreds) &lt; Math.ceil(1 * selectedOffer.toRate)
                   : planetResource(selectedOffer.toResource).currentStock
                   &lt; Math.ceil(1 * selectedOffer.toRate))}">
             <s:Label text="0"/>
             <s:HSlider minimum="0" maximum="{Math.min(selectedOffer.fromAmount, 
                        Math.floor(selectedOffer.toResource == ResourceType.CREDS
-                       ? ML.player.creds - ML.player.vipCreds/selectedOffer.toRate
+                       ? (ML.player.creds - ML.player.vipCreds)/selectedOffer.toRate
                        : planetResource(selectedOffer.toResource).currentStock
                        / selectedOffer.toRate))}" 
                        stepSize="1"
                        id="selector" change="selector_changeHandler(event)"
                        width="250"/>
-            <s:Label text="{selectedOffer.fromAmount.toString()}"/>
+            <s:Label text="{Math.min(selectedOffer.fromAmount, 
+                     Math.floor(selectedOffer.toResource == ResourceType.CREDS
+                     ? (ML.player.creds - ML.player.vipCreds)/selectedOffer.toRate
+                     : planetResource(selectedOffer.toResource).currentStock
+                     / selectedOffer.toRate))}"/>
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle"/>
             </s:layout>
          </s:Group>
          <s:Group visible="{!(selectedOffer.toResource == ResourceType.CREDS
-            ? ML.player.creds - ML.player.vipCreds &lt; Math.ceil(1 * selectedOffer.toRate)
+            ? (ML.player.creds - ML.player.vipCreds) &lt; Math.ceil(1 * selectedOffer.toRate)
             : planetResource(selectedOffer.toResource).currentStock
             &lt; Math.ceil(1 * selectedOffer.toRate))}">
             <s:layout>
@@ -223,7 +227,7 @@
                 visible="{ML.player.id == selectedOffer.fromId
                 ?(mScreen.privateOffers.find(selectedOffer.id) != null)
                 :(!(selectedOffer.toResource == ResourceType.CREDS
-                ? ML.player.creds - ML.player.vipCreds &lt; Math.ceil(1 * selectedOffer.toRate)
+                ? (ML.player.creds - ML.player.vipCreds) &lt; Math.ceil(1 * selectedOffer.toRate)
                 : planetResource(selectedOffer.toResource).currentStock
                 &lt; Math.ceil(1 * selectedOffer.toRate)))}"
                 skinClass="components.skins.GreenButtonSkin"

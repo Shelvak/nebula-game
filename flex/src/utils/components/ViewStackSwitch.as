@@ -160,7 +160,7 @@ package utils.components
        * 
        * @param name Name of the screen to show <strong>without</strong> prefix.
        */
-      public function showScreen(name:String) : void
+      public function showScreen(name:String, unlockAfter: Boolean = true) : void
       {
          currentName = name;
          SyncUtil.waitFor(this, 'viewStack', 

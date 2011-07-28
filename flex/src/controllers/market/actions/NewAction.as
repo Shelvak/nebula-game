@@ -40,6 +40,7 @@ package controllers.market.actions
          var offer: MarketOffer = MarketOfferFactory.fromObject(cmd.parameters.offer);
          var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
          mScreen.privateOffers.addItem(offer);
+         mScreen.publicOffers.addItem(offer);
          mScreen.offerCount++;
       }
       

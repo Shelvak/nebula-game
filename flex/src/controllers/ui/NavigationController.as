@@ -622,7 +622,7 @@ package controllers.ui
          mScreen.market = market;
          mScreen.planetId = ML.latestPlanet.id;
          GlobalFlags.getInstance().lockApplication = true;
-         showNonMapScreen(_screenProperties[MainAreaScreens.MARKET]);
+         showNonMapScreen(_screenProperties[MainAreaScreens.MARKET], false);
          new MarketCommand(MarketCommand.INDEX, {
             'planetId': mScreen.planetId}).dispatch();
       }
@@ -1008,7 +1008,7 @@ package controllers.ui
        * 
        * @throws IllegalOperationError if given name is of a map screen 
        */
-      private function showNonMapScreen(screenProps:ScreenProperties) : void
+      private function showNonMapScreen(screenProps:ScreenProperties, unlockAfter: Boolean = true) : void
       {
          if (screenProps.holdsMap)
          {
@@ -1018,7 +1018,7 @@ package controllers.ui
             );
          }
          beforeScreenChange();
-         _mainAreaSwitch.showScreen(screenProps.screenName);
+         _mainAreaSwitch.showScreen(screenProps.screenName, unlockAfter);
          resetActiveButton(screenProps.button);
          resetSidebarToCurrentScreenDefault();
          updateContainerState();
