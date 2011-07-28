@@ -271,8 +271,7 @@ else
       @mule.write json
       @mule.write "\n"
       response = @mule.readline.strip
-    rescue Errno::EPIPE, EOFError, JSON::ParserError => ex
-      # Java crashed, restart it for next request.
+    rescue Exception => ex
       error = (response || "") + @mule.read
 
       exception = "SpaceMule has crashed, restarting!
@@ -284,8 +283,16 @@ Java info:
 
 Ruby info:
 #{ex.inspect}"
-      # Notify that something went wrong
-      raise SpaceMule::Crash.new(exception)
+      
+      case ex
+      when Errno::EPIPE, EOFError, JSON::ParserError
+        # Java crashed, restart it for next request.
+        # and notify that something went wrong
+        raise SpaceMule::Crash.new(exception)
+      else
+        LOGGER.error("Error @ SpaceMule! Details:\n\n#{exception}")
+        raise ex
+      end
     end
   end
 end

@@ -33,8 +33,15 @@ object Main {
           System.exit(0)
         }
 
-        val response = dispatchCommand(line)
-        println(response.toJson)
+        try {
+          val response = dispatchCommand(line)
+          println(response.toJson)
+        }
+        catch {
+          case e: Exception => 
+            println("Input was:\n%s".format(line))
+            throw e
+        }
       }
     }
     catch {
