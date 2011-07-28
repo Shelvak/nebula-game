@@ -56,7 +56,8 @@
       </s:layout>
       <s:Group width="{OffersColumnsWidths.from}">
          <s:Button label="{offer.from}" width="100%" skinClass="components.skins.LinkButtonSkin"
-                   click="NavigationController.getInstance().showPlayer(offer.fromId)"/>
+                   click="NavigationController.getInstance().showPlayer(offer.fromId)"
+                   enabled="{offer.fromId != 0}"/>
       </s:Group>
       <base:ImageAndLabel textToDisplay="{offer.fromAmount}" type="{offer.fromResource}"
                           width="{OffersColumnsWidths.fromAmount}"

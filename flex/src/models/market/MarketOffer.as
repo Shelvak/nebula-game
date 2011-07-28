@@ -6,6 +6,7 @@ package models.market
    import models.player.PlayerMinimal;
    
    import utils.MathUtil;
+   import utils.locale.Localizer;
    
    public class MarketOffer extends BaseModel
    {
@@ -32,13 +33,13 @@ package models.market
       [Bindable (event="offerOwnerChange")]
       public function get from(): String
       {
-         return player.name;
+         return player == null?Localizer.string('Players', 'npc'):player.name;
       }
       
       [Bindable (event="offerOwnerChange")]
       public function get fromId(): int
       {
-         return player.id;
+         return player == null?0:player.id;
       }
       
       [Bindable]
