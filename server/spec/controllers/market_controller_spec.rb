@@ -38,13 +38,14 @@ describe MarketController do
         Factory.create(:market_offer, :galaxy_id => player.galaxy_id),
         Factory.create(:market_offer, :galaxy_id => player.galaxy_id),
         Factory.create(:market_offer, :galaxy_id => player.galaxy_id),
+        # It's on the other planet.
+        Factory.create(:market_offer, :galaxy_id => player.galaxy_id, :planet => planet2),
       ]
       @planet_offers = [
         Factory.create(:market_offer, :planet => @planet),
         Factory.create(:market_offer, :planet => @planet),
       ]
-      # This should be invisible because it's on the other planet.
-      Factory.create(:market_offer, :planet => planet2)
+      @offers = @public_offers + @planet_offers
       # This should be invisible because it's in the other galaxy.
       Factory.create(:market_offer)
       @params = {'planet_id' => @planet.id}
@@ -62,12 +63,12 @@ describe MarketController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
     
-    it "should have public offers" do
+    it "should have all galaxy offers" do
       invoke @action, @params
       response[:public_offers].each_with_index do |offer_row, index|
-        offer_row.should equal_to_hash(@public_offers[index].as_json)
+        offer_row.should equal_to_hash(@offers[index].as_json)
       end
-      response[:public_offers].size.should == @public_offers.size
+      response[:public_offers].size.should == @offers.size
     end
     
     it "should have planet offers" do
