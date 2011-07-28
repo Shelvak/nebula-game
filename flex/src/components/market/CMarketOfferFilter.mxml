@@ -198,7 +198,7 @@
    </fx:Script>
    <!-- background -->
    <s:Group left="0" right="0">
-      <s:BitmapImage width="{(width - 500)/2}" id="leftRepeat"
+      <s:BitmapImage width="{Math.ceil((width - 500)/2)}" id="leftRepeat"
                      source="{getImage('top_repeat')}" fillMode="repeat"/>
       <s:BitmapImage source="{getImage('top_left')}"/>
       <s:BitmapImage width="100%" fillMode="repeat"

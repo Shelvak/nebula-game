@@ -90,11 +90,20 @@
          
       ]]>
    </fx:Script>
+   
+   <s:Rect left="0" right="0" bottom="0" top="0">
+      <s:fill>
+         <s:SolidColor color="#0a0a0a"/>
+      </s:fill>
+   </s:Rect>
+   
    <market:CMarketOffersHeader id="header" left="0" right="0"
-                               listSort="header_listSortHandler(event)"/>
+                               listSort="header_listSortHandler(event)"
+                               visible="{!offers.isEmpty}"/>
    <base:Scroller id="contScroller" left="0" right="0" 
-                  top="{header.height}" bottom="0" stepMultiplier="10">
-      <s:Group left="0" right="0">
+                  top="{header.height}" bottom="0" stepMultiplier="10"
+                  visible="{!offers.isEmpty}">
+      <s:Group width="100%" id="contGroup">
          <s:DataGroup dataProvider="{offers}" left="0" right="0"
                       itemRenderer="components.market.IRMarketOffer">
             <s:layout>
@@ -103,4 +112,11 @@
          </s:DataGroup>
       </s:Group>
    </base:Scroller>
+   
+   <s:Label visible="{offers.isEmpty}"
+            top="0" 
+            bottom="0"
+            verticalAlign="middle" horizontalCenter="0"
+            fontSize="36" fontWeight="bold" color="0x1C1C1C"
+            text="{getText('label.noOffers')}"/>
 </s:Group>
