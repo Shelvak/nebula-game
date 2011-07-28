@@ -1,4 +1,5 @@
 class ChatController < GenericController
+  ACTION_INDEX = 'chat|index'
   # Sends channels and their participants for the player.
   # 
   # Invocation: by server
