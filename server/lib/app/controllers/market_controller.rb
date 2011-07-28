@@ -40,10 +40,8 @@ class MarketController < GenericController
     planet_ids = player.planets.select("id").c_select_values
     
     respond \
-      :public_offers => MarketOffer.
-        fast_offers(
-          "#{MarketOffer.table_name}.galaxy_id=? AND planet_id NOT IN (?)", 
-          player.galaxy_id, planet_ids), 
+      :public_offers => MarketOffer.fast_offers(
+        "#{MarketOffer.table_name}.galaxy_id=?", player.galaxy_id), 
       :planet_offers => MarketOffer.fast_offers("planet_id=?", planet.id),
       :offer_count => MarketOffer.where(:planet_id => planet_ids).count
   end
