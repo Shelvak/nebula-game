@@ -667,7 +667,7 @@ package controllers.ui
          {
             createdHandler = setData;
          }
-         showNonMapScreen(_screenProperties[MainAreaScreens.PLAYER]);
+         showNonMapScreen(_screenProperties[MainAreaScreens.PLAYER], false);
       }
       
       public function showDefensivePortal(planetId: int) :void
