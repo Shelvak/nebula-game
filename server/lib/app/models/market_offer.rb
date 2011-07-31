@@ -128,7 +128,7 @@ class MarketOffer < ActiveRecord::Base
     when KIND_METAL then attr = :metal
     when KIND_ENERGY then attr = :energy
     when KIND_ZETIUM then attr = :zetium
-    when KIND_CREDS then source = source.player; attr = :pure_creds
+    when KIND_CREDS then source = source.player; attr = :market_creds
     end
     
     [source, attr]
