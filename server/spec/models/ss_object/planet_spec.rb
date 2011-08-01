@@ -339,6 +339,11 @@ describe SsObject::Planet do
       end
     end
 
+    it "should save new #owner_changed" do
+      @planet.save!
+      @planet.owner_changed.should be_close(Time.now, SPEC_TIME_PRECISION)
+    end
+    
     it "should call FowSsEntry.change_planet_owner after save" do
       FowSsEntry.should_receive(:change_planet_owner).with(
         @planet, @old, @new
@@ -484,12 +489,13 @@ describe SsObject::Planet do
     end
 
     describe "resetable cooldowns" do
-      it "should start cooldowns" do
-        building = Factory.create(:b_npc_hall, :planet => @planet)
+      it "should reset cooldowns" do
+        building = Factory.create(:b_npc_hall, :planet => @planet,
+          :cooldown_ends_at => 10.minutes.from_now)
         lambda do
           @planet.save!
           building.reload
-        end.should change(building, :cooldown_ends_at).from(nil)
+        end.should change(building, :cooldown_ends_at)
       end
     end
     
@@ -992,7 +998,8 @@ describe SsObject::Planet do
         metal_rate_boost_ends_at metal_storage_boost_ends_at
         energy_rate_boost_ends_at energy_storage_boost_ends_at
         zetium_rate_boost_ends_at zetium_storage_boost_ends_at
-        last_resources_update exploration_ends_at next_raid_at}
+        last_resources_update exploration_ends_at next_raid_at
+        owner_changed}
       @ommited_fields = %w{energy_diminish_registered}
       it_should_behave_like "to json"
     end

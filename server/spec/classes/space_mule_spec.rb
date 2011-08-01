@@ -341,27 +341,34 @@ describe SpaceMule do
         end
       end
 
-      describe "homeworld resources" do
+      describe "homeworld" do
         before(:all) do
           @homeworld = SsObject::Planet.where(
             :player_id => @player_id).first
         end
-
-        it "should set last_resources_update" do
-          @homeworld.last_resources_update.should_not be_nil
+        
+        it "should set #owner_changed" do
+          @homeworld.owner_changed.
+            should be_close(Time.now, SPEC_TIME_PRECISION)
         end
+        
+        describe "resources" do
+          it "should set last_resources_update" do
+            @homeworld.last_resources_update.should_not be_nil
+          end
 
-        %w{metal energy zetium}.each do |resource|
-          [
-            ["starting", ""],
-            ["generate", "_rate"],
-            ["store", "_storage"]
-          ].each do |config_name, attr_name|
-            it "should set #{resource} #{config_name}" do
-              @homeworld.send("#{resource}#{attr_name}").should be_close(
-                CONFIG.evalproperty(
-                  "buildings.mothership.#{resource}.#{config_name}"
-                ), 0.5)
+          %w{metal energy zetium}.each do |resource|
+            [
+              ["starting", ""],
+              ["generate", "_rate"],
+              ["store", "_storage"]
+            ].each do |config_name, attr_name|
+              it "should set #{resource} #{config_name}" do
+                @homeworld.send("#{resource}#{attr_name}").should be_close(
+                  CONFIG.evalproperty(
+                    "buildings.mothership.#{resource}.#{config_name}"
+                  ), 0.5)
+              end
             end
           end
         end

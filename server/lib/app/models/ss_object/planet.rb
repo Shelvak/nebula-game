@@ -70,7 +70,7 @@ class SsObject::Planet < SsObject
     zetium zetium_generation_rate zetium_usage_rate zetium_storage
     zetium_rate_boost_ends_at zetium_storage_boost_ends_at
     last_resources_update exploration_ends_at can_destroy_building_at
-    next_raid_at}
+    next_raid_at owner_changed}
 
   # Attributes which are included when :view => true is passed to
   # #as_json
@@ -240,9 +240,12 @@ class SsObject::Planet < SsObject
   end
 
   private
-  # Set #next_raid_at.
+  # Set #next_raid_at & #owner_changed.
   before_update :if => Proc.new { |r| r.player_id_changed? } do
     should_raid? ? register_raid : clear_raid
+    self.owner_changed = Time.now
+    
+    true
   end
 
   # Update things if player changed.
@@ -285,7 +288,7 @@ class SsObject::Planet < SsObject
       max_population_count += building.population \
         if building.respond_to?(:population)
       
-      building.start_cooldown! if building.respond_to?(:start_cooldown!)
+      building.reset_cooldown! if building.respond_to?(:reset_cooldown!)
     end
 
     # Return exploring scientists if on a mission.
