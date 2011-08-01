@@ -35,7 +35,8 @@
          {
             if (ownership != null)
             {
-               timePassed = DateUtil.secondsToHumanString(new Date().time - ownership.time, 1);
+               timePassed = DateUtil.secondsToHumanString(
+                  (new Date().time - ownership.time) / 1000, 1);
             }
          }
          
@@ -59,6 +60,7 @@
    <s:Label text="{getText('label.battlegroundOwner')}"
             visible="{npc}" includeInLayout="{npc}"/>
    <base:layout>
-      <s:VerticalLayout horizontalAlign="justify"/>
+      <s:VerticalLayout horizontalAlign="justify" paddingLeft="6"
+         paddingRight="6" paddingTop="6" paddingBottom="6" />
    </base:layout>
 </base:Panel>
