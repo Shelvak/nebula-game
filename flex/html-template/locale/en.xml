@@ -3974,12 +3974,11 @@
     <title value="Welcome!" />
     <greeting value="Greetings, Commander!" />
     <instructions>
-      <p>I am Deyna, your assistant.</p>
-      <p>
-        We have some urgent matters to attend to. Click N44 logo in bottom-left 
-        corner and select quests to read your first mission.
+      <p>I am Kaya, your assistant.</p>
+      <p>We have some urgent matters to attend to. Click introduction button to
+      learn the game basics and lets get started.
       </p>
-      <p>Good luck, Commander.</p>
+      <p>Good luck.</p>
     </instructions>
   </WelcomeScreen>
 

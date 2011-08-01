@@ -3860,11 +3860,10 @@
     <title value="Sveiki!" />
     <greeting value="Sveiki, Komandore!" />
     <instructions>
-      <p>Aš esu Diana, tavo pagalbininkė.</p>
-      <p>Mes turime svarbių reikalų. Paspausk ant N44 logotipo apatiniame
-      kairiajame kampe ir pasirink „Užduotys“, kad perskaitytum savo pirmąją
-      misiją.</p>
-      <p>Sekmės, Komandore.</p>
+      <p>Aš esu Kaja, tavo pagalbininkė.</p>
+      <p>Mes turime svarbių reikalų. Spausk įžangos mygtuką, jog susipažintum
+      su žaidimu ir kimbam į reikalus.</p>
+      <p>Sekmės.</p>
     </instructions>
   </WelcomeScreen>
 
