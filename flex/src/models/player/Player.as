@@ -175,6 +175,9 @@ package models.player
       public var vipCreds: int = 0;
       
       [Optional]
+      public var freeCreds: int = 0;
+      
+      [Optional]
       public var vipCredsUntil: Date;
       public var vipCredsTime: String = null;
       

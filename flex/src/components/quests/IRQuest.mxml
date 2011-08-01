@@ -156,6 +156,7 @@
       </s:Group>
    </fx:Declarations>
    <fx:Binding source="itemIndex == ML.quests.length - 1" destination="bottomLineVisible"/>
+   <fx:Binding source="itemIndex == 0" destination="firstItem"/>
    <fx:Binding source="Quest(data).title" destination="title"/>
    <fx:Script>
       <![CDATA[

@@ -87,6 +87,7 @@
    <screens:GradientBackground gradientWidth="{(width - header.width) / 2}"/>
    <base:Panel horizontalCenter="0" skinClass="components.skins.LargePanelSkin"
                title="{getString('title.vip')}"
+               top="10"
                visible="{ML.player.vipLevel != 0}">
       <base:AdvancedContainer left="0" right="0">
          <base:layout>
@@ -190,7 +191,7 @@
       </base:AdvancedContainer>
    </base:Panel>
    <base:Panel horizontalCenter="0" skinClass="components.skins.LargePanelSkin"
-               title="{getString('title.becomeVIP')}" 
+               title="{getString('title.becomeVIP')}" top="10"
                visible="{ML.player.vipLevel == 0}">
       
       <s:Label text="{getString('label.becomeVIP')}" 

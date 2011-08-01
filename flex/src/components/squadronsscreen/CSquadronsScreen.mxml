@@ -6,7 +6,8 @@
                    xmlns:screen="components.base.screen.*"
                    xmlns:screens="components.screens.*"
                    headerFromListSeparatorVisible="true"
-                   initialize="this_initializeHandler(event)">
+                   initialize="this_initializeHandler(event)"
+                   layoutGap="5">
    <fx:Declarations>
       <s:DataGroup id="_list" itemRenderer="components.squadronsscreen.IRSquadronElement"/>
       <s:Group id="_controlButtons">

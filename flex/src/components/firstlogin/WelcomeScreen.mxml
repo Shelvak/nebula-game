@@ -6,9 +6,12 @@
 
    <fx:Script>
       <![CDATA[
-         import utils.locale.Localizer;
+         import components.skins.YellowButtonSkin;
+         
+         import utils.UrlNavigate;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
          
          
          private function getImage(name:String) : BitmapData
@@ -48,5 +51,11 @@
          <s:Label text="{getString('instructions')}" width="100%" lineBreak="toFit"/>
       </s:Group>
    </s:Group>
+   
+   <!-- start guide button -->
+   <s:Button skinClass="components.skins.YellowButtonSkin"
+             click="UrlNavigate.getInstance().showTutorial()"
+             label="{getString('label.intro')}"
+             top="216" left="201"/>
       
 </s:Group>

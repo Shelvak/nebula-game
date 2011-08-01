@@ -12,6 +12,9 @@ package models.building
       public static const ZETIUM_EXTRACTOR_T2:String = "ZetiumExtractorT2";
       public static const HEALING_CENTER: String = "HealingCenter";
       public static const NPC_HALL: String = "NpcHall";
+      public static const NPC_INFANTRY_FACTORY: String = "NpcInfantryFactory";
+      public static const NPC_GROUND_FACTORY: String = "NpcGroundFactory";
+      public static const NPC_SPACE_FACTORY: String = "NpcSpaceFactory";
       public static const DEFENSIVE_PORTAL: String = "DefensivePortal";
       public static const MARKET: String = "Market";
    }
