@@ -49,6 +49,9 @@
          {
             if (ML.latestPlanet && constructor)
             {
+               if (constructor.constructableType == null)
+                  return;
+
                var constructable: * = ModelUtil.getModelClass(
                   constructor.constructableType) == ObjectClass.UNIT
                   ? ML.latestPlanet.getUnitById(constructor.constructableId)
