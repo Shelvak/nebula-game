@@ -4056,6 +4056,7 @@
     <label.here value="you can convert them here" />
     <warning.notFromPlanet 
     value="This offer that you submited is not from this planet" />
+    <filter.clear value="Clear" />
   </Market>
 
 </locale>

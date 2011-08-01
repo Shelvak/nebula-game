@@ -3944,6 +3944,7 @@
     <label.here value="Tu gali išsikeisti juos čia" />
     <warning.notFromPlanet 
     value="Šis Tavo pasiūlymas yra ne iš šitos planetos" />
+    <filter.clear value="Valyti" />
   </Market>
 
 </locale>
