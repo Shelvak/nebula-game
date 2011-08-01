@@ -127,6 +127,31 @@ describe Player do
         Factory.build(:player, :vip_level => 1).should be_vip
       end
     end
+    
+    describe "#market_creds" do
+      it "should return #pure_creds - #free_creds" do
+        Factory.build(:player, :pure_creds => 1000, :free_creds => 800).
+          market_creds.should == 200
+      end
+    end
+    
+    describe "#market_creds=" do
+      it "should set #pure_creds to value + #free_creds" do
+        player = Factory.build(:player, :pure_creds => 100, 
+          :free_creds => 800)
+        lambda do
+          player.market_creds -= 50
+        end.should change(player, :pure_creds).by(-50)
+      end
+      
+      it "should not change #free_creds" do
+        player = Factory.build(:player, :pure_creds => 100, 
+          :free_creds => 800)
+        lambda do
+          player.market_creds -= 50
+        end.should_not change(player, :free_creds)
+      end
+    end
 
     describe "#creds" do
       it "should add #pure_creds and #vip_creds" do
@@ -137,7 +162,7 @@ describe Player do
     
     describe "#creds=" do
       before(:each) do
-        @player = Factory.create(:player, :vip_level => 1,
+        @player = Factory.build(:player, :vip_level => 1,
           :vip_creds => 1000, :pure_creds => 1000)
       end
       
@@ -153,6 +178,12 @@ describe Player do
             @player.creds += 500
           end.should_not change(@player, :vip_creds)
         end
+        
+        it "should not change free creds" do
+          lambda do
+            @player.creds += 500
+          end.should_not change(@player, :free_creds)
+        end
       end
 
       describe "spending" do
@@ -161,18 +192,38 @@ describe Player do
             @player.creds -= 500
           end.should change(@player, :vip_creds).by(-500)
         end
+        
+        describe "when spending more than vip_creds" do
+          it "should subtract from pure creds" do
+            lambda do
+              @player.creds -= @player.vip_creds + 200
+            end.should change(@player, :pure_creds).by(-200)
+          end
 
-        it "should subtract from pure creds when spending more " +
-        "than vip_creds" do
-          lambda do
-            @player.creds -= @player.vip_creds + 200
-          end.should change(@player, :pure_creds).by(-200)
+          it "should not go below 0 for vip creds" do
+            lambda do
+              @player.creds = 0
+            end.should change(@player, :vip_creds).to(0)
+          end
         end
-
-        it "should not go below 0 for vip creds" do
-          lambda do
-            @player.creds = 0
-          end.should change(@player, :vip_creds).to(0)
+      
+        describe "having free creds" do
+          before(:each) do
+            @player.vip_creds = 100
+            @player.free_creds = 500
+          end
+          
+          it "should first not consider vip_creds as free_creds" do
+            lambda do
+              @player.creds -= 300
+            end.should change(@player, :free_creds).by(-200)
+          end
+          
+          it "should not set free_creds below 0" do
+            lambda do
+              @player.creds = 0
+            end.should change(@player, :free_creds).to(0)
+          end
         end
       end
     end
@@ -196,6 +247,23 @@ describe Player do
       it "should reduce current creds" do
         @player.vip_start!(@vip_level)
         @player.creds.should == 10000 + @per_day
+      end
+      
+      describe "with free creds" do
+        before(:each) do
+          @player.free_creds = @creds_needed / 2 + 1
+        end
+        
+        it "should flag #vip_free if vip was bought with >=50% of them" do
+          @player.vip_start!(@vip_level)
+          @player.vip_free?.should be_true
+        end
+
+        it "should reduce them" do
+          lambda do
+            @player.vip_start!(@vip_level)
+          end.should change(@player, :free_creds).to(0)
+        end
       end
 
       it "should fail if not enough creds" do
@@ -221,8 +289,7 @@ describe Player do
       end
 
       it "should call #vip_tick!" do
-        @player.should_receive(:save!).ordered
-        @player.should_receive(:vip_tick!).ordered
+        @player.should_receive(:vip_tick!)
         @player.vip_start!(@vip_level)
       end
 
@@ -291,7 +358,7 @@ describe Player do
       before(:each) do
         @player = Factory.create(:player, :pure_creds => 7000,
           :vip_creds => 3000, :vip_level => 1, :vip_until => Time.now,
-          :vip_creds_until => 10.minutes.from_now)
+          :vip_creds_until => 10.minutes.from_now, :vip_free => true)
         CallbackManager.register(@player, CallbackManager::EVENT_VIP_TICK,
           @player.vip_creds_until)
         CallbackManager.register(@player, CallbackManager::EVENT_VIP_STOP,
@@ -333,6 +400,10 @@ describe Player do
       it "should remove vip_until" do
         @player.vip_until.should be_nil
       end
+      
+      it "should set #vip_free to false" do
+        @player.vip_free?.should be_false
+      end
     end
 
     describe "#vip_conversion_rate" do
@@ -363,23 +434,41 @@ describe Player do
             vip_convert(101)
         end.should raise_error(GameLogicError)
       end
+      
+      describe "increasments" do
+        before(:each) do
+          @creds = 100; rate = 1.3
+          @player = Factory.build(:player, :vip_level => 1, 
+            :vip_creds => @creds, :pure_creds => 10000)
+          @player.stub!(:vip_conversion_rate).and_return(rate)
+          @converted = (@creds / rate).floor
+        end
 
-      it "should increase pure creds" do
-        creds = 100; rate = 1.3
-        player = Factory.build(:player, :vip_level => 1, :vip_creds => creds,
-          :pure_creds => 10000)
-        player.stub!(:vip_conversion_rate).and_return(rate)
+        it "should increase pure creds" do
+          lambda do
+            @player.vip_convert(@creds)
+          end.should change(@player, :pure_creds).by(@converted)
+        end
+
+        it "should increase #free_creds if #vip_free is set" do
+          @player.vip_free = true
+          lambda do
+            @player.vip_convert(@creds)
+          end.should change(@player, :free_creds).by(@converted)
+        end
+      end
+      
+      it "should not increase #free_creds otherwise" do
+        player = Factory.build(:player, :vip_level => 1, :vip_creds => 100)
         lambda do
-          player.vip_convert(creds)
-          player.save!
-        end.should change(player, :pure_creds).by((creds / rate).floor)
+          player.vip_convert(10)
+        end.should_not change(player, :free_creds)
       end
 
       it "should reduce amount from vip creds" do
         player = Factory.build(:player, :vip_level => 1, :vip_creds => 100)
         lambda do
           player.vip_convert(10)
-          player.save!
         end.should change(player, :vip_creds).by(-10)
       end
     end
@@ -496,7 +585,7 @@ describe Player do
         first_time economy_points army_points science_points war_points
         victory_points creds population population_max planets_count
         alliance_id alliance_cooldown_ends_at
-        vip_level vip_creds vip_until vip_creds_until}
+        free_creds vip_level vip_creds vip_until vip_creds_until}
       @ommited_fields = fields - @required_fields
       it_should_behave_like "to json"
 

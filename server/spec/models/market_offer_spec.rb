@@ -157,6 +157,13 @@ describe MarketOffer do
         end.should raise_error(GameLogicError)
       end
       
+      it "should fail if buying with free creds" do
+        @buyer.free_creds = @buyer.pure_creds
+        lambda do
+          @offer.buy!(@buyer_planet, @offer.from_amount)
+        end.should raise_error(GameLogicError)
+      end
+      
       describe "seller" do
         it "should transfer creds to seller account" do
           lambda do

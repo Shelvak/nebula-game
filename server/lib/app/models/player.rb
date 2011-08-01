@@ -140,7 +140,7 @@ class Player < ActiveRecord::Base
         first_time economy_points army_points science_points war_points
         victory_points population population_max planets_count
         alliance_id alliance_cooldown_ends_at
-        vip_creds vip_level vip_until vip_creds_until}
+        free_creds vip_creds vip_level vip_until vip_creds_until}
       )
       json['creds'] = creds
       unless alliance_id.nil?

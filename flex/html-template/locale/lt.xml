@@ -3948,10 +3948,10 @@
     </label.offerCount>
     <label.selected value="Parinkta: {0}" />
     <!-- link button "here" goes after this label -->
-    <label.changeVip value="Negalima atsiskaityti VIP kredais," />
-    <label.here value="Tu gali išsikeisti juos čia" />
+    <label.changeVip value="VIP kredai nepriimami." />
+    <label.here value="Gali išsikeisti juos čia." />
     <warning.notFromPlanet 
-    value="Šis Tavo pasiūlymas yra ne iš šitos planetos" />
+    value="Tai tavo pasiūlymas, tačiau jis buvo įdėtas iš kitos planetos." />
     <filter.clear value="Valyti" />
     <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje" />
     <label.moreInfo value="kodėl?" />

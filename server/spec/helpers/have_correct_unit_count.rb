@@ -3,6 +3,7 @@ Spec::Matchers.define :have_correct_unit_count do |*config_keys|
     @location = location
     @errors = {}
     grouped = Unit.in_location(location).group_by do |unit|
+      raise "#{unit.inspect} is not a Unit!" unless unit.is_a?(Unit)
       [unit.type, unit.flank]
     end
     

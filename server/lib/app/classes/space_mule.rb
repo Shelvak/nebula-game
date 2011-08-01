@@ -227,11 +227,7 @@ class SpaceMule
   end
 
   def command(message)
-    json = JSON.generate(message)
-    LOGGER.debug("Issuing message: #{json}", "SpaceMule")
-    response = @worker.issue json
-    LOGGER.debug("Received answer: #{response}", "SpaceMule")
-    parsed = JSON.parse(response)
+    parsed = @worker.issue message
     if parsed["error"]
       raise ArgumentError.new("Mule responded with error: #{parsed['error']}")
     else
@@ -254,8 +250,12 @@ if RUBY_PLATFORM == 'java'
   require SpaceMule::JAR_PATH
 
   class SpaceMule::Worker
-    def issue(json)
-      Java::spacemule.main.Main.rubyCommand(json)
+    def issue(message)
+      json = JSON.generate(message)
+      LOGGER.debug("Issuing message: #{json}", "SpaceMule")
+      response = Java::spacemule.main.Main.rubyCommand(json)
+      LOGGER.debug("Received answer: #{response}", "SpaceMule")
+      JSON.parse(response)
     end
   end
 else
@@ -267,12 +267,15 @@ else
       )
     end
 
-    def issue(json)
+    def issue(message)
+      json = JSON.generate(message)
+      LOGGER.debug("Issuing message: #{json}", "SpaceMule")
       @mule.write json
       @mule.write "\n"
       response = @mule.readline.strip
-    rescue Errno::EPIPE, EOFError, JSON::ParserError => ex
-      # Java crashed, restart it for next request.
+      LOGGER.debug("Received answer: #{response}", "SpaceMule")
+      JSON.parse(response)
+    rescue Exception => ex
       error = (response || "") + @mule.read
 
       exception = "SpaceMule has crashed, restarting!
@@ -284,8 +287,16 @@ Java info:
 
 Ruby info:
 #{ex.inspect}"
-      # Notify that something went wrong
-      raise SpaceMule::Crash.new(exception)
+      
+      case ex
+      when Errno::EPIPE, EOFError, JSON::ParserError
+        # Java crashed, restart it for next request.
+        # and notify that something went wrong
+        raise SpaceMule::Crash.new(exception)
+      else
+        LOGGER.error("Error @ SpaceMule! Details:\n\n#{exception}")
+        raise ex
+      end
     end
   end
 end

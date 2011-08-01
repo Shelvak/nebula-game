@@ -7,7 +7,9 @@ module Parts::WithCooldown
   module InstanceMethods
     # When the next cooldown should end.
     def cooldowns_at
-      self.class.cooldowns_at(level)
+      time_owned = planet.owner_changed.nil? \
+        ? 0 : (Time.now - planet.owner_changed).to_i
+      self.class.cooldowns_at(level, time_owned)
     end
 
     # Checks if the cooldown has expired.
@@ -23,8 +25,9 @@ module Parts::WithCooldown
 
   module ClassMethods
     # When the next cooldown should end.
-    def cooldowns_at(level)
-      evalproperty('cooldown', nil, 'level' => level).seconds.from_now
+    def cooldowns_at(level, time_owned)
+      evalproperty('cooldown', nil, 
+        'level' => level, 'time_owned' => time_owned).seconds.from_now
     end
     
     def on_callback(id, event)

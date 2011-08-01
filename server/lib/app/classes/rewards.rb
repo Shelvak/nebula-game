@@ -22,7 +22,7 @@ class Rewards
   REWARD_PLAYER = [
     [:xp, XP],
     [:economy_points, POINTS],
-    [:creds, CREDS],
+    [[:creds, :free_creds], CREDS],
     [[:scientists, :scientists_total], SCIENTISTS]
   ]
 

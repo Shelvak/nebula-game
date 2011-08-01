@@ -104,13 +104,9 @@ assets:
     "*":
       ".":
         <% each_model('building') do |base| %>
-        <% if base == "NpcHall" %>
         "<%= base %>.png":
           wiki_name: <%= "#{base}.png" %>
           flex: {save_as: "swf:png"}
-        <% else %>
-        <%= "#{base}.png: #{base}.png" %>
-        <% end %>
         <% end %>
       "constructors":
         <% each_model('building') do |base|
@@ -851,7 +847,7 @@ assets:
         popup_title_center.png:          Popup_center.png
         popup_title_right.png:           Popup_right.png
         popup_bug.png:                   Bug.png
-        quest_advisor.jpg:               QuestAdvisor.jpg
+        quest_advisor.png:               QuestAdvisor.png
         warning_line.png:                Y_topline.png
         warning_corner.png:              Y_corner.png
         warning_sign.png:                Y_warning.png

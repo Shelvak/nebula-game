@@ -4060,10 +4060,10 @@
     </label.offerCount>
     <label.selected value="Selected: {0}" />
     <!-- link button "here" goes after this label -->
-    <label.changeVip value="You cant pay with VIP creds," />
-    <label.here value="you can convert them here" />
+    <label.changeVip value="VIP creds are not accepted." />
+    <label.here value="Convert them here." />
     <warning.notFromPlanet 
-    value="This offer that you submited is not from this planet" />
+    value="This is your offer but it has been submitted from another planet." />
     <filter.clear value="Clear" />
     <label.freeCreds value="You can not use free creds in the market" />
     <label.moreInfo value="why?" />
