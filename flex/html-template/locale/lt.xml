@@ -470,6 +470,13 @@
     <construction.bonus value="Statymo greitis" />
     <scientists value="Mokslininkai" />
     <special value="Sąvybės" />
+    <title.owner value="Valdymas" />
+    <!-- 0: date, 1: time (1 part) -->
+    <label.owner value="Tu valdai šią planetą nuo {0} ({1})." />
+    <label.battlegroundOwner> 
+      <p>Kuo ilgiau valdysi šią planetą tuo mažesnis bus ateivių fabrikų 
+      produktyvumas</p>
+    </label.battlegroundOwner> 
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>
@@ -3865,6 +3872,7 @@
       su žaidimu ir kimbam į reikalus.</p>
       <p>Sekmės.</p>
     </instructions>
+    <label.intro value="Įžanga" />
   </WelcomeScreen>
 
   <Chat>
@@ -3943,6 +3951,9 @@
     <label.here value="Gali išsikeisti juos čia." />
     <warning.notFromPlanet 
     value="Tai tavo pasiūlymas, tačiau jis buvo įdėtas iš kitos planetos." />
+    <filter.clear value="Valyti" />
+    <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje" />
+    <label.moreInfo value="kodėl?" />
   </Market>
 
 </locale>

@@ -31,6 +31,7 @@
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
          
+         import utils.UrlNavigate;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
@@ -149,17 +150,19 @@
                        showSign="false" minWidth="250"
                        verticalPaddings="6" defMinHeight="50"
                        visible="{(selectedOffer.toResource == ResourceType.CREDS
-                       ? (ML.player.creds - ML.player.vipCreds) &lt; Math.ceil(1 * selectedOffer.toRate)
+                       ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds) 
+                       &lt; Math.ceil(1 * selectedOffer.toRate)
                        : planetResource(selectedOffer.toResource).currentStock
                        &lt; Math.ceil(1 * selectedOffer.toRate))}"/>
          <s:Group width="100%" visible="{!(selectedOffer.toResource == ResourceType.CREDS
-                  ? (ML.player.creds - ML.player.vipCreds) &lt; Math.ceil(1 * selectedOffer.toRate)
+                  ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds) 
+                  &lt; Math.ceil(1 * selectedOffer.toRate)
                   : planetResource(selectedOffer.toResource).currentStock
                   &lt; Math.ceil(1 * selectedOffer.toRate))}">
             <s:Label text="0"/>
             <s:HSlider minimum="0" maximum="{Math.min(selectedOffer.fromAmount, 
                        Math.floor(selectedOffer.toResource == ResourceType.CREDS
-                       ? (ML.player.creds - ML.player.vipCreds)/selectedOffer.toRate
+                       ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds)/selectedOffer.toRate
                        : planetResource(selectedOffer.toResource).currentStock
                        / selectedOffer.toRate))}" 
                        stepSize="1"
@@ -167,7 +170,7 @@
                        width="250"/>
             <s:Label text="{Math.min(selectedOffer.fromAmount, 
                      Math.floor(selectedOffer.toResource == ResourceType.CREDS
-                     ? (ML.player.creds - ML.player.vipCreds)/selectedOffer.toRate
+                     ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds)/selectedOffer.toRate
                      : planetResource(selectedOffer.toResource).currentStock
                      / selectedOffer.toRate))}"/>
             <s:layout>
@@ -175,7 +178,8 @@
             </s:layout>
          </s:Group>
          <s:Group visible="{!(selectedOffer.toResource == ResourceType.CREDS
-            ? (ML.player.creds - ML.player.vipCreds) &lt; Math.ceil(1 * selectedOffer.toRate)
+            ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds) 
+                  &lt; Math.ceil(1 * selectedOffer.toRate)
             : planetResource(selectedOffer.toResource).currentStock
             &lt; Math.ceil(1 * selectedOffer.toRate))}">
             <s:layout>
@@ -198,6 +202,17 @@
                   <s:HorizontalLayout verticalAlign="middle" gap="3"/>
                </s:layout>
             </s:Group>
+         </s:Group>
+         <s:Group visible="{selectedOffer.toResource == ResourceType.CREDS
+                  &amp;&amp; ML.player.creds - ML.player.vipCreds == ML.player.freeCreds
+                  &amp;&amp; ML.player.freeCreds > 0}">
+            <s:Label color="#eec500" text="{getText('label.freeCreds')}" />
+            <s:Button skinClass="components.skins.LinkButtonSkin" 
+                      label="{getText('label.moreInfo')}"
+                      click="UrlNavigate.getInstance().showUrl('free-creds')"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
          </s:Group>
          <s:Group visible="{selectedOffer.toResource == ResourceType.CREDS
                   &amp;&amp; ML.player.vipLevel > 0}">

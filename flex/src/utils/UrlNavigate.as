@@ -43,5 +43,10 @@ package utils
       {
          showUrl('buy-creds');
       }
+      
+      public function showTutorial(): void
+      {
+         showUrl('intro-'+StartupInfo.getInstance().locale);
+      }
    }
 }

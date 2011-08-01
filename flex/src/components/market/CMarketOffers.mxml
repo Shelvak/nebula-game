@@ -99,7 +99,7 @@
             EventBroker.subscribe(GMarketEvent.OFFER_SELECTED, selectedChange);
          }
          
-         public function deselect(): void
+         public function deselect(e: MarketEvent = null): void
          {
             if (selected != null)
             {

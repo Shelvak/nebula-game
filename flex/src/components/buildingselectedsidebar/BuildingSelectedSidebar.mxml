@@ -821,6 +821,20 @@
                      </base:layout>
                   </base:Panel>
                   
+                  <buildingselectedsidebar:PlanetOwnerPanel 
+                     npc="{_selectedModel.type == BuildingType.NPC_GROUND_FACTORY
+                     || _selectedModel.type == BuildingType.NPC_SPACE_FACTORY
+                     || _selectedModel.type == BuildingType.NPC_INFANTRY_FACTORY}"
+                     visible="{ML.latestPlanet.ssObject.ownerChanged != null
+                     &amp;&amp; (
+                     _selectedModel.type == BuildingType.NPC_GROUND_FACTORY
+                     || _selectedModel.type == BuildingType.NPC_SPACE_FACTORY
+                     || _selectedModel.type == BuildingType.NPC_INFANTRY_FACTORY
+                     || _selectedModel.type == BuildingType.MOTHERSHIP
+                     || _selectedModel.type == BuildingType.HQ)}"
+                     ownership="{ML.latestPlanet.ssObject.ownerChanged}"/>
+                     
+                  
                   <base:Panel title="{getString('renamePlanet')}" 
                               visible="{(_selectedModel.type == BuildingType.MOTHERSHIP ||
                               _selectedModel.type == BuildingType.HQ) 

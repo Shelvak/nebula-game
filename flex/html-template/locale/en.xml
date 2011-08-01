@@ -470,6 +470,13 @@
     <construction.bonus value="Construction speed" />
     <scientists value="Scientists" />
     <special value="Attributes" />
+    <title.owner value="Ownership" />
+    <!-- 0: date, 1: time (1 part) -->
+    <label.owner value="You are the owner of this planet from {0} ({1})." />
+    <label.battlegroundOwner> 
+      <p>The longer you rule this planet, the less productive 
+      will the NPC factories become.</p>
+    </label.battlegroundOwner> 
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>
@@ -3980,6 +3987,7 @@
       </p>
       <p>Good luck.</p>
     </instructions>
+    <label.intro value="Intro" />
   </WelcomeScreen>
 
   <Chat>
@@ -4055,6 +4063,9 @@
     <label.here value="Convert them here." />
     <warning.notFromPlanet 
     value="This is your offer but it has been submitted from another planet." />
+    <filter.clear value="Clear" />
+    <label.freeCreds value="You can not use free creds in the market" />
+    <label.moreInfo value="why?" />
   </Market>
 
 </locale>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-            xmlns:s="library://ns.adobe.com/flex/spark" 
-            xmlns:mx="library://ns.adobe.com/flex/mx" 
-            xmlns:base="components.base.*"
-            xmlns:market="components.market.*"
-            creationComplete="panel1_creationCompleteHandler(event)">
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:base="components.base.*"
+         xmlns:market="components.market.*"
+         creationComplete="panel1_creationCompleteHandler(event)">
    <fx:Metadata>
       /**
       * Dispatched when selected resource in radio group changes
@@ -57,7 +57,7 @@
          }
          
          [Bindable]
-         private var toKinds: ArrayCollection = new ArrayCollection(ALL_KINDS);
+         private var toKinds: ArrayCollection = new ArrayCollection();
          
          protected function from_changeHandler(event:IndexChangeEvent):void
          {
@@ -77,7 +77,11 @@
             if (selectedFrom != ResourceType.ALL)
             {
                temp = toRes.selectedItem;
-               toKinds.removeItemAt(toKinds.getItemIndex(selectedFrom));
+               var indx: int = toKinds.getItemIndex(selectedFrom);
+               if (indx != -1)
+               {
+                  toKinds.removeItemAt(indx);
+               }
             }
             toKinds.refresh();
             if (temp != null)
@@ -282,6 +286,7 @@
                       change="toRes_changeHandler(event)"
                       requireSelection="true"
                       itemRenderer="components.base.IRResource"/>
+      <s:Button label="{getText('filter.clear')}" click="reset()"/>
       <s:CheckBox id="selfOnly" label="{getText('label.onlyPlanet')}"
                   change="checkbox1_changeHandler(event)"/>
       <s:layout>

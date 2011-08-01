@@ -40,7 +40,7 @@
          }
          
          
-         protected function cFilter_selectedResourceChangeHandler(event:MarketEvent):void
+         protected function cFilter_selectedResourceChangeHandler(event:MarketEvent = null):void
          {
             function filterList(list: ModelsCollection): void
             {
@@ -79,8 +79,8 @@
          {
             cFilter.reset();
             offersList.defaultSort();
-            mScreen.addEventListener(MarketEvent.RESET_FILTER, cFilter.reset);
-            mScreen.addEventListener(MarketEvent.RESET_FILTER, offersList.defaultSort);
+            mScreen.addEventListener(MarketEvent.RESET_FILTER, cFilter_selectedResourceChangeHandler);
+            mScreen.addEventListener(MarketEvent.RESET_FILTER, offersList.deselect);
          }
          
       ]]>
