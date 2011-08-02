@@ -19,7 +19,7 @@ exploration.rewards.win.with_units.generator_config:
   # Number of variations
   number: 100
   # Level range for extractors (inclusive)
-  level: [0, 8]
+  level: [1, 8]
   # Time range for extractors (inclusive)
   time: [<%= 10.minutes %>, <%= 6.hours %>]
   # Possible unit types
@@ -32,7 +32,7 @@ exploration.rewards.win.without_units.generator_config:
   # Number of variations
   number: 100
   # Level range for extractors (inclusive)
-  level: [0, 8]
+  level: [1, 8]
   # Time range for extractors (inclusive)
   time: [<%= 10.minutes %>, <%= 6.hours %>]
   # Possible unit types
@@ -45,7 +45,7 @@ exploration.rewards.lose.with_units.generator_config:
   # Number of variations
   number: 100
   # Level range for extractors (inclusive)
-  level: [0, 4]
+  level: [1, 4]
   # Time range for extractors (inclusive)
   time: [<%= 1.minute %>, <%= 10.minutes %>]
   # Possible unit types
@@ -58,7 +58,7 @@ exploration.rewards.lose.without_units.generator_config:
   # Number of variations
   number: 100
   # Level range for extractors (inclusive)
-  level: [0, 4]
+  level: [1, 4]
   # Time range for extractors (inclusive)
   time: [<%= 1.minute %>, <%= 10.minutes %>]
   # Possible unit types

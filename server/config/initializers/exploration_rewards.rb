@@ -45,6 +45,12 @@ lambda do
     rewards.push("kind" => Rewards::ZETIUM, "count" => zetium) if zetium > 0
     weight += calculate_weight.call(metal, energy, zetium)
 
+    raise \
+      ("Rewards are empty! metal: %3.4f, energy: %3.4f, " +
+      "zetium: %3.4f, unit_type: %s, unit_count: %d, unit_hp: %d") % [
+        metal, energy, zetium, unit_type, unit_count, unit_hp
+      ] if rewards.blank?
+    
     raise "Weight cannot be 0 for #{rewards.inspect}!" if weight < 1
     {
       "weight" => weight,
@@ -82,20 +88,31 @@ lambda do
     unit_types = config['unit_types']
     unit_count_range = config['unit_count']
     unit_hp_range = config['unit_hp']
+    
+    LOGGER.block("Generating exploration rewards for #{side}", 
+      :level => :debug
+    ) do
+      %w{
+        number level_range time_range unit_types unit_count_range 
+        unit_hp_range
+      }.each do |var|
+        LOGGER.debug("%-20s: %s" % [var, eval(var).inspect])
+      end
+      
+      number.times do
+        m_lvl, e_lvl, z_lvl, m_mult, e_mult, z_mult, unit_type, unit_count,
+          unit_hp = generate_rand_coefs.call(
+            level_range, time_range, unit_types,
+            unit_count_range, unit_hp_range
+          )
 
-    number.times do
-      m_lvl, e_lvl, z_lvl, m_mult, e_mult, z_mult, unit_type, unit_count,
-        unit_hp = generate_rand_coefs.call(
-          level_range, time_range, unit_types,
-          unit_count_range, unit_hp_range
-        )
-
-      add.call(side, item.call(
-        Building::MetalExtractor.metal_rate(m_lvl) * m_mult,
-        Building::CollectorT1.energy_rate(e_lvl) * e_mult,
-        Building::ZetiumExtractor.zetium_rate(z_lvl) * z_mult,
-        unit_type, unit_count, unit_hp
-      ))
+        add.call(side, item.call(
+          Building::MetalExtractor.metal_rate(m_lvl) * m_mult,
+          Building::CollectorT1.energy_rate(e_lvl) * e_mult,
+          Building::ZetiumExtractor.zetium_rate(z_lvl) * z_mult,
+          unit_type, unit_count, unit_hp
+        ))
+      end
     end
   end
 
