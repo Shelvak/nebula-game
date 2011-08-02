@@ -269,11 +269,7 @@ else
 
     def issue(message)
       json = JSON.generate(message)
-      LOGGER.debug("Issuing message: #{json}", "SpaceMule")
-      @mule.write json
-      @mule.write "\n"
-      response = @mule.readline.strip
-      LOGGER.debug("Received answer: #{response}", "SpaceMule")
+      response = issue_raw(json)
       JSON.parse(response)
     rescue Exception => ex
       error = (response || "") + @mule.read
@@ -297,6 +293,18 @@ Ruby info:
         LOGGER.error("Error @ SpaceMule! Details:\n\n#{exception}")
         raise ex
       end
+    end
+    
+    def issue_raw(json)
+      puts json
+      LOGGER.debug("Issuing message: #{json}", "SpaceMule")
+      @mule.write json
+      @mule.write "\n"
+      response = @mule.readline.strip
+      LOGGER.debug("Received answer: #{response}", "SpaceMule")
+      raise "Response does not look like JSON message!" \
+        unless response[0..0] == "{"
+      response
     end
   end
 end

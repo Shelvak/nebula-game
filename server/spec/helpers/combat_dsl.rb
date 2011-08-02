@@ -128,10 +128,10 @@ class CombatDsl
   class AllianceContainer
     attr_reader :alliance, :players
 
-    def initialize(dsl, &block)
+    def initialize(dsl, options, &block)
       @dsl = dsl
       @players = []
-      @alliance = Factory.create(:alliance)
+      @alliance = Factory.create(:alliance, options)
       instance_eval(&block)
     end
 
@@ -210,8 +210,8 @@ class CombatDsl
     @location = LocationContainer.new(type, &block)
   end
 
-  def alliance(&block)
-    alliance = AllianceContainer.new(self, &block)
+  def alliance(options={}, &block)
+    alliance = AllianceContainer.new(self, options, &block)
     @alliances.push alliance
     alliance
   end

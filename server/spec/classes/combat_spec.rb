@@ -199,6 +199,18 @@ describe Combat do
     end
   end
 
+  describe "#794" do
+    it "should not crash if alliance name has weird characters" do
+      CombatDsl.new do
+        location :planet
+        alliance(:name => "¨°º¤ø ULTRASONIC TEAM ø¤º°¨") do
+          player(:planet_owner => true) { units { trooper } }
+        end
+        player { units { shocker } }
+      end.run
+    end
+  end
+  
   it "should not crash if planet owner does not have any assets" do
     CombatDsl.new do
       location :planet
