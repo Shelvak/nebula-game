@@ -14,4 +14,6 @@ class Cfg; class << self
       CONFIG['creds.move.speed_up.max_cost']
     ].min
   end
+  
+  def player_max_population; CONFIG['galaxy.player.population.max']; end
 end; end

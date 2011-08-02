@@ -583,7 +583,7 @@ describe Player do
     describe "normal mode" do
       @required_fields = %w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
-        victory_points creds population population_max planets_count
+        victory_points creds population population_cap planets_count
         alliance_id alliance_cooldown_ends_at
         free_creds vip_level vip_creds vip_until vip_creds_until}
       @ommited_fields = fields - @required_fields
@@ -624,6 +624,20 @@ describe Player do
     end
   end
 
+  describe "#population_max" do
+    it "should return #population_cap if cap is smaller" do
+      pop = Cfg.player_max_population - 1
+      Factory.build(:player, :population_cap => pop).population_max.
+        should == pop
+    end
+    
+    it "should return max config population if cap is greater" do
+      pop = Cfg.player_max_population + 1
+      Factory.build(:player, :population_cap => pop).population_max.
+        should == Cfg.player_max_population
+    end
+  end
+  
   describe "points" do
     point_types = %w{war_points army_points science_points economy_points}
 

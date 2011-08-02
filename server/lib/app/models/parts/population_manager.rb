@@ -20,26 +20,26 @@ module Parts::PopulationManager
       self.class.population(level || self.level)
     end
 
-    def on_upgrade_finished
+    def on_activation
       super if defined?(super)
-      population_change = population - population(level - 1)
-      if population_change != 0
+      population = self.population
+      if population != 0
         player = self.player
         unless player.nil?
           # Player can be nil if this unit has constructed in NPC planet.
-          player.population_max += population_change
+          player.population_cap += population
           player.save!
         end
       end
     end
 
-    def on_destroy
+    def on_deactivation
       super if defined?(super)
-      population_change = population
-      if population_change != 0
+      population = self.population
+      if population != 0
         player = self.player
         unless player.nil?
-          player.population_max -= population_change
+          player.population_cap -= population
           player.save!
         end
       end

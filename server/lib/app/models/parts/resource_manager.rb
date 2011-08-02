@@ -83,7 +83,7 @@ module Parts::ResourceManager
 
   module InstanceCallbacks
     def on_upgrade_finished
-      super
+      super if defined?(super)
       SsObject::Planet.find(planet_id).increase!(
         :metal_storage => metal_storage - metal_storage(level - 1),
         :energy_storage => energy_storage - energy_storage(level - 1),
@@ -92,7 +92,7 @@ module Parts::ResourceManager
     end
 
     def on_activation
-      super
+      super if defined?(super)
       SsObject::Planet.find(planet_id).increase!(
         :metal_generation_rate => metal_generation_rate,
         :metal_usage_rate => metal_usage_rate,
@@ -104,7 +104,7 @@ module Parts::ResourceManager
     end
 
     def on_deactivation
-      super
+      super if defined?(super)
       SsObject::Planet.find(planet_id).increase!(
         :metal_generation_rate => -metal_generation_rate,
         :metal_usage_rate => -metal_usage_rate,

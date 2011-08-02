@@ -5,6 +5,9 @@
 # 
 # Beware! Gotchas:
 # 
+# #population_cap holds actual value of maximum population from population
+# buildings. However #population_max should be used in all the checks.
+# 
 # #creds include normal creds + vip creds if player is a VIP.
 #
 class Player < ActiveRecord::Base
@@ -138,7 +141,7 @@ class Player < ActiveRecord::Base
     else
       json = attributes.only(*%w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
-        victory_points population population_max planets_count
+        victory_points population population_cap planets_count
         alliance_id alliance_cooldown_ends_at
         free_creds vip_creds vip_level vip_until vip_creds_until}
       )
@@ -204,6 +207,11 @@ class Player < ActiveRecord::Base
         row
       end
   end
+  
+  # Number that represents maximum population for player.
+  def population_max
+    [Cfg.player_max_population, population_cap].min
+  end
 
   def population_free; population_max - population; end
   
@@ -216,8 +224,8 @@ class Player < ActiveRecord::Base
   end
 
   def to_s
-    "<Player(#{id}), pop: #{population}/#{population_max}, gid: #{
-      galaxy_id}, name: #{name.inspect}, creds: #{creds}, VIP: #{
+    "<Player(#{id}), pop: #{population}/#{population_max}(#{population_cap
+      }), gid: #{galaxy_id}, name: #{name.inspect}, creds: #{creds}, VIP: #{
       vip_level}@#{vip_creds}/#{vip_creds_per_tick}>"
   end
 

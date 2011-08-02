@@ -303,11 +303,11 @@ class SsObject::Planet < SsObject
     
     if old_player
       old_player.population -= population_count
-      old_player.population_max -= max_population_count
+      old_player.population_cap -= max_population_count
     end
     if new_player
       new_player.population += population_count
-      new_player.population_max += max_population_count
+      new_player.population_cap += max_population_count
     end
 
     # Transfer all points to new player.

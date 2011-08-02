@@ -362,12 +362,14 @@ class Building < ActiveRecord::Base
 
   # Called when building is deactivated (after save)
   def on_deactivation
+    super if defined?(super)
     EventBroker.fire(self, EventBroker::CHANGED,
       EventBroker::REASON_DEACTIVATED)
   end
 
   # Called when building is activated (after save)
   def on_activation
+    super if defined?(super)
     EventBroker.fire(self, EventBroker::CHANGED,
       EventBroker::REASON_ACTIVATED)
   end
