@@ -1,7 +1,7 @@
 ---
 
 # How much numbers after . should we keep?
-resources.rounding_precision: 4
+resources.rounding_precision: 2
 
 # How much constructor mods can reduce construction time to?
 # I.e. 5 would mean that min construction time can be 5%.
@@ -559,7 +559,7 @@ defensive_portal.requirement.defensive_portal.level: 1
 # Position in constructable list
 defensive_portal.constructable.position: 550
 
-<% bg_building_level = 10 %>
+<% bg_building_level = 6 %>
 # Max level in battleground planets buildings. This is used by SpaceMule when
 # it is generating galaxies to ensure, that mini battlegrounds have level 1
 # buildings and main battleground has max level buildings.
@@ -573,7 +573,7 @@ battleground.max_level: <%= bg_building_level %>
     # 2. Pulsar buildings would have _max_level_ times lesser cooldown time
     # increasement. Second parenthesis
     "(#{base * max_level} / level / speed) * " +
-      "(1.0 + 1.0 * time_owned / #{1.week / max_level} * level)"
+      "(1.0 + 1.0 * time_owned / #{3.5.days / max_level} * level)"
   end
 %>
 
@@ -601,7 +601,7 @@ npc_infantry_factory.cooldown: <%= bg_cooldown(12.hours, bg_building_level) %>
 # [type, count]
 npc_infantry_factory.unit_bonus:
   - [glancer, 1]
-  - [gnat, 3]
+  - [gnat, 2]
 
 ### npc_tank_factory config ###
 
