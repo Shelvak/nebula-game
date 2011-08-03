@@ -2962,7 +2962,7 @@
   <Ratings>
     <label.ratings value="Reitingai" />
     <label.loading value="Kraunasi..." />
-    <label.noAlliances value="Šioje galaktikoje sąjungų nėra" />
+    <label.noAlliances value="Sąjungų nerasta" />
     <label.allyRatings value="Sąjungų reitingai" />
     <label.close value="Uždaryti"/>
     <rank value="#" />
@@ -3542,8 +3542,22 @@
     <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
     <property.population value="Populiacija" />
     
-    <tooltip.populationLeft 
-      value="{0 one[? laisvas gyventojas] tens[? laisvų gyventojų] many[? laisvi gyventojai]}" />
+    <tooltip.populationLeft>
+      <p>{0 zero[? laisvų gyventojų] one[? laisvas gyventojas] tens[? laisvų gyventojų] 
+      many[? laisvi gyventojai]}</p>
+      <p>Maksimalus populiacijos limitas: {1}</p>
+    </tooltip.populationLeft>
+    
+    <tooltip.maxPopulationReached>
+      <p>{0 zero[? laisvų gyventojų] one[? laisvas gyventojas] tens[? laisvų gyventojų] 
+      many[? laisvi gyventojai]}</p>
+      <p>Tu pasiekei maksimalų populiacijos limitą. Gali išlaikyti 
+      {1 zero[? gyventojų] one[? gyventoją] tens[? gyventojų] many[? gyventojus]},
+      tačiau maksimaliai leidžiama tik {2}</p>
+    </tooltip.maxPopulationReached>
+    
+    <tooltip.overPopulation 
+    value="Tavo laivai bus {0}% silpnesni dėl viršytos maksimalios populiacijos" />
     
     <title.defensivePool value="Tavo gynybinis rezervas" />
     <title.emptyDefensivePool>

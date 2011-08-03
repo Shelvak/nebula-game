@@ -176,6 +176,11 @@ package config
       /* ### OTHER CONFIG GETTERS ### */
       /* ############################ */
       
+      public static function getMaxPopulation(): int
+      {
+         return getValue("galaxy.player.population.max");
+      }
+      
       public static function getMarketFee(): String
       {
          return getValue("buildings.market.fee");

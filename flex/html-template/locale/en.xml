@@ -2963,7 +2963,7 @@
   <Ratings>
     <label.ratings value="Ratings" />
     <label.loading value="Loading..." />
-    <label.noAlliances value="There are no alliances in this galaxy" />
+    <label.noAlliances value="No alliances found" />
     <label.allyRatings value="Alliance ratings" />
     <label.close value="Close"/>
     <rank value="#" />
@@ -3609,7 +3609,16 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
     
-    <tooltip.populationLeft value="{0} population left" />
+    <tooltip.populationLeft>
+      <p>{0} population left.<br/>Max population: {1}</p>
+    </tooltip.populationLeft>
+    <tooltip.maxPopulationReached>
+      <p>{0} population left.</p>
+      <p>You have reached your maximum population. Your pods can harbor {1} 
+      people but only {2} is allowed.</p>
+    </tooltip.maxPopulationReached>
+    <tooltip.overPopulation 
+    value="Your ships will be {0}% weaker due to exceeded max population" />
     
     <title.defensivePool value="Your defensive army pool" />
     <title.emptyDefensivePool>

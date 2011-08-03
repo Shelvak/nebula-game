@@ -5,6 +5,8 @@
                 autoDrawBackground="false" xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
+         import components.skins.RadioButtonSkin;
+         
          import flashx.textLayout.elements.TextFlow;
          
          import models.credit.VipLevelsData;
@@ -56,7 +58,8 @@
          <s:HorizontalLayout gap="1" verticalAlign="middle"/>
       </s:layout>
       <s:Group width="80">
-         <s:RadioButton group="{group}" value="{level}" horizontalCenter="0"/>
+         <s:RadioButton group="{group}" value="{level}" horizontalCenter="0"
+                        skinClass="components.skins.RadioButtonSkin"/>
       </s:Group>
       <s:Label text="{level.toString()}" width="80" textAlign="center"/>
       <s:Label text="{VipLevelsData.getVipCost(level)}" width="50" textAlign="center"/>

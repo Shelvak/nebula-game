@@ -23,6 +23,12 @@ package models.player
    
    
    /**
+    * @see models.player.events.PlayerEvent#POPULATION_CAP_CHANGE
+    * @eventType models.player.events.PlayerEvent.POPULATION_CAP_CHANGE
+    */
+   [Event(name="populationCapChange", type="models.player.events.PlayerEvent")]
+   
+   /**
     * @see models.player.events.PlayerEvent#CREDS_CHANGE
     * @eventType models.player.events.PlayerEvent.CREDS_CHANGE
     */
@@ -189,7 +195,37 @@ package models.player
       public var population: int = 0;
       
       [Optional]
-      public var populationMax: int = 0;
+      public function set populationCap(value: int): void
+      {
+         _populationCap = value;
+         dispatchPopulationCapChangeEvent();
+      }
+      
+      [Bindable (event="populationCapChange")]
+      public function get populationCap(): int
+      {
+         return _populationCap;
+      }
+      
+      public var _populationCap: int = 0;
+      
+      [Bindable (event="populationCapChange")]
+      public function get populationMax(): int
+      {
+         return Math.min(populationCap, Config.getMaxPopulation());
+      }
+      
+      [Bindable (event="populationCapChange")]
+      public function get populationMaxReached(): Boolean
+      {
+         return populationCap >= Config.getMaxPopulation();
+      }
+      
+      [Bindable (event="populationCapChange")]
+      public function get overPopulationAntibonus(): int
+      {
+         return Math.round(100*(1 - (populationMax/population)));
+      }
       
       private var _scientists:int = 0;
       [Bindable(event="scientistsChange")]
@@ -543,7 +579,6 @@ package models.player
       /* ### HELPERS ### */
       /* ############### */
       
-      
       private function dispatchPlayerEvent(type:String) : void {
          dispatchSimpleEvent(PlayerEvent, type);
       }
@@ -554,6 +589,11 @@ package models.player
       
       private function dispatchCredsChangeEvent(): void {
          dispatchPlayerEvent(PlayerEvent.CREDS_CHANGE);
+      }
+      
+      private function dispatchPopulationCapChangeEvent() : void
+      {
+         dispatchPlayerEvent(PlayerEvent.POPULATION_CAP_CHANGE);
       }
    }
 }

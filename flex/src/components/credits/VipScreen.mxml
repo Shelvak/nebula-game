@@ -94,7 +94,8 @@
             <s:VerticalLayout horizontalAlign="center"/>
          </base:layout>
          <s:Label text="{getString('label.currentVipLvl', [ML.player.vipLevel])}"
-                  fontSize="14" paddingTop="20" paddingLeft="5" paddingBottom="10"/>
+                  fontSize="16" paddingTop="12" paddingLeft="5" paddingBottom="10"
+                  fontWeight="bold"/>
          <s:Group>
             <s:Group toolTip="{getString('tooltip.nextVipTick')}">
                <s:Label text="{getString('label.nextVipTick') + ':'}" 
@@ -155,7 +156,8 @@
                        [Math.ceil(VipLevelsData.getVipConvertRate(
                        ML.player.vipLevel))])}"
                        visible="{ML.player.vipCreds &lt; VipLevelsData.getVipConvertRate(
-                       ML.player.vipLevel)}"/>
+                       ML.player.vipLevel)}"
+                       width="100%"/>
          <s:Label fontSize="14" color="#eec500" 
                   text="{getString('label.convertRate', 
                   [MathUtil.round(VipLevelsData.getVipConvertRate(

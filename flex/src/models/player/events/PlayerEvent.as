@@ -6,6 +6,7 @@ package models.player.events
    {
       public static const SCIENTISTS_CHANGE: String = "scientistsChange";
       public static const CREDS_CHANGE: String = "credsChange";
+      public static const POPULATION_CAP_CHANGE: String = "populationCapChange";
       
       /**
        * Dispatched when <code>Player.allianceId</code> property changes.

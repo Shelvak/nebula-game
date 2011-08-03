@@ -217,6 +217,11 @@
       ]]>
    </fx:Script>
    <!-- background -->
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor color="#0a0a0a"/>
+      </s:fill>
+   </s:Rect>
    <s:Group left="0" right="0">
       <s:BitmapImage width="{Math.ceil((width - 500)/2)}" id="leftRepeat"
                      source="{getImage('top_repeat')}" fillMode="repeat"/>

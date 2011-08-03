@@ -50,12 +50,12 @@
          <!-- instructions -->
          <s:Label text="{getString('instructions')}" width="100%" lineBreak="toFit"/>
       </s:Group>
+      
+      <!-- start guide button -->
+      <s:Button skinClass="components.skins.YellowButtonSkin"
+                click="UrlNavigate.getInstance().showTutorial()"
+                label="{getString('label.intro')}"
+                top="216" left="201"/>
    </s:Group>
-   
-   <!-- start guide button -->
-   <s:Button skinClass="components.skins.YellowButtonSkin"
-             click="UrlNavigate.getInstance().showTutorial()"
-             label="{getString('label.intro')}"
-             top="216" left="201"/>
       
 </s:Group>
