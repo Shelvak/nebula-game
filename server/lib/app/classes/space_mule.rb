@@ -296,14 +296,13 @@ Ruby info:
     end
     
     def issue_raw(json)
-      puts json
       LOGGER.debug("Issuing message: #{json}", "SpaceMule")
       @mule.write json
       @mule.write "\n"
       response = @mule.readline.strip
       LOGGER.debug("Received answer: #{response}", "SpaceMule")
-      raise "Response does not look like JSON message!" \
-        unless response[0..0] == "{"
+#      raise "Response does not look like JSON message!" \
+#        unless response[0..0] == "{"
       response
     end
   end
