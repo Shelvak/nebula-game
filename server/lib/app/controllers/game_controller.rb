@@ -22,6 +22,8 @@ class GameController < GenericController
     |
     guns\.
     |
+    galaxy\.player\.population\.max
+    |
     units\.
     |
     damages\.
