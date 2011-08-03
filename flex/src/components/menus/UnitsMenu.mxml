@@ -22,7 +22,7 @@
    </fx:Script>      
    <base:ImageAndLabel type="{ResourceType.POPULATION}" id="popIcon"
                        textToDisplay="{ML.player.population + ' / ' + ML.player.populationMax}"
-                       toolTip="{(ML.player.populationMaxReached
+                       toolTip="{(!ML.player.populationMaxReached
                        ? getString('tooltip.populationLeft',
                        [ML.player.populationMax - ML.player.population,
                        Config.getMaxPopulation()])
