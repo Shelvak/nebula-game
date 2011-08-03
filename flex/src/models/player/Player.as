@@ -191,8 +191,20 @@ package models.player
       public var vipUntil: Date;
       public var vipTime: String = null;
       
+      private var _population: int;
+      
       [Optional]
-      public var population: int = 0;
+      public function set population(value: int): void
+      {
+         _population = value;
+         dispatchPopulationChangeEvent();
+      }
+      
+      [Bindable (event="populationChange")]
+      public function get population(): int
+      {
+         return _population;
+      }
       
       [Optional]
       public function set populationCap(value: int): void
@@ -212,16 +224,17 @@ package models.player
       [Bindable (event="populationCapChange")]
       public function get populationMax(): int
       {
-         return Math.min(populationCap, Config.getMaxPopulation());
+         return Math.min(_populationCap, Config.getMaxPopulation());
       }
       
       [Bindable (event="populationCapChange")]
       public function get populationMaxReached(): Boolean
       {
-         return populationCap >= Config.getMaxPopulation();
+         return _populationCap >= Config.getMaxPopulation();
       }
       
       [Bindable (event="populationCapChange")]
+      [Bindable (event="populationChange")]
       public function get overPopulationAntibonus(): int
       {
          return Math.round(100*(1 - (populationMax/population)));
@@ -580,7 +593,7 @@ package models.player
       /* ############### */
       
       private function dispatchPlayerEvent(type:String) : void {
-         dispatchSimpleEvent(PlayerEvent, type);
+         dispatchSimpleEvent(PlayerEvent as Class, type);
       }
       
       private function dispatchScientistsChangeEvent(): void {
@@ -594,6 +607,11 @@ package models.player
       private function dispatchPopulationCapChangeEvent() : void
       {
          dispatchPlayerEvent(PlayerEvent.POPULATION_CAP_CHANGE);
+      }
+      
+      private function dispatchPopulationChangeEvent() : void
+      {
+         dispatchPlayerEvent(PlayerEvent.POPULATION_CHANGE);
       }
    }
 }
