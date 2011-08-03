@@ -3609,16 +3609,24 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
     
+    <tooltip.populationCommon>
+      <p>{0} population left</p>
+    </tooltip.populationCommon>
+    
     <tooltip.populationLeft>
-      <p>{0} population left.<br/>Max population: {1}</p>
+      <p>[reference:tooltip.populationCommon]</p>
+      <p>Max. population: {1}</p>
     </tooltip.populationLeft>
+    
     <tooltip.maxPopulationReached>
-      <p>{0} population left.</p>
+      <p>[reference:tooltip.populationCommon]</p>
       <p>You have reached your maximum population. Your pods can harbor {1} 
-      people but only {2} is allowed.</p>
+      people but only {2} is allowed in game.</p>
     </tooltip.maxPopulationReached>
-    <tooltip.overPopulation 
-    value="Your ships will be {0}% weaker due to exceeded max population" />
+    
+    <tooltip.overPopulation>
+      <p>Your units and buildings will be {0}% weaker due to overpopulation.</p>
+    </tooltip.overPopulation>
     
     <title.defensivePool value="Your defensive army pool" />
     <title.emptyDefensivePool>

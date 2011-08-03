@@ -30,7 +30,7 @@
                        [ML.player.populationMax - ML.player.population,
                        ML.player.populationCap, Config.getMaxPopulation()]))
                        + (ML.player.population > ML.player.populationMax
-                       ? '/n'+getString('tooltip.overPopulation', 
+                       ? '\n\n' + getString('tooltip.overPopulation', 
                        [ML.player.overPopulationAntibonus])
                        :'')}"
                        paddingRight="9" paddingTop="3" textTopPadding="3"

@@ -18,6 +18,7 @@ package models.player
    import mx.utils.ObjectUtil;
    
    import utils.DateUtil;
+   import utils.MathUtil;
    import utils.NumberUtil;
    import utils.datastructures.Collections;
    
@@ -222,9 +223,9 @@ package models.player
       }
       
       [Bindable (event="populationCapChange")]
-      public function get overPopulationAntibonus(): int
+      public function get overPopulationAntibonus(): Number
       {
-         return Math.round(100*(1 - (populationMax/population)));
+         return MathUtil.round(100 * (1 - (populationMax / population)), 1);
       }
       
       private var _scientists:int = 0;

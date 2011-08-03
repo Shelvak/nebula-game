@@ -531,8 +531,9 @@
     <property.armorMod value="Šarvų daugiklis" />
     <property.damageMod value="Žalos daugiklis" />
     <property.mod.construction value="Konstravimo greičio daugiklis" />
-    <property.healing.time.mod value="Sekundžių pagyditi 1 GT" />
+    <property.healing.time.mod value="Sekundžių pagydyti 1 GT" />
     <property.healing.cost.mod value="Gydymo kainos daugiklis" />
+    <property.population value="Populiacija" />
     <property.teleportedVolume value="Perkeliamas tūris" />
     <property.creds value="Kredai" />
     <property.victoryPoints value="Pergalės taškai" />
@@ -3542,22 +3543,27 @@
     <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
     <property.population value="Populiacija" />
     
-    <tooltip.populationLeft>
-      <p>{0 zero[? laisvų gyventojų] one[? laisvas gyventojas] tens[? laisvų gyventojų] 
+    <tooltip.populationCommon>
+      <p>{0 one[? laisvas gyventojas] tens[? laisvų gyventojų] 
       many[? laisvi gyventojai]}</p>
+    </tooltip.populationCommon>
+    
+    <tooltip.populationLeft>
+      <p>[reference:tooltip.populationCommon]</p>
       <p>Maksimalus populiacijos limitas: {1}</p>
     </tooltip.populationLeft>
     
     <tooltip.maxPopulationReached>
-      <p>{0 zero[? laisvų gyventojų] one[? laisvas gyventojas] tens[? laisvų gyventojų] 
-      many[? laisvi gyventojai]}</p>
-      <p>Tu pasiekei maksimalų populiacijos limitą. Gali išlaikyti 
-      {1 zero[? gyventojų] one[? gyventoją] tens[? gyventojų] many[? gyventojus]},
-      tačiau maksimaliai leidžiama tik {2}</p>
+      <p>[reference:tooltip.populationCommon]</p>
+      <p>Tu pasiekei maksimalią populiacijos ribą. Gali išlaikyti 
+      {1 one[? gyventoją] tens[? gyventojų] many[? gyventojus]},
+      tačiau žaidime maksimaliai leidžiama turėti tik {2}.</p>
     </tooltip.maxPopulationReached>
     
-    <tooltip.overPopulation 
-    value="Tavo laivai bus {0}% silpnesni dėl viršytos maksimalios populiacijos" />
+    <tooltip.overPopulation>
+      <p>Tavo kariai, laivai ir bokšteliai bus {0}% silpnesni dėl viršytos 
+      maksimalios populiacijos.</p>
+    </tooltip.overPopulation>
     
     <title.defensivePool value="Tavo gynybinis rezervas" />
     <title.emptyDefensivePool>
