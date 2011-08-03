@@ -220,7 +220,7 @@ package models.player
          return _populationCap;
       }
       
-      public var _populationCap: int = 0;
+      private var _populationCap: int = 0;
       
       [Bindable (event="populationCapChange")]
       public function get populationMax(): int
