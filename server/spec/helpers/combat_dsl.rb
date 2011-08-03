@@ -111,8 +111,9 @@ class CombatDsl
 
     def read_units; @units; end
 
-    def initialize(alliance, location_container, &block)
-      @player = Factory.create(:player, :alliance => alliance)
+    def initialize(alliance, location_container, options, &block)
+      options.reverse_merge! :alliance => alliance
+      @player = Factory.create(:player, options)
       @location_container = location_container
 
       instance_eval(&block) if block
@@ -137,9 +138,10 @@ class CombatDsl
 
     protected
     def player(options={}, &block)
+      planet_owner = options.delete :planet_owner
       player = PlayerContainer.new(@alliance, @dsl.location_container,
-        &block)
-      @dsl.set_planet_owner(player) if options[:planet_owner]
+        options, &block)
+      @dsl.set_planet_owner(player) if planet_owner
 
       @players.push player
     end
@@ -217,8 +219,9 @@ class CombatDsl
   end
 
   def player(options={}, &block)
-    player = PlayerContainer.new(nil, @location, &block)
-    set_planet_owner(player) if options[:planet_owner]
+    planet_owner = options.delete :planet_owner
+    player = PlayerContainer.new(nil, @location, options, &block)
+    set_planet_owner(player) if planet_owner
 
     @players.push player
     player

@@ -94,6 +94,11 @@ module Combat::Simulation
       :hp => troop.hp, :flank => troop.flank, :player_id => troop.player_id,
       :stance => troop.stance, :xp => troop.xp}
   end
+  
+  # Special value for overpopulation mod.
+  # Defined in SpaceMule: 
+  # spacemule.modules.combat.objects.Player.Technologies.ModsMap.Overpopulation
+  OVERPOPULATION_TECH_MOD = 'overpopulation'
 
   # Returns two +Hash+es (damage and armor) with {class_name => mod} pairs.
   #
@@ -102,6 +107,12 @@ module Combat::Simulation
     technologies = TechTracker.query_active(player.id, 'damage', 'armor').all
     damage_mods = TechModApplier.apply(technologies, 'damage')
     armor_mods = TechModApplier.apply(technologies, 'armor')
+    
+    # Player#overpopulation_mod returns (0..1], and we need (-1..1) in 
+    # SpaceMule.
+    overpopulation_mod = player.overpopulation_mod - 1
+    damage_mods[OVERPOPULATION_TECH_MOD] = overpopulation_mod
+    armor_mods[OVERPOPULATION_TECH_MOD] = overpopulation_mod
 
     [damage_mods, armor_mods]
   end

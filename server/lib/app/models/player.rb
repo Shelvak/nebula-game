@@ -212,6 +212,12 @@ class Player < ActiveRecord::Base
   def population_max
     [Cfg.player_max_population, population_cap].min
   end
+  
+  # Returns value (0..1] for combat mods. If player is overpopulated this
+  # value will be < 1, else it will be 1.0.
+  def overpopulation_mod
+    overpopulated? ? population_max.to_f / population : 1.0
+  end
 
   def population_free; population_max - population; end
   

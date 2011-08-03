@@ -6,14 +6,13 @@
 package spacemule.modules.pmg.persistence.objects
 
 import java.util.regex.Pattern
-import spacemule.modules.pmg.objects.Galaxy
 import spacemule.modules.pmg.objects.Player
 import spacemule.modules.pmg.persistence.TableIds
 import spacemule.modules.config.objects.Config
 
 object PlayerRow {
   val columns = "`id`, `galaxy_id`, `auth_token`, `name`, `scientists`, " +
-    "`scientists_total`, `population_max`, `planets_count`"
+    "`scientists_total`, `population_cap`, `planets_count`"
   val escapeRegexp = Pattern.compile("[\t\n\\\\]")
 }
 

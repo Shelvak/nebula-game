@@ -638,6 +638,22 @@ describe Player do
     end
   end
   
+  describe "#overpopulation_mod" do
+    describe "normally populated" do
+      it "should return 1" do
+        Factory.build(:player, :population => 10).overpopulation_mod.
+          should == 1
+      end
+    end
+    
+    describe "overpopulated" do
+      it "should return ratio" do
+        Factory.build(:player, :population => 35, :population_cap => 10).
+          overpopulation_mod.should == (10.0 / 35)
+      end
+    end
+  end
+  
   describe "points" do
     point_types = %w{war_points army_points science_points economy_points}
 

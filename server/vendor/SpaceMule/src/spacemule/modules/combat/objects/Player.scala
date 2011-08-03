@@ -10,8 +10,17 @@ object Player {
     /**
      * Map of combatant full name (Building::Thunder, Unit::Trooper, etc.) to
      * modifier.
+     * 
+     * Modifier example: 0.25 would mean 25% more damage.
      */
     type ModsMap = Map[String, Double]
+    
+    object ModsMap {
+      /**
+       * Special value for overpopulation mod.
+       */
+      val Overpopulation = "overpopulation"
+    }
 
     def empty = new Player.Technologies(Map(), Map())
   }
@@ -33,6 +42,7 @@ object Player {
      * Return mod for combatant from given mod map.
      */
     private def modsFrom(modsMap: Technologies.ModsMap, combatant: Combatant) =
+      modsMap(Technologies.ModsMap.Overpopulation) + 
       modsMap.getOrElse(combatant.rubyName, 0d)
   }
 }

@@ -211,6 +211,22 @@ describe Combat do
     end
   end
   
+  it "should calculate overpopulation into account" do
+    loser = nil # This will lose because being THAT much into overpopulation
+                # sucks bad for you.
+    winner = nil
+    CombatDsl.new do
+      location :planet
+      player(:population => 100000, :population_cap => 10) do
+        units { loser = trooper }
+      end
+      player { units { winner = trooper :hp => 1 } }
+    end.run
+    
+    loser.should be_dead
+    winner.should be_alive
+  end
+  
   it "should not crash if planet owner does not have any assets" do
     CombatDsl.new do
       location :planet
