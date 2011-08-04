@@ -32,18 +32,6 @@ describe SsObject do
     end
   end
 
-  describe "#client_location" do
-    it "should return ClientLocation" do
-      position = 2
-      angle = 90
-      planet = Factory.create(:planet, :position => position,
-        :angle => angle)
-      planet.client_location.should == ClientLocation.new(planet.id,
-        Location::SS_OBJECT, position, angle, planet.name, nil, planet.terrain,
-        planet.solar_system_id)
-    end
-  end
-
   describe ".find_for_player!" do
     it "should raise ActiveRecord::RecordNotFound if not found" do
       planet = Factory.create :planet

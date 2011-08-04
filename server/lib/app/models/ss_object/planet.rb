@@ -118,6 +118,12 @@ class SsObject::Planet < SsObject
     
     super(options).merge(additional)
   end
+  
+  def client_location
+    ClientLocation.new(id, Location::SS_OBJECT, position, angle, name, nil,
+      terrain, solar_system_id, 
+      player ? player.as_json(:mode => :minimal) : nil)
+  end
 
   def landable?; true; end
 
