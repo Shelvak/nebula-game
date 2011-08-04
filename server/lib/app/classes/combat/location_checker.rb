@@ -102,8 +102,7 @@ class Combat::LocationChecker
     def on_conflict(location_point, check_report)
       location = location_point.object
 
-      units = Unit.in_location(location_point.location_attrs).where(
-        "level > 0").all
+      units = Unit.in_location(location_point.location_attrs).combat.all
 
       # Get players from alliances.
       players = check_report.alliances.values.flatten

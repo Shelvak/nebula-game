@@ -130,6 +130,17 @@ describe klass do
           Combat::LocationChecker.check_location(@location)
         end
 
+        it "should not include non-combat units" do
+          unit = Factory.create!(:u_mdh, :location => @location, :level => 1,
+            :player => @player1)
+          Combat.stub!(:run).and_return do
+            |planet, alliances, nap_rules, units, buildings|
+            units.should_not include(unit)
+            @stubbed_assets
+          end
+          Combat::LocationChecker.check_location(@location)
+        end
+
         it "should not include units with level 0" do
           unit = Factory.create(:unit, :location => @location, :level => 0,
             :player => @player1)

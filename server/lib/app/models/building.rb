@@ -61,17 +61,17 @@ class Building < ActiveRecord::Base
   }
 
   # This needs to be Proc because we can't test it otherwise.
-  scope :shooting, Proc.new { {:conditions => {:type => shooting_types}} }
-  scope :defensive, Proc.new { {:conditions => {:type => defensive_types}} }
+  scope :shooting, Proc.new { where(:type => shooting_types) }
+  scope :defensive, Proc.new { where(:type => defensive_types) }
 
   # Regexp used to match building guns in config.
-  SHOOTING_REGEXP = /^buildings\.(.+?)\.guns$/
+  GUNS_REGEXP = /^buildings\.(.+?)\.guns$/
 
   # Return Array of String building types that have guns.
   def self.shooting_types
     types = []
-    CONFIG.each_matching(SHOOTING_REGEXP) do |key, value|
-      types.push key.match(SHOOTING_REGEXP)[1].camelcase unless value.blank?
+    CONFIG.each_matching(GUNS_REGEXP) do |key, value|
+      types.push key.match(GUNS_REGEXP)[1].camelcase unless value.blank?
     end
     types
   end
