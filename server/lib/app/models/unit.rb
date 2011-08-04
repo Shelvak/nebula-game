@@ -13,6 +13,22 @@ class Unit < ActiveRecord::Base
   composed_of :location, :class_name => 'LocationPoint',
       :mapping => LocationPoint.attributes_mapping_for(:location),
       :converter => LocationPoint::CONVERTER
+  
+  scope :combat, proc { 
+    where("level > 0 AND `type` NOT IN (?)", non_shooting_types)
+  }
+  
+  # Regexp used to match building guns in config.
+  GUNS_REGEXP = /^units\.(.+?)\.guns$/
+
+  # Return Array of String building types that have guns.
+  def self.non_shooting_types
+    types = []
+    CONFIG.each_matching(GUNS_REGEXP) do |key, value|
+      types.push key.match(GUNS_REGEXP)[1].camelcase if value.blank?
+    end
+    types
+  end
 
   belongs_to :player
   belongs_to :route

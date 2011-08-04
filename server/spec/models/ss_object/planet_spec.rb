@@ -398,36 +398,36 @@ describe SsObject::Planet do
       @planet.save!
     end
 
-    describe "constructors building units" do
+    describe "alive units" do
       before(:each) do
-        @constructable = Factory.create(
-          :unit, :player => @old, :location => @planet
-        )
-        Factory.create(:b_constructor_with_constructable,
-          :planet => @planet,
-          :constructable => @constructable
-        )
+        @unit = Factory.create(:unit, :player => @old, :location => @planet)
       end
     
-      it "should change constructable player ids" do
+      it "should change player id" do
         @planet.save!
         lambda do
-          @constructable.reload
-        end.should change(@constructable, :player).from(@old).to(@new)
+          @unit.reload
+        end.should change(@unit, :player).from(@old).to(@new)
       end
       
       it "should take population from old player" do
         lambda do
           @planet.save!
           @old.reload
-        end.should change(@old, :population).by(- @constructable.population)
+        end.should change(@old, :population).by(- @unit.population)
       end
       
       it "should give population to new player" do
         lambda do
           @planet.save!
           @new.reload
-        end.should change(@new, :population).by(@constructable.population)        
+        end.should change(@new, :population).by(@unit.population)        
+      end
+      
+      it "should dispatch changed event" do
+        should_fire_event([@unit], EventBroker::CHANGED) do
+          @planet.save!
+        end
       end
     end
 

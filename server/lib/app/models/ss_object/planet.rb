@@ -271,16 +271,8 @@ class SsObject::Planet < SsObject
     population_count = 0
     max_population_count = 0
     buildings.each do |building|
-      if building.constructor? and building.working?
-        constructable = building.constructable
-        if constructable.is_a?(Unit)
-          constructable.player = new_player
-          population_count += constructable.population
-          constructable.save!
-        end
-
-        ConstructionQueue.clear(building.id)
-      end
+      ConstructionQueue.clear(building.id) \
+        if building.constructor? and building.working?
 
       if building.is_a?(Trait::Radar)
         zone = building.radar_zone
@@ -296,6 +288,15 @@ class SsObject::Planet < SsObject
       
       building.reset_cooldown! if building.respond_to?(:reset_cooldown!)
     end
+    
+    # Transfer any alive units that were not included in combat to new 
+    # owner.
+    units = self.units
+    units.each do |unit|
+      population_count += unit.population
+      unit.player = new_player
+    end
+    Unit.save_all_units(units)
 
     # Return exploring scientists if on a mission.
     stop_exploration!(old_player) if exploring?

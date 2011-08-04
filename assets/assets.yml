@@ -474,7 +474,9 @@ assets:
 
       "units":
         <% each_model('unit') do |base| %>
+        <% unless CONFIG["units.#{base.underscore}.guns"].blank? %>
         <%= "#{base}.tar.gz: #{base}BattlefieldUnit.tar.gz" %>
+        <% end %>
         <% end %>
 
     <% terrain_types.each do |number, name| %>
