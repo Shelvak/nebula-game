@@ -51,6 +51,7 @@ package controllers.ui
    import models.quest.Quest;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
+   import models.unit.MCUnitScreen;
    import models.unit.Unit;
    import models.unit.UnitKind;
    
@@ -552,37 +553,14 @@ package controllers.ui
       public function showUnits(units:ListCollectionView, location: * = null, target: Building = null,
                                 kind: String = null, owner: int = Owner.PLAYER) : void
       {
-         function setData(e: Event): void
-         {
-            createdScreens[MainAreaScreens.UNITS] = true;
-            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
-            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
-               'target': target,
-               'units': units,
-               'kind': kind,
-               'owner': owner});
-         }
-         if (_mainAreaSwitch.currentScreenName != MainAreaScreens.UNITS)
-         {
-            if (createdScreens[MainAreaScreens.UNITS])
-            {
-               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
-            }
-            else
-            {
-               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-            }
-            showNonMapScreen(_screenProperties[MainAreaScreens.UNITS]);
-         }
-         else
-         {
-            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
-               'target': target,
-               'units': units,
-               'kind': kind,
-               'owner': owner});
-         }
+         var uScreen: MCUnitScreen = MCUnitScreen.getInstance();
+         uScreen.units = units;
+         uScreen.location = location;
+         uScreen.target = target;
+         uScreen.currentKind = kind;
+         uScreen.owner = owner;
+         uScreen.prepare();
+         showNonMapScreen(_screenProperties[MainAreaScreens.UNITS]);
       }
       
       public function showFacilities(facilityId: int) : void

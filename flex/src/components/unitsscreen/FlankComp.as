@@ -5,6 +5,8 @@ package components.unitsscreen
    
    import flash.events.Event;
    
+   import models.unit.MCUnitScreen;
+   
    [SkinState("transfering")]
    [SkinState("normal")]
    
@@ -88,8 +90,35 @@ package components.unitsscreen
          return _freeStorage;
       }
       
-      [Bindable]
-      public var flankModel: UnitsFlank;
+      [Bindable (event="flankModelChange")]
+      public function get flankModel(): UnitsFlank
+      {
+         return _flankModel;
+      }
+      
+      public function set flankModel(value: UnitsFlank): void
+      {
+         if (_flankModel)
+         {
+            _flankModel.removeEventListener(UnitsScreenEvent.FLANK_DESELECT, deselectAll);
+         }
+         _flankModel = value;
+         if (_flankModel)
+         {
+            _flankModel.addEventListener(UnitsScreenEvent.FLANK_DESELECT, deselectAll);
+         }
+         dispatchFlankModelChangeEvent();
+      }
+      
+      private function dispatchFlankModelChangeEvent(): void
+      {
+         if (hasEventListener(UnitsScreenEvent.FLANK_MODEL_CHANGE))
+         {
+            dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_MODEL_CHANGE));
+         }
+      }
+      
+      public var _flankModel: UnitsFlank;
       
       public function get selectedUnits(): Vector.<Object>
       {
@@ -101,6 +130,7 @@ package components.unitsscreen
          DragManager.acceptDragDrop(event.currentTarget as IUIComponent);
       }
       
+      private var uScreen: MCUnitScreen = MCUnitScreen.getInstance();
       
       public function unitsList_dragDropHandler(event:DragEvent):void
       {
@@ -111,7 +141,7 @@ package components.unitsscreen
             {
                flanksObj[unit.id] = [flankModel.nr - 1, null, unit];
             }
-            new GUnitsScreenEvent(GUnitsScreenEvent.UNITS_UPDATED, flanksObj);
+            uScreen.updateUnits(flanksObj);
          }
          deselect = true;
       }
@@ -180,7 +210,7 @@ package components.unitsscreen
                unit.newStance = e.stance;
             }
             ML.units.enableAutoUpdate();
-            new GUnitsScreenEvent(GUnitsScreenEvent.UNITS_UPDATED, flanksObj);
+            uScreen.updateUnits(flanksObj);
             deselectAll();
          }
       }
@@ -230,7 +260,7 @@ package components.unitsscreen
          else
          {
             flankModel.selection = unitsList.selectedItems;
-            new GUnitsScreenEvent(GUnitsScreenEvent.SELECTION_PRECHANGE);
+            uScreen.dispatchSelectionChangeEvent();
          }
          selectDeselectAllRequested = false;
       }

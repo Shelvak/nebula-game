@@ -36,6 +36,7 @@
          import models.factories.BuildingFactory;
          import models.location.LocationType;
          import models.planet.Planet;
+         import models.unit.MCUnitScreen;
          import models.unit.Unit;
          
          import mx.events.EffectEvent;
@@ -188,11 +189,13 @@
             }
          }
          
+         private var uScreen: MCUnitScreen = MCUnitScreen.getInstance();
+         
          private function switchToStorage(e: GUnitEvent): void
          {
             EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
             NavigationController.getInstance().enableActiveButton();
-            new GUnitsScreenEvent(GUnitsScreenEvent.SWITCH_TO_STORAGE_SCREEN, unitModel);
+            uScreen.switchToStorage(unitModel);
          }
          
          [Bindable]

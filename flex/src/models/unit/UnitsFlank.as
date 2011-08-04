@@ -2,13 +2,17 @@ package models.unit
 {
    import com.developmentarc.core.utils.EventBroker;
    
+   import components.unitsscreen.events.UnitsScreenEvent;
+   
+   import flash.events.EventDispatcher;
+   
    import globalevents.GUnitsScreenEvent;
    
    import models.ModelsCollection;
    import models.Owner;
    
    [Bindable]
-   public class UnitsFlank
+   public class UnitsFlank extends EventDispatcher
    {
       public var flank: ModelsCollection;
       public var nr: int;
@@ -23,7 +27,13 @@ package models.unit
          owner = _owner
       }
       
-      
+      public function deselectAll(): void
+      {
+         if (hasEventListener(UnitsScreenEvent.FLANK_DESELECT))
+         {
+            dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_DESELECT));
+         }
+      }
       
       private function dropUnits(e: GUnitsScreenEvent): void
       {

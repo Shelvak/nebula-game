@@ -14,6 +14,7 @@
          import models.ModelLocator;
          import models.Owner;
          import models.movement.MRoute;
+         import models.unit.MCUnitScreen;
          import models.unit.Unit;
          
          import utils.assets.AssetNames;
@@ -59,8 +60,10 @@
             new RoutesCommand(RoutesCommand.DESTROY, model).dispatch();
          }
          
+         private var uScreen: MCUnitScreen = MCUnitScreen.getInstance();
+         
          private function btnManage_clickHandler(event:MouseEvent) : void {
-            new GUnitsScreenEvent(GUnitsScreenEvent.MANAGE_UNITS, 
+            uScreen.showSquadron( 
                Collections.filter(ML.units,
                   function(unit:Unit) : Boolean {
                      return unit.squadronId == model.id;
