@@ -1303,6 +1303,7 @@
     <header.building value="Pastatas" />
     <header.unit value="Karys" />
     <header.storage value="Talpa" />
+    <header.owner value="Owner" />
 
     <description.short.galaxy value="Galaktika" />
     <description.short.solarSystem value="Saulės sistema {0}" />
@@ -1424,7 +1425,7 @@
     <title.combatLog value="Mūšio ataskaita" />
     <message.combatLog>
       <p>Mūšis {0 planet[planetoje] galaxy[galaktikoje] ss[saulės sistemoje] 
-      battleground[]} {1}</p>
+      battleground[]} {1}{0 planet[, Savininkas] galaxy[] ss[] battleground[]} {2}</p>
     </message.combatLog>
     <label.combatLog.outcome.win value="Tu laimėjai!" />
     <label.combatLog.outcome.loose value="Tu pralaimėjai!" />
