@@ -40,9 +40,18 @@ when "start"
       require "rubygems"
       require 'robustthread'
       RobustThread.logger = Logger.new(log_file)
-      #RobustThread.exception_handler do |exception|
-      #  email_me_the_exception(exception)
-      #end
+      RobustThread.exception_handler do |exception|
+        message = "Unhandled exception:\n#{exception.message} " \
+          "(#{exception.class}): \n\t#{exception.backtrace.join("\n\t")}"
+        
+        if defined?(MAILER)
+          MAILER.call("DAEMON", message)
+        else
+          # Mailer may not be defined if crashed somewhere early in 
+          # initialization.
+          log(message, :error)
+        end
+      end
       
       STDIN.close
       STDOUT.reopen(log_file)

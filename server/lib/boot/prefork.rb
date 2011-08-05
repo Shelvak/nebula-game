@@ -78,17 +78,11 @@ benchmark :autoloader do
   end
 end
 
-benchmark :logger do
+benchmark :mailer do
   email_from = "server-#{Socket.gethostname}@nebula44.com"
   email_to = 'arturas@nebula44.com'
-  LOGGER = GameLogger.new(
-    File.expand_path(
-      File.join(ROOT_DIR, 'log', "#{ENV['environment']}.log")
-    )
-  )
-  LOGGER.level = GameLogger::LEVEL_INFO
   
-  mailer_block = lambda do |short, long|
+  MAILER = lambda do |short, long|
     lambda do |error|
       Mail.deliver do
         from email_from
@@ -98,15 +92,24 @@ benchmark :logger do
       end
     end
   end
+end
+
+benchmark :logger do
+  LOGGER = GameLogger.new(
+    File.expand_path(
+      File.join(ROOT_DIR, 'log', "#{ENV['environment']}.log")
+    )
+  )
+  LOGGER.level = GameLogger::LEVEL_INFO
   
   # Error reporting by mail.
   if ENV['environment'] == 'production'
     Mail.defaults { delivery_method :sendmail }
-    LOGGER.on_fatal = mailer_block.call("FATAL", 
+    LOGGER.on_fatal = MAILER.call("FATAL", 
       "Server has encountered an FATAL error!")
-    LOGGER.on_error = mailer_block.call("ERROR", 
+    LOGGER.on_error = MAILER.call("ERROR", 
       "Server has encountered an error!")
-    LOGGER.on_warn = mailer_block.call("WARN", 
+    LOGGER.on_warn = MAILER.call("WARN", 
       "Server has issued a warning!")
   end
 end
