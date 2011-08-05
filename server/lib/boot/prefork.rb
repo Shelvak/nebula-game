@@ -90,24 +90,18 @@ benchmark :logger do
   
   mailer_block = lambda do |short, long|
     lambda do |error|
-      Thread.new do
-        begin
-          Mail.deliver do
-            from email_from
-            to email_to
-            subject "[#{short}] #{error.split("\n")[0]}"
-            body "#{long}\n\n#{error}"
-          end
-        rescue Errno::ENETUNREACH, Net::SMTPServerBusy
-          sleep 60
-          retry
-        end
+      Mail.deliver do
+        from email_from
+        to email_to
+        subject "[#{short}] #{error.split("\n")[0]}"
+        body "#{long}\n\n#{error}"
       end
     end
   end
   
   # Error reporting by mail.
   if ENV['environment'] == 'production'
+    Mail.defaults { delivery_method :sendmail }
     LOGGER.on_fatal = mailer_block.call("FATAL", 
       "Server has encountered an FATAL error!")
     LOGGER.on_error = mailer_block.call("ERROR", 

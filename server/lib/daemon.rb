@@ -63,7 +63,9 @@ when "stop"
   kill_server
 when "hup"
   kill_server("-HUP")
+when "status"
+  puts running? ? "ok" : "error"
 else
   puts "Unknown argument: #{ARGV[0]}"
-  puts "Usage: lib/daemon.rb start|stop|hup"
+  puts "Usage: lib/daemon.rb start|stop|hup|status"
 end
