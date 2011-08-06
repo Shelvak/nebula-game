@@ -187,8 +187,10 @@ class Unit < ActiveRecord::Base
 
   # How much population does this unit take?
   def self.population
-    property('population') or raise ArgumentError.new(
-      "property population is nil for #{self}")
+    population = property('population')
+    raise ArgumentError.new("property population is nil for #{self}") \
+      if population.nil?
+    population
   end
 
   protected
