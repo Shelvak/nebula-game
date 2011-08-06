@@ -10,6 +10,9 @@ c.transaction do
   rd = Building::Radar.all.map do |r|
     r.active? ? (r.deactivate!; r) : nil
   end.compact
+  
+  FowGalaxyEntry.delete_all
+  FowSsEntry.delete_all
 
   SolarSystem.all.each do |ss|
     next if ss.main_battleground? || ss.wormhole?
@@ -47,16 +50,14 @@ c.transaction do
 
     puts counts.inspect
     counts.each do |player_id, count|
-      fse = FowSsEntry.where(:solar_system_id => ss.id, 
-          :player_id => player_id).first || FowSsEntry.new
+      fse = FowSsEntry.new
       fse.solar_system_id = ss.id
       fse.player_id = player_id
       fse.counter = count
       fse.save!
       puts "  FSE: #{fse.inspect}"
-      FowSsEntry.recalculate(ss.id)
     end
-
+    FowSsEntry.recalculate(ss.id)
   end
 
   rd.each { |r| r.activate! }
