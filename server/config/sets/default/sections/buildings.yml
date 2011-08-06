@@ -1,7 +1,8 @@
 ---
 
 # How much numbers after . should we keep?
-resources.rounding_precision: 2
+# Warning, affects the server too!
+resources.rounding_precision: 4
 
 # How much constructor mods can reduce construction time to?
 # I.e. 5 would mean that min construction time can be 5%.

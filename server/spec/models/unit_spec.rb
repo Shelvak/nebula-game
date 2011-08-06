@@ -198,7 +198,7 @@ describe Unit do
 
   it "should fail if we don't have enough population" do
     player = Factory.create(:player, 
-      :population_max => Unit::TestUnit.population - 1)
+      :population_cap => Unit::TestUnit.population - 1)
     unit = Factory.build(:unit, :player => player, :level => 0)
     lambda do
       unit.upgrade!
@@ -208,7 +208,7 @@ describe Unit do
   it "should increase population when upgrading" do
     player = Factory.create(:player,
       :population => 0,
-      :population_max => Unit::TestUnit.population)
+      :population_cap => Unit::TestUnit.population)
     unit = Factory.build(:unit, :player => player, :level => 0)
     lambda do
       unit.upgrade!

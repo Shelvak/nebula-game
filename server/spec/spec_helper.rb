@@ -122,6 +122,14 @@ Spork.prefork do
         define_method(method_name, &old_method)
       end
     end
+    
+    class ActiveRecord::Base
+      def update_row!(updates)
+        self.class.update_all updates, ["id=?", id]
+        reload
+        self
+      end
+    end
   end
 end
 
