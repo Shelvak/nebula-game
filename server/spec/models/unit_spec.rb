@@ -1,6 +1,24 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Unit do
+  describe ".non_combat_types" do
+    it "should return ground units without guns" do
+      Unit.non_combat_types.should include("Mdh")
+    end
+    
+    it "should not return ground units with guns" do
+      Unit.non_combat_types.should_not include("Trooper")
+    end
+    
+    it "should not return space units without guns" do
+      Unit.non_combat_types.should_not include("Jumper")
+    end
+    
+    it "should not return space units with guns" do
+      Unit.non_combat_types.should_not include("Crow")
+    end
+  end
+  
   describe ".on_callback" do
     describe "destroy" do
       it "should destroy unit" do
