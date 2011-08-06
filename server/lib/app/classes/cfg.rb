@@ -15,5 +15,6 @@ class Cfg; class << self
     ].min
   end
   
+  def player_initial_population; CONFIG['galaxy.player.population']; end
   def player_max_population; CONFIG['galaxy.player.population.max']; end
 end; end

@@ -402,6 +402,16 @@ describe SsObject::Planet do
       before(:each) do
         @unit = Factory.create(:unit, :player => @old, :location => @planet)
       end
+      
+      it "should not change player if it didn't belong to old user" do
+        @unit.player = Factory.create(:player)
+        @unit.save!
+        
+        @planet.save!
+        lambda do
+          @unit.reload
+        end.should_not change(@unit, :player)
+      end
     
       it "should change player id" do
         @planet.save!

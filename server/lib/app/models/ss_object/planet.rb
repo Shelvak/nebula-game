@@ -111,8 +111,8 @@ class SsObject::Planet < SsObject
         # Player was passed.
         resolver = StatusResolver.new(resolver) if resolver.is_a?(Player)
         additional["status"] = resolver.status(player_id)
-        additional["viewable"] = !! (
-          observer_player_ids & resolver.friendly_ids).present?
+        additional["viewable"] = ! (
+          observer_player_ids & resolver.friendly_ids).blank?
       end
     end
     
@@ -291,7 +291,8 @@ class SsObject::Planet < SsObject
     
     # Transfer any alive units that were not included in combat to new 
     # owner.
-    units = self.units
+    units = Unit.in_location(self).
+      where(:player_id => old_player ? old_player.id : nil)
     units.each do |unit|
       population_count += unit.population
       unit.player = new_player
