@@ -7,13 +7,29 @@ describe Tile do
       Factory.create(:tile, :planet => model.planet)
     end.should raise_error(ActiveRecord::RecordNotUnique)
   end
+  
+  it "should be object" do
+    Tile.should include(Parts::Object)
+  end
+  
+  describe "notifier" do
+    before(:all) do
+      @build = lambda { Factory.build(:tile, :kind => Tile::SAND) }
+      @change = lambda { |tile| tile.kind = Tile::TITAN }
+    end
 
-  describe "#to_json" do
+    @should_not_notify_create = true
+    @should_not_notify_update = true
+    it_should_behave_like "notifier"
+  end
+
+  describe "#as_json" do
     before(:all) do
       @model = Factory.create(:tile)
     end
 
-    @ommited_fields = %w{planet_id}
+    @ommited_fields = %w{}
+    @required_fields = Tile.columns.map(&:name) - @ommited_fields
     it_should_behave_like "to json"
   end
 

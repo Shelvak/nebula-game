@@ -29,6 +29,12 @@ class Cfg; class << self
       'width' => width, 'height' => height).round
   end
   
+  # Returns number of creds required to remove a folliage.
+  def foliage_removal_cost(width, height)
+    CONFIG.evalproperty("creds.folliage.remove", 
+      'width' => width, 'height' => height).round
+  end
+  
   # Returns number of creds required to instantly finish an exploration.
   def exploration_finish_cost(width, height)
     CONFIG.evalproperty("creds.exploration.finish", 

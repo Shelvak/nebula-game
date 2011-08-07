@@ -15,6 +15,8 @@ class CredStats < ActiveRecord::Base
   ACTION_VIP = 6
   # Finish exploration
   ACTION_FINISH_EXPLORATION = 7
+  # Remove foliage
+  ACTION_REMOVE_FOLIAGE = 8
 
   # Creates a new record which you can save later.
   def self.new_record(player, action, cost, attributes={})
@@ -88,6 +90,13 @@ class CredStats < ActiveRecord::Base
     new_record(
       player, ACTION_FINISH_EXPLORATION,
       Cfg.exploration_finish_cost(width, height)
+    )
+  end
+  
+  def self.remove_foliage(player, width, height)
+    new_record(
+      player, ACTION_REMOVE_FOLIAGE,
+      Cfg.foliage_removal_cost(width, height)
     )
   end
 end

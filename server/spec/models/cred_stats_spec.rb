@@ -55,4 +55,10 @@ describe CredStats do
       CredStats.finish_exploration(Factory.create(:player), 3, 4).save!
     end
   end
+  
+  describe ".remove_foliage" do
+    it "should work" do
+      CredStats.remove_foliage(Factory.create(:player), 3, 4).save!
+    end
+  end
 end

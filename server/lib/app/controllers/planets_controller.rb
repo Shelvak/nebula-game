@@ -114,6 +114,25 @@ class PlanetsController < GenericController
     planet.finish_exploration!(true)
   end
   
+  # Removes explorable foliage for creds.
+  #
+  # Invocation: by client
+  # 
+  # Parameters:
+  # - id (Fixnum): ID of the planet
+  # - x (Fixnum): x coordinate of the tile
+  # - y (Fixnum): y coordinate of the tile
+  # 
+  # Response: None
+  #
+  def action_remove_foliage
+    param_options(:required => {:id => Fixnum, :x => Fixnum, :y => Fixnum})
+    
+    planet = SsObject::Planet.where(:player_id => player.id).
+      find(params['id'])
+    planet.remove_foliage!(params['x'], params['y'])
+  end
+  
   # Edit planet properties.
   #
   # You can only do this if you own the planet. Also you can only do this

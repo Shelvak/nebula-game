@@ -18,7 +18,7 @@ module Parts::PlanetExploration
         if player_id.nil?
       raise GameLogicError.new("Planet is already being explored!") \
         if exploring?
-
+      
       kind = tile_kind(x, y)
       raise GameLogicError.new(
         "Tile @ #{x},#{y} should have been exploration tile but was #{
@@ -132,7 +132,7 @@ module Parts::PlanetExploration
 
       true
     end
-
+    
     # Return tile kind for coordinates _x_, _y_.
     def tile_kind(x, y)
       Tile.where(:planet_id => id, :x => x, :y => y).first.try(:kind)
@@ -144,6 +144,44 @@ module Parts::PlanetExploration
 
       kind = tile_kind(exploration_x, exploration_y)
       Tile.exploration_scientists(kind)
+    end
+  
+    # Removes explorable foliage tile from planet map.
+    def remove_foliage!(x, y)
+      raise GameLogicError.new("Cannot remove folliage while exploring!") \
+        if exploring?
+      
+      tile = Tile.where(:planet_id => id, :x => x, :y => y).first
+      raise GameLogicError.new("There is no tile @ #{x},#{y}!") if tile.nil?
+      
+      kind = tile.kind
+      raise GameLogicError.new(
+        "Tile @ #{x},#{y} should have been exploration tile but was #{
+          kind.inspect}!") unless Tile::EXPLORATION_TILES.include?(kind)
+      
+      width, height = Tile::BLOCK_SIZES[kind]      
+      cost = Cfg.foliage_removal_cost(width, height)
+      
+      player = self.player
+      raise GameLogicError.
+        new("#{self} must have a player to remove foliage!") \
+        if player.nil?
+      
+      raise GameLogicError.new(
+        "Not enough creds for #{player}! Required: #{cost}, had: #{
+        player.creds}"
+      ) if player.creds < cost
+      
+      stats = CredStats.remove_foliage(player, width, height)
+      player.creds -= cost
+      
+      self.class.transaction do
+        tile.destroy
+        stats.save!
+        player.save!
+      end
+      
+      self
     end
   end
 end

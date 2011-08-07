@@ -12,10 +12,13 @@ upgradable.speed_up:
   - [<%= 1.day %> / speed, 1000]
   - [<%= 2.days %> / speed, 1500]
   - [<%= Creds::ACCELERATE_INSTANT_COMPLETE %>, 2000]
-  
+
+# How much does it cost to remove a folliage.
+folliage.remove: 1000.0 * width * height / 9
+
 # How much creds it costs to explore something. Result from this formula
 # should be rounded.
-exploration.finish: 20.0 / 9 * width * height
+exploration.finish: 20.0 * width * height / 9
 
 # Cost to move building from one spot to another
 building.move: 200

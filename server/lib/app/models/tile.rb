@@ -2,7 +2,7 @@
 class Tile < ActiveRecord::Base
   include FastFind
   def self.fast_find_columns
-    {:x => :to_i, :y => :to_i, :kind => :to_i}
+    {:id => :to_i, :x => :to_i, :y => :to_i, :kind => :to_i}
   end
 
   # Only metal extractors can be built on these
@@ -63,6 +63,11 @@ class Tile < ActiveRecord::Base
   # Tile kinds that can be explored.
   EXPLORATION_TILES = [FOLLIAGE_3X3, FOLLIAGE_3X4, FOLLIAGE_4X3,
     FOLLIAGE_4X4, FOLLIAGE_4X6, FOLLIAGE_6X6, FOLLIAGE_6X2]
+  
+  include Parts::Object
+  def self.notify_on_create?; false; end
+  def self.notify_on_update?; false; end
+  include Parts::Notifier
 
   belongs_to :planet, :class_name => "SsObject::Planet"
 
@@ -78,7 +83,7 @@ class Tile < ActiveRecord::Base
   }
 
   def as_json(options=nil)
-    attributes.except('id', 'planet_id')
+    attributes
   end
 
   # Checks if given _kind_ is exploration tile kind, raises ArgumentError

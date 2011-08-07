@@ -947,6 +947,77 @@ describe SsObject::Planet do
     end
   end
 
+  describe "#remove_foliage!" do
+    before(:each) do
+      @player = Factory.create(:player, 
+        :creds => Cfg.foliage_removal_cost(6, 6))
+      @planet = Factory.create(:planet, :player => @player)
+      @x = 10; @y = 2
+      @tile = Factory.create(:t_folliage_6x6, :planet => @planet,
+        :x => @x, :y => @y)
+    end
+    
+    it "should fail if exploring" do
+      @planet.stub!(:exploring?).and_return(true)
+      lambda do
+        @planet.remove_foliage!(@x, @y)
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should fail if given wrong coordinates" do
+      lambda do
+        @planet.remove_foliage!(@x + 1, @y)
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should fail if trying to remove non-exploration tile" do
+      @tile.kind = Tile::SAND
+      @tile.save!
+      
+      lambda do
+        @planet.remove_foliage!(@x, @y)
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should fail if planet has no player" do
+      @planet.player = nil
+      
+      lambda do
+        @planet.remove_foliage!(@x, @y)
+      end.should raise_error(GameLogicError)
+      
+    end
+    
+    it "should fail if not enough creds" do
+      @player.creds -= 1
+      @player.save!
+      
+      lambda do
+        @planet.remove_foliage!(@x, @y)
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should reduce creds from player" do
+      lambda do
+        @planet.remove_foliage!(@x, @y)
+        @player.reload
+      end.should change(@player, :creds).to(0)
+    end
+    
+    it "should record cred stats" do
+      should_record_cred_stats(:remove_foliage!, [@player, 6, 6]) \
+        { @planet.remove_foliage!(@x, @y) }
+    end
+    
+    it "should destroy the tile" do
+      @planet.remove_foliage!(@x, @y)
+      
+      lambda do
+        @tile.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+  
   describe "#can_view_resources?" do
     it "should return false if planet is unowned" do
       Factory.create(:planet).can_view_resources?(1).should be_false

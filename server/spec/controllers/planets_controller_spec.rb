@@ -281,6 +281,41 @@ describe PlanetsController do
     end
   end
   
+  describe "planets|remove_foliage" do
+    before(:each) do
+      player.creds = Cfg.foliage_removal_cost(3, 4)
+      player.save!
+      @planet = Factory.create(:planet, :player => player)
+      @tile = Factory.create(:t_folliage_3x4, :planet => @planet, 
+        :x => 3, :y => 4)
+      
+      @action = "planets|remove_foliage"
+      @params = {'id' => @planet.id, 'x' => @tile.x, 'y' => @tile.y}
+    end
+    
+    @required_params = %w{id x y}
+    it_should_behave_like "with param options"
+    
+    it "should fail if planet does not belong to player" do
+      @planet.update_row! ["player_id=?", Factory.create(:player).id]
+      
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+    
+    it "should invoke #remove_foliage!" do
+      SsObject::Planet.stub_chain(:where, :find).with(@planet.id).
+        and_return(@planet)
+      @planet.should_receive(:remove_foliage!).with(@tile.x, @tile.y)
+      invoke @action, @params
+    end
+    
+    it "should work" do
+      invoke @action, @params
+    end
+  end
+  
   describe "planets|edit" do
     before(:each) do
       @action = "planets|edit"
