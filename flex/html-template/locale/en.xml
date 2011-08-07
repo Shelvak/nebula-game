@@ -2622,6 +2622,13 @@
       </p>
     </about.15>
 
+    <title.121 value="Holding Breath" />
+    <about.121>
+      <p>Commander.</p>
+      <p>We need more space for our people. Soon enough we won't have any
+      rooms left.</p>
+      <p>Commence building of living pods immediately!</p>
+    </about.121>
 
     <title.16 value="Achieving Greatness" />
     <about.16>
@@ -2729,6 +2736,30 @@
         [reference:Buildings/SpaceFactory.name] and order construction now. 
       </p>
     </about.31>
+    
+    <title.119 value="Fearsome Fleets" />
+    <about.119>
+      <p>Commander.</p>
+      <p>Good job on building those crows. They are fast and deadly. I'm
+      so proud about them. Lets put them to a good use, shall we?</p>
+      <p>There are some alien dirac ships hovering nearby planet. I suggest
+      we take our fleet and wipe them out. That planet looks like a nice
+      expansion spot and I wouldn't want any alien scum flying around 
+      there.</p>
+    </about.119>
+    
+    <title.120 value="Freighting Minerals" />
+    <about.120>
+      <p>Good job on cleaning up those diracs, Commander!</p>
+      <p>We sure showed them! Anyway, back to bussiness. Its an awful mess
+      down there after that battle - we've got wreckages flying everywhere.
+      We should clean it up.</p>
+      <p>Why the frowned face? Oh, I must have forgot to mention that those
+      wreckages can be used as resources in our worlds. Heh, I see you're 
+      smiling already.</p>
+      <p>Right on! Lets collect those resources! Build your first mule 
+      class ship!</p>
+    </about.120>
 
     <title.35 value="Cleansing" />
     <about.35>

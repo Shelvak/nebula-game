@@ -3,7 +3,7 @@
 # New quests can be added here but do not edit old ones!
 
 # Please update this if you add new quests ;)
-# Last quest id: 118
+# Last quest id: 121
 #
 
 # [unit, count, level]
@@ -31,11 +31,11 @@ UNITS_SHIPS = [
 ]
 
 definition = QuestDefinition.define(:debug => false) do
-  define(1, "Constructing Buildings") do
+  define(1, "buildings") do
     have_upgraded_to Building::CollectorT1
 
     reward_cost Building::MetalExtractor, :count => 1.2
-  end.define(2, "Extracting Metal") do
+  end.define(2, "metal") do
     have_upgraded_to Building::MetalExtractor
 
     reward_cost Building::MetalExtractor, :count => 1.1
@@ -47,7 +47,7 @@ definition = QuestDefinition.define(:debug => false) do
     reward_cost Building::Barracks, :count => 1.2
   end.tap do |quest|
     # Side quest chain
-    quest.define(22, "Exploring Objects") do
+    quest.define(22, "exploring") do
       explore_object Tile::FOLLIAGE_3X3
 
       reward_points 200
@@ -61,7 +61,7 @@ definition = QuestDefinition.define(:debug => false) do
     end
 
     # Side quest chain
-    quest.define(4, "Upgrading Buildings") do
+    quest.define(4, "upgrading") do
       have_upgraded_to Building::CollectorT1, :count => 2, :level => 3
       have_upgraded_to Building::MetalExtractor, :count => 2, :level => 3
 
@@ -82,7 +82,7 @@ definition = QuestDefinition.define(:debug => false) do
     reward_cost Unit::Trooper, :count => 4.2
     reward_zetium Building::ZetiumExtractor.zetium_rate(3) * 1.hour
   end.tap do |quest|
-    quest.define(7, "Building Units") do
+    quest.define(7, "building-units") do
       have_upgraded_to Unit::Trooper, :count => 8
 
       reward_cost Unit::Trooper, :count => 3.2
@@ -91,7 +91,7 @@ definition = QuestDefinition.define(:debug => false) do
       define_war_chain(85, 10, 10000, 1.37, UNITS_SHIPS + UNITS_TANKS). # Last quest ID is 94
       define_war_chain(106, 10, 200000, 1.15, UNITS_SHIPS)
       # Last quest ID is 115
-  end.define(8, "Attacking NPC Buildings") do
+  end.define(8, "attacking") do
     destroy_npc_building Building::NpcMetalExtractor
 
     reward_unit Unit::Trooper, :level => 2, :hp => 50, :count => 2
@@ -123,11 +123,11 @@ definition = QuestDefinition.define(:debug => false) do
     end
 
     # VIP mode quest
-    quest.define(116, "VIP players") do
+    quest.define(116, "vip") do
       become_vip
 
       reward_creds CONFIG['creds.upgradable.speed_up'][-1][1]
-    end.define(117, "Accelerating") do
+    end.define(117, "accelerating") do
       accelerate Building
 
       reward_cost Unit::Shocker, :count => 3
@@ -161,7 +161,7 @@ definition = QuestDefinition.define(:debug => false) do
     end
 
     # Side quest line
-    quest.define(12, "Researching Technologies") do
+    quest.define(12, "technologies") do
       have_upgraded_to Unit::Seeker, :count => 3
 
       reward_cost Technology::Seeker, :count => 0.7
@@ -216,7 +216,7 @@ definition = QuestDefinition.define(:debug => false) do
       reward_cost Building::Market, :count => 2.5
     end
   end.tap do |quest|
-    quest.define(27, "Zetium Crystals") do
+    quest.define(27, "zetium") do
       destroy_npc_building Building::NpcZetiumExtractor
 
       reward_cost Technology::ZetiumExtraction, :count => 1.2
@@ -235,8 +235,14 @@ definition = QuestDefinition.define(:debug => false) do
     reward_cost Building::EnergyStorage, :level => 1, :count => 1.2
     reward_cost Building::ZetiumStorage, :level => 1, :count => 1.2
   end.tap do |quest|
+    quest.define(121, "population") do
+      have_upgraded_to Building::Housing
+      
+      reward_cost Building::Housing, :count => 0.65
+    end
+    
     # Side quest
-    quest.define(16, "Collecting Points") do
+    quest.define(16) do
       have_points 15000
 
       reward_unit Unit::Trooper, :level => 3, :count => 1, :hp => 100
@@ -283,37 +289,47 @@ definition = QuestDefinition.define(:debug => false) do
     reward_unit Unit::Crow, :count => 2
     reward_cost Unit::Crow, :count => 4.2
   end.tap do |quest|
-    quest.define(31, "Fighting in Space") do
-      have_upgraded_to Unit::Crow, :count => 4
+    quest.define(31) do
+      have_upgraded_to Unit::Crow, :count => 5
 
-      reward_cost Unit::Crow, :count => 6
+      reward_cost Unit::Crow, :count => 7
+    end.define(119, "flying") do
+      destroy Unit::Dirac, :count => 4
+      
+      reward_cost Unit::Dirac, :count => 4
+    end.tap do |quest1|
+      quest1.define(120, "resource-transportation") do
+        have_upgraded_to Unit::Mule, :count => 1
+
+        reward_cost Unit::Mule, :count => 1.2
+      end
+      
+      quest1.define(35) do
+        destroy Unit::Dirac, :count => 14
+
+        reward_unit Unit::Dart, :count => 2
+      end.define(36) do
+        destroy Unit::Thor, :count => 10
+
+        reward_unit Unit::Avenger, :count => 2
+      end.define(37) do
+        destroy Unit::Demosis, :count => 6
+
+        reward_unit Unit::Rhyno, :count => 1
+      end
     end
-
-    quest.define(35) do
-      destroy Unit::Dirac, :count => 14
-
-      reward_unit Unit::Dart, :count => 2
-    end.define(36) do
-      destroy Unit::Thor, :count => 10
-
-      reward_unit Unit::Avenger, :count => 2
-    end.define(37) do
-      destroy Unit::Demosis, :count => 6
-
-      reward_unit Unit::Rhyno, :count => 1
-    end
-  end.define(20, "Annexing Planets") do
+  end.define(20, "colonization") do
     annex_planet :npc => true
 
     reward_unit Unit::Mule
     reward_unit Unit::Mdh
-  end.define(21, "Colonizing Planets") do
+  end.define(21) do
     upgrade_to Building::Headquarters
 
     reward_metal Building::Headquarters.metal_storage(1) * 0.4
     reward_energy Building::Headquarters.energy_storage(1) * 0.4
     reward_zetium Building::Headquarters.zetium_storage(1) * 0.15
-  end.define(34, "Exploring Galaxy") do
+  end.define(34, "radar") do
     have_upgraded_to Building::Radar
 
     reward_cost Building::Radar, :count => 0.8
