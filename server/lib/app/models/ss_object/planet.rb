@@ -69,7 +69,9 @@ class SsObject::Planet < SsObject
     energy_rate_boost_ends_at energy_storage_boost_ends_at
     zetium zetium_generation_rate zetium_usage_rate zetium_storage
     zetium_rate_boost_ends_at zetium_storage_boost_ends_at
-    last_resources_update exploration_ends_at can_destroy_building_at
+    last_resources_update 
+    exploration_x exploration_y exploration_ends_at 
+    can_destroy_building_at
     next_raid_at owner_changed}
 
   # Attributes which are included when :view => true is passed to

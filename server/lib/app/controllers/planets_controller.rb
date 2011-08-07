@@ -73,7 +73,7 @@ class PlanetsController < GenericController
   # You must have a research center to be able to explore something on a 
   # planet.
   # 
-  # Invocation: By client
+  # Invocation: by client
   # 
   # Parameters:
   # - planet_id (Fixnum)
@@ -97,6 +97,23 @@ class PlanetsController < GenericController
     planet.explore!(params['x'], params['y'])
   end
 
+  # Immediately finishes exploration mission for creds.
+  # 
+  # Invocation: by client
+  # 
+  # Parameters:
+  # - id (Fixnum): ID of the planet
+  # 
+  # Response: None
+  #
+  def action_finish_exploration
+    param_options(:required => {:id => Fixnum})
+    
+    planet = SsObject::Planet.where(:player_id => player.id).
+      find(params['id'])
+    planet.finish_exploration!(true)
+  end
+  
   # Edit planet properties.
   #
   # You can only do this if you own the planet. Also you can only do this

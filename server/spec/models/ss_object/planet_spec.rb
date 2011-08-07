@@ -723,9 +723,11 @@ describe SsObject::Planet do
     before(:each) do
       @player = Factory.create(:player)
       @planet = Factory.create(:planet, :exploration_x => @x,
-        :exploration_y => @y, :player => @player)
+        :exploration_y => @y, :exploration_ends_at => 10.minutes.from_now,
+        :player => @player)
       @planet.stub!(:tile_kind).and_return(Tile::FOLLIAGE_4X3)
-      @planet.stub!(:stop_exploration!)
+      @width = 4
+      @height = 3
       @lucky = [
         {'weight' => 10, 'rewards' => [
             {"kind" => Rewards::UNITS, "type" => "gnat", "count" => 3,
@@ -750,11 +752,16 @@ describe SsObject::Planet do
       ]
     end
     
+    it "should fail if not exploring" do
+      @planet.finish_exploration!
+      lambda do
+        @planet.finish_exploration!
+      end.should raise_error(GameLogicError)
+    end
+    
     it "should get winning chance based on width and height" do
-      CONFIG.should_receive(:evalproperty).with(
-        "tiles.exploration.winning_chance",
-        'width' => 4, 'height' => 3
-      ).and_return(0)
+      Cfg.should_receive(:exploration_win_chance).with(@width, @height).
+        and_return(0)
       Notification.stub!(:create_for_exploration_finished)
       @planet.finish_exploration!
     end
@@ -816,6 +823,28 @@ describe SsObject::Planet do
       end
     end
 
+    describe "with creds" do
+      it "should fail if player does not have enough creds" do
+        @player.creds = 0
+        @player.save!
+        
+        lambda do
+          @planet.finish_exploration!(true)
+        end.should raise_error(GameLogicError)
+      end
+      
+      it "should reduce creds from player" do
+        @player.pure_creds = 1000
+        @player.save!
+        creds = Cfg.exploration_finish_cost(@width, @height)
+                
+        lambda do
+          @planet.finish_exploration!(true)
+          @player.reload
+        end.should change(@player, :creds).by(- creds)
+      end
+    end
+    
     it "should create notification" do
       Notification.should_receive(:create_for_exploration_finished).with(
         @planet, an_instance_of(Rewards)).and_return(true)
@@ -1035,7 +1064,9 @@ describe SsObject::Planet do
         metal_rate_boost_ends_at metal_storage_boost_ends_at
         energy_rate_boost_ends_at energy_storage_boost_ends_at
         zetium_rate_boost_ends_at zetium_storage_boost_ends_at
-        last_resources_update exploration_ends_at next_raid_at
+        last_resources_update 
+        exploration_x exploration_y exploration_ends_at 
+        next_raid_at
         owner_changed}
       @ommited_fields = %w{energy_diminish_registered}
       it_should_behave_like "to json"

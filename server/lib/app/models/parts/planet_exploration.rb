@@ -89,14 +89,29 @@ module Parts::PlanetExploration
     # Finishes exploration, checks if anything was found and gives out
     # rewards accordingly. Creates notification and clears exploration
     # attributes so other one can be started.
-    def finish_exploration!
+    #
+    # If _with_creds_ is true, then player creds are also reduced.
+    #
+    def finish_exploration!(with_creds=false)
+      raise GameLogicError.new(
+        "Cannot finish exploration if not currently exploring!"
+      ) unless exploring?
+      
       width, height = Tile::BLOCK_SIZES[
         tile_kind(exploration_x, exploration_y)
       ]
 
       player = self.player
-      win_chance = CONFIG.evalproperty("tiles.exploration.winning_chance",
-        'width' => width, 'height' => height).round
+      if with_creds
+        creds_needed = Cfg.exploration_finish_cost(width, height)
+        raise GameLogicError.new(
+          "Not enough creds for #{player}! Required: #{creds_needed
+          }, had: #{player.creds}"
+        ) if player.creds < creds_needed
+        player.creds -= creds_needed
+      end
+      
+      win_chance = Cfg.exploration_win_chance(width, height)
       win_lose_key = Random.chance(win_chance) ? "win" : "lose"
       units_key = player.overpopulated? ? "without_units" : "with_units"
       rewards = Rewards.from_exploration(
@@ -106,9 +121,11 @@ module Parts::PlanetExploration
       )
 
       transaction do
+        CredStats.finish_exploration!(player, width, height) if with_creds
         Objective::ExploreBlock.progress(self)
         Notification.create_for_exploration_finished(self, rewards)
         rewards.claim!(self, player)
+        player.save!
         stop_exploration!
       end
 

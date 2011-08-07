@@ -251,6 +251,36 @@ describe PlanetsController do
     end
   end
 
+  describe "planets|finish_exploration" do
+    before(:each) do
+      @action = "planets|finish_exploration"
+      @planet = Factory.create(:planet, :player => player, 
+        :exploration_x => 5, :exploration_y => 3, 
+        :exploration_ends_at => 10.minutes.from_now)
+      Factory.create(:t_folliage_3x4, :planet => @planet, 
+        :x => @planet.exploration_x, :y => @planet.exploration_y)
+      @params = {'id' => @planet.id}
+    end
+    
+    @required_params = %w{id}
+    it_should_behave_like "with param options"
+    
+    it "should fail if a planet does not belong to player" do
+      @planet.update_row! ["player_id=?", Factory.create(:player).id]
+      
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+    
+    it "should finish exploration" do
+      SsObject::Planet.stub_chain(:where, :find).with(@params['id']).
+        and_return(@planet)
+      @planet.should_receive(:finish_exploration!).with(true)
+      invoke @action, @params
+    end
+  end
+  
   describe "planets|edit" do
     before(:each) do
       @action = "planets|edit"

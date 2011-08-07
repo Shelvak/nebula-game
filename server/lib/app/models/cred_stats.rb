@@ -13,13 +13,17 @@ class CredStats < ActiveRecord::Base
   ACTION_MOVEMENT_SPEED_UP = 5
   # Buy VIP
   ACTION_VIP = 6
+  # Finish exploration
+  ACTION_FINISH_EXPLORATION = 7
 
-  def self.insert(player, attributes)
+  def self.insert(player, action, attributes)
+    attributes[:action] = action
     attributes[:created_at] = Time.now
     attributes[:player_id] = player.id
     attributes[:creds_left] = player.creds
     attributes[:vip_level] = player.vip_level
     attributes[:vip_creds] = player.vip_creds
+    attributes[:free_creds] = player.free_creds
 
     connection.execute("INSERT INTO `cred_stats` SET #{
       sanitize_sql_hash_for_assignment(attributes)}")
@@ -29,7 +33,7 @@ class CredStats < ActiveRecord::Base
   def self.accelerate!(model, cost, time, seconds_reduced)
     insert(
       model.player,
-      :action => ACTION_ACCELERATE,
+      ACTION_ACCELERATE,
       :class_name => model.class.to_s,
       :level => model.level,
       :cost => cost,
@@ -41,7 +45,7 @@ class CredStats < ActiveRecord::Base
   def self.self_destruct!(model)
     insert(
       model.player,
-      :action => ACTION_SELF_DESTRUCT,
+      ACTION_SELF_DESTRUCT,
       :class_name => model.class.to_s,
       :level => model.level,
       :cost => CONFIG['creds.building.destroy']
@@ -51,7 +55,7 @@ class CredStats < ActiveRecord::Base
   def self.move!(model)
     insert(
       model.player,
-      :action => ACTION_MOVE,
+      ACTION_MOVE,
       :class_name => model.class.to_s,
       :level => model.level,
       :cost => CONFIG['creds.building.move']
@@ -61,7 +65,7 @@ class CredStats < ActiveRecord::Base
   def self.alliance_change!(player)
     insert(
       player,
-      :action => ACTION_ALLIANCE_CHANGE,
+      ACTION_ALLIANCE_CHANGE,
       :cost => CONFIG['creds.alliance.change']
     )
   end
@@ -69,7 +73,7 @@ class CredStats < ActiveRecord::Base
   def self.movement_speed_up!(player, cost)
     insert(
       player,
-      :action => ACTION_MOVEMENT_SPEED_UP,
+      ACTION_MOVEMENT_SPEED_UP,
       :cost => cost
     )
   end
@@ -77,7 +81,7 @@ class CredStats < ActiveRecord::Base
   def self.vip!(player, level, cost)
     insert(
       player,
-      :action => ACTION_VIP,
+      ACTION_VIP,
       :level => level,
       :cost => cost
     )
@@ -86,10 +90,17 @@ class CredStats < ActiveRecord::Base
   def self.boost!(player, resource, attribute)
     insert(
       player,
-      :action => ACTION_BOOST,
+      ACTION_BOOST,
       :resource => resource,
       :attribute => attribute,
       :cost => CONFIG['creds.planet.resources.boost.cost']
+    )
+  end
+  
+  def self.finish_exploration!(player, width, height)
+    insert(
+      player, ACTION_FINISH_EXPLORATION,
+      :cost => Cfg.exploration_finish_cost(width, height)
     )
   end
 end

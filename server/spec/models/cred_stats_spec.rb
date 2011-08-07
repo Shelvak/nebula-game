@@ -49,4 +49,10 @@ describe CredStats do
       CredStats.boost!(Factory.create(:player), 'metal', 'rate')
     end
   end
+  
+  describe ".finish_exploration!" do
+    it "should work" do
+      CredStats.finish_exploration!(Factory.create(:player), 3, 4)
+    end
+  end
 end
