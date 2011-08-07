@@ -29,9 +29,9 @@ class Cfg; class << self
       'width' => width, 'height' => height).round
   end
   
-  # Returns number of creds required to remove a folliage.
+  # Returns number of creds required to remove a foliage.
   def foliage_removal_cost(width, height)
-    CONFIG.evalproperty("creds.folliage.remove", 
+    CONFIG.evalproperty("creds.foliage.remove", 
       'width' => width, 'height' => height).round
   end
   

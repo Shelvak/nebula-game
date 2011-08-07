@@ -13,7 +13,7 @@ describe Folliage do
 
   describe "#to_json" do
     before(:all) do
-      @model = Factory.create :tile
+      @model = Factory.create :folliage
     end
 
     @ommited_fields = %w{planet_id}

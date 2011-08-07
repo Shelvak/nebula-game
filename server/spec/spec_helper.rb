@@ -105,6 +105,8 @@ Spork.prefork do
           return_method_call_value=false)
         # Save old method
         old_method = method(method_name)
+        raise "No such method #{self.class.to_s}##{method_name}!" \
+          if old_method.nil?
         
         # Create new stub method that records the call.
         method_ran = false

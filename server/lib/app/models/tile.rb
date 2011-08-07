@@ -82,6 +82,14 @@ class Tile < ActiveRecord::Base
     }
   }
 
+  # {
+  #   'id' => Fixnum,
+  #   'planet_id' => Fixnum,
+  #   'x' => Fixnum,
+  #   'y' => Fixnum,
+  #   'kind' => Fixnum
+  # }
+  #
   def as_json(options=nil)
     attributes
   end

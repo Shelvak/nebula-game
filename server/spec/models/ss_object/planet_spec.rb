@@ -1005,7 +1005,7 @@ describe SsObject::Planet do
     end
     
     it "should record cred stats" do
-      should_record_cred_stats(:remove_foliage!, [@player, 6, 6]) \
+      should_record_cred_stats(:remove_foliage, [@player, 6, 6]) \
         { @planet.remove_foliage!(@x, @y) }
     end
     

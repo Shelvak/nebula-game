@@ -3,7 +3,7 @@
 module Parts::InLocation
   def self.included(receiver)
     receiver.send(:scope, :in_zone,
-      Proc.new { |zone| {:conditions => zone.zone_attrs}}
+      Proc.new { |zone| {:conditions => zone.zone_attrs} }
     )
     receiver.send(:scope, :in_location,
       Proc.new do |location_or_attrs|
