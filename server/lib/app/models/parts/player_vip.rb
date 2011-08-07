@@ -67,6 +67,7 @@ module Parts
         raise GameLogicError.new("Not enough creds for vip level #{vip_level
           }! Needed: #{cost}, had: #{creds}") if creds < cost
 
+        stats = CredStats.vip(self, vip_level, cost)
         self.vip_free = true if free_creds >= cost / 2
         self.creds -= cost
         self.vip_level = vip_level
@@ -76,7 +77,7 @@ module Parts
           vip_tick!
           CallbackManager.register(self, CallbackManager::EVENT_VIP_STOP,
             vip_until)
-          CredStats.vip!(self, vip_level, cost)
+          stats.save!
           Objective::BecomeVip.progress(self)
         end
       end

@@ -5,6 +5,11 @@ class Cfg; class << self
     CONFIG.evalproperty('combat.cooldown.protection.duration')
   end
   
+  def planet_boost_cost; CONFIG['creds.planet.resources.boost.cost']; end
+  def planet_boost_duration
+    CONFIG['creds.planet.resources.boost.duration']
+  end
+  
   def units_speed_up(speed_modifier, hop_count)
     [
       CONFIG.evalproperty('creds.move.speed_up', 

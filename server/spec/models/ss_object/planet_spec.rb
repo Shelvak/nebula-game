@@ -64,6 +64,75 @@ describe SsObject::Planet do
         ).send(:"#{resource}_rate").should == -10
       end
     end
+    
+    describe "#boost!" do
+      before(:each) do
+        @player = Factory.create(:player, 
+          :creds => CONFIG['creds.planet.resources.boost.cost'])
+        @planet = Factory.create(:planet, :player => @player)
+      end
+      
+      it "should fail if player does not have enough creds" do
+        @player.creds -= 1
+        @player.save!
+        
+        lambda do
+          @planet.boost!(:metal, :rate)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should fail if we use unknown resource" do
+        lambda do
+          @planet.boost!(:food, :rate)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should fail if we use unknown attribute" do
+        lambda do
+          @planet.boost!(:metal, :color)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should set boost expiration date" do
+        @planet.boost!(:metal, :rate)
+        @planet.reload
+        @planet.metal_rate_boost_ends_at.should be_close(
+          CONFIG['creds.planet.resources.boost.duration'].from_now,
+          SPEC_TIME_PRECISION
+        )
+      end
+
+      it "should increase boost expiration date if already set" do
+        @planet.metal_rate_boost_ends_at = 3.days.from_now
+        @planet.save!
+
+        @planet.boost!(:metal, :rate)
+        @planet.reload
+        @planet.metal_rate_boost_ends_at.should be_close(
+          (3.days + CONFIG['creds.planet.resources.boost.duration']).from_now,
+          SPEC_TIME_PRECISION
+        )
+      end
+
+      it "should reduce creds from player" do
+        lambda do
+          @planet.boost!(:metal, :rate)
+          @player.reload
+        end.should change(@player, :creds).to(0)
+      end
+
+      it "should dispatch changed on planet" do
+        should_fire_event(@planet, EventBroker::CHANGED,
+            EventBroker::REASON_OWNER_PROP_CHANGE) do
+          @planet.boost!(:metal, :rate)
+        end
+      end
+
+      it "should record cred stats" do
+        should_record_cred_stats(:boost, [@player, :metal, :rate]) \
+          { @planet.boost!(:metal, :rate) }
+      end
+    end
   end
   
   describe "raiding" do
@@ -842,6 +911,15 @@ describe SsObject::Planet do
           @planet.finish_exploration!(true)
           @player.reload
         end.should change(@player, :creds).by(- creds)
+      end
+      
+      it "should record cred stats" do
+        @player.pure_creds = 1000
+        @player.save!
+        
+        should_record_cred_stats(
+          :finish_exploration, [@player, @width, @height]
+        ) { @planet.finish_exploration!(true) }
       end
     end
     

@@ -140,7 +140,7 @@ class SsObject::Planet < SsObject
   #
   # Don't allow setting more than storage and less than 0.
   #
-  %w{metal energy zetium}.each do |resource|
+  Resources::TYPES.each do |resource|
     define_method("#{resource}=") do |value|
       name = "#{resource}_storage"
       storage = (read_attribute(name) * resource_modifier(name))
@@ -159,7 +159,7 @@ class SsObject::Planet < SsObject
   def increase(options)
     options.symbolize_keys!
 
-    [:metal, :energy, :zetium].each do |resource|
+    Resources::TYPES.each do |resource|
       [:storage, :generation_rate, :usage_rate].each do |type|
         name = "#{resource}_#{type}".to_sym
         send("#{name}=", send(name) + (options[name] || 0))
@@ -193,6 +193,44 @@ class SsObject::Planet < SsObject
     reload
 
     changes
+  end
+  
+  # Boosts planets _resource_ _attribute_.
+  #
+  # _resource_ can be one of the +Resource::TYPES+ symbol.
+  # _attribute_ can be either :rate or :storage.
+  def boost!(resource, attribute)
+    resource = resource.to_sym
+    attribute = attribute.to_sym
+    
+    raise GameLogicError.new("Unknown resource #{resource}!") \
+      unless Resources::TYPES.include?(resource)
+    raise GameLogicError.new("Unknown attribute #{attribute}!") \
+      unless [:rate, :storage].include?(attribute)
+
+    player = self.player
+    raise ArgumentError.new("Planet player cannot be nil!") if player.nil?
+    creds_needed = Cfg.planet_boost_cost
+    raise GameLogicError.new("Not enough creds! Required #{creds_needed
+      }, has: #{player.creds}.") if player.creds < creds_needed
+    stats = CredStats.boost(player, resource, attribute)
+    player.creds -= creds_needed
+    
+    attr = :"#{resource}_#{attribute}_boost_ends_at"
+    duration = Cfg.planet_boost_duration
+    current = self.send(attr)
+    self.send(:"#{attr}=",
+      current.nil? ? duration.from_now : current + duration)
+
+    ActiveRecord::Base.transaction do
+      self.save!
+      player.save!
+      EventBroker.fire(self, EventBroker::CHANGED,
+        EventBroker::REASON_OWNER_PROP_CHANGE)
+      stats.save!
+    end
+    
+    self
   end
 
   def player_change
@@ -237,7 +275,7 @@ class SsObject::Planet < SsObject
     save!
   end
   
-  RESOURCES = [:metal, :energy, :zetium]
+  RESOURCES = Resources::TYPES
   
   RESOURCES.each do |resource|
     define_method("#{resource}_rate") do

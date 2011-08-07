@@ -16,91 +16,78 @@ class CredStats < ActiveRecord::Base
   # Finish exploration
   ACTION_FINISH_EXPLORATION = 7
 
-  def self.insert(player, action, attributes)
+  # Creates a new record which you can save later.
+  def self.new_record(player, action, cost, attributes={})
     attributes[:action] = action
     attributes[:created_at] = Time.now
+    attributes[:cost] = cost
     attributes[:player_id] = player.id
-    attributes[:creds_left] = player.creds
+    attributes[:creds] = player.creds
+    attributes[:free_creds] = player.free_creds
     attributes[:vip_level] = player.vip_level
     attributes[:vip_creds] = player.vip_creds
-    attributes[:free_creds] = player.free_creds
-
-    connection.execute("INSERT INTO `cred_stats` SET #{
-      sanitize_sql_hash_for_assignment(attributes)}")
+    
+    new(attributes)
   end
 
   # Registers upgradable part acceleration.
-  def self.accelerate!(model, cost, time, seconds_reduced)
-    insert(
-      model.player,
-      ACTION_ACCELERATE,
+  def self.accelerate(model, cost, time, seconds_reduced)
+    new_record(
+      model.player, ACTION_ACCELERATE, cost,
       :class_name => model.class.to_s,
       :level => model.level,
-      :cost => cost,
       :time => time,
       :actual_time => seconds_reduced
     )
   end
 
-  def self.self_destruct!(model)
-    insert(
-      model.player,
-      ACTION_SELF_DESTRUCT,
+  def self.self_destruct(model)
+    new_record(
+      model.player, ACTION_SELF_DESTRUCT, CONFIG['creds.building.destroy'],
       :class_name => model.class.to_s,
-      :level => model.level,
-      :cost => CONFIG['creds.building.destroy']
+      :level => model.level
     )
   end
 
-  def self.move!(model)
-    insert(
-      model.player,
-      ACTION_MOVE,
+  def self.move(model)
+    new_record(
+      model.player, ACTION_MOVE, CONFIG['creds.building.move'],
       :class_name => model.class.to_s,
-      :level => model.level,
-      :cost => CONFIG['creds.building.move']
+      :level => model.level
     )
   end
 
-  def self.alliance_change!(player)
-    insert(
-      player,
-      ACTION_ALLIANCE_CHANGE,
-      :cost => CONFIG['creds.alliance.change']
+  def self.alliance_change(player)
+    new_record(
+      player, ACTION_ALLIANCE_CHANGE, CONFIG['creds.alliance.change']
     )
   end
 
-  def self.movement_speed_up!(player, cost)
-    insert(
-      player,
-      ACTION_MOVEMENT_SPEED_UP,
-      :cost => cost
+  def self.movement_speed_up(player, cost)
+    new_record(
+      player, ACTION_MOVEMENT_SPEED_UP, cost
     )
   end
 
-  def self.vip!(player, level, cost)
-    insert(
-      player,
-      ACTION_VIP,
-      :level => level,
-      :cost => cost
+  def self.vip(player, level, cost)
+    new_record(
+      player, ACTION_VIP, cost,
+      :level => level
     )
   end
 
-  def self.boost!(player, resource, attribute)
-    insert(
-      player,
-      ACTION_BOOST,
-      :resource => resource,
-      :attribute => attribute,
-      :cost => CONFIG['creds.planet.resources.boost.cost']
+  def self.boost(player, resource, attribute)
+    new_record(
+      player, ACTION_BOOST, CONFIG['creds.planet.resources.boost.cost'],
+      :resource => resource.to_s,
+      :attr => attribute.to_s
     )
   end
   
-  def self.finish_exploration!(player, width, height)
-    insert(
+  def self.finish_exploration(player, width, height)
+    new_record(
       player, ACTION_FINISH_EXPLORATION,
-      :cost => Cfg.exploration_finish_cost(width, height)
+      Cfg.exploration_finish_cost(width, height)
     )
   end
 end

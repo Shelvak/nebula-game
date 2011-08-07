@@ -108,6 +108,7 @@ module Parts::PlanetExploration
           "Not enough creds for #{player}! Required: #{creds_needed
           }, had: #{player.creds}"
         ) if player.creds < creds_needed
+        stats = CredStats.finish_exploration(player, width, height)
         player.creds -= creds_needed
       end
       
@@ -121,7 +122,7 @@ module Parts::PlanetExploration
       )
 
       transaction do
-        CredStats.finish_exploration!(player, width, height) if with_creds
+        stats.save! if with_creds
         Objective::ExploreBlock.progress(self)
         Notification.create_for_exploration_finished(self, rewards)
         rewards.claim!(self, player)

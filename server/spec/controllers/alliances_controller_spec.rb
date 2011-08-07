@@ -432,8 +432,8 @@ describe AlliancesController do
     end
 
     it "should record cred stats" do
-      CredStats.should_receive(:alliance_change!).with(player)
-      invoke @action, @params
+      should_record_cred_stats(:alliance_change, [player]) \
+        { invoke @action, @params }
     end
   end
 
