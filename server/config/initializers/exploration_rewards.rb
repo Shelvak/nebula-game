@@ -10,37 +10,51 @@
 
 # Create initializer which can be called as needed.
 class ExplorationRewardsInitializer
+  # Divider for all calculated weights.
+  STARTING_POINT = 100_000.0
+  # Multiplier to tweak probabilities
+  METAL_MULT = 4
+  ENERGY_MULT = 2
+  ZETIUM_MULT = 30
+  UNIT_MULT = 4
+  
   def self.initialize
     return if @initialized
-    
-    starting_point = 100_000.0
-    # Multiplier to tweak probabilities
-    metal_mult = 4
-    energy_mult = 2
-    zetium_mult = 30
-    unit_mult = 4
 
-    add = lambda do |side, item|
+    # Reset to default set scope. This is needed because lazy 
+    # initialization might happen in other set scope.
+    CONFIG.with_set_scope('default') do
+      generate
+      @initialized = true
+    end
+  end
+  
+  class << self
+    protected
+    def add(side, item)
       CONFIG["tiles.exploration.rewards.#{side}"] ||= []
       CONFIG["tiles.exploration.rewards.#{side}"].push item
     end
-
-    calculate_weight = lambda do |metal, energy, zetium|
-      total = metal * metal_mult + energy * energy_mult + zetium * zetium_mult
-      total == 0 ? 0 : (starting_point / total).round
+    
+    def calculate_weight(metal, energy, zetium)
+      total = metal * METAL_MULT + energy * ENERGY_MULT + 
+        zetium * ZETIUM_MULT
+      total = (total / STARTING_POINT).round
+      # If it is so small, give it at least 1 weight.
+      total == 0 ? 1 : total
     end
-
-    item = lambda do |metal, energy, zetium, unit_type, unit_count, unit_hp|
+    
+    def item(metal, energy, zetium, unit_type, unit_count, unit_hp)        
       weight = 0
       rewards = []
 
       if unit_count > 0
         klass = "Unit::#{unit_type.camelcase}".constantize
         hp_f = unit_hp.to_f / 100
-        unit_metal = klass.metal_cost(1) * unit_count * unit_mult * hp_f
-        unit_energy = klass.energy_cost(1) * unit_count * unit_mult * hp_f
-        unit_zetium = klass.zetium_cost(1) * unit_count * unit_mult * hp_f
-        weight += calculate_weight.call(unit_metal, unit_energy, unit_zetium)
+        unit_metal = klass.metal_cost(1) * unit_count * UNIT_MULT * hp_f
+        unit_energy = klass.energy_cost(1) * unit_count * UNIT_MULT * hp_f
+        unit_zetium = klass.zetium_cost(1) * unit_count * UNIT_MULT * hp_f
+        weight += calculate_weight(unit_metal, unit_energy, unit_zetium)
         rewards.push("kind" => Rewards::UNITS, "type" => unit_type,
           "count" => unit_count, "hp" => unit_hp)
       end
@@ -48,7 +62,7 @@ class ExplorationRewardsInitializer
       rewards.push("kind" => Rewards::METAL, "count" => metal) if metal > 0
       rewards.push("kind" => Rewards::ENERGY, "count" => energy) if energy > 0
       rewards.push("kind" => Rewards::ZETIUM, "count" => zetium) if zetium > 0
-      weight += calculate_weight.call(metal, energy, zetium)
+      weight += calculate_weight(metal, energy, zetium)
 
       raise \
         ("Rewards are empty! metal: %3.4f, energy: %3.4f, " +
@@ -56,15 +70,16 @@ class ExplorationRewardsInitializer
           metal, energy, zetium, unit_type, unit_count, unit_hp
         ] if rewards.blank?
 
-      raise "Weight cannot be 0 for #{rewards.inspect}!" if weight < 1
+      raise "Weight cannot be less than 1 for #{rewards.inspect} but was #{
+        weight.inspect}!" if weight < 1
       {
         "weight" => weight,
         "rewards" => rewards
       }
     end
-
-    generate_rand_coefs = lambda do |level_range, time_range, unit_types,
-        unit_count_range, unit_hp_range|
+    
+    def generate_rand_coefs(level_range, time_range, unit_types,
+        unit_count_range, unit_hp_range)
       m_lvl = rand(level_range.first, level_range.last + 1)
       e_lvl = rand(level_range.first, level_range.last + 1)
       z_lvl = rand(level_range.first, level_range.last + 1)
@@ -77,16 +92,16 @@ class ExplorationRewardsInitializer
 
       # Ensure we get _something_.
       if m_lvl == 0 && e_lvl == 0 && z_lvl == 0 && unit_count == 0
-        generate_rand_coefs.call(level_range, time_range, unit_types,
+        generate_rand_coefs(level_range, time_range, unit_types,
           unit_count_range, unit_hp_range)
       else
         [m_lvl, e_lvl, z_lvl, m_mult, e_mult, z_mult, unit_type, unit_count,
           unit_hp]
       end
     end
-
-    generate = lambda do |side|
-      config = CONFIG["tiles.exploration.rewards.#{side}.generator_config"]
+    
+    def generate_entry(key)
+      config = CONFIG["tiles.exploration.rewards.#{key}.generator_config"]
       number = config['number']
       level_range = config['level']
       time_range = config['time']
@@ -94,7 +109,7 @@ class ExplorationRewardsInitializer
       unit_count_range = config['unit_count']
       unit_hp_range = config['unit_hp']
 
-      LOGGER.block("Generating exploration rewards for #{side}", 
+      LOGGER.block("Generating exploration rewards for #{key}", 
         :level => :debug
       ) do
         %w{
@@ -105,13 +120,13 @@ class ExplorationRewardsInitializer
         end
 
         number.times do
-          m_lvl, e_lvl, z_lvl, m_mult, e_mult, z_mult, unit_type, unit_count,
-            unit_hp = generate_rand_coefs.call(
+          m_lvl, e_lvl, z_lvl, m_mult, e_mult, z_mult, unit_type, 
+            unit_count, unit_hp = generate_rand_coefs(
               level_range, time_range, unit_types,
               unit_count_range, unit_hp_range
             )
 
-          add.call(side, item.call(
+          add(key, item(
             Building::MetalExtractor.metal_rate(m_lvl) * m_mult,
             Building::CollectorT1.energy_rate(e_lvl) * e_mult,
             Building::ZetiumExtractor.zetium_rate(z_lvl) * z_mult,
@@ -120,13 +135,13 @@ class ExplorationRewardsInitializer
         end
       end
     end
-
-    # Generate presets
-    generate.call('win.with_units')
-    generate.call('win.without_units')
-    generate.call('lose.with_units')
-    generate.call('lose.without_units')
     
-    @initialized = true
+    def generate
+      # Generate presets
+      generate_entry('win.with_units')
+      generate_entry('win.without_units')
+      generate_entry('lose.with_units')
+      generate_entry('lose.without_units')
+    end
   end
 end
