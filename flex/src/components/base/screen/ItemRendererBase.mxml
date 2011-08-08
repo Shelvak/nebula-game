@@ -48,6 +48,17 @@
           */
          protected var bottomLineVisible:Boolean = false;
          
+         
+         [Bindable]
+         /**
+          * Is this the first item in list
+          * 
+          * @default false
+          */
+         protected var firstItem:Boolean = false;
+         
+         
+         
          private function this_initializeHandler(event:FlexEvent) : void {
             if (headerLeftContent != null) {
                headerLeftContent.left = 10;
@@ -149,7 +160,7 @@
    <!-- background -->
    <s:Rect left="0" right="0" top="0" height="26">
       <s:fill>
-         <s:SolidColor color="0x363636"/>
+         <s:SolidColor color="{firstItem?0x363636:0x434343}"/>
       </s:fill>
    </s:Rect>
    

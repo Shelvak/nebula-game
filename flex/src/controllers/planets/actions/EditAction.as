@@ -11,13 +11,13 @@ package controllers.planets.actions
    
    
    /**
-    * Starts exploration of a planet.
+    * Renames a planet.
     * 
     * <p>
     * Client -->> Server
     * <ul>
-    *    <li><code>planet</code> - a planet in wich to explore</li>
-    *    <li><code>folliage</code> - a folliage to explore</li>
+    *    <li><code>id</code> - planet which to rename</li>
+    *    <li><code>name</code> - new name of a planet</li>
     * </ul>
     * </p>
     */

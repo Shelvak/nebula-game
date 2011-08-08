@@ -104,7 +104,7 @@ describe SolarSystemPoint do
       SolarSystemPoint.new(
         id, position, angle
       ).client_location.should == ClientLocation.new(id,
-        Location::SOLAR_SYSTEM, position, angle, nil, ss.kind, nil, nil)
+        Location::SOLAR_SYSTEM, position, angle, nil, ss.kind, nil, nil, nil)
     end
   end
 end

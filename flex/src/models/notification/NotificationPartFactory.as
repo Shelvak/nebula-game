@@ -26,6 +26,7 @@ package models.notification
          TYPE_TO_CLASS[ALLIANCE_INVITATION] =  AllianceInvitation;
          TYPE_TO_CLASS[KICKED_FROM_ALLIANCE] = KickedFromAlliance;
          TYPE_TO_CLASS[ALLIANCE_JOINED] = AllianceJoined;
+         TYPE_TO_CLASS[MARKET_OFFER_BOUGHT] = MarketOfferBought;
       };
       
       /**

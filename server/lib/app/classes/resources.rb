@@ -1,5 +1,7 @@
 # Various resource related helpers.
 class Resources
+  TYPES = [:metal, :energy, :zetium]
+  
   # How much volume this metal takes.
   def self.metal_volume(metal); resource_volume(metal, "metal"); end
   # How much volume this energy takes.

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+            xmlns:s="library://ns.adobe.com/flex/spark" 
+            xmlns:mx="library://ns.adobe.com/flex/mx" 
+            xmlns:base="components.base.*"
+            title="{getText('title.owner')}"
+            removedFromStage="panel1_removedFromStageHandler(event)"
+            addedToStage="panel1_addedToStageHandler(event)">
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import globalevents.GlobalEvent;
+         
+         import mx.events.FlexEvent;
+         
+         import utils.DateUtil;
+         import utils.locale.Localizer;
+         
+         [Bindable]
+         public var npc: Boolean;
+         
+         [Bindable]
+         public var ownership: Date;
+         
+         [Bindable]
+         private var timePassed: String;
+         
+         private function getText(prop: String, params: Array = null): String
+         {
+            return Localizer.string('BuildingSelectedSidebar', prop, params);
+         }
+         
+         private function refreshTime(e: GlobalEvent): void
+         {
+            if (ownership != null)
+            {
+               timePassed = DateUtil.secondsToHumanString(
+                  (new Date().time - ownership.time) / 1000, 1);
+            }
+         }
+         
+
+         protected function panel1_addedToStageHandler(event:Event):void
+         {
+            GlobalEvent.subscribe_TIMED_UPDATE(refreshTime);
+         }
+
+
+         protected function panel1_removedFromStageHandler(event:Event):void
+         {
+            GlobalEvent.unsubscribe_TIMED_UPDATE(refreshTime);
+         }
+
+      ]]>
+   </fx:Script>
+   <s:Label text="{getText('label.owner', [
+            ownership == null?'':DateUtil.formatShortDate(ownership),
+            timePassed])}"/>
+   <s:Label text="{getText('label.battlegroundOwner')}"
+            visible="{npc}" includeInLayout="{npc}"/>
+   <base:layout>
+      <s:VerticalLayout horizontalAlign="justify" paddingLeft="6"
+         paddingRight="6" paddingTop="6" paddingBottom="6" />
+   </base:layout>
+</base:Panel>

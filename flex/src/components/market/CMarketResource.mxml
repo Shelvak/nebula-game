@@ -7,6 +7,8 @@
    </s:layout>
    <fx:Script>
       <![CDATA[
+         import components.skins.RadioButtonSkin;
+         
          import spark.components.RadioButtonGroup;
          
          import utils.assets.AssetNames;
@@ -19,7 +21,7 @@
          public var type: String;
       ]]>
    </fx:Script>
-   <s:RadioButton group="{gr}" value="{type}"/>
+   <s:RadioButton group="{gr}" value="{type}" skinClass="components.skins.RadioButtonSkin"/>
    <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
                   AssetNames.getIconImageName(type))}"/>
 </s:Group>

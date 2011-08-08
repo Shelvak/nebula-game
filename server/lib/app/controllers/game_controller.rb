@@ -10,6 +10,8 @@ class GameController < GenericController
     |
     creds\.
     |
+    market\.
+    |
     battleground\.
     |
     raiding\.
@@ -19,6 +21,8 @@ class GameController < GenericController
     technologies\.
     |
     guns\.
+    |
+    galaxy\.player\.population\.max
     |
     units\.
     |

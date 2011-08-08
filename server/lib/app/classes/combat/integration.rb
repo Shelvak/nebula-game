@@ -16,13 +16,13 @@ module Combat::Integration
           notification = Notification.create_for_combat(
             player_id,
             alliance_id,
-            response['classified_alliances'][player_id.to_s],
+            response['classified_alliances'][player_id],
             combat_log.id,
             client_location.as_json,
-            response['outcomes'][player_id.to_s],
-            response['yane'][player_id.to_s],
+            response['outcomes'][player_id],
+            response['yane'][player_id],
             leveled_up_units[player_id],
-            response['statistics'][player_id.to_s],
+            response['statistics'][player_id],
             wreckages
           )
 
@@ -78,14 +78,14 @@ module Combat::Integration
           ? 'combat.cooldown.planet.duration' \
           : 'combat.cooldown.duration'
       ).from_now
-      Cooldown.create_or_update!(location, ends_at)
+      Cooldown.create_unless_exists(location, ends_at)
     end
   end
 
   # Give players their points ;)
   def save_players(players, statistics)
     players.each do |player|
-      player.war_points += statistics[player.id.to_s]['points_earned']
+      player.war_points += statistics[player.id]['points_earned']
       player.save!
     end
   end

@@ -53,6 +53,14 @@ package controllers.players
       
       
       /**
+       * Converts vip creds to creds
+       * 
+       * @eventType players|convert_creds
+       */ 
+      public static const CONVERT_CREDS:String = "players|convert_creds";
+      
+      
+      /**
        * This is sent to the server only once when a player opens quests screen from the first time login
        * screen.
        * 

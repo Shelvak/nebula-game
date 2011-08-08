@@ -358,7 +358,7 @@ class DispatcherEventHandler
         unit = location.object
         parent = unit.location.object
         raise "Support for dispatching when parent is #{parent
-          } is not supported when type is Location::UNIT" \
+          } is not supported for units" \
           unless parent.is_a?(SsObject::Planet)
         [
           parent.observer_player_ids,
@@ -438,6 +438,9 @@ class DispatcherEventHandler
     when SolarSystemMetadata
       ss = SolarSystem.find(object.id)
       resolve_location(ss.galaxy_point)
+    when Tile
+      planet = object.planet
+      resolve_location(planet.location_point)
     else
       raise ArgumentError.new("Don't know how to resolve player ids for #{
         object.inspect}!")

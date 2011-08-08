@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx" 
          xmlns:base="components.base.*" 
          xmlns:market="components.market.*"
-         skinClass="components.skins.LargePanelSkin"
-         creationComplete="panel1_creationCompleteHandler(event)"
-         title="{getText('title.offers')}">
+         creationComplete="panel1_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
@@ -27,7 +25,16 @@
          import utils.locale.Localizer;
          
          [Bindable]
-         public var offers: ModelsCollection;
+         private var _offers: ModelsCollection;
+         public function set offers(value: ModelsCollection): void
+         {
+            _offers = value;
+            defaultSort();
+         }
+         public function get offers(): ModelsCollection
+         {
+            return _offers;
+         }
          
          
          private function getText(prop: String, params: Array = null): String
@@ -39,61 +46,97 @@
          
          private static const idField: SortField = new SortField('id', false, false, true);
          private static const fromField: SortField = new SortField('from', true);
-         private static const whatField: SortField = new SortField('what', false, true, true);
-         private static const forWhatField: SortField = new SortField('forWhat', false, true, true);
-         private static const rateField: SortField = new SortField('rate', false, false, true);
+         private static const whatField: SortField = new SortField('fromAmount', false, true, true);
+         private static const fromResourceField: SortField = new SortField('fromKind', false, false, true);
+         private static const toResourceField: SortField = new SortField('toKind', false, false, true);
+         private static const forWhatField: SortField = new SortField('toAmount', false, true, true);
+         private static const rateField: SortField = new SortField('toRate', false, false, true);
          private static const createdAtField: SortField = new SortField('createdAt', false, true);
          
          
          private static const sortFields: Object = 
             {
                'from':[fromField, createdAtField, idField],
-               'what':[whatField, fromField, createdAtField, idField],
-               'forWhat':[forWhatField, fromField, createdAtField, idField],
+               'what':[fromResourceField, whatField, fromField, createdAtField, idField],
+               'forWhat':[toResourceField, forWhatField, fromField, createdAtField, idField],
                'rate':[rateField, fromField, createdAtField, idField],
                'createdAt':[createdAtField, fromField, idField]
             }
-
+         
          protected function header_listSortHandler(event:HeaderEvent):void
          {
-            offers.sort = new Sort();
-            offers.sort.fields = sortFields[event.key];
-            offers.refresh();
+            _offers.sort = new Sort();
+            _offers.sort.fields = sortFields[event.key];
+            _offers.refresh();
+         }
+         
+         public function defaultSort(e: MarketEvent = null): void
+         {
+            if (_offers != null)
+            {
+               _offers.sort = new Sort();
+               _offers.sort.fields = sortFields['createdAt'];
+               _offers.refresh();
+               header.reset();
+            }
          }
          
          [Bindable]
          public var selected: MarketOffer;
-
+         
          private function selectedChange(e: GMarketEvent): void
          {
-            selected = e.offer;
-            for each (var offer: MarketOffer in offers)
+            if (selected != null)
             {
-               if (offer.selected && offer != selected)
-               {
-                  offer.selected = false;
-               }
+               selected.selected = false;
             }
+            selected = e.offer;
+            selected.selected = true;
          }
-
+         
          protected function panel1_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GMarketEvent.OFFER_SELECTED, selectedChange);
          }
-
+         
+         public function deselect(e: MarketEvent = null): void
+         {
+            if (selected != null)
+            {
+               selected.selected = false;
+               selected = null;
+            }
+         }
+         
       ]]>
    </fx:Script>
-      <market:CMarketOffersHeader id="header" 
-                                  listSort="header_listSortHandler(event)"/>
-      <base:Scroller id="contScroller" left="0" right="0" 
-                     top="{header.height}" bottom="0" stepMultiplier="10">
-         <s:Group width="100%">
-            <s:DataGroup dataProvider="{offers}"
-                         itemRenderer="components.market.IRMarketOffer">
-               <s:layout>
-                  <s:VerticalLayout gap="0"/>
-               </s:layout>
-            </s:DataGroup>
-         </s:Group>
-      </base:Scroller>
-</base:Panel>
+   
+   <s:Rect left="0" right="0" bottom="0" top="0">
+      <s:fill>
+         <s:SolidColor color="#0a0a0a"/>
+      </s:fill>
+   </s:Rect>
+   
+   <market:CMarketOffersHeader id="header" left="0" right="0"
+                               listSort="header_listSortHandler(event)"
+                               visible="{!_offers.isEmpty}"/>
+   <base:Scroller id="contScroller" left="0" right="0" 
+                  top="{header.height}" bottom="0" stepMultiplier="10"
+                  visible="{!_offers.isEmpty}">
+      <s:Group width="100%" id="contGroup">
+         <s:DataGroup dataProvider="{_offers}" left="0" right="0"
+                      itemRenderer="components.market.IRMarketOffer">
+            <s:layout>
+               <s:VerticalLayout gap="0"/>
+            </s:layout>
+         </s:DataGroup>
+      </s:Group>
+   </base:Scroller>
+   
+   <s:Label visible="{_offers.isEmpty}"
+            top="0" 
+            bottom="0"
+            verticalAlign="middle" horizontalCenter="0"
+            fontSize="36" fontWeight="bold" color="0x1C1C1C"
+            text="{getText('label.noOffers')}"/>
+</s:Group>

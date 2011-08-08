@@ -34,7 +34,7 @@ package controllers.screens
          return SingletonFactory.getSingletonInstance(ScreensSwitch);
       }
       
-      override public function showScreen(name:String) : void
+      override public function showScreen(name:String, unlockAfter: Boolean = true) : void
       {
          if (name == currentName)
             return;

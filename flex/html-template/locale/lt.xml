@@ -238,6 +238,10 @@
     <SpaceFactory-whos value="{0 one[laivų gamyklos] 1sts[? laivų gamyklos] tens[? laivų gamyklų] many[? laivų gamyklų]}" />
     
     <!-- Kiti pastatai -->
+    
+    <Market value="Turgus" />
+    <Market-what value="{0 one[turgų] 1sts[? turgų] tens[? turgų] many[? turgus]}" />
+    <Market-whos value="{0 one[turgaus] 1sts[? turgaus] tens[? turgų] many[? turgų]}" />
 
     <Radar value="Radaras" />
     <Radar-what value="{0 one[radarą] 1sts[? radarą] tens[? radarų] many[? radarus]}" />
@@ -468,6 +472,13 @@
     <construction.bonus value="Statymo greitis" />
     <scientists value="Mokslininkai" />
     <special value="Sąvybės" />
+    <title.owner value="Valdymas" />
+    <!-- 0: date, 1: time (1 part) -->
+    <label.owner value="Tu valdai šią planetą nuo {0} ({1})." />
+    <label.battlegroundOwner> 
+      <p>Kuo ilgiau valdysi šią planetą tuo mažesnis bus ateivių fabrikų 
+      produktyvumas</p>
+    </label.battlegroundOwner> 
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>
@@ -478,6 +489,7 @@
     <notApplicable value="Nesvarbūs:" />
     <pressEsc value="Spausk ESC klavišą, jog atžymėtum savo pasirinkimą" />
     <notYourPlanet value="Ši planeta tau nepriklauso!" />
+    <label.claimPlanet value="Perimti planetą" />
 
     <deselectButtonText value="atžymėti pastatą" />
 
@@ -521,11 +533,13 @@
     <property.armorMod value="Šarvų daugiklis" />
     <property.damageMod value="Žalos daugiklis" />
     <property.mod.construction value="Konstravimo greičio daugiklis" />
-    <property.healing.time.mod value="Sekundžių pagyditi 1 GT" />
+    <property.healing.time.mod value="Sekundžių pagydyti 1 GT" />
     <property.healing.cost.mod value="Gydymo kainos daugiklis" />
+    <property.population value="Populiacija" />
     <property.teleportedVolume value="Perkeliamas tūris" />
     <property.creds value="Kredai" />
     <property.victoryPoints value="Pergalės taškai" />
+    <property.fee value="Mokesčio procentas" />
 
     <text.deactivated>
       <p>
@@ -811,6 +825,19 @@
         dienų.
       </p>
     </Crane.about>
+    
+    <Market.name ref="Objects/Market" />
+    <Market.tooltip value="Leidžia prekiauti su kitais žaidėjais" />
+    <Market.common>
+      <p>Turgus leidžia tau prekiauti su kitais šios galaktikos žaidėjais.
+      Materijos vertikliai įgalina akimirksniu persiųsti ir gauti prekes,
+      tačiau norint į galaktikos rinką įkelti savo pasiūlymus reikės 
+      atseikėti mokesčius galaktikos prekeivių sandraugai.</p>
+    </Market.common>
+    <Market.about>
+      <p>[reference:Market.common]</p>
+      <p>Kiekvienas patobulinimo lygis sumažina įkėlimo mokestį.</p>
+    </Market.about>
 
     <Radar.name ref="Objects/Radar" />
     <Radar.tooltip value="Atskleidžia galaktikos zoną" />
@@ -974,12 +1001,23 @@
   </Buildings>
 
   <Credits>
+    <title.vip value="VIP" />
+    <label.currentVipLvl value="Dabar Tu esi {0} lygio VIP" />
+    <label.convertRate value="Tu gali iškeisti {0} VIP kredų į 1 kredą" />
+    <label.selectedConvert>
+      <p>Parinkta 
+      {0 one[1 VIP kredas] 1sts[? VIP kredas] tens[? VIP kredų] many[? VIP kredai]}, 
+      už juos tu gautum {1 one[1 kredą] 1sts[? kredą] tens[? kredų] many[? kredus]}
+      </p>
+    </label.selectedConvert>
+    <label.convert value="Iškeisti" />
     <label.accelerate value="Paspartinti" />
     <label.vip value="VIP" />
     <label.whouldFinish value="Tobulinimas baigtusi už" />
     <label.selectAccelerate value="Pasirink paspartinimą" />
     <label.credsSum value="Iš viso kredų" />
     <message.vipOrdered value="VIP sėkmingai užsakytas" />
+    <message.credsConverted value="Vip kredai sėkmingai iškeisti" />
     <title.becomeVIP value="Tapk VIP" />
     <label.becomeVIP>
       <p>Tapimas VIP nariu tau suteikia VIP dienpinigių, kuriuos gali 
@@ -1071,6 +1109,8 @@
      <p>Nepakanka kredų.<br/>Tau dar reikia 
        {0 one[vieno kredo] tens[? kredų] many[? kredų]}.</p>
     </label.notEnough>
+    <warning.notEnoughVipCreds 
+    value="Tu turi turėti bent {0} VIP kredus, kad galėtum juos keisti" />
   </Credits>
 
   <Exploration>
@@ -1139,6 +1179,7 @@
       kartą.</p>
     </message.actionCanceled>
     <message.copyToClipboardSuccessful value="Nukopijuota į iškarpinę" />
+    <message.planetClaimed value="Planeta perimta" />
     <label.cooldownEndsIn value="Kitas mūšis už" />
   </General>
 
@@ -1225,7 +1266,8 @@
       Gamyklos dirbs sparčiau, jeigu jas statysi ant lygios žemės.
     </tip.1>
     <tip.2>
-      Pastatai bus pastatyti greičiau, jeigu juos statysi ant lygios žemės.
+      Jeigu nesi tikras ką daro pastatas ar karys, paspausk ant Informacijos
+      ikonėlės, jog sužinotum daugiau.
     </tip.2>
     <tip.3>
       Nestatyk gynybinių bokštelių ant akmeningos žemės! Ji nėra tvirta, todėl
@@ -1373,10 +1415,6 @@
     <label.noNotifications value="Pranešimų nėra" />
     <label.claimReward value="Pasiimk atlygį!" />
     <label.questCompleted value="Užduotis „{0}“ buvo atlikta." />
-    <label.oldPlayer value="Tu atėmei planetą iš" />
-    <label.noPlayer value="Ši planeta buvo neapgyvendinta." />
-    <label.newPlayer value="Planetą užkariavo" />
-    <label.npcAnexed value="Planetą užkariavo ateivių plėšikai." />
     <label.readAll value="Perskaityti visus" />
     <label.resourcesGained value="Gauta resursų" />
     <label.wreckageLeft value="Liko nuolaužų" />
@@ -1424,10 +1462,44 @@
     <message.explorationFinished 
       value="Planetoje {0} tyrinėjimai baigti" />
 
+    <title.marketOfferBought value="Pasiūlymas turguje nupirktas" />
+    <message.marketOfferBought value="Pasiūlymas turguje buvo nupirktas" />
+    <!-- message with link button between -->
+    <label.marketOfferBought.message1 value="Žaidėjas" />
+    <label.marketOfferBought.message2 value="nusipirko:" />
+    <label.marketOfferBought.for value="už" />
+    <label.marketOfferBought.amountLeft>
+    <!-- 1: metal, energy or zetium -->
+      <p>Tavo pasiūlyme dar liko {0} 
+      {1 metal[metalo] energy[energijos] zetium[zetiumo]}.</p>
+    </label.marketOfferBought.amountLeft>
+    <label.marketOfferBought.allBought value="Tavo pasiūlymas buvo pilnai nupirktas." />
+
     <title.planetAnnexed.win value="Tu užkariavai planetą!" />
     <title.planetAnnexed.lose value="Tu praradai planetą!" />
     <message.planetAnnexed.win value="Planeta {0} užkariauta" />
     <message.planetAnnexed.lose value="Planeta {0} prarasta" />
+    <message.planetAnnexed.loseAlly value="Sąjungininko planeta {0} prarasta" />
+    <!-- two lines in notification, link button after first line-->
+    <label.planetAnnexed.win1 value="Tu laimėjai kovą prieš" />
+    <label.planetAnnexed.win2 value="dėl planetos '{0}'." />
+    <label.planetAnnexed.npcWin>
+      <p>Tu laimėjai kovą prieš ateivius planetoje '{0}'. 
+      Dabar tu gali perimti šią planetą.</p>
+    </label.planetAnnexed.npcWin>
+    <label.planetAnnexed.selfLose>
+      <p>Tu pralaimėjai kovą dėl planetos '{0}'. 
+      Tu daugiau jos nebekontroliuoji.</p>
+    </label.planetAnnexed.selfLose>
+    <label.planetAnnexed.allyLose>
+      <p>Tavo sąjungininkas pralaimėjo kovą dėl savo planetos '{0}'. 
+      Jam nebepriklauso ši planeta.</p>
+    </label.planetAnnexed.allyLose>
+    <label.planetAnnexed.emptyWin>
+      <p>Tavo kariai atvyko į neapgyvendintą planetą '{0}'. 
+      Jei nori Tu gali pasisavinti šią planetą.</p>
+    </label.planetAnnexed.emptyWin>
+    <label.planetAnnexed.claimPlanet value="Dabar tu gali perimti šią planetą." />
     
     <title.planetProtected value="Planeta apsaugota!" />
     <message.planetProtected ref="title.planetProtected" />
@@ -1442,10 +1514,16 @@
     </label.planetProtected.enemies>
     <label.planetProtected.yours>
       <p>Tavo paskutinė planeta buvo užpulta ir tu buvai nugalėtas, tačiau 
-      remiantis tarpžvaigždinės paktais tau buvo suteikta planetos apsauga {0}
+      remiantis tarpžvaigždiniais paktais tau buvo suteikta planetos apsauga {0}
       (iki {1})</p>
       <p>[reference:label.planetProtected.explained]</p>
     </label.planetProtected.yours>
+    <label.planetProtected.ally>
+      <p>Tavo sąjungos nario paskutinė planeta buvo užpulta ir jūs buvote nugalėti, 
+      tačiau remiantis tarpžvaigždiniais paktais jam buvo suteikta planetos apsauga {0}
+      (iki {1})</p>
+      <p>[reference:label.planetProtected.explained]</p>
+    </label.planetProtected.ally>
     
     <title.allianceInvitation value="Pakvietimas į sąjungą"/>
     <message.allianceInvitation 
@@ -1497,6 +1575,28 @@
     <label.ok value="Gerai" />
     <label.yes value="Taip" />
     <label.no value="Ne" />
+    
+    <title.cancelOffer value="Atšaukti pasiūlymą" />
+    <message.cancelOffer>
+      <p>Ar tikrai nori atšaukti savo pasiūlymą?</p>
+    </message.cancelOffer>
+    
+    <title.buyOffer value="Priimti pasiūlymą" />
+    <message.buyOffer>
+      <p>Ar tikrai nori pirkti iš šito pasiūlymo?</p>
+    </message.buyOffer>
+    
+    <title.createOffer value="Sukurti pasiūlymą" />
+    <message.createOffer>
+      <p>Ar tikrai nori sukurti šį pasiūlymą?</p>
+    </message.createOffer>
+    
+    <title.convertCreds value="Iškeisti kredus" />
+    <message.convertCreds>
+      <p>Ar tikrai nori iškeisti 
+      {0 one[? VIP kredą] 1sts[? VIP kredą] tens[? VIP kredų] many[? VIP kredus]} 
+      į {1 one[? kredą] 1sts[? kredą] tens[? kredų] many[? kredus]} ?</p>
+    </message.convertCreds>
     
     <title.dailyBonus value="Dienos prizas" />
     <message.dailyBonus>
@@ -1697,8 +1797,8 @@
     <!-- ANNEX_PLANET
     0: count of planets to occupy -->
     <objectiveText.AnnexPlanet.npc>
-    <p>Užkariauk {0 one[neutralią planetą] 1sts[? neutralią planetą] 
-    tens[? neutralių planetų] many[? neutralias planetas]}</p>
+    <p>Kolonizuok {0 one[vieną planetą] 1sts[? planetą] 
+    tens[? planetų] many[? planetas]}</p>
     </objectiveText.AnnexPlanet.npc>
     <objectiveText.AnnexPlanet.enemy>
     <p>Užkariauk {0 one[priešo planetą] 1sts[? priešo planetą] 
@@ -2308,6 +2408,17 @@
 
     <title.79 value="[reference:ThirstForKnowledge.title] (VIII)" />
     <about.79 ref="ThirstForKnowledge.about" />
+    
+    <title.118 value="Poreikių patenkinimas" />
+    <about.118>
+      <p>Sveiki, Komandore.</p>
+      <p>Skirtingais laikais mums reikia skirtingų dalykų, ir deja nei vienas
+      iš mūsų negali tobulai numatyti ateities. Išrask turgų jog galėtume
+      vykdyti mainus su kitais šios galaktikos gyventojais.</p>
+      <p>Juk jiems gali reikėti to, ko mes turime, ir atvirkščiai. Kodėl mes
+      neturėtume padėti vieni kitiems? Galbūt besimainydami netgi susirasim
+      ir vieną kitą draugą? Kas žino...</p>
+    </about.118>
 
     <title.27 value="Technologijų šukės" />
     <about.27>
@@ -2556,6 +2667,14 @@
       </p>
     </about.15>
 
+    <title.121 value="Užgniaužus kvapą" />
+    <about.121>
+      <p>Komandore,</p>
+      <p>Mūsų žmonėms reikia daugiau vietos! Dar truputis ir nebus kur
+      kojos padėti!</p>
+      <p>Nedelsiant pradėkite gyvenamųjų bokštų statybas.</p>
+    </about.121>
+    
     <title.16 value="Dydybės link" />
     <about.16>
       <p>Komandore.</p>
@@ -2657,7 +2776,7 @@
 
     <title.31 value="Kosmoso grėsmės" />
     <about.31>
-      <p>Sveikas, Komandore.</p>
+      <p>Sveiki, Komandore.</p>
       <p>Štai, mūsų laivų gamykla jau stovi. Galėtume kilti į kosmosą, tačiau
       mums reikia laivų! Žinome mes galėtume naudotis mulo klasės laivais, 
       tačiau jų pagrindinė paskirtis - gabenti krovinius. Nors jie ir turi
@@ -2666,10 +2785,39 @@
       planetų, mums prireiks kovinių laivų! Keliaukite į savo laivų gamyklą ir
       liepkite pradėti gamybą!</p>
     </about.31>
+    
+    <title.119 value="Bauginantys laivynai" />
+    <about.119>
+      <p>Komandore.</p>
+      <p>Statant varno klasės laivus šauniai padirbėjote. Jie greiti ir 
+      mirtini mūsų priešams. Ech... Kai pagalvoju apie juos mane apima toks
+      išdidumas! Reikėtų juos kur nors panaudoti!</p>
+      <p>Aplink gretimą planetą skraido keli ateivių dirako klasės laivai. 
+      Argi ne šaunus taikinys mūsų pilotų pratyboms? Skriskime ir sunaikinkime
+      juos.</p>
+      <p>O vienaip ar kitaip - ta planeta atrodo kaip visai nieko vietelė 
+      antrosios mūsų kolonijos įkurtuvėms. O jeigu jau ten kursimės - juk 
+      nenorėtumėme, kad aplink šlaistytųsi kažkokie ateivių pašlemėkai?</p>
+    </about.119>
+    
+    <title.120 value="Mineralų skraidinimas" />
+    <about.120>
+      <p>Komandore!</p>
+      <p>Šaunus darbelis! Ateivių dirakai neturėjo nei menkiausio šanso prieš
+      mūsų laivyną.</p>
+      <p>Na ką, pasismaginom, kimbam į darbus. Mūšio vietoje liko siaubinga
+      netvarka - visame sektoriuje kairėn dešinėn skraido laivų nuolaužos.
+      Ko gero reikėtų išsikuopti...</p>
+      <p>Na ir ko taip nusiminėt? Ai, gi pamiršau paminėti, jog surinktas
+      nuolaužas mūsų planetoje galėsime panaudoti kaip resursus! Na va, matau
+      iš karto šypsena ant ausų lipa ;)</p>
+      <p>Taigi, susirinkime tuos resursus! Pasistatykime mūsų pirmajį
+      mulo klasės laiva!</p>
+    </about.120>
 
     <title.35 value="Išvalymas" />
     <about.35>
-      <p>Sveikas, Komandore.</p>
+      <p>Sveiki, Komandore.</p>
       <p>Kadangi jau turime funkcionuojančia laivų gamyklą, galime truputi 
       patreniruoti savo pilotus. Nusiųskite juos sumedžioti keletos dirakų. Tai
       neturėtų jiems būti sunki užduotis.</p>
@@ -2858,7 +3006,7 @@
   <Ratings>
     <label.ratings value="Reitingai" />
     <label.loading value="Kraunasi..." />
-    <label.noAlliances value="Šioje galaktikoje sąjungų nėra" />
+    <label.noAlliances value="Sąjungų nerasta" />
     <label.allyRatings value="Sąjungų reitingai" />
     <label.close value="Uždaryti"/>
     <rank value="#" />
@@ -2885,6 +3033,7 @@
   </Ratings>
 
   <Resources>
+    <all value="Visi" />
     <metal value="Metalas" />
     <energy value="Energija" />
     <zetium value="Zetiumas" />
@@ -2922,6 +3071,10 @@
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->
     <title.info 
       value="{0 Planet[Planetos] Jumpgate[Šuolio vartų] Asteroid[Asteroido] Wreckage[Nuolaužų] Cooldown[Pertraukos]} informacija" />
+    <!-- {0}: Planet/Jumpgate/Asteroid  
+         {1}: item name -->
+    <typeAndName 
+      value="{0 Planet[Planeta] Jumpgate[Šuolio vartai] Asteroid[Asteroidas]} {1}" />
     <!-- TODO: fix code -->
     <type.Planet value="Planet" />
     <type.Jumpgate value="Jumpgate" />
@@ -3185,6 +3338,9 @@
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
+    
+    <Market.name ref="Buildings/Market.name" />
+    <Market.about ref="Buildings/Market.common" />
 
     <Radar.name ref="Buildings/Radar.name" />
     <Radar.about ref="Buildings/Radar.common" />
@@ -3430,8 +3586,27 @@
     <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
     <property.population value="Populiacija" />
     
-    <tooltip.populationLeft 
-      value="{0 one[? laisvas gyventojas] tens[? laisvų gyventojų] many[? laisvi gyventojai]}" />
+    <tooltip.populationCommon>
+      <p>{0 one[? laisvas gyventojas] tens[? laisvų gyventojų] 
+      many[? laisvi gyventojai]}</p>
+    </tooltip.populationCommon>
+    
+    <tooltip.populationLeft>
+      <p>[reference:tooltip.populationCommon]</p>
+      <p>Maksimalus populiacijos limitas: {1}</p>
+    </tooltip.populationLeft>
+    
+    <tooltip.maxPopulationReached>
+      <p>[reference:tooltip.populationCommon]</p>
+      <p>Tu pasiekei maksimalią populiacijos ribą. Gali išlaikyti 
+      {1 one[? gyventoją] tens[? gyventojų] many[? gyventojus]},
+      tačiau žaidime maksimaliai leidžiama turėti tik {2}.</p>
+    </tooltip.maxPopulationReached>
+    
+    <tooltip.overPopulation>
+      <p>Tavo kariai, laivai ir bokšteliai bus {0}% silpnesni dėl viršytos 
+      maksimalios populiacijos.</p>
+    </tooltip.overPopulation>
     
     <title.defensivePool value="Tavo gynybinis rezervas" />
     <title.emptyDefensivePool>
@@ -3507,7 +3682,7 @@
     <label.deploy value="Išskleisti" />
     <label.manage value="Tvarkyti" />
     <label.withPlanets 
-      value="Su {0 one[? planeta] tens[? planetų] many[? planetų]}" />
+      value="Su {0 one[? planeta] tens[? planetų] many[? planetomis]}" />
     <label.resources value="Resursai" />
     <label.transferResources value="Perkelti" />
     <!-- 0 - resources string, 1 - 'is' or 'are' 
@@ -3753,15 +3928,15 @@
   </Units>
 
   <WelcomeScreen>
-    <title value="Sveikas!" />
-    <greeting value="Sveikas, Komandore!" />
+    <title value="Sveiki!" />
+    <greeting value="Sveiki, Komandore!" />
     <instructions>
-      <p>Aš esu Diana, tavo pagalbininkė.</p>
-      <p>Mes turime svarbių reikalų. Paspausk ant N44 logotipo apatiniame
-      kairiajame kampe ir pasirink „Užduotys“, kad perskaitytum savo pirmąją
-      misiją.</p>
-      <p>Sekmės, Komandore.</p>
+      <p>Aš esu Kaja, tavo pagalbininkė.</p>
+      <p>Mes turime svarbių reikalų. Spausk įžangos mygtuką, jog susipažintum
+      su žaidimu ir kimbam į reikalus.</p>
+      <p>Sekmės.</p>
     </instructions>
+    <label.intro value="Įžanga" />
   </WelcomeScreen>
 
   <Chat>
@@ -3779,12 +3954,11 @@
   <Market>
     <label.submit value="Patvirtinti" />
     <label.fee value="Mokesčiai:" />
-    <label.wantToSell value="Tu nori parduoti:" />
-    <label.howMuch value="Kiek?" />
-    <label.sellFor value="Už:" />
+    <label.wantToSell value="Parduoti" />
+    <label.sellFor value="Už" />
     <!-- 1 cheaper or more -->
     <label.marketValue value="{0}% {1 cheaper[mažiau] more[daugiau]} nei rinkos kaina" />
-    <title.sell value="Parduoti"/>
+    <title.sell value="Sukurti pasiūlymą"/>
     <warning.noSlots value="Pasiekei pasiūlymų limitą" />
     <title.currentOffers value="Dabartiniai pasiūlymai" />
     <title.filterOffers value="Filtruoti pasiūlymus" />
@@ -3798,10 +3972,52 @@
     <header.createdAt value="Įkelta" />
     <title.buy value="Priimti pasiūlymą" />
     <title.cancel value="Atšaukti pasiūlymą" />
+    
     <!-- resource image goes after this string -->
+    <label.youBuy value="Tu perki {0}" />
+    <label.youSell value="Tu parduodi {0}" />
+    <label.willBuy value="Tu perki {0}" />
     <label.willPay value="Tu turėsi sumokėti {0}" />
+    
     <label.buy value="Pirkti" />
     <label.cancel value="Atšaukti" />
+    <label.close value="Uždaryti" />
+    <label.noOffers value="Nėra pasiūlymų" />
+    <!-- {0}: metal/energy/zetium
+         {1}: minimal amount -->
+    <warning.noMinResource> 
+      <p>Tu neturi pakankamai 
+      {0 metal[metalo] energy[energijos] zetium[zetiumo]} minimaliam 
+      pasiūlymui.</p>
+      <p>Minimalus pasiūlymas yra {1} 
+      {0 metal[metalo] energy[energijos] zetium[zetiumo]}.</p>
+    </warning.noMinResource>
+    <message.offerSubmited value="Pasiūlymas priimtas" />
+    <message.offerGone value="Atsiprašome, šio pasiūlymo nebėra" />
+    <label.onlyPlanet value="Rodyti pasiūlymus tik iš šios planetos" />
+    <title.section.resources value="RESURSAI" />
+    <title.section.units value="KARIAI" />
+    <title.section.current value="{0 left[RESURSŲ] right[KARIŲ]} TURGUS" />
+    <tooltip.unitsDisabled 
+    value="Karių turgus bus sukurtas ateityje." />
+    <tooltip.notEnoughStorage value="Tavo talpyklose netilps {0}" />
+    <warning.doNotAfford value="Tu neįperki šio pasiūlymo" />
+    <label.offerCount>
+      <![CDATA[
+      <p>
+        Pateikta pasiūlymų: <span fontWeight="bold">{0}/{1}</span>
+      </p>
+      ]]>
+    </label.offerCount>
+    <label.selected value="Parinkta: {0}" />
+    <!-- link button "here" goes after this label -->
+    <label.changeVip value="VIP kredai nepriimami." />
+    <label.here value="Gali išsikeisti juos čia." />
+    <warning.notFromPlanet 
+    value="Tai tavo pasiūlymas, tačiau jis buvo įdėtas iš kitos planetos." />
+    <filter.clear value="Valyti" />
+    <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje" />
+    <label.moreInfo value="kodėl?" />
   </Market>
 
 </locale>

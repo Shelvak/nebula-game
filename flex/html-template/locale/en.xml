@@ -238,6 +238,10 @@
     <SpaceFactory-whos ref="SpaceFactory-what" />
     
     <!-- Other buildings -->
+    
+    <Market value="Market" />
+    <Market-what value="{0 one[one market] many[? markets]}" />
+    <Market-whos ref="Market-what" />
 
     <Radar value="Radar" />
     <Radar-what value="{0 one[one radar] many[? radars]}" />
@@ -468,6 +472,13 @@
     <construction.bonus value="Construction speed" />
     <scientists value="Scientists" />
     <special value="Attributes" />
+    <title.owner value="Ownership" />
+    <!-- 0: date, 1: time (1 part) -->
+    <label.owner value="You are the owner of this planet from {0} ({1})." />
+    <label.battlegroundOwner> 
+      <p>The longer you rule this planet, the less productive 
+      will the NPC factories become.</p>
+    </label.battlegroundOwner> 
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>
@@ -478,6 +489,7 @@
     <notApplicable value="Not applicable:" />
     <pressEsc value="To deselect press ESC" />
     <notYourPlanet value="This planet does not belong to you!" />
+    <label.claimPlanet value="Claim planet" />
 
     <deselectButtonText value="deselect building" />
 
@@ -527,6 +539,7 @@
     <property.teleportedVolume value="Volume teleported" />
     <property.creds value="Creds" />
     <property.victoryPoints value="Victory points" />
+    <property.fee value="Fee percentage" />
 
     <text.deactivated>
       <p>
@@ -812,6 +825,19 @@
         few days. 
       </p>
     </Crane.about>
+    
+    <Market.name ref="Objects/Market" />
+    <Market.tooltip value="Allows trading with other players" />
+    <Market.common>
+      <p>Market allows you to trade with other players in this galaxy. 
+      Matter converters allow sending and receiving goods 
+      instantaneously, however galaxy market dealers will require a fee to
+      list your offers on their networks.</p>
+    </Market.common>
+    <Market.about>
+      <p>[reference:Market.common]</p>
+      <p>Each upgrade level decreases offer submission fee.</p>
+    </Market.about>
 
     <Radar.name ref="Objects/Radar" />
     <Radar.tooltip value="Increases visible galaxy area" />
@@ -973,8 +999,15 @@
   </Buildings>
 
   <Credits>
+    <title.vip value="VIP" />
+    <label.currentVipLvl value="You are currently VIP level {0}" />
+    <label.convertRate value="You can trade {0} VIP creds for 1 cred" />
+    <label.selectedConvert 
+    value="{0} VIP creds selected, you would get {1 one[one cred] many[? creds]}" />
+    <label.convert value="Convert" />
     <label.accelerate value="Accelerate" />
     <message.vipOrdered value="VIP ordered successfully" />
+    <message.credsConverted value="Vip creds converted successfully" />
     <title.becomeVIP value="Become a VIP" />
     <label.becomeVIP>
       <p>
@@ -1069,6 +1102,8 @@
       Not enough creds.<br/>You need {0} more
      </p>
     </label.notEnough>
+    <warning.notEnoughVipCreds 
+    value="To convert VIP creds you must at least have {0} of them" />
   </Credits>
 
   <Exploration>
@@ -1145,6 +1180,7 @@
       </p>
     </message.actionCanceled>
     <message.copyToClipboardSuccessful value="Copied to clipboard" />
+    <message.planetClaimed value="Planet claimed" />
     <label.cooldownEndsIn value="Next battle in"/>
   </General>
 
@@ -1232,7 +1268,8 @@
       construction speed later.
     </tip.1>
     <tip.2>
-      When building on a flat land your building will be built faster.
+      If you're not sure what building or unit does, click on Info icon to 
+      learn more.
     </tip.2>
     <tip.3>
       Don't build turrets on rocky ground! They will lose armor and perish
@@ -1378,10 +1415,6 @@
     <label.players value="Players" />
     <label.noNotifications value="There are no notifications" />
     <label.questCompleted value="Quest '{0}' was completed." />
-    <label.oldPlayer value="You have ceased it's control from" />
-    <label.noPlayer value="This planet was uninhabitated." />
-    <label.newPlayer value="It was conquered by" />
-    <label.npcAnexed value="This planet was occupied by NPC raiders." />
     <label.readAll value="Read all" />
     <label.resourcesGained value="Resources gained" />
     <label.wreckageLeft value="Wreckage left" />
@@ -1423,10 +1456,44 @@
     <title.explorationFinished value="Exploration finished" />
     <message.explorationFinished value="Exploration finished in planet {0}" />
 
+    <title.marketOfferBought value="Market offer bought" />
+    <message.marketOfferBought value="Market offer bought" />
+    <!-- message with link button between -->
+    <label.marketOfferBought.message1 value="Player" />
+    <label.marketOfferBought.message2 value="has bought:" />
+    <label.marketOfferBought.for value="for" />
+    <label.marketOfferBought.amountLeft>
+    <!-- 1: metal, energy or zetium -->
+      <p>Your offer still has {0} {1} left.</p>
+    </label.marketOfferBought.amountLeft>
+    <label.marketOfferBought.allBought value="Your offer has been bought out." />
+
     <title.planetAnnexed.win value="You have conquered this planet!" />
     <title.planetAnnexed.lose value="You have lost this planet!" />
     <message.planetAnnexed.win value="Planet {0} conquered" />
-    <message.planetAnnexed.lose value="Planet {0} lost" />
+    <message.planetAnnexed.lose value="Your planet {0} lost" />
+    <message.planetAnnexed.loseAlly value="Alliances planet {0} lost" />
+    <!-- two lines in notification, link button after first line-->
+    <label.planetAnnexed.win1 value="You won a battle against" />
+    <label.planetAnnexed.win2 value="for planet '{0}'." />
+    <label.planetAnnexed.npcWin>
+      <p>You have won against aliens in planet '{0}'. 
+      You can now claim it for yourself.</p>
+    </label.planetAnnexed.npcWin>
+    <label.planetAnnexed.selfLose>
+      <p>You have lost a battle for your planet '{0}'. 
+      You no longer control it.</p>
+    </label.planetAnnexed.selfLose>
+    <label.planetAnnexed.allyLose>
+      <p>Your ally have lost a battle for his planet '{0}'. 
+      He does not control it anymore.</p>
+    </label.planetAnnexed.allyLose>
+    <label.planetAnnexed.emptyWin>
+      <p>Your units have arrived to unclaimed planet '{0}'. 
+      You can claim this planet if you want.</p>
+    </label.planetAnnexed.emptyWin>
+    <label.planetAnnexed.claimPlanet 
+    value="You can now claim this planet for yourself." />
     
     <title.planetProtected value="Planet protected!" />
     <message.planetProtected ref="title.planetProtected" />
@@ -1450,6 +1517,14 @@
       </p>
       <p>[reference:label.planetProtected.explained]</p>
     </label.planetProtected.yours>
+    <label.planetProtected.ally>
+      <p>
+      Your alliance members last planet was under attack and you have lost. 
+      Due to interstellar treaties his/hers planet has been placed 
+      under protection for {0} until {1}.
+      </p>
+      <p>[reference:label.planetProtected.explained]</p>
+    </label.planetProtected.ally>
     
     <title.allianceInvitation value="Alliance invitation"/>
     <message.allianceInvitation value="Invitation to join alliance '{0}'"/>
@@ -1498,6 +1573,27 @@
     <label.ok value="Ok" />
     <label.yes value="Yes" />
     <label.no value="No" />
+    
+    <title.convertCreds value="Convert creds" />
+    <message.convertCreds>
+      <p>Are you sure you want to convert {0 one[one VIP cred] many[? VIP creds]} 
+      to {1 one[one cred] many[? creds]}?</p>
+    </message.convertCreds>
+    
+    <title.cancelOffer value="Cancel offer" />
+    <message.cancelOffer>
+      <p>Do you realy want to cancel your offer?</p>
+    </message.cancelOffer>
+    
+    <title.buyOffer value="Buy offer" />
+    <message.buyOffer>
+      <p>Do you realy want to buy from this offer?</p>
+    </message.buyOffer>
+    
+    <title.createOffer value="Create offer" />
+    <message.createOffer>
+      <p>Do you realy want to create that offer?</p>
+    </message.createOffer>
     
     <title.dailyBonus value="Daily bonus" />
     <message.dailyBonus>
@@ -1700,7 +1796,7 @@
     <!-- ANNEX_PLANET
     0: count of planets to occupy -->
     <objectiveText.AnnexPlanet.npc>
-    <p>Occupy {0 one[neutral planet] many[? neutral planets]}</p>
+    <p>Colonize {0 one[one planet] many[? planets]}</p>
     </objectiveText.AnnexPlanet.npc>
     <objectiveText.AnnexPlanet.enemy>
     <p>Occupy {0 one[enemy planet] many[? enemy planets]}</p>
@@ -2279,6 +2375,17 @@
 
     <title.79 value="[reference:ThirstForKnowledge.title] (VIII)" />
     <about.79 ref="ThirstForKnowledge.about" />
+    
+    <title.118 value="Fulfilling our needs" />
+    <about.118>
+      <p>Hello, Commander.</p>
+      <p>In different times we need different things and it's not always
+      easy to plan ahead. Research a market so that we could trade with
+      other inhabitants of this galaxy.</p>
+      <p>Afterall they might be in need of something we have surplus and
+      vice verca. Why shouldn't we help each other? We could even make
+      a friend or two in this way.</p>
+    </about.118>
 
     <title.27 value="Shards of Technology" />
     <about.27>
@@ -2521,6 +2628,13 @@
       </p>
     </about.15>
 
+    <title.121 value="Holding Breath" />
+    <about.121>
+      <p>Commander.</p>
+      <p>We need more space for our people. Soon enough we won't have any
+      rooms left.</p>
+      <p>Commence building of living pods immediately!</p>
+    </about.121>
 
     <title.16 value="Achieving Greatness" />
     <about.16>
@@ -2628,6 +2742,30 @@
         [reference:Buildings/SpaceFactory.name] and order construction now. 
       </p>
     </about.31>
+    
+    <title.119 value="Fearsome Fleets" />
+    <about.119>
+      <p>Commander.</p>
+      <p>Good job on building those crows. They are fast and deadly. I'm
+      so proud about them. Lets put them to a good use, shall we?</p>
+      <p>There are some alien dirac ships hovering nearby planet. I suggest
+      we take our fleet and wipe them out. That planet looks like a nice
+      expansion spot and I wouldn't want any alien scum flying around 
+      there.</p>
+    </about.119>
+    
+    <title.120 value="Freighting Minerals" />
+    <about.120>
+      <p>Good job on cleaning up those diracs, Commander!</p>
+      <p>We sure showed them! Anyway, back to bussiness. Its an awful mess
+      down there after that battle - we've got wreckages flying everywhere.
+      We should clean it up.</p>
+      <p>Why the frowned face? Oh, I must have forgot to mention that those
+      wreckages can be used as resources in our worlds. Heh, I see you're 
+      smiling already.</p>
+      <p>Right on! Lets collect those resources! Build your first mule 
+      class ship!</p>
+    </about.120>
 
     <title.35 value="Cleansing" />
     <about.35>
@@ -2862,7 +3000,7 @@
   <Ratings>
     <label.ratings value="Ratings" />
     <label.loading value="Loading..." />
-    <label.noAlliances value="There are no alliances in this galaxy" />
+    <label.noAlliances value="No alliances found" />
     <label.allyRatings value="Alliance ratings" />
     <label.close value="Close"/>
     <rank value="#" />
@@ -2889,6 +3027,7 @@
   </Ratings>
 
   <Resources>
+    <all value="All" />
     <metal value="Metal" />
     <energy value="Energy" />
     <zetium value="Zetium" />
@@ -2927,6 +3066,9 @@
   <SSObjects>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    
     <title.info value="{0} info" />
+    <!-- {0}: Planet/Jumpgate/Asteroid  
+         {1}: item name -->
+    <typeAndName value="{0} {1}" />
     <!-- TODO: fix code -->
     <type.Planet value="Planet" />
     <type.Jumpgate value="Jumpgate" />
@@ -3220,6 +3362,9 @@
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
+    
+    <Market.name ref="Buildings/Market.name" />
+    <Market.about ref="Buildings/Market.common" />
 
     <Radar.name ref="Buildings/Radar.name" />
     <Radar.about ref="Buildings/Radar.common" />
@@ -3501,7 +3646,24 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
     
-    <tooltip.populationLeft value="{0} population left" />
+    <tooltip.populationCommon>
+      <p>{0} population left</p>
+    </tooltip.populationCommon>
+    
+    <tooltip.populationLeft>
+      <p>[reference:tooltip.populationCommon]</p>
+      <p>Max. population: {1}</p>
+    </tooltip.populationLeft>
+    
+    <tooltip.maxPopulationReached>
+      <p>[reference:tooltip.populationCommon]</p>
+      <p>You have reached your maximum population. Your pods can harbor {1} 
+      people but only {2} is allowed in game.</p>
+    </tooltip.maxPopulationReached>
+    
+    <tooltip.overPopulation>
+      <p>Your units and buildings will be {0}% weaker due to overpopulation.</p>
+    </tooltip.overPopulation>
     
     <title.defensivePool value="Your defensive army pool" />
     <title.emptyDefensivePool>
@@ -3874,13 +4036,13 @@
     <title value="Welcome!" />
     <greeting value="Greetings, Commander!" />
     <instructions>
-      <p>I am Deyna, your assistant.</p>
-      <p>
-        We have some urgent matters to attend to. Click N44 logo in bottom-left 
-        corner and select quests to read your first mission.
+      <p>I am Kaya, your assistant.</p>
+      <p>We have some urgent matters to attend to. Click introduction button to
+      learn the game basics and lets get started.
       </p>
-      <p>Good luck, Commander.</p>
+      <p>Good luck.</p>
     </instructions>
+    <label.intro value="Intro" />
   </WelcomeScreen>
 
   <Chat>
@@ -3898,12 +4060,11 @@
   <Market>
     <label.submit value="Submit" />
     <label.fee value="Fee:" />
-    <label.wantToSell value="You want to sell:" />
-    <label.howMuch value="How much?" />
-    <label.sellFor value="For:" />
+    <label.wantToSell value="Selling" />
+    <label.sellFor value="For" />
     <!-- 1 cheaper or more -->
     <label.marketValue value="{0}% {1} than market value" />
-    <title.sell value="Sell"/>
+    <title.sell value="Create offer"/>
     <warning.noSlots value="Offers limit reached" />
     <title.currentOffers value="Current offers" />
     <title.filterOffers value="Filter offers" />
@@ -3917,10 +4078,49 @@
     <header.createdAt value="Created at" />
     <title.buy value="Buy offer" />
     <title.cancel value="Cancel offer" />
+    
     <!-- resource image goes after this string -->
+    <label.youBuy value="You are buying {0}" />
+    <label.youSell value="You are selling {0}" />
+    <label.willBuy value="You buy {0}" />
     <label.willPay value="You will pay {0}" />
+    
     <label.buy value="Buy" />
     <label.cancel value="Cancel" />
+    <label.close value="Close" />
+    <label.noOffers value="No offers" />
+    <!-- {0}: metal/energy/zetium
+         {1}: minimal amount -->
+    <warning.noMinResource> 
+      <p>You dont have enough {0} for minimal offer.</p>
+      <p>Minimal offer is {1} {0}.</p>
+    </warning.noMinResource>
+    <message.offerSubmited value="Offer submited" />
+    <message.offerGone value="Sorry, offer is already gone" />
+    <label.onlyPlanet value="Show orders from this planet only" />
+    <title.section.resources value="RESOURCES" />
+    <title.section.units value="UNITS" />
+    <title.section.current value="{0 left[RESOURCES] right[UNITS]} MARKET" />
+    <tooltip.unitsDisabled 
+    value="Units market is currently under development." />
+    <tooltip.notEnoughStorage value="There are no enough storage for {0}" />
+    <warning.doNotAfford value="You do not afford this offer" />
+    <label.offerCount>
+      <![CDATA[
+      <p>
+        Currently offering: <span fontWeight="bold">{0}/{1}</span>
+      </p>
+      ]]>
+    </label.offerCount>
+    <label.selected value="Selected: {0}" />
+    <!-- link button "here" goes after this label -->
+    <label.changeVip value="VIP creds are not accepted." />
+    <label.here value="Convert them here." />
+    <warning.notFromPlanet 
+    value="This is your offer but it has been submitted from another planet." />
+    <filter.clear value="Clear" />
+    <label.freeCreds value="You can not use free creds in the market" />
+    <label.moreInfo value="why?" />
   </Market>
 
 </locale>

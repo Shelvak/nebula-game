@@ -114,7 +114,7 @@
             </s:Group>
             
             <s:layout>
-               <s:HorizontalLayout gap="10" paddingTop="12" paddingLeft="22" paddingRight="18" 
+               <s:HorizontalLayout gap="20" paddingTop="12" paddingLeft="22" paddingRight="18" 
                                    paddingBottom="18"/>
             </s:layout>
          </s:Group>
@@ -156,6 +156,7 @@
       </s:Group>
    </fx:Declarations>
    <fx:Binding source="itemIndex == ML.quests.length - 1" destination="bottomLineVisible"/>
+   <fx:Binding source="itemIndex == 0" destination="firstItem"/>
    <fx:Binding source="Quest(data).title" destination="title"/>
    <fx:Script>
       <![CDATA[
@@ -291,7 +292,7 @@
          }
          
          private function btnTutorial_clickHandler(event:MouseEvent) : void {
-            UrlNavigate.getInstance().showWikiUrl(quest.helpUrlId + " (Tutorial)");
+            UrlNavigate.getInstance().showTutorial(quest.helpUrlId);
          }
          
          private function btnClaim_clickHandler(event:MouseEvent) : void {

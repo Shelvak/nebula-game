@@ -22,9 +22,9 @@
       ]]>
    </fx:Script>
    <s:layout>
-      <s:HorizontalLayout/>
+      <s:HorizontalLayout verticalAlign="middle"/>
    </s:layout>
-   <s:Label text="{getText('label.fee')}"/>
+   <s:Label text="{getText('label.fee')}" fontWeight="bold" paddingRight="3"/>
    <base:ImageAndLabel type="{type}" 
                        textToDisplay="{Math.ceil((selectedAmmount * taxRate)).toString()}"/>
    <s:Label text="{'('+Math.round(taxRate*100)+'%'+')'}"/>

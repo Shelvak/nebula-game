@@ -1,21 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx" 
-         xmlns:base="components.base.*"
-         skinClass="components.skins.LargePanelSkin"
-         title="{ML.player.id != selectedOffer.fromId
-         ?getText('title.buy')
-         :getText('title.cancel')}">
+         xmlns:base="components.base.*">   
+   <fx:Metadata>
+      /**
+      * Dispatched when selected resource in radio group changes
+      * 
+      * @eventType components.market.events.MarketEvent.DESELECT_OFFER
+      */
+      [Event(name="deselectOffer", type="components.market.events.MarketEvent")]
+   </fx:Metadata>
    <fx:Script>
       <![CDATA[
+         import components.market.events.MarketEvent;
+         import components.popups.ActionConfirmationPopup;
          import components.skins.GreenButtonSkin;
          import components.skins.LargePanelSkin;
+         import components.skins.LinkButtonSkin;
          
+         import controllers.GlobalFlags;
+         import controllers.market.MarketCommand;
+         import controllers.ui.NavigationController;
+         
+         import models.ModelLocator;
+         import models.market.MCMarketScreen;
          import models.market.MarketOffer;
+         import models.market.OfferResourceKind;
+         import models.resource.Resource;
+         import models.resource.ResourceType;
+         import models.solarsystem.MSSObject;
          
+         import utils.UrlNavigate;
          import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
+         
+         [Bindable]
+         private var IMG: ImagePreloader = ImagePreloader.getInstance();
+         
+         [Bindable]
+         private var ML: ModelLocator = ModelLocator.getInstance();
          
          [Bindable]
          public var selectedOffer: MarketOffer;
@@ -27,31 +52,207 @@
          
          [Bindable]
          private var cost: int = 0;
-
+         
          protected function selector_changeHandler(event:Event):void
          {
-            cost = Math.ceil(selector.value * selectedOffer.rate);
+            var selVal: int = selector.value;
+            cost = Math.ceil(selVal * selectedOffer.toRate);
+            var cPlanet: MSSObject = ML.latestPlanet.ssObject;
+            var storString: String = Resource.getNotFittingResourcesString(
+               cPlanet, 
+               selectedOffer.fromResource == ResourceType.METAL?selVal:0,
+               selectedOffer.fromResource == ResourceType.ENERGY?selVal:0,
+               selectedOffer.fromResource == ResourceType.ZETIUM?selVal:0);
+            if (storString == null)
+            {
+               missingString = null;
+            }
+            else
+            {
+               missingString = getText('tooltip.notEnoughStorage', [storString]);
+            }
+         }
+         
+         [Bindable]
+         private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
+         
+         private function confirm(e: MouseEvent): void
+         {
+            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+            var lbl: Label = new Label();
+            lbl.minWidth = 300;
+            lbl.text = Localizer.string('Popups', 'message.'+
+               (selectedOffer.fromId == ML.player.id?'cancelOffer':'buyOffer'));
+            popUp.addElement(lbl);
+            popUp.title = Localizer.string('Popups', 'title.'+
+               (selectedOffer.fromId == ML.player.id?'cancelOffer':'buyOffer'));
+            popUp.confirmButtonClickHandler = function (button: Button = null): void
+            {
+               GlobalFlags.getInstance().lockApplication = true;
+               if (selectedOffer.fromId == ML.player.id)
+               {
+                  new MarketCommand(MarketCommand.CANCEL, selectedOffer.id).dispatch();
+                  cancel();
+               }
+               else
+               {
+                  new MarketCommand(MarketCommand.BUY, {
+                     'offer': selectedOffer,
+                     'planetId': mScreen.planetId,
+                     'amount': Math.round(selector.value)
+                  }).dispatch();
+                  selector.value = 0;
+                  cancel();
+               }
+            };
+            popUp.show();
+         }
+         
+         private function cancel(e: MouseEvent = null): void
+         {
+            dispatchEvent(new MarketEvent(MarketEvent.DESELECT_OFFER));
+         }
+         
+         private function getImage(name:String) : BitmapData
+         {
+            return IMG.getImage(AssetNames.MARKET_SCREEN_IMAGE_FOLDER + name);
          }
 
+         [Bindable]
+         private var missingString: String = null;
+         
+         private function planetResource(res: String): Resource
+         {
+            return Resource(ML.latestPlanet.ssObject[res]);
+         }
+         
       ]]>
    </fx:Script>
-   <s:HSlider minimum="0" maximum="{selectedOffer.forWhat}" stepSize="1"
-              id="selector" change="selector_changeHandler(event)"/>
-   <s:Group>
+   <!-- background -->
+   <s:Group left="0" right="0">
+      <s:BitmapImage width="{Math.ceil((width - 500)/2)}" id="leftRepeat"
+                     source="{getImage('buy_repeat')}" fillMode="repeat"/>
+      <s:BitmapImage source="{getImage('buy_left')}"/>
+      <s:BitmapImage width="100%" fillMode="repeat"
+                     source="{getImage('buy_center')}"/>
+      <s:BitmapImage source="{getImage('buy_right')}"/>
+      <s:BitmapImage width="{leftRepeat.width}"
+                     source="{getImage('buy_repeat')}" fillMode="repeat"/>
       <s:layout>
-         <s:HorizontalLayout verticalAlign="middle"/>
+         <s:HorizontalLayout gap="0"/>
       </s:layout>
-      <s:Label text="{getText('label.willPay', [])}"/>
-      <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + selectedOffer.toResource)}"/>
    </s:Group>
-   <s:Group>
+   <base:AdvancedContainer horizontalCenter="0" bottom="14">
+      <base:AdvancedContainer visible="{ML.player.id != selectedOffer.fromId}">
+         <base:Warning text="{getText('warning.doNotAfford')}" paddingTop="3"
+                       showSign="false" minWidth="250"
+                       verticalPaddings="6" defMinHeight="50"
+                       visible="{(selectedOffer.toResource == ResourceType.CREDS
+                       ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds) 
+                       &lt; Math.ceil(1 * selectedOffer.toRate)
+                       : planetResource(selectedOffer.toResource).currentStock
+                       &lt; Math.ceil(1 * selectedOffer.toRate))}"/>
+         <s:Group width="100%" visible="{!(selectedOffer.toResource == ResourceType.CREDS
+                  ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds) 
+                  &lt; Math.ceil(1 * selectedOffer.toRate)
+                  : planetResource(selectedOffer.toResource).currentStock
+                  &lt; Math.ceil(1 * selectedOffer.toRate))}">
+            <s:Label text="0"/>
+            <s:HSlider minimum="0" maximum="{Math.min(selectedOffer.fromAmount, 
+                       Math.floor(selectedOffer.toResource == ResourceType.CREDS
+                       ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds)/selectedOffer.toRate
+                       : planetResource(selectedOffer.toResource).currentStock
+                       / selectedOffer.toRate))}" 
+                       stepSize="1"
+                       id="selector" change="selector_changeHandler(event)"
+                       width="250"/>
+            <s:Label text="{Math.min(selectedOffer.fromAmount, 
+                     Math.floor(selectedOffer.toResource == ResourceType.CREDS
+                     ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds)/selectedOffer.toRate
+                     : planetResource(selectedOffer.toResource).currentStock
+                     / selectedOffer.toRate))}"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         <s:Group visible="{!(selectedOffer.toResource == ResourceType.CREDS
+            ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds) 
+                  &lt; Math.ceil(1 * selectedOffer.toRate)
+            : planetResource(selectedOffer.toResource).currentStock
+            &lt; Math.ceil(1 * selectedOffer.toRate))}">
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle" gap="20"/>
+            </s:layout>
+            <s:Group toolTip="{missingString == null?'':missingString}">
+               <s:Label text="{getText('label.willBuy', [selector.value])}"
+                        styleName="{missingString==null?null:'unsatisfied'}"/>
+               <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
+                              selectedOffer.fromResource)}"/>
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="middle" gap="3"/>
+               </s:layout>
+            </s:Group>
+            <s:Group>
+               <s:Label text="{getText('label.willPay', [cost])}"/>
+               <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
+                              selectedOffer.toResource)}"/>
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="middle" gap="3"/>
+               </s:layout>
+            </s:Group>
+         </s:Group>
+         <s:Group visible="{selectedOffer.toResource == ResourceType.CREDS
+                  &amp;&amp; ML.player.creds - ML.player.vipCreds == ML.player.freeCreds
+                  &amp;&amp; ML.player.freeCreds > 0}">
+            <s:Label color="#eec500" text="{getText('label.freeCreds')}" />
+            <s:Button skinClass="components.skins.LinkButtonSkin" 
+                      label="{getText('label.moreInfo')}"
+                      click="UrlNavigate.getInstance().showUrl('free-creds')"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         <s:Group visible="{selectedOffer.toResource == ResourceType.CREDS
+                  &amp;&amp; ML.player.vipLevel > 0}">
+            <s:Label color="#eec500" text="{getText('label.changeVip')}" />
+            <s:Button skinClass="components.skins.LinkButtonSkin" 
+                      label="{getText('label.here')}"
+                      click="NavigationController.getInstance().showVip()"/>
+            <s:layout>
+               <s:HorizontalLayout verticalAlign="middle"/>
+            </s:layout>
+         </s:Group>
+         <base:layout>
+            <s:VerticalLayout horizontalAlign="center"/>
+         </base:layout>
+      </base:AdvancedContainer>
+      <base:Warning text="{getText('warning.notFromPlanet')}"
+                    paddingTop="6"
+                    visible="{ML.player.id == selectedOffer.fromId
+                    &amp;&amp; mScreen.privateOffers.find(selectedOffer.id) == null}"/>
       <s:Button label="{ML.player.id != selectedOffer.fromId
                 ?getText('label.buy')
-                :getText('label.cancel')}" right="6"
-                skinClass="components.skins.GreenButtonSkin"/>
-   </s:Group>
-   <base:layout>
-   <s:VerticalLayout horizontalAlign="justify" paddingBottom="3" paddingLeft="6"
-                     paddingRight="6" paddingTop="6"/>
-   </base:layout>
-</base:Panel>
+                :getText('label.cancel')}" 
+                right="6"
+                enabled="{ML.player.id == selectedOffer.fromId
+                ?true
+                :selector.value > 0}"
+                visible="{ML.player.id == selectedOffer.fromId
+                ?(mScreen.privateOffers.find(selectedOffer.id) != null)
+                :(!(selectedOffer.toResource == ResourceType.CREDS
+                ? (ML.player.creds - ML.player.vipCreds) &lt; Math.ceil(1 * selectedOffer.toRate)
+                : planetResource(selectedOffer.toResource).currentStock
+                &lt; Math.ceil(1 * selectedOffer.toRate)))}"
+                skinClass="components.skins.GreenButtonSkin"
+                click="confirm(event)"/>
+      <s:Button label="{getText('label.close')}" 
+                right="6"
+                skinClass="components.skins.RedButtonSkin"
+                click="cancel(event)"/>
+      <base:layout>
+         <s:HorizontalLayout verticalAlign="middle" gap="30"/>
+      </base:layout>
+   </base:AdvancedContainer>
+</s:Group>

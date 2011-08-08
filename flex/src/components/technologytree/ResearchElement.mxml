@@ -148,7 +148,8 @@
                             Localizer.string('Technologies','finishedIn', [
                             _researchModel.upgradePart.timeToFinishString])}"/>
             <credits:CoinComp right="2" top="2" click="coin_clickHandler(event)"
-                              visible="{_researchModel.scientists != 0}"/>
+                              visible="{_researchModel.scientists != 0}"
+                              enabled="{_researchModel.upgradePart.upgradeProgress &lt; 1}"/>
          </s:Group>
          <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
                              textToDisplay="{_researchModel.scientists.toString()}"

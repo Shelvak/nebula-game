@@ -61,17 +61,17 @@ class Building < ActiveRecord::Base
   }
 
   # This needs to be Proc because we can't test it otherwise.
-  scope :shooting, Proc.new { {:conditions => {:type => shooting_types}} }
-  scope :defensive, Proc.new { {:conditions => {:type => defensive_types}} }
+  scope :shooting, Proc.new { where(:type => shooting_types) }
+  scope :defensive, Proc.new { where(:type => defensive_types) }
 
   # Regexp used to match building guns in config.
-  SHOOTING_REGEXP = /^buildings\.(.+?)\.guns$/
+  GUNS_REGEXP = /^buildings\.(.+?)\.guns$/
 
   # Return Array of String building types that have guns.
   def self.shooting_types
     types = []
-    CONFIG.each_matching(SHOOTING_REGEXP) do |key, value|
-      types.push key.match(SHOOTING_REGEXP)[1].camelcase unless value.blank?
+    CONFIG.each_matching(GUNS_REGEXP) do |key, value|
+      types.push key.match(GUNS_REGEXP)[1].camelcase unless value.blank?
     end
     types
   end
@@ -226,6 +226,7 @@ class Building < ActiveRecord::Base
       creds_needed = CONFIG['creds.building.destroy']
       raise GameLogicError.new("Player does not have enough creds! Req: #{
         creds_needed}, has: #{player.creds}") if player.creds < creds_needed
+      stats = CredStats.self_destruct(self)
       player.creds -= creds_needed
     else
       raise GameLogicError.new("Cannot self-destruct this building, planet " +
@@ -242,7 +243,7 @@ class Building < ActiveRecord::Base
 
     transaction do
       if with_credits
-        CredStats.self_destruct!(self)
+        stats.save!
         player.save!
       end
       planet.save!
@@ -271,6 +272,7 @@ class Building < ActiveRecord::Base
       "Cannot move while upgrading or working (#{self.inspect})!") \
       if upgrading? || working?
 
+    stats = CredStats.move(self)
     player.creds -= creds_needed
     self.armor_mod = self.energy_mod = self.construction_mod = 0
     self.x = x
@@ -281,7 +283,7 @@ class Building < ActiveRecord::Base
     calculate_mods(true)
 
     transaction do
-      CredStats.move!(self)
+      stats.save!
       player.save!
       save!
       Objective::MoveBuilding.progress(self)
@@ -362,12 +364,14 @@ class Building < ActiveRecord::Base
 
   # Called when building is deactivated (after save)
   def on_deactivation
+    super if defined?(super)
     EventBroker.fire(self, EventBroker::CHANGED,
       EventBroker::REASON_DEACTIVATED)
   end
 
   # Called when building is activated (after save)
   def on_activation
+    super if defined?(super)
     EventBroker.fire(self, EventBroker::CHANGED,
       EventBroker::REASON_ACTIVATED)
   end

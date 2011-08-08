@@ -5,12 +5,15 @@ class Combat::LocationCheckerAj < Combat::LocationChecker
     protected
     # Create cooldown for a short time before actual battle will begin.
     def on_conflict(location_point, check_report)
-      Cooldown.create_or_update!(location_point, 
+      Cooldown.create_unless_exists(location_point, 
         CONFIG['combat.cooldown.after_jump.duration'].from_now)
+      
+      # No combat means no assets.
+      nil
     end
     
-    def try_to_annex(location_point, check_report, assets)
-      # Only annex immediately if after jump there is no conflict.
+    # Don't try to annex planet after jump unless there were no conflicts.
+    def annex_planet(location_point, check_report, assets)
       super(location_point, check_report, assets) \
         if check_report.status == Combat::CheckReport::NO_CONFLICT
     end

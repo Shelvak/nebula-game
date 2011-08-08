@@ -26,7 +26,7 @@ class CombatDsl
   class LocationContainer
     attr_reader :location, :galaxy_id
 
-    def read_buildings; @buildings; end
+    def read_buildings; Set.new(@buildings); end
 
     def initialize(type, &block)
       @type = type
@@ -111,8 +111,9 @@ class CombatDsl
 
     def read_units; @units; end
 
-    def initialize(alliance, location_container, &block)
-      @player = Factory.create(:player, :alliance => alliance)
+    def initialize(alliance, location_container, options, &block)
+      options.reverse_merge! :alliance => alliance
+      @player = Factory.create(:player, options)
       @location_container = location_container
 
       instance_eval(&block) if block
@@ -128,18 +129,19 @@ class CombatDsl
   class AllianceContainer
     attr_reader :alliance, :players
 
-    def initialize(dsl, &block)
+    def initialize(dsl, options, &block)
       @dsl = dsl
       @players = []
-      @alliance = Factory.create(:alliance)
+      @alliance = Factory.create(:alliance, options)
       instance_eval(&block)
     end
 
     protected
     def player(options={}, &block)
+      planet_owner = options.delete :planet_owner
       player = PlayerContainer.new(@alliance, @dsl.location_container,
-        &block)
-      @dsl.set_planet_owner(player) if options[:planet_owner]
+        options, &block)
+      @dsl.set_planet_owner(player) if planet_owner
 
       @players.push player
     end
@@ -179,25 +181,21 @@ class CombatDsl
       units += units_container.units if units_container
     end
 
-    units
+    Set.new(units)
   end
 
   def players
-    player_containers.accept do |player_container|
-      # Only include player if he has any units or buildings.
+    Set.new(player_containers.accept do |player_container|
+      # Only include player if he has any units or is a planet owner.
       has_units = (player_container.read_units.try(:units).try(:size) || 0) > 0
       location = @location.location
       if location.is_a?(SsObject::Planet)
         planet_owner = player_container.player == location.player
-        has_buildings = (
-          planet_owner &&
-          (location_container.read_buildings.try(:size) || 0) > 0
-        )
       else
-        has_buildings = false
+        planet_owner = false
       end
-      has_units || has_buildings
-    end.map(&:player)
+      has_units || planet_owner
+    end.map(&:player))
   end
 
   def alliances
@@ -214,15 +212,16 @@ class CombatDsl
     @location = LocationContainer.new(type, &block)
   end
 
-  def alliance(&block)
-    alliance = AllianceContainer.new(self, &block)
+  def alliance(options={}, &block)
+    alliance = AllianceContainer.new(self, options, &block)
     @alliances.push alliance
     alliance
   end
 
   def player(options={}, &block)
-    player = PlayerContainer.new(nil, @location, &block)
-    set_planet_owner(player) if options[:planet_owner]
+    planet_owner = options.delete :planet_owner
+    player = PlayerContainer.new(nil, @location, options, &block)
+    set_planet_owner(player) if planet_owner
 
     @players.push player
     player

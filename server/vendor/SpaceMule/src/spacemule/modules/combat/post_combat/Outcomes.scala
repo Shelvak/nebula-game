@@ -22,6 +22,13 @@ class Outcomes(alliances: Alliances) {
     _outcomes = _outcomes + (player -> outcome)
 
   override def toString = {initialized; _outcomes.toString}
+  
+  /**
+   * Check if this combat was a both-way tie.
+   */
+  def isTie = {initialized; _outcomes.filterNot { 
+    case (player, outcome) => outcome == Combat.Outcome.Tie
+  }.isEmpty}
 
   def asJson = {initialized; _outcomes.map { case (player, outcome) =>
     (Player.idForJson(player) -> outcome.id)

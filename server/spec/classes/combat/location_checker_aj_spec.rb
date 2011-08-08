@@ -11,7 +11,7 @@ describe Combat::LocationCheckerAj do
     
     it "should create a cooldown if conflict" do
       check_report = Combat::CheckReport.new(
-        Combat::CheckReport::CONFLICT, {}
+        Combat::CheckReport::COMBAT, {}
       )
       Combat::LocationCheckerAj.stub!(:check_for_enemies).and_return(
         check_report)
@@ -43,7 +43,7 @@ describe Combat::LocationCheckerAj do
     
     it "should not try to annex if conflict" do
       check_report = Combat::CheckReport.new(
-        Combat::CheckReport::CONFLICT, {}
+        Combat::CheckReport::COMBAT, {}
       )
       Combat::LocationCheckerAj.stub!(:check_for_enemies).and_return(
         check_report)

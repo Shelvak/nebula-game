@@ -544,6 +544,12 @@ describe DispatcherEventHandler do
       DispatcherEventHandler.resolve_objects(obj, :reason).should ==
         DispatcherEventHandler.resolve_location(ss.galaxy_point)
     end
+    
+    it "should resolve Tile" do
+      obj = Factory.create(:tile)
+      DispatcherEventHandler.resolve_objects(obj, :reason).should ==
+        DispatcherEventHandler.resolve_location(obj.planet.location_point)
+    end
   end
 end
 

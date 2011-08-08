@@ -193,7 +193,8 @@ class SolarSystem < ActiveRecord::Base
     )
     raise GameLogicError.new(
       "Cannot check player activity if more than one player exists in SS #{
-      id}! Player IDs: #{player_ids.inspect}") if player_ids.size > 1
+      id}! Player IDs: #{player_ids.inspect}#") if player_ids.size > 1
+    return if player_ids.size > 1
 
     player = Player.find(player_ids[0])
     if player.last_login.nil? || ! (

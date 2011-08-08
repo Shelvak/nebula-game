@@ -1,0 +1,29 @@
+---
+
+# Maximum number of active simulateneous offers for player.
+offers.max: 15
+
+# Minimal amount of resource you are able to offer.
+offer.min_amount: 500
+
+# Float percentage that we allow user submitted rate to vary from average market
+# value.
+avg_rate.offset: 0.10
+
+# How much of the offer person should buy so that seller would get notified?
+buy.notification.threshold: 0.03
+
+### 
+# Seed values for market values.
+# 
+# Seed value is: [from_amount, to_rate]
+###
+avg_rate.seed.0.1: [53289, 3.67]   # metal to energy
+avg_rate.seed.0.2: [53289, 0.19]   # metal to zetium
+avg_rate.seed.0.3: [53289, 0.05]   # metal to creds
+avg_rate.seed.1.0: [195648, 0.27]  # energy to metal
+avg_rate.seed.1.2: [195648, 0.05]  # energy to zetium
+avg_rate.seed.1.3: [195648, 0.01]  # energy to creds
+avg_rate.seed.2.0: [10310, 5.17]   # zetium to metal
+avg_rate.seed.2.1: [10310, 18.98]  # zetium to energy
+avg_rate.seed.2.3: [10310, 0.2]    # zetium to creds

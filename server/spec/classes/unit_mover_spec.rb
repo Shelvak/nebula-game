@@ -261,7 +261,7 @@ describe UnitMover do
       slow_route, _ = UnitMover.move_meta(
         @player.id, @units_slow.map(&:id), @source, @target)
 
-      route_with_all.should == slow_route
+      route_with_all.should be_close(slow_route, SPEC_TIME_PRECISION)
     end
 
     it "should use technologies for movement" do

@@ -58,8 +58,7 @@ class SsObject < ActiveRecord::Base
 
   # See Location#client_location
   def client_location
-    ClientLocation.new(id, Location::SS_OBJECT, position, angle, name, nil,
-      terrain, solar_system_id)
+    raise NotImplementedError.new("I should never be called!")
   end
 
   # See Location#route_attrs

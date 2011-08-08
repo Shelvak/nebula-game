@@ -19,6 +19,8 @@ class StatusResolver
   attr_reader :player
 
   def friendly_ids
+    load_data unless @data_loaded
+    
     [@player.id] | @alliance_player_ids
   end
 

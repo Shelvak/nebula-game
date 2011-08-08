@@ -1,31 +1,301 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx" 
          xmlns:base="components.base.*"
-         skinClass="components.skins.LargePanelSkin"
-         title="{getText('title.filterOffers')}" 
-         xmlns:market="components.market.*">
+         xmlns:market="components.market.*"
+         creationComplete="panel1_creationCompleteHandler(event)">
+   <fx:Metadata>
+      /**
+      * Dispatched when selected resource in radio group changes
+      * 
+      * @eventType components.market.events.MarketEvent.SELECTED_CHANGE
+      */
+      [Event(name="selectedResourceChange", type="components.market.events.MarketEvent")]
+      /**
+      * Dispatched when selected resource in radio group changes
+      * 
+      * @eventType components.market.events.MarketEvent.DESELECT_OFFER
+      */
+      [Event(name="deselectOffer", type="components.market.events.MarketEvent")]
+   </fx:Metadata>
    <fx:Script>
       <![CDATA[
+         import components.base.IRResource;
+         import components.market.events.MarketEvent;
          import components.skins.LargePanelSkin;
          
+         import models.market.MCMarketScreen;
          import models.resource.ResourceType;
          
+         import mx.collections.ArrayCollection;
+         import mx.collections.Sort;
+         import mx.events.CollectionEvent;
+         import mx.events.FlexEvent;
+         
+         import spark.events.IndexChangeEvent;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
          
          private function getText(prop: String, params: Array = null): String
          {
             return Localizer.string('Market', prop, params);
          }
+         
+         public var selectedFrom: String;
+         
+         public var selectedTo: String;
+         
+         private function dispatchSelectedChangeEvent(): void
+         {
+            if (hasEventListener(MarketEvent.SELECTED_RESOURCE_CHANGE))
+            {
+               dispatchEvent(new MarketEvent(MarketEvent.SELECTED_RESOURCE_CHANGE));
+            }
+         }
+         
+         [Bindable]
+         private var toKinds: ArrayCollection = new ArrayCollection();
+         
+         protected function from_changeHandler(event:IndexChangeEvent):void
+         {
+            var deselected: Boolean = false;
+            if (toRes.selectedItem == from.selectedItem && toRes.selectedItem != null
+               && toRes.selectedItem != ResourceType.ALL)
+            {
+               toRes.selectedIndex = -1;
+               deselected = true;
+            }
+            if (selectedFrom != null && selectedFrom != 'null' && selectedFrom != 'undefined' && selectedFrom != ResourceType.ALL)
+            {
+               toKinds.addItem(selectedFrom);
+            }
+            selectedFrom = from.selectedItem;
+            var temp: String;
+            if (selectedFrom != ResourceType.ALL)
+            {
+               temp = toRes.selectedItem;
+               var indx: int = toKinds.getItemIndex(selectedFrom);
+               if (indx != -1)
+               {
+                  toKinds.removeItemAt(indx);
+               }
+            }
+            toKinds.refresh();
+            if (temp != null)
+            {
+               toRes.selectedIndex = toKinds.getItemIndex(temp);
+            }
+            if (deselected)
+            {
+               toRes.selectedIndex = 3;
+               selectedTo = ResourceType.ALL;
+            }
+            dispatchSelectedChangeEvent();
+            cancel();
+         }
+         
+         private static const ALL_KINDS: Array = [
+            ResourceType.METAL,
+            ResourceType.ENERGY,
+            ResourceType.ZETIUM,
+            ResourceType.CREDS,
+            ResourceType.ALL];
+         
+         
+         protected function panel1_creationCompleteHandler(event:FlexEvent):void
+         {
+            toKinds.sort = new Sort();
+            toKinds.sort.compareFunction = function (a:String, b:String, fields: Array = null):int
+            {
+               if (a == b)
+               {
+                  return 0;
+               }
+               if (a == ResourceType.METAL)
+               {
+                  return -1;
+               }
+               else if (a == ResourceType.ENERGY)
+               {
+                  if (b == ResourceType.METAL)
+                  {
+                     return 1;
+                  }
+                  else
+                  {
+                     return -1;
+                  }
+               }
+               else if (a == ResourceType.ZETIUM)
+               {
+                  if (b == ResourceType.METAL || b == ResourceType.ENERGY)
+                  {
+                     return 1;
+                  }
+                  else
+                  {
+                     return -1;
+                  }
+               }
+               else if (a == ResourceType.CREDS)
+               {
+                  if (b == ResourceType.ALL)
+                  {
+                     return -1;
+                  }
+                  else
+                  {
+                     return 1;
+                  }
+               }
+               else
+                  return 1;
+            };
+            reset();
+         }
+         
+         
+         protected function toRes_changeHandler(event:IndexChangeEvent):void
+         {
+            selectedTo = toRes.selectedItem;
+            dispatchSelectedChangeEvent();
+            cancel();
+         }
+         
+         [Bindable]
+         public var onlyPrivateOffers: Boolean = false;
+         
+         protected function checkbox1_changeHandler(event:Event):void
+         {
+            onlyPrivateOffers = selfOnly.selected;
+            cancel();
+         }
+         
+         private function cancel(): void
+         {
+            dispatchEvent(new MarketEvent(MarketEvent.DESELECT_OFFER));
+         }
+         
+         [Bindable]
+         private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
+         
+         
+         private function getImage(name:String) : BitmapData
+         {
+            return ImagePreloader.getInstance().getImage(
+               AssetNames.MARKET_SCREEN_IMAGE_FOLDER + name);
+         }
+         
+         protected function tab_clickHandler(event:MouseEvent):void
+         {
+            mScreen.currentTab = 'left';
+         }
+         
+         public function reset(e: MarketEvent = null): void
+         {
+            for each (var res: String in ALL_KINDS)
+            {
+               if (toKinds.getItemIndex(res) == -1)
+               {
+                  toKinds.addItem(res);
+               }
+            }
+            toKinds.refresh();
+            from.selectedIndex = 3;
+            selectedFrom = ResourceType.ALL;
+            toRes.selectedIndex = 4;
+            selectedTo = ResourceType.ALL;
+            selfOnly.selected = false;
+            onlyPrivateOffers = false;
+            dispatchSelectedChangeEvent();
+            cancel();
+         }
+         
       ]]>
    </fx:Script>
-   <s:Label text="{getText('filter.show')}"/>
-   <market:CMarketResourceSelector hidenType="{ResourceType.CREDS}" id="from"/>
-   <s:Label text="{getText('filter.for')}"/>
-   <market:CMarketResourceSelector disabledType="{from.selected}"/>
-   <base:layout>
-      <s:HorizontalLayout paddingBottom="10" paddingTop="10" horizontalAlign="center"
-                          verticalAlign="middle"/>
-   </base:layout>
-</base:Panel>
+   <!-- background -->
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:SolidColor color="#0a0a0a"/>
+      </s:fill>
+   </s:Rect>
+   <s:Group left="0" right="0">
+      <s:BitmapImage width="{Math.ceil((width - 500)/2)}" id="leftRepeat"
+                     source="{getImage('top_repeat')}" fillMode="repeat"/>
+      <s:BitmapImage source="{getImage('top_left')}"/>
+      <s:BitmapImage width="100%" fillMode="repeat"
+                     source="{getImage('top_center')}"/>
+      <s:BitmapImage source="{getImage('top_right')}"/>
+      <s:BitmapImage width="{leftRepeat.width}"
+                     source="{getImage('top_repeat')}" fillMode="repeat"/>
+      <s:layout>
+         <s:HorizontalLayout gap="0"/>
+      </s:layout>
+   </s:Group>
+   <!-- Market logo and tabs -->
+   <s:Group top="0" horizontalCenter="0" id="topGroup">
+      <s:layout>
+         <s:HorizontalLayout gap="-45"/>
+      </s:layout>
+      <!-- "name" is used by skin -->
+      <s:ToggleButton id="tabResources" name="left" 
+                      skinClass="components.market.skins.SectionTabSkin"
+                      label="{getText('title.section.resources')}" 
+                      minWidth="210" fontSize="15"
+                      enabled="{mScreen.currentTab != 'left'}"
+                      selected="{mScreen.currentTab == 'left'}"
+                      click="tab_clickHandler(event)"/>
+      <s:Group width="276" depth="10">
+         <s:BitmapImage id="tabLeft" left="0" source="{getImage('tab_center_left')}"/>
+         <s:BitmapImage id="tabRight" right="0" source="{getImage('tab_center_right')}"/>
+         <s:BitmapImage left="{tabLeft.width}" right="{tabRight.width}" 
+                        fillMode="repeat"
+                        source="{getImage('tab_center_center')}"/>
+         <s:BitmapImage source="{getImage('logo')}" verticalCenter="0" 
+                        left="{tabLeft.width - 7}" id="logo"/>
+         <s:Label verticalCenter="0" left="{tabLeft.width + logo.width}"
+                  right="{tabRight.width - 14}"
+                  textAlign="center"
+                  fontWeight="bold" fontSize="18"
+                  text="{getText('title.section.current', [mScreen.currentTab])}"/>
+      </s:Group> 
+      <s:Group toolTip="{getText('tooltip.unitsDisabled')}">
+         <s:ToggleButton id="tabUnits"  name="right" 
+                         skinClass="components.market.skins.SectionTabSkin"
+                         label="{getText('title.section.units')}" 
+                         minWidth="210" fontSize="15"
+                         enabled="false"
+                         selected="{mScreen.currentTab == 'right'}"/>
+      </s:Group>
+   </s:Group>
+   <s:Group horizontalCenter="0" bottom="20">
+      <s:Label text="{getText('filter.show')}"/>
+      <s:DropDownList dataProvider="{new ArrayCollection([
+                      ResourceType.METAL,
+                      ResourceType.ENERGY,
+                      ResourceType.ZETIUM,
+                      ResourceType.ALL])}" 
+                      labelFunction="{ResourceType.resourceLabelFunction}"
+                      id="from"
+                      requireSelection="true"
+                      width="152"
+                      change="from_changeHandler(event)"
+                      itemRenderer="components.base.IRResource"/>
+      <s:Label text="{getText('filter.for')}"/>
+      <s:DropDownList id="toRes" dataProvider="{toKinds}"
+                      width="152"
+                      labelFunction="{ResourceType.resourceLabelFunction}"
+                      change="toRes_changeHandler(event)"
+                      requireSelection="true"
+                      itemRenderer="components.base.IRResource"/>
+      <s:Button label="{getText('filter.clear')}" click="reset()"/>
+      <s:CheckBox id="selfOnly" label="{getText('label.onlyPlanet')}"
+                  change="checkbox1_changeHandler(event)"/>
+      <s:layout>
+         <s:HorizontalLayout verticalAlign="middle"/>
+      </s:layout>
+   </s:Group>
+</s:Group>

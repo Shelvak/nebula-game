@@ -6,24 +6,18 @@ package models.market
    import models.player.PlayerMinimal;
    
    import utils.MathUtil;
+   import utils.locale.Localizer;
    
    public class MarketOffer extends BaseModel
    {
-      public function MarketOffer(_from: String, _to: String)
+      public function MarketOffer()
       {
-         player = new PlayerMinimal();
-         player.id = Math.round(Math.random() * 100 + 3);
-         player.name = 'Žaidėjas'+player.id;
-         what = Math.round(Math.random() * 1000);
-         forWhat = Math.round(Math.random() * 1000);
-         whatResource = _from;
-         toResource = _to;
-         createdAt = new Date();
          super();
       }
       
       private var _player: PlayerMinimal;
       
+      [Required]
       public function set player(value: PlayerMinimal): void
       {
          _player = value;
@@ -39,34 +33,84 @@ package models.market
       [Bindable (event="offerOwnerChange")]
       public function get from(): String
       {
-         return player.name;
+         return player == null?Localizer.string('Players', 'npc'):player.name;
       }
       
       [Bindable (event="offerOwnerChange")]
       public function get fromId(): int
       {
-         return player.id;
+         return player == null?0:player.id;
       }
       
       [Bindable]
       public var selected: Boolean = false;
       
-      [Bindable]
-      public var what: int;
+      [Required]
+      [Bindable (event="fromAmountChange")]
+      public function get fromAmount(): int
+      {
+         return _fromAmount;
+      }
+      
+      public function set fromAmount(value: int): void
+      {
+         _fromAmount = value;
+         dispatchFromAmountChangeEvent();
+      }
+      
+      private var _fromAmount: int;
+      
+      [Required]
+      [Bindable (event="willNotChange")]
+      public function set fromKind(value: int): void
+      {
+         fromResource = OfferResourceKind.KINDS[value];
+      }
+      
+      public function get fromKind(): int
+      {
+         return int(OfferResourceKind[fromResource]);
+      }
       
       [Bindable]
-      public var forWhat: int;
+      public var fromResource: String;
       
-      [Bindable]
-      public var whatResource: String;
+      [Required]
+      [Bindable (event="willNotChange")]
+      public function set toKind(value: int): void
+      {
+         toResource = OfferResourceKind.KINDS[value];
+      }
+      
+      public function get toKind(): int
+      {
+         return int(OfferResourceKind[toResource]);
+      }
+      
+      [Bindable (event="fromAmountChange")]
+      public function get toAmount(): int
+      {
+         return _fromAmount * rate;
+      }
       
       [Bindable]
       public var toResource: String;
       
-      public function get rate(): Number
+      private var rate: Number;
+      
+      [Required]
+      public function set toRate(value: Number): void
       {
-         return MathUtil.round(Number(forWhat)/what, 2);
+         rate = value;
+         dispatchRateChangeEvent();
       }
+      [Bindable (event="offerRateChange")]
+      public function get toRate(): Number
+      {
+         return rate;
+      }
+      
+      [Required]
       [Bindable]
       public var createdAt: Date;
       
@@ -75,6 +119,22 @@ package models.market
          if (hasEventListener(MarketEvent.OFFER_OWNER_CHANGE))
          {
             dispatchEvent(new MarketEvent(MarketEvent.OFFER_OWNER_CHANGE));
+         }
+      }
+      
+      private function dispatchRateChangeEvent(): void
+      {
+         if (hasEventListener(MarketEvent.OFFER_RATE_CHANGE))
+         {
+            dispatchEvent(new MarketEvent(MarketEvent.OFFER_RATE_CHANGE));
+         }
+      }
+      
+      private function dispatchFromAmountChangeEvent(): void
+      {
+         if (hasEventListener(MarketEvent.FROM_AMOUNT_CHANGE))
+         {
+            dispatchEvent(new MarketEvent(MarketEvent.FROM_AMOUNT_CHANGE));
          }
       }
    }

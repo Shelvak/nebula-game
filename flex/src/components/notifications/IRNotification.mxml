@@ -29,6 +29,7 @@
       </s:Group>
    </fx:Declarations>
    <fx:Binding source="itemIndex == ML.notifications.length - 1" destination="bottomLineVisible"/>
+   <fx:Binding source="itemIndex == 0" destination="firstItem"/>
    <fx:Script>
       <![CDATA[
          import models.ModelLocator;

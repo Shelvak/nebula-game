@@ -27,6 +27,11 @@ package controllers.startup
    import controllers.galaxies.actions.*;
    import controllers.game.GameCommand;
    import controllers.game.actions.*;
+   import controllers.market.MarketCommand;
+   import controllers.market.actions.AvgRateAction;
+   import controllers.market.actions.BuyAction;
+   import controllers.market.actions.CancelAction;
+   import controllers.market.actions.NewAction;
    import controllers.notifications.NotificationsCommand;
    import controllers.notifications.actions.*;
    import controllers.objects.ObjectsCommand;
@@ -271,6 +276,7 @@ package controllers.startup
          bindRoutesCommands();
          bindQuestsCommands();
          bindChatCommands();
+         bindMarketCommands();
       }
       private static function bindChatCommands() : void
       {
@@ -282,6 +288,14 @@ package controllers.startup
             bindPair(MESSAGE_PUBLIC, new MessagePublicAction());
             bindPair(MESSAGE_PRIVATE, new MessagePrivateAction());
          }
+      }
+      private static function bindMarketCommands() : void
+      {
+         bindPair(MarketCommand.INDEX, new controllers.market.actions.IndexAction());
+         bindPair(MarketCommand.NEW, new controllers.market.actions.NewAction());
+         bindPair(MarketCommand.BUY, new controllers.market.actions.BuyAction());
+         bindPair(MarketCommand.CANCEL, new controllers.market.actions.CancelAction());
+         bindPair(MarketCommand.AVG_RATE, new controllers.market.actions.AvgRateAction());
       }
       private static function bindQuestsCommands() : void
       {
@@ -372,6 +386,7 @@ package controllers.startup
             bindPair(RATINGS, new controllers.players.actions.RatingsAction());
             bindPair(SHOW, new controllers.players.actions.ShowAction());
             bindPair(SHOW_PROFILE, new controllers.players.actions.ShowProfileAction());
+            bindPair(CONVERT_CREDS, new controllers.players.actions.ConvertCredsAction());
             bindPair(EDIT, new controllers.players.actions.EditAction());
             bindPair(VIP, new controllers.players.actions.VipAction());
             bindPair(STATUS_CHANGE, new StatusChangeAction());
@@ -411,6 +426,7 @@ package controllers.startup
             bindPair(SHOW, new controllers.planets.actions.ShowAction());
             bindPair(EDIT, new controllers.planets.actions.EditAction());
             bindPair(BOOST, new controllers.planets.actions.BoostAction());
+            bindPair(TAKE, new controllers.planets.actions.TakeAction());
             bindPair(PLAYER_INDEX, new PlayerIndexAction());
             bindPair(EXPLORE, new ExploreAction());
             bindPair(FINISH_EXPLORATION, new FinishExplorationAction());

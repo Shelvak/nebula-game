@@ -5,6 +5,9 @@
 # 
 # Beware! Gotchas:
 # 
+# #population_cap holds actual value of maximum population from population
+# buildings. However #population_max should be used in all the checks.
+# 
 # #creds include normal creds + vip creds if player is a VIP.
 #
 class Player < ActiveRecord::Base
@@ -31,6 +34,7 @@ class Player < ActiveRecord::Base
   has_many :units
   # FK :dependent => :nullify
   has_many :planets, :class_name => "SsObject::Planet"
+  has_many :market_offers, :through => :planets
   # FK with NO ACTION, because we need to dispatch changed events in code
   # for alliance members.
   has_one :owned_alliance, :dependent => :destroy, 
@@ -71,12 +75,18 @@ class Player < ActiveRecord::Base
     grouped
   end
 
+  # Returns minimal representation of +Player+ with _id_.
+  #
+  # Either _nil_ if _id_ is nil or:
+  # 
+  # {"id" => Fixnum, "name" => String}
+  #
   def self.minimal(id)
     if id
       name = connection.select_one(
         "SELECT name FROM `#{table_name}` WHERE id=#{id.to_i}"
       )['name']
-      {:id => id, :name => name}
+      {"id" => id, "name" => name}
     else
       nil
     end
@@ -131,10 +141,11 @@ class Player < ActiveRecord::Base
     else
       json = attributes.only(*%w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
-        victory_points creds population population_max planets_count
+        victory_points population population_cap planets_count
         alliance_id alliance_cooldown_ends_at
-        vip_creds vip_level vip_until vip_creds_until}
+        free_creds vip_creds vip_level vip_until vip_creds_until}
       )
+      json['creds'] = creds
       unless alliance_id.nil?
         owner = id == alliance.owner_id
         json['alliance_owner'] = owner
@@ -196,6 +207,17 @@ class Player < ActiveRecord::Base
         row
       end
   end
+  
+  # Number that represents maximum population for player.
+  def population_max
+    [Cfg.player_max_population, population_cap].min
+  end
+  
+  # Returns value (0..1] for combat mods. If player is overpopulated this
+  # value will be < 1, else it will be 1.0.
+  def overpopulation_mod
+    overpopulated? ? population_max.to_f / population : 1.0
+  end
 
   def population_free; population_max - population; end
   
@@ -208,8 +230,8 @@ class Player < ActiveRecord::Base
   end
 
   def to_s
-    "<Player(#{id}), pop: #{population}/#{population_max}, gid: #{
-      galaxy_id}, name: #{name.inspect}, creds: #{creds}, VIP: #{
+    "<Player(#{id}), pop: #{population}/#{population_max}(#{population_cap
+      }), gid: #{galaxy_id}, name: #{name.inspect}, creds: #{creds}, VIP: #{
       vip_level}@#{vip_creds}/#{vip_creds_per_tick}>"
   end
 

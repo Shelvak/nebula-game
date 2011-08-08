@@ -31,9 +31,13 @@ describe PlayersController do
       it "should push actions" do
         invoke @action, @params
         
-        %w{game|config players|show planets|player_index technologies|index
-        quests|index notifications|index routes|index
-        chat|index}.each_with_index do |action, index|
+        [
+          "game|config", "players|show", "planets|player_index", 
+          "technologies|index", "quests|index", "notifications|index", 
+          RoutesController::ACTION_INDEX, 
+          ChatController::ACTION_INDEX, 
+          GalaxiesController::ACTION_SHOW
+        ].each_with_index do |action, index|
           message = {'action' => action, 'params' => {}}
           @dispatcher.pushed_messages[@test_player.id][index].should == 
             message
@@ -204,12 +208,6 @@ describe PlayersController do
       
       it "should call player#vip_convert" do
         player.should_receive(:vip_convert).with(@params['amount'])
-        invoke @action, @params
-      end
-      
-      it "should convert amount to int" do
-        player.should_receive(:vip_convert).with(@params['amount'])
-        @params['amount'] = @params['amount'].to_s
         invoke @action, @params
       end
       

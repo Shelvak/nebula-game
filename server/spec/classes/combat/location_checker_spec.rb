@@ -12,7 +12,7 @@ describe klass do
     end
 
     it "should return false if there is cooldown" do
-      Cooldown.create_or_update!(@location, 1.minute.since)
+      Cooldown.create_unless_exists(@location, 1.minute.since)
       Combat::LocationChecker.check_location(@location).should be_false
     end
 
@@ -23,7 +23,7 @@ describe klass do
     it "should invoke SS metadata recalc if location is ss point" do
       ssp = SolarSystemPoint.new(@planet.solar_system_id, 0, 0)
       check_report = Combat::CheckReport.new(
-        Combat::CheckReport::CONFLICT, {}
+        Combat::CheckReport::COMBAT, {}
       )
       Combat::LocationChecker.stub!(:check_for_enemies).and_return(check_report)
       Combat.stub!(:run).and_return(true)
@@ -34,7 +34,7 @@ describe klass do
     it "should not invoke SS metadata recalc if location is not " +
     "a ss point" do
       check_report = Combat::CheckReport.new(
-        Combat::CheckReport::CONFLICT, {}
+        Combat::CheckReport::COMBAT, {}
       )
       Combat::LocationChecker.stub!(:check_for_enemies).and_return(check_report)
       Combat.stub!(:run).and_return(true)
@@ -44,7 +44,7 @@ describe klass do
 
     it "should not invoke SS metadata recalc if no combat was ran" do
       check_report = Combat::CheckReport.new(
-        Combat::CheckReport::CONFLICT, {}
+        Combat::CheckReport::COMBAT, {}
       )
       Combat::LocationChecker.stub!(:check_for_enemies).
         and_return(check_report)
@@ -63,8 +63,7 @@ describe klass do
         and_return(check_report)
       Combat::Annexer.should_receive(:annex!).with(
         @planet,
-        check_report.status,
-        check_report.alliances,
+        check_report,
         nil
       )
       Combat::LocationChecker.check_location(@location)
@@ -74,29 +73,29 @@ describe klass do
       Combat::Annexer.should_not_receive(:annex!)
       Combat::LocationChecker.check_location(
         SolarSystemPoint.new(@planet.solar_system_id, 0, 0))
-    end
+    end    
 
     describe "opposing players" do
       before(:each) do
         @player1 = Factory.create :player
         @player2 = Factory.create :player
-        @players = [@planet.player, @player1, @player2].compact
+        @players = Set.new([@planet.player, @player1, @player2].compact)
         @alliances = Player.grouped_by_alliance(
           [@planet.player_id, @player1.id, @player2.id]
         )
         @nap_rules = {}
-        @units = [          
+        @units = Set.new([          
           Factory.create(:unit, :location => @location,
             :player => @player1, :level => 1),
           Factory.create(:unit, :location => @location,
             :player => @player2, :level => 1),
-        ]
-        @buildings = [
+        ])
+        @buildings = Set.new([
           Factory.create!(:b_vulcan, :planet => @planet, :x => 10,
             :state => Building::STATE_ACTIVE, :level => 1),
           Factory.create!(:b_thunder, :planet => @planet, :x => 20,
             :state => Building::STATE_ACTIVE, :level => 1),
-        ]
+        ])
       end
 
       describe "invocation" do
@@ -123,10 +122,22 @@ describe klass do
           Building::DefensivePortal.should_receive(:portal_units_for).
             with(@planet).and_return(portal_units)
 
-          units = @units + portal_units
-          players = Player.find(units.map(&:player_id).uniq.compact)
+          units = @units + Set.new(portal_units)
+          players = Set.new(
+            Player.find(units.map(&:player_id).uniq.compact))
           Combat.should_receive(:run).with(@planet, players, @nap_rules,
             units, @buildings).and_return(@stubbed_assets)
+          Combat::LocationChecker.check_location(@location)
+        end
+
+        it "should not include non-combat units" do
+          unit = Factory.create!(:u_mdh, :location => @location, :level => 1,
+            :player => @player1)
+          Combat.stub!(:run).and_return do
+            |planet, alliances, nap_rules, units, buildings|
+            units.should_not include(unit)
+            @stubbed_assets
+          end
           Combat::LocationChecker.check_location(@location)
         end
 
@@ -159,7 +170,7 @@ describe klass do
 
       it "should invoke annexer if location is planet" do
         check_report = Combat::CheckReport.new(
-          Combat::CheckReport::CONFLICT, {}
+          Combat::CheckReport::COMBAT, {}
         )
         Combat::LocationChecker.stub!(:check_for_enemies).
           and_return(check_report)
@@ -172,12 +183,8 @@ describe klass do
         Combat.stub!(:run).and_return(assets)
         Combat::Annexer.should_receive(:annex!).with(
           @planet,
-          check_report.status,
-          check_report.alliances,
-          Combat::LocationChecker::CombatData.new(
-            response['outcomes'],
-            response['statistics']
-          )
+          check_report,
+          response['outcomes']
         )
         Combat::LocationChecker.check_location(@location)
       end
@@ -284,7 +291,7 @@ describe klass do
       Factory.create(:unit, :location => @route_hop.location,
         :player => player3)
       Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).
-        status == Combat::CheckReport::CONFLICT
+        status == Combat::CheckReport::COMBAT
     end
 
     it "should not return false if there are enemies (players)" do
@@ -303,7 +310,7 @@ describe klass do
         :location => @route_hop.location, :player => player3
       )
       Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).status ==
-        Combat::CheckReport::CONFLICT
+        Combat::CheckReport::COMBAT
     end
 
     it "should return alliances" do

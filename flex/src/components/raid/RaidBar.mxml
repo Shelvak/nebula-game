@@ -80,8 +80,10 @@
             </s:Group>
             
             <s:Group top="25" left="10" right="10">
-               <s:Label fontSize="12" fontWeight="bold" text="{ML.latestPlanet.ssObject.nextRaidAt.toString()}" 
-                        left="0" right="0" textAlign="center"/>
+               <s:Label fontSize="12" fontWeight="bold" 
+                  text="{ML.latestPlanet.ssObject.nextRaidAt == null?''
+                  :DateUtil.formatShortDateTime(ML.latestPlanet.ssObject.nextRaidAt)}" 
+                  left="0" right="0" textAlign="center"/>
             </s:Group>
             
             <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRUnitBuildingEntrySmall"

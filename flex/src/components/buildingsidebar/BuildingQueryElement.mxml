@@ -49,6 +49,9 @@
          {
             if (ML.latestPlanet && constructor)
             {
+               if (constructor.constructableType == null)
+                  return;
+
                var constructable: * = ModelUtil.getModelClass(
                   constructor.constructableType) == ObjectClass.UNIT
                   ? ML.latestPlanet.getUnitById(constructor.constructableId)
@@ -163,10 +166,16 @@
          <s:Label id="countLbl" fontSize="12" fontWeight="bold"
                   text="{_queryElementModel.count.toString()}"
                   horizontalCenter="0" top="1" bottom="1"/>
+      </s:Group>      
+      <s:Group visible="{hovered}" top="1" right="1" 
+               width="{countLbl.width + 2}">
+         <ui:DarkRoundedBackground top="0" bottom="0" left="0" right="0"/>
+         <s:Button skinClass="components.skins.DeleteButtonSkin" 
+                   left="1" top="1" bottom="1" right="1"
+                   rollOver="hovered = true" rollOut="hovered = false" 
+                   click="button1_clickHandler(event)"
+                   enabled="{!deletePending}"/>
       </s:Group>
-      <s:Button skinClass="components.skins.DeleteButtonSkin" top="1" right="1" visible="{hovered}"
-                rollOver="hovered = true" rollOut="hovered = false" click="button1_clickHandler(event)"
-                enabled="{!deletePending}"/>
       <s:Group bottom="0" horizontalCenter="0" 
                width="{timeLbl.width + 4}">
          <ui:DarkRoundedBackground top="0" bottom="0" left="0" right="0"/>

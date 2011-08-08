@@ -1,13 +1,12 @@
 package controllers.screens
 {
-   import utils.SingletonFactory;
-   
    import controllers.GlobalFlags;
    
    import globalevents.GScreenChangeEvent;
    
    import models.events.ScreensSwitchEvent;
    
+   import utils.SingletonFactory;
    import utils.components.TrackingViewStackSwitch;
    
    
@@ -18,7 +17,7 @@ package controllers.screens
          return SingletonFactory.getSingletonInstance(MainAreaScreensSwitch);
       }
       
-      override public function showScreen(name:String) : void
+      override public function showScreen(name:String, unlockAfter: Boolean = true) : void
       {
          if (name == currentName)
             return;
@@ -37,7 +36,10 @@ package controllers.screens
             removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, dispatchChangedEvent);
             changedEvent.dispatch();
          }
-         GlobalFlags.getInstance().lockApplication = false;
+         if (unlockAfter)
+         {
+            GlobalFlags.getInstance().lockApplication = false;
+         }
          addEventListener(ScreensSwitchEvent.SCREEN_CREATED, dispatchChangedEvent);
          super.showScreen(name);
       }

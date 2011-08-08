@@ -25,6 +25,11 @@ module Combat::Simulation
       if response['no_combat']
         nil
       else
+        # Unwrap JSON'ified hash keys to normal ruby hashes.
+        %w{outcomes classified_alliances yane statistics}.each do |attr|
+          response[attr] = unwrap_json_hash(response[attr])
+        end
+        
         # Apply XP/HP changes.
         all_units = units + unloaded_units.values.flatten
         hashed_units = all_units.hash_by(&:id)
@@ -37,6 +42,22 @@ module Combat::Simulation
         generate_assets(players, location, nap_rules, all_units, buildings,
           killed_by, response, options)
       end
+    end
+  end
+  
+  # Unwraps keys from strings in _source_.
+  #      
+  # Example:
+  #    Combat.unwrap_json_hash('1' => 'foo', Combat::NPC_SM => 'bar').
+  #      should == {1 => 'foo', Combat::NPC => 'bar'}
+  #
+  def unwrap_json_hash(source)
+    source.inject({}) do |hash, pair|
+      string_player_id, value = pair
+      player_id = string_player_id == Combat::NPC_SM \
+        ? Combat::NPC : string_player_id.to_i
+      hash[player_id] = value
+      hash
     end
   end
 
@@ -73,6 +94,11 @@ module Combat::Simulation
       :hp => troop.hp, :flank => troop.flank, :player_id => troop.player_id,
       :stance => troop.stance, :xp => troop.xp}
   end
+  
+  # Special value for overpopulation mod.
+  # Defined in SpaceMule: 
+  # spacemule.modules.combat.objects.Player.Technologies.ModsMap.Overpopulation
+  OVERPOPULATION_TECH_MOD = 'overpopulation'
 
   # Returns two +Hash+es (damage and armor) with {class_name => mod} pairs.
   #
@@ -81,6 +107,12 @@ module Combat::Simulation
     technologies = TechTracker.query_active(player.id, 'damage', 'armor').all
     damage_mods = TechModApplier.apply(technologies, 'damage')
     armor_mods = TechModApplier.apply(technologies, 'armor')
+    
+    # Player#overpopulation_mod returns (0..1], and we need (-1..1) in 
+    # SpaceMule.
+    overpopulation_mod = player.overpopulation_mod - 1
+    damage_mods[OVERPOPULATION_TECH_MOD] = overpopulation_mod
+    armor_mods[OVERPOPULATION_TECH_MOD] = overpopulation_mod
 
     [damage_mods, armor_mods]
   end

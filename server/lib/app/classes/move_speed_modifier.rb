@@ -22,10 +22,14 @@ class MoveSpeedModifier
       creds_needed = Cfg.units_speed_up(@modifier, hop_count)
       raise GameLogicError.new("Not enough creds for speed up! Needed: #{
         creds_needed}, has: #{player.creds}") if player.creds < creds_needed
+      stats = CredStats.movement_speed_up(player, creds_needed)
       player.creds -= creds_needed
-      player.save!
-      Objective::AccelerateFlight.progress(player)
-      CredStats.movement_speed_up!(player, creds_needed)
+      
+      ActiveRecord::Base.transaction do
+        player.save!
+        Objective::AccelerateFlight.progress(player)
+        stats.save!
+      end
     end
   end
   

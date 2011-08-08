@@ -145,7 +145,9 @@ object Runner extends BenchmarkableMock {
 
     printBenchmarkResults()
 
-    if (combat.log.isEmpty)
+    if (combat.log.isEmpty && combat.outcomes.isTie)
+      // There was not combat if all sides have alive enemies and there were
+      // no shots fired. Probably different reachs.
       Map("no_combat" -> true)
     else
       Map[String, Any](

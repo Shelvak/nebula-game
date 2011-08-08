@@ -54,9 +54,9 @@ describe MoveSpeedModifier do
     end
 
     it "should record cred stats" do
-      CredStats.should_receive(:movement_speed_up!).with(@player,
-        @creds_needed)
-      @modifier.deduct_creds!(@player, [], :source, :target, false)
+      should_record_cred_stats(
+        :movement_speed_up, [@player, @creds_needed]
+      ) { @modifier.deduct_creds!(@player, [], :source, :target, false) }
     end
 
     it "should progress achievement" do

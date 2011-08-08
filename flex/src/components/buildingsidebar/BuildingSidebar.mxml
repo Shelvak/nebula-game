@@ -11,11 +11,15 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import components.skins.GreenButtonSkin;
+         
          import config.Config;
          
+         import controllers.GlobalFlags;
          import controllers.buildings.BuildingsCommand;
          import controllers.constructionqueues.ConstructionQueuesCommand;
          import controllers.objects.ObjectClass;
+         import controllers.planets.PlanetsCommand;
          import controllers.screens.MainAreaScreens;
          import controllers.screens.SidebarScreens;
          import controllers.screens.SidebarScreensSwitch;
@@ -509,6 +513,11 @@
                NC.showTechnologies();
                return;
             }
+            if (e.building.type == BuildingType.MARKET)
+            {
+               NC.showMarket(e.building);
+               return;
+            }
             if (e.building.type == BuildingType.DEFENSIVE_PORTAL &&
                 e.building.state == Building.ACTIVE)
             {
@@ -660,12 +669,30 @@
             queueList.scroller.setStyle('horizontalScrollPolicy', ScrollPolicy.OFF);
          }
          
+
+         protected function button1_clickHandler(event:MouseEvent):void
+         {
+            GlobalFlags.getInstance().lockApplication = true;
+            new PlanetsCommand(PlanetsCommand.TAKE, {
+               'id':ML.latestPlanet.id}).dispatch();
+         }
+
       ]]>
    </fx:Script>
    
    <base:SpinnerContainer busy="{waitingForApproval}" top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
       <s:Group top="0" left="0" right="0" visible="{ML.latestPlanet.ssObject.owner != Owner.PLAYER}">
-         <base:Warning left="6" right="6" top="6" text="{Localizer.string ('BuildingSidebar','notYourPlanet')}"/>
+         <s:layout>
+            <s:VerticalLayout paddingLeft="6" paddingRight="6" paddingTop="6"
+                              horizontalAlign="center"/>
+         </s:layout>
+         <base:Warning text="{Localizer.string ('BuildingSidebar','notYourPlanet')}"
+                       width="100%"/>
+         <s:Button label="{Localizer.string ('BuildingSidebar','label.claimPlanet')}"
+                   visible="{ML.latestPlanet.ssObject.player == null
+                   &amp;&amp; ML.latestPlanet.getActiveUnits(Owner.ENEMY).length == 0}"
+                   skinClass="components.skins.GreenButtonSkin"
+                   click="button1_clickHandler(event)"/>
       </s:Group>
       <s:Group top="0" left="0" right="0" bottom="0" visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
          <base:Panel top="0" left="0" right="0" id="facilitiesPanel"

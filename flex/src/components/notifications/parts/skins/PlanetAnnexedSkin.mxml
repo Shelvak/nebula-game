@@ -8,17 +8,24 @@
    <fx:Metadata>
       [HostComponent("components.notifications.parts.IRPlanetAnnexed")]
    </fx:Metadata>
-   
-   <s:layout>
-      <s:VerticalLayout gap="10"/>
-   </s:layout>
-   <location:MiniLocationComp id="location" left="0" top="77"/>
-   <base:AdvancedContainer width="100%">
+   <base:AdvancedContainer left="0" right="0" top="0" bottom="0">
       <base:layout>
-         <s:HorizontalLayout paddingLeft="6" paddingTop="6"/>
+         <s:VerticalLayout gap="10"/>
       </base:layout>
-      <s:Label id="lblConquere"/>
-      <s:Label id="lblRelatedPlayer" textDecoration="underline" color="#ff0000"/>
+      <fx:Script>
+         <![CDATA[
+            import components.skins.LinkButtonSkin;
+         ]]>
+      </fx:Script>
+      <location:MiniLocationComp id="location" left="0" top="77"/>
+      <base:AdvancedContainer width="100%">
+         <base:layout>
+            <s:HorizontalLayout paddingLeft="6" paddingTop="6"/>
+         </base:layout>
+         <s:Label id="lblOutcome"/>
+         <s:Button skinClass="components.skins.LinkButtonSkin" id="lblRelatedPlayer"/>
+         <s:Label id="lblAfterLink"/>
+      </base:AdvancedContainer>
+      <s:Label id="lblClaimPlanet" paddingLeft="6" paddingTop="6"/>
    </base:AdvancedContainer>
-   
 </s:SparkSkin>

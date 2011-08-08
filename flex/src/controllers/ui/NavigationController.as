@@ -15,6 +15,7 @@ package controllers.ui
    
    import controllers.GlobalFlags;
    import controllers.alliances.AlliancesCommand;
+   import controllers.market.MarketCommand;
    import controllers.planets.PlanetsCommand;
    import controllers.players.PlayersCommand;
    import controllers.screens.MainAreaScreens;
@@ -44,6 +45,7 @@ package controllers.ui
    import models.galaxy.Galaxy;
    import models.map.MMap;
    import models.map.MapType;
+   import models.market.MCMarketScreen;
    import models.planet.Planet;
    import models.player.MRatingPlayer;
    import models.quest.Quest;
@@ -614,9 +616,15 @@ package controllers.ui
          showNonMapScreen(_screenProperties[MainAreaScreens.VIP]);
       }
       
-      public function showMarket() :void
+      public function showMarket(market: Building) :void
       {
-         showNonMapScreen(_screenProperties[MainAreaScreens.MARKET]);
+         var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
+         mScreen.market = market;
+         mScreen.planetId = ML.latestPlanet.id;
+         GlobalFlags.getInstance().lockApplication = true;
+         showNonMapScreen(_screenProperties[MainAreaScreens.MARKET], false);
+         new MarketCommand(MarketCommand.INDEX, {
+            'planetId': mScreen.planetId}).dispatch();
       }
       
       public function showAllianceScreen() :void
@@ -659,7 +667,7 @@ package controllers.ui
          {
             createdHandler = setData;
          }
-         showNonMapScreen(_screenProperties[MainAreaScreens.PLAYER]);
+         showNonMapScreen(_screenProperties[MainAreaScreens.PLAYER], false);
       }
       
       public function showDefensivePortal(planetId: int) :void
@@ -1000,7 +1008,7 @@ package controllers.ui
        * 
        * @throws IllegalOperationError if given name is of a map screen 
        */
-      private function showNonMapScreen(screenProps:ScreenProperties) : void
+      private function showNonMapScreen(screenProps:ScreenProperties, unlockAfter: Boolean = true) : void
       {
          if (screenProps.holdsMap)
          {
@@ -1010,7 +1018,7 @@ package controllers.ui
             );
          }
          beforeScreenChange();
-         _mainAreaSwitch.showScreen(screenProps.screenName);
+         _mainAreaSwitch.showScreen(screenProps.screenName, unlockAfter);
          resetActiveButton(screenProps.button);
          resetSidebarToCurrentScreenDefault();
          updateContainerState();

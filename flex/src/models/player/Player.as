@@ -20,9 +20,16 @@ package models.player
    import namespaces.prop_name;
    
    import utils.DateUtil;
+   import utils.MathUtil;
    import utils.NumberUtil;
    import utils.datastructures.Collections;
    
+   
+   /**
+    * @see models.player.events.PlayerEvent#POPULATION_CAP_CHANGE
+    * @eventType models.player.events.PlayerEvent.POPULATION_CAP_CHANGE
+    */
+   [Event(name="populationCapChange", type="models.player.events.PlayerEvent")]
    
    /**
     * @see models.player.events.PlayerEvent#CREDS_CHANGE
@@ -177,6 +184,9 @@ package models.player
       public var vipCreds: int = 0;
       
       [Optional]
+      public var freeCreds: int = 0;
+      
+      [Optional]
       public var vipCredsUntil: Date;
       public var vipCredsTime: String = null;
       
@@ -184,11 +194,53 @@ package models.player
       public var vipUntil: Date;
       public var vipTime: String = null;
       
-      [Optional]
-      public var population: int = 0;
+      private var _population: int;
       
       [Optional]
-      public var populationMax: int = 0;
+      public function set population(value: int): void
+      {
+         _population = value;
+         dispatchPopulationChangeEvent();
+      }
+      
+      [Bindable (event="populationChange")]
+      public function get population(): int
+      {
+         return _population;
+      }
+      
+      [Optional]
+      public function set populationCap(value: int): void
+      {
+         _populationCap = value;
+         dispatchPopulationCapChangeEvent();
+      }
+      
+      [Bindable (event="populationCapChange")]
+      public function get populationCap(): int
+      {
+         return _populationCap;
+      }
+      
+      private var _populationCap: int = 0;
+      
+      [Bindable (event="populationCapChange")]
+      public function get populationMax(): int
+      {
+         return Math.min(_populationCap, Config.getMaxPopulation());
+      }
+      
+      [Bindable (event="populationCapChange")]
+      public function get populationMaxReached(): Boolean
+      {
+         return _populationCap >= Config.getMaxPopulation();
+      }
+      
+      [Bindable (event="populationChange")]
+      public function get overPopulationAntibonus(): Number
+      {
+         return MathUtil.round(100 * (1 - (populationMax / population)), 1);
+      }
       
       prop_name static const scientists:String = "scientists";
       private var _scientists:int = 0;
@@ -522,9 +574,8 @@ package models.player
       /* ### HELPERS ### */
       /* ############### */
       
-      
       private function dispatchPlayerEvent(type:String) : void {
-         dispatchSimpleEvent(PlayerEvent, type);
+         dispatchSimpleEvent(PlayerEvent as Class, type);
       }
       
       private function dispatchScientistsChangeEvent(): void {
@@ -533,6 +584,16 @@ package models.player
       
       private function dispatchCredsChangeEvent(): void {
          dispatchPlayerEvent(PlayerEvent.CREDS_CHANGE);
+      }
+      
+      private function dispatchPopulationCapChangeEvent() : void
+      {
+         dispatchPlayerEvent(PlayerEvent.POPULATION_CAP_CHANGE);
+      }
+      
+      private function dispatchPopulationChangeEvent() : void
+      {
+         dispatchPlayerEvent(PlayerEvent.POPULATION_CHANGE);
       }
    }
 }

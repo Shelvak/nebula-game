@@ -1,96 +1,71 @@
 class Combat::Annexer
   class << self
     # Annexes a +SsObject+ if:
-    # 1. It was without an owner - assign player randomly.
-    # 2. It was owned - only change planet ownership to enemy player.
+    # 1. It was without an owner - keeps it that way.
+    # 2. It was owned - remove ownership if planet was lost.
+    # 
+    # _planet_ is +SsObject::Planet+ in question.
+    # _check_report_ is +Combat::CheckReport+
+    # _outcomes_ is either nil or a {player_id => outcome} hash.
     #
-    # If there was a combat, then calculate winners from _outcomes_ and
-    # random weights from _statistics_. Otherwise these two can be nil.
-    #
-    def annex!(planet, status, alliances, combat_data)
-      players = alliances.values.flatten
-      determine_new_planet_owner(planet, status, players, combat_data)
+    def annex!(planet, check_report, outcomes)
+      if check_report.status == Combat::CheckReport::COMBAT
+        # Don't do anything if no shots were shot.
+        return if outcomes.nil?
+        
+        # There was a combat. Lets check if the owner of that planet lost.
+        if outcomes[planet.player_id] == Combat::OUTCOME_LOSE
+          if planet.player && planet.player.planets_count == 1
+            # Don't take players last planet.
+            protect(planet, outcomes)
+          else
+            # Take the planet away from him.
+            annex_planet(planet, outcomes)
+          end
+        end
+      elsif check_report.status == Combat::CheckReport::NO_CONFLICT && 
+        planet.player_id.nil?
+        # No conflict, it's a free annexable planet. Create notifications 
+        # for all players who are in the planet.
+        planet_free(planet, check_report.alliances)
+      end
     end
 
     protected
 
     # Protects player from losing his last planet.
-    def protect(planet, old_player, new_player)
+    def protect(planet, outcomes)
       ActiveRecord::Base.transaction do
-        [old_player, new_player].each do |player|
-          Notification.create_for_planet_protected(planet, player) \
-            unless player.nil?
+        outcomes.each do |player_id, outcome|
+          Notification.create_for_planet_protected(player_id, planet, 
+            outcome) unless player_id.nil?
         end
-        Cooldown.create_or_update!(planet,
+        
+        Cooldown.create_unless_exists(planet,
           Cfg.planet_protection_duration.from_now)
       end
     end
-
-    # Changes planet owner.
-    def determine_new_planet_owner(planet, status, players, combat_data)
-      winner = false
-      old_player = planet.player
-
-      if status == Combat::CheckReport::CONFLICT
-        if combat_data.nil?
-          # If no combat was ran, don't do anything
-        else
-          winners, weights = winners_with_weights(planet.player, players,
-            combat_data)
-          winner = winners.weighted_random(weights) unless winners.blank?
+    
+    # Remove planet ownership and notify all combat participants.
+    def annex_planet(planet, outcomes)
+      ActiveRecord::Base.transaction do
+        outcomes.each do |player_id, outcome|
+          Notification.create_for_planet_annexed(player_id, planet, 
+            outcome) unless player_id.nil?
         end
-      else
-        unless old_player.nil?
-          # Only transfer control of planet to an enemy or NPC.
-          players = StatusResolver.new(old_player).filter(
-            players, [StatusResolver::NPC, StatusResolver::ENEMY], :id)
-        end
-
-        winner = players.random_element unless players.blank?
+        
+        planet.player = nil
+        planet.save!
       end
-
-      change_planet_owner(planet, winner) unless winner == false
     end
     
-    def change_planet_owner(planet, new_player)
-      old_player = planet.player
-      if old_player && old_player.planets_count == 1
-        protect(planet, old_player, new_player)
-      else
-        ActiveRecord::Base.transaction do
-          planet.player = new_player
-          planet.save!
-          Notification.create_for_planet_annexed(planet, old_player, 
-            new_player)
+    # Planet is free, send notifications for everyone in alliances.
+    def planet_free(planet, alliances)
+      ActiveRecord::Base.transaction do
+        alliances.values.flatten.compact.each do |player|
+          Notification.create_for_planet_annexed(player.id, planet, nil)
         end
       end
-    end
-
-    # Calculate [_winners_, _weights_] for planet annexation.
-    def winners_with_weights(owner, players, combat_data)
-      winners = []
-      weights = []
-      resolver = StatusResolver.new(owner) unless owner.nil?
-
-      players.each do |player|
-        # player can be nil if it is NPC. In that case we use ID 0 because it
-        # is hardcoded into SpaceMule.
-        player_id = player ? player.id : nil
-        # SpaceMule player id
-        sm_player_id = player ? player.id.to_s : Combat::NPC_SM
-        if combat_data.outcomes[sm_player_id] == Combat::OUTCOME_WIN && (
-          owner.nil? || (
-            status = resolver.status(player_id);
-            status == StatusResolver::ENEMY ||
-            status == StatusResolver::NPC
-          )
-        )
-          winners.push player
-          weights.push combat_data.statistics[sm_player_id]['points_earned']
-        end
-      end
-
-      [winners, weights]
     end
   end
 end

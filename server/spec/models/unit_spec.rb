@@ -1,6 +1,24 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Unit do
+  describe ".non_combat_types" do
+    it "should return ground units without guns" do
+      Unit.non_combat_types.should include("Mdh")
+    end
+    
+    it "should not return ground units with guns" do
+      Unit.non_combat_types.should_not include("Trooper")
+    end
+    
+    it "should not return space units without guns" do
+      Unit.non_combat_types.should_not include("Jumper")
+    end
+    
+    it "should not return space units with guns" do
+      Unit.non_combat_types.should_not include("Crow")
+    end
+  end
+  
   describe ".on_callback" do
     describe "destroy" do
       it "should destroy unit" do
@@ -198,7 +216,7 @@ describe Unit do
 
   it "should fail if we don't have enough population" do
     player = Factory.create(:player, 
-      :population_max => Unit::TestUnit.population - 1)
+      :population_cap => Unit::TestUnit.population - 1)
     unit = Factory.build(:unit, :player => player, :level => 0)
     lambda do
       unit.upgrade!
@@ -208,7 +226,7 @@ describe Unit do
   it "should increase population when upgrading" do
     player = Factory.create(:player,
       :population => 0,
-      :population_max => Unit::TestUnit.population)
+      :population_cap => Unit::TestUnit.population)
     unit = Factory.build(:unit, :player => player, :level => 0)
     lambda do
       unit.upgrade!
@@ -486,11 +504,13 @@ describe Unit do
   describe ".save_all_units" do
     before(:each) do
       @route = Factory.create(:route)
+      @mule = Factory.create!(:u_mule)
       @units = [
         Factory.create!(:u_dart, :route => @route),
         Factory.create!(:u_dart, :route => @route),
         Factory.create!(:u_crow, :route => @route),
         Factory.create!(:u_crow),
+        @mule,
       ]
       @units.each { |unit| unit.hp -= 1 }
     end
@@ -510,6 +530,14 @@ describe Unit do
 
     it "should fire changed" do
       should_fire_event(@units, EventBroker::CHANGED, :reason) do
+        Unit.save_all_units(@units, :reason)
+      end
+    end
+    
+    it "should exclude units within other units from changed event" do
+      event_units = @units.dup
+      @units.push Factory.create(:u_trooper, :location => @mule)
+      should_fire_event(event_units, EventBroker::CHANGED, :reason) do
         Unit.save_all_units(@units, :reason)
       end
     end

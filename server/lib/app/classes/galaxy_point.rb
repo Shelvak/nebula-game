@@ -30,6 +30,7 @@ class GalaxyPoint < LocationPoint
 
   # See Location#client_location
   def client_location
-    ClientLocation.new(@id, Location::GALAXY, @x, @y, nil, nil, nil, nil)
+    ClientLocation.new(@id, Location::GALAXY, @x, @y, nil, nil, nil, nil, 
+      nil)
   end
 end

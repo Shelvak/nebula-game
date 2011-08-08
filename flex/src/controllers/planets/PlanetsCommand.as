@@ -22,7 +22,12 @@ package controllers.planets
       public static const SHOW:String = "planets|show";
             
       /**
-       * @see controllers.planets.actions.ExploreAction
+       * @see controllers.planets.actions.TakeAction
+       */ 
+      public static const TAKE:String = "planets|take";
+      
+      /**
+       * @see controllers.planets.action.ExploreAction
        */
       public static const EXPLORE:String = "planets|explore";
       

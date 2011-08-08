@@ -63,7 +63,7 @@
          </s:LinearGradient>
       </s:fill>
    </s:Rect>
-   <s:Group>
+   <s:Group horizontalCenter="0">
       <s:Label width="{OffersColumnsWidths.from}" 
                text="{getText('header.from')}" textAlign="center"
                rollOver="label_rollOverHandler(event)" 
@@ -74,7 +74,7 @@
             <s:SolidColorStroke color="0xffffff" weight="1"/>
          </s:stroke>
       </s:Line>
-      <s:Label width="{OffersColumnsWidths.what}" 
+      <s:Label width="{OffersColumnsWidths.fromAmount}" 
                text="{getText('header.what')}" textAlign="center"
                rollOver="label_rollOverHandler(event)" 
                rollOut="label_rollOutHandler(event)"
@@ -84,7 +84,7 @@
             <s:SolidColorStroke color="0xffffff" weight="1"/>
          </s:stroke>
       </s:Line>
-      <s:Label width="{OffersColumnsWidths.forWhat}" 
+      <s:Label width="{OffersColumnsWidths.toAmount}" 
                text="{getText('header.forWhat')}" textAlign="center"
                rollOver="label_rollOverHandler(event)" 
                rollOut="label_rollOutHandler(event)"

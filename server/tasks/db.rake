@@ -128,8 +128,10 @@ namespace :db do
       ActiveRecord::Base.connection.tables.reject do |table|
         table == 'schema_migrations'
       end.each do |table|
-        res = ActiveRecord::Base.connection.select_one("SHOW CREATE TABLE `#{table}`")
-        tables.push res["Create Table"]
+        res = ActiveRecord::Base.connection.select_one(
+          "SHOW CREATE TABLE `#{table}`")
+        sql = res["Create Table"]
+        tables.push sql
       end
 
       ActiveRecord::Base.establish_connection(DB_CONFIG['test'])

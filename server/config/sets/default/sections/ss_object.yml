@@ -20,12 +20,12 @@ rich_asteroid.zetium_rate: [2, 6]
 
 # Asteroid wreckage spawn rate ranges.
 #
-# 15 asteroids average, x * 3 hrs avg spawn time, 0,5 mule capacity.
-<% mult = 12 %>
+# 15 asteroids average, x * 3 hrs avg spawn time, 0,15 mule capacity.
+<% mult = 12; cap = 0.15 %>
 
-asteroid.wreckage.metal.spawn: [<%= mult * 18 %>, <%= mult * 52 %>]
-asteroid.wreckage.energy.spawn: [<%= mult * 52 %>, <%= mult * 160 %>]
-asteroid.wreckage.zetium.spawn: [<%= mult * 9 %>, <%= mult * 27 %>]
+asteroid.wreckage.metal.spawn: [<%= mult * cap * 36 %>, <%= mult * cap * 104 %>]
+asteroid.wreckage.energy.spawn: [<%= mult * cap * 104 %>, <%= mult * cap * 320 %>]
+asteroid.wreckage.zetium.spawn: [<%= mult * cap * 18 %>, <%= mult * cap * 54 %>]
 asteroid.wreckage.time.spawn: [<%= (mult * 2).hours %> / speed, <%= (mult * 4).hours %> / speed]
 # After player registers when to register first cooldown on asteroids in his
 # solar system?
@@ -33,9 +33,9 @@ asteroid.wreckage.time.first: <%= 1.week %> / speed
 
 # Maximum values of each resource that can be on asteroid. Spawning will get
 # slower when reaching these values
-asteroid.wreckage.metal.spawn.max: 32000
-asteroid.wreckage.energy.spawn.max: 90000
-asteroid.wreckage.zetium.spawn.max: 16000
+asteroid.wreckage.metal.spawn.max: 18000
+asteroid.wreckage.energy.spawn.max: 45000
+asteroid.wreckage.zetium.spawn.max: 8000
 
 ### Planet units configuration. Not overridable.
 # This is needed so that people cannot take planets with only space units.

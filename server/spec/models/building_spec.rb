@@ -65,8 +65,8 @@ describe Building do
       end
 
       it "should register the destruction in the log" do
-        CredStats.should_receive(:self_destruct!).with(@building)
-        @building.self_destruct!(true)
+        should_record_cred_stats(:self_destruct, [@building]) \
+          { @building.self_destruct!(true) }
       end
     end
 
@@ -198,9 +198,8 @@ describe Building do
       end.should change(@player, :creds).to(0)
     end
 
-    it "should register the move in the log" do
-      CredStats.should_receive(:move!).with(@model)
-      @model.move!(10, 15)
+    it "should record cred stats" do
+      should_record_cred_stats(:move, [@model]) { @model.move!(10, 15) }
     end
 
     it "should dispatch changed" do

@@ -15,7 +15,7 @@ object SSObjectRow {
           "`metal`, `metal_generation_rate`, `metal_storage`, " +
           "`energy`, `energy_generation_rate`, `energy_storage`, " +
           "`zetium`, `zetium_generation_rate`, `zetium_storage`, " +
-          "`last_resources_update`"
+          "`last_resources_update`, `owner_changed`"
 }
 
 case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
@@ -71,21 +71,21 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
     size,
     ssObject match {
       case asteroid: Asteroid =>
-        "%d\t%f\t%d\t%d\t%f\t%d\t%d\t%f\t%d\t%s".format(
+        "%d\t%f\t%d\t%d\t%f\t%d\t%d\t%f\t%d\t%s\t%s".format(
           0, asteroid.metalRate, 0,
           0, asteroid.energyRate, 0,
           0, asteroid.zetiumRate, 0,
-          DB.loadInFileNull
+          DB.loadInFileNull, DB.loadInFileNull
         )
       case bgPlanet: BgPlanet =>
-        "%d\t%d\t%f\t%d\t%d\t%f\t%d\t%d\t%f\t%s".format(
+        "%d\t%d\t%f\t%d\t%d\t%f\t%d\t%d\t%f\t%s\t%s".format(
           0, 0, Config.bgPlanetMetalStorage,
           0, 0, Config.bgPlanetEnergyStorage,
           0, 0, Config.bgPlanetZetiumStorage,
-          DB.loadInFileNull
+          DB.loadInFileNull, DB.loadInFileNull
         )
       case homeworld: Homeworld =>
-        "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%s".format(
+        "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%s\t%s".format(
           Config.homeworldStartingMetal,
           Config.homeworldStartingMetalRate,
           Config.homeworldStartingMetalStorage,
@@ -95,21 +95,21 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
           Config.homeworldStartingZetium,
           Config.homeworldStartingZetiumRate,
           Config.homeworldStartingZetiumStorage,
-          Manager.currentDateTime
+          Manager.currentDateTime, Manager.currentDateTime
         )
       case planet: Planet =>
-        "%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s".format(
+        "%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s".format(
           0, 0, 0,
           0, 0, 0,
           0, 0, 0,
-          Manager.currentDateTime
+          Manager.currentDateTime, DB.loadInFileNull
         )
       case _ =>
-        "%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s".format(
+        "%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s".format(
           0, 0, 0,
           0, 0, 0,
           0, 0, 0,
-          DB.loadInFileNull
+          DB.loadInFileNull, DB.loadInFileNull
         )
     }
   )

@@ -17,11 +17,12 @@ class PlayersController < GenericController
     if player
       login player
 
-      %w{game|config players|show planets|player_index technologies|index
-      quests|index notifications|index routes|index
-      chat|index}.each do |action|
-        push action
-      end
+      ["game|config", "players|show", "planets|player_index", 
+        "technologies|index", "quests|index", "notifications|index", 
+        RoutesController::ACTION_INDEX, 
+        ChatController::ACTION_INDEX, 
+        GalaxiesController::ACTION_SHOW
+      ].each { |action| push action }
       
       push DailyBonusController::ACTION_SHOW \
         if player.daily_bonus_available?

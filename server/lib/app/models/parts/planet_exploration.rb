@@ -18,7 +18,7 @@ module Parts::PlanetExploration
         if player_id.nil?
       raise GameLogicError.new("Planet is already being explored!") \
         if exploring?
-
+      
       kind = tile_kind(x, y)
       raise GameLogicError.new(
         "Tile @ #{x},#{y} should have been exploration tile but was #{
@@ -89,32 +89,48 @@ module Parts::PlanetExploration
     # Finishes exploration, checks if anything was found and gives out
     # rewards accordingly. Creates notification and clears exploration
     # attributes so other one can be started.
-    def finish_exploration!
+    #
+    # If _with_creds_ is true, then player creds are also reduced.
+    #
+    def finish_exploration!(with_creds=false)
+      raise GameLogicError.new(
+        "Cannot finish exploration if not currently exploring!"
+      ) unless exploring?
+      
       width, height = Tile::BLOCK_SIZES[
         tile_kind(exploration_x, exploration_y)
       ]
 
       player = self.player
-      win_chance = CONFIG.evalproperty("tiles.exploration.winning_chance",
-        'width' => width, 'height' => height).round
+      if with_creds
+        creds_needed = Cfg.exploration_finish_cost(width, height)
+        raise GameLogicError.new(
+          "Not enough creds for #{player}! Required: #{creds_needed
+          }, had: #{player.creds}"
+        ) if player.creds < creds_needed
+        stats = CredStats.finish_exploration(player, width, height)
+        player.creds -= creds_needed
+      end
+      
+      win_chance = Cfg.exploration_win_chance(width, height)
       win_lose_key = Random.chance(win_chance) ? "win" : "lose"
       units_key = player.overpopulated? ? "without_units" : "with_units"
       rewards = Rewards.from_exploration(
-        (
-          CONFIG["tiles.exploration.rewards.#{win_lose_key}.#{units_key}"]
-        ).weighted_random { |item| item['weight'] }['rewards']
+        Cfg.exploration_rewards_random("#{win_lose_key}.#{units_key}")
       )
 
       transaction do
+        stats.save! if with_creds
         Objective::ExploreBlock.progress(self)
         Notification.create_for_exploration_finished(self, rewards)
         rewards.claim!(self, player)
+        player.save!
         stop_exploration!
       end
 
       true
     end
-
+    
     # Return tile kind for coordinates _x_, _y_.
     def tile_kind(x, y)
       Tile.where(:planet_id => id, :x => x, :y => y).first.try(:kind)
@@ -126,6 +142,44 @@ module Parts::PlanetExploration
 
       kind = tile_kind(exploration_x, exploration_y)
       Tile.exploration_scientists(kind)
+    end
+  
+    # Removes explorable foliage tile from planet map.
+    def remove_foliage!(x, y)
+      raise GameLogicError.new("Cannot remove folliage while exploring!") \
+        if exploring?
+      
+      tile = Tile.where(:planet_id => id, :x => x, :y => y).first
+      raise GameLogicError.new("There is no tile @ #{x},#{y}!") if tile.nil?
+      
+      kind = tile.kind
+      raise GameLogicError.new(
+        "Tile @ #{x},#{y} should have been exploration tile but was #{
+          kind.inspect}!") unless Tile::EXPLORATION_TILES.include?(kind)
+      
+      width, height = Tile::BLOCK_SIZES[kind]      
+      cost = Cfg.foliage_removal_cost(width, height)
+      
+      player = self.player
+      raise GameLogicError.
+        new("#{self} must have a player to remove foliage!") \
+        if player.nil?
+      
+      raise GameLogicError.new(
+        "Not enough creds for #{player}! Required: #{cost}, had: #{
+        player.creds}"
+      ) if player.creds < cost
+      
+      stats = CredStats.remove_foliage(player, width, height)
+      player.creds -= cost
+      
+      self.class.transaction do
+        tile.destroy
+        stats.save!
+        player.save!
+      end
+      
+      self
     end
   end
 end

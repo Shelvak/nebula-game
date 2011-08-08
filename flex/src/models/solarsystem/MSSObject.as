@@ -865,5 +865,20 @@ package models.solarsystem
             zetium = new Resource();
          return zetium.boost.storageBoostEndsAt;
       }
+      
+      /* ##################### */
+      /* ### OWNER_CHANGED ### */
+      /* ##################### */
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Time when this planet was undertaken by current owner.
+       *  
+       * <p><i><b>Metadata</b>:<br/>
+       * [Bindable]<br/>
+       * [Optional]</i></p>
+       */      
+      public var ownerChanged: Date;
    }
 }
