@@ -53,7 +53,7 @@
       
       <!-- start guide button -->
       <s:Button skinClass="components.skins.YellowButtonSkin"
-                click="UrlNavigate.getInstance().showTutorial()"
+                click="UrlNavigate.getInstance().showIntro()"
                 label="{getString('label.intro')}"
                 top="216" left="201"/>
    </s:Group>
