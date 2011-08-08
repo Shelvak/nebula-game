@@ -7,6 +7,8 @@ package components.exploration
    
    import flash.events.MouseEvent;
    
+   import flashx.textLayout.elements.TextFlow;
+   
    import globalevents.GlobalEvent;
    
    import models.exploration.ExplorationStatus;
@@ -15,8 +17,10 @@ package components.exploration
    
    import spark.components.Button;
    import spark.components.Label;
+   import spark.components.RichText;
    import spark.components.supportClasses.SkinnableComponent;
    import spark.primitives.BitmapImage;
+   import spark.utils.TextFlowUtil;
    
    import utils.DateUtil;
    import utils.UrlNavigate;
@@ -87,7 +91,7 @@ package components.exploration
                   }
                }
             }
-            updateLblInstantFinishCost();
+            updateTxtInstantFinishCost();
             updateBtnBuyCredsVisibility();
             updateBtnInstantFinishVisibility();
          }
@@ -175,10 +179,10 @@ package components.exploration
       public var pnlInstantFinishPanel:Panel;
       
       [SkinPart(required="true")]
-      public var lblInstantFinishCost:Label;
-      private function updateLblInstantFinishCost() : void {
-         if (lblInstantFinishCost != null)
-            lblInstantFinishCost.text = getString("description.instantFinishCost", [status.instantFinishCost]);
+      public var txtInstantFinishCost:RichText;
+      private function updateTxtInstantFinishCost() : void {
+         if (txtInstantFinishCost != null)
+            txtInstantFinishCost.textFlow = TextFlowUtil.importFromString(getString("description.instantFinishCost", [status.instantFinishCost]));
       }
       
       [SkinPart(required="true")]
@@ -244,18 +248,18 @@ package components.exploration
                pnlInstantFinishPanel.title = getString("title.instantFinish");
                break;
             
-            case lblInstantFinishCost:
-               updateLblInstantFinishCost();
+            case txtInstantFinishCost:
+               updateTxtInstantFinishCost();
                break;
             
             case btnInstantFinish:
-               btnInstantFinish.label = "label.instantFinish";
+               btnInstantFinish.label = getString("label.instantFinish");
                btnInstantFinish.addEventListener(MouseEvent.CLICK, btnInstantFinish_clickHandler, false, 0, true);
                updateBtnInstantFinishVisibility();
                break;
             
             case btnBuyCreds:
-               btnBuyCreds.label = "label.buyCreds";
+               btnBuyCreds.label = getString("label.buyCreds");
                btnBuyCreds.addEventListener(MouseEvent.CLICK, btnBuyCreds_clickHandler, false, 0, true);
                updateBtnBuyCredsVisibility();
                break;

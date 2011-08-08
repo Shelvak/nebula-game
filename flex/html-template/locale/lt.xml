@@ -1134,7 +1134,9 @@
     <title.instantFinish value="Baigti tyrinėjimus"/>
     <label.instantFinish value="Baigti tyrinėjimus"/>
     <label.buyCreds value="Pirkti kredus"/>
-    <description.instantFinishCost value="Bagti tyrinėjimus akimirksniu tau kainuos {0 one[? kredą] tens[? kredų] many[? kredus]}."/>
+    <description.instantFinishCost>
+    <![CDATA[Bagti tyrinėjimus akimirksniu tau kainuos <span fontWeight="bold">{0 one[? kredą] tens[? kredų] many[? kredus]}</span>.]]>
+    </description.instantFinishCost>
   </Exploration>
 
   <Formatters>

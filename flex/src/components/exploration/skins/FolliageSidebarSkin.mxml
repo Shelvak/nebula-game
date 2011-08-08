@@ -24,7 +24,7 @@
    <base:Panel id="pnlPanel">
       <base:layout>
          <s:VerticalLayout horizontalAlign="justify"
-                           paddingLeft="5" paddingRight="0" paddingTop="5" paddingBottom="0"/>
+                           paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="0"/>
       </base:layout>
       <s:Label id="lblDescription"/>
       <base:ImageAndLabel id="lblScientistsNeeded" includeIn="startExploration"/>
@@ -49,7 +49,7 @@
          <s:VerticalLayout horizontalAlign="justify"
                            paddingLeft="5" paddingRight="0" paddingTop="5" paddingBottom="0"/>
       </base:layout>
-      <s:Group><s:Label id="lblInstantFinishCost" left="0" right="0" lineBreak="toFit"/></s:Group>
+      <s:Group><s:RichText id="txtInstantFinishCost" left="0" right="0" lineBreak="toFit"/></s:Group>
       <s:Group>
          <s:Button right="0" id="btnBuyCreds" skinClass="components.skins.CreditButtonSkin"/>
          <s:Button right="0" id="btnInstantFinish"/>
