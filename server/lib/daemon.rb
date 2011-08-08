@@ -1,12 +1,9 @@
 #!/usr/bin/env ruby
-
 SERVER_NAME = 'nebula_server'
 SERVER_PATH = File.expand_path(File.join(File.dirname(__FILE__), 'main.rb'))
-LOG_PATH = File.expand_path(File.join(File.dirname(__FILE__), '..', 'log',
-  'daemon.log'))
 
 def server_process_line
-  `ps aux`.split("\n").grep(/#{SERVER_NAME}/)[0]
+  `ps aux`.split("\n").grep(/-Dname=#{SERVER_NAME}/)[0]
 end
 
 def running?
@@ -29,42 +26,8 @@ end
 case ARGV[0]
 when "start"
   unless running?
-    $0 = SERVER_NAME
-    
-    # Clear the argv, because main.rb doesn't expect any arguments
-    ARGV.clear
-
-    pid = fork do
-      log_file = File.open(LOG_PATH, 'a+')
-      
-      require "rubygems"
-      require 'robustthread'
-      RobustThread.logger = Logger.new(log_file)
-      RobustThread.exception_handler do |exception|
-        message = "Unhandled exception:\n#{exception.message} " \
-          "(#{exception.class}): \n\t#{exception.backtrace.join("\n\t")}"
-        
-        if defined?(MAILER)
-          MAILER.call("DAEMON", message)
-        else
-          # Mailer may not be defined if crashed somewhere early in 
-          # initialization.
-          log(message, :error)
-        end
-      end
-      
-      STDIN.close
-      STDOUT.reopen(log_file)
-      STDERR.reopen(log_file)
-
-      # Marker not to include IRB session.
-      DAEMONIZED = true
-
-      RobustThread.new(:label => SERVER_NAME) do
-        require SERVER_PATH
-      end
-    end
-    Process.detach pid
+    `#{File.expand_path(File.dirname(__FILE__) + '/daemon/runner.sh')
+       } "#{SERVER_NAME}"`
   else
     puts "Server is already running."
   end

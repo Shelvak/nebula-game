@@ -141,6 +141,33 @@ Spork.prefork do
         self
       end
     end
+    
+    # Disable logging. Who looks at it anyway?
+    LOGGER.level = GameLogger::LEVEL_FATAL
+    
+    Spec::Runner.configure do |config|
+      last_gc_run = Time.now
+      
+      config.before(:each) do
+        conn = ActiveRecord::Base.connection
+        conn.begin_db_transaction
+        conn.increment_open_transactions
+        
+        GC.disable unless RUBY_PLATFORM == "java"
+      end
+      
+      config.after(:each) do
+        conn = ActiveRecord::Base.connection
+        conn.decrement_open_transactions
+        conn.rollback_db_transaction
+        
+        if RUBY_PLATFORM != "java" && Time.now - last_gc_run > 5.0
+          GC.enable
+          GC.start
+          last_gc_run = Time.now
+        end
+      end
+    end
   end
 end
 

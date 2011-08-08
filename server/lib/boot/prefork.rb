@@ -7,6 +7,8 @@ if GC.respond_to?(:copy_on_write_friendly=)
 end
 
 if RUBY_VERSION.to_f < 1.9
+  $KCODE = 'u'
+  
   Range.send(:alias_method, :cover?, :include?)
   class Integer
     alias :precisionless_round :round
@@ -33,7 +35,6 @@ else
   $LOAD_PATH.unshift File.expand_path(ROOT_DIR)
 end
 
-
 def rake?; File.basename($0) == 'rake'; end
 
 benchmark :gems do
@@ -43,24 +44,31 @@ benchmark :gems do
   REQUIRED_GEMS.each do |gem|
     gem = {:name => gem} unless gem.is_a?(Hash)
     unless gem[:skip]
-      gem_name = gem[:lib].nil? ? gem[:name] : gem[:lib]
-      gem gem[:name], gem[:version] if gem[:version]
-      require gem_name
+      env = gem[:env]
+      # Load gem if:
+      # * environment is not specified
+      # * negative environment is specified and does not equal to current
+      # * environment is specified and equals to current
+      if env.nil? || 
+          (env[0..0] == "!" && ENV['environment'] != env[1..-1]) ||
+          ENV['environment'] == env
+        gem_name = gem[:lib].nil? ? gem[:name] : gem[:lib]
+        gem gem[:name], gem[:version] if gem[:version]
+        require gem_name  
+      end
     end
   end
 
-  require 'timeout'
-  require 'socket'
-  require 'erb'
-  require 'pp'
+  %w{timeout socket erb pp}.each do |gem|
+    require gem
+  end
 end
 
 # Require plugins so all their functionality is present during
 # initialization
 benchmark :plugins do
-  Dir[File.join(ROOT_DIR, 'vendor', 'plugins', '*', 'init.rb')].each do |file|
-    require file
-  end
+  Dir[File.join(ROOT_DIR, 'vendor', 'plugins', '*', 'init.rb')].
+    each { |file| require file }
 end
 
 ENV['environment'] ||= 'development'
@@ -73,7 +81,8 @@ benchmark :autoloader do
     ["#{ROOT_DIR}/lib/server"] + Dir["#{ROOT_DIR}/lib/app/**"]
   ).each do |file_name|
     if File.directory?(file_name)
-      ActiveSupport::Dependencies.autoload_paths << File.expand_path(file_name)
+      ActiveSupport::Dependencies.autoload_paths << 
+        File.expand_path(file_name)
     end
   end
 end

@@ -185,10 +185,11 @@ describe PlanetsController do
 
       push @action, @params
       # Try to account for time difference
-      planet1.reload; planet2.reload
-      response_should_include(:planets => ([planet1, planet2].map do |planet|
-        planet.as_json(:resources => true)
-      end))
+      [planet1, planet2].each_with_index do |planet, index|
+        planet.reload
+        response[:planets][index].should equal_to_hash(
+          planet.as_json(:resources => true))
+      end
     end
   end
 

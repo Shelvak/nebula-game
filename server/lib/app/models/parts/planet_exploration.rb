@@ -116,9 +116,7 @@ module Parts::PlanetExploration
       win_lose_key = Random.chance(win_chance) ? "win" : "lose"
       units_key = player.overpopulated? ? "without_units" : "with_units"
       rewards = Rewards.from_exploration(
-        (
-          CONFIG["tiles.exploration.rewards.#{win_lose_key}.#{units_key}"]
-        ).weighted_random { |item| item['weight'] }['rewards']
+        Cfg.exploration_rewards_random("#{win_lose_key}.#{units_key}")
       )
 
       transaction do

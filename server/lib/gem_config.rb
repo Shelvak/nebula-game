@@ -1,12 +1,10 @@
 REQUIRED_GEMS = [
-  {:name => 'activerecord', :version => '>=3.0.5', :lib => 'active_record'},
   {:name => 'activesupport', :version => '>=3.0.5', :lib => 'active_support'},
-  {:name => 'eventmachine', :version => '>=0.12.6',
-    # mingw needs dev version to compile.
-    :platform_options => {/mingw/ => "--pre"}},
+  {:name => 'activerecord', :version => '>=3.0.5', :lib => 'active_record'},
+  {:name => 'eventmachine', :version => '>=0.12.6', :env => "!test"},
   {:name => 'json', :version => '>=1.4.6', :lib => "json/ext"},
   {:name => 'robustthread', :version => '>=0.5.2', :skip => true},
-  {:name => 'mail', :version => '>=2.2'},
+  {:name => 'mail', :version => '>=2.2', :env => "production"},
 ]
 
 REQUIRED_DEVELOPMENT_GEMS = [
