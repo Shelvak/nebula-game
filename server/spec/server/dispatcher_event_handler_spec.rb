@@ -155,6 +155,10 @@ describe DispatcherEventHandler do
           {'changes' => changes},
           nil
         )
+        @dispatcher.should_receive(:push_to_player).with(
+          player_id,
+          RoutesController::ACTION_INDEX
+        )
       end
       
       @handler.fire([event], EventBroker::CHANGED, nil)

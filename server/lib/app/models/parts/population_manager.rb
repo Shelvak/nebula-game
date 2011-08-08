@@ -25,8 +25,11 @@ module Parts::PopulationManager
       population_change = population - population(level - 1)
       if population_change != 0
         player = self.player
-        player.population_max += population_change
-        player.save!
+        unless player.nil?
+          # Player can be nil if this unit has constructed in NPC planet.
+          player.population_max += population_change
+          player.save!
+        end
       end
     end
 
@@ -35,8 +38,10 @@ module Parts::PopulationManager
       population_change = population
       if population_change != 0
         player = self.player
-        player.population_max -= population_change
-        player.save!
+        unless player.nil?
+          player.population_max -= population_change
+          player.save!
+        end
       end
     end
   end

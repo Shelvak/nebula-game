@@ -143,9 +143,9 @@ class PlayersController < GenericController
   # Response: None
   #
   def action_convert_creds
-    param_options :required => %w{amount}
+    param_options :required => {:amount => Fixnum}
     
-    player.vip_convert(params['amount'].to_i)
+    player.vip_convert(params['amount'])
     player.save!
   end
 end

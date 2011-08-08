@@ -40,6 +40,16 @@ describe Building::PopulationManagerPartTest do
         end.should change(@player, :population_max).by(
           @building.population(2) - @building.population(1))
       end
+      
+      it "should not fail if player is nil" do
+        @planet.player = nil
+        @planet.save!
+        opts_upgrading.apply(@building)
+        @building.level = 2
+        lambda do
+          @building.send(:on_upgrade_finished)
+        end.should_not raise_error
+      end
     end
 
     describe "#on_destroy" do
@@ -50,6 +60,14 @@ describe Building::PopulationManagerPartTest do
           @player.reload
         end.should change(@player, :population_max).by(
           - @building.population(2))
+      end
+      
+      it "should not fail if player is nil" do
+        @planet.player = nil
+        @planet.save!
+        
+        @building.level = 2
+        lambda { @building.destroy }.should_not raise_error
       end
     end
   end
