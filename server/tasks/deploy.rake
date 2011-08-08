@@ -15,20 +15,15 @@ DEPLOY_CONFIG = {
   :releases_kept => 2,
   :release_branch => {
     :stable => "master",
-    :beta => "master",
-    :beta3 => "server"
+    :beta => "server"
   },
 
   :servers => {
     :stable => {
-      :client => ["static1.nebula44.com"],
-      :server => ["game1.nebula44.com"],
+      :client => ["static.nebula44.lt"],
+      :server => ["game.nebula44.lt"],
     },
     :beta => {
-      :client => ["nebula44.com"],
-      :server => ["nebula44.com"],
-    },
-    :beta3 => {
       :client => ["static-beta3.nebula44.com:2022"],
       :server => ["beta3.nebula44.com:1022"],
     },
