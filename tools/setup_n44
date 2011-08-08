@@ -1,0 +1,718 @@
+#!/usr/bin/env ruby
+
+USER = "spacegame"
+DOMAIN = "lt" # In what ending does your domain end
+LOCALE = "lt" # Your locale.
+
+# Configuration {{{
+ARTURAZ_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAvQixOdHtH572+yAkRxyDNdo/Q6BLyhUrAtw1E9oOEg6VtECFEEUbQijncU0iMerPpyjbzboX2bGRvA9LRwJEoSrW4pDGV3KTMIUpIMdZzt0n49HsCja8+03++B0HBEjbpeqql9EMDOfTjXQqIE78WNFCsPEBxyKRQDdUQyfXo2f1/0k/WKUScASj3zfTdUKWZPDiuqwVB+v0uR+8n/5dkGaviBxH1Uji82y5c1o+Xpn872FaiJyEtsOfZWS1AN8YKbNL3MZJ+S+bJeCNM3wg7zF0Y1BVXqQrDME2IUhekR5XpkO0UfIcPRZmIKCjl4x//URcNbcT6ihLu/cRru2xcQ== arturaz"
+SPX_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAw8jm0NLEJc5JOXxXLmSj6AOBeH5M6I1FPy2xFOOp/Kfer9GLzTSU8yegMEkOTIuVNN/arLxGzZ7w4y90WngrHUoZXGS5XxolaBrV6CSmiI1QAwMUTGLGwo23yeKYF5gUmIUm0uvrncvDf46JakBSRCWzwfIY86XpfqE6zudCBlEwBhu1lmDLwnsFUMoSeFdevHwYd1vjCtu9p/9wbugFqa064Lo+4NRMpGTN2OtqdTOkfO1ap7a3TA6L4tpOuZOQmea+zE+nbVyNbCrQNWaEQkNd4faTIkL+MMxqKZ7dX7ka3PiyWAgFnhKTxYLN5utX+Pu2pVCxTNwnpP8KZH3U3Q== spx@spx-desktop"
+
+CRONTAB = %Q{
+SHELL=/bin/bash
+
+# m h  dom mon dow   command
+
+@daily  /usr/sbin/logrotate -s $HOME/run/logrotate.state -f $HOME/config/logrotate.conf
+
+}
+
+VIMRC = %Q{
+syntax enable
+" Wrap long lines
+set wrap
+set smartcase
+set enc=utf-8
+
+if version >= 600
+	set foldenable
+	set foldmethod=marker
+  set foldcolumn=3
+endif
+
+" Torte colorscheme usually looks ugly on GUI :)
+if has('gui_running')
+    colorscheme torte
+    if has('win32')
+        set guifont=Lucida_Console:h10:w6
+    endif
+else
+    set bg=dark
+endif
+" Makes backspace erase everything
+set backspace=2
+set autoindent
+set mouse=a
+" Title
+set titlestring="VIM: [%n] %f"
+set title
+" Wraps lines at xx symbols (nasty ;)
+"set textwidth=80
+" Make n spaces instead of tab
+" Treat them as tab
+set shiftwidth=2 tabstop=2 expandtab
+set softtabstop=2 smarttab
+" Makes status line AOT (always-on-top)
+set laststatus=2
+set pastetoggle=<F3>
+}
+
+MYCNF = %Q{
+#
+# The MySQL database server configuration file.
+#
+# You can copy this to one of:
+# - "/etc/mysql/my.cnf" to set global options,
+# - "~/.my.cnf" to set user-specific options.
+# 
+# One can use all long options that the program supports.
+# Run program with --help to get a list of available options and with
+# --print-defaults to see which it would actually understand and use.
+#
+# For explanations see
+# http://dev.mysql.com/doc/mysql/en/server-system-variables.html
+
+# This will be passed to all mysql clients
+# It has been reported that passwords should be enclosed with ticks/quotes
+# escpecially if they contain "#" chars...
+# Remember to edit /etc/mysql/debian.cnf when changing the socket location.
+[client]
+port    = 3306
+socket    = /var/run/mysqld/mysqld.sock
+
+# Here is entries for some specific programs
+# The following values assume you have at least 32M ram
+
+# This was formally known as [safe_mysqld]. Both versions are currently parsed.
+[mysqld_safe]
+socket    = /var/run/mysqld/mysqld.sock
+nice    = 0
+
+[mysqld]
+#
+# * Basic Settings
+#
+
+#
+# * IMPORTANT
+#   If you make changes to these settings and your system uses apparmor, you may
+#   also need to also adjust /etc/apparmor.d/usr.sbin.mysqld.
+#
+
+user    = mysql
+socket    = /var/run/mysqld/mysqld.sock
+port    = 3306
+basedir   = /usr
+datadir   = /var/lib/mysql
+tmpdir    = /tmp
+skip-external-locking
+#
+# Instead of skip-networking the default is now to listen only on
+# localhost which is more compatible and is not less secure.
+bind-address    = 127.0.0.1
+#
+# * Fine Tuning
+#
+key_buffer    = 16M
+max_allowed_packet  = 16M
+thread_stack    = 192K
+thread_cache_size       = 8
+# This replaces the startup script and checks MyISAM tables if needed
+# the first time they are touched
+myisam-recover         = BACKUP
+#max_connections        = 100
+#table_cache            = 64
+#thread_concurrency     = 10
+#
+# * Query Cache Configuration
+#
+query_cache_limit = 1M
+query_cache_size        = 16M
+#
+# * Logging and Replication
+#
+# Both location gets rotated by the cronjob.
+# Be aware that this log type is a performance killer.
+# As of 5.1 you can enable the log at runtime!
+#general_log_file        = /var/log/mysql/mysql.log
+#general_log             = 1
+
+log_error                = /var/log/mysql/error.log
+
+# Here you can see queries with especially long duration
+slow_query_log  = /var/log/mysql/slow.log
+long_query_time = 0.1
+#log-queries-not-using-indexes
+#
+# The following can be used as easy to replay backup logs or for replication.
+# note: if you are setting up a replication slave, see README.Debian about
+#       other settings you may need to change.
+#server-id    = 1
+#log_bin      = /var/log/mysql/mysql-bin.log
+expire_logs_days  = 10
+max_binlog_size         = 100M
+#binlog_do_db   = include_database_name
+#binlog_ignore_db = include_database_name
+#
+# * InnoDB
+#
+# InnoDB is enabled by default with a 10MB datafile in /var/lib/mysql/.
+# Read the manual for more InnoDB related options. There are many!
+#
+# * Security Features
+#
+# Read the manual, too, if you want chroot!
+# chroot = /var/lib/mysql/
+#
+# For generating SSL certificates I recommend the OpenSSL GUI "tinyca".
+#
+# ssl-ca=/etc/mysql/cacert.pem
+# ssl-cert=/etc/mysql/server-cert.pem
+# ssl-key=/etc/mysql/server-key.pem
+
+innodb_file_per_table
+
+
+
+[mysqldump]
+quick
+quote-names
+max_allowed_packet  = 16M
+
+[mysql]
+#no-auto-rehash # faster start of mysql but no tab completition
+
+[isamchk]
+key_buffer    = 16M
+
+#
+# * IMPORTANT: Additional settings that can override those from this file!
+#   The files must end with '.cnf', otherwise they'll be ignored.
+#
+!includedir /etc/mysql/conf.d/
+}
+
+# }}}
+
+# DSL {{{
+def run(cmd)
+  status = system cmd
+  unless $?.success?
+    puts
+    puts "Running `#{cmd}` failed with exit status #{$?.exitstatus}!"
+    exit
+  end
+  status
+end
+def remove(cmd); run "apt-get remove -y --purge #{cmd}"; end
+def install(cmd); run "apt-get install -y #{cmd}"; end
+def as(user); run %Q{su -l #{user} -c "#{yield.gsub('"', '\\"')}"}; end
+def rvm_str(command=""); %Q{bash -c "source #{BASHRC} && rvm #{command}"}; end
+def rvm(command=""); `#{rvm_str(command)}`; end
+def rvmuse(version, command="")
+  rvm("use #{version} > /dev/null && #{command}")
+end
+
+PASS_CHARS = "1234567890-=qwertyuiop[]asdfghjkl;zxcvbnm,./`~!@#^%&*()_+QWERTYUIOP{}ASDFGHJKLZXCVBNM<>?"
+def rand_pass(length)
+  (0...length).map do 
+    index = rand(PASS_CHARS.size)
+    PASS_CHARS[index..index]
+  end.join
+end
+
+def logrotate(conf)
+  file = "#{HOME}/config/logrotate.conf"
+  unless File.read(file).include?(conf)
+    puts "Appending client web logs logrotate configuration."
+    File.append(file, "\n#{conf}\n")
+  end
+end
+
+def cron(conf)
+  contents = `crontab -u #{USER} -l`
+  unless contents.include?(conf)
+    IO.popen("crontab -u #{USER} -", "w") do |io|
+      io.write contents + "\n\n" + conf + "\n"
+    end
+  end
+end
+
+def adduser(user)
+  puts "Checking for user #{user}."
+  "id #{user}".or { "adduser #{user}".and { puts "User #{user} created." } }
+
+  dir = "/home/#{user}/.ssh"
+  Dir.mkdir(dir, "700", "#{user}:") unless File.exists?(dir)
+
+  file = "#{dir}/authorized_keys"
+  File.write(file, "", "600", "#{user}:") unless file.exists?
+  file.append("#{ARTURAZ_PUBKEY}\n") unless file.read.include?(ARTURAZ_PUBKEY)
+end
+
+def apache_vhost(vhost, path, hostname="")
+  hostname = hostname == "" \
+    ? "nebula44.#{DOMAIN}" : "#{hostname}.nebula44.#{DOMAIN}"
+
+  File.write("/etc/apache2/sites-available/#{vhost}", %Q{
+<VirtualHost *:80>
+  ServerName #{hostname}
+
+  DocumentRoot "#{path}"
+  <Directory #{path}>
+    AllowOverride All
+    Options -MultiViews
+  </Directory>
+
+  ErrorLog #{LOGS}/#{vhost}.error.log
+  CustomLog #{LOGS}/#{vhost}.access.log common
+</VirtualHost>
+})
+  run "ln -sf ../sites-available/#{vhost} /etc/apache2/sites-enabled/#{vhost}"
+  run "/etc/init.d/apache2 reload"
+end
+
+def create_mysql(db_name)
+  pass = rand_pass(20)
+  db = "#{USER}_#{db_name}"
+  dbuser = "'#{db}'@'localhost'"
+  script = Tempfile.new('mysqlscript')
+  script.write(%Q{
+-- Grant harmless privilege to user to ensure that it's created.
+GRANT USAGE ON *.* TO #{dbuser};
+DROP USER #{dbuser};
+-- Recreate the user.
+CREATE USER #{dbuser} IDENTIFIED BY '#{pass}';
+CREATE DATABASE IF NOT EXISTS `#{db}`;
+GRANT ALL ON `#{db}`.* TO #{dbuser};
+FLUSH PRIVILEGES;
+})
+  script.close
+  puts File.read(script.path)
+  run "mysql --defaults-file=/etc/mysql/debian.cnf < #{script.path}"
+  script.unlink
+
+  [db, pass]
+end
+
+class String
+  def and
+    output = `#{self} 2>&1`
+    yield output if $?.success?
+    output
+  end
+
+  def or
+    output = `#{self} 2>&1`
+    yield output unless $?.success?
+    output
+  end
+
+  def exists?; File.exists?(self); end
+  def append(content); File.append(self, content); end
+  def read; File.read(self); end
+end
+
+class File
+  def self.write(name, content, mode=nil, owner=nil)
+    file = new(name, "w")
+    file.write(content)
+    file.close
+
+    perms(name, mode, owner)
+
+    unless File.exist?(name)
+      puts "Write failed for #{name}!"
+      exit
+    end
+
+    file
+  end
+
+  def self.perms(name, mode=nil, owner=nil)
+    mode ||= "0644"
+    run %Q{chmod #{mode} "#{name}"}
+    run %Q{chown #{owner} "#{name}"} unless owner.nil?
+  end
+
+  def self.append(name, content)
+    unless File.exist?(name)
+      puts "File #{name} does not exist!"
+      exit
+    end
+    
+    c = File.read(name)
+    c += content
+    file = new(name, "w")
+    file.write(c)
+    file.close
+  end
+
+  def self.ensure(name, content, mode=nil, owner=nil)
+    if exist?(name)
+      unless read(name).include?(content)
+        append(name, content)
+      end
+      
+      perms(name, mode, owner)
+    else
+      write(name, content, mode, owner)
+    end
+  end
+end
+
+class Dir
+  def self.mkdir(dir, mode=nil, owner=nil)
+    run %Q{mkdir "#{dir}"} unless File.directory?(dir)
+    File.perms(dir, mode || "0755", owner)
+  end
+end
+
+class TrueClass
+  def or; end
+  def and; yield; end
+end
+
+class FalseClass
+  def or; yield; end
+  def and; end
+end
+
+class NilClass
+  def or; yield; end
+  def and; end
+end
+
+# }}}
+
+# Check if root.
+`id`.include?("uid=0(root)").or do
+  puts "You must be root to run this script!"
+  exit
+end
+
+if ARGV.size == 0
+  puts "Usage: setup_n44 targets"
+  puts
+  puts "Targets:"
+  puts "  basic  - Sets up basic system"
+  puts "  server - Sets up Nebula server"
+  puts "  client - Sets up Nebula client"
+  puts "  web    - Sets up Nebula web server"
+  exit
+end
+
+HOME = "/home/#{USER}"
+LOGS = "#{HOME}/logs"
+UCH = "#{USER}:"
+BASHRC = "/etc/bash.bashrc"
+require 'tempfile'
+
+if ARGV.include?("basic") # {{{
+  adduser("x11")
+  File.write("/home/x11/.vimrc", VIMRC, nil, "x11:")
+  `ln -sf /home/x11/.vimrc /root/.vimrc`
+
+  # Removing samba.
+  remove "samba.*" if File.exists?("/etc/init.d/smbd")
+
+  install "less cron mc irb gnupg wget host exim4"
+  run "dpkg-reconfigure exim4-config"
+
+  run "gpg --keyserver  hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A"
+  run "gpg -a --export CD2EFD2A | apt-key add -"
+  File.write("/etc/apt/sources.list.d/percona.list", 
+"deb http://repo.percona.com/apt lucid main
+deb-src http://repo.percona.com/apt lucid main")
+  run "apt-get update"
+  run "apt-get dist-upgrade -y"
+
+  #`dpkg-reconfigure debconf`
+  `locale-gen en_US.utf8`
+
+  MYCNF_FILE = "/etc/mysql/my.cnf"
+  unless File.exists?(MYCNF_FILE)
+    puts "Configuring mysqld..."
+    File.write(MYCNF_FILE, MYCNF)
+  end
+  install "percona-server-server"
+
+  puts "Installing munin-node"
+  install "munin-node"
+
+  puts "Installing Git & curl"
+  install "git-core curl"
+
+  puts "Checking for RVM..."
+  (rvm() == "").and {
+    puts "Installing RVM"
+    rvminst="/tmp/rvm-installer"
+    run("wget -O #{rvminst} https://rvm.beginrescueend.com/install/rvm")
+    run("chmod +x #{rvminst}")
+    run(rvminst)
+    File.unlink(rvminst)
+
+    bashrc = File.read(BASHRC)
+    bashrc.sub!(%Q{[ -z "$PS1" ] && return}, %Q{if [ -z "$PS1" ]; then})
+    bashrc += %Q{\nfi\n\n[[ -s "/usr/local/rvm/scripts/rvm" ]] && . "/usr/local/rvm/scripts/rvm"}
+    File.write(BASHRC, bashrc)
+
+    puts
+    puts "RVM installed and it needs to be loaded."
+    puts
+    puts "Please run this:"
+    puts ". #{BASHRC}"
+    exit
+  }
+
+  puts "Installing Ruby build deps"
+  install "build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev"
+
+  adduser USER
+  
+  File.ensure("#{HOME}/.bash_profile", "export environment='production'", nil, UCH)
+  (`crontab -u #{USER} -l`.strip == "").and {
+    puts "Installing default crontab for #{USER}"
+    IO.popen("crontab -u #{USER} -", "w") do |io|
+      io.write CRONTAB
+    end
+  }
+
+  # Set up logrotate
+  conf = "/home/#{USER}/config/logrotate.conf"
+  unless File.exist?(conf)
+    puts "Writing base logrotate.conf for #{USER}"
+    Dir.mkdir(File.dirname(conf), nil, UCH)
+    File.write(conf, "compress\n\n", nil, UCH)
+  end
+
+  Dir.mkdir LOGS, nil, UCH
+  logrotate %Q{
+#{LOGS}/*.log {
+  rotate 10
+  daily
+  missingok
+  dateext
+}
+}
+  # Set up SSHD
+  cfg = "/etc/ssh/sshd_config"
+  contents = cfg.read
+  contents = contents.sub(/^#?PermitRootLogin .+$/, "PermitRootLogin no").
+    sub(/^#?PasswordAuthentication .+$/, "PasswordAuthentication no").
+    sub(/^#?PubkeyAuthentication .+$/, "PubkeyAuthentication yes")
+  File.write(cfg, contents)
+  run "/etc/init.d/ssh reload"
+end # }}}
+
+if ARGV.include?("server") # {{{
+  puts "Checking for jruby"
+  rvm("list rubies").include?("jruby").or { rvm("install jruby") }
+
+  install "openjdk-6-jre-headless"
+
+  as(USER) { rvm_str("rvmrc trust #{HOME}/nebula-server/current/") }
+  as(USER) { "mkdir -p #{LOGS}/server" }
+  run "rm -rf #{HOME}/nebula-server/shared/log"
+  as(USER) { "ln -s #{LOGS}/server #{HOME}/nebula-server/shared/log" }
+
+  logrotate %Q{
+#{LOGS}/server/*.log {
+  rotate 10
+  daily
+  missingok
+  dateext
+  postrotate
+    cd #{HOME}/nebula-server/current/lib/daemon.rb hup
+  endscript
+}
+}
+
+  puts "Adding server launcher to cron"
+  cron "@reboot   source $HOME/.bash_profile && cd $HOME/nebula-server/current && ruby lib/daemon.rb start"
+
+  # Linking munin
+  puts "Linking munin plugins"
+  run("ln -sf " +
+    "#{HOME}/nebula-server/current/script/munin-plugins/counters " +
+    "/etc/munin/plugins/nebula44_counts ")
+  run("ln -sf " +
+    "#{HOME}/nebula-server/current/script/munin-plugins/counters " +
+    "/etc/munin/plugins/nebula44_time ")
+  run("ln -sf " +
+    "#{HOME}/nebula-server/current/script/munin-plugins/logged_in " +
+    "/etc/munin/plugins/nebula44_logged_in ")
+  run("ln -sf " +
+    "#{HOME}/nebula-server/current/script/munin-plugins/memory " +
+    "/etc/munin/plugins/nebula44_mem ")
+  run("/etc/init.d/munin-node restart")
+
+  dbuser, pass = create_mysql("game")
+  File.write("#{HOME}/config/db.game.yml", %Q{---
+production:
+  host: "localhost"
+  database: "#{dbuser}"
+  username: "#{dbuser}"
+  password: "#{pass}"
+}, nil, UCH)
+end # }}}
+
+if ARGV.include?("client") # {{{
+  install "apache2"
+  Dir.mkdir "#{HOME}/nebula-client", nil, UCH
+  apache_vhost("nebula-client", "#{HOME}/nebula-client/current", "static")
+end # }}}
+
+if ARGV.include?("web") # {{{
+  rubyv="ruby-1.9.2" # ruby version
+  rubygs="web" # ruby gemset
+  rvms="#{rubyv}@#{rubygs}"
+  puts "Checking for #{rubyv}"
+  rvm("list rubies").include?(rubyv).or { rvm "install #{rubyv}" }
+  install "libmysqlclient-dev libapache2-mod-php5 php5-mysql php-apc"
+
+  (rvmuse(rvms, "which passenger-install-apache2-module") == "").and {
+    # Passenger build deps
+    install "libcurl4-openssl-dev apache2-prefork-dev libapr1-dev libaprutil1-dev"
+    rvmuse(rvms, "gem install passenger --no-rdoc --no-ri")
+  }
+
+  passenger_load = "/etc/apache2/mods-available/passenger.load"
+  unless passenger_load.exists?
+    puts "Installing passenger apache2 module..."
+    rvmuse(rvms, "passenger-install-apache2-module -a")
+    passenger_dir = Dir["/usr/local/rvm/gems/#{rubyv}-*@#{rubygs}/gems/passenger-*"][0]
+    if passenger_dir.nil?
+      puts "Passenger install failed!"
+      exit
+    else
+      puts "Installing passenger from #{passenger_dir}"
+    end
+    passenger = passenger_dir.split("/")[-1]
+    content = %Q{
+LoadModule passenger_module #{passenger_dir}/ext/apache2/mod_passenger.so
+PassengerRoot #{passenger_dir}
+PassengerRuby #{Dir["/usr/local/rvm/wrappers/#{rubyv}-*@#{rubygs}/ruby"][0]}
+}
+    File.write(passenger_load, content)
+    run "ln -s ../mods-available/passenger.load /etc/apache2/mods-enabled/passenger.load"
+    run "/etc/init.d/apache2 restart"
+  end
+  exit
+
+  as(USER) { rvm_str("rvmrc trust #{HOME}/web/current/.rvmrc") }
+
+  keyfile = "#{HOME}/.ssh/id_rsa"
+  unless keyfile.exists?
+    puts "Creating SSH key"
+    as(USER) { "ssh-keygen -t rsa -f #{keyfile} -q -N ''" } 
+    puts "\n\nYour public key:\n\n"
+    puts File.read("#{keyfile}.pub")
+    puts "\n\n\n"
+  end
+
+  file = "#{HOME}/.ssh/authorized_keys"
+  File.write(file, "") unless File.exists?(file)
+  file.read.include?(SPX_PUBKEY).or {
+    puts "Appending SPX pubkey to authorized keys"
+    file.append("\n#{SPX_PUBKEY}\n")
+  }
+
+  # Forum configuration
+  apache_vhost("nebula-forum", "#{HOME}/web/current/forum", "forum")
+  forum_dbuser, forum_pass = create_mysql("forum")
+  forum_secret = rand_pass(64)
+  forum_cookie = "forum_n44_#{DOMAIN}_#{rand(10000)}"
+  forum_uri = "http://forum.nebula44.#{DOMAIN}"
+  File.write("#{HOME}/config/forum.php", %Q{<?php
+<?php
+
+$db_type = 'mysqli';
+$db_host = 'localhost';
+$db_name = '#{forum_dbuser}';
+$db_username = '#{forum_dbuser}';
+$db_password = '#{forum_pass}';
+$db_prefix = '';
+$p_connect = false;
+
+$base_url = "#{forum_uri}";
+
+$cookie_name = "#{forum_cookie}";
+$cookie_domain = '.nebula44.#{DOMAIN}';
+$cookie_path = '/';
+$cookie_secure = 0;
+
+define('FORUM', 1);
+define('FORUM_API_SECRET_KEY', "#{forum_secret}");
+define('ALLIANCE_FORUMS_CATEGORY', 0);
+define('WEB_URL', "http://nebula44.#{DOMAIN}");
+//define('FORUM_DEBUG', 1);
+}, nil, UCH)
+
+  # WIKI configuration
+  apache_vhost("nebula-wiki", "#{HOME}/web/current/wiki", "wiki")
+  dbuser, pass = create_mysql("wiki")
+  File.write("#{HOME}/config/wiki.php", %Q{<?php
+
+$wgDBtype           = "mysql";
+$wgDBserver         = "localhost";
+$wgDBname           = "#{dbuser}";
+$wgDBuser           = "#{dbuser}";
+$wgDBpassword       = "#{pass}";
+
+$wgSecretKey = "#{rand_pass(64)}";
+$wgLanguageCode = "#{LOCALE}";
+}, nil, UCH)
+
+  # WEB configuration
+  apache_vhost("nebula-web", "#{HOME}/web/current/www/public")
+  apache_vhost("nebula-web-www", "#{HOME}/web/current/www-redirect", "www")
+  dbuser, pass = create_mysql("web")
+  File.write("#{HOME}/config/db.web.yml", %Q{---
+production: &production
+  host: "localhost"
+  adapter: mysql2
+  database: "#{dbuser}"
+  username: "#{dbuser}"
+  password: "#{pass}"
+
+staging:
+  <<: &production
+
+nebula_forum:
+  adapter: mysql2
+  database: "#{forum_dbuser}"
+  username: "#{forum_dbuser}"
+  password: "#{forum_pass}"
+}, nil, UCH)
+
+  File.write("#{HOME}/config/web.rb", %Q{
+FORUM_URI = "#{forum_uri}"
+FORUM_API_KEY = "#{forum_secret}"
+FORUM_COOKIE_NAME = "#{forum_cookie}"
+WIKI_URI = 'http://wiki.nebula44.#{DOMAIN}/wiki/'
+
+# This is used in application controller.
+LOCALE = :#{LOCALE}
+
+# Email configuration
+ActionMailer::Base.default_url_options[:host] = "nebula44.#{DOMAIN}"
+ActionMailer::Base.perform_deliveries = true
+}, nil, UCH)
+
+  as(USER) { "mkdir -p #{LOGS}/web" }
+  run "rm -rf #{HOME}/web/shared/log"
+  as(USER) { "ln -sf #{LOGS}/web #{HOME}/web/shared/log" }
+  logrotate %Q{
+#{LOGS}/web/*.log {
+  rotate 10
+  daily
+  missingok
+  dateext
+  postrotate
+    touch #{HOME}/web/current/tmp/restart.txt
+  endscript
+}
+}
+
+end # }}}
