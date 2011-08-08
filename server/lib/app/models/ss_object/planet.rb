@@ -319,12 +319,14 @@ class SsObject::Planet < SsObject
         Trait::Radar.decrease_vision(zone, old_player) if old_player
         Trait::Radar.increase_vision(zone, new_player) if new_player
       end
+      
+      if building.active?
+        scientist_count += building.scientists \
+          if building.respond_to?(:scientists)
 
-      scientist_count += building.scientists \
-        if building.respond_to?(:scientists)
-
-      max_population_count += building.population \
-        if building.respond_to?(:population)
+        max_population_count += building.population \
+          if building.respond_to?(:population)
+      end
       
       building.reset_cooldown! if building.respond_to?(:reset_cooldown!)
     end

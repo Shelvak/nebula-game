@@ -535,48 +535,86 @@ describe SsObject::Planet do
       end
     end
 
+    describe "transfering attribute", :shared => true do
+      it "should reduce attribute value from previous owner" do
+        lambda do
+          @planet.save!
+          @old.reload
+        end.should change(@old, @attr).by(- @change)
+      end
+
+      it "should increase attribute value for new owner" do
+        lambda do
+          @planet.save!
+          @new.reload
+        end.should change(@new, @attr).by(@change)
+      end
+    end
+    
+    describe "not transfering attribute", :shared => true do
+      it "should reduce attribute value from previous owner" do
+        lambda do
+          @planet.save!
+          @old.reload
+        end.should_not change(@old, @attr)
+      end
+
+      it "should increase attribute value for new owner" do
+        lambda do
+          @planet.save!
+          @new.reload
+        end.should_not change(@new, @attr)
+      end
+    end
+    
     describe "scientists" do
       before(:each) do
         @research_center = Factory.create(:b_research_center,
-          :planet => @planet)
+          opts_active + {:planet => @planet})
         @old.reload
       end
 
       %w{scientists scientists_total}.each do |attr|
-        it "should reduce #{attr} from previous owner" do
-          lambda do
-            @planet.save!
-            @old.reload
-          end.should change(@old, attr).by(- @research_center.scientists)
-        end
+        describe attr do
+          before(:each) do
+            @attr = attr
+            @change = @research_center.scientists
+          end
+          
+          describe "building active" do
+            it_should_behave_like "transfering attribute"
+          end
 
-        it "should increase #{attr} for new owner" do
-          lambda do
-            @planet.save!
-            @new.reload
-          end.should change(@new, attr).by(@research_center.scientists)
+          describe "inactinet ve building" do
+            before(:each) do
+              @research_center.deactivate!
+            end
+            
+            it_should_behave_like "not transfering attribute"
+          end
         end
       end
     end
     
     describe "population_max" do
       before(:each) do
-        @housing = Factory.create(:b_housing, :planet => @planet)
+        @housing = Factory.create(:b_housing, 
+          opts_active + {:planet => @planet})
         @old.reload
+        @attr = :population_max
+        @change = @housing.population
       end
 
-      it "should reduce population_max from previous owner" do
-        lambda do
-          @planet.save!
-          @old.reload
-        end.should change(@old, :population_max).by(- @housing.population)
+      describe "building active" do
+        it_should_behave_like "transfering attribute"
       end
 
-      it "should increase population_max for new owner" do
-        lambda do
-          @planet.save!
-          @new.reload
-        end.should change(@new, :population_max).by(@housing.population)
+      describe "inactive building" do
+        before(:each) do
+          @housing.deactivate!
+        end
+
+        it_should_behave_like "not transfering attribute"
       end
     end
 
