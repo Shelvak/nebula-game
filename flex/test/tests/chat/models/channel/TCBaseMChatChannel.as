@@ -43,7 +43,7 @@ package tests.chat.models.channel
       {
          RM.addResourceBundle(new ChatResourceBundle());
          RM.update();
-         ML.player = new Player();
+         ML.player.reset();
          ML.player.id = 1;
          ML.player.name = "mikism";
          channel = new MChatChannel("galaxy");

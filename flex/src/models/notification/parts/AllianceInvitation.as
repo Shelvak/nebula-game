@@ -91,23 +91,15 @@ package models.notification.parts
       }
       
       
-      public function joinAlliance() : void
-      {
+      public function joinAlliance() : void {
          if (ML.player.canJoinAlliance)
-         {
             new AlliancesCommand(AlliancesCommand.JOIN, new JoinActionParams(_notification.id)).dispatch();
-         }
-         else
-         {
+         else {
             var errorMessage:String = "Unable to join the alliance '" + allianceName + "': "
             if (ML.player.belongsToAlliance)
-            {
                errorMessage += "player belongs to another alliance " + ML.player.allianceId;
-            }
             else
-            {
                errorMessage += "alliance cooldown is in effect until " + ML.player.allianceCooldown.occuresAt;
-            }
             throw new IllegalOperationError(errorMessage);
          }
       }

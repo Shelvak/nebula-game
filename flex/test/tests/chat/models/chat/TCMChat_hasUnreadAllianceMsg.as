@@ -3,7 +3,6 @@ package tests.chat.models.chat
    import models.chat.MChatMember;
    import models.chat.MChatMessage;
    import models.chat.events.MChatEvent;
-   import models.player.Player;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.object.isFalse;
@@ -22,7 +21,7 @@ package tests.chat.models.chat
       public override function setUp() : void
       {
          super.setUp();
-         ML.player = new Player();
+         ML.player.reset();
          ML.player.id = 1;
          ML.player.name = "mikism";
          chat.initialize(

@@ -20,7 +20,7 @@ package tests.chat.models.chat
       public override function setUp() : void
       {
          super.setUp();
-         ML.player = new Player();
+         ML.player.reset();
          ML.player.id = 1;
          ML.player.name = "mikism";
          chat.initialize(

@@ -5,7 +5,6 @@ package tests.models
    import models.ModelLocator;
    import models.galaxy.Galaxy;
    import models.planet.Planet;
-   import models.player.Player;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    
@@ -31,7 +30,7 @@ package tests.models
       public function setUp() : void
       {
          ML = ModelLocator.getInstance();
-         ML.player = new Player();
+         ML.player.reset();
          ML.player.galaxyId = 1;
          ML.latestGalaxy = new Galaxy();
          ML.latestGalaxy.id = ML.player.galaxyId;

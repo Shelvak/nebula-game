@@ -114,12 +114,13 @@ package models
       public var notificationAlerts: ArrayCollection = new ArrayCollection();
       
       
+      [Bindable(event="willNotChange")]
       /**
        * A player. One instance only for the whole application.
        * 
        * @default empty <code>Player</code> instance
-       */      
-      public var player:Player = new Player();
+       */
+      public const player:Player = new Player();
       
       
       /**

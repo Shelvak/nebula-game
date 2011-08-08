@@ -4,7 +4,6 @@ package tests.chat.models
    
    import models.ModelLocator;
    import models.chat.MChatMessage;
-   import models.player.Player;
    
    import org.hamcrest.assertThat;
    
@@ -23,7 +22,7 @@ package tests.chat.models
       [Before]
       public function setUp() : void
       {
-         ML.player = new Player();
+         ML.player.reset();
          ML.player.id = 1;
          message = new MChatMessage();
       };
