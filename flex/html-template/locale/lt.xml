@@ -1091,6 +1091,10 @@
       objektus užtrunkama ilgiau, tačiau yra didesnė tikimybė rasti vertingų
       atradimų.</p>
     </description.startExploration>
+    <title.instantFinish value="Baigti tyrinėjimus"/>
+    <label.instantFinish value="Baigti tyrinėjimus"/>
+    <label.buyCreds value="Pirkti kredus"/>
+    <description.instantFinishCost value="Bagti tyrinėjimus akimirksniu tau kainuos {0 one[? kredą] tens[? kredų] many[? kredus]}."/>
   </Exploration>
 
   <Formatters>

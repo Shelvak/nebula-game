@@ -1095,6 +1095,10 @@
         something worthy of your time. 
       </p>
     </description.startExploration>
+    <title.instantFinish value="Finish exploring"/>
+    <label.instantFinish value="Finish exploring"/>
+    <label.buyCreds value="Buy creds"/>
+    <description.instantFinishCost value="It would cost you {0} creds to instantly finish exploring."/>
   </Exploration>
 
   <Formatters>

@@ -406,14 +406,16 @@ package controllers.startup
             new controllers.solarsystems.actions.ShowAction()
          );
       }
-      private static function bindPlanetCommands() : void
-      {
-         bindPair(PlanetsCommand.SHOW, new controllers.planets.actions.ShowAction());
-         bindPair(PlanetsCommand.EDIT, new controllers.planets.actions.EditAction());
-         bindPair(PlanetsCommand.BOOST, new controllers.planets.actions.BoostAction());
-         bindPair(PlanetsCommand.PLAYER_INDEX, new PlayerIndexAction());
-         bindPair(PlanetsCommand.EXPLORE, new ExploreAction());
-         bindPair(PlanetsCommand.PORTAL_UNITS, new PortalUnitsAction());
+      private static function bindPlanetCommands() : void {
+         with (PlanetsCommand) {
+            bindPair(SHOW, new controllers.planets.actions.ShowAction());
+            bindPair(EDIT, new controllers.planets.actions.EditAction());
+            bindPair(BOOST, new controllers.planets.actions.BoostAction());
+            bindPair(PLAYER_INDEX, new PlayerIndexAction());
+            bindPair(EXPLORE, new ExploreAction());
+            bindPair(FINISH_EXPLORATION, new FinishExplorationAction());
+            bindPair(PORTAL_UNITS, new PortalUnitsAction());
+         }
       }
       
       /**
