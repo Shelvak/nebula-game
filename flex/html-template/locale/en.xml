@@ -1790,7 +1790,7 @@
     <!-- ANNEX_PLANET
     0: count of planets to occupy -->
     <objectiveText.AnnexPlanet.npc>
-    <p>Occupy {0 one[neutral planet] many[? neutral planets]}</p>
+    <p>Colonize {0 one[one planet] many[? planets]}</p>
     </objectiveText.AnnexPlanet.npc>
     <objectiveText.AnnexPlanet.enemy>
     <p>Occupy {0 one[enemy planet] many[? enemy planets]}</p>

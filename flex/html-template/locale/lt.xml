@@ -1791,8 +1791,8 @@
     <!-- ANNEX_PLANET
     0: count of planets to occupy -->
     <objectiveText.AnnexPlanet.npc>
-    <p>Užkariauk {0 one[neutralią planetą] 1sts[? neutralią planetą] 
-    tens[? neutralių planetų] many[? neutralias planetas]}</p>
+    <p>Kolonizuok {0 one[vieną planetą] 1sts[? planetą] 
+    tens[? planetų] many[? planetas]}</p>
     </objectiveText.AnnexPlanet.npc>
     <objectiveText.AnnexPlanet.enemy>
     <p>Užkariauk {0 one[priešo planetą] 1sts[? priešo planetą] 

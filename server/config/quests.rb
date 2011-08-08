@@ -319,7 +319,7 @@ definition = QuestDefinition.define(:debug => false) do
       end
     end
   end.define(20, "colonization") do
-    annex_planet :npc => true
+    annex_planet
 
     reward_unit Unit::Mule
     reward_unit Unit::Mdh
@@ -485,11 +485,13 @@ definition = QuestDefinition.define(:debug => false) do
         reward_unit Unit::Cyrix, :count => 6, :level => 5
       end
 
-      q2.define(65) do
-        annex_planet :npc => false
-
-        reward_unit Unit::Scorpion, :level => 5, :count => 2
-      end
+      # Disabled for now because of changes in planets annexing. Needs
+      # to be separated into other objective.
+#      q2.define(65) do
+#        annex_planet :npc => false
+#
+#        reward_unit Unit::Scorpion, :level => 5, :count => 2
+#      end
     end
   end
 
