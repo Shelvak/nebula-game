@@ -4,6 +4,11 @@ USER = "spacegame"
 DOMAIN = "lt" # In what ending does your domain end
 LOCALE = "lt" # Your locale.
 
+FORUM_LANGS = {
+  "en" => "English",
+  "lt" => "Lithuanian"
+}
+
 # Configuration {{{
 ARTURAZ_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAvQixOdHtH572+yAkRxyDNdo/Q6BLyhUrAtw1E9oOEg6VtECFEEUbQijncU0iMerPpyjbzboX2bGRvA9LRwJEoSrW4pDGV3KTMIUpIMdZzt0n49HsCja8+03++B0HBEjbpeqql9EMDOfTjXQqIE78WNFCsPEBxyKRQDdUQyfXo2f1/0k/WKUScASj3zfTdUKWZPDiuqwVB+v0uR+8n/5dkGaviBxH1Uji82y5c1o+Xpn872FaiJyEtsOfZWS1AN8YKbNL3MZJ+S+bJeCNM3wg7zF0Y1BVXqQrDME2IUhekR5XpkO0UfIcPRZmIKCjl4x//URcNbcT6ihLu/cRru2xcQ== arturaz"
 SPX_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAw8jm0NLEJc5JOXxXLmSj6AOBeH5M6I1FPy2xFOOp/Kfer9GLzTSU8yegMEkOTIuVNN/arLxGzZ7w4y90WngrHUoZXGS5XxolaBrV6CSmiI1QAwMUTGLGwo23yeKYF5gUmIUm0uvrncvDf46JakBSRCWzwfIY86XpfqE6zudCBlEwBhu1lmDLwnsFUMoSeFdevHwYd1vjCtu9p/9wbugFqa064Lo+4NRMpGTN2OtqdTOkfO1ap7a3TA6L4tpOuZOQmea+zE+nbVyNbCrQNWaEQkNd4faTIkL+MMxqKZ7dX7ka3PiyWAgFnhKTxYLN5utX+Pu2pVCxTNwnpP8KZH3U3Q== spx@spx-desktop"
@@ -268,7 +273,7 @@ def apache_vhost(vhost, path, hostname="")
   CustomLog #{LOGS}/#{vhost}.access.log common
 </VirtualHost>
 })
-  run "ln -sf ../sites-available/#{vhost} /etc/apache2/sites-enabled/#{vhost}"
+  run "a2ensite #{vhost}"
   run "/etc/init.d/apache2 reload"
 end
 
@@ -346,6 +351,13 @@ class File
     file = new(name, "w")
     file.write(c)
     file.close
+  end
+
+  def self.modify(name)
+    modified = yield File.read(name)
+    File.open(name, "w") do |file|
+      file.write(modified)
+    end
   end
 
   def self.ensure(name, content, mode=nil, owner=nil)
@@ -452,10 +464,11 @@ deb-src http://repo.percona.com/apt lucid main")
     run(rvminst)
     File.unlink(rvminst)
 
-    bashrc = File.read(BASHRC)
-    bashrc.sub!(%Q{[ -z "$PS1" ] && return}, %Q{if [ -z "$PS1" ]; then})
-    bashrc += %Q{\nfi\n\n[[ -s "/usr/local/rvm/scripts/rvm" ]] && . "/usr/local/rvm/scripts/rvm"}
-    File.write(BASHRC, bashrc)
+    File.modify(BASHRC) do |bashrc|
+      bashrc.sub!(%Q{[ -z "$PS1" ] && return}, %Q{if [ -z "$PS1" ]; then})
+      bashrc += %Q{\nfi\n\n[[ -s "/usr/local/rvm/scripts/rvm" ]] && . "/usr/local/rvm/scripts/rvm"}
+      bashrc
+    end
 
     puts
     puts "RVM installed and it needs to be loaded."
@@ -469,8 +482,11 @@ deb-src http://repo.percona.com/apt lucid main")
   install "build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev"
 
   adduser USER
+  run "addgroup www-shared"
+  run "adduser www-data www-shared"
+  run "adduser #{USER} www-shared"
   
-  File.ensure("#{HOME}/.bash_profile", "export environment='production'", nil, UCH)
+  File.ensure("#{HOME}/.profile", "export environment='production'", nil, UCH)
   (`crontab -u #{USER} -l`.strip == "").and {
     puts "Installing default crontab for #{USER}"
     IO.popen("crontab -u #{USER} -", "w") do |io|
@@ -496,12 +512,11 @@ deb-src http://repo.percona.com/apt lucid main")
 }
 }
   # Set up SSHD
-  cfg = "/etc/ssh/sshd_config"
-  contents = cfg.read
-  contents = contents.sub(/^#?PermitRootLogin .+$/, "PermitRootLogin no").
-    sub(/^#?PasswordAuthentication .+$/, "PasswordAuthentication no").
-    sub(/^#?PubkeyAuthentication .+$/, "PubkeyAuthentication yes")
-  File.write(cfg, contents)
+  File.modify("/etc/ssh/sshd_config") do |contents|
+    contents.sub(/^#?PermitRootLogin .+$/, "PermitRootLogin no").
+      sub(/^#?PasswordAuthentication .+$/, "PasswordAuthentication no").
+      sub(/^#?PubkeyAuthentication .+$/, "PubkeyAuthentication yes")
+  end
   run "/etc/init.d/ssh reload"
 end # }}}
 
@@ -529,7 +544,7 @@ if ARGV.include?("server") # {{{
 }
 
   puts "Adding server launcher to cron"
-  cron "@reboot   source $HOME/.bash_profile && cd $HOME/nebula-server/current && ruby lib/daemon.rb start"
+  cron "@reboot   source $HOME/.profile && cd $HOME/nebula-server/current && ruby lib/daemon.rb start"
 
   # Linking munin
   puts "Linking munin plugins"
@@ -569,7 +584,26 @@ if ARGV.include?("web") # {{{
   rvms="#{rubyv}@#{rubygs}"
   puts "Checking for #{rubyv}"
   rvm("list rubies").include?(rubyv).or { rvm "install #{rubyv}" }
-  install "libmysqlclient-dev libapache2-mod-php5 php5-mysql php-apc"
+  File.ensure("#{HOME}/.profile", "export RAILS_ENV='production'", nil, UCH)
+
+  # Set up php
+  install "libmysqlclient-dev libapache2-mod-php5 php5-mysql php-apc " +
+    "php5-cli imagemagick php5-intl libapache2-mod-xsendfile"
+
+  File.modify("/etc/php5/apache2/php.ini") do |content|
+    content.sub(/^memory_limit = .+$/, "memory_limit = 512M").
+      sub(/^upload_max_filesize = .+$/, "upload_max_filesize = 5M").
+      sub(/^post_max_size = .+$/, "post_max_size = 8M")
+  end
+
+  # Enable xsendfile for avatars
+  File.write("/etc/apache2/mods-available/xsendfile.conf", %Q{
+# http://www.qc4blog.com/?p=547
+XSendFile On
+# http://www.qc4blog.com/?p=555
+XSendFileAllowAbove on
+})
+  run "a2enmod rewrite xsendfile"
 
   (rvmuse(rvms, "which passenger-install-apache2-module") == "").and {
     # Passenger build deps
@@ -595,10 +629,8 @@ PassengerRoot #{passenger_dir}
 PassengerRuby #{Dir["/usr/local/rvm/wrappers/#{rubyv}-*@#{rubygs}/ruby"][0]}
 }
     File.write(passenger_load, content)
-    run "ln -s ../mods-available/passenger.load /etc/apache2/mods-enabled/passenger.load"
-    run "/etc/init.d/apache2 restart"
+    run "a2enmod passenger"
   end
-  exit
 
   as(USER) { rvm_str("rvmrc trust #{HOME}/web/current/.rvmrc") }
 
@@ -625,7 +657,6 @@ PassengerRuby #{Dir["/usr/local/rvm/wrappers/#{rubyv}-*@#{rubygs}/ruby"][0]}
   forum_cookie = "forum_n44_#{DOMAIN}_#{rand(10000)}"
   forum_uri = "http://forum.nebula44.#{DOMAIN}"
   File.write("#{HOME}/config/forum.php", %Q{<?php
-<?php
 
 $db_type = 'mysqli';
 $db_host = 'localhost';
@@ -644,10 +675,17 @@ $cookie_secure = 0;
 
 define('FORUM', 1);
 define('FORUM_API_SECRET_KEY', "#{forum_secret}");
-define('ALLIANCE_FORUMS_CATEGORY', 0);
+define('ALLIANCE_FORUMS_CATEGORY', 1);
 define('WEB_URL', "http://nebula44.#{DOMAIN}");
+define('DEFAULT_LANGUAGE', "#{FORUM_LANGS[LOCALE]}");
 //define('FORUM_DEBUG', 1);
 }, nil, UCH)
+
+  %w{cache attachments}.each do |dir|
+    as(USER) { "mkdir -p #{HOME}/web/shared/forum/#{dir}" }
+    run "chown #{USER}:www-shared #{HOME}/web/shared/forum/#{dir}"
+    run "chmod 775 #{HOME}/web/shared/forum/#{dir}"
+  end
 
   # WIKI configuration
   apache_vhost("nebula-wiki", "#{HOME}/web/current/wiki", "wiki")
@@ -662,6 +700,7 @@ $wgDBpassword       = "#{pass}";
 
 $wgSecretKey = "#{rand_pass(64)}";
 $wgLanguageCode = "#{LOCALE}";
+$webUrl = "http://nebula44.#{DOMAIN}";
 }, nil, UCH)
 
   # WEB configuration
@@ -691,6 +730,7 @@ FORUM_URI = "#{forum_uri}"
 FORUM_API_KEY = "#{forum_secret}"
 FORUM_COOKIE_NAME = "#{forum_cookie}"
 WIKI_URI = 'http://wiki.nebula44.#{DOMAIN}/wiki/'
+NEWS_FORUM_ID = 2
 
 # This is used in application controller.
 LOCALE = :#{LOCALE}
@@ -715,4 +755,5 @@ ActionMailer::Base.perform_deliveries = true
 }
 }
 
+  run "/etc/init.d/apache2 restart"
 end # }}}
