@@ -5,7 +5,6 @@ package tests.chat.models.chat
    
    import models.chat.MChatChannelPrivate;
    import models.chat.MChatMember;
-   import models.player.Player;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
@@ -33,7 +32,7 @@ package tests.chat.models.chat
       public override function setUp() : void
       {
          super.setUp();
-         ML.player = new Player();
+         ML.player.reset();
          ML.player.id = 1;
          ML.player.name = "mikism";
          player = makeMember(ML.player.id, ML.player.name);

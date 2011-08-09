@@ -449,6 +449,8 @@
       <p>Paspausk ant tuščios žemėlapio vietos, jog įeitum į statybų 
       režimą.</p>
     </message.pressOnEmpty>
+    <panelTitle.scientists value="Mokslininkai" />
+    <message.scientistsNotAvailable value="Pastatas yra tobulinimas, jame dirbantys mokslininkai yra nepasiekiami.""/>
     <warning.buildingWorking>
       <p>Jeigu liepsi šiam pastatui susinaikinti, tada tai, 
       ką stato šis pastatas, bus taip pat sunaikinta.</p>
@@ -1129,6 +1131,12 @@
       objektus užtrunkama ilgiau, tačiau yra didesnė tikimybė rasti vertingų
       atradimų.</p>
     </description.startExploration>
+    <title.instantFinish value="Baigti tyrinėjimus"/>
+    <label.instantFinish value="Baigti tyrinėjimus"/>
+    <label.buyCreds value="Pirkti kredus"/>
+    <description.instantFinishCost>
+    <![CDATA[Bagti tyrinėjimus akimirksniu tau kainuos <span fontWeight="bold">{0 one[? kredą] tens[? kredų] many[? kredus]}</span>.]]>
+    </description.instantFinishCost>
   </Exploration>
 
   <Formatters>

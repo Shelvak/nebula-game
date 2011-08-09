@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
-             xmlns:s="library://ns.adobe.com/flex/spark" 
-             minWidth="21" minHeight="21" mouseEnabled="false" xmlns:animation="animation.*" xmlns:base="components.base.*" xmlns:credits="components.credits.*">
+             xmlns:s="library://ns.adobe.com/flex/spark"
+             xmlns:animation="animation.*"
+             xmlns:base="components.base.*"
+             xmlns:credits="components.credits.*"
+             minWidth="21" minHeight="21" mouseEnabled="false">
    
    <!-- host component -->
    <fx:Metadata>

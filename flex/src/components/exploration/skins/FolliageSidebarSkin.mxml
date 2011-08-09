@@ -17,10 +17,14 @@
       <s:State name="planetNotOwned" />
    </s:states>
    
-   <base:Panel id="pnlPanel" left="0" right="0" top="0" bottom="0">
+   <s:layout>
+      <s:VerticalLayout gap="5" horizontalAlign="justify" paddingBottom="6"/>
+   </s:layout>
+   
+   <base:Panel id="pnlPanel">
       <base:layout>
          <s:VerticalLayout horizontalAlign="justify"
-                           paddingLeft="5" paddingRight="0" paddingTop="5" paddingBottom="0"/>
+                           paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="0"/>
       </base:layout>
       <s:Label id="lblDescription"/>
       <base:ImageAndLabel id="lblScientistsNeeded" includeIn="startExploration"/>
@@ -38,6 +42,18 @@
          </s:layout>
       </s:Group>
       <base:Warning id="warning" left="6" right="6" top="6" includeIn="planetNotOwned"/>
+   </base:Panel>
+   
+   <base:Panel id="pnlInstantFinishPanel" includeIn="explorationUderway">
+      <base:layout>
+         <s:VerticalLayout horizontalAlign="justify"
+                           paddingLeft="5" paddingRight="0" paddingTop="5" paddingBottom="0"/>
+      </base:layout>
+      <s:Group><s:RichText id="txtInstantFinishCost" left="0" right="0" lineBreak="toFit"/></s:Group>
+      <s:Group>
+         <s:Button right="0" id="btnBuyCreds" skinClass="components.skins.CreditButtonSkin"/>
+         <s:Button right="0" id="btnInstantFinish"/>
+      </s:Group>
    </base:Panel>
    
 </s:Skin>

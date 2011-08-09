@@ -450,6 +450,8 @@
     <message.pressOnEmpty>
       <p>Click on empty map space to enter building construction mode</p>
     </message.pressOnEmpty>
+    <panelTitle.scientists value="Scientists" />
+    <message.scientistsNotAvailable value="This building is currently upgrading and its scientists are unavailable."/>
     <warning.buildingWorking>
       <p>Anything this building is constructing will be destroyed if you 
       initiate self-destruct on this building.</p>
@@ -1128,6 +1130,12 @@
         something worthy of your time. 
       </p>
     </description.startExploration>
+    <title.instantFinish value="Finish exploring"/>
+    <label.instantFinish value="Finish exploring"/>
+    <label.buyCreds value="Buy creds"/>
+    <description.instantFinishCost>
+    <![CDATA[It will cost you <span fontWeight="bold">{0}</span> creds to instantly finish exploring.]]>
+    </description.instantFinishCost>
   </Exploration>
 
   <Formatters>

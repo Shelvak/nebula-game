@@ -32,7 +32,7 @@ package controllers.units
    import mx.events.CollectionEventKind;
    import mx.events.PropertyChangeEvent;
    
-   import namespaces.property_name;
+   import namespaces.prop_name;
    
    import utils.Objects;
    import utils.SingletonFactory;
@@ -85,7 +85,7 @@ package controllers.units
       }
       
       
-      property_name static const flag_disableOrderPopup:String = "flag_disableOrderPopup";
+      prop_name static const flag_disableOrderPopup:String = "flag_disableOrderPopup";
       [Bindable]
       /**
        * Indicates if order popup should be disabled in all maps.

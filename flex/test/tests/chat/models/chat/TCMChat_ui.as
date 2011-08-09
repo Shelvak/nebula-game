@@ -4,17 +4,10 @@ package tests.chat.models.chat
    
    import models.chat.MChat;
    import models.chat.MChatChannel;
-   import models.chat.MChatChannelPublic;
-   import models.chat.MChatMember;
    import models.chat.MChatMessage;
    import models.chat.events.MChatEvent;
-   import models.events.BaseModelEvent;
-   import models.player.Player;
    
    import org.hamcrest.assertThat;
-   import org.hamcrest.collection.arrayWithSize;
-   import org.hamcrest.core.isA;
-   import org.hamcrest.object.hasProperty;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
    import org.hamcrest.object.notNullValue;
@@ -33,7 +26,7 @@ package tests.chat.models.chat
       public override function setUp() : void
       {
          super.setUp();
-         ML.player = new Player();
+         ML.player.reset();
          ML.player.id = 1;
          ML.player.name = "mikism";
          chat.initialize(

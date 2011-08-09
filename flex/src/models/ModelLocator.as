@@ -25,6 +25,8 @@ package models
    
    import mx.collections.ArrayCollection;
    
+   import namespaces.prop_name;
+   
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
    
@@ -114,12 +116,13 @@ package models
       public var notificationAlerts: ArrayCollection = new ArrayCollection();
       
       
+      [Bindable(event="willNotChange")]
       /**
        * A player. One instance only for the whole application.
        * 
        * @default empty <code>Player</code> instance
-       */      
-      public var player:Player = new Player();
+       */
+      public const player:Player = new Player();
       
       
       /**
@@ -178,18 +181,16 @@ package models
       }
       
       
+      prop_name static const latestPlanet:String = "latestPlanet"; 
       private var _latestPlanet:Planet = null;
       /**
        * A solar system that user is acting in at the time (or recently was).
        * 
        * @default null
        */
-      public function set latestPlanet(value:Planet) : void
-      {
-         if (_latestPlanet != value)
-         {
-            if (_latestPlanet)
-            {
+      public function set latestPlanet(value:Planet) : void {
+         if (_latestPlanet != value) {
+            if (_latestPlanet) {
                NAV_CTRL.destroyOldMap(MainAreaScreens.PLANET);
                _latestPlanet.setFlag_destructionPending()
                _latestPlanet.cleanup();
@@ -201,8 +202,7 @@ package models
       /**
        * @private
        */
-      public function get latestPlanet() : Planet
-      {
+      public function get latestPlanet() : Planet {
          return _latestPlanet;
       }
       
@@ -286,6 +286,7 @@ package models
       public var selectedBuilding:Building = null;
       
       
+      prop_name static const selectedFolliange:String = "selectedFolliage";
       /**
        * A blocking folliage currently selected. <code>selectedBuilding</code> and
        * <code>selectedBlockingFolliage</code> are mutually exclusive.

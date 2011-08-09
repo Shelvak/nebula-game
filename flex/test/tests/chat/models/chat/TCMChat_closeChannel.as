@@ -2,12 +2,9 @@ package tests.chat.models.chat
 {
    import ext.hamcrest.object.equals;
    
-   import models.player.Player;
-   
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
    import org.hamcrest.collection.hasItem;
-   import org.hamcrest.core.allOf;
    import org.hamcrest.core.not;
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.notNullValue;
@@ -27,7 +24,7 @@ package tests.chat.models.chat
       public override function setUp() : void
       {
          super.setUp();
-         ML.player = new Player();
+         ML.player.reset();
          ML.player.id = 1;
          ML.player.name = "mikism";
          chat.initialize(

@@ -30,6 +30,8 @@ package models.solarsystem
    import models.solarsystem.events.SSObjectEvent;
    import models.tile.TerrainType;
    
+   import namespaces.prop_name;
+   
    import utils.DateUtil;
    import utils.MathUtil;
    import utils.NameResolver;
@@ -45,7 +47,6 @@ package models.solarsystem
     */
    [Event(name="playerChange", type="models.solarsystem.events.SSObjectEvent")]
    
-   
    /**
     * Dispatched when <code>owner</code> property changes.
     * 
@@ -53,14 +54,12 @@ package models.solarsystem
     */
    [Event(name="ownerChange", type="models.solarsystem.events.SSObjectEvent")]
    
-   
    /**
     * Dispatched when <code>cooldown</code> property changes.
     * 
     * @eventType models.solarsystem.events.SSObjectEvent.COOLDOWN_CHANGE
     */
    [Event(name="cooldownChange", type="models.solarsystem.events.SSObjectEvent")]
-   
    
    public class MSSObject extends BaseModel implements IMStaticSpaceObject, ICleanable
    {
@@ -73,17 +72,13 @@ package models.solarsystem
        * 
        * @return variation of a solar system object with given properties
        */
-      public static function getVariation(id:int, type:String, terrain:int) : int
-      {
+      public static function getVariation(id:int, type:String, terrain:int) : int {
          var key:String = "ui.ssObject." + StringUtil.firstToLowerCase(type);
          if (type == SSObjectType.PLANET)
-         {
             key += "." + terrain;
-         }
          key += ".variations";
          return id % Config.getValue(key);
       }
-      
       
       /**
        * Returns image of a solar system object of given type, terrain and with given id.
@@ -94,23 +89,18 @@ package models.solarsystem
        * 
        * @return image of a solar system object with given properties
        */
-      public static function getImageData(id:int, type:String, terrain:int) : BitmapData
-      {
+      public static function getImageData(id:int, type:String, terrain:int) : BitmapData {
          var key:String = "";
          if (type == SSObjectType.PLANET)
-         {
             key += terrain + "/";
-         }
          key += getVariation(id, type, terrain).toString();
          return IMG.getImage(AssetNames.getSSObjectImageName(type, key));
       }
-      
       
       /**
        * Original width of an object image.
        */
       public static const IMAGE_WIDTH: Number = 200;
-      
       
       /**
        * Original height of an object image.
@@ -118,21 +108,17 @@ package models.solarsystem
       public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;      
       
       
-      private static function get NAV_CTRL() : NavigationController
-      {
+      private function get NAV_CTRL() : NavigationController {
          return NavigationController.getInstance();
       }
       
       
-      public function MSSObject()
-      {
+      public function MSSObject() {
          super();
          registerOrUnregisterTimedUpdateHandler();
       }
       
-      
-      public function cleanup() : void
-      {
+      public function cleanup() : void {
          unregisterTimedUpdateHandler();
       }
       
@@ -148,15 +134,12 @@ package models.solarsystem
        */
       public var solarSystemId:int = 0;
       
-      
       /**
        * Idicates if this <code>MSSObject</code> in a battleground solar system.
        */
-      public function get inBattleground() : Boolean
-      {
+      public function get inBattleground() : Boolean {
          return ML.latestGalaxy.battlegroundId == solarSystemId;
       }
-      
       
       private var _name:String = "";
       [Optional]
@@ -170,29 +153,17 @@ package models.solarsystem
        * 
        * @default empty string
        */
-      public function set name(value:String) : void
-      {
-         if (isPlanet)
-         {
-            _name = value;
-         }
+      public function set name(value:String) : void {
+         if (isPlanet) _name = value;
       }
       /**
        * @private
        */
-      public function get name() : String
-      {
-         if (isPlanet)
-         {
-            return _name;
-         }
-         if (isAsteroid)
-         {
-            return NameResolver.resolveAsteroid(id);
-         }
+      public function get name() : String {
+         if (isPlanet)   return _name;
+         if (isAsteroid) return NameResolver.resolveAsteroid(id);
          return NameResolver.resolveJumpgate(id);
       }
-      
       
       [SkipProperty]
       [Optional]
@@ -209,7 +180,6 @@ package models.solarsystem
        */
       public var terrain:int = TerrainType.GRASS;
       
-      
       [SkipProperty]
       [Required]
       /**
@@ -224,7 +194,6 @@ package models.solarsystem
        */
       public var size:Number = 100;
       
-      
       [SkipProperty]
       [Optional]
       /**
@@ -237,7 +206,6 @@ package models.solarsystem
        * @default 0
        */
       public var width:int = 0;
-      
       
       [SkipProperty]
       [Optional]
@@ -252,29 +220,19 @@ package models.solarsystem
        */
       public var height:int = 0;
       
-      
       [Bindable(event="willNotChange")]
-      public function get isNavigable() : Boolean
-      {
+      public function get isNavigable() : Boolean {
          return isJumpgate || viewable;
       }
       
-      
-      public function navigateTo() : void
-      {
+      public function navigateTo() : void {
          if (isJumpgate)
-         {
             NAV_CTRL.toGalaxy();
-         }
          else if (isPlanet)
-         {
             NAV_CTRL.toPlanet(this);
-         }
          else
-         {
             throw new IllegalOperationError("Only objects of SSObjectType.PLANET and SSObjectType.JUMPGATE " +
                                             "type support this method");
-         }
       }
       
       
@@ -282,12 +240,9 @@ package models.solarsystem
       /* ### TYPE ### */
       /* ############ */
       
-      
-      public function get objectType() : int
-      {
+      public function get objectType() : int {
          return MMapSpace.STATIC_OBJECT_NATURAL;
       }
-      
       
       private var _type:String = SSObjectType.PLANET;
       [SkipProperty]
@@ -303,10 +258,8 @@ package models.solarsystem
        * 
        * @default <code>SSObjectType.PLANET</code>
        */
-      public function set type(value:String) : void
-      {
-         if (_type != value)
-         {
+      public function set type(value:String) : void {
+         if (_type != value) {
             _type = value;
             registerOrUnregisterTimedUpdateHandler();
          }
@@ -314,8 +267,7 @@ package models.solarsystem
       /**
        * @private
        */
-      public function get type() : String
-      {
+      public function get type() : String {
          return _type;
       }
       
@@ -330,11 +282,9 @@ package models.solarsystem
        * 
        * @see SSObjectType#getLocalizedName()
        */
-      public function get typeName() : String
-      {
+      public function get typeName() : String {
          return SSObjectType.getLocalizedName(type);
       }
-      
       
       private var _viewable:Boolean = false;
       [Optional]
@@ -347,54 +297,44 @@ package models.solarsystem
        * [Optional]<br/>
        * [Bindable]</i></p>
        */
-      public function set viewable(value:Boolean) : void
-      {
-         if (_viewable != value)
-         {
+      public function set viewable(value:Boolean) : void {
+         if (_viewable != value) {
             _viewable = value;
          }
       }
       /**
        * @private
        */
-      public function get viewable() : Boolean
-      {
+      public function get viewable() : Boolean {
          return _viewable;
       }
       
-      
       [Bindable(event="willNotChange")]
       /**
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="willNotChange")]</i></p>
        */
-      public function get isPlanet() : Boolean
-      {
+      public function get isPlanet() : Boolean {
          return type == SSObjectType.PLANET;
       }
       
-      
       [Bindable(event="willNotChange")]
       /**
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="willNotChange")]</i></p>
        */
-      public function get isAsteroid() : Boolean
-      {
+      public function get isAsteroid() : Boolean {
          return type == SSObjectType.ASTEROID;
       }
       
-      
       [Bindable(event="willNotChange")]
       /**
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="willNotChange")]</i></p>
        */
-      public function get isJumpgate() : Boolean
-      {
+      public function get isJumpgate() : Boolean {
          return type == SSObjectType.JUMPGATE;
       }
-      
       
       [Bindable(event="willNotChange")]
       /**
@@ -403,27 +343,20 @@ package models.solarsystem
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="willNotChange")]</i></p>
        */
-      public function get variation() : int
-      {
+      public function get variation() : int {
          return getVariation(id, type, terrain);
       }
       
-      
       [Bindable(event="willNotChange")]
-      public function get imageData() : BitmapData
-      {
+      public function get imageData() : BitmapData {
          return getImageData(id, type, terrain);
       }
       
-      
-      public function get componentWidth() : int
-      {
+      public function get componentWidth() : int {
          return IMAGE_WIDTH * size / 100;
       }
       
-      
-      public function get componentHeight() : int
-      {
+      public function get componentHeight() : int {
          return IMAGE_HEIGHT * size / 100;
       }
       
@@ -431,7 +364,6 @@ package models.solarsystem
       /* ################ */
       /* ### LOCATION ### */
       /* ################ */
-      
       
       [SkipProperty]
       [Required]
@@ -448,7 +380,6 @@ package models.solarsystem
        */
       public var position:int = 0;
       
-      
       [SkipProperty]
       [Required]
       [Bindable(event="willNotChange")]
@@ -464,13 +395,10 @@ package models.solarsystem
        */
       public var angle:Number = 0;
       
-      
       private var _currentLocation:LocationMinimal
       [Bindable(event="willNotChange")]
-      public function get currentLocation() : LocationMinimal
-      {
-         if (!_currentLocation)
-         {
+      public function get currentLocation() : LocationMinimal {
+         if (!_currentLocation) {
             var loc:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
             loc.location = new LocationMinimal();
             loc.id = solarSystemId;
@@ -482,15 +410,12 @@ package models.solarsystem
          return _currentLocation;
       }
       
-      
       /**
        * Same as <code>angle</code> just measured in radians. 
        */	   
-      public function get angleRadians() : Number
-      {
+      public function get angleRadians() : Number {
          return MathUtil.degreesToRadians(angle);
       }
-      
       
       [Bindable(event="willNotChange")]
       /**
@@ -500,20 +425,15 @@ package models.solarsystem
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="willNotChange")]</i></p>
        */
-      public function get sectorName() : String
-      {
+      public function get sectorName() : String {
          return Localizer.string("SSObjects", "location.sector", [position, angle]);
       }
       
-      
       private var _toLocationCache:Location;
-      public function toLocation(): Location
-      {
-         if (_toLocationCache == null)
-         {
+      public function toLocation(): Location {
+         if (_toLocationCache == null) {
             _toLocationCache = new Location();
-            with (_toLocationCache)
-            {
+            with (_toLocationCache) {
                id            = this.id;
                type          = LocationType.SS_OBJECT;
                variation     = this.variation;
@@ -530,7 +450,7 @@ package models.solarsystem
       /* ### OWNER ### */
       /* ############# */
       
-      
+      prop_name static const owner:String = "owner";
       private var _owner:int = Owner.UNDEFINED;
       [Optional(alias="status")]
       [Bindable(event="ownerChange")]
@@ -543,23 +463,20 @@ package models.solarsystem
        * [Bindable(event="ownerChange")]
        * </p>
        */
-      public function set owner(value:int) : void
-      {
-         if (_owner != value)
-         {
+      public function set owner(value:int) : void {
+         if (_owner != value) {
             _owner = value;
             dispatchSimpleEvent(SSObjectEvent, SSObjectEvent.OWNER_CHANGE);
-            dispatchPropertyUpdateEvent("owner", _owner);
-            dispatchPropertyUpdateEvent("isOwned", isOwned);
-            dispatchPropertyUpdateEvent("ownerIsPlayer", ownerIsPlayer);
+            dispatchPropertyUpdateEvent(prop_name::owner, _owner);
+            dispatchPropertyUpdateEvent(prop_name::isOwned, isOwned);
+            dispatchPropertyUpdateEvent(prop_name::ownerIsPlayer, ownerIsPlayer);
             registerOrUnregisterTimedUpdateHandler();
          }
       }
       /**
        * @private
        */
-      public function get owner() : int
-      {
+      public function get owner() : int {
          return _owner;
       }
       
@@ -576,10 +493,8 @@ package models.solarsystem
        * 
        * @default null
        */
-      public function set player(value:PlayerMinimal) : void
-      {
-         if (_player != value)
-         {
+      public function set player(value:PlayerMinimal) : void {
+         if (_player != value) {
             _player = value;
             dispatchSimpleEvent(SSObjectEvent, SSObjectEvent.PLAYER_CHANGE);
             dispatchPropertyUpdateEvent("player", player);
@@ -588,12 +503,12 @@ package models.solarsystem
       /**
        * @private
        */
-      public function get player() : PlayerMinimal
-      {
+      public function get player() : PlayerMinimal {
          return _player;
       }
       
       
+      prop_name static const isOwned:String = "isOwned";
       [Bindable(event="ownerChange")]
       /**
        * Indicates if a planet is owned by someone.
@@ -603,12 +518,12 @@ package models.solarsystem
        * 
        * @default false 
        */
-      public function get isOwned() : Boolean
-      {
+      public function get isOwned() : Boolean {
          return _owner != Owner.UNDEFINED;
       }
       
       
+      prop_name static const ownerIsPlayer:String = "ownerIsPlayer";
       [Bindable(event="ownerChange")]
       /**
        * Indicates if a planet belongs to the player.
@@ -616,8 +531,7 @@ package models.solarsystem
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="ownerChange")]</i></p>
        */
-      public function get ownerIsPlayer() : Boolean
-      {
+      public function get ownerIsPlayer() : Boolean {
          return _owner == Owner.PLAYER;
       }
       
@@ -628,8 +542,7 @@ package models.solarsystem
        * [Bindable(event="playerChange")]
        * </p>
        */
-      public function get canInviteOwnerToAlliance() : Boolean
-      {
+      public function get canInviteOwnerToAlliance() : Boolean {
          return isOwned &&
                !inBattleground &&
                !ownerIsAlly &&
@@ -641,8 +554,7 @@ package models.solarsystem
       
       
       [Bindable(event="ownerChange")]
-      public function get ownerIsAlly() : Boolean
-      {
+      public function get ownerIsAlly() : Boolean {
          return _owner == Owner.ALLY;
       }
       
@@ -650,19 +562,15 @@ package models.solarsystem
       /**
        * Sends invitation to join players alliance if this is possible.
        */
-      public function inviteOwnerToAlliance() : void
-      {
+      public function inviteOwnerToAlliance() : void {
          if (canInviteOwnerToAlliance)
-         {
             new AlliancesCommand(AlliancesCommand.INVITE, new InviteActionParams(id)).dispatch();
-         }
       }
       
       
       /* ################# */
       /* ### RESOURCES ### */
       /* ################# */
-      
       
       [Bindable]
       [Optional(alias="metal")]
@@ -672,7 +580,6 @@ package models.solarsystem
        * [Optional(alias="metal")]</i></p>
        */
       public var metalAfterLastUpdate:Number;
-
       
       [Bindable]
       [Optional(alias="energy")]
@@ -683,7 +590,6 @@ package models.solarsystem
        */
       public var energyAfterLastUpdate:Number;
       
-      
       [Bindable]
       [Optional(alias="zetium")]
       /**
@@ -692,7 +598,6 @@ package models.solarsystem
        * [Optional(alias="zetium")]</i></p>
        */
       public var zetiumAfterLastUpdate:Number;
-      
       
       [Optional]
       /**
@@ -703,54 +608,40 @@ package models.solarsystem
        */
       public var lastResourcesUpdate:Date;
       
-      
       [Bindable]
       public var metal:Resource;
       
-      
       [Bindable]
       public var energy:Resource;
-      
       
       [Bindable]
       public var zetium:Resource;
       
       
       private var timedUpdateHandlerRegistered:Boolean = false;
-      private function registerOrUnregisterTimedUpdateHandler() : void
-      {
+      private function registerOrUnregisterTimedUpdateHandler() : void {
          if (isPlanet && ownerIsPlayer)
-         {
             registerTimedUpdateHandler();
-         }
          else
-         {
             unregisterTimedUpdateHandler();
-         }
       }
-      private function registerTimedUpdateHandler() : void
-      {
-         if (!timedUpdateHandlerRegistered)
-         {
+      private function registerTimedUpdateHandler() : void {
+         if (!timedUpdateHandlerRegistered) {
             timedUpdateHandlerRegistered = true;
             GlobalEvent.subscribe_TIMED_UPDATE(recalculateResources);
          }
       }
-      private function unregisterTimedUpdateHandler() : void
-      {
-         if (timedUpdateHandlerRegistered)
-         {
+      private function unregisterTimedUpdateHandler() : void {
+         if (timedUpdateHandlerRegistered) {
             timedUpdateHandlerRegistered = false;
             GlobalEvent.unsubscribe_TIMED_UPDATE(recalculateResources);
          }
       }
       
       
-      private function recalculateResources(event:GlobalEvent) : void
-      {
+      private function recalculateResources(event:GlobalEvent) : void {
          var timeDiff:Number = Math.floor((DateUtil.now - lastResourcesUpdate.time) / 1000);
-         for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM])
-         {
+         for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM]) {
             var resource:Resource = this[type];
             resource.boost.refreshBoosts();
             resource.currentStock = Math.max(0, Math.min(
@@ -759,20 +650,12 @@ package models.solarsystem
             ));
          }
          if (ML.latestPlanet && this == ML.latestPlanet.ssObject)
-         {
             new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE);
-         }
          if (nextRaidAt && ML.player.planetsCount >= Config.getRaidingPlanetLimit())
-         {
             raidTime = DateUtil.secondsToHumanString((nextRaidAt.time - DateUtil.now)/1000,2);
-         }
          else
-         {
             raidTime = null;
-         }
-         
       }
-      
       
       [Bindable]
       public var raidTime: String = null;
@@ -781,7 +664,6 @@ package models.solarsystem
       /* ######################## */
       /* ### SELF DESTRUCTION ### */
       /* ######################## */
-      
       
       [Bindable]
       [Optional]
@@ -794,13 +676,11 @@ package models.solarsystem
        */      
       public var canDestroyBuildingAt: Date = null;
       
-      public function get canDestroyBuilding(): Boolean
-      {
+      public function get canDestroyBuilding(): Boolean {
          return (!canDestroyBuildingAt || (canDestroyBuildingAt.time < (new Date().time)));
       }
       
-      public function get timeLeftToDestroyBuilding(): int
-      {
+      public function get timeLeftToDestroyBuilding() : int {
          return 0;
       }
       
@@ -808,7 +688,7 @@ package models.solarsystem
       /* ### EXPLORATION ### */
       /* ################### */
       
-      
+      prop_name static const explorationEndsAt:String = "explorationEndsAt";
       [Bindable]
       [Optional]
       /**
@@ -825,7 +705,6 @@ package models.solarsystem
       /* ### COOLDOWN ### */
       /* ################ */
       
-      
       private var _cooldown:MCooldown;
       [SkipProperty]
       [Bindable(event="cooldownChange")]
@@ -837,10 +716,8 @@ package models.solarsystem
        * [Bindable(event="cooldownChange")]
        * </p>
        */
-      public function set cooldown(value:MCooldown) : void
-      {
-         if (_cooldown != value)
-         {
+      public function set cooldown(value:MCooldown) : void {
+         if (_cooldown != value) {
             _cooldown = value;
             dispatchSimpleEvent(SSObjectEvent, SSObjectEvent.COOLDOWN_CHANGE);
          }
@@ -848,8 +725,7 @@ package models.solarsystem
       /**
        * @private
        */
-      public function get cooldown() : MCooldown
-      {
+      public function get cooldown() : MCooldown {
          return _cooldown;
       }
       
@@ -866,22 +742,16 @@ package models.solarsystem
        * [Bindable]<br/>
        * [Optional]</i></p>
        */
-      public function set metalRateBoostEndsAt(value:Date): void
-      {
+      public function set metalRateBoostEndsAt(value:Date) : void {
          if (metal == null)
-         {
             metal = new Resource();
-         }
          metal.boost.rateBoostEndsAt = value;
          metal.boost.refreshBoosts();
       }
       
-      public function get metalRateBoostEndsAt(): Date
-      {
+      public function get metalRateBoostEndsAt() : Date {
          if (metal == null)
-         {
             metal = new Resource();
-         }
          return metal.boost.rateBoostEndsAt;
       }
       
@@ -894,22 +764,17 @@ package models.solarsystem
        * [Bindable]<br/>
        * [Optional]</i></p>
        */
-      public function set energyRateBoostEndsAt(value:Date): void
-      {
-         if (energy == null)
-         {
+      public function set energyRateBoostEndsAt(value:Date) : void {
+         if (energy == null) {
             energy = new Resource();
          }
          energy.boost.rateBoostEndsAt = value;
          energy.boost.refreshBoosts();
       }
       
-      public function get energyRateBoostEndsAt(): Date
-      {
+      public function get energyRateBoostEndsAt() : Date {
          if (energy == null)
-         {
             energy = new Resource();
-         }
          return energy.boost.rateBoostEndsAt;
       }
       
@@ -922,22 +787,16 @@ package models.solarsystem
        * [Bindable]<br/>
        * [Optional]</i></p>
        */
-      public function set zetiumRateBoostEndsAt(value:Date): void
-      {
+      public function set zetiumRateBoostEndsAt(value:Date) : void {
          if (zetium == null)
-         {
             zetium = new Resource();
-         }
          zetium.boost.rateBoostEndsAt = value;
          zetium.boost.refreshBoosts();
       }
       
-      public function get zetiumRateBoostEndsAt(): Date
-      {
+      public function get zetiumRateBoostEndsAt() : Date {
          if (zetium == null)
-         {
             zetium = new Resource();
-         }
          return zetium.boost.rateBoostEndsAt;
       }
       
@@ -950,22 +809,16 @@ package models.solarsystem
        * [Bindable]<br/>
        * [Optional]</i></p>
        */
-      public function set metalStorageBoostEndsAt(value:Date): void
-      {
+      public function set metalStorageBoostEndsAt(value:Date) : void {
          if (metal == null)
-         {
             metal = new Resource();
-         }
          metal.boost.storageBoostEndsAt = value;
          metal.boost.refreshBoosts();
       }
       
-      public function get metalStorageBoostEndsAt(): Date
-      {
+      public function get metalStorageBoostEndsAt() : Date {
          if (metal == null)
-         {
             metal = new Resource();
-         }
          return metal.boost.storageBoostEndsAt;
       }
       
@@ -978,22 +831,16 @@ package models.solarsystem
        * [Bindable]<br/>
        * [Optional]</i></p>
        */
-      public function set energyStorageBoostEndsAt(value:Date): void
-      {
+      public function set energyStorageBoostEndsAt(value:Date) : void {
          if (energy == null)
-         {
             energy = new Resource();
-         }
          energy.boost.storageBoostEndsAt = value;
          energy.boost.refreshBoosts();
       }
       
-      public function get energyStorageBoostEndsAt(): Date
-      {
+      public function get energyStorageBoostEndsAt() : Date {
          if (energy == null)
-         {
             energy = new Resource();
-         }
          return energy.boost.storageBoostEndsAt;
       }
       
@@ -1006,22 +853,16 @@ package models.solarsystem
        * [Bindable]<br/>
        * [Optional]</i></p>
        */
-      public function set zetiumStorageBoostEndsAt(value:Date): void
-      {
+      public function set zetiumStorageBoostEndsAt(value:Date) : void {
          if (zetium == null)
-         {
             zetium = new Resource();
-         }
          zetium.boost.storageBoostEndsAt = value;
          zetium.boost.refreshBoosts();
       }
       
-      public function get zetiumStorageBoostEndsAt(): Date
-      {
+      public function get zetiumStorageBoostEndsAt() : Date {
          if (zetium == null)
-         {
             zetium = new Resource();
-         }
          return zetium.boost.storageBoostEndsAt;
       }
       

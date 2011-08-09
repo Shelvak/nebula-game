@@ -32,5 +32,5 @@ package namespaces
     * This way you will only have to rename two properties in different namespaces and change the
     * string value held by the property in <code>property_name</code> namespace.
     */
-   public namespace property_name;
+   public namespace prop_name;
 }

@@ -17,6 +17,8 @@ package models.player
    import mx.collections.Sort;
    import mx.utils.ObjectUtil;
    
+   import namespaces.prop_name;
+   
    import utils.DateUtil;
    import utils.MathUtil;
    import utils.NumberUtil;
@@ -156,7 +158,7 @@ package models.player
       [Bindable(event="credsChange")]
       [Optional]
       /**
-       * Amount of credits player has.
+       * Amount of credits player has (pure creds + vip creds).
        */
       public function set creds(value: int): void
       {
@@ -240,6 +242,7 @@ package models.player
          return MathUtil.round(100 * (1 - (populationMax / population)), 1);
       }
       
+      prop_name static const scientists:String = "scientists";
       private var _scientists:int = 0;
       [Bindable(event="scientistsChange")]
       [Optional]
@@ -249,7 +252,7 @@ package models.player
          {
             _scientists = value;
             dispatchScientistsChangeEvent();
-            dispatchPropertyUpdateEvent("scientists", value);
+            dispatchPropertyUpdateEvent(prop_name::scientists, value);
          }
       }
       public function get scientists(): int
@@ -408,6 +411,7 @@ package models.player
       /* ############# */
       
       
+      prop_name static const points:String = "points";
       [SkipProperty]
       [Bindable(event="propertyChange")]
       /**
@@ -416,111 +420,93 @@ package models.player
        * <p><i><b>Metadata</b>:<br/>
        * [SkipProperty]</i></p>
        */
-      public function get points() : int
-      {
+      public function get points() : int {
          return warPoints + economyPoints + sciencePoints + armyPoints;
       }
-      private function dispatchPointsPropertyChangeEvent() : void
-      {
-         dispatchPropertyUpdateEvent("points", points);
+      private function dispatchPointsPropertyChangeEvent() : void {
+         dispatchPropertyUpdateEvent(prop_name::points, points);
       }
       
       
+      prop_name static const warPoints:String = "warPoints";
       private var _warPoints:int = 0;
       [Optional]
       [Bindable(event="propertyChange")]
-      public function set warPoints(value:int) : void
-      {
+      public function set warPoints(value:int) : void {
          var oldValue:int = _warPoints;
-         if (oldValue != value)
-         {
+         if (oldValue != value) {
             _warPoints = value;
-            dispatchPropertyUpdateEvent("warPoints", value, oldValue);
+            dispatchPropertyUpdateEvent(prop_name::warPoints, value, oldValue);
             dispatchPointsPropertyChangeEvent();
          }
       }
-      public function get warPoints() : int
-      {
+      public function get warPoints() : int {
          return _warPoints;
       }
       
-      
+      prop_name static const economyPoints:String = "economyPoints";
       private var _economyPoints:int = 0;
       [Optional]
       [Bindable(event="propertyChange")]
-      public function set economyPoints(value:int) : void
-      {
+      public function set economyPoints(value:int) : void {
          var oldValue:int = _economyPoints;
-         if (oldValue != value)
-         {
+         if (oldValue != value) {
             _economyPoints = value;
-            dispatchPropertyUpdateEvent("economyPoints", value, oldValue);
+            dispatchPropertyUpdateEvent(prop_name::economyPoints, value, oldValue);
             dispatchPointsPropertyChangeEvent();
          }
       }
-      public function get economyPoints() : int
-      {
+      public function get economyPoints() : int {
          return _economyPoints;
       }
       
-      
+      prop_name static const sciencePoints:String = "sciencePoints";
       private var _sciencePoints:int = 0;
       [Optional]
       [Bindable(event="propertyChange")]
-      public function set sciencePoints(value:int) : void
-      {
+      public function set sciencePoints(value:int) : void {
          var oldValue:int = _sciencePoints;
-         if (oldValue != value)
-         {
+         if (oldValue != value) {
             _sciencePoints = value;
-            dispatchPropertyUpdateEvent("sciencePoints", value, oldValue);
+            dispatchPropertyUpdateEvent(prop_name::sciencePoints, value, oldValue);
             dispatchPointsPropertyChangeEvent();
          }
       }
-      public function get sciencePoints() : int
-      {
+      public function get sciencePoints() : int {
          return _sciencePoints;
       }
       
-      
+      prop_name static const armyPoints:String = "armyPoints";
       private var _armyPoints:int = 0;
       [Optional]
       [Bindable(event="propertyChange")]
-      public function set armyPoints(value:int) : void
-      {
+      public function set armyPoints(value:int) : void {
          var oldValue:int = _armyPoints;
-         if (oldValue != value)
-         {
+         if (oldValue != value) {
             _armyPoints = value;
-            dispatchPropertyUpdateEvent("armyPoints", value, oldValue);
+            dispatchPropertyUpdateEvent(prop_name::armyPoints, value, oldValue);
             dispatchPointsPropertyChangeEvent();
          }
       }
-      public function get armyPoints() : int
-      {
+      public function get armyPoints() : int {
          return _armyPoints;
       }
       
-      
+      prop_name static const victoryPoints:String = "victoryPoints";
       private var _victoryPoints:int = 0;
       [Optional]
       [Bindable(event="propertyChange")]
-      public function set victoryPoints(value:int) : void
-      {
+      public function set victoryPoints(value:int) : void {
          var oldValue:int = _victoryPoints;
-         if (oldValue != value)
-         {
+         if (oldValue != value) {
             _victoryPoints = value;
-            dispatchPropertyUpdateEvent("victoryPoints", value, oldValue);
+            dispatchPropertyUpdateEvent(prop_name::victoryPoints, value, oldValue);
             dispatchPointsPropertyChangeEvent();
          }
       }
-      public function get victoryPoints() : int
-      {
+      public function get victoryPoints() : int {
          return _victoryPoints;
       }
-      
-      
       
       [Optional]
       /**
@@ -529,8 +515,7 @@ package models.player
       public var planetsCount:int = 0;
       
       
-      public function reset() : void
-      {
+      public function reset() : void {
          Collections.cleanListOfICleanables(planets);
          loggedIn = false;
          scientists = 0;
@@ -542,8 +527,7 @@ package models.player
          armyPoints = 0;
          economyPoints = 0;
          planetsCount = 0;
-         if (_alliancesTechnology != null)
-         {
+         if (_alliancesTechnology != null) {
             _alliancesTechnology.removeEventListener
                (UpgradeEvent.LEVEL_CHANGE, alliancesTech_levelChangeHandler, false);
             _alliancesTechnology = null;
@@ -554,7 +538,6 @@ package models.player
       /* ################## */
       /* ### IUpdatable ### */
       /* ################## */
-      
       
       public function update() : void {
          var now:Number = DateUtil.now;
@@ -571,7 +554,6 @@ package models.player
          else
             vipTime = null;
       }
-      
       
       public function resetChangeFlags() : void {
          _allianceCooldown.resetChangeFlags();

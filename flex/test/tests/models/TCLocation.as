@@ -55,7 +55,7 @@ package tests.models
       public function setUp() : void
       {
          ML = ModelLocator.getInstance();
-         ML.player = new Player();
+         ML.player.reset();
          ML.player.galaxyId = 1;
          ML.latestGalaxy = new Galaxy();
          ML.latestGalaxy.id = ML.player.galaxyId;
@@ -66,7 +66,7 @@ package tests.models
          ML.latestPlanet = new Planet(new MSSObject());
          ML.latestPlanet.id = 1;
          ML.latestPlanet.solarSystemId = 1;
-         ML.player = new Player();
+         ML.player.reset();
          ML.player.id = 1;
          loc = new Location();
          mockRepository = new MockRepository();
