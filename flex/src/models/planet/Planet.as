@@ -38,8 +38,8 @@ package models.planet
    import mx.collections.SortField;
    import mx.events.CollectionEvent;
    
-   import utils.Objects;
    import utils.ModelUtil;
+   import utils.Objects;
    import utils.datastructures.Collections;
    
    
@@ -701,6 +701,16 @@ package models.planet
       }
       
       
+      /**
+       * Foliage currently beeing explored or <code>null</code> if exploration is not underway.
+       */
+      public function get exploredFoliage() : BlockingFolliage {
+         if (_ssObject.explorationEndsAt != null)
+            return BlockingFolliage(getObject(_ssObject.explorationX, _ssObject.explorationY));
+         return null;
+      }
+      
+      
       /* ############# */
       /* ### UNITS ### */
       /* ############# */
@@ -959,28 +969,22 @@ package models.planet
       
       
       /**
-       * Removes <code>PlanetObject<code> from the planet and dispatches
+       * Removes <code>PlanetObject</code> from the planet and dispatches
        * <code>PlanetEvent.OBJECT_REMOVE</code> event if the object has actually been removed.
        * 
        * @param object An object that needs to be removed
-       * @param silent is not used
-       * 
-       * @throws Error if <code>object</code> is <code>null</code>
+       * @param silent not used
        */
-      public override function removeObject(obj:BaseModel, silent:Boolean = false) : *
-      {
+      public override function removeObject(obj:BaseModel, silent:Boolean = false) : * {
          var object:PlanetObject = Objects.paramNotNull("obj", obj);
          var x:int = object.x;
          var y:int = object.y;
-         if (objectsMatrix[x][y] == object)
-         {
+         if (objectsMatrix[x][y] == object) {
             clearObjectsMatrix(x, object.xEnd, y, object.yEnd);
             objects.removeItemAt(objects.getItemIndex(object));
             dispatchObjectRemoveEvent(object);
             if (object is ICleanable)
-            {
                ICleanable(object).cleanup();
-            }
          }
       }
       
@@ -989,12 +993,9 @@ package models.planet
        * Sets slots of <code>objectsMatrix</code> to <code>null</code> where <code>x</code> varies in a range
        * <code>[xMin; xMax]</code> and <code>y</code> - <code>[yMin; yMax]</code>.
        */
-      private function clearObjectsMatrix(xMin:int, xMax:int, yMin:int, yMax:int) : void
-      {
-         for (var x:int = xMin; x <= xMax; x++)
-         {
-            for (var y:int = yMin; y <= yMax; y++)
-            {
+      private function clearObjectsMatrix(xMin:int, xMax:int, yMin:int, yMax:int) : void {
+         for (var x:int = xMin; x <= xMax; x++) {
+            for (var y:int = yMin; y <= yMax; y++) {
                objectsMatrix[x][y] = null;
             }
          }
@@ -1003,22 +1004,17 @@ package models.planet
       
       /**
        * Looks for and returns a building with a given id.
-       * 
-       * @param id Id of a building.
-       * 
-       * @return <code>Building</code> instance with a given id or <code>null</code>
-       * if one can't be found.
        */
-      public function getBuildingById(id:int) : Building
-      {
-         return Collections.findFirst(buildings,
-            function(building:Building) : Boolean
-            {
-               return building.id == id;
-            }
-         );
+      public function getBuildingById(id:int) : Building {
+         return Collections.findFirstWithId(buildings, id);
       }
       
+      /**
+       * Looks for and returns blocking foliage with a given id.
+       */
+      public function getBlockingFoliageById(id:int) : BlockingFolliage {
+         return Collections.findFirstWithId(blockingFolliages, id);
+      }
       
       /**
        * Looks for and returns a constructor which currently is constructing a constructable with
@@ -1029,11 +1025,9 @@ package models.planet
        * @return <code>Building</code> instance which is currently constructing the given
        * constructable or <code>null</code> if one can't be found.
        */
-      public function getBuildingByConstructable(id:int, type:String) : Building
-      {
+      public function getBuildingByConstructable(id:int, type:String) : Building {
          return Collections.findFirst(buildings,
-            function(building:Building) : Boolean
-            {
+            function(building:Building) : Boolean {
                return building.isConstructor(type) &&
                building.constructableType != null &&
                building.constructableId == id;

@@ -184,9 +184,7 @@ package models.exploration
        * [Bindable(event="statusChange")]</p>
        */
       public function get explorationIsUnderway() : Boolean {
-         return stateIsValid &&
-                ML.latestPlanet.ssObject != null &&
-                ML.latestPlanet.ssObject.explorationEndsAt != null;
+         return planet != null && planet.ssObject != null && planet.ssObject.explorationEndsAt != null;
       }
       
       [Bindable(event="statusChange")]
@@ -282,7 +280,10 @@ package models.exploration
        */      
       public function get instantFinishCost() : int {
          if (explorationIsUnderway)
-            return calculateCredsForInstantFinish(_foliage.width, _foliage.height);
+            return calculateCredsForInstantFinish(
+               planet.exploredFoliage.width,
+               planet.exploredFoliage.height
+            );
          else
             return 0;
       }

@@ -18,6 +18,7 @@ package models.solarsystem
    import models.IMStaticSpaceObject;
    import models.Owner;
    import models.cooldown.MCooldown;
+   import models.folliage.BlockingFolliage;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
@@ -699,6 +700,20 @@ package models.solarsystem
        * [Optional]</i></p>
        */
       public var explorationEndsAt:Date = null;
+      
+      [Bindable]
+      [Optional]
+      /**
+       * X coordinate of the bottom-left corner of the foliage beeing explored.
+       */
+      public var explorationX:int = 0;
+      
+      [Bindable]
+      [Optional]
+      /**
+       * Y coordinate of the bottom-left corner of the foliage beeing explored.
+       */
+      public var explorationY:int = 0;
       
       
       /* ################ */
