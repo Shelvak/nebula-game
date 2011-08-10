@@ -15,9 +15,7 @@
    <foliage:CExplorationPanel model="{model.explorationPanelModel}"
                               visible="{model.explorationPanelVisible}"
                               includeInLayout="{model.explorationPanelVisible}"/>
-   <!--
    <foliage:CTerraformPanel panelModel="{model.terraformPanelModel}"
                             visible="{model.terraformPanelVisible}"
                             includeInLayout="{model.terraformPanelVisible}"/>
-   -->
 </s:Group>

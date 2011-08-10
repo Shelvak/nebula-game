@@ -8,15 +8,13 @@
    <fx:Script>
       <![CDATA[
          import org.flexunit.listeners.UIListener;
-         
-         import tests.folliage.TS_Folliage;
-         
          import org.flexunit.runner.FlexUnitCore;
          
          import tests._old.testsuites.*;
          import tests.animation.TS_Animation;
          import tests.chat.TS_Chat;
          import tests.controllers.ui.TS_UIControllers;
+         import tests.foliage.TS_Foliage;
          import tests.models.TS_Models;
          import tests.movement.TS_Movement;
          import tests.notifications.TS_Notifications;
@@ -46,7 +44,7 @@
                TS_SpaceMap,
                TS_Chat,
                TS_Time,
-               TS_Folliage,
+               TS_Foliage,
                CommunicationsTestSuite,
                ModelsTestSuite,
                UtilsTestSuite
@@ -57,7 +55,7 @@
          public function currentRunTestSuite():Array
          {
             var testsToRun:Array = [
-               TS_Chat
+               TS_Foliage
             ];
             return testsToRun;
          }

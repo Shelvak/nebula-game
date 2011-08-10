@@ -690,6 +690,7 @@ package models.solarsystem
       /* ################### */
       
       prop_name static const explorationEndsAt:String = "explorationEndsAt";
+      private var _explorationEndsAt:Date = null;
       [Bindable]
       [Optional]
       /**
@@ -699,21 +700,37 @@ package models.solarsystem
        * [Bindable]<br/>
        * [Optional]</i></p>
        */
-      public var explorationEndsAt:Date = null;
+      public function set explorationEndsAt(value:Date) : void {
+         if (_explorationEndsAt != value) {
+            _explorationEndsAt = value;
+            if (_explorationEndsAt == null) {
+               explorationX = -1;
+               explorationY = -1;
+            }
+         }
+      }
+      /**
+       * @private
+       */
+      public function get explorationEndsAt() : Date {
+         return _explorationEndsAt;
+      }
       
+      prop_name static const explorationX:String = "explorationX";
       [Bindable]
       [Optional]
       /**
        * X coordinate of the bottom-left corner of the foliage beeing explored.
        */
-      public var explorationX:int = 0;
+      public var explorationX:int = -1;
       
+      prop_name static const explorationY:String = "explorationY";
       [Bindable]
       [Optional]
       /**
        * Y coordinate of the bottom-left corner of the foliage beeing explored.
        */
-      public var explorationY:int = 0;
+      public var explorationY:int = -1;
       
       
       /* ################ */
