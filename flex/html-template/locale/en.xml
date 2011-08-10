@@ -1137,6 +1137,20 @@
     <![CDATA[It will cost you <span fontWeight="bold">{0}</span> creds to instantly finish exploring.]]>
     </description.instantFinishCost>
   </Exploration>
+  
+  <Terraform>
+    <title.terraform value="Terraform"/>
+    <title.confirmTerraform value="Terraform"/>
+    <label.removeFoliage value="Remove folliage"/>
+    <label.buyCreds value="Buy creds"/>
+    <label.cancel value="Cancel"/>
+    <message.foliageRemovalCost>
+      <![CDATA[You can remove this object for <span fontWeight="bold">{0}</span> creds.]]>
+    </message.foliageRemovalCost>
+    <message.foliageRemovalConfirmation>
+      <![CDATA[Removal of this object will cost you <span fontWeight="bold">{0}</span> creds. Are you sure?]]>
+    </message.foliageRemovalConfirmation>
+  </Terraform>
 
   <Formatters>
     <date.shortDate value="YYYY-MM-DD" />

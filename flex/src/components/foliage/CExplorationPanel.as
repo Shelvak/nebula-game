@@ -1,13 +1,11 @@
-package components.exploration
+package components.foliage
 {
    import components.base.ImageAndLabel;
    import components.base.Panel;
    import components.base.Warning;
-   import components.exploration.skins.FolliageSidebarSkin;
+   import components.foliage.skins.CExplorationPanelSkin;
    
    import flash.events.MouseEvent;
-   
-   import flashx.textLayout.elements.TextFlow;
    
    import globalevents.GlobalEvent;
    
@@ -33,15 +31,10 @@ package components.exploration
    [SkinState("noResearchCenter")]
    [SkinState("explorationUderway")]
    [SkinState("planetNotOwned")]
-   public class FolliageSidebar extends SkinnableComponent
+   public class CExplorationPanel extends SkinnableComponent
    {
       private function get IMG() : ImagePreloader {
          return ImagePreloader.getInstance();
-      }
-      
-      
-      private function get status() : ExplorationStatus {
-         return ExplorationStatus.getInstance();
       }
             
       
@@ -49,10 +42,9 @@ package components.exploration
       /* ### INITIALIZATION ### */
       /* ###################### */
       
-      public function FolliageSidebar() {
+      public function CExplorationPanel() {
          super();
-         status.addEventListener(ExplorationStatusEvent.STATUS_CHANGE, status_statusChangeHandler);
-         setStyle("skinClass", FolliageSidebarSkin);  
+         setStyle("skinClass", CExplorationPanelSkin);  
       }
       
       
@@ -60,28 +52,48 @@ package components.exploration
       /* ### PROPERTIES ### */
       /* ################## */
       
+      private var _model:ExplorationStatus;
+      public function set model(value:ExplorationStatus) : void {
+         if (_model != value) {
+            if (_model != null)
+               _model.removeEventListener(ExplorationStatusEvent.STATUS_CHANGE, panelModel_statusChangeHandler, false);
+            _model = value;
+            if (_model != null)
+               _model.addEventListener(ExplorationStatusEvent.STATUS_CHANGE, panelModel_statusChangeHandler);
+            f_statusChanged = true;
+            f_timeLeftChanged = true;
+            invalidateProperties();
+         }
+      }
+      public function get model() : ExplorationStatus {
+         return _model;
+      }
+      
+      
       private var f_statusChanged:Boolean = true,
                   f_timeLeftChanged:Boolean = true;
       
       protected override function commitProperties() : void {
          super.commitProperties();
          
+         if (_model == null) return;
+         
          if (f_statusChanged) {
             updateBtnExplore();
-            if (!status.stateIsValid) {
+            if (!_model.stateIsValid) {
                lblDescription.text = "";
                updateLblTimeNeeded();
                updateLblScientistsNeeded();
                updateLblInsufficientScientists();
             }
             else {
-               if (status.explorationIsUnderway) {
+               if (_model.explorationIsUnderway) {
                   GlobalEvent.subscribe_TIMED_UPDATE(global_timedUpdateHandler);
                   lblDescription.text = getString("description.explorationUnderway");
                }
                else {
                   GlobalEvent.unsubscribe_TIMED_UPDATE(global_timedUpdateHandler);
-                  if (!status.planetHasReasearchCenter)
+                  if (!_model.planetHasReasearchCenter)
                      lblDescription.text = getString("description.noResearchCenter");
                   else {
                      lblDescription.text = getString("description.startExploration");
@@ -120,15 +132,17 @@ package components.exploration
       public var btnExplore:Button;
       private function updateBtnExplore() : void {
          if (btnExplore != null)
-            btnExplore.enabled = status.stateIsValid && status.explorationCanBeStarted && !status.folliage.pending;
+            btnExplore.enabled = _model.stateIsValid &&
+                                 _model.explorationCanBeStarted &&
+                                !_model.foliage.pending;
       }
       
       [SkinPart(required="true")]
       public var lblTimeLeft:Label;
       private function updateLblTimeLeft() : void {
          if (lblTimeLeft)
-            lblTimeLeft.text = status.explorationIsUnderway ?
-               getString("label.finishesIn", [DateUtil.secondsToHumanString(status.timeLeft)]) :
+            lblTimeLeft.text = _model.explorationIsUnderway ?
+               getString("label.finishesIn", [DateUtil.secondsToHumanString(_model.timeLeft)]) :
                "";
       }
       
@@ -139,10 +153,10 @@ package components.exploration
       public var lblTimeNeeded:ImageAndLabel;
       private function updateLblTimeNeeded() : void {
          if (lblTimeNeeded) {
-            if (!status.stateIsValid)
+            if (!_model.stateIsValid)
                lblTimeNeeded.textToDisplay = "";
             else
-               lblTimeNeeded.textToDisplay = DateUtil.secondsToHumanString(status.timeNeeded);
+               lblTimeNeeded.textToDisplay = DateUtil.secondsToHumanString(_model.timeNeeded);
          }
       }
       
@@ -150,11 +164,11 @@ package components.exploration
       public var lblScientistsNeeded:ImageAndLabel;
       private function updateLblScientistsNeeded() : void {
          if (lblScientistsNeeded) {
-            if (!status.stateIsValid)
+            if (!_model.stateIsValid)
                lblScientistsNeeded.textToDisplay = "";
             else {
-               lblScientistsNeeded.textToDisplay = status.scientistNeeded.toString();
-               if (status.playerHasEnoughScientists)
+               lblScientistsNeeded.textToDisplay = _model.scientistNeeded.toString();
+               if (_model.playerHasEnoughScientists)
                   lblScientistsNeeded.labelStyleName = null;
                else
                   lblScientistsNeeded.labelStyleName = "unsatisfied";
@@ -166,12 +180,12 @@ package components.exploration
       public var lblInsufficientScientists:Label;
       private function updateLblInsufficientScientists() : void {
          if (lblInsufficientScientists) {
-            if (!status.stateIsValid)
+            if (!_model.stateIsValid)
                lblInsufficientScientists.visible =
                lblInsufficientScientists.includeInLayout = false;
             else
                lblInsufficientScientists.visible =
-               lblInsufficientScientists.includeInLayout = !status.playerHasEnoughScientists;
+               lblInsufficientScientists.includeInLayout = !_model.playerHasEnoughScientists;
          }
       }
       
@@ -182,7 +196,7 @@ package components.exploration
       public var txtInstantFinishCost:RichText;
       private function updateTxtInstantFinishCost() : void {
          if (txtInstantFinishCost != null)
-            txtInstantFinishCost.textFlow = TextFlowUtil.importFromString(getString("description.instantFinishCost", [status.instantFinishCost]));
+            txtInstantFinishCost.textFlow = TextFlowUtil.importFromString(getString("description.instantFinishCost", [_model.instantFinishCost]));
       }
       
       [SkinPart(required="true")]
@@ -190,7 +204,7 @@ package components.exploration
       private function updateBtnInstantFinishVisibility() : void {
          if (btnInstantFinish != null)
             btnInstantFinish.visible =
-            btnInstantFinish.includeInLayout = status.canInstantFinish;
+            btnInstantFinish.includeInLayout = _model.canInstantFinish;
       }
       
       [SkinPart(required="true")]
@@ -198,7 +212,7 @@ package components.exploration
       private function updateBtnBuyCredsVisibility() : void {
          if (btnBuyCreds != null)
             btnBuyCreds.visible = 
-            btnBuyCreds.includeInLayout = !status.canInstantFinish;
+            btnBuyCreds.includeInLayout = !_model.canInstantFinish;
       }
       
       
@@ -267,9 +281,9 @@ package components.exploration
       }
       
       protected override function getCurrentSkinState() : String {
-         if (status.explorationIsUnderway)     return "explorationUderway";
-         if (!status.planetHasReasearchCenter) return "noResearchCenter";
-         if (!status.planetBelongsToPlayer)    return "planetNotOwned";
+         if ( _model.explorationIsUnderway)    return "explorationUderway";
+         if (!_model.planetHasReasearchCenter) return "noResearchCenter";
+         if (!_model.planetBelongsToPlayer)    return "planetNotOwned";
          return "startExploration";
       }
       
@@ -279,7 +293,7 @@ package components.exploration
       /* ################################# */
       
       private function btnExplore_clickHandler(event:MouseEvent) : void {
-         status.beginExploration();
+         _model.beginExploration();
       }
       
       private function btnBuyCreds_clickHandler(event:MouseEvent) : void {
@@ -287,7 +301,7 @@ package components.exploration
       }
       
       private function btnInstantFinish_clickHandler(event:MouseEvent) : void {
-         status.finishInstantly();
+         _model.finishInstantly();
       }
       
       
@@ -295,7 +309,7 @@ package components.exploration
       /* ### ExplorationStatus EVENT HANDLERS ### */
       /* ######################################## */
       
-      private function status_statusChangeHandler(event:ExplorationStatusEvent) : void {
+      private function panelModel_statusChangeHandler(event:ExplorationStatusEvent) : void {
          f_statusChanged = true;
          invalidateProperties();
          invalidateSkinState();

@@ -46,7 +46,7 @@ package components.map.planet
       
       protected override function objectSelectedImpl(object:IInteractivePlanetMapObject) : void
       {
-         ML.selectedFolliage = BlockingFolliage(object.model);
+         ML.selectedFoliage = BlockingFolliage(object.model);
          Messenger.show(Localizer.string('BuildingSelectedSidebar', 'message.pressOnEmpty'));
          SSS.showScreen(SidebarScreens.BLOCKING_FOLLIAGE);
       }
@@ -54,7 +54,7 @@ package components.map.planet
       
       protected override function objectDeselectedImpl(object:IInteractivePlanetMapObject) : void
       {
-         ML.selectedFolliage = null;
+         ML.selectedFoliage = null;
          Messenger.hide();
          SSS.showPrevious();
       }

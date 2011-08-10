@@ -6,25 +6,25 @@ package controllers.planets.actions
     * Aggregates parameters of <code>controllers.planets.actions.FinishExplorationAction</code> client command.
     * 
     * @see #FinishExplorationActionParams()
-    * @see #id
+    * @see #planetId
     */
    public class FinishExplorationActionParams
    {
       /**
        * See documentation of corresponding variables for information about parameters.
        * 
-       * @see #id
+       * @see #planetId
        */
-      public function FinishExplorationActionParams(id:int) {
-         if (id <= 0)
-            throw new ArgumentError("[param id] must be greater than 0 but was " + id);
-         this.id = id;
+      public function FinishExplorationActionParams(planetId:int) {
+         if (planetId <= 0)
+            throw new ArgumentError("[param planetId] must be greater than 0 but was " + planetId);
+         this.planetId = planetId;
       }
       
       /**
        * Id of the planet to instantly finish exploration in.
        * <p><b>Required. Greater than 0.</b></p>
        */
-      public var id:int;
+      public var planetId:int;
    }
 }

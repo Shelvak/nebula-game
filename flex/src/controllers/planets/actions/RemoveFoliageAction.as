@@ -8,28 +8,29 @@ package controllers.planets.actions
    
    
    /**
-    * Immediately finishes exploration mission for creds.
+    * Removes explorable foliage for creds.
     * 
-    * <p>Client -->> Server: <code>FinishExplorationActionParams</code><p/>
-    * 
-    * @see FinishExplorationActionParams
+    * <p>Client -->> Server: <code>RemoveFoliageActionParams</code></p>
     */
-   public class FinishExplorationAction extends CommunicationAction
+   public class RemoveFoliageAction extends CommunicationAction
    {
       private function get GF() : GlobalFlags {
          return GlobalFlags.getInstance();
       }
       
       
-      public function FinishExplorationAction() {
+      public function RemoveFoliageAction() {
          super();
       }
       
-      
       public override function applyClientAction(cmd:CommunicationCommand) : void {
          GF.lockApplication = true;
-         var params:FinishExplorationActionParams = FinishExplorationActionParams(cmd.parameters);
-         sendMessage(new ClientRMO({"id": params.planetId}));
+         var params:RemoveFoliageActionParams = RemoveFoliageActionParams(cmd.parameters);
+         sendMessage(new ClientRMO({
+            "id": params.planetId,
+            "x": params.foliageX,
+            "y": params.foliageY
+         }));
       }
       
       public override function result(rmo:ClientRMO) : void {

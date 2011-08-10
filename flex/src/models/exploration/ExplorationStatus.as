@@ -6,7 +6,6 @@ package models.exploration
    import controllers.planets.actions.FinishExplorationActionParams;
    
    import flash.errors.IllegalOperationError;
-   import flash.events.Event;
    import flash.events.EventDispatcher;
    
    import models.ModelLocator;
@@ -26,6 +25,7 @@ package models.exploration
    
    import namespaces.prop_name;
    
+   import utils.EventUtils;
    import utils.SingletonFactory;
    import utils.StringUtil;
    import utils.datastructures.Collections;
@@ -49,12 +49,11 @@ package models.exploration
          return SingletonFactory.getSingletonInstance(ExplorationStatus);
       }
       
-      
       /**
        * Calculates number of scientists needed for exploration of a folliage of given size.
        * 
-       * @param width width of a folliage
-       * @param height height of a folliage
+       * @param width width of a foliage
+       * @param height height of a foliage
        * 
        * @return number of scientists
        */
@@ -66,10 +65,10 @@ package models.exploration
       }
       
       /**
-       * Calculates time needed for exploration of a folliage of given size.
+       * Calculates time needed for exploration of a foliage of given size.
        * 
-       * @param width width of a folliage
-       * @param height height of a folliage
+       * @param width width of a foliage
+       * @param height height of a foliage
        * 
        * @return time in seconds
        */
@@ -81,10 +80,10 @@ package models.exploration
       }
       
       /**
-       * Calculates number of credits required for istantly finishing exploration of a folliage.
+       * Calculates number of credits required for istantly finishing exploration of a foliage.
        * 
-       * @param width width of a folliage
-       * @param height height of a folliage
+       * @param width width of a foliage
+       * @param height height of a foliage
        * 
        * @return number of credits
        */
@@ -100,32 +99,43 @@ package models.exploration
          return ModelLocator.getInstance();
       }
       
-      
-      public function ExplorationStatus() {
-         super();
-         addModelLocatorEventHandlers();
-      }
-      
-      [Bindable(event="statusChange")]
-      /**
-       * A planet in which the folliage currently beeing explored or due to be explored is.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="statusChange")]</p>
-       */
-      public function get planet() : Planet {
+      private function get planet() : Planet {
          return ML.latestPlanet;
       }
       
+      
+      public function ExplorationStatus() {
+         super();
+         ML.player.addEventListener(
+            PropertyChangeEvent.PROPERTY_CHANGE,
+            player_propertyChangeHandler, false, 0, true
+         );
+         ML.player.addEventListener(
+            PlayerEvent.CREDS_CHANGE,
+            player_credsChangeHandler, false, 0, true
+         );
+      }
+      
+      private var _foliage:BlockingFolliage
       [Bindable(event="statusChange")]
-      /**
-       * A folliage currently beeing explored in the <code>planet</code> or is due to be explored.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Bindable(event="statusChange")]</p>
-       */
-      public function get folliage() : BlockingFolliage {
-         return ML.selectedFolliage;
+      public function set foliage(value:BlockingFolliage) : void {
+         if (_foliage != value) {
+            if (_foliage != null) {
+               removeFoliageEventHandlers(_foliage);
+               if (planet != null)
+                  removePlanetEventHandlers(planet);
+            }
+            _foliage = value;
+            if (_foliage != null) {
+               addFoliageEventHandlers(_foliage);
+               if (planet != null)
+                  addPlanetEventHandlers(planet);
+            }
+            dispatchStatusChangeEvent();
+         }
+      }
+      public function get foliage() : BlockingFolliage {
+         return _foliage;
       }
       
       [Bindable(event="statusChange")]
@@ -139,7 +149,7 @@ package models.exploration
       public function get scientistNeeded() : int {
          if (!stateIsValid || explorationIsUnderway)
             return 0;
-         return calculateNeededScientists(folliage.width, folliage.height);
+         return calculateNeededScientists(_foliage.width, _foliage.height);
       }
       
       [Bindable(event="statusChange")]
@@ -153,7 +163,7 @@ package models.exploration
       public function get timeNeeded() : int {
          if (!stateIsValid || explorationIsUnderway)
             return 0;
-         return calculateNeededTime(folliage.width, folliage.height);
+         return calculateNeededTime(_foliage.width, _foliage.height);
       }
       
       /**
@@ -168,18 +178,20 @@ package models.exploration
       
       [Bindable(event="statusChange")]
       /**
-       * Indicates if an exploration of the <code>folliage</code> in the <code>planet</code> is underway.
+       * Indicates if an exploration of the <code>foliage</code> in the <code>planet</code> is underway.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="statusChange")]</p>
        */
       public function get explorationIsUnderway() : Boolean {
-         return stateIsValid && ML.latestPlanet.ssObject && ML.latestPlanet.ssObject.explorationEndsAt;
+         return stateIsValid &&
+                ML.latestPlanet.ssObject != null &&
+                ML.latestPlanet.ssObject.explorationEndsAt != null;
       }
       
       [Bindable(event="statusChange")]
       /**
-       * Indicates if an exploration of the <code>folliage</code> can be started considering given resources.
+       * Indicates if an exploration of the <code>foliage</code> can be started considering given resources.
        * Returns <code>false</code> if exploration is underway.
        * 
        * <p><i><b>Metadata</b>:<br/>
@@ -236,14 +248,14 @@ package models.exploration
       
       [Bindable(event="statusChange")]
       /**
-       * Idicates if this object is in valid state: that is if <code>palnet</code> and <code>folliage</code>
+       * Idicates if this object is in valid state: that is if <code>palnet</code> and <code>foliage</code>
        * are set and values of other properties can be determined corectly.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="statusChange")]</p>
        */
       public function get stateIsValid() : Boolean {
-         return folliage != null && planet != null;
+         return _foliage != null && planet != null;
       }
       
       /**
@@ -253,7 +265,7 @@ package models.exploration
          if (stateIsValid && explorationCanBeStarted) {
             new PlanetsCommand(PlanetsCommand.EXPLORE, {
                "planet": planet,
-               "folliage": folliage
+               "folliage": _foliage
             }).dispatch();
          }
       }
@@ -270,14 +282,14 @@ package models.exploration
        */      
       public function get instantFinishCost() : int {
          if (explorationIsUnderway)
-            return calculateCredsForInstantFinish(folliage.width, folliage.height);
+            return calculateCredsForInstantFinish(_foliage.width, _foliage.height);
          else
             return 0;
       }
       
       [Bindable(event="statusChange")]
       /**
-       * Idicates of the player can instatly finish explortion of a folliage. This is true if:
+       * Idicates of the player can instatly finish explortion of a foliage. This is true if:
        * <ul>
        *    <li>exploration is underway and</li>
        *    <li>player has enough credits</li>
@@ -290,7 +302,7 @@ package models.exploration
       }
       
       /**
-       * Requests server to instantly finish exploration of a folliage. Throws exception if instant finishing
+       * Requests server to instantly finish exploration of a foliage. Throws exception if instant finishing
        * is not available.
        */
       public function finishInstantly() : void {
@@ -308,34 +320,7 @@ package models.exploration
       
       /* ############################# */
       /* ### MODELS EVENT HANDLERS ### */
-      /* ############################# */      
-      
-      private function addModelLocatorEventHandlers() : void {
-         ML.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ML_propertyChangeHandler);
-         ML.player.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, player_propertyChangeHandler);
-         ML.player.addEventListener(PlayerEvent.CREDS_CHANGE, player_credsChangeHandler, false, 0, true);
-      }
-      
-      private function ML_propertyChangeHandler(event:PropertyChangeEvent) : void {
-         switch (event.property) 
-         {
-            case ModelLocator.prop_name::latestPlanet:
-               if (event.oldValue != null)
-                  removePlanetEventHandlers(Planet(event.oldValue));
-               if (event.newValue != null)
-                  addPlanetEventHandlers(Planet(event.newValue));
-               dispatchStatusChangeEvent();
-               break;
-            
-            case ModelLocator.prop_name::selectedFolliange:
-               if (event.oldValue != null)
-                  removeFolliageEventHandlers(BlockingFolliage(event.oldValue));
-               if (event.newValue != null)
-                  addFolliageEventHandlers(BlockingFolliage(event.newValue));
-               dispatchStatusChangeEvent();
-               break;
-         }
-      }
+      /* ############################# */
       
       private function player_propertyChangeHandler(event:PropertyChangeEvent) : void {
          if (event.property == Player.prop_name::scientists)
@@ -347,23 +332,31 @@ package models.exploration
       }
       
       private function addPlanetEventHandlers(palnet:Planet) : void {
-         planet.addEventListener(PlanetEvent.OBJECT_ADD, planet_objectsListUpdateHandler);
-         planet.addEventListener(PlanetEvent.OBJECT_REMOVE, planet_objectsListUpdateHandler);
-         planet.ssObject.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
-                                          ssObject_propertyChangeHandler, false, 0, true);
-         planet.ssObject.addEventListener(SSObjectEvent.OWNER_CHANGE,
-                                          ssObject_ownerChangeHandler, false, 0, true);
+         planet.addEventListener(PlanetEvent.OBJECT_ADD, planet_objectsListUpdateHandler, false, 0, true);
+         planet.addEventListener(PlanetEvent.OBJECT_REMOVE, planet_objectsListUpdateHandler, false, 0, true);
+         planet.ssObject.addEventListener(
+            PropertyChangeEvent.PROPERTY_CHANGE,
+            ssObject_propertyChangeHandler, false, 0, true
+         );
+         planet.ssObject.addEventListener(
+            SSObjectEvent.OWNER_CHANGE,
+            ssObject_ownerChangeHandler, false, 0, true
+         );
       }
       
       private function removePlanetEventHandlers(planet:Planet) : void
       {
-         planet.removeEventListener(PlanetEvent.OBJECT_ADD, planet_objectsListUpdateHandler);
-         planet.removeEventListener(PlanetEvent.OBJECT_REMOVE, planet_objectsListUpdateHandler);
+         planet.removeEventListener(PlanetEvent.OBJECT_ADD, planet_objectsListUpdateHandler, false);
+         planet.removeEventListener(PlanetEvent.OBJECT_REMOVE, planet_objectsListUpdateHandler, false);
          if (planet.ssObject != null) {
-            planet.ssObject.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE,
-                                                ssObject_propertyChangeHandler, false);
-            planet.ssObject.removeEventListener(SSObjectEvent.OWNER_CHANGE,
-                                                ssObject_ownerChangeHandler, false);
+            planet.ssObject.removeEventListener(
+               PropertyChangeEvent.PROPERTY_CHANGE,
+               ssObject_propertyChangeHandler, false
+            );
+            planet.ssObject.removeEventListener(
+               SSObjectEvent.OWNER_CHANGE,
+               ssObject_ownerChangeHandler, false
+            );
          }
       }
       
@@ -380,15 +373,15 @@ package models.exploration
          dispatchStatusChangeEvent();
       }
       
-      private function addFolliageEventHandlers(folliage:BlockingFolliage) : void {
-         folliage.addEventListener(BaseModelEvent.PENDING_CHANGE, folliage_pendingChangeHandler);
+      private function addFoliageEventHandlers(foliage:BlockingFolliage) : void {
+         foliage.addEventListener(BaseModelEvent.PENDING_CHANGE, foliage_pendingChangeHandler, false, 0, true);
       }
       
-      private function removeFolliageEventHandlers(folliage:BlockingFolliage) : void {
-         folliage.removeEventListener(BaseModelEvent.PENDING_CHANGE, folliage_pendingChangeHandler);
+      private function removeFoliageEventHandlers(foliage:BlockingFolliage) : void {
+         foliage.removeEventListener(BaseModelEvent.PENDING_CHANGE, foliage_pendingChangeHandler, false);
       }
       
-      private function folliage_pendingChangeHandler(event:BaseModelEvent) : void {
+      private function foliage_pendingChangeHandler(event:BaseModelEvent) : void {
          dispatchStatusChangeEvent();
       }
       
@@ -398,8 +391,7 @@ package models.exploration
       /* ################################## */
       
       private function dispatchStatusChangeEvent() : void {
-         if (hasEventListener(ExplorationStatusEvent.STATUS_CHANGE))
-            dispatchEvent(new ExplorationStatusEvent(ExplorationStatusEvent.STATUS_CHANGE));
+         EventUtils.dispatchSimpleEvent(this, ExplorationStatusEvent, ExplorationStatusEvent.STATUS_CHANGE);
       }
    }
 }

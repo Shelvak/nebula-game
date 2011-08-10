@@ -430,6 +430,7 @@ package controllers.startup
             bindPair(PLAYER_INDEX, new PlayerIndexAction());
             bindPair(EXPLORE, new ExploreAction());
             bindPair(FINISH_EXPLORATION, new FinishExplorationAction());
+            bindPair(REMOVE_FOLIAGE, new RemoveFoliageAction());
             bindPair(PORTAL_UNITS, new PortalUnitsAction());
          }
       }
