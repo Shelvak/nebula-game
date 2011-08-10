@@ -421,7 +421,7 @@
     <selectAll value="Pažymėti visus" />
     <open value="Atidaryti" />
     <noUnits value="Tu neturi antžeminių karių" />
-    <attackInfo value="Pastate ęsantys kariai" />
+    <attackInfo value="Pastate esantys kariai" />
     <selfDestruct value="Susinaikinti" />
     <destructResources>
       <p>Jeigu sunaikinsi šį pastatą gausi:</p>
@@ -450,7 +450,10 @@
       režimą.</p>
     </message.pressOnEmpty>
     <panelTitle.scientists value="Mokslininkai" />
-    <message.scientistsNotAvailable value="Pastatas yra tobulinimas, jame dirbantys mokslininkai yra nepasiekiami.""/>
+    <message.scientistsNotAvailable>
+      <p>Pastatas yra tobulinimas, jame dirbantys mokslininkai yra 
+      nepasiekiami.</p>
+    </message.scientistsNotAvailable>
     <warning.buildingWorking>
       <p>Jeigu liepsi šiam pastatui susinaikinti, tada tai, 
       ką stato šis pastatas, bus taip pat sunaikinta.</p>
@@ -652,7 +655,7 @@
         patobulinta kasykla taip pat reikalauja daugiau energijos savo
         darbui.
       </p>
-      <p>Metalo kasyklos išsijungs ęsant energijos stygiui.</p>
+      <p>Metalo kasyklos išsijungs esant energijos stygiui.</p>
       <p>Kiekvienas patobulinimo lygis pakelia metalo išgavimo greitį.</p>
     </MEX.common>
 
@@ -777,7 +780,7 @@
     </ResearchCenter.about>
 
     <ZetiumExtractor.common>
-      <p>Ęsant energijos trūkumui zetiumo kasyklos išsijungs.</p>
+      <p>Esant energijos trūkumui zetiumo kasyklos išsijungs.</p>
       <p>Kiekvienas patobulinimo lygis didina zetiumo išgavimo greitį.</p>
     </ZetiumExtractor.common>
 
@@ -952,7 +955,7 @@
     <DefensivePortal.tooltip value="Teleportuoja žemės karius į gynybą" />
     <DefensivePortal.common>
       <p>Kai šis portalas yra aktyvus, kitos planetos užpuolimo atveju 
-      jis siunčia žemės armiją ęsančią šioje planetoje į pagalbą. 
+      jis siunčia žemės armiją esančią šioje planetoje į pagalbą. 
       Taip pat jis leidžia kariams ir tankams iš kitų planetų 
       atkeliauti planetai, kurioje jis pastatytas, į gynybą.</p>
       <p>Atkreipk dėmesį, jog šis pastatas gali priimti tik tiek karių iš kitų
@@ -987,7 +990,7 @@
 
     <NpcSpaceFactory.name ref="Objects/NpcSpaceFactory" />
     <NpcSpaceFactory.about>
-      <p>Ši gamykla, ęsanti po žeme, gamina galingus ateivių laivus, kurie
+      <p>Ši gamykla, esanti po žeme, gamina galingus ateivių laivus, kurie
       gali būti panaudoti tiek gynybai, tiek puolimui.</p>
       <p>[reference:GivesUnits]</p>
     </NpcSpaceFactory.about>
@@ -1091,7 +1094,7 @@
          {2} - int -->
     <label.boostActive1> 
       <p>Tavo {0 metal[metalo] energy[energijos] zetium[zetiumo]} 
-        {1 rate[išgavimo greitis] storage[talpa]} yra padidinta {2}%</p> 
+        {1 rate[išgavimo greitis] storage[talpa]} yra padidintas {2}%</p> 
     </label.boostActive1>
     <!-- {0} - time (e.g. 3m) -->
     <label.boostActive2 value="Tu gali pratęsti šį laiką {0}." /> 
@@ -1135,7 +1138,11 @@
     <label.instantFinish value="Baigti tyrinėjimus"/>
     <label.buyCreds value="Pirkti kredus"/>
     <description.instantFinishCost>
-    <![CDATA[Bagti tyrinėjimus akimirksniu tau kainuos <span fontWeight="bold">{0 one[? kredą] tens[? kredų] many[? kredus]}</span>.]]>
+      <p><![CDATA[
+      Baigti tyrinėjimus akimirksniu tau kainuos 
+      <span fontWeight="bold">{0 one[? kredą] tens[? kredų] 
+        many[? kredus]}</span>.
+      ]]></p>
     </description.instantFinishCost>
   </Exploration>
 
@@ -1375,7 +1382,7 @@
       <p>Pažymėta: tavo laivynas stengsis išvengti nebūtinų mūšių su ateivių laivais,
       todėl jis gali užtrukti ilgiau, jeigu tavo kelyje stovi ateiviai.</p>
       <p>Nepažymėta: tavo laivynas skris greičiausiu maršrutu ir kausis su ateiviais 
-      ęsančiais jo kelyje.</p>
+      esančiais jo kelyje.</p>
     </description.avoidNpc>
   </Movement>
 
@@ -1734,7 +1741,7 @@
       surinkome. Užtikriname tave, kad PANAUDOSIME juos tobulinant mūsų 
       Anti-Vabalinę formulę, jog tavo žaidimas būtų toks malonus, kaip tik
       žmogiškai įmanoma ;)</p>
-      <p>Taigi tiesiog nukopijuok apačioje ęsantį tekstą į iškarpinę (arba 
+      <p>Taigi tiesiog nukopijuok apačioje esantį tekstą į iškarpinę (arba 
       spustelėk mūsų patogiai padėtą „[reference:label.clientCrash.copy]“
       mygtuką) ir keliauk į forumą, kad praneštum apie šią klaidą. Už tavo 
       sunkų darbą bus atlyginta. Mes pažadam. Kosminis mažojo pirštelio pažadas.
@@ -1815,13 +1822,13 @@
     <!-- HAVE_POINTS, HAVE_XXX_POINTS
     0: count of points to have -->
     <objectiveText.HaveSciencePoints 
-    value="Surink {0} moklso {0 1sts[tašką] tens[taškų] many[taškus]}" />
+    value="Surink {0} mokslo {0 1sts[tašką] tens[taškų] many[taškus]}" />
     <objectiveText.HaveEconomyPoints 
     value="Surink {0} ekonomikos {0 1sts[tašką] tens[taškų] many[taškus]}" />
     <objectiveText.HaveVictoryPoints 
     value="Surink {0} pergalės {0 1sts[tašką] tens[taškų] many[taškus]}" />
     <objectiveText.HaveArmyPoints 
-    value="Surink {0} armijos {0 1sts[tašką] tens[taškų] many[taškus]}" />
+    value="Surink {0} kariuomenės {0 1sts[tašką] tens[taškų] many[taškus]}" />
     <objectiveText.HaveWarPoints 
     value="Surink {0} karo {0 1sts[tašką] tens[taškų] many[taškus]}" />
     <objectiveText.HavePoints 
@@ -1935,7 +1942,7 @@
       <p>Sveiki atvykę, Komandore.</p>
 
       <p>Mes sėkmingai nutupdėme motininį laivą šioje planetoje ir remiantis 
-      pirminiais žvalgybos duomenimis, čia ęsame ne vieni. Inžinieriai įrengė 
+      pirminiais žvalgybos duomenimis, čia esame ne vieni. Inžinieriai įrengė 
       gynybos perimetrą, tačiau šis išeikvoja gerokai daugiau energijos, nei 
       jos pagamina mūsų generatoriai. Tokiomis sąlygomis ilgai čia 
       netversime!</p>
@@ -2014,7 +2021,7 @@
 
       <p>
         Skubu pranešti, kad išteklių gavyba šioje planetoje vyksta sklandžiai. 
-        Nors iš pirmo žvilgsnio atrodo, kad ęsame apsirūpinę, aš negaliu 
+        Nors iš pirmo žvilgsnio atrodo, kad esame apsirūpinę, aš negaliu 
         atsikratyti minčių apie mūsų galimybių ribas. Ši planeta tokia 
         turtinga ištekliais! Mes galime iš jos išspausti daug, daug daugiau!      
       </p>
@@ -2046,7 +2053,7 @@
       <p>
         Žvalgyba praneša apie keistus triukšmus ir tai nėra šiaip vėjo 
         stūgavimas. Žvalgų nerimą patvirtina ir skeneriai, kuriuose stebime 
-        keistas anomalijas. Įtarimai, kad šioje planetoje ęsame ne vieni 
+        keistas anomalijas. Įtarimai, kad šioje planetoje esame ne vieni 
         pasitvirtino, o kol nežinome su kuo susidūrėme, negalime pasikliauti 
         tik gynybinio perimetro apsauga. 
       </p>
@@ -2366,7 +2373,7 @@
         Jūsų ryžtas ir nusiteikimas asmeniškai vadovauti mūšyje 
         dalyvaujantiems kariams verti pagarbos. Esu įsitikinusi, kad jūs tą 
         patį pasakytumėte apie kiekvieną jūsų įsakymus vykdžiusi karį. 
-        Atkreipkite dėmesį, kad kai kurie, nuolatos greta ęsantys, kovotojai 
+        Atkreipkite dėmesį, kad kai kurie, nuolatos greta esantys, kovotojai 
         tapo labiau patyrę. Jie tapo efektyvesni ir atsparesni priešų atakoms. 
       </p>
       <p>
@@ -2681,7 +2688,7 @@
     <about.16>
       <p>Komandore.</p>
       <p>
-        Tiesiog užsukau pasakyti, kad ęsate didis vadovas ir nuostabus 
+        Tiesiog užsukau pasakyti, kad esate didis vadovas ir nuostabus 
         lyderis. Jūsų dėka mes daug pasiekėme ir už tai esame dėkingi. 
       </p>
     </about.16>
@@ -3095,7 +3102,7 @@
     <prompt.selectPlanet value="Tavo planetos" />
 
     <message.battleground>
-      <p>Planetų, ęsančių šioje saulės sistemoje, užėmimas ir kontrolė duoda
+      <p>Planetų, esančių šioje saulės sistemoje, užėmimas ir kontrolė duoda
       tau Pergalės Taškų, kredų ir karių.</p>
     </message.battleground>
     <message.planetRenamed 
@@ -3107,7 +3114,7 @@
     <message.allianceFull value="Sąjunga pilna"/>
     <tooltip.allianceFull>
       <p>Tavo sąjunga pilna.</p>
-      <p>Kad galėtum pakviestį šį žaidėją į savo sąjungą, išmesk ęsamus žaidėjus
+      <p>Kad galėtum pakviestį šį žaidėją į savo sąjungą, išmesk esamus žaidėjus
       arba patobulink savo sąjungų technologiją.</p>
     </tooltip.allianceFull>
     
