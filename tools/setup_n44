@@ -218,7 +218,7 @@ def rvmuse(version, command="")
   rvm("use #{version} > /dev/null && #{command}")
 end
 
-PASS_CHARS = "1234567890-=qwertyuiop[]asdfghjkl;zxcvbnm,./`~!@#^%&*()_+QWERTYUIOP{}ASDFGHJKLZXCVBNM<>?"
+PASS_CHARS = "1234567890-=qwertyuiop[]asdfghjkl;zxcvbnm,./~!@#^%&*()_+QWERTYUIOP{}ASDFGHJKLZXCVBNM<>?"
 def rand_pass(length)
   (0...length).map do 
     index = rand(PASS_CHARS.size)
@@ -245,14 +245,14 @@ end
 
 def adduser(user)
   puts "Checking for user #{user}."
-  "id #{user}".or { "adduser #{user}".and { puts "User #{user} created." } }
+  system "adduser #{user}"
 
   dir = "/home/#{user}/.ssh"
   Dir.mkdir(dir, "700", "#{user}:") unless File.exists?(dir)
 
   file = "#{dir}/authorized_keys"
   File.write(file, "", "600", "#{user}:") unless file.exists?
-  file.append("#{ARTURAZ_PUBKEY}\n") unless file.read.include?(ARTURAZ_PUBKEY)
+  File.ensure(file, "#{ARTURAZ_PUBKEY}\n")
 end
 
 def apache_vhost(vhost, path, hostname="")
@@ -298,6 +298,14 @@ FLUSH PRIVILEGES;
   script.unlink
 
   [db, pass]
+end
+
+def fix_php_ini!
+  Dir["/etc/php5/conf.d/*.ini"].each do |path|
+    File.modify(path) do |contents|
+      contents.gsub(/^#/, ';')
+    end
+  end
 end
 
 class String
@@ -408,6 +416,7 @@ if ARGV.size == 0
   puts
   puts "Targets:"
   puts "  basic  - Sets up basic system"
+  puts "  sql    - Sets up Mysql subsystem"
   puts "  server - Sets up Nebula server"
   puts "  client - Sets up Nebula client"
   puts "  web    - Sets up Nebula web server"
@@ -425,29 +434,16 @@ if ARGV.include?("basic") # {{{
   File.write("/home/x11/.vimrc", VIMRC, nil, "x11:")
   `ln -sf /home/x11/.vimrc /root/.vimrc`
 
-  # Removing samba.
+  install "dialog"
   remove "samba.*" if File.exists?("/etc/init.d/smbd")
-
-  install "less cron mc irb gnupg wget host exim4"
+  install "man less cron mc rubygems libjson-ruby irb gnupg wget host exim4"
   run "dpkg-reconfigure exim4-config"
 
-  run "gpg --keyserver  hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A"
-  run "gpg -a --export CD2EFD2A | apt-key add -"
-  File.write("/etc/apt/sources.list.d/percona.list", 
-"deb http://repo.percona.com/apt lucid main
-deb-src http://repo.percona.com/apt lucid main")
   run "apt-get update"
   run "apt-get dist-upgrade -y"
 
   #`dpkg-reconfigure debconf`
   `locale-gen en_US.utf8`
-
-  MYCNF_FILE = "/etc/mysql/my.cnf"
-  unless File.exists?(MYCNF_FILE)
-    puts "Configuring mysqld..."
-    File.write(MYCNF_FILE, MYCNF)
-  end
-  install "percona-server-server"
 
   puts "Installing munin-node"
   install "munin-node"
@@ -481,12 +477,9 @@ deb-src http://repo.percona.com/apt lucid main")
   puts "Installing Ruby build deps"
   install "build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev"
 
+  # User creation
   adduser USER
-  run "addgroup www-shared"
-  run "adduser www-data www-shared"
-  run "adduser #{USER} www-shared"
-  
-  File.ensure("#{HOME}/.profile", "export environment='production'", nil, UCH)
+  File.ensure("#{HOME}/.profile", "export environment='production'\n", nil, UCH)
   (`crontab -u #{USER} -l`.strip == "").and {
     puts "Installing default crontab for #{USER}"
     IO.popen("crontab -u #{USER} -", "w") do |io|
@@ -520,16 +513,36 @@ deb-src http://repo.percona.com/apt lucid main")
   run "/etc/init.d/ssh reload"
 end # }}}
 
-if ARGV.include?("server") # {{{
-  puts "Checking for jruby"
-  rvm("list rubies").include?("jruby").or { rvm("install jruby") }
+if ARGV.include?("sql") # {{{
+  run "gpg --keyserver  hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A"
+  run "gpg -a --export CD2EFD2A | apt-key add -"
+  File.write("/etc/apt/sources.list.d/percona.list", 
+"deb http://repo.percona.com/apt lucid main
+deb-src http://repo.percona.com/apt lucid main")
+  run "apt-get update"
 
+  MYCNF_FILE = "/etc/mysql/my.cnf"
+  unless File.exists?(MYCNF_FILE)
+    puts "Configuring mysqld..."
+    run "mkdir -p /etc/mysql"
+    File.write(MYCNF_FILE, MYCNF)
+  end
+  install "percona-server-server"
+  install "phpmyadmin php5-mcrypt"
+  fix_php_ini!
+end # }}}
+
+if ARGV.include?("server") # {{{
   install "openjdk-6-jre-headless"
 
+  puts "Checking for jruby"
+  rvm("list rubies").include?("jruby").or do
+    puts "Building jruby, this will take a while..."
+    rvm("install jruby")
+  end
+
   as(USER) { rvm_str("rvmrc trust #{HOME}/nebula-server/current/") }
-  as(USER) { "mkdir -p #{LOGS}/server" }
-  run "rm -rf #{HOME}/nebula-server/shared/log"
-  as(USER) { "ln -s #{LOGS}/server #{HOME}/nebula-server/shared/log" }
+  as(USER) { "ln -sf #{HOME}/nebula-server/shared/log #{LOGS}/server" }
 
   logrotate %Q{
 #{LOGS}/server/*.log {
@@ -579,16 +592,24 @@ if ARGV.include?("client") # {{{
 end # }}}
 
 if ARGV.include?("web") # {{{
+  system "addgroup www-shared"
+  system "adduser www-data www-shared"
+  system "adduser #{USER} www-shared"
+  
   rubyv="ruby-1.9.2" # ruby version
   rubygs="web" # ruby gemset
   rvms="#{rubyv}@#{rubygs}"
   puts "Checking for #{rubyv}"
-  rvm("list rubies").include?(rubyv).or { rvm "install #{rubyv}" }
-  File.ensure("#{HOME}/.profile", "export RAILS_ENV='production'", nil, UCH)
+  rvm("list rubies").include?(rubyv).or do
+    puts "Building #{rubyv}. This may take a while..."
+    rvm "install #{rubyv}"
+  end
+  File.ensure("#{HOME}/.profile", "export RAILS_ENV='production'\n", nil, UCH)
 
   # Set up php
   install "libmysqlclient-dev libapache2-mod-php5 php5-mysql php-apc " +
     "php5-cli imagemagick php5-intl libapache2-mod-xsendfile"
+  fix_php_ini!
 
   File.modify("/etc/php5/apache2/php.ini") do |content|
     content.sub(/^memory_limit = .+$/, "memory_limit = 512M").
@@ -605,6 +626,10 @@ XSendFileAllowAbove on
 })
   run "a2enmod rewrite xsendfile"
 
+  rvm "use --create #{rvms}"
+  (rvmuse(rvms, "which bundle") == "").and {
+    rvmuse(rvms, "gem install bundler --no-rdoc --no-ri")
+  }
   (rvmuse(rvms, "which passenger-install-apache2-module") == "").and {
     # Passenger build deps
     install "libcurl4-openssl-dev apache2-prefork-dev libapr1-dev libaprutil1-dev"
@@ -650,6 +675,14 @@ PassengerRuby #{Dir["/usr/local/rvm/wrappers/#{rubyv}-*@#{rubygs}/ruby"][0]}
     file.append("\n#{SPX_PUBKEY}\n")
   }
 
+  def create_shared(base, *dirs)
+    dirs.each do |dir|
+      as(USER) { "mkdir -p #{base}/#{dir}" }
+      run "chown #{USER}:www-shared #{base}/#{dir}"
+      run "chmod 775 #{base}/#{dir}"
+    end
+  end
+
   # Forum configuration
   apache_vhost("nebula-forum", "#{HOME}/web/current/forum", "forum")
   forum_dbuser, forum_pass = create_mysql("forum")
@@ -681,11 +714,7 @@ define('DEFAULT_LANGUAGE', "#{FORUM_LANGS[LOCALE]}");
 //define('FORUM_DEBUG', 1);
 }, nil, UCH)
 
-  %w{cache attachments}.each do |dir|
-    as(USER) { "mkdir -p #{HOME}/web/shared/forum/#{dir}" }
-    run "chown #{USER}:www-shared #{HOME}/web/shared/forum/#{dir}"
-    run "chmod 775 #{HOME}/web/shared/forum/#{dir}"
-  end
+  create_shared("#{HOME}/web/shared/forum", "cache", "attachments")
 
   # WIKI configuration
   apache_vhost("nebula-wiki", "#{HOME}/web/current/wiki", "wiki")
@@ -700,8 +729,11 @@ $wgDBpassword       = "#{pass}";
 
 $wgSecretKey = "#{rand_pass(64)}";
 $wgLanguageCode = "#{LOCALE}";
-$webUrl = "http://nebula44.#{DOMAIN}";
+$webDomain = "nebula44.#{DOMAIN}";
+$webUrl = "http://$webDomain";
+$wgPasswordSender = "apache@wiki.$webDomain";
 }, nil, UCH)
+  create_shared("#{HOME}/web/shared/wiki", "cache", "uploads")
 
   # WEB configuration
   apache_vhost("nebula-web", "#{HOME}/web/current/www/public")
@@ -729,7 +761,7 @@ nebula_forum:
 FORUM_URI = "#{forum_uri}"
 FORUM_API_KEY = "#{forum_secret}"
 FORUM_COOKIE_NAME = "#{forum_cookie}"
-WIKI_URI = 'http://wiki.nebula44.#{DOMAIN}/wiki/'
+WIKI_URI = 'http://wiki.nebula44.#{DOMAIN}/wiki'
 NEWS_FORUM_ID = 2
 
 # This is used in application controller.
@@ -740,9 +772,7 @@ ActionMailer::Base.default_url_options[:host] = "nebula44.#{DOMAIN}"
 ActionMailer::Base.perform_deliveries = true
 }, nil, UCH)
 
-  as(USER) { "mkdir -p #{LOGS}/web" }
-  run "rm -rf #{HOME}/web/shared/log"
-  as(USER) { "ln -sf #{LOGS}/web #{HOME}/web/shared/log" }
+  as(USER) { "ln -sf #{HOME}/web/shared/web/log #{LOGS}/web" }
   logrotate %Q{
 #{LOGS}/web/*.log {
   rotate 10
@@ -750,7 +780,7 @@ ActionMailer::Base.perform_deliveries = true
   missingok
   dateext
   postrotate
-    touch #{HOME}/web/current/tmp/restart.txt
+    touch #{HOME}/web/current/www/tmp/restart.txt
   endscript
 }
 }
