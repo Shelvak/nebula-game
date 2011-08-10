@@ -30,6 +30,10 @@ package models
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
    
+   /**
+    * @eventType mx.events.PropertyChangeEvent.PROPERTY_CHANGE
+    */
+   [Event(name="propertyChange", type="mx.events.PropertyChangeEvent")]
    
    /**
     * A class that implements "model locator" pattern (idea more precisely) from the
@@ -286,11 +290,11 @@ package models
       public var selectedBuilding:Building = null;
       
       
-      prop_name static const selectedFolliange:String = "selectedFolliage";
+      prop_name static const selectedFoliage:String = "selectedFoliage";
       /**
-       * A blocking folliage currently selected. <code>selectedBuilding</code> and
+       * A blocking foliage currently selected. <code>selectedBuilding</code> and
        * <code>selectedBlockingFolliage</code> are mutually exclusive.
        */
-      public var selectedFolliage:BlockingFolliage;
+      public var selectedFoliage:BlockingFolliage;
    }
 }

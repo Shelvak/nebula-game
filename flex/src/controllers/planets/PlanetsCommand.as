@@ -35,6 +35,11 @@ package controllers.planets
        * @see controllers.planets.actions.FinishExplorationAction
        */
       public static const FINISH_EXPLORATION:String = "planets|finish_exploration";
+      
+      /**
+       * @see controllers.planets.actions.RemoveFoliageAction
+       */
+      public static const REMOVE_FOLIAGE:String = "planets|remove_foliage";
             
       /**
        * @see controllers.planets.actions.EditAction

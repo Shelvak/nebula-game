@@ -29,7 +29,7 @@ package controllers.planets.actions
       public override function applyClientAction(cmd:CommunicationCommand) : void {
          GF.lockApplication = true;
          var params:FinishExplorationActionParams = FinishExplorationActionParams(cmd.parameters);
-         sendMessage(new ClientRMO({"id": params.id}));
+         sendMessage(new ClientRMO({"id": params.planetId}));
       }
       
       public override function result(rmo:ClientRMO) : void {

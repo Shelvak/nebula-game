@@ -1145,6 +1145,20 @@
       ]]></p>
     </description.instantFinishCost>
   </Exploration>
+  
+  <Terraform>
+    <title.terraform value="Melioracija"/>
+    <title.confirmTerraform value="Melioracija"/>
+    <label.removeFoliage value="Pašalinti objektą"/>
+    <label.buyCreds value="Pirkti kredus"/>
+    <label.cancel value="Atšaukti"/>
+    <message.foliageRemovalCost>
+      <![CDATA[Šį objektą gali pašalinti už <span fontWeight="bold">{0 one[? kredą] tens[? kredų] many[? kredus]}</span>.]]>
+    </message.foliageRemovalCost>
+    <message.foliageRemovalConfirmation>
+      <![CDATA[Šio objekto pašalinimas tau kainuos <span fontWeight="bold">{0 one[? kredą] tens[? kredų] many[? kredus]}</span>. Ar apsisprendei?]]>
+    </message.foliageRemovalConfirmation>
+  </Terraform>
 
   <Formatters>
     <date.shortDate value="YYYY-MM-DD" />

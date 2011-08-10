@@ -13,10 +13,9 @@
                     xmlns:viewport="components.base.viewport.*"
                     xmlns:squadronsscreen="components.squadronsscreen.*"
                     xmlns:infoscreen="components.infoscreen.*"
-                    xmlns:exploration="components.exploration.*"
+                    xmlns:foliage="components.foliage.*"
                     xmlns:ratings="components.ratings.*"
                     xmlns:space="components.map.space.*"
-                    currentState="sidebarCollapsed"
                     xmlns:firstlogin="components.firstlogin.*"
                     xmlns:healing="components.healing.*"
                     xmlns:cchat="components.chat.*"
@@ -24,7 +23,8 @@
                     xmlns:credits="components.credits.*"
                     xmlns:player="components.player.*"
                     xmlns:defensiveportal="components.defensiveportal.*"
-                    xmlns:market="components.market.*">
+                    xmlns:market="components.market.*"
+                    currentState="sidebarCollapsed">
    <fx:Script>
       <![CDATA[
          import components.dailybonus.DailyBonusComp;
@@ -208,7 +208,7 @@
             <buildingSelected:BuildingSelectedSidebar selectedModel="{ML.selectedBuilding}" width="100%" height="100%"/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.BLOCKING_FOLLIAGE}" width="100%" height="100%">
-            <exploration:FolliageSidebar width="100%" height="100%"/>
+            <foliage:CFoliageSidebar width="100%" height="100%"/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.UNITS_ACTIONS}" width="100%" height="100%">
             <unitsscreen:UnitsSelectedSidebar width="100%" height="100%"/>

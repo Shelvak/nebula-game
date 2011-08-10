@@ -19,14 +19,12 @@ package ext.hamcrest.events
     * </pre>
     */
    public class DispatchesMatcherBuilder
-   {      
-      public function DispatchesMatcherBuilder()
-      {
+   {
+      public function DispatchesMatcherBuilder() {
+         super();
       }
       
-      
       private var _target:IEventDispatcher;
-      
       
       /**
        * A target to register listener on.
@@ -36,24 +34,20 @@ package ext.hamcrest.events
        * 
        * @return this
        */
-      public function causesTarget(target:IEventDispatcher) : DispatchesMatcherBuilder
-      {
+      public function causesTarget(target:IEventDispatcher) : DispatchesMatcherBuilder {
          Objects.paramNotNull("target", target);
          _target = target;
          return this;
       }
-      
       
       /**
        * A shortcut for <code>toDispatch (event ("yourEvent"))</code>.
        * 
        * @see #toDispatch()
        */
-      public function toDispatchEvent(eventType:String, eventMatcher:* = null) : DispatchesMatcher
-      {
+      public function toDispatchEvent(eventType:String, eventMatcher:* = null) : DispatchesMatcher {
          return toDispatch(new ExpectedEvent(eventType, eventMatcher));
       }
-      
       
       /**
        * Registers all given events to be dispatched by the target set using <code>causesTarget()</code>
@@ -65,11 +59,9 @@ package ext.hamcrest.events
        * 
        * @return new configured instance of <code>DispatchesMatcher</code>
        */
-      public function toDispatch(... events) : DispatchesMatcher
-      {
+      public function toDispatch(... events) : DispatchesMatcher {
          var expectedEvents:Vector.<ExpectedEvent> = new Vector.<ExpectedEvent>();
-         for each (var event:ExpectedEvent in events)
-         {
+         for each (var event:ExpectedEvent in events) {
             expectedEvents.push(event);
          }
          return new DispatchesMatcher(_target, expectedEvents);

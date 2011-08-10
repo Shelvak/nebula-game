@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:foliage="components.foliage.*">
+   <fx:Script>
+      <![CDATA[
+         [Bindable(event="willNotChange")]
+         private const model:CFoliageSidebarM = new CFoliageSidebarM();
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:VerticalLayout gap="0" horizontalAlign="justify"/>
+   </s:layout>
+   <foliage:CExplorationPanel model="{model.explorationPanelModel}"
+                              visible="{model.explorationPanelVisible}"
+                              includeInLayout="{model.explorationPanelVisible}"/>
+   <!--
+   <foliage:CTerraformPanel panelModel="{model.terraformPanelModel}"
+                            visible="{model.terraformPanelVisible}"
+                            includeInLayout="{model.terraformPanelVisible}"/>
+   -->
+</s:Group>

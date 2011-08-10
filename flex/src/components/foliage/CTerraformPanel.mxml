@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+            xmlns:s="library://ns.adobe.com/flex/spark" 
+            xmlns:mx="library://ns.adobe.com/flex/mx"
+            xmlns:base="components.base.*"
+            title="{panelModel.panelTitle}">
+   <fx:Script>
+      <![CDATA[
+         [Bindable]
+         public var panelModel:CTerraformPanelM;
+      ]]>
+   </fx:Script>
+   <base:layout>
+      <s:VerticalLayout horizontalAlign="justify"
+                        gap="6" paddingLeft="6" paddingRight="6" paddingTop="6" paddingBottom="6"/>
+   </base:layout>
+   <s:RichText textFlow="{panelModel.foliageRemovalCostTextFlow}"/>
+   <s:Group>
+      <s:Button right="0" click="panelModel.buyCreds()" skinClass="components.skins.CreditButtonSkin"
+                label="{panelModel.btnBuyCredsLabel}" visible="{panelModel.btnBuyCredsVisible}"/>
+      <s:Button right="0" click="panelModel.removeFolliage()" skinClass="components.skins.CreditButtonSkin"
+                label="{panelModel.btnRemoveFoliageLabel}" visible="{panelModel.btnRemoveFoliageVisible}"/>
+   </s:Group>
+</base:Panel>
