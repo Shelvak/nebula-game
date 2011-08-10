@@ -1,4 +1,5 @@
 REQUIRED_GEMS = [
+  {:name => 'jruby-openssl', :skip => true},
   {:name => 'activerecord-jdbcmysql-adapter',
     :version => '~>1.1', :skip => true},
   {:name => 'activesupport', :version => '>=3.0.5', :lib => 'active_support'},
