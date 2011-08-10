@@ -162,7 +162,7 @@ class DeployHelpers; class << self
   end
 
   def exec_server(ssh, cmd)
-    ssh.exec!("source $HOME/.bash_profile > /dev/null && cd #{
+    ssh.exec!("source $HOME/.profile > /dev/null && cd #{
       DEPLOY_CONFIG_SERVER_CURRENT
     } && #{cmd}")
   end
@@ -196,7 +196,9 @@ class DeployHelpers; class << self
   def start_server(ssh)
     output = exec_server(ssh, START_SERVER_CMD)
     if output.nil?
-      sleep 1
+      sec = 5
+      puts "  Waiting #{sec} seconds to check for status..."
+      sleep sec
       running = server_running?(ssh)
 
       attempt = 0
