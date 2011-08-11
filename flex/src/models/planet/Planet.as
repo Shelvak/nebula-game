@@ -187,6 +187,11 @@ package models.planet
          }
          if (_buildings != null)
          {
+            ML.units.disableAutoUpdate();
+            units.disableAutoUpdate();
+            Collections.cleanListOfICleanables(_buildings);
+            units.enableAutoUpdate();
+            ML.units.enableAutoUpdate();
             _buildings.list = null;
             _buildings.filterFunction = null;
             _buildings = null;
