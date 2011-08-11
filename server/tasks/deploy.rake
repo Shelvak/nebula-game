@@ -1,3 +1,5 @@
+STDOUT.sync = true
+
 begin
   require 'net/sftp'
 rescue LoadError
@@ -73,7 +75,6 @@ class DeployHelpers; class << self
   def info(env, message)
     $stdout.write("[%s] %s %s" % [
         env, Time.now.strftime("%H:%M:%S"), message])
-    $stdout.flush
 
     if block_given?
       start = Time.now
@@ -181,7 +182,6 @@ class DeployHelpers; class << self
     running = server_running?(ssh)
     while running
       $stdout.write(".")
-      $stdout.flush
 
       exec_server(ssh, STOP_SERVER_CMD)
       running = server_running?(ssh)
@@ -197,14 +197,13 @@ class DeployHelpers; class << self
     output = exec_server(ssh, START_SERVER_CMD)
     if output.nil?
       sec = 5
-      puts "  Waiting #{sec} seconds to check for status..."
+      $stdout.write ". Waiting #{sec} seconds to check for status... "
       sleep sec
       running = server_running?(ssh)
 
       attempt = 0
       until running || attempt >= START_SERVER_TIMEOUT
         $stdout.write(".")
-        $stdout.flush
         attempt += 1
 
         sleep 1
