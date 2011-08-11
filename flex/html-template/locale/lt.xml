@@ -1330,9 +1330,9 @@
     <description.short.solarSystem value="Saulės sistema {0}" />
     <description.short.planet value="Planeta {0}" />
     <description.long.galaxy value="Galaktikos sektorius {0}:{1}" />
-    <description.long.solarSystem 
-      value="Saulės sistemos {0} sektorius {1}:{2}" />
+    <description.long.solarSystem value="Saulės sistemos {0} sektorius {1}:{2}" />
     <description.long.planet value="Saulės sistemos {1} planeta {0}" />
+    <description.long.planetInBattleground value="Arenos planeta {0}" />
 
     <message.locationNotAvailable>
       <p>Tu nebegali peržiūrėti šios vietos</p>

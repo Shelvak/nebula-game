@@ -1334,6 +1334,7 @@
     <description.long.galaxy value="Sector {0}:{1} in Galaxy" />
     <description.long.solarSystem value="Sector {1}:{2} in Solar System {0}" />
     <description.long.planet value="Planet {0} in Solar System {1}" />
+    <description.long.planetInBattleground value="Planet {0} in battleground"/>
 
     <message.locationNotAvailable>
       <p>You can no longer view this location</p>

@@ -22,6 +22,8 @@ package tests.models
    import namespaces.client_internal;
    
    import org.hamcrest.assertThat;
+   import org.hamcrest.object.isFalse;
+   import org.hamcrest.object.isTrue;
    import org.hamcrest.object.notNullValue;
    import org.hamcrest.object.nullValue;
    
@@ -45,8 +47,7 @@ package tests.models
       private var mockRepository:MockRepository;
       
       
-      private function get NAV_CTRL() : NavigationController
-      {
+      private function get NAV_CTRL() : NavigationController {
          return NavigationController.getInstance();
       }
       
@@ -86,6 +87,28 @@ package tests.models
          loc = null;
          mockRepository = null;
       };
+      
+      
+      [Test]
+      public function inBattleground() : void {
+         ML.latestGalaxy.battlegroundId = 100;
+         
+         loc.type = LocationType.GALAXY;
+         assertThat( "when galaxy", loc.inBattleground, isFalse() );
+         
+         loc.type = LocationType.SOLAR_SYSTEM;
+         assertThat( "when solar system", loc.inBattleground, isFalse() );
+         
+         loc.id = ML.latestGalaxy.battlegroundId;
+         assertThat( "when battleground", loc.inBattleground, isFalse() );
+         
+         loc.type = LocationType.SS_OBJECT;
+         loc.solarSystemId = 1;
+         assertThat( "when ss object not in battleground", loc.inBattleground, isFalse() );
+         
+         loc.solarSystemId = ML.latestGalaxy.battlegroundId;
+         assertThat( "when ss object in battleground", loc.inBattleground, isTrue() );
+      }
       
       
       [Test]
