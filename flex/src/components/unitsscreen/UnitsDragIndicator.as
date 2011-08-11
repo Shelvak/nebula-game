@@ -17,6 +17,7 @@ package components.unitsscreen
    import spark.components.Group;
    import spark.components.IItemRenderer;
    import spark.components.List;
+   import components.unitsscreen.simple.DraggedUnitsIndicator;
    
    /**
     *  The ListItemDragProxy class defines the default drag proxy used 

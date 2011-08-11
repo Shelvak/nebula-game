@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:base="components.base.*"
+               xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:unitsscreen="components.unitsscreen.*"
+               width="100%" minWidth="20" minHeight="30" 
+               xmlns:units="components.unitsscreen.units.*">
+   <fx:Metadata>
+      [HostComponent("components.unitsscreen.simple.CUnitScreenFlank")]
+   </fx:Metadata>
+   <fx:Script>
+      import components.unitsscreen.UnitsDragIndicator;
+      import components.unitsscreen.events.UnitsScreenEvent;
+      
+      import config.BattleConfig;
+      
+      import models.Owner;
+      
+      import mx.events.FlexEvent;
+      
+      import utils.assets.AssetNames;
+      import utils.datastructures.Collections;
+      import utils.locale.Localizer;
+      
+      protected function unitsList_rollOverHandler(event:MouseEvent):void
+      {
+         stage.addEventListener(MouseEvent.MOUSE_UP,hostComponent.unitsList_dragDropHandler, true);
+      }
+      
+      protected function unitsList_rollOutHandler(event:MouseEvent):void
+      {
+         stage.removeEventListener(MouseEvent.MOUSE_UP,hostComponent.unitsList_dragDropHandler, true);
+      }
+      
+   </fx:Script>
+   <base:states>
+      <s:State name="normal"/>
+      <s:State name="disabled"/>
+      <s:State name="normalWithControlBar"/>
+      <s:State name="disabledWithControlBar"/>
+   </base:states>
+   
+   <!-- Title container -->
+   <s:Group id="titleCont" left="0" width="21" top="0" bottom="0" 
+            toolTip="{Localizer.string('Units', 'tooltip.flank',
+            [Localizer.string('Units', 'label.flankNr'+hostComponent.flankModel.nr),
+            BattleConfig.getFlankHitChance(hostComponent.flankModel.nr)])}">
+      <!-- Background of the title -->
+      <s:Path alpha="0.6" data="M 0 8 L 8 0 L {titleCont.width-1} 0 L {titleCont.width-1} 
+              {titleCont.height-1} L 0 {titleCont.height-1} Z" 
+              winding="nonZero" top="0" left="0" right="0" bottom="0">
+         <s:fill>
+            <s:LinearGradient rotation="270">
+               <s:GradientEntry color="0x004F68" ratio="0"/>
+               <s:GradientEntry alpha="0.282353" color="0x00232E" ratio="1"/>
+            </s:LinearGradient>
+         </s:fill>
+         <s:stroke>
+            <s:SolidColorStroke caps="none" joints="miter" miterLimit="4" scaleMode="normal" weight="1"/>
+         </s:stroke>
+      </s:Path>
+      <!--- Title of the component. -->
+      <s:Button skinClass="components.skins.ZoomInButtonSkin" 
+                click="hostComponent.selectAllUnits()" 
+                horizontalCenter="0" y="10"/>
+      <s:Button skinClass="components.skins.ZoomOutButtonSkin" 
+                click="hostComponent.deselectAll()" 
+                horizontalCenter="0" y="28"/>
+      <s:Label styleName="panelTitle" 
+               text="{Localizer.string('Units', 'label.flankNr'+hostComponent.flankModel.nr)}"
+               top="50" horizontalCenter="-3" rotation="90"/> 
+   </s:Group>
+   
+   
+   <s:Group left="22" right="0" top="0" bottom="0">
+      
+      <base:PanelContentArtwork left="0" right="0" top="0" bottom="0"/>
+      
+      <!--- All the content goes here -->
+      <s:Group id="contentGroup" left="12" right="1" top="13" bottom="15">
+         <base:Scroller id="scrollCont" top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off" 
+                        stepMultiplier="5">
+            <s:Group width="100%" height="100%">
+               <s:DataGroup id="unitsList" 
+                            dataProvider="{hostComponent.flankModel.flankUnits}" 
+                            left="0" right="0" height="100%"
+                            
+                            rollOver="unitsList_rollOverHandler(event)"
+                            rollOut="unitsList_rollOutHandler(event)"
+                            itemRenderer="components.unitsscreen.simple.IRUnitScreenUnit">
+                  <s:layout>
+                     <s:TileLayout id="flankLayout" horizontalGap="1"
+                                   requestedColumnCount="{unitsList.width / (flankLayout.columnWidth+1)}"/>
+                  </s:layout>
+               </s:DataGroup>
+            </s:Group>
+         </base:Scroller>
+      </s:Group>
+   </s:Group>
+</base:BaseSkin>

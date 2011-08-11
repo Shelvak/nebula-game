@@ -168,11 +168,11 @@
             }
             for (var key: int = 0; key < MAX_FLANKS; key++)
             {
-               flanks.addItem(new MHealFlank(new ModelsCollection(tempSelfObj[key]), key+1,
+               flanks.addItem(new MHealFlank(new ModelsCollection(tempSelfObj[key]), key,
                   Owner.PLAYER, selectionClass));
-               napFlanks.addItem(new MHealFlank(new ModelsCollection(tempNapObj[key]), key+1,
+               napFlanks.addItem(new MHealFlank(new ModelsCollection(tempNapObj[key]), key,
                   Owner.NAP, selectionClass));
-               allyFlanks.addItem(new MHealFlank(new ModelsCollection(tempAllyObj[key]), key+1,
+               allyFlanks.addItem(new MHealFlank(new ModelsCollection(tempAllyObj[key]), key,
                   Owner.ALLY, selectionClass));
             }
             dispatchUnitsChangeEvent();
@@ -201,9 +201,9 @@
                         : (unitToAdd.owner == Owner.ALLY?allyFlanks:napFlanks);
                      for each (var flank: MHealFlank in cFlanks)
                      {
-                        if (flank.nr == (unitToAdd.flank+1))
+                        if (flank.nr == (unitToAdd.flank))
                         {
-                           flank.flank.addItem(unitToAdd);
+                           flank.flankUnits.addItem(unitToAdd);
                         }
                      }
                   }
@@ -319,7 +319,7 @@
             if (_flanks)
             {
                for each (var flank: MHealFlank in _flanks)
-               count += flank.flank.length;
+               count += flank.flankUnits.length;
             }
             return count;
          }

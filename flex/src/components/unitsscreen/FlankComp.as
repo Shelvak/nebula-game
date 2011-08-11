@@ -7,6 +7,11 @@ package components.unitsscreen
    
    import models.unit.MCUnitScreen;
    
+   import mx.collections.ArrayCollection;
+   import mx.collections.ListCollectionView;
+   
+   import utils.datastructures.Collections;
+   
    [SkinState("transfering")]
    [SkinState("normal")]
    
@@ -141,7 +146,7 @@ package components.unitsscreen
             {
                flanksObj[unit.id] = [flankModel.nr - 1, null, unit];
             }
-            uScreen.updateUnits(flanksObj);
+            uScreen.updateChanges();
          }
          deselect = true;
       }
@@ -166,9 +171,9 @@ package components.unitsscreen
          {
             var allSelection: Vector.<int> = new Vector.<int>;
             var total: int = 0;
-            for each (var unit: Unit in flankModel.flank)
+            for each (var unit: Unit in flankModel.flankUnits)
             {
-               var idx: int = flankModel.flank.getItemIndex(unit);
+               var idx: int = flankModel.flankUnits.getItemIndex(unit);
                if (!unitsList.selectedIndices || unitsList.selectedIndices.lastIndexOf(idx) == -1)
                {
                   if (((unit.volume + total) <= freeStorage) || (freeStorage == -1) || !_transfer)
@@ -210,7 +215,7 @@ package components.unitsscreen
                unit.newStance = e.stance;
             }
             ML.units.enableAutoUpdate();
-            uScreen.updateUnits(flanksObj);
+            uScreen.updateChanges();
             deselectAll();
          }
       }
@@ -222,15 +227,16 @@ package components.unitsscreen
          if ((flankModel.selection.length < unitsList.selectedIndices.length) && _transfer 
             && freeStorage != -1 && !selectDeselectAllRequested)
          {
-            flankModel.selection = flankModel.selection.filter(function(item: Unit, index:int, vector:*): Boolean
+            flankModel.selection = Collections.filter(flankModel.selection,
+               function(item: Unit): Boolean
             {
                return unitsList.selectedItems.indexOf(item) != -1;
             });
             var didntFit: Boolean = false;
             var newSelectedIndices: Vector.<int> = new Vector.<int>;
-            flankModel.selection = unitsList.selectedItems.filter(function(item: Unit, index:int, vector:*): Boolean
+            var tempSelection: Vector.<Object> = unitsList.selectedItems.filter(function(item: Unit, index:int, vector:*): Boolean
             {
-               if (flankModel.selection.indexOf(item) != -1)
+               if (flankModel.selection.getItemIndex(item) != -1)
                {
                   newSelectedIndices.push(unitsList.selectedIndices[index]);
                   return true;
@@ -251,6 +257,11 @@ package components.unitsscreen
                }
             });
             unitsList.selectedIndices = newSelectedIndices;
+            flankModel.selection = new ArrayCollection();
+            for each (var unit: Unit in tempSelection)
+            {
+               flankModel.selection.addItem(unit);
+            }
             if (didntFit)
             {
                Messenger.show(Localizer.string('Units', 'message.notSelected'), MESSAGE_DURATION);
@@ -259,7 +270,11 @@ package components.unitsscreen
          }
          else
          {
-            flankModel.selection = unitsList.selectedItems;
+            flankModel.selection = new ArrayCollection();
+            for each (unit in unitsList.selectedItems)
+            {
+               flankModel.selection.addItem(unit);
+            }
             uScreen.dispatchSelectionChangeEvent();
          }
          selectDeselectAllRequested = false;

@@ -553,13 +553,7 @@ package controllers.ui
       public function showUnits(units:ListCollectionView, location: * = null, target: Building = null,
                                 kind: String = null, owner: int = Owner.PLAYER) : void
       {
-         var uScreen: MCUnitScreen = MCUnitScreen.getInstance();
-         uScreen.units = units;
-         uScreen.location = location;
-         uScreen.target = target;
-         uScreen.currentKind = kind;
-         uScreen.owner = owner;
-         uScreen.prepare();
+         MCUnitScreen.getInstance().prepare(units, location, target, kind, owner);
          showNonMapScreen(_screenProperties[MainAreaScreens.UNITS]);
       }
       

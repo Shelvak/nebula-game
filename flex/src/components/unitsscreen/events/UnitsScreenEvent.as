@@ -15,14 +15,18 @@ package components.unitsscreen.events
       public static const FORMATION_CHANGE: String = 'formationChange';
       public static const UNIT_COUNT_CHANGE: String = 'unitsChange';
       public static const FLANK_MODEL_CHANGE: String = 'flankModelChange';
-      public static const SELECTION_CHANGE: String = 'unitsChange';
+      public static const SELECTION_CHANGE: String = 'selectionChange';
+      public static const SET_STANCE: String = 'setStance';
+      public static const DROP_UNITS: String = 'dropUnits';
+      
+      
+      public var stance: int;
       
       
       
-      
-      
-      public function UnitsScreenEvent(type:String)
+      public function UnitsScreenEvent(type:String, _stance: int = 0)
       {
+         stance = _stance;
          super(type, false, false);
       }
    }

@@ -10,6 +10,7 @@ package models.healing
    import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.ListCollectionView;
    
    import utils.locale.Localizer;
    
@@ -27,7 +28,7 @@ package models.healing
          }
          if (selectedPrice.addIfPossible(HealPrice.calculateHealingPrice([unit], center.level, center.type)))
          {
-            flank.selection.push(unit);
+            flank.selection.addItem(unit);
             return true;
          }
          return false;
@@ -44,9 +45,9 @@ package models.healing
       public function selectFlank(flank: MHealFlank): Boolean
       {
          var selectedAll: Boolean = true;
-         for each (var unit: Unit in flank.flank)
+         for each (var unit: Unit in flank.flankUnits)
          {
-            if (flank.selection.indexOf(unit) == -1)
+            if (flank.selection.getItemIndex(unit) == -1)
             {
                if (!selectUnit(unit, flank))
                {
@@ -82,10 +83,10 @@ package models.healing
                selectedPrice.substract(HealPrice.calculateHealingPrice([unit], center.level, center.type));
             }
          }
-         var newSelection: Vector.<Object> = new Vector.<Object>;
+         var newSelection: ArrayCollection = new ArrayCollection();
          for each (unit in selection)
          {
-            if (flank.selection.indexOf(unit) == -1)
+            if (flank.selection.getItemIndex(unit) == -1)
             {
                if (!selectUnit(unit, flank))
                {
@@ -93,12 +94,12 @@ package models.healing
                }
                else
                {
-                  newSelection.push(unit);
+                  newSelection.addItem(unit);
                }
             }
             else
             {
-               newSelection.push(unit);
+               newSelection.addItem(unit);
             }
          }
          
@@ -113,7 +114,7 @@ package models.healing
          {
             if (flank.selection.length > 0)
             {
-               var deselectedUnit: Unit = flank.selection.pop();
+               var deselectedUnit: Unit;// = flank.selection.pop();
                selectedPrice.substract(HealPrice.calculateHealingPrice([deselectedUnit], center.level, center.type));
                checkIfNotNegative();
                return;

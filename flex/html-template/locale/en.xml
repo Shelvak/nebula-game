@@ -3656,8 +3656,8 @@
     <label.enoughIn value="Enough in {0}" />
     <label.currentUnits value="Units" />
     <label.currentFacilities value="Facilities" />
-    <label.flankNr1 value="First" />
-    <label.flankNr2 value="Second" />
+    <label.flankNr0 value="First" />
+    <label.flankNr1 value="Second" />
     <tooltip.flank>
       <p>{0} flank</p>
       <p>Units in {0} flank has {1}% probability to be hit.</p>
@@ -3750,11 +3750,11 @@
     <kind.ground value="Ground ({0})" />
     <kind.space value="Space ({0})" />
     <kind.moving value="Moving ({0})" />
-    <kind.launch value="Preparing for launch" />
+    <kind.launch value="Preparing for launch ({0})" />
     <kind.stored value="Stored ({0})" />
     <kind.land value="Land ({0})" />
     <kind.resources value="Resources" />
-    <kind.squadron value="Fleet" />
+    <kind.squadron value="Fleet ({0})" />
     <kind.self value="Your units" />
     <kind.nap  value="Nap units" />
     <kind.ally value="Alliance units" />

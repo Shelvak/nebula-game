@@ -24,7 +24,7 @@
                     xmlns:credits="components.credits.*"
                     xmlns:player="components.player.*"
                     xmlns:defensiveportal="components.defensiveportal.*"
-                    xmlns:market="components.market.*">
+                    xmlns:market="components.market.*" xmlns:simple="components.unitsscreen.simple.*" xmlns:facilities="components.unitsscreen.facilities.*">
    <fx:Script>
       <![CDATA[
          import components.dailybonus.DailyBonusComp;
@@ -125,10 +125,10 @@
             <technologies:TechnologyTree id="techTree" width="100%" height="100%"/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{MainAreaScreens.FACILITIES}" width="100%" height="100%">
-            <unitsscreen:UnitsBuild id="facilities" width="100%" height="100%"/>
+            <facilities:UnitsBuild id="facilities" width="100%" height="100%"/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{MainAreaScreens.UNITS}" width="100%" height="100%">
-            <unitsscreen:UnitsScreen width="100%" height="100%"/>
+            <simple:UnitsScreen width="100%" height="100%"/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{MainAreaScreens.STORAGE}" width="100%" height="100%">
             <unitsscreen:StorageScreen width="100%" height="100%"/>
@@ -211,7 +211,7 @@
             <exploration:FolliageSidebar width="100%" height="100%"/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.UNITS_ACTIONS}" width="100%" height="100%">
-            <unitsscreen:UnitsSelectedSidebar width="100%" height="100%"/>
+            <simple:UnitsSelectedSidebar width="100%" height="100%"/>
          </s:NavigatorContent>
          <s:NavigatorContent name="{SidebarScreens.LOAD_UNLOAD}" width="100%" height="100%">
             <unitsscreen:LoadUnloadSidebar width="100%" height="100%"/>

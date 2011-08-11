@@ -7,7 +7,7 @@
         xmlns:notifications="components.notifications.*"
         xmlns:unitsscreen="components.unitsscreen.*"
         xmlns:parts="components.notifications.parts.*"
-        xmlns:location="components.location.*">
+        xmlns:location="components.location.*" xmlns:units="components.unitsscreen.units.*">
    
    <fx:Metadata>
       [HostComponent("components.notifications.parts.IRCombatLog")]
@@ -217,7 +217,7 @@
             <s:itemRenderer>
                <fx:Component>
                   <s:ItemRenderer>
-                     <unitsscreen:UnitComp type="{data.type}" hp="{data.hp}" level="{data.level}" stance="{data.stance}"/>
+                     <units:UnitComp type="{data.type}" hp="{data.hp}" level="{data.level}" stance="{data.stance}"/>
                   </s:ItemRenderer>
                </fx:Component>
             </s:itemRenderer>

@@ -16,7 +16,7 @@
    <base:Scroller left="0" top="0" right="0" bottom="0" id="scroller" preventIneffectiveEvents="true"
                   minViewportInset="1" hasFocusableChildren="false" horizontalScrollPolicy="off"
                   stepMultiplier="0" verticalScrollPolicy="on">
-      <s:DataGroup id="dataGroup" itemRenderer="components.unitsscreen.UnitComp">
+      <s:DataGroup id="dataGroup" itemRenderer="components.unitsscreen.IRSimpleUnit">
          <s:layout>
             <s:TileLayout orientation="rows" requestedColumnCount="4" requestedRowCount="1"
                           verticalGap="0" horizontalGap="0"/>

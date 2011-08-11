@@ -57,10 +57,12 @@ package models.unit
       
       public var _units: ListCollectionView;
       
+      public var sourceFlank: UnitsFlank;
+      public var sourceUnits: ListCollectionView;
+      
       public function set units (value: ListCollectionView): void
       {
          _units = value;
-         _units.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
          sortByHp(_units);
       }
       
@@ -68,6 +70,8 @@ package models.unit
       {
          return _units;
       }
+      
+      private var transformedUnits: ArrayCollection;
       
       [Bindable]
       public var owner: int;
@@ -87,12 +91,61 @@ package models.unit
       [Bindable]
       public var currentKind: String = UnitKind.GROUND;
       
-      public var draggedUnits: Object = {};
-      public var hashedUnits: Object = {};
+      /* ################# */
+      /* #### Filters #### */
+      /* ################# */
       
-      public function prepare(): void
+      private function filterGround(item: MCUnit): Boolean
       {
-         cancel();
+         return item.unit.kind == UnitKind.GROUND;
+      }
+      
+      public function prepare(sUnits: ListCollectionView, sLocation: *,
+                              sTarget: *, sKind: String, sOwner: int): void
+      {
+         //Set screen values
+         units = sUnits;
+         location = sLocation;
+         target = sTarget;
+         currentKind = sKind;
+         owner = sOwner;
+         
+         //Find out current kind
+         if (currentKind == UnitKind.SPACE && !hasSpaceUnits)
+         {
+            currentKind = UnitKind.MOVING;
+         }
+         
+         if (currentKind == null)
+         {
+            if (hasSpaceUnits)
+            {
+               currentKind = UnitKind.SPACE;
+            }
+            else
+            {
+               currentKind = UnitKind.GROUND;
+            }
+         }
+         
+         //Prepare currentScreen
+         refreshScreen();
+      }
+      
+      private function refreshScreen(): void
+      {
+         if (currentKind == UnitKind.MOVING)
+         {
+            createRoutes();
+         }
+         else
+         {
+            createFlanks();
+         }
+      }
+      
+      private function createRoutes(): void
+      {
          if (routes)
          {
             routes.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshRoutesButton);
@@ -115,33 +168,76 @@ package models.unit
          {
             routes.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshRoutesButton);
          }
-         groundVisible = hasGroundUnits;
-         spaceVisible = hasSpaceUnits;
-         moveVisible = hasMovingUnits;
-         
-         if (currentKind == UnitKind.SPACE && !hasSpaceUnits)
+      }
+      
+      private var filteredUnits: ListCollectionView;
+      
+      private function createFlanks(): void
+      {
+         if (filteredUnits != null)
          {
-            currentKind = UnitKind.MOVING;
+            filteredUnits.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+         }
+         buildFlanks();
+         if (currentKind != UnitKind.SQUADRON)
+         {
+            filteredUnits = 
+               Collections.filter(_units, function(item: Unit): Boolean
+               {
+                  return item.kind == currentKind;
+               });
          }
          
-         if (currentKind == null)
+         filteredUnits.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+         buildUnits(filteredUnits);
+      }
+      
+      private function buildFlanks(): void
+      {
+         flanks = new ArrayCollection();
+         for (var key: int = 0; key < MAX_FLANKS; key++)
          {
-            if (hasSpaceUnits)
-            {
-               currentKind = UnitKind.SPACE;
-            }
-            else
-            {
-               currentKind = UnitKind.GROUND;
-            }
+            flanks.addItem(new UnitsFlank(key, owner));
          }
       }
       
-      public function cancel(e: Event = null): void
+      private function buildUnits(unitsList: ListCollectionView): void
       {
-         draggedUnits = {};
-         hashedUnits = {};
-         buildFlanks();
+         var source: Array = [];
+         for each (var unit: Unit in unitsList)
+         {
+            source.push(new MCUnit(unit, UnitsFlank(flanks.getItemAt(unit.flank))));
+         }
+         transformedUnits = new ArrayCollection(source);
+         unitsToFlanks();
+      }
+      
+      private function filteredCollection(flank: UnitsFlank): ListCollectionView
+      {
+         return Collections.filter(transformedUnits, 
+            function(item: MCUnit): Boolean
+            {
+               return item.flankModel == flank;
+            });
+      }
+      
+      private function unitsToFlanks(): void
+      {
+         for each (var flank: UnitsFlank in flanks)
+         {
+            flank.flankUnits = filteredCollection(flank);
+         }
+      }
+      
+      public function tabChanged(tabName: String):void
+      {
+         deselectUnits();
+         currentKind = tabName;
+         if (currentKind == UnitKind.GROUND || currentKind == UnitKind.SPACE)
+         {
+            NavigationController.getInstance().switchActiveUnitButtonKind(currentKind);
+         }
+         refreshScreen();
       }
       
       public function updateChanges(): void
@@ -154,12 +250,13 @@ package models.unit
       private function getChanged(): Object
       {
          var changedUnits: Object = {};
-         for (var unitId: String in draggedUnits)
+         for each(var unit: MCUnit in transformedUnits)
          {
-            var currentUnit: Unit = hashedUnits[unitId];
-            if ((currentUnit.flank != draggedUnits[unitId][0]) ||
-               (currentUnit.stance != draggedUnits[unitId][1]))
-               changedUnits[unitId] = draggedUnits[unitId];
+            if (unit.stance != unit.unit.stance
+               || unit.flankModel.nr != unit.unit.flank)
+            {
+               changedUnits[unit.unit.id] = [unit.flankModel.nr, unit.stance];
+            } 
          }
          return changedUnits;
       }
@@ -167,68 +264,63 @@ package models.unit
       [Bindable (event="formationChange")]
       public function get hasChanges(): Boolean
       {
-         for (var unitId: String in draggedUnits)
+         for each(var unit: MCUnit in transformedUnits)
          {
-            var currentUnit: Unit = hashedUnits[unitId];
-            if (currentUnit != null && draggedUnits[unitId] != null)
+            if (unit.stance != unit.unit.stance
+               || unit.flankModel.nr != unit.unit.flank)
             {
-               if ((currentUnit.flank != draggedUnits[unitId][0]) ||
-                  (currentUnit.stance != draggedUnits[unitId][1]))
-                  return true;
-            }
+               return true;
+            } 
          }
          return false;
       }
+      
+      private var cachedSelection: ArrayCollection = null;
       
       [Bindable (event="selectionChange")]
-      public function get selection(): Array
+      public function get selection(): ArrayCollection
       {
-         function getSelection(flankList: ArrayCollection): Array
+         if (cachedSelection)
          {
-            var _selection: Array = [];
-            for each (var flank: UnitsFlank in flankList)
-            {
-               for each (var unit: Unit in flank.selection)
-               {
-                  _selection.push(unit);
-               }
-            }
-            return _selection;
+            return cachedSelection;
          }
-         
-         return getSelection(currentKind == UnitKind.GROUND?groundFlanks:
-            (currentKind == UnitKind.SPACE?spaceFlanks:squadronFlanks));
+         var _selection: Array = [];
+         for each (var flank: UnitsFlank in flanks)
+         {
+            for each (var unit: MCUnit in flank.selection)
+            {
+               _selection.push(unit.unit);
+            }
+         }
+         cachedSelection = new ArrayCollection(_selection);
+         return cachedSelection;
       }
       
       [Bindable]
-      public var groundFlanks: ArrayCollection;
-      [Bindable]
-      public var spaceFlanks: ArrayCollection;
-      [Bindable]
-      public var squadronFlanks: ArrayCollection;
-      
-      
-      private function hasUnits(flanks: ArrayCollection): Boolean
-      {
-         if (flanks)
-         {
-            for each (var flank: UnitsFlank in flanks)
-            {
-               if (flank.flank.length > 0)
-                  return true;
-            }
-         }
-         return false;
-      }
+      public var flanks: ArrayCollection;
       
       private function get hasGroundUnits(): Boolean
       {
-         return hasUnits(groundFlanks);
+         for each (var unit: Unit in _units)
+         {
+            if (unit.kind == UnitKind.GROUND)
+            {
+               return true;
+            }
+         }
+         return false;
       }
       
       private function get hasSpaceUnits(): Boolean
       {
-         return hasUnits(spaceFlanks);
+         for each (var unit: Unit in _units)
+         {
+            if (unit.kind == UnitKind.SPACE)
+            {
+               return true;
+            }
+         }
+         return false;
       }
       
       private function get hasMovingUnits(): Boolean
@@ -236,58 +328,71 @@ package models.unit
          return routes && routes.length > 0;
       }
       
-      public function updateUnits(unitsHash: Object): void
+      public function cancel(): void
       {
-         for (var unitId: String in unitsHash)
+         transformedUnits.disableAutoUpdate();
+         for each(var unit: MCUnit in transformedUnits)
          {
-            hashedUnits[unitId] = unitsHash[unitId][2];
-            if (draggedUnits[unitId] != null)
+            if (unit.unit.flank != unit.flankModel.nr)
             {
-               if (unitsHash[unitId][0] == null)
-               {
-                  draggedUnits[unitId][1] = unitsHash[unitId][1];
-               }
-               else
-               {
-                  draggedUnits[unitId][0] = unitsHash[unitId][0];
-               }
+               unit.flankModel = UnitsFlank(flanks.getItemAt(unit.unit.flank));
             }
-            else
+            if (unit.unit.stance != unit.stance)
             {
-               if (unitsHash[unitId][0] == null)
-               {
-                  draggedUnits[unitId]= [unitsHash[unitId][2].flank, unitsHash[unitId][1]];
-               }
-               else
-               {
-                  draggedUnits[unitId] = [unitsHash[unitId][0], unitsHash[unitId][2].stance];
-               }
+               unit.stance = unit.unit.stance;
             }
          }
+         transformedUnits.enableAutoUpdate();
          dispatchFormationChangeEvent();
+         deselectUnits();
       }
       
-      public function confirmChanges(e: Event): void
+      public function confirmChanges(): void
       {
-         ML.units.disableAutoUpdate();
-         for (var unitId: String in draggedUnits)
+         transformedUnits.disableAutoUpdate();
+         for each(var unit: MCUnit in transformedUnits)
          {
-            hashedUnits[unitId].flank = draggedUnits[unitId][0];
-            hashedUnits[unitId].stance = draggedUnits[unitId][1];
+            if (unit.unit.flank != unit.flankModel.nr)
+            {
+               unit.unit.flank = unit.flankModel.nr;
+            }
+            if (unit.unit.stance != unit.stance)
+            {
+               unit.unit.stance = unit.stance;
+            }
          }
-         ML.units.enableAutoUpdate();
-         cancel();
+         transformedUnits.enableAutoUpdate();
+         dispatchFormationChangeEvent();
          GlobalFlags.getInstance().lockApplication = false;
       }
       
       [Bindable (event = 'unitsChange')]
-      public function getUnitCount(flanks: ArrayCollection): int
+      public function getUnitCount(kind: String): int
       {
          var count: int = 0;
-         if (flanks)
+         if (kind == UnitKind.MOVING)
          {
-            for each (var flank: UnitsFlank in flanks)
-            count += flank.flank.length;
+            for each (var route: MRoute in routes)
+            {
+               for each (var entry: UnitBuildingEntry in route.cachedUnits)
+               {
+                  count += entry.count;
+               }
+            }
+         }
+         else if (kind == UnitKind.SQUADRON)
+         {
+            count = filteredUnits.length;
+         }
+         else
+         {
+            for each (var unit: Unit in _units)
+            {
+               if (unit.kind == kind)
+               {
+                  count++;
+               }
+            }
          }
          return count;
       }
@@ -295,16 +400,12 @@ package models.unit
       private function get selectionIds(): Array
       {
          var _selection: Array = [];
-         var flankList: ArrayCollection;
          
-         flankList = (currentKind == UnitKind.GROUND?groundFlanks:
-            (currentKind == UnitKind.SPACE?spaceFlanks:squadronFlanks));
-         
-         for each (var flank: UnitsFlank in flankList)
+         for each (var flank: UnitsFlank in flanks)
          {
-            for each (var unit: Unit in flank.selection)
+            for each (var unit: MCUnit in flank.selection)
             {
-               _selection.push(unit.id);
+               _selection.push(unit.unit.id);
             }
          }
          return _selection;
@@ -323,8 +424,9 @@ package models.unit
       public function showSquadron(list: ListCollectionView): void
       {
          squadronVisible = true;
-         buildSquadronFlanks(list);
+         filteredUnits = list;
          currentKind = UnitKind.SQUADRON;
+         refreshScreen();
       }
       
       private function refreshRoutesButton(e: CollectionEvent): void
@@ -372,57 +474,44 @@ package models.unit
          else
          {
             // ======= ISSUE ORDER ========
-            OrdersController.getInstance().issueOrder(new ArrayCollection(selection));
+            OrdersController.getInstance().issueOrder(selection);
          }
+      }
+      
+      public function selectAll(): void
+      {
+         for each (var flank: UnitsFlank in flanks)
+         {
+            flank.selectAll(false);
+         }
+         dispatchSelectionChangeEvent();
       }
       
       public function deselectUnits(): void
       {
-         function deselectFlanks(flanks: ArrayCollection): void
+         for each (var flank: UnitsFlank in flanks)
          {
-            for each (var flank: UnitsFlank in flanks)
-            {
-               flank.deselectAll();
-            }
+            flank.deselectAll(false);
          }
-         deselectFlanks(groundFlanks);
-         deselectFlanks(spaceFlanks);
-         deselectFlanks(squadronFlanks);
+         dispatchSelectionChangeEvent();
       }
       
-      public function tabChanged(tabName: String):void
+      public function setStance(stance: int): void
       {
-         currentKind = tabName;
-         if (currentKind == UnitKind.GROUND || currentKind == UnitKind.SPACE)
+         for each (var flank: UnitsFlank in flanks)
          {
-            NavigationController.getInstance().switchActiveUnitButtonKind(currentKind);
+            flank.setStance(stance);
          }
       }
       
-      
-      private function addUnitToFlank(unit: Unit, flankNr: int): void
+      private function sortByHp(list: ListCollectionView): void
       {
-         if (unit.kind == UnitKind.GROUND)
+         if (list)
          {
-            for each (var flank: UnitsFlank in groundFlanks)
-            {
-               if (flank.nr == flankNr+1)
-               {
-                  flank.flank.addItem(unit);
-                  return;
-               }
-            }
-         }
-         else
-         {
-            for each (flank in spaceFlanks)
-            {
-               if (flank.nr == flankNr+1)
-               {
-                  flank.flank.addItem(unit);
-                  return;
-               }
-            }
+            list.sort = new Sort();
+            list.sort.fields = [new SortField('type'), 
+               new SortField('hp', false, true, true), new SortField('id', false, false, true)];
+            list.refresh();
          }
       }
       
@@ -432,7 +521,6 @@ package models.unit
          {
             if (e.items.length != 0)
             {
-               //TODO OR NOT call later was here
                addUnits(e.items);
                if (hasGroundUnits)
                {
@@ -442,7 +530,6 @@ package models.unit
                {
                   spaceVisible = true;
                }
-               //and ended here
             }
          }
          else if (e.kind == CollectionEventKind.REMOVE)
@@ -467,127 +554,46 @@ package models.unit
       {
          for each (var unitToAdd: Unit in unitsToAdd)
          {
-            addUnitToFlank(unitToAdd, unitToAdd.flank);
+            transformedUnits.addItem(new MCUnit(unitToAdd, 
+               UnitsFlank(flanks.getItemAt(unitToAdd.flank))));
          }
          dispatchUnitsChangeEvent();
+      }
+      
+      private function findUnitIndexAndDeselect(unit: Unit): int
+      {
+         for (var i: int = 0; i < transformedUnits.length; i++)
+         {
+            var mUnit: MCUnit = MCUnit(transformedUnits.getItemAt(i));
+            if (mUnit.unit == unit)
+            {
+               mUnit.selected = false;
+               return i;
+            }
+         }
+         return -1;
       }
       
       private function removeUnits(unitsToDestroy: Array): void
       {
-         new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, unitsToDestroy);
-         dispatchUnitsChangeEvent();
-      }
-      
-      private function sortByHp(list: ListCollectionView): void
-      {
-         if (list)
+         for each (var unitToDestroy: Unit in unitsToDestroy)
          {
-            list.sort = new Sort();
-            list.sort.fields = [new SortField('type'), 
-               new SortField('hp', false, true, true), new SortField('id', false, false, true)];
-            list.refresh();
-         }
-      }
-      
-      private function buildFlanks(): void
-      {
-         groundFlanks = new ArrayCollection();
-         spaceFlanks = new ArrayCollection();
-         
-         var groundFlanksObj: Object = {};
-         var spaceFlanksObj: Object = {};
-         ML.units.disableAutoUpdate();
-         for each (var unit: Unit in units)
-         {
-            unit.newStance = unit.stance;
-            if (unit.kind == UnitKind.GROUND)
+            var indx: int =  findUnitIndexAndDeselect(unitToDestroy);
+            if (indx != -1)
             {
-               if (groundFlanksObj[unit.flank] == null)
-               {
-                  groundFlanksObj[unit.flank] = new Array;
-               }
-               groundFlanksObj[unit.flank].push(unit);
+               var flank: UnitsFlank = UnitsFlank(flanks.getItemAt(unitToDestroy.flank));
+               transformedUnits.removeItemAt(indx);
+               flank.deselectUnit(unitToDestroy.id);
             }
-            else
-            {
-               if (spaceFlanksObj[unit.flank] == null)
-               {
-                  spaceFlanksObj[unit.flank] = new Array();
-               }
-               spaceFlanksObj[unit.flank].push(unit);
-            }
-         }
-         ML.units.enableAutoUpdate();
-         var key: int;
-         for (key = 0; key < MAX_FLANKS; key++)
-         {
-            groundFlanks.addItem(new UnitsFlank(new ModelsCollection(groundFlanksObj[key]), key+1, owner));
-            spaceFlanks.addItem(new UnitsFlank(new ModelsCollection(spaceFlanksObj[key]), key+1, owner));
          }
          dispatchUnitsChangeEvent();
       }
-      
-      private function buildSquadronFlanks(squadUnits: ListCollectionView): void
-      {
-         squadUnits.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshSquadron);
-         sortByHp(squadUnits);
-         squadronFlanks = new ArrayCollection();
-         var squadronFlanksObj: Object = {};
-         ML.units.disableAutoUpdate();
-         for each (var unit: Unit in squadUnits)
-         {
-            unit.newStance = unit.stance;
-            if (squadronFlanksObj[unit.flank] == null)
-            {
-               squadronFlanksObj[unit.flank] = new Array();
-            }
-            squadronFlanksObj[unit.flank].push(unit);
-         }
-         ML.units.enableAutoUpdate();
-         
-         var key: int;
-         for (key = 0; key < MAX_FLANKS; key++)
-         {
-            squadronFlanks.addItem(new UnitsFlank(new ModelsCollection(squadronFlanksObj[key]), key+1, owner));
-         }
-         dispatchUnitsChangeEvent();
-      }
-      
-      private function refreshSquadron(e: CollectionEvent): void
-      {
-         if (e.kind == CollectionEventKind.ADD)
-         {
-            if (e.items.length != 0)
-            {
-               for each (var unitToAdd: Unit in e.items)
-               {
-                  for each (var flank: UnitsFlank in squadronFlanks)
-                  {
-                     if (flank.nr == unitToAdd.flank+1)
-                     {
-                        flank.flank.addItem(unitToAdd);
-                        return;
-                     }
-                  }
-               }
-               dispatchUnitsChangeEvent();
-            }
-         }
-         else if (e.kind == CollectionEventKind.REMOVE)
-         {
-            if (e.items.length != 0)
-            {
-               removeUnits(e.items);
-            }
-         }
-      }
-      
       
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
       
-      private function dispatchFormationChangeEvent(): void
+      public function dispatchFormationChangeEvent(): void
       {
          if (hasEventListener(UnitsScreenEvent.FORMATION_CHANGE))
          {
@@ -607,6 +613,7 @@ package models.unit
       {
          if (hasEventListener(UnitsScreenEvent.SELECTION_CHANGE))
          {
+            cachedSelection = null;
             dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.SELECTION_CHANGE));
          }
       }

@@ -15,7 +15,9 @@ package components.healing
    import globalevents.GUnitsScreenEvent;
    
    import models.healing.MHealFlank;
+   import models.unit.Unit;
    
+   import mx.collections.ArrayCollection;
    import mx.events.FlexEvent;
    
    import utils.locale.Localizer;
@@ -53,7 +55,17 @@ package components.healing
          {
             Messenger.show(Localizer.string('Units', 'message.noResources'), MESSAGE_DURATION);
          }
-         unitsList.selectedItems = flankModel.selection;
+         markSelected();
+      }
+      
+      private function markSelected(e: GHealingScreenEvent = null): void
+      {
+         var tempSelection: Vector.<Object> = new Vector.<Object>;
+         for each (var unit: Unit in flankModel.selection)
+         {
+            tempSelection.push(unit);
+         }
+         unitsList.selectedItems = tempSelection;
          new GUnitsScreenEvent(GUnitsScreenEvent.SELECTION_PRECHANGE);
       }
       
@@ -70,13 +82,7 @@ package components.healing
       private function deselectAll(e: Event = null): void
       {
          unitsList.selectedIndices = new Vector.<int>;
-         flankModel.selection = new Vector.<Object>;
-         new GUnitsScreenEvent(GUnitsScreenEvent.SELECTION_PRECHANGE);
-      }
-      
-      private function markSelected(e: GHealingScreenEvent): void
-      {
-         unitsList.selectedItems = flankModel.selection;
+         flankModel.selection = new ArrayCollection();
          new GUnitsScreenEvent(GUnitsScreenEvent.SELECTION_PRECHANGE);
       }
       

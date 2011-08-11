@@ -17,11 +17,10 @@
          import globalevents.GResourcesEvent;
          import globalevents.GUnitsScreenEvent;
          
-         import models.ModelsCollection;
+         import models.Owner;
          import models.location.Location;
          import models.resource.Resource;
          import models.resource.ResourceType;
-         import models.solarsystem.MSSObject;
          import models.unit.Unit;
          import models.unit.UnitsFlank;
          import models.unit.events.UnitEvent;
@@ -34,11 +33,6 @@
          import mx.events.CollectionEventKind;
          import mx.events.FlexEvent;
          
-         import spark.events.IndexChangeEvent;
-         
-         import utils.ObjectFormType;
-         import utils.ObjectStringsResolver;
-         import utils.assets.AssetNames;
          import utils.locale.Localizer;
          
          [Bindable]
@@ -62,7 +56,7 @@
             var count: int = 0;
             
             for each (var flank: UnitsFlank in _flanks)
-            count += flank.flank.length;
+            count += flank.flankUnits.length;
             
             return count;
          }
@@ -196,7 +190,9 @@
             ML.units.enableAutoUpdate();
             for (var key: int = 0; key < MAX_FLANKS; key++)
             {
-               flanks.addItem(new UnitsFlank(new ModelsCollection(tempObj[key]), key+1));
+               var flnk: UnitsFlank = new UnitsFlank(key, Owner.PLAYER);
+               flnk.flankUnits = new ArrayCollection(tempObj[key] as Array);
+               flanks.addItem(flnk);
             }
             
             dispatchUnitsChangeEvent();
@@ -229,9 +225,9 @@
                   {
                      for each (var flank: UnitsFlank in flanks)
                      {
-                        if (flank.nr == (unitToAdd.flank+1))
+                        if (flank.nr == (unitToAdd.flank))
                         {
-                           flank.flank.addItem(unitToAdd);
+                           flank.flankUnits.addItem(unitToAdd);
                         }
                      }
                   }

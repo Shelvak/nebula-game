@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:base="components.base.*"
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         mouseEnabled="false" mouseChildren="false"
+         creationComplete="datagroup1_creationCompleteHandler(event)">
+   <fx:Script>
+      <![CDATA[
+         import components.unitsscreen.events.UnitsScreenEvent;
+         
+         import models.unit.MCUnitScreen;
+         
+         import mx.collections.ArrayCollection;
+         import mx.core.FlexGlobals;
+         import mx.events.FlexEvent;
+         [Bindable]
+         public var cachedUnits: ArrayCollection;
+         
+         protected function datagroup1_mouseMoveHandler(event:MouseEvent):void
+         {
+            this.x = event.stageX - (this.width/2);               
+            this.y = event.stageY - (this.height/2);
+         }
+         
+         
+         protected function datagroup1_mouseUpHandler(event:MouseEvent):void
+         {
+            stage.removeEventListener(MouseEvent.MOUSE_MOVE, datagroup1_mouseMoveHandler);
+            stage.removeEventListener(MouseEvent.MOUSE_UP, datagroup1_mouseUpHandler);
+            dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.DROP_UNITS));
+            FlexGlobals.topLevelApplication.removeElement(this);
+            var us: MCUnitScreen = MCUnitScreen.getInstance();
+            us.sourceFlank = null;
+         }
+         
+         protected function datagroup1_creationCompleteHandler(event:FlexEvent):void
+         {
+            stage.addEventListener(MouseEvent.MOUSE_MOVE, datagroup1_mouseMoveHandler);
+            stage.addEventListener(MouseEvent.MOUSE_UP, datagroup1_mouseUpHandler);
+         }
+         
+      ]]>
+   </fx:Script>
+      <s:DataGroup dataProvider="{cachedUnits}"
+                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+         <s:layout>
+            <s:TileLayout id="unitLayout"/>
+         </s:layout>
+      </s:DataGroup>
+</s:Group>
