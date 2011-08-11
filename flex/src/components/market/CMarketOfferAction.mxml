@@ -209,7 +209,7 @@
             <s:Label color="#eec500" text="{getText('label.freeCreds')}" />
             <s:Button skinClass="components.skins.LinkButtonSkin" 
                       label="{getText('label.moreInfo')}"
-                      click="UrlNavigate.getInstance().showUrl('free-creds')"/>
+                      click="UrlNavigate.getInstance().showInfo('free-creds')"/>
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle"/>
             </s:layout>
