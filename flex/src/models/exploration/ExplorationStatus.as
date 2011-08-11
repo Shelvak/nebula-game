@@ -366,7 +366,9 @@ package models.exploration
       }
       
       private function ssObject_propertyChangeHandler(event:PropertyChangeEvent) : void {
-         if (event.property == MSSObject.prop_name::explorationEndsAt)
+         if (event.property == MSSObject.prop_name::explorationEndsAt ||
+             event.property == MSSObject.prop_name::explorationX ||
+             event.property == MSSObject.prop_name::explorationY)
             dispatchStatusChangeEvent();
       }
       

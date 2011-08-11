@@ -29,8 +29,12 @@ package components.foliage
          return ModelLocator.getInstance();
       }
       
-      private function get foliage() : BlockingFolliage {
+      private function get selectedFoliage() : BlockingFolliage {
          return ML.selectedFoliage;
+      }
+      
+      private function get exploredFoliage() : BlockingFolliage {
+         return ML.latestPlanet != null ? ML.latestPlanet.exploredFoliage : null;
       }
       
       
@@ -56,12 +60,12 @@ package components.foliage
       
       [Bindable(event="stateChange")]
       public function get explorationPanelVisible() : Boolean {
-         return foliage != null;
+         return selectedFoliage != null;
       }
       
       [Bindable(event="stateChange")]
       public function get terraformPanelVisible() : Boolean {
-         return foliage != null && !explorationPanelModel.explorationIsUnderway;
+         return selectedFoliage != null && exploredFoliage == null;
       }
       
       private function ML_propertyChangeHandler(event:PropertyChangeEvent) : void {
@@ -76,8 +80,8 @@ package components.foliage
       }
       
       private function setFoliageModels() : void {
-         terraformPanelModel.foliage = foliage;
-         explorationPanelModel.foliage = foliage;
+         terraformPanelModel.foliage = selectedFoliage;
+         explorationPanelModel.foliage = selectedFoliage;
       }
       
       private function dispatchStateChangeEvent() : void {

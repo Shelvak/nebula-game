@@ -13,26 +13,17 @@ package controllers.objects.actions.customcontrollers
    
    public class CooldownController extends BaseObjectController
    {
-      public static function getInstace() : CooldownController
-      {
-         return SingletonFactory.getSingletonInstance(CooldownController);
-      }
-      
-      
-      public function CooldownController()
-      {
+      public function CooldownController() {
          super();
       }
       
-      
-      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void
-      {
+      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
          var location:LocationMinimal = BaseModel.createModel(LocationMinimal, object.location);
+         
          // don't need cooldowns for other objects than maps
          if (!location.isObserved)
-         {
             return;
-         }
+         
          var cooldown:MCooldown = location.isSSObject ?
             new MCooldown() :
             new MCooldownSpace();
@@ -40,11 +31,8 @@ package controllers.objects.actions.customcontrollers
          cooldown.currentLocation = location;
          cooldown.endsAt = DateUtil.parseServerDTF(object.endsAt);
          if (location.isSSObject)
-         {
             ML.latestPlanet.ssObject.cooldown = cooldown;
-         }
-         else
-         {
+         else {
             var map:MMapSpace = MMapSpace(location.isGalaxy ? ML.latestGalaxy : ML.latestSolarSystem);
             // Server often sends objects|created with a cooldown in the same location just
             // before a few seconds it is about to be removed by the client

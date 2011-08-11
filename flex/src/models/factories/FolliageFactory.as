@@ -22,11 +22,9 @@ package models.factories
        * 
        * @return instance of <code>NonblockingFolliage</code>.
        */
-      public static function nonblockingFromObject(data:Object) : NonblockingFolliage
-      {
+      public static function nonblockingFromObject(data:Object) : NonblockingFolliage {
          return BaseModel.createModel(NonblockingFolliage, data);
       }
-      
       
       /**
        * Creates blocking folliage from a tile and optionally sets terrain type.
@@ -36,16 +34,13 @@ package models.factories
        * 
        * @return instance of <code>BlockingFolliage</code>.
        */
-      public static function blocking
-         (tile:Tile, terrainType:int = TerrainType.GRASS) : BlockingFolliage
-      {
+      public static function blocking(tile:Tile, terrainType:int = TerrainType.GRASS) : BlockingFolliage {
          if (!tile.isFolliage())
-         {
             throw new Error("Unable to create BlockingFolliage " +
                             "instance form non-folliage tile kind!");
-         }
          
          var folliage:BlockingFolliage = new BlockingFolliage();
+         folliage.id = tile.id;
          folliage.kind = tile.kind;
          folliage.x = tile.x;
          folliage.y = tile.y;

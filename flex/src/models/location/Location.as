@@ -12,22 +12,20 @@ package models.location
    import models.solarsystem.SolarSystem;
    import models.tile.TerrainType;
    
-   import utils.locale.Localizer;
    import utils.NameResolver;
    import utils.assets.AssetNames;
    import utils.datastructures.Collections;
+   import utils.locale.Localizer;
    
    
    public class Location extends LocationMinimal
    {
-      private static function get NAV_CTRL() : NavigationController
-      {
+      private static function get NAV_CTRL() : NavigationController {
          return NavigationController.getInstance();
       }
       
       
-      public function Location()
-      {
+      public function Location() {
          super();
       }
       
@@ -44,40 +42,30 @@ package models.location
       [Optional]
       public var ssObjectType:String = SSObjectType.PLANET;
       
+      public function get inBattleground() : Boolean {
+         return isSSObject && ML.latestGalaxy.isBattleground(solarSystemId);
+      }
       
       private var _variation:int;
       [Bindable(event="willNotChange")]
-      public function set variation(value:int) : void
-      {
+      public function set variation(value:int) : void {
          if (_variation != value)
-         {
             _variation = value;
-         }
       }
-      public function get variation() : int
-      {
+      public function get variation() : int {
          if (isSSObject)
-         {
             return MSSObject.getVariation(id, ssObjectType, terrain);
-         }
          return _variation;
       }
       
-      
       [Bindable(event="willNotChange")]
-      public function get solarSystemName() : String
-      {
-         if (isMiniBattleground || isSSObject && ML.latestGalaxy.getSSById(solarSystemId).isMiniBattleground)
-         {
-            return Localizer.string("Galaxy", "label.pulsar", [solarSystemId]);
-         }
-         if (isBattleground || isSSObject && ML.latestGalaxy.isBattleground(solarSystemId))
-         {
+      public function get solarSystemName() : String {
+         if (isBattleground || inBattleground)
             return Localizer.string("Galaxy", "label.wormhole");
-         }
+         if (isMiniBattleground || isSSObject && ML.latestGalaxy.getSSById(solarSystemId).isMiniBattleground)
+            return Localizer.string("Galaxy", "label.pulsar", [solarSystemId]);
          return NameResolver.resolveSolarSystem(solarSystemId == 0 ? id : solarSystemId);
       }
-      
       
       [Bindable(event="willNotChange")]
       public function get planetName() : String
@@ -117,13 +105,15 @@ package models.location
          {
             case LocationType.GALAXY:
                return getString("description.long.galaxy", [x, y]);
+               
             case LocationType.SOLAR_SYSTEM:
                if (isBattleground)
-               {
                   return solarSystemName;
-               }
                return getString("description.long.solarSystem", [solarSystemName, x, y]);
+               
             case LocationType.SS_OBJECT:
+               if (inBattleground)
+                  return getString("description.long.planetInBattleground", [planetName]);
                return getString("description.long.planet", [planetName, solarSystemName]);
          }
          throwUnsupportedLocationTypeError();
@@ -318,11 +308,9 @@ package models.location
                                                "type does not support this method");
          }
       }
-      private function navigateToSolarSystem(ssId:int) : void
-      {
+      private function navigateToSolarSystem(ssId:int) : void {
          NAV_CTRL.toSolarSystem(ssId,
-            function() : void
-            {
+            function() : void {
                ML.latestSolarSystem.moveTo(ML.latestSolarSystem.getSSObjectById(id).currentLocation);
             }
          );
@@ -333,34 +321,21 @@ package models.location
       /* ### HELPERS ### */
       /* ############### */
       
-      
       /**
        * Looks for a planet in <code>ML.player.planets</code> with the same ID as <code>Location.id</code>.
        */
-      private function findPlayerPlanet() : MSSObject
-      {
+      private function findPlayerPlanet() : MSSObject {
          return Collections.findFirst(ML.player.planets, filterFunction_playerPlanet);
       }
-      private function filterFunction_playerPlanet(planet:MSSObject) : Boolean
-      {
+      private function filterFunction_playerPlanet(planet:MSSObject) : Boolean {
          return planet.id == id;
       }
       
-      
-      /**
-       * Shortcut for <code>Localizer.string("Location", resourceName, parameters)</code>.
-       */
-      private function getString(resourceName:String, parameters:Array = null) : String
-      {
+      private function getString(resourceName:String, parameters:Array = null) : String {
          return Localizer.string("Location", resourceName, parameters);
       }
       
-      
-      /**
-       * @throws Error
-       */
-      private function throwUnsupportedLocationTypeError() : void
-      {
+      private function throwUnsupportedLocationTypeError() : void {
          throw new Error("Unsupported location type: " + type);
       }
    }

@@ -7,28 +7,25 @@ package controllers.objects.actions.customcontrollers
    
    public class BaseObjectController
    {
-      protected var ML:ModelLocator = ModelLocator.getInstance();
-      
-      
-      public function BaseObjectController()
-      {
+      protected function get ML() : ModelLocator {
+         return ModelLocator.getInstance();
       }
       
       
-      public function objectCreated(objectSubclass:String, object:Object, reason:String) : void
-      {
+      public function BaseObjectController() {
+         super();
+      }
+      
+      
+      public function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
          throw new IllegalOperationError("This operation is not supported");
       }
       
-      
-      public function objectUpdated(objectSubclass:String, object:Object, reason:String) : void
-      {
+      public function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
          throw new IllegalOperationError("This operation is not supported");
       }
       
-      
-      public function objectDestroyed(objectSubclass:String, objectId:int, reason:String) : void
-      {
+      public function objectDestroyed(objectSubclass:String, objectId:int, reason:String) : void {
          throw new IllegalOperationError("This operation is not supported");
       }
    }

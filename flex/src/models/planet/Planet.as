@@ -187,6 +187,11 @@ package models.planet
          }
          if (_buildings != null)
          {
+            ML.units.disableAutoUpdate();
+            units.disableAutoUpdate();
+            Collections.cleanListOfICleanables(_buildings);
+            units.enableAutoUpdate();
+            ML.units.enableAutoUpdate();
             _buildings.list = null;
             _buildings.filterFunction = null;
             _buildings = null;
@@ -705,7 +710,9 @@ package models.planet
        * Foliage currently beeing explored or <code>null</code> if exploration is not underway.
        */
       public function get exploredFoliage() : BlockingFolliage {
-         if (_ssObject.explorationEndsAt != null)
+         if (_ssObject.explorationEndsAt != null &&
+             _ssObject.explorationX >= 0 &&
+             _ssObject.explorationY >= 0)
             return BlockingFolliage(getObject(_ssObject.explorationX, _ssObject.explorationY));
          return null;
       }
