@@ -34,7 +34,7 @@ package controllers.objects.actions.customcontrollers
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
          var buildingNew:Building = BuildingFactory.fromObject(object);
-         if (ML.latestPlanet && ML.latestPlanet.id == buildingNew.planetId) {
+         if (ML.latestPlanet != null && ML.latestPlanet.id == buildingNew.planetId) {
             var buildingOld:Building = ML.latestPlanet.getBuildingById(buildingNew.id);
             if (buildingOld == null)
                throw new Error("Can't update building " + buildingNew + ": object has not been found");

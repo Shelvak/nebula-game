@@ -31,11 +31,12 @@ package controllers.objects.actions.customcontrollers
          }
          var planet:Planet = ML.latestPlanet;
          if (notification.event == NotificationType.NOT_ENOUGH_RESOURCES && planet != null &&
-             planet.definesLocation(NotEnoughResources(notification.customPart).location))
+             planet.definesLocation(NotEnoughResources(notification.customPart).location)) {
             for each (var coords:Array in object.params.coordinates) {
                var remove:PlanetObject = planet.getObject(coords[0], coords[1]);
                planet.removeObject(remove);
             }
+         }
       }
       
       public override function objectDestroyed(objectSubclass:String, objectId:int, reason:String) : void {

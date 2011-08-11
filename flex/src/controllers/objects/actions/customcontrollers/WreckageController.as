@@ -20,11 +20,12 @@ package controllers.objects.actions.customcontrollers
       
       public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
          var wreck:MWreckage = BaseModel.createModel(MWreckage, object);
-         if (wreck.currentLocation.isObserved)
+         if (wreck.currentLocation.isObserved) {
             if (wreck.currentLocation.type == LocationType.SOLAR_SYSTEM)
                ML.latestSolarSystem.addObject(wreck);
             else
                ML.latestGalaxy.addObject(wreck);
+         }
       }
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
