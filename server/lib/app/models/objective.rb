@@ -27,6 +27,15 @@ class Objective < ActiveRecord::Base
   def as_json(options=nil)
     attributes.symbolize_keys
   end
+  
+  def to_s
+    attributes = self.attributes
+    id = attributes.delete 'id'
+    quest_id = attributes.delete 'quest_id'
+    "<Objective(#{id}, QID #{quest_id}) " + 
+      (attributes.map { |key, value| "#{key}: #{value.inspect}" }.
+        join(", ")) + ">"
+  end
 
   class << self
     # Update objective progresses related to given models.

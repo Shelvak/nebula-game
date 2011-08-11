@@ -25,9 +25,31 @@ class Rewards
     [[:creds, :free_creds], CREDS],
     [[:scientists, :scientists_total], SCIENTISTS]
   ]
+  
+  # Array of simple rewards which only has one value.
+  SIMPLE_REWARDS = [METAL, ENERGY, ZETIUM, XP, POINTS, SCIENTISTS, CREDS]
 
   def initialize(data={})
     @data = data
+  end
+  
+  def blank?
+    @data.blank?
+  end
+  
+  def to_s
+    "<Rewards " + 
+      (
+        SIMPLE_REWARDS.map { |key| "#{key}: #{@data[key].inspect}" } +
+        [("Units: " + ((units || []).map do |unit_def|
+          unit_str = ""
+          unit_str += "#{unit_def['count']}x" if unit_def['count'] != 1
+          unit_str += unit_def['type']
+          unit_str += "(lvl #{unit_def['level']})" if unit_def['level'] != 1
+          unit_str += "(hp #{unit_def['hp']}%)" if unit_def['hp'] != 100
+          unit_str
+        end).join(", "))]
+      ).join(", ") + ">"
   end
 
   def self.from_json(json); new(JSON.parse(json)); end
@@ -39,7 +61,7 @@ class Rewards
   end
 
   def ==(other)
-    other.is_a?(self.class) && as_json == other.as_json
+    other.is_a?(self.class) && to_s == other.to_s
   end
 
   # Creates +Rewards+ object from _exploration_config_ which is defines in
@@ -66,7 +88,7 @@ class Rewards
 
   def [](key); @data[key]; end
 
-  [METAL, ENERGY, ZETIUM, XP, POINTS, SCIENTISTS, CREDS].each do |reward|
+  SIMPLE_REWARDS.each do |reward|
     define_method(reward) do |value|
       @data[reward]
     end
