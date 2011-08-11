@@ -45,9 +45,10 @@ package controllers.objects.actions.customcontrollers
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
          var unit:Unit = UnitFactory.fromObject(object);
-         if (reason == UpdatedReason.COMBAT)
+         if (reason == UpdatedReason.COMBAT) {
             if (!ML.units.addOrUpdate(unit))
                unit.cleanup();
+         }
          else {
             ML.units.update(unit);
             unit.cleanup();
