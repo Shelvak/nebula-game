@@ -84,19 +84,10 @@ package models.movement
       public const arrivalEvent:MTimeEventFixedMoment = new MTimeEventFixedMoment();
       
       
-      [Required]
-      [Bindable]
       /**
        * Time (local) when this squadron will do first hop.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Required]<br/>
-       * [Bindable]
-       * </i></p>
-       * 
-       * @default null
        */
-      public var firstHop:Date = null;
+      public const firstHopEvent:MTimeEventFixedMoment = new MTimeEventFixedMoment();
       
       
       [Required(alias="source")]
@@ -177,10 +168,12 @@ package models.movement
       
       public function resetChangeFlags() : void {
          arrivalEvent.resetChangeFlags();
+         firstHopEvent.resetChangeFlags();
       }
       
       public function update() : void {
          arrivalEvent.update();
+         firstHopEvent.update();
       }
       
       
@@ -197,6 +190,8 @@ package models.movement
             "[prop arrivesAt] is required by [class: MRoute] but was not present in source object. " +
             "The object was:\n" + ObjectUtil.toString(data)
          ));
+         if (data["firstHop"] != null)
+            firstHopEvent.occuresAt = DateUtil.parseServerDTF(data["firstHop"]);
       }
    }
 }
