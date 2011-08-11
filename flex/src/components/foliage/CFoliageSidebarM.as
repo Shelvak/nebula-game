@@ -65,7 +65,7 @@ package components.foliage
       
       [Bindable(event="stateChange")]
       public function get terraformPanelVisible() : Boolean {
-         return selectedFoliage != null && exploredFoliage != selectedFoliage;
+         return selectedFoliage != null && exploredFoliage == null;
       }
       
       private function ML_propertyChangeHandler(event:PropertyChangeEvent) : void {
