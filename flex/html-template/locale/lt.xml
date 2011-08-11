@@ -1399,7 +1399,7 @@
   
   <ListScreen>
     <label.colorLegend value="Legenda:" />
-    <label.close value="Close" />
+    <label.close value="Uždaryti" />
   </ListScreen>
 
   <Notifications>
