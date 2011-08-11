@@ -48,6 +48,11 @@ package utils
       {
          showTutorial('intro');
       }
+
+      public function showInfo(name: String): void
+      {
+         showUrl('info/' + name);
+      }
       
       public function showTutorial(name: String): void
       {
