@@ -89,7 +89,10 @@ package models.notification.parts
                ?location.planetName
                :(location.isSolarSystem
                   ?location.solarSystemName
-                  :'')]);
+                  :''),
+               location.isSSObject
+               ?location.player.name
+               :'']);
       }
    }
 }

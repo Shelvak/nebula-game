@@ -532,6 +532,7 @@ package models.player
                (UpgradeEvent.LEVEL_CHANGE, alliancesTech_levelChangeHandler, false);
             _alliancesTechnology = null;
          }
+         dailyBonus = null;
       }
       
       

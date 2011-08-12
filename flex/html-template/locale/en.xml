@@ -1327,6 +1327,7 @@
     <header.building value="Building" />
     <header.unit value="Unit" />
     <header.storage value="Storage" />
+    <header.owner value="Owner" />
 
     <description.short.galaxy value="Galaxy" />
     <description.short.solarSystem value="Solar System {0}" />
@@ -1442,7 +1443,7 @@
     <title.combatLog value="Combat report" />
     <message.combatLog>
       <p>Battle in {0 planet[Planet] galaxy[Galaxy] ss[Solar System] 
-      battleground[]} {1}</p>
+      battleground[]} {1}{0 planet[, Owner] galaxy[] ss[] battleground[]} {2}</p>
     </message.combatLog>
     <label.combatLog.outcome.win value="You have won!" />
     <label.combatLog.outcome.loose value="You have lost!" />
