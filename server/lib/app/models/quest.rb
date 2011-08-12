@@ -132,9 +132,15 @@ class Quest < ActiveRecord::Base
   # Start child quests for given player.
   def self.start_child_quests(parent_id, player_id)
     Quest.where(:parent_id => parent_id).each do |quest|
-      quest_progress = QuestProgress.new(:quest_id => quest.id,
-        :player_id => player_id, :status => QuestProgress::STATUS_STARTED)
-      quest_progress.save!
+      begin
+        quest_progress = QuestProgress.new(:quest_id => quest.id,
+          :player_id => player_id, :status => QuestProgress::STATUS_STARTED)
+        quest_progress.save!
+      rescue ActiveRecord::RecordNotUnique => e
+        # WTF, this should not be happening!
+        LOGGER.warn "QuestProgress not unique for player id #{player_id
+          }, quest #{quest}.\n\n#{e.to_s}"
+      end
     end
   end
 end
