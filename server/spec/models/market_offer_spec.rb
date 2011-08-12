@@ -9,12 +9,23 @@ describe MarketOffer do
         should_not be_valid
     end
     
-    it "should fail if user has too much offers" do
-      with_config_values('market.offers.max' => 1) do
+    describe "if user has too much offers" do
+      it "should fail on create" do
+        with_config_values('market.offers.max' => 1) do
+          player = Factory.create(:market_offer).player
+          offer = Factory.build(:market_offer, 
+            :planet => Factory.create(:planet, :player => player))
+          offer.should_not be_valid
+        end
+      end
+      
+      it "should not fail on update" do
         player = Factory.create(:market_offer).player
-        offer = Factory.build(:market_offer, 
+        offer = Factory.create(:market_offer, 
           :planet => Factory.create(:planet, :player => player))
-        offer.should_not be_valid
+        with_config_values('market.offers.max' => 1) do
+          offer.should be_valid
+        end
       end
     end
     
@@ -63,6 +74,13 @@ describe MarketOffer do
     @ommited_params = MarketOffer.columns.map(&:name) - @required_params
     
     it_should_behave_like "to json"
+    
+    it "should not fail with system offer" do
+      @model.planet = nil
+      @model.save!
+      
+      @model.as_json['player'].should be_nil
+    end
   end
   
   describe "#buy!" do    
@@ -118,6 +136,13 @@ describe MarketOffer do
             @seller_planet.reload
           end.should change(@seller_planet, :zetium).by(@to_amount)
         end
+        
+        it "should not fail if planet is currently unoccupied" do
+          @seller_planet.player = nil
+          @seller_planet.save!
+          
+          @offer.buy!(@buyer_planet, @offer.from_amount)
+        end
       end
       
       describe "buyer planet" do
@@ -143,6 +168,7 @@ describe MarketOffer do
         @offer = Factory.create(:market_offer, 
           :from_kind => MarketOffer::KIND_METAL,
           :to_kind => MarketOffer::KIND_CREDS)
+        @seller_planet = @offer.planet
         @seller = @offer.player
         
         @to_amount = (@offer.from_amount * @offer.to_rate).ceil
@@ -170,6 +196,13 @@ describe MarketOffer do
             @offer.buy!(@buyer_planet, @offer.from_amount)
             @seller.reload
           end.should change(@seller, :creds).by(@to_amount)
+        end
+        
+        it "should not fail if planet is currently unoccupied" do
+          @seller_planet.player = nil
+          @seller_planet.save!
+          
+          @offer.buy!(@buyer_planet, @offer.from_amount)
         end
       end
       
@@ -256,9 +289,17 @@ describe MarketOffer do
       it "should not create notif. if buying amount below threshold" do
         Notification.should_not_receive(:create_for_market_offer_bought)
         @offer.buy!(@buyer_planet, 
-          @offer.from_amount * CONFIG['market.buy.notification.threshold'] -
-            1
+          @offer.from_amount * 
+            CONFIG['market.buy.notification.threshold'] - 1
         )
+      end
+
+      it "should not create notification if planet has no owner" do
+        @seller_planet.player = nil
+        @seller_planet.save!
+        
+        Notification.should_not_receive(:create_for_market_offer_bought)
+        @offer.buy!(@buyer_planet, @offer.from_amount)
       end
     
       it "should not register system callback if offer is bought out" do
@@ -370,6 +411,27 @@ describe MarketOffer do
         row.should equal_to_hash(offers[index].as_json)
       end
       fetched.size.should == offers.size - 1
+    end
+    
+    it "should return offers from NPC planets" do
+      planet = Factory.create(:planet_with_player)      
+      # We must create an offer from planet with player.
+      offer = Factory.create(:market_offer, :planet => planet)
+      planet.player = nil
+      planet.save!
+      
+      fetched = MarketOffer.fast_offers("planet_id=?", planet.id)
+      fetched[0].should equal_to_hash(offer.as_json)
+      fetched.size.should == 1
+    end
+    
+    it "should return system offers" do    
+      offer = Factory.create(:market_offer, :planet => nil, 
+        :galaxy_id => Factory.create(:galaxy).id)
+      fetched = MarketOffer.
+        fast_offers("`#{MarketOffer.table_name}`.`id`=?", offer.id)
+      fetched[0].should equal_to_hash(offer.as_json)
+      fetched.size.should == 1
     end
   end
   

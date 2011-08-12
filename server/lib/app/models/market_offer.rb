@@ -28,15 +28,18 @@ class MarketOffer < ActiveRecord::Base
   CALLBACK_MAPPINGS_FLIPPED = CALLBACK_MAPPINGS.flip
   
   validate do
+    errors.add(:from_kind, "cannot be creds") if from_kind == KIND_CREDS
+  end
+  
+  validate :on => :create do
     min_amount = CONFIG['market.offer.min_amount']
     errors.add(:from_amount, 
       "cannot be less than minimal #{min_amount}, however #{from_amount
-      } was offered.") if new_record? && from_amount < min_amount
-    errors.add(:from_kind, "cannot be creds") if from_kind == KIND_CREDS
-    unless system? # System offers do not have limit.
-      errors.add(:base, "Maximum number of market offers reached!") \
-        if player.market_offers.size >= CONFIG['market.offers.max']
-    end
+      } was offered.") if from_amount < min_amount
+    # System offers do not belong to player, so there is no limit.
+    errors.add(:base, "Maximum number of market offers reached!") \
+      if ! system? && 
+      player.market_offers.size >= CONFIG['market.offers.max']
   end
   
   before_create do
@@ -62,7 +65,7 @@ class MarketOffer < ActiveRecord::Base
   #
   # {
   #   'id' => Fixnum,
-  #   'player' => Player#minimal,
+  #   'player' => Player#minimal | nil,
   #   'from_kind' => Fixnum,
   #   'from_amount' => Fixnum,
   #   'to_kind' => Fixnum,
@@ -73,7 +76,7 @@ class MarketOffer < ActiveRecord::Base
   def as_json(options=nil)
     {
       'id' => id,
-      'player' => Player.minimal(player_id),
+      'player' => system? ? nil : Player.minimal(player_id),
       'from_kind' => from_kind,
       'from_amount' => from_amount,
       'to_kind' => to_kind,
@@ -93,8 +96,12 @@ class MarketOffer < ActiveRecord::Base
     cost = (amount * to_rate).ceil
     buyer_source, bs_attr = self.class.resolve_kind(buyer_planet, to_kind)
     buyer_target, bt_attr = self.class.resolve_kind(buyer_planet, from_kind)
-    seller_target, _ = self.class.resolve_kind(planet, to_kind) \
-      unless system?
+    if system?
+      seller_target = nil
+    else
+      seller_target, _ = self.class.resolve_kind(planet, to_kind)
+    end
+      
     
     buyer_has = buyer_source.send(bs_attr)
     raise GameLogicError.new("Not enough funds for #{buyer_source
@@ -109,17 +116,19 @@ class MarketOffer < ActiveRecord::Base
     # Add resource that buyer has bought from seller.
     buyer_target.send(:"#{bt_attr}=", 
       buyer_target.send(bt_attr) + amount)
-    # Add resource that buyer is paying with to seller. Unless its a system
-    # offer.
-    seller_target.send(:"#{bs_attr}=", 
-      seller_target.send(bs_attr) + cost) unless system?
+    # Add resource that buyer is paying with to seller. Unless:
+    # * its a system offer
+    # * or #to_kind is creds and planet currently does not have an owner
+    seller_target.send(
+      :"#{bs_attr}=", seller_target.send(bs_attr) + cost
+    ) unless seller_target.nil?
     # Reduce bought amount from offer.
     self.from_amount -= amount
     
     transaction do
       objects = [buyer_source, buyer_target]
-      # System offers have no seller target
-      objects.push seller_target unless system?
+      # We might not have seller target. See above.
+      objects.push seller_target unless seller_target.nil?
       objects.uniq.each { |obj| self.class.save_obj_with_event(obj) }
       
       if from_amount == 0
@@ -131,10 +140,16 @@ class MarketOffer < ActiveRecord::Base
         save!
       end
       percentage_bought = amount.to_f / original_amount
+      
+      # Create notification if:
+      # * It's not a system notification
+      # * Enough of the percentage was bought
+      # * Sellers planet currently has a player.
       Notification.create_for_market_offer_bought(
         self, buyer_planet.player, amount, cost
-      ) if ! system? && 
-        percentage_bought >= CONFIG['market.buy.notification.threshold']
+      ) if ! system? &&  
+        percentage_bought >= CONFIG['market.buy.notification.threshold'] &&
+        ! planet.player_id.nil?
     end
     
     amount
@@ -166,9 +181,12 @@ class MarketOffer < ActiveRecord::Base
   def self.fast_offers(*conditions)
     t = "`#{table_name}`"
     p = "`#{Player.table_name}`"
+    sso = "`#{SsObject.table_name}`"
     
     (conditions.blank? ? self : where(*conditions)).
-      joins(:planet => :player).
+      joins("LEFT JOIN #{sso} ON #{sso}.`id` = #{t}.`planet_id` AND #{
+        sso}.`type` = '#{SsObject::Planet.to_s.demodulize}'").
+      joins("LEFT JOIN #{p} ON #{p}.`id` = #{sso}.`player_id`").
       select("#{t}.id, #{t}.from_kind, #{t}.from_amount, #{t}.to_kind, 
         #{t}.to_rate, #{t}.created_at, #{p}.id as player_id, 
         #{p}.name as player_name").
