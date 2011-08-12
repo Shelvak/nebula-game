@@ -717,7 +717,9 @@
                           dragEnabled="true" borderVisible="false" dragStart="queueList_dragStartHandler(event)"
                           contentBackgroundAlpha="0" creationComplete="queueList_creationCompleteHandler(event)"
                           dragComplete="queueList_dragCompleteHandler(event)"
-                          height="{selectedFacility.constructionQueueEntries.length > 0?52:0}">
+                          height="{selectedFacility.constructionQueueEntries.length > 0
+                          ?(selectedFacility.constructionQueueEntries.length > 4?96:50)
+                          :0}">
                      <s:itemRenderer>
                         <fx:Component>
                            <s:ItemRenderer width="100%" height="44">
@@ -727,7 +729,7 @@
                      </s:itemRenderer>
                      
                      <s:layout>
-                        <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="6"/>
+                        <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="1"/>
                      </s:layout>
                   </s:List>
                   <s:layout>
