@@ -1141,7 +1141,7 @@
                                          visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
                                          toolTip="{getString('toolTip.afterUpgrade')}"/>
                      <base:layout>
-                        <s:HorizontalLayout/>
+                        <s:HorizontalLayout verticalAlign="middle"/>
                      </base:layout>
                   </base:Panel>
                   
