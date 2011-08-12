@@ -20,7 +20,7 @@ buy.notification.threshold: 0.03
 ###
 avg_rate.seed.0.1: [53289, 3.67]   # metal to energy
 avg_rate.seed.0.2: [53289, 0.19]   # metal to zetium
-avg_rate.seed.0.3: [20000, 0.01]   # metal to creds
+avg_rate.seed.0.3: [20000, 0.1]    # metal to creds
 avg_rate.seed.1.0: [195648, 0.27]  # energy to metal
 avg_rate.seed.1.2: [195648, 0.05]  # energy to zetium
 avg_rate.seed.1.3: [40000, 0.05]   # energy to creds
