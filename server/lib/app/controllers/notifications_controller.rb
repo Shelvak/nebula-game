@@ -13,7 +13,8 @@ class NotificationsController < GenericController
     
     base = Notification.where(:player_id => player.id)
     main = base.where("`starred`=? OR `read`=?", true, false).all
-    extras = base.where(:read => true).limit(Cfg.notification_limit).all
+    extras = base.where(:starred => false, :read => true).
+      limit(Cfg.notification_limit).all
     notifications = (main | extras).sort do |n1, n2|
       (n1.created_at <=> n2.created_at) * -1
     end
