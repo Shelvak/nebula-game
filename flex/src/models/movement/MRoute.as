@@ -78,12 +78,14 @@ package models.movement
       }
       
       
+      [Bindable(event="willNotChange")]
       /**
        * Time (local) when this squadron will reach its destination. Never <code>null</code>.
        */
       public const arrivalEvent:MTimeEventFixedMoment = new MTimeEventFixedMoment();
       
       
+      [Bindable(event="willNotChange")]
       /**
        * Time (local) when this squadron will do first hop.
        */
@@ -182,6 +184,7 @@ package models.movement
       /* ########################### */
       
       protected override function afterCreateModel(data:Object) : void {
+         super.afterCreateModel(data);
          if (sourceLocation.isSSObject)  sourceLocation.setDefaultCoordinates();
          if (currentLocation.isSSObject) currentLocation.setDefaultCoordinates();
          if (targetLocation.isSSObject)  currentLocation.setDefaultCoordinates();

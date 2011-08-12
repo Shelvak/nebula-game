@@ -29,7 +29,7 @@ package controllers.objects.actions.customcontrollers
          
          // update planet in current solar system's objects list
          var solarSystem:SolarSystem = ML.latestSolarSystem;
-         if (solarSystem && !solarSystem.fake && solarSystem.id == planetNew.solarSystemId) {
+         if (solarSystem != null && !solarSystem.fake && solarSystem.id == planetNew.solarSystemId) {
             planetOld = findExistingPlanet(solarSystem.naturalObjects);
             planetOld.copyProperties(planetNew);
          }
@@ -37,7 +37,7 @@ package controllers.objects.actions.customcontrollers
          // update planet in list of player planets
          var planets:IList = ML.player.planets;
          planetOld = findExistingPlanet(planets);
-         if (planetOld) {
+         if (planetOld != null) {
             // planet does not belong to the player anymore so remove it from the list
             if (!planetNew.ownerIsPlayer) {
                planets.removeItemAt(planets.getItemIndex(planetOld));
@@ -50,7 +50,7 @@ package controllers.objects.actions.customcontrollers
          
          // update current planet
          var planet:Planet = ML.latestPlanet;
-         if (planet && !planet.fake && planet.id == planetNew.id) {
+         if (planet != null && !planet.fake && planet.id == planetNew.id) {
             // the planet is not visible to the player anymore, so invalidate it
             if (!planetNew.viewable) {
                ML.latestPlanet.setFlag_destructionPending();
