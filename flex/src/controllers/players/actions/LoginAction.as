@@ -4,6 +4,7 @@ package controllers.players.actions
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.GlobalFlags;
    import controllers.galaxies.GalaxiesCommand;
    import controllers.screens.MainAreaScreens;
    import controllers.screens.MainAreaScreensSwitch;
@@ -20,36 +21,34 @@ package controllers.players.actions
     */
    public class LoginAction extends CommunicationAction
    {
-      private function get STARTUP_INFO() : StartupInfo
-      {
+      private function get STARTUP_INFO() : StartupInfo {
          return StartupInfo.getInstance();
       }
       
+      private function get GF() : GlobalFlags {
+         return GlobalFlags.getInstance();
+      }
       
-      public function LoginAction()
-      {
+      
+      public function LoginAction() {
          super ();
       }
       
       
-      public override function applyClientAction(cmd:CommunicationCommand) : void
-      {         
+      public override function applyClientAction(cmd:CommunicationCommand) : void {         
          sendMessage(new ClientRMO({
             "galaxyId":  STARTUP_INFO.galaxyId,
             "authToken": STARTUP_INFO.authToken
          }));
       }
       
-      
-      public override function applyServerAction(cmd:CommunicationCommand) : void
-      {
-         if (cmd.parameters.success)
-         {
+      public override function applyServerAction(cmd:CommunicationCommand) : void {
+         if (cmd.parameters["success"]) {
             ML.player.loggedIn = true;
             ScreensSwitch.getInstance().showScreen(Screens.MAIN);
          }
-         else
-         {
+         else {
+            GF.lockApplication = false;
             var popup:ErrorPopup = new ErrorPopup();
             popup.title = Localizer.string("Popups", "title.loginFailed");
             popup.message = Localizer.string("Popups", "message.loginFailed");
