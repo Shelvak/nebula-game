@@ -84,26 +84,20 @@ package tests.chat.models
       };
       
       [Test]
-      public function openMemberIgnoresCurrentPlayer() : void {
-         Expect.notCalled(MCHAT.openPrivateChannel(0)).ignoreArguments();
-         Expect.notCalled(NAV_CTRL.showPlayer(0)).ignoreArguments();
-         mockRepository.replayAll();
-         list.openMember(member.id);
-         mockRepository.verifyAll();
-      }
-      
-      [Test]
-      public function openMemberOpensPrivateChannelWhenChannelIsPublic() : void {
+      public function openMemberOpensPrivateChannelForFriendAndProfileForPlayerWhenChannelIsPublic() : void {
          var friend:MChatMember = new MChatMember(2, "jho");
          channel = new MChatChannelPublic("galaxy");
          channel.memberJoin(member, false);
          channel.memberJoin(friend, false);
          list = channel.members;
          
-         Expect.notCalled(NAV_CTRL.showPlayer(0)).ignoreArguments();
+         Expect.notCalled(NAV_CTRL.showPlayer(friend.id));
+         Expect.notCalled(MCHAT.openPrivateChannel(member.id));
          Expect.call(MCHAT.openPrivateChannel(friend.id));
+         Expect.call(NAV_CTRL.showPlayer(member.id));
          mockRepository.replayAll();
          list.openMember(friend.id);
+         list.openMember(member.id);
          mockRepository.verifyAll();
       }
       
@@ -117,8 +111,10 @@ package tests.chat.models
          
          Expect.notCalled(MCHAT.openPrivateChannel(0)).ignoreArguments();
          Expect.call(NAV_CTRL.showPlayer(friend.id));
+         Expect.call(NAV_CTRL.showPlayer(member.id));
          mockRepository.replayAll();
          list.openMember(friend.id);
+         list.openMember(member.id);
          mockRepository.verifyAll();
       }
       

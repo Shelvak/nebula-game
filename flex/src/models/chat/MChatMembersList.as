@@ -95,9 +95,6 @@ package models.chat
        * player's profile (if channel is private). O(1) complexity.
        */
       public function openMember(id:int) : void {
-         if (containsMember(id) && getMember(id).isPlayer)
-            return;
-         
          if (_channel == null)
             throw new IllegalStateError(
                "Unable to perform this operation. [param channel] was not provided for the constructor " +
@@ -105,10 +102,10 @@ package models.chat
             );
             
          if (containsMember(id)) {
-            if (_channel.isPublic)
-               MCHAT.openPrivateChannel(id);
-            else
+            if (getMember(id).isPlayer || !_channel.isPublic)
                getMember(id).showPlayer();
+            else
+               MCHAT.openPrivateChannel(id);
          }
          else
             throw new Error(
