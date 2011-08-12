@@ -78,8 +78,8 @@ class CallbackManager
 
       ActiveRecord::Base.connection.execute(
         "INSERT INTO callbacks SET class='#{get_class(object)
-          }', ruleset='#{CONFIG.set_scope}', object_id=#{object.id}, event=#{
-          event}, ends_at='#{time.to_s(:db)}'"
+          }', ruleset='#{CONFIG.set_scope}', object_id=#{object.id
+          }, event=#{event}, ends_at='#{time.to_s(:db)}'"
       )
     end
 
