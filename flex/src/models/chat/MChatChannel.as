@@ -54,7 +54,7 @@ package models.chat
          super();
          _name = Objects.paramNotEquals("name", name, [null, ""]);;
          _content = new MChatChannelContent();
-         _members = new MChatMembersList();
+         _members = new MChatMembersList(this);
       }
       
       
@@ -66,6 +66,13 @@ package models.chat
       public function get name() : String
       {
          return _name;
+      }
+      
+      /**
+       * Is this a public o private channel?
+       */
+      public function get isPublic() : Boolean {
+         throw new IllegalOperationError("Property is abstract!");
       }
       
       

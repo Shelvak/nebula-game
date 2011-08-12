@@ -95,16 +95,9 @@ package components.chat
       /* ### LOGIC ### */
       /* ############# */
       
-      
-      /**
-       * Opens private channel if a member is selected.
-       */
-      private function openPrivateChannel() : void
-      {
+      private function openMember() : void {
          if (selectedMember != null)
-         {
-            MCHAT.openPrivateChannel(selectedMember.id);
-         }
+            model.openMember(selectedMember.id)
       }
       
       
@@ -136,7 +129,7 @@ package components.chat
       
       private function this_doubleClickHandler(event:MouseEvent) : void
       {
-         openPrivateChannel();
+         openMember();
       }
    }
 }
