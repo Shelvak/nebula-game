@@ -30,6 +30,13 @@ class CallbackManager
   EVENT_VIP_TICK = 10
   # VIP has expired.
   EVENT_VIP_STOP = 11
+  # Create system offer for creds -> metal in galaxy.
+  EVENT_CREATE_METAL_SYSTEM_OFFER = 12
+  # Create system offer for creds -> energy in galaxy.
+  EVENT_CREATE_ENERGY_SYSTEM_OFFER = 13
+  # Create system offer for creds -> zetium in galaxy.
+  EVENT_CREATE_ZETIUM_SYSTEM_OFFER = 14
+  
   STRING_NAMES = {
     EVENT_UPGRADE_FINISHED => 'upgrade finished',
     EVENT_CONSTRUCTION_FINISHED => 'construction finished',
@@ -43,6 +50,9 @@ class CallbackManager
     EVENT_SPAWN => "spawn",
     EVENT_VIP_TICK => "vip tick",
     EVENT_VIP_STOP => "vip stop",
+    EVENT_CREATE_METAL_SYSTEM_OFFER => "create metal system offer",
+    EVENT_CREATE_ENERGY_SYSTEM_OFFER => "create energy system offer",
+    EVENT_CREATE_ZETIUM_SYSTEM_OFFER => "create zetium system offerp",
   }
 
   # Maximum time for callback

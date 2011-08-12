@@ -110,6 +110,22 @@ describe Galaxy do
           CONFIG.evalproperty('galaxy.convoy.time').from_now)
       end
     end
+  
+    describe "system offers" do
+      before(:each) do
+        @galaxy = Factory.create(:galaxy)
+      end
+      
+      MarketOffer::CALLBACK_MAPPINGS.each do |resource_kind, event|
+        it "should create system offer and save it" do
+          should_execute_and_save(
+            MarketOffer, :create_system_offer, [@galaxy.id, resource_kind]
+          ) do
+            Galaxy.on_callback(@galaxy.id, event)
+          end
+        end
+      end
+    end
   end
   
   describe "#by_coords" do

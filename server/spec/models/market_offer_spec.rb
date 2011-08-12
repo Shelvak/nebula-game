@@ -246,7 +246,7 @@ describe MarketOffer do
         @offer.buy!(@buyer_planet, @offer.from_amount + 10).
           should == amount
       end
-
+      
       it "should create notification" do
         Notification.should_receive(:create_for_market_offer_bought).
           with(@offer, @buyer, @offer.from_amount, @to_amount)
@@ -259,6 +259,55 @@ describe MarketOffer do
           @offer.from_amount * CONFIG['market.buy.notification.threshold'] -
             1
         )
+      end
+    
+      it "should not register system callback if offer is bought out" do
+        CallbackManager.should_not_receive(:register).
+          with(
+            @offer.galaxy, 
+            MarketOffer::CALLBACK_MAPPINGS[@offer.from_kind],
+            an_instance_of(Time)
+          )
+        @offer.buy!(@buyer_planet, @offer.from_amount)
+      end
+      
+      describe "system offers" do
+        before(:each) do
+          @offer.planet = nil
+          @offer.save!
+        end
+
+        it "should support buying them" do
+          @offer.buy!(@buyer_planet, @offer.from_amount)
+        end
+        
+        it "should register callback when offer is bought out" do
+          CallbackManager.should_receive(:register).and_return do
+            |galaxy, event, time|
+            galaxy.should == @offer.galaxy
+            event.should == MarketOffer::CALLBACK_MAPPINGS[@offer.from_kind]
+            Cfg.market_bot_resource_cooldown_range.
+              should cover(time - Time.now)
+            
+            true
+          end
+          @offer.buy!(@buyer_planet, @offer.from_amount)
+        end
+        
+        it "should not register callback when offer is not bought out" do
+          CallbackManager.should_not_receive(:register).
+            with(
+              @offer.galaxy, 
+              MarketOffer::CALLBACK_MAPPINGS[@offer.from_kind],
+              an_instance_of(Time)
+            )
+          @offer.buy!(@buyer_planet, @offer.from_amount - 100)
+        end
+
+        it "should not create notification" do
+          Notification.should_not_receive(:create_for_market_offer_bought)
+          @offer.buy!(@buyer_planet, @offer.from_amount + 10)
+        end
       end
     end
   end
@@ -349,6 +398,43 @@ describe MarketOffer do
           ) / (offer.from_amount + seed_amount),
           0.01
         )
+    end
+  end
+
+  describe ".create_system_offer" do
+    before(:all) do
+      @galaxy = Factory.create(:galaxy)
+      @kind = MarketOffer::KIND_ENERGY
+    end
+    
+    it "should set #from_amount from bot resource range" do
+      Cfg.market_bot_resource_range(@kind).should cover(
+        MarketOffer.create_system_offer(@galaxy.id, @kind).from_amount
+      )
+    end
+    
+    it "should set #from_kind" do
+      MarketOffer.create_system_offer(@galaxy.id, @kind).
+        from_kind.should == @kind
+    end
+    
+    it "should set #to_kind" do
+      MarketOffer.create_system_offer(@galaxy.id, @kind).
+        to_kind.should == MarketOffer::KIND_CREDS
+    end
+    
+    it "should set #galaxy_id" do
+      MarketOffer.create_system_offer(@galaxy.id, @kind).
+        galaxy_id.should == @galaxy.id
+    end
+    
+    it "should set maximum possible selling price" do
+      MarketOffer.create_system_offer(@galaxy.id, @kind).to_rate.
+        should == 
+      (
+        MarketOffer.avg_rate(@galaxy.id, @kind, MarketOffer::KIND_CREDS) *
+        (1 + Cfg.market_rate_offset)
+      )
     end
   end
 end

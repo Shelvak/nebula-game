@@ -1,5 +1,47 @@
-# Config shortcuts instead of using strings everywhere.
+# Configuration shortcuts instead of using strings everywhere.
 class Cfg; class << self
+  # Returns +Float+ offset (like 0.10) for MarketOffer#to_rate deviation 
+  # from MarketOffer#avg_rate.
+  def market_rate_offset; CONFIG['market.avg_rate.offset']; end
+  
+  # Returns +Range+ for market resources bot for resource of kind 
+  # _resource_kind_.
+  def market_bot_resource_range(resource_kind)
+    (
+      CONFIG["market.bot.resources.range.#{resource_kind}"][0]
+    )..(
+      CONFIG["market.bot.resources.range.#{resource_kind}"][1]
+    )
+  end
+  
+  # Returns random resource amount for market resources bot for 
+  # resource kind _resource_kind_.
+  def market_bot_random_resource(resource_kind)
+    range = market_bot_resource_range(resource_kind)
+    rand(range.first, range.last + 1)
+  end
+  
+  # Returns +Range+ of how much seconds we should wait before creating new
+  # system offer.
+  def market_bot_resource_cooldown_range
+    from, to = CONFIG["market.bot.resources.cooldown"]
+    from = CONFIG.safe_eval(from)
+    to = CONFIG.safe_eval(to)
+    (from)..(to)
+  end
+  
+  # Returns random number of seconds we should wait before creating new
+  # system offer.
+  def market_bot_random_resource_cooldown
+    range = market_bot_resource_cooldown_range
+    rand(range.first, range.last + 1)
+  end
+  
+  # Returns random +Time+ when new system offer should be created.
+  def market_bot_random_resource_cooldown_date
+    market_bot_random_resource_cooldown.seconds.from_now
+  end
+    
   # Number of notifications sent to player.
   def notification_limit; CONFIG['notifications.limit']; end
     
