@@ -1,5 +1,7 @@
 package models.chat
 {
+   import controllers.ui.NavigationController;
+   
    import models.BaseModel;
    import models.chat.events.MChatMemberEvent;
    
@@ -64,10 +66,8 @@ package models.chat
        * [Bindable(event="isOnlineChange")]
        * </p>
        */
-      public function set isOnline(value:Boolean) : void
-      {
-         if (_isOnline != value)
-         {
+      public function set isOnline(value:Boolean) : void {
+         if (_isOnline != value) {
             _isOnline = value;
             dispatchSimpleEvent(MChatMemberEvent, MChatMemberEvent.IS_ONLINE_CHANGE);
          }
@@ -75,9 +75,12 @@ package models.chat
       /**
        * @private
        */
-      public function get isOnline() : Boolean
-      {
+      public function get isOnline() : Boolean {
          return _isOnline;
+      }
+      
+      public function showPlayer() : void {
+         NavigationController.getInstance().showPlayer(id);
       }
       
       
