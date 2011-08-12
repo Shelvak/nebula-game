@@ -4,7 +4,10 @@ class Building::Market < Building
   
   # Returns full cost with market fee for offer creation.
   def full_cost(amount)
-    (amount * (1 + fee)).ceil
+    # Don't ceil the fee here or calculation in client gets overly 
+    # complicated in edge cases, e.g. when there is 0,5 of a resource 
+    # missing.
+    amount + (amount * fee).floor
   end
   
   # Creates an market offer where _from_amount_ of _from_kind_ resources 
