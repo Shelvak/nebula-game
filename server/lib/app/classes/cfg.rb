@@ -1,5 +1,8 @@
 # Config shortcuts instead of using strings everywhere.
 class Cfg; class << self
+  # Number of notifications sent to player.
+  def notification_limit; CONFIG['notifications.limit']; end
+    
   # For how long planet is protected after protection is initiated?
   def planet_protection_duration
     CONFIG.evalproperty('combat.cooldown.protection.duration')
