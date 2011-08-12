@@ -521,9 +521,9 @@
     <property.metal.store value="Metalo talpa" />
     <property.metal.use value="Metalo vartojimo greitis" />
     <property.metal.cost value="Metalo kaina" />
-    <property.energy.generate value="Energy išgavimo greitis" />
+    <property.energy.generate value="Energijos išgavimo greitis" />
     <property.energy.store value="Energijos talpa" />
-    <property.energy.use value="Energy vartojimo greitis" />
+    <property.energy.use value="Energijos vartojimo greitis" />
     <property.energy.cost value="Energijos kaina" />
     <property.zetium.generate value="Zetiumo išgavimo greitis" />
     <property.zetium.store value="Zetiumo talpa" />
@@ -642,7 +642,7 @@
     <Mothership.about>
       <p>[reference:Objects/Mothership] - tai pagrindinis laivas žmonėms, 
       kurie gyvena šioje planetoje. Jie atkeliavo čia šiuo laivu ir jis tapo 
-      jiems pirmaja saugia užuoveja šioje laukinėje planetoje.</p>
+      jiems pirmąja saugia užuoveja šioje laukinėje planetoje.</p>
       <p>[reference:Objects/Mothership] turi integruotą metalo išgavėją, 
       saulės baterijas generuoti energijai ir talpyklas šiems resursams saugoti.
       To pilnai užtenka, kad patenkinti bazines planetos resursų reikmes.</p>
@@ -4013,7 +4013,7 @@
       {0 metal[metalo] energy[energijos] zetium[zetiumo]} minimaliam 
       pasiūlymui.</p>
       <p>Minimalus pasiūlymas yra {1} 
-      {0 metal[metalo] energy[energijos] zetium[zetiumo]}.</p>
+      {0 metal[metalo] energy[energijos] zetium[zetiumo]} + mokesčiai.</p>
     </warning.noMinResource>
     <message.offerSubmited value="Pasiūlymas priimtas" />
     <message.offerGone value="Atsiprašome, šio pasiūlymo nebėra" />

@@ -4110,7 +4110,7 @@
          {1}: minimal amount -->
     <warning.noMinResource> 
       <p>You dont have enough {0} for minimal offer.</p>
-      <p>Minimal offer is {1} {0}.</p>
+      <p>Minimal offer is {1} {0} + taxes.</p>
     </warning.noMinResource>
     <message.offerSubmited value="Offer submited" />
     <message.offerGone value="Sorry, offer is already gone" />
