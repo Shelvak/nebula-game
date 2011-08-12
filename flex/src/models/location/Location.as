@@ -7,6 +7,7 @@ package models.location
    
    import models.building.Building;
    import models.map.MMap;
+   import models.player.PlayerMinimal;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
    import models.solarsystem.SolarSystem;
@@ -36,7 +37,7 @@ package models.location
       public var name:String = null;
       [Optional]
       [Bindable]
-      public var playerId:int = 0;
+      public var player:PlayerMinimal;
       [Optional]
       public var solarSystemId:int = 0;
       [Optional]

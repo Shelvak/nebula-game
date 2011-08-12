@@ -12,8 +12,7 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
-         import components.popups.ErrorPopup;
-         import models.events.HeaderEvent;
+         import components.popups.ActionConfirmationPopup;
          import components.skins.LinkButtonSkin;
          
          import config.Config;
@@ -26,11 +25,8 @@
          import globalevents.GAllianceEvent;
          
          import models.ModelLocator;
-         import models.alliance.MAlliance;
          import models.technology.Technology;
          
-         import mx.collections.Sort;
-         import mx.collections.SortField;
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
@@ -103,20 +99,21 @@
             }
             else if (allyNewName.text.length >= Config.getMinAllyNameLength())
             {
-               var popUp: ErrorPopup = new ErrorPopup();
-               popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
+               
+               var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+               popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
                popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-               popUp.showCancelButton = true;
-               popUp.showRetryButton = true;
-               popUp.message = Localizer.string('Popups', 'message.renameAlliance',
+               var lbl: Label = new Label();
+               lbl.minWidth = 300;
+               lbl.text = Localizer.string('Popups', 'message.renameAlliance',
                   [allyNewName.text, Config.getEditAllianceCredits()]);
+               popUp.addElement(lbl);
                popUp.title = Localizer.string('Popups', 'title.renameAlliance');
-               popUp.retryButtonClickHandler = function (button: Button = null): void
+               popUp.confirmButtonClickHandler = function (button: Button = null): void
                {
                   GlobalFlags.getInstance().lockApplication = true;
                   new AlliancesCommand(AlliancesCommand.EDIT, 
                      {'name': allyNewName.text}).dispatch();
-                  model.alliance.name = allyNewName.text;
                   allyNewName.text = '';
                };
                popUp.show();

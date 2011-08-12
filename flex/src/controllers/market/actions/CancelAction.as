@@ -41,8 +41,8 @@ package controllers.market.actions
          var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
          GlobalFlags.getInstance().lockApplication = false;
          mScreen.privateOffers.remove(offerId);
+         mScreen.publicOffers.remove(offerId);
          mScreen.offerCount--;
-         
       }
    }
 }

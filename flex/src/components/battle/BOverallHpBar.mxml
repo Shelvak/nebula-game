@@ -26,7 +26,7 @@
             verticalCenter="0"/>
    <base:AdvancedContainer left="73" right="0">
       <s:Group visible="{hpModel.spaceMax != 0}" width="100%">
-         <s:Label text="{Localizer.string('BattleMap','space')}" width="80" textAlign="left"/>
+         <s:Label text="{Localizer.string('BattleMap','space')}" width="80" textAlign="center"/>
          <battle:HpBar right="0" left="83" verticalCenter="0" playerStatus="{hpModel.playerStatus}"
                        currentStock="{hpModel.spaceCurrent}" 
                        maxStock="{proportional?spaceMaxTotal:hpModel.spaceMax}"/>
