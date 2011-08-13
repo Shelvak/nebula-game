@@ -142,8 +142,7 @@ class ModelMissingCollectionMetadata extends BaseModel
 
 class ModelUnsupportedCollectionItem extends BaseModel
 {
-   [ArrayElementType("Date")]
-   [Required]
+   [Required(elementType="Date")]
    public var collection:Array = null;
 }
 
