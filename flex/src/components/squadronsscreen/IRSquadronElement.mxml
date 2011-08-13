@@ -63,7 +63,7 @@
             new GUnitsScreenEvent(GUnitsScreenEvent.MANAGE_UNITS, 
                Collections.filter(ML.units,
                   function(unit:Unit) : Boolean {
-                     return unit.squadronId == model.id;
+                     return model != null && unit.squadronId == model.id;
                   }
                )
             );
