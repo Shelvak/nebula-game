@@ -54,6 +54,8 @@ package models
     */
    public class BaseModel extends EventDispatcher implements IBaseModel
    {
+      private static const WHITESPACE_REGEXP:RegExp = /\s/g;
+      
       /**
        * Reference to <code>ImagePreloader</code> singleton.
        */
@@ -127,8 +129,12 @@ package models
        *        containing only <code>[Required]</code> tag;</li>
        *    <li>Properties of <code>Array</code> and <code>IList</code> type must have
        *        <code>elementType</code> attribute of <code>[Required|Optional]</code> metadata tag defined.
-       *        Properties of <code>Vector<code> type do not need this attribute. Currently element type can
+       *        Properties of <code>Vector</code> type do not need this attribute. Currently element type can
        *        only be a primitive type or derivative of <code>BaseModel</code>;</li>
+       *    <li>You can define properties of <code>BaseModel</code> as aggregators (<code>aggregatesProps
+       *        </code> and <code>aggregatesPrefix</code> attributes of <code>[Required|Optional]</code>)
+       *        tags. See <a target="_blank" href="http://wiki-dev.nebula44.com/wiki/Nebula_44:ClientCode">
+       *        wiki page</a> for more information on this feature;</li>
        *    <li>If source object contains properties of different type than those that are defined
        *        in destination class, method invocation will end up with error thrown;</li>
        *    <li>Works only with dynamicly created properties of the data object.</li>
@@ -151,56 +157,9 @@ package models
          var info:XML = Objects.describeType(type).factory[0];
          
          var errors:Array = [];
-         function pushPropAbsenceError(prop:String, alias:String) : void {
-            errors.push(
-               "Property '" + prop + "' does not exist in source object but " +
-               "is required by " + type + "."
-            );
-         };
-         function pushDateFormatError(prop:String, alias:String, e:Error) : void {
-            errors.push(
-               "Error while parsing [Date] property '" + prop +
-               "'. Error message is: " + e.message + "."
-            );
+         function pushError(message:String) : void {
+            errors.push(message);
          }
-         function pushTypeMismatchError(prop:String, alias:String, destType:Class) : void {
-            errors.push(
-               "'" + prop + "' property in source object is " +
-               getQualifiedClassName(data[prop]) + " but " +
-               destType + " was expected in destination object [" + type + "]."
-            );
-         };
-         function pushInvalidMetadataError(prop:String) : void {
-            errors.push(
-               "Property '" + prop + "' has both - [Required] and [Optional] - " +
-               "metadata tags declared."
-            );
-         }
-         function pushMissingArrayMetadataError(prop:String) : void {
-            errors.push(
-               "Property '" + prop + "' is of [class IList] or [class Array] type and therefore " +
-               "requires elementType attribute of [Required|Optional] metadata tag declared."
-            );
-         };
-         function pushUnsupportedCollectionItemTypeError(prop:String, itemType:Class) : void {
-            errors.push(
-               "Property '" + prop + "' is a collection but the declared item type " + itemType +
-               " is not supported. BaseModel.createModel() only supports primitive types " +
-               "and models.BaseModel as item type for collections."
-            );
-         };
-         function pushUnsupportedPropTypeError(propName:String, propType:Class) : void {
-            errors.push(
-               "Property '" + propName + "' is of type " + propType + " which is not supported." 
-            );
-         };
-         function pushRecursiveRequiredPropError(propName:String) : void {
-            errors.push(
-               "Property '" + propName + "' is marked with [Required] and is of exact type " +
-               "as given model type " + type + ". This is not legal. Use [Optional] instead."
-            );
-         }
-         
          function copyProperty(propInfo:XML) : void
          {
             var metadata:XMLList = propInfo.metadata;
@@ -213,20 +172,79 @@ package models
             
             // Its illegal to declare both tags
             if (metaRequired && metaOptional) {
-               pushInvalidMetadataError(propName);
+               pushError(
+                  "Property '" + propName + "' has both - [Required] and [Optional] - " +
+                  "metadata tags declared which is illegal."
+               );
                return;
             }
             
             var srvMeta:XML = metaRequired ? metaRequired : metaOptional;
             var propName:String = propInfo.@name[0];
             var propAlias:String = srvMeta.arg.(@key == "alias").@value[0];
-            if (propAlias == null)
-               propAlias = propName
+            var aggregatesProps:String = srvMeta.arg.(@key == "aggregatesProps").@value[0];
+            var aggregatesPrefix:String = srvMeta.arg.(@key == "aggregatesPrefix").@value[0];
             
+            if ((aggregatesProps != null || aggregatesPrefix != null) && propAlias != null) {
+               pushError(
+                  "Property '" + propName + "' on class '" + type + "' has both - alias and aggregatesProps " +
+                  "(or aggregatesPrefix) - attributes defined which is illegal."
+               );
+               return;
+            }
+            if (aggregatesProps != null && aggregatesPrefix != null) {
+               pushError(
+                  "Property '" + propName + "' on class '" + type + "' has both - aggregatesProps and " +
+                  "aggregatesPrefix - attributes defined which is illegal."
+               );
+               return;
+            }
+            
+            if (propAlias == null)
+               propAlias = propName;
+            
+            var propClass:Class = getDefinitionByName(propInfo.@type[0]) as Class;
+            var propClassName:String = getQualifiedClassName(propClass);
+            
+            // Aggregator comes first
+            if (aggregatesProps != null || aggregatesPrefix != null) {
+               var aggrData:Object;
+               
+               // aggregates props
+               if (aggregatesProps != null) {
+                  aggregatesProps = aggregatesProps.replace(WHITESPACE_REGEXP, "");
+                  aggrData = new Object();
+                  for each (var aggrProp:String in aggregatesProps.split(",")) {
+                     if (data[aggrProp] !== undefined)
+                        aggrData[aggrProp] = data[aggrProp];
+                  }
+               }
+               // aggregates prefix
+               else
+                  aggrData = Objects.extractPropsWithPrefix(aggregatesPrefix, data);
+               
+               if (!Objects.hasAnyProperty(aggrData)) {
+                  if (metaRequired != null) {
+                     var errorMsg:String = "Aggregator defined by property '" + propName + "' is required but ";
+                     if (aggregatesProps != null)
+                        errorMsg += "none of aggregated properties [" + aggregatesProps + "]"; 
+                     else
+                        errorMsg += "no properties with prefix '" + aggregatesPrefix + "'";
+                     errorMsg += " are provided.";
+                     pushError(errorMsg);
+                  }
+               }
+               else
+                  model[propName] = createModel(propClass, aggrData);
+               return;
+            }
             
             // Property does not exist and property is required
-            if (metaRequired && data[propAlias] === undefined) {
-               pushPropAbsenceError(propName, propAlias);
+            if (metaRequired != null && data[propAlias] === undefined) {
+               pushError(
+                  "Property '" + propAlias + "' does not exist in source object but " +
+                  "is required by " + type + "."
+               );
                return;
             }
             
@@ -234,22 +252,27 @@ package models
             if (data[propAlias] == null)
                return;
             
-            var propClass:Class = getDefinitionByName(propInfo.@type[0]) as Class;
-            var propClassName:String = getQualifiedClassName(propClass);
             // Special treatment for Date fields
             if (propClass == Date) {
                try {
                   model[propName] = DateUtil.parseServerDTF(data[propAlias], false);
                }
                catch (e:Error) {
-                  pushDateFormatError(propName, propAlias, e);
+                  pushError(
+                     "Error while parsing [Date] property '" + propAlias +
+                     "'. Error message is: " + e.message + "."
+                  );
                   return;
                }
             }
             // Simple types
             else if (TypeChecker.isPrimitiveClass(propClass)) {
                if (!TypeChecker.isOfPrimitiveType(data[propAlias])) {
-                  pushTypeMismatchError(propName, propAlias, propClass);
+                  pushError(
+                     "'" + propAlias + "' property in source object is " +
+                     getQualifiedClassName(data[propAlias]) + " but " + propClass + 
+                     " was expected in destination object [" + type + "]."
+                  );
                   return;
                }
                else
@@ -268,7 +291,11 @@ package models
                   // elementType attribute is mandatory element for Array and IList properties
                   var itemType:String = srvMeta.arg.(@key == "elementType").@value[0];
                   if (!isVector && itemType == null) {
-                     pushMissingArrayMetadataError(propName);
+                     pushError(
+                        "Property '" + propName + "' is of [class IList] or [class Array] type and " +
+                        "therefore requires elementType attribute of [Required|Optional] metadata tag " +
+                        "declared."
+                     );
                      return;
                   }
                   
@@ -283,7 +310,11 @@ package models
                   var itemClass:Class = getDefinitionByName(itemType) as Class;
                   var itemInstance:Object = new itemClass();
                   if (!TypeChecker.isPrimitiveClass(itemClass) && !(itemInstance is BaseModel)) {
-                     pushUnsupportedCollectionItemTypeError(propName, itemClass);
+                     pushError(
+                        "Property '" + propName + "' is a collection but the declared item type " + itemClass +
+                        " is not supported. BaseModel.createModel() only supports primitive types and " +
+                        "models.BaseModel as item type for collections."
+                     );
                      return;
                   }
                   
@@ -327,13 +358,18 @@ package models
                else if (propInstance is BaseModel)
                {
                   if (propInstance is type && metaRequired) {
-                     pushRecursiveRequiredPropError(propName);
+                     pushError(
+                        "Property '" + propName + "' is marked with [Required] and is of exact type " +
+                        "as given model type " + type + ". This is not legal. Use [Optional] instead."
+                     );
                      return;
                   }
                   model[propName] = createModel(propClass, data[propAlias]);
                }
                else {
-                  pushUnsupportedPropTypeError(propName, propClass);
+                  pushError(
+                     "Property '" + propName + "' is of type " + propClass + " which is not supported." 
+                  );
                   return;
                }
             }
@@ -840,12 +876,10 @@ package models
       /* ### HELPERS ### */
       /* ############### */
       
-      
       /**
        * Prefixes the given message with "Model ... is in illegal state. " and throws the error.
        */
-      protected function throwIllegalStateError(message:String) : void
-      {
+      protected function throwIllegalStateError(message:String) : void {
          throw new IllegalStateError("Model " + this + " is in illegal state. " + message);
       }
    }

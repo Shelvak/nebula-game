@@ -12,6 +12,10 @@ package utils
     */
    public class Objects
    {
+      /* ############# */
+      /* ### CLASS ### */
+      /* ############# */
+      
       /**
        * Use this to retrieve <code>Class</code> object from the given instance.
        * 
@@ -23,16 +27,14 @@ package utils
        * @throws ArgumentError if <code>instance</code> is <code>null</code>, is of
        * <code>Class</code> type or is of <code>Function</code> type.
        */
-      public static function getClass(instance:Object) : Class
-      {
+      public static function getClass(instance:Object) : Class {
          paramNotNull("instance", instance);
          if (instance is Class || instance is Function)
-         {
             throw new ArgumentError("[param instance] can't be of type [class Class] or " +
                                     "[class Function]");
-         }
          return Class(getDefinitionByName(getQualifiedClassName(instance)));
       }
+      
       /**
        * Creates new object of the same type as the given instance. A class of the given
        * instance must have no-args constructor for this method to work.
@@ -45,11 +47,9 @@ package utils
        * @throws ArgumentError if <code>instance</code> is <code>null</code> or is of
        * <code>Class</code> type
        */
-      public static function getInstance(instance:Object) : *
-      {
+      public static function getInstance(instance:Object) : * {
          return new (getClass(instance))();
       }
-      
       
       /**
        * Returns the fully qualified class name of a given object.
@@ -57,39 +57,42 @@ package utils
        * @param replaceColons if <code>true</code>, will replace the two colons that separate package
        * from class name with a dot (.) symbol.
        */
-      public static function getClassName(o:Object, replaceColons:Boolean = false) : String
-      {
+      public static function getClassName(o:Object, replaceColons:Boolean = false) : String {
          var className:String = getQualifiedClassName(o);
          if (replaceColons)
-         {
             className = className.replace("::", ".");
-         }
          return className;
-      }
-      
-      /**
-       * 
-       * @return true if obj has any keys, false otherwise
-       * 
-       */      
-      public static function hasAnyProperty(obj: Object): Boolean
-      {
-         for (var key: String in obj)
-         {
-            return true;
-         }
-         return false;
       }
       
       /**
        * Returns the class name (without package) of a given object. This is a shorcut method for
        * <code>toSimpleClassName(getClassName(o))</code>.
        */
-      public static function getClassNameSimple(o:Object) : String
-      {
+      public static function getClassNameSimple(o:Object) : String {
          return toSimpleClassName(getClassName(o));
       }
       
+      /**
+       * Strips package part from full class name and leaves only the name itself.
+       * 
+       * @param className fully qualified class name or simple class name
+       * 
+       * @return simple class name without package
+       * 
+       * @throws ArgumentError if given [param className] is illegal name of a class
+       */
+      public static function toSimpleClassName(className:String) : String {
+         if (className == null || className.length == 0)
+            throwIllegalClassNameError(className);
+         var indexColon:int = className.lastIndexOf(":");
+         var indexPoint:int = className.lastIndexOf(".");
+         if (indexColon == -1 && indexPoint == -1)
+            return className;
+         if (indexColon == className.length - 1 ||
+            indexColon != -1 && indexColon < indexPoint)
+            throwIllegalClassNameError(className);
+         return className.substring(indexColon + 1);
+      }
       
       /**
        * Lets you find out if a given class has got a given metadata tag.
@@ -101,16 +104,15 @@ package utils
        * @return <code>true</code> if the given class has a given metadata tag defined or <code>false</code>
        * otherwise.
        */
-      public static function hasMetadata(type:Class, tag:String) : Boolean
-      {
-         if (type == null) return false;
+      public static function hasMetadata(type:Class, tag:String) : Boolean {
+         if (type == null)
+            return false;
          var typeData:XML = describeType(type).factory[0];
          if (typeData.metadata.(@name == tag)[0] != null)
             return true;
          else
             return false;
       }
-      
       
       /**
        * Returns array all public properties of a given type.
@@ -120,24 +122,22 @@ package utils
        * 
        * @return Array of properties that are defined either as variables or setter/getter pairs.
        */      
-      public static function getPublicProperties(type:Class, writeOnly:Boolean=true) : Array
-      {
+      public static function getPublicProperties(type:Class, writeOnly:Boolean=true) : Array {
          var result:Array = [];
          var info:XML = describeType(type).factory[0];
-         for each (var prop:XML in info.accessor)
-         {
+         for each (var prop:XML in info.accessor) {
             if (!writeOnly || prop.@access != "readonly")
-            {
                result.push(prop.@name.toString());
-            }
          }
-         for each (prop in info.variable)
-         {
+         for each (prop in info.variable) {
             result.push(prop.@name.toString())
          }
          return result;
       }
       
+      
+      /* ############### */
+      /* ### STATICS ### */
       
       /**
        * For each public static variable/property/constant calls the given callback
@@ -156,11 +156,9 @@ package utils
       public static function forEachStaticValue(CLASS:Class,
                                                 type:int,
                                                 callback:Function,
-                                                exclusions:Array = null) : void
-      {
+                                                exclusions:Array = null) : void {
          forEachStatic(CLASS, type, false, callback, exclusions);
       }
-      
       
       /**
        * For each public static variable/property/constant calls the given callback
@@ -180,11 +178,9 @@ package utils
       public static function forEachStaticName(CLASS:Class,
                                                type:int,
                                                callback:Function,
-                                               exclusions:Array = null) : void
-      {
+                                               exclusions:Array = null) : void {
          forEachStatic(CLASS, type, true, callback, exclusions);
       }
-      
       
       /**
        * For each public static variable/property/constant (determined by
@@ -210,8 +206,7 @@ package utils
                                            type:int,
                                            name:Boolean,
                                            callback:Function,
-                                           exclusions:Array = null) : void
-      {
+                                           exclusions:Array = null) : void {
          var loopVar:Boolean = false;
          var loopConst:Boolean = false;
          var loopAccess:Boolean = false;
@@ -239,8 +234,7 @@ package utils
          
          var classData:XML = describeType(CLASS);
          var excl:ArrayCollection = new ArrayCollection(exclusions);
-         var helper:Function = function(propType:String) : void
-         {
+         var helper:Function = function(propType:String) : void {
             loopThroughStatics(CLASS, classData[propType], name, callback, excl)
          }
          if (loopAccess) helper("accessor");
@@ -252,18 +246,56 @@ package utils
                                                  data:XMLList,
                                                  name:Boolean,
                                                  callback:Function,
-                                                 exclusions:ArrayCollection) : void
-      {
-         for each (var prop:XML in data)
-         {
-            if (! exclusions.contains(prop.@name.toString()))
-            {
+                                                 exclusions:ArrayCollection) : void {
+         for each (var prop:XML in data) {
+            if (! exclusions.contains(prop.@name.toString())) {
                if (name) callback(prop.@name)
                else callback(CLASS[prop.@name])
             }
          }
       }
       
+      
+      /* ############## */
+      /* ### OBJECT ### */
+      /* ############## */
+      
+      /**
+       * Extracts all properties starting with given prefix to a new object and reruns that object.
+       * Of no properties are found, the object returned will also have no properties.
+       * 
+       * <p>This method loops through all dynamic properties of the source object so it take time
+       * to extract properties from large objects.</p>
+       * 
+       * @param prefix <b>Not null. Not empty string.</b>
+       * @param source source object that holds properties.
+       *        <b>Not null. Generic object only.</b>
+       */
+      public static function extractPropsWithPrefix(prefix:String, source:Object) : Object {
+         paramNotNull("source", source);
+         paramNotEquals("prefix", prefix, [null, ""]);
+         var result:Object = new Object();
+         for (var prop:String in source) {
+            if (prop.length > prefix.length && prop.indexOf(prefix) == 0)
+               result[StringUtil.firstToLowerCase(prop.substr(prefix.length))] = source[prop];
+         }
+         return result;
+      }
+      
+      /**
+       * @return true if obj has any keys, false otherwise
+       */
+      public static function hasAnyProperty(obj: Object): Boolean {
+         for (var key:String in obj) {
+            return true;
+         }
+         return false;
+      }
+      
+      
+      /* ############################ */
+      /* ### FAIL-FAST ASSERTIONS ### */
+      /* ############################ */
       
       /**
        * Checks if <code>paramValue</code> is <code>null</code> or <code>undefined</code>. If this is
@@ -278,11 +310,9 @@ package utils
        * 
        * @see #paramNotEquals()
        */
-      public static function paramNotNull(paramName:String, paramValue:Object) : *
-      {
+      public static function paramNotNull(paramName:String, paramValue:Object) : * {
          return paramNotEquals(paramName, paramValue, [null, undefined]);
       }
-      
       
       /**
        * Checks if <code>paramValue</code> is not equal to any of given restricted values. If it is equal at
@@ -302,47 +332,35 @@ package utils
        * @throws ArgumentError if <code>paramValue</code> equals to one of values in
        * <code>restrictedValues</code>
        */
-      public static function paramNotEquals(paramName:String, paramValue:Object, restrictedValues:Array) : *
-      {
-         for each (var value:* in restrictedValues)
-         {
+      public static function paramNotEquals(paramName:String, paramValue:Object, restrictedValues:Array) : * {
+         for each (var value:* in restrictedValues) {
             if (paramValue === value)
-            {
                throw new ArgumentError(
                   "[param " + paramName + "] can't be equal to " + arrayJoin(restrictedValues, ", ") +
                   " but was equal to " + paramValue
                );
-            }
          }
          
          return paramValue;
       }
       
-      
       /**
        * Does the same as <code>paramNotNull</code> just allows you to specify a custom error message.
        */
-      public static function notNull(value:Object, errorMessage:String) : *
-      {
+      public static function notNull(value:Object, errorMessage:String) : * {
          return notEquals(value, [null, undefined], errorMessage);
       }
-      
       
       /**
        * Does the same as <code>paramNotEquals</code> just allows you to specify a custom error message.
        */
-      public static function notEquals(value:Object, restrictedValues:Array, errorMessage:String) : *
-      {
-         for each (var val:* in restrictedValues)
-         {
+      public static function notEquals(value:Object, restrictedValues:Array, errorMessage:String) : * {
+         for each (var val:* in restrictedValues) {
             if (value === val)
-            {
                throw new Error(errorMessage);
-            }
          }
          return value;
       }
-      
       
       /**
        * Checks if the given <code>value</code> is of given <code>type</code>. If so, returns
@@ -354,13 +372,10 @@ package utils
        * 
        * @return <code>value</code>.
        */
-      public static function requireType(value:Object, type:Class, errorMessage:String = null) : *
-      {
+      public static function requireType(value:Object, type:Class, errorMessage:String = null) : * {
          paramNotNull("type", type);
-         if (!(value is type))
-         {
-            if (errorMessage == null)
-            {
+         if (!(value is type)) {
+            if (errorMessage == null) {
                errorMessage = "Required type " + type + " but " + value +
                               " was of type " + getClassName(value);
             }
@@ -369,61 +384,22 @@ package utils
          return value;
       }
       
-      
-      /**
-       * Strips package part from full class name and leaves only the name itself.
-       * 
-       * @param className fully qualified class name or simple class name
-       * 
-       * @return simple class name without package
-       * 
-       * @throws ArgumentError if given [param className] is illegal name of a class
-       */
-      public static function toSimpleClassName(className:String) : String
-      {
-         if (className == null || className.length == 0)
-         {
-            throwIllegalClassNameError(className);
-         }
-         var indexColon:int = className.lastIndexOf(":");
-         var indexPoint:int = className.lastIndexOf(".");
-         if (indexColon == -1 && indexPoint == -1)
-         {
-            return className;
-         }
-         if (indexColon == className.length - 1 ||
-             indexColon != -1 && indexColon < indexPoint)
-         {
-            throwIllegalClassNameError(className);
-         }
-         return className.substring(indexColon + 1);
-      }
-      
-      
-      private static function throwIllegalClassNameError(name:String) : void
-      {
+      private static function throwIllegalClassNameError(name:String) : void {
          throw new ArgumentError("'" + name + "' is illegal class name");
       }
-      
       
       /**
        * Does the same as <code>Array.join()</code> just converts <code>null</code> to <code>"null"</code>.
        * 
        * @see Array#join()
        */
-      private static function arrayJoin(array:Array, sep:String) : String
-      {
+      private static function arrayJoin(array:Array, sep:String) : String {
          var strings:Array = array.map(
-            function(item:*, index:int, array:Array) : String
-            {
+            function(item:*, index:int, array:Array) : String {
                if (item === null)
-               {
                   return "null";
-               }
                if (item === undefined)
-               {
                   return "undefined";
-               }
                return Object(item).toString();
             }
          );
@@ -435,7 +411,6 @@ package utils
       /* ### DESCRIBE TYPE ### */
       /* ##################### */
       
-      
       private static const DT_CACHE:Dictionary = new Dictionary(true);
       
       /**
@@ -444,8 +419,7 @@ package utils
        * function instead of <code>flash.utils.describeType()</code> because the latter each time creates
        * new XML object and does not cache them (caching makes things a lot faster).
        */
-      public static function describeType(type:Class) : XML
-      {
+      public static function describeType(type:Class) : XML {
          var typeInfo:XML = null
          if (DT_CACHE[type] !== undefined)
             typeInfo = DT_CACHE[type];

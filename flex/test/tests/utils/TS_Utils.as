@@ -13,5 +13,6 @@ package tests.utils
       public var tc_Localizer:TC_Localizer;
       public var tc_NumberUtil:TC_NumberUtil;
       public var tc_ModelUtil:TC_ModelUtil;
+      public var tc_Objects:TC_Objects;
    }
 }
