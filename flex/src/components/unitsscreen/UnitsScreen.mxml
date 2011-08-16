@@ -144,7 +144,7 @@
                {
                   if (flank.nr == flankNr+1)
                   {
-                     flank.flank.addItem(unit);
+                     flank.flank.addOrUpdate(unit);
                      return;
                   }
                }
@@ -155,7 +155,7 @@
                {
                   if (flank.nr == flankNr+1)
                   {
-                     flank.flank.addItem(unit);
+                     flank.flank.addOrUpdate(unit);
                      return;
                   }
                }
@@ -251,7 +251,7 @@
                         {
                            if (flank.nr == unitToAdd.flank+1)
                            {
-                              flank.flank.addItem(unitToAdd);
+                              flank.flank.addOrUpdate(unitToAdd);
                               return;
                            }
                         }

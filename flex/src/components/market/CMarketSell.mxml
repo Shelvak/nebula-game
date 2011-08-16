@@ -100,10 +100,15 @@
                   'toRate': forSelector.selectedVal/sellSelector.selectedVal,
                   'toKind': OfferResourceKind[forWhat.selectedItem]
                }).dispatch();
-               forWhat.selectedIndex = -1;
-               what.selectedIndex = -1;
+               reset();
             };
             popUp.show();
+         }
+         
+         public function reset(): void
+         {
+            forWhat.selectedIndex = -1;
+            what.selectedIndex = -1;
          }
          
       ]]>

@@ -182,49 +182,43 @@ package tests.chat.models.chat
          assertThat( chat.selectedChannel.name, equals (MChat.MAIN_CHANNEL_NAME) );
       };
       
-      
       [Test]
-      public function should_select_first_private_channel_with_unread_messages() : void
-      {
+      public function selectsRecentlyOpenedPrivateChannel() : void {
          chat.visible = true;
-         chat.receivePrivateMessage(makePrivateMessage(2, "jho", "Go to hell!"));
-         chat.receivePrivateMessage(makePrivateMessage(3, "arturaz", "Git it back"));
-         chat.selectChannel("jho");
-         chat.selectChannel(MChat.MAIN_CHANNEL_NAME);
          
-         chat.selectFirstPrivateChannel();
+         chat.selectRecentPrivateChannel();
+         assertThat(
+            "if no private channel is open, main channel should still be selected",
+            chat.selectedChannel.name, equals (MChat.MAIN_CHANNEL_NAME)
+         );
          
-         assertThat( chat.selectedChannel, notNullValue() );
-         assertThat( chat.selectedChannel.name, equals ("arturaz") );
-      };
-      
-      
-      [Test]
-      public function should_select_first_private_channel_if_none_have_unread_messages() : void
-      {
-         chat.visible = true;
-         chat.receivePrivateMessage(makePrivateMessage(2, "jho", "Go to hell!"));
-         chat.receivePrivateMessage(makePrivateMessage(3, "arturaz", "Git it back"));
-         chat.selectChannel("jho");
-         chat.selectChannel("arturaz");
-         chat.selectChannel(MChat.MAIN_CHANNEL_NAME);
+         chat.openPrivateChannel(2, "jho");
+         chat.selectMainChannel();
+         chat.selectRecentPrivateChannel();
+         assertThat(
+            "when only one private channel is open, should select it",
+            chat.selectedChannel.name, equals ("jho")
+         );
          
-         chat.selectFirstPrivateChannel();
+         chat.openPrivateChannel(3, "arturaz");
+         chat.selectMainChannel();
+         chat.selectRecentPrivateChannel();
+         assertThat(
+            "when there are more private channels open, recently opened private channel should be selected",
+            chat.selectedChannel.name, equals ("arturaz")
+         );
          
-         assertThat( chat.selectedChannel, notNullValue() );
-         assertThat( chat.selectedChannel.name, equals ("jho") );
-      };
-      
-      
-      [Test]
-      public function selectFirstPrivateChannel_should_do_nothing_if_there_is_no_private_channel_open() : void
-      {
-         chat.visible = true;
-         chat.selectFirstPrivateChannel();
-         
-         assertThat( chat.selectedChannel, notNullValue() );
-         assertThat( chat.selectedChannel.name, equals (MChat.MAIN_CHANNEL_NAME) );
-      };
+         chat.closePrivateChannel("arturaz");
+         chat.closePrivateChannel("jho");
+         chat.receivePrivateMessage(makePrivateMessage(4, "tommy", "Ho"));
+         chat.receivePrivateMessage(makePrivateMessage(2, "jho", "Hi"));
+         chat.receivePrivateMessage(makePrivateMessage(3, "arturaz", "Hey"));
+         chat.selectRecentPrivateChannel();
+         assertThat(
+            "when no private channel was recently opened, should select first private channel",
+            chat.selectedChannel.name, equals ("tommy")
+         );
+      }
       
       
       /* ############### */

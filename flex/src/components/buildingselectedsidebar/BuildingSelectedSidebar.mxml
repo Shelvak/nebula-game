@@ -416,7 +416,9 @@
                totalDestructTimeLbl = Localizer.string('BuildingSelectedSidebar', 'destructCooldown.total', 
                   [DateUtil.secondsToHumanString(totalCooldown)]);
             }
-            if (canDestroyBuilding != ML.latestPlanet.ssObject.canDestroyBuilding)
+            // TODO: find out when ML.latestPlanet or ML.latestPlanet.ssObject becomes null and fix this
+            var proceed:Boolean = ML.latestPlanet != null && ML.latestPlanet.ssObject != null;
+            if (proceed && canDestroyBuilding != ML.latestPlanet.ssObject.canDestroyBuilding)
             {
                canDestroyBuilding = ML.latestPlanet.ssObject.canDestroyBuilding;
             }
@@ -424,7 +426,7 @@
             {
                destructRemainingTime = '';
             }
-            else
+            else if (proceed)
             {
                destructRemainingTime = DateUtil.secondsToHumanString(int(
                   (ML.latestPlanet.ssObject.canDestroyBuildingAt.time - new Date().time)/1000));

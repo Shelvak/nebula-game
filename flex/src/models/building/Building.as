@@ -318,9 +318,8 @@ package models.building
          return Config.getBuildingMaxQueue(type) - count;
       }
       
-      [ArrayElementType ("models.constructionqueueentry.ConstructionQueueEntry")]
       [Bindable (event="queryChange")]
-      [Optional]
+      [Optional(elementType="models.constructionqueueentry.ConstructionQueueEntry")]
       public function set constructionQueueEntries(value: ModelsCollection): void
       {
          _constructionQueueEntries = value;
