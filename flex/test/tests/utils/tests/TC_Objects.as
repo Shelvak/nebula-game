@@ -11,6 +11,21 @@ package tests.utils.tests
    public class TC_Objects
    {
       [Test]
+      public function extractProps() : void {
+         var result:Object = Objects.extractProps(["one", "two", "nonExisting"], {
+            "one": 1,
+            "two": 2,
+            "three": 3,
+            "four": 4
+         });
+         assertThat( "[prop three] not extracted", result["three"] === undefined, isTrue() );
+         assertThat( "[prop four] not extracted", result["four"] === undefined, isTrue() );
+         assertThat( "[prop nonExisting] not created", result["nonExisting"] === undefined, isTrue() );
+         assertThat( "[prop one] extracted", result["one"], equals (1) );
+         assertThat( "[prop two] extracted", result["two"], equals (2) );
+      }
+      
+      [Test]
       public function extractPropsWithPrefix() : void {
          var result:Object = Objects.extractPropsWithPrefix("prefix", {
             "one": 1,

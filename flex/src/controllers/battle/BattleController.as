@@ -395,7 +395,7 @@ package controllers.battle
       {
          if (!appeared)
          {
-            if (Objects.hasAnyProperty(_battle.appearOrders))
+            if (Objects.hasAnyProp(_battle.appearOrders))
             {
                executeOrder();
             }

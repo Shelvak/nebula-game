@@ -261,15 +261,15 @@ package utils
       /* ############## */
       
       /**
-       * Extracts all properties starting with given prefix to a new object and reruns that object.
-       * Of no properties are found, the object returned will also have no properties.
+       * Extracts all properties starting with given prefix from the source object to a new object and retuns
+       * that object. If no properties are found, the object returned will also have no properties.
        * 
        * <p>This method loops through all dynamic properties of the source object so it take time
        * to extract properties from large objects.</p>
        * 
        * @param prefix <b>Not null. Not empty string.</b>
        * @param source source object that holds properties.
-       *        <b>Not null. Generic object only.</b>
+       *               <b>Not null. Generic object only.</b>
        */
       public static function extractPropsWithPrefix(prefix:String, source:Object) : Object {
          paramNotNull("source", source);
@@ -283,9 +283,31 @@ package utils
       }
       
       /**
+       * Extracts all given properties from the source object to a new object and retuns that object. If no
+       * properties are found, the object returned will also have no properties. 
+       * 
+       * @param properties list of properties to extract.
+       *                   <b>Not null. Not empty.</b>
+       * @param source source object that holds properties.
+       *               <b>Not null. Generic object only.</b>
+       */
+      public static function extractProps(properties:Array, source:Object) : Object {
+         paramNotNull("source", source);
+         paramNotNull("properties", properties);
+         if (properties.length == 0)
+            throw new ArgumentError("[prop properties] must have at least one element");
+         var result:Object = new Object();
+         for each (var prop:String in properties) {
+            if (source[prop] !== undefined)
+               result[prop] = source[prop];
+         }
+         return result;
+      }
+      
+      /**
        * @return true if obj has any keys, false otherwise
        */
-      public static function hasAnyProperty(obj: Object): Boolean {
+      public static function hasAnyProp(obj: Object): Boolean {
          for (var key:String in obj) {
             return true;
          }
