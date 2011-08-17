@@ -4,6 +4,7 @@ package components.chat
    
    import components.base.Panel;
    
+   import flash.events.Event;
    import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
    import flash.ui.Keyboard;
@@ -16,6 +17,7 @@ package components.chat
    import models.chat.events.MChatChannelEvent;
    
    import spark.components.Button;
+   import spark.components.CheckBox;
    import spark.components.Group;
    import spark.components.Label;
    import spark.components.TextArea;
@@ -119,6 +121,8 @@ package components.chat
             inpMessage.setFocus();
             updateGrpFriendOfflineWarningContainer();
             updatePnlMembers();
+            updateGrpJoinLeaveMsgsCheckBoxContainer();
+            updateChkJoinLeaveMsgs();
          }
          f_modelChanged = false;
       }
@@ -172,9 +176,30 @@ package components.chat
       private function updateGrpFriendOfflineWarningContainer() : void {
          grpFriendOfflineWarningContainer.visible =
          grpFriendOfflineWarningContainer.includeInLayout =
-            _model != null &&
-            _model is MChatChannelPrivate &&
-            !MChatChannelPrivate(_model).isFriendOnline;
+            _model != null && !_model.isPublic && !MChatChannelPrivate(_model).isFriendOnline;
+      }
+      
+      [SkinPart(required="true")]
+      /**
+       * Lets user decide if he wants to see member join / leave messages.
+       */
+      public var chkJoinLeaveMsgs:CheckBox;
+      private function updateChkJoinLeaveMsgs() : void {
+         if (chkJoinLeaveMsgs != null && _model != null)
+            chkJoinLeaveMsgs.selected = _model.generateJoinLeaveMsgs;
+      }
+      
+      [SkinPart(required="true")]
+      /**
+       * Container for <code>chkJoinLeaveMsgs</code> and corresponding artwork.
+       */
+      public var grpJoinLeaveMsgsCheckBoxContainer:Group;
+      private function updateGrpJoinLeaveMsgsCheckBoxContainer() : void {
+         if (grpJoinLeaveMsgsCheckBoxContainer != null) {
+            grpJoinLeaveMsgsCheckBoxContainer.visible =
+            grpJoinLeaveMsgsCheckBoxContainer.includeInLayout =
+               _model != null && _model.isPublic
+         }
       }
       
       [SkinPart(required="true")]
@@ -214,6 +239,16 @@ package components.chat
             case pnlMembers:
                updatePnlMembers();
                break;
+            
+            case chkJoinLeaveMsgs:
+               chkJoinLeaveMsgs.addEventListener(Event.CHANGE, chkJoinLeaveMsgs_changeHandler, false, 0, true);
+               chkJoinLeaveMsgs.label = getString("label.generateJoinLeaveMsgs");
+               updateChkJoinLeaveMsgs();
+               break;
+            
+            case grpJoinLeaveMsgsCheckBoxContainer:
+               updateGrpJoinLeaveMsgsCheckBoxContainer();
+               break;
          }
       }
       
@@ -227,6 +262,10 @@ package components.chat
             
             case btnSend:
                btnSend.removeEventListener(MouseEvent.CLICK, btnSend_clickHandler, false);
+               break;
+            
+            case chkJoinLeaveMsgs:
+               chkJoinLeaveMsgs.removeEventListener(Event.CHANGE, chkJoinLeaveMsgs_changeHandler, false);
                break;
          }
       }
@@ -243,6 +282,10 @@ package components.chat
       
       private function model_numMembersChangeHandler(event:MChatChannelEvent) : void {
          updatePnlMembers();
+      }
+      
+      private function model_generateJoinLeaveMsgsChangeHandler(event:MChatChannelEvent) : void {
+         updateChkJoinLeaveMsgs();
       }
       
       
@@ -264,6 +307,11 @@ package components.chat
       
       private function btnSend_clickHandler(event:MouseEvent) : void {
          sendMessage();
+      }
+      
+      private function chkJoinLeaveMsgs_changeHandler(event:Event) : void {
+         if (_model != null)
+            _model.generateJoinLeaveMsgs = chkJoinLeaveMsgs.selected;
       }
       
       
