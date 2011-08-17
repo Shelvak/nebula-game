@@ -71,7 +71,7 @@ package models.unit
          return _units;
       }
       
-      private var transformedUnits: ArrayCollection;
+      public var transformedUnits: ArrayCollection;
       
       [Bindable]
       public var owner: int;
@@ -214,11 +214,15 @@ package models.unit
       
       private function filteredCollection(flank: UnitsFlank): ListCollectionView
       {
-         return Collections.filter(transformedUnits, 
-            function(item: MCUnit): Boolean
+         var source: Array = [];
+         for each (var unit: MCUnit in transformedUnits)
+         {
+            if (unit.flankModel == flank)
             {
-               return item.flankModel == flank;
-            });
+               source.push(unit);
+            }
+         }
+         return new ArrayCollection(source);
       }
       
       private function unitsToFlanks(): void
@@ -227,6 +231,90 @@ package models.unit
          {
             flank.flankUnits = filteredCollection(flank);
          }
+         transformedUnits.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshModels);
+         addEventListener(UnitsScreenEvent.FORMATION_CHANGE, refreshFlanks);
+      }
+      
+      private function refreshFlanks(e: UnitsScreenEvent): void
+      {
+         var changedUnits: Array = [];
+         var sourceFlank: UnitsFlank = null;
+         var targetFlank: UnitsFlank = null;
+         var found: Boolean = false;
+         for each (var flank: UnitsFlank in flanks)
+         {
+            for each (var unit: MCUnit in flank.flankUnits)
+            {
+               if (unit.flankModel != flank)
+               {
+                  if (!found)
+                  {
+                     found = true;
+                     sourceFlank = flank;
+                     targetFlank = unit.flankModel;
+                  }
+                  changedUnits.push(unit);
+               }
+            }
+            if (found)
+            {
+               sourceFlank.removeUnits(changedUnits, false);
+               targetFlank.addUnits(changedUnits);
+               break;
+            }
+         }
+      }
+      
+      private function addModels(source: Array): void
+      {
+         var temp: Object = {};
+         for each (var unit: MCUnit in source)
+         {
+            if (temp[unit.flankModel.nr] == null)
+            {
+               temp[unit.flankModel.nr] = new Array();
+            }
+            (temp[unit.flankModel.nr] as Array).push(unit);
+         }
+         for (var flankNr: String in temp)
+         {
+            UnitsFlank(flanks.getItemAt(int(flankNr))).addUnits(temp[flankNr] as Array);
+         }
+      }
+      
+      private function removeModels(source: Array): void
+      {
+         var temp: Object = {};
+         for each (var unit: MCUnit in source)
+         {
+            if (temp[unit.flankModel.nr] == null)
+            {
+               temp[unit.flankModel.nr] = new Array();
+            }
+            (temp[unit.flankModel.nr] as Array).push(unit);
+         }
+         for (var flankNr: String in temp)
+         {
+            UnitsFlank(flanks.getItemAt(int(flankNr))).removeUnits(temp[flankNr] as Array);
+         }
+      }
+      
+      private function refreshModels(e: CollectionEvent): void
+      {
+            if (e.kind == CollectionEventKind.ADD)
+            {
+               if (e.items.length != 0)
+               {
+                  addModels(e.items);
+               }
+            }
+            else if (e.kind == CollectionEventKind.REMOVE)
+            {
+               if (e.items.length != 0)
+               {
+                  removeModels(e.items);
+               }
+            }
       }
       
       public function tabChanged(tabName: String):void
@@ -517,6 +605,7 @@ package models.unit
       
       private function refreshList(e: CollectionEvent): void
       {
+         transformedUnits.disableAutoUpdate();
          if (e.kind == CollectionEventKind.ADD)
          {
             if (e.items.length != 0)
@@ -547,7 +636,7 @@ package models.unit
                }
             }
          }
-         
+         transformedUnits.enableAutoUpdate();
       }
       
       private function addUnits(unitsToAdd: Array): void

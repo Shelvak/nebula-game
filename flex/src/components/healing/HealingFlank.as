@@ -34,8 +34,6 @@ package components.healing
       
       private function addEventListeners(e: Event): void
       {
-         addEventListener(UnitsScreenEvent.FLANK_SELECT_ALL, selectAllRequested);
-         addEventListener(UnitsScreenEvent.FLANK_DESELECT, deselectAll);
          EventBroker.subscribe(GHealingScreenEvent.DESELECT_UNITS, deselectAll);
          EventBroker.subscribe(GHealingScreenEvent.SELECTION_UPDATED, markSelected);
       }
@@ -43,13 +41,11 @@ package components.healing
       
       private function removeEventListeners(e: Event): void
       {
-         removeEventListener(UnitsScreenEvent.FLANK_SELECT_ALL, selectAllRequested);
-         removeEventListener(UnitsScreenEvent.FLANK_DESELECT, deselectAll);
          EventBroker.unsubscribe(GHealingScreenEvent.DESELECT_UNITS, deselectAll);
          EventBroker.unsubscribe(GHealingScreenEvent.SELECTION_UPDATED, markSelected);
       }
       
-      private function selectAllRequested(e: UnitsScreenEvent): void
+      public function selectAllRequested(): void
       {
          if (!flankModel.selectionClass.selectFlank(flankModel))
          {
@@ -79,7 +75,7 @@ package components.healing
          return unitsList.selectedItems;
       }
       
-      private function deselectAll(e: Event = null): void
+      public function deselectAll(e: GHealingScreenEvent = null): void
       {
          unitsList.selectedIndices = new Vector.<int>;
          flankModel.selection = new ArrayCollection();

@@ -20,12 +20,13 @@
       [HostComponent("components.healing.HealingFlank")]
    </fx:Metadata>
    <fx:Script>
-      import components.unitsscreen.events.UnitsScreenEvent;
       import components.unitsscreen.UnitsDragIndicator;
+      import components.unitsscreen.events.UnitsScreenEvent;
+      
       import models.Owner;
       
-      import utils.locale.Localizer;
       import utils.assets.AssetNames;
+      import utils.locale.Localizer;
    </fx:Script>
    <base:states>
       <s:State name="normal"/>
@@ -52,10 +53,10 @@
       </s:Path>
       <!--- Title of the component. -->
       <s:Button skinClass="components.skins.ZoomInButtonSkin" 
-                click="hostComponent.dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_SELECT_ALL))" 
+                click="hostComponent.selectAllRequested()" 
                 horizontalCenter="0" y="10"/>
       <s:Button skinClass="components.skins.ZoomOutButtonSkin" 
-                click="hostComponent.dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_DESELECT))" 
+                click="hostComponent.deselectAll()" 
                 horizontalCenter="0" y="28"/>
       <s:Label styleName="panelTitle" 
                text="{Localizer.string('Units', 'label.flankNr'+hostComponent.flankModel.nr)}"
@@ -127,22 +128,8 @@
                                   rollOverColor="#4f4f4f" selectionColor="#2f2f2f"
                                   borderVisible="false" 
                                   change="hostComponent.unitsList_changeHandler(event)"
-                                  allowMultipleSelection="true">
-                  <base:itemRenderer>
-                     <fx:Component>
-                        <s:ItemRenderer width="100%" height="100%">
-                           <fx:Script>
-                              <![CDATA[
-                                 import models.unit.Unit;
-                              ]]>
-                           </fx:Script>
-                           <units:UnitComp deployable="{Unit(data).deploysTo != null}" 
-                                                 stance="{Unit(data).newStance}" level="{Unit(data).level}" 
-                                                 hp="{Unit(data).hp}" type="{Unit(data).type}"
-                                                 unit="{Unit(data)}"/>
-                        </s:ItemRenderer>
-                     </fx:Component>
-                  </base:itemRenderer>     
+                                  allowMultipleSelection="true"
+                                  itemRenderer="components.unitsscreen.units.UnitComp">    
                   <base:layout>
                      <s:TileLayout id="flankLayout" horizontalGap="1"
                                    requestedColumnCount="{unitsList.width / (flankLayout.columnWidth+1)}"/>

@@ -2,6 +2,7 @@ package controllers.units.actions
 {
    
    import controllers.CommunicationAction;
+   import controllers.GlobalFlags;
    
    import globalevents.GHealingScreenEvent;
    
@@ -16,13 +17,13 @@ package controllers.units.actions
    {
       public override function result(rmo:ClientRMO) : void
       {
-         new GHealingScreenEvent(GHealingScreenEvent.HEAL_APPROVED);
+         GlobalFlags.getInstance().lockApplication = false;
       }
       
       public override function cancel(rmo:ClientRMO):void
       {
          super.cancel(rmo);
-         new GHealingScreenEvent(GHealingScreenEvent.HEAL_APPROVED);
+         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

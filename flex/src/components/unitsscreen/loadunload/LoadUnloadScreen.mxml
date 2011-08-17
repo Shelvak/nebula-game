@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/mx"
+                    xmlns:base="components.base.*" 
+                    xmlns:location="components.location.*"
+                    xmlns:unitsscreen="components.unitsscreen.*">
+   <fx:Script>
+      <![CDATA[
+         import models.resource.ResourceType;
+         import models.unit.MCLoadUnloadScreen;
+         import models.unit.Unit;
+         
+         import utils.locale.Localizer;
+         
+         [Bindable]
+         private var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();
+        
+      ]]>
+   </fx:Script>
+   <base:layout>
+      <s:VerticalLayout gap="0" horizontalAlign="justify"/>
+   </base:layout>
+   
+   <unitsscreen:ScreenLocations location="{LS.location}" target="{LS.target}"/>
+   <unitsscreen:ScreenContent height="100%">
+      <unitsscreen:rightControls>
+         <s:Group>
+            <s:Label styleName="locationHeader" id="lblStorage"
+                     text="{Localizer.string('Location', 'header.storage')}" verticalCenter="0"/>
+            <base:DoubleProgressBar text="{Localizer.string('Location', 'label.storage',
+                                    LS.target is Unit
+                                    ? [LS.transporter.stored + LS.volume, LS.transporter.storage]
+                                    : [LS.transporter.stored - LS.volume, LS.transporter.storage])}"
+                                    full="{LS.target is Unit
+                                    ? LS.transporter.stored + LS.volume > LS.transporter.storage
+                                    : LS.transporter.stored - LS.volume > LS.transporter.storage}"
+                                    currentStock="{LS.transporter.stored}"
+                                    addStock="{LS.target is Unit ? LS.volume : -LS.volume}"
+                                    maxStock="{LS.transporter.storage}" 
+                                    specialHeight="20" left="0" right="0" width="200"/>
+         </s:Group>
+      </unitsscreen:rightControls>
+      <unitsscreen:leftControls>
+         <base:AdvancedContainer left="0">
+            <base:layout>
+               <s:HorizontalLayout gap="1"/>
+            </base:layout>
+            <s:ToggleButton id="landButton"
+                            name="land"
+                            label="{Localizer.string('Units', 'kind.' + (LS.location is Unit?'stored':'land'), 
+                            [LS.getUnitCount(LS.flanks)])}"
+                            click="LS.tglButton_clickHandler(event)"/>
+            <s:ToggleButton id="resourcesButton" label="{Localizer.string('Units', 'kind.resources')}"
+                            click="LS.tglButton_clickHandler(event)"
+                            name="resources"
+                            visible="{LS.resourcesVisible}"
+                            selected="{LS.resourcesSelected}"/>
+         </base:AdvancedContainer>
+      </unitsscreen:leftControls>
+      <unitsscreen:content>
+         <s:DataGroup visible="{LS.landSelected}" dataProvider="{LS.flanks}" 
+                      left="0" right="0" top="0" bottom="0"> 
+            <s:itemRenderer>
+               <fx:Component>
+                  <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
+                     <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
+                  </s:ItemRenderer>
+               </fx:Component>
+            </s:itemRenderer>
+            <s:layout>
+               <s:VerticalLayout rowHeight="120"/>
+            </s:layout>
+         </s:DataGroup>
+         
+         <unitsscreen:StoragePanel visible="{LS.resourcesSelected}" 
+                                   left="0" right="0" top="0" id="storagePanel"
+                                   skinClass="components.unitsscreen.StorageScreenSectionPanelSkin"
+                                   buttonVisible="false">
+            <base:AdvancedContainer width="100%">
+               <s:Group width="80%">
+                  <base:ResourceSelectorComp resourceType="{ResourceType.METAL}" 
+                                             maxAmmount="{LS.getMaxStock(ResourceType.METAL)}"
+                                             id="metalSelector" 
+                                             selectedVal="{LS.metalSelectedVal}"
+                                             selectedResourcesChange="LS.selectedResourcesChangeHandler(event)"/>
+               </s:Group>
+               <s:Group width="80%">
+                  <base:ResourceSelectorComp resourceType="{ResourceType.ENERGY}" 
+                                             maxAmmount="{LS.getMaxStock(ResourceType.ENERGY)}"
+                                             id="energySelector"
+                                             selectedVal="{LS.energySelectedVal}"
+                                             selectedResourcesChange="LS.selectedResourcesChangeHandler(event)"/>
+               </s:Group>
+               <s:Group width="80%">
+                  <base:ResourceSelectorComp resourceType="{ResourceType.ZETIUM}"
+                                             maxAmmount="{LS.getMaxStock(ResourceType.ZETIUM)}"
+                                             id="zetiumSelector"
+                                             selectedVal="{LS.zetiumSelectedVal}"
+                                             selectedResourcesChange="LS.selectedResourcesChangeHandler(event)"/>
+               </s:Group>
+               <base:Warning text="{LS.missingStorageString}" paddingTop="10" 
+                             horizontalCenter="0" maxWidth="{storagePanel.width - 60}" 
+                             visible="{LS.missingStorageString.length > 0 &amp;&amp; LS.location is Unit}"/>
+               <base:Warning text="{Localizer.string('Units', 'label.transporterFull')}" 
+                             horizontalCenter="0" visible="{LS.target is Unit &amp;&amp;
+                             LS.getMaxStock(ResourceType.ZETIUM) == 0 &amp;&amp;
+                             LS.getMaxStock(ResourceType.ENERGY) == 0 &amp;&amp;
+                             LS.getMaxStock(ResourceType.METAL) == 0}"
+                             maxWidth="{storagePanel.width - 60}" paddingTop="10"/>
+               <base:layout>
+                  <s:VerticalLayout horizontalAlign="center"/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </unitsscreen:StoragePanel>
+      </unitsscreen:content>
+   </unitsscreen:ScreenContent>
+</base:BaseContainer>

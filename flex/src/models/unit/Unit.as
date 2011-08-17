@@ -336,15 +336,12 @@ package models.unit
       public static const STANCE_DEFENSIVE: int = 1;
       public static const STANCE_AGGRESSIVE: int = 2;
       
-      
-      public var newStance: int;
       private var _stance: int;
       [Required]
       [Bindable (event="unitStanceChange")]
       public function set stance(value: int): void
       {
          _stance = value;
-         newStance = value;
          dispatchStanceChangeEvent();
          dispatchPropertyUpdateEvent("stance", value);
       }

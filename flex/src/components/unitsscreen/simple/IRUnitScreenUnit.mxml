@@ -201,7 +201,7 @@
 
          protected function itemrenderer1_mouseMoveHandler(event:MouseEvent):void
          {
-            if (downPressed)
+            if (downPressed && uScreen.owner == Owner.PLAYER)
             {
                downPressed = false;
                deselectOnUp = false;

@@ -33,6 +33,37 @@ package models.unit
       /* ### FOLOWING APPLIES FOR SIMPLE UNIT SCREEN ### */
       /* ############################################### */
       
+      public function addUnits(models: Array): void
+      {
+         flankUnits.disableAutoUpdate();
+         for each (var model: MCUnit in models)
+         {
+            flankUnits.addItem(model);
+         }
+         flankUnits.enableAutoUpdate();
+      }
+      
+      public function removeUnits(models: Array, dispatchEvnt: Boolean = true): void
+      {
+         var selectionChanged: Boolean = false;
+         flankUnits.disableAutoUpdate();
+         for each (var model: MCUnit in models)
+         {
+            flankUnits.removeItemAt(flankUnits.getItemIndex(model));
+            var indx: int = selection.getItemIndex(model);
+            if (indx != -1)
+            {
+               selection.removeItemAt(indx);
+               selectionChanged = true;
+            }
+         }
+         flankUnits.enableAutoUpdate();
+         if (selectionChanged && dispatchEvnt)
+         {
+            US.dispatchSelectionChangeEvent();
+         }
+      }
+      
       public function invertSelection(model: MCUnit): void
       {
          if (model.selected)
@@ -96,10 +127,12 @@ package models.unit
       
       public function stopDrag(): void
       {
+         US.transformedUnits.disableAutoUpdate();
          for each (var unit: MCUnit in US.sourceUnits)
          {
             unit.flankModel = this;
          }
+         US.transformedUnits.enableAutoUpdate();
          US.sourceFlank = null;
          US.sourceUnits = null;
          US.dispatchFormationChangeEvent();
@@ -110,10 +143,12 @@ package models.unit
       
       public function setStance(stance: int): void
       {
+         US.transformedUnits.disableAutoUpdate();
          for each (var unit: MCUnit in selection)
          {
             unit.stance = stance;
          }
+         US.transformedUnits.enableAutoUpdate();
          US.dispatchFormationChangeEvent();
       }
    }

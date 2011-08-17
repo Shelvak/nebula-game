@@ -4,7 +4,8 @@
                xmlns:s="library://ns.adobe.com/flex/spark" 
                xmlns:mx="library://ns.adobe.com/flex/halo"
                xmlns:unitsscreen="components.unitsscreen.*"
-               width="100%" minWidth="20" minHeight="30" xmlns:units="components.unitsscreen.units.*">
+               width="100%" minWidth="20" minHeight="30" 
+               xmlns:units="components.unitsscreen.units.*">
    <fx:Metadata>
       [HostComponent("components.unitsscreen.FlankComp")]
    </fx:Metadata>
@@ -12,16 +13,16 @@
       import components.unitsscreen.UnitsDragIndicator;
       import components.unitsscreen.events.UnitsScreenEvent;
       
+      import config.BattleConfig;
+      
       import models.Owner;
       
       import utils.assets.AssetNames;
       import utils.locale.Localizer;
-      import config.BattleConfig;
    </fx:Script>
    <base:states>
       <s:State name="normal"/>
       <s:State name="disabled"/>
-      <s:State name="transfering"/>
       <s:State name="normalWithControlBar"/>
       <s:State name="disabledWithControlBar"/>
    </base:states>
@@ -47,10 +48,10 @@
       </s:Path>
       <!--- Title of the component. -->
       <s:Button skinClass="components.skins.ZoomInButtonSkin" 
-                click="hostComponent.dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_SELECT_ALL))" 
+                click="hostComponent.selectAllUnits()" 
                 horizontalCenter="0" y="10"/>
       <s:Button skinClass="components.skins.ZoomOutButtonSkin" 
-                click="hostComponent.dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_DESELECT))" 
+                click="hostComponent.deselectAll()" 
                 horizontalCenter="0" y="28"/>
       <s:Label styleName="panelTitle" 
                text="{Localizer.string('Units', 'label.flankNr'+hostComponent.flankModel.nr)}"
@@ -67,56 +68,21 @@
          <base:Scroller id="scrollCont" top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off" 
                         stepMultiplier="5">
             <s:Group width="100%" height="100%">
-               <base:AdvancedList id="unitsList" dataProvider="{hostComponent.flankModel.flankUnits}" left="0" right="0" height="100%"
+               <fx:Script>
+                  <![CDATA[
+                     import components.unitsscreen.units.UnitComp;
+                  ]]>
+               </fx:Script>
+               <base:AdvancedList id="unitsList" 
+                                  dataProvider="{hostComponent.flankModel.flankUnits}" 
+                                  left="0" right="0" height="100%"
                                   skinClass="components.skins.ListNonScrollableSkin"
                                   useVirtualLayout="false" contentBackgroundColor="#0f0f0f"
-                                  rollOverColor="#4f4f4f" selectionColor="#2f2f2f" dragEnter="hostComponent.dragEnterHandler(event)"
+                                  rollOverColor="#4f4f4f" selectionColor="#2f2f2f"
                                   borderVisible="false" 
-                                  dragMoveEnabled="{hostComponent.flankModel.owner == Owner.PLAYER 
-                                  &amp;&amp; currentState != 'transfering'?true:false}"
-                                  dragIndicatorClass="{UnitsDragIndicator}"
                                   change="hostComponent.unitsList_changeHandler(event)"
-                                  allowMultipleSelection="true" updateComplete="
-                                  if (hostComponent.deselect)
-                                  {
-                                  hostComponent.deselect = false;
-                                  hostComponent.dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_DESELECT));
-                                  }"
-                                  dragEnabled="{hostComponent.flankModel.owner == Owner.PLAYER 
-                                  &amp;&amp; currentState != 'transfering'?true:false}"
-                                  dropEnabled="{hostComponent.flankModel.owner == Owner.PLAYER 
-                                  &amp;&amp; currentState != 'transfering'?true:false}"
-                                  dragDrop="hostComponent.unitsList_dragDropHandler(event)">
-                  <base:itemRenderer.transfering>
-                     <fx:Component>
-                        <s:ItemRenderer width="100%" height="100%">
-                           <fx:Script>
-                              <![CDATA[
-                                 import models.unit.Unit;
-                              ]]>
-                           </fx:Script>
-                           <units:UnitComp deployable="{Unit(data).deploysTo != null}" 
-                                                 stance="{Unit(data).newStance}" level="{Unit(data).upgradePart.level}" 
-                                                 hp="{Unit(data).hp}" type="{Unit(data).type}"
-                                                 unit="{Unit(data)}" transfer="true"/>
-                        </s:ItemRenderer>
-                     </fx:Component>
-                  </base:itemRenderer.transfering>                  
-                  <base:itemRenderer.normal>
-                     <fx:Component>
-                        <s:ItemRenderer width="100%" height="100%">
-                           <fx:Script>
-                              <![CDATA[
-                                 import models.unit.Unit;
-                              ]]>
-                           </fx:Script>
-                           <units:UnitComp deployable="{Unit(data).deploysTo != null}" 
-                                                 stance="{Unit(data).newStance}" level="{Unit(data).upgradePart.level}" 
-                                                 hp="{Unit(data).hp}" type="{Unit(data).type}"
-                                                 unit="{Unit(data)}" transfer="false"/>
-                        </s:ItemRenderer>
-                     </fx:Component>
-                  </base:itemRenderer.normal>
+                                  allowMultipleSelection="true"
+                                  itemRenderer="components.unitsscreen.units.UnitComp"> 
                   <base:layout>
                      <s:TileLayout id="flankLayout" horizontalGap="1"
                                    requestedColumnCount="{unitsList.width / (flankLayout.columnWidth+1)}"/>

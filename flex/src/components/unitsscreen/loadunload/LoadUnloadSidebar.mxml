@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                    xmlns:s="library://ns.adobe.com/flex/spark" 
+                    xmlns:mx="library://ns.adobe.com/flex/halo"
+                    xmlns:base="components.base.*">
+   
+   <fx:Script>
+      <![CDATA[
+         import components.skins.RedButtonSkin;
+         import components.skins.YellowButtonSkin;
+         
+         import controllers.GlobalFlags;
+         import controllers.ui.NavigationController;
+         
+         import globalevents.GLoadUnloadScreenEvent;
+         
+         import models.unit.MCLoadUnloadScreen;
+         import models.unit.Unit;
+         
+         import utils.assets.AssetNames;
+         import utils.locale.Localizer;
+         
+         protected function button1_clickHandler(event:MouseEvent):void
+         {
+            NavigationController.getInstance().disableActiveButton();
+            NavigationController.getInstance().showPreviousScreen();
+         }
+         
+         [Bindable]
+         private var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();
+         
+         private function selectAll(): void
+         {
+            if (LS.resourcesSelected)
+            {
+               LS.selectAllResources();
+            }
+            else
+            {
+               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.SELECT_ALL);
+            }
+         }
+         
+         private function selectNone(): void
+         {
+            if (LS.resourcesSelected)
+            {
+               LS.deselectAllResources();
+            }
+            else
+            {
+               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_UNITS);
+            }
+         }
+         
+         private function load_clickHandler(e: Event): void
+         {
+            GlobalFlags.getInstance().lockApplication = true;
+            LS.confirmTransfer();
+         }
+      ]]>
+   </fx:Script>
+   <base:Scroller top="0" left="0" right="0" bottom="0" stepMultiplier="3">
+      <s:Group left="0" right="0">
+         <base:AdvancedContainer left="0" right="0">
+            <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
+               <base:layout>
+                  <s:HorizontalLayout gap="10" horizontalAlign="center"/>
+               </base:layout>
+               <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()"/>
+               <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()"/>
+            </base:Panel>
+            
+            <base:Panel width="100%" title="{Localizer.string ('Units', 'label.noSelection')}"
+                        visible="{LS.volume == 0}">
+               <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'arrow_select_units')}"/>
+               <s:Group width="100%">
+                  <s:Label text="{Localizer.string('Units', 'label.selectUnits')}" fontSize="20" fontWeight="bold" 
+                           color="#ffd200" horizontalCenter="0"/>
+               </s:Group>
+               <base:layout>
+                  <s:HorizontalLayout verticalAlign="middle"/>
+               </base:layout>
+            </base:Panel>
+            
+            <base:Panel width="100%" title="{Localizer.string ('Units', 'label.transfer')}">
+               <base:AdvancedContainer width="100%">
+                  <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.selectedVolume', 
+                           [LS.volume])}"/>
+                  <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.freeStorage', 
+                           [LS.transporter.storage - LS.transporter.stored])}"/>
+                  <s:Group width="100%" visible="{!(!(LS.volume + LS.transporter.stored > 
+                           LS.transporter.storage) || LS.location is Unit)}">
+                     <s:Label styleName="unsatisfied" horizontalCenter="0" 
+                              text="{Localizer.string ('Units', 'label.noStorage')}" fontSize="16"/>
+                  </s:Group>
+                  <s:Group width="100%">
+                     <s:Button label="{LS.target is Unit 
+                               ? Localizer.string ('Units', 'label.load')
+                               : Localizer.string ('Units', 'label.unload')}" 
+                               enabled="{(LS.volume > 0) &amp;&amp;
+                               (LS.target is Unit &amp;&amp; (((LS.transporter.stored + 
+                               LS.volume) &lt;= LS.transporter.storage))
+                               || (!LS.target is Unit))}" 
+                               click="load_clickHandler(event)"
+                               horizontalCenter="0"
+                               skinClass="components.skins.YellowButtonSkin"/>
+                  </s:Group>
+                  <base:layout>
+                     <s:VerticalLayout paddingLeft="6"/>
+                  </base:layout>
+               </base:AdvancedContainer>
+            </base:Panel>
+            
+            <s:Group width="100%">
+               <s:Button label="{Localizer.string ('Units', 'label.close')}"
+                         click="button1_clickHandler(event)" horizontalCenter="0"
+                         skinClass="components.skins.RedButtonSkin"/>
+            </s:Group>
+            
+            <base:layout>
+               <s:VerticalLayout/>
+            </base:layout>
+            
+         </base:AdvancedContainer>
+      </s:Group>
+   </base:Scroller>
+   
+</base:BaseContainer>

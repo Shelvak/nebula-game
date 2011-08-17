@@ -15,13 +15,9 @@ package globalevents
       
       public static const DESELECT_ALL_RESOURCES: String = "deselectAllLoadResources";
       
-      public static const OPEN_SCREEN: String = "openLoadUnloadScreen";
-      
       public static const REFRESH_SIDEBAR: String = "refreshLoadUnloadSidebar";
       
       public static const TRANSFER_CONFIRMED: String = "transferConfirmed";
-      
-      public static const FREE_STORAGE_CHANGE: String = "freeStorageChange";
       
       public var units: Array;
       
@@ -34,27 +30,16 @@ package globalevents
       public var storedResources: Resource;
       
       public var storedItems: ArrayCollection;
-      
-      public var freeStorage: int;
-      
       public var storingResources: Boolean;
       
       public function GLoadUnloadScreenEvent(type:String, params: * = null, eagerDispatch:Boolean=true)
       {
          switch (type)
          {
-            case (OPEN_SCREEN):
-               location = params.location;
-               destination = params.target;
-               unitsCollection = params.units;
-               break;
             case (REFRESH_SIDEBAR):
                location = params.location;
                destination = params.target;
                storingResources = params.transferingResources;
-               break;
-            case (FREE_STORAGE_CHANGE):
-               freeStorage = params;
                break;
          }
          super(type, eagerDispatch);

@@ -43,6 +43,7 @@ package controllers.ui
    import models.chat.MChat;
    import models.events.ScreensSwitchEvent;
    import models.galaxy.Galaxy;
+   import models.healing.MCHealingScreen;
    import models.map.MMap;
    import models.map.MapType;
    import models.market.MCMarketScreen;
@@ -51,6 +52,7 @@ package controllers.ui
    import models.quest.Quest;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
+   import models.unit.MCLoadUnloadScreen;
    import models.unit.MCUnitScreen;
    import models.unit.Unit;
    import models.unit.UnitKind;
@@ -483,25 +485,8 @@ package controllers.ui
       
       public function showHealing(location: *, units: ListCollectionView): void
       {
-         var setData: Function = function(e: Event): void
-         {
-            createdScreens[MainAreaScreens.HEAL] = true;
-            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
-            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-            new GHealingScreenEvent(GHealingScreenEvent.OPEN_SCREEN, {
-               'location': location,
-               'units': units});
-         }
-         if (createdScreens[MainAreaScreens.HEAL])
-         {
-            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
-         }
-         else
-         {
-            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-         }
+         MCHealingScreen.getInstance().prepare(units, location);
          showNonMapScreen(_screenProperties[MainAreaScreens.HEAL]);
-         
       }
       
       public function showStorage(transporter: Unit, oldUnits: ListCollectionView, oldLocation: *): void
@@ -528,26 +513,8 @@ package controllers.ui
       
       public function showLoadUnload(location: *, target: *, units: ListCollectionView): void
       {
-         var setData: Function = function(e: Event): void
-         {
-            createdScreens[MainAreaScreens.LOAD_UNLOAD] = true;
-            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
-            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.OPEN_SCREEN, {
-               'location': location,
-               'target': target,
-               'units': units});
-         }
-         if (createdScreens[MainAreaScreens.LOAD_UNLOAD])
-         {
-            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
-         }
-         else
-         {
-            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-         }
+         MCLoadUnloadScreen.getInstance().prepare(units, location, target);
          showNonMapScreen(_screenProperties[MainAreaScreens.LOAD_UNLOAD]);
-         
       }
       
       public function showUnits(units:ListCollectionView, location: * = null, target: Building = null,

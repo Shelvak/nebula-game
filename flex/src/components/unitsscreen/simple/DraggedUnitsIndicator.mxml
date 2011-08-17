@@ -26,9 +26,11 @@
          
          protected function datagroup1_mouseUpHandler(event:MouseEvent):void
          {
+            if (stage)
+            {
             stage.removeEventListener(MouseEvent.MOUSE_MOVE, datagroup1_mouseMoveHandler);
             stage.removeEventListener(MouseEvent.MOUSE_UP, datagroup1_mouseUpHandler);
-            dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.DROP_UNITS));
+            }
             FlexGlobals.topLevelApplication.removeElement(this);
             var us: MCUnitScreen = MCUnitScreen.getInstance();
             us.sourceFlank = null;

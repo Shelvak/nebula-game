@@ -9,19 +9,9 @@ package globalevents
    
    public class GHealingScreenEvent extends GlobalEvent
    {
-      public static const SELECT_ALL: String = "selectAllHealingUnits";
-      
       public static const DESELECT_UNITS: String = "HealingUnitsDeselect";
       
-      public static const OPEN_SCREEN: String = "openHealingUnloadScreen";
-      
-      public static const REFRESH_SIDEBAR: String = "refreshHealingSidebar";
-      
-      public static const HEALING_CONFIRMED: String = "healingConfirmed";
-      
       public static const HEALING_MAX_CHANGE: String = "healingMaxChange";
-      
-      public static const HEAL_APPROVED: String = "healingApproved";
       
       public static const SELECTION_UPDATED: String = "healingSelectionUpdated";
       
@@ -39,14 +29,6 @@ package globalevents
       {
          switch (type)
          {
-            case (OPEN_SCREEN):
-               location = params.location;
-               unitsCollection = params.units;
-               break;
-            case (REFRESH_SIDEBAR):
-               location = params.location;
-               price = params.price;
-               break;
             case (HEALING_MAX_CHANGE):
                freeStorage = params;
                break;
