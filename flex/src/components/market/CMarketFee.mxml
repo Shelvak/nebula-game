@@ -21,11 +21,24 @@
          }
       ]]>
    </fx:Script>
+   <s:Group>
+      <s:layout>
+         <s:HorizontalLayout verticalAlign="middle"/>
+      </s:layout>
+      <s:Label text="{getText('label.fee')}" fontWeight="bold" paddingRight="3"/>
+      <base:ImageAndLabel type="{type}" 
+                          textToDisplay="{Math.floor((selectedAmmount * taxRate)).toString()}"/>
+      <s:Label text="{'('+Math.round(taxRate*100)+'%'+')'}"/>
+   </s:Group>
+   <s:Group>
+      <s:layout>
+         <s:HorizontalLayout verticalAlign="middle"/>
+      </s:layout>
+      <s:Label text="{getText('label.total')}" fontWeight="bold" paddingRight="3"/>
+      <base:ImageAndLabel type="{type}" 
+                          textToDisplay="{(selectedAmmount + Math.floor(selectedAmmount * taxRate)).toString()}"/>
+   </s:Group>
    <s:layout>
-      <s:HorizontalLayout verticalAlign="middle"/>
+      <s:VerticalLayout horizontalAlign="justify"/>
    </s:layout>
-   <s:Label text="{getText('label.fee')}" fontWeight="bold" paddingRight="3"/>
-   <base:ImageAndLabel type="{type}" 
-                       textToDisplay="{Math.floor((selectedAmmount * taxRate)).toString()}"/>
-   <s:Label text="{'('+Math.round(taxRate*100)+'%'+')'}"/>
 </s:Group>

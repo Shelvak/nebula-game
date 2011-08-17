@@ -135,14 +135,12 @@
                                          visible="{ML.allyRatings.length > 0}"/>
          <base:Scroller left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10"
                         id="contScroller">
-            <s:Group width="100%">
                <s:DataGroup dataProvider="{ML.allyRatings}"
                             itemRenderer="components.alliance.IRAllianceRatingsRow">
                   <s:layout>
-                     <s:VerticalLayout gap="0"/>
+                     <s:VerticalLayout gap="0" useVirtualLayout="true"/>
                   </s:layout>
                </s:DataGroup>
-            </s:Group>
          </base:Scroller>
       </base:Panel>
       <base:layout>

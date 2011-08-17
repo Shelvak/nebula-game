@@ -4080,6 +4080,7 @@
   <Market>
     <label.submit value="Submit" />
     <label.fee value="Fee:" />
+    <label.total value="Total:" />
     <label.wantToSell value="Selling" />
     <label.sellFor value="For" />
     <!-- 1 cheaper or more -->
