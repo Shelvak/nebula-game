@@ -123,6 +123,11 @@ describe MarketOffer do
         end.should raise_error(GameLogicError)
       end
       
+      it "should not record cred stats" do
+        CredStats.should_not_receive(:buy_offer)
+        @offer.buy!(@buyer_planet, @offer.from_amount)
+      end
+      
       describe "seller planet" do
         before(:each) do
           @planet = @seller_planet
@@ -188,6 +193,29 @@ describe MarketOffer do
         lambda do
           @offer.buy!(@buyer_planet, @offer.from_amount)
         end.should raise_error(GameLogicError)
+      end
+      
+      it "should register cred stats if it's an system offer" do
+        @offer.planet = nil
+
+        should_record_cred_stats(:buy_offer, [@buyer, @to_amount]) do
+          @offer.buy!(@buyer_planet, @offer.from_amount)
+        end
+      end
+
+      it "should register cred stats if it's an npc offer" do
+        planet = @offer.planet
+        planet.player = nil
+        planet.save!
+
+        should_record_cred_stats(:buy_offer, [@buyer, @to_amount]) do
+          @offer.buy!(@buyer_planet, @offer.from_amount)
+        end
+      end
+
+      it "should not record cred stats otherwise" do
+        CredStats.should_not_receive(:buy_creds)
+        @offer.buy!(@buyer_planet, @offer.from_amount)
       end
       
       describe "seller" do

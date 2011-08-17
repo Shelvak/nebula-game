@@ -61,4 +61,10 @@ describe CredStats do
       CredStats.remove_foliage(Factory.create(:player), 3, 4).save!
     end
   end
+  
+  describe ".buy_offer" do
+    it "should work" do
+      CredStats.buy_offer(Factory.create(:player), 140).save!
+    end
+  end
 end

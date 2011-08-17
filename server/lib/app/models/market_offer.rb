@@ -101,7 +101,9 @@ class MarketOffer < ActiveRecord::Base
     else
       seller_target, _ = self.class.resolve_kind(planet, to_kind)
     end
-      
+    
+    stats = CredStats.buy_offer(buyer_planet.player, cost) \
+      if seller_target.nil? && to_kind == KIND_CREDS
     
     buyer_has = buyer_source.send(bs_attr)
     raise GameLogicError.new("Not enough funds for #{buyer_source
@@ -150,6 +152,8 @@ class MarketOffer < ActiveRecord::Base
       ) if ! system? &&  
         percentage_bought >= CONFIG['market.buy.notification.threshold'] &&
         ! planet.player_id.nil?
+      
+      stats.save! unless stats.nil?
     end
     
     amount

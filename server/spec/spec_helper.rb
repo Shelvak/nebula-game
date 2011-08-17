@@ -105,32 +105,32 @@ Spork.prefork do
           return_method_call_value=false)
         # Save old method
         old_method = method(method_name)
-        raise "No such method #{self.class.to_s}##{method_name}!" \
-          if old_method.nil?
-        
-        # Create new stub method that records the call.
-        method_ran = false
-        method_call_value = nil
-        metaclass = class << self; self; end
-        metaclass.instance_eval do
-          define_method(method_name) do |*call_args|
-            method_ran = args.nil? ? true : args == call_args
-            method_call_value = old_method.call(*call_args)
+
+        begin
+          # Create new stub method that records the call.
+          method_ran = false
+          method_call_value = nil
+          metaclass = class << self; self; end
+          metaclass.instance_eval do
+            define_method(method_name) do |*call_args|
+              method_ran = args.nil? ? true : args == call_args
+              method_call_value = old_method.call(*call_args)
+            end
           end
+
+          block_value = yield
+
+          raise "#{self} expected to receive #{method_name} with args #{
+            args.inspect}!" unless method_ran
+
+          if return_method_call_value
+            [method_call_value, block_value]
+          else
+            block_value
+          end
+        ensure
+          define_method(method_name, &old_method)
         end
-        
-        block_value = yield
-        
-        raise "#{self} expected to receive #{method_name} with args #{
-          args.inspect}!" unless method_ran
-          
-        if return_method_call_value
-          [method_call_value, block_value]
-        else
-          block_value
-        end
-      ensure
-        define_method(method_name, &old_method)
       end
     end
     
