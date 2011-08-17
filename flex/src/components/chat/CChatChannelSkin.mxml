@@ -16,7 +16,6 @@
       <![CDATA[
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
-         import utils.locale.Localizer;
          
          
          private function get IMG() : ImagePreloader {
@@ -27,14 +26,11 @@
             return IMG.getImage(AssetNames.CHAT_IMAGES_FOLDER + "ctrl_area_" + key);
          }
          
-         private function getString(property:String) : String {
-            return Localizer.string("Chat", property);
-         }
-         
          protected override function initializationComplete() : void {
             super.initializationComplete();
             bmpFriendOfflineWarningSign.source =
                IMG.getImage(AssetNames.UI_IMAGES_FOLDER + "warning_sign");
+            bmpJoinLeaveMsgsCheckBoxBackground.source =
             bmpFriendOfflineBackground.source =
                IMG.getImage(AssetNames.CHAT_IMAGES_FOLDER + "friend_offline_background");
          }
@@ -54,6 +50,11 @@
             <s:BitmapImage id="bmpFriendOfflineWarningSign" left="20" verticalCenter="0"/>
             <s:Label id="lblFriendOfflineWarning" left="80" verticalCenter="0"
                      fontSize="16" color="0xFFCC00" fontWeight="bold"/>
+         </s:Group>
+         <s:Group id="grpJoinLeaveMsgsCheckBoxContainer" left="-5" right="-5" top="-5">
+            <s:BitmapImage id="bmpJoinLeaveMsgsCheckBoxBackground" left="0" right="0" top="0" bottom="0"
+                           fillMode="repeat"/>
+            <s:CheckBox id="chkJoinLeaveMsgs" verticalCenter="0" right="30"/>
          </s:Group>
       </s:Group>
       
@@ -92,7 +93,7 @@
    <!-- Members list -->
    <s:SkinnableContainer right="0" top="0" bottom="0" width="240" mouseEnabled="false"
                          skinClass="components.skins.RightSidebarContainerSkin">
-      <base:Panel title="{getString('label.channelMembers')}" left="0" right="0" top="0" bottom="0">
+      <base:Panel id="pnlMembers" left="0" right="0" top="0" bottom="0">
          <cchat:CChatChannelMembers id="lstMembers" left="0" right="0" top="0" bottom="0"
                                     borderVisible="false"
                                     contentBackgroundAlpha="0"/>

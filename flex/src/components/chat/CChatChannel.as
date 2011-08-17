@@ -2,6 +2,9 @@ package components.chat
 {
    import com.adobe.utils.StringUtil;
    
+   import components.base.Panel;
+   
+   import flash.events.Event;
    import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
    import flash.ui.Keyboard;
@@ -14,6 +17,7 @@ package components.chat
    import models.chat.events.MChatChannelEvent;
    
    import spark.components.Button;
+   import spark.components.CheckBox;
    import spark.components.Group;
    import spark.components.Label;
    import spark.components.TextArea;
@@ -75,18 +79,27 @@ package components.chat
          super.commitProperties();
          if (f_modelChanged) {
             if (_modelOld != null) {
+               _modelOld.removeEventListener(
+                  MChatChannelEvent.NUM_MEMBERS_CHANGE,
+                  model_numMembersChangeHandler, false
+               );
                _modelOld.content.text.removeEventListener(
                   CompositionCompleteEvent.COMPOSITION_COMPLETE,
                   textFlow_compositionCompleteHandler
                );
                txtContent.textFlow = null;
-               if (_modelOld is MChatChannelPrivate)
+               if (!_modelOld.isPublic)
                   MChatChannelPrivate(_modelOld).removeEventListener(
-                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE, model_isFriendOnlineChangeHandler, false
+                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE,
+                     model_isFriendOnlineChangeHandler, false
                   );
                _modelOld = null;
             }
             if (_model != null) {
+               _model.addEventListener(
+                  MChatChannelEvent.NUM_MEMBERS_CHANGE,
+                  model_numMembersChangeHandler, false, 0, true
+               );
                _model.content.text.addEventListener(
                   CompositionCompleteEvent.COMPOSITION_COMPLETE,
                   textFlow_compositionCompleteHandler
@@ -94,9 +107,10 @@ package components.chat
                txtContent.textFlow = _model.content.text;
                lstMembers.model = _model.members;
                lstMembers.itemRendererFunction = _model.membersListIRFactory;
-               if (_model is MChatChannelPrivate)
+               if (!_model.isPublic)
                   MChatChannelPrivate(_model).addEventListener(
-                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE, model_isFriendOnlineChangeHandler, false, 0, true
+                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE,
+                     model_isFriendOnlineChangeHandler, false, 0, true
                   );
             }
             else {
@@ -106,6 +120,9 @@ package components.chat
             inpMessage.text = "";
             inpMessage.setFocus();
             updateGrpFriendOfflineWarningContainer();
+            updatePnlMembers();
+            updateGrpJoinLeaveMsgsCheckBoxContainer();
+            updateChkJoinLeaveMsgs();
          }
          f_modelChanged = false;
       }
@@ -129,6 +146,18 @@ package components.chat
       
       [SkinPart(required="true")]
       /**
+       * Panel that holds a list of all members in the channel.
+       */      
+      public var pnlMembers:Panel;
+      private function updatePnlMembers() : void {
+         if (pnlMembers != null && model != null) {
+            pnlMembers.title =
+               getString("label.channelMembers") + (model.numMembersVisible ? " (" + model.numMembers + ")" : "");
+         }
+      }
+      
+      [SkinPart(required="true")]
+      /**
        * Input field for entering messages.
        */
       public var inpMessage:TextInput;
@@ -147,9 +176,30 @@ package components.chat
       private function updateGrpFriendOfflineWarningContainer() : void {
          grpFriendOfflineWarningContainer.visible =
          grpFriendOfflineWarningContainer.includeInLayout =
-            _model != null &&
-            _model is MChatChannelPrivate &&
-            !MChatChannelPrivate(_model).isFriendOnline;
+            _model != null && !_model.isPublic && !MChatChannelPrivate(_model).isFriendOnline;
+      }
+      
+      [SkinPart(required="true")]
+      /**
+       * Lets user decide if he wants to see member join / leave messages.
+       */
+      public var chkJoinLeaveMsgs:CheckBox;
+      private function updateChkJoinLeaveMsgs() : void {
+         if (chkJoinLeaveMsgs != null && _model != null)
+            chkJoinLeaveMsgs.selected = _model.generateJoinLeaveMsgs;
+      }
+      
+      [SkinPart(required="true")]
+      /**
+       * Container for <code>chkJoinLeaveMsgs</code> and corresponding artwork.
+       */
+      public var grpJoinLeaveMsgsCheckBoxContainer:Group;
+      private function updateGrpJoinLeaveMsgsCheckBoxContainer() : void {
+         if (grpJoinLeaveMsgsCheckBoxContainer != null) {
+            grpJoinLeaveMsgsCheckBoxContainer.visible =
+            grpJoinLeaveMsgsCheckBoxContainer.includeInLayout =
+               _model != null && _model.isPublic
+         }
       }
       
       [SkinPart(required="true")]
@@ -157,6 +207,7 @@ package components.chat
        * A warning that a friend in a private channel is offline.
        */
       public var lblFriendOfflineWarning:Label;
+      
       
       protected override function partAdded(partName:String, instance:Object) : void {
          super.partAdded(partName, instance);
@@ -184,6 +235,20 @@ package components.chat
             case grpFriendOfflineWarningContainer:
                updateGrpFriendOfflineWarningContainer();
                break;
+            
+            case pnlMembers:
+               updatePnlMembers();
+               break;
+            
+            case chkJoinLeaveMsgs:
+               chkJoinLeaveMsgs.addEventListener(Event.CHANGE, chkJoinLeaveMsgs_changeHandler, false, 0, true);
+               chkJoinLeaveMsgs.label = getString("label.generateJoinLeaveMsgs");
+               updateChkJoinLeaveMsgs();
+               break;
+            
+            case grpJoinLeaveMsgsCheckBoxContainer:
+               updateGrpJoinLeaveMsgsCheckBoxContainer();
+               break;
          }
       }
       
@@ -198,6 +263,10 @@ package components.chat
             case btnSend:
                btnSend.removeEventListener(MouseEvent.CLICK, btnSend_clickHandler, false);
                break;
+            
+            case chkJoinLeaveMsgs:
+               chkJoinLeaveMsgs.removeEventListener(Event.CHANGE, chkJoinLeaveMsgs_changeHandler, false);
+               break;
          }
       }
       
@@ -207,9 +276,16 @@ package components.chat
       /* ############################ */
       
       
-      private function model_isFriendOnlineChangeHandler(event:MChatChannelEvent) : void
-      {
+      private function model_isFriendOnlineChangeHandler(event:MChatChannelEvent) : void {
          updateGrpFriendOfflineWarningContainer();
+      }
+      
+      private function model_numMembersChangeHandler(event:MChatChannelEvent) : void {
+         updatePnlMembers();
+      }
+      
+      private function model_generateJoinLeaveMsgsChangeHandler(event:MChatChannelEvent) : void {
+         updateChkJoinLeaveMsgs();
       }
       
       
@@ -231,6 +307,11 @@ package components.chat
       
       private function btnSend_clickHandler(event:MouseEvent) : void {
          sendMessage();
+      }
+      
+      private function chkJoinLeaveMsgs_changeHandler(event:Event) : void {
+         if (_model != null)
+            _model.generateJoinLeaveMsgs = chkJoinLeaveMsgs.selected;
       }
       
       

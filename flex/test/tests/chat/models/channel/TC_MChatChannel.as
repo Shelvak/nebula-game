@@ -1,8 +1,11 @@
 package tests.chat.models.channel
 {
+   import ext.hamcrest.events.causesTarget;
    import ext.hamcrest.object.equals;
    
    import models.chat.MChatChannel;
+   import models.chat.MChatChannelPrivate;
+   import models.chat.MChatChannelPublic;
    import models.chat.MChatMember;
    import models.chat.MChatMessage;
    import models.chat.events.MChatChannelEvent;
@@ -194,5 +197,76 @@ package tests.chat.models.channel
          
          assertThat( channel.hasUnreadMessages, isFalse() );
       };
+      
+      [Test]
+      public function numberOfMembers() : void {
+         var member:MChatMember = new MChatMember(2, "jho", true);
+         
+         assertThat( "initial number of members", channel.numMembers, equals (0) );
+         
+         channel.memberJoin(member);
+         assertThat( "number of members increased", channel.numMembers, equals (1) );
+         
+         channel.memberLeave(member);
+         assertThat( "number of members decreased", channel.numMembers, equals (0) );
+         
+         assertThat(
+            "NUM_MEMBERS_CHANGE is dispatched when member joins",
+            function():void{ channel.memberJoin(member) },
+            causesTarget (channel) .toDispatchEvent (MChatChannelEvent.NUM_MEMBERS_CHANGE)
+         );
+         
+         assertThat(
+            "NUM_MEMBERS_CHANGE is dispatched when member leaves",
+            function():void{ channel.memberLeave(member) },
+            causesTarget (channel) .toDispatchEvent (MChatChannelEvent.NUM_MEMBERS_CHANGE)
+         );
+      }
+      
+      [Test]
+      public function numberOfMembersVisible() : void {
+         assertThat(
+            "visible if channel is public",
+            new MChatChannelPublic("public").numMembersVisible, isTrue()
+         );
+         assertThat(
+            "not visible if channel is private",
+            new MChatChannelPrivate("private").numMembersVisible, isFalse()
+         );
+      }
+      
+      [Test]
+      public function generateJoinLeaveMsgs() : void {
+         var member:MChatMember = new MChatMember(2, "jho"); 
+         
+         channel.generateJoinLeaveMsgs = false;
+         channel.memberJoin(member);
+         assertThat(
+            "when generateJoinLeaveMsgs should not add join message",
+            channel.content.text.numChildren, equals (0)
+         );
+         channel.memberLeave(member);
+         assertThat(
+            "when generateJoinLeaveMsgs should not add leave message",
+            channel.content.text.numChildren, equals (0)
+         );
+         
+         channel.generateJoinLeaveMsgs = true;
+         channel.memberJoin(member);
+         assertThat(
+            "when generateJoinLeaveMsgs should add join message",
+            channel.content.text.numChildren, equals (1)
+         );
+         channel.memberLeave(member);
+         assertThat(
+            "when generateJoinLeaveMsgs should add leave message",
+            channel.content.text.numChildren, equals (2)
+         );
+         
+         assertThat(
+            "changing generateJoinLeaveMsgs", function():void{ channel.generateJoinLeaveMsgs = false },
+            causesTarget (channel) .toDispatchEvent (MChatChannelEvent.GENERATE_JOIN_LEAVE_MSGS_CHANGE)
+         );
+      }
    }
 }

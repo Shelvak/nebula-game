@@ -4072,6 +4072,7 @@
      <label.allianceChannel value="#alliance"/>
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Players"/>
+     <label.generateJoinLeaveMsgs value="Show join / leave messages"/>
   </Chat>
   
   <Market>

@@ -3965,6 +3965,7 @@
      <label.allianceChannel value="#sąjunga"/>
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Žaidėjai"/>
+     <label.generateJoinLeaveMsgs value="Rodyti prisijungimo / išėjimo žinutes"/>
   </Chat>
   
   <Market>
