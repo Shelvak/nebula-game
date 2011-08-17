@@ -126,11 +126,9 @@ describe Building::ConstructorTest do
       @constructor.constructable.should be_nil
     end
 
-    it "should destroy constructable" do
+    it "should call #cancel! on constructable" do
+      @constructor.constructable.should_receive(:cancel!)
       @constructor.cancel!
-      lambda do
-        @building.reload
-      end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "should unregister from CM" do
@@ -151,12 +149,12 @@ describe Building::ConstructorTest do
     end
 
     %w{metal energy zetium}.each do |resource|
-      it "should not change #{resource}" do
+      it "should change #{resource}" do
         planet = @constructor.planet(true)
         @constructor.cancel!
         lambda do
           planet.reload
-        end.should_not change(planet, resource)
+        end.should change(planet, resource)
       end
     end
 
