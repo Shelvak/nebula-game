@@ -208,8 +208,6 @@
             selectedFrom = ResourceType.ALL;
             toRes.selectedIndex = 4;
             selectedTo = ResourceType.ALL;
-            selfOnly.selected = false;
-            onlyPrivateOffers = false;
             dispatchSelectedChangeEvent();
             cancel();
          }

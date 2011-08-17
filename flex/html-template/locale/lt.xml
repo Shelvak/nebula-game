@@ -3980,6 +3980,7 @@
   <Market>
     <label.submit value="Patvirtinti" />
     <label.fee value="Mokesčiai:" />
+    <label.total value="Viso:" />
     <label.wantToSell value="Parduoti" />
     <label.sellFor value="Už" />
     <!-- 1 cheaper or more -->
