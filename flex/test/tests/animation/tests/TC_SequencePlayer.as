@@ -197,7 +197,7 @@ package tests.animation.tests
       /* ######################################## */
       
       
-      [Test(async, timeout=100, description="test automatic playback of sequence without repeat part")]
+      [Test(async, timeout=500, description="test automatic playback of sequence without repeat part")]
       public function play_withoutRepeat() : void
       {
          // seqOne = new Sequence([0], null, [1, 2]);
@@ -222,7 +222,7 @@ package tests.animation.tests
       };
       
       
-      [Test(async, timeout=200, description="tests automatic playback of sequence with repeat part")]
+      [Test(async, timeout=500, description="tests automatic playback of sequence with repeat part")]
       public function play_withRepeat() : void
       {
          // seqTwo = new Sequence([0, 1], [0, 2], [2]);
