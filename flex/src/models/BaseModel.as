@@ -15,6 +15,7 @@ package models
    import mx.collections.IList;
    import mx.events.PropertyChangeEvent;
    
+   import namespaces.client_internal;
    import namespaces.prop_name;
    
    import utils.DateUtil;
@@ -116,6 +117,31 @@ package models
          TYPE_POST_PROCESSORS[type] = postProcessor;
       }
       
+      client_internal static const TYPE_PROCESSORS:Dictionary = new Dictionary();
+      /**
+       * Sets processor function to handle properties of specific type.
+       * 
+       * @param type a Class that requires special handling
+       * @param processor function that will be called when an object of the given type needs to be constructed.
+       * Signature of the function should be: <code>function(currValue:*, value:Object) : Object</code>.
+       * Parameters of the function:
+       * <ul>
+       *    <li><code>currValue</code> - currentValue of the property in the host object.</li>
+       *    <li><code>value</code> - an object that is a generic representation of an instance beeing constructed.</li>
+       * </ul>
+       * The function should create and return a new instance of <code>type</code> only if <code>currValue</code>
+       * is <code>null</code>. If not, it should fill the <code>currValue</code> object with appropriate data
+       * and return it. 
+       */
+      public static function setTypeProcessor(type:Class, processor:Function) : void {
+         Objects.paramNotNull("type", processor);
+         Objects.paramNotNull("processor", processor);
+         client_internal::TYPE_PROCESSORS[type] = processor;
+      }
+      private static function getTypeProcessor(type:Class) : Function {
+         return client_internal::TYPE_PROCESSORS[type];
+      }
+      
       /**
        * Creates a model and loads values to appropriate fields from a provided
        * object.
@@ -148,12 +174,26 @@ package models
        * @throws Error if some properties in source object do not exist in the
        * destination object or if some of them are of different type. 
        */
-      public static function createModel(type:Class, data:Object) : *
-      {
+      public static function createModel(type:Class, data:Object) : * {
+         Objects.paramNotNull("type", type);
+         
+         return createModelImpl(type, null, data);
+      };
+      
+      private static function createModelImpl(type:Class, model:Object, data:Object) : Object {
+         Objects.paramNotNull("type", type);
+         
          if (data == null)
             return null;
          
-         var model:BaseModel = new type();
+         // type processors come first so that special types could be created directly using 
+         // createModel() method
+         var typeProcessor:Function = getTypeProcessor(type);
+         if (typeProcessor != null) {
+            return typeProcessor.call(null, model, data);
+         }
+         
+         model = new type();
          var info:XML = Objects.describeType(type).factory[0];
          
          var errors:Array = [];
@@ -162,16 +202,16 @@ package models
          }
          function copyProperty(propInfo:XML) : void
          {
-            var metadata:XMLList = propInfo.metadata;
-            var metaRequired:XML = metadata.(@name == "Required")[0];
-            var metaOptional:XML = metadata.(@name == "Optional")[0];
+            var propMetadata:XMLList = propInfo.metadata;
+            var metaRequired:XML = propMetadata.(@name == "Required")[0];
+            var metaOptional:XML = propMetadata.(@name == "Optional")[0];
             
             // Skip the property if its not required
-            if (!metaRequired && !metaOptional)
+            if (metaRequired == null && metaOptional == null)
                return;
             
             // Its illegal to declare both tags
-            if (metaRequired && metaOptional) {
+            if (metaRequired != null && metaOptional != null) {
                pushError(
                   "Property '" + propName + "' has both - [Required] and [Optional] - " +
                   "metadata tags declared which is illegal."
@@ -208,22 +248,29 @@ package models
             
             // Aggregator comes first
             if (aggregatesProps != null || aggregatesPrefix != null) {
+               
+               // aggregatesProps and aggregatesPrefix not allowed for primitives
+               if (TypeChecker.isPrimitiveClass(propClass)) {
+                  pushError(
+                     "aggregatesProps and aggregatesPrefix attributes not allowed in [Optional] and " +
+                     "[Required] tags attached to a property of primitive type, but such tag was found " +
+                     "on property '" + propName + "' of type " + type
+                  );
+                  return;
+               }
+               
                var aggrData:Object;
                
                // aggregates props
                if (aggregatesProps != null) {
                   aggregatesProps = aggregatesProps.replace(WHITESPACE_REGEXP, "");
-                  aggrData = new Object();
-                  for each (var aggrProp:String in aggregatesProps.split(",")) {
-                     if (data[aggrProp] !== undefined)
-                        aggrData[aggrProp] = data[aggrProp];
-                  }
+                  aggrData = Objects.extractProps(aggregatesProps.split(","), data);
                }
-               // aggregates prefix
+                  // aggregates prefix
                else
                   aggrData = Objects.extractPropsWithPrefix(aggregatesPrefix, data);
                
-               if (!Objects.hasAnyProperty(aggrData)) {
+               if (!Objects.hasAnyProp(aggrData)) {
                   if (metaRequired != null) {
                      var errorMsg:String = "Aggregator defined by property '" + propName + "' is required but ";
                      if (aggregatesProps != null)
@@ -282,6 +329,12 @@ package models
             // Raw object type: just copy the source and don't run any checks
             else if (propClassName == "Object")
                model[propName] = data[propAlias];
+            // type processor
+            else if (getTypeProcessor(propClass) != null) {
+               var propValue:Object = createModelImpl(propClass, model[propName], data[propAlias]);
+               if (model[propName] !== propValue)
+                  model[propName] = propValue;
+            }
             else {
                var propInstance:Object = new propClass();
                var isVector:Boolean = TypeChecker.isVector(propInstance);
@@ -308,15 +361,15 @@ package models
                   
                   // Collections can only contain primitive types or BaseModel
                   var itemClass:Class = getDefinitionByName(itemType) as Class;
-                  var itemInstance:Object = new itemClass();
-                  if (!TypeChecker.isPrimitiveClass(itemClass) && !(itemInstance is BaseModel)) {
-                     pushError(
-                        "Property '" + propName + "' is a collection but the declared item type " + itemClass +
-                        " is not supported. BaseModel.createModel() only supports primitive types and " +
-                        "models.BaseModel as item type for collections."
-                     );
-                     return;
-                  }
+//                  var itemInstance:Object = new itemClass();
+//                  if (!TypeChecker.isPrimitiveClass(itemClass) && !(itemInstance is BaseModel)) {
+//                     pushError(
+//                        "Property '" + propName + "' is a collection but the declared item type " + itemClass +
+//                        " is not supported. BaseModel.createModel() only supports primitive types and " +
+//                        "models.BaseModel as item type for collections."
+//                     );
+//                     return;
+//                  }
                   
                   // Special case for ModelsCollection. See its documentation for more information.
                   if (propInstance is ModelsCollection) {
@@ -327,7 +380,7 @@ package models
                   // set model property collection
                   model[propName] = propInstance;
                   
-                  // To distinguish between primitive type and BaseModel
+                  // To distinguish between primitive type and other types
                   var createItem:Function;
                   if (TypeChecker.isPrimitiveClass(itemClass))
                      createItem = function(data:Object) : Object {
@@ -355,8 +408,7 @@ package models
                      addItem(createItem(item));
                   }
                }
-               else if (propInstance is BaseModel)
-               {
+               else {
                   if (propInstance is type && metaRequired) {
                      pushError(
                         "Property '" + propName + "' is marked with [Required] and is of exact type " +
@@ -365,12 +417,6 @@ package models
                      return;
                   }
                   model[propName] = createModel(propClass, data[propAlias]);
-               }
-               else {
-                  pushError(
-                     "Property '" + propName + "' is of type " + propClass + " which is not supported." 
-                  );
-                  return;
                }
             }
             // run post-processor function on the property, if any
@@ -392,9 +438,21 @@ package models
                "object holds values for all required properties of correct type."
             );
          
-         model.afterCreateModel(data);
+         callAfterCreate(model, data);
+         
          return model;
-      };
+      }
+      
+      private static function callAfterCreate(target:Object, data:Object) : void {
+         Objects.paramNotNull("target", target);
+         Objects.paramNotNull("data", data);
+         try {
+            (target["afterCreateModel"] as Function).call(null, data);
+         }
+         // ignore this error since afterCreateModel() method is optional and dynamic read of this method
+         // form the static class ends up with this error
+         catch (err:ReferenceError) {}
+      }
       
       
       /**

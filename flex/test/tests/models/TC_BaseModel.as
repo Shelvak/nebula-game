@@ -3,14 +3,21 @@ package tests.models
    import ext.hamcrest.object.equals;
    
    import flash.geom.Point;
+   import flash.geom.Rectangle;
    
    import models.BaseModel;
    
+   import namespaces.client_internal;
+   
    import org.hamcrest.assertThat;
+   import org.hamcrest.collection.array;
+   import org.hamcrest.core.allOf;
+   import org.hamcrest.core.isA;
    import org.hamcrest.core.not;
    import org.hamcrest.core.throws;
    import org.hamcrest.number.isNotANumber;
    import org.hamcrest.object.equalTo;
+   import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.notNullValue;
    
    import tests.models.classes.ModelAggregator;
@@ -32,10 +39,10 @@ package tests.models
             throws (Error)
          );
          
-         assertThat(
-            function():void{ createModel(ModelUnsupportedCollectionItem, {collection: [new Date()]}) },
-            throws (Error)
-         );
+//         assertThat(
+//            function():void{ createModel(ModelUnsupportedCollectionItem, {collection: [new Date()]}) },
+//            throws (Error)
+//         );
          
          assertThat(
             function():void{ createModel(ModelRequiredProps, {name: "MikisM"}) },
@@ -52,10 +59,10 @@ package tests.models
             throws (Error)
          );
          
-         assertThat(
-            function():void{ createModel(ModelUnsupportedPropertyType, {point: new Point()}) },
-            throws (Error)
-         );
+//         assertThat(
+//            function():void{ createModel(ModelUnsupportedPropertyType, {point: new Point()}) },
+//            throws (Error)
+//         );
          
          assertThat(
             function():void{ createModel(ModelRequiredSelf, {id: 2, self: {id: 3}}) },
@@ -138,8 +145,12 @@ package tests.models
             function():void{ createModel(ModelPropsAggregatorAlias, {"required": 0}) }, throws (Error)
          );
          assertThat(
-            "aggregatesProps and aggregatesPrefix attributes not allowed together",
+            "aggregatesPrefix attribute not allowed together",
             function():void{ createModel(ModelPropsAndPrefixAggregator, {"required": 0, "optional": 0}) }, throws (Error)
+         );
+         assertThat(
+            "it is illegal to define aggregatesProps for primitives",
+            function():void{ createModel(ModelAggregatesPropsPrimitive, {}) }, throws (Error)
          );
       }
       
@@ -160,6 +171,10 @@ package tests.models
          assertThat(
             "not providing optional but providing required property for aggregator",
             function():void{ createModel(ModelPrefixAggregatorRequired, {"prefixRequired": 0}) }, not (throws (Error))
+         );
+         assertThat(
+            "it is illegal to define aggregatesPrefix for primitives",
+            function():void{ createModel(ModelAggregatesPrefixPrimitive, {}) }, throws (Error)
          );
       }
       
@@ -199,6 +214,76 @@ package tests.models
          assertThat( "aggregator.optional", aggregator.optional, equals (1) );
       }
       
+      [Test]
+      public function createModelUsesTypeProcessorsForObjects() : void {
+         BaseModel.setTypeProcessor(Point, function(currValue:*, value:Object) : Object {
+            var point:Point = currValue == null ? new Point() : currValue;
+            point.x = value["x"];
+            point.y = value["y"];
+            return point;
+         });
+         
+         var point:Point = createModel(Point, {"x": 1, "y": 2});
+         assertThat( "point created", point, notNullValue() );
+         assertThat( "point.x", point.x, equals (1) );
+         assertThat( "point.y", point.y, equals (2) ); 
+         
+         delete BaseModel.client_internal::TYPE_PROCESSORS[Point];
+      }
+      
+      [Test]
+      public function createModelUsesTypeProcessorsForProperties() : void {
+         BaseModel.setTypeProcessor(Rectangle, function(currValue:*, value:Object) : Object {
+            var rect:Rectangle = currValue == null ? new Rectangle() : currValue;
+            rect.x = value["x"];
+            rect.y = value["y"];
+            rect.width = value["width"];
+            rect.height = value["height"];
+            return rect;
+         });
+         
+         var data:Object = {"rect": {"x": 1, "y": 2, "width": 3, "height": 4}};
+         
+         var modelNull:ModelRectangleNull = createModel(ModelRectangleNull, data);
+         assertThat( "rect", modelNull.rect, notNullValue() );
+         assertThat( "rect.x", modelNull.rect.x, equals (1) );
+         assertThat( "rect.y", modelNull.rect.y, equals (2) );
+         assertThat( "rect.width", modelNull.rect.width, equals (3) );
+         assertThat( "rect.height", modelNull.rect.height, equals (4) );
+         
+         var modelDefault:ModelRectangleDefault = createModel(ModelRectangleDefault, data);
+         assertThat( "rect", modelDefault.rect, notNullValue() );
+         assertThat( "rect.x", modelDefault.rect.x, equals (1) );
+         assertThat( "rect.y", modelDefault.rect.y, equals (2) );
+         assertThat( "rect.width", modelDefault.rect.width, equals (3) );
+         assertThat( "rect.height", modelDefault.rect.height, equals (4) );
+         
+         delete BaseModel.client_internal::TYPE_PROCESSORS[Rectangle];
+      }
+      
+      [Test]
+      public function createModelAllowsAnyTypeInCollections() : void {
+         BaseModel.setTypeProcessor(Point, function(currValue:*, value:Object) : Object {
+            var point:Point = currValue == null ? new Point() : currValue;
+            point.x = value["x"];
+            point.y = value["y"];
+            return point;
+         });
+         
+         var model:ModelCollectionsAnyType = createModel(ModelCollectionsAnyType, {
+            "points": [{"x": 1, y: "1"}, {"x": 2, "y": 2}],
+            "numbers": [1, 2, 3]
+         });
+         
+         assertThat( "numbers", model.numbers, array (1, 2, 3) );
+         assertThat( "points", model.points, array(
+            allOf( isA(Point), hasProperties ({"x": 1, "y": 1}) ),
+            allOf( isA(Point), hasProperties ({"x": 2, "y": 2}) ) 
+         ));
+         
+         delete BaseModel.client_internal::TYPE_PROCESSORS[Point];
+      }
+      
       private function createModel(type:Class, data:Object) : * {
          return BaseModel.createModel(type, data);
       }
@@ -207,6 +292,7 @@ package tests.models
 
 
 import flash.geom.Point;
+import flash.geom.Rectangle;
 
 import models.BaseModel;
 
@@ -342,4 +428,34 @@ class ModelPropsAndPrefixAggregator extends BaseModel implements IAggregatorUser
    public function getAggregator() : ModelAggregator {
       return aggregator;
    }
+}
+
+class ModelAggregatesPrefixPrimitive extends BaseModel
+{
+   [Required(aggregatesPrefix="prefix")]
+   public var primitive:Number;
+}
+
+class ModelAggregatesPropsPrimitive extends BaseModel
+{
+   [Required(aggregatesProps="value")]
+   public var primitive:String;
+}
+
+class ModelRectangleNull extends BaseModel
+{
+   [Required] public var rect:Rectangle = null;
+}
+
+class ModelRectangleDefault extends BaseModel
+{
+   [Required] public var rect:Rectangle = new Rectangle();
+}
+
+class ModelCollectionsAnyType extends BaseModel
+{
+   [Required(elementType="Number")]
+   public var numbers:Array;
+   [Required(elementType="flash.geom.Point")]
+   public var points:Array;
 }
