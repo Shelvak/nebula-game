@@ -1,7 +1,10 @@
 package models.chat
 {
+   import com.adobe.errors.IllegalStateError;
+   
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
+   import mx.utils.ObjectUtil;
    
    import utils.Objects;
    
@@ -14,12 +17,18 @@ package models.chat
     */
    public class MChatMembersList extends ArrayCollection
    {
+      private static function get MCHAT() : MChat {
+         return MChat.getInstance();
+      }
+      
+      
       private var _membersHash:Object;
+      private var _channel:MChatChannel;
       
       
-      public function MChatMembersList()
-      {
+      public function MChatMembersList(channel:MChatChannel = null) {
          super(null);
+         _channel = channel;
          _membersHash = new Object();
          sort = new Sort();
          sort.compareFunction = MChat.compareFunction_members;
@@ -34,13 +43,10 @@ package models.chat
        * 
        * @throws ArgumentError if given <code>MChatMember</code> is already in the list.
        */
-      public function addMember(member:MChatMember) : void
-      {
+      public function addMember(member:MChatMember) : void {
          Objects.paramNotNull("member", member);
          if (containsMember(member.id))
-         {
             throw new ArgumentError("Member " + member + " is already in the list");
-         }
          _membersHash[member.id] = member;
          addItem(member);
       }
@@ -54,14 +60,11 @@ package models.chat
        * @throws ArgumentError if given <code>MChatMember</code> is not in the list and therefore
        * can't be removed.
        */
-      public function removeMember(member:MChatMember) : void
-      {
+      public function removeMember(member:MChatMember) : void {
          Objects.paramNotNull("member", member);
          var toRemove:MChatMember = getMember(member.id);
          if (toRemove == null)
-         {
             throw new ArgumentError("Unable to remove: member " + member + " is not in the list");
-         }
          removeItemAt(getItemIndex(toRemove));
          delete _membersHash[toRemove.id];
       }
@@ -75,27 +78,46 @@ package models.chat
        * @return instance of <code>MChatMember</code> with the given <code>id</code> or <code>null</code>
        * if there is no such <code>MChatMember</code>.
        */
-      public function getMember(id:int) : MChatMember
-      {
+      public function getMember(id:int) : MChatMember {
          return _membersHash[id];
       }
-      
       
       /**
        * Returns <code>true</code> if the list contains <code>MChatMember</code> with a given <code>id</code>.
        * O(1) complexity.
        */
-      public function containsMember(id:int) : Boolean
-      {
+      public function containsMember(id:int) : Boolean {
          return getMember(id) != null;
       }
       
+      /**
+       * Opens private channel to a member with a given id (if the channel is public) or shows corresponding
+       * player's profile (if channel is private). O(1) complexity.
+       */
+      public function openMember(id:int) : void {
+         if (_channel == null)
+            throw new IllegalStateError(
+               "Unable to perform this operation. [param channel] was not provided for the constructor " +
+               "when this instance was created."
+            );
+            
+         if (containsMember(id)) {
+            if (getMember(id).isPlayer || !_channel.isPublic)
+               getMember(id).showPlayer();
+            else
+               MCHAT.openPrivateChannel(id);
+         }
+         else
+            throw new Error(
+               "Unable to open private channel or show player profile of member with id " + id + 
+               ": this member is not in the list. The list is:\n" + ObjectUtil.toString(this)
+            );
+      }
       
       /**
        * Removes all members.
        */
-      public function reset() : void
-      {
+      public function reset() : void {
          removeAll();
          _membersHash = new Object();
       }

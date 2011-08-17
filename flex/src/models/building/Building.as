@@ -30,7 +30,7 @@ package models.building
    import mx.collections.ArrayCollection;
    import mx.events.FlexEvent;
    
-   import namespaces.property_name;
+   import namespaces.prop_name;
    
    import spark.components.List;
    
@@ -318,9 +318,8 @@ package models.building
          return Config.getBuildingMaxQueue(type) - count;
       }
       
-      [ArrayElementType ("models.constructionqueueentry.ConstructionQueueEntry")]
       [Bindable (event="queryChange")]
-      [Optional]
+      [Optional(elementType="models.constructionqueueentry.ConstructionQueueEntry")]
       public function set constructionQueueEntries(value: ModelsCollection): void
       {
          _constructionQueueEntries = value;
@@ -395,7 +394,7 @@ package models.building
       }
       
       
-      property_name static const state:String = "state";
+      prop_name static const state:String = "state";
       [Required]
       /**
        *state means:

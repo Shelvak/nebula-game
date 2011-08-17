@@ -63,7 +63,7 @@
             new GUnitsScreenEvent(GUnitsScreenEvent.MANAGE_UNITS, 
                Collections.filter(ML.units,
                   function(unit:Unit) : Boolean {
-                     return unit.squadronId == model.id;
+                     return model != null && unit.squadronId == model.id;
                   }
                )
             );
@@ -98,7 +98,7 @@
             <squadscr:CLocationWithButton location="{model.currentLocation}"
                                           visible="{!_currentLocIsPlanet}" includeInLayout="{!_currentLocIsPlanet}"/>
             <squadscr:CLocationWithButton location="{model.targetLocation}"/>
-            <s:Label paddingTop="9" text="{model.firstHop}"
+            <s:Label paddingTop="9" text="{model.firstHopEvent.occuresAtString} ({model.firstHopEvent.occuresInString})"
                      visible="{_currentLocIsPlanet}" includeInLayout="{_currentLocIsPlanet}"/>
             <s:Label paddingTop="9" text="{model.arrivalEvent.occuresAtString} ({model.arrivalEvent.occuresInString})"/>
          </s:Group>

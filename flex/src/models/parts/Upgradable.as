@@ -30,9 +30,9 @@ package models.parts
    /**
     * Dispatched when <code>level</code> property has changed.
     * 
-    * @eventType models.parts.events.UpgradeEvent.LVL_CHANGE
+    * @eventType models.parts.events.UpgradeEvent.LEVEL_CHANGE
     */
-   [Event(name="lvlChange", type="models.parts.events.UpgradeEvent")]
+   [Event(name="levelChange", type="models.parts.events.UpgradeEvent")]
    
    
    /**
@@ -304,12 +304,42 @@ package models.parts
       
       [Bindable(event="upgradePropChange")]
       /**
-       * Indicates if upgrade process of this model has been completed
-       * (<code>upgradeEndsAt &lt;= now || upgradeEndsAt == null</code>)
+       * <code>true</code> if this upgradable is either beeing upgraded or constructed.
+       * <code>upgradeInProgress</code> and <code>upgradeCompleted</code> are mutually exclusive.
        */
-      public function get upgradeCompleted() : Boolean
-      {
-         return (upgradeEndsAt == null || upgradeEndsAt.time <= new Date().time); 
+      public function get upgradeInProgress() : Boolean {
+         return upgradeEndsAt != null && upgradeEndsAt.time > DateUtil.now;
+      }
+      
+      [Bindable(event="upgradePropChange")]
+      /**
+       * Indicates if upgrade process of this model has been completed.
+       * <code>upgradeInProgress</code> and <code>upgradeCompleted</code> are mutually exclusive.
+       */
+      public function get upgradeCompleted() : Boolean {
+         return !upgradeInProgress; 
+      }
+      
+      [Bindable(event="upgradePropChange")]
+      /**
+       * <code>true</code> if this upgradable is beeing upgraded (<code>level >> level + 1</code>
+       * where <code>level > 0</code>). If <code>upgradeCompleted = false</code> then <code>isUpgrading</code>
+       * and <code>isConstructing</code> are mutually exclusive. Otherwise
+       * <code>isUpgrading = isConstructing = false</code>.
+       */
+      public function get isUpgrading() : Boolean {
+         return upgradeInProgress && level > 0;
+      }
+      
+      [Bindable(event="upgradePropChange")]
+      /**
+       * <code>true</code> if this upgradable is beeing constructed (<code>level >> level + 1</code> 
+       * where <code>level = 0</code>). If <code>upgradeCompleted = false</code> then <code>isUpgrading</code>
+       * and <code>isConstructing</code> are mutually exclusive. Otherwise
+       * <code>isUpgrading = isConstructing = false</code>.
+       */
+      public function get isConstructing() : Boolean {
+         return upgradeInProgress && level == 0;
       }
       
       

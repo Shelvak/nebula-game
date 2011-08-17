@@ -26,6 +26,6 @@
    </s:layout>
    <s:Label text="{getText('label.fee')}" fontWeight="bold" paddingRight="3"/>
    <base:ImageAndLabel type="{type}" 
-                       textToDisplay="{Math.ceil((selectedAmmount * taxRate)).toString()}"/>
+                       textToDisplay="{Math.floor((selectedAmmount * taxRate)).toString()}"/>
    <s:Label text="{'('+Math.round(taxRate*100)+'%'+')'}"/>
 </s:Group>

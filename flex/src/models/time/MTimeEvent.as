@@ -52,7 +52,7 @@ package models.time
       
       [Bindable(event="occuresAtChange")]
       public function get occuresAtString() : String {
-         return occuresAt.toString();
+         return DateUtil.formatShortDateTime(occuresAt);
       }
       
       

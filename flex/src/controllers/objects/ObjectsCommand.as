@@ -3,8 +3,6 @@ package controllers.objects
    import controllers.CommunicationCommand;
    
    
-   
-   
    /**
     * Used for buildings, units, routes, quests and their progress, and queues.
     */  
@@ -14,12 +12,8 @@ package controllers.objects
       public static const DESTROYED: String = "objects|destroyed";
       public static const CREATED: String = "objects|created";
       
-      /**
-       * Constructor. 
-       */
-      public function ObjectsCommand  
-         (type: String, parameters: Object = null, fromServer: Boolean = false)
-      {
+      
+      public function ObjectsCommand(type:String, parameters:Object = null, fromServer:Boolean = false) {
          super (type, parameters, fromServer);
       }
    }

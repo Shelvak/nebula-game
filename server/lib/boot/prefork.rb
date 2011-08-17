@@ -187,9 +187,7 @@ end
 benchmark :db do
   # Establish database connection
   DB_CONFIG = read_config(config_dir, 'database.yml')
-  DB_CONFIG.each do |env, config|
-    config["adapter"] = RUBY_PLATFORM == "java" ? "jdbcmysql" : "mysql2"
-  end
+  DB_CONFIG.each { |env, config| config["adapter"] = "jdbcmysql" }
   USED_DB_CONFIG = DB_CONFIG[ENV['db_environment']]
 
   if USED_DB_CONFIG.nil?

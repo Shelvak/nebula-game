@@ -19,8 +19,7 @@ package models.location
       }
       
       
-      public function LocationMinimal()
-      {
+      public function LocationMinimal(){
          super();
       }
       
@@ -35,77 +34,59 @@ package models.location
       private var _type:uint = LocationType.GALAXY;
       [Optional]
       [Bindable]
-      public function set type(value:uint) : void
-      {
+      public function set type(value:uint) : void {
          if (_type != value)
-         {
             _type = value;
-         }
       }
-      public function get type() : uint
-      {
+      public function get type() : uint {
          return _type;
       }
       
       
       private var _x:int = 0;
       [Optional]
-      public function set x(value:int) : void
-      {
+      public function set x(value:int) : void {
          _x = value;
       }
-      public function get x() : int
-      {
+      public function get x() : int {
          return _x;
       }
       
       
       private var _y:int = 0;
       [Optional]
-      public function set y(value:int) : void
-      {
+      public function set y(value:int) : void {
          _y = value;
       }
-      public function get y() : int
-      {
+      public function get y() : int {
          return _y;
       }
       
       
       [Bindable(event="willNotChange")]
-      public function get isSSObject() : Boolean
-      {
+      public function get isSSObject() : Boolean {
          return type == LocationType.SS_OBJECT;
       }
       
-      
       [Bindable(event="willNotChange")]
-      public function get isSolarSystem() : Boolean
-      {
+      public function get isSolarSystem() : Boolean {
          return type == LocationType.SOLAR_SYSTEM;
       }
       
-      
       [Bindable(event="willNotChange")]
-      public function get isBattleground() : Boolean
-      {
+      public function get isBattleground() : Boolean {
          return isSolarSystem && ML.latestGalaxy.isBattleground(id);
       }
       
-      
       [Bindable(event="willNotChange")]
-      public function get isMiniBattleground() : Boolean
-      {
+      public function get isMiniBattleground() : Boolean {
          return isSolarSystem && kind == SSKind.BATTLEGROUND && !isBattleground;
       }
       
-      
       [Bindable(event="willNotChange")]
-      public function get isGalaxy() : Boolean
-      {
+      public function get isGalaxy() : Boolean {
          return type == LocationType.GALAXY;
       }
-      
       
       [Bindable(event="willNotChange")]
       /**
@@ -117,13 +98,11 @@ package models.location
          return x + ":" + y;
       }
       
-      
       /**
        * Indicates if this location is defined by one of cached maps and therefore is currently
        * viewed by the player.
        */
-      public function get isObserved() : Boolean
-      {
+      public function get isObserved() : Boolean {
          return ML.latestPlanet && !ML.latestPlanet.fake && ML.latestPlanet.definesLocation(this) ||
                 ML.latestGalaxy && !ML.latestGalaxy.fake && ML.latestGalaxy.locationIsVisible(this) ||
                 ML.latestSolarSystem && !ML.latestSolarSystem.fake && ML.latestSolarSystem.definesLocation(this);
@@ -134,16 +113,13 @@ package models.location
       /* ### INTERFACE METHODS ### */
       /* ######################### */
       
-      
       /**
        * Sets <code>x</code> and <code>y</code> to default values, which is <code>0</code>.
        */
-      public function setDefaultCoordinates() : void
-      {
+      public function setDefaultCoordinates() : void {
          x = 0;
          y = 0;
       }
-      
       
       /**
        * Tries to construct instance of <code>Location</code> from this <code>LocationMinimal</code>.
@@ -152,10 +128,8 @@ package models.location
        * 
        * @throws IllegalOperationError if <code>this.isObserved == false</code>
        */
-      public function toLocation() : Location
-      {
-         if (!isGalaxy && !isObserved)
-         {
+      public function toLocation() : Location {
+         if (!isGalaxy && !isObserved) {
             throw new IllegalOperationError(
                "Can't construct instance of [class Location] from " + this + ": [prop isObserved] " +
                "must return true for this method to work but returned " + isObserved
@@ -177,7 +151,6 @@ package models.location
          return map.getLocation(x, y);
       }
       
-      
       /**
        * Checks if two locations are equal. <code>model</code> is equal to this location if
        * all of following conditions are met:
@@ -193,10 +166,8 @@ package models.location
        * @return <code>true</code> if given location is equal to this one or <code>false</code>
        * otherwise 
        */
-      public override function equals(o:Object) : Boolean
-      {
-         if (o is LocationMinimal)
-         {
+      public override function equals(o:Object) : Boolean {
+         if (o is LocationMinimal) {
             var loc:LocationMinimal = LocationMinimal(o);
             return loc == this || loc.type == type && loc.id == id && loc.x == x && loc.y == y;
          }
@@ -218,14 +189,11 @@ package models.location
        * </ul>
        * <p>
        */
-      public override function hashKey() : String
-      {
+      public override function hashKey() : String {
          return "models.location::LocationMinimal," + type + "," + id + "," + x + "," + y;
       }
       
-      
-      public override function toString() : String
-      {
+      public override function toString() : String {
          return "[class: " + className + ", type: " + type + ", id: " + id + ", x: " + x + ", y: " + y + "]";
       }
    }

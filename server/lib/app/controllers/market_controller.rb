@@ -123,7 +123,7 @@ class MarketController < GenericController
     raise GameLogicError.new("Cannot buy offer from other galaxy!") \
       unless offer.galaxy_id == player.galaxy_id
     raise GameLogicError.new("Cannot buy offer from self!") \
-      if offer.planet.player_id == player.id
+      if ! offer.system? && offer.planet.player_id == player.id
     
     buyer_planet = player.planets.find(params['planet_id'])
     

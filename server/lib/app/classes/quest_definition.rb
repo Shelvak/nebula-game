@@ -8,7 +8,6 @@ class QuestDefinition
 
     definition = new(db_quest_ids, options)
     definition.instance_eval(&block)
-    definition.save!
 
     definition
   end
@@ -22,6 +21,7 @@ class QuestDefinition
     @debug = options[:debug]
 
     @dsls = []
+    @dsls_for_checking = []
   end
 
   # Save all defined quests and start available ones for players.
@@ -41,6 +41,37 @@ class QuestDefinition
     @quests_started_count, @quests_started_players = start_newborn_parents!
 
     true
+  end
+  
+  # #save! quests and return statistics string.
+  def sync!
+    save!
+
+    "Quests in definition: #{count_in_definition}\n" +
+      "Quests in database  : #{count_in_db}\n" +
+      "Added to database   : #{count_in_definition - count_in_db}\n" +
+      "#{QUESTS.quests_started_count} quests started for #{
+      quests_started_players} players."
+  end
+  
+  # Checks definition against actual database records.
+  #
+  # If any mismatches are found, returns errors in such format:
+  # 
+  # [
+  #   [quest_id, [error_string_1, error_string_2, ...],
+  #   ...
+  # ]
+  #
+  def check
+    errors = []
+    
+    @dsls_for_checking.each do |dsl|
+      dsl_errors = dsl.check
+      errors.push [dsl.id, dsl_errors] unless dsl_errors.blank?
+    end
+    
+    errors
   end
   
   def count_in_definition; @defined_quest_ids.size; end
@@ -78,6 +109,10 @@ class QuestDefinition
     ) if @defined_quest_ids.include?(quest_id)
     @defined_quest_ids.add quest_id
 
+    dsl = Quest::DSL.new(parent_id, quest_id, help_url_id, achievement)
+    dsl.instance_eval(&block)
+    @dsls_for_checking.push dsl
+    
     # Don't save quests which are already in database.
     unless @db_quest_ids.include?(quest_id)
       # Add parent as having new children if it already exists in db.
@@ -85,9 +120,7 @@ class QuestDefinition
         @newborn_parent_ids[parent_id] ||= []
         @newborn_parent_ids[parent_id].push quest_id
       end
-
-      dsl = Quest::DSL.new(parent_id, quest_id, help_url_id, achievement)
-      dsl.instance_eval(&block)
+      
       @dsls.push dsl
     end
 

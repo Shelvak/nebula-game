@@ -21,7 +21,7 @@ package ext.hamcrest.events
     * 
     * @see DispatchesMatcherBuilder
     */
-   public function event(eventType:String, eventMatcher:* = null) : ExpectedEvent
-   {
-      return new ExpectedEvent(eventType, eventMatcher);  }
+   public function event(eventType:String, eventMatcher:* = null) : ExpectedEvent {
+      return new ExpectedEvent(eventType, eventMatcher);
+   }
 }

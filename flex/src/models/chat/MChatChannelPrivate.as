@@ -50,6 +50,13 @@ package models.chat
          return Localizer.string("Chat", "label.privateChannel", [name]);
       }
       
+      /**
+       * Returns <code>false</code>.
+       */
+      public override function get isPublic() : Boolean {
+         return false;
+      }
+      
       
       private var _friendIRFactory:ClassFactory = new ClassFactory(IRChatMember);
       /**

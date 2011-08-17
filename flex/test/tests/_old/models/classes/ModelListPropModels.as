@@ -5,8 +5,7 @@ package tests._old.models.classes
    
    public class ModelListPropModels extends BaseModel
    {
-      [ArrayElementType("models.BaseModel")]
-      [Required]
+      [Required(elementType="models.BaseModel")]
       public var models:Array = null;
    }
 }

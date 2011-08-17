@@ -28,5 +28,13 @@ package models.building
       }
       
       public var units:ModelsCollection;
+      
+      public override function cleanup() : void {
+         super.cleanup();
+         Collections.cleanListOfICleanables(units);
+         units.list = null;
+         units.filterFunction = null;
+         units = null;
+      }
    }
 }

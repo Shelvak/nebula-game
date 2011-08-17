@@ -2,13 +2,10 @@ package tests._old.models.classes
 {
    import models.BaseModel;
    
-   public class ModelArrayProp extends BaseModel
-   {
-      [ArrayElementType("Number")]
-      [Required]
+   public class ModelArrayProp extends BaseModel {
+      [Required(elementType="Number")]
       public var numbersInstance:Array = [];
-      [ArrayElementType("Number")]
-      [Required]
+      [Required(elementType="Number")]
       public var numbersNull:Array = null;
    }
 }

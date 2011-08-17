@@ -13,7 +13,7 @@ package components.movement
    
    import mx.events.PropertyChangeEvent;
    
-   import namespaces.property_name;
+   import namespaces.prop_name;
    
    import spark.components.Button;
    import spark.components.CheckBox;
@@ -207,7 +207,7 @@ package components.movement
       }
       
       private function ordersCtrl_propertyChangeHandler(event:PropertyChangeEvent) : void {
-         if (event.property == OrdersController.property_name::flag_disableOrderPopup)
+         if (event.property == OrdersController.prop_name::flag_disableOrderPopup)
             enabled = !ORDERS_CTRL.flag_disableOrderPopup;
       }
       

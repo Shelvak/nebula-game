@@ -25,7 +25,7 @@ package components.map.planet.objects
    import mx.events.ResizeEvent;
    import mx.graphics.BitmapFillMode;
    
-   import namespaces.property_name;
+   import namespaces.prop_name;
    
    import spark.primitives.BitmapImage;
    
@@ -441,7 +441,7 @@ package components.map.planet.objects
       
       private function model_propertyChangeHandler(event:PropertyChangeEvent) : void
       {
-         if (event.property == Building.property_name::state)
+         if (event.property == Building.prop_name::state)
          {
             f_buildingStateChanged = true;
             invalidateProperties();
