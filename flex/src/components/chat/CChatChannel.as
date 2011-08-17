@@ -2,6 +2,8 @@ package components.chat
 {
    import com.adobe.utils.StringUtil;
    
+   import components.base.Panel;
+   
    import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
    import flash.ui.Keyboard;
@@ -75,18 +77,27 @@ package components.chat
          super.commitProperties();
          if (f_modelChanged) {
             if (_modelOld != null) {
+               _modelOld.removeEventListener(
+                  MChatChannelEvent.NUM_MEMBERS_CHANGE,
+                  model_numMembersChangeHandler, false
+               );
                _modelOld.content.text.removeEventListener(
                   CompositionCompleteEvent.COMPOSITION_COMPLETE,
                   textFlow_compositionCompleteHandler
                );
                txtContent.textFlow = null;
-               if (_modelOld is MChatChannelPrivate)
+               if (!_modelOld.isPublic)
                   MChatChannelPrivate(_modelOld).removeEventListener(
-                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE, model_isFriendOnlineChangeHandler, false
+                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE,
+                     model_isFriendOnlineChangeHandler, false
                   );
                _modelOld = null;
             }
             if (_model != null) {
+               _model.addEventListener(
+                  MChatChannelEvent.NUM_MEMBERS_CHANGE,
+                  model_numMembersChangeHandler, false, 0, true
+               );
                _model.content.text.addEventListener(
                   CompositionCompleteEvent.COMPOSITION_COMPLETE,
                   textFlow_compositionCompleteHandler
@@ -94,9 +105,10 @@ package components.chat
                txtContent.textFlow = _model.content.text;
                lstMembers.model = _model.members;
                lstMembers.itemRendererFunction = _model.membersListIRFactory;
-               if (_model is MChatChannelPrivate)
+               if (!_model.isPublic)
                   MChatChannelPrivate(_model).addEventListener(
-                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE, model_isFriendOnlineChangeHandler, false, 0, true
+                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE,
+                     model_isFriendOnlineChangeHandler, false, 0, true
                   );
             }
             else {
@@ -106,6 +118,7 @@ package components.chat
             inpMessage.text = "";
             inpMessage.setFocus();
             updateGrpFriendOfflineWarningContainer();
+            updatePnlMembers();
          }
          f_modelChanged = false;
       }
@@ -126,6 +139,18 @@ package components.chat
        * List of all members in the channel.
        */
       public var lstMembers:CChatChannelMembers;
+      
+      [SkinPart(required="true")]
+      /**
+       * Panel that holds a list of all members in the channel.
+       */      
+      public var pnlMembers:Panel;
+      private function updatePnlMembers() : void {
+         if (pnlMembers != null && model != null) {
+            pnlMembers.title =
+               getString("label.channelMembers") + (model.numMembersVisible ? " (" + model.numMembers + ")" : "");
+         }
+      }
       
       [SkinPart(required="true")]
       /**
@@ -158,6 +183,7 @@ package components.chat
        */
       public var lblFriendOfflineWarning:Label;
       
+      
       protected override function partAdded(partName:String, instance:Object) : void {
          super.partAdded(partName, instance);
          switch (instance)
@@ -184,6 +210,10 @@ package components.chat
             case grpFriendOfflineWarningContainer:
                updateGrpFriendOfflineWarningContainer();
                break;
+            
+            case pnlMembers:
+               updatePnlMembers();
+               break;
          }
       }
       
@@ -207,9 +237,12 @@ package components.chat
       /* ############################ */
       
       
-      private function model_isFriendOnlineChangeHandler(event:MChatChannelEvent) : void
-      {
+      private function model_isFriendOnlineChangeHandler(event:MChatChannelEvent) : void {
          updateGrpFriendOfflineWarningContainer();
+      }
+      
+      private function model_numMembersChangeHandler(event:MChatChannelEvent) : void {
+         updatePnlMembers();
       }
       
       
