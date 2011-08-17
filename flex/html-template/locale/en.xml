@@ -1859,7 +1859,9 @@
     <!-- BECOME_VIP
     0: VIP level, 
     1: count of times to become VIP -->
-    <objectiveText.BecomeVip value="Become level {0} VIP {1 one[] many[? times]}" />
+    <objectiveText.BecomeVip>
+      <p>Become at least level {0} VIP {1 one[] many[? times]}</p>
+    </objectiveText.BecomeVip>
 
     <!-- ACCELERATE_FLIGHT
     0: count of times to accelerate flight -->

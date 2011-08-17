@@ -474,7 +474,7 @@
     <energy.bonus value="Energijos gamyba" />
     <construction.bonus value="Statymo greitis" />
     <scientists value="Mokslininkai" />
-    <special value="Sąvybės" />
+    <special value="Savybės" />
     <title.owner value="Valdymas" />
     <!-- 0: date, 1: time (1 part) -->
     <label.owner value="Tu valdai šią planetą nuo {0} ({1})." />
@@ -772,7 +772,7 @@
       </p>
       <p>
         Primygtinai siūlome turėti bent jau po vieną tyrimų centrą planetoje.
-        Kitu atveju tavo priešininkai ilgainiui būsi sutriuškintas dėl 
+        Kitu atveju ilgainiui būsi sutriuškintas savo priešininkų dėl 
         atsilikusių technologijų.
       </p>
       <p>Kiekvienas patobulinimo lygis didina mokslininkų, dirbančių šiame 
@@ -1212,14 +1212,14 @@
     <description value="Aprašymas" />
     <level value="Lygis" />
     <close value="Uždaryti" />
-    <property value="Sąvybė" />
+    <property value="Savybė" />
     <atLevel value="{0} lygyje" />
     <difference value="Skirtumas" />
     <fullUpgradeCost value="Pilna kaina {0} lygiui" />
     <resource value="Resursas" />
-    <tableTitle value="Sąvybės" />
+    <tableTitle value="Savybės" />
     <guns value="Ginklai" />
-    <gunProperties value="Ginklo „{0}“ sąvybės" />
+    <gunProperties value="Ginklo „{0}“ savybės" />
     <damagesDealt value="Ginklo „{0}“ žala" />
     <gun.pistol value="Pistoletas" />
     <gun.machine_gun value="Automatas" />
@@ -1236,7 +1236,7 @@
     <gun.heavy_rocket value="Raketų leidyklė" />
     <gun.space_rocket ref="gun.heavy_rocket" />
     <gun.rhyno_rocket value="Halo raketa" />
-    <gun.rhyno_rocket2 value="Scorchmaker raketa" />
+    <gun.rhyno_rocket2 value="Iškasėjo raketa" />
     <gun.plasma_gun value="Sukūrių generatorius" />
     <gun.plasma_spike value="Šoko patranka" />
     <gun.thor_ground value="Pūga" />
@@ -1330,9 +1330,9 @@
     <header.solarSystem value="Saulės sistema" />
     <header.planet value="Planeta" />
     <header.building value="Pastatas" />
-    <header.unit value="Karys" />
+    <header.unit value="Laivas" />
     <header.storage value="Talpa" />
-    <header.owner value="Owner" />
+    <header.owner value="Valdytojas" />
 
     <description.short.galaxy value="Galaktika" />
     <description.short.solarSystem value="Saulės sistema {0}" />
@@ -1862,8 +1862,10 @@
     <!-- BECOME_VIP
     0: VIP level, 
     1: count of times to become VIP -->
-    <objectiveText.BecomeVip 
-    value="Tapk {0}-o lygio VIP nariu {1 one[] 1sts[? kartą] tens[? kartų] many[? kartus]}" />
+    <objectiveText.BecomeVip>
+      <p>Tapk bent {0}-o lygio VIP nariu {1 one[] 1sts[? kartą] tens[? kartų] 
+      many[? kartus]}</p>
+    </objectiveText.BecomeVip>
 
     <!-- ACCELERATE_FLIGHT
     0: count of times to accelerate flight -->
@@ -3602,7 +3604,7 @@
     <property.armorMod value="Šarvų pliusas" />
     <property.damageMod value="Žalos pliusas" />
     <property.evasiveness value="Išsisukimas" />
-    <property.xpNeeded value="Pergalės taškų pakelti lygiui" />
+    <property.xpNeeded value="Patirties taškų pakelti lygiui" />
     <property.initiative value="Iniciatyva" />
     <property.volume value="Apimtis" />
     <property.storage value="Talpa" />
