@@ -438,7 +438,7 @@ package models.solarsystem
                id            = this.id;
                type          = LocationType.SS_OBJECT;
                variation     = this.variation;
-               player        = isOwned ? player: null;
+               player        = isOwned ? this.player : null;
                solarSystemId = this.solarSystemId;
             }
          }
