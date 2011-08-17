@@ -107,7 +107,6 @@ module Parts
           "Player does not have enough credits! Has: #{player.creds
           }, required: #{cost}"
         ) if player.creds < cost
-        player.creds -= cost
 
         pause
         # Clear upgrade status because we're not going to save the record
@@ -125,9 +124,12 @@ module Parts
         # Some code depend on this variable being set to know what to do
         @just_accelerated = true
         resume
+        
+        stats = CredStats.accelerate(self, cost, time, seconds_reduced)
+        player.creds -= cost
 
         transaction do
-          CredStats.accelerate!(self, cost, time, seconds_reduced)
+          stats.save!
           player.save!
           save!
           EventBroker.fire(self, EventBroker::CHANGED)

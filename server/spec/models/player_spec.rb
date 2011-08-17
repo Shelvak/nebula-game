@@ -294,9 +294,9 @@ describe Player do
       end
 
       it "should register with cred stats" do
-        CredStats.should_receive(:vip!).with(@player, @vip_level,
-          @creds_needed)
-        @player.vip_start!(@vip_level)
+        should_record_cred_stats(
+          :vip, [@player, @vip_level, @creds_needed]
+        ) { @player.vip_start!(@vip_level) }
       end
 
       it "should progress objective" do

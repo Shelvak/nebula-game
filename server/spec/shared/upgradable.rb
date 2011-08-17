@@ -112,9 +112,14 @@ describe "upgradable", :shared => true do
     end
 
     it "should record this acceleration" do
-      CredStats.should_receive(:accelerate!).with(@model, @player.creds,
-        Creds::ACCELERATE_INSTANT_COMPLETE, an_instance_of(Fixnum))
-      @model.accelerate!(Creds::ACCELERATE_INSTANT_COMPLETE, @player.creds)
+      should_record_cred_stats(
+        :accelerate, 
+        [@model, @player.creds, Creds::ACCELERATE_INSTANT_COMPLETE, 
+          an_instance_of(Fixnum)]
+      ) do
+        @model.accelerate!(
+          Creds::ACCELERATE_INSTANT_COMPLETE, @player.creds)
+      end
     end
 
     it "should dispatch changed" do

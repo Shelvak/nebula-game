@@ -438,6 +438,9 @@ class DispatcherEventHandler
     when SolarSystemMetadata
       ss = SolarSystem.find(object.id)
       resolve_location(ss.galaxy_point)
+    when Tile
+      planet = object.planet
+      resolve_location(planet.location_point)
     else
       raise ArgumentError.new("Don't know how to resolve player ids for #{
         object.inspect}!")

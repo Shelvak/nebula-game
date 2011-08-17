@@ -304,17 +304,15 @@ class Quest::DSL
   # Annex a planet.
   #
   # Options:
-  # - :npc => true or false - should that planet be owned by NPC?
   # - :count => Fixnum - number of planets required.
   #
   def annex_planet(options={})
-    options.assert_valid_keys(:npc, :count)
+    options.assert_valid_keys(:count)
 
-    options.reverse_merge! :npc => true, :count => 1
+    options.reverse_merge! :count => 1
     @objectives.push([
       Objective::AnnexPlanet,
-      {:key => PLANET_KEY, :count => options[:count],
-        :npc => options[:npc]}
+      {:key => PLANET_KEY, :count => options[:count], :npc => true}
     ])
   end
 

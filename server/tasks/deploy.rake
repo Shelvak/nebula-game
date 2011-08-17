@@ -15,20 +15,15 @@ DEPLOY_CONFIG = {
   :releases_kept => 2,
   :release_branch => {
     :stable => "master",
-    :beta => "master",
-    :beta3 => "server"
+    :beta => "server"
   },
 
   :servers => {
     :stable => {
-      :client => ["static1.nebula44.com"],
-      :server => ["game1.nebula44.com"],
+      :client => ["static.nebula44.lt"],
+      :server => ["game.nebula44.lt"],
     },
     :beta => {
-      :client => ["nebula44.com"],
-      :server => ["nebula44.com"],
-    },
-    :beta3 => {
       :client => ["static-beta3.nebula44.com:2022"],
       :server => ["beta3.nebula44.com:1022"],
     },
@@ -171,10 +166,12 @@ class DeployHelpers; class << self
       DEPLOY_CONFIG_SERVER_CURRENT
     } && #{cmd}")
   end
+  
+  CHECK_SERVER_CMD = "ruby lib/daemon.rb status"
+  CHECK_SERVER_OK_RESPONSE = "ok"
 
   def server_running?(ssh)
-    status = ssh.exec!("ps aux | grep -v grep | grep nebula_server")
-    ! status.nil?
+    exec_server(ssh, CHECK_SERVER_CMD).strip == CHECK_SERVER_OK_RESPONSE
   end
 
   STOP_SERVER_CMD = "ruby lib/daemon.rb stop"
@@ -194,11 +191,12 @@ class DeployHelpers; class << self
   end
 
   START_SERVER_CMD = "ruby lib/daemon.rb start"
-  START_SERVER_TIMEOUT = 10
+  START_SERVER_TIMEOUT = 5
 
   def start_server(ssh)
     output = exec_server(ssh, START_SERVER_CMD)
     if output.nil?
+      sleep 1
       running = server_running?(ssh)
 
       attempt = 0
@@ -211,7 +209,7 @@ class DeployHelpers; class << self
         running = server_running?(ssh)
       end
 
-      $stdout.write("Server startup failed! ") unless running
+      $stdout.write(" Server startup FAILED! ") unless running
     else
       puts
       puts "!! Server said something:"

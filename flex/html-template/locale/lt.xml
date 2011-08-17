@@ -1792,8 +1792,8 @@
     <!-- ANNEX_PLANET
     0: count of planets to occupy -->
     <objectiveText.AnnexPlanet.npc>
-    <p>Užkariauk {0 one[neutralią planetą] 1sts[? neutralią planetą] 
-    tens[? neutralių planetų] many[? neutralias planetas]}</p>
+    <p>Kolonizuok {0 one[vieną planetą] 1sts[? planetą] 
+    tens[? planetų] many[? planetas]}</p>
     </objectiveText.AnnexPlanet.npc>
     <objectiveText.AnnexPlanet.enemy>
     <p>Užkariauk {0 one[priešo planetą] 1sts[? priešo planetą] 
@@ -2662,6 +2662,14 @@
       </p>
     </about.15>
 
+    <title.121 value="Užgniaužus kvapą" />
+    <about.121>
+      <p>Komandore,</p>
+      <p>Mūsų žmonėms reikia daugiau vietos! Dar truputis ir nebus kur
+      kojos padėti!</p>
+      <p>Nedelsiant pradėkite gyvenamųjų bokštų statybas.</p>
+    </about.121>
+    
     <title.16 value="Dydybės link" />
     <about.16>
       <p>Komandore.</p>
@@ -2772,6 +2780,35 @@
       planetų, mums prireiks kovinių laivų! Keliaukite į savo laivų gamyklą ir
       liepkite pradėti gamybą!</p>
     </about.31>
+    
+    <title.119 value="Bauginantys laivynai" />
+    <about.119>
+      <p>Komandore.</p>
+      <p>Statant varno klasės laivus šauniai padirbėjote. Jie greiti ir 
+      mirtini mūsų priešams. Ech... Kai pagalvoju apie juos mane apima toks
+      išdidumas! Reikėtų juos kur nors panaudoti!</p>
+      <p>Aplink gretimą planetą skraido keli ateivių dirako klasės laivai. 
+      Argi ne šaunus taikinys mūsų pilotų pratyboms? Skriskime ir sunaikinkime
+      juos.</p>
+      <p>O vienaip ar kitaip - ta planeta atrodo kaip visai nieko vietelė 
+      antrosios mūsų kolonijos įkurtuvėms. O jeigu jau ten kursimės - juk 
+      nenorėtumėme, kad aplink šlaistytųsi kažkokie ateivių pašlemėkai?</p>
+    </about.119>
+    
+    <title.120 value="Mineralų skraidinimas" />
+    <about.120>
+      <p>Komandore!</p>
+      <p>Šaunus darbelis! Ateivių dirakai neturėjo nei menkiausio šanso prieš
+      mūsų laivyną.</p>
+      <p>Na ką, pasismaginom, kimbam į darbus. Mūšio vietoje liko siaubinga
+      netvarka - visame sektoriuje kairėn dešinėn skraido laivų nuolaužos.
+      Ko gero reikėtų išsikuopti...</p>
+      <p>Na ir ko taip nusiminėt? Ai, gi pamiršau paminėti, jog surinktas
+      nuolaužas mūsų planetoje galėsime panaudoti kaip resursus! Na va, matau
+      iš karto šypsena ant ausų lipa ;)</p>
+      <p>Taigi, susirinkime tuos resursus! Pasistatykime mūsų pirmajį
+      mulo klasės laiva!</p>
+    </about.120>
 
     <title.35 value="Išvalymas" />
     <about.35>

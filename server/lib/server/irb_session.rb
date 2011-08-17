@@ -143,7 +143,7 @@ module Dev
     
     if opts[:population]
       player.population = 0
-      player.population_max = 10_000
+      player.population_cap = 10_000
     end
     player.scientists = player.scientists_total = 10_000 if opts[:scientists]
     player.creds = 1_000_000 if opts[:creds]

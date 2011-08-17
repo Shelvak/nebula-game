@@ -64,6 +64,75 @@ describe SsObject::Planet do
         ).send(:"#{resource}_rate").should == -10
       end
     end
+    
+    describe "#boost!" do
+      before(:each) do
+        @player = Factory.create(:player, 
+          :creds => CONFIG['creds.planet.resources.boost.cost'])
+        @planet = Factory.create(:planet, :player => @player)
+      end
+      
+      it "should fail if player does not have enough creds" do
+        @player.creds -= 1
+        @player.save!
+        
+        lambda do
+          @planet.boost!(:metal, :rate)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should fail if we use unknown resource" do
+        lambda do
+          @planet.boost!(:food, :rate)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should fail if we use unknown attribute" do
+        lambda do
+          @planet.boost!(:metal, :color)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should set boost expiration date" do
+        @planet.boost!(:metal, :rate)
+        @planet.reload
+        @planet.metal_rate_boost_ends_at.should be_close(
+          CONFIG['creds.planet.resources.boost.duration'].from_now,
+          SPEC_TIME_PRECISION
+        )
+      end
+
+      it "should increase boost expiration date if already set" do
+        @planet.metal_rate_boost_ends_at = 3.days.from_now
+        @planet.save!
+
+        @planet.boost!(:metal, :rate)
+        @planet.reload
+        @planet.metal_rate_boost_ends_at.should be_close(
+          (3.days + CONFIG['creds.planet.resources.boost.duration']).from_now,
+          SPEC_TIME_PRECISION
+        )
+      end
+
+      it "should reduce creds from player" do
+        lambda do
+          @planet.boost!(:metal, :rate)
+          @player.reload
+        end.should change(@player, :creds).to(0)
+      end
+
+      it "should dispatch changed on planet" do
+        should_fire_event(@planet, EventBroker::CHANGED,
+            EventBroker::REASON_OWNER_PROP_CHANGE) do
+          @planet.boost!(:metal, :rate)
+        end
+      end
+
+      it "should record cred stats" do
+        should_record_cred_stats(:boost, [@player, :metal, :rate]) \
+          { @planet.boost!(:metal, :rate) }
+      end
+    end
   end
   
   describe "raiding" do
@@ -398,36 +467,46 @@ describe SsObject::Planet do
       @planet.save!
     end
 
-    describe "constructors building units" do
+    describe "alive units" do
       before(:each) do
-        @constructable = Factory.create(
-          :unit, :player => @old, :location => @planet
-        )
-        Factory.create(:b_constructor_with_constructable,
-          :planet => @planet,
-          :constructable => @constructable
-        )
+        @unit = Factory.create(:unit, :player => @old, :location => @planet)
       end
-    
-      it "should change constructable player ids" do
+      
+      it "should not change player if it didn't belong to old user" do
+        @unit.player = Factory.create(:player)
+        @unit.save!
+        
         @planet.save!
         lambda do
-          @constructable.reload
-        end.should change(@constructable, :player).from(@old).to(@new)
+          @unit.reload
+        end.should_not change(@unit, :player)
+      end
+    
+      it "should change player id" do
+        @planet.save!
+        lambda do
+          @unit.reload
+        end.should change(@unit, :player).from(@old).to(@new)
       end
       
       it "should take population from old player" do
         lambda do
           @planet.save!
           @old.reload
-        end.should change(@old, :population).by(- @constructable.population)
+        end.should change(@old, :population).by(- @unit.population)
       end
       
       it "should give population to new player" do
         lambda do
           @planet.save!
           @new.reload
-        end.should change(@new, :population).by(@constructable.population)        
+        end.should change(@new, :population).by(@unit.population)        
+      end
+      
+      it "should dispatch changed event" do
+        should_fire_event([@unit], EventBroker::CHANGED) do
+          @planet.save!
+        end
       end
     end
 
@@ -456,48 +535,86 @@ describe SsObject::Planet do
       end
     end
 
+    describe "transfering attribute", :shared => true do
+      it "should reduce attribute value from previous owner" do
+        lambda do
+          @planet.save!
+          @old.reload
+        end.should change(@old, @attr).by(- @change)
+      end
+
+      it "should increase attribute value for new owner" do
+        lambda do
+          @planet.save!
+          @new.reload
+        end.should change(@new, @attr).by(@change)
+      end
+    end
+    
+    describe "not transfering attribute", :shared => true do
+      it "should reduce attribute value from previous owner" do
+        lambda do
+          @planet.save!
+          @old.reload
+        end.should_not change(@old, @attr)
+      end
+
+      it "should increase attribute value for new owner" do
+        lambda do
+          @planet.save!
+          @new.reload
+        end.should_not change(@new, @attr)
+      end
+    end
+    
     describe "scientists" do
       before(:each) do
         @research_center = Factory.create(:b_research_center,
-          :planet => @planet)
+          opts_active + {:planet => @planet})
         @old.reload
       end
 
       %w{scientists scientists_total}.each do |attr|
-        it "should reduce #{attr} from previous owner" do
-          lambda do
-            @planet.save!
-            @old.reload
-          end.should change(@old, attr).by(- @research_center.scientists)
-        end
+        describe attr do
+          before(:each) do
+            @attr = attr
+            @change = @research_center.scientists
+          end
+          
+          describe "building active" do
+            it_should_behave_like "transfering attribute"
+          end
 
-        it "should increase #{attr} for new owner" do
-          lambda do
-            @planet.save!
-            @new.reload
-          end.should change(@new, attr).by(@research_center.scientists)
+          describe "inactinet ve building" do
+            before(:each) do
+              @research_center.deactivate!
+            end
+            
+            it_should_behave_like "not transfering attribute"
+          end
         end
       end
     end
     
     describe "population_max" do
       before(:each) do
-        @housing = Factory.create(:b_housing, :planet => @planet)
+        @housing = Factory.create(:b_housing, 
+          opts_active + {:planet => @planet})
         @old.reload
+        @attr = :population_max
+        @change = @housing.population
       end
 
-      it "should reduce population_max from previous owner" do
-        lambda do
-          @planet.save!
-          @old.reload
-        end.should change(@old, :population_max).by(- @housing.population)
+      describe "building active" do
+        it_should_behave_like "transfering attribute"
       end
 
-      it "should increase population_max for new owner" do
-        lambda do
-          @planet.save!
-          @new.reload
-        end.should change(@new, :population_max).by(@housing.population)
+      describe "inactive building" do
+        before(:each) do
+          @housing.deactivate!
+        end
+
+        it_should_behave_like "not transfering attribute"
       end
     end
 
@@ -713,9 +830,11 @@ describe SsObject::Planet do
     before(:each) do
       @player = Factory.create(:player)
       @planet = Factory.create(:planet, :exploration_x => @x,
-        :exploration_y => @y, :player => @player)
+        :exploration_y => @y, :exploration_ends_at => 10.minutes.from_now,
+        :player => @player)
       @planet.stub!(:tile_kind).and_return(Tile::FOLLIAGE_4X3)
-      @planet.stub!(:stop_exploration!)
+      @width = 4
+      @height = 3
       @lucky = [
         {'weight' => 10, 'rewards' => [
             {"kind" => Rewards::UNITS, "type" => "gnat", "count" => 3,
@@ -740,11 +859,16 @@ describe SsObject::Planet do
       ]
     end
     
+    it "should fail if not exploring" do
+      @planet.finish_exploration!
+      lambda do
+        @planet.finish_exploration!
+      end.should raise_error(GameLogicError)
+    end
+    
     it "should get winning chance based on width and height" do
-      CONFIG.should_receive(:evalproperty).with(
-        "tiles.exploration.winning_chance",
-        'width' => 4, 'height' => 3
-      ).and_return(0)
+      Cfg.should_receive(:exploration_win_chance).with(@width, @height).
+        and_return(0)
       Notification.stub!(:create_for_exploration_finished)
       @planet.finish_exploration!
     end
@@ -806,6 +930,37 @@ describe SsObject::Planet do
       end
     end
 
+    describe "with creds" do
+      it "should fail if player does not have enough creds" do
+        @player.creds = 0
+        @player.save!
+        
+        lambda do
+          @planet.finish_exploration!(true)
+        end.should raise_error(GameLogicError)
+      end
+      
+      it "should reduce creds from player" do
+        @player.pure_creds = 1000
+        @player.save!
+        creds = Cfg.exploration_finish_cost(@width, @height)
+                
+        lambda do
+          @planet.finish_exploration!(true)
+          @player.reload
+        end.should change(@player, :creds).by(- creds)
+      end
+      
+      it "should record cred stats" do
+        @player.pure_creds = 1000
+        @player.save!
+        
+        should_record_cred_stats(
+          :finish_exploration, [@player, @width, @height]
+        ) { @planet.finish_exploration!(true) }
+      end
+    end
+    
     it "should create notification" do
       Notification.should_receive(:create_for_exploration_finished).with(
         @planet, an_instance_of(Rewards)).and_return(true)
@@ -830,6 +985,77 @@ describe SsObject::Planet do
     end
   end
 
+  describe "#remove_foliage!" do
+    before(:each) do
+      @player = Factory.create(:player, 
+        :creds => Cfg.foliage_removal_cost(6, 6))
+      @planet = Factory.create(:planet, :player => @player)
+      @x = 10; @y = 2
+      @tile = Factory.create(:t_folliage_6x6, :planet => @planet,
+        :x => @x, :y => @y)
+    end
+    
+    it "should fail if exploring" do
+      @planet.stub!(:exploring?).and_return(true)
+      lambda do
+        @planet.remove_foliage!(@x, @y)
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should fail if given wrong coordinates" do
+      lambda do
+        @planet.remove_foliage!(@x + 1, @y)
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should fail if trying to remove non-exploration tile" do
+      @tile.kind = Tile::SAND
+      @tile.save!
+      
+      lambda do
+        @planet.remove_foliage!(@x, @y)
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should fail if planet has no player" do
+      @planet.player = nil
+      
+      lambda do
+        @planet.remove_foliage!(@x, @y)
+      end.should raise_error(GameLogicError)
+      
+    end
+    
+    it "should fail if not enough creds" do
+      @player.creds -= 1
+      @player.save!
+      
+      lambda do
+        @planet.remove_foliage!(@x, @y)
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should reduce creds from player" do
+      lambda do
+        @planet.remove_foliage!(@x, @y)
+        @player.reload
+      end.should change(@player, :creds).to(0)
+    end
+    
+    it "should record cred stats" do
+      should_record_cred_stats(:remove_foliage, [@player, 6, 6]) \
+        { @planet.remove_foliage!(@x, @y) }
+    end
+    
+    it "should destroy the tile" do
+      @planet.remove_foliage!(@x, @y)
+      
+      lambda do
+        @tile.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+  
   describe "#can_view_resources?" do
     it "should return false if planet is unowned" do
       Factory.create(:planet).can_view_resources?(1).should be_false
@@ -1025,7 +1251,9 @@ describe SsObject::Planet do
         metal_rate_boost_ends_at metal_storage_boost_ends_at
         energy_rate_boost_ends_at energy_storage_boost_ends_at
         zetium_rate_boost_ends_at zetium_storage_boost_ends_at
-        last_resources_update exploration_ends_at next_raid_at
+        last_resources_update 
+        exploration_x exploration_y exploration_ends_at 
+        next_raid_at
         owner_changed}
       @ommited_fields = %w{energy_diminish_registered}
       it_should_behave_like "to json"

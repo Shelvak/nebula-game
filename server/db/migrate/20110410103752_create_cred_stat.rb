@@ -7,8 +7,8 @@ class CreateCredStat < ActiveRecord::Migration
       t.string :class_name, :limit => 50
       t.column :level, 'tinyint(2) unsigned'
       t.column :cost, 'int unsigned not null'
-      t.column :time, 'int unsigned'
-      t.column :actual_time, 'int unsigned'
+      t.column :time, 'int(10) unsigned'
+      t.column :actual_time, 'int(10) unsigned'
       t.datetime :created_at, :null => false
     end
 

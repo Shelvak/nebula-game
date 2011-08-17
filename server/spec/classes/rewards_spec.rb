@@ -117,7 +117,7 @@ describe Rewards do
     describe "when population is exausted" do
       before(:each) do
         @player = Factory.create(:player, :population => 100, 
-          :population_max => 100)
+          :population_cap => 100)
         @planet = Factory.create(:planet, :player => @player)
       end
       
