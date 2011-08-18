@@ -7,6 +7,27 @@ describe BuildingsController do
     init_controller BuildingsController, :login => true
   end
 
+  describe "finding building", :shared => true do
+    @required_params = %w{id}
+    it_should_behave_like "with param options"
+    
+    it "should raise error if building is not found" do
+      @building.destroy
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should fail if player does not own planet" do
+      @planet.player = nil
+      @planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+  
   describe "buildings|new" do
     before(:each) do
       @action = "buildings|new"
@@ -51,29 +72,24 @@ describe BuildingsController do
 
   describe "buildings|upgrade" do
     before(:each) do
-      @action = "buildings|upgrade"
       @planet = Factory.create :planet_with_player, :player => player
       set_resources(@planet, 10000, 10000, 10000)
       @building = Factory.create :building_built, :planet => @planet
+      
+      @action = "buildings|upgrade"
+      @params = {'id' => @building.id}
     end
 
-    it "should not allow upgrading buildings that player doesn't own" do
-      @planet.player = nil
-      @planet.save!
-
-      lambda do
-        invoke @action, 'id' => @building.id
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
+    it_should_behave_like "finding building"
 
     it "should return building" do
-      invoke @action, 'id' => @building.id
+      invoke @action, @params
       @building.reload
       response_should_include(:building => @building.as_json)
     end
 
     it "should put building into upgrading state" do
-      invoke @action, 'id' => @building.id
+      invoke @action, @params
       @building.reload
       @building.should be_upgrading
     end
@@ -81,47 +97,47 @@ describe BuildingsController do
 
   describe "buildings|activate" do
     before(:each) do
-      @action = "buildings|activate"
-    end
-
-    it "should activate building" do
-      building = Factory.create(:building_built, opts_inactive + {
-        :planet => Factory.create(:planet_with_player, :player => player)
+      @planet = Factory.create(:planet_with_player, :player => player)
+      @building = Factory.create(:building_built, opts_inactive + {
+        :planet => @planet
       })
-      invoke @action, 'id' => building.id
-      building.reload
-      building.should be_active
+    
+      @action = "buildings|activate"
+      @params = {'id' => @building.id}
     end
 
-    it "should not allow activating buildings that player doesn't own" do
-      building = Factory.create :building_built, opts_inactive
-
+    it_should_behave_like "finding building"
+    
+    it "should activate building" do
       lambda do
-        invoke @action, 'id' => building.id
-      end.should raise_error(ActiveRecord::RecordNotFound)
+        invoke @action, @params
+        @building.reload
+      end.should change(@building, :state).
+        from(Building::STATE_INACTIVE).
+        to(Building::STATE_ACTIVE)
     end
   end
 
   describe "buildings|deactivate" do
     before(:each) do
+      @planet = Factory.create(:planet_with_player, :player => player)
+      @building = Factory.create(:building_built, opts_active + {
+        :planet => @planet
+      })
+    
       @action = "buildings|deactivate"
+      @params = {'id' => @building.id}
     end
+    
+    it_should_behave_like "finding building"
 
     it "should deactivate building" do
-      building = Factory.create :building_built, opts_active + {
-        :planet => Factory.create(:planet_with_player, :player => player)
-      }
-      invoke @action, 'id' => building.id
-      building.reload
-      building.should be_inactive
-    end
-
-    it "should not allow activating buildings that player doesn't own" do
-      building = Factory.create :building_built, opts_active
-
       lambda do
-        invoke @action, 'id' => building.id
-      end.should raise_error(ActiveRecord::RecordNotFound)
+        invoke @action, @params
+        @building.reload
+      end.should change(@building, :state).
+        from(Building::STATE_ACTIVE).
+        to(Building::STATE_INACTIVE)
     end
   end
 
@@ -135,21 +151,7 @@ describe BuildingsController do
 
     @required_params = %w{id with_creds}
     it_should_behave_like "with param options"
-
-    it "should raise error if building is not found" do
-      @building.destroy
-      lambda do
-        invoke @action, @params
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should raise error if planet does not belong to player" do
-      @planet.player = Factory.create(:player)
-      @planet.save!
-      lambda do
-        invoke @action, @params
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
+    it_should_behave_like "finding building"
 
     it "should self destruct the building" do
       invoke @action, @params
@@ -169,13 +171,7 @@ describe BuildingsController do
 
     @required_params = %w{id x y}
     it_should_behave_like "with param options"
-
-    it "should fail if building does not belong to player" do
-      @planet.player = Factory.create(:player)
-      lambda do
-        invoke @action, @params
-      end.should raise_error(GameLogicError)
-    end
+    it_should_behave_like "finding building"
 
     it "should move building" do
       Building.stub!(:find).with(@building.id, anything).and_return(@building)
@@ -185,19 +181,13 @@ describe BuildingsController do
   end
 
   describe "accelerate", :shared => true do
+    @required_params = %w{id index}
+    it_should_behave_like "with param options"
+    
     it "should raise error when providing wrong index" do
       lambda do
         invoke @action, @params.merge('index' => @params['index'] + 1)
       end.should raise_error(GameLogicError)
-    end
-
-    it "should raise error if planet does not belong to player" do
-      @planet.player = Factory.create(:player)
-      @planet.save!
-
-      lambda do
-        invoke @action, @params
-      end.should raise_error(ActiveRecord::RecordNotFound)
     end
   end
 
@@ -207,7 +197,7 @@ describe BuildingsController do
       player.creds += 100000
       player.save!
       @planet = Factory.create(:planet, :player => player)
-      @building = Factory.create(:b_mothership, opts_active + 
+      @building = Factory.create(:b_headquarters, opts_active + 
           {:planet => @planet})
       @constructable = @building.construct!("Building::Barracks",
         :x => 10, :y => 10)
@@ -215,6 +205,7 @@ describe BuildingsController do
         'index' => CONFIG['creds.upgradable.speed_up'].size - 1}
     end
 
+    it_should_behave_like "finding building"
     it_should_behave_like "accelerate"
 
     it "should accelerate building" do
@@ -237,6 +228,7 @@ describe BuildingsController do
         'index' => CONFIG['creds.upgradable.speed_up'].size - 1}
     end
 
+    it_should_behave_like "finding building"
     it_should_behave_like "accelerate"
 
     it "should accelerate building" do
