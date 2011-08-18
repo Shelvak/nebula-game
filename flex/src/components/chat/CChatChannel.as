@@ -14,12 +14,17 @@ package components.chat
    import models.chat.ChatConstants;
    import models.chat.MChatChannel;
    import models.chat.MChatChannelPrivate;
+   import models.chat.events.MChatChannelContentEvent;
    import models.chat.events.MChatChannelEvent;
+   
+   import mx.core.mx_internal;
+   import mx.events.PropertyChangeEvent;
    
    import spark.components.Button;
    import spark.components.CheckBox;
    import spark.components.Group;
    import spark.components.Label;
+   import spark.components.RichEditableText;
    import spark.components.TextArea;
    import spark.components.TextInput;
    import spark.components.supportClasses.SkinnableComponent;
@@ -79,39 +84,31 @@ package components.chat
          super.commitProperties();
          if (f_modelChanged) {
             if (_modelOld != null) {
-               _modelOld.removeEventListener(
-                  MChatChannelEvent.NUM_MEMBERS_CHANGE,
-                  model_numMembersChangeHandler, false
-               );
-               _modelOld.content.text.removeEventListener(
-                  CompositionCompleteEvent.COMPOSITION_COMPLETE,
-                  textFlow_compositionCompleteHandler
-               );
+               _modelOld.removeEventListener
+                  (MChatChannelEvent.NUM_MEMBERS_CHANGE, model_numMembersChangeHandler, false);
+               _modelOld.content.removeEventListener
+                  (MChatChannelContentEvent.MESSAGE_REMOVE, modelContent_messageRemoveHandler, false);
+               _modelOld.content.text.removeEventListener
+                  (CompositionCompleteEvent.COMPOSITION_COMPLETE, textFlow_compositionCompleteHandler, false);
                txtContent.textFlow = null;
                if (!_modelOld.isPublic)
-                  MChatChannelPrivate(_modelOld).removeEventListener(
-                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE,
-                     model_isFriendOnlineChangeHandler, false
-                  );
+                  MChatChannelPrivate(_modelOld).removeEventListener
+                     (MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE, model_isFriendOnlineChangeHandler, false);
                _modelOld = null;
             }
             if (_model != null) {
-               _model.addEventListener(
-                  MChatChannelEvent.NUM_MEMBERS_CHANGE,
-                  model_numMembersChangeHandler, false, 0, true
-               );
-               _model.content.text.addEventListener(
-                  CompositionCompleteEvent.COMPOSITION_COMPLETE,
-                  textFlow_compositionCompleteHandler
-               );
+               _model.addEventListener
+                  (MChatChannelEvent.NUM_MEMBERS_CHANGE, model_numMembersChangeHandler, false, 0, true);
+               _model.content.addEventListener
+                  (MChatChannelContentEvent.MESSAGE_REMOVE, modelContent_messageRemoveHandler, false, 0, true);
+               _model.content.text.addEventListener
+                  (CompositionCompleteEvent.COMPOSITION_COMPLETE, textFlow_compositionCompleteHandler, false, 0, true);
                txtContent.textFlow = _model.content.text;
                lstMembers.model = _model.members;
                lstMembers.itemRendererFunction = _model.membersListIRFactory;
                if (!_model.isPublic)
-                  MChatChannelPrivate(_model).addEventListener(
-                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE,
-                     model_isFriendOnlineChangeHandler, false, 0, true
-                  );
+                  MChatChannelPrivate(_model).addEventListener
+                     (MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE, model_isFriendOnlineChangeHandler, false, 0, true);
             }
             else {
                lstMembers.model = null;
@@ -123,6 +120,8 @@ package components.chat
             updatePnlMembers();
             updateGrpJoinLeaveMsgsCheckBoxContainer();
             updateChkJoinLeaveMsgs();
+            enableAutoScroll();
+            _forceAutoScrollAfterModelChange = true;
          }
          f_modelChanged = false;
       }
@@ -214,8 +213,12 @@ package components.chat
          switch (instance)
          {
             case txtContent:
+               _lineHeight = txtContent.getStyle("fontSize") + 10;
+               txtContent.setStyle("lineHeight", _lineHeight);
                txtContent.editable = false;
                txtContent.selectable = true;
+               txtContent.textDisplay.addEventListener
+                  (PropertyChangeEvent.PROPERTY_CHANGE, textDisplay_propertyChangeHandler, false, 0, true);
                break;
             
             case inpMessage:
@@ -270,11 +273,79 @@ package components.chat
          }
       }
       
+      /* ############################ */
+      /* ### AUTOSCROLL HANNDLING ### */
+      /* ############################ */
+      
+      private static const AUTO_SCROLL_TOLERANCE:int = 50;
+      private var _autoScrollOn:Boolean = true;
+      private var _anchoredScrollPosition:Number = 0;
+      private var _messagesRemoved:int = 0;
+      private var _lineHeight:Number = 0;
+      private var _forceAutoScrollAfterModelChange:Boolean = true;
+      
+      private function enableAutoScroll() : void {
+         _autoScrollOn = true;
+         _anchoredScrollPosition = 0;
+         _messagesRemoved = 0;
+      }
+      
+      private function textDisplay_propertyChangeHandler(event:PropertyChangeEvent) : void {
+         if (event.property != "verticalScrollPosition")
+            return;
+         
+         var textDisplay:RichEditableText = RichEditableText(event.target);
+         _autoScrollOn = _forceAutoScrollAfterModelChange ||
+            Math.abs(textDisplay.contentHeight - textDisplay.verticalScrollPosition - textDisplay.height) <
+            AUTO_SCROLL_TOLERANCE;
+         if (_autoScrollOn) {
+            _anchoredScrollPosition = 0;
+            _messagesRemoved = 0;
+         }
+         else
+            _anchoredScrollPosition = textDisplay.verticalScrollPosition;
+         if (_forceAutoScrollAfterModelChange) {
+            _forceAutoScrollAfterModelChange = false;
+            scrollToBottom();
+         }
+      }
+      
+      private function textFlow_compositionCompleteHandler(event:CompositionCompleteEvent) : void {
+         if (_autoScrollOn)
+            scrollToBottom();
+         else if (_anchoredScrollPosition > 0) {
+            if (_messagesRemoved > 0) {
+               _messagesRemoved--;
+               _anchoredScrollPosition -= _lineHeight;
+               if (_anchoredScrollPosition > 0)
+                  scrollTo(_anchoredScrollPosition);
+            }
+         }
+         else
+            _messagesRemoved = 0;
+      }
+      
+      private function modelContent_messageRemoveHandler(event:MChatChannelContentEvent) : void {
+         if (!_autoScrollOn)
+            _messagesRemoved++;
+      }
+      
+      private function scrollToBottom() : void {
+         scrollTo(Number.MAX_VALUE);
+      }
+      
+      private function scrollTo(verticalPosition:Number) : void {
+         txtContent.scroller.verticalScrollBar.value = verticalPosition;
+      }
+      
+      private function verticalScrollPosition() : Number {
+         return txtContent.scroller.verticalScrollBar.value;
+      }
+      
       
       /* ############################ */
       /* ### MODEL EVENT HANDLERS ### */
       /* ############################ */
-      
       
       private function model_isFriendOnlineChangeHandler(event:MChatChannelEvent) : void {
          updateGrpFriendOfflineWarningContainer();
@@ -292,13 +363,6 @@ package components.chat
       /* ################################# */
       /* ### SKIN PARTS EVENT HANDLERS ### */
       /* ################################# */
-      
-      
-      private function textFlow_compositionCompleteHandler(event:CompositionCompleteEvent) : void {
-         if (txtContent.scroller != null &&
-             txtContent.scroller.verticalScrollBar != null)
-            txtContent.scroller.verticalScrollBar.value = Number.MAX_VALUE;
-      }
       
       private function inpMessage_keyUpHandler(event:KeyboardEvent) : void {
          if (event.keyCode == Keyboard.ENTER)
@@ -324,6 +388,7 @@ package components.chat
          if (message.length > 0)
             _model.sendMessage(message);
          inpMessage.text = "";
+         enableAutoScroll();
       }
       
       

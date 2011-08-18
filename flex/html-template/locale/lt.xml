@@ -821,7 +821,7 @@
       <p>
         Šie milžiniški kranai ypač praverčia statant naujas kolonijas. Jie 
         ypatingai naudingi tuo, jog gali turėti daug nurodymų savo eilėje.
-        Naudojant keletą šių kranų galima pastataty visą koloniją per keletą
+        Naudojant keletą šių kranų galima pastatati visą koloniją per keletą
         dienų.
       </p>
     </Crane.about>
@@ -921,7 +921,7 @@
     <GroundFactory.about>
       <p>Tai pastatas, leidžiantis statyti tankus ir kitus aukšto lygio žemės
       karius. Taip pat tau prireiks šio pastato norint pasistatyti 
-      Mobilųjį Štabą, kuris leidžia kolonizuoti kitas planets.</p>
+      Mobilųjį Štabą, kuris leidžia kolonizuoti kitas planetas.</p>
     </GroundFactory.about>
 
     <SpaceFactory.name ref="Objects/SpaceFactory" />
