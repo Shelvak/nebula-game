@@ -159,8 +159,9 @@ package controllers.galaxies.actions
             ML.selectedFolliage = null;
             ML.selectedTechnology = null;
          }
-         
+         ML.units.disableAutoUpdate();
          ML.units.addAll(units);
+         ML.units.enableAutoUpdate();
          SQUADS_CTRL.createSquadronsForUnits(units);
          SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
          if (ML.latestGalaxy == null) {

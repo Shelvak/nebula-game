@@ -25,10 +25,7 @@ package controllers.objects.actions
                                                         reason:String,
                                                         objects:Array) : void
       {
-         if (ML.latestPlanet)
-         {
-            ML.latestPlanet.units.disableAutoUpdate();
-         }
+         ML.units.disableAutoUpdate();
          if (objectClass == ObjectClass.UNIT)
          {
             UnitController.getInstance().unitsDestroyed(objects, reason);
@@ -40,9 +37,10 @@ package controllers.objects.actions
                getCustomController(objectClass).objectDestroyed(objectSubclass, objectId, reason);
             }
          }
-         if (ML.latestPlanet)
+         ML.units.enableAutoUpdate();
+         if (objectClass == ObjectClass.UNIT && ML.latestPlanet)
          {
-            ML.latestPlanet.units.enableAutoUpdate();
+            ML.latestPlanet.dispatchUnitRefreshEvent();
          }
       }
    }

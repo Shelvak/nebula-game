@@ -35,17 +35,11 @@
             NavigationController.getInstance().showPreviousScreen();
          }
          
-         private function selectNone(): void
-         {
-            new GHealingScreenEvent(GHealingScreenEvent.DESELECT_UNITS);
-         }
-         
          [Bindable]
          private var HS: MCHealingScreen = MCHealingScreen.getInstance();
          
          private function heal_clickHandler(e: Event): void
          {
-            GlobalFlags.getInstance().lockApplication = true;
             HS.confirmHeal();
          }
          
@@ -79,7 +73,7 @@
                   <s:HorizontalLayout gap="10" horizontalAlign="center"/>
                </base:layout>
                <s:Button label="{Localizer.string ('Units', 'label.all')}" click="HS.selectAll()"/>
-               <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()"/>
+               <s:Button label="{Localizer.string ('Units', 'label.none')}" click="HS.selectNone()"/>
             </base:Panel>
             
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.noSelection')}"

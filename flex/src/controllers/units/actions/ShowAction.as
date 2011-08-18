@@ -56,6 +56,10 @@ package controllers.units.actions
          playersHash[ML.player.id] = {"id": ML.player.id, "name": ML.player.name};
          ML.units.addAll(UnitFactory.fromObjects(cmd.parameters.units, playersHash));
          ML.units.enableAutoUpdate();
+         if (ML.latestPlanet)
+         {
+            ML.latestPlanet.dispatchUnitRefreshEvent();
+         }
          new GUnitEvent(GUnitEvent.UNITS_SHOWN);
       }
    }

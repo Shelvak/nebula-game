@@ -21,10 +21,14 @@
          {
             this.x = event.stageX - (this.width/2);               
             this.y = event.stageY - (this.height/2);
+            if (!event.buttonDown)
+            {
+               datagroup1_mouseUpHandler();
+            }
          }
          
          
-         protected function datagroup1_mouseUpHandler(event:MouseEvent):void
+         protected function datagroup1_mouseUpHandler(event:MouseEvent = null):void
          {
             if (stage)
             {

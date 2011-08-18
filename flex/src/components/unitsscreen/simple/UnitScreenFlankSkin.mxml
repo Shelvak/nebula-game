@@ -15,6 +15,8 @@
       
       import config.BattleConfig;
       
+      import flashx.textLayout.container.ScrollPolicy;
+      
       import models.Owner;
       
       import mx.events.FlexEvent;
@@ -79,12 +81,14 @@
       
       <!--- All the content goes here -->
       <s:Group id="contentGroup" left="12" right="1" top="13" bottom="15">
-         <base:Scroller id="scrollCont" top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off" 
-                        stepMultiplier="5">
-            <s:Group left="0" right="0" height="100%">
+         <base:Scroller id="scrollCont" top="0" bottom="0" left="0" right="0" 
+                        verticalScrollPolicy="{hostComponent.flankModel.flankUnits.length == 0
+                        ?ScrollPolicy.OFF
+                        :ScrollPolicy.AUTO}"
+                        horizontalScrollPolicy="off">
                <s:DataGroup id="unitsList" 
                             dataProvider="{hostComponent.flankModel.flankUnits}" 
-                            left="0" right="0" height="100%"
+                            left="0" right="0"
                             rollOver="unitsList_rollOverHandler(event)"
                             rollOut="unitsList_rollOutHandler(event)"
                             itemRenderer="components.unitsscreen.simple.IRUnitScreenUnit">
@@ -93,7 +97,6 @@
                                    requestedColumnCount="{unitsList.width / 101}"/>
                   </s:layout>
                </s:DataGroup>
-            </s:Group>
          </base:Scroller>
       </s:Group>
    </s:Group>

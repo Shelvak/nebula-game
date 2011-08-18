@@ -56,6 +56,7 @@ package models.unit
                selection.removeItemAt(indx);
                selectionChanged = true;
             }
+            model.selected = false;
          }
          flankUnits.enableAutoUpdate();
          if (selectionChanged && dispatchEvnt)

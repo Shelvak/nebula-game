@@ -72,8 +72,10 @@ package controllers.planets.actions
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          var params:Object = cmd.parameters;
+         ML.units.disableAutoUpdate();
          ML.units.addAll(UnitFactory.fromObjects(params.units, params.players));
          ML.units.addAll(UnitFactory.fromObjects(params.npcUnits, new Object()));
+         ML.units.enableAutoUpdate();
          params.planet.cooldownEndsAt = params.cooldownEndsAt;
          var planet:Planet = PlanetFactory.fromSSObject(
             SSObjectFactory.fromObject(params.planet),
@@ -139,6 +141,7 @@ package controllers.planets.actions
             ML.latestPlanet = null;
          }
          SQUADS_CTRL.createSquadronsForUnits(planet.units);
+         planet.dispatchUnitRefreshEvent();
          NAV_CTRL.showPlanet(planet);
          GF.lockApplication = false;
          dispatchPlanetBuildingsChangeEvent();

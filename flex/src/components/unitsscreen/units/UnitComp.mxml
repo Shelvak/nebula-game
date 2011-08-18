@@ -6,7 +6,8 @@
                 xmlns:unitsscreen="components.unitsscreen.*"
                 autoDrawBackground="false"
                 rollOver="basecontainer1_rollOverHandler(event)"
-                rollOut="basecontainer1_rollOutHandler(event)" 
+                rollOut="basecontainer1_rollOutHandler(event)"
+                mouseDown="itemrenderer1_mouseDownHandler(event)"
                 xmlns:components="utils.components.*">
    
    <fx:Declarations>
@@ -37,6 +38,7 @@
          import models.location.LocationType;
          import models.planet.Planet;
          import models.unit.MCLoadUnloadScreen;
+         import models.unit.MCUnit;
          import models.unit.MCUnitScreen;
          import models.unit.Unit;
          
@@ -54,19 +56,19 @@
          private var ML:ModelLocator = ModelLocator.getInstance();
          
          [Bindable]
-         public var unit: Unit;
+         public var model: MCUnit;
+         
          
          public override function set data(value:Object) : void
          {
-            if (unit != value)
+            if (data != value)
             {
-               unit = Unit(value);
+               super.data = value;
+               if (data)
+               {
+                  model = MCUnit(data);
+               }
             }
-         }
-         
-         public override function get data():Object
-         {
-            return unit;
          }
          
          protected function basecontainer1_rollOverHandler(event:MouseEvent):void
@@ -85,16 +87,16 @@
          
          protected function info_clickHandler(event:MouseEvent):void
          {
-            ModelLocator.getInstance().infoModel = unit;
+            ModelLocator.getInstance().infoModel = model.unit;
             NavigationController.getInstance().showInfo();
          }
          
          protected function deploy_clickHandler(event:MouseEvent):void
          {
             NavigationController.getInstance().toPlanet(ModelLocator.getInstance().latestPlanet.ssObject);
-            var building: Building = BuildingFactory.createDefault(unit.deploysTo);
+            var building: Building = BuildingFactory.createDefault(model.unit.deploysTo);
             building.cleanup();
-            building.unitDeployed = unit;
+            building.unitDeployed = model.unit;
             new GSelectConstructableEvent(building);
          }
          
@@ -103,10 +105,10 @@
          private function show_inside(load: Boolean): void
          {
             unitsLoading = load;
-            if (unit.stored > 0)
+            if (model.unit.stored > 0)
             {
                EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-               new UnitsCommand(UnitsCommand.SHOW, unit).dispatch();
+               new UnitsCommand(UnitsCommand.SHOW, model.unit).dispatch();
             }
             else
             {
@@ -124,7 +126,7 @@
             NavigationController.getInstance().enableActiveButton();
             if (unitsLoading)
             {
-               NavigationController.getInstance().showLoadUnload(planet.toLocation(), unit, 
+               NavigationController.getInstance().showLoadUnload(planet.toLocation(), model.unit, 
                   Collections.filter(planet.units, 
                      function (_unit: Unit): Boolean {
                         return (_unit.level > 0) && (_unit.volume > 0) 
@@ -133,12 +135,12 @@
             }
             else
             {
-               NavigationController.getInstance().showLoadUnload(unit, planet.toLocation(),
+               NavigationController.getInstance().showLoadUnload(model.unit, planet.toLocation(),
                   Collections.filter(ModelLocator.getInstance().units, 
                      function (_unit: Unit): Boolean {
                         return (_unit.level > 0) && (_unit.location.type == LocationType.UNIT) 
-                        && (unit != null) 
-                        && (_unit.location.id == unit.id);}));
+                        && (model != null) && (model.unit != null)
+                        && (_unit.location.id == model.unit.id);}));
             }
          }
          
@@ -157,12 +159,18 @@
             expanded = false;
          }
          
+         protected function itemrenderer1_mouseDownHandler(event:MouseEvent):void
+         {
+            model.selected = !model.selected;
+            model.flankModel.invertSelection(model);
+         }
+         
       ]]>
    </fx:Script>
    <s:Group id="contGroup" width="100" height="76">
-      <s:Rect left="0" right="0" top="0" bottom="0" alpha="0">
+      <s:Rect left="0" right="0" top="0" bottom="0">
          <s:fill>
-            <s:SolidColor color="0x0f0f0f"/>
+            <s:SolidColor color="{model.selected?0x2f2f2f:0x0f0f0f}"/>
          </s:fill>
       </s:Rect>
       <base:AdvancedContainer left="0" width="24" bottom="0" top="0">
@@ -172,22 +180,22 @@
          
          <!-- actionGroup -->
          <s:Button id="deploy" click="deploy_clickHandler(event)" 
-                   visible="{!(!(unit.deploysTo != null)
-                   || (unit.owner != Owner.PLAYER)
+                   visible="{!(!(model.unit.deploysTo != null)
+                   || (model.unit.owner != Owner.PLAYER)
                    || (!ML.latestPlanet)
                    || (ML.latestPlanet.ssObject.owner != Owner.PLAYER))}"
                    skinClass="components.skins.DeployButtonSkin" 
                    toolTip="{Localizer.string('Units', 'label.deploy')}"/>
          
-         <base:AdvancedContainer id="loadGroup" visible="{unit != null}" width="100%">
+         <base:AdvancedContainer id="loadGroup" visible="{model.unit != null}" width="100%">
             <base:layout>
                <s:VerticalLayout/>
             </base:layout>
             <s:Button id="load" click="show_inside(true)" visible="{!(
-                      (unit.storage == 0)
-                      || (!unit.location.isSSObject)
+                      (model.unit.storage == 0)
+                      || (!model.unit.location.isSSObject)
                       || (!ML.latestPlanet)
-                      || (unit.owner != Owner.PLAYER)
+                      || (model.unit.owner != Owner.PLAYER)
                       || (ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length == 0
                       &amp;&amp; (ML.latestPlanet.ssObject.owner == 
                       Owner.ALLY))
@@ -195,9 +203,9 @@
                       toolTip="{Localizer.string('Units', 'label.load')}"
                       skinClass="components.skins.LoadButtonSkin"/>
             <s:Button id="unload" click="show_inside(false)" 
-                      visible="{!(unit.stored == 0 
-                      || !unit.location.isSSObject
-                      || (unit.owner != Owner.PLAYER)
+                      visible="{!(model.unit.stored == 0 
+                      || !model.unit.location.isSSObject
+                      || (model.unit.owner != Owner.PLAYER)
                       || (!ML.latestPlanet)
                       || (!(
                       (ML.latestPlanet.ssObject.owner == Owner.PLAYER)
@@ -208,29 +216,26 @@
          </base:AdvancedContainer>
       </base:AdvancedContainer>
       <s:Group left="24" right="24" top="0" bottom="0">
-         <base:SetableProgressBar id="sBar" maxStock="{unit.hpMax}" curentStock="{unit.hp}"
+         <base:SetableProgressBar id="sBar" maxStock="{model.unit.hpMax}" curentStock="{model.unit.hp}"
                                   specialHeight="6" width="50" text="" top="0" useColorCoding="true"/>
-         <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(unit.type))}" 
+         <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(model.unit.type))}" 
                                          width="50" height="50" horizontalCenter="0" top="9"/>
          
-         <unitsscreen:StarsContainer starCount="{unit.upgradePart.level-1}" horizontalCenter="0" top="62"/>
+         <unitsscreen:StarsContainer starCount="{model.unit.upgradePart.level-1}" horizontalCenter="0" top="62"/>
          <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
-                  text="{unit.hp+'\n'+'/'+'\n'+unit.hpMax}" verticalAlign="middle"
+                  text="{model.unit.hp+'\n'+'/'+'\n'+model.unit.hpMax}" verticalAlign="middle"
                   backgroundColor="#0f0f0f" backgroundAlpha="0.7"/>
          
       </s:Group>
-      <base:BackgroundedLabel visible="{unit &amp;&amp; !expanded}" 
-                              bottom="17" right="24" text="{unit.volume}"
+      <base:BackgroundedLabel visible="{model.unit &amp;&amp; !expanded}" 
+                              bottom="17" right="24" text="{model.unit.volume}"
                               defaultFontSize="12"/>
       <s:Group right="0" width="24" bottom="0" top="0">
          <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(
-                        Unit.STANCE_WORD + unit.stance))}" 
+                        Unit.STANCE_WORD + model.unit.stance))}" 
                         top="10" horizontalCenter="0"/>
          <s:Button skinClass="components.skins.InfoButtonSkin" horizontalCenter="0" bottom="10"
                    click="info_clickHandler(event)"/>
       </s:Group>
    </s:Group>
 </s:ItemRenderer>
-
-
-

@@ -2,7 +2,7 @@ package models.unit
 {
    public class MCUnit
    {
-      public function MCUnit(_unit: Unit, flank: UnitsFlank)
+      public function MCUnit(_unit: Unit, flank: UnitsFlank = null)
       {
          unit = _unit;
          flankModel = flank;

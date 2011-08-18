@@ -95,8 +95,6 @@ package models.planet
       {
          _ssObject = ssObject;
          super();
-         units.addEventListener(CollectionEvent.COLLECTION_CHANGE,
-            dispatchUnitRefreshEvent, false, 0, true);
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
@@ -1400,7 +1398,7 @@ package models.planet
       }
       
       
-      public function dispatchUnitRefreshEvent(e: Event = null) : void
+      public function dispatchUnitRefreshEvent() : void
       {
          if (!f_cleanupStarted &&
             !f_cleanupComplete &&

@@ -332,7 +332,6 @@ package models.unit
          {
             if (e.items.length != 0)
             {
-               new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, e.items);
                dispatchUnitsChangeEvent();
                refreshVolume();
             }

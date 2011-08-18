@@ -4,6 +4,7 @@ package models.healing
    
    import components.unitsscreen.events.UnitsScreenEvent;
    
+   import controllers.GlobalFlags;
    import controllers.Messenger;
    import controllers.units.UnitsCommand;
    
@@ -16,6 +17,7 @@ package models.healing
    
    import models.Owner;
    import models.building.Building;
+   import models.unit.MCUnit;
    import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
@@ -37,7 +39,6 @@ package models.healing
       public function MCHealingScreen()
       {
          super();
-         EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshPrice);
          EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshMaxHealing);
       }
       
@@ -89,6 +90,23 @@ package models.healing
             selfSelected = true;
          }
          selectionClass.flanks = currentFlanks;
+         selectionClass.allFlanks = [selfFlanks, allyFlanks, napFlanks];
+         deselectAllFlankSets();
+         refreshPrice();
+      }
+      
+      private function deselectAllFlankSets(): void
+      {
+         function deselectGivenFlanks(flankSet: ArrayCollection): void
+         {
+            for each (var flank: MHealFlank in flankSet)
+            {
+               flank.deselectAll();
+            }
+         }
+         deselectGivenFlanks(selfFlanks);
+         deselectGivenFlanks(allyFlanks);
+         deselectGivenFlanks(napFlanks);
       }
       
       [Bindable]
@@ -118,11 +136,14 @@ package models.healing
       private function get selectionIds(): Array
       {
          var _selection: Array = [];
-         for each (var flank: MHealFlank in currentFlanks)
+         for each (var flankSet: ArrayCollection in selectionClass.allFlanks)
          {
-            for each (var unit: Unit in flank.selection)
+            for each (var flank: MHealFlank in flankSet)
             {
-               _selection.push(unit.id);
+               for each (var model: MCUnit in flank.selection)
+               {
+                  _selection.push(model.unit.id);
+               }
             }
          }
          return _selection;
@@ -133,6 +154,7 @@ package models.healing
          var _selectionIds: Array = selectionIds;
          if (_selectionIds.length > 0)
          {
+            GlobalFlags.getInstance().lockApplication = true;
             new UnitsCommand(
                UnitsCommand.HEAL,
                {
@@ -140,7 +162,6 @@ package models.healing
                   unitIds: _selectionIds
                }).dispatch();
          }
-         new GHealingScreenEvent(GHealingScreenEvent.DESELECT_UNITS);
       }
       
       private var selectionClass: HealingSelection = new HealingSelection();
@@ -162,11 +183,12 @@ package models.healing
          {
             var tempObj: Object = unit.owner == Owner.PLAYER?tempSelfObj
                :(unit.owner == Owner.ALLY?tempAllyObj:tempNapObj);
+            var newUnit: MCUnit = new MCUnit(unit);
             if (tempObj[unit.flank] == null)
             {
                tempObj[unit.flank] = new Array();
             }
-            tempObj[unit.flank].push(unit);
+            tempObj[unit.flank].push(newUnit);
          }
          for (var key: int = 0; key < MAX_FLANKS; key++)
          {
@@ -204,7 +226,7 @@ package models.healing
                   {
                      if (flank.nr == (unitToAdd.flank))
                      {
-                        flank.flankUnits.addItem(unitToAdd);
+                        flank.flankUnits.addItem(new MCUnit(unitToAdd, flank));
                      }
                   }
                }
@@ -214,7 +236,19 @@ package models.healing
          {
             if (e.items.length != 0)
             {
-               new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, e.items);
+               for each (var unitToRemove: Unit in e.items)
+               {
+                  var tFlanks: ArrayCollection = 
+                     unitToRemove.owner == Owner.PLAYER? selfFlanks
+                     : (unitToRemove.owner == Owner.ALLY?allyFlanks:napFlanks);
+                  for each (var rflank: MHealFlank in tFlanks)
+                  {
+                     if (rflank.nr == (unitToRemove.flank))
+                     {
+                        rflank.removeUnit(unitToRemove);
+                     }
+                  }
+               }
             }
          }
          dispatchUnitsChangeEvent();
@@ -226,6 +260,16 @@ package models.healing
          {
             Messenger.show(Localizer.string('Units', 'message.noResources'), Messenger.MEDIUM);
          }
+         refreshPrice();
+      }
+      
+      public function selectNone(): void
+      {
+         for each (var flank: MHealFlank in currentFlanks)
+         {
+            flank.deselectAll(false);
+         }
+         refreshPrice();
       }
       
       private function refreshMaxHealing(e: GResourcesEvent): void
@@ -239,7 +283,7 @@ package models.healing
        * refreshed HealPrice object with price for all selected units
        * signs null if there is no selection
        **/
-      private function refreshPrice(e: GUnitsScreenEvent): void
+      public function refreshPrice(): void
       {
          var _selection: Array = selection;
          if (_selection.length == 0 || !location || !location.upgradePart)
@@ -256,11 +300,14 @@ package models.healing
       private function get selection(): Array
       {
          var _selection: Array = [];
-         for each (var flank: MHealFlank in currentFlanks)
+         for each (var flankSet: ArrayCollection in selectionClass.allFlanks)
          {
-            for each (var unit: Unit in flank.selection)
+            for each (var flank: MHealFlank in flankSet)
             {
-               _selection.push(unit);
+               for each (var unit: MCUnit in flank.selection)
+               {
+                  _selection.push(unit);
+               }
             }
          }
          return _selection;

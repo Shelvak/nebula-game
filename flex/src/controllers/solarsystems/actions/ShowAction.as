@@ -81,7 +81,9 @@ package controllers.solarsystems.actions
             ML.latestSolarSystem = null;
          }
          var units:ArrayCollection = UnitFactory.fromObjects(params.units, params.players);
+         ML.units.disableAutoUpdate();
          ML.units.addAll(units);
+         ML.units.enableAutoUpdate();
          SQUADS_CTRL.createSquadronsForUnits(units);
          SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
          NAV_CTRL.showSolarSystem(ss);

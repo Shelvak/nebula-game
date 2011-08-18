@@ -15,13 +15,9 @@ package globalevents
       
       public static const SELECT_ALL: String = "selectAllUnits";
       
-      public static const DESTROY_UNIT: String = "unitDestroy";
-      
       public static const OPEN_STORAGE_SCREEN: String = "openStorageScreen";
       
       public static const REFRESH_SIDEBAR: String = "refreshSidebar";
-      
-      public static const SELECTION_PRECHANGE: String = "selectionWillChange";
       
       
       public var facilityId: int;
@@ -63,9 +59,6 @@ package globalevents
                break;
             case (SET_STANCE):
                stance = params;
-               break;
-            case (DESTROY_UNIT):
-               units = params;
                break;
             case (OPEN_STORAGE_SCREEN):
                location = params.location;

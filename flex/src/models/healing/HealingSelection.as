@@ -7,6 +7,7 @@ package models.healing
    import globalevents.GHealingScreenEvent;
    
    import models.building.Building;
+   import models.unit.MCUnit;
    import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
@@ -18,9 +19,11 @@ package models.healing
    {      
       public var flanks: ArrayCollection;
       
+      public var allFlanks: Array;
+      
       public var center: Building;
       
-      public function selectUnit(unit: Unit, flank: MHealFlank): Boolean
+      public function selectUnit(unit: MCUnit, flank: MHealFlank): Boolean
       {
          if (!selectedPrice)
          {
@@ -29,6 +32,7 @@ package models.healing
          if (selectedPrice.addIfPossible(HealPrice.calculateHealingPrice([unit], center.level, center.type)))
          {
             flank.selection.addItem(unit);
+            unit.selected = true;
             return true;
          }
          return false;
@@ -37,7 +41,7 @@ package models.healing
       public function clear(): void
       {
          flanks = null;
-         selectedPrice = null;
+         allFlanks = null;
       }
       
       public var selectedPrice: HealPrice;
@@ -45,7 +49,7 @@ package models.healing
       public function selectFlank(flank: MHealFlank): Boolean
       {
          var selectedAll: Boolean = true;
-         for each (var unit: Unit in flank.flankUnits)
+         for each (var unit: MCUnit in flank.flankUnits)
          {
             if (flank.selection.getItemIndex(unit) == -1)
             {
@@ -69,42 +73,6 @@ package models.healing
                selectedAll = false;
             }
          }
-         new GHealingScreenEvent(GHealingScreenEvent.SELECTION_UPDATED);
-         return selectedAll;
-      }
-      
-      public function updateSelection(flank: MHealFlank, selection: Vector.<Object>): Boolean
-      {
-         var selectedAll: Boolean = true;
-         for each (var unit: Unit in flank.selection)
-         {
-            if (selection.indexOf(unit) == -1)
-            {
-               selectedPrice.substract(HealPrice.calculateHealingPrice([unit], center.level, center.type));
-            }
-         }
-         var newSelection: ArrayCollection = new ArrayCollection();
-         for each (unit in selection)
-         {
-            if (flank.selection.getItemIndex(unit) == -1)
-            {
-               if (!selectUnit(unit, flank))
-               {
-                  selectedAll = false;
-               }
-               else
-               {
-                  newSelection.addItem(unit);
-               }
-            }
-            else
-            {
-               newSelection.addItem(unit);
-            }
-         }
-         
-         flank.selection = newSelection;
-         
          return selectedAll;
       }
       
@@ -114,8 +82,9 @@ package models.healing
          {
             if (flank.selection.length > 0)
             {
-               var deselectedUnit: Unit;// = flank.selection.pop();
+               var deselectedUnit: MCUnit = MCUnit(flank.selection.getItemAt(flank.selection.length-1));
                selectedPrice.substract(HealPrice.calculateHealingPrice([deselectedUnit], center.level, center.type));
+               deselectedUnit.selected = false;
                checkIfNotNegative();
                return;
             }

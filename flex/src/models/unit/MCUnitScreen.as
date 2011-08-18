@@ -22,6 +22,7 @@ package models.unit
    import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
+   import mx.core.FlexGlobals;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
    
@@ -128,6 +129,11 @@ package models.unit
             }
          }
          
+         groundVisible = hasGroundUnits;
+         spaceVisible = hasSpaceUnits;
+         moveVisible = hasMovingUnits;
+         
+         
          //Prepare currentScreen
          refreshScreen();
       }
@@ -208,7 +214,12 @@ package models.unit
          {
             source.push(new MCUnit(unit, UnitsFlank(flanks.getItemAt(unit.flank))));
          }
+         if (transformedUnits != null)
+         {
+            
+         }
          transformedUnits = new ArrayCollection(source);
+         transformedUnits.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshModels);
          unitsToFlanks();
       }
       
@@ -238,8 +249,8 @@ package models.unit
       private function refreshFlanks(e: UnitsScreenEvent): void
       {
          var changedUnits: Array = [];
-         var sourceFlank: UnitsFlank = null;
-         var targetFlank: UnitsFlank = null;
+         var _sourceFlank: UnitsFlank = null;
+         var _targetFlank: UnitsFlank = null;
          var found: Boolean = false;
          for each (var flank: UnitsFlank in flanks)
          {
@@ -250,16 +261,17 @@ package models.unit
                   if (!found)
                   {
                      found = true;
-                     sourceFlank = flank;
-                     targetFlank = unit.flankModel;
+                     _sourceFlank = flank;
+                     _targetFlank = unit.flankModel;
                   }
                   changedUnits.push(unit);
                }
             }
             if (found)
             {
-               sourceFlank.removeUnits(changedUnits, false);
-               targetFlank.addUnits(changedUnits);
+               _sourceFlank.removeUnits(changedUnits, false);
+               _targetFlank.addUnits(changedUnits);
+               dispatchSelectionChangeEvent();
                break;
             }
          }
@@ -301,25 +313,26 @@ package models.unit
       
       private function refreshModels(e: CollectionEvent): void
       {
-            if (e.kind == CollectionEventKind.ADD)
+         if (e.kind == CollectionEventKind.ADD)
+         {
+            if (e.items.length != 0)
             {
-               if (e.items.length != 0)
-               {
-                  addModels(e.items);
-               }
+               addModels(e.items);
             }
-            else if (e.kind == CollectionEventKind.REMOVE)
+         }
+         else if (e.kind == CollectionEventKind.REMOVE)
+         {
+            if (e.items.length != 0)
             {
-               if (e.items.length != 0)
-               {
-                  removeModels(e.items);
-               }
+               removeModels(e.items);
             }
+         }
       }
       
       public function tabChanged(tabName: String):void
       {
          deselectUnits();
+         cancel();
          currentKind = tabName;
          if (currentKind == UnitKind.GROUND || currentKind == UnitKind.SPACE)
          {
@@ -438,6 +451,7 @@ package models.unit
       public function confirmChanges(): void
       {
          transformedUnits.disableAutoUpdate();
+         ML.units.disableAutoUpdate();
          for each(var unit: MCUnit in transformedUnits)
          {
             if (unit.unit.flank != unit.flankModel.nr)
@@ -450,9 +464,11 @@ package models.unit
             }
          }
          transformedUnits.enableAutoUpdate();
+         ML.units.enableAutoUpdate();
          dispatchFormationChangeEvent();
          GlobalFlags.getInstance().lockApplication = false;
       }
+      
       
       [Bindable (event = 'unitsChange')]
       public function getUnitCount(kind: String): int
@@ -590,6 +606,7 @@ package models.unit
          {
             flank.setStance(stance);
          }
+         deselectUnits();
       }
       
       private function sortByHp(list: ListCollectionView): void
@@ -605,7 +622,6 @@ package models.unit
       
       private function refreshList(e: CollectionEvent): void
       {
-         transformedUnits.disableAutoUpdate();
          if (e.kind == CollectionEventKind.ADD)
          {
             if (e.items.length != 0)
@@ -626,18 +642,10 @@ package models.unit
             if (e.items.length != 0)
             {
                removeUnits(e.items);
-               if (hasGroundUnits)
-               {
-                  groundVisible = true;
-               }
-               if (hasSpaceUnits)
-               {
-                  spaceVisible = true;
-               }
             }
          }
-         transformedUnits.enableAutoUpdate();
       }
+      
       
       private function addUnits(unitsToAdd: Array): void
       {
@@ -646,8 +654,15 @@ package models.unit
             transformedUnits.addItem(new MCUnit(unitToAdd, 
                UnitsFlank(flanks.getItemAt(unitToAdd.flank))));
          }
-         dispatchUnitsChangeEvent();
+         if (!unitsHasChanged)
+         {
+            unitsHasChanged = true;
+            FlexGlobals.topLevelApplication.callLater(
+               dispatchUnitsChangeEvent);
+         }
       }
+      
+      private var unitsHasChanged: Boolean = false;
       
       private function findUnitIndexAndDeselect(unit: Unit): int
       {
@@ -675,7 +690,12 @@ package models.unit
                flank.deselectUnit(unitToDestroy.id);
             }
          }
-         dispatchUnitsChangeEvent();
+         if (!unitsHasChanged)
+         {
+            unitsHasChanged = true;
+            FlexGlobals.topLevelApplication.callLater(
+               dispatchUnitsChangeEvent);
+         }
       }
       
       /* ############### */
@@ -692,6 +712,7 @@ package models.unit
       
       private function dispatchUnitsChangeEvent(): void
       {
+         unitsHasChanged = false;
          if (hasEventListener(UnitsScreenEvent.UNIT_COUNT_CHANGE))
          {
             dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.UNIT_COUNT_CHANGE));

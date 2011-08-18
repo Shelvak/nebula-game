@@ -27,6 +27,7 @@
       
       import utils.assets.AssetNames;
       import utils.locale.Localizer;
+      import flashx.textLayout.container.ScrollPolicy;
    </fx:Script>
    <base:states>
       <s:State name="normal"/>
@@ -118,24 +119,19 @@
       
       <!--- All the content goes here -->
       <s:Group id="contentGroup" left="24" right="1" top="13" bottom="15">
-         <base:Scroller id="scrollCont" top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off" 
-                        stepMultiplier="5">
-            <s:Group width="100%" height="100%">
-               <base:AdvancedList id="unitsList" dataProvider="{hostComponent.flankModel.flankUnits}" 
-                                  left="0" right="0" top="0" bottom="0"
-                                  skinClass="components.skins.ListNonScrollableSkin"
-                                  useVirtualLayout="false" contentBackgroundColor="#0f0f0f"
-                                  rollOverColor="#4f4f4f" selectionColor="#2f2f2f"
-                                  borderVisible="false" 
-                                  change="hostComponent.unitsList_changeHandler(event)"
-                                  allowMultipleSelection="true"
+         <base:Scroller id="scrollCont" top="0" bottom="0" left="0" right="0" 
+                        horizontalScrollPolicy="off" 
+                        verticalScrollPolicy="{hostComponent.flankModel.flankUnits.length == 0
+                        ?ScrollPolicy.OFF
+                        :ScrollPolicy.AUTO}">
+               <s:DataGroup id="unitsList" dataProvider="{hostComponent.flankModel.flankUnits}" 
+                                  left="0" right="0"
                                   itemRenderer="components.unitsscreen.units.UnitComp">    
-                  <base:layout>
-                     <s:TileLayout id="flankLayout" horizontalGap="1"
-                                   requestedColumnCount="{unitsList.width / (flankLayout.columnWidth+1)}"/>
-                  </base:layout>
-               </base:AdvancedList>
-            </s:Group>
+                  <s:layout>
+                     <s:TileLayout id="flankLayout" horizontalGap="1" useVirtualLayout="true"
+                                   requestedColumnCount="{unitsList.width / 101}"/>
+                  </s:layout>
+               </s:DataGroup>
          </base:Scroller>
       </s:Group>
       
