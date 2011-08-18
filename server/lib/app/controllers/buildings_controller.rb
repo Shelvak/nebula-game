@@ -86,8 +86,7 @@ class BuildingsController < GenericController
   # - objects|updated with +Player+. (if using creds)
   #
   def action_self_destruct
-    param_options :required => {:id => Fixnum, 
-      :with_creds => [TrueClass, FalseClass]}
+    param_options :required => {:id => Fixnum, :with_creds => [TrueClass, FalseClass]}
 
     building = find_building
     building.self_destruct!(params['with_creds'])
@@ -149,6 +148,36 @@ class BuildingsController < GenericController
   rescue ArgumentError => e
     # In case client provides invalid index.
     raise GameLogicError.new(e.message)
+  end
+
+  # Cancels whatever constructor is constructing. Partially returns 
+  # resources depending on how much of constructable has been built.
+  # 
+  # Invocation: by client
+  # 
+  # Parameters:
+  # - id (Fixnum): ID of the constructor.
+  # 
+  # Response: None
+  #
+  def action_cancel_constructor
+    constructor = find_building
+    constructor.cancel!
+  end
+    
+  # Cancels upgrade of the building. Partially returns 
+  # resources depending on how much of the upgrade has been done.
+  # 
+  # Invocation: by client
+  # 
+  # Parameters:
+  # - id (Fixnum): ID of the building.
+  # 
+  # Response: None
+  #
+  def action_cancel_upgrade
+    building = find_building
+    building.cancel!
   end
   
   private

@@ -193,7 +193,6 @@ describe BuildingsController do
 
   describe "buildings|accelerate_constructor" do
     before(:each) do
-      @action = "buildings|accelerate_constructor"
       player.creds += 100000
       player.save!
       @planet = Factory.create(:planet, :player => player)
@@ -201,6 +200,8 @@ describe BuildingsController do
           {:planet => @planet})
       @constructable = @building.construct!("Building::Barracks",
         :x => 10, :y => 10)
+      
+      @action = "buildings|accelerate_constructor"
       @params = {'id' => @building.id,
         'index' => CONFIG['creds.upgradable.speed_up'].size - 1}
     end
@@ -218,12 +219,13 @@ describe BuildingsController do
 
   describe "buildings|accelerate_upgrade" do
     before(:each) do
-      @action = "buildings|accelerate_upgrade"
       player.creds += 100000
       player.save!
       @planet = Factory.create(:planet, :player => player)
       @building = Factory.create(:building, :planet => @planet)
       @building.upgrade!
+      
+      @action = "buildings|accelerate_upgrade"
       @params = {'id' => @building.id,
         'index' => CONFIG['creds.upgradable.speed_up'].size - 1}
     end
@@ -234,6 +236,46 @@ describe BuildingsController do
     it "should accelerate building" do
       @controller.should_receive(:find_building).and_return(@building)
       Creds.should_receive(:accelerate!).with(@building, @params['index'])
+      invoke @action, @params
+    end
+  end
+  
+  describe "buildings|cancel_constructor" do
+    before(:each) do
+      @planet = Factory.create(:planet, :player => player)
+      @building = Factory.create(:b_headquarters, opts_active + 
+          {:planet => @planet})
+      @constructable = @building.construct!("Building::Barracks",
+        :x => 10, :y => 10)
+      
+      @action = "buildings|cancel_constructor"
+      @params = {'id' => @building.id}
+    end
+    
+    it_should_behave_like "finding building"
+    
+    it "should call #cancel! on constructor" do
+      @controller.should_receive(:find_building).and_return(@building)
+      @building.should_receive(:cancel!)
+      invoke @action, @params
+    end
+  end
+  
+  describe "buildings|cancel_upgrade" do
+    before(:each) do
+      @planet = Factory.create(:planet, :player => player)
+      @building = Factory.create(:building, :planet => @planet)
+      @building.upgrade!
+      
+      @action = "buildings|cancel_upgrade"
+      @params = {'id' => @building.id}
+    end
+    
+    it_should_behave_like "finding building"
+    
+    it "should call #cancel! on building" do
+      @controller.should_receive(:find_building).and_return(@building)
+      @building.should_receive(:cancel!)
       invoke @action, @params
     end
   end
