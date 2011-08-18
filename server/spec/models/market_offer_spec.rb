@@ -3,12 +3,7 @@ require File.expand_path(
 )
 
 describe MarketOffer do
-  describe "validation" do
-    it "should fail if source_kind is creds" do
-      Factory.build(:market_offer, :from_kind => MarketOffer::KIND_CREDS).
-        should_not be_valid
-    end
-    
+  describe "validation" do    
     describe "if user has too much offers" do
       it "should fail on create" do
         with_config_values('market.offers.max' => 1) do
@@ -101,152 +96,210 @@ describe MarketOffer do
       end
     end
     
-    describe "goods are resources" do
-      before(:each) do
-        @offer = Factory.create(:market_offer, 
-          :from_kind => MarketOffer::KIND_METAL,
-          :to_kind => MarketOffer::KIND_ZETIUM)
-        @seller_planet = @offer.planet
-        
-        @to_amount = (@offer.from_amount * @offer.to_rate).ceil
-        @buyer_planet = Factory.create(:planet_with_player)
-        # We must increase this separately because of the storage/resource
-        # order :/
-        @buyer_planet.zetium_storage = @buyer_planet.zetium = 
-          @to_amount + 1000
-      end
-      
+    describe "selling for resources", :shared => true do
       it "should fail if buyer does not have enough goods" do
         @buyer_planet.zetium = @to_amount - 1
         lambda do
           @offer.buy!(@buyer_planet, @offer.from_amount)
         end.should raise_error(GameLogicError)
       end
-      
+
       it "should not record cred stats" do
         CredStats.should_not_receive(:buy_offer)
         @offer.buy!(@buyer_planet, @offer.from_amount)
       end
-      
-      describe "seller planet" do
-        before(:each) do
-          @planet = @seller_planet
-        end
-        
-        it_should_behave_like "dispatching planet changed"
-        
-        it "should increase in goods he requested" do
-          lambda do
-            @offer.buy!(@buyer_planet, @offer.from_amount)
-            @seller_planet.reload
-          end.should change(@seller_planet, :zetium).by(@to_amount)
-        end
-        
-        it "should not fail if planet is currently unoccupied" do
-          @seller_planet.player = nil
-          @seller_planet.save!
-          
+    end
+    
+    describe "seller planet", :shared => true do
+      it_should_behave_like "dispatching planet changed"
+
+      it "should increase in goods he requested" do
+        lambda do
           @offer.buy!(@buyer_planet, @offer.from_amount)
-        end
+          @seller_planet.reload
+        end.should change(@seller_planet, :zetium).by(@to_amount)
       end
-      
-      describe "buyer planet" do
-        before(:each) do
-          @planet = @buyer_planet
-        end
-        
-        it_should_behave_like "buying goods"
-        it_should_behave_like "dispatching planet changed"
-        
-        it "should decrease from goods with which he sold it" do
-          lambda do
-            @offer.buy!(@buyer_planet, @offer.from_amount)
-            @buyer_planet.reload
-          end.should change(@buyer_planet, :zetium).by(- @to_amount)
-        end
-        
+
+      it "should not fail if planet is currently unoccupied" do
+        @seller_planet.player = nil
+        @seller_planet.save!
+
+        @offer.buy!(@buyer_planet, @offer.from_amount)
       end
     end
     
-    describe "goods are creds" do
-      before(:each) do
-        @offer = Factory.create(:market_offer, 
-          :from_kind => MarketOffer::KIND_METAL,
-          :to_kind => MarketOffer::KIND_CREDS)
-        @seller_planet = @offer.planet
-        @seller = @offer.player
-        
-        @to_amount = (@offer.from_amount * @offer.to_rate).ceil
-        @buyer = Factory.create(:player, :creds => @to_amount + 1000)
-        @buyer_planet = Factory.create(:planet, :player => @buyer)
-      end
-      
-      it "should fail if buyer does not have enough creds" do
-        @buyer.creds = @to_amount - 1
-        lambda do
-          @offer.buy!(@buyer_planet, @offer.from_amount)
-        end.should raise_error(GameLogicError)
-      end
-      
-      it "should fail if buying with free creds" do
-        @buyer.free_creds = @buyer.pure_creds
-        lambda do
-          @offer.buy!(@buyer_planet, @offer.from_amount)
-        end.should raise_error(GameLogicError)
-      end
-      
-      it "should register cred stats if it's an system offer" do
-        @offer.planet = nil
-
-        should_record_cred_stats(:buy_offer, [@buyer, @to_amount]) do
-          @offer.buy!(@buyer_planet, @offer.from_amount)
-        end
-      end
-
-      it "should register cred stats if it's an npc offer" do
-        planet = @offer.planet
-        planet.player = nil
-        planet.save!
-
-        should_record_cred_stats(:buy_offer, [@buyer, @to_amount]) do
-          @offer.buy!(@buyer_planet, @offer.from_amount)
-        end
-      end
-
-      it "should not record cred stats otherwise" do
-        CredStats.should_not_receive(:buy_creds)
-        @offer.buy!(@buyer_planet, @offer.from_amount)
-      end
-      
-      describe "seller" do
-        it "should transfer creds to seller account" do
-          lambda do
-            @offer.buy!(@buyer_planet, @offer.from_amount)
-            @seller.reload
-          end.should change(@seller, :creds).by(@to_amount)
-        end
-        
-        it "should not fail if planet is currently unoccupied" do
-          @seller_planet.player = nil
-          @seller_planet.save!
-          
-          @offer.buy!(@buyer_planet, @offer.from_amount)
-        end
-      end
-      
-      describe "buyer" do
+    describe "when selling resources" do
+      describe "for resources" do
         before(:each) do
-          @planet = @buyer_planet
+          @offer = Factory.create(:market_offer, 
+            :from_kind => MarketOffer::KIND_METAL,
+            :to_kind => MarketOffer::KIND_ZETIUM)
+          @seller_planet = @offer.planet
+
+          @to_amount = (@offer.from_amount * @offer.to_rate).ceil
+          @buyer_planet = Factory.create(:planet_with_player)
+          # We must increase this separately because of the storage/resource
+          # order :/
+          @buyer_planet.zetium_storage = @buyer_planet.zetium = 
+            @to_amount + 1000
         end
+
+        it_should_behave_like "selling for resources"
         
-        it_should_behave_like "dispatching planet changed"
-        it_should_behave_like "buying goods"
-        
-        it "should reduce creds from buyer account" do
+        describe "seller planet" do
+          before(:each) do
+            @planet = @seller_planet
+          end
+
+          it_should_behave_like "seller planet"
+        end
+
+        describe "buyer planet" do
+          before(:each) do
+            @planet = @buyer_planet
+          end
+
+          it_should_behave_like "buying goods"
+          it_should_behave_like "dispatching planet changed"
+
+          it "should decrease from goods with which he sold it" do
+            lambda do
+              @offer.buy!(@buyer_planet, @offer.from_amount)
+              @buyer_planet.reload
+            end.should change(@buyer_planet, :zetium).by(- @to_amount)
+          end
+        end
+      end
+
+      describe "for creds" do
+        before(:each) do
+          @offer = Factory.create(:market_offer, 
+            :from_kind => MarketOffer::KIND_METAL,
+            :to_kind => MarketOffer::KIND_CREDS)
+          @seller_planet = @offer.planet
+          @seller = @offer.player
+
+          @to_amount = (@offer.from_amount * @offer.to_rate).ceil
+          @buyer = Factory.create(:player, :creds => @to_amount + 1000)
+          @buyer_planet = Factory.create(:planet, :player => @buyer)
+        end
+
+        it "should fail if buyer does not have enough creds" do
+          @buyer.creds = @to_amount - 1
           lambda do
             @offer.buy!(@buyer_planet, @offer.from_amount)
-            @buyer.reload
-          end.should change(@buyer, :creds).by(- @to_amount)
+          end.should raise_error(GameLogicError)
+        end
+
+        it "should fail if buying with free creds" do
+          @buyer.free_creds = @buyer.pure_creds
+          lambda do
+            @offer.buy!(@buyer_planet, @offer.from_amount)
+          end.should raise_error(GameLogicError)
+        end
+
+        it "should register cred stats if it's an system offer" do
+          @offer.planet = nil
+
+          should_record_cred_stats(:buy_offer, [@buyer, @to_amount]) do
+            @offer.buy!(@buyer_planet, @offer.from_amount)
+          end
+        end
+
+        it "should register cred stats if it's an npc offer" do
+          planet = @offer.planet
+          planet.player = nil
+          planet.save!
+
+          should_record_cred_stats(:buy_offer, [@buyer, @to_amount]) do
+            @offer.buy!(@buyer_planet, @offer.from_amount)
+          end
+        end
+
+        it "should not record cred stats otherwise" do
+          CredStats.should_not_receive(:buy_creds)
+          @offer.buy!(@buyer_planet, @offer.from_amount)
+        end
+
+        describe "seller" do
+          it "should transfer creds to seller account" do
+            lambda do
+              @offer.buy!(@buyer_planet, @offer.from_amount)
+              @seller.reload
+            end.should change(@seller, :creds).by(@to_amount)
+          end
+
+          it "should not fail if planet is currently unoccupied" do
+            @seller_planet.player = nil
+            @seller_planet.save!
+
+            @offer.buy!(@buyer_planet, @offer.from_amount)
+          end
+        end
+
+        describe "buyer" do
+          before(:each) do
+            @planet = @buyer_planet
+          end
+
+          it_should_behave_like "dispatching planet changed"
+          it_should_behave_like "buying goods"
+
+          it "should reduce creds from buyer account" do
+            lambda do
+              @offer.buy!(@buyer_planet, @offer.from_amount)
+              @buyer.reload
+            end.should change(@buyer, :creds).by(- @to_amount)
+          end
+        end
+      end
+    end
+    
+    describe "when selling creds" do
+      describe "for resources" do
+        before(:each) do
+          @offer = Factory.create(:market_offer, 
+            :from_kind => MarketOffer::KIND_CREDS,
+            :to_kind => MarketOffer::KIND_ZETIUM)
+          @seller_planet = @offer.planet
+
+          @to_amount = (@offer.from_amount * @offer.to_rate).ceil
+          @buyer_planet = Factory.create(:planet_with_player)
+          @buyer = @buyer_planet.player
+          # We must increase this separately because of the storage/resource
+          # order :/
+          @buyer_planet.zetium_storage = @buyer_planet.zetium = 
+            @to_amount + 1000
+        end
+
+        it_should_behave_like "selling for resources"
+
+        describe "seller planet" do
+          before(:each) do
+            @planet = @seller_planet
+          end
+          
+          it_should_behave_like "seller planet"
+        end
+
+        describe "buyer" do
+          before(:each) do
+            @planet = @buyer_planet
+          end
+
+          it "should transfer creds to buyer account" do
+            lambda do
+              @offer.buy!(@buyer_planet, @offer.from_amount)
+              @buyer.reload
+            end.should change(@buyer, :creds).by(@offer.from_amount)
+          end        
+
+          it "should decrease from goods with which he sold it" do
+            lambda do
+              @offer.buy!(@buyer_planet, @offer.from_amount)
+              @buyer_planet.reload
+            end.should change(@buyer_planet, :zetium).by(- @to_amount)
+          end
         end
       end
     end
@@ -393,6 +446,15 @@ describe MarketOffer do
         @offer.cancel!
         planet.reload
       end.should change(planet, :energy).by(@offer.from_amount)
+    end
+    
+    it "should return from_amount to player if creds" do
+      @offer.from_kind = MarketOffer::KIND_CREDS
+      player = @offer.player
+      lambda do
+        @offer.cancel!
+        player.reload
+      end.should change(player, :market_creds).by(@offer.from_amount)
     end
     
     it "should dispatch changed with planet" do

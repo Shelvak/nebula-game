@@ -27,10 +27,6 @@ class MarketOffer < ActiveRecord::Base
   # Maps callback manager event kind to resource kind.
   CALLBACK_MAPPINGS_FLIPPED = CALLBACK_MAPPINGS.flip
   
-  validate do
-    errors.add(:from_kind, "cannot be creds") if from_kind == KIND_CREDS
-  end
-  
   validate :on => :create do
     min_amount = CONFIG['market.offer.min_amount']
     errors.add(:from_amount, 
@@ -159,11 +155,11 @@ class MarketOffer < ActiveRecord::Base
     amount
   end
   
-  # Cancels offer. Returns #from_amount which is left to parent planet.
+  # Cancels offer. Returns #from_amount which is left to seller.
   def cancel!
-    planet, attr = self.class.resolve_kind(self.planet, from_kind)
-    planet.send(:"#{attr}=", planet.send(attr) + from_amount)
-    self.class.save_obj_with_event(planet)
+    seller_source, attr = self.class.resolve_kind(self.planet, from_kind)
+    seller_source.send(:"#{attr}=", seller_source.send(attr) + from_amount)
+    self.class.save_obj_with_event(seller_source)
     destroy
   end
   
