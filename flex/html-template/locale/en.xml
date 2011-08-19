@@ -416,7 +416,7 @@
     <activate value="Activate" />
     <deactivate value="Deactivate" />
     <attack value="Attack" />
-    <label.noUnits value="You dont have available units!" />
+    <label.noUnits value="You don't have available units!" />
     <deselectAll value="Deselect all" />
     <selectAll value="Select all" />
     <open value="Open" />
@@ -4114,7 +4114,7 @@
     <!-- {0}: metal/energy/zetium/creds
          {1}: minimal amount -->
     <warning.noMinResource> 
-      <p>You dont have enough {0} for minimal offer.</p>
+      <p>You don't have enough {0} for minimal offer.</p>
       <p>Minimal offer is {1} {0} + taxes.</p>
     </warning.noMinResource>
     <message.offerSubmited value="Offer submited" />
@@ -4141,8 +4141,8 @@
     <warning.notFromPlanet 
     value="This is your offer but it has been submitted from another planet." />
     <filter.clear value="Clear" />
-    <label.freeCreds value="You can not use free creds in the market" />
-    <label.moreInfo value="why?" />
+    <label.freeCreds value="You can not use free creds in the market." />
+    <label.moreInfo value="Why?" />
   </Market>
 
 </locale>

@@ -2,11 +2,13 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx"
-         layout="{useVerticalLayout?vLayout:hLayout}"
-         creationComplete="group1_creationCompleteHandler(event)">
+         creationComplete="group1_creationCompleteHandler(event)" 
+         xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
          import mx.events.FlexEvent;
+         
+         import org.osmf.layout.PaddingLayoutFacet;
          
          import spark.layouts.HorizontalAlign;
          import spark.layouts.HorizontalLayout;
@@ -28,21 +30,40 @@
             return Localizer.string('Market', prop, params);
          }
          
+         // Vertical layout includes yellow warning background
          protected function group1_creationCompleteHandler(event:FlexEvent):void
          {
             vLayout.horizontalAlign = HorizontalAlign.JUSTIFY;
-            vLayout.paddingTop = 6;
-            vLayout.paddingBottom = 6;
+            vLayout.paddingTop = 14;
+            vLayout.paddingBottom = 14;
+            vLayout.paddingLeft = 14;
+            vLayout.paddingRight = 14;
             hLayout.verticalAlign = VerticalAlign.MIDDLE;
          }
          
+         [Bindable]
+         public var paddingLeft : int = 0;
+         [Bindable]
+         public var paddingRight : int = 0;
+         [Bindable]
+         public var paddingTop : int = 0;
+         [Bindable]
+         public var paddingBottom : int = 0;
+         
       ]]>
    </fx:Script>
-   <s:Label color="#eec500" text="{getText('label.freeCreds')}"/>
-   <s:Group>
-      <s:Button skinClass="components.skins.LinkButtonSkin" 
-                label="{getText('label.moreInfo')}"
-                horizontalCenter="0"
-                click="UrlNavigate.getInstance().showInfo('free-creds')"/>
+   <base:WarningContainer top="{paddingTop}" bottom="{paddingBottom}" 
+                          left="{paddingLeft}" right="{paddingRight}"
+                          visible="{useVerticalLayout}"/>
+   <s:Group layout="{useVerticalLayout?vLayout:hLayout}" 
+            top="{paddingTop}" bottom="{paddingBottom}" 
+            left="{paddingLeft}" right="{paddingRight}">
+      <s:Label color="#eec500" text="{getText('label.freeCreds')}"/>
+      <s:Group>
+         <s:Button skinClass="components.skins.LinkButtonSkin" 
+                   label="{getText('label.moreInfo')}"
+                   horizontalCenter="0"
+                   click="UrlNavigate.getInstance().showInfo('free-creds')"/>
+      </s:Group>
    </s:Group>
 </s:Group>

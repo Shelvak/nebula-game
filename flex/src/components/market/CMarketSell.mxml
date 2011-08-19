@@ -212,9 +212,13 @@
                              &amp;&amp; getResourceWithoutTaxes(what.selectedItem, taxRate)
                              &lt; Config.getMinMarketOffer()
                              &amp;&amp; ML.player.freeCreds > 0}"
+                             paddingBottom="6"
+                             paddingTop="6"
                              useVerticalLayout="true"/>
    <credits:VipCredsWarning visible="{what.selectedItem == ResourceType.CREDS
                             &amp;&amp; ML.player.vipLevel > 0}"
+                            paddingBottom="6"
+                            paddingTop="6"
                             useVerticalLayout="true"/>
    <base:AdvancedContainer visible="{what.selectedItem != null 
                            &amp;&amp; getResourceWithoutTaxes(what.selectedItem, taxRate)

@@ -4044,8 +4044,8 @@
     <warning.notFromPlanet 
     value="Tai tavo pasiūlymas, tačiau jis buvo įdėtas iš kitos planetos." />
     <filter.clear value="Valyti" />
-    <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje" />
-    <label.moreInfo value="kodėl?" />
+    <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje." />
+    <label.moreInfo value="Kodėl?" />
   </Market>
 
 </locale>
