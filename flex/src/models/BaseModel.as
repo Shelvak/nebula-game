@@ -5,7 +5,6 @@ package models
    import flash.events.EventDispatcher;
    import flash.utils.Dictionary;
    import flash.utils.getDefinitionByName;
-   import flash.utils.getQualifiedClassName;
    
    import interfaces.IEqualsComparable;
    
@@ -14,6 +13,7 @@ package models
    import mx.collections.ICollectionView;
    import mx.collections.IList;
    import mx.events.PropertyChangeEvent;
+   import mx.utils.StringUtil;
    
    import namespaces.client_internal;
    import namespaces.prop_name;
@@ -94,36 +94,13 @@ package models
          return true;
       }
       
-      
-      private static const TYPE_POST_PROCESSORS:Dictionary = new Dictionary();
-      /**
-       * Sets post processor function for properties of given type.
-       * 
-       * @param type wich must have a post processor function called on each property of that type
-       * encountered by <code>createModel()</code>
-       * @param postProcessor a function wich will be called on a property of a given type after
-       * it has been set. Function signature should be:
-       * <pre>
-       *    postProcessor(instance:BaseModel, property:String, value:*) : void
-       * </pre>
-       * Here:
-       * <ul>
-       *    <li><code>instance</code> - a model wich is beeing created</li>
-       *    <li><code>property</code> - name of the property wich has been set</li>
-       *    <li><code>value</code> - current value of that property</li>
-       * </ul>
-       */
-      public static function setTypePostProcessor(type:Class, postProcessor:Function) : void {
-         TYPE_POST_PROCESSORS[type] = postProcessor;
-      }
-      
       client_internal static const TYPE_PROCESSORS:Dictionary = new Dictionary();
       /**
        * Sets processor function to handle properties of specific type.
        * 
        * @param type a Class that requires special handling
        * @param processor function that will be called when an object of the given type needs to be constructed.
-       * Signature of the function should be: <code>function(currValue:*, value:Object) : Object</code>.
+       * Signature of the function should be: <code>function(currValue:&#42, value:Object) : Object</code>.
        * Parameters of the function:
        * <ul>
        *    <li><code>currValue</code> - currentValue of the property in the host object.</li>
@@ -180,7 +157,7 @@ package models
          return createModelImpl(type, null, data);
       };
       
-      private static function createModelImpl(type:Class, model:Object, data:Object) : Object {
+      private static function createModelImpl(type:Class, model:Object, data:Object, itemType:Class = null) : Object {
          Objects.paramNotNull("type", type);
          
          if (data == null)
@@ -190,255 +167,207 @@ package models
          // createModel() method
          var typeProcessor:Function = getTypeProcessor(type);
          if (typeProcessor != null) {
-            return typeProcessor.call(null, model, data);
+            model = typeProcessor.call(null, model, data);
+            callAfterCreate(model, data);
+            return model;
          }
          
-         model = new type();
-         var info:XML = Objects.describeType(type).factory[0];
+         // primitives and generic objects don't need any handling at all
+         if (TypeChecker.isPrimitiveClass(type) || type == Object)
+            return data;
          
-         var errors:Array = [];
-         function pushError(message:String) : void {
-            errors.push(message);
+         // TODO: replace with type processor. Left over only not to break old tests.
+         if (type == Date)
+            return DateUtil.parseServerDTF(String(data), false);
+         
+         // the rest operations also need an instance of given type
+         // assuming that all types from this point forward have constructors without arguments
+         if (model == null)
+            model = new type();
+         
+         // collections
+         var isVector:Boolean = TypeChecker.isVector(model);
+         var isArray:Boolean = model is Array;
+         var isList:Boolean = model is IList;
+         var isCollection:Boolean = isVector || isArray || isList;
+         if (isCollection) {
+            // different interfaces of different collections require small but different piece of code
+            var addItem:Function;
+            if (isVector || isArray)
+               addItem = function(item:Object) : void { model.push(item) };
+            else
+               addItem = function(item:Object) : void { model.addItem(item) };
+            // now create items
+            for each (var itemData:Object in data) {
+               addItem(createModelImpl(itemType, null, itemData));
+            }
+            
+            // afterCreate() callback is not supported on the collections because including this feature
+            // would be too much dependent on internals of each collection type
+            return model;
          }
-         function copyProperty(propInfo:XML) : void
-         {
-            var propMetadata:XMLList = propInfo.metadata;
-            var metaRequired:XML = propMetadata.(@name == "Required")[0];
-            var metaOptional:XML = propMetadata.(@name == "Optional")[0];
-            
-            // Skip the property if its not required
-            if (metaRequired == null && metaOptional == null)
-               return;
-            
-            // Its illegal to declare both tags
-            if (metaRequired != null && metaOptional != null) {
-               pushError(
-                  "Property '" + propName + "' has both - [Required] and [Optional] - " +
-                  "metadata tags declared which is illegal."
-               );
-               return;
-            }
-            
-            var srvMeta:XML = metaRequired ? metaRequired : metaOptional;
-            var propName:String = propInfo.@name[0];
-            var propAlias:String = srvMeta.arg.(@key == "alias").@value[0];
-            var aggregatesProps:String = srvMeta.arg.(@key == "aggregatesProps").@value[0];
-            var aggregatesPrefix:String = srvMeta.arg.(@key == "aggregatesPrefix").@value[0];
-            
-            if ((aggregatesProps != null || aggregatesPrefix != null) && propAlias != null) {
-               pushError(
-                  "Property '" + propName + "' on class '" + type + "' has both - alias and aggregatesProps " +
-                  "(or aggregatesPrefix) - attributes defined which is illegal."
-               );
-               return;
-            }
-            if (aggregatesProps != null && aggregatesPrefix != null) {
-               pushError(
-                  "Property '" + propName + "' on class '" + type + "' has both - aggregatesProps and " +
-                  "aggregatesPrefix - attributes defined which is illegal."
-               );
-               return;
-            }
-            
-            if (propAlias == null)
-               propAlias = propName;
-            
-            var propClass:Class = getDefinitionByName(propInfo.@type[0]) as Class;
-            var propClassName:String = getQualifiedClassName(propClass);
-            
-            // Aggregator comes first
-            if (aggregatesProps != null || aggregatesPrefix != null) {
+         
+         var errors:Array = new Array();
+         function pushError(message:String, ... params) : void {
+            errors.push(StringUtil.substitute(message, params));
+         }
+         
+         // other types: assuming they have metadata tags attached to properties
+         var typeInfo:XML = Objects.describeType(type).factory[0];
+         for each (var propsInfoList:XMLList in [typeInfo.accessor, typeInfo.variable, typeInfo.constant]) {
+            for each (var propInfo:XML in propsInfoList) {
+               var propMetadata:XMLList = propInfo.metadata;
+               var propName:String  = propInfo.@name[0];
+               var propClassName:String = String(propInfo.@type[0]).replace("&lt;", "<");
+               var propClass:Class = getDefinitionByName(propClassName) as Class;
+               var metaRequired:XML = propMetadata.(@name == "Required")[0];
+               var metaOptional:XML = propMetadata.(@name == "Optional")[0];
+               var metaActual:XML   = metaRequired != null ? metaRequired : metaOptional;
+               if (metaActual != null) {
+                  var propAlias:String = metaActual.arg.(@key == "alias").@value[0];
+                  var aggregatesProps:String  = metaActual.arg.(@key == "aggregatesProps" ).@value[0];
+                  var aggregatesPrefix:String = metaActual.arg.(@key == "aggregatesPrefix").@value[0];
+               }
                
-               // aggregatesProps and aggregatesPrefix not allowed for primitives
-               if (TypeChecker.isPrimitiveClass(propClass)) {
+               
+               // skip the property if its not tagged
+               if (metaRequired == null && metaOptional == null)
+                  continue;
+               
+               if (metaRequired != null && metaOptional != null) {
                   pushError(
-                     "aggregatesProps and aggregatesPrefix attributes not allowed in [Optional] and " +
-                     "[Required] tags attached to a property of primitive type, but such tag was found " +
-                     "on property '" + propName + "' of type " + type
+                     "Property '{0}' has both - [Required] and [Optional] - metadata tags declared which " +
+                     "is illegal.", propName
                   );
-                  return;
+                  continue;
                }
-               
-               var aggrData:Object;
-               
-               // aggregates props
-               if (aggregatesProps != null) {
-                  aggregatesProps = aggregatesProps.replace(WHITESPACE_REGEXP, "");
-                  aggrData = Objects.extractProps(aggregatesProps.split(","), data);
-               }
-                  // aggregates prefix
-               else
-                  aggrData = Objects.extractPropsWithPrefix(aggregatesPrefix, data);
-               
-               if (!Objects.hasAnyProp(aggrData)) {
-                  if (metaRequired != null) {
-                     var errorMsg:String = "Aggregator defined by property '" + propName + "' is required but ";
-                     if (aggregatesProps != null)
-                        errorMsg += "none of aggregated properties [" + aggregatesProps + "]"; 
-                     else
-                        errorMsg += "no properties with prefix '" + aggregatesPrefix + "'";
-                     errorMsg += " are provided.";
-                     pushError(errorMsg);
-                  }
-               }
-               else
-                  model[propName] = createModel(propClass, aggrData);
-               return;
-            }
-            
-            // Property does not exist and property is required
-            if (metaRequired != null && data[propAlias] === undefined) {
-               pushError(
-                  "Property '" + propAlias + "' does not exist in source object but " +
-                  "is required by " + type + "."
-               );
-               return;
-            }
-            
-            // Skip null and undefined values in source object
-            if (data[propAlias] == null)
-               return;
-            
-            // Special treatment for Date fields
-            if (propClass == Date) {
-               try {
-                  model[propName] = DateUtil.parseServerDTF(data[propAlias], false);
-               }
-               catch (e:Error) {
+               if ((aggregatesProps != null || aggregatesPrefix != null) && propAlias != null) {
                   pushError(
-                     "Error while parsing [Date] property '" + propAlias +
-                     "'. Error message is: " + e.message + "."
+                     "Property '{0}' has both - alias and aggregatesProps (or aggregatesPrefix) - attributes " +
+                     "defined which is illegal.", propName
                   );
-                  return;
+                  continue;
                }
-            }
-            // Simple types
-            else if (TypeChecker.isPrimitiveClass(propClass)) {
-               if (!TypeChecker.isOfPrimitiveType(data[propAlias])) {
+               if (aggregatesProps != null && aggregatesPrefix != null) {
                   pushError(
-                     "'" + propAlias + "' property in source object is " +
-                     getQualifiedClassName(data[propAlias]) + " but " + propClass + 
-                     " was expected in destination object [" + type + "]."
+                     "Property '{0}' has both - aggregatesProps and aggregatesPrefix - " +
+                     "attributes defined which is illegal.", propName
                   );
-                  return;
+                  continue;
                }
-               else
-                  // Safely copy primitive property value
-                  model[propName] = data[propAlias];
-            }
-            // Raw object type: just copy the source and don't run any checks
-            else if (propClassName == "Object")
-               model[propName] = data[propAlias];
-            // type processor
-            else if (getTypeProcessor(propClass) != null) {
-               var propValue:Object = createModelImpl(propClass, model[propName], data[propAlias]);
-               if (model[propName] !== propValue)
-                  model[propName] = propValue;
-            }
-            else {
-               var propInstance:Object = new propClass();
-               var isVector:Boolean = TypeChecker.isVector(propInstance);
+               if (propClass == type && metaRequired != null) {
+                  pushError(
+                     "Property '{0}' is marked with [Required] and is of exact type as given model type " +
+                     "{1}. This is not legal. Use [Optional] instead.", propName, type
+                  );
+                  continue;
+               }
                
-               // Collections
-               if (propInstance is Array || propInstance is IList || isVector) {
-                  // elementType attribute is mandatory element for Array and IList properties
-                  var itemType:String = srvMeta.arg.(@key == "elementType").@value[0];
-                  if (!isVector && itemType == null) {
+               if (propAlias == null)
+                  propAlias = propName;
+               var propValue:* = model[propName];
+               var propData:* = data[propAlias];
+               
+               function setProp(value:Object) : void {
+                  if (model[propName] != value)
+                     model[propName] = value;
+               }
+               
+               // aggregator comes first
+               if (aggregatesProps != null || aggregatesPrefix != null) {
+                  
+                  // aggregatesProps and aggregatesPrefix not allowed for primitives
+                  if (TypeChecker.isPrimitiveClass(propClass)) {
                      pushError(
-                        "Property '" + propName + "' is of [class IList] or [class Array] type and " +
-                        "therefore requires elementType attribute of [Required|Optional] metadata tag " +
-                        "declared."
+                        "aggregatesProps and aggregatesPrefix attributes not allowed in [Optional|Required] " +
+                        "tags attached to a property of primitive type, but such tag was found on property " +
+                        "'{0}'", propName
                      );
-                     return;
+                     continue;
                   }
                   
-                  if (isVector) {
-                     itemType = propClassName.substring(
+                  var aggrData:Object;
+                  // aggregates props
+                  if (aggregatesProps != null) {
+                     aggregatesProps = aggregatesProps.replace(WHITESPACE_REGEXP, "");
+                     aggrData = Objects.extractProps(aggregatesProps.split(","), data);
+                  }
+                  // aggregates prefix
+                  else
+                     aggrData = Objects.extractPropsWithPrefix(aggregatesPrefix, data);
+                  
+                  if (!Objects.hasAnyProp(aggrData)) {
+                     if (metaRequired != null) {
+                        var errorMsg:String = "Aggregator defined by property '" + propName + "' is required but ";
+                        if (aggregatesProps != null)
+                           errorMsg += "none of aggregated properties [" + aggregatesProps + "]"; 
+                        else
+                           errorMsg += "no properties with prefix '" + aggregatesPrefix + "'";
+                        errorMsg += " are provided.";
+                        pushError(errorMsg);
+                     }
+                  }
+                  else
+                     setProp(createModelImpl(propClass, propValue, aggrData));
+                  
+                  continue;
+               }
+               
+               if (metaRequired != null && propData === undefined) {
+                  pushError("Property '{0}' does not exist in source object but is required.", propName);
+                  continue;
+               }
+               
+               // skip null and undefined values in source object
+               if (propData == null)
+                  continue;
+               
+               if (getTypeProcessor(propClass) != null ||
+                   TypeChecker.isPrimitiveClass(type) ||
+                   type == Object) {
+                  setProp(createModelImpl(propClass, propValue, propData));
+                  continue;
+               }
+               
+               if (propValue == null)
+                  propValue = new propClass();
+               
+               // collections
+               var propIsVector:Boolean = TypeChecker.isVector(propValue);
+               var propIsArray:Boolean = propValue is Array;
+               var propIsList:Boolean = propValue is IList;
+               if (propIsArray || propIsList || propIsVector) {
+                  // elementType attribute is mandatory element for Array and IList properties
+                  var itemTypeName:String = metaActual.arg.(@key == "elementType").@value[0];
+                  if (!propIsVector && itemTypeName == null) {
+                     pushError(
+                        "Property '{0}' is of [class IList] or [class Array] type and therefore requires " +
+                        "elementType attribute of [Required|Optional] metadata tag declared.", propName
+                     );
+                     continue;
+                  }
+                  if (propIsVector) {
+                     itemTypeName = propClassName.substring(
                         propClassName.indexOf("Vector.<") + 8,
                         propClassName.length - 1
                      );
                   }
-                  
-                  // Collections can only contain primitive types or BaseModel
-                  var itemClass:Class = getDefinitionByName(itemType) as Class;
-//                  var itemInstance:Object = new itemClass();
-//                  if (!TypeChecker.isPrimitiveClass(itemClass) && !(itemInstance is BaseModel)) {
-//                     pushError(
-//                        "Property '" + propName + "' is a collection but the declared item type " + itemClass +
-//                        " is not supported. BaseModel.createModel() only supports primitive types and " +
-//                        "models.BaseModel as item type for collections."
-//                     );
-//                     return;
-//                  }
-                  
-                  // Special case for ModelsCollection. See its documentation for more information.
-                  if (propInstance is ModelsCollection) {
-                     model[propName] = createCollection(ModelsCollection, itemClass, data[propAlias]);
-                     return;
-                  }
-                  
-                  // set model property collection
-                  model[propName] = propInstance;
-                  
-                  // To distinguish between primitive type and other types
-                  var createItem:Function;
-                  if (TypeChecker.isPrimitiveClass(itemClass))
-                     createItem = function(data:Object) : Object {
-                        return data;
-                     };
-                  else
-                     createItem = function(data:Object) : Object {
-                        return BaseModel.createModel(itemClass, data);
-                     };
-                  
-                  // Different interfaces of different collections require small but
-                  // different piece of code
-                  var addItem:Function;
-                  if (isVector || propInstance is Array)
-                     addItem = function(item:Object) : void {
-                        propInstance.push(item);
-                     };
-                  else if (propInstance is IList)
-                     addItem = function(item:Object) : void {
-                        propInstance.addItem(item);
-                     };
-                  
-                  // Now create items
-                  for each (var item:Object in data[propAlias]) {
-                     addItem(createItem(item));
-                  }
+                  setProp(createModelImpl(propClass, propValue, propData, getDefinitionByName(itemTypeName) as Class));
                }
-               else {
-                  if (propInstance is type && metaRequired) {
-                     pushError(
-                        "Property '" + propName + "' is marked with [Required] and is of exact type " +
-                        "as given model type " + type + ". This is not legal. Use [Optional] instead."
-                     );
-                     return;
-                  }
-                  model[propName] = createModel(propClass, data[propAlias]);
-               }
+               
+               // other objects
+               else
+                  setProp(createModelImpl(propClass, propValue, propData));
             }
-            // run post-processor function on the property, if any
-            var postProcessor:Function = TYPE_POST_PROCESSORS[propClass]
-            if (postProcessor != null)
-               postProcessor(model, propName, model[propName]);
-         };
+         }
          
-         for each (var propInfo:XML in info.accessor) {
-            copyProperty(propInfo);
-         }
-         for each (propInfo in info.variable) {
-            copyProperty(propInfo);
-         }
+         callAfterCreate(model, data);
          
          if (errors.length != 0)
             throw new Error(
                errors.join("\n") + "\nFix properties in " + type + " or see to it that source " +
                "object holds values for all required properties of correct type."
             );
-         
-         callAfterCreate(model, data);
          
          return model;
       }
@@ -447,7 +376,9 @@ package models
          Objects.paramNotNull("target", target);
          Objects.paramNotNull("data", data);
          try {
-            (target["afterCreateModel"] as Function).call(null, data);
+            var afterCreateCallback:Function = target["afterCreateModel"]; 
+            if (afterCreateCallback != null)
+               afterCreateCallback.call(null, data);
          }
          // ignore this error since afterCreateModel() method is optional and dynamic read of this method
          // form the static class ends up with this error

@@ -236,10 +236,9 @@ package controllers.startup
       
       private static function setupBaseModel() : void
       {
-         BaseModel.setTypePostProcessor(Date,
-            function(instance:BaseModel, property:String, value:Date) : void
-            {
-               instance[property] = DateUtil.getLocalTime(value);
+         BaseModel.setTypeProcessor(Date,
+            function(currValue:Date, value:String) : Date {
+               return DateUtil.parseServerDTF(value);
             }
          );
       }

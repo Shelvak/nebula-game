@@ -216,31 +216,19 @@ package tests.models
       
       [Test]
       public function createModelUsesTypeProcessorsForObjects() : void {
-         BaseModel.setTypeProcessor(Point, function(currValue:*, value:Object) : Object {
-            var point:Point = currValue == null ? new Point() : currValue;
-            point.x = value["x"];
-            point.y = value["y"];
-            return point;
-         });
+         addPointProcessor();
          
          var point:Point = createModel(Point, {"x": 1, "y": 2});
          assertThat( "point created", point, notNullValue() );
          assertThat( "point.x", point.x, equals (1) );
          assertThat( "point.y", point.y, equals (2) ); 
          
-         delete BaseModel.client_internal::TYPE_PROCESSORS[Point];
+         removePointProcessor();
       }
       
       [Test]
       public function createModelUsesTypeProcessorsForProperties() : void {
-         BaseModel.setTypeProcessor(Rectangle, function(currValue:*, value:Object) : Object {
-            var rect:Rectangle = currValue == null ? new Rectangle() : currValue;
-            rect.x = value["x"];
-            rect.y = value["y"];
-            rect.width = value["width"];
-            rect.height = value["height"];
-            return rect;
-         });
+         addRectangleProcessor();
          
          var data:Object = {"rect": {"x": 1, "y": 2, "width": 3, "height": 4}};
          
@@ -258,17 +246,12 @@ package tests.models
          assertThat( "rect.width", modelDefault.rect.width, equals (3) );
          assertThat( "rect.height", modelDefault.rect.height, equals (4) );
          
-         delete BaseModel.client_internal::TYPE_PROCESSORS[Rectangle];
+         removeRectangleProcessor();
       }
       
       [Test]
       public function createModelAllowsAnyTypeInCollections() : void {
-         BaseModel.setTypeProcessor(Point, function(currValue:*, value:Object) : Object {
-            var point:Point = currValue == null ? new Point() : currValue;
-            point.x = value["x"];
-            point.y = value["y"];
-            return point;
-         });
+         addPointProcessor();
          
          var model:ModelCollectionsAnyType = createModel(ModelCollectionsAnyType, {
             "points": [{"x": 1, y: "1"}, {"x": 2, "y": 2}],
@@ -281,11 +264,63 @@ package tests.models
             allOf( isA(Point), hasProperties ({"x": 2, "y": 2}) ) 
          ));
          
-         delete BaseModel.client_internal::TYPE_PROCESSORS[Point];
+         removePointProcessor();
       }
+      
+      [Test]
+      public function createModelSupportsInstanceConstants() : void {
+         addPointProcessor();
+         
+         var model:ModelPublicConstants = createModel(ModelPublicConstants, {
+            "point": {"x": 1, "y": 2},
+            "model": {"id": 10}
+         });
+         assertThat( "point.x", model.point.x, equals (1) );
+         assertThat( "point.y", model.point.y, equals (2) );
+         assertThat( "model.id", model.model.id, equals (10) );
+         
+         var modelCollection:ModelConstantCollection =
+            createModel(ModelConstantCollection, {"numbers": [1, 2, 3]});
+         assertThat( "constant collection of numbers", modelCollection.numbers, array (1, 2, 3) );
+         
+         removePointProcessor();
+      }
+      
+      
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
       
       private function createModel(type:Class, data:Object) : * {
          return BaseModel.createModel(type, data);
+      }
+      
+      private function addPointProcessor() : void {
+         BaseModel.setTypeProcessor(Point, function(currValue:*, value:Object) : Object {
+            var point:Point = currValue == null ? new Point() : currValue;
+            point.x = value["x"];
+            point.y = value["y"];
+            return point;
+         });
+      }
+      
+      private function removePointProcessor() : void {
+         delete BaseModel.client_internal::TYPE_PROCESSORS[Point];
+      }
+      
+      private function addRectangleProcessor() : void {
+         BaseModel.setTypeProcessor(Rectangle, function(currValue:*, value:Object) : Object {
+            var rect:Rectangle = currValue == null ? new Rectangle() : currValue;
+            rect.x = value["x"];
+            rect.y = value["y"];
+            rect.width = value["width"];
+            rect.height = value["height"];
+            return rect;
+         });
+      }
+      
+      private function removeRectangleProcessor() : void {
+         delete BaseModel.client_internal::TYPE_PROCESSORS[Rectangle];
       }
    }
 }
@@ -295,6 +330,8 @@ import flash.geom.Point;
 import flash.geom.Rectangle;
 
 import models.BaseModel;
+
+import mx.collections.ArrayCollection;
 
 import tests.models.classes.ModelAggregator;
 
@@ -458,4 +495,16 @@ class ModelCollectionsAnyType extends BaseModel
    public var numbers:Array;
    [Required(elementType="flash.geom.Point")]
    public var points:Array;
+}
+
+class ModelPublicConstants extends BaseModel
+{
+   [Required] public const point:Point = new Point();
+   [Required] public const model:BaseModel = new BaseModel();
+}
+
+class ModelConstantCollection extends BaseModel
+{
+   [Required(elementType="Number")]
+   public const numbers:ArrayCollection = new ArrayCollection();
 }
