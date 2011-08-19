@@ -23,6 +23,12 @@ package models.chat.events
        */
       public static const NUM_MEMBERS_CHANGE:String = "numMembersChange";
       
+      /**
+       * Dispatched when <code>MChatChannel.generateJoinLeaveMsgs</code> property changes.
+       * @eventType generateJoinLeaveMsgsChange
+       */
+      public static const GENERATE_JOIN_LEAVE_MSGS_CHANGE:String = "generateJoinLeaveMsgsChange";
+      
       
       public function MChatChannelEvent(type:String) {
          super(type, false, false);
