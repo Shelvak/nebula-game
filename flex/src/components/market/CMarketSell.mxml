@@ -4,7 +4,7 @@
                         xmlns:mx="library://ns.adobe.com/flex/mx" 
                         xmlns:market="components.market.*" 
                         xmlns:base="components.base.*"
-                        creationComplete="advancedcontainer1_creationCompleteHandler(event)">
+                        creationComplete="advancedcontainer1_creationCompleteHandler(event)" xmlns:credits="components.credits.*">
    <fx:Script>
       <![CDATA[
          import components.market.events.MarketEvent;
@@ -208,6 +208,14 @@
                       change="what_selectedResourceChangeHandler(event)"
                       itemRenderer="components.base.IRResource"/>
    </s:Group>
+   <credits:FreeCredsWarning visible="{what.selectedItem == ResourceType.CREDS
+                             &amp;&amp; getResourceWithoutTaxes(what.selectedItem, taxRate)
+                             &lt; Config.getMinMarketOffer()
+                             &amp;&amp; ML.player.freeCreds > 0}"
+                             useVerticalLayout="true"/>
+   <credits:VipCredsWarning visible="{what.selectedItem == ResourceType.CREDS
+                            &amp;&amp; ML.player.vipLevel > 0}"
+                            useVerticalLayout="true"/>
    <base:AdvancedContainer visible="{what.selectedItem != null 
                            &amp;&amp; getResourceWithoutTaxes(what.selectedItem, taxRate)
                            >= Config.getMinMarketOffer()}">
