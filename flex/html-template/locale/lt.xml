@@ -4036,5 +4036,10 @@
     <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje" />
     <label.moreInfo value="kodėl?" />
   </Market>
+  
+  <Announcements>
+    <title.popup value="Skelbimas"/>
+    <label.close value="Uždaryti"/>
+  </Announcements>
 
 </locale>
