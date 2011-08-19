@@ -38,6 +38,24 @@ describe Building::Market do
       end.should change(@planet, :metal).to(0)
     end
     
+    it "should not record cred stats" do
+      CredStats.should_not_receive(:market_fee)
+      @market.create_offer!(MarketOffer::KIND_METAL, @amount, 
+          MarketOffer::KIND_ZETIUM, 1)
+    end
+    
+    it "should record cred stats if #from_kind is creds" do
+      @planet.player = Factory.create(:player, :creds => 100000)
+      @planet.save!
+      
+      should_record_cred_stats(
+        :market_fee, [@planet.player, @amount * @market.fee]
+      ) do
+        @market.create_offer!(MarketOffer::KIND_CREDS, @amount, 
+          MarketOffer::KIND_ZETIUM, 1)
+      end
+    end
+    
     it "should fire changed on planet" do
       should_fire_event(@planet, EventBroker::CHANGED, 
           EventBroker::REASON_OWNER_PROP_CHANGE) do

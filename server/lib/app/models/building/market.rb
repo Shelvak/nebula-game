@@ -24,6 +24,11 @@ class Building::Market < Building
     raise GameLogicError.new(
       "Cannot create offer. #{full_cost} #{attr} is needed on #{source
       } but only #{current} is available!") if current < full_cost
+    if from_kind == MarketOffer::KIND_CREDS
+      fee = (from_amount * self.fee)
+      stats = CredStats.market_fee(player, fee)
+    end
+    
     source.send(:"#{attr}=", current - full_cost)
     
     offer = MarketOffer.new(:planet => planet, 
@@ -31,6 +36,7 @@ class Building::Market < Building
       :to_kind => to_kind, :to_rate => to_rate)
     
     transaction do
+      stats.save! if stats
       offer.save!
       MarketOffer.save_obj_with_event(source)
     end

@@ -331,6 +331,18 @@ class SsObject::Planet < SsObject
       building.reset_cooldown! if building.respond_to?(:reset_cooldown!)
     end
     
+    # Cancel all market offers where MarketOffer#from_kind was creds so
+    # owner of the planet would retrieve his creds without fee.
+    if old_player
+      MarketOffer.
+        where(:planet_id => id, :from_kind => MarketOffer::KIND_CREDS).
+        all.each \
+      do |market_offer|
+        old_player.creds += market_offer.from_amount
+        market_offer.destroy
+      end
+    end
+    
     # Transfer any alive units that were not included in combat to new 
     # owner.
     units = Unit.in_location(self).
