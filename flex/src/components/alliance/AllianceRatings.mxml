@@ -34,12 +34,12 @@
          
          
          private var _searchText:String;
-         private function setSearchText(value:String) : void
+         private function setSearchText(value:String, setInputValue: Boolean = false) : void
          {
             if (_searchText != value)
             {
                _searchText = value;
-               if (searchHeader != null && searchHeader.txtSearch != null)
+               if (searchHeader != null && searchHeader.txtSearch != null && setInputValue)
                {
                   searchHeader.txtSearch.text = value;
                }
@@ -59,7 +59,7 @@
          
          private function filterAlly(e: GRatingsEvent): void
          {
-            setSearchText(e.filterName);
+            setSearchText(e.filterName, true);
             ML.allyRatings.filterFunction = function (item: MRatingPlayer): Boolean
             {
                return item.name.toLowerCase().indexOf(_searchText.toLowerCase()) != -1;
