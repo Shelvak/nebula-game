@@ -234,5 +234,39 @@ package tests.chat.models.channel
             new MChatChannelPrivate("private").numMembersVisible, isFalse()
          );
       }
+      
+      [Test]
+      public function generateJoinLeaveMsgs() : void {
+         var member:MChatMember = new MChatMember(2, "jho"); 
+         
+         channel.generateJoinLeaveMsgs = false;
+         channel.memberJoin(member);
+         assertThat(
+            "when generateJoinLeaveMsgs should not add join message",
+            channel.content.text.numChildren, equals (0)
+         );
+         channel.memberLeave(member);
+         assertThat(
+            "when generateJoinLeaveMsgs should not add leave message",
+            channel.content.text.numChildren, equals (0)
+         );
+         
+         channel.generateJoinLeaveMsgs = true;
+         channel.memberJoin(member);
+         assertThat(
+            "when generateJoinLeaveMsgs should add join message",
+            channel.content.text.numChildren, equals (1)
+         );
+         channel.memberLeave(member);
+         assertThat(
+            "when generateJoinLeaveMsgs should add leave message",
+            channel.content.text.numChildren, equals (2)
+         );
+         
+         assertThat(
+            "changing generateJoinLeaveMsgs", function():void{ channel.generateJoinLeaveMsgs = false },
+            causesTarget (channel) .toDispatchEvent (MChatChannelEvent.GENERATE_JOIN_LEAVE_MSGS_CHANGE)
+         );
+      }
    }
 }

@@ -4,7 +4,20 @@ package models.chat
    import flashx.textLayout.elements.TextFlow;
    
    import models.BaseModel;
+   import models.chat.events.MChatChannelContentEvent;
    
+   
+   /**
+    * @see models.chat.events.MChatChannelContentEvent#MESSAGE_ADD
+    * @eventType models.chat.events.MChatChannelContentEvent.MESSAGE_ADD
+    */
+   [Event(name="messageAdd", type="models.chat.events.MChatChannelContentEvent")]
+   
+   /**
+    * @see models.chat.events.MChatChannelContentEvent#MESSAGE_REMOVE
+    * @eventType models.chat.events.MChatChannelContentEvent.MESSAGE_REMOVE
+    */
+   [Event(name="messageRemove", type="models.chat.events.MChatChannelContentEvent")]
    
    /**
     * Holds the content of a chat channel as an instance of <code>TextFlow</code>. Holds as many
@@ -13,8 +26,7 @@ package models.chat
     */
    public class MChatChannelContent extends BaseModel
    {
-      public function MChatChannelContent()
-      {
+      public function MChatChannelContent() {
          super();
          _text = new TextFlow();
       }
@@ -28,11 +40,9 @@ package models.chat
        * 
        * @see #addMessage()
        */
-      public function get text() : TextFlow
-      {
+      public function get text() : TextFlow {
          return _text;
       }
-      
       
       /**
        * Appends the given <code>FlowElement</code> to the end of the whole channel text. If total
@@ -41,13 +51,17 @@ package models.chat
        * 
        * @param element a <code>FlowElement</code> to append. <b>Not null.</b>
        */
-      public function addMessage(element:FlowElement) : void
-      {
+      public function addMessage(element:FlowElement) : void {
          _text.addChild(element);
-         if (_text.numChildren > ChatConstants.MAX_MESSAGES_IN_CHANNEL)
-         {
+         dispatchConentEvent(MChatChannelContentEvent.MESSAGE_ADD);
+         if (_text.numChildren > ChatConstants.MAX_MESSAGES_IN_CHANNEL) {
             _text.removeChildAt(0);
+            dispatchConentEvent(MChatChannelContentEvent.MESSAGE_REMOVE);
          }
+      }
+      
+      private function dispatchConentEvent(type:String) : void {
+         dispatchSimpleEvent(MChatChannelContentEvent, type);
       }
    }
 }

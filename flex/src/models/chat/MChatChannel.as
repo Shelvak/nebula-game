@@ -32,6 +32,12 @@ package models.chat
    [Event(name="numMembersChange", type="models.chat.events.MChatChannelEvent")]
    
    /**
+    * @see models.chat.events.MChatChannelEvent#GENERATE_JOIN_LEAVE_MSGS_CHANGE
+    * @eventType models.chat.events.MChatChannelEvent.GENERATE_JOIN_LEAVE_MSGS_CHANGE
+    */
+   [Event(name="generateJoinLeaveMsgsChange", type="models.chat.events.MChatChannelEvent")]
+   
+   /**
     * A channel of the chat.
     * 
     * <p>Holds a list of <code>MChatMember</code>s in this channel as an intance of
@@ -241,6 +247,24 @@ package models.chat
          return isPublic;
       }
       
+      private var _generateJoinLeaveMsgs:Boolean = true;
+      [Bindable(event="generateJoinLeaveMsgsChange")]
+      /**
+       * Should member join / leave messages be generated?
+       */
+      public function set generateJoinLeaveMsgs(value:Boolean) : void {
+         if (_generateJoinLeaveMsgs != value) {
+            _generateJoinLeaveMsgs = value;
+            dispatchChannelEvent(MChatChannelEvent.GENERATE_JOIN_LEAVE_MSGS_CHANGE);
+         }
+      }
+      /**
+       * @private
+       */
+      public function get generateJoinLeaveMsgs() : Boolean {
+         return _generateJoinLeaveMsgs;
+      }
+      
       /**
        * Called when a chat member has joined this channel. Optionally adds a message to channel content.
        * 
@@ -252,7 +276,7 @@ package models.chat
        */
       public function memberJoin(member:MChatMember, addMessage:Boolean = true) : void {
          _members.addMember(member);
-         if (addMessage)
+         if (_generateJoinLeaveMsgs && addMessage)
             addMemberExistanceChangeMessage(member, ChannelJoinMessageConverter.getInstance());
          dispatchChannelEvent(MChatChannelEvent.NUM_MEMBERS_CHANGE);
       }
@@ -266,7 +290,8 @@ package models.chat
        */
       public function memberLeave(member:MChatMember) : void {
          _members.removeMember(member);
-         addMemberExistanceChangeMessage(member, ChannelLeaveMessageConverter.getInstance());
+         if (_generateJoinLeaveMsgs)
+            addMemberExistanceChangeMessage(member, ChannelLeaveMessageConverter.getInstance());
          dispatchChannelEvent(MChatChannelEvent.NUM_MEMBERS_CHANGE);
       }
       
