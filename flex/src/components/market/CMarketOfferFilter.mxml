@@ -204,7 +204,7 @@
                }
             }
             toKinds.refresh();
-            from.selectedIndex = 3;
+            from.selectedIndex = 4;
             selectedFrom = ResourceType.ALL;
             toRes.selectedIndex = 4;
             selectedTo = ResourceType.ALL;
@@ -275,6 +275,7 @@
                       ResourceType.METAL,
                       ResourceType.ENERGY,
                       ResourceType.ZETIUM,
+                      ResourceType.CREDS,
                       ResourceType.ALL])}" 
                       labelFunction="{ResourceType.resourceLabelFunction}"
                       id="from"

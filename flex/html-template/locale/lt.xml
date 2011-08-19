@@ -4010,14 +4010,14 @@
     <label.cancel value="Atšaukti" />
     <label.close value="Uždaryti" />
     <label.noOffers value="Nėra pasiūlymų" />
-    <!-- {0}: metal/energy/zetium
+    <!-- {0}: metal/energy/zetium/creds
          {1}: minimal amount -->
     <warning.noMinResource> 
       <p>Tu neturi pakankamai 
-      {0 metal[metalo] energy[energijos] zetium[zetiumo]} minimaliam 
+      {0 metal[metalo] energy[energijos] zetium[zetiumo] creds[kredų]} minimaliam 
       pasiūlymui.</p>
       <p>Minimalus pasiūlymas yra {1} 
-      {0 metal[metalo] energy[energijos] zetium[zetiumo]} + mokesčiai.</p>
+      {0 metal[metalo] energy[energijos] zetium[zetiumo] creds[kredų]} + mokesčiai.</p>
     </warning.noMinResource>
     <message.offerSubmited value="Pasiūlymas priimtas" />
     <message.offerGone value="Atsiprašome, šio pasiūlymo nebėra" />

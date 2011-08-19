@@ -177,6 +177,12 @@ package models.player
       }
       
       
+      [Bindable(event="credsChange")]
+      public function get pureCreds(): int
+      {
+         return _creds - vipCreds - freeCreds
+      }
+      
       [Optional]
       public var vipLevel: int = 0;
       

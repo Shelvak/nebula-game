@@ -177,6 +177,20 @@
          {
             return Math.round((mScreen.avgRate * (1 - Config.getMarketRange())) * amount);
          }
+         
+         private function getResourceWithoutTaxes(resource: String, taxes: Number): Number
+         {
+            if (resource == ResourceType.CREDS)
+            {
+               return Resource.getGivenResourceWithoutTaxes(
+                  ML.player.creds - ML.player.vipCreds - ML.player.freeCreds,
+                  taxes);
+            }
+            else
+            {
+               return getResource(resource).getWithoutTaxes(taxes);
+            }
+         }
       ]]>
    </fx:Script>
    <s:Label text="{getText('label.wantToSell')}" styleName="h3" paddingBottom="3"
@@ -185,7 +199,8 @@
       <s:DropDownList dataProvider="{new ArrayCollection([
                       ResourceType.METAL,
                       ResourceType.ENERGY,
-                      ResourceType.ZETIUM])}" 
+                      ResourceType.ZETIUM,
+                      ResourceType.CREDS])}" 
                       labelFunction="{ResourceType.resourceLabelFunction}"
                       id="what"
                       horizontalCenter="0"
@@ -194,11 +209,11 @@
                       itemRenderer="components.base.IRResource"/>
    </s:Group>
    <base:AdvancedContainer visible="{what.selectedItem != null 
-                           &amp;&amp; getResource(what.selectedItem).getWithoutTaxes(taxRate)
+                           &amp;&amp; getResourceWithoutTaxes(what.selectedItem, taxRate)
                            >= Config.getMinMarketOffer()}">
       <s:Label text="{getText('label.selected',[sellSelector.selectedVal.toString()])}"
                paddingTop="6" textAlign="center"/>
-      <market:CMarketResourceSlider maxAmmount="{getResource(what.selectedItem).getWithoutTaxes(taxRate)}"
+      <market:CMarketResourceSlider maxAmmount="{getResourceWithoutTaxes(what.selectedItem, taxRate)}"
                                     minAmmount="{Config.getMinMarketOffer()}" id="sellSelector"/>
       <market:CMarketFee type="{what.selectedItem}" taxRate="{taxRate}"
                          selectedAmmount="{sellSelector.selectedVal}"/>
@@ -243,7 +258,7 @@
    <base:Warning text="{what.selectedItem == null?''
                  :getText('warning.noMinResource', [what.selectedItem, Config.getMinMarketOffer()])}" 
                  visible="{what.selectedItem != null 
-                 &amp;&amp; (getResource(what.selectedItem).getWithoutTaxes(taxRate)
+                 &amp;&amp; (getResourceWithoutTaxes(what.selectedItem, taxRate)
                  &lt; Config.getMinMarketOffer())}"
                  showSign="false"/>
 </base:AdvancedContainer>

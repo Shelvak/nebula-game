@@ -4110,7 +4110,7 @@
     <label.cancel value="Cancel" />
     <label.close value="Close" />
     <label.noOffers value="No offers" />
-    <!-- {0}: metal/energy/zetium
+    <!-- {0}: metal/energy/zetium/creds
          {1}: minimal amount -->
     <warning.noMinResource> 
       <p>You dont have enough {0} for minimal offer.</p>
