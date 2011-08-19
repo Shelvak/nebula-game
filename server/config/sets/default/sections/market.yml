@@ -32,8 +32,8 @@ avg_rate.seed.3.1: [1000, 20.0]    # creds to energy
 avg_rate.seed.3.2: [1000, 1.25]    # creds to zetium
 
 # Resource ranges for generated system offers.
-bot.resources.range.0: [7500, 15000]         # metal range
-bot.resources.range.1: [20000, 40000]       # energy range
-bot.resources.range.2: [1500, 3000]         # zetium range
+bot.resources.range.0: [3750, 7500]         # metal range
+bot.resources.range.1: [10000, 20000]       # energy range
+bot.resources.range.2: [750, 1500]         # zetium range
 # Cooldown range for when system offer is totally bought out.
-bot.resources.cooldown: [<%= 30.minutes %> / speed, <%= 2.hours %> / speed]
+bot.resources.cooldown: [<%= 15.minutes %> / speed, <%= 1.hour %> / speed]
