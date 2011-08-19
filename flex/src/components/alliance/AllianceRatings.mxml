@@ -57,16 +57,6 @@
             ML.allyRatings.refresh();
          }
          
-         private function filterAlly(e: GRatingsEvent): void
-         {
-            setSearchText(e.filterName, true);
-            ML.allyRatings.filterFunction = function (item: MRatingPlayer): Boolean
-            {
-               return item.name.toLowerCase().indexOf(_searchText.toLowerCase()) != -1;
-            };
-            ML.allyRatings.refresh();
-         }
-         
          private function refreshAll(e: GRatingsEvent): void
          {
             setSearchText("");
@@ -76,7 +66,6 @@
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
          {
             EventBroker.subscribe(GRatingsEvent.ALLIANCE_RATINGS_REFRESH, refreshAll);
-            EventBroker.subscribe(GRatingsEvent.FILTER_ALLIANCE, filterAlly);
             NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
          }
          
@@ -133,7 +122,7 @@
                   horizontalCenter="0" verticalCenter="0" visible="{ML.allyRatings.length == 0}"/>
          <alliance:AllianceRatingsHeader id="header" listSort="header_ratingsSortHandler(event)" 
                                          visible="{ML.allyRatings.length > 0}"/>
-         <base:Scroller left="0" right="0" top="{header.height}" bottom="0" stepMultiplier="10"
+         <base:Scroller left="0" right="0" top="{header.height}" bottom="0"
                         id="contScroller">
                <s:DataGroup dataProvider="{ML.allyRatings}"
                             itemRenderer="components.alliance.IRAllianceRatingsRow">

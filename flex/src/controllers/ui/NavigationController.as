@@ -49,6 +49,7 @@ package controllers.ui
    import models.planet.Planet;
    import models.player.MRatingPlayer;
    import models.quest.Quest;
+   import models.ratings.MCRatingsScreen;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    import models.unit.Unit;
@@ -722,57 +723,29 @@ package controllers.ui
       
       public function showRatings(playerName: String = null) :void
       {
-         var setData: Function = function(e: Event): void
+         var RS: MCRatingsScreen = MCRatingsScreen.getInstance();
+         var filterPlayer: Function = function(e: Event): void
          {
             createdScreens[MainAreaScreens.RATINGS] = true;
-            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
-            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-            new GRatingsEvent(GRatingsEvent.FILTER_PLAYER, playerName);
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, filterPlayer);
+            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, filterPlayer);
+            RS.filterPlayer(playerName);
          }
-         if (playerName)
+         if (createdScreens[MainAreaScreens.RATINGS])
          {
-            if (createdScreens[MainAreaScreens.RATINGS])
-            {
-               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
-            }
-            else
-            {
-               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-            }
+            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, filterPlayer);
          }
          else
          {
-            createdScreens[MainAreaScreens.RATINGS] = true;
+            _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, filterPlayer);
          }
          showNonMapScreen(_screenProperties[MainAreaScreens.RATINGS]);
-         new GRatingsEvent(GRatingsEvent.RATINGS_REFRESH);
       }
       
       
-      public function showAllyRatings(allyName: String = null) :void
+      public function showAllyRatings() :void
       {
-         var setData: Function = function(e: Event): void
-         {
-            createdScreens[MainAreaScreens.ALLY_RATINGS] = true;
-            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
-            _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-            new GRatingsEvent(GRatingsEvent.FILTER_ALLIANCE, allyName);
-         }
-         if (allyName)
-         {
-            if (createdScreens[MainAreaScreens.ALLY_RATINGS])
-            {
-               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CREATED, setData);
-            }
-            else
-            {
-               _mainAreaSwitch.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-            }
-         }
-         else
-         {
-            createdScreens[MainAreaScreens.ALLY_RATINGS] = true;
-         }
+         createdScreens[MainAreaScreens.ALLY_RATINGS] = true;
          showNonMapScreen(_screenProperties[MainAreaScreens.ALLY_RATINGS]);
          new GRatingsEvent(GRatingsEvent.ALLIANCE_RATINGS_REFRESH);
       }

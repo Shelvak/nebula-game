@@ -248,8 +248,6 @@ package models
        */
       public var units:UnitsList = new UnitsList();
       
-      public var ratings: ArrayCollection;
-      
       public var allyRatings: ArrayCollection;
       
       

@@ -19,16 +19,6 @@ package controllers.alliances.actions
     */
    public class RatingsAction extends CommunicationAction
    {
-      private var allyName: String = null;
-      
-      public override function applyClientAction(cmd:CommunicationCommand):void
-      {
-         if (cmd.parameters)
-         {
-            allyName = String(cmd.parameters);
-         }
-         sendMessage(new ClientRMO({}));
-      }
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
@@ -46,9 +36,7 @@ package controllers.alliances.actions
             i++;
             ally.rank = i;
          }
-         
-         NavigationController.getInstance().showAllyRatings(allyName);
-         allyName = null;
+         NavigationController.getInstance().showAllyRatings();
          GlobalFlags.getInstance().lockApplication = false;
       }
    }
