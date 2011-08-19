@@ -631,7 +631,7 @@
          
          protected function queueList_creationCompleteHandler(event:FlexEvent):void
          {
-            queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
+            //queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
             queueList.scroller.setStyle('horizontalScrollPolicy', ScrollPolicy.OFF);
          }
          
@@ -810,7 +810,9 @@
                              creationComplete="queueList_creationCompleteHandler(event)"
                              contentBackgroundAlpha="0"
                              dragComplete="queueList_dragCompleteHandler(event)"
-                             height="{constructor.constructionQueueEntries.length > 0?52:0}">
+                             height="{constructor.constructionQueueEntries.length > 0
+                             ?(constructor.constructionQueueEntries.length > 4?96:50)
+                             :0}">
                         <s:itemRenderer>
                            <fx:Component>
                               <s:ItemRenderer width="100%" height="44">
@@ -820,7 +822,7 @@
                         </s:itemRenderer>
                         
                         <s:layout>
-                           <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="6"/>
+                           <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="1"/>
                         </s:layout>
                      </s:List>
                      <base:layout>
@@ -1146,7 +1148,7 @@
                                          visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
                                          toolTip="{getString('toolTip.afterUpgrade')}"/>
                      <base:layout>
-                        <s:HorizontalLayout/>
+                        <s:HorizontalLayout verticalAlign="middle"/>
                      </base:layout>
                   </base:Panel>
                   

@@ -66,7 +66,7 @@ module Dev
   def self.seed(player_id=1, player_count=10)
     players = {}
     player_count.times do |i|
-      name = "p #{Time.now.to_f}"
+      name = "p #{i} #{Time.now.to_f}"
       players[name] = name
     end
 

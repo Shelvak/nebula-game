@@ -17,6 +17,10 @@ class CredStats < ActiveRecord::Base
   ACTION_FINISH_EXPLORATION = 7
   # Remove foliage
   ACTION_REMOVE_FOLIAGE = 8
+  # Buy NPC or system offer from market.
+  ACTION_BUY_OFFER = 9
+  # Pay market fee with creds.
+  ACTION_MARKET_FEE = 10
 
   # Creates a new record which you can save later.
   def self.new_record(player, action, cost, attributes={})
@@ -98,5 +102,13 @@ class CredStats < ActiveRecord::Base
       player, ACTION_REMOVE_FOLIAGE,
       Cfg.foliage_removal_cost(width, height)
     )
+  end
+  
+  def self.buy_offer(player, cost)
+    new_record(player, ACTION_BUY_OFFER, cost)
+  end
+  
+  def self.market_fee(player, cost)
+    new_record(player, ACTION_MARKET_FEE, cost)
   end
 end

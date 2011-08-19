@@ -203,8 +203,7 @@
                   <s:Label left="40" top="15" styleName="panelTitle"
                            text="{Localizer.string('Units', 'title.defensivePool')}"/>
                   <s:Button top="13" left="295" skinClass="components.skins.InfoButtonSkin"
-                            click="UrlNavigate.getInstance().showUrl(
-                            'info/defensive-portal')"/>
+                            click="UrlNavigate.getInstance().showInfo('defensive-portal')"/>
                   <s:DataGroup dataProvider="{_allUnits}" left="40" right="40" top="50" bottom="75" 
                                itemRenderer="components.unit.IRUnitBuildingEntrySmall">
                      <s:layout>

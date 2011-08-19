@@ -66,6 +66,12 @@ class Galaxy < ActiveRecord::Base
         CallbackManager.register(galaxy, CallbackManager::EVENT_SPAWN,
           CONFIG.evalproperty('galaxy.convoy.time').from_now)
       end
+    when CallbackManager::EVENT_CREATE_METAL_SYSTEM_OFFER,
+        CallbackManager::EVENT_CREATE_ENERGY_SYSTEM_OFFER, 
+        CallbackManager::EVENT_CREATE_ZETIUM_SYSTEM_OFFER
+      MarketOffer.create_system_offer(
+        id, MarketOffer::CALLBACK_MAPPINGS_FLIPPED[event]
+      ).save!
     else
       raise ArgumentError.new("Don't know how to handle #{
         CallbackManager::STRING_NAMES[event]} (#{event})")

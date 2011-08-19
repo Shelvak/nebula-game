@@ -98,6 +98,36 @@ module Parts
         self.upgrade_ends_at = nil
         @upgrade_status = :just_paused
       end
+      
+      # Cancels upgrading. Returns unused resources back to planet. Reduces
+      # given points for player.
+      # 
+      # Unused resources are calculated from cost * time remainder.
+      # E.g. if 35% of building is built, it will only give back 65% of the
+      # cost.
+      #
+      def cancel!(before_save=nil)
+        raise GameLogicError.
+          new("Cannot cancel upgrading if not upgrading!") unless upgrading?
+        
+        percentage_left = 
+          (upgrade_ends_at - Time.now) / upgrade_time(level + 1)
+        metal = (metal_cost(level + 1) * percentage_left).floor
+        energy = (energy_cost(level + 1) * percentage_left).floor
+        zetium = (zetium_cost(level + 1) * percentage_left).floor
+        
+        SsObject::Planet.change_resources(planet_id,
+          metal, energy, zetium)
+        decrease_player_points(points_on_upgrade)
+        
+        self.upgrade_ends_at = nil
+        if level == 0
+          destroy
+        else
+          before_save.call unless before_save.nil?
+          save!
+        end
+      end
 
       # Accelerate upgrading. Returns number of seconds reduced.
       #

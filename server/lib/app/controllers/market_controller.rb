@@ -56,8 +56,9 @@ class MarketController < GenericController
   # - from_kind (Fixnum): kind of resource you are offering. One of the
   # MarketOffer::KIND_* constants.
   # - to_kind (Fixnum): kind of resource you are demanding.
-  # - to_rate (Float): exchange rate. How much resources of _to_kind_ you
-  # are demanding for 1 unit of _from_kind_ resource.
+  # - to_rate (Fixnum || Float): exchange rate. 
+  # How much resources of _to_kind_ you are demanding for 1 unit of 
+  # _from_kind_ resource.
   # 
   # Response:
   # - offer (Hash): MarketOffer#as_json
@@ -65,7 +66,7 @@ class MarketController < GenericController
   def action_new
     param_options :required => {:market_id => Fixnum, 
       :from_amount => Fixnum, :from_kind => Fixnum, :to_kind => Fixnum,
-      :to_rate => Float}
+      :to_rate => [Fixnum, Float]}
     
     market = Building::Market.find(params['market_id'])
     raise GameLogicError.new("This planet does not belong to you!") \
@@ -123,7 +124,7 @@ class MarketController < GenericController
     raise GameLogicError.new("Cannot buy offer from other galaxy!") \
       unless offer.galaxy_id == player.galaxy_id
     raise GameLogicError.new("Cannot buy offer from self!") \
-      if offer.planet.player_id == player.id
+      if ! offer.system? && offer.planet.player_id == player.id
     
     buyer_planet = player.planets.find(params['planet_id'])
     

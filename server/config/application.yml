@@ -1,6 +1,6 @@
 ---
 ######
-# Generic configuration
+# Generic configuration. No ERB allowed here!
 ######
 
 # Game server listening port.

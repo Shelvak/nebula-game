@@ -4,10 +4,11 @@ require File.expand_path(
 
 describe Building::Market do
   describe "#full_cost" do
-    it "should return amount + fee ceiled" do
+    it "should return amount + fee(floored)" do
       market = Factory.create!(:b_market)
-      market.should_receive(:fee).and_return(0.033)
-      market.full_cost(1000).should == (1000 * 1.033).ceil
+      fee = 0.033
+      market.should_receive(:fee).and_return(fee)
+      market.full_cost(1000).should == (1000 + (1000 * fee).floor)
     end
   end
   
@@ -35,6 +36,24 @@ describe Building::Market do
             MarketOffer::KIND_ZETIUM, 1)
         @planet.reload
       end.should change(@planet, :metal).to(0)
+    end
+    
+    it "should not record cred stats" do
+      CredStats.should_not_receive(:market_fee)
+      @market.create_offer!(MarketOffer::KIND_METAL, @amount, 
+          MarketOffer::KIND_ZETIUM, 1)
+    end
+    
+    it "should record cred stats if #from_kind is creds" do
+      @planet.player = Factory.create(:player, :creds => 100000)
+      @planet.save!
+      
+      should_record_cred_stats(
+        :market_fee, [@planet.player, @amount * @market.fee]
+      ) do
+        @market.create_offer!(MarketOffer::KIND_CREDS, @amount, 
+          MarketOffer::KIND_ZETIUM, 1)
+      end
     end
     
     it "should fire changed on planet" do

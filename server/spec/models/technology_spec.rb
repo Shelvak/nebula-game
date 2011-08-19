@@ -309,7 +309,7 @@ describe Technology do
 
   describe "upgradable" do
     before(:each) do
-      @player = Factory.create(:player)
+      @player = Factory.create(:player, :science_points => 10000)
       @planet = Factory.create :planet, :player => @player
       Factory.create(:b_research_center, :planet => @planet)
       @model = Factory.build :technology, :planet_id => @planet.id,
@@ -318,7 +318,8 @@ describe Technology do
       set_resources(@planet,
         @model.metal_cost(@model.level + 1),
         @model.energy_cost(@model.level + 1),
-        @model.zetium_cost(@model.level + 1)
+        @model.zetium_cost(@model.level + 1),
+        1_000_000, 1_000_000, 1_000_000
       )
     end
 

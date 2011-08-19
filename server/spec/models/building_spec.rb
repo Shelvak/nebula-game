@@ -894,7 +894,8 @@ describe Building do
 
   describe "upgradable" do
     before(:each) do
-      @player = Factory.create(:player)
+      # #economy_points is needed for #cancel! test.
+      @player = Factory.create(:player, :economy_points => 10000)
       @planet = Factory.create(:planet, :player => @player)
       @model = Factory.create :building_built, :level => 1,
         :planet => @planet
@@ -902,13 +903,28 @@ describe Building do
       set_resources(@planet,
         @model.metal_cost(@model.level + 1),
         @model.energy_cost(@model.level + 1),
-        @model.zetium_cost(@model.level + 1)
+        @model.zetium_cost(@model.level + 1),
+        1_000_000, 1_000_000, 1_000_000 # High storages for #cancel!
       )
     end
 
     it_should_behave_like "upgradable"
     it_should_behave_like "upgradable with hp"
     it_should_behave_like "default upgradable time calculation"
+  end
+  
+  describe "#cancel!" do
+    before(:each) do
+      @model = Factory.create(:building_built, 
+        opts_upgrading + {:level => 1, :state => Building::STATE_INACTIVE})
+    end
+    
+    it "should return to active state" do
+      lambda do
+        @model.cancel!
+      end.should change(@model, :state).from(Building::STATE_INACTIVE).
+        to(Building::STATE_ACTIVE)
+    end
   end
 
   describe "#on_upgrade_finished" do
