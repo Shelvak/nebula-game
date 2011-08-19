@@ -188,6 +188,10 @@ class Building < ActiveRecord::Base
   def x_end; x ? x + width - 1 : nil; end
   def y_end; y ? y + height - 1 : nil; end
 
+  def cancel!
+    super(proc { activate })
+  end
+  
   def upgrade
     forbid_unmanagable!
     super

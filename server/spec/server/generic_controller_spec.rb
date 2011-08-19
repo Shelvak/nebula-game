@@ -40,33 +40,72 @@ describe GenericController do
       @action = 'foo|bar'
     end
 
-    it "should raise ControllerArgumentError if required param " +
-    "is missing" do
-      lambda do
-        @controller.receive('action' => @action, 'params' => {'aa' => 10})
-        @controller.send :param_options, :required => 'lol'
-      end.should raise_error(ControllerArgumentError)
-    end
+    describe "requirements" do
+      it "should raise ControllerArgumentError if required param " +
+      "is missing" do
+        lambda do
+          @controller.receive('action' => @action, 'params' => {'aa' => 10})
+          @controller.send :param_options, :required => 'lol'
+        end.should raise_error(ControllerArgumentError)
+      end
+      
+      it "should support array syntax" do
+        lambda do
+          @controller.receive('action' => @action, 
+            'params' => {'foo' => 10, 'bar' => 20})
+          @controller.send :param_options, :required => %w{foo bar}
+        end.should_not raise_error(ControllerArgumentError)
+      end
+      
+      it "should support hash syntax" do
+        lambda do
+          @controller.receive('action' => @action, 
+            'params' => {'foo' => 10, 'bar' => "20"})
+          @controller.send :param_options, :required => {:foo => Fixnum,
+            :bar => String}
+        end.should_not raise_error(ControllerArgumentError)
+      end
+      
+      it "should support multiple type checking" do
+        lambda do
+          @controller.receive('action' => @action, 
+            'params' => {'foo' => 10, 'bar' => false})
+          @controller.send :param_options, :required => {:foo => Fixnum,
+            :bar => [TrueClass, FalseClass]}
+        end.should_not raise_error(ControllerArgumentError)
+      end
+      
+      it "should fail if types mismatch" do
+        lambda do
+          @controller.receive('action' => @action, 
+            'params' => {'foo' => 10, 'bar' => nil})
+          @controller.send :param_options, :required => {:foo => Fixnum,
+            :bar => [TrueClass, FalseClass]}
+        end.should raise_error(ControllerArgumentError)
+      end
 
-    it "should pass if required params is given" do
-      lambda do
-        @controller.receive('action' => @action, 'params' => {'lol' => 10})
-        @controller.send :param_options, :required => 'lol'
-      end.should_not raise_error(ArgumentError)
+      it "should pass if required params is given" do
+        lambda do
+          @controller.receive('action' => @action, 'params' => {'lol' => 10})
+          @controller.send :param_options, :required => 'lol'
+        end.should_not raise_error(ArgumentError)
+      end
     end
+    
+    describe "validity" do
+      it "should raise ControllerArgumentError if param is not from valid list" do      
+        lambda do
+          @controller.receive('action' => @action, 'params' => {'aa' => 10})
+          @controller.send :param_options, :valid => 'lol'
+        end.should raise_error(ControllerArgumentError)
+      end
 
-    it "should raise ArgumentError if param is not from valid list" do      
-      lambda do
-        @controller.receive('action' => @action, 'params' => {'aa' => 10})
-        @controller.send :param_options, :valid => 'lol'
-      end.should raise_error(ArgumentError)
-    end
-
-    it "should pass if params are from valid list" do
-      lambda do
-        @controller.receive('action' => @action, 'params' => {'lol' => 10})
-        @controller.send :param_options, :valid => 'lol'
-      end.should_not raise_error(ArgumentError)
+      it "should pass if params are from valid list" do
+        lambda do
+          @controller.receive('action' => @action, 'params' => {'lol' => 10})
+          @controller.send :param_options, :valid => 'lol'
+        end.should_not raise_error(ArgumentError)
+      end  
     end
 
     it "should pass if all params are valid and required are provided" do

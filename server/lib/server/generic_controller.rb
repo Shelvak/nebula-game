@@ -134,32 +134,57 @@ class GenericController
 
   # Ensure params options.
   #
-  # * <tt>:required</tt>: these params are required. ArgumentError is raised
-  #    if they are not supplied.
-  # * <tt>:valid</tt>: these params are valid. ArgumentError is raised
+  # * <tt>:required</tt>: these params are required. 
+  #   ControllerArgumentError is raised if they are not supplied.
+  #   Accepts one of following options:
+  #   - :required => 'foo' (Single parameter, no type checking)
+  #   - :required => ['foo', 'bar'] (Multiple parameters, no type checking)
+  #   - :required => {:foo => String, :bar => [TrueClass, FalseClass],
+  #                   :baz => nil} (Multiple parameters, foo must be String,
+  #                                 bar must be true or false, baz has no
+  #                                 type checking).
+  #                                 
+  # * <tt>:valid</tt>: these params are valid. ControllerArgumentError is raised
   #    if param not from this list is supplied.
   #
   def param_options(options={})
     required = (options[:required] || [])
     if required.is_a?(Array)
-      required = required.inject({}) { |hash, item| hash[item] = true; hash }
+      required = required.inject({}) { |hash, item| hash[item] = nil; hash }
     elsif ! required.is_a?(Hash)
-      required = {required => true}
+      required = {required => nil}
     end
     
-    required.each do |param, type|
+    required.each do |param, types|
       param = param.to_s
+      types = case types
+      when nil
+        nil # Don't do type matching
+      when Array
+        types
+      else
+        [types]
+      end
       
       raise ControllerArgumentError.new(
         "#{param} is required, but was not provided for action #{
           @current_message['action']}"
       ) unless params.has_key?(param)
       
-      if type != true
+      # Check parameter types.
+      unless types.nil?
+        matched = false
+        types.each do |type|
+          if params[param].is_a?(type)
+            matched = true
+            break
+          end
+        end
+        
         raise ControllerArgumentError.new(
-          "#{param} should have been #{type}, but was #{params[param].class
-            } for action #{@current_message['action']}"
-        ) unless params[param].is_a?(type)
+          "#{param} should have been one of the #{types.inspect}, but was #{
+            params[param].class} for action #{@current_message['action']}"
+        ) unless matched
       end
     end
 
@@ -167,7 +192,12 @@ class GenericController
       valid = (options[:valid] || [])
       valid = [valid] unless valid.is_a?(Array)
       valid += required.stringify_keys.keys
-      params.assert_valid_keys(valid)
+      
+      invalid = params.keys - valid
+      raise ControllerArgumentError.new(
+        "Received invalid parameter keys: #{invalid.inspect
+        } for action #{@current_message['action']}"
+      ) unless invalid.blank?
     end
   end
 

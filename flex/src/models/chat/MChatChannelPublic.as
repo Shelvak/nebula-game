@@ -37,7 +37,6 @@ package models.chat
          return true;
       }
       
-      
       /**
        * <code>true</code> if this channel is an alliance channel.
        */

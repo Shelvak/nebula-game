@@ -3152,7 +3152,7 @@
     <label.leavesPlanetAt value="Iš planetos išvyksta:" />
     <label.inTime value="(už {0})" />
     <label.close value="Uždaryti" />
-    <label.playerFleets value="Tavo lvynai" />
+    <label.playerFleets value="Tavo laivynai" />
     <label.allianceFleets value="Sąjungininkų laivynai" />
     <label.stop value="Sustabdyti" />
     <label.manage value="Tvarkyti" />

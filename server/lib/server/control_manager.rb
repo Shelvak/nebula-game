@@ -72,8 +72,6 @@ class ControlManager
   #
   # Response:
   # - current (Fixnum): no. of currently logged in players.
-  # - 6h (Fixnum): no. of players logged in 6 hours.
-  # - 12h (Fixnum): no. of players logged in 12 hours.
   # - 24h (Fixnum): no. of players logged in 24 hours.
   # - 48h (Fixnum): no. of players logged in 48 hours.
   # - 1w (Fixnum): no. of players logged in 1 week.
@@ -246,8 +244,6 @@ class ControlManager
   def action_statistics(io)
     statistics = {
       :current => Dispatcher.instance.logged_in_count,
-      :"6h" => get_player_count_in(6.hours),
-      :"12h" => get_player_count_in(12.hours),
       :"24h" => get_player_count_in(24.hours),
       :"48h" => get_player_count_in(48.hours),
       :"1w" => get_player_count_in(1.week),

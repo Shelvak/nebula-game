@@ -27,10 +27,6 @@ class MarketOffer < ActiveRecord::Base
   # Maps callback manager event kind to resource kind.
   CALLBACK_MAPPINGS_FLIPPED = CALLBACK_MAPPINGS.flip
   
-  validate do
-    errors.add(:from_kind, "cannot be creds") if from_kind == KIND_CREDS
-  end
-  
   validate :on => :create do
     min_amount = CONFIG['market.offer.min_amount']
     errors.add(:from_amount, 
@@ -101,7 +97,9 @@ class MarketOffer < ActiveRecord::Base
     else
       seller_target, _ = self.class.resolve_kind(planet, to_kind)
     end
-      
+    
+    stats = CredStats.buy_offer(buyer_planet.player, cost) \
+      if seller_target.nil? && to_kind == KIND_CREDS
     
     buyer_has = buyer_source.send(bs_attr)
     raise GameLogicError.new("Not enough funds for #{buyer_source
@@ -150,16 +148,18 @@ class MarketOffer < ActiveRecord::Base
       ) if ! system? &&  
         percentage_bought >= CONFIG['market.buy.notification.threshold'] &&
         ! planet.player_id.nil?
+      
+      stats.save! unless stats.nil?
     end
     
     amount
   end
   
-  # Cancels offer. Returns #from_amount which is left to parent planet.
+  # Cancels offer. Returns #from_amount which is left to seller.
   def cancel!
-    planet, attr = self.class.resolve_kind(self.planet, from_kind)
-    planet.send(:"#{attr}=", planet.send(attr) + from_amount)
-    self.class.save_obj_with_event(planet)
+    seller_source, attr = self.class.resolve_kind(self.planet, from_kind)
+    seller_source.send(:"#{attr}=", seller_source.send(attr) + from_amount)
+    self.class.save_obj_with_event(seller_source)
     destroy
   end
   

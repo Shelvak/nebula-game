@@ -877,14 +877,15 @@ describe Unit do
   describe "upgradable" do
     before(:each) do
       @planet = Factory.create :planet
-      @player = Factory.create(:player)
+      @player = Factory.create(:player, :army_points => 1000)
       @model = Factory.build :unit, :location => @planet,
         :player => @player
 
       set_resources(@planet,
         @model.metal_cost(@model.level + 1),
         @model.energy_cost(@model.level + 1),
-        @model.zetium_cost(@model.level + 1)
+        @model.zetium_cost(@model.level + 1),
+        1_000_000, 1_000_000, 1_000_000
       )
     end
 
