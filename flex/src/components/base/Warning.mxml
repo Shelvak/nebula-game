@@ -40,41 +40,16 @@
       ]]>
    </fx:Script>
    <s:Group top="{paddingTop}" left="0" right="0" bottom="0">
-      <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_corner')}" top="0" left="0"
-                     rotation="270" id="topLeft"/>
-      <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_corner')}" top="0" right="0"
-                     id="topRight"/>
-      <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_corner')}" bottom="0" left="0"
-                     rotation="180" id="bottomLeft"/>
-      <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_corner')}" bottom="0" right="0"
-                     rotation="90" id="bottomRight"/>
-      
-      <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_line')}" top="0" 
-                     left="{topLeft.width}" right="{topRight.width}" fillMode="repeat"/>
-      <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_line')}" left="0" 
-                     top="{topLeft.width}" bottom="{bottomLeft.width}" fillMode="repeat" rotation="270"/>
-      <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_line')}" right="0" 
-                     top="{topRight.height}" bottom="{bottomRight.height}" fillMode="repeat" rotation="90"/>
-      <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_line')}" bottom="0" 
-                     left="{topLeft.width}" right="{topRight.width}" fillMode="repeat" rotation="180"/>
-      
-      <s:Rect left="{topLeft.width}" top="{topLeft.height}" bottom="{bottomRight.height}" right="{bottomRight.width}"
-              alpha="0.1">
-         <s:fill>
-            <s:SolidColor color="#ffb400"/>
-         </s:fill>
-      </s:Rect>
+      <base:WarningContainer left="0" right="0" bottom="0" top="0"/>
       
       <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_sign')}" 
-                     left="{topLeft.width + 10}" id="sign" 
-                     top="{warningSignVerticalCenter?((height-sign.height)/2) 
-                     :(topLeft.height + 6)}"
+                     left="{21}" id="sign" 
+                     top="{warningSignVerticalCenter?((height - 36)/2) 
+                     :(17)}"
                      visible="{showSign}"/>
       
-      <s:RichText right="{topRight.width + 10}" 
-                  left="{topLeft.width + (showSign
-                  ?sign.width + 20
-                  :10)}" 
+      <s:RichText right="{21}" 
+                  left="{showSign ?77 :21}" 
                   fontSize="14" textFlow="{getTextFlow(text)}" 
                   verticalAlign="middle" textAlign="{warningTextAlign}" 
                   color="#ffcc00" top="{verticalPaddings}" 

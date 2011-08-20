@@ -7,6 +7,7 @@ package controllers.players.actions
    
    import models.factories.RatingsPlayerFactory;
    import models.player.MRatingPlayer;
+   import models.ratings.MCRatingsScreen;
    
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
@@ -32,16 +33,17 @@ package controllers.players.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         ML.ratings = RatingsPlayerFactory.fromObjects(cmd.parameters.ratings);
-         ML.ratings.sort = new Sort();
-         ML.ratings.sort.fields = [new SortField('victoryPoints', true, true, true), 
+         var RS: MCRatingsScreen = MCRatingsScreen.getInstance();
+         RS.ratings = RatingsPlayerFactory.fromObjects(cmd.parameters.ratings);
+         RS.ratings.sort = new Sort();
+         RS.ratings.sort.fields = [new SortField('victoryPoints', true, true, true), 
             new SortField('points', true, true, true),
             new SortField('planetsCount', true, true, true),
             new SortField('name')];
-         ML.ratings.refresh();
+         RS.ratings.refresh();
          
          var i: int = 0;
-         for each (var player: MRatingPlayer in ML.ratings)
+         for each (var player: MRatingPlayer in RS.ratings)
          {
             i++;
             player.rank = i;

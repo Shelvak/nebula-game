@@ -27,12 +27,12 @@ package models.factories
       {
          data = PropertiesTransformer.objectToCamelCase(data);
          var objective: QuestObjective;
-         if (data.objective.type in [ObjectiveType.HAVE_ARMY_POINTS,
+         if ([ObjectiveType.HAVE_ARMY_POINTS,
             ObjectiveType.HAVE_ECONOMY_POINTS,
             ObjectiveType.HAVE_POINTS,
             ObjectiveType.HAVE_SCIENCE_POINTS,
             ObjectiveType.HAVE_VICTORY_POINTS,
-            ObjectiveType.HAVE_WAR_POINTS])
+            ObjectiveType.HAVE_WAR_POINTS].indexOf(data.objective.type) != -1)
          {
             objective = new HavePointsQuestObjective(data.objective.type);
          }

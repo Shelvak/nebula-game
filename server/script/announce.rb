@@ -11,6 +11,8 @@ if ARGV.size != 2
   puts "  E.g.: 'in 5 minutes' or 'in 1 hour'"
   puts "- *message* is a string which will be reported to server users."
   puts
+  puts "Arguments were:"
+  puts "#{ARGV.inspect}"
   exit
 end
 
