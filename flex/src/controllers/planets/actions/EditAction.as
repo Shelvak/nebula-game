@@ -13,37 +13,28 @@ package controllers.planets.actions
    /**
     * Renames a planet.
     * 
-    * <p>
-    * Client -->> Server
-    * <ul>
-    *    <li><code>id</code> - planet which to rename</li>
-    *    <li><code>name</code> - new name of a planet</li>
-    * </ul>
-    * </p>
+    * <p>Client -->> Server: <code>EditActionParams</code><p/>
+    * 
+    * @see EditActionParams
     */
    public class EditAction extends CommunicationAction
    {
-      public function EditAction()
-      {
+      public function EditAction() {
          super();
       }
       
-      public override function result(rmo:ClientRMO):void
-      {
-         if (ML.latestPlanet)
-         {
-            Messenger.show(Localizer.string('SSObjects', 'message.planetRenamed', 
-               [ML.latestPlanet.ssObject.name]), Messenger.MEDIUM);
-         }
+      public override function applyClientAction(cmd:CommunicationCommand) : void {
+         var params:EditActionParams = EditActionParams(cmd.parameters);
+         sendMessage(new ClientRMO({
+            "id": params.planet.id,
+            "name": params.newName
+         }, params.planet));
       }
       
-      public override function applyClientAction(cmd:CommunicationCommand) : void
-      {
-         var params:Planet = Planet(cmd.parameters);
-         sendMessage(new ClientRMO({
-            "id": params.id,
-            "name": params.ssObject.name
-         }, params));
+      public override function result(rmo:ClientRMO):void {
+         if (ML.latestPlanet != null)
+            Messenger.show(Localizer.string('SSObjects', 'message.planetRenamed', 
+               [ML.latestPlanet.ssObject.name]), Messenger.MEDIUM);
       }
    }
 }
