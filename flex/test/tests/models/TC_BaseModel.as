@@ -39,11 +39,6 @@ package tests.models
             throws (Error)
          );
          
-//         assertThat(
-//            function():void{ createModel(ModelUnsupportedCollectionItem, {collection: [new Date()]}) },
-//            throws (Error)
-//         );
-         
          assertThat(
             function():void{ createModel(ModelRequiredProps, {name: "MikisM"}) },
             throws (Error)
@@ -58,11 +53,6 @@ package tests.models
             function():void{ createModel(ModelDateProp, {date: "not a date"}) },
             throws (Error)
          );
-         
-//         assertThat(
-//            function():void{ createModel(ModelUnsupportedPropertyType, {point: new Point()}) },
-//            throws (Error)
-//         );
          
          assertThat(
             function():void{ createModel(ModelRequiredSelf, {id: 2, self: {id: 3}}) },
@@ -358,13 +348,6 @@ class ModelMissingCollectionMetadata extends BaseModel
 }
 
 
-class ModelUnsupportedCollectionItem extends BaseModel
-{
-   [Required(elementType="Date")]
-   public var collection:Array = null;
-}
-
-
 class ModelRequiredProps extends BaseModel
 {
    [Required]
@@ -378,13 +361,6 @@ class ModelDateProp extends BaseModel
 {
    [Required]
    public var date:Date = null;
-}
-
-
-class ModelUnsupportedPropertyType extends BaseModel
-{
-   [Required]
-   public var point:Point;
 }
 
 

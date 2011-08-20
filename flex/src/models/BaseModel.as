@@ -322,9 +322,21 @@ package models
                if (propData == null)
                   continue;
                
+               // error when property is a primitive but the value in data object is generic object or 
+               // an instance of some non-primitive class
+               if (TypeChecker.isPrimitiveClass(propClass)) {
+                  if (!TypeChecker.isOfPrimitiveType(propData)) {
+                     pushError(
+                        "Property '{0}' is of primitive type {1}, but the value '{2}' in the data object " +
+                        "is of complex type {3}", propName, propClass, propData, Objects.getClass(propData)
+                     );
+                     continue;
+                  }
+               }
+               
                if (getTypeProcessor(propClass) != null ||
-                   TypeChecker.isPrimitiveClass(type) ||
-                   type == Object) {
+                   TypeChecker.isPrimitiveClass(propClass) ||
+                   propClass == Object) {
                   setProp(createModelImpl(propClass, propValue, propData));
                   continue;
                }
