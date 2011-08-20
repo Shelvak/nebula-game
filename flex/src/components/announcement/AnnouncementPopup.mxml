@@ -90,7 +90,8 @@
          }
          
          private function updateTxtMessage() : void {
-            txtMessage.textFlow = TextFlowUtil.importFromString(ANNOUNCEMENT.message);
+            if (ANNOUNCEMENT.message != null)
+               txtMessage.textFlow = TextFlowUtil.importFromString(ANNOUNCEMENT.message);
          }         
       ]]>
    </fx:Script>
