@@ -55,6 +55,62 @@ describe "upgradable", :shared => true do
       @model.upgrade_time(1).should == 1
     end
   end
+  
+  describe "#cancel!" do
+    before(:each) do
+      opts_upgrading.apply @model
+      @percentage = 0.35 # Percentage of constructing done.
+      @model.upgrade_ends_at = 
+        (@model.upgrade_time(@model.level + 1) * (1 - @percentage)).
+          from_now
+    end
+    
+    it "should fail if not upgrading" do
+      @model.upgrade_ends_at = nil
+      lambda do
+        @model.cancel!
+      end.should raise_error(GameLogicError)
+    end
+    
+    Resources::TYPES.each do |resource|
+      it "should return #{resource} back to planet" do
+        cost = @model.send("#{resource}_cost", @model.level + 1)
+        increasement = (cost * (1.0 - @percentage)).floor
+        current = @planet.send(resource)
+        @model.cancel!
+        @planet.reload
+        @planet.send(resource).should be_close(current + increasement, 5)
+      end
+    end
+    
+    it "should stop upgrading" do
+      @model.cancel!
+      @model.should_not be_upgrading
+    end
+    
+    it "should not increase level" do
+      lambda do
+        @model.cancel!
+      end.should_not change(@model, :level)
+    end
+    
+    it "should destroy upgradable if level == 0" do
+      @model.level = 0
+      lambda do
+        @model.cancel!
+        @model.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+    
+    it "should decrease player points" do
+      player = @model.player
+      lambda do
+        @model.cancel!
+        player.reload
+      end.should change(player, @model.points_attribute).
+        by(- @model.points_on_upgrade)
+    end
+  end
 
   describe "#accelerate!" do
     before(:each) do

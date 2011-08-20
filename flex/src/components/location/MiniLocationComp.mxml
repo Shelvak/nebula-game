@@ -8,6 +8,10 @@
                     minWidth="245" maxWidth="330" width="100%" height="71">
    <fx:Script>
       <![CDATA[
+         import components.skins.LinkButtonSkin;
+         
+         import controllers.ui.NavigationController;
+         
          import models.building.Building;
          import models.location.Location;
          import models.location.LocationType;
@@ -36,7 +40,7 @@
                _target = value;
                var tUnit: Unit = Unit(value);
                if (tUnit.location.type == LocationType.SS_OBJECT
-               && ML.latestPlanet.id == tUnit.location.id)
+                  && ML.latestPlanet.id == tUnit.location.id)
                {
                   _location = ML.latestPlanet.toLocation();
                }
@@ -119,13 +123,39 @@
          </s:layout>
       </s:Group>
       
-      <!-- planet -->
+      <!-- planet info -->
       <s:Group visible="{_location.isSSObject}">
-         <s:Label styleName="locationHeader"
-                  text="{Localizer.string('Location', 'header.planet')}:"/>
-         <s:Label text="{_location.planetName}"/>
+         <s:Group>
+            <s:Label styleName="locationHeader"
+                     text="{Localizer.string('Location', 'header.planet')}:"/>
+            <s:Label text="{_location.planetName}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         
+         <!-- owner -->
+         <s:Group>
+            <s:Label styleName="locationHeader"
+                     text="{Localizer.string('Location', 'header.owner')}:"/>
+            <s:Button skinClass="components.skins.LinkButtonSkin"
+                      enabled="{_location.player != null}"
+                      label="{_location.player == null?
+                      Localizer.string('Players', 'npc')
+                      :_location.player.name}"
+                      click="if (_location.player == null)
+                      {
+                      }
+                      else
+                      {
+                        NavigationController.getInstance().showPlayer(_location.player.id);
+                      }"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
          <s:layout>
-            <s:HorizontalLayout/>
+            <s:VerticalLayout/>
          </s:layout>
       </s:Group>
       
@@ -156,8 +186,8 @@
       <s:Group visible="{_target != null}">
          <s:Label styleName="locationHeader"
                   text="{_target is Building ?
-                     Localizer.string('Location', 'header.building') :
-                     Localizer.string('Location', 'header.unit')}:"/>
+                  Localizer.string('Location', 'header.building') :
+                  Localizer.string('Location', 'header.unit')}:"/>
          <s:Label text="{_target.name}"/>
          <s:layout>
             <s:HorizontalLayout/>

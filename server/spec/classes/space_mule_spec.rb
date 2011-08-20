@@ -166,6 +166,14 @@ describe SpaceMule do
       @galaxy.should have_callback(CallbackManager::EVENT_SPAWN,
         CONFIG.evalproperty('galaxy.convoy.time').from_now)
     end
+    
+    MarketOffer::CALLBACK_MAPPINGS.each do |kind, event|
+      it "should have spawn callback for resource kind #{kind}" do
+        seconds_range = Cfg.market_bot_resource_cooldown_range
+        range = (seconds_range.first.from_now..seconds_range.last.from_now)
+        @galaxy.should have_callback(event, range)
+      end
+    end
   end
 
   describe "#create_players" do

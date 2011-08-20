@@ -1,12 +1,14 @@
 REQUIRED_GEMS = [
+  {:name => 'jruby-openssl', :skip => true},
   {:name => 'activerecord-jdbcmysql-adapter',
     :version => '~>1.1', :skip => true},
-  {:name => 'activesupport', :version => '>=3.0.5', :lib => 'active_support'},
-  {:name => 'activerecord', :version => '>=3.0.5', :lib => 'active_record'},
+  {:name => 'activesupport', :version => '~>3.0.9', :lib => 'active_support'},
+  {:name => 'activerecord', :version => '~>3.0.9', :lib => 'active_record'},
   {:name => 'eventmachine', :version => '>=0.12.6', :env => "!test"},
   {:name => 'json', :version => '>=1.4.6', :lib => "json/ext"},
-  {:name => 'robustthread', :version => '>=0.5.2', :skip => true},
   {:name => 'mail', :version => '>=2.2', :env => "production"},
+  # For natural date parsing, e.g. "in 5 minutes"
+  {:name => "chronic", :version => ">=0.6.2", :skip => true},
 ]
 
 REQUIRED_DEVELOPMENT_GEMS = [

@@ -10,6 +10,7 @@
          
          import controllers.ui.NavigationController;
          
+         import models.ModelLocator;
          import models.player.MRatingPlayer;
          
          import utils.assets.AssetNames;
@@ -32,7 +33,9 @@
    </fx:Script>
    <s:Rect left="0" right="0" top="0" bottom="0">
       <s:fill>
-         <s:SolidColor color="{itemIndex%2==0?0x0e0e0e:0x141414}"/>
+         <s:SolidColor color="{player.id == ModelLocator.getInstance().player.id
+                       ?0x363636
+                       :itemIndex%2==0?0x0e0e0e:0x141414}"/>
       </s:fill>
    </s:Rect>
    <s:Group top="3" bottom="3">

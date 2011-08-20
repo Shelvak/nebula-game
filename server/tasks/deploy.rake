@@ -1,3 +1,5 @@
+STDOUT.sync = true
+
 begin
   require 'net/sftp'
 rescue LoadError
@@ -15,20 +17,15 @@ DEPLOY_CONFIG = {
   :releases_kept => 2,
   :release_branch => {
     :stable => "master",
-    :beta => "master",
-    :beta3 => "server"
+    :beta => "server"
   },
 
   :servers => {
     :stable => {
-      :client => ["static1.nebula44.com"],
-      :server => ["game1.nebula44.com"],
+      :client => ["static.nebula44.lt"],
+      :server => ["game.nebula44.lt"],
     },
     :beta => {
-      :client => ["nebula44.com"],
-      :server => ["nebula44.com"],
-    },
-    :beta3 => {
       :client => ["static-beta3.nebula44.com:2022"],
       :server => ["beta3.nebula44.com:1022"],
     },
@@ -78,7 +75,6 @@ class DeployHelpers; class << self
   def info(env, message)
     $stdout.write("[%s] %s %s" % [
         env, Time.now.strftime("%H:%M:%S"), message])
-    $stdout.flush
 
     if block_given?
       start = Time.now
@@ -167,7 +163,7 @@ class DeployHelpers; class << self
   end
 
   def exec_server(ssh, cmd)
-    ssh.exec!("source $HOME/.bash_profile > /dev/null && cd #{
+    ssh.exec!("source $HOME/.profile > /dev/null && cd #{
       DEPLOY_CONFIG_SERVER_CURRENT
     } && #{cmd}")
   end
@@ -186,7 +182,6 @@ class DeployHelpers; class << self
     running = server_running?(ssh)
     while running
       $stdout.write(".")
-      $stdout.flush
 
       exec_server(ssh, STOP_SERVER_CMD)
       running = server_running?(ssh)
@@ -201,13 +196,14 @@ class DeployHelpers; class << self
   def start_server(ssh)
     output = exec_server(ssh, START_SERVER_CMD)
     if output.nil?
-      sleep 1
+      sec = 5
+      $stdout.write ". Waiting #{sec} seconds to check for status... "
+      sleep sec
       running = server_running?(ssh)
 
       attempt = 0
       until running || attempt >= START_SERVER_TIMEOUT
         $stdout.write(".")
-        $stdout.flush
         attempt += 1
 
         sleep 1
@@ -233,8 +229,8 @@ class DeployHelpers; class << self
   def chmod(ssh)
     current_dir = DEPLOY_CONFIG_SERVER_CURRENT
     ssh.exec!("chmod -R +x #{current_dir}/lib/main.rb #{current_dir
-      }/lib/daemon.rb #{current_dir}/lib/console.rb #{current_dir
-      }/script/*")
+      }/lib/daemon.rb #{current_dir}/lib/daemon/runner.sh #{current_dir
+      }/lib/console.rb #{current_dir}/script/*")
   end
 
   def server_symlink(ssh)

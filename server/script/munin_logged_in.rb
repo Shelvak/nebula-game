@@ -2,8 +2,6 @@
 
 NAMES = [
   ["current", "Currently logged in"],
-  ["6h", "Logged in 6h"],
-  ["12h", "Logged in 12h"],
   ["24h", "Logged in 24h"],
   ["48h", "Logged in 48h"],
   ["1w", "Logged in 1wk"],
@@ -23,22 +21,13 @@ if ARGV[0] == "config"
     puts "#{name}.min 0"
   end
 else
-  require 'rubygems'
-  require 'socket'
-  require 'yaml'
-  require 'json'
-  config_file = File.join(File.dirname(__FILE__), '..', 'config',
-    'application.yml')
-
-  CONFIG = YAML.load(File.read(config_file))
-
+  require File.expand_path(File.dirname(__FILE__) + 
+      '/../lib/server/control_client.rb')
+  
   begin
-    socket = TCPSocket.open("127.0.0.1", CONFIG['control']['port'])
-    message = {:token => CONFIG['control']['token'],
-      :action => 'statistics'}.to_json
-    socket.write message
-    data = JSON.parse(socket.gets)
-  rescue Errno::ECONNREFUSED
+    client = ControlClient.new
+    data = client.message('statistics')
+  rescue ControlClient::ConnectionError
     # Stub data if server is down.
     data = {}
     NAMES.each { |key, label| data[key] = -1 }

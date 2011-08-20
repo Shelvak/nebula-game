@@ -2,6 +2,7 @@ package controllers.connection
 {
    import com.developmentarc.core.utils.EventBroker;
    
+   import components.announcement.AnnouncementPopup;
    import components.popups.ErrorPopup;
    
    import controllers.GlobalFlags;
@@ -160,6 +161,10 @@ package controllers.connection
          
          popup.show();
          popup = null;
+         
+         var announcementPopup:AnnouncementPopup = AnnouncementPopup.getInstance();
+         if (announcementPopup.isShown)
+            announcementPopup.show();
          
          RESP_MSG_TRACKER.reset();
          G_FLAGS.lockApplication = false;

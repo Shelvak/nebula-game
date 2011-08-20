@@ -6,6 +6,7 @@ package models.factories
    import models.objectives.ExploreBlock;
    import models.objectives.HavePlanets;
    import models.objectives.HavePoints;
+   import models.objectives.HavePointsQuestObjective;
    import models.objectives.HaveUpgradedTo;
    import models.objectives.ObjectiveType;
    import models.objectives.QuestObjective;
@@ -25,7 +26,20 @@ package models.factories
       public static function fromObject(data:Object) : QuestObjective
       {
          data = PropertiesTransformer.objectToCamelCase(data);
-         var objective: QuestObjective = new QuestObjective(data.objective.type);
+         var objective: QuestObjective;
+         if ([ObjectiveType.HAVE_ARMY_POINTS,
+            ObjectiveType.HAVE_ECONOMY_POINTS,
+            ObjectiveType.HAVE_POINTS,
+            ObjectiveType.HAVE_SCIENCE_POINTS,
+            ObjectiveType.HAVE_VICTORY_POINTS,
+            ObjectiveType.HAVE_WAR_POINTS].indexOf(data.objective.type) != -1)
+         {
+            objective = new HavePointsQuestObjective(data.objective.type);
+         }
+         else
+         {
+          objective = new QuestObjective(data.objective.type);
+         }
          objective.limit = data.objective.limit;
          objective.npc = data.objective.npc;
          objective.level = data.objective.level;

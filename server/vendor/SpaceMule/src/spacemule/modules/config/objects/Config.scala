@@ -113,6 +113,17 @@ object Config {
     val rangeData = list[Int](key)
     return Range.inclusive(rangeData(0), rangeData(1))
   }
+  
+  /**
+   * Same as range(), but range limits are forumlas with speed.
+   */
+  private def evalRange(key: String): Range = {
+    val rangeData = list[String](key)
+    val params = Map("speed" -> new BigDecimal(speed))
+    val from = formula(rangeData(0), params).intValue
+    val to = formula(rangeData(1), params).intValue
+    return Range.inclusive(from, to)
+  }
 
   private def areaTileConfig(name: String): AreaTileConfig = {
     return AreaTileConfig(
@@ -154,6 +165,7 @@ object Config {
   }
 
   private def cost(key: String) = double(key).ceil.toInt
+  private def speed = int("speed")
 
   //////////////////////////////////////////////////////////////////////////////
   // Reader methods 
@@ -170,6 +182,9 @@ object Config {
   lazy val wormholes = positions("galaxy.wormholes.positions")
   lazy val miniBattlegrounds = positions("galaxy.mini_battlegrounds.positions")
   def convoyTime = int("galaxy.convoy.time")
+  def marketBotResourceCooldownRange = 
+    evalRange("market.bot.resources.cooldown")
+  def marketBotRandomResourceCooldown = marketBotResourceCooldownRange.random
 
   // Combat attributes
 

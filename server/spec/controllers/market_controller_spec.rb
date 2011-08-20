@@ -163,9 +163,9 @@ describe MarketController do
   describe "market|buy" do
     before(:each) do
       @action = "market|buy"
-      offer_planet = Factory.create(:planet, 
+      @offer_planet = Factory.create(:planet, 
         :player => Factory.create(:player, :galaxy_id => player.galaxy_id))
-      @offer = Factory.create(:market_offer, :planet => offer_planet)
+      @offer = Factory.create(:market_offer, :planet => @offer_planet)
       @buyer_planet = Factory.create(:planet, :player => player)
       @params = {'offer_id' => @offer.id, 'planet_id' => @buyer_planet.id,
         'amount' => 100}
@@ -219,6 +219,20 @@ describe MarketController do
       @params['amount'] = @offer.from_amount + 1000
       invoke @action, @params
       response_should_include(:amount => @offer.from_amount)
+    end
+  
+    it "should support buying system offers" do
+      @offer.planet = nil
+      @offer.save!
+      
+      invoke @action, @params
+    end
+    
+    it "should support buying npc offers" do
+      @offer_planet.player = nil
+      @offer_planet.save!
+      
+      invoke @action, @params
     end
   end
 end

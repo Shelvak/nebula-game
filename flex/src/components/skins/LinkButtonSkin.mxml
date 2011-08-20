@@ -24,7 +24,7 @@
             color.up="0xFFC000"
             color.over="0x00D8E3"
             color.down="0x00D8E3"
-            color.disabled="0x8E8E8E"
+            color.disabled="0xE0E0E0"
             left="0" right="0">
    </s:Label>
    

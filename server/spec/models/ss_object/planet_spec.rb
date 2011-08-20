@@ -516,6 +516,40 @@ describe SsObject::Planet do
       ConstructionQueue.should_receive(:clear).with(constructor.id)
       @planet.save!
     end
+    
+    describe "market offers where #from_kind is creds" do
+      before(:each) do
+        @offers = [
+          Factory.create(:market_offer, :planet => @planet, 
+            :from_kind => MarketOffer::KIND_CREDS),
+          Factory.create(:market_offer, :planet => @planet, 
+            :from_kind => MarketOffer::KIND_CREDS),
+        ]
+      end
+      
+      it "should add summed #from_amount to old player" do
+        lambda do
+          @planet.save!
+          @old.reload
+        end.should change(@old, :creds).by(@offers.sum(&:from_amount))
+      end
+      
+      it "should destroy those offers" do
+        @planet.save!
+        @offers.each do |offer|
+          lambda do
+            offer.reload
+          end.should raise_error(ActiveRecord::RecordNotFound)
+        end
+      end
+      
+      it "should not fail if planet does not have old player" do
+        @planet.stub!(:player_change).and_return([nil, @new])
+        lambda do
+          @planet.save!
+        end.should_not raise_error
+      end
+    end
 
     describe "radar" do
       before(:each) do

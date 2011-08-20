@@ -97,7 +97,7 @@
             
             buildFlanks();
             if (location is Unit ||
-               (location is Location && Location(location).playerId == ML.player.id))
+               (location is Location && Location(location).player.id == ML.player.id))
             {
                if (!resourcesButton.visible)
                {

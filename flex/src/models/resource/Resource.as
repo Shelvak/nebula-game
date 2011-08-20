@@ -26,6 +26,11 @@ package models.resource
       private var _generationRate: Number = 0;
       private var _usageRate: Number = 0;
       
+      public static function getGivenResourceWithoutTaxes(ammount: Number, taxRate: Number): Number
+      {
+         return Math.floor(ammount / (1 + taxRate));
+      }
+      
       public static function getMissingStoragesString(planet: MSSObject,
                                               metalCost: Number, 
                                               energyCost: Number, 
@@ -297,7 +302,7 @@ package models.resource
       [Bindable (event="resourceAmmountChanged")]
       public function getWithoutTaxes(taxRate: Number): Number
       {
-         return Math.floor(_currentStock / (1 + taxRate));
+         return getGivenResourceWithoutTaxes(_currentStock, taxRate);
       }
       
       [Bindable (event="resourceAmmountChanged")]

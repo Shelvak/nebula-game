@@ -128,6 +128,7 @@ package models.player
        */
       public var loggedIn:Boolean = false;
       
+      prop_name static const dailyBonus:String = "dailyBonus";
       [SkipProperty]
       public var dailyBonus: Reward = null;
       
@@ -176,6 +177,12 @@ package models.player
          return _creds;
       }
       
+      
+      [Bindable(event="credsChange")]
+      public function get pureCreds(): int
+      {
+         return _creds - vipCreds - freeCreds
+      }
       
       [Optional]
       public var vipLevel: int = 0;
@@ -532,6 +539,7 @@ package models.player
                (UpgradeEvent.LEVEL_CHANGE, alliancesTech_levelChangeHandler, false);
             _alliancesTechnology = null;
          }
+         dailyBonus = null;
       }
       
       

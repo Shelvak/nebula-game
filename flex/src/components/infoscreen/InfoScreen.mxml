@@ -168,18 +168,12 @@
             guns.removeAll();
             if (oldOriginModel != null)
             {
-               if (oldOriginModel is Building)
+               if ((oldOriginModel is Building || oldOriginModel is Technology) &&
+                   oldOriginModel.upgradePart != null)
                {
                   oldOriginModel.upgradePart.removeEventListener(
                      UpgradeEvent.LEVEL_CHANGE, 
-                     dealWithPropertiesChange
-                  );
-               }
-               if (oldOriginModel is Technology)
-               {
-                  oldOriginModel.upgradePart.removeEventListener(
-                     UpgradeEvent.LEVEL_CHANGE, 
-                     dealWithPropertiesChange
+                     dealWithPropertiesChange, false
                   );
                }
             }
@@ -191,7 +185,7 @@
                {
                   value.upgradePart.addEventListener(
                      UpgradeEvent.LEVEL_CHANGE, 
-                     dealWithPropertiesChange
+                     dealWithPropertiesChange, false, 0, true
                   );
                }
                lvlSelector.value = _infoModel.usefulLevel;
@@ -1010,17 +1004,17 @@
                                         headerBackgroundSkin="components.skins.DataGridHeaderBackgroundSkin" 
                                         horizontalCenter="0" width="100%">
                               <mx:columns>
-                                 <mx:DataGridColumn id="propertiesColumn" dataField="property" width="160"
+                                 <mx:DataGridColumn id="propertiesColumn" dataField="property" width="190"
                                                     headerText="{Localizer.string('InfoScreen', 'property')}"/>
                                  <mx:DataGridColumn dataField="current" visible="{_infoModel.currentLevel > 0}"
-                                                    textAlign="center" width="160"
+                                                    textAlign="center" width="150"
                                                     headerText="{Localizer.string('InfoScreen', 'atLevel', [_infoModel.usefulLevel.toString()])}"/>
                                  <mx:DataGridColumn dataField="after" visible="{!((_infoModel.currentLevel == _infoModel.maxLevel) 
                                                     ||(lvlSelector.value == _infoModel.currentLevel))}" 
-                                                    textAlign="center" width="160"
+                                                    textAlign="center" width="150"
                                                     headerText="{Localizer.string('InfoScreen', 'atLevel', [lvlSelector.value.toString()])}"/>
                                  <mx:DataGridColumn dataField="diff" visible="{_infoModel.currentLevel != _infoModel.maxLevel}" 
-                                                    textAlign="center" width="160"
+                                                    textAlign="center" width="150"
                                                     headerText="{Localizer.string('InfoScreen', 'difference')}"/>
                               </mx:columns>
                            </mx:DataGrid>

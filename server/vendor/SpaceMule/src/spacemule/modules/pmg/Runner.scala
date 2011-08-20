@@ -34,6 +34,18 @@ object Runner extends BenchmarkableMock {
         Manager.save { () =>
           Manager.galaxies += galaxyRow.values
           Manager.callbacks += CallbackRow(galaxyRow, ruleset).values
+          
+          // Create system offer creation cooldowns.
+          List(
+            CallbackRow.Events.CreateMetalSystemOffer,
+            CallbackRow.Events.CreateEnergySystemOffer,
+            CallbackRow.Events.CreateZetiumSystemOffer
+          ).foreach { event => 
+            Manager.callbacks += CallbackRow(
+              galaxyRow, ruleset, Some(event),
+              Some(Config.marketBotRandomResourceCooldown.fromNow)
+            ).values
+          }
           Manager.readBattleground(
             galaxyRow.id,
             new Galaxy(galaxyRow.id, ruleset),

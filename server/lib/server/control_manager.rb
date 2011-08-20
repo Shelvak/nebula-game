@@ -72,8 +72,6 @@ class ControlManager
   #
   # Response:
   # - current (Fixnum): no. of currently logged in players.
-  # - 6h (Fixnum): no. of players logged in 6 hours.
-  # - 12h (Fixnum): no. of players logged in 12 hours.
   # - 24h (Fixnum): no. of players logged in 24 hours.
   # - 48h (Fixnum): no. of players logged in 48 hours.
   # - 1w (Fixnum): no. of players logged in 1 week.
@@ -81,6 +79,17 @@ class ControlManager
   # - total (Fixnum): total no. of players
   #
   ACTION_STATISTICS = 'statistics'
+  
+  # Send announcement to all the connected players.
+  # 
+  # Parameters:
+  # - ends_at (Time): when should the announcement expire
+  # - message (String): announcement text
+  # 
+  # Response:
+  # - success (Boolean)
+  #
+  ACTION_ANNOUNCE = 'announce'
 
   def receive(io, message)
     if message['token'] == CONFIG['control']['token']
@@ -182,6 +191,8 @@ class ControlManager
       action_add_creds(io, message)
     when ACTION_STATISTICS
       action_statistics(io)
+    when ACTION_ANNOUNCE
+      action_announce(io, message)
     else
       io.send_message(:success => false, :reason => "Action Unknown!")
     end
@@ -246,8 +257,6 @@ class ControlManager
   def action_statistics(io)
     statistics = {
       :current => Dispatcher.instance.logged_in_count,
-      :"6h" => get_player_count_in(6.hours),
-      :"12h" => get_player_count_in(12.hours),
       :"24h" => get_player_count_in(24.hours),
       :"48h" => get_player_count_in(48.hours),
       :"1w" => get_player_count_in(1.week),
@@ -256,6 +265,22 @@ class ControlManager
     }
 
     io.send_message statistics
+  end
+  
+  def action_announce(io, message)
+    unless message['ends_at'].is_a?(Time)
+      parsed = Time.parse(message['ends_at'])
+      if parsed
+        message['ends_at'] = parsed
+      else
+        io.send_message 'success' => false, 
+          :error => "#{message['ends_at'].inspect} is not Time!"
+        return
+      end
+    end
+      
+    AnnouncementsController.set(message['ends_at'], message['message'])
+    io.send_message 'success' => true
   end
 
   private

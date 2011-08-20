@@ -416,7 +416,7 @@
     <activate value="Activate" />
     <deactivate value="Deactivate" />
     <attack value="Attack" />
-    <label.noUnits value="You dont have available units!" />
+    <label.noUnits value="You don't have available units!" />
     <deselectAll value="Deselect all" />
     <selectAll value="Select all" />
     <open value="Open" />
@@ -1327,6 +1327,7 @@
     <header.building value="Building" />
     <header.unit value="Unit" />
     <header.storage value="Storage" />
+    <header.owner value="Owner" />
 
     <description.short.galaxy value="Galaxy" />
     <description.short.solarSystem value="Solar System {0}" />
@@ -1442,7 +1443,7 @@
     <title.combatLog value="Combat report" />
     <message.combatLog>
       <p>Battle in {0 planet[Planet] galaxy[Galaxy] ss[Solar System] 
-      battleground[]} {1}</p>
+      battleground[]} {1}{0 planet[, Owner] galaxy[] ss[] battleground[]} {2}</p>
     </message.combatLog>
     <label.combatLog.outcome.win value="You have won!" />
     <label.combatLog.outcome.loose value="You have lost!" />
@@ -1858,7 +1859,9 @@
     <!-- BECOME_VIP
     0: VIP level, 
     1: count of times to become VIP -->
-    <objectiveText.BecomeVip value="Become level {0} VIP {1 one[] many[? times]}" />
+    <objectiveText.BecomeVip>
+      <p>Become at least level {0} VIP {1 one[] many[? times]}</p>
+    </objectiveText.BecomeVip>
 
     <!-- ACCELERATE_FLIGHT
     0: count of times to accelerate flight -->
@@ -2236,7 +2239,7 @@
     <about.116>
       <p>Commander!</p>
       <p>In your last mission, "[reference:title.8]" you were rewarded with
-      some creds. Go and take your reward if you haven't done so alredy.</p>
+      some creds. Go and take your reward if you haven't done so already.</p>
       <p>Creds are a useful and powerful tool. They can be spent on various
       tasks like accelerating your constructions, researches and unit
       training. They can even be used for moving buildings or speeding up
@@ -4078,6 +4081,7 @@
   <Market>
     <label.submit value="Submit" />
     <label.fee value="Fee:" />
+    <label.total value="Total:" />
     <label.wantToSell value="Selling" />
     <label.sellFor value="For" />
     <!-- 1 cheaper or more -->
@@ -4107,11 +4111,11 @@
     <label.cancel value="Cancel" />
     <label.close value="Close" />
     <label.noOffers value="No offers" />
-    <!-- {0}: metal/energy/zetium
+    <!-- {0}: metal/energy/zetium/creds
          {1}: minimal amount -->
     <warning.noMinResource> 
-      <p>You dont have enough {0} for minimal offer.</p>
-      <p>Minimal offer is {1} {0}.</p>
+      <p>You don't have enough {0} for minimal offer.</p>
+      <p>Minimal offer is {1} {0} + taxes.</p>
     </warning.noMinResource>
     <message.offerSubmited value="Offer submited" />
     <message.offerGone value="Sorry, offer is already gone" />
@@ -4137,8 +4141,13 @@
     <warning.notFromPlanet 
     value="This is your offer but it has been submitted from another planet." />
     <filter.clear value="Clear" />
-    <label.freeCreds value="You can not use free creds in the market" />
-    <label.moreInfo value="why?" />
+    <label.freeCreds value="You can not use free creds in the market." />
+    <label.moreInfo value="Why?" />
   </Market>
+  
+  <Announcements>
+    <title.popup value="Announcement"/>
+    <label.close value="Close"/>
+  </Announcements>
 
 </locale>

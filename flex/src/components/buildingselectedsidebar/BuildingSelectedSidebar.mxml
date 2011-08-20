@@ -13,6 +13,8 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import controllers.planets.actions.EditActionParams;
+         
          import components.credits.AccelerateSelector;
          import components.credits.ConfirmCredsLabel;
          import components.popups.ActionConfirmationPopup;
@@ -273,6 +275,8 @@
          
          protected function recalculateCosts(): void
          {
+            if (_selectedModel == null || _selectedModel.upgradePart == null)
+               return;
             var resources:ResourcesAmount = _selectedModel.upgradePart.resourcesNeededForNextLevel();
             metalCost = resources.metal;
             energyCost = resources.energy;
@@ -494,10 +498,9 @@
             }
          }
          
-         private function renamePlanet(e: Event): void
-         {
-            ML.latestPlanet.ssObject.name = newPlanetName.text;
-            new PlanetsCommand(PlanetsCommand.EDIT, ML.latestPlanet).dispatch();
+         private function renamePlanet(): void {
+            new PlanetsCommand(PlanetsCommand.EDIT, new EditActionParams(ML.latestPlanet, newPlanetName.text))
+               .dispatch();
             newPlanetName.text = "";
          }
          
@@ -629,7 +632,7 @@
          
          protected function queueList_creationCompleteHandler(event:FlexEvent):void
          {
-            queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
+            //queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
             queueList.scroller.setStyle('horizontalScrollPolicy', ScrollPolicy.OFF);
          }
          
@@ -808,7 +811,9 @@
                              creationComplete="queueList_creationCompleteHandler(event)"
                              contentBackgroundAlpha="0"
                              dragComplete="queueList_dragCompleteHandler(event)"
-                             height="{constructor.constructionQueueEntries.length > 0?52:0}">
+                             height="{constructor.constructionQueueEntries.length > 0
+                             ?(constructor.constructionQueueEntries.length > 4?96:50)
+                             :0}">
                         <s:itemRenderer>
                            <fx:Component>
                               <s:ItemRenderer width="100%" height="44">
@@ -818,7 +823,7 @@
                         </s:itemRenderer>
                         
                         <s:layout>
-                           <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="6"/>
+                           <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="1"/>
                         </s:layout>
                      </s:List>
                      <base:layout>
@@ -848,12 +853,12 @@
                         <s:Label text="{getString('message.changeName')}" 
                                  left="6" right="6"/>
                      </s:Group>
-                     <base:BaseTextInput width="80%" id="newPlanetName" enter="renamePlanet(event)"
+                     <base:BaseTextInput width="80%" id="newPlanetName" enter="renamePlanet()"
                                          maxChars="{Config.getMaxPlanetNameLength()}"/>
                      <s:Group width="100%">
                         <s:Button right="6" enabled="{newPlanetName.text.length >= Config.getMinPlanetNameLength()
                                   &amp;&amp; !ML.latestPlanet.pending}"
-                                  click="renamePlanet(event)" 
+                                  click="renamePlanet()" 
                                   label="{getString('label.changeName')}"/>
                      </s:Group>
                      <base:layout>
@@ -1144,7 +1149,7 @@
                                          visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
                                          toolTip="{getString('toolTip.afterUpgrade')}"/>
                      <base:layout>
-                        <s:HorizontalLayout/>
+                        <s:HorizontalLayout verticalAlign="middle"/>
                      </base:layout>
                   </base:Panel>
                   

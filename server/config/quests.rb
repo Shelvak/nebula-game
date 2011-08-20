@@ -30,7 +30,7 @@ UNITS_SHIPS = [
   [Unit::Dart, 1, 3], [Unit::Avenger, 1, 3],
 ]
 
-definition = QuestDefinition.define(:debug => false) do
+QUESTS = QuestDefinition.define(:debug => false) do
   define(1, "buildings") do
     have_upgraded_to Building::CollectorT1
 
@@ -96,7 +96,7 @@ definition = QuestDefinition.define(:debug => false) do
 
     reward_unit Unit::Trooper, :level => 2, :hp => 50, :count => 2
     reward_unit Unit::Trooper, :level => 3, :hp => 30
-    reward_cost Building::ResearchCenter, :count => 1.1
+    reward_cost Building::ResearchCenter, :count => 1.05
     reward_creds (CONFIG['creds.vip'][0][0] * 1.5).ceil
   end.tap do |quest|
     # Side quest chain
@@ -288,38 +288,36 @@ definition = QuestDefinition.define(:debug => false) do
 
     reward_unit Unit::Crow, :count => 2
     reward_cost Unit::Crow, :count => 4.2
+  end.define(31) do
+    have_upgraded_to Unit::Crow, :count => 5
+
+    reward_cost Unit::Crow, :count => 7
+  end.define(119, "flying") do
+    destroy Unit::Dirac, :count => 4
+
+    reward_cost Unit::Dirac, :count => 4
   end.tap do |quest|
-    quest.define(31) do
-      have_upgraded_to Unit::Crow, :count => 5
+    quest.define(120, "resource-transportation") do
+      have_upgraded_to Unit::Mule, :count => 1
 
-      reward_cost Unit::Crow, :count => 7
-    end.define(119, "flying") do
-      destroy Unit::Dirac, :count => 4
-      
-      reward_cost Unit::Dirac, :count => 4
-    end.tap do |quest1|
-      quest1.define(120, "resource-transportation") do
-        have_upgraded_to Unit::Mule, :count => 1
+      reward_cost Unit::Mule, :count => 1.2
+    end
 
-        reward_cost Unit::Mule, :count => 1.2
-      end
-      
-      quest1.define(35) do
-        destroy Unit::Dirac, :count => 14
+    quest.define(35) do
+      destroy Unit::Dirac, :count => 14
 
-        reward_unit Unit::Dart, :count => 2
-      end.define(36) do
-        destroy Unit::Thor, :count => 10
+      reward_unit Unit::Dart, :count => 2
+    end.define(36) do
+      destroy Unit::Thor, :count => 10
 
-        reward_unit Unit::Avenger, :count => 2
-      end.define(37) do
-        destroy Unit::Demosis, :count => 6
+      reward_unit Unit::Avenger, :count => 2
+    end.define(37) do
+      destroy Unit::Demosis, :count => 6
 
-        reward_unit Unit::Rhyno, :count => 1
-      end
+      reward_unit Unit::Rhyno, :count => 1
     end
   end.define(20, "colonization") do
-    annex_planet
+    have_planets :count => 2
 
     reward_unit Unit::Mule
     reward_unit Unit::Mdh
@@ -589,10 +587,3 @@ definition = QuestDefinition.define(:debug => false) do
     achievement(10400 + index) { heal_hp count }
   end
 end
-
-puts "Quests in definition: #{definition.count_in_definition}"
-puts "Quests in database  : #{definition.count_in_db}"
-puts "Added to database   : #{definition.count_in_definition -
-  definition.count_in_db}"
-puts "#{definition.quests_started_count} quests started for #{
-  definition.quests_started_players} players."

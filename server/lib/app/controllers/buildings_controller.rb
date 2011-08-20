@@ -3,16 +3,16 @@ class BuildingsController < GenericController
   # Start construction of new building in a planet that player owns.
   #
   # Parameters:
-  # - planet_id
-  # - constructor_id - building id that constructs this building
-  # - x
-  # - y
-  # - type - string of building type, e.g. SolarPlant
+  # - constructor_id (Fixnum): building id that constructs this building
+  # - x (Fixnum)
+  # - y (Fixnum)
+  # - type (String): string of building type, e.g. SolarPlant
   #
   # Response: None
   #
   def action_new
-    param_options :required => %w{constructor_id x y type}
+    param_options :required => {:constructor_id => Fixnum, :x => Fixnum,
+      :y => Fixnum, :type => String}
 
     constructor = Building.find(params['constructor_id'],
       :include => :planet)
@@ -27,10 +27,10 @@ class BuildingsController < GenericController
   # Upgrade a building in planet.
   #
   # Params:
-  #   id
+  # - id (Fixnum): ID of the building
   #
   # Return:
-  #   building
+  # - building (Hash): Building#as_json
   #
   def action_upgrade
     building = find_building
@@ -42,11 +42,10 @@ class BuildingsController < GenericController
   ACTION_ACTIVATE = 'buildings|activate'
   # Activate a building in planet.
   #
-  # Params:
-  #   id
+  # Parameters:
+  # - id (Fixnum)
   #
-  # Return:
-  #   nothing - updated building will be pushed via buildings|updated
+  # Response: None
   #
   def action_activate
     building = find_building
@@ -56,11 +55,10 @@ class BuildingsController < GenericController
   ACTION_DEACTIVATE = 'buildings|deactivate'
   # Deactivate a building in planet.
   #
-  # Params:
-  #   id
+  # Parameters:
+  # - id (Fixnum)
   #
-  # Return:
-  #   nothing - updated building will be pushed via buildings|updated
+  # Response: None
   #
   def action_deactivate
     building = find_building
@@ -88,7 +86,7 @@ class BuildingsController < GenericController
   # - objects|updated with +Player+. (if using creds)
   #
   def action_self_destruct
-    param_options :required => %w{id with_creds}
+    param_options :required => {:id => Fixnum, :with_creds => [TrueClass, FalseClass]}
 
     building = find_building
     building.self_destruct!(params['with_creds'])
@@ -110,7 +108,7 @@ class BuildingsController < GenericController
   # - objects|updated with +Player+
   #
   def action_move
-    param_options :required => %w{id x y}
+    param_options :required => {:id => Fixnum, :x => Fixnum, :y => Fixnum}
 
     building = find_building
     building.move!(params['x'].to_i, params['y'].to_i)
@@ -121,9 +119,11 @@ class BuildingsController < GenericController
   # Parameters:
   # - id (Fixnum): ID of the constructor.
   # - index (Fixnum): Index of CONFIG["creds.upgradable.speed_up"] entry.
+  # 
+  # Response: None
   #
   def action_accelerate_constructor
-    param_options :required => %w{id index}
+    param_options :required => {:id => Fixnum, :index => Fixnum}
 
     building = find_building
     Creds.accelerate_construction!(building, params['index'])
@@ -134,12 +134,14 @@ class BuildingsController < GenericController
 
   # Accelerates building upgrade.
   #
+  # Invocation: by client
+  # 
   # Parameters:
   # - id (Fixnum): ID of the building that will be accelerated.
   # - index (Fixnum): Index of CONFIG["creds.upgradable.speed_up"] entry.
   #
   def action_accelerate_upgrade
-    param_options :required => %w{id index}
+    param_options :required => {:id => Fixnum, :index => Fixnum}
 
     building = find_building
     Creds.accelerate!(building, params['index'])
@@ -148,9 +150,39 @@ class BuildingsController < GenericController
     raise GameLogicError.new(e.message)
   end
 
+  # Cancels whatever constructor is constructing. Partially returns 
+  # resources depending on how much of constructable has been built.
+  # 
+  # Invocation: by client
+  # 
+  # Parameters:
+  # - id (Fixnum): ID of the constructor.
+  # 
+  # Response: None
+  #
+  def action_cancel_constructor
+    constructor = find_building
+    constructor.cancel!
+  end
+    
+  # Cancels upgrade of the building. Partially returns 
+  # resources depending on how much of the upgrade has been done.
+  # 
+  # Invocation: by client
+  # 
+  # Parameters:
+  # - id (Fixnum): ID of the building.
+  # 
+  # Response: None
+  #
+  def action_cancel_upgrade
+    building = find_building
+    building.cancel!
+  end
+  
   private
   def find_building
-    param_options :required => %w{id}
+    param_options :required => {:id => Fixnum}
 
     building = Building.find(params['id'], :include => :planet)
     raise ActiveRecord::RecordNotFound \

@@ -29,6 +29,7 @@ package models.achievement
          return super.objectiveText;
       }
       
+      [Bindable (event="willNotChange")]
       public function get image(): BitmapData
       {
          return objectivePart.image;

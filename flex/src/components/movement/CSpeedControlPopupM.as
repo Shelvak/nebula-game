@@ -320,7 +320,7 @@ package components.movement
        */
       public function openPreBattleCooldownInfo() : void
       {
-         UrlNavigate.getInstance().showUrl('after-jump-cooldown');
+         UrlNavigate.getInstance().showInfo('after-jump-cooldown');
       }
       
       

@@ -64,7 +64,7 @@ package models.planet
             rateOn = false;
             dispatchRateBoostChangeEvent();
          }
-         else if (!storageOn && storageTime != null)
+         else if (!rateOn && rateTime != null)
          {
             rateOn = true;
             dispatchRateBoostChangeEvent();

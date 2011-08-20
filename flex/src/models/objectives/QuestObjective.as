@@ -34,7 +34,7 @@ package models.objectives
          return super.objectiveText + ' ('+ completed + '/'+ count+')';
       }
       
-      private function dispatchCompletedChangeEvent(): void
+      public function dispatchCompletedChangeEvent(): void
       {
          if (hasEventListener(QuestEvent.COMPLETED_CHANGE))
          {
