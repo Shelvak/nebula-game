@@ -13,6 +13,8 @@ package models.resource
    import models.solarsystem.MSSObject;
    import models.unit.Unit;
    
+   import org.hamcrest.BaseMatcher;
+   
    import utils.MathUtil;
    import utils.StringUtil;
    import utils.locale.Localizer;
@@ -206,6 +208,16 @@ package models.resource
             }
          }
          return tSource + getResourcesForVolume(tVolume, resource);
+      }
+      
+      public static function getModelCancelRevenueString(model: *, resource: String, progress: Number): String
+      {
+         var revenue: Number = MathUtil.round(
+            Upgradable.calculateCost(model is Building
+            ?UpgradableType.BUILDINGS:UpgradableType.UNITS,
+            model.type, resource, {'level': model.upgradePart.level + 1}) 
+            * (1-progress), 2);
+         return revenue == 0? null: revenue.toString();
       }
       
       public static function calculateUnitDestructRevenue(units: Array, resource: String): Number

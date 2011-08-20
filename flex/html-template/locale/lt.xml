@@ -450,6 +450,12 @@
       režimą.</p>
     </message.pressOnEmpty>
     <panelTitle.scientists value="Mokslininkai" />
+    <panelTitle.cancelProgress value="Atšaukti statybas" />
+    <label.cancelUpgrade 
+    value="Jei atšauksi šio pastato tobulinimą gausi:" />
+    <label.cancelConstructor
+    value="Jei atšauksi šio pastato statybą gausi:" />
+    <label.cancel value="Atšaukti" />
     <message.scientistsNotAvailable>
       <p>Pastatas yra tobulinimas, jame dirbantys mokslininkai yra 
       nepasiekiami.</p>
@@ -1599,6 +1605,14 @@
     <label.ok value="Gerai" />
     <label.yes value="Taip" />
     <label.no value="Ne" />
+    
+    <title.cancelUpgrade value="Atšaukti tobulinimą" />
+    <message.cancelUpgrade 
+    value="Ar tikrai nori atšaukti šio pastato tobulinimą?"/>
+    
+    <title.cancelConstructor value="Atšaukti statybas" />
+    <message.cancelConstructor 
+    value="Ar tikrai nori atšaukti šio pastato statybas?"/>
     
     <title.cancelOffer value="Atšaukti pasiūlymą" />
     <message.cancelOffer>

@@ -411,7 +411,7 @@ package models.building
       [Required]
       public var constructableId: int = 0;
       
-      
+      [Optional]
       /**
        * Id of the constructor which is curently constructing this building 
        */      

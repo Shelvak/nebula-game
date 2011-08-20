@@ -252,8 +252,20 @@
          private function global_timedUpdateHandler(e: GlobalEvent): void
          {
             refreshDestructProperties();
+            refreshCancelProperties();
          }
          
+         [Bindable]
+         private var builtPart: Number;
+         
+         private function refreshCancelProperties(): void
+         {
+            if (_selectedModel.upgradePart.upgradeEndsAt == null)
+            {
+               return;
+            }
+            builtPart = _selectedModel.upgradePart.upgradeProgress;
+         }
          
          protected function queueList_dragStartHandler(event:DragEvent):void
          {
@@ -431,6 +443,30 @@
                destructRemainingTime = DateUtil.secondsToHumanString(int(
                   (ML.latestPlanet.ssObject.canDestroyBuildingAt.time - new Date().time)/1000));
             }
+         }
+         
+         private function cancelUpgrade(): void
+         {
+            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+            var lbl: Label = new Label();
+            lbl.minWidth = 300;
+            lbl.text = Localizer.string('Popups', 'message.' + 
+            (_selectedModel.upgradePart.level > 0?'cancelUpgrade':'cancelConstructor'));
+            popUp.addElement(lbl);
+            popUp.title = Localizer.string('Popups', 'title.' +
+               (_selectedModel.upgradePart.level > 0?'cancelUpgrade':'cancelConstructor'));
+            popUp.confirmButtonClickHandler = function (button: Button = null): void
+            {
+               new BuildingsCommand(_selectedModel.upgradePart.level > 0 || _selectedModel.constructorId == 0
+                  ?BuildingsCommand.CANCEL_UPGRADE:BuildingsCommand.CANCEL_CONSTRUCTOR, 
+                  {'id': (_selectedModel.upgradePart.level > 0 || _selectedModel.constructorId == 0
+                     ? _selectedModel.id
+                     : _selectedModel.constructorId)
+                  }).dispatch();
+            };
+            popUp.show();
          }
          
          [Bindable]
@@ -787,9 +823,47 @@
                      </base:AdvancedContainer>
                   </base:Panel>
                   
+                  <base:Panel title="{getString('panelTitle.cancelProgress')}"
+                              visible="{_selectedModel.upgradePart.upgradeEndsAt != null
+                              &amp;&amp; (_selectedModel.upgradePart.level > 0
+                              || _selectedModel.constructorId != 0)}">
+                     <base:AdvancedContainer left="0" right="0">
+                        <s:Group width="100%" visible="{_selectedModel.upgradePart.level > 0}">
+                           <s:Label text="{getString('label.cancelUpgrade')}"
+                                    left="0" right="0"/>
+                        </s:Group>
+                        <s:Group width="100%" visible="{_selectedModel.upgradePart.level == 0}">
+                           <s:Label text="{getString('label.cancelConstructor')}"
+                                    left="0" right="0"/>
+                        </s:Group>
+                        <base:ImageAndLabel type="{ResourceType.METAL}" paddingLeft="6" 
+                                            visible="{Resource.getModelCancelRevenueString(
+                                            _selectedModel, ResourceType.METAL, builtPart) != null}"
+                                            textToDisplay="{Resource.getModelCancelRevenueString(
+                                            _selectedModel, ResourceType.METAL, builtPart)}"/>
+                        <base:ImageAndLabel type="{ResourceType.ENERGY}" paddingLeft="6" 
+                                            visible="{Resource.getModelCancelRevenueString(
+                                            _selectedModel, ResourceType.ENERGY, builtPart) != null}"
+                                            textToDisplay="{Resource.getModelCancelRevenueString(
+                                            _selectedModel, ResourceType.ENERGY, builtPart)}"/>
+                        <base:ImageAndLabel type="{ResourceType.ZETIUM}" paddingLeft="6"
+                                            visible="{Resource.getModelCancelRevenueString(
+                                            _selectedModel, ResourceType.ZETIUM, builtPart) != null}"
+                                            textToDisplay="{Resource.getModelCancelRevenueString(
+                                            _selectedModel, ResourceType.ZETIUM, builtPart)}"/>
+                        <s:Group width="100%">
+                           <s:Button right="6" label="{getString('label.cancel')}"
+                                     click="cancelUpgrade()"/>
+                        </s:Group>
+                        <base:layout>
+                           <s:VerticalLayout paddingLeft="6" paddingTop="6" paddingRight="6" paddingBottom="6"/>
+                        </base:layout>
+                     </base:AdvancedContainer>
+                  </base:Panel>
+                  
                   <base:Panel title="{getString('panelTitle.scientists')}"
                               visible="{_selectedModel.type == BuildingType.RESEARCH_CENTER &amp;&amp;
-                                        _selectedModel.upgradePart.isUpgrading}">
+                              _selectedModel.upgradePart.isUpgrading}">
                      <s:Label text="{getString('message.scientistsNotAvailable')}" lineBreak="toFit"
                               left="6" right="6"/>
                   </base:Panel>
@@ -840,7 +914,7 @@
                      || _selectedModel.type == BuildingType.MOTHERSHIP
                      || _selectedModel.type == BuildingType.HQ)}"
                      ownership="{ML.latestPlanet.ssObject.ownerChanged}"/>
-                     
+                  
                   
                   <base:Panel title="{getString('renamePlanet')}" 
                               visible="{(_selectedModel.type == BuildingType.MOTHERSHIP ||

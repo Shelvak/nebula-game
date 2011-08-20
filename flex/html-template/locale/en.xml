@@ -451,6 +451,12 @@
       <p>Click on empty map space to enter building construction mode</p>
     </message.pressOnEmpty>
     <panelTitle.scientists value="Scientists" />
+    <panelTitle.cancelProgress value="Cancel upgrade" />
+    <label.cancelUpgrade 
+    value="You will get these resources if you cancel upgrade of this building" />
+    <label.cancelConstructor
+    value="You will get these resources if you cancel construction of this building" />
+    <label.cancel value="Cancel" />
     <message.scientistsNotAvailable value="This building is currently upgrading and its scientists are unavailable."/>
     <warning.buildingWorking>
       <p>Anything this building is constructing will be destroyed if you 
@@ -1597,6 +1603,14 @@
       <p>Are you sure you want to convert {0 one[one VIP cred] many[? VIP creds]} 
       to {1 one[one cred] many[? creds]}?</p>
     </message.convertCreds>
+    
+    <title.cancelUpgrade value="Cancel upgrade" />
+    <message.cancelUpgrade 
+    value="Are you sure you want to cancel upgrade of this building?"/>
+    
+    <title.cancelConstructor value="Cancel construction" />
+    <message.cancelConstructor 
+    value="Are you sure you want to cancel construction of this building?"/>
     
     <title.cancelOffer value="Cancel offer" />
     <message.cancelOffer>
