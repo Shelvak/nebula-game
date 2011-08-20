@@ -1,18 +1,16 @@
 package tests._old.models
 {
-   import flash.geom.Point;
-   
    import models.BaseModel;
    
-   import mx.collections.ArrayCollection;
-   
-   import net.digitalprimates.fluint.tests.TestCase;
+   import org.flexunit.asserts.assertEquals;
+   import org.flexunit.asserts.assertNotNull;
+   import org.flexunit.asserts.fail;
    
    import tests._old.models.classes.*;
    
    
    
-   public class BaseModelTest extends TestCase
+   public class BaseModelTest
    {
       private var data: Object;
       private var model: *;

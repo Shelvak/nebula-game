@@ -1,13 +1,14 @@
 package tests._old.utils
 {
-   import net.digitalprimates.fluint.tests.TestCase;
+   import org.flexunit.asserts.assertFalse;
+   import org.flexunit.asserts.assertTrue;
    
    import spark.components.Button;
    
    import utils.TypeChecker;
    
    
-   public class TypeCheckerTest extends TestCase
+   public class TypeCheckerTest
    {
       // ############################### //
       // ### Testing primitive types ### //

@@ -47,7 +47,6 @@
                TS_Time,
                TS_Foliage,
                TS_Announcement,
-               CommunicationsTestSuite,
                ModelsTestSuite,
                UtilsTestSuite
             ];
