@@ -4,8 +4,6 @@ package models.healing
    import controllers.screens.MainAreaScreens;
    import controllers.screens.MainAreaScreensSwitch;
    
-   import globalevents.GHealingScreenEvent;
-   
    import models.building.Building;
    import models.unit.MCUnit;
    import models.unit.Unit;

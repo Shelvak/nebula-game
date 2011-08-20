@@ -5,12 +5,12 @@ package models.unit
    import components.unitsscreen.events.LoadUnloadEvent;
    import components.unitsscreen.events.UnitsScreenEvent;
    
+   import controllers.Messenger;
    import controllers.units.UnitsCommand;
    
    import flash.events.EventDispatcher;
    import flash.events.MouseEvent;
    
-   import globalevents.GLoadUnloadScreenEvent;
    import globalevents.GResourcesEvent;
    import globalevents.GUnitsScreenEvent;
    
@@ -66,8 +66,18 @@ package models.unit
          location = sLocation;
          target = sTarget;
          
+         if (transporter != null)
+         {
+            transporter.removeEventListener(UnitEvent.STORED_CHANGE, refreshVolume)
+         }
+         
          transporter = (location is Unit? location: target);
             
+         if (transporter != null)
+         {
+            transporter.addEventListener(UnitEvent.STORED_CHANGE, refreshVolume)
+         }
+         
          if (oldProvider != null)
          {
             oldProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
@@ -96,11 +106,9 @@ package models.unit
          {
             resourcesSelected = true;
          }
+         selectionClass.flanks = flanks;
          refreshVolume();
       }
-      
-      [Bindable]
-      public var freeSpace: int = 0;
       
       [Bindable (event="selectedResourcesChange")]
       public function getMaxStock(resource: String): Number
@@ -188,13 +196,7 @@ package models.unit
       public function selectedResourcesChangeHandler(event:UnitEvent):void
       {
          dispatchRefreshMaxStorageEvent();
-      }
-      
-      private function resetResources(): void
-      {
-         metalSelectedVal = 0;
-         energySelectedVal = 0;
-         zetiumSelectedVal = 0;
+         refreshVolume();
       }
       
       [Bindable]
@@ -223,7 +225,7 @@ package models.unit
       {
          var count: int = 0;
          
-         for each (var flank: UnitsFlank in _flanks)
+         for each (var flank: LoadUnloadFlank in _flanks)
          count += flank.flankUnits.length;
          
          return count;
@@ -232,11 +234,11 @@ package models.unit
       private function get selectionIds(): Array
       {
          var _selection: Array = [];
-         for each (var flank: UnitsFlank in flanks)
+         for each (var flank: LoadUnloadFlank in flanks)
          {
-            for each (var unit: Unit in flank.selection)
+            for each (var unit: MCUnit in flank.selection)
             {
-               _selection.push(unit.id);
+               _selection.push(unit.unit.id);
             }
          }
          return _selection;
@@ -291,8 +293,8 @@ package models.unit
                   }).dispatch();
             }
          }
-         resetResources();
-         new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_UNITS);
+         deselectAllResources()
+         deselectAllUnits();
          refreshVolume();
       }
       
@@ -317,11 +319,11 @@ package models.unit
             {
                for each (var unitToAdd: Unit in e.items)
                {
-                  for each (var flank: UnitsFlank in flanks)
+                  for each (var flank: LoadUnloadFlank in flanks)
                   {
                      if (flank.nr == (unitToAdd.flank))
                      {
-                        flank.flankUnits.addItem(unitToAdd);
+                        flank.flankUnits.addItem(new MCUnit(unitToAdd, flank, true));
                      }
                   }
                }
@@ -332,6 +334,16 @@ package models.unit
          {
             if (e.items.length != 0)
             {
+               for each (var unitToRemove: Unit in e.items)
+               {
+                  for each (flank in flanks)
+                  {
+                     if (flank.nr == (unitToRemove.flank))
+                     {
+                        flank.removeUnit(unitToRemove);
+                     }
+                  }
+               }
                dispatchUnitsChangeEvent();
                refreshVolume();
             }
@@ -341,11 +353,11 @@ package models.unit
       private function get unitsSelectedVolume(): int
       {
          var volumeTotal: int = 0;
-         for each (var flank: UnitsFlank in flanks)
+         for each (var flank: LoadUnloadFlank in flanks)
          {
-            for each (var unit: Unit in flank.selection)
+            for each (var model: MCUnit in flank.selection)
             {
-               volumeTotal += unit.volume;
+               volumeTotal += model.unit.volume;
             }
          }
          return volumeTotal;
@@ -372,6 +384,25 @@ package models.unit
          zetiumSelectedVal = 0;
       }
       
+      public function selectAllUnits(): void
+      {
+         if (!selectionClass.selectAll())
+         {
+            Messenger.show(Localizer.string('Units', 'message.notSelected'), 
+               Messenger.SHORT);
+         }
+         refreshVolume();
+      }
+      
+      public function deselectAllUnits(): void
+      {
+         for each (var flank: LoadUnloadFlank in flanks)
+         {
+            flank.deselectAll(false);
+         }
+         refreshVolume();
+      }
+      
       [Bindable (event="selectedVolumeChanged")]
       public function get volume(): int
       {
@@ -381,9 +412,11 @@ package models.unit
          return volumeTotal;
       }
       
-      public function refreshVolume(): void
+      public var selectionClass: LoadUnloadSelection = new LoadUnloadSelection();
+      
+      public function refreshVolume(e: UnitEvent = null): void
       {
-         freeSpace = (target is Unit?transporter.storage - transporter.stored - volume:-1);
+         selectionClass.freeStorage = (target is Unit?transporter.storage - transporter.stored - volume:-1);
          dispatchVolumeChangeEvent();
       }
       /**
@@ -407,21 +440,18 @@ package models.unit
       {
          flanks.removeAll();
          var tempObj: Object = {};
-         ML.units.disableAutoUpdate();
          for each (var unit: Unit in oldProvider)
          {
             if (tempObj[unit.flank] == null)
             {
                tempObj[unit.flank] = new Array();
             }
-            tempObj[unit.flank].push(unit);
+            tempObj[unit.flank].push(new MCUnit(unit, null, true));
          }
-         ML.units.enableAutoUpdate();
          for (var key: int = 0; key < MAX_FLANKS; key++)
          {
-            var flnk: UnitsFlank = new UnitsFlank(key, Owner.PLAYER);
-            flnk.flankUnits = new ArrayCollection(tempObj[key] as Array);
-            flanks.addItem(flnk);
+            flanks.addItem(new LoadUnloadFlank(
+               new ArrayCollection(tempObj[key] as Array), key, Owner.PLAYER));
          }
          
          dispatchUnitsChangeEvent();

@@ -15,8 +15,6 @@
          
          import controllers.GlobalFlags;
          import controllers.ui.NavigationController;
-         
-         import globalevents.GHealingScreenEvent;
          import globalevents.GlobalEvent;
          
          import models.building.Building;

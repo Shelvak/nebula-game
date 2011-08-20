@@ -30,8 +30,6 @@ package controllers.ui
    import flash.events.MouseEvent;
    import flash.external.ExternalInterface;
    
-   import globalevents.GHealingScreenEvent;
-   import globalevents.GLoadUnloadScreenEvent;
    import globalevents.GRatingsEvent;
    import globalevents.GUnitsScreenEvent;
    import globalevents.GlobalEvent;

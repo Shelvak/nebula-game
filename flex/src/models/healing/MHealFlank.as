@@ -2,8 +2,6 @@ package models.healing
 {
    import controllers.Messenger;
    
-   import globalevents.GHealingScreenEvent;
-   
    import models.ModelsCollection;
    import models.Owner;
    import models.unit.MCUnit;

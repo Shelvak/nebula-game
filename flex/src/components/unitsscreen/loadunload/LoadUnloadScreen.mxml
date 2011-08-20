@@ -50,6 +50,7 @@
                             name="land"
                             label="{Localizer.string('Units', 'kind.' + (LS.location is Unit?'stored':'land'), 
                             [LS.getUnitCount(LS.flanks)])}"
+                            selected="{LS.landSelected}"
                             click="LS.tglButton_clickHandler(event)"/>
             <s:ToggleButton id="resourcesButton" label="{Localizer.string('Units', 'kind.resources')}"
                             click="LS.tglButton_clickHandler(event)"
@@ -64,7 +65,7 @@
             <s:itemRenderer>
                <fx:Component>
                   <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-                     <unitsscreen:FlankComp flankModel="{data}" height="100%" width="100%"/>
+                     <unitsscreen:SelectableFlank flankModel="{data}" height="100%" width="100%"/>
                   </s:ItemRenderer>
                </fx:Component>
             </s:itemRenderer>
@@ -83,21 +84,24 @@
                                              maxAmmount="{LS.getMaxStock(ResourceType.METAL)}"
                                              id="metalSelector" 
                                              selectedVal="{LS.metalSelectedVal}"
-                                             selectedResourcesChange="LS.selectedResourcesChangeHandler(event)"/>
+                                             selectedResourcesChange="LS.metalSelectedVal = metalSelector.selectedVal;
+                                             LS.selectedResourcesChangeHandler(event)"/>
                </s:Group>
                <s:Group width="80%">
                   <base:ResourceSelectorComp resourceType="{ResourceType.ENERGY}" 
                                              maxAmmount="{LS.getMaxStock(ResourceType.ENERGY)}"
                                              id="energySelector"
                                              selectedVal="{LS.energySelectedVal}"
-                                             selectedResourcesChange="LS.selectedResourcesChangeHandler(event)"/>
+                                             selectedResourcesChange="LS.energySelectedVal = energySelector.selectedVal;
+                                             LS.selectedResourcesChangeHandler(event)"/>
                </s:Group>
                <s:Group width="80%">
                   <base:ResourceSelectorComp resourceType="{ResourceType.ZETIUM}"
                                              maxAmmount="{LS.getMaxStock(ResourceType.ZETIUM)}"
                                              id="zetiumSelector"
                                              selectedVal="{LS.zetiumSelectedVal}"
-                                             selectedResourcesChange="LS.selectedResourcesChangeHandler(event)"/>
+                                             selectedResourcesChange="LS.zetiumSelectedVal = zetiumSelector.selectedVal;
+                                             LS.selectedResourcesChangeHandler(event)"/>
                </s:Group>
                <base:Warning text="{LS.missingStorageString}" paddingTop="10" 
                              horizontalCenter="0" maxWidth="{storagePanel.width - 60}" 

@@ -10,8 +10,6 @@ package models.healing
    
    import flash.events.EventDispatcher;
    import flash.events.MouseEvent;
-   
-   import globalevents.GHealingScreenEvent;
    import globalevents.GResourcesEvent;
    import globalevents.GUnitsScreenEvent;
    
@@ -258,7 +256,7 @@ package models.healing
       {
          if (!selectionClass.selectAll())
          {
-            Messenger.show(Localizer.string('Units', 'message.noResources'), Messenger.MEDIUM);
+            Messenger.show(Localizer.string('Units', 'message.noResources'), Messenger.SHORT);
          }
          refreshPrice();
       }

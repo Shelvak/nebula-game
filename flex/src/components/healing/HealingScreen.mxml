@@ -51,7 +51,7 @@
                         import models.unit.Unit;
                      ]]>
                   </fx:Script>
-                  <healing:HealingFlank flankModel="{data}" height="100%" width="100%"/>
+                  <unitsscreen:SelectableFlank flankModel="{data}" height="100%" width="100%"/>
                </s:ItemRenderer>
             </fx:Component>
          </s:itemRenderer>
@@ -69,7 +69,7 @@
                         import models.unit.Unit;
                      ]]>
                   </fx:Script>
-                  <healing:HealingFlank flankModel="{data}" height="100%" width="100%"/>
+                  <unitsscreen:SelectableFlank flankModel="{data}" height="100%" width="100%"/>
                </s:ItemRenderer>
             </fx:Component>
          </s:itemRenderer>
@@ -87,7 +87,7 @@
                         import models.unit.Unit;
                      ]]>
                   </fx:Script>
-                  <healing:HealingFlank flankModel="{data}" height="100%" width="100%"/>
+                  <unitsscreen:SelectableFlank flankModel="{data}" height="100%" width="100%"/>
                </s:ItemRenderer>
             </fx:Component>
          </s:itemRenderer>

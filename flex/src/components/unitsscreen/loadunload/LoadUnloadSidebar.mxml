@@ -12,8 +12,6 @@
          import controllers.GlobalFlags;
          import controllers.ui.NavigationController;
          
-         import globalevents.GLoadUnloadScreenEvent;
-         
          import models.unit.MCLoadUnloadScreen;
          import models.unit.Unit;
          
@@ -37,7 +35,7 @@
             }
             else
             {
-               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.SELECT_ALL);
+               LS.selectAllUnits();
             }
          }
          
@@ -49,7 +47,7 @@
             }
             else
             {
-               new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.DESELECT_UNITS);
+               LS.deselectAllUnits();
             }
          }
          

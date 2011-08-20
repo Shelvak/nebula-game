@@ -227,7 +227,8 @@
                   backgroundColor="#0f0f0f" backgroundAlpha="0.7"/>
          
       </s:Group>
-      <base:BackgroundedLabel visible="{model.unit &amp;&amp; !expanded}" 
+      <base:BackgroundedLabel visible="{model.unit &amp;&amp; model.loadUnload 
+                              &amp;&amp; !expanded}" 
                               bottom="17" right="24" text="{model.unit.volume}"
                               defaultFontSize="12"/>
       <s:Group right="0" width="24" bottom="0" top="0">

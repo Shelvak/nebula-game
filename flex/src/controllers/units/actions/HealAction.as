@@ -4,8 +4,6 @@ package controllers.units.actions
    import controllers.CommunicationAction;
    import controllers.GlobalFlags;
    
-   import globalevents.GHealingScreenEvent;
-   
    import utils.remote.rmo.ClientRMO;
    
    
