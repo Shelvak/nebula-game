@@ -3,8 +3,8 @@ package models.time
    import flash.events.EventDispatcher;
    import flash.events.IEventDispatcher;
    
-   import utils.Objects;
    import utils.DateUtil;
+   import utils.Objects;
    
 
    /**
@@ -35,7 +35,7 @@ package models.time
       }
       
       
-      private var _occuresAt:Date = null;
+      private var _occuresAt:Date = new Date(0);
       [Bindable(event="occuresAtChange")]
       /**
        * A fixed moment in time.  This property does not change over time but <code>occuresIn</code> and

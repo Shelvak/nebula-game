@@ -38,6 +38,12 @@ package tests.time
          timeEvent = null;
       };
       
+      [Test]
+      public function defaultPropValues() : void {
+         assertThat( "occuresIn", timeEvent.occuresIn, equals (0) );
+         assertThat( "occuresAt", timeEvent.occuresAt, notNullValue() );
+      }
+      
       
       [Test]
       public function should_dispatch_change_events() : void

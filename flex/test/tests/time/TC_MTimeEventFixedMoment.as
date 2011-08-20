@@ -10,6 +10,7 @@ package tests.time
    import org.hamcrest.assertThat;
    import org.hamcrest.core.not;
    import org.hamcrest.core.throws;
+   import org.hamcrest.date.dateEqual;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
    
@@ -32,6 +33,12 @@ package tests.time
          timeEvent = new MTimeEventFixedMoment();
       };
       
+      [Test]
+      public function defaultPropValues() : void {
+         assertThat( "occuresAt", timeEvent.occuresAt, dateEqual (new Date(0)) );
+         assertThat( "occuresIn", timeEvent.occuresIn, equals (0) );
+         assertThat( "hasOccured", timeEvent.hasOccured, isTrue() );
+      }
       
       [Test]
       public function should_dispatch_change_events() : void
