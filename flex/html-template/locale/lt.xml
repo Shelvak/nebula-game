@@ -465,6 +465,8 @@
       ką stato šis pastatas, bus taip pat sunaikinta.</p>
     </warning.buildingWorking>
     <toolTip.afterUpgrade value="Po patobulinimo" />
+    <warning.deployCancel 
+    value="Atšaukus statybas tu neatgausi skleidžiamo kario" /> 
 
     <title.boost value="Padidinti" />
     <title.buildingBonus value="Pastato privalumai" />
@@ -1605,6 +1607,10 @@
     <label.ok value="Gerai" />
     <label.yes value="Taip" />
     <label.no value="Ne" />
+    
+    <title.cancelUnitTraining value="Atšaukti kario apmokymus" />
+    <message.cancelUnitTraining 
+    value="Ar tikrai nori atšaukti šio kario apmokymus?"/>
     
     <title.cancelUpgrade value="Atšaukti tobulinimą" />
     <message.cancelUpgrade 
@@ -3746,6 +3752,10 @@
     <warning.noFleets>
       <p>Šiuo metu nėra išskrendančių laivynų.</p>
     </warning.noFleets>
+    
+    <btnLabel.cancel value="Atšaukti" />
+    <label.cancelTraining
+    value="Atšaukus šio kario apmokymus gautum:" />
 
     <stored.short>
       <p>R: {0}%<br/>K: {1}%</p>

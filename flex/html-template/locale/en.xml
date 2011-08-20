@@ -484,7 +484,8 @@
     <label.battlegroundOwner> 
       <p>The longer you rule this planet, the less productive 
       will the NPC factories become.</p>
-    </label.battlegroundOwner> 
+    </label.battlegroundOwner>
+    <warning.deployCancel value="You will not get your deployed unit back" /> 
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>
@@ -1603,6 +1604,10 @@
       <p>Are you sure you want to convert {0 one[one VIP cred] many[? VIP creds]} 
       to {1 one[one cred] many[? creds]}?</p>
     </message.convertCreds>
+    
+    <title.cancelUnitTraining value="Cancel unit training" />
+    <message.cancelUnitTraining 
+    value="Are you sure you want to cancel training of this unit?"/>
     
     <title.cancelUpgrade value="Cancel upgrade" />
     <message.cancelUpgrade 
@@ -3794,6 +3799,10 @@
     <warning.noFleets>
       <p>There are currently no ships leaving this planet.</p>
     </warning.noFleets>
+    
+    <btnLabel.cancel value="Cancel" />
+    <label.cancelTraining
+    value="If you cancel training of this unit you will get:" />
 
     <stored.short>
       <p>R: {0}%<br/>U: {1}%</p>

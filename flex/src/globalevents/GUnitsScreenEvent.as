@@ -9,8 +9,6 @@ package globalevents
    {
       public static const MANAGE_UNITS: String = 'manageUnits';
       
-      public static const FACILITY_OPEN: String = "facilityOpen";
-      
       public static const UNITS_UPDATED: String = "unitsUpdated";
       
       public static const SET_STANCE: String = "unitsStanceSet";
@@ -39,8 +37,6 @@ package globalevents
       
       public static const SWITCH_TO_STORAGE_SCREEN: String = "switchToStorageInitiated";
       
-      
-      public var facilityId: int;
       
       public var unitsHash: Object;
       
@@ -74,9 +70,6 @@ package globalevents
       {
          switch (type)
          {
-            case (FACILITY_OPEN):
-               facilityId = params;
-               break;
             case (UNITS_UPDATED):
                unitsHash = params;
                break;

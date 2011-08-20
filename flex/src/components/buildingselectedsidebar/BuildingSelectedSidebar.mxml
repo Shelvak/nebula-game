@@ -46,6 +46,7 @@
          import models.building.BuildingType;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
+         import models.parts.Upgradable;
          import models.parts.events.UpgradeEvent;
          import models.planet.MBoost;
          import models.resource.Resource;
@@ -62,6 +63,7 @@
          import spark.utils.TextFlowUtil;
          
          import utils.DateUtil;
+         import utils.MathUtil;
          import utils.ModelUtil;
          import utils.NumberUtil;
          import utils.UrlNavigate;
@@ -345,6 +347,7 @@
          
          private function refreshConstructor(e: Event = null): void
          {
+            GlobalEvent.unsubscribe_TIMED_UPDATE(refreshBuiltPart);
             if (_selectedModel)
             {
                if (_selectedModel.isGhost)
@@ -369,6 +372,7 @@
                   {
                      constructable = ML.latestPlanet.getBuildingById(constructor.constructableId);
                   }
+                  GlobalEvent.subscribe_TIMED_UPDATE(refreshBuiltPart);
                   if (_selectedModel.isGhost)
                   {
                      for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries)
@@ -386,6 +390,14 @@
                }
             }
          }
+         
+         private function refreshBuiltPart(e: GlobalEvent): void
+         {
+            constructableBuiltPart = Upgradable(constructable.upgradePart).upgradeProgress;
+         }
+         
+         [Bindable]
+         private var constructableBuiltPart: Number;
          
          [Bindable]
          private var constructable: * = null;
@@ -826,10 +838,7 @@
                   </base:Panel>
                   
                   <base:Panel title="{getString('panelTitle.cancelProgress')}"
-                              visible="{_selectedModel.upgradePart.upgradeEndsAt != null
-                              &amp;&amp; (_selectedModel.upgradePart.level > 0
-                              || ML.latestPlanet.getBuildingByConstructable(_selectedModel.id,
-                              ObjectClass.BUILDING) != null)}">
+                              visible="{_selectedModel.upgradePart.upgradeEndsAt != null}">
                      <base:AdvancedContainer left="0" right="0">
                         <s:Group width="100%" visible="{_selectedModel.upgradePart.level > 0}">
                            <s:Label text="{getString('label.cancelUpgrade')}"
@@ -854,6 +863,9 @@
                                             _selectedModel, ResourceType.ZETIUM, builtPart) != null}"
                                             textToDisplay="{Resource.getModelCancelRevenueString(
                                             _selectedModel, ResourceType.ZETIUM, builtPart)}"/>
+                        <base:Warning showSign="false" text="{getString('warning.deployCancel')}" 
+                                      visible="{ML.latestPlanet.getBuildingByConstructable(_selectedModel.id,
+                                      ObjectClass.BUILDING) == null}"/>
                         <s:Group width="100%">
                            <s:Button right="6" label="{getString('label.cancel')}"
                                      click="cancelUpgrade()"/>
@@ -875,6 +887,7 @@
                               visible="{_selectedModel.isGhost
                               || _selectedModel.constructableType != null}">
                      <buildingsidebar:BuildingProgressElement id="progressElement"
+                                                              cancelable="true"
                                                               constructableModel="{constructable}"/>
                      <s:List id="queueList" 
                              dataProvider="{constructor.constructionQueueEntries}"
@@ -1334,16 +1347,37 @@
                         </s:Group>
                         <base:ImageAndLabel type="{ResourceType.METAL}" paddingLeft="6" 
                                             visible="{_selectedModel.upgradePart.level > 0}"
-                                            textToDisplay="{Resource.calculateBuildingDestructRevenue(_selectedModel.type,
-                                            _selectedModel.upgradePart.level, ResourceType.METAL)}"/>
+                                            textToDisplay="{MathUtil.round(
+                                            Resource.calculateBuildingDestructRevenue(_selectedModel.type,
+                                            _selectedModel.upgradePart.level, ResourceType.METAL)
+                                            + (_selectedModel.constructableId == 0 
+                                            || Resource.getModelCancelRevenueString(constructable, ResourceType.METAL,
+                                            constructableBuiltPart) == null
+                                            ? 0
+                                            : Resource.getModelCancelRevenue(constructable, ResourceType.METAL,
+                                            constructableBuiltPart)), 2).toString()}"/>
                         <base:ImageAndLabel type="{ResourceType.ENERGY}" paddingLeft="6" 
                                             visible="{_selectedModel.upgradePart.level > 0}"
-                                            textToDisplay="{Resource.calculateBuildingDestructRevenue(_selectedModel.type,
-                                            _selectedModel.upgradePart.level, ResourceType.ENERGY)}"/>
+                                            textToDisplay="{MathUtil.round(
+                                            Resource.calculateBuildingDestructRevenue(_selectedModel.type,
+                                            _selectedModel.upgradePart.level, ResourceType.ENERGY)
+                                            + (_selectedModel.constructableId == 0 
+                                            || Resource.getModelCancelRevenueString(constructable, ResourceType.ENERGY,
+                                            constructableBuiltPart) == null
+                                            ? 0
+                                            : Resource.getModelCancelRevenue(constructable, ResourceType.ENERGY,
+                                            constructableBuiltPart)), 2).toString()}"/>
                         <base:ImageAndLabel type="{ResourceType.ZETIUM}" paddingLeft="6"
                                             visible="{_selectedModel.upgradePart.level > 0}"
-                                            textToDisplay="{Resource.calculateBuildingDestructRevenue(_selectedModel.type,
-                                            _selectedModel.upgradePart.level, ResourceType.ZETIUM)}"/>
+                                            textToDisplay="{MathUtil.round(
+                                            Resource.calculateBuildingDestructRevenue(_selectedModel.type,
+                                            _selectedModel.upgradePart.level, ResourceType.ZETIUM)
+                                            + (_selectedModel.constructableId == 0 
+                                            || Resource.getModelCancelRevenueString(constructable, ResourceType.ZETIUM,
+                                            constructableBuiltPart) == null
+                                            ? 0
+                                            : Resource.getModelCancelRevenue(constructable, ResourceType.ZETIUM,
+                                            constructableBuiltPart)), 2).toString()}"/>
                         <s:Group width="100%">
                            <s:Button right="6" label="{canDestroyBuilding?getString('destroy')
                                      :destructRemainingTime}" enabled="{!_selectedModel.pending}"

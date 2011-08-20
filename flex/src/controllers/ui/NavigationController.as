@@ -52,6 +52,7 @@ package controllers.ui
    import models.ratings.MCRatingsScreen;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
+   import models.unit.MCUnitsBuild;
    import models.unit.Unit;
    import models.unit.UnitKind;
    
@@ -586,14 +587,25 @@ package controllers.ui
          }
       }
       
-      public function showFacilities(facilityId: int) : void
+      public function showFacilities(facilityId: int, 
+                                     cancelState: Boolean = false) : void
       {
          var openFacilityWithId: Function = function(e: Event): void
          {
             createdScreens[MainAreaScreens.FACILITIES] = true;
             _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, openFacilityWithId);
             _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, openFacilityWithId);
-            new GUnitsScreenEvent(GUnitsScreenEvent.FACILITY_OPEN, facilityId);
+            var BS: MCUnitsBuild = MCUnitsBuild.getInstance();
+            BS.facilityId = facilityId;
+            if (cancelState)
+            {
+               BS.cancelId = facilityId;
+            }
+            else
+            {
+               BS.cancelId = -1;
+            }
+            BS.openFacility();
          }
          if (createdScreens[MainAreaScreens.FACILITIES])
          {

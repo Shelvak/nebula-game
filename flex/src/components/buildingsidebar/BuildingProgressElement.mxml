@@ -16,6 +16,7 @@
          import controllers.GlobalFlags;
          import controllers.buildings.BuildingsCommand;
          import controllers.objects.ObjectClass;
+         import controllers.ui.NavigationController;
          
          import globalevents.GCreditEvent;
          
@@ -109,12 +110,24 @@
          
          [Bindable]
          private var hovered: Boolean = false;
-
+         
          protected function btnDelete_clickHandler(event:MouseEvent):void
          {
-            ML.latestPlanet.selectObject(_constructableModel);
+            if (_constructableModel is Building)
+            {
+               ML.latestPlanet.selectObject(_constructableModel);
+            }
+            else
+            {
+               var fac: Building = ML.latestPlanet.getBuildingByConstructable(_constructableModel.id, 
+                  ObjectClass.UNIT);
+               if (fac != null)
+               {
+                  NavigationController.getInstance().showFacilities(fac.id, true);
+               }
+            }
          }
-
+         
       ]]>
    </fx:Script>
    <s:BorderContainer height="{imageHeight + 4}" width="100%" borderColor="#474747" borderWeight="1"
@@ -159,7 +172,7 @@
                                   + '%'}"/>
                   <s:Group width="100%">
                      <s:Label fontSize="10" text="{Localizer.string('Buildings', 'property.timeToFinish.long', 
-                             [_constructableModel.upgradePart.timeToFinishString])}" horizontalCenter="0"/>
+                              [_constructableModel.upgradePart.timeToFinishString])}" horizontalCenter="0"/>
                   </s:Group>
                   <s:layout>
                      <s:VerticalLayout gap="4"/>
