@@ -24,6 +24,13 @@ class PlayersController < GenericController
         GalaxiesController::ACTION_SHOW
       ].each { |action| push action }
       
+      # Dispatch current announcement if we have one.
+      ends_at, announcement = AnnouncementsController.get
+      unless ends_at.nil?
+        push AnnouncementsController::ACTION_NEW,
+          {'ends_at' => ends_at, 'message' => announcement}
+      end
+      
       push DailyBonusController::ACTION_SHOW \
         if player.daily_bonus_available?
 

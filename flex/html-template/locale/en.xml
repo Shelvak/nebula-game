@@ -4144,5 +4144,10 @@
     <label.freeCreds value="You can not use free creds in the market." />
     <label.moreInfo value="Why?" />
   </Market>
+  
+  <Announcements>
+    <title.popup value="Announcement"/>
+    <label.close value="Close"/>
+  </Announcements>
 
 </locale>

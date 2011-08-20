@@ -7,6 +7,8 @@ REQUIRED_GEMS = [
   {:name => 'eventmachine', :version => '>=0.12.6', :env => "!test"},
   {:name => 'json', :version => '>=1.4.6', :lib => "json/ext"},
   {:name => 'mail', :version => '>=2.2', :env => "production"},
+  # For natural date parsing, e.g. "in 5 minutes"
+  {:name => "chronic", :version => ">=0.6.2", :skip => true},
 ]
 
 REQUIRED_DEVELOPMENT_GEMS = [

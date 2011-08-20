@@ -2405,7 +2405,7 @@
       <p>Komandore.</p>
       <p>
         Atradimai! Progresas! Pasitelkę mokslą, mes išplečiame savo galimybių 
-        ribas. Mūsų priešai gali statytis laivynius, bet mes pasistatysime 
+        ribas. Mūsų priešai gali statytis laivynus, bet mes pasistatysime 
         geresnius! Negailėkite investicijų tyrimams ir mėgaukitės kosminiais 
         dividendais!
       </p>
@@ -4047,5 +4047,10 @@
     <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje." />
     <label.moreInfo value="Kodėl?" />
   </Market>
+  
+  <Announcements>
+    <title.popup value="Skelbimas"/>
+    <label.close value="Uždaryti"/>
+  </Announcements>
 
 </locale>

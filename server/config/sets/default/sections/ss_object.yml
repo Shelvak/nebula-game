@@ -29,7 +29,7 @@ asteroid.wreckage.zetium.spawn: [<%= mult * cap * 18 %>, <%= mult * cap * 54 %>]
 asteroid.wreckage.time.spawn: [<%= (mult * 2).hours %> / speed, <%= (mult * 4).hours %> / speed]
 # After player registers when to register first cooldown on asteroids in his
 # solar system?
-asteroid.wreckage.time.first: <%= 1.week %> / speed
+asteroid.wreckage.time.first: <%= 3.days %> / speed
 
 # Maximum values of each resource that can be on asteroid. Spawning will get
 # slower when reaching these values

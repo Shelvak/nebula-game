@@ -273,6 +273,8 @@
          
          protected function recalculateCosts(): void
          {
+            if (_selectedModel == null || _selectedModel.upgradePart == null)
+               return;
             var resources:ResourcesAmount = _selectedModel.upgradePart.resourcesNeededForNextLevel();
             metalCost = resources.metal;
             energyCost = resources.energy;
