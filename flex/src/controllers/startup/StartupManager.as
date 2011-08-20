@@ -11,6 +11,8 @@ package controllers.startup
    import controllers.GlobalFlags;
    import controllers.alliances.AlliancesCommand;
    import controllers.alliances.actions.*;
+   import controllers.announcements.AnnouncementsCommand;
+   import controllers.announcements.actions.NewAction;
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.*;
    import controllers.chat.ChatCommand;
@@ -260,11 +262,11 @@ package controllers.startup
       private static function bindCommandsToActions () :void
       {
          bindDailyBonusCommands();
-         bindPlayerCommands();
+         bindPlayersCommands();
          bindAlliancesCommands();
          bindGalaxiesCommands();
          bindSolarSystemsCommands();
-         bindPlanetCommands();
+         bindPlanetsCommands();
          bindGameCommands();
          bindBuildingsCommands();
          bindTechnologiesCommands();
@@ -277,6 +279,7 @@ package controllers.startup
          bindQuestsCommands();
          bindChatCommands();
          bindMarketCommands();
+         bindAnnouncementsCommands();
       }
       private static function bindChatCommands() : void
       {
@@ -377,7 +380,7 @@ package controllers.startup
       {
          bindPair(GameCommand.CONFIG, new ConfigAction());
       }
-      private static function bindPlayerCommands() : void
+      private static function bindPlayersCommands() : void
       {
          with (PlayersCommand)
          {
@@ -421,7 +424,7 @@ package controllers.startup
             new controllers.solarsystems.actions.ShowAction()
          );
       }
-      private static function bindPlanetCommands() : void {
+      private static function bindPlanetsCommands() : void {
          with (PlanetsCommand) {
             bindPair(SHOW, new controllers.planets.actions.ShowAction());
             bindPair(EDIT, new controllers.planets.actions.EditAction());
@@ -433,6 +436,9 @@ package controllers.startup
             bindPair(REMOVE_FOLIAGE, new RemoveFoliageAction());
             bindPair(PORTAL_UNITS, new PortalUnitsAction());
          }
+      }
+      private static function bindAnnouncementsCommands() : void {
+         bindPair(AnnouncementsCommand.NEW, new controllers.announcements.actions.NewAction());
       }
       
       /**

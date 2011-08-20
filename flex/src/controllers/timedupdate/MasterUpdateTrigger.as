@@ -75,9 +75,11 @@ package controllers.timedupdate
        * Reset the flags that were (possibly) set by the previous updates.
        */
       private function resetChangeFlags() : void {
-         if (_triggersToReset.length == 0) return;
-         for each (var trigger:IUpdateTrigger in _triggersToReset.splice(0, _triggersToReset.length))
+         if (_triggersToReset.length == 0)
+            return;
+         for each (var trigger:IUpdateTrigger in _triggersToReset.splice(0, _triggersToReset.length)) {
             trigger.resetChangeFlags();
+         }
       }
       
       
@@ -92,9 +94,11 @@ package controllers.timedupdate
          _triggerIndex++;
          if (_triggerIndex == _triggers.length)
             _triggerIndex = 0;
-         _triggers[_triggerIndex].update();
          
-         _triggersToReset.push(_triggers[_triggerIndex]);
+         // update
+         var trigger:IUpdateTrigger = _triggers[_triggerIndex]; 
+         trigger.update();
+         _triggersToReset.push(trigger);
       }
    }
 }

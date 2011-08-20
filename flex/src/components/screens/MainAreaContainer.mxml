@@ -24,7 +24,7 @@
                     xmlns:player="components.player.*"
                     xmlns:defensiveportal="components.defensiveportal.*"
                     xmlns:market="components.market.*"
-                    currentState="sidebarCollapsed">
+                    currentState="sidebarCollapsed" xmlns:announcement="components.announcement.*">
    <fx:Script>
       <![CDATA[
          import components.dailybonus.DailyBonusComp;
@@ -180,8 +180,14 @@
          </s:NavigatorContent>
       </mx:ViewStack>
       <base:TopMessage bottom="20" horizontalCenter="0" width="100%" visible="false"/>
-      <s:Button skinClass="components.skins.DailyBonusButtonSkin" left="0" top="200"
-                visible="{ML.player.dailyBonus != null}" click="showDailyBonus()"/>
+      <s:Group left="0" top="200">
+         <s:layout>
+            <s:VerticalLayout horizontalAlign="left" gap="20"/>
+         </s:layout>
+         <s:Button skinClass="components.skins.DailyBonusButtonSkin"
+                   visible="{ML.player.dailyBonus != null}" click="showDailyBonus()"/>
+         <announcement:AnnouncementButton/>
+      </s:Group>
    </s:Group>
    
    <s:SkinnableContainer id="rightSidebarContainer"
