@@ -62,6 +62,7 @@ package controllers.startup
    
    import models.BaseModel;
    import models.ModelLocator;
+   import models.announcement.MAnnouncement;
    import models.chat.MChat;
    
    import mx.logging.Log;
@@ -199,10 +200,11 @@ package controllers.startup
       public static function resetApp() : void
       {
          _inMemoryLog.clear();
-         EventBroker.broadcast(new GlobalEvent(GlobalEvent.APP_RESET));
+         EventBroker.broadcast(new GlobalEvent(GlobalEvent.APP_RESET));         
          StringUtil.reset();
          ML.reset();
          MChat.getInstance().reset();
+         MAnnouncement.getInstance().reset();
          AllianceScreenM.getInstance().reset();
          ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
          GlobalFlags.getInstance().lockApplication = false;

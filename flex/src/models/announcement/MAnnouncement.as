@@ -18,6 +18,12 @@ package models.announcement
    [Event(name="buttonVisibleChange", type="models.announcement.MAnnouncementEvent")]
    
    /**
+    * @see models.announcement.MAnnouncementEvent#RESET
+    * @eventType models.announcement.MAnnouncementEvent.RESET
+    */
+   [Event(name="reset", type="models.announcement.MAnnouncementEvent")]
+   
+   /**
     * Announcement model singleton.
     */
    public class MAnnouncement extends BaseModel implements IUpdatable
@@ -29,6 +35,12 @@ package models.announcement
       
       public function MAnnouncement() {
          super();
+      }
+      
+      public function reset() : void {
+         this.message = null;
+         this.event.occuresAt = new Date(0);
+         dispatchAnnouncmentEvent(MAnnouncementEvent.RESET);
       }
       
       prop_name static const message:String = "message";
@@ -46,7 +58,7 @@ package models.announcement
       public function update() : void {
          event.update();
          if (event.change_flag::hasOccured)
-            dispatchSimpleEvent(MAnnouncementEvent, MAnnouncementEvent.BUTTON_VISIBLE_CHANGE);
+            dispatchAnnouncmentEvent(MAnnouncementEvent.BUTTON_VISIBLE_CHANGE);
       }
       
       public function resetChangeFlags() : void {
@@ -61,6 +73,15 @@ package models.announcement
       [Bindable(event="buttonVisibleChange")]
       public function get buttonVisible() : Boolean {
          return !event.hasOccured;
+      }
+      
+      
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+      
+      private function dispatchAnnouncmentEvent(type:String) : void {
+         dispatchSimpleEvent(MAnnouncementEvent, type);
       }
    }
 }
