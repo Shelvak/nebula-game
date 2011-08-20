@@ -7,6 +7,8 @@ package tests.time
    import models.time.MTimeEventFixedMoment;
    import models.time.events.MTimeEventEvent;
    
+   import namespaces.change_flag;
+   
    import org.hamcrest.assertThat;
    import org.hamcrest.core.not;
    import org.hamcrest.core.throws;
@@ -38,6 +40,15 @@ package tests.time
          assertThat( "occuresAt", timeEvent.occuresAt, dateEqual (new Date(0)) );
          assertThat( "occuresIn", timeEvent.occuresIn, equals (0) );
          assertThat( "hasOccured", timeEvent.hasOccured, isTrue() );
+      }
+      
+      [Test]
+      public function flagsSetWhenOccuresAtIsChanged() : void {
+         timeEvent.resetChangeFlags();
+         timeEvent.occuresAt = new Date();
+         assertThat( "change_flag::occuresAt", timeEvent.change_flag::occuresAt, isTrue() );
+         assertThat( "change_flag::occuresIn", timeEvent.change_flag::occuresIn, isTrue() );
+         assertThat( "change_flag::hasOccured", timeEvent.change_flag::hasOccured, isTrue() );
       }
       
       [Test]
