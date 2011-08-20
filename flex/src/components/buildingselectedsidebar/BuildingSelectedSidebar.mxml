@@ -459,11 +459,13 @@
                (_selectedModel.upgradePart.level > 0?'cancelUpgrade':'cancelConstructor'));
             popUp.confirmButtonClickHandler = function (button: Button = null): void
             {
+               var _constructor: Building = ML.latestPlanet.getBuildingByConstructable(
+                  _selectedModel.id, ObjectClass.BUILDING);
                new BuildingsCommand(_selectedModel.upgradePart.level > 0 || _selectedModel.constructorId == 0
                   ?BuildingsCommand.CANCEL_UPGRADE:BuildingsCommand.CANCEL_CONSTRUCTOR, 
-                  {'id': (_selectedModel.upgradePart.level > 0 || _selectedModel.constructorId == 0
+                  {'id': (_selectedModel.upgradePart.level > 0 || _constructor == null
                      ? _selectedModel.id
-                     : _selectedModel.constructorId)
+                     : _constructor.id)
                   }).dispatch();
             };
             popUp.show();
@@ -826,7 +828,8 @@
                   <base:Panel title="{getString('panelTitle.cancelProgress')}"
                               visible="{_selectedModel.upgradePart.upgradeEndsAt != null
                               &amp;&amp; (_selectedModel.upgradePart.level > 0
-                              || _selectedModel.constructorId != 0)}">
+                              || ML.latestPlanet.getBuildingByConstructable(_selectedModel.id,
+                              ObjectClass.BUILDING) != null)}">
                      <base:AdvancedContainer left="0" right="0">
                         <s:Group width="100%" visible="{_selectedModel.upgradePart.level > 0}">
                            <s:Label text="{getString('label.cancelUpgrade')}"
