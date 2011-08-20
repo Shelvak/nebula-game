@@ -219,21 +219,15 @@ package controllers.connection
       }
       
       
-      private function serverProxy_connectionLostHandler(event:ServerProxyEvent) : void
-      {
-         // check if we have a unprocessed disconnect warning from the server
+      private function serverProxy_connectionLostHandler(event:ServerProxyEvent) : void {
+         // check if we have a unprocessed players|disconnect messages from the server
          // if we do, don't show the message here: soon serverWillDisconnect() will be called
          // and the user will be notified
-         var unprocessedMessages:Vector.<ServerRMO> = SERVER_PROXY.unprocessedMessages;
-         for each (var rmo:ServerRMO in unprocessedMessages)
-         {
-            if (rmo.action == PlayersCommand.DISCONNECT)
-            {
-               unprocessedMessages.splice(0, unprocessedMessages.length, rmo);
-               return;
-            }
+         for each (var rmo:ServerRMO in SERVER_PROXY.unprocessedMessages) {
+            if (rmo.action == PlayersCommand.DISCONNECT) return;
          }
-         
+         // do not process any leftover messages after disconnect
+         SERVER_PROXY.getUnprocessedMessages();
          showErrorPopup("connectionLost", "connectionLost", [reconnectLabelText]);
       }
       

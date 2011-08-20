@@ -2,21 +2,23 @@ Spec::Matchers.define :have_correct_unit_count do |*config_keys|
   match do |location|
     @location = location
     @errors = {}
-    grouped = Unit.in_location(location).group_by do |unit|
-      raise "#{unit.inspect} is not a Unit!" unless unit.is_a?(Unit)
-      [unit.type, unit.flank]
+    grouped = Unit.in_location(location).all.grouped_counts do |unit|
+      # Can't use Unit#type because it RANDOMLY returns Unit#class instead
+      # of actual #type attribute... Fuck that.
+      [unit[:type], unit.flank]
     end
     
-    success = false
     config_keys.each do |config_key|
-      value_success = true
-      
       values = CONFIG[config_key]
       raise ArgumentError.new("Unknown config key #{config_key}!") \
         if values.nil?
       
       if values.blank?
-        value_success = grouped.size == 0
+        unless grouped.size == 0
+          @errors[config_key] ||= []
+          @errors[config_key].push "Expected no units, but had #{
+            grouped.inspect}"
+        end
       else
         values.each do |type, count_range, flanks|
           type = type.camelcase
@@ -25,24 +27,19 @@ Spec::Matchers.define :have_correct_unit_count do |*config_keys|
             : (count_range[0]..count_range[1])
           flanks = [flanks] if flanks.is_a?(Fixnum)
 
-          count = 0
-          flanks.each do |flank|
-            count += (grouped[[type, flank]] || []).size
-          end
+          count = flanks.map { |flank| grouped[[type, flank]] || 0 }.sum
 
           unless count_range.include?(count)
-            value_success = false
             @errors[config_key] ||= []
             @errors[config_key].push "Expected #{type} to be in #{
               count_range} in flanks #{flanks.inspect} but it was #{count}."
           end
         end
       end
-      
-      success = true if value_success
     end
     
-    success
+    # Success if at least one combination had no errors.
+    @errors.keys.size < config_keys.size
   end
 
   failure_message_for_should do |location|

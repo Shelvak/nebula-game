@@ -416,7 +416,9 @@
                totalDestructTimeLbl = Localizer.string('BuildingSelectedSidebar', 'destructCooldown.total', 
                   [DateUtil.secondsToHumanString(totalCooldown)]);
             }
-            if (canDestroyBuilding != ML.latestPlanet.ssObject.canDestroyBuilding)
+            // TODO: find out when ML.latestPlanet or ML.latestPlanet.ssObject becomes null and fix this
+            var proceed:Boolean = ML.latestPlanet != null && ML.latestPlanet.ssObject != null;
+            if (proceed && canDestroyBuilding != ML.latestPlanet.ssObject.canDestroyBuilding)
             {
                canDestroyBuilding = ML.latestPlanet.ssObject.canDestroyBuilding;
             }
@@ -424,7 +426,7 @@
             {
                destructRemainingTime = '';
             }
-            else
+            else if (proceed)
             {
                destructRemainingTime = DateUtil.secondsToHumanString(int(
                   (ML.latestPlanet.ssObject.canDestroyBuildingAt.time - new Date().time)/1000));
@@ -627,7 +629,7 @@
          
          protected function queueList_creationCompleteHandler(event:FlexEvent):void
          {
-            queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
+            //queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
             queueList.scroller.setStyle('horizontalScrollPolicy', ScrollPolicy.OFF);
          }
          
@@ -678,12 +680,8 @@
                                  skinClass="components.skins.InfoButtonSkin"
                                  click="infoButton_clickHandler(event)"/>
                            </s:Group>
-                           <s:Label text="{getString('status') + 
-                                    ': ' + (_selectedModel.upgradePart.upgradeEndsAt != null?
-                                    (_selectedModel.upgradePart.level == 0?
-                                    getString('constructing'):
-                                    getString('upgrading')):' ')}" 
-                                    visible="{_selectedModel.upgradePart.upgradeEndsAt != null}"/>
+                           <s:Label text="{getString('status') + ': ' + (_selectedModel.upgradePart.isUpgrading ? getString('upgrading') : getString('constructing'))}" 
+                                    visible="{_selectedModel.upgradePart.upgradeInProgress}"/>
                            <s:Group visible="{_selectedModel.hp > 0}">
                               
                               <s:Label text="{getString('hp')}" styleName="h3"/>
@@ -696,7 +694,7 @@
                               </s:layout>
                            </s:Group>
                            
-                           <s:Group visible="{_selectedModel.upgradePart.upgradeEndsAt != null}">
+                           <s:Group visible="{_selectedModel.upgradePart.upgradeInProgress}">
                               <s:Button skinClass="components.skins.CreditButtonSkin" 
                                         click="coin_clickHandler(event)"
                                         label="{Localizer.string('Credits', 'label.accelerate')}"
@@ -707,7 +705,7 @@
                            <s:Group visible="{
                                     !(
                                     _selectedModel.npc || 
-                                    _selectedModel.upgradePart.upgradeEndsAt != null || 
+                                    _selectedModel.upgradePart.upgradeInProgress || 
                                     _selectedModel.state == Building.WORKING || 
                                     !(
                                     _selectedModel.metalRate &lt; 0 || 
@@ -723,31 +721,31 @@
                                         right="6"/>
                            </s:Group>
                            
-                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeInProgress ||
                                     (_selectedModel.type != BuildingType.HEALING_CENTER))}">
                               <s:Button label="{getString('open')}"
                                         click="NC.showHealing(_selectedModel, ML.latestPlanet.getActiveHealableUnits())"
                                         right="6"/>
                            </s:Group>
-                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeInProgress ||
                                     (!_selectedModel.isConstructor(ObjectClass.UNIT)) )}">
                               <s:Button label="{getString('open')}"
                                         click="NC.showFacilities(_selectedModel.id)"
                                         right="6"/>
                            </s:Group>
-                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeInProgress ||
                                     _selectedModel.type != BuildingType.RESEARCH_CENTER)}">
                               <s:Button label="{getString('open')}"
                                         click="NC.showTechnologies()"
                                         right="6"/>
                            </s:Group>
-                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeInProgress ||
                                     _selectedModel.type != BuildingType.DEFENSIVE_PORTAL)}">
                               <s:Button label="{getString('open')}"
                                         click="NC.showDefensivePortal(ML.latestPlanet.id)"
                                         right="6"/>
                            </s:Group>
-                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeInProgress ||
                                     _selectedModel.type != BuildingType.MARKET)}">
                               <s:Button label="{getString('open')}"
                                         click="NC.showMarket(_selectedModel)"
@@ -789,6 +787,13 @@
                      </base:AdvancedContainer>
                   </base:Panel>
                   
+                  <base:Panel title="{getString('panelTitle.scientists')}"
+                              visible="{_selectedModel.type == BuildingType.RESEARCH_CENTER &amp;&amp;
+                                        _selectedModel.upgradePart.isUpgrading}">
+                     <s:Label text="{getString('message.scientistsNotAvailable')}" lineBreak="toFit"
+                              left="6" right="6"/>
+                  </base:Panel>
+                  
                   <base:Panel title="{getString('queueInfo')}" 
                               visible="{_selectedModel.isGhost
                               || _selectedModel.constructableType != null}">
@@ -803,7 +808,9 @@
                              creationComplete="queueList_creationCompleteHandler(event)"
                              contentBackgroundAlpha="0"
                              dragComplete="queueList_dragCompleteHandler(event)"
-                             height="{constructor.constructionQueueEntries.length > 0?52:0}">
+                             height="{constructor.constructionQueueEntries.length > 0
+                             ?(constructor.constructionQueueEntries.length > 4?96:50)
+                             :0}">
                         <s:itemRenderer>
                            <fx:Component>
                               <s:ItemRenderer width="100%" height="44">
@@ -813,7 +820,7 @@
                         </s:itemRenderer>
                         
                         <s:layout>
-                           <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="6"/>
+                           <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="1"/>
                         </s:layout>
                      </s:List>
                      <base:layout>
@@ -878,8 +885,7 @@
                                  text="{getString('attackInfo')}"/> 
                      </s:Group>
                      
-                     <buildingselectedsidebar:NpcUnitsList 
-                        building="{_selectedModel}"/>
+                     <buildingselectedsidebar:NpcUnitsList building="{_selectedModel}"/>
                      <s:layout>
                         <s:VerticalLayout horizontalAlign="justify"/>
                      </s:layout>  
@@ -888,7 +894,7 @@
                   <base:Panel title="{getString('selectedUpgradeCost')}" 
                               visible="{!(_selectedModel.upgradePart.level == Config.getBuildingMaxLevel(_selectedModel.type) 
                               || !_selectedModel.managable
-                              || _selectedModel.npc || _selectedModel.upgradePart.upgradeEndsAt != null ||
+                              || _selectedModel.npc || _selectedModel.upgradePart.upgradeInProgress ||
                               _selectedModel.isGhost)}">
                      <s:Group>
                         <s:Group width="40%">
@@ -958,8 +964,7 @@
                               (_selectedModel.energyRate != 0) ||
                               (_selectedModel.zetiumRate != 0)) 
                               &amp;&amp; !_selectedModel.isGhost
-                              &amp;&amp; 
-                              (_selectedModel.state != Building.INACTIVE)}">
+                              &amp;&amp; (_selectedModel.state != Building.INACTIVE)}">
                      <base:AdvancedContainer left="0" right="0">
                         <s:Group visible="{_selectedModel.metalRate != 0}">
                            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
@@ -1141,7 +1146,7 @@
                                          visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
                                          toolTip="{getString('toolTip.afterUpgrade')}"/>
                      <base:layout>
-                        <s:HorizontalLayout/>
+                        <s:HorizontalLayout verticalAlign="middle"/>
                      </base:layout>
                   </base:Panel>
                   

@@ -14,8 +14,7 @@ package controllers.objects.actions
       /**
        * Returns "objectIds".
        */
-      protected override function get objectsHashName() : String
-      {
+      protected override function get objectsHashName() : String {
          return "objectIds";
       }
       
@@ -27,15 +26,10 @@ package controllers.objects.actions
       {
          ML.units.disableAutoUpdate();
          if (objectClass == ObjectClass.UNIT)
-         {
             UnitController.getInstance().unitsDestroyed(objects, reason);
-         }
          else
-         {
-            for each (var objectId:int in objects)
-            {
-               getCustomController(objectClass).objectDestroyed(objectSubclass, objectId, reason);
-            }
+            for each (var objectId:int in objects) {
+            getCustomController(objectClass).objectDestroyed(objectSubclass, objectId, reason);
          }
          ML.units.enableAutoUpdate();
          if (objectClass == ObjectClass.UNIT && ML.latestPlanet)

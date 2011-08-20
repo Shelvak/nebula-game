@@ -292,7 +292,7 @@
          }
          
          private function btnTutorial_clickHandler(event:MouseEvent) : void {
-            UrlNavigate.getInstance().showWikiUrl(quest.helpUrlId + " (Tutorial)");
+            UrlNavigate.getInstance().showTutorial(quest.helpUrlId);
          }
          
          private function btnClaim_clickHandler(event:MouseEvent) : void {

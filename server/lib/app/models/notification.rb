@@ -49,7 +49,7 @@ class Notification < ActiveRecord::Base
 
   # custom_serialize converts all :symbols to 'symbols'
   serialize :params
-  default_scope :order => "`read` ASC, `created_at` DESC"
+  default_scope order("`read` ASC, `created_at` DESC")
 
   protected
   before_save :set_timestamps

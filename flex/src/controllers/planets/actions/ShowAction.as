@@ -130,6 +130,12 @@ package controllers.planets.actions
             ss.fake = true;
             ss.id = planet.solarSystemId;
             var ssInGalaxy:SolarSystem = ML.latestGalaxy.getSSById(ss.id);
+            if (ssInGalaxy == null)
+            {
+               throw new Error("Can't find solar system with id " + ss.id
+                  + " in galaxy map. Man, that's funky! " 
+                  + "It should be there because you have a planet in it.");
+            }
             ss.x = ssInGalaxy.x;
             ss.y = ssInGalaxy.y;
             ML.latestSolarSystem = ss;

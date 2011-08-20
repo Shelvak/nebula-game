@@ -73,7 +73,7 @@ class PlanetsController < GenericController
   # You must have a research center to be able to explore something on a 
   # planet.
   # 
-  # Invocation: By client
+  # Invocation: by client
   # 
   # Parameters:
   # - planet_id (Fixnum)
@@ -97,6 +97,42 @@ class PlanetsController < GenericController
     planet.explore!(params['x'], params['y'])
   end
 
+  # Immediately finishes exploration mission for creds.
+  # 
+  # Invocation: by client
+  # 
+  # Parameters:
+  # - id (Fixnum): ID of the planet
+  # 
+  # Response: None
+  #
+  def action_finish_exploration
+    param_options(:required => {:id => Fixnum})
+    
+    planet = SsObject::Planet.where(:player_id => player.id).
+      find(params['id'])
+    planet.finish_exploration!(true)
+  end
+  
+  # Removes explorable foliage for creds.
+  #
+  # Invocation: by client
+  # 
+  # Parameters:
+  # - id (Fixnum): ID of the planet
+  # - x (Fixnum): x coordinate of the tile
+  # - y (Fixnum): y coordinate of the tile
+  # 
+  # Response: None
+  #
+  def action_remove_foliage
+    param_options(:required => {:id => Fixnum, :x => Fixnum, :y => Fixnum})
+    
+    planet = SsObject::Planet.where(:player_id => player.id).
+      find(params['id'])
+    planet.remove_foliage!(params['x'], params['y'])
+  end
+  
   # Edit planet properties.
   #
   # You can only do this if you own the planet. Also you can only do this
@@ -148,31 +184,9 @@ class PlanetsController < GenericController
     param_options :required => {:id => Fixnum, :resource => String,
       :attribute => String}
 
-    raise GameLogicError.new("Unknown resource #{params['resource']}!") \
-      unless %w{metal energy zetium}.include?(params['resource'])
-    raise GameLogicError.new("Unknown attribute #{params['attribute']}!") \
-      unless %w{rate storage}.include?(params['attribute'])
-
-    creds_needed = CONFIG['creds.planet.resources.boost.cost']
-    raise GameLogicError.new("Not enough creds! Required #{creds_needed
-      }, has: #{player.creds}.") if player.creds < creds_needed
-    player.creds -= creds_needed
-
     planet = SsObject::Planet.where(:player_id => player.id).find(
       params['id'])
-    attr = :"#{params['resource']}_#{params['attribute']}_boost_ends_at"
-    duration = CONFIG['creds.planet.resources.boost.duration']
-    current = planet.send(attr)
-    planet.send(:"#{attr}=",
-      current.nil? ? duration.from_now : current + duration)
-
-    ActiveRecord::Base.transaction do
-      planet.save!
-      player.save!
-      EventBroker.fire(planet, EventBroker::CHANGED,
-        EventBroker::REASON_OWNER_PROP_CHANGE)
-      CredStats.boost!(player, params['resource'], params['attribute'])
-    end
+    planet.boost!(params['resource'], params['attribute'])
   end
 
   # Returns portal units that would come to defend this planet.

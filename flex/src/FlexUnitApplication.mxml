@@ -11,17 +11,18 @@
          import org.flexunit.runner.FlexUnitCore;
          
          import tests._old.testsuites.*;
-         import tests.animation.TSAnimation;
-         import tests.chat.TSChat;
-         import tests.controllers.ui.TSUIControllers;
-         import tests.models.TSModels;
-         import tests.movement.TSMovement;
-         import tests.notifications.TSNotifications;
-         import tests.spacemap.TSSpaceMap;
-         import tests.time.TSTime;
-         import tests.utils.TSUtils;
-         import tests.utils.components.TSComponents;
-         import tests.utils.datastructures.TSDataStructures;
+         import tests.animation.TS_Animation;
+         import tests.chat.TS_Chat;
+         import tests.controllers.ui.TS_UIControllers;
+         import tests.foliage.TS_Foliage;
+         import tests.models.TS_Models;
+         import tests.movement.TS_Movement;
+         import tests.notifications.TS_Notifications;
+         import tests.spacemap.TS_SpaceMap;
+         import tests.time.TS_Time;
+         import tests.utils.TS_Utils;
+         import tests.utils.components.TS_Components;
+         import tests.utils.datastructures.TS_DataStructures;
          
          import utils.DateUtil;
          
@@ -32,17 +33,18 @@
          private function allTestSuites() : Array
          {
             return [
-               TSModels,
-               TSAnimation,
-               TSNotifications,
-               TSUtils,
-               TSDataStructures,
-               TSComponents,
-               TSUIControllers,
-               TSMovement,
-               TSSpaceMap,
-               TSChat,
-               TSTime,
+               TS_Models,
+               TS_Animation,
+               TS_Notifications,
+               TS_Utils,
+               TS_DataStructures,
+               TS_Components,
+               TS_UIControllers,
+               TS_Movement,
+               TS_SpaceMap,
+               TS_Chat,
+               TS_Time,
+               TS_Foliage,
                CommunicationsTestSuite,
                ModelsTestSuite,
                UtilsTestSuite
@@ -53,7 +55,7 @@
          public function currentRunTestSuite():Array
          {
             var testsToRun:Array = [
-               TSChat
+               TS_Foliage
             ];
             return testsToRun;
          }

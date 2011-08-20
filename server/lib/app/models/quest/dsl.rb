@@ -35,6 +35,53 @@ class Quest::DSL
 
     quest
   end
+  
+  def check
+    errors = []
+    
+    quest = Quest.where(:id => @quest_id).first
+    if quest.nil?
+      errors.push "Not found!"
+      return errors
+    end
+    
+    errors.push "Parent id should have been #{@parent_id} but was #{
+      quest.parent_id}" unless @parent_id == quest.parent_id
+    rewards = @rewards.blank? ? nil : @rewards
+    errors.push "Expected rewards:\n#{@rewards
+      }\n\nActual rewards:\n#{quest.rewards}" \
+      unless rewards == quest.rewards
+    errors.push "Expected achievement to be #{@achievement}, but it was #{
+      quest.achievement}" unless @achievement == quest.achievement
+    errors.push "Expected help_url_id to be #{@help_url_id}, but it was #{
+      quest.help_url_id}" unless @help_url_id == quest.help_url_id
+    
+    defined_objectives = @objectives.dup
+    quest.objectives.all.reject do |objective|
+      index = defined_objectives.index do |klass, options|
+        objective.is_a?(klass) && options.map do |key, value|
+          objective.send(key) == value
+        end.uniq == [true]
+      end
+      
+      if index
+        defined_objectives.delete_at(index)
+      else
+        errors.push "Objective #{objective
+          } was not defined but found in DB!"
+      end
+    end
+    
+    unless defined_objectives.blank?
+      defined_objectives.each do |klass, options|
+        errors.push "Objective #{klass.to_s.demodulize} with options " +
+          (options.map { |k, v| "#{k}: #{v.inspect}"}.join(", ")) +
+          " was defined, but not found in DB!"
+      end
+    end
+    
+    errors
+  end
 
   # Reward numeric property.
   #
@@ -304,17 +351,15 @@ class Quest::DSL
   # Annex a planet.
   #
   # Options:
-  # - :npc => true or false - should that planet be owned by NPC?
   # - :count => Fixnum - number of planets required.
   #
   def annex_planet(options={})
-    options.assert_valid_keys(:npc, :count)
+    options.assert_valid_keys(:count)
 
-    options.reverse_merge! :npc => true, :count => 1
+    options.reverse_merge! :count => 1
     @objectives.push([
       Objective::AnnexPlanet,
-      {:key => PLANET_KEY, :count => options[:count],
-        :npc => options[:npc]}
+      {:key => PLANET_KEY, :count => options[:count], :npc => true}
     ])
   end
 

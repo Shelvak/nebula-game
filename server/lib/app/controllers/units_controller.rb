@@ -406,7 +406,8 @@ class UnitsController < GenericController
   # transporter.
   #
   def action_unload
-    param_options :required => %w{unit_ids transporter_id}
+    param_options :required => {:unit_ids => Array, 
+      :transporter_id => Fixnum}
 
     transporter = Unit.where(:player_id => player.id).find(
       params['transporter_id'])

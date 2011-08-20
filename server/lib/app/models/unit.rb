@@ -15,17 +15,20 @@ class Unit < ActiveRecord::Base
       :converter => LocationPoint::CONVERTER
   
   scope :combat, proc { 
-    where("level > 0 AND `type` NOT IN (?)", non_shooting_types)
+    where("level > 0 AND `type` NOT IN (?)", non_combat_types)
   }
   
   # Regexp used to match building guns in config.
   GUNS_REGEXP = /^units\.(.+?)\.guns$/
 
-  # Return Array of String building types that have guns.
-  def self.non_shooting_types
+  # Return Array of String unit types that do not participate in combat.
+  def self.non_combat_types
     types = []
     CONFIG.each_matching(GUNS_REGEXP) do |key, value|
-      types.push key.match(GUNS_REGEXP)[1].camelcase if value.blank?
+      underscore_key = key.match(GUNS_REGEXP)[1]
+      # All space units participate in combat.
+      is_space = CONFIG["units.#{underscore_key}.kind"] == :space
+      types.push underscore_key.camelcase if value.blank? && ! is_space
     end
     types
   end
@@ -187,8 +190,10 @@ class Unit < ActiveRecord::Base
 
   # How much population does this unit take?
   def self.population
-    property('population') or raise ArgumentError.new(
-      "property population is nil for #{self}")
+    population = property('population')
+    raise ArgumentError.new("property population is nil for #{self}") \
+      if population.nil?
+    population
   end
 
   protected

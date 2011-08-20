@@ -6,6 +6,7 @@ package controllers.technologies.actions
    
    import globalevents.GCreditEvent;
    
+   import models.ModelLocator;
    import models.factories.TechnologyFactory;
    import models.parts.TechnologyUpgradable;
    import models.technology.Technology;
@@ -36,6 +37,7 @@ package controllers.technologies.actions
          else
          {
             TechnologyUpgradable(technology.upgradePart).dispatchUpgradeFinishedEvent();
+            ModelLocator.getInstance().resourcesMods.recalculateMods();
          }
          temp.cleanup();
       }

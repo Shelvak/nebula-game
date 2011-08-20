@@ -1,7 +1,5 @@
 package controllers.objects.actions.customcontrollers
 {
-   import utils.SingletonFactory;
-   
    import controllers.screens.MainAreaScreens;
    import controllers.screens.MainAreaScreensSwitch;
    
@@ -17,45 +15,31 @@ package controllers.objects.actions.customcontrollers
    
    public class NotificationController extends BaseObjectController
    {
-      public static function getInstance() : NotificationController
-      {
-         return SingletonFactory.getSingletonInstance(NotificationController);
+      public function NotificationController() {
+         super();
       }
       
       
-      public function NotificationController()
-      {
-      }
-      
-      
-      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void
-      {
+      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
          var notification:Notification = BaseModel.createModel(Notification, object);
          notification.isNew = true;
          ML.notifications.addItem(notification);
-         if (MainAreaScreensSwitch.getInstance().currentScreenName != MainAreaScreens.NOTIFICATIONS)
-         {
+         if (MainAreaScreensSwitch.getInstance().currentScreenName != MainAreaScreens.NOTIFICATIONS) {
             if (ExternalInterface.available)
-            {
                ExternalInterface.call("setUnreadNotifications", ML.notifications.unreadNotifsTotal);
-            }
             ML.notificationAlerts.addItem(notification);
          }
          var planet:Planet = ML.latestPlanet;
          if (notification.event == NotificationType.NOT_ENOUGH_RESOURCES && planet != null &&
-             planet.definesLocation(NotEnoughResources(notification.customPart).location))
-         {
-            for each (var coords:Array in object.params.coordinates)
-            {
+             planet.definesLocation(NotEnoughResources(notification.customPart).location)) {
+            for each (var coords:Array in object.params.coordinates) {
                var remove:PlanetObject = planet.getObject(coords[0], coords[1]);
                planet.removeObject(remove);
             }
          }
       }
       
-      
-      public override function objectDestroyed(objectSubclass:String, objectId:int, reason:String) : void
-      {
+      public override function objectDestroyed(objectSubclass:String, objectId:int, reason:String) : void {
          ML.notifications.remove(objectId);
       }
    }

@@ -1,20 +1,16 @@
 package models
 {
-   import config.Config;
-   
    import models.tile.TerrainType;
    import models.unit.UnitBuildingEntry;
-   
-   import utils.MathUtil;
 
    [Bindable]
    public class Reward
    {
       public function Reward(obj: Object)
       {
-         metal = MathUtil.round((obj.metal == null)? 0 : obj.metal, Config.getRoundingPrecision());
-         energy = MathUtil.round((obj.energy == null)? 0 : obj.energy, Config.getRoundingPrecision());
-         zetium = MathUtil.round((obj.zetium == null)? 0 : obj.zetium, Config.getRoundingPrecision());
+         metal = Math.floor((obj.metal == null)? 0 : obj.metal);
+         energy = Math.floor((obj.energy == null)? 0 : obj.energy);
+         zetium = Math.floor((obj.zetium == null)? 0 : obj.zetium);
          points = (obj.points == null)? 0 : obj.points;
          scientists = (obj.scientists == null)?0:obj.scientists;
          creds = (obj.creds == null)?0:obj.creds;

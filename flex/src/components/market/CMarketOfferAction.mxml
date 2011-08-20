@@ -2,7 +2,7 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx" 
-         xmlns:base="components.base.*">   
+         xmlns:base="components.base.*" xmlns:credits="components.credits.*">   
    <fx:Metadata>
       /**
       * Dispatched when selected resource in radio group changes
@@ -43,7 +43,19 @@
          private var ML: ModelLocator = ModelLocator.getInstance();
          
          [Bindable]
-         public var selectedOffer: MarketOffer;
+         private var _selectedOffer: MarketOffer;
+         
+         public function set selectedOffer(value: MarketOffer): void
+         {
+            _selectedOffer = value;
+            selector.value = 0;
+            cost = 0;
+            missingString = null;
+         }
+         public function get selectedOffer(): MarketOffer
+         {
+            return _selectedOffer;
+         }
          
          private function getText(prop: String, params: Array = null): String
          {
@@ -56,13 +68,13 @@
          protected function selector_changeHandler(event:Event):void
          {
             var selVal: int = selector.value;
-            cost = Math.ceil(selVal * selectedOffer.toRate);
+            cost = Math.ceil(selVal * _selectedOffer.toRate);
             var cPlanet: MSSObject = ML.latestPlanet.ssObject;
             var storString: String = Resource.getNotFittingResourcesString(
                cPlanet, 
-               selectedOffer.fromResource == ResourceType.METAL?selVal:0,
-               selectedOffer.fromResource == ResourceType.ENERGY?selVal:0,
-               selectedOffer.fromResource == ResourceType.ZETIUM?selVal:0);
+               _selectedOffer.fromResource == ResourceType.METAL?selVal:0,
+               _selectedOffer.fromResource == ResourceType.ENERGY?selVal:0,
+               _selectedOffer.fromResource == ResourceType.ZETIUM?selVal:0);
             if (storString == null)
             {
                missingString = null;
@@ -84,16 +96,16 @@
             var lbl: Label = new Label();
             lbl.minWidth = 300;
             lbl.text = Localizer.string('Popups', 'message.'+
-               (selectedOffer.fromId == ML.player.id?'cancelOffer':'buyOffer'));
+               (_selectedOffer.fromId == ML.player.id?'cancelOffer':'buyOffer'));
             popUp.addElement(lbl);
             popUp.title = Localizer.string('Popups', 'title.'+
-               (selectedOffer.fromId == ML.player.id?'cancelOffer':'buyOffer'));
+               (_selectedOffer.fromId == ML.player.id?'cancelOffer':'buyOffer'));
             popUp.confirmButtonClickHandler = function (button: Button = null): void
             {
                GlobalFlags.getInstance().lockApplication = true;
-               if (selectedOffer.fromId == ML.player.id)
+               if (_selectedOffer.fromId == ML.player.id)
                {
-                  new MarketCommand(MarketCommand.CANCEL, selectedOffer.id).dispatch();
+                  new MarketCommand(MarketCommand.CANCEL, _selectedOffer.id).dispatch();
                   cancel();
                }
                else
@@ -119,7 +131,7 @@
          {
             return IMG.getImage(AssetNames.MARKET_SCREEN_IMAGE_FOLDER + name);
          }
-
+         
          [Bindable]
          private var missingString: String = null;
          
@@ -145,43 +157,40 @@
       </s:layout>
    </s:Group>
    <base:AdvancedContainer horizontalCenter="0" bottom="14">
-      <base:AdvancedContainer visible="{ML.player.id != selectedOffer.fromId}">
+      <base:AdvancedContainer visible="{ML.player.id != _selectedOffer.fromId}">
          <base:Warning text="{getText('warning.doNotAfford')}" paddingTop="3"
                        showSign="false" minWidth="250"
                        verticalPaddings="6" defMinHeight="50"
-                       visible="{(selectedOffer.toResource == ResourceType.CREDS
-                       ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds) 
-                       &lt; Math.ceil(1 * selectedOffer.toRate)
-                       : planetResource(selectedOffer.toResource).currentStock
-                       &lt; Math.ceil(1 * selectedOffer.toRate))}"/>
-         <s:Group width="100%" visible="{!(selectedOffer.toResource == ResourceType.CREDS
-                  ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds) 
-                  &lt; Math.ceil(1 * selectedOffer.toRate)
-                  : planetResource(selectedOffer.toResource).currentStock
-                  &lt; Math.ceil(1 * selectedOffer.toRate))}">
+                       visible="{(_selectedOffer.toResource == ResourceType.CREDS
+                       ? ML.player.pureCreds &lt; Math.ceil(1 * _selectedOffer.toRate)
+                       : planetResource(_selectedOffer.toResource).currentStock
+                       &lt; Math.ceil(1 * _selectedOffer.toRate))}"/>
+         <s:Group width="100%" visible="{!(_selectedOffer.toResource == ResourceType.CREDS
+                  ? ML.player.pureCreds &lt; Math.ceil(1 * _selectedOffer.toRate)
+                  : planetResource(_selectedOffer.toResource).currentStock
+                  &lt; Math.ceil(1 * _selectedOffer.toRate))}">
             <s:Label text="0"/>
-            <s:HSlider minimum="0" maximum="{Math.min(selectedOffer.fromAmount, 
-                       Math.floor(selectedOffer.toResource == ResourceType.CREDS
-                       ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds)/selectedOffer.toRate
-                       : planetResource(selectedOffer.toResource).currentStock
-                       / selectedOffer.toRate))}" 
+            <s:HSlider minimum="0" maximum="{Math.min(_selectedOffer.fromAmount, 
+                       Math.floor(_selectedOffer.toResource == ResourceType.CREDS
+                       ? ML.player.pureCreds/_selectedOffer.toRate
+                       : planetResource(_selectedOffer.toResource).currentStock
+                       / _selectedOffer.toRate))}" 
                        stepSize="1"
                        id="selector" change="selector_changeHandler(event)"
                        width="250"/>
-            <s:Label text="{Math.min(selectedOffer.fromAmount, 
-                     Math.floor(selectedOffer.toResource == ResourceType.CREDS
-                     ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds)/selectedOffer.toRate
-                     : planetResource(selectedOffer.toResource).currentStock
-                     / selectedOffer.toRate))}"/>
+            <s:Label text="{Math.min(_selectedOffer.fromAmount, 
+                     Math.floor(_selectedOffer.toResource == ResourceType.CREDS
+                     ? ML.player.pureCreds/_selectedOffer.toRate
+                     : planetResource(_selectedOffer.toResource).currentStock
+                     / _selectedOffer.toRate))}"/>
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle"/>
             </s:layout>
          </s:Group>
-         <s:Group visible="{!(selectedOffer.toResource == ResourceType.CREDS
-            ? (ML.player.creds - ML.player.vipCreds - ML.player.freeCreds) 
-                  &lt; Math.ceil(1 * selectedOffer.toRate)
-            : planetResource(selectedOffer.toResource).currentStock
-            &lt; Math.ceil(1 * selectedOffer.toRate))}">
+         <s:Group visible="{!(_selectedOffer.toResource == ResourceType.CREDS
+                  ? ML.player.pureCreds &lt; Math.ceil(1 * _selectedOffer.toRate)
+                  : planetResource(_selectedOffer.toResource).currentStock
+                  &lt; Math.ceil(1 * _selectedOffer.toRate))}">
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle" gap="20"/>
             </s:layout>
@@ -189,7 +198,7 @@
                <s:Label text="{getText('label.willBuy', [selector.value])}"
                         styleName="{missingString==null?null:'unsatisfied'}"/>
                <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
-                              selectedOffer.fromResource)}"/>
+                              _selectedOffer.fromResource)}"/>
                <s:layout>
                   <s:HorizontalLayout verticalAlign="middle" gap="3"/>
                </s:layout>
@@ -197,54 +206,38 @@
             <s:Group>
                <s:Label text="{getText('label.willPay', [cost])}"/>
                <s:BitmapImage source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 
-                              selectedOffer.toResource)}"/>
+                              _selectedOffer.toResource)}"/>
                <s:layout>
                   <s:HorizontalLayout verticalAlign="middle" gap="3"/>
                </s:layout>
             </s:Group>
          </s:Group>
-         <s:Group visible="{selectedOffer.toResource == ResourceType.CREDS
+         <credits:FreeCredsWarning visible="{_selectedOffer.toResource == ResourceType.CREDS
                   &amp;&amp; ML.player.creds - ML.player.vipCreds == ML.player.freeCreds
-                  &amp;&amp; ML.player.freeCreds > 0}">
-            <s:Label color="#eec500" text="{getText('label.freeCreds')}" />
-            <s:Button skinClass="components.skins.LinkButtonSkin" 
-                      label="{getText('label.moreInfo')}"
-                      click="UrlNavigate.getInstance().showUrl('free-creds')"/>
-            <s:layout>
-               <s:HorizontalLayout verticalAlign="middle"/>
-            </s:layout>
-         </s:Group>
-         <s:Group visible="{selectedOffer.toResource == ResourceType.CREDS
-                  &amp;&amp; ML.player.vipLevel > 0}">
-            <s:Label color="#eec500" text="{getText('label.changeVip')}" />
-            <s:Button skinClass="components.skins.LinkButtonSkin" 
-                      label="{getText('label.here')}"
-                      click="NavigationController.getInstance().showVip()"/>
-            <s:layout>
-               <s:HorizontalLayout verticalAlign="middle"/>
-            </s:layout>
-         </s:Group>
+                  &amp;&amp; ML.player.freeCreds > 0}"/>
+         <credits:VipCredsWarning visible="{_selectedOffer.toResource == ResourceType.CREDS
+                  &amp;&amp; ML.player.vipLevel > 0}"/>
          <base:layout>
             <s:VerticalLayout horizontalAlign="center"/>
          </base:layout>
       </base:AdvancedContainer>
       <base:Warning text="{getText('warning.notFromPlanet')}"
                     paddingTop="6"
-                    visible="{ML.player.id == selectedOffer.fromId
-                    &amp;&amp; mScreen.privateOffers.find(selectedOffer.id) == null}"/>
-      <s:Button label="{ML.player.id != selectedOffer.fromId
+                    visible="{ML.player.id == _selectedOffer.fromId
+                    &amp;&amp; mScreen.privateOffers.find(_selectedOffer.id) == null}"/>
+      <s:Button label="{ML.player.id != _selectedOffer.fromId
                 ?getText('label.buy')
                 :getText('label.cancel')}" 
                 right="6"
-                enabled="{ML.player.id == selectedOffer.fromId
+                enabled="{ML.player.id == _selectedOffer.fromId
                 ?true
                 :selector.value > 0}"
-                visible="{ML.player.id == selectedOffer.fromId
-                ?(mScreen.privateOffers.find(selectedOffer.id) != null)
-                :(!(selectedOffer.toResource == ResourceType.CREDS
-                ? (ML.player.creds - ML.player.vipCreds) &lt; Math.ceil(1 * selectedOffer.toRate)
-                : planetResource(selectedOffer.toResource).currentStock
-                &lt; Math.ceil(1 * selectedOffer.toRate)))}"
+                visible="{ML.player.id == _selectedOffer.fromId
+                ?(mScreen.privateOffers.find(_selectedOffer.id) != null)
+                :(!(_selectedOffer.toResource == ResourceType.CREDS
+                ? ML.player.pureCreds &lt; Math.ceil(1 * _selectedOffer.toRate)
+                : planetResource(_selectedOffer.toResource).currentStock
+                &lt; Math.ceil(1 * _selectedOffer.toRate)))}"
                 skinClass="components.skins.GreenButtonSkin"
                 click="confirm(event)"/>
       <s:Button label="{getText('label.close')}" 

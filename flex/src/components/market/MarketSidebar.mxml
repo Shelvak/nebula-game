@@ -3,16 +3,23 @@
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx" 
          xmlns:market="components.market.*" 
-         xmlns:base="components.base.*">
+         xmlns:base="components.base.*"
+         creationComplete="group1_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
          import config.Config;
          
          import flashx.textLayout.elements.TextFlow;
          
+         import globalevents.GPlanetEvent;
+         
          import models.ModelLocator;
          import models.building.Building;
          import models.market.MCMarketScreen;
+         
+         import mx.events.FlexEvent;
          
          import spark.utils.TextFlowUtil;
          
@@ -28,6 +35,17 @@
          {
             return TextFlowUtil.importFromString(from);
          }
+
+         protected function group1_creationCompleteHandler(event:FlexEvent):void
+         {
+            EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, reset);
+         }
+         
+         private function reset(e: GPlanetEvent): void
+         {
+            sellGroup.reset();
+         }
+
       ]]>
    </fx:Script>
    <base:Panel title="{Localizer.string('Market', 'title.sell')}" left="6" right="6">
@@ -37,7 +55,7 @@
                   color="{mScreen.freeSlots > 0?0xffffff:0xff0000}"
                   paddingBottom="6"/>
       <s:Group>
-         <market:CMarketSell left="0" right="0"
+         <market:CMarketSell id="sellGroup" left="0" right="0"
             taxRate="{Building.getMarketTaxRate(
             mScreen.market.upgradePart.level)}"
             visible="{mScreen.freeSlots > 0}"

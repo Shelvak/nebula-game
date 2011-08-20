@@ -36,10 +36,13 @@
             {
                _queryElementModel = value;
                constructor = ML.latestPlanet.getBuildingById(_queryElementModel.constructorId);
-               recalculateTime();
-               var constructable: Building = ML.latestPlanet.getBuildingById(constructor.constructableId);
-               constructable.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
-               constructable.upgradePart.addEventListener(UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
+               recalculateTime();               
+               var constructablePart: Upgradable = ModelUtil.getModelClass(
+                  constructor.constructableType) == ObjectClass.UNIT
+                  ? ML.latestPlanet.getUnitById(constructor.constructableId).upgradePart
+                  : ML.latestPlanet.getBuildingById(constructor.constructableId).upgradePart;
+               constructablePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
+               constructablePart.addEventListener(UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
             }
          }
          
@@ -109,7 +112,7 @@
          private var _queryElementModel: ConstructionQueueEntry;
          
          private static const imageHeight: int = 28;
-         private static const imageWidth: int = 40;
+         private static const imageWidth: int = 42;
          
          [Bindable]
          private var deletePending: Boolean = false;
@@ -160,17 +163,18 @@
       <components:CenteredBitmapImage left="1" top="1" right="1" bottom="1" id="buildingImage"
                                       source="{IMG.getImage(AssetNames.getConstructableImageName(_queryElementModel.constructableType))}"
                                       rollOver="hovered = true" rollOut="hovered = false"/>
-      <s:Group visible="{_queryElementModel.count > 1}" top="0" left="0" 
-               width="{countLbl.width + 2}">
+      <s:Group visible="{_queryElementModel.count > 1}" top="1" left="1" 
+               width="{countLbl.width + 4}">
          <ui:DarkRoundedBackground top="0" bottom="0" left="0" right="0"/>
          <s:Label id="countLbl" fontSize="12" fontWeight="bold"
                   text="{_queryElementModel.count.toString()}"
-                  horizontalCenter="0" top="1" bottom="1"/>
+                  horizontalCenter="0" top="2" bottom="2"/>
       </s:Group>      
       <s:Group visible="{hovered}" top="1" right="1" 
-               width="{countLbl.width + 2}">
+               width="{btnDelete.width + 2}">
          <ui:DarkRoundedBackground top="0" bottom="0" left="0" right="0"/>
-         <s:Button skinClass="components.skins.DeleteButtonSkin" 
+         <s:Button skinClass="components.skins.DeleteButtonSkin"
+                   id="btnDelete"
                    left="1" top="1" bottom="1" right="1"
                    rollOver="hovered = true" rollOut="hovered = false" 
                    click="button1_clickHandler(event)"

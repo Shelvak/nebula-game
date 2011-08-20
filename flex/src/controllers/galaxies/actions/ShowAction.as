@@ -156,7 +156,7 @@ package controllers.galaxies.actions
          }
          else {
             ML.selectedBuilding = null;
-            ML.selectedFolliage = null;
+            ML.selectedFoliage = null;
             ML.selectedTechnology = null;
          }
          ML.units.disableAutoUpdate();

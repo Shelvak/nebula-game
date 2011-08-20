@@ -17,20 +17,31 @@ class MarketOffer < ActiveRecord::Base
   KIND_ZETIUM = 2
   KIND_CREDS = 3
   
-  validate do
+  # Maps resource kind to callback manager event kind.
+  CALLBACK_MAPPINGS = {
+    KIND_METAL => CallbackManager::EVENT_CREATE_METAL_SYSTEM_OFFER,
+    KIND_ENERGY => CallbackManager::EVENT_CREATE_ENERGY_SYSTEM_OFFER,
+    KIND_ZETIUM => CallbackManager::EVENT_CREATE_ZETIUM_SYSTEM_OFFER,
+  }
+  
+  # Maps callback manager event kind to resource kind.
+  CALLBACK_MAPPINGS_FLIPPED = CALLBACK_MAPPINGS.flip
+  
+  validate :on => :create do
     min_amount = CONFIG['market.offer.min_amount']
     errors.add(:from_amount, 
       "cannot be less than minimal #{min_amount}, however #{from_amount
-      } was offered.") if new_record? && from_amount < min_amount
-    errors.add(:from_kind, "cannot be creds") if from_kind == KIND_CREDS
+      } was offered.") if from_amount < min_amount
+    # System offers do not belong to player, so there is no limit.
     errors.add(:base, "Maximum number of market offers reached!") \
-      if player.market_offers.size >= CONFIG['market.offers.max']
+      if ! system? && 
+      player.market_offers.size >= CONFIG['market.offers.max']
   end
   
   before_create do
     self.galaxy_id ||= player.galaxy_id
     avg_rate = self.class.avg_rate(galaxy_id, from_kind, to_kind)
-    offset = CONFIG['market.avg_rate.offset']
+    offset = Cfg.market_rate_offset
     
     low = avg_rate * (1 - offset)
     high = avg_rate * (1 + offset)
@@ -43,11 +54,14 @@ class MarketOffer < ActiveRecord::Base
     true
   end
   
+  # Is this offer created by system?
+  def system?; planet_id.nil?; end
+  
   # Returns JSON hash for this +MarketOffer+.
   #
   # {
   #   'id' => Fixnum,
-  #   'player' => Player#minimal,
+  #   'player' => Player#minimal | nil,
   #   'from_kind' => Fixnum,
   #   'from_amount' => Fixnum,
   #   'to_kind' => Fixnum,
@@ -58,7 +72,7 @@ class MarketOffer < ActiveRecord::Base
   def as_json(options=nil)
     {
       'id' => id,
-      'player' => Player.minimal(player_id),
+      'player' => system? ? nil : Player.minimal(player_id),
       'from_kind' => from_kind,
       'from_amount' => from_amount,
       'to_kind' => to_kind,
@@ -78,7 +92,14 @@ class MarketOffer < ActiveRecord::Base
     cost = (amount * to_rate).ceil
     buyer_source, bs_attr = self.class.resolve_kind(buyer_planet, to_kind)
     buyer_target, bt_attr = self.class.resolve_kind(buyer_planet, from_kind)
-    seller_target, _ = self.class.resolve_kind(planet, to_kind)
+    if system?
+      seller_target = nil
+    else
+      seller_target, _ = self.class.resolve_kind(planet, to_kind)
+    end
+    
+    stats = CredStats.buy_offer(buyer_planet.player, cost) \
+      if seller_target.nil? && to_kind == KIND_CREDS
     
     buyer_has = buyer_source.send(bs_attr)
     raise GameLogicError.new("Not enough funds for #{buyer_source
@@ -93,31 +114,52 @@ class MarketOffer < ActiveRecord::Base
     # Add resource that buyer has bought from seller.
     buyer_target.send(:"#{bt_attr}=", 
       buyer_target.send(bt_attr) + amount)
-    # Add resource that buyer is paying with to seller.
-    seller_target.send(:"#{bs_attr}=", 
-      seller_target.send(bs_attr) + cost)
+    # Add resource that buyer is paying with to seller. Unless:
+    # * its a system offer
+    # * or #to_kind is creds and planet currently does not have an owner
+    seller_target.send(
+      :"#{bs_attr}=", seller_target.send(bs_attr) + cost
+    ) unless seller_target.nil?
     # Reduce bought amount from offer.
     self.from_amount -= amount
     
     transaction do
-      [buyer_source, buyer_target, seller_target].uniq.each do |obj|
-        self.class.save_obj_with_event(obj)
+      objects = [buyer_source, buyer_target]
+      # We might not have seller target. See above.
+      objects.push seller_target unless seller_target.nil?
+      objects.uniq.each { |obj| self.class.save_obj_with_event(obj) }
+      
+      if from_amount == 0
+        # Schedule creation of new system offer. 
+        CallbackManager.register(galaxy, CALLBACK_MAPPINGS[from_kind],
+          Cfg.market_bot_random_resource_cooldown_date) if system?
+        destroy
+      else
+        save!
       end
-      from_amount == 0 ? destroy : save!
       percentage_bought = amount.to_f / original_amount
+      
+      # Create notification if:
+      # * It's not a system notification
+      # * Enough of the percentage was bought
+      # * Sellers planet currently has a player.
       Notification.create_for_market_offer_bought(
         self, buyer_planet.player, amount, cost
-      ) if percentage_bought >= CONFIG['market.buy.notification.threshold']
+      ) if ! system? &&  
+        percentage_bought >= CONFIG['market.buy.notification.threshold'] &&
+        ! planet.player_id.nil?
+      
+      stats.save! unless stats.nil?
     end
     
     amount
   end
   
-  # Cancels offer. Returns #from_amount which is left to parent planet.
+  # Cancels offer. Returns #from_amount which is left to seller.
   def cancel!
-    planet, attr = self.class.resolve_kind(self.planet, from_kind)
-    planet.send(:"#{attr}=", planet.send(attr) + from_amount)
-    self.class.save_obj_with_event(planet)
+    seller_source, attr = self.class.resolve_kind(self.planet, from_kind)
+    seller_source.send(:"#{attr}=", seller_source.send(attr) + from_amount)
+    self.class.save_obj_with_event(seller_source)
     destroy
   end
   
@@ -139,9 +181,12 @@ class MarketOffer < ActiveRecord::Base
   def self.fast_offers(*conditions)
     t = "`#{table_name}`"
     p = "`#{Player.table_name}`"
+    sso = "`#{SsObject.table_name}`"
     
     (conditions.blank? ? self : where(*conditions)).
-      joins(:planet => :player).
+      joins("LEFT JOIN #{sso} ON #{sso}.`id` = #{t}.`planet_id` AND #{
+        sso}.`type` = '#{SsObject::Planet.to_s.demodulize}'").
+      joins("LEFT JOIN #{p} ON #{p}.`id` = #{sso}.`player_id`").
       select("#{t}.id, #{t}.from_kind, #{t}.from_amount, #{t}.to_kind, 
         #{t}.to_rate, #{t}.created_at, #{p}.id as player_id, 
         #{p}.name as player_name").
@@ -180,6 +225,24 @@ class MarketOffer < ActiveRecord::Base
           select("from_amount as amount, to_rate as rate").to_sql}
       ) as subselect
     ").to_f # JRuby compatibility.
+  end
+  
+  # Creates system offer for resource specified by _resource_kind_ in galaxy
+  # specified by _galaxy_id_.
+  #
+  # System offer is an offer which does not belong to any planet and trades
+  # resource for creds.
+  # 
+  # Its #to_rate is calculated by using #avg_rate and selling in most 
+  # expensive possible value.
+  #
+  def self.create_system_offer(galaxy_id, resource_kind)
+    avg_rate = self.avg_rate(galaxy_id, resource_kind, KIND_CREDS)
+    to_rate = avg_rate * (1 + Cfg.market_rate_offset)
+    from_amount = Cfg.market_bot_random_resource(resource_kind)
+    
+    new(:from_amount => from_amount, :from_kind => resource_kind,
+      :to_kind => KIND_CREDS, :to_rate => to_rate, :galaxy_id => galaxy_id)
   end
   
   # Save _object_ and dispatch event if is a planet.

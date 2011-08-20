@@ -12,8 +12,7 @@ package models.player
     */
    public class PlayerMinimal extends BaseModel
    {
-      public function PlayerMinimal()
-      {
+      public function PlayerMinimal() {
          super();
       }
       
@@ -36,12 +35,10 @@ package models.player
       /* ### UI ### */
       /* ########## */
       
-      
       /**
        * Opens up player profile screen.
        */
-      public function show() : void
-      {
+      public function show() : void {
          NavigationController.getInstance().showPlayer(id);
       }
    }

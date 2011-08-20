@@ -11,6 +11,7 @@ package models.quest
    import models.ModelsCollection;
    import models.notification.Notification;
    import models.notification.parts.QuestLog;
+   import models.objectives.QuestObjective;
    import models.quest.events.QuestCollectionEvent;
    import models.quest.events.QuestEvent;
    
@@ -21,7 +22,6 @@ package models.quest
    import mx.events.CollectionEventKind;
    
    import utils.datastructures.Collections;
-   import models.objectives.QuestObjective;
    
    
    /**
@@ -328,8 +328,8 @@ package models.quest
             {
                dispatchSelectionChangeEvent(oldQuest, newQuest);
             }
-            if (newQuest != null)
-            {
+//            if (newQuest != null)
+//            {
                //Deprecated after notifications quest completed and new quest were merged
 //               // when a quest is selected, mark corresponding notifications as read
 //               for each (var notif:Notification in ML.notifications)
@@ -341,6 +341,13 @@ package models.quest
 //                     notif.doRead();
 //                  }
 //               }
+//            }
+         }
+         if (newQuest != null)
+         {
+            for each (var obj: QuestObjective in newQuest.objectives)
+            {
+               obj.dispatchCompletedChangeEvent();
             }
          }
       }

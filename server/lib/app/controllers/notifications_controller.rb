@@ -1,15 +1,25 @@
 class NotificationsController < GenericController
-  # Lists all notifications.
+  # Lists most recent, unread & starred notifications.
   #
   # Invocation: pushed by server after galaxies|select
+  # 
   # Params: None
+  # 
   # Response:
-  #   - notifications: array of Notification objects
+  # - notifications (Hash[]): Notification#as_json array
   #
   def action_index
     only_push!
-    respond :notifications => Notification.where(
-      :player_id => player.id).all.map(&:as_json)
+    
+    base = Notification.where(:player_id => player.id)
+    main = base.where("`starred`=? OR `read`=?", true, false).all
+    extras = base.where(:starred => false, :read => true).
+      limit(Cfg.notification_limit).all
+    notifications = (main | extras).sort do |n1, n2|
+      (n1.created_at <=> n2.created_at) * -1
+    end
+    
+    respond :notifications => notifications.map(&:as_json)
   end
 
   # Marks notification as read.

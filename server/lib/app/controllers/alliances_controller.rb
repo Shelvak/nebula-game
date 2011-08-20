@@ -202,13 +202,14 @@ class AlliancesController < GenericController
       creds_needed}, had: #{player.creds}"
     ) if player.creds < creds_needed
 
+    stats = CredStats.alliance_change(player)
     player.creds -= creds_needed
     alliance.name = params['name'] if params['name']
 
     ActiveRecord::Base.transaction do
       alliance.save!
       player.save!
-      CredStats.alliance_change!(player)
+      stats.save!
     end
   end
 

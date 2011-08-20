@@ -69,7 +69,9 @@ class SsObject::Planet < SsObject
     energy_rate_boost_ends_at energy_storage_boost_ends_at
     zetium zetium_generation_rate zetium_usage_rate zetium_storage
     zetium_rate_boost_ends_at zetium_storage_boost_ends_at
-    last_resources_update exploration_ends_at can_destroy_building_at
+    last_resources_update 
+    exploration_x exploration_y exploration_ends_at 
+    can_destroy_building_at
     next_raid_at owner_changed}
 
   # Attributes which are included when :view => true is passed to
@@ -111,8 +113,8 @@ class SsObject::Planet < SsObject
         # Player was passed.
         resolver = StatusResolver.new(resolver) if resolver.is_a?(Player)
         additional["status"] = resolver.status(player_id)
-        additional["viewable"] = !! (
-          observer_player_ids & resolver.friendly_ids).present?
+        additional["viewable"] = ! (
+          observer_player_ids & resolver.friendly_ids).blank?
       end
     end
     
@@ -138,7 +140,7 @@ class SsObject::Planet < SsObject
   #
   # Don't allow setting more than storage and less than 0.
   #
-  %w{metal energy zetium}.each do |resource|
+  Resources::TYPES.each do |resource|
     define_method("#{resource}=") do |value|
       name = "#{resource}_storage"
       storage = (read_attribute(name) * resource_modifier(name))
@@ -157,7 +159,7 @@ class SsObject::Planet < SsObject
   def increase(options)
     options.symbolize_keys!
 
-    [:metal, :energy, :zetium].each do |resource|
+    Resources::TYPES.each do |resource|
       [:storage, :generation_rate, :usage_rate].each do |type|
         name = "#{resource}_#{type}".to_sym
         send("#{name}=", send(name) + (options[name] || 0))
@@ -191,6 +193,44 @@ class SsObject::Planet < SsObject
     reload
 
     changes
+  end
+  
+  # Boosts planets _resource_ _attribute_.
+  #
+  # _resource_ can be one of the +Resource::TYPES+ symbol.
+  # _attribute_ can be either :rate or :storage.
+  def boost!(resource, attribute)
+    resource = resource.to_sym
+    attribute = attribute.to_sym
+    
+    raise GameLogicError.new("Unknown resource #{resource}!") \
+      unless Resources::TYPES.include?(resource)
+    raise GameLogicError.new("Unknown attribute #{attribute}!") \
+      unless [:rate, :storage].include?(attribute)
+
+    player = self.player
+    raise ArgumentError.new("Planet player cannot be nil!") if player.nil?
+    creds_needed = Cfg.planet_boost_cost
+    raise GameLogicError.new("Not enough creds! Required #{creds_needed
+      }, has: #{player.creds}.") if player.creds < creds_needed
+    stats = CredStats.boost(player, resource, attribute)
+    player.creds -= creds_needed
+    
+    attr = :"#{resource}_#{attribute}_boost_ends_at"
+    duration = Cfg.planet_boost_duration
+    current = self.send(attr)
+    self.send(:"#{attr}=",
+      current.nil? ? duration.from_now : current + duration)
+
+    ActiveRecord::Base.transaction do
+      self.save!
+      player.save!
+      EventBroker.fire(self, EventBroker::CHANGED,
+        EventBroker::REASON_OWNER_PROP_CHANGE)
+      stats.save!
+    end
+    
+    self
   end
 
   def player_change
@@ -235,7 +275,7 @@ class SsObject::Planet < SsObject
     save!
   end
   
-  RESOURCES = [:metal, :energy, :zetium]
+  RESOURCES = Resources::TYPES
   
   RESOURCES.each do |resource|
     define_method("#{resource}_rate") do
@@ -279,19 +319,34 @@ class SsObject::Planet < SsObject
         Trait::Radar.decrease_vision(zone, old_player) if old_player
         Trait::Radar.increase_vision(zone, new_player) if new_player
       end
+      
+      if building.active?
+        scientist_count += building.scientists \
+          if building.respond_to?(:scientists)
 
-      scientist_count += building.scientists \
-        if building.respond_to?(:scientists)
-
-      max_population_count += building.population \
-        if building.respond_to?(:population)
+        max_population_count += building.population \
+          if building.respond_to?(:population)
+      end
       
       building.reset_cooldown! if building.respond_to?(:reset_cooldown!)
     end
     
+    # Cancel all market offers where MarketOffer#from_kind was creds so
+    # owner of the planet would retrieve his creds without fee.
+    if old_player
+      MarketOffer.
+        where(:planet_id => id, :from_kind => MarketOffer::KIND_CREDS).
+        all.each \
+      do |market_offer|
+        old_player.creds += market_offer.from_amount
+        market_offer.destroy
+      end
+    end
+    
     # Transfer any alive units that were not included in combat to new 
     # owner.
-    units = self.units
+    units = Unit.in_location(self).
+      where(:player_id => old_player ? old_player.id : nil)
     units.each do |unit|
       population_count += unit.population
       unit.player = new_player

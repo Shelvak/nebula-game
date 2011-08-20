@@ -30,8 +30,8 @@ describe Combat do
   
   describe "combat" do
     before(:each) do
-      survivors = []
-      dead_people = []
+      survivors = Set.new
+      dead_people = Set.new
       
       @dsl = CombatDsl.new do
         location :planet do
@@ -41,24 +41,24 @@ describe Combat do
         alliance do
           player :planet_owner => true do
             units do
-              survivors.push trooper
-              survivors.push trooper(:flank => 1)
+              survivors.add trooper
+              survivors.add trooper(:flank => 1)
             end
           end
-          player { units { survivors.push trooper } }
+          player { units { survivors.add trooper } }
         end
 
         a2 = alliance do
           player do
             units do
-              dead_people.push trooper(:hp => 10)
-              dead_people.push trooper(:flank => 1, :hp => 10)
+              dead_people.add trooper(:hp => 10)
+              dead_people.add trooper(:flank => 1, :hp => 10)
             end
           end
         end
 
         a3 = alliance do
-          player { units { dead_people.push trooper(:hp => 10) } }
+          player { units { dead_people.add trooper(:hp => 10) } }
         end
 
         nap(a2, a3)
@@ -105,17 +105,20 @@ describe Combat do
     end
 
     it "should save updated units" do
-      Unit.should_receive(:save_all_units).with(
-        @survivors, EventBroker::REASON_COMBAT
-      )
+      Unit.should_receive(:save_all_units).and_return do |units, reason|
+        Set.new(units).should == @survivors
+        reason.should == EventBroker::REASON_COMBAT
+      end
       @dsl.run
     end
 
     it "should destroy dead units" do
-      Unit.should_receive(:delete_all_units).with(
-        @dead_people, an_instance_of(Hash),
-        EventBroker::REASON_COMBAT
-      )
+      Unit.should_receive(:delete_all_units).and_return do 
+        |units, killed_by, reason|
+        Set.new(units).should == @dead_people
+        killed_by.should be_instance_of(Hash)
+        reason.should == EventBroker::REASON_COMBAT
+      end
       @dsl.run
     end
 
@@ -220,7 +223,7 @@ describe Combat do
       player(:population => 100000, :population_cap => 10) do
         units { loser = trooper }
       end
-      player { units { winner = trooper :hp => 1 } }
+      player { units { winner = trooper :hp => 20 } }
     end.run
     
     loser.should be_dead

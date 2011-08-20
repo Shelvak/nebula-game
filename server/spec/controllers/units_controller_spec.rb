@@ -543,8 +543,7 @@ describe UnitsController do
     end
     
     it "should fail if planet belongs to enemy" do
-      @planet.player = Factory.create(:player)
-      @planet.save!
+      @planet.update_row! ["player_id=?", Factory.create(:player).id]
 
       lambda do
         invoke @action, @params
@@ -560,8 +559,7 @@ describe UnitsController do
     it "should not fail if planet belongs to ally" do
       ally, alliance = create_alliance(player)
 
-      @planet.player = ally
-      @planet.save!
+      @planet.update_row! ["player_id=?", ally.id]
 
       lambda do
         invoke @action, @params
@@ -571,8 +569,7 @@ describe UnitsController do
     it "should fail if planet belongs to nap" do
       nap, alliance, nap_alliance = create_nap(player)
 
-      @planet.player = nap
-      @planet.save!
+      @planet.update_row! ["player_id=?", nap.id]
 
       lambda do
         invoke @action, @params
@@ -608,8 +605,7 @@ describe UnitsController do
       it "should fail if planet belongs to ally" do
         ally, alliance = create_alliance(player)
 
-        @planet.player = ally
-        @planet.save!
+        @planet.update_row! ["player_id=?", ally.id]
 
         lambda do
           invoke @action, @params
@@ -619,8 +615,7 @@ describe UnitsController do
       it "should fail if planet belongs to nap" do
         nap, alliance, nap_alliance = create_nap(player)
 
-        @planet.player = nap
-        @planet.save!
+        @planet.update_row! ["player_id=?", nap.id]
 
         lambda do
           invoke @action, @params
@@ -628,8 +623,7 @@ describe UnitsController do
       end
 
       it "should raise error if planet does not belong to player" do
-        @planet.player = Factory.create(:player)
-        @planet.save!
+        @planet.update_row! ["player_id=?", Factory.create(:player).id]
 
         lambda do
           invoke @action, @params
@@ -650,8 +644,7 @@ describe UnitsController do
       it "should not fail if planet belongs to ally" do
         ally, alliance = create_alliance(player)
 
-        @planet.player = ally
-        @planet.save!
+        @planet.update_row! ["player_id=?", ally.id]
 
         lambda do
           invoke @action, @params
@@ -661,8 +654,7 @@ describe UnitsController do
       it "should fail if planet belongs to nap" do
         nap, alliance, nap_alliance = create_nap(player)
 
-        @planet.player = nap
-        @planet.save!
+        @planet.update_row! ["player_id=?", nap.id]
 
         lambda do
           invoke @action, @params
@@ -670,8 +662,7 @@ describe UnitsController do
       end
 
       it "should raise error if planet does not belong to player" do
-        @planet.player = Factory.create(:player)
-        @planet.save!
+        @planet.update_row! ["player_id=?", Factory.create(:player).id]
 
         lambda do
           invoke @action, @params

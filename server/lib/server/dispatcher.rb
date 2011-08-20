@@ -4,6 +4,10 @@ class Dispatcher
 
   attr_reader :storage
   
+  # Special key for message id. This is needed for client to do time
+  # syncing.
+  MESSAGE_ID_KEY = 'id'
+  # Disconnect action name.
   ACTION_DISCONNECT = 'players|disconnect'
 
   # Initialize the dispatcher.
@@ -326,10 +330,6 @@ class Dispatcher
   def next_message_id
     "%d" % (Time.now.to_f * 1000)
   end
-
-  # Special key for message id. This is needed for client to do time
-  # syncing.
-  MESSAGE_ID_KEY = 'id'
 
   # Confirm client of _message_ receiving. Set _failed_ to inform client
   # that his last action has failed.

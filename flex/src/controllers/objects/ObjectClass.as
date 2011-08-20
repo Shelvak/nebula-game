@@ -16,5 +16,6 @@ package controllers.objects
       public static const SS_METADATA:String = "solarSystemMetadata";
       public static const COOLDOWN:String = "cooldown";
       public static const SOLAR_SYSTEM:String = "solarSystem";
+      public static const TILE:String = "tile";
    }
 }

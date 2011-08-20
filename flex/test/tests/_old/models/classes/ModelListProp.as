@@ -7,11 +7,9 @@ package tests._old.models.classes
    
    public class ModelListProp extends BaseModel
    {
-      [ArrayElementType("Number")]
-      [Required]
+      [Required(elementType="Number")]
       public var numbersInstance:ArrayCollection = new ArrayCollection();
-      [ArrayElementType("Number")]
-      [Required]
+      [Required(elementType="Number")]
       public var numbersNull:ArrayCollection = null;
    }
 }

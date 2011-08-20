@@ -65,8 +65,8 @@ describe Building do
       end
 
       it "should register the destruction in the log" do
-        CredStats.should_receive(:self_destruct!).with(@building)
-        @building.self_destruct!(true)
+        should_record_cred_stats(:self_destruct, [@building]) \
+          { @building.self_destruct!(true) }
       end
     end
 
@@ -198,9 +198,8 @@ describe Building do
       end.should change(@player, :creds).to(0)
     end
 
-    it "should register the move in the log" do
-      CredStats.should_receive(:move!).with(@model)
-      @model.move!(10, 15)
+    it "should record cred stats" do
+      should_record_cred_stats(:move, [@model]) { @model.move!(10, 15) }
     end
 
     it "should dispatch changed" do
@@ -895,7 +894,8 @@ describe Building do
 
   describe "upgradable" do
     before(:each) do
-      @player = Factory.create(:player)
+      # #economy_points is needed for #cancel! test.
+      @player = Factory.create(:player, :economy_points => 10000)
       @planet = Factory.create(:planet, :player => @player)
       @model = Factory.create :building_built, :level => 1,
         :planet => @planet
@@ -903,13 +903,28 @@ describe Building do
       set_resources(@planet,
         @model.metal_cost(@model.level + 1),
         @model.energy_cost(@model.level + 1),
-        @model.zetium_cost(@model.level + 1)
+        @model.zetium_cost(@model.level + 1),
+        1_000_000, 1_000_000, 1_000_000 # High storages for #cancel!
       )
     end
 
     it_should_behave_like "upgradable"
     it_should_behave_like "upgradable with hp"
     it_should_behave_like "default upgradable time calculation"
+  end
+  
+  describe "#cancel!" do
+    before(:each) do
+      @model = Factory.create(:building_built, 
+        opts_upgrading + {:level => 1, :state => Building::STATE_INACTIVE})
+    end
+    
+    it "should return to active state" do
+      lambda do
+        @model.cancel!
+      end.should change(@model, :state).from(Building::STATE_INACTIVE).
+        to(Building::STATE_ACTIVE)
+    end
   end
 
   describe "#on_upgrade_finished" do

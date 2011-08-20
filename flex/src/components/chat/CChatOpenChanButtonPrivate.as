@@ -7,37 +7,30 @@ package components.chat
    
    public class CChatOpenChanButtonPrivate extends CChatOpenChanButton
    {
-      public function CChatOpenChanButtonPrivate()
-      {
+      public function CChatOpenChanButtonPrivate() {
          super();
          updateEnabledProperty();
-//         toolTip = getString("tooltip.privateChannel");
          MCHAT.addEventListener(
             MChatEvent.HAS_UNREAD_PRIVATE_MSG_CHANGE,
-            model_hasUnreadPrivateMsgChangeHandler
+            model_hasUnreadPrivateMsgChangeHandler, false, 0, true
          );
          MCHAT.addEventListener(
             MChatEvent.PRIVATE_CHANNEL_OPEN_CHANGE,
-            model_privateChannelOpenChangeHandler
+            model_privateChannelOpenChangeHandler, false, 0, true
          );
       }
       
       
-      public override function get imageKeySpecificPart() : String
-      {
+      public override function get imageKeySpecificPart() : String {
          return "private";
       }
       
-      
-      protected override function this_clickHandler(event:MouseEvent) : void
-      {
+      protected override function this_clickHandler(event:MouseEvent) : void {
          super.this_clickHandler(event);
-         MCHAT.selectFirstPrivateChannel();
+         MCHAT.selectRecentPrivateChannel();
       }
       
-      
-      private function updateEnabledProperty() : void
-      {
+      private function updateEnabledProperty() : void {
          enabled = MCHAT.privateChannelOpen;
       }
       
@@ -46,15 +39,11 @@ package components.chat
       /* ### MODEL EVENT HANDLERS ### */
       /* ############################ */
       
-      
-      private function model_hasUnreadPrivateMsgChangeHandler(event:MChatEvent) : void
-      {
+      private function model_hasUnreadPrivateMsgChangeHandler(event:MChatEvent) : void {
          newMessage = MCHAT.hasUnreadPrivateMsg;
       }
       
-      
-      private function model_privateChannelOpenChangeHandler(event:MChatEvent) : void
-      {
+      private function model_privateChannelOpenChangeHandler(event:MChatEvent) : void {
          updateEnabledProperty();
       }
    }

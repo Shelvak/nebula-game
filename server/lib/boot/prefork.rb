@@ -7,6 +7,8 @@ if GC.respond_to?(:copy_on_write_friendly=)
 end
 
 if RUBY_VERSION.to_f < 1.9
+  $KCODE = 'u'
+  
   Range.send(:alias_method, :cover?, :include?)
   class Integer
     alias :precisionless_round :round
@@ -33,7 +35,6 @@ else
   $LOAD_PATH.unshift File.expand_path(ROOT_DIR)
 end
 
-
 def rake?; File.basename($0) == 'rake'; end
 
 benchmark :gems do
@@ -43,24 +44,31 @@ benchmark :gems do
   REQUIRED_GEMS.each do |gem|
     gem = {:name => gem} unless gem.is_a?(Hash)
     unless gem[:skip]
-      gem_name = gem[:lib].nil? ? gem[:name] : gem[:lib]
-      gem gem[:name], gem[:version] if gem[:version]
-      require gem_name
+      env = gem[:env]
+      # Load gem if:
+      # * environment is not specified
+      # * negative environment is specified and does not equal to current
+      # * environment is specified and equals to current
+      if env.nil? || 
+          (env[0..0] == "!" && ENV['environment'] != env[1..-1]) ||
+          ENV['environment'] == env
+        gem_name = gem[:lib].nil? ? gem[:name] : gem[:lib]
+        gem gem[:name], gem[:version] if gem[:version]
+        require gem_name  
+      end
     end
   end
 
-  require 'timeout'
-  require 'socket'
-  require 'erb'
-  require 'pp'
+  %w{timeout socket erb pp}.each do |gem|
+    require gem
+  end
 end
 
 # Require plugins so all their functionality is present during
 # initialization
 benchmark :plugins do
-  Dir[File.join(ROOT_DIR, 'vendor', 'plugins', '*', 'init.rb')].each do |file|
-    require file
-  end
+  Dir[File.join(ROOT_DIR, 'vendor', 'plugins', '*', 'init.rb')].
+    each { |file| require file }
 end
 
 ENV['environment'] ||= 'development'
@@ -73,14 +81,29 @@ benchmark :autoloader do
     ["#{ROOT_DIR}/lib/server"] + Dir["#{ROOT_DIR}/lib/app/**"]
   ).each do |file_name|
     if File.directory?(file_name)
-      ActiveSupport::Dependencies.autoload_paths << File.expand_path(file_name)
+      ActiveSupport::Dependencies.autoload_paths << 
+        File.expand_path(file_name)
+    end
+  end
+end
+
+benchmark :mailer do
+  email_from = "server-#{Socket.gethostname}@nebula44.com"
+  email_to = 'arturas@nebula44.com'
+  
+  MAILER = lambda do |short, long|
+    lambda do |error|
+      Mail.deliver do
+        from email_from
+        to email_to
+        subject "[#{short}] #{error.split("\n")[0]}"
+        body "#{long}\n\n#{error}"
+      end
     end
   end
 end
 
 benchmark :logger do
-  email_from = "server-#{Socket.gethostname}@nebula44.com"
-  email_to = 'arturas@nebula44.com'
   LOGGER = GameLogger.new(
     File.expand_path(
       File.join(ROOT_DIR, 'log', "#{ENV['environment']}.log")
@@ -88,31 +111,18 @@ benchmark :logger do
   )
   LOGGER.level = GameLogger::LEVEL_INFO
   
-  mailer_block = lambda do |short, long|
-    lambda do |error|
-      Thread.new do
-        begin
-          Mail.deliver do
-            from email_from
-            to email_to
-            subject "[#{short}] #{error.split("\n")[0]}"
-            body "#{long}\n\n#{error}"
-          end
-        rescue Errno::ENETUNREACH, Net::SMTPServerBusy
-          sleep 60
-          retry
-        end
-      end
-    end
-  end
-  
   # Error reporting by mail.
   if ENV['environment'] == 'production'
-    LOGGER.on_fatal = mailer_block.call("FATAL", 
+    Mail.defaults do
+      # -i means ".\n" does not terminate mail.
+      # -t is skipped because it fucks up delivery on some MTAs
+      delivery_method :sendmail, :arguments => "-i"
+    end
+    LOGGER.on_fatal = MAILER.call("FATAL", 
       "Server has encountered an FATAL error!")
-    LOGGER.on_error = mailer_block.call("ERROR", 
+    LOGGER.on_error = MAILER.call("ERROR", 
       "Server has encountered an error!")
-    LOGGER.on_warn = mailer_block.call("WARN", 
+    LOGGER.on_warn = MAILER.call("WARN", 
       "Server has issued a warning!")
   end
 end
@@ -181,9 +191,7 @@ end
 benchmark :db do
   # Establish database connection
   DB_CONFIG = read_config(config_dir, 'database.yml')
-  DB_CONFIG.each do |env, config|
-    config["adapter"] = RUBY_PLATFORM == "java" ? "jdbcmysql" : "mysql2"
-  end
+  DB_CONFIG.each { |env, config| config["adapter"] = "jdbcmysql" }
   USED_DB_CONFIG = DB_CONFIG[ENV['db_environment']]
 
   if USED_DB_CONFIG.nil?

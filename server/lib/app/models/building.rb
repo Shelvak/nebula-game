@@ -188,6 +188,10 @@ class Building < ActiveRecord::Base
   def x_end; x ? x + width - 1 : nil; end
   def y_end; y ? y + height - 1 : nil; end
 
+  def cancel!
+    super(proc { activate })
+  end
+  
   def upgrade
     forbid_unmanagable!
     super
@@ -226,6 +230,7 @@ class Building < ActiveRecord::Base
       creds_needed = CONFIG['creds.building.destroy']
       raise GameLogicError.new("Player does not have enough creds! Req: #{
         creds_needed}, has: #{player.creds}") if player.creds < creds_needed
+      stats = CredStats.self_destruct(self)
       player.creds -= creds_needed
     else
       raise GameLogicError.new("Cannot self-destruct this building, planet " +
@@ -242,7 +247,7 @@ class Building < ActiveRecord::Base
 
     transaction do
       if with_credits
-        CredStats.self_destruct!(self)
+        stats.save!
         player.save!
       end
       planet.save!
@@ -271,6 +276,7 @@ class Building < ActiveRecord::Base
       "Cannot move while upgrading or working (#{self.inspect})!") \
       if upgrading? || working?
 
+    stats = CredStats.move(self)
     player.creds -= creds_needed
     self.armor_mod = self.energy_mod = self.construction_mod = 0
     self.x = x
@@ -281,7 +287,7 @@ class Building < ActiveRecord::Base
     calculate_mods(true)
 
     transaction do
-      CredStats.move!(self)
+      stats.save!
       player.save!
       save!
       Objective::MoveBuilding.progress(self)

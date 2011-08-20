@@ -30,6 +30,12 @@ package models.chat
          return name;
       }
       
+      /**
+       * Returns <code>true</code>.
+       */
+      public override function get isPublic() : Boolean {
+         return true;
+      }
       
       /**
        * <code>true</code> if this channel is an alliance channel.

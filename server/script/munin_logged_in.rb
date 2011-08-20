@@ -2,8 +2,6 @@
 
 NAMES = [
   ["current", "Currently logged in"],
-  ["6h", "Logged in 6h"],
-  ["12h", "Logged in 12h"],
   ["24h", "Logged in 24h"],
   ["48h", "Logged in 48h"],
   ["1w", "Logged in 1wk"],

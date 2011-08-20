@@ -170,6 +170,7 @@ units.with_storage.metal.cost: 300
 units.with_storage.energy.cost: 300
 units.with_storage.zetium.cost: 300
 units.with_storage.initiative: 5
+units.with_storage.population: 2
 units.with_storage.armor: :light
 units.with_storage.evasiveness: 0
 units.with_storage.kind: :ground

@@ -421,7 +421,7 @@
     <selectAll value="Pažymėti visus" />
     <open value="Atidaryti" />
     <noUnits value="Tu neturi antžeminių karių" />
-    <attackInfo value="Pastate ęsantys kariai" />
+    <attackInfo value="Pastate esantys kariai" />
     <selfDestruct value="Susinaikinti" />
     <destructResources>
       <p>Jeigu sunaikinsi šį pastatą gausi:</p>
@@ -449,6 +449,11 @@
       <p>Paspausk ant tuščios žemėlapio vietos, jog įeitum į statybų 
       režimą.</p>
     </message.pressOnEmpty>
+    <panelTitle.scientists value="Mokslininkai" />
+    <message.scientistsNotAvailable>
+      <p>Pastatas yra tobulinimas, jame dirbantys mokslininkai yra 
+      nepasiekiami.</p>
+    </message.scientistsNotAvailable>
     <warning.buildingWorking>
       <p>Jeigu liepsi šiam pastatui susinaikinti, tada tai, 
       ką stato šis pastatas, bus taip pat sunaikinta.</p>
@@ -469,7 +474,7 @@
     <energy.bonus value="Energijos gamyba" />
     <construction.bonus value="Statymo greitis" />
     <scientists value="Mokslininkai" />
-    <special value="Sąvybės" />
+    <special value="Savybės" />
     <title.owner value="Valdymas" />
     <!-- 0: date, 1: time (1 part) -->
     <label.owner value="Tu valdai šią planetą nuo {0} ({1})." />
@@ -516,9 +521,9 @@
     <property.metal.store value="Metalo talpa" />
     <property.metal.use value="Metalo vartojimo greitis" />
     <property.metal.cost value="Metalo kaina" />
-    <property.energy.generate value="Energy išgavimo greitis" />
+    <property.energy.generate value="Energijos išgavimo greitis" />
     <property.energy.store value="Energijos talpa" />
-    <property.energy.use value="Energy vartojimo greitis" />
+    <property.energy.use value="Energijos vartojimo greitis" />
     <property.energy.cost value="Energijos kaina" />
     <property.zetium.generate value="Zetiumo išgavimo greitis" />
     <property.zetium.store value="Zetiumo talpa" />
@@ -637,7 +642,7 @@
     <Mothership.about>
       <p>[reference:Objects/Mothership] - tai pagrindinis laivas žmonėms, 
       kurie gyvena šioje planetoje. Jie atkeliavo čia šiuo laivu ir jis tapo 
-      jiems pirmaja saugia užuoveja šioje laukinėje planetoje.</p>
+      jiems pirmąja saugia užuoveja šioje laukinėje planetoje.</p>
       <p>[reference:Objects/Mothership] turi integruotą metalo išgavėją, 
       saulės baterijas generuoti energijai ir talpyklas šiems resursams saugoti.
       To pilnai užtenka, kad patenkinti bazines planetos resursų reikmes.</p>
@@ -650,7 +655,7 @@
         patobulinta kasykla taip pat reikalauja daugiau energijos savo
         darbui.
       </p>
-      <p>Metalo kasyklos išsijungs ęsant energijos stygiui.</p>
+      <p>Metalo kasyklos išsijungs esant energijos stygiui.</p>
       <p>Kiekvienas patobulinimo lygis pakelia metalo išgavimo greitį.</p>
     </MEX.common>
 
@@ -767,7 +772,7 @@
       </p>
       <p>
         Primygtinai siūlome turėti bent jau po vieną tyrimų centrą planetoje.
-        Kitu atveju tavo priešininkai ilgainiui būsi sutriuškintas dėl 
+        Kitu atveju ilgainiui būsi sutriuškintas savo priešininkų dėl 
         atsilikusių technologijų.
       </p>
       <p>Kiekvienas patobulinimo lygis didina mokslininkų, dirbančių šiame 
@@ -775,7 +780,7 @@
     </ResearchCenter.about>
 
     <ZetiumExtractor.common>
-      <p>Ęsant energijos trūkumui zetiumo kasyklos išsijungs.</p>
+      <p>Esant energijos trūkumui zetiumo kasyklos išsijungs.</p>
       <p>Kiekvienas patobulinimo lygis didina zetiumo išgavimo greitį.</p>
     </ZetiumExtractor.common>
 
@@ -819,7 +824,7 @@
       <p>
         Šie milžiniški kranai ypač praverčia statant naujas kolonijas. Jie 
         ypatingai naudingi tuo, jog gali turėti daug nurodymų savo eilėje.
-        Naudojant keletą šių kranų galima pastataty visą koloniją per keletą
+        Naudojant keletą šių kranų galima pastatati visą koloniją per keletą
         dienų.
       </p>
     </Crane.about>
@@ -919,7 +924,7 @@
     <GroundFactory.about>
       <p>Tai pastatas, leidžiantis statyti tankus ir kitus aukšto lygio žemės
       karius. Taip pat tau prireiks šio pastato norint pasistatyti 
-      Mobilųjį Štabą, kuris leidžia kolonizuoti kitas planets.</p>
+      Mobilųjį Štabą, kuris leidžia kolonizuoti kitas planetas.</p>
     </GroundFactory.about>
 
     <SpaceFactory.name ref="Objects/SpaceFactory" />
@@ -950,7 +955,7 @@
     <DefensivePortal.tooltip value="Teleportuoja žemės karius į gynybą" />
     <DefensivePortal.common>
       <p>Kai šis portalas yra aktyvus, kitos planetos užpuolimo atveju 
-      jis siunčia žemės armiją ęsančią šioje planetoje į pagalbą. 
+      jis siunčia žemės armiją esančią šioje planetoje į pagalbą. 
       Taip pat jis leidžia kariams ir tankams iš kitų planetų 
       atkeliauti planetai, kurioje jis pastatytas, į gynybą.</p>
       <p>Atkreipk dėmesį, jog šis pastatas gali priimti tik tiek karių iš kitų
@@ -985,7 +990,7 @@
 
     <NpcSpaceFactory.name ref="Objects/NpcSpaceFactory" />
     <NpcSpaceFactory.about>
-      <p>Ši gamykla, ęsanti po žeme, gamina galingus ateivių laivus, kurie
+      <p>Ši gamykla, esanti po žeme, gamina galingus ateivių laivus, kurie
       gali būti panaudoti tiek gynybai, tiek puolimui.</p>
       <p>[reference:GivesUnits]</p>
     </NpcSpaceFactory.about>
@@ -1089,7 +1094,7 @@
          {2} - int -->
     <label.boostActive1> 
       <p>Tavo {0 metal[metalo] energy[energijos] zetium[zetiumo]} 
-        {1 rate[išgavimo greitis] storage[talpa]} yra padidinta {2}%</p> 
+        {1 rate[išgavimo greitis] storage[talpa]} yra padidintas {2}%</p> 
     </label.boostActive1>
     <!-- {0} - time (e.g. 3m) -->
     <label.boostActive2 value="Tu gali pratęsti šį laiką {0}." /> 
@@ -1129,7 +1134,31 @@
       objektus užtrunkama ilgiau, tačiau yra didesnė tikimybė rasti vertingų
       atradimų.</p>
     </description.startExploration>
+    <title.instantFinish value="Baigti tyrinėjimus"/>
+    <label.instantFinish value="Baigti tyrinėjimus"/>
+    <label.buyCreds value="Pirkti kredus"/>
+    <description.instantFinishCost>
+      <p><![CDATA[
+      Baigti tyrinėjimus akimirksniu tau kainuos 
+      <span fontWeight="bold">{0 one[? kredą] tens[? kredų] 
+        many[? kredus]}</span>.
+      ]]></p>
+    </description.instantFinishCost>
   </Exploration>
+  
+  <Terraform>
+    <title.terraform value="Melioracija"/>
+    <title.confirmTerraform value="Melioracija"/>
+    <label.removeFoliage value="Pašalinti objektą"/>
+    <label.buyCreds value="Pirkti kredus"/>
+    <label.cancel value="Atšaukti"/>
+    <message.foliageRemovalCost>
+      <![CDATA[Šį objektą gali pašalinti už <span fontWeight="bold">{0 one[? kredą] tens[? kredų] many[? kredus]}</span>.]]>
+    </message.foliageRemovalCost>
+    <message.foliageRemovalConfirmation>
+      <![CDATA[Šio objekto pašalinimas tau kainuos <span fontWeight="bold">{0 one[? kredą] tens[? kredų] many[? kredus]}</span>. Ar apsisprendei?]]>
+    </message.foliageRemovalConfirmation>
+  </Terraform>
 
   <Formatters>
     <date.shortDate value="YYYY-MM-DD" />
@@ -1183,14 +1212,14 @@
     <description value="Aprašymas" />
     <level value="Lygis" />
     <close value="Uždaryti" />
-    <property value="Sąvybė" />
+    <property value="Savybė" />
     <atLevel value="{0} lygyje" />
     <difference value="Skirtumas" />
     <fullUpgradeCost value="Pilna kaina {0} lygiui" />
     <resource value="Resursas" />
-    <tableTitle value="Sąvybės" />
+    <tableTitle value="Savybės" />
     <guns value="Ginklai" />
-    <gunProperties value="Ginklo „{0}“ sąvybės" />
+    <gunProperties value="Ginklo „{0}“ savybės" />
     <damagesDealt value="Ginklo „{0}“ žala" />
     <gun.pistol value="Pistoletas" />
     <gun.machine_gun value="Automatas" />
@@ -1207,7 +1236,7 @@
     <gun.heavy_rocket value="Raketų leidyklė" />
     <gun.space_rocket ref="gun.heavy_rocket" />
     <gun.rhyno_rocket value="Halo raketa" />
-    <gun.rhyno_rocket2 value="Scorchmaker raketa" />
+    <gun.rhyno_rocket2 value="Iškasėjo raketa" />
     <gun.plasma_gun value="Sukūrių generatorius" />
     <gun.plasma_spike value="Šoko patranka" />
     <gun.thor_ground value="Pūga" />
@@ -1301,17 +1330,17 @@
     <header.solarSystem value="Saulės sistema" />
     <header.planet value="Planeta" />
     <header.building value="Pastatas" />
-    <header.unit value="Karys" />
+    <header.unit value="Laivas" />
     <header.storage value="Talpa" />
-    <header.owner value="Owner" />
+    <header.owner value="Valdytojas" />
 
     <description.short.galaxy value="Galaktika" />
     <description.short.solarSystem value="Saulės sistema {0}" />
     <description.short.planet value="Planeta {0}" />
     <description.long.galaxy value="Galaktikos sektorius {0}:{1}" />
-    <description.long.solarSystem 
-      value="Saulės sistemos {0} sektorius {1}:{2}" />
+    <description.long.solarSystem value="Saulės sistemos {0} sektorius {1}:{2}" />
     <description.long.planet value="Saulės sistemos {1} planeta {0}" />
+    <description.long.planetInBattleground value="Arenos planeta {0}" />
 
     <message.locationNotAvailable>
       <p>Tu nebegali peržiūrėti šios vietos</p>
@@ -1368,7 +1397,7 @@
       <p>Pažymėta: tavo laivynas stengsis išvengti nebūtinų mūšių su ateivių laivais,
       todėl jis gali užtrukti ilgiau, jeigu tavo kelyje stovi ateiviai.</p>
       <p>Nepažymėta: tavo laivynas skris greičiausiu maršrutu ir kausis su ateiviais 
-      ęsančiais jo kelyje.</p>
+      esančiais jo kelyje.</p>
     </description.avoidNpc>
   </Movement>
 
@@ -1378,7 +1407,7 @@
   
   <ListScreen>
     <label.colorLegend value="Legenda:" />
-    <label.close value="Close" />
+    <label.close value="Uždaryti" />
   </ListScreen>
 
   <Notifications>
@@ -1727,7 +1756,7 @@
       surinkome. Užtikriname tave, kad PANAUDOSIME juos tobulinant mūsų 
       Anti-Vabalinę formulę, jog tavo žaidimas būtų toks malonus, kaip tik
       žmogiškai įmanoma ;)</p>
-      <p>Taigi tiesiog nukopijuok apačioje ęsantį tekstą į iškarpinę (arba 
+      <p>Taigi tiesiog nukopijuok apačioje esantį tekstą į iškarpinę (arba 
       spustelėk mūsų patogiai padėtą „[reference:label.clientCrash.copy]“
       mygtuką) ir keliauk į forumą, kad praneštum apie šią klaidą. Už tavo 
       sunkų darbą bus atlyginta. Mes pažadam. Kosminis mažojo pirštelio pažadas.
@@ -1792,8 +1821,8 @@
     <!-- ANNEX_PLANET
     0: count of planets to occupy -->
     <objectiveText.AnnexPlanet.npc>
-    <p>Užkariauk {0 one[neutralią planetą] 1sts[? neutralią planetą] 
-    tens[? neutralių planetų] many[? neutralias planetas]}</p>
+    <p>Kolonizuok {0 one[vieną planetą] 1sts[? planetą] 
+    tens[? planetų] many[? planetas]}</p>
     </objectiveText.AnnexPlanet.npc>
     <objectiveText.AnnexPlanet.enemy>
     <p>Užkariauk {0 one[priešo planetą] 1sts[? priešo planetą] 
@@ -1808,13 +1837,13 @@
     <!-- HAVE_POINTS, HAVE_XXX_POINTS
     0: count of points to have -->
     <objectiveText.HaveSciencePoints 
-    value="Surink {0} moklso {0 1sts[tašką] tens[taškų] many[taškus]}" />
+    value="Surink {0} mokslo {0 1sts[tašką] tens[taškų] many[taškus]}" />
     <objectiveText.HaveEconomyPoints 
     value="Surink {0} ekonomikos {0 1sts[tašką] tens[taškų] many[taškus]}" />
     <objectiveText.HaveVictoryPoints 
     value="Surink {0} pergalės {0 1sts[tašką] tens[taškų] many[taškus]}" />
     <objectiveText.HaveArmyPoints 
-    value="Surink {0} armijos {0 1sts[tašką] tens[taškų] many[taškus]}" />
+    value="Surink {0} kariuomenės {0 1sts[tašką] tens[taškų] many[taškus]}" />
     <objectiveText.HaveWarPoints 
     value="Surink {0} karo {0 1sts[tašką] tens[taškų] many[taškus]}" />
     <objectiveText.HavePoints 
@@ -1833,8 +1862,10 @@
     <!-- BECOME_VIP
     0: VIP level, 
     1: count of times to become VIP -->
-    <objectiveText.BecomeVip 
-    value="Tapk {0}-o lygio VIP nariu {1 one[] 1sts[? kartą] tens[? kartų] many[? kartus]}" />
+    <objectiveText.BecomeVip>
+      <p>Tapk bent {0}-o lygio VIP nariu {1 one[] 1sts[? kartą] tens[? kartų] 
+      many[? kartus]}</p>
+    </objectiveText.BecomeVip>
 
     <!-- ACCELERATE_FLIGHT
     0: count of times to accelerate flight -->
@@ -1928,7 +1959,7 @@
       <p>Sveiki atvykę, Komandore.</p>
 
       <p>Mes sėkmingai nutupdėme motininį laivą šioje planetoje ir remiantis 
-      pirminiais žvalgybos duomenimis, čia ęsame ne vieni. Inžinieriai įrengė 
+      pirminiais žvalgybos duomenimis, čia esame ne vieni. Inžinieriai įrengė 
       gynybos perimetrą, tačiau šis išeikvoja gerokai daugiau energijos, nei 
       jos pagamina mūsų generatoriai. Tokiomis sąlygomis ilgai čia 
       netversime!</p>
@@ -2007,7 +2038,7 @@
 
       <p>
         Skubu pranešti, kad išteklių gavyba šioje planetoje vyksta sklandžiai. 
-        Nors iš pirmo žvilgsnio atrodo, kad ęsame apsirūpinę, aš negaliu 
+        Nors iš pirmo žvilgsnio atrodo, kad esame apsirūpinę, aš negaliu 
         atsikratyti minčių apie mūsų galimybių ribas. Ši planeta tokia 
         turtinga ištekliais! Mes galime iš jos išspausti daug, daug daugiau!      
       </p>
@@ -2039,7 +2070,7 @@
       <p>
         Žvalgyba praneša apie keistus triukšmus ir tai nėra šiaip vėjo 
         stūgavimas. Žvalgų nerimą patvirtina ir skeneriai, kuriuose stebime 
-        keistas anomalijas. Įtarimai, kad šioje planetoje ęsame ne vieni 
+        keistas anomalijas. Įtarimai, kad šioje planetoje esame ne vieni 
         pasitvirtino, o kol nežinome su kuo susidūrėme, negalime pasikliauti 
         tik gynybinio perimetro apsauga. 
       </p>
@@ -2359,7 +2390,7 @@
         Jūsų ryžtas ir nusiteikimas asmeniškai vadovauti mūšyje 
         dalyvaujantiems kariams verti pagarbos. Esu įsitikinusi, kad jūs tą 
         patį pasakytumėte apie kiekvieną jūsų įsakymus vykdžiusi karį. 
-        Atkreipkite dėmesį, kad kai kurie, nuolatos greta ęsantys, kovotojai 
+        Atkreipkite dėmesį, kad kai kurie, nuolatos greta esantys, kovotojai 
         tapo labiau patyrę. Jie tapo efektyvesni ir atsparesni priešų atakoms. 
       </p>
       <p>
@@ -2662,11 +2693,19 @@
       </p>
     </about.15>
 
+    <title.121 value="Užgniaužus kvapą" />
+    <about.121>
+      <p>Komandore,</p>
+      <p>Mūsų žmonėms reikia daugiau vietos! Dar truputis ir nebus kur
+      kojos padėti!</p>
+      <p>Nedelsiant pradėkite gyvenamųjų bokštų statybas.</p>
+    </about.121>
+    
     <title.16 value="Dydybės link" />
     <about.16>
       <p>Komandore.</p>
       <p>
-        Tiesiog užsukau pasakyti, kad ęsate didis vadovas ir nuostabus 
+        Tiesiog užsukau pasakyti, kad esate didis vadovas ir nuostabus 
         lyderis. Jūsų dėka mes daug pasiekėme ir už tai esame dėkingi. 
       </p>
     </about.16>
@@ -2687,7 +2726,7 @@
       </p>
     </about.29>
 
-    <title.30 value="Viršūkalnė" />
+    <title.30 value="Viršukalnė" />
     <about.30>
       <p>Komandore.</p>
       <p>
@@ -2772,6 +2811,35 @@
       planetų, mums prireiks kovinių laivų! Keliaukite į savo laivų gamyklą ir
       liepkite pradėti gamybą!</p>
     </about.31>
+    
+    <title.119 value="Bauginantys laivynai" />
+    <about.119>
+      <p>Komandore.</p>
+      <p>Statant varno klasės laivus šauniai padirbėjote. Jie greiti ir 
+      mirtini mūsų priešams. Ech... Kai pagalvoju apie juos mane apima toks
+      išdidumas! Reikėtų juos kur nors panaudoti!</p>
+      <p>Aplink gretimą planetą skraido keli ateivių dirako klasės laivai. 
+      Argi ne šaunus taikinys mūsų pilotų pratyboms? Skriskime ir sunaikinkime
+      juos.</p>
+      <p>O vienaip ar kitaip - ta planeta atrodo kaip visai nieko vietelė 
+      antrosios mūsų kolonijos įkurtuvėms. O jeigu jau ten kursimės - juk 
+      nenorėtumėme, kad aplink šlaistytųsi kažkokie ateivių pašlemėkai?</p>
+    </about.119>
+    
+    <title.120 value="Mineralų skraidinimas" />
+    <about.120>
+      <p>Komandore!</p>
+      <p>Šaunus darbelis! Ateivių dirakai neturėjo nei menkiausio šanso prieš
+      mūsų laivyną.</p>
+      <p>Na ką, pasismaginom, kimbam į darbus. Mūšio vietoje liko siaubinga
+      netvarka - visame sektoriuje kairėn dešinėn skraido laivų nuolaužos.
+      Ko gero reikėtų išsikuopti...</p>
+      <p>Na ir ko taip nusiminėt? Ai, gi pamiršau paminėti, jog surinktas
+      nuolaužas mūsų planetoje galėsime panaudoti kaip resursus! Na va, matau
+      iš karto šypsena ant ausų lipa ;)</p>
+      <p>Taigi, susirinkime tuos resursus! Pasistatykime mūsų pirmajį
+      mulo klasės laiva!</p>
+    </about.120>
 
     <title.35 value="Išvalymas" />
     <about.35>
@@ -3051,7 +3119,7 @@
     <prompt.selectPlanet value="Tavo planetos" />
 
     <message.battleground>
-      <p>Planetų, ęsančių šioje saulės sistemoje, užėmimas ir kontrolė duoda
+      <p>Planetų, esančių šioje saulės sistemoje, užėmimas ir kontrolė duoda
       tau Pergalės Taškų, kredų ir karių.</p>
     </message.battleground>
     <message.planetRenamed 
@@ -3063,7 +3131,7 @@
     <message.allianceFull value="Sąjunga pilna"/>
     <tooltip.allianceFull>
       <p>Tavo sąjunga pilna.</p>
-      <p>Kad galėtum pakviestį šį žaidėją į savo sąjungą, išmesk ęsamus žaidėjus
+      <p>Kad galėtum pakviestį šį žaidėją į savo sąjungą, išmesk esamus žaidėjus
       arba patobulink savo sąjungų technologiją.</p>
     </tooltip.allianceFull>
     
@@ -3084,7 +3152,7 @@
     <label.leavesPlanetAt value="Iš planetos išvyksta:" />
     <label.inTime value="(už {0})" />
     <label.close value="Uždaryti" />
-    <label.playerFleets value="Tavo lvynai" />
+    <label.playerFleets value="Tavo laivynai" />
     <label.allianceFleets value="Sąjungininkų laivynai" />
     <label.stop value="Sustabdyti" />
     <label.manage value="Tvarkyti" />
@@ -3536,7 +3604,7 @@
     <property.armorMod value="Šarvų pliusas" />
     <property.damageMod value="Žalos pliusas" />
     <property.evasiveness value="Išsisukimas" />
-    <property.xpNeeded value="Pergalės taškų pakelti lygiui" />
+    <property.xpNeeded value="Patirties taškų pakelti lygiui" />
     <property.initiative value="Iniciatyva" />
     <property.volume value="Apimtis" />
     <property.storage value="Talpa" />
@@ -3907,11 +3975,13 @@
      <label.allianceChannel value="#sąjunga"/>
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Žaidėjai"/>
+     <label.generateJoinLeaveMsgs value="Rodyti prisijungimo / išėjimo žinutes"/>
   </Chat>
   
   <Market>
     <label.submit value="Patvirtinti" />
     <label.fee value="Mokesčiai:" />
+    <label.total value="Viso:" />
     <label.wantToSell value="Parduoti" />
     <label.sellFor value="Už" />
     <!-- 1 cheaper or more -->
@@ -3941,14 +4011,14 @@
     <label.cancel value="Atšaukti" />
     <label.close value="Uždaryti" />
     <label.noOffers value="Nėra pasiūlymų" />
-    <!-- {0}: metal/energy/zetium
+    <!-- {0}: metal/energy/zetium/creds
          {1}: minimal amount -->
     <warning.noMinResource> 
       <p>Tu neturi pakankamai 
-      {0 metal[metalo] energy[energijos] zetium[zetiumo]} minimaliam 
+      {0 metal[metalo] energy[energijos] zetium[zetiumo] creds[kredų]} minimaliam 
       pasiūlymui.</p>
       <p>Minimalus pasiūlymas yra {1} 
-      {0 metal[metalo] energy[energijos] zetium[zetiumo]}.</p>
+      {0 metal[metalo] energy[energijos] zetium[zetiumo] creds[kredų]} + mokesčiai.</p>
     </warning.noMinResource>
     <message.offerSubmited value="Pasiūlymas priimtas" />
     <message.offerGone value="Atsiprašome, šio pasiūlymo nebėra" />
@@ -3974,8 +4044,8 @@
     <warning.notFromPlanet 
     value="Tai tavo pasiūlymas, tačiau jis buvo įdėtas iš kitos planetos." />
     <filter.clear value="Valyti" />
-    <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje" />
-    <label.moreInfo value="kodėl?" />
+    <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje." />
+    <label.moreInfo value="Kodėl?" />
   </Market>
 
 </locale>

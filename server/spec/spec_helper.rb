@@ -98,28 +98,74 @@ Spork.prefork do
     class Object
       # Almost the same as #should_receive but instead actually executes
       # the call.
-      def should_execute(method_name, args=nil)
+      #
+      # If _return_method_call_value_ is set to true, it returns 
+      # [method_call_value, block_value] instead of just block_value.
+      def should_execute(method_name, args=nil, 
+          return_method_call_value=false)
         # Save old method
         old_method = method(method_name)
-        
-        # Create new stub method that records the call.
-        method_ran = false
-        metaclass = class << self; self; end
-        metaclass.instance_eval do
-          define_method(method_name) do |*call_args|
-            method_ran = args.nil? ? true : args == call_args
-            old_method.call(*call_args)
+
+        begin
+          # Create new stub method that records the call.
+          method_ran = false
+          method_call_value = nil
+          metaclass = class << self; self; end
+          metaclass.instance_eval do
+            define_method(method_name) do |*call_args|
+              method_ran = args.nil? ? true : args == call_args
+              method_call_value = old_method.call(*call_args)
+            end
           end
+
+          block_value = yield
+
+          raise "#{self} expected to receive #{method_name} with args #{
+            args.inspect}!" unless method_ran
+
+          if return_method_call_value
+            [method_call_value, block_value]
+          else
+            block_value
+          end
+        ensure
+          define_method(method_name, &old_method)
         end
+      end
+    end
+    
+    class ActiveRecord::Base
+      def update_row!(updates)
+        self.class.update_all updates, ["id=?", id]
+        reload
+        self
+      end
+    end
+    
+    # Disable logging. Who looks at it anyway?
+    LOGGER.level = GameLogger::LEVEL_FATAL
+    
+    Spec::Runner.configure do |config|
+      last_gc_run = Time.now
+      
+      config.before(:each) do
+        conn = ActiveRecord::Base.connection
+        conn.begin_db_transaction
+        conn.increment_open_transactions
         
-        ret_val = yield
+        GC.disable unless RUBY_PLATFORM == "java"
+      end
+      
+      config.after(:each) do
+        conn = ActiveRecord::Base.connection
+        conn.decrement_open_transactions
+        conn.rollback_db_transaction
         
-        raise "#{self} expected to receive #{method_name} with args #{
-          args.inspect}!" unless method_ran
-          
-        ret_val
-      ensure
-        define_method(method_name, &old_method)
+        if RUBY_PLATFORM != "java" && Time.now - last_gc_run > 5.0
+          GC.enable
+          GC.start
+          last_gc_run = Time.now
+        end
       end
     end
   end

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-         xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx" 
-         xmlns:base="components.base.*"
-         creationComplete="group1_creationCompleteHandler(event)">
+                        xmlns:s="library://ns.adobe.com/flex/spark" 
+                        xmlns:mx="library://ns.adobe.com/flex/mx" 
+                        xmlns:base="components.base.*"
+                        creationComplete="group1_creationCompleteHandler(event)">
    <fx:Declarations>
       <s:RadioButtonGroup id="grAccelerate" change="grAccelerate_changeHandler(event)"/>
    </fx:Declarations>
@@ -43,13 +43,16 @@
             return selectedIndex;
          }
          
-         protected function grAccelerate_changeHandler(event:Event):void
+         protected function grAccelerate_changeHandler(event:Event = null):void
          {
-            selectedIndex = MAccelerate(grAccelerate.selectedValue).index;
-            dispatchEvent(new CreditEvent(CreditEvent.ACCELERATE_CHANGE));
-            popUp.confirmButtonEnabled = true;
-            popUp.confirmButtonLabel = Localizer.string('Credits', 
-               hasEnoughCredits()?'label.confirm':'label.buy');
+            if (grAccelerate != null && grAccelerate.selectedValue != null)
+            {
+               selectedIndex = MAccelerate(grAccelerate.selectedValue).index;
+               dispatchEvent(new CreditEvent(CreditEvent.ACCELERATE_CHANGE));
+               popUp.confirmButtonEnabled = true;
+               popUp.confirmButtonLabel = Localizer.string('Credits', 
+                  hasEnoughCredits()?'label.confirm':'label.buy');
+            }
          }
          
          private function refreshList(): void
@@ -73,6 +76,15 @@
                popUp.confirmButtonEnabled = false;
                popUp.confirmButtonLabel = Localizer.string('Credits', 'label.confirm');
             }
+            if (selectedIndex == -1)
+            {
+               grAccelerate.selectedValue = accelerateInfo.getItemAt(accelerateInfo.length - 1);
+               selectedIndex = accelerateInfo.length - 1;
+               dispatchEvent(new CreditEvent(CreditEvent.ACCELERATE_CHANGE));
+               popUp.confirmButtonEnabled = true;
+               popUp.confirmButtonLabel = Localizer.string('Credits', 
+                  hasEnoughCredits()?'label.confirm':'label.buy');
+            }
          }
          
          public function hasEnoughCredits(): Boolean
@@ -81,8 +93,16 @@
          }
          
          public function get selectedCost(): int
-         {
-            return MAccelerate(grAccelerate.selectedValue).credits;
+         { 
+            if (grAccelerate != null && grAccelerate.selectedValue != null)
+            {
+               return MAccelerate(grAccelerate.selectedValue).credits;
+            }
+            else
+            {
+               return MAccelerate(accelerateInfo.getItemAt(
+                  accelerateInfo.length - 1)).credits;
+            }
          }
          
          [Bindable]
@@ -173,7 +193,7 @@
    </s:DataGroup>
    <s:Label visible="{selectedIndex > -1 &amp;&amp; 
             ModelLocator.getInstance().player.creds &lt; MAccelerate(grAccelerate.selectedValue).credits}"
-      text="{Localizer.string('Credits', 'label.notEnough', 
+            text="{Localizer.string('Credits', 'label.notEnough', 
             [MAccelerate(grAccelerate.selectedValue).credits - ModelLocator.getInstance().player.creds])}" 
             width="100%" paddingLeft="6" paddingRight="6" textAlign="center" styleName="unsatisfied"
             fontWeight="bold"/>

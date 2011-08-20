@@ -10,6 +10,8 @@ package components.popups
    import mx.collections.ArrayCollection;
    import mx.core.FlexGlobals;
    import mx.events.FlexEvent;
+   import mx.logging.ILogger;
+   import mx.logging.Log;
    import mx.managers.PopUpManager;
    
    import spark.components.Application;
@@ -17,6 +19,7 @@ package components.popups
    import spark.components.Group;
    import spark.components.Panel;
    
+   import utils.Objects;
    import utils.datastructures.Collections;
    
    
@@ -25,59 +28,47 @@ package components.popups
     */
    public class BasePopup extends Panel
    {
-      private static const application:Application = Application(FlexGlobals.topLevelApplication);
-      
-      
       /**
        * Reference to application-wide instance of <code>ModelLocator</code>.
        */
-      protected static function get ML() : ModelLocator
-      {
+      protected static function get ML() : ModelLocator {
          return ModelLocator.getInstance();
       }
       
       
-      public function BasePopup() : void
-      {
+      private function get logger() : ILogger {
+         return Log.getLogger(Objects.getClassName(this, true));
+      }
+      
+      
+      public function BasePopup() : void {
          super();
          if (this is ClientCrashPopup)
-         {
             setStyle("skinClass", CrashPopupSkin);
-         }
          else
-         {
             setStyle("skinClass", BasePopupSkin);
-         }
          addEventListener(MouseEvent.CLICK, this_clickHandler);
          addEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
       }
       
-      
-      private function this_creationCompleteHandler(event:FlexEvent) : void
-      {
+      private function this_creationCompleteHandler(event:FlexEvent) : void {
          if (!(this is ClientCrashPopup))
-         {
             PopUpManager.centerPopUp(this);
-         }
       }
-      
       
       /**
        * Shows this popup in the screen. 
        */      
-      public function show() : void
-      {
-         PopUpManager.addPopUp(this, application, true);
+      public function show() : void {
+         PopUpManager.addPopUp(this, Application(FlexGlobals.topLevelApplication), true);
       }
-      
       
       /**
        * Removes this popup from popup list in <code>PopupManager</code>.
        * 
        * @param command will be used as argument for a close handler.
        */
-      public function close() : void
-      {
+      public function close() : void {
          PopUpManager.removePopUp(this);
       }
       
@@ -86,22 +77,17 @@ package components.popups
       /* ### ACTION BUTTONS ### */
       /* ###################### */
       
-      
       /**
        * A list of all action buttons in this popup.
        */
       private var _actionButtons:ArrayCollection = new ArrayCollection();
-      private function findActionButton(button:Button) : ActionButton
-      {
+      private function findActionButton(button:Button) : ActionButton {
          return Collections.findFirst(_actionButtons,
-            function(actionButton:ActionButton) : Boolean
-            {
+            function(actionButton:ActionButton) : Boolean {
                return actionButton.button === button;
             }
          );
       }
-      
-      
       
       /**
        * Use this to add any action buttons (those are the buttons at the bottom of the popup and
@@ -116,15 +102,11 @@ package components.popups
        */
       public function addActionButton(button:Button,
                                       clickHandler:Function,
-                                      closeOnClick:Boolean = true) : void
-      {
+                                      closeOnClick:Boolean = true) : void {
          _actionButtons.addItem(new ActionButton(button, clickHandler, closeOnClick));
          if (grpActionButtons != null)
-         {
             grpActionButtons.addElement(button);
-         }
       }
-      
       
       [SkinPart(required="true")]
       /**
@@ -132,35 +114,33 @@ package components.popups
        */
       public var grpActionButtons:Group;
       
-      
-      protected override function partAdded(partName:String, instance:Object) : void
-      {
+      protected override function partAdded(partName:String, instance:Object) : void {
          super.partAdded(partName, instance);
-         if (instance == grpActionButtons)
-         {
-            for each (var actionButton:ActionButton in _actionButtons)
-            {
+         if (instance == grpActionButtons) {
+            for each (var actionButton:ActionButton in _actionButtons) {
                grpActionButtons.addElement(actionButton.button);
             }
          }
       }
       
-      
-      private function this_clickHandler(event:MouseEvent) : void
-      {
-         if (event.target is Button)
-         {
+      private function this_clickHandler(event:MouseEvent) : void {
+         if (event.target is Button) {
             var actionButton:ActionButton = findActionButton(Button(event.target));
-            if (actionButton != null)
-            {
-               if (actionButton.closeHandler != null)
-               {
-                  actionButton.closeHandler.call(null, actionButton.button);
+            if (actionButton != null) {
+               if (actionButton.closeHandler != null) {
+                  try {
+                     actionButton.closeHandler.call(null, actionButton.button);
+                  }
+                  catch (err:Error) {
+                     logger.error(
+                        "Invoking handler of an action button {0} failed with the error: {1}",
+                        actionButton.button, err.message
+                     );
+                     throw err;
+                  }
                }
                if (actionButton.closeOnClick)
-               {
                   close();
-               }
             }
          }
       }
@@ -173,8 +153,7 @@ import spark.components.Button;
 
 class ActionButton
 {
-   public function ActionButton(button:Button, closeHandler:Function, closeOnClick:Boolean)
-   {
+   public function ActionButton(button:Button, closeHandler:Function, closeOnClick:Boolean) {
       this.button       = button;
       this.closeHandler = closeHandler;
       this.closeOnClick = closeOnClick;

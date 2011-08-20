@@ -1,12 +1,12 @@
 REQUIRED_GEMS = [
-  {:name => 'activerecord', :version => '>=3.0.5', :lib => 'active_record'},
-  {:name => 'activesupport', :version => '>=3.0.5', :lib => 'active_support'},
-  {:name => 'eventmachine', :version => '>=0.12.6',
-    # mingw needs dev version to compile.
-    :platform_options => {/mingw/ => "--pre"}},
+  {:name => 'jruby-openssl', :skip => true},
+  {:name => 'activerecord-jdbcmysql-adapter',
+    :version => '~>1.1', :skip => true},
+  {:name => 'activesupport', :version => '~>3.0.9', :lib => 'active_support'},
+  {:name => 'activerecord', :version => '~>3.0.9', :lib => 'active_record'},
+  {:name => 'eventmachine', :version => '>=0.12.6', :env => "!test"},
   {:name => 'json', :version => '>=1.4.6', :lib => "json/ext"},
-  {:name => 'robustthread', :version => '>=0.5.2', :skip => true},
-  {:name => 'mail', :version => '>=2.2'},
+  {:name => 'mail', :version => '>=2.2', :env => "production"},
 ]
 
 REQUIRED_DEVELOPMENT_GEMS = [
@@ -21,13 +21,3 @@ REQUIRED_DEVELOPMENT_GEMS = [
   {:name => "net-scp", :version => "~>1.0", :skip => true},
   {:name => "xml-simple", :version => "~>1.0", :skip => true},
 ]
-
-if RUBY_PLATFORM == "java"
-  REQUIRED_GEMS.push(:name => 'activerecord-jdbcmysql-adapter',
-    :version => '~>1.1', :skip => true)
-else
-  REQUIRED_GEMS.push(:name => 'mysql2', :version => '~>0.2.6', :skip => true,
-    :platform => nil)
-  REQUIRED_DEVELOPMENT_GEMS.push("ruby-prof")
-  REQUIRED_DEVELOPMENT_GEMS.push("spork")
-end

@@ -416,7 +416,7 @@
     <activate value="Activate" />
     <deactivate value="Deactivate" />
     <attack value="Attack" />
-    <label.noUnits value="You dont have available units!" />
+    <label.noUnits value="You don't have available units!" />
     <deselectAll value="Deselect all" />
     <selectAll value="Select all" />
     <open value="Open" />
@@ -450,6 +450,8 @@
     <message.pressOnEmpty>
       <p>Click on empty map space to enter building construction mode</p>
     </message.pressOnEmpty>
+    <panelTitle.scientists value="Scientists" />
+    <message.scientistsNotAvailable value="This building is currently upgrading and its scientists are unavailable."/>
     <warning.buildingWorking>
       <p>Anything this building is constructing will be destroyed if you 
       initiate self-destruct on this building.</p>
@@ -1128,7 +1130,27 @@
         something worthy of your time. 
       </p>
     </description.startExploration>
+    <title.instantFinish value="Finish exploring"/>
+    <label.instantFinish value="Finish exploring"/>
+    <label.buyCreds value="Buy creds"/>
+    <description.instantFinishCost>
+    <![CDATA[It will cost you <span fontWeight="bold">{0}</span> creds to instantly finish exploring.]]>
+    </description.instantFinishCost>
   </Exploration>
+  
+  <Terraform>
+    <title.terraform value="Terraform"/>
+    <title.confirmTerraform value="Terraform"/>
+    <label.removeFoliage value="Remove folliage"/>
+    <label.buyCreds value="Buy creds"/>
+    <label.cancel value="Cancel"/>
+    <message.foliageRemovalCost>
+      <![CDATA[You can remove this object for <span fontWeight="bold">{0}</span> creds.]]>
+    </message.foliageRemovalCost>
+    <message.foliageRemovalConfirmation>
+      <![CDATA[Removal of this object will cost you <span fontWeight="bold">{0}</span> creds. Are you sure?]]>
+    </message.foliageRemovalConfirmation>
+  </Terraform>
 
   <Formatters>
     <date.shortDate value="YYYY-MM-DD" />
@@ -1313,6 +1335,7 @@
     <description.long.galaxy value="Sector {0}:{1} in Galaxy" />
     <description.long.solarSystem value="Sector {1}:{2} in Solar System {0}" />
     <description.long.planet value="Planet {0} in Solar System {1}" />
+    <description.long.planetInBattleground value="Planet {0} in battleground"/>
 
     <message.locationNotAvailable>
       <p>You can no longer view this location</p>
@@ -1791,7 +1814,7 @@
     <!-- ANNEX_PLANET
     0: count of planets to occupy -->
     <objectiveText.AnnexPlanet.npc>
-    <p>Occupy {0 one[neutral planet] many[? neutral planets]}</p>
+    <p>Colonize {0 one[one planet] many[? planets]}</p>
     </objectiveText.AnnexPlanet.npc>
     <objectiveText.AnnexPlanet.enemy>
     <p>Occupy {0 one[enemy planet] many[? enemy planets]}</p>
@@ -1836,7 +1859,9 @@
     <!-- BECOME_VIP
     0: VIP level, 
     1: count of times to become VIP -->
-    <objectiveText.BecomeVip value="Become level {0} VIP {1 one[] many[? times]}" />
+    <objectiveText.BecomeVip>
+      <p>Become at least level {0} VIP {1 one[] many[? times]}</p>
+    </objectiveText.BecomeVip>
 
     <!-- ACCELERATE_FLIGHT
     0: count of times to accelerate flight -->
@@ -2214,7 +2239,7 @@
     <about.116>
       <p>Commander!</p>
       <p>In your last mission, "[reference:title.8]" you were rewarded with
-      some creds. Go and take your reward if you haven't done so alredy.</p>
+      some creds. Go and take your reward if you haven't done so already.</p>
       <p>Creds are a useful and powerful tool. They can be spent on various
       tasks like accelerating your constructions, researches and unit
       training. They can even be used for moving buildings or speeding up
@@ -2623,6 +2648,13 @@
       </p>
     </about.15>
 
+    <title.121 value="Holding Breath" />
+    <about.121>
+      <p>Commander.</p>
+      <p>We need more space for our people. Soon enough we won't have any
+      rooms left.</p>
+      <p>Commence building of living pods immediately!</p>
+    </about.121>
 
     <title.16 value="Achieving Greatness" />
     <about.16>
@@ -2730,6 +2762,30 @@
         [reference:Buildings/SpaceFactory.name] and order construction now. 
       </p>
     </about.31>
+    
+    <title.119 value="Fearsome Fleets" />
+    <about.119>
+      <p>Commander.</p>
+      <p>Good job on building those crows. They are fast and deadly. I'm
+      so proud about them. Lets put them to a good use, shall we?</p>
+      <p>There are some alien dirac ships hovering nearby planet. I suggest
+      we take our fleet and wipe them out. That planet looks like a nice
+      expansion spot and I wouldn't want any alien scum flying around 
+      there.</p>
+    </about.119>
+    
+    <title.120 value="Freighting Minerals" />
+    <about.120>
+      <p>Good job on cleaning up those diracs, Commander!</p>
+      <p>We sure showed them! Anyway, back to bussiness. Its an awful mess
+      down there after that battle - we've got wreckages flying everywhere.
+      We should clean it up.</p>
+      <p>Why the frowned face? Oh, I must have forgot to mention that those
+      wreckages can be used as resources in our worlds. Heh, I see you're 
+      smiling already.</p>
+      <p>Right on! Lets collect those resources! Build your first mule 
+      class ship!</p>
+    </about.120>
 
     <title.35 value="Cleansing" />
     <about.35>
@@ -4019,11 +4075,13 @@
      <label.allianceChannel value="#alliance"/>
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Players"/>
+     <label.generateJoinLeaveMsgs value="Show join / leave messages"/>
   </Chat>
   
   <Market>
     <label.submit value="Submit" />
     <label.fee value="Fee:" />
+    <label.total value="Total:" />
     <label.wantToSell value="Selling" />
     <label.sellFor value="For" />
     <!-- 1 cheaper or more -->
@@ -4053,11 +4111,11 @@
     <label.cancel value="Cancel" />
     <label.close value="Close" />
     <label.noOffers value="No offers" />
-    <!-- {0}: metal/energy/zetium
+    <!-- {0}: metal/energy/zetium/creds
          {1}: minimal amount -->
     <warning.noMinResource> 
-      <p>You dont have enough {0} for minimal offer.</p>
-      <p>Minimal offer is {1} {0}.</p>
+      <p>You don't have enough {0} for minimal offer.</p>
+      <p>Minimal offer is {1} {0} + taxes.</p>
     </warning.noMinResource>
     <message.offerSubmited value="Offer submited" />
     <message.offerGone value="Sorry, offer is already gone" />
@@ -4083,8 +4141,8 @@
     <warning.notFromPlanet 
     value="This is your offer but it has been submitted from another planet." />
     <filter.clear value="Clear" />
-    <label.freeCreds value="You can not use free creds in the market" />
-    <label.moreInfo value="why?" />
+    <label.freeCreds value="You can not use free creds in the market." />
+    <label.moreInfo value="Why?" />
   </Market>
 
 </locale>
