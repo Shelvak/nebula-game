@@ -477,7 +477,7 @@
             {
                var _constructor: Building = ML.latestPlanet.getBuildingByConstructable(
                   _selectedModel.id, ObjectClass.BUILDING);
-               new BuildingsCommand(_selectedModel.upgradePart.level > 0 || _selectedModel.constructorId == 0
+               new BuildingsCommand(_selectedModel.upgradePart.level > 0 || _constructor == null
                   ?BuildingsCommand.CANCEL_UPGRADE:BuildingsCommand.CANCEL_CONSTRUCTOR, 
                   {'id': (_selectedModel.upgradePart.level > 0 || _constructor == null
                      ? _selectedModel.id
@@ -845,11 +845,11 @@
                      <base:AdvancedContainer left="0" right="0">
                         <s:Group width="100%" visible="{_selectedModel.upgradePart.level > 0}">
                            <s:Label text="{getString('label.cancelUpgrade')}"
-                                    left="0" right="0"/>
+                                    left="0" right="0" paddingBottom="6" />
                         </s:Group>
                         <s:Group width="100%" visible="{_selectedModel.upgradePart.level == 0}">
                            <s:Label text="{getString('label.cancelConstructor')}"
-                                    left="0" right="0"/>
+                                    left="0" right="0" paddingBottom="6" />
                         </s:Group>
                         <base:ImageAndLabel type="{ResourceType.METAL}" paddingLeft="6" 
                                             visible="{Resource.getModelCancelRevenueString(
@@ -867,8 +867,10 @@
                                             textToDisplay="{Resource.getModelCancelRevenueString(
                                             _selectedModel, ResourceType.ZETIUM, builtPart)}"/>
                         <base:Warning showSign="false" text="{getString('warning.deployCancel')}" 
-                                      visible="{ML.latestPlanet.getBuildingByConstructable(_selectedModel.id,
-                                      ObjectClass.BUILDING) == null}"/>
+                                      visible="{_selectedModel.upgradePart.level == 0 &amp;&amp;  
+                                      ML.latestPlanet.getBuildingByConstructable(_selectedModel.id,
+                                      ObjectClass.BUILDING) == null}" width="100%"
+                                      paddingTop="6" paddingBottom="6"/>
                         <s:Group width="100%">
                            <s:Button right="6" label="{getString('label.cancel')}"
                                      click="cancelUpgrade()"/>

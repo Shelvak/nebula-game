@@ -452,10 +452,14 @@
     </message.pressOnEmpty>
     <panelTitle.scientists value="Scientists" />
     <panelTitle.cancelProgress value="Cancel upgrade" />
-    <label.cancelUpgrade 
-    value="You will get these resources if you cancel upgrade of this building" />
-    <label.cancelConstructor
-    value="You will get these resources if you cancel construction of this building" />
+    <label.cancelUpgrade>
+      <p>These resources will be returned if you cancel upgrade of this 
+      building:</p>
+    </label.cancelUpgrade>
+    <label.cancelConstructor>
+      <p>These resources will be returned if you cancel construction of 
+      this building:</p>
+    </label.cancelConstructor>
     <label.cancel value="Cancel" />
     <message.scientistsNotAvailable value="This building is currently upgrading and its scientists are unavailable."/>
     <warning.buildingWorking>
@@ -3802,7 +3806,7 @@
     
     <btnLabel.cancel value="Cancel" />
     <label.cancelTraining
-    value="If you cancel training of this unit you will get:" />
+    value="Upon training cancellation you will get:" />
 
     <stored.short>
       <p>R: {0}%<br/>U: {1}%</p>

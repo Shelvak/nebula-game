@@ -188,7 +188,8 @@
                <s:Label text="{getString('label.cancelTraining')}"
                         left="0" right="0"
                         mouseOver="BS.cancelId = facilityId"
-                        mouseOut="BS.cancelId = -1"/>
+                        mouseOut="BS.cancelId = -1"
+                        paddingBottom="6" />
             </s:Group>
             <base:ImageAndLabel type="{ResourceType.METAL}" paddingLeft="6" 
                                 visible="{Resource.getModelCancelRevenueString(
