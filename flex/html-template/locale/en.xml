@@ -1481,7 +1481,7 @@
     <label.marketOfferBought.message2 value="has bought:" />
     <label.marketOfferBought.for value="for" />
     <label.marketOfferBought.amountLeft>
-    <!-- 1: metal, energy or zetium -->
+    <!-- 1: metal, energy, zetium or creds -->
       <p>Your offer still has {0} {1} left.</p>
     </label.marketOfferBought.amountLeft>
     <label.marketOfferBought.allBought value="Your offer has been bought out." />
