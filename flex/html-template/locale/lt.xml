@@ -1501,9 +1501,9 @@
     <label.marketOfferBought.message2 value="nusipirko:" />
     <label.marketOfferBought.for value="už" />
     <label.marketOfferBought.amountLeft>
-    <!-- 1: metal, energy or zetium -->
+    <!-- 1: metal, energy, zetium or creds -->
       <p>Tavo pasiūlyme dar liko {0} 
-      {1 metal[metalo] energy[energijos] zetium[zetiumo]}.</p>
+      {1 metal[metalo] energy[energijos] zetium[zetiumo] creds[kredų]}.</p>
     </label.marketOfferBought.amountLeft>
     <label.marketOfferBought.allBought value="Tavo pasiūlymas buvo pilnai nupirktas." />
 
@@ -2425,7 +2425,7 @@
       <p>Komandore.</p>
       <p>
         Atradimai! Progresas! Pasitelkę mokslą, mes išplečiame savo galimybių 
-        ribas. Mūsų priešai gali statytis laivynius, bet mes pasistatysime 
+        ribas. Mūsų priešai gali statytis laivynus, bet mes pasistatysime 
         geresnius! Negailėkite investicijų tyrimams ir mėgaukitės kosminiais 
         dividendais!
       </p>
@@ -3245,7 +3245,7 @@
     <property.mod.energy.store value="Energijos talpos priedas" />
     <property.mod.armor value="Šarvų priedas" />
     <property.mod.damage value="Žalos priedas" />
-    <property.mod.movement_time_decrease value="Jūdėjimo trukmės sumažinimas" />
+    <property.mod.movementTimeDecrease value="Jūdėjimo trukmės sumažinimas" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
 
     <UnitTech>
@@ -4071,5 +4071,10 @@
     <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje." />
     <label.moreInfo value="Kodėl?" />
   </Market>
+  
+  <Announcements>
+    <title.popup value="Skelbimas"/>
+    <label.close value="Uždaryti"/>
+  </Announcements>
 
 </locale>

@@ -168,18 +168,12 @@
             guns.removeAll();
             if (oldOriginModel != null)
             {
-               if (oldOriginModel is Building)
+               if ((oldOriginModel is Building || oldOriginModel is Technology) &&
+                   oldOriginModel.upgradePart != null)
                {
                   oldOriginModel.upgradePart.removeEventListener(
                      UpgradeEvent.LEVEL_CHANGE, 
-                     dealWithPropertiesChange
-                  );
-               }
-               if (oldOriginModel is Technology)
-               {
-                  oldOriginModel.upgradePart.removeEventListener(
-                     UpgradeEvent.LEVEL_CHANGE, 
-                     dealWithPropertiesChange
+                     dealWithPropertiesChange, false
                   );
                }
             }
@@ -191,7 +185,7 @@
                {
                   value.upgradePart.addEventListener(
                      UpgradeEvent.LEVEL_CHANGE, 
-                     dealWithPropertiesChange
+                     dealWithPropertiesChange, false, 0, true
                   );
                }
                lvlSelector.value = _infoModel.usefulLevel;

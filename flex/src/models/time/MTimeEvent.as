@@ -109,14 +109,17 @@ package models.time
       }
       
       protected function occuresInUpdated() : void {
+         change_flag::occuresIn = true;
          dispatchSimpleEvent(MTimeEventEvent, MTimeEventEvent.OCCURES_IN_CHANGE);
       }
       
       protected function occuresAtUpdated() : void {
+         change_flag::occuresAt = true;
          dispatchSimpleEvent(MTimeEventEvent, MTimeEventEvent.OCCURES_AT_CHANGE);
       }
       
       protected function hasOccuredUpdated() : void {
+         change_flag::hasOccured = true;
          dispatchSimpleEvent(MTimeEventEvent, MTimeEventEvent.HAS_OCCURED_CHANGE);
       }
    }
