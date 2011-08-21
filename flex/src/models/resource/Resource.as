@@ -13,8 +13,6 @@ package models.resource
    import models.solarsystem.MSSObject;
    import models.unit.Unit;
    
-   import org.hamcrest.BaseMatcher;
-   
    import utils.MathUtil;
    import utils.StringUtil;
    import utils.locale.Localizer;
