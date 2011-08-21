@@ -254,9 +254,9 @@ describe BuildingsController do
     
     it_should_behave_like "finding building"
     
-    it "should call #cancel! on constructor" do
+    it "should call #cancel_constructable! on constructor" do
       @controller.should_receive(:find_building).and_return(@building)
-      @building.should_receive(:cancel!)
+      @building.should_receive(:cancel_constructable!)
       invoke @action, @params
     end
   end

@@ -17,12 +17,9 @@ describe Building::ConstructorTest do
       @data = @constructor.construct!(@type, @params, 3)
     end
 
-    it "should destroy current constructable" do
+    it "should cancel current constructable" do
+      @constructor.constructable.should_receive(:cancel!)
       @constructor.destroy
-
-      lambda do
-        @data[:model].reload
-      end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "should clear construction queue entries" do
@@ -102,7 +99,7 @@ describe Building::ConstructorTest do
     end
   end
 
-  describe "#cancel!" do
+  describe "#cancel_constructable!" do
     before(:each) do
       @type = 'Building::TestBuilding'
       @args = {:x => 10, :y => 20}
@@ -117,41 +114,41 @@ describe Building::ConstructorTest do
     it "should raise GameLogicError if not working" do
       @constructor.stub!(:state).and_return(Building::STATE_ACTIVE)
       lambda do
-        @constructor.cancel!
+        @constructor.cancel_constructable!
       end.should raise_error(GameLogicError)
     end
 
     it "should clear constructable on model" do
-      @constructor.cancel!
+      @constructor.cancel_constructable!
       @constructor.constructable.should be_nil
     end
 
     it "should call #cancel! on constructable" do
       @constructor.constructable.should_receive(:cancel!)
-      @constructor.cancel!
+      @constructor.cancel_constructable!
     end
 
     it "should unregister from CM" do
       finished = @building.upgrade_ends_at
-      @constructor.cancel!
+      @constructor.cancel_constructable!
       @constructor.should_not have_callback(
         CallbackManager::EVENT_CONSTRUCTION_FINISHED, finished)
     end
 
     it "should change state to active" do
-      @constructor.cancel!
+      @constructor.cancel_constructable!
       @constructor.state.should == Building::STATE_ACTIVE
     end
 
     it "should save itself" do
-      @constructor.cancel!
+      @constructor.cancel_constructable!
       @constructor.should_not be_changed
     end
 
     %w{metal energy zetium}.each do |resource|
       it "should change #{resource}" do
         planet = @constructor.planet(true)
-        @constructor.cancel!
+        @constructor.cancel_constructable!
         lambda do
           planet.reload
         end.should change(planet, resource)
@@ -161,7 +158,7 @@ describe Building::ConstructorTest do
     it "should start construction of next extry from queue" do
       Factory.create(:construction_queue_entry,
         :constructor => @constructor)
-      @constructor.cancel!
+      @constructor.cancel_constructable!
       @constructor.reload
       @constructor.state.should == Building::STATE_WORKING
       @constructor.construction_queue_entries(true).should be_blank
