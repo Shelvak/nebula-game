@@ -17,6 +17,8 @@ Spec::Matchers.define :have_callback do |type, time|
       "#{time} +/- #{SPEC_TIME_PRECISION}s"
     when Range
       time.to_s
+    when nil
+      "any time"
     else
       time.inspect
     end
