@@ -10,6 +10,12 @@ package models.announcement
        */
       public static const BUTTON_VISIBLE_CHANGE:String = "buttonVisibleChange";
       
+      /**
+       * Dispatched when <code>MAnnouncement</code> has been reset.
+       * @eventType reset
+       */
+      public static const RESET:String = "reset";
+      
       public function MAnnouncementEvent(type:String) {
          super(type);
       }

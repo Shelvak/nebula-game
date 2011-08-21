@@ -1,5 +1,6 @@
 package tests.announcement
 {
+   import ext.hamcrest.date.dateEqual;
    import ext.hamcrest.events.causesTarget;
    import ext.hamcrest.object.equals;
    
@@ -78,6 +79,20 @@ package tests.announcement
                announcement.update();
             },
             causesTarget(announcement) .toDispatchEvent (MAnnouncementEvent.BUTTON_VISIBLE_CHANGE)
+         );
+      }
+      
+      [Test]
+      public function reset() : void {
+         announcement.event.occuresAt = new Date(2200, 0, 1);
+         announcement.message = "Message";
+         announcement.reset();
+         assertThat( "message cleared", announcement.message, nullValue() );
+         assertThat( "event reset", announcement.event.occuresAt, dateEqual (new Date(0)) );
+         
+         assertThat(
+            "resetting announcement model", function():void{ announcement.reset() },
+            causesTarget(announcement) .toDispatchEvent (MAnnouncementEvent.RESET)
          );
       }
    }

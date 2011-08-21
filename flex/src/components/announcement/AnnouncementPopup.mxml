@@ -13,6 +13,7 @@
    <fx:Script>
       <![CDATA[
          import models.announcement.MAnnouncement;
+         import models.announcement.MAnnouncementEvent;
          
          import mx.events.FlexEvent;
          import mx.events.PropertyChangeEvent;
@@ -38,6 +39,13 @@
             return MAnnouncement.getInstance();
          }
          
+         private function reset() : void {
+            if (_isShown) {
+               _isShown = false;
+               PopUpManager.removePopUp(this);
+            }
+         }
+         
          private var _isShown:Boolean = false;
          public function get isShown() : Boolean {
             return _isShown;
@@ -55,6 +63,8 @@
          private function this_creationCompleteHandler(event:FlexEvent) : void {
             ANNOUNCEMENT.addEventListener
                (PropertyChangeEvent.PROPERTY_CHANGE, announcement_propertyChangeHandler, false, 0, true);
+            ANNOUNCEMENT.addEventListener
+               (MAnnouncementEvent.RESET, announcement_resetHandler, false, 0, true);
             updateTxtMessage();
          }
          
@@ -67,6 +77,10 @@
                updateTxtMessage();
          }
          
+         private function announcement_resetHandler(event:MAnnouncementEvent) : void {
+            reset();
+         }
+         
          private function getString(property:String) : String {
             return Localizer.string("Announcements", property);
          }
@@ -76,9 +90,9 @@
          }
          
          private function updateTxtMessage() : void {
-            txtMessage.textFlow = TextFlowUtil.importFromString(ANNOUNCEMENT.message);
-         }
-         
+            if (ANNOUNCEMENT.message != null)
+               txtMessage.textFlow = TextFlowUtil.importFromString(ANNOUNCEMENT.message);
+         }         
       ]]>
    </fx:Script>
    <popups:layout>
