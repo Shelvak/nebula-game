@@ -837,6 +837,11 @@ describe SsObject::Planet do
         player.reload
       end.should change(player, :scientists).by(@scientists)
     end
+    
+    it "should not fail if planet has no player" do
+      @planet.player = nil
+      @planet.stop_exploration!
+    end
 
     %w{exploration_x exploration_y exploration_ends_at}.each do |attr|
       it "should nullify ##{attr}" do
@@ -898,6 +903,21 @@ describe SsObject::Planet do
       lambda do
         @planet.finish_exploration!
       end.should raise_error(GameLogicError)
+    end
+    
+    describe "when planet has no owner" do
+      before(:each) do
+        @planet.player = nil
+      end
+      
+      it "should stop exploration" do
+        @planet.should_receive(:stop_exploration!)
+        @planet.finish_exploration!
+      end
+      
+      it "should return false" do
+        @planet.finish_exploration!.should be_false
+      end
     end
     
     it "should get winning chance based on width and height" do

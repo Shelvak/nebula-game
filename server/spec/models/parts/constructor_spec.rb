@@ -401,7 +401,7 @@ describe Building::ConstructorTest do
     end
 
     it "should raise error if not working" do
-      @constructor.cancel!
+      @constructor.cancel_constructable!
       lambda do
         @constructor.accelerate_construction!(10, 10)
       end.should raise_error(GameLogicError)
