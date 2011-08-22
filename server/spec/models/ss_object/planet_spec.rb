@@ -1208,15 +1208,16 @@ describe SsObject::Planet do
   end
 
   describe ".buildings" do
-    describe ".shooting" do
-      it "should return shooting buildings of that planet" do
+    describe ".combat" do
+      it "should return buildings of that planet that participate " +
+      "in combat" do
         planet = Factory.create :planet
-        shooting = Factory.create :building, :planet => planet
+        combat_building = Factory.create :building, :planet => planet
         Factory.create :b_collector_t1, :planet => planet,
           :x => 10, :y => 10
 
         with_config_values('buildings.test_building.guns' => [:aa]) do
-          planet.buildings.shooting.should == [shooting]
+          planet.buildings.combat.should == [combat_building]
         end
       end
     end
