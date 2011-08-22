@@ -314,6 +314,19 @@ describe Combat do
     end.run.should_not be_nil
   end
 
+  it "should run combat if planet is defended only by npc towers" do
+    CombatDsl.new do
+      location(:planet) do
+        buildings do
+          thunder :x => 0
+          vulcan :x => 3
+          screamer :x => 6
+        end
+      end
+      player { units { mule { shocker } } }
+    end.run.should_not be_nil
+  end
+  
   describe "alive/dead stats" do
     it "should include buildings" do
        player = nil
@@ -348,7 +361,6 @@ describe Combat do
         unit_hash[:type] == "Unit::Crow"
       end.should be_nil
     end
-    
   end
 
   it "should win a battle where one player has nothing" do
