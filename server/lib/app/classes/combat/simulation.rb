@@ -117,17 +117,21 @@ module Combat::Simulation
     [damage_mods, armor_mods]
   end
 
-  # Unloads loaded units from _units_ and sets their _location_. Transporter
+  # Returns loaded units which are inside _transporters_. If _unload_ is
+  # true, then also unloads them to _location_. In such case transporter
   # #stored attributes are also reduced.
-  def loaded_units(location, units, unload)
+  #
+  def loaded_units(location, transporters, unload)
     loaded_units = {}
+    non_combat_types = Unit.non_combat_types
 
-    units.each do |unit|
+    transporters.each do |unit|
       if unit.stored > 0
         unit.units.each do |loaded_unit|
           loaded_units[unit.id] ||= []
           loaded_units[unit.id].push loaded_unit
-          if unload
+          if unload && ! non_combat_types.include?(loaded_unit[:type])
+            # Don't unload non-combat types.
             unit.stored -= loaded_unit.volume
             loaded_unit.location = location
           end
@@ -214,13 +218,14 @@ module Combat::Simulation
     end
 
     troops = units.map { |u| troop(u) }
+    # Units which are loaded into transporters.
     loaded_units = loaded_units(location, units,
       location.is_a?(SsObject::Planet))
-    loaded_troops = Hash[
-      loaded_units.map do |transporter_id, unloaded|
-        [transporter_id, unloaded.map { |u| troop(u) }]
-      end
-    ]
+    loaded_troops = loaded_units.inject({}) do |hash, entry|
+      transporter_id, unloaded = entry
+      hash[transporter_id] = unloaded.map { |u| troop(u) }
+      hash
+    end
 
     mule_buildings = buildings.map do |building|
       {:id => building.id, :type => building.type, :level => building.level,
