@@ -187,7 +187,7 @@ package controllers.startup
          ToolTipManager.hideDelay = int.MAX_VALUE;
          initializeFreeSingletons();
          bindCommandsToActions();
-         setupBaseModel();
+         setupObjects();
          ML.player.galaxyId = StartupInfo.getInstance().galaxyId;
          ConnectionManager.getInstance().connect();
          masterTrigger = new MasterUpdateTrigger();
@@ -238,9 +238,8 @@ package controllers.startup
       }
       
       
-      private static function setupBaseModel() : void
-      {
-         BaseModel.setTypeProcessor(Date,
+      private static function setupObjects() : void {
+         Objects.setTypeProcessor(Date,
             function(currValue:Date, value:String) : Date {
                return DateUtil.parseServerDTF(value);
             }

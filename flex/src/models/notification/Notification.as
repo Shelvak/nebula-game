@@ -161,7 +161,7 @@ package models.notification
       /* ############### */
       
       
-      protected override function afterCreateModel(data:Object) : void
+      public override function afterCreate(data:Object) : void
       {
          createCustomPart();
       }

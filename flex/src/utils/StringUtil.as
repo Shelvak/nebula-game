@@ -1,5 +1,7 @@
 package utils
 {
+	import mx.utils.StringUtil;
+	
 	import utils.bkde.as3.parsers.CompiledObject;
 	import utils.bkde.as3.parsers.MathParser;
 	
@@ -8,6 +10,16 @@ package utils
 	 */   
 	public class StringUtil
 	{
+      /**
+       * Invokes <code>mx.utils.StringUtil.substitute()</code>.
+       * 
+       * @see mx.utils.StringUtil#substitute()
+       */
+      public static function substitute(str:String, ... parameters) : String {
+         return mx.utils.StringUtil.substitute(str, parameters);
+      }
+      
+      
 		/**
 		 * Transforms first letter of a given string to UPPERCASE and returns resulting string.
 		 *  
@@ -85,23 +97,11 @@ package utils
             var usableFormula:String = formula.replace(POWER_REGEXP, "^");
             var parser:MathParser = new MathParser(paramNames);
             var compObject:CompiledObject = parser.doCompile(usableFormula);
-//            if (compObject.errorStatus != 0) {
-//               trace("Formula CMOPILE error!");
-//               trace("   Formula:", usableFormula);
-//               trace("   Error status:", compObject.errorStatus);
-//               trace("   Error message:", compObject.errorMes);
-//            }
             var polishArray:Array = compObject.PolishArray;
             cachedParser = new CachedMathParser(parser, polishArray)
             CACHED_PARSERS[parserKey] = cachedParser;
          }
          result = cachedParser.parser.doEval(cachedParser.polishArray, paramVals);
-//         if (isNaN(result)) {
-//            trace("Formula EVAL error!")
-//            trace("   Formula:", formula);
-//            trace("   Params:", ObjectUtil.toString(paramNames));
-//            trace("   Param values:", ObjectUtil.toString(paramVals));
-//         }
          return result;
       }
       

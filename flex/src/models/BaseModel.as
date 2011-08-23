@@ -55,8 +55,6 @@ package models
     */
    public class BaseModel extends EventDispatcher implements IBaseModel
    {
-      private static const WHITESPACE_REGEXP:RegExp = /\s/g;
-      
       /**
        * Reference to <code>ImagePreloader</code> singleton.
        */
@@ -94,31 +92,6 @@ package models
          return true;
       }
       
-      client_internal static const TYPE_PROCESSORS:Dictionary = new Dictionary();
-      /**
-       * Sets processor function to handle properties of specific type.
-       * 
-       * @param type a Class that requires special handling
-       * @param processor function that will be called when an object of the given type needs to be constructed.
-       * Signature of the function should be: <code>function(currValue:&#42, value:Object) : Object</code>.
-       * Parameters of the function:
-       * <ul>
-       *    <li><code>currValue</code> - currentValue of the property in the host object.</li>
-       *    <li><code>value</code> - an object that is a generic representation of an instance beeing constructed.</li>
-       * </ul>
-       * The function should create and return a new instance of <code>type</code> only if <code>currValue</code>
-       * is <code>null</code>. If not, it should fill the <code>currValue</code> object with appropriate data
-       * and return it. 
-       */
-      public static function setTypeProcessor(type:Class, processor:Function) : void {
-         Objects.paramNotNull("type", processor);
-         Objects.paramNotNull("processor", processor);
-         client_internal::TYPE_PROCESSORS[type] = processor;
-      }
-      private static function getTypeProcessor(type:Class) : Function {
-         return client_internal::TYPE_PROCESSORS[type];
-      }
-      
       /**
        * Creates a model and loads values to appropriate fields from a provided
        * object.
@@ -154,248 +127,8 @@ package models
       public static function createModel(type:Class, data:Object) : * {
          Objects.paramNotNull("type", type);
          
-         return createModelImpl(type, null, data);
+         return Objects.createImpl(type, null, data);
       };
-      
-      private static function createModelImpl(type:Class, model:Object, data:Object, itemType:Class = null) : Object {
-         Objects.paramNotNull("type", type);
-         
-         if (data == null)
-            return null;
-         
-         // type processors come first so that special types could be created directly using 
-         // createModel() method
-         var typeProcessor:Function = getTypeProcessor(type);
-         if (typeProcessor != null) {
-            model = typeProcessor.call(null, model, data);
-            callAfterCreate(model, data);
-            return model;
-         }
-         
-         // primitives and generic objects don't need any handling at all
-         if (TypeChecker.isPrimitiveClass(type) || type == Object)
-            return data;
-         
-         // TODO: replace with type processor. Left over only not to break old tests.
-         if (type == Date)
-            return DateUtil.parseServerDTF(String(data), false);
-         
-         // the rest operations also need an instance of given type
-         // assuming that all types from this point forward have constructors without arguments
-         if (model == null)
-            model = new type();
-         
-         // collections
-         var isVector:Boolean = TypeChecker.isVector(model);
-         var isArray:Boolean = model is Array;
-         var isList:Boolean = model is IList;
-         var isCollection:Boolean = isVector || isArray || isList;
-         if (isCollection) {
-            // different interfaces of different collections require small but different piece of code
-            var addItem:Function;
-            if (isVector || isArray)
-               addItem = function(item:Object) : void { model.push(item) };
-            else
-               addItem = function(item:Object) : void { model.addItem(item) };
-            // now create items
-            for each (var itemData:Object in data) {
-               addItem(createModelImpl(itemType, null, itemData));
-            }
-            
-            // afterCreate() callback is not supported on the collections because including this feature
-            // would be too much dependent on internals of each collection type
-            return model;
-         }
-         
-         var errors:Array = new Array();
-         function pushError(message:String, ... params) : void {
-            errors.push(StringUtil.substitute(message, params));
-         }
-         
-         // other types: assuming they have metadata tags attached to properties
-         var typeInfo:XML = Objects.describeType(type).factory[0];
-         for each (var propsInfoList:XMLList in [typeInfo.accessor, typeInfo.variable, typeInfo.constant]) {
-            for each (var propInfo:XML in propsInfoList) {
-               var propMetadata:XMLList = propInfo.metadata;
-               var propName:String  = propInfo.@name[0];
-               var propClassName:String = String(propInfo.@type[0]).replace("&lt;", "<");
-               var propClass:Class = getDefinitionByName(propClassName) as Class;
-               var metaRequired:XML = propMetadata.(@name == "Required")[0];
-               var metaOptional:XML = propMetadata.(@name == "Optional")[0];
-               var metaActual:XML   = metaRequired != null ? metaRequired : metaOptional;
-               if (metaActual != null) {
-                  var propAlias:String = metaActual.arg.(@key == "alias").@value[0];
-                  var aggregatesProps:String  = metaActual.arg.(@key == "aggregatesProps" ).@value[0];
-                  var aggregatesPrefix:String = metaActual.arg.(@key == "aggregatesPrefix").@value[0];
-               }
-               
-               
-               // skip the property if its not tagged
-               if (metaRequired == null && metaOptional == null)
-                  continue;
-               
-               if (metaRequired != null && metaOptional != null) {
-                  pushError(
-                     "Property '{0}' has both - [Required] and [Optional] - metadata tags declared which " +
-                     "is illegal.", propName
-                  );
-                  continue;
-               }
-               if ((aggregatesProps != null || aggregatesPrefix != null) && propAlias != null) {
-                  pushError(
-                     "Property '{0}' has both - alias and aggregatesProps (or aggregatesPrefix) - attributes " +
-                     "defined which is illegal.", propName
-                  );
-                  continue;
-               }
-               if (aggregatesProps != null && aggregatesPrefix != null) {
-                  pushError(
-                     "Property '{0}' has both - aggregatesProps and aggregatesPrefix - " +
-                     "attributes defined which is illegal.", propName
-                  );
-                  continue;
-               }
-               if (propClass == type && metaRequired != null) {
-                  pushError(
-                     "Property '{0}' is marked with [Required] and is of exact type as given model type " +
-                     "{1}. This is not legal. Use [Optional] instead.", propName, type
-                  );
-                  continue;
-               }
-               
-               if (propAlias == null)
-                  propAlias = propName;
-               var propValue:* = model[propName];
-               var propData:* = data[propAlias];
-               
-               function setProp(value:Object) : void {
-                  if (model[propName] != value)
-                     model[propName] = value;
-               }
-               
-               // aggregator comes first
-               if (aggregatesProps != null || aggregatesPrefix != null) {
-                  
-                  // aggregatesProps and aggregatesPrefix not allowed for primitives
-                  if (TypeChecker.isPrimitiveClass(propClass)) {
-                     pushError(
-                        "aggregatesProps and aggregatesPrefix attributes not allowed in [Optional|Required] " +
-                        "tags attached to a property of primitive type, but such tag was found on property " +
-                        "'{0}'", propName
-                     );
-                     continue;
-                  }
-                  
-                  var aggrData:Object;
-                  // aggregates props
-                  if (aggregatesProps != null) {
-                     aggregatesProps = aggregatesProps.replace(WHITESPACE_REGEXP, "");
-                     aggrData = Objects.extractProps(aggregatesProps.split(","), data);
-                  }
-                  // aggregates prefix
-                  else
-                     aggrData = Objects.extractPropsWithPrefix(aggregatesPrefix, data);
-                  
-                  if (!Objects.hasAnyProp(aggrData)) {
-                     if (metaRequired != null) {
-                        var errorMsg:String = "Aggregator defined by property '" + propName + "' is required but ";
-                        if (aggregatesProps != null)
-                           errorMsg += "none of aggregated properties [" + aggregatesProps + "]"; 
-                        else
-                           errorMsg += "no properties with prefix '" + aggregatesPrefix + "'";
-                        errorMsg += " are provided.";
-                        pushError(errorMsg);
-                     }
-                  }
-                  else
-                     setProp(createModelImpl(propClass, propValue, aggrData));
-                  
-                  continue;
-               }
-               
-               if (metaRequired != null && propData === undefined) {
-                  pushError("Property '{0}' does not exist in source object but is required.", propName);
-                  continue;
-               }
-               
-               // skip null and undefined values in source object
-               if (propData == null)
-                  continue;
-               
-               // error when property is a primitive but the value in data object is generic object or 
-               // an instance of some non-primitive class
-               if (TypeChecker.isPrimitiveClass(propClass)) {
-                  if (!TypeChecker.isOfPrimitiveType(propData)) {
-                     pushError(
-                        "Property '{0}' is of primitive type {1}, but the value '{2}' in the data object " +
-                        "is of complex type {3}", propName, propClass, propData, Objects.getClass(propData)
-                     );
-                     continue;
-                  }
-               }
-               
-               if (getTypeProcessor(propClass) != null ||
-                   TypeChecker.isPrimitiveClass(propClass) ||
-                   propClass == Object) {
-                  setProp(createModelImpl(propClass, propValue, propData));
-                  continue;
-               }
-               
-               if (propValue == null)
-                  propValue = new propClass();
-               
-               // collections
-               var propIsVector:Boolean = TypeChecker.isVector(propValue);
-               var propIsArray:Boolean = propValue is Array;
-               var propIsList:Boolean = propValue is IList;
-               if (propIsArray || propIsList || propIsVector) {
-                  // elementType attribute is mandatory element for Array and IList properties
-                  var itemTypeName:String = metaActual.arg.(@key == "elementType").@value[0];
-                  if (!propIsVector && itemTypeName == null) {
-                     pushError(
-                        "Property '{0}' is of [class IList] or [class Array] type and therefore requires " +
-                        "elementType attribute of [Required|Optional] metadata tag declared.", propName
-                     );
-                     continue;
-                  }
-                  if (propIsVector) {
-                     itemTypeName = propClassName.substring(
-                        propClassName.indexOf("Vector.<") + 8,
-                        propClassName.length - 1
-                     );
-                  }
-                  setProp(createModelImpl(propClass, propValue, propData, getDefinitionByName(itemTypeName) as Class));
-               }
-               
-               // other objects
-               else
-                  setProp(createModelImpl(propClass, propValue, propData));
-            }
-         }
-         
-         callAfterCreate(model, data);
-         
-         if (errors.length != 0)
-            throw new Error(
-               errors.join("\n") + "\nFix properties in " + type + " or see to it that source " +
-               "object holds values for all required properties of correct type."
-            );
-         
-         return model;
-      }
-      
-      private static function callAfterCreate(target:Object, data:Object) : void {
-         Objects.paramNotNull("target", target);
-         Objects.paramNotNull("data", data);
-         try {
-            var afterCreateCallback:Function = target["afterCreateModel"]; 
-            if (afterCreateCallback != null)
-               afterCreateCallback.call(null, data);
-         }
-         // ignore this error since afterCreateModel() method is optional and dynamic read of this method
-         // form the static class ends up with this error
-         catch (err:ReferenceError) {}
-      }
       
       
       /**
@@ -688,15 +421,13 @@ package models
       
       
       /**
-       * Is called when <code>BaseModel.createModel()</code> has finished creation of a model.
-       * You can hook any additional postprocessing to be performed after creation of a model
-       * in this method. You must call invoke <code>super.afterCreateModel()</code> when overriding
-       * this method.
+       * Is called when <code>Objects.create()</code> has finished creation of a model. You can hook any
+       * additional postprocessing to be performed after creation of a model in this method. You must invoke
+       * <code>super.afterCreate()</code> when overriding this method.
        * 
        * @param data A generic object which was used as source for populating properties
        */
-      protected function afterCreateModel(data:Object) : void
-      {
+      public function afterCreate(data:Object) : void {
          refresh();
       }
       

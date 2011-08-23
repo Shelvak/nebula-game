@@ -23,6 +23,8 @@ package tests.models
    import tests.models.classes.ModelAggregator;
    import tests.models.classes.ModelNested;
    import tests.models.classes.ModelRequiredSelf;
+   
+   import utils.Objects;
 
    public class TC_BaseModel
    {
@@ -286,7 +288,7 @@ package tests.models
       }
       
       private function addPointProcessor() : void {
-         BaseModel.setTypeProcessor(Point, function(currValue:*, value:Object) : Object {
+         Objects.setTypeProcessor(Point, function(currValue:*, value:Object) : Object {
             var point:Point = currValue == null ? new Point() : currValue;
             point.x = value["x"];
             point.y = value["y"];
@@ -295,11 +297,11 @@ package tests.models
       }
       
       private function removePointProcessor() : void {
-         delete BaseModel.client_internal::TYPE_PROCESSORS[Point];
+         delete Objects.client_internal::TYPE_PROCESSORS[Point];
       }
       
       private function addRectangleProcessor() : void {
-         BaseModel.setTypeProcessor(Rectangle, function(currValue:*, value:Object) : Object {
+         Objects.setTypeProcessor(Rectangle, function(currValue:*, value:Object) : Object {
             var rect:Rectangle = currValue == null ? new Rectangle() : currValue;
             rect.x = value["x"];
             rect.y = value["y"];
@@ -310,7 +312,7 @@ package tests.models
       }
       
       private function removeRectangleProcessor() : void {
-         delete BaseModel.client_internal::TYPE_PROCESSORS[Rectangle];
+         delete Objects.client_internal::TYPE_PROCESSORS[Rectangle];
       }
    }
 }

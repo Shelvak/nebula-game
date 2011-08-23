@@ -183,8 +183,8 @@ package models.movement
       /* ### BaseModel OVERRIDES ### */
       /* ########################### */
       
-      protected override function afterCreateModel(data:Object) : void {
-         super.afterCreateModel(data);
+      public override function afterCreate(data:Object) : void {
+         super.afterCreate(data);
          if (sourceLocation.isSSObject)  sourceLocation.setDefaultCoordinates();
          if (currentLocation.isSSObject) currentLocation.setDefaultCoordinates();
          if (targetLocation.isSSObject)  currentLocation.setDefaultCoordinates();
