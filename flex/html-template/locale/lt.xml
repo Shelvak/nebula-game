@@ -757,7 +757,7 @@
     </EnergyStorage.about>
 
     <Barracks.name ref="Objects/Barracks" />
-    <Barracks.tooltip value="Apmokina kareivius" />
+    <Barracks.tooltip value="Apmoko kareivius" />
     <Barracks.about>
       <p>
         Geriausi vyrai ir moterys yra treniruojami šioje bazėje, kad pavirstų
@@ -1064,6 +1064,11 @@
     <label.whouldFinish value="Patobulinimas baigsis už" />
     <label.vipCreds value="VIP kredų" />
     <label.creds value="kredų" />
+    <!-- {0} amount of free creds -->
+    <label.credsTooltip>
+      <p>Iš kurių {0} yra gauti iš užduočių.</p>
+      <p>Iš užduočių gautų kredų negali naudoti turguje.</p>
+    </label.credsTooltip>
     <label.waitingCreds value="Laukiama kredų..." />
     <label.instant value="Iš karto" />
     <label.confirm value="Patvirtinti" />

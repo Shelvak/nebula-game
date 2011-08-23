@@ -375,8 +375,6 @@
   </Alliances>
 
   <BattleMap>
-    <individual value="Individual" />
-    <combined value="Combined" />
     <status0 value="Self" />
     <status1 value="Alliance" />
     <status2 value="NAP" />
@@ -1060,6 +1058,11 @@
     <label.whouldFinish value="Upgrade would finish in" />
     <label.selectAccelerate value="Select acceleration amount" />
     <label.creds value="creds" />
+    <!-- {0} amount of free creds -->
+    <label.credsTooltip>
+      <p>{0} of them are quest rewards.</p>
+      <p>Creds received from quest rewards cannot be used in market.</p>
+    </label.credsTooltip>
     <label.credsSum value="Total creds" />
     <label.waitingCreds value="Waiting for creds..." />
     <label.instant value="Instant" />
