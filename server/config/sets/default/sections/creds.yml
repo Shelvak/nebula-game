@@ -70,7 +70,9 @@ vip:
   # VIP2, x3
   - [10000, 2150, <%= 2.weeks %>]
   # VIP3, x4
-  - [20000, 2900, <%= 4.weeks %>]    
+  - [20000, 2900, <%= 4.weeks %>]  
+  # VIP4, x4
+  - [30000, 4300, <%= 4.weeks %>]    
 
 # How often it is refreshed?
 vip.tick.duration: <%= 1.day %>
