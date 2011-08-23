@@ -16,6 +16,12 @@ package models.announcement
        */
       public static const RESET:String = "reset";
       
+      /**
+       * Dispatched when <code>message</code> and <code>messageTextFlow</code> properties have changed.
+       * @eventType messageChange
+       */
+      public static const MESSAGE_CHANGE:String = "messageChange";
+      
       public function MAnnouncementEvent(type:String) {
          super(type);
       }

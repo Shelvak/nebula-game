@@ -9,14 +9,12 @@ package tests.announcement
    import models.announcement.MAnnouncement;
    import models.announcement.MAnnouncementEvent;
    
-   import mx.events.PropertyChangeEvent;
-   
    import namespaces.change_flag;
-   import namespaces.prop_name;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.core.isA;
-   import org.hamcrest.object.hasProperty;
+   import org.hamcrest.core.not;
+   import org.hamcrest.core.throws;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
    import org.hamcrest.object.notNullValue;
@@ -39,19 +37,29 @@ package tests.announcement
       }
       
       [Test]
-      public function messageAndEventProps() : void {
+      public function messageAndMessageTextFlowAndEventProps() : void {
          assertThat( "default value of message prop", announcement.message, nullValue() );
          assertThat( "default value of event prop", announcement.event, notNullValue() );
          
+         assertThat( "setting message to null", function():void{ announcement.message = null }, not (throws (TypeError)) );
+         assertThat( "when message is null, messageTextFlow is also null", announcement.messageTextFlow, nullValue() );
+         
          announcement.message = "Server shutdown!";
          assertThat( "change message prop", announcement.message, equals ("Server shutdown!") );
+         assertThat( "create messageTextFlow", announcement.messageTextFlow, notNullValue() );
+         assertThat(
+            "messageTextFlow holds same text as message",
+            announcement.messageTextFlow.getText(), equals (announcement.message)
+         );
+         
+         assertThat(
+            "malformed HTML causes exception",
+            function():void{ announcement.message = "<a>Message" }, throws (TypeError)
+         );
          
          assertThat(
             "changing message prop", function():void{ announcement.message = "Message" },
-            causesTarget(announcement) .toDispatchEvent (
-               PropertyChangeEvent.PROPERTY_CHANGE,
-               hasProperty("property", equals (MAnnouncement.prop_name::message))
-            )
+            causesTarget(announcement) .toDispatchEvent (MAnnouncementEvent.MESSAGE_CHANGE)
          );
       }
       
