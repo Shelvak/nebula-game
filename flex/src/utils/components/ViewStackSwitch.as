@@ -168,8 +168,12 @@ package utils.components
                
                SyncUtil.waitFor(this, [viewStack, 'getChildByName', name],
                   function(child:INavigatorContent):void {
-                     viewStack.selectedChild = child;
+                     if (viewStack != null)
+                     {
+                        viewStack.selectedChild = child;
+                     }
                      this.dispatchEvent(new ScreensSwitchEvent(ScreensSwitchEvent.SCREEN_CREATED));
+                     
                   }
                );
             },

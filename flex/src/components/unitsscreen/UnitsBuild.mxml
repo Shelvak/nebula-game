@@ -5,7 +5,7 @@
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:unitsscreen="components.unitsscreen.*"
                     creationComplete="unitsScreen_creationCompleteHandler(event)" 
-                    width="100%">
+                    width="100%" height="100%">
    
    <fx:Script>
       <![CDATA[

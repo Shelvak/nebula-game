@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         visible="{MS.currentScreenName == _screenName}"
+         width="100%" height="100%">
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.alliance.AllianceRatings;
+         import components.alliance.AllianceScreen;
+         import components.chat.CChat;
+         import components.credits.VipScreen;
+         import components.defensiveportal.DefensivePortalScreen;
+         import components.firstlogin.WelcomeScreen;
+         import components.healing.HealingScreen;
+         import components.infoscreen.InfoScreen;
+         import components.market.MarketScreen;
+         import components.notifications.NotificationsScreen;
+         import components.player.PlayerScreen;
+         import components.quests.QuestsScreen;
+         import components.ratings.RatingScreen;
+         import components.squadronsscreen.CSquadronsScreen;
+         import components.technologytree.TechnologyTree;
+         import components.unitsscreen.LoadUnloadScreen;
+         import components.unitsscreen.StorageScreen;
+         import components.unitsscreen.UnitsBuild;
+         import components.unitsscreen.UnitsScreen;
+         
+         import controllers.screens.MainAreaScreens;
+         import controllers.screens.MainAreaScreensSwitch;
+         
+         import globalevents.GScreenChangeEvent;
+         
+         import mx.events.FlexEvent;
+         [Bindable]
+         private var _screenName: String;
+         public function set screenName(value: String) : void
+         {
+            _screenName = value;
+            EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGING, createContent);
+         }
+         
+         private function createContent(e: GScreenChangeEvent): void
+         {
+            if (e.newScreenName != _screenName)
+            {
+               return;
+            }
+            removeAllElements();
+            EventBroker.unsubscribe(GScreenChangeEvent.MAIN_AREA_CHANGING, createContent);
+            switch (_screenName)
+            {
+               case MainAreaScreens.GALAXY:
+               case MainAreaScreens.SOLAR_SYSTEM:
+               case MainAreaScreens.PLANET:
+                  break;
+               case MainAreaScreens.TECH_TREE:
+                  addElement(new TechnologyTree());
+                  break;
+               case MainAreaScreens.FACILITIES:
+                  addElement(new UnitsBuild());
+                  break;
+               case MainAreaScreens.UNITS:
+                  addElement(new UnitsScreen());
+                  break;
+               case MainAreaScreens.STORAGE:
+                  addElement(new StorageScreen());
+                  break;
+               case MainAreaScreens.LOAD_UNLOAD:
+                  addElement(new LoadUnloadScreen());
+                  break;
+               case MainAreaScreens.HEAL:
+                  addElement(new HealingScreen());
+                  break;
+               case MainAreaScreens.INFO:
+                  addElement(new InfoScreen());
+                  break;
+               case MainAreaScreens.NOTIFICATIONS:
+                  addElement(new NotificationsScreen());
+                  break;
+               case MainAreaScreens.QUESTS:
+                  addElement(new QuestsScreen());
+                  break;
+               case MainAreaScreens.SQUADRONS:
+                  addElement(new CSquadronsScreen());
+                  break;
+               case MainAreaScreens.RATINGS:
+                  addElement(new RatingScreen());
+                  break;
+               case MainAreaScreens.MARKET:
+                  addElement(new MarketScreen());
+                  break;
+               case MainAreaScreens.PLAYER:
+                  addElement(new PlayerScreen());
+                  break;
+               case MainAreaScreens.DEFENSIVE_PORTAL:
+                  addElement(new DefensivePortalScreen());
+                  break;
+               case MainAreaScreens.VIP:
+                  addElement(new VipScreen());
+                  break;
+               case MainAreaScreens.ALLY_RATINGS:
+                  addElement(new AllianceRatings());
+                  break;
+               case MainAreaScreens.ALLIANCE:
+                  addElement(new AllianceScreen());
+                  break;
+               case MainAreaScreens.WELCOME:
+                  addElement(new WelcomeScreen());
+                  break;
+               case MainAreaScreens.CHAT:
+                  addElement(new CChat());
+                  break;
+            }
+         }
+         
+         [Bindable]
+         private var MS: MainAreaScreensSwitch = MainAreaScreensSwitch.getInstance();
+
+      ]]>
+   </fx:Script>
+</s:Group>

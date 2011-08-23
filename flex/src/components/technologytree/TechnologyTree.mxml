@@ -6,6 +6,7 @@
                       xmlns:technology="components.technologytree.*"
                       xmlns:viewport="components.base.viewport.*"
                       mouseEnabled="false"
+                      width="100%" height="100%"
                       creationComplete="techTree_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[

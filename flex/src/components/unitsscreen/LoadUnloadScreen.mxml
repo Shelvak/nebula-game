@@ -5,7 +5,8 @@
                     xmlns:base="components.base.*" 
                     xmlns:location="components.location.*"
                     xmlns:unitsscreen="components.unitsscreen.*"
-                    creationComplete="this_creationCompleteHandler(event)" >
+                    creationComplete="this_creationCompleteHandler(event)"
+                    width="100%" height="100%">
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;

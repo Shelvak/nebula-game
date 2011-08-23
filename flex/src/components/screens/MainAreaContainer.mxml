@@ -24,7 +24,7 @@
                     xmlns:player="components.player.*"
                     xmlns:defensiveportal="components.defensiveportal.*"
                     xmlns:market="components.market.*"
-                    currentState="sidebarCollapsed">
+                    currentState="sidebarCollapsed" xmlns:screen="components.base.screen.*">
    <fx:Script>
       <![CDATA[
          import components.dailybonus.DailyBonusComp;
@@ -69,7 +69,6 @@
          private function vstMainAreaStack_creationCompleteHandler(event:FlexEvent):void
          {
             var s:MainAreaScreensSwitch = MainAreaScreensSwitch.getInstance();
-            s.setViewStack(vstMainAreaStack);
             s.setConfig({"defaultScreenName": MainAreaScreens.GALAXY});
             s.resetToDefault();
          }
@@ -90,9 +89,9 @@
             cont.reward = ML.player.dailyBonus;
             cont.addEventListener(DailyBonusEvent.CLOSE_PANEL, 
                function(e: DailyBonusEvent):void
-            {
-               popUp.close();
-            });
+               {
+                  popUp.close();
+               });
             popUp.title = Localizer.string('Popups', 'title.dailyBonus');
             popUp.addElement(cont);
             popUp.confirmButtonLabel = Localizer.string('Quests', 'label.claimReward');
@@ -115,70 +114,30 @@
    </base:states>
    <s:Group left="0" top="0" bottom="0"
             right.sidebarCollapsed="0"
-            right.sidebarExpanded="240">
-      <mx:ViewStack id="vstMainAreaStack" width="100%" height="100%"
-                    creationComplete="vstMainAreaStack_creationCompleteHandler(event)">
-         <s:NavigatorContent name="{MainAreaScreens.GALAXY}" width="100%" height="100%"/>
-         <s:NavigatorContent name="{MainAreaScreens.SOLAR_SYSTEM}" width="100%" height="100%"/>
-         <s:NavigatorContent name="{MainAreaScreens.PLANET}" width="100%" height="100%"/>
-         <s:NavigatorContent name="{MainAreaScreens.TECH_TREE}" width="100%" height="100%">
-            <technologies:TechnologyTree id="techTree" width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.FACILITIES}" width="100%" height="100%">
-            <unitsscreen:UnitsBuild id="facilities" width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.UNITS}" width="100%" height="100%">
-            <unitsscreen:UnitsScreen width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.STORAGE}" width="100%" height="100%">
-            <unitsscreen:StorageScreen width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.LOAD_UNLOAD}" width="100%" height="100%">
-            <unitsscreen:LoadUnloadScreen width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.HEAL}" width="100%" height="100%">
-            <healing:HealingScreen width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.INFO}" width="100%" height="100%">
-            <infoscreen:InfoScreen infoModel="{ML.infoModel}" width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.NOTIFICATIONS}" width="100%" height="100%">
-            <notif:NotificationsScreen/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.QUESTS}" width="100%" height="100%">
-            <quests:QuestsScreen/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.SQUADRONS}" width="100%" height="100%">
-            <squadronsscreen:CSquadronsScreen/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.RATINGS}" width="100%" height="100%">
-            <ratings:RatingScreen/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.MARKET}" width="100%" height="100%">
-            <market:MarketScreen/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.PLAYER}" width="100%" height="100%">
-            <player:PlayerScreen/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.DEFENSIVE_PORTAL}" width="100%" height="100%">
-            <defensiveportal:DefensivePortalScreen/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.VIP}" width="100%" height="100%">
-            <credits:VipScreen/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.ALLY_RATINGS}" width="100%" height="100%">
-            <alliance:AllianceRatings/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.ALLIANCE}" width="100%" height="100%">
-            <alliance:AllianceScreen left="0" right="0" top="0" bottom="0"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.WELCOME}" width="100%" height="100%">
-            <firstlogin:WelcomeScreen left="0" right="0" top="0" bottom="0"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{MainAreaScreens.CHAT}" width="100%" height="100%">
-            <cchat:CChat left="0" right="0" top="0" bottom="0"/>
-         </s:NavigatorContent>
-      </mx:ViewStack>
+            right.sidebarExpanded="240"
+            creationComplete="vstMainAreaStack_creationCompleteHandler(event)">
+      <screen:ScreenContainer screenName="{MainAreaScreens.GALAXY}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.SOLAR_SYSTEM}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.PLANET}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.TECH_TREE}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.FACILITIES}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.UNITS}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.STORAGE}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.LOAD_UNLOAD}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.HEAL}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.INFO}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.NOTIFICATIONS}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.QUESTS}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.SQUADRONS}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.RATINGS}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.MARKET}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.PLAYER}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.DEFENSIVE_PORTAL}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.VIP}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.ALLY_RATINGS}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.ALLIANCE}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.WELCOME}"/>
+      <screen:ScreenContainer screenName="{MainAreaScreens.CHAT}"/>
       <base:TopMessage bottom="20" horizontalCenter="0" width="100%" visible="false"/>
       <s:Button skinClass="components.skins.DailyBonusButtonSkin" left="0" top="200"
                 visible="{ML.player.dailyBonus != null}" click="showDailyBonus()"/>
