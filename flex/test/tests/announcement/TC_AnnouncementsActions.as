@@ -55,28 +55,36 @@ package tests.announcement
       public var includeMocks:IncludeMocksRule = new IncludeMocksRule([ImagePreloader, AnnouncementPopup]);
       private var repository:MockRepository;
       
+      private var newAction:NewAction;
+      private var announcement:MAnnouncement;
+      private var popup:AnnouncementPopup;
+      private var rmo:ServerRMO;
+      
       
       [Before]
       public function setUp() : void {         
          repository = new MockRepository();
          Mock.singleton(repository, ImagePreloader, Mock.TYPE_STUB);
          Mock.singleton(repository, AnnouncementPopup, Mock.TYPE_STRICT);
+         newAction = new NewAction();
+         rmo = new ServerRMO();
+         rmo.action = AnnouncementsCommand.NEW;
+         announcement = MAnnouncement.getInstance();
+         popup = AnnouncementPopup.getInstance();
       }
       
       [After]
       public function tearDown() : void {
          repository = null;
+         newAction = null;
+         rmo = null;
+         announcement = null;
+         popup = null;
          SingletonFactory.clearAllSingletonInstances();
       }
       
       [Test]
       public function newActionUpdatesAnnouncementSingletonAndShowsPopup() : void {
-         var announcement:MAnnouncement = MAnnouncement.getInstance();
-         var popup:AnnouncementPopup = AnnouncementPopup.getInstance();
-         var newAction:NewAction = new NewAction();
-         
-         var rmo:ServerRMO = new ServerRMO();
-         rmo.action = AnnouncementsCommand.NEW;
          rmo.parameters = {
             "message": "Server shutdown",
             "endsAt": "2000-01-01T00:00:00Z"
@@ -84,7 +92,7 @@ package tests.announcement
          
          Expect.call(popup.show());
          repository.replay(popup);
-         newAction.applyAction(new AnnouncementsCommand(rmo.action, rmo.parameters, true, false, rmo));
+         applyAction();
          repository.verify(popup);
          
          var endsAt:Date = new Date();
@@ -92,6 +100,23 @@ package tests.announcement
          endsAt.setUTCHours(0, 0, 0, 0);
          assertThat( "announcement.message updated", announcement.message, equals ("Server shutdown") );
          assertThat( "announcement.event updated", announcement.event.occuresAt, dateEqual (endsAt) );
+      }
+      
+      [Test]
+      public function newActionDoesNotShowPopupIfMalformedHTMLIsReveived() : void {
+         rmo.parameters = {
+            "message": "<a>Malformed",
+            "endsAt": "2000-01-01T00:00:00Z"
+         };
+         
+         Expect.notCalled(popup.show());
+         repository.replay(popup);
+         applyAction();
+         repository.verify(popup);
+      }
+      
+      private function applyAction() : void {
+         newAction.applyAction(new AnnouncementsCommand(rmo.action, rmo.parameters, true, false, rmo));
       }
    }
 }

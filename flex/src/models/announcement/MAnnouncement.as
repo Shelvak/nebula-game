@@ -1,12 +1,15 @@
 package models.announcement
 {
+   import flashx.textLayout.elements.TextFlow;
+   
    import interfaces.IUpdatable;
    
    import models.BaseModel;
    import models.time.MTimeEventFixedMoment;
    
    import namespaces.change_flag;
-   import namespaces.prop_name;
+   
+   import spark.utils.TextFlowUtil;
    
    import utils.SingletonFactory;
    
@@ -24,6 +27,12 @@ package models.announcement
    [Event(name="reset", type="models.announcement.MAnnouncementEvent")]
    
    /**
+    * @see models.announcement.MAnnouncementEvent#MESSAGE_CHANGE
+    * @eventType models.announcement.MAnnouncementEvent.MESSAGE_CHANGE
+    */
+   [Event(name="messageChange", type="models.announcement.MAnnouncementEvent")]
+   
+   /**
     * Announcement model singleton.
     */
    public class MAnnouncement extends BaseModel implements IUpdatable
@@ -38,14 +47,31 @@ package models.announcement
       }
       
       public function reset() : void {
-         this.message = null;
-         this.event.occuresAt = new Date(0);
+         _message = null;
+         _messageTextFlow = null;
+         event.occuresAt = new Date(0);
          dispatchAnnouncmentEvent(MAnnouncementEvent.RESET);
       }
       
-      prop_name static const message:String = "message";
-      [Bindable]
-      public var message:String;
+      
+      private var _message:String = null;
+      [Bindable(event="messageChange")]
+      public function set message(value:String) : void {
+         if (_message != value) {
+            _message = value;
+            _messageTextFlow = TextFlowUtil.importFromString(value);
+            dispatchAnnouncmentEvent(MAnnouncementEvent.MESSAGE_CHANGE);
+         }
+      }
+      public function get message() : String {
+         return _message;
+      }
+      
+      private var _messageTextFlow:TextFlow = null;
+      [Bindable(event="messageChange")]
+      public function get messageTextFlow() : TextFlow {
+         return _messageTextFlow;
+      }
       
       [Bindable(event="willNotChange")]
       public const event:MTimeEventFixedMoment = new MTimeEventFixedMoment();

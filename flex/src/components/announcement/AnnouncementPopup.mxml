@@ -16,13 +16,9 @@
          import models.announcement.MAnnouncementEvent;
          
          import mx.events.FlexEvent;
-         import mx.events.PropertyChangeEvent;
          import mx.managers.PopUpManager;
          
-         import namespaces.prop_name;
-         
          import spark.components.Button;
-         import spark.utils.TextFlowUtil;
          
          import utils.SingletonFactory;
          import utils.assets.AssetNames;
@@ -62,19 +58,11 @@
          
          private function this_creationCompleteHandler(event:FlexEvent) : void {
             ANNOUNCEMENT.addEventListener
-               (PropertyChangeEvent.PROPERTY_CHANGE, announcement_propertyChangeHandler, false, 0, true);
-            ANNOUNCEMENT.addEventListener
                (MAnnouncementEvent.RESET, announcement_resetHandler, false, 0, true);
-            updateTxtMessage();
          }
          
          private function this_cancelButtonClickHandler(button:Button) : void {
             _isShown = false;
-         }
-         
-         private function announcement_propertyChangeHandler(event:PropertyChangeEvent) : void {
-            if (event.property == MAnnouncement.prop_name::message)
-               updateTxtMessage();
          }
          
          private function announcement_resetHandler(event:MAnnouncementEvent) : void {
@@ -87,20 +75,18 @@
          
          private function getImage(name:String) : BitmapData {
             return ImagePreloader.getInstance().getImage(AssetNames.ANNOUNCEMENTS_IMAGES_FOLDER + name);
-         }
-         
-         private function updateTxtMessage() : void {
-            if (ANNOUNCEMENT.message != null)
-               txtMessage.textFlow = TextFlowUtil.importFromString(ANNOUNCEMENT.message);
-         }         
+         }      
       ]]>
    </fx:Script>
    <popups:layout>
       <s:VerticalLayout horizontalAlign="contentJustify" gap="20"/>
    </popups:layout>
-   <s:BitmapImage source="{getImage('image')}"/>
+   <s:Group>      
+      <s:BitmapImage source="{getImage('image')}" left="-10" right="-10" top="-13" bottom="0"/>
+   </s:Group>
    <s:Group>
-      <s:RichText id="txtMessage" fontSize="16" left="0" right="0" lineBreak="toFit" textAlign="center"/>
+      <s:RichText fontSize="16" left="0" right="0" lineBreak="toFit" textAlign="center"
+                  textFlow="{ANNOUNCEMENT.messageTextFlow}"/>
    </s:Group>
    <s:Group>
       <s:layout>
