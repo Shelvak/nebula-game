@@ -4096,7 +4096,7 @@
   </WelcomeScreen>
 
   <Chat>
-     <format.time value="HH:NN:SS"/>
+     <format.time value="JJ:NN:SS"/>
      <message.channelJoin  value="[ {0} joined ]"/>
      <message.channelLeave value="[ {0} left ]"/>
      <message.friendOffline value="This player is currently offline."/>

@@ -3993,7 +3993,7 @@
   </WelcomeScreen>
 
   <Chat>
-     <format.time value="HH:NN:SS"/>
+     <format.time value="JJ:NN:SS"/>
      <message.channelJoin  value="[ {0} prisijungė ]"/>
      <message.channelLeave value="[ {0} išėjo ]"/>
      <message.friendOffline value="Šis žaidėjas šiuo metu neprisijungęs"/>
