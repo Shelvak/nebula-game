@@ -27,10 +27,13 @@
          
       ]]>
    </fx:Script>
-   <s:BitmapImage width="16" height="16" id="image" 
+   <s:layout>
+      <s:HorizontalLayout gap="5" verticalAlign="middle"/>
+   </s:layout>
+   <s:BitmapImage id="image" 
                   source="{ImagePreloader.getInstance().getImage(
-                  AssetNames.getIconImageName(_resModel.type))}"/>
+                  AssetNames.getIconImageName(_resModel.type + '_large'))}"/>
    <custom:ResourcesProgressBar id="bar" currentStock="{_resModel.currentStock}" maxStock="{_resModel.maxStock}" 
                                 text="{_resModel.currentStock.toFixed(2)}" width="{barWidth}"
-                                left="18"/>
+                                height="100%"/>
 </s:Group>
