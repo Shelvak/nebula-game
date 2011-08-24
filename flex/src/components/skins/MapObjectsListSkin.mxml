@@ -5,7 +5,8 @@
              xmlns:components="components.*"
              xmlns:base="components.base.*"
              minWidth="112" minHeight="160"
-             alpha.disabled="0.5" blendMode="normal"> 
+             alpha.disabled="0.5"
+             blendMode="normal"> 
    
    <fx:Metadata>
       /** 
@@ -16,16 +17,7 @@
    <fx:Script>
       <![CDATA[
          import utils.assets.AssetNames;
-      ]]>
-   </fx:Script>
-   <fx:Script>
-      <![CDATA[
          import utils.assets.ImagePreloader;
-      ]]>
-   </fx:Script>
-   <fx:Script>
-      <![CDATA[
-         import org.osmf.media.IMediaGateway;
       ]]>
    </fx:Script>
    

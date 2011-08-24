@@ -9,6 +9,8 @@ package controllers.galaxies.actions
    
    import flash.geom.Rectangle;
    
+   import globalevents.GlobalEvent;
+   
    import interfaces.ICleanable;
    
    import models.MStaticSpaceObjectsAggregator;
@@ -81,7 +83,7 @@ package controllers.galaxies.actions
          var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, params.fowEntries);
          var units:IList = UnitFactory.fromObjects(params.units, params.players);
          
-         // Update existing galaxy if this is not the first solar_systems|index message
+         // Update existing galaxy if this is not the first galaxies|show message
          if (ML.latestGalaxy != null) {
             var ssListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.naturalObjects);
             var ssListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.naturalObjects);
@@ -169,6 +171,7 @@ package controllers.galaxies.actions
                !galaxy.hasMoreThanOneObject && !galaxy.hasUnits && ML.player.planetsCountAll == 1) {
                NAV_CTRL.toGalaxy(galaxy,
                   function() : void {
+                     new GlobalEvent(GlobalEvent.APP_READY);
                      NAV_CTRL.toPlanet(MSSObject(ML.player.planets.getItemAt(0)),
                         function() : void {
                            if (ML.player.firstTime)
@@ -178,8 +181,10 @@ package controllers.galaxies.actions
                         });
                   });
             }
-            else
+            else {
                NAV_CTRL.toGalaxy(galaxy);
+               new GlobalEvent(GlobalEvent.APP_READY);
+            }
             GF.lockApplication = false;
          }
       }
