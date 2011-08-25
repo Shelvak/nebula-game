@@ -103,5 +103,10 @@ package models.notification.parts
             throw new IllegalOperationError(errorMessage);
          }
       }
+      
+      /**
+       * No-op.
+       */
+      public function updateLocationName(id:int, name:String) : void {}
    }
 }

@@ -9,23 +9,17 @@ package models.notification
    import mx.collections.Sort;
    import mx.collections.SortField;
    import mx.events.CollectionEvent;
-   import mx.events.CollectionEventKind;
    
    
    /**
     * Dispatched when notification has been selected or deselected. If both are true, only one event will be
-    * dispatched. 
-    * 
-    * @eventType models.notification.events.NotificationsCollectionEvent.SELECTION_CHANGE
+    * dispatched.
     */
    [Event(name="selectionChange", type="models.notification.events.NotificationsCollectionEvent")]
-   
    
    /**
     * Dispatched when any of counter properties (<code>notifsTotal</code>,
     * <code>newNotifsTotal</code> and <code>unreadNotifsTotal</code>) where updated.
-    * 
-    * @eventType models.notification.events.NotificationsCollectionEvent.COUNTERS_UPDATED
     */
    [Event(name="countersUpdated", type="models.notification.events.NotificationsCollectionEvent")]
    
@@ -337,28 +331,17 @@ package models.notification
       /* ############################ */
       
       
-      private function registerNotifEventHandlers(notif:Notification) : void
-      {
-         notif.addEventListener(
-            NotificationEvent.READ_CHANGE,
-            notif_changeHandler, false, 1000
-         );
-         notif.addEventListener(
-            NotificationEvent.ISNEW_CHANGE,
-            notif_changeHandler, false, 1000
-         );
+      private function registerNotifEventHandlers(notif:Notification) : void {
+         notif.addEventListener(NotificationEvent.READ_CHANGE, notif_changeHandler, false, 1000, true);
+         notif.addEventListener(NotificationEvent.IS_NEW_CHANGE, notif_changeHandler, false, 1000, true);
       }
       
-      
-      private function removeNotifEventHandlers(notif:Notification) : void
-      {
-         notif.removeEventListener(NotificationEvent.READ_CHANGE, notif_changeHandler);
-         notif.removeEventListener(NotificationEvent.ISNEW_CHANGE, notif_changeHandler);
+      private function removeNotifEventHandlers(notif:Notification) : void {
+         notif.removeEventListener(NotificationEvent.READ_CHANGE, notif_changeHandler, false);
+         notif.removeEventListener(NotificationEvent.IS_NEW_CHANGE, notif_changeHandler, false);
       }
       
-      
-      private function notif_changeHandler(event:NotificationEvent) : void
-      {
+      private function notif_changeHandler(event:NotificationEvent) : void {
          updateCounters();
       }
       
@@ -367,23 +350,12 @@ package models.notification
       /* ### SELF EVENTS HANDLERS ### */
       /* ############################ */
       
-      
-      private function registerSelfEventHandlers() : void
-      {
-         addEventListener(
-            CollectionEvent.COLLECTION_CHANGE,
-            this_collectionChangeHandler, false, 1000
-         );
+      private function registerSelfEventHandlers() : void {
+         addEventListener(CollectionEvent.COLLECTION_CHANGE, this_collectionChangeHandler, false, 1000, true);
       }
       
-      
-      private function this_collectionChangeHandler(event:CollectionEvent) : void
-      {
-         //         if (event.kind != CollectionEventKind.REFRESH)
-         //         {
+      private function this_collectionChangeHandler(event:CollectionEvent) : void {
          updateCounters();
-         //            refresh();
-         //         }
       }
    }
 }
