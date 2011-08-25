@@ -69,6 +69,11 @@
          /**
           * A component that will render items in the data provider (either <code>DataGroup</code> or
           * <code>SkinnableDataContainer</code>). Required. Should always return the same instance.
+          * 
+          * <p><b>Warning!</b> <code>dataProvider</code> property of the container may be <code>null</code>
+          * so add checks and gouards throughout the code of the implementation of your data container
+          * accordingly. <code>dataProvider</code> property will be set to <code>null</code> when application
+          * is reset.</p>
           */
          protected function get dataContainer() : IVisualElement {
             throw new IllegalOperationError("This property is abstract");

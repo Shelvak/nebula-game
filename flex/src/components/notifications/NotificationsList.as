@@ -107,7 +107,7 @@ package components.notifications
       protected override function itemSelected(index:int, selected:Boolean):void
       {
          super.itemSelected(index, selected);
-         if (selected)
+         if (selected && notifs != null)
          {
             selectNotification(notifs.getNotifAt(index));
          }
