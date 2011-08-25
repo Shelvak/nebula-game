@@ -18,10 +18,6 @@ package tests.notifications
        * read: false
        * createdAt: 2010/05/01 10:00:00 +0300
        * expiresAt: 2010/05/01 18:00:00 +0300
-       * planet.id: 2
-       * planet.name: G12-SS16-P2
-       * planet.solarSystemId: 16
-       * constructable.type: Mothership
        * </pre>
        */
       public static function get notifOne() : Object
@@ -31,14 +27,7 @@ package tests.notifications
                "starred": false, "read": false,
                "createdAt": "2010-05-01T10:00:00+03:00",
                "expiresAt": "2010-05-01T18:00:00+03:00",
-               "params": {
-                  "planet": {
-                     "id": 2,
-                     "name": "G12-SS16-P2",
-                     "solarSystemId": 16
-                  },
-                  "constructable": {"type": "Mothership"}
-               }
+               "params": {}
          };
       }
       
@@ -60,14 +49,7 @@ package tests.notifications
                "starred": false, "read": false,
                "createdAt": "2010-04-01T10:00:00+03:00",
                "expiresAt": "2010-04-01T18:00:00+03:00",
-               "params": {
-                  "planet": {
-                     "id": 1,
-                     "name": "G12-SS16-P1",
-                     "solarSystemId": 16
-                  },
-                  "constructable": {"type": "Mothership"}
-               }
+               "params": {}
          };
       }
       
@@ -92,40 +74,19 @@ package tests.notifications
                "id": 3, "event": event, "starred": true, "read": true,
                "createdAt": "2010-08-01T10:00:00+03:00",
                "expiresAt": "2010-08-01T18:00:00+03:00",
-               "params": {
-                  "planet": {
-                     "id": 4,
-                     "name": "G12-SS17-P4",
-                     "solarSystemId": 17
-                  },
-                  "constructable": {"type": "Mothership"}
-               }
+               "params": {}
             },
             {
                "id": 4, "event": event, "starred": false, "read": true,
                "createdAt": "2010-07-01T10:00:00+03:00",
                "expiresAt": "2010-07-01T18:00:00+03:00",
-               "params": {
-                  "planet": {
-                     "id": 4,
-                     "name": "G12-SS17-P4",
-                     "solarSystemId": 17
-                  },
-                  "constructable": {"type": "Mothership"}
-               }
+               "params": {}
             },
             {
                "id": 5, "event": event, "starred": true, "read": true,
                "createdAt": "2010-06-01T10:00:00+03:00",
                "expiresAt": "2010-06-01T18:00:00+03:00",
-               "params": {
-                  "planet": {
-                     "id": 4,
-                     "name": "G12-SS17-P4",
-                     "solarSystemId": 17
-                  },
-                  "constructable": {"type": "Mothership"}
-               }
+               "params": {}
             }
          ];
       }

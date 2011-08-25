@@ -32,5 +32,10 @@ package models.notification.parts
          return Localizer.string("Notifications", "message.kickedFromAlliance",
          [alliance.name]);
       }
+      
+      /**
+       * No-op.
+       */
+      public function updateLocationName(id:int, name:String) : void {}
    }
 }

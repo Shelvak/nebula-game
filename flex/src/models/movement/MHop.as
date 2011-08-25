@@ -1,11 +1,11 @@
 package models.movement
 {
    import models.BaseModel;
+   import models.location.ILocationUser;
+   import models.location.Location;
    import models.location.LocationMinimal;
    
-   import namespaces.client_internal;
-   
-   public class MHop extends BaseModel
+   public class MHop extends BaseModel implements ILocationUser
    {
       [Required]
       /**
@@ -55,19 +55,28 @@ package models.movement
       public var location:LocationMinimal = null;
       
       
-      public override function equals(o:Object) : Boolean
-      {
-         if (o is MHop)
-         {
+      /* ##################### */
+      /* ### ILocationUser ### */
+      /* ##################### */
+      
+      public function updateLocationName(id:int, name:String) : void {
+         Location.updateName(location, id, name);
+      }
+      
+      
+      /* ########################### */
+      /* ### BaseModel OVERRIDES ### */
+      /* ########################### */
+      
+      public override function equals(o:Object) : Boolean {
+         if (o is MHop) {
             var hop:MHop = MHop(o);
             return hop == this || hop.routeId == routeId && hop.location.equals(location);
          }
          return false;
       }
       
-      
-      public override function toString() : String
-      {
+      public override function toString() : String {
          return "[" + "class: " + className + ", routeId: " + routeId + ", arrivesAt: " + arrivesAt +
                 ", index: " + index + ", location: " + location + "]";
       }

@@ -36,6 +36,11 @@ package models.notification.parts
          return getString("content", [_player.name, _alliance.name]);
       }
       
+      /**
+       * No-op.
+       */
+      public function updateLocationName(id:int, name:String) : void {}
+      
       private function getString(property:String, parameters:Array = null) : String {
          return Localizer.string("Notifications", property + ".allianceJoined", parameters);
       }

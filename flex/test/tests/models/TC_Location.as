@@ -6,15 +6,17 @@ package tests.models
    
    import controllers.ui.NavigationController;
    
+   import ext.hamcrest.events.causesTarget;
    import ext.hamcrest.object.equals;
    
    import models.ModelLocator;
    import models.Owner;
    import models.galaxy.Galaxy;
    import models.location.Location;
+   import models.location.LocationEvent;
+   import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.planet.Planet;
-   import models.player.Player;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSKind;
    import models.solarsystem.SolarSystem;
@@ -22,6 +24,8 @@ package tests.models
    import namespaces.client_internal;
    
    import org.hamcrest.assertThat;
+   import org.hamcrest.core.not;
+   import org.hamcrest.core.throws;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
    import org.hamcrest.object.notNullValue;
@@ -356,5 +360,46 @@ package tests.models
          
          assertThat( loc.isNavigable, equals (false) );
       };
+      
+      [Test]
+      public function namePropertyChange() : void {
+         loc.type = LocationType.SS_OBJECT;
+         
+         assertThat(
+            "changing name", function():void{ loc.name = "My home" },
+            causesTarget(loc) .toDispatchEvent (LocationEvent.NAME_CHANGE)
+         );
+         assertThat( "name", loc.name, equals ("My home") );
+         assertThat( "planetName", loc.name, equals ("My home") );
+      }
+      
+      [Test]
+      public function updateName() : void {
+         assertThat(
+            "null location ignored", function():void{ Location.updateName(null, 1 , "name") },
+            not (throws (Error))
+         );
+         
+         var locMinimal:LocationMinimal = new LocationMinimal();
+         locMinimal.id = 1;
+         locMinimal.type = LocationType.SS_OBJECT;
+         assertThat(
+            "not instance of Location ignored", function():void{ Location.updateName(locMinimal, locMinimal.id, "name") },
+            not (throws (Error))
+         );
+         
+         loc.id   = 1;
+         loc.type = LocationType.GALAXY;
+         loc.name = null;
+         Location.updateName(loc, loc.id, "name");
+         assertThat( "not of LocationType.SS_OBJECT type ignored", loc.name, nullValue() );
+         
+         loc.type = LocationType.SS_OBJECT;
+         Location.updateName(loc, 2, "name");
+         assertThat( "not the same location ignored", loc.name, nullValue() );
+         
+         Location.updateName(loc, 1, "name");
+         assertThat( "name should have been changed", loc.name, equals ("name") );
+      }
    }
 }
