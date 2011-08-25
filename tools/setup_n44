@@ -530,7 +530,7 @@ deb-src http://repo.percona.com/apt lucid main")
     run "mkdir -p /etc/mysql"
     File.write(MYCNF_FILE, MYCNF)
   end
-  install "percona-server-server"
+  install "percona-server-server xtrabackup"
   install "phpmyadmin php5-mcrypt"
   fix_php_ini!
 end # }}}
