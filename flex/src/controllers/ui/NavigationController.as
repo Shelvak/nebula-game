@@ -2,7 +2,6 @@ package controllers.ui
 {
    import com.developmentarc.core.utils.EventBroker;
    
-   import components.alliance.AllianceScreen;
    import components.base.viewport.ViewportZoomable;
    import components.defensiveportal.DefensivePortalScreen;
    import components.factories.MapFactory;
@@ -14,7 +13,6 @@ package controllers.ui
    import components.screens.MainAreaContainer;
    
    import controllers.GlobalFlags;
-   import controllers.alliances.AlliancesCommand;
    import controllers.market.MarketCommand;
    import controllers.planets.PlanetsCommand;
    import controllers.players.PlayersCommand;
@@ -38,7 +36,6 @@ package controllers.ui
    
    import models.ModelLocator;
    import models.Owner;
-   import models.alliance.MAlliance;
    import models.building.Building;
    import models.chat.MChat;
    import models.events.ScreensSwitchEvent;
@@ -758,9 +755,8 @@ package controllers.ui
       }
       
       
-      public function showChat() : void
-      {
-         resetToNonMapScreen(_screenProperties[MainAreaScreens.CHAT]);
+      public function showChat() : void {
+         showNonMapScreen(_screenProperties[MainAreaScreens.CHAT]);
       }
       
       
@@ -990,6 +986,10 @@ package controllers.ui
                "instead."
             );
          }
+         
+         if (_currentScreenProps != null && _currentScreenProps.screenName == screenProps.screenName)
+            return;
+         
          beforeScreenChange();
          _mainAreaSwitch.showScreen(screenProps.screenName, unlockAfter);
          resetActiveButton(screenProps.button);

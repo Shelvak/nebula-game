@@ -46,6 +46,10 @@ package models.chat
     */
    [Event(name="hasUnreadMainMsgChange", type="models.chat.events.MChatEvent")]
    
+   /**
+    * @see MChatEvent#VISIBLE_CHANGE
+    */
+   [Event(name="visibleChange", type="models.chat.events.MChatEvent")]
    
    /**
     * Chat singleton.
@@ -218,7 +222,7 @@ package models.chat
       private function setHasUnreadMainMsg(value:Boolean) : void {
          if (_hasUnreadMainMsg != value) {
             _hasUnreadMainMsg = value;
-            dispatchSimpleEvent(MChatEvent, MChatEvent.HAS_UNREAD_MAIN_MSG_CHANGE);
+            dispatchChatEvent(MChatEvent.HAS_UNREAD_MAIN_MSG_CHANGE);
          }
       }
       
@@ -237,7 +241,7 @@ package models.chat
       private function setHasUnreadAllianceMsg(value:Boolean) : void {
          if (_hasUnreadAllianceMsg != value) {
             _hasUnreadAllianceMsg = value;
-            dispatchSimpleEvent(MChatEvent, MChatEvent.HAS_UNREAD_ALLIANCE_MSG_CHANGE);
+            dispatchChatEvent(MChatEvent.HAS_UNREAD_ALLIANCE_MSG_CHANGE);
          }
       }
       
@@ -265,7 +269,7 @@ package models.chat
       private function setHasUnreadPrivateMsg(value:Boolean) : void {
          if (_hasUnreadPrivateMsg != value) {
             _hasUnreadPrivateMsg = value;
-            dispatchSimpleEvent(MChatEvent, MChatEvent.HAS_UNREAD_PRIVATE_MSG_CHANGE);
+            dispatchChatEvent(MChatEvent.HAS_UNREAD_PRIVATE_MSG_CHANGE);
          }
       }
       
@@ -299,7 +303,7 @@ package models.chat
          _selectedChannel = toSelect;
          if (!toSelect.isPublic)
             _recentPrivateChannel = toSelect;
-         dispatchSimpleEvent(MChatEvent, MChatEvent.SELECTED_CHANNEL_CHANGE);
+         dispatchChatEvent(MChatEvent.SELECTED_CHANNEL_CHANGE);
       }
       
       
@@ -331,6 +335,7 @@ package models.chat
                else
                   updateHasUnreadPrivateMsg();
             }
+            dispatchChatEvent(MChatEvent.VISIBLE_CHANGE);
          }
       }
       /**
@@ -727,7 +732,7 @@ package models.chat
       private function setPrivateChannelOpen(value:Boolean) : void {
          if (_privateChannelOpen != value) {
             _privateChannelOpen = value;
-            dispatchSimpleEvent(MChatEvent, MChatEvent.PRIVATE_CHANNEL_OPEN_CHANGE);
+            dispatchChatEvent(MChatEvent.PRIVATE_CHANNEL_OPEN_CHANGE);
          }
       }
       
@@ -748,7 +753,7 @@ package models.chat
             _allianceChannelOpen = value;
             if (!_allianceChannelOpen)
                setHasUnreadAllianceMsg(false);
-            dispatchSimpleEvent(MChatEvent, MChatEvent.ALLIANCE_CHANNEL_OPEN_CHANGE);
+            dispatchChatEvent(MChatEvent.ALLIANCE_CHANNEL_OPEN_CHANGE);
          }
       }
       
@@ -913,6 +918,9 @@ package models.chat
       /* ### HELPERS ### */
       /* ############### */
       
+      private function dispatchChatEvent(type:String) : void {
+         dispatchSimpleEvent(MChatEvent, type);
+      }
       
       private function throwChannelNotFoundError(message:String, channel:String) : void {
          throw new Error(message + ": channel '" + channel + "' not found");
