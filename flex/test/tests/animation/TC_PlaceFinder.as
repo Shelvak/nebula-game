@@ -1,4 +1,4 @@
-package tests.animation.tests
+package tests.animation
 {
    import controllers.notifications.actions.ReadAction;
    

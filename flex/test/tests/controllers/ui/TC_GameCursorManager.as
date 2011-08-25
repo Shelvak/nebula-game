@@ -1,4 +1,4 @@
-package tests.controllers.ui.tests
+package tests.controllers.ui
 {
    import controllers.ui.GameCursorManager;
    import controllers.ui.GameCursorPriority;

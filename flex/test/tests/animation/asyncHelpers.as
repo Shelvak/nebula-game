@@ -5,7 +5,7 @@ import org.fluint.sequence.SequenceDelay;
 import org.fluint.sequence.SequenceWaiter;
 
 
-include "../../asyncSequenceHelpers.as";
+include "../asyncSequenceHelpers.as";
 
 
 private function timerWaiter() : SequenceWaiter

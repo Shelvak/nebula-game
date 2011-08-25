@@ -21,8 +21,7 @@ package tests.time
    
    public class TC_MTimeEventFixedMoment
    {
-      public function TC_MTimeEventFixedMoment()
-      {
+      public function TC_MTimeEventFixedMoment() {
       }
       
       
@@ -30,8 +29,8 @@ package tests.time
       
       
       [Before]
-      public function setUp() : void
-      {
+      public function setUp() : void {
+         DateUtil.now = new Date().time;
          timeEvent = new MTimeEventFixedMoment();
       };
       

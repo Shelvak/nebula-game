@@ -1,4 +1,4 @@
-package tests.animation.tests
+package tests.animation
 {
    import animation.AnimatedBitmap;
    import animation.AnimationTimer;
@@ -197,7 +197,7 @@ package tests.animation.tests
       /* ######################################## */
       
       
-      [Test(async, timeout=500, description="test automatic playback of sequence without repeat part")]
+      [Test(async, timeout=1000, description="test automatic playback of sequence without repeat part")]
       public function play_withoutRepeat() : void
       {
          // seqOne = new Sequence([0], null, [1, 2]);
@@ -374,7 +374,7 @@ package tests.animation.tests
       /* ############### */
       
       
-      include "../../asyncHelpers.as";
+      include "../asyncHelpers.as";
       include "asyncHelpers.as";
       
       
