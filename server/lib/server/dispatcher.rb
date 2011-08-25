@@ -109,7 +109,6 @@ class Dispatcher
       message['client_id'],
       message['player'].to_s
     ]
-    info "Symbols: %d" % [Symbol.all_symbols.size]
 
     unless message['client_id'].nil?
       failed = false

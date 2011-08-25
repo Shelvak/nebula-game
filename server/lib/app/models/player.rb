@@ -284,6 +284,14 @@ class Player < ActiveRecord::Base
       klass.progress(self)
     end
   end
+  
+  # Upon +Player+ destroy all shielded solar systems should become dead 
+  # stars.
+  before_destroy do
+    solar_system_ids = planets.map(&:solar_system_id).uniq
+    SolarSystem.shielded.where(:id => solar_system_ids).each(&:die!)
+    true
+  end
 
   attr_accessor :invoked_from_control_manager
   

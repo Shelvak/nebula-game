@@ -10,9 +10,13 @@ class CombatDsl
 
     def method_missing(name, *args)
       options = args.last || {}
+      factory_options = options.except(:count, :level, :hp)
       (options[:count] || 1).times do
-        building = Factory.build!("b_#{name}", :planet => @planet,
-          :level => (options[:level] || 1))
+        building = Factory.build!(
+          "b_#{name}", 
+          {:planet => @planet, :level => (options[:level] || 1)}.
+            merge(factory_options)
+        )
         building.hp = (
           building.hit_points * ((options[:hp] || 100).to_f / 100)
         ).to_i

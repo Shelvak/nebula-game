@@ -31,10 +31,20 @@ describe Location do
       Location.combat_player_ids(@location).should include(@planet.player_id)
     end
     
-    it "should not include planet owner if it's NPC" do
-      @planet.player = nil
-      @planet.save!
-      Location.combat_player_ids(@location).should_not include(nil)
+    describe "NPC planet owner" do
+      before(:each) do
+        @planet.player = nil
+        @planet.save!
+      end
+    
+      it "should not include it" do
+        Location.combat_player_ids(@location).should_not include(nil)
+      end
+
+      it "should include it if planet has combat buildings" do
+        Factory.create!(:b_thunder, opts_active + {:planet => @planet})
+        Location.combat_player_ids(@location).should include(nil)
+      end
     end
   end
 

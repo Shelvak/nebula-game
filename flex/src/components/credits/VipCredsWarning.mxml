@@ -58,7 +58,7 @@
    <s:Group layout="{useVerticalLayout?vLayout:hLayout}" 
             top="{paddingTop}" bottom="{paddingBottom}" 
             left="{paddingLeft}" right="{paddingRight}">
-      <s:Label color="#eec500" text="{getText('label.changeVip')}" />
+      <s:Label color="#eec500" text="{getText('label.changeVip')}" textAlign="center"/>
       <s:Group>
          <s:Button skinClass="components.skins.LinkButtonSkin" 
                    label="{getText('label.here')}"

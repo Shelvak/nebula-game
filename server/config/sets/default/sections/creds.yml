@@ -52,7 +52,7 @@ alliance.change: 1000
 # [18, [[0.2, 464], [0.4, 836], [0.6, 1216], [0.8, 1604]]],
 # [19, [[0.2, 484], [0.4, 876], [0.6, 1276], [0.8, 1684]]],
 # [20, [[0.2, 504], [0.4, 916], [0.6, 1336], [0.8, 1764]]]]
-move.speed_up: (100 + (100 * hop_count) * percentage + 100 * percentage * percentage)
+move.speed_up: (100 + (100 * hop_count) * percentage + 100 * percentage ** 2)
 move.speed_up.max_cost: 2500
 
 # How much % does boost give to resources?
@@ -70,7 +70,9 @@ vip:
   # VIP2, x3
   - [10000, 2150, <%= 2.weeks %>]
   # VIP3, x4
-  - [20000, 2900, <%= 4.weeks %>]    
+  - [20000, 2900, <%= 4.weeks %>]  
+  # VIP4, x4
+  - [30000, 4300, <%= 4.weeks %>]    
 
 # How often it is refreshed?
 vip.tick.duration: <%= 1.day %>

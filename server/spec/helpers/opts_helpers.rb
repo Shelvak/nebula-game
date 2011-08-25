@@ -78,3 +78,8 @@ end
 def opts_built
   SpecOptionsHelper.new(:level => 1)
 end
+
+def opts_shielded(player_id)
+  SpecOptionsHelper.new(:shield_ends_at => 10.hours.from_now, 
+    :shield_owner_id => player_id)
+end

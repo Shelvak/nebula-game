@@ -22,6 +22,8 @@
          import models.building.events.BuildingEvent;
          import models.planet.Planet;
          import models.planet.events.PlanetEvent;
+         import models.unit.MCUnitsBuild;
+         import models.unit.events.UnitEvent;
          
          import mx.collections.ArrayCollection;
          import mx.collections.ListCollectionView;
@@ -75,12 +77,12 @@
             }
          }
          
-         private function openFacilityById(e: GUnitsScreenEvent): void
+         private function openFacilityById(e: UnitEvent): void
          {
             refreshPlanet();
             for each(var element: Building in facilities)
             {
-               if (element.id == e.facilityId)
+               if (element.id == BS.facilityId)
                {
                   element.dispatchExpandEvent();
                   facilitiesList.selectedIndex = facilities.getItemIndex(element);
@@ -104,9 +106,11 @@
             latestPlanet = null;
          }
          
+         private var BS: MCUnitsBuild = MCUnitsBuild.getInstance();
+         
          protected function unitsScreen_creationCompleteHandler(event:FlexEvent):void
          {
-            EventBroker.subscribe(GUnitsScreenEvent.FACILITY_OPEN, openFacilityById);
+            BS.addEventListener(UnitEvent.OPEN_FACILITY, openFacilityById);
             latestPlanet = ML.latestPlanet;
             refreshFacilities();
             latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
