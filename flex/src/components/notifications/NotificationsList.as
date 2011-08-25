@@ -47,6 +47,9 @@ package components.notifications
       
       private function removeNewStates(e: GScreenChangeEvent): void
       {
+         if (notifs == null)
+            return;
+         
          if (e.oldScreenName == MainAreaScreens.NOTIFICATIONS)
          {
             notifs.removeFilter();
@@ -104,7 +107,7 @@ package components.notifications
       protected override function itemSelected(index:int, selected:Boolean):void
       {
          super.itemSelected(index, selected);
-         if (selected)
+         if (selected && notifs != null)
          {
             selectNotification(notifs.getNotifAt(index));
          }
@@ -119,15 +122,14 @@ package components.notifications
       
       private function selectNotification(notif:Notification) : void
       {
+         if (notifs == null)
+            return;
+         
          selectedItem = notif;
          if (notif)
-         {
             notifs.select(notif.id, false);
-         }
          else
-         {
             notifs.deselect(false);
-         }
       }
       
       

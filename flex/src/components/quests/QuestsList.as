@@ -97,6 +97,9 @@ package components.quests
       
       private function selectQuest(quest:Quest) : void
       {
+         if (quests == null)
+            return;
+         
          selectedItem = quest;
          if (quest != null && quests.getItemIndex(quest) != -1)
          {
@@ -163,7 +166,8 @@ package components.quests
       
       private function this_updateCompleteHandler(event:FlexEvent) : void
       {
-         quests.dispatchEvent(new QuestCollectionEvent(QuestCollectionEvent.UPDATE_COMPLETED));
+         if (quests != null)
+            quests.dispatchEvent(new QuestCollectionEvent(QuestCollectionEvent.UPDATE_COMPLETED));
       }
       
       
