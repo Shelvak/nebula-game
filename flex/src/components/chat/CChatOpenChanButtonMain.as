@@ -1,6 +1,5 @@
 package components.chat
 {
-   import flash.events.Event;
    import flash.events.MouseEvent;
    
    import models.chat.events.MChatEvent;
@@ -10,11 +9,10 @@ package components.chat
    {
       public function CChatOpenChanButtonMain() {
          super();
-//         toolTip = getString("tooltip.mainChannel");
-         MCHAT.addEventListener(
-            MChatEvent.HAS_UNREAD_MAIN_MSG_CHANGE,
-            model_hasUnreadMainMsgChangeHandler
-         );
+         MCHAT.addEventListener
+            (MChatEvent.HAS_UNREAD_MAIN_MSG_CHANGE, model_hasUnreadMainMsgChangeHandler, false, 0, true);
+         MCHAT.addEventListener
+            (MChatEvent.VISIBLE_CHANGE, model_visibleChangeHandler, false, 0, true);
       }
       
       public override function get imageKeySpecificPart() : String {
@@ -23,8 +21,16 @@ package components.chat
       
       
       protected override function this_clickHandler(event:MouseEvent) : void {
-         super.this_clickHandler(event);
-         MCHAT.selectMainChannel();
+         if (MCHAT.visible)
+            NAV_CTRL.showPreviousScreen();
+         else
+            NAV_CTRL.showChat();
+      }
+      
+      protected override function getCurrentSkinState() : String {
+         if (MCHAT.visible)
+            return "down";
+         return super.getCurrentSkinState();
       }
       
       
@@ -32,6 +38,9 @@ package components.chat
       /* ### MODEL EVENT HANDLERS ### */
       /* ############################ */
       
+      private function model_visibleChangeHandler(event:MChatEvent) : void {
+         invalidateSkinState();
+      }
       
       private function model_hasUnreadMainMsgChangeHandler(event:MChatEvent) : void {
          newMessage = MCHAT.hasUnreadMainMsg;
