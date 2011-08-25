@@ -26,6 +26,7 @@
          import tests.utils.datastructures.TS_DataStructures;
          
          import utils.DateUtil;
+         import utils.Objects;
          
          
          private var core:FlexUnitCore;
@@ -66,6 +67,13 @@
          {
             // NaN would break half of the tests
             DateUtil.timeDiff = 0;
+            
+            // Objects setup
+            Objects.setTypeProcessor(Date,
+               function(currValue:Date, value:String) : Object {
+                  return DateUtil.parseServerDTF(value);
+               }
+            );
             
             core = new FlexUnitCore();
             core.addListener(new UIListener(runner));

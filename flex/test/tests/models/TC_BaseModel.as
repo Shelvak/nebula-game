@@ -7,10 +7,14 @@ package tests.models
    
    import models.BaseModel;
    
+   import mx.collections.ArrayCollection;
+   import mx.collections.IList;
+   
    import namespaces.client_internal;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.array;
+   import org.hamcrest.collection.arrayWithSize;
    import org.hamcrest.core.allOf;
    import org.hamcrest.core.isA;
    import org.hamcrest.core.not;
@@ -18,6 +22,7 @@ package tests.models
    import org.hamcrest.number.isNotANumber;
    import org.hamcrest.object.equalTo;
    import org.hamcrest.object.hasProperties;
+   import org.hamcrest.object.hasProperty;
    import org.hamcrest.object.notNullValue;
    
    import tests.models.classes.ModelAggregator;
@@ -274,6 +279,107 @@ package tests.models
          var modelCollection:ModelConstantCollection =
             createModel(ModelConstantCollection, {"numbers": [1, 2, 3]});
          assertThat( "constant collection of numbers", modelCollection.numbers, array (1, 2, 3) );
+         
+         removePointProcessor();
+      }
+      
+      [Test]
+      public function fillCollectionErrors() : void {
+         function _fillCollection(collectionInstance:*, itemType:Class, data:Object) : Function {
+            return function() : void {
+               Objects.fillCollection(collectionInstance, itemType, data);
+            }
+         }
+         
+         assertThat(
+            "[param collectionInstance] may not be null",
+            _fillCollection(null, Point, []), throws (ArgumentError)
+         );
+         assertThat(
+            "[param collectionInstance] can be Array",
+            _fillCollection(new Array(), Point, []), not (throws (Error))
+         );
+         assertThat(
+            "[param collectionInstance] can be Vector",
+            _fillCollection(new Vector.<Point>(), Point, []), not (throws (Error))
+         );
+         assertThat(
+            "[param collectionInstance] can be IList",
+            _fillCollection(new ArrayCollection(), Point, []),  not (throws (Error))
+         );
+         assertThat(
+            "[param collectionInstance] may not be other type than Array, Vector or IList",
+            _fillCollection(new Object(), Point, []), throws (TypeError)
+         );
+         assertThat(
+            "[param itemTime] may not be null",
+            _fillCollection(new ArrayCollection(), null, []), throws (ArgumentError)
+         );
+         assertThat(
+            "[param data] may not be null",
+            _fillCollection(new ArrayCollection(), Point, null), throws (ArgumentError)
+         );
+         assertThat(
+            "[param data] can be Array",
+            _fillCollection([], Point, new Array()), not (throws (Error))
+         );
+         assertThat(
+            "[param data] can be Vector",
+            _fillCollection([], Point, new Vector.<Object>()), not (throws (Error))
+         );
+         assertThat(
+            "[param data] can be IList",
+            _fillCollection([], Point, new ArrayCollection()),  not (throws (Error))
+         );
+         assertThat(
+            "[param data] may not be other type than Array, Vector or IList",
+            _fillCollection([], Point, new Object()), throws (TypeError)
+         );
+      }
+      
+      [Test]
+      public function fillCollectionFillsCollectionPassedToTheMethod() : void {
+         addPointProcessor();
+         var collection:IList;
+         function getPoint(idx:int) : Point {
+            return Point(collection.getItemAt(idx));
+         }
+         
+         collection = new ArrayCollection();
+         Objects.fillCollection(collection, Point, [{"x": 1, "y": 1}, {"x": 2, "y": 2}]);
+         assertThat( "number of items", collection, arrayWithSize (2) );
+         assertThat( "0th point: x", getPoint(0).x, equals (1) );
+         assertThat( "0th point: y", getPoint(0).y, equals (1) );
+         assertThat( "1st point: x", getPoint(1).x, equals (2) );
+         assertThat( "1st point: y", getPoint(1).y, equals (2) );
+         
+         removePointProcessor();
+      }
+      
+      [Test]
+      public function fillCollectionSupportsDifferentCollectionTypes() : void {
+         addPointProcessor();
+         function fillCollection(collectionInstance:*, itemType:Class, data:Object) : void {
+            Objects.fillCollection(collectionInstance, itemType, data);
+         }
+         
+         var list:IList = new ArrayCollection();
+         fillCollection(list, String, new ArrayCollection(["one", "two"]));
+         assertThat( "fills IList from IList", list, array ("one", "two") );
+         
+         var arr:Array = new Array();
+         fillCollection(arr, BaseModel, [{"id": 1}, {"id": 2}]);
+         assertThat( "fills Array form Array", arr, array (
+            allOf (isA(BaseModel), hasProperty("id", 1)),
+            allOf (isA(BaseModel), hasProperty("id", 2))
+         ));
+         
+         var vector:Vector.<Point> = new Vector.<Point>();
+         fillCollection(vector, Point, Vector.<Object>([{"x": 1, "y": 1}, {"x": 2, "y": 2}]));
+         assertThat("fills Vector from Vector", vector, array (
+            allOf (isA(Point), hasProperties({"x": 1, "y": 1})),
+            allOf (isA(Point), hasProperties({"x": 2, "y": 2}))
+         ));
          
          removePointProcessor();
       }

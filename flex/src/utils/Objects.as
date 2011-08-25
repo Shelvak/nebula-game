@@ -488,6 +488,58 @@ package utils
          return client_internal::TYPE_PROCESSORS[type];
       }
       
+      /**
+       * Fills given <code>collectionInstance</code> with items that are created from the generic objects in
+       * collection <code>data</code>.
+       * 
+       * @param collectionInstance an <code>Array</code>, <code>Vector</code> or <code>IList</code> to add items to.
+       *                           <b>Not null.</b>
+       * @param itemType type of items to create.
+       *                 <b>Not null.</b>
+       * @param data <code>Array</code>, <code>Vector</code> or <code>IList</code> that holds generic objects
+       *             that need to be created and added to the <code>collectionInstance</code>.
+       *             <b>Not null.</b>
+       */
+      public static function fillCollection(collectionInstance:*, itemType:Class, data:Object) : void {
+         paramNotNull("collectionInstance", collectionInstance);
+         paramNotNull("itemType", itemType);
+         paramNotNull("data", data);
+         var collIsList:Boolean = collectionInstance is IList;
+         var collIsArray:Boolean = collectionInstance is Array || TypeChecker.isVector(collectionInstance);
+         if (!collIsList && !collIsArray)
+            throw new TypeError(
+               "[param collectionIsntance] must be of Array, Vector or IList type but was " + 
+               getClass(collectionInstance)
+            );
+         var dataIsList:Boolean = data is IList;
+         var dataIsArray:Boolean = data is Array || TypeChecker.isVector(data);
+         if (!dataIsList && !dataIsArray)
+            throw new TypeError(
+               "[param data] must be of Array, Vector or IList type but was " + 
+               getClass(data)
+            );
+         
+         function addItem(data:Object) : void {
+            var item:Object = createImpl(itemType, null, data);
+            if (collIsList)
+               IList(collectionInstance).addItem(item);
+            else
+               collectionInstance.push(item);
+         }
+         if (dataIsList) {
+            var list:IList = IList(data);
+            var listLength:int = list.length;
+            for (var idx:int = 0; idx < listLength; idx++) {
+               addItem(list.getItemAt(idx));
+            }
+         }
+         else {
+            for each (var item:Object in data) {
+               addItem(item);
+            }
+         }
+      }
+      
       public static function createImpl(type:Class, object:Object, data:Object, itemType:Class = null) : Object {
          paramNotNull("type", type);
          
@@ -507,32 +559,14 @@ package utils
          if (TypeChecker.isPrimitiveClass(type) || type == Object)
             return data;
          
-         // TODO: replace with type processor. Left over only not to break old tests.
-         if (type == Date)
-            return DateUtil.parseServerDTF(String(data), false);
-         
          // the rest operations also need an instance of given type
          // assuming that all types from this point forward have constructors without arguments
          if (object == null)
             object = new type();
          
          // collections
-         var isVector:Boolean = TypeChecker.isVector(object);
-         var isArray:Boolean = object is Array;
-         var isList:Boolean = object is IList;
-         var isCollection:Boolean = isVector || isArray || isList;
-         if (isCollection) {
-            // different interfaces of different collections require small but different piece of code
-            var addItem:Function;
-            if (isVector || isArray)
-               addItem = function(item:Object) : void { object.push(item) };
-            else
-               addItem = function(item:Object) : void { object.addItem(item) };
-            // now create items
-            for each (var itemData:Object in data) {
-               addItem(createImpl(itemType, null, itemData));
-            }
-            
+         if (TypeChecker.isCollection(object)) {
+            fillCollection(object, itemType, data);
             // afterCreate() callback is not supported on the collections because including this feature
             // would be too much dependent on internals of each collection type
             return object;
