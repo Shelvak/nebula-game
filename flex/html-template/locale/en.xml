@@ -474,7 +474,7 @@
     <label.cred>
       <p>{0 one[? cred] many[? creds]}</p>
     </label.cred>
-    <tileBonuses value="Tile bonuses" />
+    <tileBonuses value="Tile properties" />
     <armor.bonus value="Armor" />
     <energy.bonus value="Energy output" />
     <construction.bonus value="Construction speed" />

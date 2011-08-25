@@ -475,7 +475,7 @@
     <label.cred>
       <p>{0 one[? kredas] 1sts[? kredas] tens[? kredų] many[? kredai]}</p>
     </label.cred>
-    <tileBonuses value="Žemėlapio privalumai" />
+    <tileBonuses value="Žemėlapio ypatybės" />
     <armor.bonus value="Šarvai" />
     <energy.bonus value="Energijos gamyba" />
     <construction.bonus value="Statymo greitis" />
