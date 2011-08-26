@@ -6,6 +6,7 @@ package models.notification.parts
    import models.location.Location;
    import models.notification.INotificationPart;
    import models.notification.Notification;
+   import models.player.PlayerMinimal;
    
    import mx.collections.ArrayCollection;
    
@@ -23,6 +24,8 @@ package models.notification.parts
          {
             var params: Object = notif.params;
             location = BaseModel.createModel(Location, params.location);
+            if (location.player == null)
+               location.player = PlayerMinimal.NPC_PLAYER;
             logId = params.logId;
             outcome = params.outcome;
             units = params.units;
@@ -43,6 +46,10 @@ package models.notification.parts
       public var logId: String;
       
       public var location: Location;
+      
+      public function updateLocationName(id:int, name:String) : void {
+         Location.updateName(location, id, name);
+      }
       
       public var outcome: int;
       

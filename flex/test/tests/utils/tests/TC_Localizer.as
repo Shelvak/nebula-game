@@ -164,6 +164,16 @@ package tests.utils.tests
       
       
       [Test]
+      public function pluralize_should_respect_english_rules_negativeValues() : void
+      {
+         var str:String = "{0 zero[? dogs] one[? dog] many[? dogs]}";
+         assertThat( "0",                pluralize(str, [ 0], Locale.EN), equals ("0 dogs")  );
+         assertThat( "-1",               pluralize(str, [-1], Locale.EN), equals ("-1 dog")  );
+         assertThat( "-everything else", pluralize(str, [-5], Locale.EN), equals ("-5 dogs") );
+      };
+      
+      
+      [Test]
       public function pluralize_should_respect_lithuanian_rules() : void
       {
          function _pluralize(number:int) : String
@@ -186,6 +196,32 @@ package tests.utils.tests
          assertThat( "3rd form: everything else", _pluralize( 8), equals ( "8 šunys") );
          assertThat( "3rd form: everything else", _pluralize(25), equals ("25 šunys") );
       };
+      
+      
+      [Test]
+      public function pluralize_should_respect_lithuanian_rules_negativeValues() : void
+      {
+         function _pluralize(number:int) : String {
+            return pluralize(
+               "{0 zero[? šunų] one[? šuo] 1sts[? šuo] tens[? šunų] many[? šunys]}",
+               [number], Locale.LT
+            );
+         }
+         
+         assertThat( "is 0:   0", _pluralize( 0), equals ("0 šunų") );
+         assertThat( "is 1:  -1", _pluralize(-1), equals ("-1 šuo") );
+         assertThat( "1st form: ends in 1, not 11: -21", _pluralize(-21), equals ("-21 šuo") );
+         
+         assertThat( "2nd form: ends in 0 or 10-20: -110", _pluralize(-110), equals ("-110 šunų") );
+         assertThat( "2nd form: ends in 0 or 10-20:  -11", _pluralize( -11), equals ( "-11 šunų") );
+         assertThat( "2nd form: ends in 0 or 10-20: -515", _pluralize(-515), equals ("-515 šunų") );
+         assertThat( "2nd form: ends in 0 or 10-20: -220", _pluralize(-220), equals ("-220 šunų") );
+         assertThat( "2nd form: ends in 0 or 10-20:  -30", _pluralize( -30), equals ( "-30 šunų") );
+         
+         assertThat( "3rd form: everything else", _pluralize( -8), equals ( "-8 šunys") );
+         assertThat( "3rd form: everything else", _pluralize(-25), equals ("-25 šunys") );
+      };
+      
       
       [Test]
       public function pluralize_should_follow_fallbacks() : void

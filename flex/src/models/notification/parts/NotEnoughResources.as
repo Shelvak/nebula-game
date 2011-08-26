@@ -47,5 +47,9 @@ package models.notification.parts
       public var constructables:ArrayCollection;
       public var location:Location;
       public var constructorType:String;
+      
+      public function updateLocationName(id:int, name:String) : void {
+         Location.updateName(location, id, name);
+      }
    }
 }
