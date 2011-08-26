@@ -437,8 +437,9 @@ if ARGV.include?("basic") # {{{
   install "dialog"
   remove "samba.*" if File.exists?("/etc/init.d/smbd")
   install "man less cron mc rubygems libjson-ruby irb gnupg wget host " +
-    "exim4 logrotate netcat"
+    "exim4 logrotate netcat ntpdate"
   run "dpkg-reconfigure exim4-config"
+  run "dpkg-reconfigure tzdata"
 
   run "apt-get update"
   run "apt-get dist-upgrade -y"
@@ -530,7 +531,7 @@ deb-src http://repo.percona.com/apt lucid main")
     run "mkdir -p /etc/mysql"
     File.write(MYCNF_FILE, MYCNF)
   end
-  install "percona-server-server"
+  install "percona-server-server xtrabackup"
   install "phpmyadmin php5-mcrypt"
   fix_php_ini!
 end # }}}
