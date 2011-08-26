@@ -3,7 +3,8 @@ package models.player
    import controllers.ui.NavigationController;
    
    import models.BaseModel;
-   import models.chat.MChat;
+   
+   import utils.locale.Localizer;
    
    
    /**
@@ -12,9 +13,21 @@ package models.player
     */
    public class PlayerMinimal extends BaseModel
    {
+      private static var npcPlayer:PlayerMinimal = null;
+      public static function get NPC_PLAYER() : PlayerMinimal {
+         if (npcPlayer == null) {
+            npcPlayer = new PlayerMinimal();
+            npcPlayer.id = PlayerId.NO_PLAYER;
+            npcPlayer.name = Localizer.string("Players", "npc");
+         }
+         return npcPlayer;
+      }
+      
+      
       public function PlayerMinimal() {
          super();
       }
+      
       
       [Bindable]
       [Optional]
