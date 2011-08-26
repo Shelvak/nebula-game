@@ -85,44 +85,6 @@ package models
          return true;
       }
       
-      /**
-       * Creates a model and loads values to appropriate fields from a provided
-       * object.
-       * <ul>
-       *    <li>Properties that need to be filled must be marked with either
-       *        <code>[Optional]</code> or <code>[Required]</code> metadata tags;</li>
-       *    <li>Properties of primitive type are copied from the source object;</li>
-       *    <li>Properties that are of <code>BaseModel</code> type will cause recursive call to
-       *        <code>createModel()</code>. A model can't have property of the same type (or subtype)
-       *        as the model marked with <code>[Required]</code> and you can't created any similar loops
-       *        containing only <code>[Required]</code> tag;</li>
-       *    <li>Properties of <code>Array</code> and <code>IList</code> type must have
-       *        <code>elementType</code> attribute of <code>[Required|Optional]</code> metadata tag defined.
-       *        Properties of <code>Vector</code> type do not need this attribute. Currently element type can
-       *        only be a primitive type or derivative of <code>BaseModel</code>;</li>
-       *    <li>You can define properties of <code>BaseModel</code> as aggregators (<code>aggregatesProps
-       *        </code> and <code>aggregatesPrefix</code> attributes of <code>[Required|Optional]</code>)
-       *        tags. See <a target="_blank" href="http://wiki-dev.nebula44.com/wiki/Nebula_44:ClientCode">
-       *        wiki page</a> for more information on this feature;</li>
-       *    <li>If source object contains properties of different type than those that are defined
-       *        in destination class, method invocation will end up with error thrown;</li>
-       *    <li>Works only with dynamicly created properties of the data object.</li>
-       * 
-       * @param type Type of a model to be created.
-       * @param data Raw object containing data to be loaded to the model.
-       * 
-       * @return Newly created model with values loaded to its properties from
-       * the data object.
-       * 
-       * @throws Error if some properties in source object do not exist in the
-       * destination object or if some of them are of different type. 
-       */
-      public static function createModel(type:Class, data:Object) : * {
-         Objects.paramNotNull("type", type);
-         
-         return Objects.createImpl(type, null, data);
-      };
-      
       
       public function BaseModel()
       {
@@ -362,7 +324,6 @@ package models
          refresh();
       }
       
-      
       /**
        * Is called when <code>this.copyProperties()</code> has copied all properties. You can hook
        * any additional postprocessing to be performed in this method after properties have been
@@ -373,8 +334,7 @@ package models
        * 
        * @see #copyProperties()
        */
-      protected function afterCopyProperties(source:BaseModel, props:Array) : void
-      {
+      protected function afterCopyProperties(source:BaseModel, props:Array) : void {
          refresh();
       }
       

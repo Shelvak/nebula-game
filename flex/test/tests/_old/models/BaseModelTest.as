@@ -8,6 +8,8 @@ package tests._old.models
    
    import tests._old.models.classes.*;
    
+   import utils.Objects;
+   
    
    
    public class BaseModelTest
@@ -35,30 +37,30 @@ package tests._old.models
          };
          
          data = {notTagged: "won't be copied"};
-         model = BaseModel.createModel(ModelNoTaggedProps, data);
+         model = Objects.create(ModelNoTaggedProps, data);
          checkIfNotChanged("notTagged", "");
          
          data = {variable: 5, accessor: 10};
-         model = BaseModel.createModel(ModelAccessorAndVariable, data);
+         model = Objects.create(ModelAccessorAndVariable, data);
          checkIfChanged("variable");
          checkIfChanged("accessor");
          
          data = {name: "MikisM", age: 22};
-         model = BaseModel.createModel(ModelRequiredProps, data);
+         model = Objects.create(ModelRequiredProps, data);
          checkIfChanged("name");
          checkIfChanged("age");
          
-         model = BaseModel.createModel(ModelOptionalProps, data);
+         model = Objects.create(ModelOptionalProps, data);
          checkIfChanged("name");
          checkIfChanged("age");
          
          data = {name: "MikisM"};
-         model = BaseModel.createModel(ModelOptionalProps, data);
+         model = Objects.create(ModelOptionalProps, data);
          checkIfChanged("name");
          checkIfNotChanged("age", 0);
          
          data = {date: "2009-09-25T18:45:26+03:00"};
-         model = BaseModel.createModel(ModelDateProp, data);
+         model = Objects.create(ModelDateProp, data);
          var date:Date = model.date;
          assertEquals("Year shoul be 2009", 2009, date.fullYearUTC);
          assertEquals("Month should be 8", 8, date.monthUTC);
@@ -91,7 +93,7 @@ package tests._old.models
          
          // Array
          data = {numbersInstance: [1, 2], numbersNull: [1, 2]};
-         model = BaseModel.createModel(ModelArrayProp, data);
+         model = Objects.create(ModelArrayProp, data);
          assertNotNull("Should have initialized the array", model.numbersNull);
          assertEquals(
             "source and destination arrays should be of the same length",
@@ -106,7 +108,7 @@ package tests._old.models
          
          // A list
          data = {numbersInstance: [2, 1], numbersNull: [2, 1]};
-         model = BaseModel.createModel(ModelListProp, data);
+         model = Objects.create(ModelListProp, data);
          assertNotNull("Should have initialized the list", model.numbersNull);
          assertEquals(
             "source and destination lists should be of the same length",
@@ -122,7 +124,7 @@ package tests._old.models
          
          // Vector
          data = {numbersInstance: [3, 4], numbersNull: [3, 4]};
-         model = BaseModel.createModel(ModelVectorProp, data);
+         model = Objects.create(ModelVectorProp, data);
          assertNotNull("Should have initialized vector [prop numbersNull]", model.numbersNull);
          assertEquals(
             "source and destination lists should be of the same length",
@@ -137,7 +139,7 @@ package tests._old.models
          
          // List of models
          data = {models: [{id: 1}, {id: 2}]};
-         model = BaseModel.createModel(ModelListPropModels, data);
+         model = Objects.create(ModelListPropModels, data);
          assertEquals(
             "source and destination lists should be of the same length",
             2, model.models.length
@@ -156,7 +158,7 @@ package tests._old.models
       public function createModel_objectProp() : void
       {
          var object:Object = {"foo": "Foo", "bar": "Bar"};
-         var model:ModelObjectProp = BaseModel.createModel(ModelObjectProp, {"object": object});
+         var model:ModelObjectProp = Objects.create(ModelObjectProp, {"object": object});
          
          assertNotNull("[prop object] should have been set", model.object);
          assertEquals(

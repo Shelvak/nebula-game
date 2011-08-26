@@ -21,7 +21,6 @@ package controllers.battle
    import config.BattleConfig;
    
    import controllers.screens.ScreensSwitch;
-   import controllers.ui.NavigationController;
    
    import flash.events.Event;
    import flash.events.EventDispatcher;
@@ -49,13 +48,11 @@ package controllers.battle
    import mx.collections.ArrayCollection;
    import mx.core.AdvancedLayoutFeatures;
    import mx.core.IVisualElement;
-   import mx.utils.ObjectUtil;
    
    import spark.components.NavigatorContent;
    
-   import utils.Objects;
    import utils.MathUtil;
-   import utils.StringUtil;
+   import utils.Objects;
    
    
    public class BattleController
@@ -1299,14 +1296,11 @@ import controllers.battle.BattleController;
 
 import flash.geom.Point;
 import flash.geom.Vector3D;
-import flash.sampler.getGetterInvocationCount;
 
 import models.battle.Battle;
 import models.battle.FireOrder;
 
 import mx.core.AdvancedLayoutFeatures;
-
-import utils.StringUtil;
 
 
 class OrderType

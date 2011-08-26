@@ -3,9 +3,9 @@ package config
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
-   import models.BaseModel;
    import models.battle.BGun;
    
+   import utils.Objects;
    import utils.StringUtil;
 
    public final class BattleConfig
@@ -73,7 +73,7 @@ package config
          {
             if (gunPoints[id] == null)
                throw new Error("no gun " + id +" point for unit "+ type);
-            var gun:BGun = BaseModel.createModel(BGun, rawGun);
+            var gun:BGun = Objects.create(BGun, rawGun);
             gun.id = id;
             gun.type = StringUtil.underscoreToCamelCase(
                Config.getAssetValue('images.battlefield.units.'+StringUtil.firstToLowerCase(type)+'.guns')[id]);
@@ -99,7 +99,7 @@ package config
          var id:int = 0;
          for each (var rawGun:Object in Config.getBuildingGuns(type))
          {
-            var gun:BGun = BaseModel.createModel(BGun, rawGun);
+            var gun:BGun = Objects.create(BGun, rawGun);
             gun.id = id;
             gun.type = StringUtil.underscoreToCamelCase(
                Config.getAssetValue('images.battlefield.buildings.'+StringUtil.firstToLowerCase(type)+'.guns')[id]);

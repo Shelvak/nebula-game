@@ -1,13 +1,9 @@
 package controllers.objects.actions.customcontrollers
 {
-   import utils.SingletonFactory;
-   
-   import globalevents.GResourcesEvent;
-   
-   import models.BaseModel;
    import models.MWreckage;
    import models.location.LocationType;
    
+   import utils.Objects;
    import utils.datastructures.Collections;
    
    
@@ -19,7 +15,7 @@ package controllers.objects.actions.customcontrollers
       
       
       public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
-         var wreck:MWreckage = BaseModel.createModel(MWreckage, object);
+         var wreck:MWreckage = Objects.create(MWreckage, object);
          if (wreck.currentLocation.isObserved) {
             if (wreck.currentLocation.type == LocationType.SOLAR_SYSTEM)
                ML.latestSolarSystem.addObject(wreck);
@@ -29,7 +25,7 @@ package controllers.objects.actions.customcontrollers
       }
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
-         var wreckNew:MWreckage = BaseModel.createModel(MWreckage, object);
+         var wreckNew:MWreckage = Objects.create(MWreckage, object);
          var wreckOld:MWreckage = null;
          if (ML.latestGalaxy != null)
             wreckOld = Collections.findFirstEqualTo(ML.latestGalaxy.wreckages, wreckNew);

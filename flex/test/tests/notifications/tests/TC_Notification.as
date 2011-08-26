@@ -6,7 +6,6 @@ package tests.notifications.tests
    
    import ext.hamcrest.events.causesTarget;
    
-   import models.BaseModel;
    import models.notification.Notification;
    import models.notification.events.NotificationEvent;
    import models.notification.parts.NotEnoughResources;
@@ -18,6 +17,8 @@ package tests.notifications.tests
    import org.hamcrest.object.notNullValue;
    
    import tests.notifications.Data;
+   
+   import utils.Objects;
 
    public class TC_Notification
    {		
@@ -68,7 +69,7 @@ package tests.notifications.tests
       [Test(description="Checks if afterModelCreate() works and part instance is instantiated")]
       public function customPartInstantiation() : void
       {
-         notif = BaseModel.createModel(Notification, Data.notifOne);
+         notif = Objects.create(Notification, Data.notifOne);
          assertThat( notif.customPart, notNullValue() );
          assertThat( notif.customPart, instanceOf (NotEnoughResources) );
       };
@@ -141,7 +142,7 @@ package tests.notifications.tests
       
       [Test]
       public function messageChangeEventWhenLocationIsUpdated() : void {
-         notif = BaseModel.createModel(Notification, Data.notifOne);
+         notif = Objects.create(Notification, Data.notifOne);
          assertThat(
             "updating location", function():void{ notif.updateLocationName(2, "name") },
             causesTarget(notif) .toDispatchEvent (NotificationEvent.MESSAGE_CHANGE)

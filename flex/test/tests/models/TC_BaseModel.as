@@ -37,38 +37,38 @@ package tests.models
       public function createModel_error() : void
       {
          assertThat(
-            function():void{ createModel(ModelInvalidMetadata, {invalid: "invalid"}) },
+            function():void{ create(ModelInvalidMetadata, {invalid: "invalid"}) },
             throws(Error)
          );
          
          assertThat(
-            function():void{ createModel(ModelMissingCollectionMetadata, {collection: [1]}) },
+            function():void{ create(ModelMissingCollectionMetadata, {collection: [1]}) },
             throws (Error)
          );
          
          assertThat(
-            function():void{ createModel(ModelRequiredProps, {name: "MikisM"}) },
+            function():void{ create(ModelRequiredProps, {name: "MikisM"}) },
             throws (Error)
          );
          
          assertThat(
-            function():void{ createModel(ModelRequiredProps, {name: new Date(), age: 5}) },
+            function():void{ create(ModelRequiredProps, {name: new Date(), age: 5}) },
             throws (Error)
          );
          
          assertThat(
-            function():void{ createModel(ModelDateProp, {date: "not a date"}) },
+            function():void{ create(ModelDateProp, {date: "not a date"}) },
             throws (Error)
          );
          
          assertThat(
-            function():void{ createModel(ModelRequiredSelf, {id: 2, self: {id: 3}}) },
+            function():void{ create(ModelRequiredSelf, {id: 2, self: {id: 3}}) },
             throws (Error)
          );
          
          
          assertThat(
-            function():void{ createModel(ModelAliasProperties, {}) },
+            function():void{ create(ModelAliasProperties, {}) },
             throws (Error)
          );
       };
@@ -79,7 +79,7 @@ package tests.models
        */
       public function createModel_nestedModels() : void
       {
-         var model:ModelNested = createModel(ModelNested, {id: 1, nested: {id: 2}});
+         var model:ModelNested = create(ModelNested, {id: 1, nested: {id: 2}});
          assertThat( model.id, equalTo (1) );
          assertThat( model.nested, notNullValue() );
          assertThat( model.nested.id, equalTo (2) );
@@ -93,10 +93,10 @@ package tests.models
       {
          var model:ModelOptionalMetadata = null;
          
-         model = createModel(ModelOptionalMetadata, {optional: null});
+         model = create(ModelOptionalMetadata, {optional: null});
          assertThat( model.optional, equalTo ("default") );
          
-         model = createModel(ModelOptionalMetadata, {});
+         model = create(ModelOptionalMetadata, {});
          assertThat( model.optional, equalTo ("default") );
       };
       
@@ -105,11 +105,11 @@ package tests.models
       /**
        * When "alias" attribute of [Optional] or [Required] metadata tag is specified property of
        * source object named as specified by that attribute should be used instead of staticly
-       * typed property name of model beeing created.
+       * typed property name of object beeing created.
        */
       public function createModel_propertyAlias() : void
       {
-         var model:ModelAliasProperties = createModel(ModelAliasProperties, {
+         var model:ModelAliasProperties = create(ModelAliasProperties, {
             "requiredAlias": "required",
             "optionalAlias": "optional",
             "requiredModelAlias": new BaseModel()
@@ -123,31 +123,31 @@ package tests.models
       public function createModel_aggregatesPropsErrors() : void {
          assertThat(
             "when no properties provided for required aggregator",
-            function():void{ createModel(ModelPropsAggregatorRequired, {}) }, throws (Error)
+            function():void{ create(ModelPropsAggregatorRequired, {}) }, throws (Error)
          );
          assertThat(
             "when no properties provided for optional aggregator",
-            function():void{ createModel(ModelPropsAggregatorOptional, {}) }, not (throws (Error))
+            function():void{ create(ModelPropsAggregatorOptional, {}) }, not (throws (Error))
          );
          assertThat(
             "not providing required property for aggregator",
-            function():void{ createModel(ModelPropsAggregatorRequired, {"optional": 0}) }, throws (Error)
+            function():void{ create(ModelPropsAggregatorRequired, {"optional": 0}) }, throws (Error)
          );
          assertThat(
             "not providing optional but providing required property for aggregator",
-            function():void{ createModel(ModelPropsAggregatorRequired, {"required": 0}) }, not (throws (Error))
+            function():void{ create(ModelPropsAggregatorRequired, {"required": 0}) }, not (throws (Error))
          );
          assertThat(
             "alias attribute not allowed on aggregators",
-            function():void{ createModel(ModelPropsAggregatorAlias, {"required": 0}) }, throws (Error)
+            function():void{ create(ModelPropsAggregatorAlias, {"required": 0}) }, throws (Error)
          );
          assertThat(
             "aggregatesPrefix attribute not allowed together",
-            function():void{ createModel(ModelPropsAndPrefixAggregator, {"required": 0, "optional": 0}) }, throws (Error)
+            function():void{ create(ModelPropsAndPrefixAggregator, {"required": 0, "optional": 0}) }, throws (Error)
          );
          assertThat(
             "it is illegal to define aggregatesProps for primitives",
-            function():void{ createModel(ModelAggregatesPropsPrimitive, {}) }, throws (Error)
+            function():void{ create(ModelAggregatesPropsPrimitive, {}) }, throws (Error)
          );
       }
       
@@ -155,23 +155,23 @@ package tests.models
       public function createModel_aggregatesPrefixErrors() : void {
          assertThat(
             "when no properties provided for required aggregator",
-            function():void{ createModel(ModelPrefixAggregatorRequired, {}) }, throws (Error)
+            function():void{ create(ModelPrefixAggregatorRequired, {}) }, throws (Error)
          );
          assertThat(
             "when no properties provided for optional aggregator",
-            function():void{ createModel(ModelPrefixAggregatorOptional, {}) }, not (throws (Error))
+            function():void{ create(ModelPrefixAggregatorOptional, {}) }, not (throws (Error))
          );
          assertThat(
             "not providing required property for aggregator",
-            function():void{ createModel(ModelPrefixAggregatorRequired, {"prefixOptional": 0}) }, throws (Error)
+            function():void{ create(ModelPrefixAggregatorRequired, {"prefixOptional": 0}) }, throws (Error)
          );
          assertThat(
             "not providing optional but providing required property for aggregator",
-            function():void{ createModel(ModelPrefixAggregatorRequired, {"prefixRequired": 0}) }, not (throws (Error))
+            function():void{ create(ModelPrefixAggregatorRequired, {"prefixRequired": 0}) }, not (throws (Error))
          );
          assertThat(
             "it is illegal to define aggregatesPrefix for primitives",
-            function():void{ createModel(ModelAggregatesPrefixPrimitive, {}) }, throws (Error)
+            function():void{ create(ModelAggregatesPrefixPrimitive, {}) }, throws (Error)
          );
       }
       
@@ -180,13 +180,13 @@ package tests.models
          var aggregatorUser:IAggregatorUser;
          var aggregator:ModelAggregator;
          
-         aggregatorUser = createModel(ModelPropsAggregatorRequired, {"required": 0});
+         aggregatorUser = create(ModelPropsAggregatorRequired, {"required": 0});
          aggregator = aggregatorUser.getAggregator();
          assertThat( "aggregator without optional prop created", aggregator, notNullValue() );
          assertThat( "aggregator.required", aggregator.required, equals (0) );
          assertThat( "aggregator.optional", aggregator.optional, isNotANumber() );
          
-         aggregatorUser = createModel(ModelPropsAggregatorRequired, {"required": 0, "optional" :1});
+         aggregatorUser = create(ModelPropsAggregatorRequired, {"required": 0, "optional" :1});
          aggregator = aggregatorUser.getAggregator();
          assertThat( "aggregator with optional prop created", aggregator, notNullValue() );
          assertThat( "aggregator.required", aggregator.required, equals (0) );
@@ -198,13 +198,13 @@ package tests.models
          var aggregatorUser:IAggregatorUser;
          var aggregator:ModelAggregator;
          
-         aggregatorUser = createModel(ModelPrefixAggregatorRequired, {"prefixRequired": 0});
+         aggregatorUser = create(ModelPrefixAggregatorRequired, {"prefixRequired": 0});
          aggregator = aggregatorUser.getAggregator();
          assertThat( "aggregator without optional prop created", aggregator, notNullValue() );
          assertThat( "aggregator.required", aggregator.required, equals (0) );
          assertThat( "aggregator.optional", aggregator.optional, isNotANumber() );
          
-         aggregatorUser = createModel(ModelPrefixAggregatorRequired, {"prefixRequired": 0, "prefixOptional" :1});
+         aggregatorUser = create(ModelPrefixAggregatorRequired, {"prefixRequired": 0, "prefixOptional" :1});
          aggregator = aggregatorUser.getAggregator();
          assertThat( "aggregator with optional prop created", aggregator, notNullValue() );
          assertThat( "aggregator.required", aggregator.required, equals (0) );
@@ -215,7 +215,7 @@ package tests.models
       public function createModelUsesTypeProcessorsForObjects() : void {
          addPointProcessor();
          
-         var point:Point = createModel(Point, {"x": 1, "y": 2});
+         var point:Point = create(Point, {"x": 1, "y": 2});
          assertThat( "point created", point, notNullValue() );
          assertThat( "point.x", point.x, equals (1) );
          assertThat( "point.y", point.y, equals (2) ); 
@@ -229,14 +229,14 @@ package tests.models
          
          var data:Object = {"rect": {"x": 1, "y": 2, "width": 3, "height": 4}};
          
-         var modelNull:ModelRectangleNull = createModel(ModelRectangleNull, data);
+         var modelNull:ModelRectangleNull = create(ModelRectangleNull, data);
          assertThat( "rect", modelNull.rect, notNullValue() );
          assertThat( "rect.x", modelNull.rect.x, equals (1) );
          assertThat( "rect.y", modelNull.rect.y, equals (2) );
          assertThat( "rect.width", modelNull.rect.width, equals (3) );
          assertThat( "rect.height", modelNull.rect.height, equals (4) );
          
-         var modelDefault:ModelRectangleDefault = createModel(ModelRectangleDefault, data);
+         var modelDefault:ModelRectangleDefault = create(ModelRectangleDefault, data);
          assertThat( "rect", modelDefault.rect, notNullValue() );
          assertThat( "rect.x", modelDefault.rect.x, equals (1) );
          assertThat( "rect.y", modelDefault.rect.y, equals (2) );
@@ -250,7 +250,7 @@ package tests.models
       public function createModelAllowsAnyTypeInCollections() : void {
          addPointProcessor();
          
-         var model:ModelCollectionsAnyType = createModel(ModelCollectionsAnyType, {
+         var model:ModelCollectionsAnyType = create(ModelCollectionsAnyType, {
             "points": [{"x": 1, y: "1"}, {"x": 2, "y": 2}],
             "numbers": [1, 2, 3]
          });
@@ -268,7 +268,7 @@ package tests.models
       public function createModelSupportsInstanceConstants() : void {
          addPointProcessor();
          
-         var model:ModelPublicConstants = createModel(ModelPublicConstants, {
+         var model:ModelPublicConstants = create(ModelPublicConstants, {
             "point": {"x": 1, "y": 2},
             "model": {"id": 10}
          });
@@ -277,7 +277,7 @@ package tests.models
          assertThat( "model.id", model.model.id, equals (10) );
          
          var modelCollection:ModelConstantCollection =
-            createModel(ModelConstantCollection, {"numbers": [1, 2, 3]});
+            create(ModelConstantCollection, {"numbers": [1, 2, 3]});
          assertThat( "constant collection of numbers", modelCollection.numbers, array (1, 2, 3) );
          
          removePointProcessor();
@@ -391,8 +391,8 @@ package tests.models
       /* ### HELPERS ### */
       /* ############### */
       
-      private function createModel(type:Class, data:Object) : * {
-         return BaseModel.createModel(type, data);
+      private function create(type:Class, data:Object) : * {
+         return Objects.create(type, data);
       }
       
       private function addPointProcessor() : void {
@@ -478,13 +478,13 @@ class ModelAliasProperties extends BaseModel
 {
    [Required(alias="requiredAlias")]
    /**
-    * [Required(serverAlias="requiredAlias")]
+    * [Required(alias="requiredAlias")]
     */
    public var required:String = null;
    
    [Optional(alias="optionalAlias")]
    /**
-    * [Optional(serverAlias="optionalAlias")]
+    * [Optional(alias="optionalAlias")]
     */
    public var optional:String = null;
    

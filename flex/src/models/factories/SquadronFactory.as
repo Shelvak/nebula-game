@@ -1,9 +1,10 @@
 package models.factories
 {
-   import models.BaseModel;
    import models.location.LocationMinimal;
    import models.movement.MSquadron;
    import models.unit.Unit;
+   
+   import utils.Objects;
 
    public class SquadronFactory
    {
@@ -25,12 +26,12 @@ package models.factories
       
       public static function fromObject(data:Object) : MSquadron
       {
-         var currentLoc:LocationMinimal = BaseModel.createModel(LocationMinimal, data.current);
+         var currentLoc:LocationMinimal = Objects.create(LocationMinimal, data.current);
          if (currentLoc.isSSObject)
          {
             currentLoc.setDefaultCoordinates();
          }
-         var squad:MSquadron = BaseModel.createModel(MSquadron, data);
+         var squad:MSquadron = Objects.create(MSquadron, data);
          squad.createCurrentHop(currentLoc);
          return squad;
       }

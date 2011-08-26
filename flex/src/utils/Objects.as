@@ -543,7 +543,43 @@ package utils
          return collectionInstance;
       }
       
-      public static function createImpl(type:Class, object:Object, data:Object, itemType:Class = null) : Object {
+      /**
+       * Creates an object and copies values to appropriate fields from a provided object.
+       * <ul>
+       *    <li>Properties that need to be filled must be marked with either
+       *        <code>[Optional]</code> or <code>[Required]</code> metadata tags;</li>
+       *    <li>Properties of primitive type are copied from the source object;</li>
+       *    <li>Properties that are of any other type will cause recursive call to <code>create()</code>. A
+       *        class can't have property of the same class (itself) type (or subtype) marked with
+       *        <code>[Required]</code> and you can't created any similar loops containing only
+       *        <code>[Required]</code> tag;</li>
+       *    <li>Properties of <code>Array</code> and <code>IList</code> type must have
+       *        <code>elementType</code> attribute of <code>[Required|Optional]</code> metadata tag defined.
+       *        Properties of <code>Vector</code> type do not need this attribute. Element type can be any
+       *        class;</li>
+       *    <li>You can define properties of your classes as aggregators (<code>aggregatesProps</code> and
+       *        <code>aggregatesPrefix</code> attributes of <code>[Required|Optional]</code>) tags.
+       *        See <a target="_blank" href="http://wiki-dev.nebula44.com/wiki/Nebula_44:ClientCode"> wiki
+       *        page</a> for more information on this feature;</li>
+       *    <li>If source object contains properties of different type than those that are defined
+       *        in destination class, method invocation will end up with an error thrown;</li>
+       *    <li>Works only with dynamicly created properties of the data object.</li>
+       * 
+       * @param type type of a model to be created.
+       * @param data raw object containing data to be loaded to the object to be created.
+       * 
+       * @return Newly created object with values loaded to its properties from the data object.
+       * 
+       * @throws Error if some properties in source object do not exist in the destination object or if some
+       * of them are of different type. 
+       */
+      public static function create(type:Class, data:Object) : * {
+         Objects.paramNotNull("type", type);
+         
+         return createImpl(type, null, data);
+      };
+      
+      private static function createImpl(type:Class, object:Object, data:Object, itemType:Class = null) : Object {
          paramNotNull("type", type);
          
          if (data == null)

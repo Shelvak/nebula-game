@@ -5,12 +5,13 @@ package controllers.objects.actions.customcontrollers
    
    import flash.external.ExternalInterface;
    
-   import models.BaseModel;
    import models.notification.Notification;
    import models.notification.NotificationType;
    import models.notification.parts.NotEnoughResources;
    import models.planet.Planet;
    import models.planet.PlanetObject;
+   
+   import utils.Objects;
    
    
    public class NotificationController extends BaseObjectController
@@ -21,7 +22,7 @@ package controllers.objects.actions.customcontrollers
       
       
       public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
-         var notification:Notification = BaseModel.createModel(Notification, object);
+         var notification:Notification = Objects.create(Notification, object);
          notification.isNew = true;
          ML.notifications.addItem(notification);
          if (MainAreaScreensSwitch.getInstance().currentScreenName != MainAreaScreens.NOTIFICATIONS) {

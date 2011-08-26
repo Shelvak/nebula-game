@@ -1,13 +1,12 @@
 package models.notification.parts
 {
-   import components.notifications.parts.IRCombatLog;
-   
    import models.BaseModel;
    import models.location.Location;
    import models.notification.INotificationPart;
    import models.notification.Notification;
    import models.player.PlayerMinimal;
    
+   import utils.Objects;
    import utils.locale.Localizer;
    
    public class PlanetAnnexed extends BaseModel implements INotificationPart
@@ -15,13 +14,13 @@ package models.notification.parts
       public function PlanetAnnexed(notif:Notification=null)
       {
          super();
-         var params: Object = notif.params;
-         oldPlayer = params.oldPlayer?BaseModel.createModel(PlayerMinimal, params.oldPlayer):null;
-         newPlayer = params.newPlayer?BaseModel.createModel(PlayerMinimal, params.newPlayer):null;
-         location = BaseModel.createModel(Location, params.planet);
-         owner = params.owner?BaseModel.createModel(PlayerMinimal, params.owner):null;
+         var params:Object = notif.params;
+         oldPlayer = Objects.create(PlayerMinimal, params.oldPlayer);
+         newPlayer = Objects.create(PlayerMinimal, params.newPlayer);
+         location  = Objects.create(Location, params.planet);
+         owner     = Objects.create(PlayerMinimal, params.owner);
          //if outcome is null this means there was no battle fought
-         outcome = params.outcome==null?-1:params.outcome;
+         outcome = params.outcome == null ? -1 : params.outcome;
       }
       
       public var outcome: int;

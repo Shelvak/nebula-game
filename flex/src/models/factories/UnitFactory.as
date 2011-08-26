@@ -1,10 +1,11 @@
 package models.factories
 {
-   import models.BaseModel;
    import models.ModelsCollection;
    import models.player.PlayerId;
    import models.player.PlayerMinimal;
    import models.unit.Unit;
+   
+   import utils.Objects;
    
    
    /**
@@ -23,7 +24,7 @@ package models.factories
       public static function fromObject(data:Object) : Unit {
          if (!data)
             throw new Error('Can not create unit, null given');
-         return BaseModel.createModel(Unit, data);
+         return Objects.create(Unit, data);
       }
       
       /**

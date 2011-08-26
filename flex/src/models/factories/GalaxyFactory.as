@@ -2,10 +2,10 @@ package models.factories
 {
    import flash.geom.Rectangle;
    
-   import models.BaseModel;
    import models.MWreckage;
-   import models.cooldown.MCooldown;
    import models.galaxy.Galaxy;
+   
+   import utils.Objects;
    
    
    /**
@@ -23,9 +23,7 @@ package models.factories
       public static function fromObject(data:Object) : Galaxy
       {
          if (!data)
-         {
             return null;
-         }
          
          var g:Galaxy = new Galaxy();
          g.id = data.id;
@@ -37,7 +35,7 @@ package models.factories
          }
          for each (var wreckage:Object in data.wreckages)
          {
-            g.objects.addItem(BaseModel.createModel(MWreckage, wreckage));
+            g.objects.addItem(Objects.create(MWreckage, wreckage));
          }
          for each (var cooldown:Object in data.cooldowns)
          {

@@ -1,15 +1,10 @@
 package models.factories
 {
-   import models.BaseModel;
-   import models.ModelsCollection;
    import models.player.MRatingPlayer;
-   import models.player.PlayerId;
-   import models.player.PlayerMinimal;
-   import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
    
-   import utils.locale.Localizer;
+   import utils.Objects;
    
    
    /**
@@ -31,7 +26,7 @@ package models.factories
          {
             throw new Error('Can not create ratings player, null given');
          }
-         var player: MRatingPlayer = BaseModel.createModel(MRatingPlayer, data);
+         var player: MRatingPlayer = Objects.create(MRatingPlayer, data);
          player.points = player.warPoints +
             player.sciencePoints +
             player.armyPoints +

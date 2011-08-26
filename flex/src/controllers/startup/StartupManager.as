@@ -60,7 +60,6 @@ package controllers.startup
    
    import globalevents.GlobalEvent;
    
-   import models.BaseModel;
    import models.ModelLocator;
    import models.announcement.MAnnouncement;
    import models.chat.MChat;
@@ -117,7 +116,7 @@ package controllers.startup
             registerStartupInfo(new StartupInfo());
             return false;
          }
-         startupInfo = BaseModel.createModel(StartupInfo, ExternalInterface.call("getGameOptions"));
+         startupInfo = Objects.create(StartupInfo, ExternalInterface.call("getGameOptions"));
          if (startupInfo == null)
          {
             registerStartupInfo(new StartupInfo());

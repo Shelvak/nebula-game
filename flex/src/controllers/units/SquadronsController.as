@@ -7,7 +7,6 @@ package controllers.units
    
    import globalevents.GlobalEvent;
    
-   import models.BaseModel;
    import models.ModelLocator;
    import models.ModelsCollection;
    import models.Owner;
@@ -73,7 +72,7 @@ package controllers.units
        */
       public function addHopToSquadron(hop:Object) : void
       {
-         var hopM:MHop = BaseModel.createModel(MHop, hop);
+         var hopM:MHop = Objects.create(MHop, hop);
          var squad:MSquadron = findSquad(hopM.routeId);
          if (squad)
          {
@@ -164,7 +163,7 @@ package controllers.units
                "New route data was: " + ObjectUtil.toString(routeData)
             );
          
-         route.currentLocation = BaseModel.createModel(Location, routeData.current);
+         route.currentLocation = Objects.create(Location, routeData.current);
          route.cachedUnits.removeAll();
          route.cachedUnits.addAll(createCachedUnits(routeData.cachedUnits));
       }
@@ -240,7 +239,7 @@ package controllers.units
        */
       public function createRoute(data:Object, owner:int = Owner.UNDEFINED) : MRoute
       {
-         var route:MRoute = BaseModel.createModel(MRoute, data);
+         var route:MRoute = Objects.create(MRoute, data);
          route.cachedUnits.addAll(createCachedUnits(data.cachedUnits));
          if (owner != Owner.UNDEFINED)
             route.owner = owner;
@@ -320,7 +319,7 @@ package controllers.units
       {
          var squad:MSquadron;
          var unitIds:ArrayCollection = new ArrayCollection($unitIds);
-         var currentLocation:LocationMinimal = BaseModel.createModel(LocationMinimal, route.current);
+         var currentLocation:LocationMinimal = Objects.create(LocationMinimal, route.current);
          if (currentLocation.isSSObject)
          {
             currentLocation.setDefaultCoordinates();

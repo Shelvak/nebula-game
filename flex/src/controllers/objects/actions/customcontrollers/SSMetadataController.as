@@ -1,7 +1,8 @@
 package controllers.objects.actions.customcontrollers
 {
-   import models.BaseModel;
    import models.solarsystem.SSMetadata;
+   
+   import utils.Objects;
    
    
    public class SSMetadataController extends BaseObjectController
@@ -12,7 +13,7 @@ package controllers.objects.actions.customcontrollers
       
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
-         var ssMetadata:SSMetadata = BaseModel.createModel(SSMetadata, object);
+         var ssMetadata:SSMetadata = Objects.create(SSMetadata, object);
          ML.latestGalaxy.getSSById(ssMetadata.id).metadata.copyProperties(ssMetadata);
       }
       
