@@ -341,12 +341,14 @@ package tests.models
       public function fillCollectionFillsCollectionPassedToTheMethod() : void {
          addPointProcessor();
          var collection:IList;
+         var collectionReturned:IList;
          function getPoint(idx:int) : Point {
             return Point(collection.getItemAt(idx));
          }
          
          collection = new ArrayCollection();
-         Objects.fillCollection(collection, Point, [{"x": 1, "y": 1}, {"x": 2, "y": 2}]);
+         collectionReturned = Objects.fillCollection(collection, Point, [{"x": 1, "y": 1}, {"x": 2, "y": 2}]);
+         assertThat( "returns same collection", collectionReturned, equals (collection) );
          assertThat( "number of items", collection, arrayWithSize (2) );
          assertThat( "0th point: x", getPoint(0).x, equals (1) );
          assertThat( "0th point: y", getPoint(0).y, equals (1) );

@@ -1,7 +1,5 @@
 package controllers.units
 {
-   import com.developmentarc.core.utils.EventBroker;
-   
    import components.map.space.SquadronsController;
    
    import controllers.GlobalFlags;
@@ -31,8 +29,7 @@ package controllers.units
    import mx.collections.ListCollectionView;
    import mx.utils.ObjectUtil;
    
-   import namespaces.client_internal;
-   
+   import utils.Objects;
    import utils.SingletonFactory;
    import utils.StringUtil;
    import utils.datastructures.Collections;
@@ -346,7 +343,7 @@ package controllers.units
             route.status = unit.owner; 
             squad = SquadronFactory.fromObject(route);
             squad.player = unit.player;
-            squad.addAllHops(BaseModel.createCollection(ArrayCollection, MHop, route.hops));
+            squad.addAllHops(Objects.fillCollection(new ArrayCollection(), MHop, route.hops));
             units.disableAutoUpdate();
             for each (unit in units)
             {

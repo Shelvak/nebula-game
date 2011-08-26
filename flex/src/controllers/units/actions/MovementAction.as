@@ -4,11 +4,12 @@ package controllers.units.actions
    import controllers.CommunicationCommand;
    import controllers.units.SquadronsController;
    
-   import models.BaseModel;
    import models.factories.UnitFactory;
    import models.movement.MHop;
    
    import mx.collections.ArrayCollection;
+   
+   import utils.Objects;
    
    
    /**
@@ -64,7 +65,7 @@ package controllers.units.actions
          {
             SQUADS_CTRL.executeJump(
                UnitFactory.fromObjects(params.units, params.players),
-               BaseModel.createCollection(ArrayCollection, MHop, params.routeHops)
+               Objects.fillCollection(new ArrayCollection(), MHop, params.routeHops)
             );
          }
       }

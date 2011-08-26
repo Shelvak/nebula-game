@@ -1,12 +1,11 @@
 package tests.notifications
 {
-   import flash.events.Event;
-   
-   import models.BaseModel;
    import models.location.LocationType;
    import models.notification.Notification;
    import models.notification.NotificationType;
    import models.notification.NotificationsCollection;
+   
+   import utils.Objects;
 
    public class Data
    {
@@ -140,9 +139,8 @@ package tests.notifications
        * 
        * @see Data#notificationsRaw
        */
-      public static function get notificationsTyped() : NotificationsCollection
-      {
-         return BaseModel.createCollection(NotificationsCollection, Notification, notificationsRaw);
+      public static function get notificationsTyped() : NotificationsCollection {
+         return Objects.fillCollection(new NotificationsCollection(), Notification, notificationsRaw);
       }
    }
 }

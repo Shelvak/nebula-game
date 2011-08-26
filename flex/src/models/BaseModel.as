@@ -3,25 +3,18 @@ package models
    import com.adobe.errors.IllegalStateError;
    
    import flash.events.EventDispatcher;
-   import flash.utils.Dictionary;
-   import flash.utils.getDefinitionByName;
    
    import interfaces.IEqualsComparable;
    
    import models.events.BaseModelEvent;
    
    import mx.collections.ICollectionView;
-   import mx.collections.IList;
    import mx.events.PropertyChangeEvent;
-   import mx.utils.StringUtil;
    
-   import namespaces.client_internal;
    import namespaces.prop_name;
    
-   import utils.DateUtil;
    import utils.EventUtils;
    import utils.Objects;
-   import utils.TypeChecker;
    import utils.assets.ImagePreloader;
    
    
@@ -129,68 +122,6 @@ package models
          
          return Objects.createImpl(type, null, data);
       };
-      
-      
-      /**
-       * Creates a list of models of given type from the given list or array.
-       * 
-       * @param collectionType type of a collection to return. Must be collection class
-       * implementing <code>IList</code> 
-       * @param modelType type of models in the resulting list
-       * @param list an <code>IList</code> or <code>Array</code> of generic objects to use as
-       * data source for the resulting collection.
-       * 
-       * @return collection of <code>collectionType</code> type where each element is
-       * of <code>modelType</code> type.
-       * 
-       * @throws ArgumentError when
-       * <ul>
-       *    <li><code>collectionType</code> does not implement <code>IList</code></li>
-       *    <li>
-       *       <code>list</code> does not implement <code>IList</code> and is not an
-       *       <code>Array</code>
-       *    </li>
-       * </ul>
-       * @throws Error when <code>BaseModel.createModel()</code> throws any error.
-       * 
-       * @see #createModel()
-       */
-      public static function createCollection(collectionType:Class, modelType:Class, list:Object) : *
-      {
-         if ( !(new collectionType() is IList) )
-         {
-            throw new ArgumentError(
-               "[param collectionType] must be a class of collection implementing " +
-               "[interface IList] but was " + collectionType
-            );
-         }
-         if ( !(list is Array || list is IList) )
-         {
-            throw new ArgumentError(
-               "[param list] must be instance of [class Array] or [interface IList]"
-            );
-         }
-         var collection:IList = IList(new collectionType());
-         var item:Object;
-         
-         // Special case for ModelsCollection as that bastard has performance issues. See
-         // documentation of ModelsCollection for more insight on this problem.
-         if (collection is ModelsCollection)
-         {
-            var source:Array = new Array();
-            for each (item in list)
-            {
-               source.push(createModel(modelType, item));
-            }
-            return new collectionType(source);
-         }
-         
-         for each (item in list)
-         {
-            collection.addItem(createModel(modelType, item));
-         }
-         return collection;
-      }
       
       
       public function BaseModel()

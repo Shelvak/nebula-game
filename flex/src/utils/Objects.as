@@ -499,8 +499,10 @@ package utils
        * @param data <code>Array</code>, <code>Vector</code> or <code>IList</code> that holds generic objects
        *             that need to be created and added to the <code>collectionInstance</code>.
        *             <b>Not null.</b>
+       * 
+       * @return <code>collectionInstance</code>
        */
-      public static function fillCollection(collectionInstance:*, itemType:Class, data:Object) : void {
+      public static function fillCollection(collectionInstance:*, itemType:Class, data:Object) : * {
          paramNotNull("collectionInstance", collectionInstance);
          paramNotNull("itemType", itemType);
          paramNotNull("data", data);
@@ -538,6 +540,7 @@ package utils
                addItem(item);
             }
          }
+         return collectionInstance;
       }
       
       public static function createImpl(type:Class, object:Object, data:Object, itemType:Class = null) : Object {
