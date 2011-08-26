@@ -80,6 +80,7 @@ package controllers.startup
    import utils.SingletonFactory;
    import utils.StringUtil;
    import utils.logging.targets.InMemoryTarget;
+   import utils.remote.ServerProxyInstance;
    
    
    public final class StartupManager
@@ -213,6 +214,11 @@ package controllers.startup
       
       private static function initializeLogging() : void
       {
+         ServerProxyInstance.getInstance().disableLogging([
+            "chat|",
+            GameCommand.CONFIG
+         ]);
+         
          var traceTarget:TraceTarget = new TraceTarget();   
          traceTarget.includeCategory = true;
          traceTarget.includeLevel = true;
