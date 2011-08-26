@@ -4,7 +4,6 @@ package tests.models
    [RunWith("org.flexunit.runners.Suite")]
    public class TS_Models
    {
-      public var tc_BaseModel:TC_BaseModel;
       public var tc_Resource:TC_Resource;
       public var tc_Objectives:TC_Objectives;
       public var tc_SolarSystem_cached:TC_SolarSystem_cached;

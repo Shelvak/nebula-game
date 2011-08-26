@@ -1,8 +1,6 @@
-package tests.models.classes
+package tests.utils.classes
 {
-   import models.BaseModel;
-
-   public class ModelAggregator extends BaseModel
+   public class Aggregator
    {
       [Optional] public var optional:Number = NaN;
       [Required] public var required:Number = NaN;
