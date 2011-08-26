@@ -67,11 +67,11 @@ module Parts::PlanetExploration
 
       kind = tile_kind(exploration_x, exploration_y)
       player ||= self.player
-      raise GameLogicError.new(
-        "Cannot return scientists if player is nil!"
-      ) if player.nil?
-
-      player.scientists += Tile.exploration_scientists(kind)
+      # Sometimes planet can have no player when this method is called 
+      # (e.g. on #finish_exploration!)
+      player.scientists += Tile.exploration_scientists(kind) \
+        unless player.nil?
+      
       self.exploration_x = nil
       self.exploration_y = nil
       self.exploration_ends_at = nil
@@ -79,7 +79,7 @@ module Parts::PlanetExploration
       transaction do
         CallbackManager.unregister(self,
           CallbackManager::EVENT_EXPLORATION_COMPLETE)
-        player.save!
+        player.save! unless player.nil?
         save!
         EventBroker.fire(self, EventBroker::CHANGED,
           EventBroker::REASON_OWNER_PROP_CHANGE)
@@ -102,6 +102,13 @@ module Parts::PlanetExploration
       ]
 
       player = self.player
+      # Stop exploration and don't give any rewards if planet does not
+      # have player anymore.
+      if player.nil?
+        stop_exploration!
+        return false
+      end
+      
       if with_creds
         creds_needed = Cfg.exploration_finish_cost(width, height)
         raise GameLogicError.new(

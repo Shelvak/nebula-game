@@ -18,7 +18,11 @@ module Location
     player_ids = []
     if location_point.type == SS_OBJECT
       planet = location_point.object
-      player_ids.push planet.player_id unless planet.player_id.nil?
+      # Add non NPC players to combat or NPC players if they have combat
+      # buildings.
+      unless planet.player_id.nil? && planet.buildings.combat.size == 0
+        player_ids.push planet.player_id 
+      end
     end
     player_ids | Unit.player_ids_in_location(location_point)
   end

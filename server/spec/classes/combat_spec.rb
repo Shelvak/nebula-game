@@ -26,6 +26,56 @@ describe Combat do
           should == {1 => 'foo', Combat::NPC => 'bar'}
       end
     end
+  
+    describe ".loaded_units" do
+      before(:each) do
+        @transporters = [
+          Factory.create(:u_mule, :stored => Unit::Trooper.volume),
+          Factory.create(:u_mule, :stored => Unit::Trooper.volume)
+        ]
+        @loaded = [
+          Factory.create(:u_trooper, :location => @transporters[0]),
+          Factory.create(:u_trooper, :location => @transporters[1]),
+        ]
+        @location = Factory.create(:planet)
+      end
+      
+      it "should return all units in transporters" do
+        Combat.loaded_units(@location, @transporters, false).should ==
+          @loaded.group_by(&:location_id)
+      end
+      
+      it "should not change unit locations" do
+        loaded_units = Combat.loaded_units(@location, @transporters, false)
+        @loaded.each do |unit|
+          loaded_units[unit.location_id].find do |unit_in_transporter|
+            unit_in_transporter.id == unit.id
+          end.location.should == unit.location
+        end
+      end
+      
+      describe "unload=true" do
+        it "should change combat unit location" do
+          loaded_units = Combat.loaded_units(@location, @transporters, true)
+          @loaded.each do |unit|
+            loaded_units[unit.location_id].find do |unit_in_transporter|
+              unit_in_transporter.id == unit.id
+            end.location.should == @location.location_point
+          end
+        end
+        
+        it "should not change non-combat unit location" do
+          transporter = @transporters[0]
+          transporter.stored += Unit::Mdh.volume
+          mdh = Factory.create!(:u_mdh, :location => transporter)
+          
+          loaded_units = Combat.loaded_units(@location, @transporters, true)
+          loaded_units[mdh.location_id].find do |unit_in_transporter|
+            unit_in_transporter.id == mdh.id
+          end.location.should == mdh.location
+        end
+      end
+    end
   end
   
   describe "combat" do
@@ -264,38 +314,53 @@ describe Combat do
     end.run.should_not be_nil
   end
 
-  it "should include buildings in alive/dead stats" do
-     player = nil
-     dsl = CombatDsl.new do
-       location(:planet) { buildings { thunder } }
-       player = self.player :planet_owner => true
-       player { units { crow } }
-     end
- 
-     assets = dsl.run
-     notification = Notification.find(
-       assets.notification_ids[player.player.id])
-     notification.params['units']['yours']['alive'].should include(
-       "Building::Thunder")
+  it "should run combat if planet is defended only by npc towers" do
+    CombatDsl.new do
+      location(:planet) do
+        buildings do
+          thunder :x => 0
+          vulcan :x => 3
+          screamer :x => 6
+        end
+      end
+      player { units { mule { shocker } } }
+    end.run.should_not be_nil
   end
+  
+  describe "alive/dead stats" do
+    it "should include buildings" do
+       player = nil
+       dsl = CombatDsl.new do
+         location(:planet) { buildings { thunder } }
+         player = self.player :planet_owner => true
+         player { units { crow } }
+       end
 
-  it "should not include other player leveled up units in stats" do
-    player = crow_unit = nil
-    dsl = CombatDsl.new do
-      location(:solar_system)
-      player = self.player { units { crow :hp => 10 } }
-      self.player { units { crow_unit = crow } }
+       assets = dsl.run
+       notification = Notification.find(
+         assets.notification_ids[player.player.id])
+       notification.params['units']['yours']['alive'].should include(
+         "Building::Thunder")
     end
-    
-    crow_unit.xp = crow_unit.xp_needed(2) - 1
-    crow_unit.save!
 
-    assets = dsl.run
-    notification = Notification.find(
-      assets.notification_ids[player.player.id])
-    notification.params['leveled_up'].find do |unit_hash|
-      unit_hash[:type] == "Unit::Crow"
-    end.should be_nil
+    it "should not include other player leveled up units" do
+      player = crow_unit = nil
+      dsl = CombatDsl.new do
+        location(:solar_system)
+        player = self.player { units { crow :hp => 10 } }
+        self.player { units { crow_unit = crow } }
+      end
+
+      crow_unit.xp = crow_unit.xp_needed(2) - 1
+      crow_unit.save!
+
+      assets = dsl.run
+      notification = Notification.find(
+        assets.notification_ids[player.player.id])
+      notification.params['leveled_up'].find do |unit_hash|
+        unit_hash[:type] == "Unit::Crow"
+      end.should be_nil
+    end
   end
 
   it "should win a battle where one player has nothing" do
@@ -344,15 +409,17 @@ describe Combat do
     before(:each) do
       player = nil
       planet = nil
+      mdh = nil
       @dsl = CombatDsl.new do
         planet = location(:planet).location
         player = self.player(:planet_owner => true) do
-          units { mule { trooper; shocker :hp => 1 } }
+          units { mule { trooper; shocker :hp => 1; mdh = self.mdh } }
         end
         player { units { shocker :hp => 1, :count => 2 } }
       end
       @player = player.player
       @planet = planet
+      @mdh = mdh
     end
 
     it "should change teleported unit location" do
@@ -361,6 +428,13 @@ describe Combat do
       unit.location.should == @planet.location_point
     end
 
+    it "should not teleport non combat types" do
+      lambda do
+        @dsl.run
+        @mdh.reload
+      end.should_not change(@mdh, :location)
+    end
+    
     it "should destroy teleported dead units" do
       # Ensure Shocker gets it
       Unit::Trooper.where(:player_id => @player.id).first.destroy
@@ -384,7 +458,7 @@ describe Combat do
       @dsl = CombatDsl.new do
         location_container = location(:solar_system)
         player = self.player do
-          units { mule(:hp => 1) { trooper } }
+          units { mule(:hp => 1) { trooper; mdh } }
         end
         player { units { rhyno } }
       end
@@ -403,6 +477,14 @@ describe Combat do
         assets.notification_ids[@player.id])
       notification.params['units']['yours']['dead'].should include(
         "Unit::Trooper")
+    end
+    
+    it "should include non-combat units in lost unit stats too" do
+      assets = @dsl.run
+      notification = Notification.find(
+        assets.notification_ids[@player.id])
+      notification.params['units']['yours']['dead'].should include(
+        "Unit::Mdh")
     end
   end
 

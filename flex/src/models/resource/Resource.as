@@ -208,6 +208,22 @@ package models.resource
          return tSource + getResourcesForVolume(tVolume, resource);
       }
       
+      public static function getModelCancelRevenueString(model: *, resource: String, progress: Number): String
+      {
+         var revenue: Number = getModelCancelRevenue(model, resource, progress);
+         return revenue == 0? null: revenue.toString();
+      }
+      
+      public static function getModelCancelRevenue(model: *, resource: String, progress: Number): Number
+      {
+         var revenue: Number = MathUtil.round(
+            Upgradable.calculateCost(model is Building
+               ?UpgradableType.BUILDINGS:UpgradableType.UNITS,
+               model.type, resource, {'level': model.upgradePart.level + 1}) 
+            * (1-progress), 2);
+         return revenue;
+      }
+      
       public static function calculateUnitDestructRevenue(units: Array, resource: String): Number
       {
          var revenue: Number = 0;

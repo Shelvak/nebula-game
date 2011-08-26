@@ -450,6 +450,10 @@
       režimą.</p>
     </message.pressOnEmpty>
     <panelTitle.scientists value="Mokslininkai" />
+    <panelTitle.cancelProgress value="Atšaukti statybas" />
+    <label.cancelUpgrade value="Atšaukęs pastato tobulinimą gausi:" />
+    <label.cancelConstructor value="Atšaukęs pastato statybą gausi:" />
+    <label.cancel value="Atšaukti" />
     <message.scientistsNotAvailable>
       <p>Pastatas yra tobulinimas, jame dirbantys mokslininkai yra 
       nepasiekiami.</p>
@@ -459,6 +463,8 @@
       ką stato šis pastatas, bus taip pat sunaikinta.</p>
     </warning.buildingWorking>
     <toolTip.afterUpgrade value="Po patobulinimo" />
+    <warning.deployCancel 
+    value="Atšaukus statybas išskleidžiamas bus prarastas!" /> 
 
     <title.boost value="Padidinti" />
     <title.buildingBonus value="Pastato privalumai" />
@@ -751,7 +757,7 @@
     </EnergyStorage.about>
 
     <Barracks.name ref="Objects/Barracks" />
-    <Barracks.tooltip value="Apmokina kareivius" />
+    <Barracks.tooltip value="Apmoko kareivius" />
     <Barracks.about>
       <p>
         Geriausi vyrai ir moterys yra treniruojami šioje bazėje, kad pavirstų
@@ -1058,6 +1064,11 @@
     <label.whouldFinish value="Patobulinimas baigsis už" />
     <label.vipCreds value="VIP kredų" />
     <label.creds value="kredų" />
+    <!-- {0} amount of free creds -->
+    <label.credsTooltip>
+      <p>Iš kurių {0} yra gauti iš užduočių.</p>
+      <p>Iš užduočių gautų kredų negali naudoti turguje.</p>
+    </label.credsTooltip>
     <label.waitingCreds value="Laukiama kredų..." />
     <label.instant value="Iš karto" />
     <label.confirm value="Patvirtinti" />
@@ -1493,9 +1504,9 @@
     <label.marketOfferBought.message2 value="nusipirko:" />
     <label.marketOfferBought.for value="už" />
     <label.marketOfferBought.amountLeft>
-    <!-- 1: metal, energy or zetium -->
+    <!-- 1: metal, energy, zetium or creds -->
       <p>Tavo pasiūlyme dar liko {0} 
-      {1 metal[metalo] energy[energijos] zetium[zetiumo]}.</p>
+      {1 metal[metalo] energy[energijos] zetium[zetiumo] creds[kredų]}.</p>
     </label.marketOfferBought.amountLeft>
     <label.marketOfferBought.allBought value="Tavo pasiūlymas buvo pilnai nupirktas." />
 
@@ -1599,6 +1610,18 @@
     <label.ok value="Gerai" />
     <label.yes value="Taip" />
     <label.no value="Ne" />
+    
+    <title.cancelUnitTraining value="Atšaukti kario apmokymus" />
+    <message.cancelUnitTraining 
+    value="Ar tikrai nori atšaukti šio kario apmokymus?"/>
+    
+    <title.cancelUpgrade value="Atšaukti tobulinimą" />
+    <message.cancelUpgrade 
+    value="Ar tikrai nori atšaukti šio pastato tobulinimą?"/>
+    
+    <title.cancelConstructor value="Atšaukti statybas" />
+    <message.cancelConstructor 
+    value="Ar tikrai nori atšaukti šio pastato statybas?"/>
     
     <title.cancelOffer value="Atšaukti pasiūlymą" />
     <message.cancelOffer>
@@ -3225,7 +3248,7 @@
     <property.mod.energy.store value="Energijos talpos priedas" />
     <property.mod.armor value="Šarvų priedas" />
     <property.mod.damage value="Žalos priedas" />
-    <property.mod.movement_time_decrease value="Jūdėjimo trukmės sumažinimas" />
+    <property.mod.movementTimeDecrease value="Jūdėjimo trukmės sumažinimas" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
 
     <UnitTech>
@@ -3732,6 +3755,10 @@
     <warning.noFleets>
       <p>Šiuo metu nėra išskrendančių laivynų.</p>
     </warning.noFleets>
+    
+    <btnLabel.cancel value="Atšaukti" />
+    <label.cancelTraining
+    value="Atšaukęs kario apmokymą gautum:" />
 
     <stored.short>
       <p>R: {0}%<br/>K: {1}%</p>

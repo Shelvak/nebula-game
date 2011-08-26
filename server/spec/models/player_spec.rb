@@ -881,6 +881,39 @@ describe Player do
       player.invoked_from_control_manager = true
       player.destroy
     end
+
+    describe "solar systems" do
+      before(:each) do
+        @player = Factory.create(:player)
+        
+        @shielded_ss = Factory.create(:solar_system, 
+          opts_shielded(@player.id))
+        Factory.create(:planet, :solar_system => @shielded_ss, 
+          :player => @player)
+        Factory.create(:planet, :solar_system => @shielded_ss, 
+          :player => @player, :angle => 90)
+        
+        @unshielded_ss = Factory.create(:solar_system)
+        
+        Factory.create(:planet, :solar_system => @unshielded_ss, 
+          :player => @player)
+      end
+      
+      it "should turn shielded solar systems into dead stars" do
+        lambda do
+          @player.destroy
+          @shielded_ss.reload
+        end.should change(@shielded_ss, :kind).
+          from(SolarSystem::KIND_NORMAL).to(SolarSystem::KIND_DEAD)
+      end
+      
+      it "should not turn unshielded solar systems into dead stars" do
+        lambda do
+          @player.destroy
+          @unshielded_ss.reload
+        end.should_not change(@unshielded_ss, :kind)
+      end
+    end
   end
 
   describe "#ensure_free_scientists!" do

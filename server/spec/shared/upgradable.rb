@@ -63,6 +63,7 @@ describe "upgradable", :shared => true do
       @model.upgrade_ends_at = 
         (@model.upgrade_time(@model.level + 1) * (1 - @percentage)).
           from_now
+      @model.save!
     end
     
     it "should fail if not upgrading" do
@@ -86,6 +87,15 @@ describe "upgradable", :shared => true do
     it "should stop upgrading" do
       @model.cancel!
       @model.should_not be_upgrading
+    end
+    
+    it "should remove upgrade finished callback" do
+      @model.save!
+      CallbackManager.register(@model, 
+        CallbackManager::EVENT_UPGRADE_FINISHED,
+        @model.upgrade_ends_at)
+      @model.cancel!
+      @model.should_not have_callback(CallbackManager::EVENT_UPGRADE_FINISHED)
     end
     
     it "should not increase level" do

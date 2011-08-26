@@ -429,7 +429,7 @@ describe Building do
 
   describe ".defensive_types" do
     it "should include shooting units" do
-      shooting = Building.shooting_types
+      shooting = Building.combat_types
       (Building.defensive_types & shooting).size.should == shooting.size
     end
 

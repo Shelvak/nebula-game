@@ -36,6 +36,7 @@
          import models.parts.UpgradableType;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
+         import models.unit.MCUnitsBuild;
          import models.unit.Unit;
          
          import mx.collections.ArrayCollection;
@@ -277,7 +278,6 @@
             scrollTimer.start();
          }
          
-         
          protected function previousQueue_rollOverHandler(event:Event):void
          {
             scrollType = PREVIOUS_QUEUE;
@@ -512,7 +512,7 @@
                <s:Group left="0" right="0" height="100%">
                   <unitsscreen:BuildElement unitModel="{ML.latestPlanet.getUnitById(_facility.constructableId)}" height="100%"
                                             visible="{_facility.constructableType != null}" id="buildElem"
-                                            left="0" top="6"/> 
+                                            left="0" top="6" facilityId="{_facility.id}" /> 
                   <s:Group id="queueGroup" left="{buildElem.visible?buildElem.width:0}" height="100%" right="0">
                      <base:Scroller horizontalScrollPolicy="off" verticalScrollPolicy="off" 
                                     id="queueCont" top="0" bottom="0" left="{previousQueue.visible?24:0}" right="{nextQueue.visible?24:0}">

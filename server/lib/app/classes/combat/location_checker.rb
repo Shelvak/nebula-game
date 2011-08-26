@@ -110,7 +110,7 @@ class Combat::LocationChecker
       if location.is_a?(SsObject::Planet)
         dp_units = Building::DefensivePortal.portal_units_for(location)
         units += dp_units
-        buildings = location.buildings.shooting.active.all
+        buildings = location.buildings.combat.active.all
 
         # Add players that have units from defensive portal.
         players = players | Player.find(dp_units.map(&:player_id))

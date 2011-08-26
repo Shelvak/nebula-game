@@ -13,6 +13,9 @@ module Parts::Shieldable
     receiver.instance_eval do
       belongs_to :shield_owner, :foreign_key => :shield_owner_id,
         :class_name => "Player"
+      # Look to #has_shield? for conditions.
+      scope :shielded, where("shield_owner_id IS NOT NULL AND " +
+          "shield_ends_at IS NOT NULL AND shield_ends_at > NOW()")
     end
   end
 

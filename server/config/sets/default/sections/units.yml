@@ -2,7 +2,7 @@
 # Gun damage can be: piercing, normal, explosive, siege
 # Gun reach can be: ground, space, both
 
-# How much % of resources you gain when you destroy a building?
+# How much % of resources you gain when you destroy a unit?
 self_destruct.resource_gain: 50
 
 ### Transportation ###

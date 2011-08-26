@@ -59,7 +59,7 @@
       </s:Group>
       
       <s:TextArea id="txtContent" height="100%"
-                  fontSize="14"
+                  fontSize="16"
                   borderVisible="false"
                   contentBackgroundAlpha="0"/>
       

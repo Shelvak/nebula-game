@@ -265,7 +265,7 @@
                   <s:HorizontalLayout paddingLeft="6" paddingTop="10"/>
                </s:layout>
             </s:Group>
-            <s:Group>
+            <s:Group toolTip="{Localizer.string('Credits', 'label.credsTooltip', [ML.player.freeCreds])}">
                <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.creds')) + ':'}" 
                         width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
                         color="#eec500"/>
@@ -274,7 +274,8 @@
                   <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
                </s:layout>
             </s:Group>
-            <s:Group visible="{ML.player.vipLevel > 0}">
+            <s:Group visible="{ML.player.vipLevel > 0}"
+                     toolTip="{Localizer.string('Credits', 'label.credsTooltip', [ML.player.freeCreds])}">
                <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.credsSum')) + ':'}" 
                         width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
                         color="#eec500"/>
