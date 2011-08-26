@@ -18,6 +18,7 @@ package utils
        */
       public static function getModelClass(type:String, firstUppercase:Boolean = false) : String
       {
+         Objects.paramNotEquals("type", type, [null, ""]);
          var separatorIdx:int = type.indexOf(MODEL_SUBCLASS_SEPARATOR);
          if (separatorIdx < 0)
          {
@@ -46,6 +47,7 @@ package utils
        */
       public static function getModelSubclass(type:String, failIfMissing:Boolean = true) : String
       {
+         Objects.paramNotEquals("type", type, [null, ""]);
          var separatorIdx:int = type.indexOf(MODEL_SUBCLASS_SEPARATOR);
          if (separatorIdx < 0)
          {
@@ -71,6 +73,8 @@ package utils
                                           modelSubclass:String,
                                           firstUppercase:Boolean = false) : String
       {
+         Objects.paramNotEquals("modelClass", modelClass, [null, ""]);
+         Objects.paramNotEquals("modelSubclass", modelSubclass, [null, ""]);
          return (firstUppercase ? StringUtil.firstToUpperCase(modelClass) :
                                   StringUtil.firstToLowerCase(modelClass)) +
                 MODEL_SUBCLASS_SEPARATOR +
