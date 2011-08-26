@@ -1,8 +1,5 @@
-package tests.utils.tests
+package tests.utils
 {
-   import mx.resources.IResourceBundle;
-   import mx.resources.ResourceBundle;
-   
    import org.hamcrest.assertThat;
    import org.hamcrest.object.equalTo;
    

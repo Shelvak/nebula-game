@@ -1,8 +1,7 @@
-package tests.utils.tests
+package tests.utils
 {
    import ext.hamcrest.object.equals;
    
-   import mx.resources.IResourceBundle;
    import mx.resources.ResourceBundle;
    import mx.resources.ResourceManager;
    

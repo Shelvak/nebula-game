@@ -1,8 +1,5 @@
-package tests.utils.tests
+package tests.utils
 {
-   import flash.events.TimerEvent;
-   import flash.utils.Timer;
-   
    import org.fluint.sequence.SequenceRunner;
    import org.hamcrest.assertThat;
    import org.hamcrest.core.throws;
@@ -12,8 +9,8 @@ package tests.utils.tests
 
    public class TC_SyncUtil
    {
-      include "../../asyncHelpers.as";
-      include "../../asyncSequenceHelpers.as";
+      include "../asyncHelpers.as";
+      include "../asyncSequenceHelpers.as";
       
       
       [Before]

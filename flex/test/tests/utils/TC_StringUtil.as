@@ -1,4 +1,4 @@
-package tests.utils.tests
+package tests.utils
 {
    import org.flexunit.asserts.assertEquals;
    

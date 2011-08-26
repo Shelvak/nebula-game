@@ -1,4 +1,4 @@
-package tests.utils.components.tests
+package tests.utils.components
 {
    import flash.display.DisplayObject;
    import flash.display.MovieClip;
