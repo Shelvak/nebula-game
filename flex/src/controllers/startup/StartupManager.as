@@ -65,6 +65,7 @@ package controllers.startup
    import models.announcement.MAnnouncement;
    import models.chat.MChat;
    
+   import mx.logging.ILogger;
    import mx.logging.Log;
    import mx.logging.LogEventLevel;
    import mx.logging.targets.TraceTarget;
@@ -85,6 +86,10 @@ package controllers.startup
    
    public final class StartupManager
    {
+      private static function get logger() : ILogger {
+         return Log.getLogger("controllers.startup.StartupManager");
+      }
+      
       private static function get ML() : ModelLocator
       {
          return ModelLocator.getInstance();
@@ -198,9 +203,8 @@ package controllers.startup
       /**
        * Resets the application: clears the state and switches login screen.
        */
-      public static function resetApp() : void
-      {
-         _inMemoryLog.clear();
+      public static function resetApp() : void {
+         logger.info("-------------- APPLICATION RESET --------------");
          EventBroker.broadcast(new GlobalEvent(GlobalEvent.APP_RESET));         
          StringUtil.reset();
          ML.reset();
@@ -236,10 +240,9 @@ package controllers.startup
       
       private static var _inMemoryLog:InMemoryTarget;
       /**
-       * An <code>ILoggingTarget</code> that stores log netries in the memory.
+       * An <code>ILoggingTarget</code> that stores log entries in the memory.
        */
-      public static function get inMemoryLog() : InMemoryTarget
-      {
+      public static function get inMemoryLog() : InMemoryTarget {
          return _inMemoryLog;
       }
       
