@@ -6,10 +6,6 @@ package models.notification
    import models.location.ILocationUser;
    import models.notification.events.NotificationEvent;
    
-   import mx.logging.ILogger;
-   import mx.logging.Log;
-   import mx.utils.ObjectUtil;
-   
    
    /**
     * @see models.notification.events.NotificationEvent#READ_CHANGE
@@ -34,11 +30,6 @@ package models.notification
    
    public class Notification extends BaseModel implements ILocationUser
    {
-      private static function get logger() : ILogger {
-         return Log.getLogger("models.notification.Notification");
-      }
-      
-      
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
@@ -50,18 +41,7 @@ package models.notification
       
       [Bindable(event="messageChange")]
       public function get message() : String {
-         try {
-            return customPart.message;
-         }
-         catch (err:Error) {
-            logger.error(
-               "Reading customPart.message caused an error: {0}.\n" +
-               "Notification model:\n{1}",
-               err.message, ObjectUtil.toString(this)
-            );
-            throw err;
-         }
-         return null;   // unreachable
+         return customPart.message;
       }
       
       [Bindable(event="willNotChange")]

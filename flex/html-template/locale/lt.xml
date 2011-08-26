@@ -455,7 +455,7 @@
     <label.cancelConstructor value="Atšaukęs pastato statybą gausi:" />
     <label.cancel value="Atšaukti" />
     <message.scientistsNotAvailable>
-      <p>Pastatas yra tobulinimas, jame dirbantys mokslininkai yra 
+      <p>Pastatas yra tobulinamas, jame dirbantys mokslininkai yra 
       nepasiekiami.</p>
     </message.scientistsNotAvailable>
     <warning.buildingWorking>
@@ -464,7 +464,7 @@
     </warning.buildingWorking>
     <toolTip.afterUpgrade value="Po patobulinimo" />
     <warning.deployCancel 
-    value="Atšaukus statybas išskleidžiamas bus prarastas!" /> 
+    value="Atšaukus statybas išskleidžiamas tankas bus prarastas!" /> 
 
     <title.boost value="Padidinti" />
     <title.buildingBonus value="Pastato privalumai" />
@@ -475,7 +475,7 @@
     <label.cred>
       <p>{0 one[? kredas] 1sts[? kredas] tens[? kredų] many[? kredai]}</p>
     </label.cred>
-    <tileBonuses value="Žemėlapio privalumai" />
+    <tileBonuses value="Žemėlapio ypatybės" />
     <armor.bonus value="Šarvai" />
     <energy.bonus value="Energijos gamyba" />
     <construction.bonus value="Statymo greitis" />
@@ -554,7 +554,7 @@
       <p>
         Neaktyvūs pastatai nevartoja energijos, tačiau ir neatlieka savo 
         funkcijų. Aktyvuok šį pastatą, jog pratęstum jo darbą. Jeigu šis 
-        pastatas šiuo metu yra tobulinimas, jis aktyvuos automatiškai 
+        pastatas šiuo metu yra tobulinamas, jis aktyvuosis automatiškai 
         pasibaigus tobulinimui.
       </p>
     </text.deactivated>
@@ -613,7 +613,7 @@
       <p>
         Pirmtakai buvo nepaprastai išsivysčiusi rasė, tačiau tai netrukdė jiems
         būti ir itin religingais. Jie rinkdavosi šiose šventyklose, jog 
-        melstusi savo technologiniams dievams.</p>
+        melstųsi savo technologiniams dievams.</p>
       <p>Sakoma, jog žemė, ant kurios stovi šie pastatai yra šventa. Nežinia
       ar tai tiesa, tačiau ji yra ypatingai saugoma.</p>
     </NpcTemple.about>
@@ -637,7 +637,7 @@
       <p>Šie vartai buvo naudojami perkelti karius ir netgi kosminius laivus 
       milžiniškais atstumais akimirksniu. Jie galėdavo perskrosti tarpus tarp
       planetų ar netgi saulės sistemų per kelias sekundes.</p>
-      <p>Ir netgi jiems nebefunkcionuojant prie jų vartų stovi didžiulės 
+      <p>Ir netgi jiems nebefunkcionuojant prie vartų stovi didžiulės 
       pajėgos, kurios pasiruošusios ginti šiuos vartus bet kurią akimirką. Jos
       neleis tau užimti šio pastato.</p>
     </NpcJumpgate.about>
@@ -830,7 +830,7 @@
       <p>
         Šie milžiniški kranai ypač praverčia statant naujas kolonijas. Jie 
         ypatingai naudingi tuo, jog gali turėti daug nurodymų savo eilėje.
-        Naudojant keletą šių kranų galima pastatati visą koloniją per keletą
+        Naudojant keletą šių kranų galima pastatyti visą koloniją per keletą
         dienų.
       </p>
     </Crane.about>
@@ -920,7 +920,7 @@
       <p>
         Besisvaidantis karštos plazmos kamuoliais į pačią orbitą, šis bokštelis
         yra visų priešo laivų ir kruizerių siaubas. Palietusi laivo korpusą 
-        plasma tiesiog jį išlydo padarydama milžinišką žalą.
+        plazma tiesiog jį išlydo padarydama milžinišką žalą.
       </p>
       <p>Šaudo tik į kosminius laivus.</p>
     </Thunder.about>
@@ -1475,7 +1475,7 @@
 
     <title.questCompleted value="Užduotis įvykdyta" />
     <message.questCompleted value="Užduotis „{0}“ buvo įvykdyta." />
-    <message.newQuests value="Tu pradejai vykdyti šias užduotis:" />
+    <message.newQuests value="Tu pradėjai vykdyti šias užduotis:" />
 
     <title.kickedFromAlliance value="Buvai pašalintas iš sąjungos" />
     <message.kickedFromAlliance value="Buvai pašalintas iš sąjungos {0}" />
@@ -1930,8 +1930,10 @@
 
     <!-- SELF_DESTRUCT
     0: count of buildings to self destruct -->
-    <objectiveText.SelfDestruct 
-    value="Nugriauk savo pastatą {0 one[] 1sts[? kartą] tens[? kartų] many[? kartus]}"/>
+    <objectiveText.SelfDestruct>
+      <p>Nugriauk {0 one[savo pastatą] 
+      1sts[? savo pastatą] tens[? savo pastatų] many[? savo pastatus]}</p>
+    </objectiveText.SelfDestruct>
 
     <!-- EXPLORE_BLOCK
     0: count of times to explore object, 
@@ -3680,8 +3682,10 @@
     <label.count value="Kiekis:" />
     <label.current value="Dabar" />
     <label.queued value="Eilėje" />
-    <label.dropItems.build value="Nutempk karius čia, kad pradėti statyti!" />
-    <label.dropItems.queue value="Nutempk karius čia, kad padėti į eilę!" />
+    <label.dropItems.build 
+      value="Tempk karius čia!" />
+    <label.dropItems.queue 
+      value="Tempk karius čia!" />
     <label.fullQueue value="Statymo eilė pilna" />
     <label.notEnoughResources value="Nepakanka resursų" />
     <label.notEnoughStorage value="Nepakanka talpyklų" />
