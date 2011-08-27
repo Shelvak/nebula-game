@@ -1,4 +1,4 @@
-package tests._old.models.classes
+package tests.models.classes
 {
    import models.BaseModel;
 

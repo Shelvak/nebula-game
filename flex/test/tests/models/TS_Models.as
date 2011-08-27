@@ -11,5 +11,6 @@ package tests.models
       public var tc_Planet_cached:TC_Planet_cached;
       public var tc_Location:TC_Location;
       public var tc_HealPrice:TC_HealPrice;
+      public var tc_BaseModel:TC_BaseModel;
    }
 }

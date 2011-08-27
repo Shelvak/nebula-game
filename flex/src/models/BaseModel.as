@@ -114,35 +114,23 @@ package models
        * @throws Error if <code>model</code> is of different type than
        * <code>this</code>.
        */
-      public function copyProperties(source:BaseModel, ignoreSkipProperty:Boolean = false, props:Array = null) : void
-      {
-         if (! source)
-         {   
+      public function copyProperties(source:BaseModel, ignoreSkipProperty:Boolean = false, props:Array = null) : void {
+         if (source == null)
             return;
-         }
          if (!(source is CLASS))
-         {
-            throw new Error("'source' is " + source.className + " but " + className + " was expected.");
-         }
+            throw new TypeError("'source' is " + source.className + " but " + className + " was expected.");
          var typeInfo:XML = Objects.describeType(CLASS).factory[0];
          ignoreSkipProperty = ignoreSkipProperty || props && props.length > 0;
          if (!props || props.length == 0)
-         {
             props = Objects.getPublicProperties(CLASS);
-         }
-         for each (var prop:String in props)
-         {
-            if (!(this[prop] == source[prop] || (this[prop] is IEqualsComparable) && IEqualsComparable(this[prop]).equals(source[prop])))
-            {
+         for each (var prop:String in props) {
+            if (!(this[prop] == source[prop] ||
+                 (this[prop] is IEqualsComparable) && IEqualsComparable(this[prop]).equals(source[prop]))) {
                var propInfo:XML = typeInfo.accessor.(@name == prop)[0];
                if (!propInfo)
-               {
                   propInfo = typeInfo.variable.(@name == prop)[0];
-               }
                if (ignoreSkipProperty || !propInfo.metadata.(@name == "SkipProperty")[0])
-               {
                   this[prop] = source[prop];
-               }
             }
          }
          afterCopyProperties(source, props);
