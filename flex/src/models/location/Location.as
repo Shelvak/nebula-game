@@ -360,6 +360,16 @@ package models.location
       }
       
       
+      /* ########################### */
+      /* ### BaseModel OVERRIDES ### */
+      /* ########################### */
+      
+      protected override function afterCreateModel(data:Object) : void {
+         if (isSSObject && player == null)
+            player = PlayerMinimal.NPC_PLAYER;
+      }
+      
+      
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */

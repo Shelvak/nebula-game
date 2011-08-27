@@ -13,7 +13,7 @@ package tests.notifications.tests.parts
    import tests.notifications.Data;
 
    
-   public class TCBuildingsDeactivated
+   public class TC_BuildingsDeactivated
    {
       private var part:BuildingsDeactivated = null;
       
