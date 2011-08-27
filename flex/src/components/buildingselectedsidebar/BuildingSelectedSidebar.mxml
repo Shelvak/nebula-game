@@ -264,11 +264,11 @@
          
          private function refreshCancelProperties(): void
          {
-            if (_selectedModel.upgradePart.upgradeEndsAt == null)
-            {
-               return;
+            if (_selectedModel != null &&
+                _selectedModel.upgradePart != null &&
+                _selectedModel.upgradePart.upgradeEndsAt != null) {
+               builtPart = _selectedModel.upgradePart.upgradeProgress;
             }
-            builtPart = _selectedModel.upgradePart.upgradeProgress;
          }
          
          protected function queueList_dragStartHandler(event:DragEvent):void
