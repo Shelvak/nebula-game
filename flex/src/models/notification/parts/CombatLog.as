@@ -6,7 +6,6 @@ package models.notification.parts
    import models.location.Location;
    import models.notification.INotificationPart;
    import models.notification.Notification;
-   import models.player.PlayerMinimal;
    
    import mx.collections.ArrayCollection;
    
@@ -25,8 +24,6 @@ package models.notification.parts
          {
             var params: Object = notif.params;
             location = Objects.create(Location, params.location);
-            if (location.player == null)
-               location.player = PlayerMinimal.NPC_PLAYER;
             logId = params.logId;
             outcome = params.outcome;
             units = params.units;

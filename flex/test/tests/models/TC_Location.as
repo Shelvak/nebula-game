@@ -17,6 +17,7 @@ package tests.models
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.planet.Planet;
+   import models.player.PlayerMinimal;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSKind;
    import models.solarsystem.SolarSystem;
@@ -30,7 +31,11 @@ package tests.models
    import org.hamcrest.object.isTrue;
    import org.hamcrest.object.notNullValue;
    import org.hamcrest.object.nullValue;
+   import org.hamcrest.object.sameInstance;
    
+   import testsutils.LocalizerUtil;
+   
+   import utils.Objects;
    import utils.SingletonFactory;
 
    public class TC_Location
@@ -57,8 +62,9 @@ package tests.models
       
       
       [Before]
-      public function setUp() : void
-      {
+      public function setUp() : void {
+         LocalizerUtil.setUp();
+         LocalizerUtil.addBundle("Players", {"npc": "NPC"});
          ML = ModelLocator.getInstance();
          ML.player.reset();
          ML.player.galaxyId = 1;
@@ -83,8 +89,8 @@ package tests.models
       
       
       [After]
-      public function tearDown() : void
-      {
+      public function tearDown() : void {
+         LocalizerUtil.tearDown();
          SingletonFactory.clearAllSingletonInstances();
          ML.reset();
          ML = null;
@@ -400,6 +406,16 @@ package tests.models
          
          Location.updateName(loc, 1, "name");
          assertThat( "name should have been changed", loc.name, equals ("name") );
+      }
+      
+      [Test]
+      public function autoCreation() : void {
+         loc = Objects.create(Location, {"type": LocationType.SS_OBJECT, "player": {"id": 1, "name": "mikism"}});
+         assertThat( "not NPC player: id", loc.player.id, equals (1) );
+         assertThat( "not NPC player: name", loc.player.name, equals ("mikism") );
+         
+         loc = Objects.create(Location, {"type": LocationType.SS_OBJECT});
+         assertThat( "NPC player", loc.player, sameInstance(PlayerMinimal.NPC_PLAYER) );
       }
    }
 }

@@ -5,14 +5,15 @@ package tests.notifications.tests.parts
    
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.hasItems;
-   import org.hamcrest.object.equalTo;
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.notNullValue;
    
    import tests.notifications.Data;
+   
+   import testsutils.LocalizerUtil;
 
    
-   public class TCNotEnoughResources
+   public class TC_NotEnoughResources
    {
       private var part:NotEnoughResources = null;
       
@@ -20,6 +21,9 @@ package tests.notifications.tests.parts
       [Test(description="Test if constructor sets properties")]
       public function testConstructor() : void
       {
+         LocalizerUtil.setUp();
+         LocalizerUtil.addBundle("Players", {"npc": "NPC"});
+         
          var notif:Notification = new Notification();
          notif.params = Data.partNotEnoughResources;
          part = new NotEnoughResources(notif);
@@ -36,6 +40,8 @@ package tests.notifications.tests.parts
             "name": "G12-SS16-P2",
             "solarSystemId": 16
          }));
+         
+         LocalizerUtil.tearDown();
       }
    }
 }
