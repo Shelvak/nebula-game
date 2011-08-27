@@ -13,12 +13,9 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
-         import controllers.planets.actions.EditActionParams;
-         
          import components.credits.AccelerateSelector;
          import components.credits.ConfirmCredsLabel;
          import components.popups.ActionConfirmationPopup;
-         import components.popups.ErrorPopup;
          import components.popups.WaitingCredsPopup;
          import components.skins.ButtonSkin;
          import components.skins.CreditButtonSkin;
@@ -32,6 +29,7 @@
          import controllers.constructionqueues.ConstructionQueuesCommand;
          import controllers.objects.ObjectClass;
          import controllers.planets.PlanetsCommand;
+         import controllers.planets.actions.EditActionParams;
          import controllers.screens.SidebarScreensSwitch;
          import controllers.ui.NavigationController;
          
@@ -50,7 +48,6 @@
          import models.constructionqueueentry.ConstructionQueueEntry;
          import models.parts.Upgradable;
          import models.parts.events.UpgradeEvent;
-         import models.planet.MBoost;
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.resource.ResourcesAmount;
