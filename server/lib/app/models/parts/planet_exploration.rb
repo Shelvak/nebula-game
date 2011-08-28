@@ -153,8 +153,11 @@ module Parts::PlanetExploration
   
     # Removes explorable foliage tile from planet map.
     def remove_foliage!(x, y)
-      raise GameLogicError.new("Cannot remove folliage while exploring!") \
+      raise GameLogicError.new("Cannot remove foliage while exploring!") \
         if exploring?
+      raise GameLogicError.
+        new("Cannot remove foliage from battleground planet!") \
+        if solar_system.battleground?
       
       tile = Tile.where(:planet_id => id, :x => x, :y => y).first
       raise GameLogicError.new("There is no tile @ #{x},#{y}!") if tile.nil?

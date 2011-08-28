@@ -1055,6 +1055,16 @@ describe SsObject::Planet do
         @planet.remove_foliage!(@x, @y)
       end.should raise_error(GameLogicError)
     end
+
+    it "should fail if planet is in battleground solar system" do
+      ss = @planet.solar_system
+      ss.kind = SolarSystem::KIND_BATTLEGROUND
+      ss.save!
+
+      lambda do
+        @planet.remove_foliage!(@x, @y)
+      end.should raise_error(GameLogicError)
+    end
     
     it "should fail if given wrong coordinates" do
       lambda do
