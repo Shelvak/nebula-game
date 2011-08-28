@@ -27,6 +27,7 @@ package tests.utils
    
    import tests.utils.classes.Aggregator;
    import tests.utils.classes.NestedModel;
+   import tests.utils.classes.PropsMapTarget;
    import tests.utils.classes.RequiredSelf;
    
    import utils.Objects;
@@ -418,6 +419,66 @@ package tests.utils
          removePointProcessor();
       }
       
+      [Test]
+      public function create_propsMapErrors() : void {
+         assertThat(
+            "[PropsMap] on collections not supported",
+            $_creating(PropsMapOnCollection, {"items": []}), throws (Error)
+         );
+         assertThat(
+            "[PropsMap] on primitives not supported",
+            $_creating(PropsMapOnPrimitive, {"size": 5}), throws (Error)
+         );
+         assertThat(
+            "[PropsMap] can't have duplicate keys (source props)",
+            $_creating(PropsMapDuplicateKeys, {"target": {"one": 1, "two": 2}}), throws (Error)
+         );
+         assertThat(
+            "[PropsMap] can't have dublicate values (destination props)",
+            $_creating(PropsMapDuplicateValues, {"target": {"one": 1, "two": 2}}), throws (Error)
+         );
+         assertThat(
+            "[PropsMap] can't have keys mapping to empty strings",
+            $_creating(PropsMapEmptyValue, {"target": {"one": 1, "two": 2}}), throws (Error)
+         );
+      }
+      
+      [Test]
+      public function create_propsMap() : void {
+         var target:Object;
+         var targetData:Object = {"one": 1, "two": 2, "four":4};
+         function createPropsMap(type:Class, data:Object) : void {
+            target = create(type, data)["target"];
+         }
+         function assertMappingIsCorrect(msgPrefix:String) : void {
+            msgPrefix += ": ";
+            assertThat( msgPrefix + "one => two",   target["two"],   equals (1) );
+            assertThat( msgPrefix + "two => three", target["three"], equals (2) );
+            assertThat( msgPrefix + "four = four",  target["four"],  equals (4) );
+         }
+         
+         createPropsMap(PropsMapOnly, {"target": targetData});
+         assertMappingIsCorrect("[Required]");
+         
+         createPropsMap(PropsMapWithAlias, {"prop": targetData});
+         assertMappingIsCorrect("[Required(alias='prop')]");
+         
+         createPropsMap(PropsMapWithAggregatesProps, targetData);
+         assertMappingIsCorrect("[Required(aggregatesProps='one, two, four')]");
+         
+         createPropsMap(PropsMapWithAggregatesPrefix, {"prefOne": 1, "prefTwo": 2, "prefFour":4});
+         assertMappingIsCorrect("[Required(aggregatesPrefix='pref')]");
+         
+         createPropsMap(PropsMapOnObject, {"target": targetData});
+         assertMappingIsCorrect("[Required] (Object)");
+         
+         addPointProcessor();
+         var pointHost:PropsMapOnPoint = create(PropsMapOnPoint, {"point": {"pX": 1, "pY": 2}});
+         assertThat( "type processor (Point): pX => x", pointHost.point.x, equals (1) );
+         assertThat( "type processor (Point): pY => y", pointHost.point.y, equals (2) );
+         removePointProcessor();
+      }
+      
       
       /* ######################## */
       /* ### fillCollection() ### */
@@ -580,6 +641,7 @@ import models.BaseModel;
 import mx.collections.ArrayCollection;
 
 import tests.utils.classes.Aggregator;
+import tests.utils.classes.PropsMapTarget;
 
 class InvalidMetadata
 {
@@ -772,4 +834,81 @@ class PublicConstants
 class ConstantCollection
 {
    [Required(elementType="Number")] public const numbers:ArrayCollection = new ArrayCollection();
+}
+
+class PropsMapOnly
+{
+   [Required]
+   [PropsMap(one="two", two="three")]
+   public var target:PropsMapTarget;
+}
+
+class PropsMapWithAlias
+{
+   [Required(alias="prop")]
+   [PropsMap(one="two", two="three")]
+   public var target:PropsMapTarget;
+}
+
+class PropsMapWithAggregatesProps
+{
+   [Required(aggregatesProps="one, two, four")]
+   [PropsMap(one="two", two="three")]
+   public var target:PropsMapTarget;
+}
+
+class PropsMapWithAggregatesPrefix
+{
+   [Required(aggregatesPrefix="pref")]
+   [PropsMap(one="two", two="three")]
+   public var target:PropsMapTarget;
+}
+
+class PropsMapOnObject
+{
+   [Required]
+   [PropsMap(one="two", two="three")]
+   public var target:Object;
+}
+
+class PropsMapOnPoint
+{
+   [Required]
+   [PropsMap(pX="x", pY="y")]
+   public var point:Point;
+}
+
+class PropsMapOnCollection
+{
+   [Required(elementType="int")]
+   [PropsMap]
+   public var items:ArrayCollection;
+}
+
+class PropsMapOnPrimitive
+{
+   [Required]
+   [PropsMap]
+   public var size:int;
+}
+
+class PropsMapDuplicateKeys
+{
+   [Required]
+   [PropsMap(one="two", one="three")]
+   public var target:Object;
+}
+
+class PropsMapDuplicateValues
+{
+   [Required]
+   [PropsMap(one="three", two="three")]
+   public var target:Object;
+}
+
+class PropsMapEmptyValue
+{
+   [Required]
+   [PropsMap(one="three", two="")]
+   public var target:Object;
 }

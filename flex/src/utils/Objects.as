@@ -626,6 +626,7 @@ package utils
                var propClass:Class = getDefinitionByName(propClassName) as Class;
                var metaRequired:XML = propMetadata.(@name == "Required")[0];
                var metaOptional:XML = propMetadata.(@name == "Optional")[0];
+               var metaPropsMap:XML = propMetadata.(@name == "PropsMap")[0];
                var metaActual:XML   = metaRequired != null ? metaRequired : metaOptional;
                if (metaActual != null) {
                   var propAlias:String = metaActual.arg.(@key == "alias").@value[0];
@@ -676,6 +677,9 @@ package utils
                   if (object[propName] != value)
                      object[propName] = value;
                }
+               function pushMappingError(err:MappingError) : void {
+                  pushError("Error while performing mappings of prop '{0}': {1}", propName, err.message);
+               }
                
                // aggregator comes first
                if (aggregatesProps != null || aggregatesPrefix != null) {
@@ -711,8 +715,14 @@ package utils
                         pushError(errorMsg);
                      }
                   }
-                  else
-                     setProp(createImpl(propClass, propValue, aggrData));
+                  else {
+                     try {
+                        setProp(createImpl(propClass, propValue, performMapping(aggrData, metaPropsMap)));
+                     }
+                     catch (err:MappingError) {
+                        pushMappingError(err);
+                     }
+                  }
                   
                   continue;
                }
@@ -726,9 +736,9 @@ package utils
                if (propData == null)
                   continue;
                
-               // error when property is a primitive but the value in data object is generic object or 
-               // an instance of some non-primitive class
                if (TypeChecker.isPrimitiveClass(propClass)) {
+                  // error when property is a primitive but the value in data object is generic object or 
+                  // an instance of some non-primitive class
                   if (!TypeChecker.isOfPrimitiveType(propData)) {
                      pushError(
                         "Property '{0}' is of primitive type {1}, but the value '{2}' in the data object " +
@@ -736,12 +746,22 @@ package utils
                      );
                      continue;
                   }
+                  // [PropsMap] not supported on primitives
+                  if (metaPropsMap != null) {
+                     pushError("[PropsMap] not allowed on a property '{0}' of primitive type", propName);
+                     continue;
+                  }
                }
                
                if (getTypeProcessor(propClass) != null ||
                    TypeChecker.isPrimitiveClass(propClass) ||
                    propClass == Object) {
-                  setProp(createImpl(propClass, propValue, propData));
+                  try {
+                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap)));
+                  }
+                  catch (err:MappingError) {
+                     pushMappingError(err);
+                  }
                   continue;
                }
                
@@ -753,6 +773,7 @@ package utils
                var propIsArray:Boolean = propValue is Array;
                var propIsList:Boolean = propValue is IList;
                if (propIsArray || propIsList || propIsVector) {
+                  
                   // elementType attribute is mandatory element for Array and IList properties
                   var itemTypeName:String = metaActual.arg.(@key == "elementType").@value[0];
                   if (!propIsVector && itemTypeName == null) {
@@ -762,6 +783,12 @@ package utils
                      );
                      continue;
                   }
+                  // [PropsMap] on collections not supported
+                  if (metaPropsMap != null) {
+                     pushError("[PropsMap] not allowed on a property '{0}' of collection type", propName);
+                     continue;
+                  }
+                  
                   if (propIsVector) {
                      itemTypeName = propClassName.substring(
                         propClassName.indexOf("Vector.<") + 8,
@@ -772,8 +799,14 @@ package utils
                }
                   
                // other objects
-               else
-                  setProp(createImpl(propClass, propValue, propData));
+               else {
+                  try {
+                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap)));
+                  }
+                  catch (err:MappingError) {
+                     pushMappingError(err);
+                  }
+               }
             }
          }
          
@@ -788,6 +821,68 @@ package utils
          return object;
       }
       
+      /**
+       * @throws MappingError 
+       */
+      private static function performMapping(sourceData:Object, metaPropsMap:XML) : Object {
+         if (metaPropsMap == null)
+            return sourceData;
+         
+         var errors:Array = new Array();
+         function pushError(message:String, ... parameters) : void {
+            errors.push(StringUtil.substitute(message, parameters));
+         }
+         
+         var propDataMapped:Object = new Object();
+         // Maybe cache these maps?
+         // But I don't expect this feature used heavily so maybe not worth the trouble?
+         var sdMap:Object = new Object();
+         var dsMap:Object = new Object();
+         for each (var sdPair:XML in metaPropsMap.arg) {
+            var sourceProp:String = sdPair.@key[0];
+            var destProp:String = sdPair.@value[0];
+            if (destProp.length == 0) {
+               pushError(
+                  "invalid destination (value) prop '{0}' for source (key) prop {'1'}",
+                  destProp, sourceProp
+               );
+               continue;
+            }
+            if (sdMap[sourceProp] !== undefined)
+               pushError(
+                  "source (key) prop '{0}' duplication (destination (value) prop '{1}')",
+                  sourceProp, destProp
+               );
+            else
+               sdMap[sourceProp] = destProp;
+            if (dsMap[destProp] !== undefined)
+               pushError(
+                  "destination (value) prop '{0}' duplication (source (key) prop '{1}')",
+                  destProp, sourceProp
+               );
+            else
+               dsMap[destProp] = sourceProp;
+         }
+         
+         if (errors.length > 0) {
+            var ident1:String = "\n   ";
+            var ident2:String = "\n      ";
+            throw new MappingError(
+               "MappingError:" + ident1 + "Mapping metadata: " + metaPropsMap.toXMLString() + ident1 +
+               "Errors:" + ident2 + errors.join(ident2)
+            );
+         }
+         
+         for (sourceProp in sourceData) {
+            destProp = sdMap[sourceProp];
+            if (destProp == null)
+               destProp = sourceProp;
+            propDataMapped[destProp] = sourceData[sourceProp];
+         }
+         
+         return propDataMapped;
+      }
+      
       private static function callAfterCreate(target:Object, data:Object) : void {
          paramNotNull("target", target);
          paramNotNull("data", data);
@@ -800,5 +895,13 @@ package utils
          // from the static class ends up with this error
          catch (err:ReferenceError) {}
       }
+   }
+}
+
+
+class MappingError extends Error
+{
+   public function MappingError(message:String) {
+      super(message);
    }
 }
