@@ -3730,6 +3730,7 @@
     <label.count value="Count:" />
     <label.current value="Current" />
     <label.queued value="Queued" />
+    <!-- These two have to be short, because they are in large font. -->
     <label.dropItems.build value="Drop items here to build!" />
     <label.dropItems.queue value="Drop items here to queue!" />
     <label.fullQueue value="Construction queue is full" />

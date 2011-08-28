@@ -3682,10 +3682,9 @@
     <label.count value="Kiekis:" />
     <label.current value="Dabar" />
     <label.queued value="Eilėje" />
-    <label.dropItems.build 
-      value="Tempk karius čia!" />
-    <label.dropItems.queue 
-      value="Tempk karius čia!" />
+    <!-- These two have to be short, because they are in large font. -->
+    <label.dropItems.build value="Tempk karius čia!" />
+    <label.dropItems.queue ref="label.dropItems.build" />
     <label.fullQueue value="Statymo eilė pilna" />
     <label.notEnoughResources value="Nepakanka resursų" />
     <label.notEnoughStorage value="Nepakanka talpyklų" />
