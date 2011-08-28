@@ -140,6 +140,7 @@ package controllers.units
             }
          );
          for each (var squad:MSquadron in toRemove) {
+            // TODO: NO NO NO! just remove squad and route (call cleanup() on those two also) but don't use destroySquadrons()!
             destroySquadron(squad.id);
          }
       }

@@ -16,6 +16,7 @@ package models.notification.parts
          super();
          if (notif != null)
          {
+            // TODO: should be  Objects.create(MAllianceMinimal, notif.params.alliance);
             alliance = Objects.create(MAllianceMinimal, notif.params);
          }
       }
