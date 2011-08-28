@@ -15,10 +15,7 @@ package models.notification.parts
       {
          super();
          if (notif != null)
-         {
-            // TODO: should be  Objects.create(MAllianceMinimal, notif.params.alliance);
-            alliance = Objects.create(MAllianceMinimal, notif.params);
-         }
+            alliance = Objects.create(MAllianceMinimal, notif.params["alliance"]);
       }
       
       public var alliance: MAllianceMinimal;
@@ -30,8 +27,7 @@ package models.notification.parts
       
       public function get message() : String
       {
-         return Localizer.string("Notifications", "message.kickedFromAlliance",
-         [alliance.name]);
+         return Localizer.string("Notifications", "message.kickedFromAlliance", [alliance.name]);
       }
       
       /**
