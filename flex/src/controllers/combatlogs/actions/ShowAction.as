@@ -11,8 +11,8 @@ package controllers.combatlogs.actions
    import controllers.GlobalFlags;
    import controllers.battle.BattleController;
    import controllers.connection.ConnectionManager;
+   import controllers.navigation.MCTopLevel;
    import controllers.screens.Screens;
-   import controllers.screens.ScreensSwitch;
    import controllers.startup.StartupInfo;
    
    import utils.PropertiesTransformer;
@@ -37,7 +37,7 @@ package controllers.combatlogs.actions
       {
          EventBroker.clearAllSubscriptions();
          ConnectionManager.getInstance().disconnect();
-         ScreensSwitch.getInstance().showScreen(Screens.BATTLE);
+         MCTopLevel.getInstance().showScreen(Screens.BATTLE);
          var log:Object = PropertiesTransformer.objectToCamelCase(JSON.decode(cmd.parameters.log));
          Config.setConfig(log.config);
          BattleController.showBattle(STARTUP_INFO.logId, log);

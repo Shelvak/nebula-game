@@ -5,7 +5,8 @@
                     xmlns:base="components.base.*"
                     xmlns:technology="components.technologytree.*"
                     creationComplete="techSidebar_creationCompleteHandler(event)" 
-                    xmlns:components="utils.components.*">
+                    xmlns:components="utils.components.*"
+                    width="100%" height="100%">
    
    
    <fx:Script>
@@ -21,47 +22,43 @@
          import config.Config;
          
          import controllers.GlobalFlags;
+         import controllers.navigation.MCMainArea;
+         import controllers.navigation.MCSidebar;
          import controllers.objects.ObjectClass;
          import controllers.screens.MainAreaScreens;
-         import controllers.screens.MainAreaScreensSwitch;
          import controllers.screens.SidebarScreens;
-         import controllers.screens.SidebarScreensSwitch;
          import controllers.technologies.TechnologiesCommand;
          import controllers.ui.NavigationController;
          
-         import globalevents.GCreditEvent;
          import globalevents.GResourcesEvent;
          import globalevents.GTechnologiesEvent;
          
          import models.factories.BuildingFactory;
-         import models.factories.UnitFactory;
          import models.parts.Upgradable;
-         import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.resource.ResourcesAmount;
          import models.solarsystem.MSSObject;
+         import models.technology.MCTechnologySelectedSidebar;
          import models.technology.Technology;
          import models.technology.events.TechnologyEvent;
+         import models.technology.events.TechnologySidebarEvent;
          import models.unit.Unit;
          
-         import mx.controls.Alert;
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
          import utils.ModelUtil;
-         import utils.ObjectStringsResolver;
-         import utils.StringUtil;
          import utils.assets.AssetNames;
          import utils.locale.Localizer;
          
          [Bindable]
          private var _selectedModel: Technology;
          
-         public function set selectedModel(value: Technology): void
+         private function refreshSelected(e: TechnologySidebarEvent = null): void
          {
-            if (_selectedModel != value)
+            if (_selectedModel != tScreen.selectedTechnology)
             {
                if (_selectedModel != null)
                {
@@ -78,7 +75,7 @@
                      model_upgradeProgressHandler
                   );
                }
-               _selectedModel = value;
+               _selectedModel = tScreen.selectedTechnology;
                if (_selectedModel != null)
                {
                   _selectedModel.upgradePart.addEventListener(UpgradeEvent.LEVEL_CHANGE,
@@ -96,8 +93,11 @@
                   
                }
             }
-            refreshPriceOrientatedProperties();
-            pauseButton.selected = _selectedModel.pauseRemainder != 0;
+            if (_selectedModel)
+            {
+               refreshPriceOrientatedProperties();
+               pauseButton.selected = _selectedModel.pauseRemainder != 0;
+            }
          }
          
          [Bindable]
@@ -162,18 +162,21 @@
          
          protected function recalculateCosts(): void
          {
-            var upgradable:Upgradable = _selectedModel.upgradePart;
-            var speedBoostCost:Number = speedUpBoost.selected  ?Config.getTechnologiesSpeedUpCost() : 1;
-            var resources:ResourcesAmount = upgradable.resourcesNeededForNextLevel();
-            metalCost  = resources.metal  * speedBoostCost;
-            energyCost = resources.energy * speedBoostCost;
-            zetiumCost = resources.zetium * speedBoostCost;
-            var timeSeconds:int = _selectedModel.upgradePart.calcUpgradeTime(
-               {'level': _selectedModel.upgradePart.level + 1,
-                  'scientists': scientistsSelector.value,
-                  'speedUp': speedUpBoost.selected});
-            timeSeconds = timeSeconds > 1 ? timeSeconds : 1;
-            timeCost = getStringFromSeconds(timeSeconds);
+            if (_selectedModel)
+            {
+               var upgradable:Upgradable = _selectedModel.upgradePart;
+               var speedBoostCost:Number = speedUpBoost.selected  ?Config.getTechnologiesSpeedUpCost() : 1;
+               var resources:ResourcesAmount = upgradable.resourcesNeededForNextLevel();
+               metalCost  = resources.metal  * speedBoostCost;
+               energyCost = resources.energy * speedBoostCost;
+               zetiumCost = resources.zetium * speedBoostCost;
+               var timeSeconds:int = _selectedModel.upgradePart.calcUpgradeTime(
+                  {'level': _selectedModel.upgradePart.level + 1,
+                     'scientists': scientistsSelector.value,
+                     'speedUp': speedUpBoost.selected});
+               timeSeconds = timeSeconds > 1 ? timeSeconds : 1;
+               timeCost = getStringFromSeconds(timeSeconds);
+            }
          }
          
          private function refreshPriceOrientatedProperties(e: Event = null): void
@@ -217,14 +220,14 @@
                      speed_up: speedUpBoost.selected}
                ).dispatch ();
             }
-         }
-         
+         } 
          
          protected function deselect_clickHandler(event:MouseEvent):void
          {
-            if (MainAreaScreensSwitch.getInstance().currentScreenName == MainAreaScreens.INFO)
-               MainAreaScreensSwitch.getInstance().showPrevious();
-            SidebarScreensSwitch.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_BASE);
+            var MA: MCMainArea = MCMainArea.getInstance();
+            if (MA.currentName == MainAreaScreens.INFO)
+               MA.showPrevious();
+            MCSidebar.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_BASE);
          }
          
          
@@ -309,11 +312,15 @@
             }
          }
          
+         private var tScreen: MCTechnologySelectedSidebar =
+            MCTechnologySelectedSidebar.getInstance();
          
          protected function techSidebar_creationCompleteHandler(event:FlexEvent):void
          {
+            tScreen.addEventListener(TechnologySidebarEvent.SELECTED_CHANGE, refreshSelected);
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
             refreshPriceOrientatedProperties();
+            refreshSelected();
          }
          
          

@@ -28,9 +28,9 @@
          import controllers.Messenger;
          import controllers.buildings.BuildingsCommand;
          import controllers.constructionqueues.ConstructionQueuesCommand;
+         import controllers.navigation.MCSidebar;
          import controllers.objects.ObjectClass;
          import controllers.planets.PlanetsCommand;
-         import controllers.screens.SidebarScreensSwitch;
          import controllers.ui.NavigationController;
          
          import flashx.textLayout.elements.TextFlow;
@@ -44,7 +44,9 @@
          import models.Owner;
          import models.building.Building;
          import models.building.BuildingType;
+         import models.building.MCBuildingSelectedSidebar;
          import models.building.events.BuildingEvent;
+         import models.building.events.BuildingSidebarEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
          import models.parts.Upgradable;
          import models.parts.events.UpgradeEvent;
@@ -94,11 +96,6 @@
          [Bindable]
          private var upgradePending: Boolean = false;
          
-         public function get selectedModel(): Building
-         {
-            return _selectedModel;
-         }
-         
          /**
           * how many seconds are left to fulfill resources needs for building
           **/
@@ -125,11 +122,16 @@
             resLeftString = getStringFromSeconds(resLeft);
          }
          
+         private var bSidebar: MCBuildingSelectedSidebar = 
+            MCBuildingSelectedSidebar.getInstance();
+         
          protected function creationHandler(e: Event): void
          {
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPriceOrientatedProperties);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshConstructor);
+            bSidebar.addEventListener(BuildingSidebarEvent.SELECTED_CHANGE, refreshBuilding);
             EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
+            refreshBuilding();
          }
          
          [Bindable]
@@ -173,11 +175,11 @@
             }
          }
          
-         public function set selectedModel(value: Building): void
+         private function refreshBuilding(e: BuildingSidebarEvent = null): void
          {
             constructable = null;
             resource = null;
-            if (_selectedModel != value)
+            if (_selectedModel != bSidebar.selectedBuilding)
             {
                if (_selectedModel != null)
                {
@@ -203,7 +205,7 @@
                      }
                   }
                }
-               _selectedModel = value;
+               _selectedModel = bSidebar.selectedBuilding;
                if (_selectedModel != null)
                {
                   _selectedModel.addEventListener(
@@ -245,7 +247,7 @@
             }
             refreshPriceOrientatedProperties();
             refreshConstructor();
-            if (_selectedModel.isGhost)
+            if (_selectedModel != null && _selectedModel.isGhost)
             {
                constructor.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
             }
@@ -604,7 +606,7 @@
          {
             if (ML.player.creds >= Config.getMoveCredits())
             {
-               SidebarScreensSwitch.getInstance().showPrevious();
+               MCSidebar.getInstance().showPrevious();
                new GBuildingEvent(GBuildingEvent.MOVE_INIT, _selectedModel);
             }
             else

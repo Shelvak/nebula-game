@@ -16,12 +16,15 @@ bars and so on.
                     xmlns:cchat="components.chat.*"
                     width="100%"
                     height="100%"
-                    mouseEnabled="false">
+                    mouseEnabled="false"
+                    creationComplete="MA.mainContainerCreationHandler(event)">
    
    <fx:Script>
       <![CDATA[
          import config.Config;
          
+         import controllers.navigation.MCMainArea;
+         import controllers.navigation.Navigation;
          import controllers.ui.NavigationController;
          
          import models.Owner;
@@ -30,6 +33,8 @@ bars and so on.
          import utils.DateUtil;
          import utils.assets.AssetNames;
          import utils.locale.Localizer;
+         
+         private var MA: MCMainArea = MCMainArea.getInstance();
          
          
          private function getPlanetCooldownLabel(seconds:int) : String

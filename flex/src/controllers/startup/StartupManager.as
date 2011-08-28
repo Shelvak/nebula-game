@@ -45,7 +45,6 @@ package controllers.startup
    import controllers.routes.RoutesCommand;
    import controllers.routes.actions.*;
    import controllers.screens.Screens;
-   import controllers.screens.ScreensSwitch;
    import controllers.solarsystems.SolarSystemsCommand;
    import controllers.solarsystems.actions.*;
    import controllers.technologies.TechnologiesCommand;
@@ -202,7 +201,7 @@ package controllers.startup
          ML.reset();
          MChat.getInstance().reset();
          AllianceScreenM.getInstance().reset();
-         ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
+         //ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
          GlobalFlags.getInstance().lockApplication = false;
       }
       

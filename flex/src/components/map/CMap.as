@@ -5,6 +5,9 @@ package components.map
    import components.base.CustomCursorContainer;
    import components.base.viewport.ViewportZoomable;
    
+   import controllers.navigation.MCMainArea;
+   import controllers.navigation.Navigation;
+   
    import flash.display.BitmapData;
    import flash.display.DisplayObject;
    import flash.errors.IllegalOperationError;
@@ -18,6 +21,7 @@ package components.map
    import interfaces.ICleanable;
    
    import models.BaseModel;
+   import models.events.ScreensSwitchEvent;
    import models.location.LocationMinimal;
    import models.map.MMap;
    import models.map.events.MMapEvent;
@@ -321,11 +325,12 @@ package components.map
       /* ### EVENT HANDLERS ### */
       /* ###################### */
       
+      private var MA: MCMainArea = MCMainArea.getInstance();
       
       protected function addGlobalEventHandlers() : void
       {
          EventBroker.subscribe(GMapEvent.SELECT_OBJECT, global_selectMapObjectHandler);
-         EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGING, global_mainAreaChangingHandler);
+         MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGING, mainAreaChangingHandler);
          EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
       
@@ -333,7 +338,7 @@ package components.map
       protected function removeGlobalEventHandlers() : void
       {
          EventBroker.unsubscribe(GMapEvent.SELECT_OBJECT, global_selectMapObjectHandler);
-         EventBroker.unsubscribe(GScreenChangeEvent.MAIN_AREA_CHANGING, global_mainAreaChangingHandler);
+         MA.removeEventListener(ScreensSwitchEvent.SCREEN_CHANGING, mainAreaChangingHandler);
          EventBroker.unsubscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
       
@@ -344,7 +349,7 @@ package components.map
       }
       
       
-      private function global_mainAreaChangingHandler(event:GScreenChangeEvent) : void
+      private function mainAreaChangingHandler(event: ScreensSwitchEvent) : void
       {
          reset();
       }

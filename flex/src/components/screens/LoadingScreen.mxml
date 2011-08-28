@@ -17,8 +17,8 @@
    <fx:Script>
       <![CDATA[
          import controllers.DisplayManager;
+         import controllers.navigation.MCTopLevel;
          import controllers.screens.Screens;
-         import controllers.screens.ScreensSwitch;
          import controllers.startup.StartupInfo;
          import controllers.startup.StartupManager;
          
@@ -158,7 +158,7 @@
             IMG.removeEventListener(ProgressEvent.PROGRESS, imageLoaded);
             IMG.removeEventListener(ImagePreloaderEvent.UNPACK_PROGRESS, IMG_unpackProgressHandler);
             IMG.removeEventListener(Event.COMPLETE, imagesLoadComplete);
-            ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
+            MCTopLevel.getInstance().showScreen(Screens.LOGIN);
             StartupManager.initializeApp();
          }
          

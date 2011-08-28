@@ -1,8 +1,9 @@
 package models.healing
 {
    import controllers.Messenger;
+   import controllers.navigation.MCMainArea;
+   import controllers.navigation.Navigation;
    import controllers.screens.MainAreaScreens;
-   import controllers.screens.MainAreaScreensSwitch;
    
    import globalevents.GHealingScreenEvent;
    
@@ -126,7 +127,7 @@ package models.healing
          if (selectedPrice && !selectedPrice.validate())
          {
             deselectLast();
-            if (MainAreaScreensSwitch.getInstance().currentScreenName == MainAreaScreens.HEAL)
+            if (MCMainArea.getInstance().currentName == MainAreaScreens.HEAL)
             {
                Messenger.show(Localizer.string('Units', 'message.wasDeselected'), Messenger.MEDIUM);
             }

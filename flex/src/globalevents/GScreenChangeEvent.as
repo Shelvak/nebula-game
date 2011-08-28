@@ -14,24 +14,6 @@ package globalevents
       
       public static const SIDEBAR_CHANGE:String = "sidebarChange";
       
-      /**
-       * Dispatched when main area screen <b>is about to be changed</b> (but has not been changed yet).
-       * 
-       * @eventType mainAreaChanging
-       * 
-       * @see #MAIN_AREA_CHANGED
-       */
-      public static const MAIN_AREA_CHANGING:String = "mainAreaChanging";
-      
-      /**
-       * Dispatched when main area screen <b>has changed</b> 
-       * 
-       * @eventType mainAreaChanged
-       * 
-       * @see #MAIN_AREA_CHANGING
-       */
-      public static const MAIN_AREA_CHANGED:String = "mainAreaChanged";
-      
       
       private var _newScreenName:String;
       /**

@@ -11,7 +11,7 @@
                width="100%" height="100%"
                initialize="StartupManager.loadStartupInfo()"
                applicationComplete="this_applicationCompleteHandler(event)"
-               keyDown="this_keyDownHandler(event)">
+               keyDown="this_keyDownHandler(event)" xmlns:screen="components.base.screen.*">
    
    
    <fx:Declarations>
@@ -25,18 +25,14 @@
    
    <base:SpinnerContainer busy="{GlobalFlags.getInstance().lockApplication}"
                           left="0" right="0" top="0" bottom="0">
-      <ns:ViewStack x="0" y="0" id="vstTopLevelScreens" width="100%" height="100%"
+      <s:Group x="0" y="0" id="vstTopLevelScreens" width="100%" height="100%"
                     creationComplete="vstTopLevelScreens_creationCompleteHandler(event)">
-         <s:NavigatorContent name="{Screens.LOADING}" width="100%" height="100%">
-            <scr:LoadingScreen localeBundlesLoaded="loadingscreen1_localeBundlesLoadedHandler(event)"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{Screens.LOGIN}" width="100%" height="100%"/>
-         <s:NavigatorContent id="navcontMain" name="{Screens.MAIN}" width="100%" height="100%">
-            <scr:MainScreen/>
-            <s:TextArea visible="false" id="profilerTextArea" width="400" height="500" x="200"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{Screens.BATTLE}" width="100%" height="100%"/>
-      </ns:ViewStack>
+         <screen:TopLevelScreenContainer screenName="{Screens.LOADING}"
+                                         localeBundlesLoaded="loadingscreen1_localeBundlesLoadedHandler(event)"/>
+         <screen:TopLevelScreenContainer screenName="{Screens.MAIN}"/>
+            <!--s:TextArea visible="false" id="profilerTextArea" width="400" height="500" x="200"/-->
+         <screen:TopLevelScreenContainer screenName="{Screens.BATTLE}"/>
+      </s:Group>
    </base:SpinnerContainer>
    
    <popups:ClientCrashPopup id="globalErrorPopUp" visible="{crashed}"
@@ -52,8 +48,8 @@
          import controllers.GlobalFlags;
          import controllers.messages.MessagesProcessor;
          import controllers.messages.ResponseMessagesTracker;
+         import controllers.navigation.MCTopLevel;
          import controllers.screens.Screens;
-         import controllers.screens.ScreensSwitch;
          import controllers.startup.StartupManager;
          
          import globalevents.GlobalEvent;
@@ -80,10 +76,7 @@
          
          private function vstTopLevelScreens_creationCompleteHandler(event:FlexEvent) : void
          {
-            var s:ScreensSwitch = ScreensSwitch.getInstance();
-            s.setViewStack(vstTopLevelScreens);
-            s.setConfig({"defaultScreenName":Screens.LOADING});
-            s.showScreen(Screens.LOADING);
+            MCTopLevel.getInstance().showScreen(Screens.LOADING);
          }
          
          

@@ -62,7 +62,7 @@
 	</fx:Script>
 	<s:Rect left="1" right="1" top="2" bottom="2" alpha="0.75">
 		<s:fill>
-			<mx:SolidColor color="#000000"/>
+			<s:SolidColor color="#000000"/>
 		</s:fill>
 	</s:Rect>
 	<s:Group left="0" right="0" top="0" bottom="0">

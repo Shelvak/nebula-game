@@ -78,7 +78,6 @@ package models
          Collections.cleanListOfICleanables(squadrons);
          Collections.cleanListOfICleanables(routes);
          Collections.cleanListOfICleanables(units);
-         selectedTechnology = null;
          technologies.clean();
          battleController = null;
          activeMapType = MapType.GALAXY;
@@ -86,11 +85,6 @@ package models
          latestSolarSystem = null;
          latestGalaxy = null;
          infoModel = null;
-         if (selectedBuilding)
-         {
-            selectedBuilding.cleanup();
-            selectedBuilding = null;
-         }
       }
       
       
@@ -271,21 +265,6 @@ package models
       /* ###################### */
       /* ### USER SELECTION ### */
       /* ###################### */
-      
-      
-      /**
-       * Selected technology for info at sidebar and upgrading.
-       * 
-       * @default null
-       */
-      public var selectedTechnology:Technology = null;
-      
-      
-      /**
-       * A building which is selected on a planet. <code>selectedBuilding</code> and
-       * <code>selectedBlockingFolliage</code> are mutually exclusive.
-       */
-      public var selectedBuilding:Building = null;
       
       
       prop_name static const selectedFoliage:String = "selectedFoliage";

@@ -1,16 +1,11 @@
 package components.notifications
 {
-   import com.developmentarc.core.utils.EventBroker;
-   
+   import controllers.navigation.MCMainArea;
    import controllers.screens.MainAreaScreens;
-   import controllers.screens.MainAreaScreensSwitch;
    
-   import flash.events.Event;
    import flash.events.MouseEvent;
    
-   import globalevents.GScreenChangeEvent;
-   
-   import models.ModelLocator;
+   import models.events.ScreensSwitchEvent;
    import models.notification.Notification;
    import models.notification.NotificationsCollection;
    import models.notification.events.NotificationsCollectionEvent;
@@ -23,8 +18,6 @@ package components.notifications
    import spark.components.IItemRenderer;
    import spark.components.List;
    import spark.events.RendererExistenceEvent;
-   import spark.layouts.HorizontalAlign;
-   import spark.layouts.VerticalLayout;
    
    /**
     * Lists specializes in displaying notifications.
@@ -37,17 +30,18 @@ package components.notifications
          useVirtualLayout = false;
          itemRenderer = new ClassFactory(IRNotification);
          addSelfEventHandlers();
-         EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, removeNewStates);
+         MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGING, removeNewStates);
       }
       
+      private var MA: MCMainArea = MCMainArea.getInstance();
       
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
       
-      private function removeNewStates(e: GScreenChangeEvent): void
+      private function removeNewStates(e: ScreensSwitchEvent): void
       {
-         if (e.oldScreenName == MainAreaScreens.NOTIFICATIONS)
+         if (MA.currentName == MainAreaScreens.NOTIFICATIONS)
          {
             notifs.removeFilter();
             for each (var newNotif: Notification in notifs)

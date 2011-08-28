@@ -39,7 +39,7 @@ in accordance with the terms of the license agreement accompanying it.
 		<!-- fill -->
 		<s:Rect left="1" right="1" top="1" bottom="1" alpha="1">
 			<s:fill>
-				<mx:SolidColor color="{getStyle('chromeColor')}"/>
+				<s:SolidColor color="{getStyle('chromeColor')}"/>
 			</s:fill>
 		</s:Rect>
 	

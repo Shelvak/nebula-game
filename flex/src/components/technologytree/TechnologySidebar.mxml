@@ -5,6 +5,7 @@
                     xmlns:base="components.base.*"
                     xmlns:technology="components.technologytree.*" 
                     xmlns:buildingsidebar="components.buildingsidebar.*"
+                    width="100%" height="100%"
                     creationComplete="techSidebar_creationCompleteHandler(event)">
    
    <fx:Script>

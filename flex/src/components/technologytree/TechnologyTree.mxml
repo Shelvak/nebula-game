@@ -16,8 +16,8 @@
          
          import config.Config;
          
+         import controllers.navigation.MCSidebar;
          import controllers.screens.SidebarScreens;
-         import controllers.screens.SidebarScreensSwitch;
          
          import globalevents.GResourcesEvent;
          import globalevents.GTechnologiesEvent;
@@ -463,11 +463,16 @@
             drawTree();
          }
          
+         private function get SD(): MCSidebar
+         {
+            return MCSidebar.getInstance();
+         }
+         
          //deselect on background click
          protected function background_clickHandler(event:ViewportEvent):void
          {
-            if (SidebarScreensSwitch.getInstance().currentScreenName != SidebarScreens.TECH_TREE_BASE)
-               SidebarScreensSwitch.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_BASE);
+            if (SD.currentName != SidebarScreens.TECH_TREE_BASE)
+               SD.replaceCurrentWith(SidebarScreens.TECH_TREE_BASE);
          }
          
       ]]>

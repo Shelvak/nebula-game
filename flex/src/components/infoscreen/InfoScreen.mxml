@@ -23,8 +23,6 @@
          import controllers.objects.ObjectClass;
          import controllers.screens.MainAreaScreens;
          import controllers.ui.NavigationController;
-         
-         import globalevents.GScreenChangeEvent;
          import globalevents.GlobalEvent;
          
          import models.building.Building;

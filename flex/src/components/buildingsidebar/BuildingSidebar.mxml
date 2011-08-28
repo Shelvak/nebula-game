@@ -5,7 +5,8 @@
                     xmlns:base="components.base.*"
                     xmlns:elements="components.buildingsidebar.*"
                     rollOver="basecontainer1_rollOverHandler(event)"
-                    creationComplete="this_creationCompleteHandler(event)">
+                    creationComplete="this_creationCompleteHandler(event)"
+                    width="100%" height="100%">
    
    <fx:Script>
       <![CDATA[
@@ -18,11 +19,12 @@
          import controllers.GlobalFlags;
          import controllers.buildings.BuildingsCommand;
          import controllers.constructionqueues.ConstructionQueuesCommand;
+         import controllers.navigation.MCMainArea;
+         import controllers.navigation.MCSidebar;
          import controllers.objects.ObjectClass;
          import controllers.planets.PlanetsCommand;
          import controllers.screens.MainAreaScreens;
          import controllers.screens.SidebarScreens;
-         import controllers.screens.SidebarScreensSwitch;
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
@@ -39,8 +41,10 @@
          import models.building.Building;
          import models.building.BuildingBonuses;
          import models.building.BuildingType;
+         import models.building.MCBuildingSelectedSidebar;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
+         import models.events.ScreensSwitchEvent;
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
          import models.planet.PlanetObject;
@@ -281,8 +285,8 @@
             constructable.deselectBuilding();
             if (e.type == GBuildingEvent.MOVE_CANCEL || e.type == GBuildingEvent.MOVE_CONFIRM)
             {
-               ML.selectedBuilding = e.building;
-               SidebarScreensSwitch.getInstance().showScreen(SidebarScreens.BUILDING_SELECTED);
+               MCBuildingSelectedSidebar.getInstance().selectedBuilding = e.building;
+               MCSidebar.getInstance().showScreen(SidebarScreens.BUILDING_SELECTED);
             }
          }
          
@@ -412,9 +416,9 @@
                ResourceType.ZETIUM, {"level": 1});
          }
          
-         private function handleScreenChange(e: GScreenChangeEvent): void
+         private function handleScreenChange(e: ScreensSwitchEvent): void
          {
-            if (e.newScreenName != MainAreaScreens.PLANET)
+            if (MA.currentName != MainAreaScreens.PLANET)
             {
                if (selectedBuilding != null)
                {
@@ -460,6 +464,7 @@
             waitingForApproval = false;
          }
          
+         private var MA: MCMainArea = MCMainArea.getInstance();
          
          protected function this_creationCompleteHandler(event:FlexEvent):void
          {
@@ -471,7 +476,7 @@
             EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
             EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleSidebarChange);
-            EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, handleScreenChange);
+            MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, handleScreenChange);
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshFacilities);
             EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, prepare);

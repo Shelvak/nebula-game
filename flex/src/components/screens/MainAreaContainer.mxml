@@ -24,23 +24,19 @@
                     xmlns:player="components.player.*"
                     xmlns:defensiveportal="components.defensiveportal.*"
                     xmlns:market="components.market.*"
-                    currentState="sidebarCollapsed" xmlns:screen="components.base.screen.*">
+                    xmlns:screen="components.base.screen.*">
    <fx:Script>
       <![CDATA[
          import components.dailybonus.DailyBonusComp;
          import components.dailybonus.DailyBonusEvent;
          import components.popups.ActionConfirmationPopup;
-         import components.skins.BuildButtonSkin;
          import components.skins.DailyBonusButtonSkin;
          
          import controllers.GlobalFlags;
          import controllers.dailybonus.DailyBonusCommand;
          import controllers.screens.MainAreaScreens;
-         import controllers.screens.MainAreaScreensSwitch;
          import controllers.screens.SidebarScreens;
-         import controllers.screens.SidebarScreensSwitch;
          
-         import models.events.ScreensSwitchEvent;
          import models.solarsystem.MSSObject;
          
          import mx.events.FlexEvent;
@@ -53,33 +49,18 @@
           */
          public function expandSidebar() : void
          {
-            setCurrentState("sidebarExpanded");
+            sidebarVisible = true;
          }
          
+         [Bindable]
+         private var sidebarVisible: Boolean = false;
          
          /**
           * Hides the sidebar if it is visible.
           */
          public function collapseSidebar() : void
          {
-            setCurrentState("sidebarCollapsed");
-         }
-         
-         
-         private function vstMainAreaStack_creationCompleteHandler(event:FlexEvent):void
-         {
-            var s:MainAreaScreensSwitch = MainAreaScreensSwitch.getInstance();
-            s.setConfig({"defaultScreenName": MainAreaScreens.GALAXY});
-            s.resetToDefault();
-         }
-         
-         
-         private function vstSidebarStack_creationCompleteHandler(event:FlexEvent):void
-         {
-            var s:SidebarScreensSwitch = SidebarScreensSwitch.getInstance();
-            s.setViewStack(vstSidebarStack);
-            s.setConfig({"defaultScreenName": SidebarScreens.EMPTY});
-            s.resetToDefault();
+            sidebarVisible = false;
          }
          
          private function showDailyBonus(): void
@@ -108,36 +89,30 @@
          
       ]]>
    </fx:Script>
-   <base:states>
-      <s:State name="sidebarExpanded"/>
-      <s:State name="sidebarCollapsed"/>
-   </base:states>
    <s:Group left="0" top="0" bottom="0"
-            right.sidebarCollapsed="0"
-            right.sidebarExpanded="240"
-            creationComplete="vstMainAreaStack_creationCompleteHandler(event)">
-      <screen:ScreenContainer screenName="{MainAreaScreens.GALAXY}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.SOLAR_SYSTEM}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.PLANET}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.TECH_TREE}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.FACILITIES}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.UNITS}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.STORAGE}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.LOAD_UNLOAD}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.HEAL}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.INFO}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.NOTIFICATIONS}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.QUESTS}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.SQUADRONS}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.RATINGS}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.MARKET}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.PLAYER}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.DEFENSIVE_PORTAL}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.VIP}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.ALLY_RATINGS}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.ALLIANCE}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.WELCOME}"/>
-      <screen:ScreenContainer screenName="{MainAreaScreens.CHAT}"/>
+            right="{sidebarVisible?240:0}">
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.GALAXY}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.SOLAR_SYSTEM}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.PLANET}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.TECH_TREE}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.FACILITIES}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.UNITS}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.STORAGE}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.LOAD_UNLOAD}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.HEAL}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.INFO}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.NOTIFICATIONS}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.QUESTS}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.SQUADRONS}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.RATINGS}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.MARKET}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.PLAYER}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.DEFENSIVE_PORTAL}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.VIP}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.ALLY_RATINGS}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.ALLIANCE}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.WELCOME}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.CHAT}"/>
       <base:TopMessage bottom="20" horizontalCenter="0" width="100%" visible="false"/>
       <s:Button skinClass="components.skins.DailyBonusButtonSkin" left="0" top="200"
                 visible="{ML.player.dailyBonus != null}" click="showDailyBonus()"/>
@@ -146,41 +121,20 @@
    <s:SkinnableContainer id="rightSidebarContainer"
                          styleName="rightSidebarContainer"
                          top="0" bottom="0" right="0"
-                         width.sidebarCollapsed="0"
-                         width.sidebarExpanded="240"
-                         mouseEnabled.sidebarCollapsed="false"
-                         mouseChildren.sidebarCollapsed="false">
-      <mx:ViewStack id="vstSidebarStack"
-                    left="0" right="0" top="0" bottom="0"
-                    creationComplete="vstSidebarStack_creationCompleteHandler(event)">
-         <s:NavigatorContent name="{SidebarScreens.EMPTY}" width="100%" height="100%"/>
-         <s:NavigatorContent name="{SidebarScreens.CONSTRUCTION}" width="100%" height="100%">
-            <building:BuildingSidebar width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.TECH_TREE_INFO}" width="100%" height="100%">
-            <technologies:TechnologySelectedSidebar selectedModel="{ML.selectedTechnology}" width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.TECH_TREE_BASE}" width="100%" height="100%">
-            <technologies:TechnologySidebar width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.BUILDING_SELECTED}" width="100%" height="100%">
-            <buildingSelected:BuildingSelectedSidebar selectedModel="{ML.selectedBuilding}" width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.BLOCKING_FOLLIAGE}" width="100%" height="100%">
-            <foliage:CFoliageSidebar width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.UNITS_ACTIONS}" width="100%" height="100%">
-            <unitsscreen:UnitsSelectedSidebar width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.LOAD_UNLOAD}" width="100%" height="100%">
-            <unitsscreen:LoadUnloadSidebar width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.HEAL}" width="100%" height="100%">
-            <healing:HealingSidebar width="100%" height="100%"/>
-         </s:NavigatorContent>
-         <s:NavigatorContent name="{SidebarScreens.MARKET}" width="100%" height="100%">
-            <market:MarketSidebar width="100%" height="100%"/>
-         </s:NavigatorContent>
-      </mx:ViewStack>
+                         width="{sidebarVisible?240:0}"
+                         mouseEnabled="{sidebarVisible}"
+                         mouseChildren="{sidebarVisible}">
+      <s:Group left="0" right="0" top="0" bottom="0">
+         <screen:SidebarScreenContainer screenName="{SidebarScreens.EMPTY}"/>
+         <screen:SidebarScreenContainer screenName="{SidebarScreens.CONSTRUCTION}"/>
+         <screen:SidebarScreenContainer screenName="{SidebarScreens.TECH_TREE_INFO}"/>
+         <screen:SidebarScreenContainer screenName="{SidebarScreens.TECH_TREE_BASE}"/>
+         <screen:SidebarScreenContainer screenName="{SidebarScreens.BUILDING_SELECTED}"/>
+         <screen:SidebarScreenContainer screenName="{SidebarScreens.BLOCKING_FOLLIAGE}"/>
+         <screen:SidebarScreenContainer screenName="{SidebarScreens.UNITS_ACTIONS}"/>
+         <screen:SidebarScreenContainer screenName="{SidebarScreens.LOAD_UNLOAD}"/>
+         <screen:SidebarScreenContainer screenName="{SidebarScreens.HEAL}"/>
+         <screen:SidebarScreenContainer screenName="{SidebarScreens.MARKET}"/>
+      </s:Group>
    </s:SkinnableContainer>
 </base:BaseContainer>

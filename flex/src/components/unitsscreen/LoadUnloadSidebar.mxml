@@ -3,6 +3,7 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:base="components.base.*"
+                    width="100%" height="100%"
                     creationComplete="basecontainer1_creationCompleteHandler(event)">
    
    <fx:Script>

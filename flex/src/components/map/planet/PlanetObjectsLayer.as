@@ -10,7 +10,6 @@ package components.map.planet
    import flash.geom.Point;
    
    import globalevents.GBuildingEvent;
-   import globalevents.GScreenChangeEvent;
    
    import interfaces.ICleanable;
    
