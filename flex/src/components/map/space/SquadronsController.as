@@ -314,7 +314,7 @@ package components.map.space
       
       internal function deselectSelectedSquadron(checkOrdersCtrl:Boolean = true) : void
       {
-         if (_selectedSquadC)
+         if (_selectedSquadC != null)
          {
             _mapC.squadronsInfo.squadron = null;
             var containsCommandedUnits:Boolean = false;

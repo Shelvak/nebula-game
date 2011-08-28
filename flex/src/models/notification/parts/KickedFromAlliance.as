@@ -16,7 +16,7 @@ package models.notification.parts
          super();
          if (notif != null)
          {
-            alliance = BaseModel.createModel(MAllianceMinimal, notif.params);
+            alliance = BaseModel.createModel(MAllianceMinimal, notif.params["alliance"]);
          }
       }
       
@@ -29,8 +29,7 @@ package models.notification.parts
       
       public function get message() : String
       {
-         return Localizer.string("Notifications", "message.kickedFromAlliance",
-         [alliance.name]);
+         return Localizer.string("Notifications", "message.kickedFromAlliance", [alliance.name]);
       }
       
       /**

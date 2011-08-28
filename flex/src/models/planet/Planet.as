@@ -441,6 +441,15 @@ package models.planet
          return _ssObject.inBattleground;
       }
       
+      /**
+       * Proxy to <code>ssObject.inMiniBattleground</code>.
+       * 
+       * @see MSSObject#inMiniBattleground
+       */
+      public function get inMiniBattleground() : Boolean {
+         return _ssObject.inMiniBattleground;
+      }
+      
       
       /* ################ */
       /* ### LOCATION ### */
