@@ -8,6 +8,7 @@ package tests.foliage.sidebar
    import ext.hamcrest.object.equals;
    
    import models.ModelLocator;
+   import models.Owner;
    import models.folliage.BlockingFolliage;
    import models.galaxy.Galaxy;
    import models.planet.Planet;
@@ -35,6 +36,7 @@ package tests.foliage.sidebar
          ssObject.type = SSObjectType.PLANET;
          ssObject.width = 5;
          ssObject.height = 5;
+         ssObject.owner = Owner.PLAYER;
          ML.latestPlanet = new Planet(ssObject);
          model = new CFoliageSidebarM();
       }
@@ -63,10 +65,17 @@ package tests.foliage.sidebar
             model.terraformPanelVisible, isFalse()
          );
          
+         ML.latestPlanet.ssObject.owner = Owner.ALLY;
          ML.selectedFoliage = new BlockingFolliage();
          explorationEndsAt = null;
          assertThat(
-            "if foliage selected and exploration is not underway",
+            "if foliage selected and exploration is not underway and player is not owner",
+            model.terraformPanelVisible, isFalse()
+         );
+         
+         ML.latestPlanet.ssObject.owner = Owner.PLAYER;
+         assertThat(
+            "if foliage selected and exploration is not underway and player is owner",
             model.terraformPanelVisible, isTrue()
          );
          
@@ -150,12 +159,16 @@ package tests.foliage.sidebar
          assertThat( "changing selected foliage",
             function():void{ ML.selectedFoliage = new BlockingFolliage() }, triggersStateChangeEvent()
          );
+         assertThat( "changing owner of planet",
+            function():void{ ML.latestPlanet.ssObject.owner = Owner.ENEMY }, triggersStateChangeEvent()
+         );
          assertThat( "starting exploration",
             function():void{ explorationEndsAt = new Date(new Date().time + 1000) }, triggersStateChangeEvent()
          );
          assertThat( "completing exploration",
             function():void{ explorationEndsAt = null }, triggersStateChangeEvent()
          );
+
       }
       
       
