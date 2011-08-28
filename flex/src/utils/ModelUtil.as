@@ -15,6 +15,9 @@ package utils
        * Extracts and returns model class name (a.k.a. object class, base model class) from the given full
        * (Class::Subclass) or partial (Class) model type name. The string returned starts with a lowercase
        * letter unless <code>firstUppercase</code> is <code>true</code>.
+       * 
+       * @param full or partial model type name.
+       *        <b>Not null. Not empty string.</b>
        */
       public static function getModelClass(type:String, firstUppercase:Boolean = false) : String
       {
@@ -42,8 +45,11 @@ package utils
       /**
        * Extracts and returns model subclass name (a.k.a. object subclass) from the given full
        * (Class::Subclass) model type name. Throws error if a subclass can't be extracted unless
-       * <code>faileIfMissing</code> is <code>false</code>. Int that case this method returns
+       * <code>faileIfMissing</code> is <code>false</code>. In that case this method returns
        * <code>null</code>.
+       * 
+       * @param full or partial model type name.
+       *        <b>Not null. Not empty string.</b>
        */
       public static function getModelSubclass(type:String, failIfMissing:Boolean = true) : String
       {
