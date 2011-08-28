@@ -37,6 +37,10 @@ package components.foliage
          return ML.latestPlanet != null ? ML.latestPlanet.exploredFoliage : null;
       }
       
+      private function get playerOwnsPlanet() : Boolean {
+         return ML.latestPlanet != null && ML.latestPlanet.ssObject.ownerIsPlayer;
+      }
+      
       private function get planetNotInBattleground() : Boolean {
          return ML.latestPlanet == null || !ML.latestPlanet.inBattleground;
       }
@@ -75,6 +79,7 @@ package components.foliage
       public function get terraformPanelVisible() : Boolean {
          return selectedFoliage != null &&
                 exploredFoliage == null &&
+                playerOwnsPlanet &&
                 planetNotInBattleground &&
                 planetNotInMiniBattleground;
       }

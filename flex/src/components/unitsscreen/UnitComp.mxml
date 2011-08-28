@@ -59,6 +59,11 @@
          
          public function set type(value: String): void
          {
+            // TODO: check with Jho if this is OK
+            if (value == null) {
+               _type = null;
+               return;
+            }
             _type = ModelUtil.getModelSubclass(value, false);
             if (_type == null)
             {

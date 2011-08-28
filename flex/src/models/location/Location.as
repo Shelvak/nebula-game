@@ -106,7 +106,9 @@ package models.location
       public function get solarSystemName() : String {
          if (isBattleground || inBattleground)
             return Localizer.string("Galaxy", "label.wormhole");
-         if (isMiniBattleground || isSSObject && ML.latestGalaxy.getSSById(solarSystemId).isMiniBattleground)
+         if (isMiniBattleground)
+            return Localizer.string("Galaxy", "label.pulsar", [id])
+         if (isSSObject && ML.latestGalaxy.getSSById(solarSystemId).isMiniBattleground)
             return Localizer.string("Galaxy", "label.pulsar", [solarSystemId]);
          return NameResolver.resolveSolarSystem(solarSystemId == 0 ? id : solarSystemId);
       }
