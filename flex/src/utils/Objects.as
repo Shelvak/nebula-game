@@ -20,21 +20,21 @@ package utils
       /* ############# */
       
       /**
-       * Use this to retrieve <code>Class</code> object from the given instance.
+       * Use this to retrieve of a given instance.
        * 
-       * @param instance an instance of some class you wan't to retrieve it from.
-       * Can't be <code>null</code> or instance of <code>Class</code>.
+       * @param instance an instance of some class you want to retrieve it of.
+       * <ul><b>
+       * <li>Not null.</li>
+       * <li>Not instance of a Class, Function.</li>
+       * </b></ul>
        * 
-       * @return class object of a given instance
-       * 
-       * @throws ArgumentError if <code>instance</code> is <code>null</code>, is of
-       * <code>Class</code> type or is of <code>Function</code> type.
+       * @return class object of a given instance.
        */
       public static function getClass(instance:Object) : Class {
          paramNotNull("instance", instance);
          if (instance is Class || instance is Function)
             throw new ArgumentError("[param instance] can't be of type [class Class] or " +
-                                    "[class Function]");
+                                    "[class Function] but was " + instance);
          return Class(getDefinitionByName(getQualifiedClassName(instance)));
       }
       
@@ -43,12 +43,12 @@ package utils
        * instance must have no-args constructor for this method to work.
        * 
        * @param instance an object of some class you want to get new instance of.
-       * Can't be <code>null</code> or instance of <code>Class</code>.
+       * <ul><b>
+       *    <li>Not null.</li>
+       *    <li>Not instance of Class or Function.</li>
+       * </b></ul>
        * 
        * @return new instance of the same type as the given instance
-       * 
-       * @throws ArgumentError if <code>instance</code> is <code>null</code> or is of
-       * <code>Class</code> type
        */
       public static function getInstance(instance:Object) : * {
          return new (getClass(instance))();
@@ -76,38 +76,44 @@ package utils
       }
       
       /**
-       * Strips package part from full class name and leaves only the name itself.
+       * Strips package part from full class name and leaves only the name only.
        * 
        * @param className fully qualified class name or simple class name
+       * <ul><b>
+       * <li>Not null.</li>
+       * <li>Not empty string.</li>
+       * <li>Legal class name.</li>
+       * </b></ul>
        * 
        * @return simple class name without package
-       * 
-       * @throws ArgumentError if given [param className] is illegal name of a class
        */
       public static function toSimpleClassName(className:String) : String {
-         if (className == null || className.length == 0)
-            throwIllegalClassNameError(className);
+         paramNotEmpty("className", className);
          var indexColon:int = className.lastIndexOf(":");
          var indexPoint:int = className.lastIndexOf(".");
          if (indexColon == -1 && indexPoint == -1)
             return className;
          if (indexColon == className.length - 1 ||
-            indexColon != -1 && indexColon < indexPoint)
-            throwIllegalClassNameError(className);
+             indexColon != -1 && indexColon < indexPoint)
+            throw new ArgumentError("[pram className] contains illegal class name '" + className + "'");
          return className.substring(indexColon + 1);
       }
       
       /**
        * Lets you find out if a given class has got a given metadata tag.
-       * This method uses ActionScript reflection feature.
        * 
        * @param value a Class to be examined
        * @param tag Name of metadata tag
+       * <ul><b>
+       * <li>Not null.</li>
+       * <li>Not empty string.</li>
+       * </b></ul>
        * 
        * @return <code>true</code> if the given class has a given metadata tag defined or <code>false</code>
        * otherwise.
        */
       public static function hasMetadata(type:Class, tag:String) : Boolean {
+         paramNotEmpty("tag", tag);
          if (type == null)
             return false;
          var typeData:XML = describeType(type).factory[0];
@@ -118,14 +124,14 @@ package utils
       }
       
       /**
-       * Returns array all public properties of a given type.
+       * Returns array with all public properties of a given type.
        *  
-       * @param type a class you want to introspect
-       * @param writeOnly If <code>true</code> only writable properties will be returned
+       * @param type a class you want to introspect.
+       * @param writeOnly If <code>true</code>, write-only properties will be returned.
        * 
-       * @return Array of properties that are defined either as variables or setter/getter pairs.
+       * @return array of properties that are defined either as variables or setter/getter pairs.
        */      
-      public static function getPublicProperties(type:Class, writeOnly:Boolean=true) : Array {
+      public static function getPublicProperties(type:Class, writeOnly:Boolean = true) : Array {
          var result:Array = [];
          var info:XML = describeType(type).factory[0];
          for each (var prop:XML in info.accessor) {
@@ -291,9 +297,16 @@ package utils
        * properties are found, the object returned will also have no properties. 
        * 
        * @param properties list of properties to extract.
-       *                   <b>Not null. Not empty.</b>
+       * <ul><b>
+       * <li>Not null.</li>
+       * <li>Not empty array.</li>
+       * </b></ul>
+       * 
        * @param source source object that holds properties.
-       *               <b>Not null. Generic object only.</b>
+       * <ul><b>
+       * <li>Not null.</li>
+       * <li>Generic object only.</li>
+       * </b></ul>
        */
       public static function extractProps(properties:Array, source:Object) : Object {
          paramNotNull("source", source);
@@ -309,7 +322,7 @@ package utils
       }
       
       /**
-       * @return true if obj has any keys, false otherwise
+       * @return true if <code>obj</code> has any keys, false otherwise.
        */
       public static function hasAnyProp(obj: Object): Boolean {
          for (var key:String in obj) {
@@ -324,20 +337,36 @@ package utils
       /* ############################ */
       
       /**
-       * Checks if <code>paramValue</code> is <code>null</code> or <code>undefined</code>. If this is
-       * case, throws <code>ArgumentError</code> error.
+       * Checks if <code>paramValue</code> is not <code>null</code> or <code>undefined</code>. If that is not
+       * the case, throws <code>ArgumentError</code> error.
        * 
-       * @param paramName name of a <code>paramValue</code> object in a context where this method is called
-       * @param paramValue object to check
+       * @param paramName name of a <code>paramValue</code> object in a context where this method is called.
+       * @param paramValue object to check.
+       * 
+       * @return <code>paramValue</code>.
+       * 
+       * @throws ArgumentError if <code>paramValue</code> is <code>null</code> or <code>undefined<code>.
+       * 
+       * @see #paramNotEquals()
+       * @see #paramNotEmpty()
+       */
+      public static function paramNotNull(paramName:String, paramValue:*) : * {
+         return paramNotEquals(paramName, paramValue, [undefined, null]);
+      }
+      
+      /**
+       * Checks if <code>paramValue</code> is not <code>null</code> or empty string. If that is not true,
+       * throws <code>ArgumentError</code>.
+       * 
+       * @param paramName name of the parameters
+       * @param paramValue value of the parameter
        * 
        * @return <code>paramValue</code>
        * 
-       * @throws ArgumentError if <code>paramValue</code> is <code>null</code>
-       * 
-       * @see #paramNotEquals()
+       * @throws ArgumentError if <code>paramValue</code> is <code>null</code> or empty string.
        */
-      public static function paramNotNull(paramName:String, paramValue:Object) : * {
-         return paramNotEquals(paramName, paramValue, [null, undefined]);
+      public static function paramNotEmpty(paramName:String, paramValue:String) : String {
+         return paramNotEquals(paramName, paramValue, [null, ""]);
       }
       
       /**
@@ -349,21 +378,21 @@ package utils
        * &lt;restrictedValues&gt; but was equal to &lt;paramValue&gt;".
        * </p>
        * 
-       * @param paramName name of a <code>paramValue</code> object in a context where this method is called
-       * @param paramValue actual parameter value
-       * @param restrictedValues values which are illegal for <code>paramValue</code>
+       * @param paramName name of a <code>paramValue</code> object in a context where this method is called.
+       * @param paramValue actual parameter value.
+       * @param restrictedValues values which are illegal for <code>paramValue</code>.
        * 
-       * @return <code>paramValue</code>
+       * @return <code>paramValue</code>.
        * 
-       * @throws ArgumentError if <code>paramValue</code> equals to one of values in
-       * <code>restrictedValues</code>
+       * @throws ArgumentError if <code>paramValue</code> is equal to one of values in
+       * <code>restrictedValues</code> array.
        */
-      public static function paramNotEquals(paramName:String, paramValue:Object, restrictedValues:Array) : * {
+      public static function paramNotEquals(paramName:String, paramValue:*, restrictedValues:Array) : * {
          for each (var value:* in restrictedValues) {
             if (paramValue === value)
                throw new ArgumentError(
                   "[param " + paramName + "] can't be equal to " + arrayJoin(restrictedValues, ", ") +
-                  " but was equal to " + paramValue
+                  " but was equal to " + toStr(paramValue)
                );
          }
          
@@ -371,16 +400,29 @@ package utils
       }
       
       /**
-       * Does the same as <code>paramNotNull</code> just allows you to specify a custom error message.
+       * Does the same as <code>paramNotNull()</code> just allows you to specify a custom error message.
+       * 
+       * @throws Error if assertion fails
        */
-      public static function notNull(value:Object, errorMessage:String) : * {
-         return notEquals(value, [null, undefined], errorMessage);
+      public static function notNull(value:*, errorMessage:String) : * {
+         return notEquals(value, [undefined, null], errorMessage);
       }
       
       /**
-       * Does the same as <code>paramNotEquals</code> just allows you to specify a custom error message.
+       * Does the same as <code>paramNotEmpty()</code> just allows you to specify a custom error message.
+       * 
+       * @throws Error if assertion fails
        */
-      public static function notEquals(value:Object, restrictedValues:Array, errorMessage:String) : * {
+      public static function notEmpty(value:String, errorMessage:String) : String {
+         return notEquals(value, [null, ""], errorMessage);
+      }
+      
+      /**
+       * Does the same as <code>paramNotEquals()</code> just allows you to specify a custom error message.
+       * 
+       * @throws Error if assertion fails
+       */
+      public static function notEquals(value:*, restrictedValues:Array, errorMessage:String) : * {
          for each (var val:* in restrictedValues) {
             if (value === val)
                throw new Error(errorMessage);
@@ -390,10 +432,18 @@ package utils
       
       /**
        * Checks if the given <code>value</code> is of given <code>type</code>. If so, returns
-       * <code>value</code> otherwise throws an error with a given <code>errorMessage</code>.
+       * <code>value</code> otherwise throws <code>TypeError</code> with a given <code>errorMessage</code>.
        * 
        * @param value an isntance to check the type of.
+       * <ul><b>
+       * <li>Not null.</li>
+       * </b></ul>
+       * 
        * @param type required type of the instance referenced by <code>value</code>.
+       * <ul><b>
+       * <li>Not null.</li>
+       * </b></ul>
+       * 
        * @param errorMessage optional error message to use when throwing an error.
        * 
        * @return <code>value</code>.
@@ -401,17 +451,12 @@ package utils
       public static function requireType(value:Object, type:Class, errorMessage:String = null) : * {
          paramNotNull("type", type);
          if (!(value is type)) {
-            if (errorMessage == null) {
+            if (errorMessage == null)
                errorMessage = "Required type " + type + " but " + value +
                               " was of type " + getClassName(value);
-            }
-            throw new Error(errorMessage);
+            throw new TypeError(errorMessage);
          }
          return value;
-      }
-      
-      private static function throwIllegalClassNameError(name:String) : void {
-         throw new ArgumentError("'" + name + "' is illegal class name");
       }
       
       /**
@@ -422,14 +467,17 @@ package utils
       private static function arrayJoin(array:Array, sep:String) : String {
          var strings:Array = array.map(
             function(item:*, index:int, array:Array) : String {
-               if (item === null)
-                  return "null";
-               if (item === undefined)
-                  return "undefined";
-               return Object(item).toString();
+               return toStr(item);
             }
          );
-         return strings.join(sep);
+         return "[" + strings.join(sep) + "]";
+      }
+      
+      private static function toStr(value:*) : String {
+         if (value === undefined) return "undefined";
+         if (value === null)      return "null";
+         if (value is String)     return "'" + value + "'";
+         return String(value);
       }
       
       
@@ -467,8 +515,15 @@ package utils
       /**
        * Sets processor function to handle properties of specific type.
        * 
-       * @param type a Class that requires special handling
+       * @param type a Class that requires special handling.
+       * <ul><b>
+       * <li>Not null.</li>
+       * </b></ul>
+       * 
        * @param processor function that will be called when an object of the given type needs to be constructed.
+       * <ul><b>
+       * <li>Not null.</li>
+       * </b></ul>
        * Signature of the function should be: <code>function(currValue:&#42, value:Object) : Object</code>.
        * Parameters of the function:
        * <ul>
@@ -493,12 +548,20 @@ package utils
        * collection <code>data</code>.
        * 
        * @param collectionInstance an <code>Array</code>, <code>Vector</code> or <code>IList</code> to add items to.
-       *                           <b>Not null.</b>
+       * <ul><b>
+       * <li>Not null.</li>
+       * </b></ul>
+       * 
        * @param itemType type of items to create.
-       *                 <b>Not null.</b>
+       * <ul><b>
+       * <li>Not null.</li>
+       * </b></ul>
+       * 
        * @param data <code>Array</code>, <code>Vector</code> or <code>IList</code> that holds generic objects
        *             that need to be created and added to the <code>collectionInstance</code>.
-       *             <b>Not null.</b>
+       * <ul><b>
+       * <li>Not null.</li>
+       * </b></ul>
        * 
        * @return <code>collectionInstance</code>
        */
@@ -565,10 +628,10 @@ package utils
        *        in destination class, method invocation will end up with an error thrown;</li>
        *    <li>Works only with dynamicly created properties of the data object.</li>
        * 
-       * @param type type of a model to be created.
-       * @param data raw object containing data to be loaded to the object to be created.
+       * @param type type of an instance to be created.
+       * @param data raw object containing data to be loaded to the instance to be created.
        * 
-       * @return Newly created object with values loaded to its properties from the data object.
+       * @return newly created object with values loaded to its properties from the data object.
        * 
        * @throws Error if some properties in source object do not exist in the destination object or if some
        * of them are of different type. 

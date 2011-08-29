@@ -35,6 +35,43 @@ package tests.utils
    
    public class TC_Objects
    {
+      /* ################# */
+      /* ### FAIL-FAST ### */
+      /* ################# */
+      
+      [Test]
+      public function failFastErrorMessages() : void {
+         assertThat( "paramNotNull(): undefined value",
+            function():void{ Objects.paramNotNull("paramName", undefined) },
+            throws (hasProperty (
+               "message",
+               "[param paramName] can't be equal to [undefined, null] but was equal to undefined"
+            ))
+         );
+         assertThat( "paramNotNull(): null value",
+            function():void{ Objects.paramNotNull("paramName", null) },
+            throws (hasProperty (
+               "message",
+               "[param paramName] can't be equal to [undefined, null] but was equal to null"
+            ))
+         );
+         assertThat( "paramNotEquals(): string value",
+            function():void{ Objects.paramNotEquals("paramName", "AAA", [null, "AAA"]) },
+            throws (hasProperty (
+               "message",
+               "[param paramName] can't be equal to [null, 'AAA'] but was equal to 'AAA'"
+            ))
+         );
+         assertThat( "paramNotEquals(): empty string value",
+            function():void{ Objects.paramNotEquals("paramName", "", [null, ""]) },
+            throws (hasProperty (
+               "message",
+               "[param paramName] can't be equal to [null, ''] but was equal to ''"
+            ))
+         );
+      }
+      
+      
       /* ####################### */
       /* ### extractProps*() ### */
       /* ####################### */
