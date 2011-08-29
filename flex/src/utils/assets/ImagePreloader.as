@@ -24,7 +24,7 @@ package utils.assets
    import mx.modules.IModuleInfo;
    import mx.modules.ModuleManager;
    
-   import utils.EventUtils;
+   import utils.Events;
    import utils.Objects;
    import utils.PropertiesTransformer;
    import utils.SingletonFactory;
@@ -417,7 +417,7 @@ package utils.assets
       
       private function dispatchUnpackProgressEvent() : void
       {
-         EventUtils.dispatchSimpleEvent(this, ImagePreloaderEvent, ImagePreloaderEvent.UNPACK_PROGRESS);
+         Events.dispatchSimpleEvent(this, ImagePreloaderEvent, ImagePreloaderEvent.UNPACK_PROGRESS);
       }
    }
 }

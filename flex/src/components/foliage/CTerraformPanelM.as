@@ -22,7 +22,7 @@ package components.foliage
    import spark.components.RichText;
    import spark.utils.TextFlowUtil;
    
-   import utils.EventUtils;
+   import utils.Events;
    import utils.StringUtil;
    import utils.UrlNavigate;
    import utils.locale.Localizer;
@@ -155,7 +155,7 @@ package components.foliage
       /* ############### */
       
       private function dispatchStateChageEvent() : void {
-         EventUtils.dispatchSimpleEvent(this, CFoliageSidebarMEvent, CFoliageSidebarMEvent.STATE_CHANGE);
+         Events.dispatchSimpleEvent(this, CFoliageSidebarMEvent, CFoliageSidebarMEvent.STATE_CHANGE);
       }
       
       private function getString(property:String, parameters:Array = null) : String {

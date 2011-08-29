@@ -13,7 +13,7 @@ package models
    
    import namespaces.prop_name;
    
-   import utils.EventUtils;
+   import utils.Events;
    import utils.Objects;
    import utils.assets.ImagePreloader;
    
@@ -424,7 +424,7 @@ package models
       
       private function dispatchFlagDestructionPendingSetEvent() : void
       {
-         dispatchSimpleEvent(BaseModelEvent, BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET);
+         dispatchModelEvent(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET);
       }
       
       
@@ -435,7 +435,7 @@ package models
        */
       protected function dispatchPendingChangeEvent() : void
       {
-         dispatchSimpleEvent(BaseModelEvent, BaseModelEvent.PENDING_CHANGE);
+         dispatchModelEvent(BaseModelEvent.PENDING_CHANGE);
       }
       
       
@@ -446,7 +446,7 @@ package models
        */
       protected function dispatchIdChangeEvent() : void
       {
-         dispatchSimpleEvent(BaseModelEvent, BaseModelEvent.MODEL_ID_CHANGE);
+         dispatchModelEvent(BaseModelEvent.MODEL_ID_CHANGE);
       }
       
       
@@ -475,11 +475,15 @@ package models
       
       
       /**
-       * @see utils.EventUtils#dispatchSimpleEvent()
+       * @see utils.Events#dispatchSimpleEvent()
        */
       protected function dispatchSimpleEvent(CLASS:Class, type:String) : void
       {
-         EventUtils.dispatchSimpleEvent(this, CLASS, type);
+         Events.dispatchSimpleEvent(this, CLASS, type);
+      }
+      
+      private function dispatchModelEvent(type:String) : void {
+         dispatchSimpleEvent(BaseModelEvent, type);
       }
       
       

@@ -7,7 +7,7 @@ package utils
    /**
     * Contains static helper methods for working with events.
     */
-   public class EventUtils
+   public class Events
    {
       /**
        * Use this for dispatching simple events: events with constructor that takes event type as the first
@@ -15,22 +15,28 @@ package utils
        * <code>target.hasEventListener(type)</code> returns <code>true</code>.
        * 
        * @param target event dispatcher to dispatch event from.
-       *        <b>Not null.</b>
+       * <ul><b>
+       * <li>Not null.</li>
+       * </b></ul>
+       * 
        * @param CLASS event class
-       *        <b>Not null.</b>
+       * <ul><b>
+       * <li>Not null.</li>
+       * </b></ul>
+       * 
        * @param type event type
-       *        <b>Not null. Not empty string.</b>
+       * <ul><b>
+       * <li>Not null.</li>
+       * <li>Not empty string.</li>
+       * </b></ul>
        */
-      public static function dispatchSimpleEvent(target:IEventDispatcher, CLASS:Class, type:String) : void
-      {
+      public static function dispatchSimpleEvent(target:IEventDispatcher, CLASS:Class, type:String) : void {
          Objects.paramNotNull("target", target);
          Objects.paramNotNull("CLASS", CLASS);
-         Objects.paramNotEquals("type", type, [null, ""]);
+         Objects.paramNotEmpty("type", type);
          
          if (target.hasEventListener(type))
-         {
             target.dispatchEvent(Event(new CLASS(type)));
-         }
       }
    }
 }

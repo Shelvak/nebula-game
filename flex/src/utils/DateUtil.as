@@ -17,12 +17,10 @@ package utils
        */
       public static const BEGINNING:Date = new Date(0);
       
-      
       /**
        * Current time of the client machine in milliseconds.
        */
       public static var now:Number;
-      
       
       /**
        * Time difference (in milliseconds) of client and server times (serverTime - clientTime). Is updated
@@ -36,33 +34,24 @@ package utils
        */
       public static var timeDiff:Number = NaN;
       
-      
-      public static function updateTimeDiff(serverTimestamp:*, clientTime:Date) : void
-      {
+      public static function updateTimeDiff(serverTimestamp:*, clientTime:Date) : void {
          var serverTime:Number = new Number(serverTimestamp);
          var newDiff:Number = serverTime - clientTime.time;
          if (isNaN(timeDiff) || Math.abs(timeDiff) > Math.abs(newDiff))
-         {
             timeDiff = newDiff;
-         }
       }
-      
       
       /**
        * Parses date and time of server format and returns that date.
        * 
        * @throws Error if the date can't be parsed.
        */ 
-      public static function parseServerDTF(dateTime:String, returnLocalTime:Boolean = true) : Date
-      {
+      public static function parseServerDTF(dateTime:String, returnLocalTime:Boolean = true) : Date {
          var serverTime:Date = com.adobe.utils.DateUtil.parseW3CDTF(dateTime);
          if (returnLocalTime)
-         {
             return getLocalTime(serverTime);
-         }
          return serverTime;
       }
-      
       
       /**
        * Does the opposite to <code>getServerTime()</code>: returns time of the local machine at a
@@ -72,8 +61,7 @@ package utils
        * 
        * @return Time of the local machine.  
        */
-      public static function getLocalTime(serverTime:Date) : Date
-      {
+      public static function getLocalTime(serverTime:Date) : Date {
          return new Date(Math.floor((serverTime.time - timeDiff) / 1000) * 1000);
       }
       
@@ -125,74 +113,28 @@ package utils
       /* ### DATE FORMAT FUNCTIONS ### */
       /* ############################# */
       
-      
       /**
        * Fromats given <code>date</code> as a short date string specified by
        * <code>locale.xml/Formatters.date.shortDate</code>.
        */
-      public static function formatShortDate(date:Date) : String
-      {
+      public static function formatShortDate(date:Date) : String {
          Objects.paramNotNull("date", date)
          return format(date, "shortDate");
       }
-      
       
       /**
        * Fromats given <code>date</code> as a short date and time string specified by
        * <code>locale.xml/Formatters.date.shortDateTime</code>.
        */
-      public static function formatShortDateTime(date:Date) : String
-      {
+      public static function formatShortDateTime(date:Date) : String {
          Objects.paramNotNull("date", date)
          return format(date, "shortDateTime");
       }
       
-      
       private static var _formatter:DateFormatter = new DateFormatter();
-      private static function format(date:Date, formatStringKey:String) : String
-      {
+      private static function format(date:Date, formatStringKey:String) : String {
          _formatter.formatString = Localizer.string("Formatters", "date." + formatStringKey);
          return _formatter.format(date);
       }
-      
-      
-//      /**
-//       * Adds <code>date1</code> and <code>date2</code> and returns new <code>Date</code> object.
-//       * 
-//       * @param date1 <b>Not null.</b>
-//       * @param date2 <b>Not null.</b>
-//       */
-//      public static function add(date1:Date, date2:Date) : Date
-//      {
-//         ClassUtil.checkIfParamNotNull("date1", date1);
-//         ClassUtil.checkIfParamNotNull("date2", date2);
-//         return new Date(date1.time + date2.time);
-//      }
-//      
-//      
-//      /**
-//       * Substracts <code>date2</code> from <code>date1</code> and returns new <code>Date</code> object.
-//       * 
-//       * @param date1 <b>Not null.</b>
-//       * @param date2 <b>Not null.</b>
-//       */
-//      public static function substract(date1:Date, date2:Date) : Date
-//      {
-//         ClassUtil.checkIfParamNotNull("date1", date1);
-//         ClassUtil.checkIfParamNotNull("date2", date2);
-//         return new Date(date1.time - date2.time);
-//      }
-//      
-//      
-//      /**
-//       * Converts given date to number of seconds.
-//       * 
-//       * @param date <b>Not null.</b>
-//       */      
-//      public static function toSeconds(date:Date) : Number
-//      {
-//         ClassUtil.checkIfParamNotNull("date", date);
-//         return Math.floor(date.time / 1000);
-//      }
    }
 }
