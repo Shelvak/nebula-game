@@ -63,6 +63,7 @@ package controllers.startup
    import models.ModelLocator;
    import models.announcement.MAnnouncement;
    import models.chat.MChat;
+   import models.time.MTimeEventFixedMoment;
    
    import mx.logging.ILogger;
    import mx.logging.Log;
@@ -247,11 +248,8 @@ package controllers.startup
       
       
       private static function setupObjects() : void {
-         Objects.setTypeProcessor(Date,
-            function(currValue:Date, value:String) : Date {
-               return DateUtil.parseServerDTF(value);
-            }
-         );
+         Objects.setTypeProcessor(Date, DateUtil.autoCreate);
+         Objects.setTypeProcessor(MTimeEventFixedMoment, MTimeEventFixedMoment.autoCreate);
       }
       
       

@@ -13,6 +13,18 @@ package utils
    public class DateUtil
    {
       /**
+       * Type processor function for <code>Objects</code>.
+       */
+      public static function autoCreate(currValue:Date, value:String) : Date {
+         var valueDate:Date = parseServerDTF(value);
+         if (currValue != null) {
+            currValue.time = valueDate.time;
+            return currValue;
+         }
+         return valueDate;
+      }
+      
+      /**
        * January 1, 1970
        */
       public static const BEGINNING:Date = new Date(0);

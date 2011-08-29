@@ -11,10 +11,6 @@ package models.movement
    import models.time.MTimeEventFixedMoment;
    import models.unit.UnitBuildingEntry;
    
-   import mx.utils.ObjectUtil;
-   
-   import utils.DateUtil;
-   import utils.Objects;
    import utils.datastructures.Collections;
    
    
@@ -79,6 +75,7 @@ package models.movement
       }
       
       
+      [Required(alias="arrivesAt")]
       [Bindable(event="willNotChange")]
       /**
        * Time (local) when this squadron will reach its destination. Never <code>null</code>.
@@ -86,6 +83,7 @@ package models.movement
       public const arrivalEvent:MTimeEventFixedMoment = new MTimeEventFixedMoment();
       
       
+      [Optional(alias="firstHop")]
       [Bindable(event="willNotChange")]
       /**
        * Time (local) when this squadron will do first hop.
@@ -200,13 +198,6 @@ package models.movement
          if (sourceLocation.isSSObject)  sourceLocation.setDefaultCoordinates();
          if (currentLocation.isSSObject) currentLocation.setDefaultCoordinates();
          if (targetLocation.isSSObject)  currentLocation.setDefaultCoordinates();
-         arrivalEvent.occuresAt = DateUtil.parseServerDTF(Objects.notNull(
-            data["arrivesAt"],
-            "[prop arrivesAt] is required by [class: MRoute] but was not present in source object. " +
-            "The object was:\n" + ObjectUtil.toString(data)
-         ));
-         if (data["firstHop"] != null)
-            firstHopEvent.occuresAt = DateUtil.parseServerDTF(data["firstHop"]);
       }
    }
 }
