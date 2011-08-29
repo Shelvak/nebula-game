@@ -33,7 +33,7 @@ package tests.models
    import org.hamcrest.object.nullValue;
    import org.hamcrest.object.sameInstance;
    
-   import testsutils.LocalizerUtil;
+   import testsutils.LocalizerUtl;
    
    import utils.Objects;
    import utils.SingletonFactory;
@@ -63,8 +63,8 @@ package tests.models
       
       [Before]
       public function setUp() : void {
-         LocalizerUtil.setUp();
-         LocalizerUtil.addBundle("Players", {"npc": "NPC"});
+         LocalizerUtl.setUp();
+         LocalizerUtl.addBundle("Players", {"npc": "NPC"});
          ML = ModelLocator.getInstance();
          ML.player.reset();
          ML.player.galaxyId = 1;
@@ -90,7 +90,7 @@ package tests.models
       
       [After]
       public function tearDown() : void {
-         LocalizerUtil.tearDown();
+         LocalizerUtl.tearDown();
          SingletonFactory.clearAllSingletonInstances();
          ML.reset();
          ML = null;

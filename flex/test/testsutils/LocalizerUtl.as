@@ -9,7 +9,7 @@ package testsutils
    import utils.Objects;
    import utils.locale.Locale;
 
-   public class LocalizerUtil
+   public class LocalizerUtl
    {
       private static function get RM() : IResourceManager {
          return ResourceManager.getInstance();
