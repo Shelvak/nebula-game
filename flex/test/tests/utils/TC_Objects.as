@@ -1,5 +1,7 @@
 package tests.utils
 {
+   import errors.AppError;
+   
    import ext.hamcrest.object.equals;
    
    import flash.geom.Point;
@@ -121,19 +123,19 @@ package tests.utils
       public function create_errors() : void {
          assertThat(
             "same property - both tags",
-            $_creating (InvalidMetadata, {"invalid": "invalid"}), throws (Error)
+            $_creating (InvalidMetadata, {"invalid": "invalid"}), throws (AppError)
          );
          assertThat(
             "no elementType attribute",
-            $_creating (MissingCollectionMetadata, {"collection": [1]}), throws (Error)
+            $_creating (MissingCollectionMetadata, {"collection": [1]}), throws (AppError)
          );
          assertThat(
             "no required property",
-            $_creating (RequiredProps, {"name": "MikisM"}), throws (Error)
+            $_creating (RequiredProps, {"name": "MikisM"}), throws (AppError)
          );
          assertThat(
             "wrong property type",
-            $_creating (RequiredProps, {"name": new Date(), "age": 5}), throws (Error)
+            $_creating (RequiredProps, {"name": new Date(), "age": 5}), throws (AppError)
          );
          assertThat(
             "wrong date format",
@@ -141,11 +143,11 @@ package tests.utils
          );
          assertThat(
             "required property of same type",
-            $_creating (RequiredSelf, {"id": 2, "self": {"id": 3}}), throws (Error)
+            $_creating (RequiredSelf, {"id": 2, "self": {"id": 3}}), throws (AppError)
          );
          assertThat(
             "no required alias properties",
-            $_creating (AliasProperties, {}), throws (Error)
+            $_creating (AliasProperties, {}), throws (AppError)
          );
       }
       
@@ -297,7 +299,7 @@ package tests.utils
       public function create_aggregatesPropsErrors() : void {
          assertThat(
             "no properties provided for required aggregator",
-            $_creating (PropsAggregatorRequired, {}), throws (Error)
+            $_creating (PropsAggregatorRequired, {}), throws (AppError)
          );
          assertThat(
             "no properties provided for optional aggregator",
@@ -305,7 +307,7 @@ package tests.utils
          );
          assertThat(
             "not provided required property for aggregator",
-            $_creating (PropsAggregatorRequired, {"optional": 0}), throws (Error)
+            $_creating (PropsAggregatorRequired, {"optional": 0}), throws (AppError)
          );
          assertThat(
             "not provided optional but providing required property for aggregator",
@@ -313,15 +315,15 @@ package tests.utils
          );
          assertThat(
             "alias attribute not allowed on aggregators",
-            $_creating (PropsAggregatorAlias, {"required": 0}), throws (Error)
+            $_creating (PropsAggregatorAlias, {"required": 0}), throws (AppError)
          );
          assertThat(
             "aggregatesPrefix attribute not allowed together",
-            $_creating (PropsAndPrefixAggregator, {"required": 0, "optional": 0}), throws (Error)
+            $_creating (PropsAndPrefixAggregator, {"required": 0, "optional": 0}), throws (AppError)
          );
          assertThat(
             "it is illegal to define aggregatesProps for primitives",
-            $_creating (AggregatesPropsPrimitive, {}), throws (Error)
+            $_creating (AggregatesPropsPrimitive, {}), throws (AppError)
          );
       }
       
@@ -329,15 +331,15 @@ package tests.utils
       public function create_aggregatesPrefixErrors() : void {
          assertThat(
             "no properties provided for required aggregator",
-            $_creating (ModelPrefixAggregatorRequired, {}), throws (Error)
+            $_creating (ModelPrefixAggregatorRequired, {}), throws (AppError)
          );
          assertThat(
             "no properties provided for optional aggregator",
-            $_creating (ModelPrefixAggregatorOptional, {}), not (throws (Error))
+            $_creating (ModelPrefixAggregatorOptional, {}), not (throws (AppError))
          );
          assertThat(
             "not provided required property for aggregator",
-            $_creating (ModelPrefixAggregatorRequired, {"prefixOptional": 0}), throws (Error)
+            $_creating (ModelPrefixAggregatorRequired, {"prefixOptional": 0}), throws (AppError)
          );
          assertThat(
             "not provided optional but providing required property for aggregator",
@@ -345,7 +347,7 @@ package tests.utils
          );
          assertThat(
             "it is illegal to define aggregatesPrefix for primitives",
-            $_creating (ModelAggregatesPrefixPrimitive, {}), throws (Error)
+            $_creating (ModelAggregatesPrefixPrimitive, {}), throws (AppError)
          );
       }
       
@@ -439,6 +441,26 @@ package tests.utils
       }
       
       [Test]
+      public function create_readOnlyPropsErrors() : void {
+         assertThat(
+            "primitive instance constant",
+            $_creating(PrimitiveInstanceConst, {"age": 10}), throws (AppError)
+         );
+         assertThat(
+            "primitive getter property",
+            $_creating(PrimitiveGetterProp, {"age": 10}), throws (AppError)
+         );
+         assertThat(
+            "instance constant not initialized",
+            $_creating(NullInstanceConst, {"model": {"id": 1}}), throws (AppError)
+         );
+         assertThat(
+            "getter property not initialized",
+            $_creating(NullGetterProp, {"point": {"x": 1, "y": 1}}), throws (AppError)
+         );
+      }
+      
+      [Test]
       public function createSupportsInstanceConstants() : void {
          addPointProcessor();
          
@@ -451,6 +473,24 @@ package tests.utils
          assertThat( "model.id", model.model.id, equals (10) );
          
          var modelCollection:ConstantCollection = create(ConstantCollection, {"numbers": [1, 2, 3]});
+         assertThat( "constant collection of numbers", modelCollection.numbers, array (1, 2, 3) );
+         
+         removePointProcessor();
+      }
+      
+      [Test]
+      public function createSupportReadOnlyProps() : void {
+         addPointProcessor();
+         
+         var model:PublicGetters = create(PublicGetters, {
+            "point": {"x": 1, "y": 2},
+            "model": {"id": 10}
+         });
+         assertThat( "point.x", model.point.x, equals (1) );
+         assertThat( "point.y", model.point.y, equals (2) );
+         assertThat( "model.id", model.model.id, equals (10) );
+         
+         var modelCollection:GetterCollection = create(GetterCollection, {"numbers": [1, 2, 3]});
          assertThat( "constant collection of numbers", modelCollection.numbers, array (1, 2, 3) );
          
          removePointProcessor();
@@ -862,15 +902,60 @@ class CollectionsAnyType
    [Required(elementType="flash.geom.Point")] public var points:Array;
 }
 
+class PrimitiveInstanceConst
+{
+   [Required] public const age:int = 0;
+}
+
+class PrimitiveGetterProp
+{
+   [Required] public function get age() : int {
+      return 0;
+   }
+}
+
+class NullInstanceConst
+{
+   [Required] public const model:BaseModel = null;
+}
+
+class NullGetterProp
+{
+   [Required] public function get point() : Point {
+      return null;
+   }
+}
+
 class PublicConstants
 {
    [Required] public const point:Point = new Point();
    [Required] public const model:BaseModel = new BaseModel();
 }
 
+class PublicGetters
+{
+   private var _point:Point = new Point();
+   [Required] public function get point() : Point {
+      return _point;
+   }
+   
+   private var _model:BaseModel = new BaseModel();
+   [Required] public function get model() : BaseModel {
+      return _model;
+   }
+}
+
 class ConstantCollection
 {
    [Required(elementType="Number")] public const numbers:ArrayCollection = new ArrayCollection();
+}
+
+class GetterCollection
+{
+   private var _numbers:ArrayCollection = new ArrayCollection();
+   [Required(elementType="Number")] public function get numbers() : ArrayCollection {
+      return _numbers;
+   }
 }
 
 class PropsMapOnly

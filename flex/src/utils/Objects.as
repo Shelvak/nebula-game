@@ -1,11 +1,14 @@
 package utils
 {
+   import errors.AppError;
+   
    import flash.utils.Dictionary;
    import flash.utils.getDefinitionByName;
    import flash.utils.getQualifiedClassName;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   import mx.utils.ObjectUtil;
    
    import namespaces.client_internal;
    
@@ -277,9 +280,17 @@ package utils
        * <p>This method loops through all dynamic properties of the source object so it take time
        * to extract properties from large objects.</p>
        * 
-       * @param prefix <b>Not null. Not empty string.</b>
-       * @param source source object that holds properties.
-       *               <b>Not null. Generic object only.</b>
+       * @param prefix
+       * <ul><b>
+       * <li>Not null.</li>
+       * <li> Not empty string.</li>
+       * </b></ul>
+       * 
+       * @param source source object that holds properties
+       * <ul><b>
+       * <li>Not null.</li>
+       * <li>Generic object only..</li>
+       * </b></ul>
        */
       public static function extractPropsWithPrefix(prefix:String, source:Object) : Object {
          paramNotNull("source", source);
@@ -434,12 +445,8 @@ package utils
        * Checks if the given <code>value</code> is of given <code>type</code>. If so, returns
        * <code>value</code> otherwise throws <code>TypeError</code> with a given <code>errorMessage</code>.
        * 
-       * @param value an isntance to check the type of.
-       * <ul><b>
-       * <li>Not null.</li>
-       * </b></ul>
-       * 
-       * @param type required type of the instance referenced by <code>value</code>.
+       * @param value an isntance to check the type of
+       * @param type required type of the instance referenced by <code>value</code>
        * <ul><b>
        * <li>Not null.</li>
        * </b></ul>
@@ -607,34 +614,44 @@ package utils
       }
       
       /**
-       * Creates an object and copies values to appropriate fields from a provided object.
+       * Creates an object and copies values to appropriate fields from a provided generic object that holds data.
        * <ul>
        *    <li>Properties that need to be filled must be marked with either
        *        <code>[Optional]</code> or <code>[Required]</code> metadata tags;</li>
-       *    <li>Properties of primitive type are copied from the source object;</li>
+       *    <li>Properties of primitive type are copied from the data object;</li>
        *    <li>Properties that are of any other type will cause recursive call to <code>create()</code>. A
        *        class can't have property of the same class (itself) type (or subtype) marked with
        *        <code>[Required]</code> and you can't created any similar loops containing only
        *        <code>[Required]</code> tag;</li>
-       *    <li>Properties of <code>Array</code> and <code>IList</code> type must have
-       *        <code>elementType</code> attribute of <code>[Required|Optional]</code> metadata tag defined.
-       *        Properties of <code>Vector</code> type do not need this attribute. Element type can be any
-       *        class;</li>
+       *    <li>Properties of <code>Array</code> and <code>IList</code> type must have <code>elementType</code>
+       *        attribute for <code>[Required|Optional]</code> metadata tag defined. Properties of
+       *        <code>Vector</code> type do not need this attribute. Element type can any class;</li>
        *    <li>You can define properties of your classes as aggregators (<code>aggregatesProps</code> and
        *        <code>aggregatesPrefix</code> attributes of <code>[Required|Optional]</code>) tags.
        *        See <a target="_blank" href="http://wiki-dev.nebula44.com/wiki/Nebula_44:ClientCode"> wiki
        *        page</a> for more information on this feature;</li>
-       *    <li>If source object contains properties of different type than those that are defined
-       *        in destination class, method invocation will end up with an error thrown;</li>
+       *    <li>Properties of complex types (not collections) may also have [PropsMap] tag attached to them.
+       *        This allows you to map properties from data object to properties of the complex type. For
+       *        more information on this feature see <a target="_blank"
+       *        href="http://wiki-dev.nebula44.com/wiki/Nebula_44:ClientCode"> wiki page</a>;</li>
+       *    <li>If data object contains properties of different type than those that are defined
+       *        in destination class, method invocation will end up with an error;</li>
        *    <li>Works only with dynamicly created properties of the data object.</li>
+       * </ul>
        * 
-       * @param type type of an instance to be created.
-       * @param data raw object containing data to be loaded to the instance to be created.
+       * @param type type of an instance to be created
+       * <ul><b>
+       * <li>Not null.</li>
+       * </b></ul>
        * 
-       * @return newly created object with values loaded to its properties from the data object.
+       * @param data raw object containing data to be loaded to the instance to be created
        * 
-       * @throws Error if some properties in source object do not exist in the destination object or if some
-       * of them are of different type. 
+       * @return newly created object with values loaded to its properties from the data object
+       * 
+       * @throws Error if:
+       * <ul>
+       * <li></li>
+       * </ul> 
        */
       public static function create(type:Class, data:Object) : * {
          Objects.paramNotNull("type", type);
@@ -674,15 +691,17 @@ package utils
             return object;
          }
          
-         var errors:Array = new Array();
+         var errs:Array = new Array();
          function pushError(message:String, ... params) : void {
-            errors.push(StringUtil.substitute(message, params));
+            errs.push(StringUtil.substitute(message, params));
          }
          
          // other types: assuming they have metadata tags attached to properties
          var typeInfo:XML = describeType(type).factory[0];
          for each (var propsInfoList:XMLList in [typeInfo.accessor, typeInfo.variable, typeInfo.constant]) {
             for each (var propInfo:XML in propsInfoList) {
+               var readOnly:Boolean = propInfo.name() == "constant" ||
+                                      propInfo.name() == "accessor" && propInfo.@access[0] == "readonly";
                var propMetadata:XMLList = propInfo.metadata;
                var propName:String  = propInfo.@name[0];
                var propClassName:String = String(propInfo.@type[0]).replace("&lt;", "<");
@@ -735,6 +754,24 @@ package utils
                   propAlias = propName;
                var propValue:* = object[propName];
                var propData:* = data[propAlias];
+               
+               if (TypeChecker.isPrimitiveClass(propClass)) {
+                  // [PropsMap] not supported on primitives
+                  if (metaPropsMap != null) {
+                     pushError("[PropsMap] not allowed on a property '{0}' of primitive type", propName);
+                     continue;
+                  }
+                  // read-only primitive error
+                  if (readOnly) {
+                     pushError("Read-only property '{0}' of primitive type {1}", propName, propClass);
+                     continue;
+                  }
+               }
+               // read-only null property
+               else if (propValue == null && readOnly) {
+                  pushError("Read-only property '{0}' of type {1} not initialized", propName, propClass);
+                  continue;
+               }
                
                function setProp(value:Object) : void {
                   if (object[propName] != value)
@@ -799,21 +836,14 @@ package utils
                if (propData == null)
                   continue;
                
-               if (TypeChecker.isPrimitiveClass(propClass)) {
-                  // error when property is a primitive but the value in data object is generic object or 
-                  // an instance of some non-primitive class
-                  if (!TypeChecker.isOfPrimitiveType(propData)) {
-                     pushError(
-                        "Property '{0}' is of primitive type {1}, but the value '{2}' in the data object " +
-                        "is of complex type {3}", propName, propClass, propData, getClass(propData)
-                     );
-                     continue;
-                  }
-                  // [PropsMap] not supported on primitives
-                  if (metaPropsMap != null) {
-                     pushError("[PropsMap] not allowed on a property '{0}' of primitive type", propName);
-                     continue;
-                  }
+               // error when property is a primitive but the value in data object is generic object or 
+               // an instance of some non-primitive class
+               if (TypeChecker.isPrimitiveClass(propClass) && !TypeChecker.isOfPrimitiveType(propData)) {
+                  pushError(
+                     "Property '{0}' is of primitive type {1}, but the value '{2}' in the data object " +
+                     "is of complex type {3}", propName, propClass, propData, getClass(propData)
+                  );
+                  continue;
                }
                
                if (getTypeProcessor(propClass) != null ||
@@ -873,13 +903,14 @@ package utils
             }
          }
          
-         callAfterCreate(object, data);
-         
-         if (errors.length != 0)
-            throw new Error(
-               errors.join("\n") + "\nFix properties in " + type + " or see to it that source " +
-               "object holds values for all required properties of correct type."
+         if (errs.length != 0)
+            throw new AppError(
+               errs.join("\n") + "\nFix properties in " + type + " or see to it that data " +
+               "object holds values for all required properties of correct type. Data object was:\n" +
+               ObjectUtil.toString(data)
             );
+         
+         callAfterCreate(object, data);
          
          return object;
       }
@@ -891,9 +922,9 @@ package utils
          if (metaPropsMap == null)
             return sourceData;
          
-         var errors:Array = new Array();
+         var errs:Array = new Array();
          function pushError(message:String, ... parameters) : void {
-            errors.push(StringUtil.substitute(message, parameters));
+            errs.push(StringUtil.substitute(message, parameters));
          }
          
          var propDataMapped:Object = new Object();
@@ -927,12 +958,12 @@ package utils
                dsMap[destProp] = sourceProp;
          }
          
-         if (errors.length > 0) {
+         if (errs.length > 0) {
             var ident1:String = "\n   ";
             var ident2:String = "\n      ";
             throw new MappingError(
                "MappingError:" + ident1 + "Mapping metadata: " + metaPropsMap.toXMLString() + ident1 +
-               "Errors:" + ident2 + errors.join(ident2)
+               "Errors:" + ident2 + errs.join(ident2)
             );
          }
          
