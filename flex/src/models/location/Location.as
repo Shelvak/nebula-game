@@ -108,7 +108,7 @@ package models.location
             return Localizer.string("Galaxy", "label.wormhole");
          if (isMiniBattleground)
             return Localizer.string("Galaxy", "label.pulsar", [id])
-         if (isSSObject && ML.latestGalaxy.getSSById(solarSystemId).isMiniBattleground)
+         if (isSSObject && ML.latestGalaxy.isMiniBattleground(solarSystemId))
             return Localizer.string("Galaxy", "label.pulsar", [solarSystemId]);
          return NameResolver.resolveSolarSystem(solarSystemId == 0 ? id : solarSystemId);
       }
