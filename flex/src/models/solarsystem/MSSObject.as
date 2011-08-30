@@ -32,7 +32,6 @@ package models.solarsystem
    import namespaces.prop_name;
    
    import utils.DateUtil;
-   import utils.MathUtil;
    import utils.NameResolver;
    import utils.StringUtil;
    import utils.assets.AssetNames;
@@ -414,13 +413,6 @@ package models.solarsystem
             _currentLocation = loc.location;
          }
          return _currentLocation;
-      }
-      
-      /**
-       * Same as <code>angle</code> just measured in radians. 
-       */	   
-      public function get angleRadians() : Number {
-         return MathUtil.degreesToRadians(angle);
       }
       
       [Bindable(event="willNotChange")]
