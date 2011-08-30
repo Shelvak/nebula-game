@@ -1,8 +1,6 @@
 package controllers.timedupdate
 {
    import models.ModelLocator;
-   import models.movement.MRoute;
-   
    
    public class MovementUpdateTrigger implements IUpdateTrigger
    {
@@ -16,15 +14,13 @@ package controllers.timedupdate
       
       
       public function update() : void {
-         for each (var route:MRoute in ML.routes) {
-            route.update();
-         }
+         MasterUpdateTrigger.update(ML.routes);
+         MasterUpdateTrigger.update(ML.squadrons);
       }
       
       public function resetChangeFlags() : void {
-         for each (var route:MRoute in ML.routes) {
-            route.resetChangeFlags();
-         }
+         MasterUpdateTrigger.resetChangeFlags(ML.routes);
+         MasterUpdateTrigger.resetChangeFlags(ML.squadrons);
       }
    }
 }

@@ -4,34 +4,24 @@ package controllers.timedupdate
    import models.solarsystem.SolarSystem;
    
    import utils.DateUtil;
-   import utils.datastructures.iterators.IIterator;
-   import utils.datastructures.iterators.IIteratorFactory;
    
    
    public class SSUpdateTrigger implements IUpdateTrigger
    {
-      private function get ML() : ModelLocator
-      {
+      private function get ML() : ModelLocator {
          return ModelLocator.getInstance();
       }
       
       
-      public function SSUpdateTrigger()
-      {
+      public function SSUpdateTrigger() {
       }
       
       
-      public function update() : void
-      {
-         if (solarSystemsInGalaxyAccessible)
-         {
-            var it:IIterator = IIteratorFactory.getIterator(ML.latestGalaxy.solarSystems);
-            while (it.hasNext)
-            {
-               var ss:SolarSystem = SolarSystem(it.next());
+      public function update() : void {
+         if (solarSystemsInGalaxyAccessible) {
+            for each (var ss:SolarSystem in ML.latestGalaxy.solarSystems) {
                // remove shield protection if it has expired
-               if (ss.isShielded && ss.shieldEndsAt.time <= DateUtil.now)
-               {
+               if (ss.isShielded && ss.shieldEndsAt.time <= DateUtil.now) {
                   ss.shieldOwnerId = 0;
                   ss.shieldEndsAt = null;
                }
@@ -40,22 +30,12 @@ package controllers.timedupdate
          }
       }
       
-      
-      public function resetChangeFlags() : void
-      {
+      public function resetChangeFlags() : void {
          if (solarSystemsInGalaxyAccessible)
-         {
-            var it:IIterator = IIteratorFactory.getIterator(ML.latestGalaxy.solarSystems);
-            while (it.hasNext)
-            {
-               SolarSystem(it.next()).resetChangeFlags();
-            }
-         }
+            MasterUpdateTrigger.resetChangeFlags(ML.latestGalaxy.solarSystems);
       }
       
-      
-      private function get solarSystemsInGalaxyAccessible() : Boolean
-      {
+      private function get solarSystemsInGalaxyAccessible() : Boolean {
          return ML.latestGalaxy != null;
       }
    }

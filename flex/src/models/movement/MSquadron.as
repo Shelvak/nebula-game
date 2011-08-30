@@ -1,8 +1,11 @@
 package models.movement
 {
+   import controllers.timedupdate.MasterUpdateTrigger;
+   
    import flash.errors.IllegalOperationError;
    
    import interfaces.ICleanable;
+   import interfaces.IUpdatable;
    
    import models.BaseModel;
    import models.ModelsCollection;
@@ -47,7 +50,7 @@ package models.movement
    /**
     * Squadrons that have <code>pending</code> set to <code>true</code> are not moved.
     */
-   public class MSquadron extends BaseModel implements ICleanable, ILocationUser
+   public class MSquadron extends BaseModel implements ICleanable, ILocationUser, IUpdatable
    {
       public function MSquadron() : void
       {
@@ -260,7 +263,7 @@ package models.movement
        * Hops that make up the route of this squadron. Do not modify this list directly: use
        * <code>addHop(), addAllHops(), moveToNextHop()</code> methods instead.
        */
-      public var hops:ModelsCollection = new ModelsCollection();
+      public const hops:ModelsCollection = new ModelsCollection();
       
       /**
        * Last hop of the route of the squadron.
@@ -420,7 +423,7 @@ package models.movement
             
             // look for the last hop the squad has to jump to
             for each (hop in hops) {
-               if (hop.arrivesAt.time <= time)
+               if (hop.arrivalEvent.hasOccured)
                   endHop = hop;
                else
                   break;
@@ -492,6 +495,20 @@ package models.movement
          for each (var hop:MHop in hops) {
             hop.updateLocationName(id, name);
          }
+      }
+      
+      
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+      
+      public function update() : void {
+         MasterUpdateTrigger.update(hops);
+         dispatchUpdateEvent();
+      }
+      
+      public function resetChangeFlags() : void {
+         MasterUpdateTrigger.resetChangeFlags(hops);
       }
       
       

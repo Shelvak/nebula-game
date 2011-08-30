@@ -167,14 +167,15 @@ package models.movement
       /* ### IUpdatable ### */
       /* ################## */
       
-      public function resetChangeFlags() : void {
-         arrivalEvent.resetChangeFlags();
-         firstHopEvent.resetChangeFlags();
-      }
-      
       public function update() : void {
          arrivalEvent.update();
          firstHopEvent.update();
+         dispatchUpdateEvent();
+      }
+      
+      public function resetChangeFlags() : void {
+         arrivalEvent.resetChangeFlags();
+         firstHopEvent.resetChangeFlags();
       }
       
       

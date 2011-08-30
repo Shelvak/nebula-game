@@ -561,6 +561,8 @@ package models.player
             vipTime = DateUtil.secondsToHumanString((vipUntil.time - now) / 1000, 2);
          else
             vipTime = null;
+         
+         dispatchUpdateEvent();
       }
       
       public function resetChangeFlags() : void {

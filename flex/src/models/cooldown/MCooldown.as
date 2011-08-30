@@ -76,20 +76,17 @@ package models.cooldown
       }
       
       
-      /* ###################### */
-      /* ### IMSelfUpdating ### */
-      /* ###################### */
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
       
-      
-      public function update() : void
-      {
+      public function update() : void {
          change_flag::endsIn = true;
          dispatchSimpleEvent(MCooldownEvent, MCooldownEvent.ENDS_IN_CHANGE);
+         dispatchUpdateEvent();
       }
       
-      
-      public function resetChangeFlags() : void
-      {
+      public function resetChangeFlags() : void {
          change_flag::endsIn = false;
       }
       

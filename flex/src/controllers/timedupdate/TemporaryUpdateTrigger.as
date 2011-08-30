@@ -15,8 +15,7 @@ package controllers.timedupdate
     */
    public class TemporaryUpdateTrigger implements IUpdateTriggerTemporary
    {
-      public static function getInstance() : IUpdateTriggerTemporary
-      {
+      public static function getInstance() : IUpdateTriggerTemporary {
          return SingletonFactory.getSingletonInstance(TemporaryUpdateTrigger);
       }
       
@@ -24,39 +23,29 @@ package controllers.timedupdate
       private var _registered:Dictionary;
       
       
-      public function TemporaryUpdateTrigger()
-      {
+      public function TemporaryUpdateTrigger() {
          _registered = new Dictionary(true);
       }
       
       
-      public function register(model:IUpdatable) : void
-      {
+      public function register(model:IUpdatable) : void {
          Objects.paramNotNull("model", model);
          _registered[model] = true;
       }
       
-      
-      public function unregister(model:IUpdatable) : void
-      {
+      public function unregister(model:IUpdatable) : void {
          Objects.paramNotNull("model", model);
          delete _registered[model];
       }
       
-      
-      public function update() : void
-      {
-         for (var model:Object in _registered)
-         {
+      public function update() : void {
+         for (var model:Object in _registered) {
             IUpdatable(model).update();
          }
       }
       
-      
-      public function resetChangeFlags() : void
-      {
-         for (var model:Object in _registered)
-         {
+      public function resetChangeFlags() : void {
+         for (var model:Object in _registered) {
             IUpdatable(model).resetChangeFlags();
          }
       }

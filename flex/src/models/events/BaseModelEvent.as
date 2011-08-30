@@ -27,12 +27,17 @@ package models.events
       
       
       /**
-       * Dispatched when <code>id</code> property of <code>BaseModel</code>
-       * changes.
+       * Dispatched when <code>id</code> property of <code>BaseModel</code> changes.
        * 
        * @eventType modelIdChange
        */
       public static const MODEL_ID_CHANGE:String = "modelIdChange";
+      
+      /**
+       * Dispatched by models implementing <code>IUpdatable</code> interface each time <code>update()</code>
+       * method is called and only <b>after it completes all the updating</b>.
+       */
+      public static const UPDATE:String = "update";
       
       
       /**

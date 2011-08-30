@@ -1,16 +1,13 @@
 package components.movement
 {
-   import com.developmentarc.core.utils.EventBroker;
-   
    import components.map.space.Grid;
    
    import flash.geom.Point;
    
-   import globalevents.GlobalEvent;
-   
    import interfaces.ICleanable;
    
    import models.OwnerColor;
+   import models.events.BaseModelEvent;
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.events.MRouteEvent;
@@ -19,7 +16,6 @@ package components.movement
    import spark.components.Group;
    
    import utils.Objects;
-   import utils.DateUtil;
    import utils.locale.Localizer;
    
    
@@ -31,19 +27,16 @@ package components.movement
       }
       
       
-      private var _squadC:CSquadronMapIcon,
-      _squadM:MSquadron,
-      _grid:Grid;
+      private var _squadC:CSquadronMapIcon;
+      private var _squadM:MSquadron;
+      private var _grid:Grid;
       
       
       /* ###################### */
       /* ### INITIALIZATION ### */
       /* ###################### */
       
-      
       /**
-       * Constructor.
-       * 
        * @param model model of a squadron travelling along the route
        * @param grid reference to map grid (will be used for calculating positioning and sizing
        * component)
@@ -59,15 +52,10 @@ package components.movement
          _squadM = squadC.squadron;
          _grid = grid;
          addModelEventHandlers(_squadM);
-         addGlobalEventHandlers();
       }
       
-      
-      public function cleanup() : void
-      {
-         removeGlobalEventHandlers();
-         if (_squadM)
-         {
+      public function cleanup() : void {
+         if (_squadM) {
             removeModelEventHandlers(_squadM);
             _squadM = null;
          }
@@ -77,7 +65,6 @@ package components.movement
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
-      
       
       public override function set visible(value:Boolean):void
       {
@@ -135,10 +122,7 @@ package components.movement
          {
             var hop:MHop = MHop(squadron.hops.getItemAt(idx));
             var hopInfo:CHopInfo = _hopsEndpoints[idx];
-            hopInfo.text = Localizer.string(
-               "Movement", "label.arrivesIn",
-               [DateUtil.secondsToHumanString((hop.arrivesAt.time - currentTime) / 1000)]
-            );
+            hopInfo.text = Localizer.string("Movement", "label.arrivesIn", [hop.arrivalEvent.occuresInString]);
             var coords:Point = _grid.getSectorRealCoordinates(hop.location);
             hopInfo.x = coords.x;
             hopInfo.y = coords.y;
@@ -195,52 +179,25 @@ package components.movement
       /* ### MODEL EVENT HANDLERS ### */
       /* ############################ */
       
-      
-      private function addModelEventHandlers(squad:MSquadron) : void
-      {
-         squad.addEventListener(MRouteEvent.CHANGE, model_routeChangeHandler);
+      private function addModelEventHandlers(squad:MSquadron) : void {
+         squad.addEventListener(MRouteEvent.CHANGE, model_routeChangeHandler, false, 0, true);
+         squad.addEventListener(BaseModelEvent.UPDATE, model_updateHandler, false, 0, true);
       }
       
-      
-      private function removeModelEventHandlers(squad:MSquadron) : void
-      {
-         squad.removeEventListener(MRouteEvent.CHANGE, model_routeChangeHandler);
+      private function removeModelEventHandlers(squad:MSquadron) : void {
+         squad.removeEventListener(MRouteEvent.CHANGE, model_routeChangeHandler, false);
+         squad.removeEventListener(BaseModelEvent.UPDATE, model_updateHandler, false);
       }
       
-      
-      private function model_routeChangeHandler(event:MRouteEvent) : void
-      {
+      private function model_routeChangeHandler(event:MRouteEvent) : void {
          invalidateDisplayList();
          if (event.kind == MRouteEventChangeKind.HOP_ADD)
-         {
             createHopEndpoint();
-         }
          else
-         {
             removeFirstHopEndpoint();
-         }
       }
       
-      
-      /* ############################# */
-      /* ### GLOBAL EVENT HANDLERS ### */
-      /* ############################# */
-      
-      
-      private function addGlobalEventHandlers() : void
-      {
-         EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, global_timedUpdateHandler);
-      }
-      
-      
-      private function removeGlobalEventHandlers() : void
-      {
-         EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, global_timedUpdateHandler);
-      }
-      
-      
-      private function global_timedUpdateHandler(event:GlobalEvent) : void
-      {
+      private function model_updateHandler(event:BaseModelEvent) : void {
          updateHopsEndpoints();
       }
    }

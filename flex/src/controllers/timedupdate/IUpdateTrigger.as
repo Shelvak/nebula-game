@@ -23,7 +23,6 @@ package controllers.timedupdate
        */
       function update() : void;
       
-      
       /**
        * Triggers reset of flags in <code>change_flag</code> namspace of models that were updated
        * as a result of call to <code>update()</code>.

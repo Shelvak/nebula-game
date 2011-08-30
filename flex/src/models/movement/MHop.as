@@ -1,11 +1,14 @@
 package models.movement
 {
+   import interfaces.IUpdatable;
+   
    import models.BaseModel;
    import models.location.ILocationUser;
    import models.location.Location;
    import models.location.LocationMinimal;
+   import models.time.MTimeEventFixedMoment;
    
-   public class MHop extends BaseModel implements ILocationUser
+   public class MHop extends BaseModel implements ILocationUser, IUpdatable
    {
       [Required]
       /**
@@ -17,22 +20,21 @@ package models.movement
       public var routeId:int = 0;
       
       
-      [Required]
+      [Required(alias="arrivesAt")]
       /**
        * Time when this squadron will reach hop's location.
-       * <p><i><b>Metadata</b>: [Required]</i></p>
        * 
        * @default null
        */
-      public var arrivesAt:Date = null;
+      public const arrivalEvent:MTimeEventFixedMoment = new MTimeEventFixedMoment();
       
       
-      [Required]
+      [Required(alias="jumpsAt")]
       /**
        * Time when squadron will jump to another map. This will be set only for last
        * hop in the current are (map).
        */
-      public var jumpsAt:Date = null;
+      public var jumpEvent:MTimeEventFixedMoment = null;
       
       
       [Required]
@@ -64,6 +66,24 @@ package models.movement
       }
       
       
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+      
+      public function update() : void {
+         arrivalEvent.update();
+         if (jumpEvent != null)
+            jumpEvent.update();
+         dispatchUpdateEvent();
+      }
+      
+      public function resetChangeFlags() : void {
+         arrivalEvent.resetChangeFlags();
+         if (jumpEvent != null)
+            jumpEvent.resetChangeFlags()
+      }
+      
+      
       /* ########################### */
       /* ### BaseModel OVERRIDES ### */
       /* ########################### */
@@ -77,8 +97,9 @@ package models.movement
       }
       
       public override function toString() : String {
-         return "[" + "class: " + className + ", routeId: " + routeId + ", arrivesAt: " + arrivesAt +
-                ", index: " + index + ", location: " + location + "]";
+         return "[" + "class: " + className + ", routeId: " + routeId +
+                ", arrivesAt: " + arrivalEvent.occuresAt + ", index: " + index +
+                ", location: " + location + "]";
       }
    }
 }

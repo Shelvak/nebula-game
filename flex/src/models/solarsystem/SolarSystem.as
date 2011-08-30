@@ -126,19 +126,15 @@ package models.solarsystem
       /* ### IMSelfUpdating ### */
       /* ###################### */
       
-      
-      public function update() : void
-      {
-         if (isShielded)
-         {
+      public function update() : void {
+         if (isShielded) {
             change_flag::shieldEndsIn = true;
             dispatchSimpleEvent(SolarSystemEvent, SolarSystemEvent.SHIELD_ENDS_IN_CHANGE);
+            dispatchUpdateEvent();
          }
       }
       
-      
-      public function resetChangeFlags() : void
-      {
+      public function resetChangeFlags() : void {
          change_flag::shieldEndsIn  = false;
          change_flag::shieldEndsAt  = false;
          change_flag::shieldOwnerId = false;
