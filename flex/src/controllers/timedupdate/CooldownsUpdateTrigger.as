@@ -22,7 +22,7 @@ package controllers.timedupdate
          if (cooldownInPlanetAccessible) {
             var cooldown:MCooldown = ML.latestPlanet.ssObject.cooldown;
             cooldown.update();
-            if (cooldown.hasEnded)
+            if (cooldown.endsEvent.hasOccured)
                ML.latestPlanet.ssObject.cooldown = null;
          }
          if (cooldownsInSolarSystemAccessible)
@@ -37,7 +37,7 @@ package controllers.timedupdate
          while (it.hasNext) {
             var cooldown:MCooldown = it.next();
             cooldown.update();
-            if (cooldown.hasEnded)
+            if (cooldown.endsEvent.hasOccured)
                it.remove();
          }
       }

@@ -27,15 +27,8 @@ bars and so on.
          import models.Owner;
          import models.map.MapType;
          
-         import utils.DateUtil;
          import utils.assets.AssetNames;
          import utils.locale.Localizer;
-         
-         
-         private function getPlanetCooldownLabel(seconds:int) : String
-         {
-            return DateUtil.secondsToHumanString(seconds, 2);
-         }
       ]]>
    </fx:Script>
    
@@ -66,7 +59,7 @@ bars and so on.
          <s:Group>
             <ui:IconWithLabel id="icoPlanetCooldown" toolTip="{Localizer.string('General', 'label.cooldownEndsIn')}"
                               icon="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 'cooldown_large')}"
-                              text="{getPlanetCooldownLabel(ML.latestPlanet.ssObject.cooldown.endsIn)}"
+                              text="{ML.latestPlanet.ssObject.cooldown.endsEvent.occuresInString}"
                               visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
                               ML.latestPlanet.ssObject.cooldown != null}"
                               left="0" right="0" top="0" bottom="4"/>
