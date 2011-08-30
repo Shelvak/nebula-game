@@ -14,6 +14,16 @@ BASE = '/var/backups'
 SRC = "#{BASE}/*/{mysql,filesystem}"
 SAFE = '/var/backups-safe'
 CHECKPOINTS = 'xtrabackup_checkpoints'
+NAME = 'sync_backups.rb'
+
+$0 = NAME
+processes = `ps aux`.split("\n").
+  map { |line| line.split(/\s+/, 11)[-1].strip }.
+  grep(NAME)
+if processes.size > 1
+  puts "Another instance already running, exiting."
+  exit 0
+end
 
 def run(cmd)
   puts "Running '#{cmd}'..."
