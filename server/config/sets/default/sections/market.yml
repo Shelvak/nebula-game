@@ -36,4 +36,4 @@ bot.resources.range.0: [3750, 7500]         # metal range
 bot.resources.range.1: [10000, 20000]       # energy range
 bot.resources.range.2: [750, 1500]         # zetium range
 # Cooldown range for when system offer is totally bought out.
-bot.resources.cooldown: [<%= 15.minutes %> / speed, <%= 1.hour %> / speed]
+bot.resources.cooldown: [<%= 10.minutes %> / speed, <%= 30.minutes %> / speed]
