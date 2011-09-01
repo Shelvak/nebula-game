@@ -139,7 +139,14 @@ package models.solarsystem
        * Idicates if this <code>MSSObject</code> in a battleground solar system.
        */
       public function get inBattleground() : Boolean {
-         return ML.latestGalaxy.battlegroundId == solarSystemId;
+         return ML.latestGalaxy.isBattleground(solarSystemId);
+      }
+      
+      /**
+       * Idicates if this <code>MSSObject</code> in a mini-battleground solar system.
+       */
+      public function get inMiniBattleground() : Boolean {
+         return ML.latestGalaxy.isMiniBattleground(solarSystemId);
       }
       
       private var _name:String = "";

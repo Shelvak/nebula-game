@@ -72,14 +72,11 @@
       ]]>
    </fx:Script>
    
-   <!--- Toggle button that shows and hides menu. -->
-   <s:ToggleButton id="btnStart" bottom="0" click="showHideMenu()" skinClass="components.skins.StartButtonSkin"/>
-   
    <!--- Styled container for menu buttons. -->
-   <s:SkinnableContainer left="0" bottom="{btnStart.height + 3}" id="menuItems" enabled="false"
+   <s:SkinnableContainer left="0" bottom="{btnStart.height - 30}" id="menuItems" enabled="false"
                          skinClass="components.menus.skins.MainMenuItemsSkin"
                          click="toggleStartButton(event)">
-      <base:AdvancedContainer height="100%">
+      <base:AdvancedContainer top="0" bottom="20">
          <!--- Button for viewing vip screen. -->
          <s:Group width="100%">
             <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
@@ -141,7 +138,7 @@
             <s:VerticalLayout gap="1" paddingTop="6" verticalAlign="middle"/>
          </base:layout>
       </base:AdvancedContainer>
-      <base:AdvancedContainer height="100%">
+      <base:AdvancedContainer top="0" bottom="20">
          <!-- TOP -->
          <s:BitmapImage id="topLeft" left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_top_left')}"/>
          <s:BitmapImage id="topRight" right="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_top_right')}"/>
@@ -268,7 +265,7 @@
                   <s:HorizontalLayout paddingLeft="6" paddingTop="10"/>
                </s:layout>
             </s:Group>
-            <s:Group>
+            <s:Group toolTip="{Localizer.string('Credits', 'label.credsTooltip', [ML.player.freeCreds])}">
                <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.creds')) + ':'}" 
                         width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
                         color="#eec500"/>
@@ -277,7 +274,8 @@
                   <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
                </s:layout>
             </s:Group>
-            <s:Group visible="{ML.player.vipLevel > 0}">
+            <s:Group visible="{ML.player.vipLevel > 0}"
+                     toolTip="{Localizer.string('Credits', 'label.credsTooltip', [ML.player.freeCreds])}">
                <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.credsSum')) + ':'}" 
                         width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
                         color="#eec500"/>
@@ -294,5 +292,8 @@
       </base:AdvancedContainer>
       
    </s:SkinnableContainer>
+   
+   <!--- Toggle button that shows and hides menu. -->
+   <s:ToggleButton id="btnStart" bottom="0" click="showHideMenu()" skinClass="components.skins.StartButtonSkin"/>
    
 </base:BaseContainer>

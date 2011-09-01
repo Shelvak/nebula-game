@@ -23,7 +23,6 @@
          import models.planet.Planet;
          import models.planet.events.PlanetEvent;
          
-         import mx.collections.ArrayCollection;
          import mx.collections.ListCollectionView;
          import mx.events.FlexEvent;
          

@@ -21,10 +21,9 @@ module Parts::Constructor
           belongs_to :constructable, :polymorphic => true
           # Destroy constructable if it's currently present.
           before_destroy do
-            constructable = self.constructable
-            constructable.destroy unless constructable.nil?
             # Reset state to active so we could deactivate.
             if working?
+              cancel_constructable!
               self.state = Building::STATE_ACTIVE
               deactivate
             end
@@ -126,7 +125,7 @@ module Parts::Constructor
 
     # Cancels constructing whatever it was constructing. Returns part of
     # the resources back.
-    def cancel!
+    def cancel_constructable!
       raise GameLogicError.new("Constructor isn't working!") unless working?
       constructable.cancel!
       CallbackManager.unregister(self,

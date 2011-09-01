@@ -97,9 +97,15 @@
                                ? Localizer.string ('Units', 'label.load')
                                : Localizer.string ('Units', 'label.unload')}" 
                                enabled="{(LS.volume > 0) &amp;&amp;
-                               (LS.target is Unit &amp;&amp; (((LS.transporter.stored + 
-                               LS.volume) &lt;= LS.transporter.storage))
-                               || (!LS.target is Unit))}" 
+                               (
+                               (LS.target is Unit &amp;&amp; 
+                               ((LS.transporter.stored + LS.volume) &lt;= LS.transporter.storage)
+                               
+                               )
+                               || 
+                               (!(LS.target is Unit))
+                               )
+                               }" 
                                click="load_clickHandler(event)"
                                horizontalCenter="0"
                                skinClass="components.skins.YellowButtonSkin"/>

@@ -78,6 +78,25 @@ package components.popups
       }
       
       
+      private var _confirmButtonVisible:Boolean = true;
+      /**
+       * Change to make confirm button visible or invisible.
+       */
+      public function set confirmButtonVisible(value:Boolean) : void {
+         if (_confirmButtonVisible != value) {
+            _confirmButtonVisible = value;
+            f_confirmButtonVisibleChanged = true;
+            invalidateProperties();
+         }
+      }
+      /**
+       * @private
+       */
+      public function get confirmButtonVisible() : Boolean {
+         return _confirmButtonVisible;
+      }
+      
+      
       /**
        * Whether to close the popup when confirm button has been clicked.
        * 
@@ -130,6 +149,25 @@ package components.popups
       }
       
       
+      private var _cancelButtonVisible:Boolean = true;
+      /**
+       * Change to make confirm button visible or invisible.
+       */
+      public function set cancelButtonVisible(value:Boolean) : void {
+         if (_cancelButtonVisible != value) {
+            _cancelButtonVisible = value;
+            f_cancelButtonVisibleChanged = true;
+            invalidateProperties();
+         }
+      }
+      /**
+       * @private
+       */
+      public function get cancelButtonVisible() : Boolean {
+         return _cancelButtonVisible;
+      }
+      
+      
       /**
        * @see BasePopup#addActionButton()
        */
@@ -146,35 +184,29 @@ package components.popups
       
       private var f_confirmButtonLabelChanged:Boolean = true,
                   f_confirmButtonEnabledChanged:Boolean = true,
+                  f_confirmButtonVisibleChanged:Boolean = true,
                   f_cancelButtonLabelChanged:Boolean = true,
-                  f_cancelButtonEnabledChanged:Boolean = true;
+                  f_cancelButtonEnabledChanged:Boolean = true,
+                  f_cancelButtonVisibleChanged:Boolean = true;
       
       
       protected override function commitProperties() : void
       {
          super.commitProperties();
          
-         if (f_cancelButtonEnabledChanged)
-         {
-            _btnCancel.enabled = _cancelButtonEnabled;
-         }
-         if (f_cancelButtonLabelChanged)
-         {
-            _btnCancel.label = _cancelButtonLabel;
-         }
-         if (f_confirmButtonEnabledChanged)
-         {
-            _btnConfirm.enabled = _confirmButtonEnabled;
-         }
-         if (f_confirmButtonLabelChanged)
-         {
-            _btnConfirm.label = _confirmButtonLabel;
-         }
+         if (f_cancelButtonEnabledChanged)  _btnCancel.enabled = _cancelButtonEnabled;
+         if (f_cancelButtonLabelChanged)    _btnCancel.label = _cancelButtonLabel;
+         if (f_cancelButtonVisibleChanged)  _btnCancel.visible = _cancelButtonVisible;
+         if (f_confirmButtonEnabledChanged) _btnConfirm.enabled = _confirmButtonEnabled;
+         if (f_confirmButtonLabelChanged)   _btnConfirm.label = _confirmButtonLabel;
+         if (f_cancelButtonVisibleChanged)  _btnConfirm.visible = _confirmButtonVisible;
          
          f_cancelButtonEnabledChanged =
          f_cancelButtonLabelChanged =
+         f_cancelButtonVisibleChanged =
          f_confirmButtonEnabledChanged =
-         f_confirmButtonLabelChanged = false;
+         f_confirmButtonLabelChanged =
+         f_confirmButtonVisibleChanged = false;
       }
       
       

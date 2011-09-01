@@ -510,10 +510,14 @@ assets:
         star_grey.png:     Star2g.png
         time.png:          TimeIcon.png
         raidTime.png:      RaidIcon.png
+        raidTime_large.png: 20x20_raid.png
         scientists.png:    ScientistsIcon.png
         metal.png:         MetalIcon.png
+        metal_large.png:   20x20_metal.png
         energy.png:        EnergyIcon.png
+        energy_large.png:  20x20_energy.png
         zetium.png:        ZetiumIcon.png
+        zetium_large.png:  20x20_zetium.png
         creds.png:         CredsIcon.png
         wreckage.png:      ResourceIcon.png
         <% gun_types.each do |gun| %>
@@ -531,6 +535,7 @@ assets:
         offline.png: Status_offline.png
         hidden.png: Status_hidden.png
         cooldown.png: CooldownIcon.png
+        cooldown_large.png: 20x20_cooldown.png
         population.png: PopulationIcon.png
 
       "notifications":
@@ -686,8 +691,13 @@ assets:
         btn_chan_private_down.png:      Chat_b3_down.png
         btn_chan_private_disabled.png:  Chat_b3_disabled.png
         friend_offline_background.png:  W_bg.png
-
-
+      
+      "announcements":
+        button_up.png:        Shutdown_button_up.png
+        button_fade.png:      Shutdown_button_up2.png
+        button_over.png:      Shutdown_button_over.png      
+        image.jpg:            Shutdown_popup_screen.jpg
+      
       "buttons":
         close_button_background.png:  Close_panel.png
         info_up.png:       Infob_up.png

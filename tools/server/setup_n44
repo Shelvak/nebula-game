@@ -436,8 +436,10 @@ if ARGV.include?("basic") # {{{
 
   install "dialog"
   remove "samba.*" if File.exists?("/etc/init.d/smbd")
-  install "man less cron mc rubygems libjson-ruby irb gnupg wget host exim4"
+  install "man less cron mc rubygems libjson-ruby irb gnupg wget host " +
+    "exim4 logrotate netcat ntpdate"
   run "dpkg-reconfigure exim4-config"
+  run "dpkg-reconfigure tzdata"
 
   run "apt-get update"
   run "apt-get dist-upgrade -y"
@@ -479,6 +481,8 @@ if ARGV.include?("basic") # {{{
 
   # User creation
   adduser USER
+  as(USER) { "mkdir ~/config" }
+  as(USER) { "mkdir ~/run" }
   File.ensure("#{HOME}/.profile", "export environment='production'\n", nil, UCH)
   (`crontab -u #{USER} -l`.strip == "").and {
     puts "Installing default crontab for #{USER}"
@@ -527,7 +531,7 @@ deb-src http://repo.percona.com/apt lucid main")
     run "mkdir -p /etc/mysql"
     File.write(MYCNF_FILE, MYCNF)
   end
-  install "percona-server-server"
+  install "percona-server-server xtrabackup"
   install "phpmyadmin php5-mcrypt"
   fix_php_ini!
 end # }}}
@@ -551,7 +555,7 @@ if ARGV.include?("server") # {{{
   missingok
   dateext
   postrotate
-    cd #{HOME}/nebula-server/current/lib/daemon.rb hup
+    cd #{HOME}/nebula-server/current/ && lib/daemon.rb hup
   endscript
 }
 }
@@ -624,7 +628,7 @@ XSendFile On
 # http://www.qc4blog.com/?p=555
 XSendFileAllowAbove on
 })
-  run "a2enmod rewrite xsendfile"
+  run "a2enmod rewrite xsendfile expires headers"
 
   rvm "use --create #{rvms}"
   (rvmuse(rvms, "which bundle") == "").and {
@@ -656,6 +660,30 @@ PassengerRuby #{Dir["/usr/local/rvm/wrappers/#{rubyv}-*@#{rubygs}/ruby"][0]}
     File.write(passenger_load, content)
     run "a2enmod passenger"
   end
+
+  # Install mysql2 gem... Must do tricks to avoid .so conflicts.
+  puts 'mysql2 gem tricks... ENGAGE!'
+  puts "BACKUPING"
+  Dir["/usr/lib/libmysqlclient*.so"].each do |f|
+    run("mv -vf #{f} #{f}~")
+  end
+
+  puts "SUBSTITUTING"
+  Dir["/usr/lib/libmysqlclient*.so.18"].each do |f|
+    name = f.sub(/\.18$/, '')
+    run("ln -sfv #{f} #{name}")
+  end
+
+  puts "COMPILING!"
+  rvmuse(rvms, "gem install mysql2 --version='~>0.2.6' --no-rdoc --no-ri")
+
+  puts "RESTORING"
+  Dir["/usr/lib/libmysqlclient*.so"].each do |f|
+    run("rm -vf #{f}")
+    run("mv -vf #{f}~ #{f}")
+  end
+
+  puts "Shazam! mysql2 is installed and linked against libmysqlclient18"
 
   as(USER) { rvm_str("rvmrc trust #{HOME}/web/current/.rvmrc") }
 

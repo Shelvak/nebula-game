@@ -4,7 +4,7 @@ package tests.notifications.tests
    
    import controllers.notifications.NotificationsCommand;
    
-   import ext.hamcrest.object.equals;
+   import ext.hamcrest.events.causesTarget;
    
    import models.BaseModel;
    import models.notification.Notification;
@@ -13,7 +13,6 @@ package tests.notifications.tests
    
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.hasItem;
-   import org.hamcrest.object.equalTo;
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.instanceOf;
    import org.hamcrest.object.notNullValue;
@@ -61,7 +60,7 @@ package tests.notifications.tests
       public function isNewChangeEvent() : void
       {
          notif.isNew = false;
-         notif.addEventListener(NotificationEvent.ISNEW_CHANGE, asyncHandler(eventHandler_empty, 10));
+         notif.addEventListener(NotificationEvent.IS_NEW_CHANGE, asyncHandler(eventHandler_empty, 10));
          notif.isNew = true;
       };
       
@@ -137,6 +136,16 @@ package tests.notifications.tests
             "read": true,
             "isNew": false
          }));
+      }
+      
+      
+      [Test]
+      public function messageChangeEventWhenLocationIsUpdated() : void {
+         notif = BaseModel.createModel(Notification, Data.notifOne);
+         assertThat(
+            "updating location", function():void{ notif.updateLocationName(2, "name") },
+            causesTarget(notif) .toDispatchEvent (NotificationEvent.MESSAGE_CHANGE)
+         );
       }
       
       

@@ -2,7 +2,9 @@
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:base="components.base.*"
-                    xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:components="utils.components.*" xmlns:credits="components.credits.*">
+                    xmlns:mx="library://ns.adobe.com/flex/mx" 
+                    xmlns:components="utils.components.*" 
+                    xmlns:credits="components.credits.*" xmlns:ui="components.ui.*">
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
@@ -14,6 +16,7 @@
          import controllers.GlobalFlags;
          import controllers.buildings.BuildingsCommand;
          import controllers.objects.ObjectClass;
+         import controllers.ui.NavigationController;
          
          import globalevents.GCreditEvent;
          
@@ -27,6 +30,9 @@
          
          [Bindable]
          private var _constructableModel: *;
+         
+         [Bindable]
+         public var cancelable: Boolean = false;
          
          public function set constructableModel(value: *): void
          {
@@ -102,10 +108,32 @@
             speedPopUp.show();
          }
          
+         [Bindable]
+         private var hovered: Boolean = false;
+         
+         protected function btnDelete_clickHandler(event:MouseEvent):void
+         {
+            if (_constructableModel is Building)
+            {
+               ML.latestPlanet.selectObject(_constructableModel);
+            }
+            else
+            {
+               var fac: Building = ML.latestPlanet.getBuildingByConstructable(_constructableModel.id, 
+                  ObjectClass.UNIT);
+               if (fac != null)
+               {
+                  NavigationController.getInstance().showFacilities(fac.id, true);
+               }
+            }
+         }
+         
       ]]>
    </fx:Script>
    <s:BorderContainer height="{imageHeight + 4}" width="100%" borderColor="#474747" borderWeight="1"
-                      borderStyle="solid">
+                      borderStyle="solid"
+                      rollOver="hovered = true"
+                      rollOut="hovered = false">
       <s:Rect left="0" right="0" top="0" bottom="0">
          <s:fill>
             <s:SolidColor color="#0f0f0f"/>
@@ -118,6 +146,15 @@
                ?AssetNames.getBuildingImageName(_constructableModel.type)
                :AssetNames.getUnitImageName(_constructableModel.type))}" 
                width="100%" height="{imageHeight}" verticalCenter="0"/>
+            <s:Group visible="{hovered &amp;&amp; cancelable}" top="1" right="1" 
+                     width="{btnDelete.width + 2}">
+               <ui:DarkRoundedBackground top="0" bottom="0" left="0" right="0"/>
+               <s:Button skinClass="components.skins.DeleteButtonSkin"
+                         id="btnDelete"
+                         left="1" top="1" bottom="1" right="1"
+                         rollOver="hovered = true" 
+                         click="btnDelete_clickHandler(event)"/>
+            </s:Group>
          </s:Group>
          <s:Group left="{imageGroup.width}" right="0" height="100%"> <!--  verticalCenter="0" -->
             <s:Rect top="0" bottom="0" right="0" left="0">
@@ -135,7 +172,7 @@
                                   + '%'}"/>
                   <s:Group width="100%">
                      <s:Label fontSize="10" text="{Localizer.string('Buildings', 'property.timeToFinish.long', 
-                             [_constructableModel.upgradePart.timeToFinishString])}" horizontalCenter="0"/>
+                              [_constructableModel.upgradePart.timeToFinishString])}" horizontalCenter="0"/>
                   </s:Group>
                   <s:layout>
                      <s:VerticalLayout gap="4"/>
@@ -145,7 +182,6 @@
                                  enabled="{_constructableModel.upgradePart.upgradeProgress &lt; 1}"/>
             </s:Group>
          </s:Group>
-         
       </s:Group>
    </s:BorderContainer>
 </base:BaseContainer>

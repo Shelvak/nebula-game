@@ -56,7 +56,8 @@ module GameServer
     traffic_debug "Sending message: #{json}"
     send_data "#{json}\n"
   rescue Exception => e
-    error "Failed while serializing: #{message.inspect}"
+    error "Failed while serializing: #{message.inspect}\n\n#{e.inspect
+      }\n\n#{e.backtrace.join("\n")}"
     raise e
   end
 

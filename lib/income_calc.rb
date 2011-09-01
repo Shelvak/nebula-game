@@ -5,30 +5,30 @@ INCOME = {
     100,
     {
       :coding => [
-        68,
+        62,
         {
           :infrastructure => [5, :arturaz],
-          :server => [40, :arturaz],
-          :client => [50,
+          :server => [37.5, :arturaz],
+          :client => [52.5,
             [
-              [55, :mikis],
-              [45, :jho]
+              [50, :mikis],
+              [50, :jho]
             ]
           ],
-          :web => [5, :deividas]
+          :web => [5, :spx]
         }
       ],
       :art => [
-        22,
+        23,
         [
-          [60, :tomas],
-          [40, :valdas],
+          [70, :tomas],
+          [30, :valdas],
         ]
       ],
-      :other => [10,
+      :other => [15,
         {
-          :management => [20, :arturaz],
-          :ideas => [80,
+          :management => [10, :arturaz],
+          :ideas => [85,
             [
               [50, :arturaz],
               [50, :titan]

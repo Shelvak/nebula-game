@@ -9,8 +9,6 @@
       <![CDATA[
          import controllers.routes.RoutesCommand;
          
-         import globalevents.GUnitsScreenEvent;
-         
          import models.ModelLocator;
          import models.Owner;
          import models.movement.MRoute;

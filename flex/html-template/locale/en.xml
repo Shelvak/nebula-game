@@ -375,8 +375,6 @@
   </Alliances>
 
   <BattleMap>
-    <individual value="Individual" />
-    <combined value="Combined" />
     <status0 value="Self" />
     <status1 value="Alliance" />
     <status2 value="NAP" />
@@ -451,6 +449,16 @@
       <p>Click on empty map space to enter building construction mode</p>
     </message.pressOnEmpty>
     <panelTitle.scientists value="Scientists" />
+    <panelTitle.cancelProgress value="Cancel upgrade" />
+    <label.cancelUpgrade>
+      <p>These resources will be returned if you cancel upgrade of this 
+      building:</p>
+    </label.cancelUpgrade>
+    <label.cancelConstructor>
+      <p>These resources will be returned if you cancel construction of 
+      this building:</p>
+    </label.cancelConstructor>
+    <label.cancel value="Cancel" />
     <message.scientistsNotAvailable value="This building is currently upgrading and its scientists are unavailable."/>
     <warning.buildingWorking>
       <p>Anything this building is constructing will be destroyed if you 
@@ -466,7 +474,7 @@
     <label.cred>
       <p>{0 one[? cred] many[? creds]}</p>
     </label.cred>
-    <tileBonuses value="Tile bonuses" />
+    <tileBonuses value="Tile properties" />
     <armor.bonus value="Armor" />
     <energy.bonus value="Energy output" />
     <construction.bonus value="Construction speed" />
@@ -478,7 +486,8 @@
     <label.battlegroundOwner> 
       <p>The longer you rule this planet, the less productive 
       will the NPC factories become.</p>
-    </label.battlegroundOwner> 
+    </label.battlegroundOwner>
+    <warning.deployCancel value="You will not get your deployed unit back" /> 
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>
@@ -1049,6 +1058,11 @@
     <label.whouldFinish value="Upgrade would finish in" />
     <label.selectAccelerate value="Select acceleration amount" />
     <label.creds value="creds" />
+    <!-- {0} amount of free creds -->
+    <label.credsTooltip>
+      <p>{0} of them are quest rewards.</p>
+      <p>Creds received from quest rewards cannot be used in market.</p>
+    </label.credsTooltip>
     <label.credsSum value="Total creds" />
     <label.waitingCreds value="Waiting for creds..." />
     <label.instant value="Instant" />
@@ -1481,7 +1495,7 @@
     <label.marketOfferBought.message2 value="has bought:" />
     <label.marketOfferBought.for value="for" />
     <label.marketOfferBought.amountLeft>
-    <!-- 1: metal, energy or zetium -->
+    <!-- 1: metal, energy, zetium or creds -->
       <p>Your offer still has {0} {1} left.</p>
     </label.marketOfferBought.amountLeft>
     <label.marketOfferBought.allBought value="Your offer has been bought out." />
@@ -1597,6 +1611,18 @@
       <p>Are you sure you want to convert {0 one[one VIP cred] many[? VIP creds]} 
       to {1 one[one cred] many[? creds]}?</p>
     </message.convertCreds>
+    
+    <title.cancelUnitTraining value="Cancel unit training" />
+    <message.cancelUnitTraining 
+    value="Are you sure you want to cancel training of this unit?"/>
+    
+    <title.cancelUpgrade value="Cancel upgrade" />
+    <message.cancelUpgrade 
+    value="Are you sure you want to cancel upgrade of this building?"/>
+    
+    <title.cancelConstructor value="Cancel construction" />
+    <message.cancelConstructor 
+    value="Are you sure you want to cancel construction of this building?"/>
     
     <title.cancelOffer value="Cancel offer" />
     <message.cancelOffer>
@@ -3704,6 +3730,7 @@
     <label.count value="Count:" />
     <label.current value="Current" />
     <label.queued value="Queued" />
+    <!-- These two have to be short, because they are in large font. -->
     <label.dropItems.build value="Drop items here to build!" />
     <label.dropItems.queue value="Drop items here to queue!" />
     <label.fullQueue value="Construction queue is full" />
@@ -3780,6 +3807,10 @@
     <warning.noFleets>
       <p>There are currently no ships leaving this planet.</p>
     </warning.noFleets>
+    
+    <btnLabel.cancel value="Cancel" />
+    <label.cancelTraining
+    value="Upon training cancellation you will get:" />
 
     <stored.short>
       <p>R: {0}%<br/>U: {1}%</p>
@@ -4066,7 +4097,7 @@
   </WelcomeScreen>
 
   <Chat>
-     <format.time value="HH:NN:SS"/>
+     <format.time value="JJ:NN:SS"/>
      <message.channelJoin  value="[ {0} joined ]"/>
      <message.channelLeave value="[ {0} left ]"/>
      <message.friendOffline value="This player is currently offline."/>
@@ -4144,5 +4175,10 @@
     <label.freeCreds value="You can not use free creds in the market." />
     <label.moreInfo value="Why?" />
   </Market>
+  
+  <Announcements>
+    <title.popup value="Announcement"/>
+    <label.close value="Close"/>
+  </Announcements>
 
 </locale>

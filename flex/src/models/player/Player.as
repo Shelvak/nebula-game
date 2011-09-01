@@ -128,6 +128,7 @@ package models.player
        */
       public var loggedIn:Boolean = false;
       
+      prop_name static const dailyBonus:String = "dailyBonus";
       [SkipProperty]
       public var dailyBonus: Reward = null;
       

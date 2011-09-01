@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<popups:ActionConfirmationPopup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                                xmlns:s="library://ns.adobe.com/flex/spark" 
+                                xmlns:mx="library://ns.adobe.com/flex/mx"
+                                xmlns:popups="components.popups.*"
+                                title="{getString('title.popup')}"
+                                confirmButtonEnabled="false"
+                                confirmButtonVisible="false"
+                                cancelButtonEnabled="true"
+                                cancelButtonLabel="{getString('label.close')}"
+                                cancelButtonClickHandler="this_cancelButtonClickHandler"
+                                creationComplete="this_creationCompleteHandler(event)">
+   <fx:Script>
+      <![CDATA[
+         import models.announcement.MAnnouncement;
+         import models.announcement.MAnnouncementEvent;
+         
+         import mx.events.FlexEvent;
+         import mx.managers.PopUpManager;
+         
+         import spark.components.Button;
+         
+         import utils.SingletonFactory;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         
+         
+         public static function getInstance() : AnnouncementPopup {
+            return SingletonFactory.getSingletonInstance(AnnouncementPopup);
+         }
+         
+         
+         private function get ANNOUNCEMENT() : MAnnouncement {
+            return MAnnouncement.getInstance();
+         }
+         
+         private function reset() : void {
+            if (_isShown) {
+               _isShown = false;
+               PopUpManager.removePopUp(this);
+            }
+         }
+         
+         private var _isShown:Boolean = false;
+         public function get isShown() : Boolean {
+            return _isShown;
+         }
+         
+         override public function show() : void {
+            if (_isShown)
+               PopUpManager.bringToFront(this);
+            else {
+               _isShown = true;
+               super.show();
+            }
+         }
+         
+         private function this_creationCompleteHandler(event:FlexEvent) : void {
+            ANNOUNCEMENT.addEventListener
+               (MAnnouncementEvent.RESET, announcement_resetHandler, false, 0, true);
+         }
+         
+         private function this_cancelButtonClickHandler(button:Button) : void {
+            _isShown = false;
+         }
+         
+         private function announcement_resetHandler(event:MAnnouncementEvent) : void {
+            reset();
+         }
+         
+         private function getString(property:String) : String {
+            return Localizer.string("Announcements", property);
+         }
+         
+         private function getImage(name:String) : BitmapData {
+            return ImagePreloader.getInstance().getImage(AssetNames.ANNOUNCEMENTS_IMAGES_FOLDER + name);
+         }      
+      ]]>
+   </fx:Script>
+   <popups:layout>
+      <s:VerticalLayout horizontalAlign="contentJustify" gap="20"/>
+   </popups:layout>
+   <s:Group>      
+      <s:BitmapImage source="{getImage('image')}" left="-10" right="-10" top="-13" bottom="0"/>
+   </s:Group>
+   <s:Group>
+      <s:RichText fontSize="16" left="0" right="0" lineBreak="toFit" textAlign="center"
+                  textFlow="{ANNOUNCEMENT.messageTextFlow}"/>
+   </s:Group>
+   <s:Group>
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="center" gap="0"/>
+      </s:layout>
+      <s:Label styleName="h1" text="{ANNOUNCEMENT.event.occuresAtString}"/>
+      <s:Label styleName="h2" text="{ANNOUNCEMENT.event.occuresInString}"/>
+   </s:Group>
+</popups:ActionConfirmationPopup>

@@ -450,8 +450,12 @@
       režimą.</p>
     </message.pressOnEmpty>
     <panelTitle.scientists value="Mokslininkai" />
+    <panelTitle.cancelProgress value="Atšaukti statybas" />
+    <label.cancelUpgrade value="Atšaukęs pastato tobulinimą gausi:" />
+    <label.cancelConstructor value="Atšaukęs pastato statybą gausi:" />
+    <label.cancel value="Atšaukti" />
     <message.scientistsNotAvailable>
-      <p>Pastatas yra tobulinimas, jame dirbantys mokslininkai yra 
+      <p>Pastatas yra tobulinamas, jame dirbantys mokslininkai yra 
       nepasiekiami.</p>
     </message.scientistsNotAvailable>
     <warning.buildingWorking>
@@ -459,6 +463,8 @@
       ką stato šis pastatas, bus taip pat sunaikinta.</p>
     </warning.buildingWorking>
     <toolTip.afterUpgrade value="Po patobulinimo" />
+    <warning.deployCancel 
+    value="Atšaukus statybas išskleidžiamas tankas bus prarastas!" /> 
 
     <title.boost value="Padidinti" />
     <title.buildingBonus value="Pastato privalumai" />
@@ -469,7 +475,7 @@
     <label.cred>
       <p>{0 one[? kredas] 1sts[? kredas] tens[? kredų] many[? kredai]}</p>
     </label.cred>
-    <tileBonuses value="Žemėlapio privalumai" />
+    <tileBonuses value="Žemėlapio ypatybės" />
     <armor.bonus value="Šarvai" />
     <energy.bonus value="Energijos gamyba" />
     <construction.bonus value="Statymo greitis" />
@@ -548,7 +554,7 @@
       <p>
         Neaktyvūs pastatai nevartoja energijos, tačiau ir neatlieka savo 
         funkcijų. Aktyvuok šį pastatą, jog pratęstum jo darbą. Jeigu šis 
-        pastatas šiuo metu yra tobulinimas, jis aktyvuos automatiškai 
+        pastatas šiuo metu yra tobulinamas, jis aktyvuosis automatiškai 
         pasibaigus tobulinimui.
       </p>
     </text.deactivated>
@@ -607,7 +613,7 @@
       <p>
         Pirmtakai buvo nepaprastai išsivysčiusi rasė, tačiau tai netrukdė jiems
         būti ir itin religingais. Jie rinkdavosi šiose šventyklose, jog 
-        melstusi savo technologiniams dievams.</p>
+        melstųsi savo technologiniams dievams.</p>
       <p>Sakoma, jog žemė, ant kurios stovi šie pastatai yra šventa. Nežinia
       ar tai tiesa, tačiau ji yra ypatingai saugoma.</p>
     </NpcTemple.about>
@@ -631,7 +637,7 @@
       <p>Šie vartai buvo naudojami perkelti karius ir netgi kosminius laivus 
       milžiniškais atstumais akimirksniu. Jie galėdavo perskrosti tarpus tarp
       planetų ar netgi saulės sistemų per kelias sekundes.</p>
-      <p>Ir netgi jiems nebefunkcionuojant prie jų vartų stovi didžiulės 
+      <p>Ir netgi jiems nebefunkcionuojant prie vartų stovi didžiulės 
       pajėgos, kurios pasiruošusios ginti šiuos vartus bet kurią akimirką. Jos
       neleis tau užimti šio pastato.</p>
     </NpcJumpgate.about>
@@ -751,7 +757,7 @@
     </EnergyStorage.about>
 
     <Barracks.name ref="Objects/Barracks" />
-    <Barracks.tooltip value="Apmokina kareivius" />
+    <Barracks.tooltip value="Apmoko kareivius" />
     <Barracks.about>
       <p>
         Geriausi vyrai ir moterys yra treniruojami šioje bazėje, kad pavirstų
@@ -824,7 +830,7 @@
       <p>
         Šie milžiniški kranai ypač praverčia statant naujas kolonijas. Jie 
         ypatingai naudingi tuo, jog gali turėti daug nurodymų savo eilėje.
-        Naudojant keletą šių kranų galima pastatati visą koloniją per keletą
+        Naudojant keletą šių kranų galima pastatyti visą koloniją per keletą
         dienų.
       </p>
     </Crane.about>
@@ -847,10 +853,10 @@
     <Radar.common>
       <p>
         Šie milžiniški pastatai yra naudojami giliosios erdvės tyrinėjimui. 
-        Siurbdami energiją iš mūsų generatorių jie pasitelkia ją, jog galėtume
-        matyti planetas mūsų saulės sistemoje, bei kitas saulės sistemas. Jie
-        netgi sugeba užfiksuoti draugiškų ar priešiškų laivų judėjimą ir 
-        suteikia mums taktinę informaciją, kuri būtina mūsų veiksmams planuoti.
+        Siurbdami energiją iš mūsų generatorių, jie leidžia matyti kitas saulės
+        sistemas bei jų planetas. Jie netgi sugeba užfiksuoti draugiškų bei
+        priešiškų laivų judėjimą ir suteikia mums taktinę informaciją, kuri būtina
+        veiksmams planuoti.
       </p>
     </Radar.common>
     <Radar.about>
@@ -912,9 +918,9 @@
     <Thunder.tooltip value="Gynybinis bokštelis prieš kosmoso flotiles" />
     <Thunder.about>
       <p>
-        Besisvaidantis karštos plazmos kamuoliais į pačią orbitą, šis bokštelis
-        yra visų priešo laivų ir kruizerių siaubas. Palietusi laivo korpusą 
-        plasma tiesiog jį išlydo padarydama milžinišką žalą.
+        Besisvaidantis karštos plazmos kamuoliais į orbitą, šis bokštelis
+        yra visų priešo laivų ir kreiserių siaubas. Palietusi laivo korpusą 
+        plazma tiesiog jį išlydo padarydama milžinišką žalą.
       </p>
       <p>Šaudo tik į kosminius laivus.</p>
     </Thunder.about>
@@ -924,7 +930,7 @@
     <GroundFactory.about>
       <p>Tai pastatas, leidžiantis statyti tankus ir kitus aukšto lygio žemės
       karius. Taip pat tau prireiks šio pastato norint pasistatyti 
-      Mobilųjį Štabą, kuris leidžia kolonizuoti kitas planetas.</p>
+      mobilųjį štabą, kuris leidžia kolonizuoti kitas planetas.</p>
     </GroundFactory.about>
 
     <SpaceFactory.name ref="Objects/SpaceFactory" />
@@ -932,7 +938,7 @@
     <SpaceFactory.about>
       <p>
         Šioje gamykloje statomi kosminiai laivai: pradedant nuo kuklių Varno
-        klasės skautų, baigiant didžiaisiais Raganosio klasės kruizeriais, 
+        klasės skautų, baigiant didžiaisiais Raganosio klasės kreiseriais, 
         kurių galia neabejoja niekas.
       </p>
     </SpaceFactory.about>
@@ -1058,6 +1064,11 @@
     <label.whouldFinish value="Patobulinimas baigsis už" />
     <label.vipCreds value="VIP kredų" />
     <label.creds value="kredų" />
+    <!-- {0} amount of free creds -->
+    <label.credsTooltip>
+      <p>Iš kurių {0} yra gauti iš užduočių.</p>
+      <p>Iš užduočių gautų kredų negali naudoti turguje.</p>
+    </label.credsTooltip>
     <label.waitingCreds value="Laukiama kredų..." />
     <label.instant value="Iš karto" />
     <label.confirm value="Patvirtinti" />
@@ -1464,7 +1475,7 @@
 
     <title.questCompleted value="Užduotis įvykdyta" />
     <message.questCompleted value="Užduotis „{0}“ buvo įvykdyta." />
-    <message.newQuests value="Tu pradejai vykdyti šias užduotis:" />
+    <message.newQuests value="Tu pradėjai vykdyti šias užduotis:" />
 
     <title.kickedFromAlliance value="Buvai pašalintas iš sąjungos" />
     <message.kickedFromAlliance value="Buvai pašalintas iš sąjungos {0}" />
@@ -1493,9 +1504,9 @@
     <label.marketOfferBought.message2 value="nusipirko:" />
     <label.marketOfferBought.for value="už" />
     <label.marketOfferBought.amountLeft>
-    <!-- 1: metal, energy or zetium -->
+    <!-- 1: metal, energy, zetium or creds -->
       <p>Tavo pasiūlyme dar liko {0} 
-      {1 metal[metalo] energy[energijos] zetium[zetiumo]}.</p>
+      {1 metal[metalo] energy[energijos] zetium[zetiumo] creds[kredų]}.</p>
     </label.marketOfferBought.amountLeft>
     <label.marketOfferBought.allBought value="Tavo pasiūlymas buvo pilnai nupirktas." />
 
@@ -1599,6 +1610,18 @@
     <label.ok value="Gerai" />
     <label.yes value="Taip" />
     <label.no value="Ne" />
+    
+    <title.cancelUnitTraining value="Atšaukti kario apmokymus" />
+    <message.cancelUnitTraining 
+    value="Ar tikrai nori atšaukti šio kario apmokymus?"/>
+    
+    <title.cancelUpgrade value="Atšaukti tobulinimą" />
+    <message.cancelUpgrade 
+    value="Ar tikrai nori atšaukti šio pastato tobulinimą?"/>
+    
+    <title.cancelConstructor value="Atšaukti statybas" />
+    <message.cancelConstructor 
+    value="Ar tikrai nori atšaukti šio pastato statybas?"/>
     
     <title.cancelOffer value="Atšaukti pasiūlymą" />
     <message.cancelOffer>
@@ -1907,8 +1930,10 @@
 
     <!-- SELF_DESTRUCT
     0: count of buildings to self destruct -->
-    <objectiveText.SelfDestruct 
-    value="Nugriauk savo pastatą {0 one[] 1sts[? kartą] tens[? kartų] many[? kartus]}"/>
+    <objectiveText.SelfDestruct>
+      <p>Nugriauk {0 one[savo pastatą] 
+      1sts[? savo pastatą] tens[? savo pastatų] many[? savo pastatus]}</p>
+    </objectiveText.SelfDestruct>
 
     <!-- EXPLORE_BLOCK
     0: count of times to explore object, 
@@ -2361,7 +2386,7 @@
       </p>
       <p>
         Mūsų tyrimų centras turi būti išplėstas ir patobulintas. Komandore, 
-        privalau jūs įspėti, kad kol bus vykdomi centro išplėtimo darbai, 
+        privalau jus įspėti, kad kol bus vykdomi centro išplėtimo darbai, 
         jame negalėsime vykdyti jokių tyrimų. Tiesa... Trumpam be darbo 
         likusius mokslininkus vis tiek galėsime siųsti į ekspedicijas.
       </p>
@@ -2405,7 +2430,7 @@
       <p>Komandore.</p>
       <p>
         Atradimai! Progresas! Pasitelkę mokslą, mes išplečiame savo galimybių 
-        ribas. Mūsų priešai gali statytis laivynius, bet mes pasistatysime 
+        ribas. Mūsų priešai gali statytis laivynus, bet mes pasistatysime 
         geresnius! Negailėkite investicijų tyrimams ir mėgaukitės kosminiais 
         dividendais!
       </p>
@@ -2721,7 +2746,7 @@
     <about.29>
       <p>Komandore.</p>
       <p>
-        Kaiminystėje visi tik ir šneka apie neprilygstamus jūsų įgūdžius. 
+        Kaimynystėje visi tik ir šneka apie neprilygstamus jūsų įgūdžius. 
         Jūs to nusipelnote. Neatsipalaiduokite, išlaikykite tą patį ritmą! 
       </p>
     </about.29>
@@ -2778,7 +2803,7 @@
       <p>Komandore.</p>
       <p>
         Mokslininkai sugalvojo kaip panaudoti zetiumą kosminių kelionių metu. 
-        Šią nuostabią dieną mes vėl trauksime žvagdžių link! Įsakykite pradėti 
+        Šią nuostabią dieną mes vėl trauksime žvaigždžių link! Įsakykite pradėti 
         laivų statyklos projektą.
       </p>
       <p>Kad pastatyti statyklą, mums būtini brėžiniai, tad nedelskite!</p>
@@ -3225,7 +3250,7 @@
     <property.mod.energy.store value="Energijos talpos priedas" />
     <property.mod.armor value="Šarvų priedas" />
     <property.mod.damage value="Žalos priedas" />
-    <property.mod.movement_time_decrease value="Jūdėjimo trukmės sumažinimas" />
+    <property.mod.movementTimeDecrease value="Jūdėjimo trukmės sumažinimas" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
 
     <UnitTech>
@@ -3379,9 +3404,9 @@
 
     <FieryMelters.name ref="Objects/FieryMelters" />
     <FieryMelters.about>
-      <p>Metalo kasyklose, panaudojant aukštą spaudimą, galima didesnė
-      metalo išgavimo sparta, bei laikymo efektyvumas. Nors ši technologija ir 
-      kiek brangoka, į tą tikrai verta investuoti, jeigu tau trūksta metalo.</p>
+      <p>Panaudojant aukštą spaudimą metalo kasyklose, galima didesnė
+      metalo išgavimo sparta bei laikymo efektyvumas. Nors ši technologija 
+      kiek brangoka, į ją tikrai verta investuoti, jeigu tau trūksta metalo.</p>
       <p>Kiekvienas patobulinimo lygis didina metalo išgavimo greitį ir 
       saugyklų talpą.</p>
     </FieryMelters.about>
@@ -3482,9 +3507,9 @@
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Seeker.about]</p>
       <p>Investicija į sėlintojus gali atsipirkti. Pagerinti šarvai gali
-      leisti jam iššauti tą paskutinį šūvį, kurio taip reikėjo. Be šarvų, ši
-      technologija dar ir duoda kulka su zetiumo lydiniu, kurios geriau 
-      skrenda ir daro daugiau žalos.</p>
+      leisti jam iššauti tą paskutinį šūvį, kurio taip reikėjo. Be šarvų ši
+      technologija apginkluoja karį zetiumo lydinio kulkomis, kurios geriau 
+      lekia ir daro daugiau žalos.</p>
       <p>[reference:UnitUpgrade]</p>
     </Seeker.about>
 
@@ -3509,8 +3534,8 @@
     <Zeus.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Zeus.about]</p>
-      <p>Ši technologija padidina tanko šaudmenų greitį ir, to pasekoje, 
-      žalą. Ji taip pat sustiprina tanko šarvus, jog jis galėtų atlaikyti 
+      <p>Ši technologija padidina tanko šaudmenų greitį, o dėl to didėja ir jų
+      daroma žala. Ji taip pat sustiprina tanko šarvus, jog jis galėtų atlaikyti 
       daugiau smūgių.</p>
       <p>[reference:UnitUpgrade]</p>
     </Zeus.about>
@@ -3549,8 +3574,8 @@
     <Dart.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Dart.about]</p>
-      <p>Strėlės klasės laivams pagerina šarvus ir ginklus, taip padarant
-      juos dar mirtinesnius priešo laivams.</p>
+      <p>Pagerina strėlės klasės laivų šarvus ir ginklus. Taip jie
+      tampa dar labiau mirtingesni priešo laivams.</p>
       <p>[reference:UnitUpgrade]</p>
     </Dart.about>
 
@@ -3571,7 +3596,7 @@
 
     <HealingCenter.name ref="Buildings/HealingCenter.name" />
     <HealingCenter.about>
-      <p>Leidžia statyti [reference:Buildings/HealingCenter.name].</p>
+      <p>Leidžia statyti techninę ligoninę.</p>
       <p>[reference:Buildings/HealingCenter.common]</p>
     </HealingCenter.about>
 
@@ -3657,8 +3682,9 @@
     <label.count value="Kiekis:" />
     <label.current value="Dabar" />
     <label.queued value="Eilėje" />
-    <label.dropItems.build value="Nutempk karius čia, kad pradėti statyti!" />
-    <label.dropItems.queue value="Nutempk karius čia, kad padėti į eilę!" />
+    <!-- These two have to be short, because they are in large font. -->
+    <label.dropItems.build value="Tempk karius čia!" />
+    <label.dropItems.queue ref="label.dropItems.build" />
     <label.fullQueue value="Statymo eilė pilna" />
     <label.notEnoughResources value="Nepakanka resursų" />
     <label.notEnoughStorage value="Nepakanka talpyklų" />
@@ -3732,6 +3758,10 @@
     <warning.noFleets>
       <p>Šiuo metu nėra išskrendančių laivynų.</p>
     </warning.noFleets>
+    
+    <btnLabel.cancel value="Atšaukti" />
+    <label.cancelTraining
+    value="Atšaukęs kario apmokymą gautum:" />
 
     <stored.short>
       <p>R: {0}%<br/>K: {1}%</p>
@@ -3781,8 +3811,8 @@
 
     <Spudder.name ref="Objects/Spudder" />
     <Spudder.about>
-      <p>Pusiau šarvuoti humanoidiniai robotai, ginkluoti plasmos sviediniais.
-      Jie iššauna keletą šių kamuoliukų vieno kartu, todėl yra puikūs kariai 
+      <p>Pusiau šarvuoti humanoidiniai robotai, ginkluoti plazmos sviediniais.
+      Jie iššauna keletą šių kamuoliukų vienu kartu, todėl yra puikūs kariai 
       prieš daug silpnų priešų.</p>
     </Spudder.about>
 
@@ -3930,7 +3960,7 @@
       <p>Strėlės klasės laivai buvo kuriami kovoti su varno ir keršytojo 
       klasės laivais - jie greiti ir vikrūs, be to, apsiginklavę iki dantų. 
       Nors ir turėdami silpnus šarvus, kuriuos priešų laivai lengvai 
-      pramuša, strelės klasės laivai yra nepakeičiami trumpose, 
+      pramuša, strėlės klasės laivai yra nepakeičiami trumpose, 
       greitose atakose turint didelę persvarą prieš priešininką.</p>
     </Dart.about>
 
@@ -3940,8 +3970,8 @@
       laivais. Jų raketiniai šoviniai lengvai pramuša šarvą ir sprogsta 
       laivo viduje, darydami ypatingai didelę žalą. Keršytojo greitaeigiai 
       varikliai užtikrina, kad nei raganosio, nei cyrikso klasės laivai nuo 
-      jo nepaspruks ir bus be gailesčio sunaikinti. Tačiau ir nors turėdami 
-      didelę šaunamają galią ir gretį, keršytojo klasės laivai kovose yra 
+      jo nepaspruks ir bus be gailesčio sunaikinti. Tačiau nors ir turėdami 
+      didelę šaunamają galią bei greitį, keršytojo klasės laivai kovose yra 
       lengvai pažeidžiami dėl savo plonų šarvų.</p>
     </Avenger.about>
 
@@ -3966,7 +3996,7 @@
   </WelcomeScreen>
 
   <Chat>
-     <format.time value="HH:NN:SS"/>
+     <format.time value="JJ:NN:SS"/>
      <message.channelJoin  value="[ {0} prisijungė ]"/>
      <message.channelLeave value="[ {0} išėjo ]"/>
      <message.friendOffline value="Šis žaidėjas šiuo metu neprisijungęs"/>
@@ -4047,5 +4077,10 @@
     <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje." />
     <label.moreInfo value="Kodėl?" />
   </Market>
+  
+  <Announcements>
+    <title.popup value="Skelbimas"/>
+    <label.close value="Uždaryti"/>
+  </Announcements>
 
 </locale>

@@ -1,7 +1,9 @@
 package components.chat
 {
    import flash.events.FocusEvent;
+   import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
+   import flash.ui.Keyboard;
    
    import models.chat.MChat;
    import models.chat.MChatMember;
@@ -105,31 +107,30 @@ package components.chat
       /* ### SELF EVENT HANDLERS ### */
       /* ########################### */
       
-      
-      private function addSelfEventHandlers() : void
-      {
+      private function addSelfEventHandlers() : void {
          addEventListener(FocusEvent.FOCUS_OUT, this_focusOutHandler, false, 0, true);
          addEventListener(MouseEvent.DOUBLE_CLICK, this_doubleClickHandler, false, 0, true);
+         addEventListener(KeyboardEvent.KEY_UP, this_keyUpHandler, false, 0, true);
       }
       
-      
-      private function removeSelfEventHandler() : void
-      {
+      private function removeSelfEventHandler() : void {
          removeEventListener(FocusEvent.FOCUS_OUT, this_focusOutHandler, false);
          removeEventListener(MouseEvent.DOUBLE_CLICK, this_doubleClickHandler, false);
+         removeEventListener(KeyboardEvent.KEY_UP, this_keyUpHandler, false);
       }
       
-      
-      private function this_focusOutHandler(event:FocusEvent) : void
-      {
+      private function this_focusOutHandler(event:FocusEvent) : void {
          // deselect when focus is lost
          selectedIndex = -1;
       }
       
-      
-      private function this_doubleClickHandler(event:MouseEvent) : void
-      {
+      private function this_doubleClickHandler(event:MouseEvent) : void {
          openMember();
+      }
+      
+      private function this_keyUpHandler(event:KeyboardEvent) : void {
+         if (event.keyCode == Keyboard.ENTER)
+            openMember();
       }
    }
 }

@@ -71,7 +71,7 @@ class Dispatcher
       @io_to_client_id.delete io
     end
   end
-
+  
   # Returns number of logged in players.
   def logged_in_count; @client_id_to_player.size; end
 
@@ -109,7 +109,6 @@ class Dispatcher
       message['client_id'],
       message['player'].to_s
     ]
-    info "Symbols: %d" % [Symbol.all_symbols.size]
 
     unless message['client_id'].nil?
       failed = false
@@ -142,6 +141,14 @@ class Dispatcher
   # SsObject ID which is currently viewed by client.
   def current_planet_id(client_id)
     @storage[client_id][:current_planet_id]
+  end
+  
+  # Pushes message to all logged in players.
+  def push_to_logged_in(action, params={})
+    message = {'action' => action, 'params' => params}
+    @client_id_to_player.each do |client_id, _|
+      push(message, client_id)
+    end
   end
 
   # Push message to player if he's connected.

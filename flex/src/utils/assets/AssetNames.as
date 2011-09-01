@@ -234,7 +234,8 @@ package utils.assets
       public static const PANEL_IMAGES_FOLDER: String = UI_IMAGES_FOLDER + "panel/";
       
       
-      public static const INFO_SCREEN_IMAGES_FOLDER: String = UI_IMAGES_FOLDER + "info_screen/";
+      public static const INFO_SCREEN_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "info_screen/";
+      public static const ANNOUNCEMENTS_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "announcements/";
       
       
       /**
@@ -247,8 +248,6 @@ package utils.assets
        */ 
       public static const PLANET_INFO_BACKGROUND: String =
          SSOBJECT_IMAGE_FOLDER + "info_" + BACKGROUND_IMAGE;
-      
-      
       
       
       /**

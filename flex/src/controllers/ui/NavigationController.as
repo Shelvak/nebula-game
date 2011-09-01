@@ -2,7 +2,6 @@ package controllers.ui
 {
    import com.developmentarc.core.utils.EventBroker;
    
-   import components.alliance.AllianceScreen;
    import components.base.viewport.ViewportZoomable;
    import components.defensiveportal.DefensivePortalScreen;
    import components.factories.MapFactory;
@@ -14,7 +13,6 @@ package controllers.ui
    import components.screens.MainAreaContainer;
    
    import controllers.GlobalFlags;
-   import controllers.alliances.AlliancesCommand;
    import controllers.market.MarketCommand;
    import controllers.planets.PlanetsCommand;
    import controllers.players.PlayersCommand;
@@ -36,7 +34,6 @@ package controllers.ui
    
    import models.ModelLocator;
    import models.Owner;
-   import models.alliance.MAlliance;
    import models.building.Building;
    import models.chat.MChat;
    import models.events.ScreensSwitchEvent;
@@ -53,6 +50,7 @@ package controllers.ui
    import models.solarsystem.SolarSystem;
    import models.unit.MCLoadUnloadScreen;
    import models.unit.MCUnitScreen;
+   import models.unit.MCUnitsBuild;
    import models.unit.Unit;
    import models.unit.UnitKind;
    
@@ -523,14 +521,25 @@ package controllers.ui
          showNonMapScreen(_screenProperties[MainAreaScreens.UNITS]);
       }
       
-      public function showFacilities(facilityId: int) : void
+      public function showFacilities(facilityId: int, 
+                                     cancelState: Boolean = false) : void
       {
          var openFacilityWithId: Function = function(e: Event): void
          {
             createdScreens[MainAreaScreens.FACILITIES] = true;
             _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CREATED, openFacilityWithId);
             _mainAreaSwitch.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, openFacilityWithId);
-            new GUnitsScreenEvent(GUnitsScreenEvent.FACILITY_OPEN, facilityId);
+            var BS: MCUnitsBuild = MCUnitsBuild.getInstance();
+            BS.facilityId = facilityId;
+            if (cancelState)
+            {
+               BS.cancelId = facilityId;
+            }
+            else
+            {
+               BS.cancelId = -1;
+            }
+            BS.openFacility();
          }
          if (createdScreens[MainAreaScreens.FACILITIES])
          {
@@ -695,9 +704,8 @@ package controllers.ui
       }
       
       
-      public function showChat() : void
-      {
-         resetToNonMapScreen(_screenProperties[MainAreaScreens.CHAT]);
+      public function showChat() : void {
+         showNonMapScreen(_screenProperties[MainAreaScreens.CHAT]);
       }
       
       
@@ -927,6 +935,10 @@ package controllers.ui
                "instead."
             );
          }
+         
+         if (_currentScreenProps != null && _currentScreenProps.screenName == screenProps.screenName)
+            return;
+         
          beforeScreenChange();
          _mainAreaSwitch.showScreen(screenProps.screenName, unlockAfter);
          resetActiveButton(screenProps.button);

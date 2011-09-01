@@ -134,6 +134,7 @@ package models.unit
          moveVisible = hasMovingUnits;
          
          
+         deselectUnits();
          //Prepare currentScreen
          refreshScreen();
       }
@@ -580,6 +581,7 @@ package models.unit
             // ======= ISSUE ORDER ========
             OrdersController.getInstance().issueOrder(selection);
          }
+         deselectUnits();
       }
       
       public function selectAll(): void
@@ -593,11 +595,14 @@ package models.unit
       
       public function deselectUnits(): void
       {
-         for each (var flank: UnitsFlank in flanks)
+         if (flanks)
          {
-            flank.deselectAll(false);
+            for each (var flank: UnitsFlank in flanks)
+            {
+               flank.deselectAll(false);
+            }
+            dispatchSelectionChangeEvent();
          }
-         dispatchSelectionChangeEvent();
       }
       
       public function setStance(stance: int): void

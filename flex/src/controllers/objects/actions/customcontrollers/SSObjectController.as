@@ -3,11 +3,13 @@ package controllers.objects.actions.customcontrollers
    import controllers.ui.NavigationController;
    
    import models.factories.SSObjectFactory;
+   import models.location.ILocationUser;
    import models.map.MapType;
    import models.planet.Planet;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    
+   import mx.collections.ArrayCollection;
    import mx.collections.IList;
    
    import utils.datastructures.Collections;
@@ -50,6 +52,7 @@ package controllers.objects.actions.customcontrollers
          
          // update current planet
          var planet:Planet = ML.latestPlanet;
+         var nameChanged:Boolean = planet != null && planet.ssObject.name != planetNew.name;
          if (planet != null && !planet.fake && planet.id == planetNew.id) {
             // the planet is not visible to the player anymore, so invalidate it
             if (!planetNew.viewable) {
@@ -61,6 +64,17 @@ package controllers.objects.actions.customcontrollers
             // otherwise just update SSObject inside it
             else
                planet.ssObject.copyProperties(planetNew);
+         }
+         
+         // update all location models if name has changed
+         if (nameChanged) {
+            var allLocUsers:ArrayCollection = new ArrayCollection();
+            allLocUsers.addAll(ML.squadrons);
+            allLocUsers.addAll(ML.routes);
+            allLocUsers.addAll(ML.notifications);
+            for each (var locUser:ILocationUser in allLocUsers) {
+               locUser.updateLocationName(planetNew.id, planetNew.name);
+            }
          }
          
          planetNew.cleanup();

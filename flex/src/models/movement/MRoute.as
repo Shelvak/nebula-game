@@ -5,6 +5,7 @@ package models.movement
    import models.BaseModel;
    import models.ModelsCollection;
    import models.Owner;
+   import models.location.ILocationUser;
    import models.location.Location;
    import models.player.PlayerMinimal;
    import models.time.MTimeEventFixedMoment;
@@ -21,7 +22,7 @@ package models.movement
     * Should only be used to store additional information about squadrons belonging to either the
     * palyer or his/her allies.
     */
-   public class MRoute extends BaseModel implements IUpdatable
+   public class MRoute extends BaseModel implements IUpdatable, ILocationUser
    {
       public function MRoute() {
          super();
@@ -176,6 +177,17 @@ package models.movement
       public function update() : void {
          arrivalEvent.update();
          firstHopEvent.update();
+      }
+      
+      
+      /* ##################### */
+      /* ### ILocationUser ### */
+      /* ##################### */
+      
+      public function updateLocationName(id:int, name:String) : void {
+         Location.updateName(currentLocation, id, name);
+         Location.updateName(sourceLocation,  id, name);
+         Location.updateName(targetLocation,  id, name);
       }
       
       

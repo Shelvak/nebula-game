@@ -1,5 +1,6 @@
 package tests.chat.models.chat
 {
+   import ext.hamcrest.events.causesTarget;
    import ext.hamcrest.object.equals;
    
    import models.chat.MChat;
@@ -65,12 +66,10 @@ package tests.chat.models.chat
          chat.selectChannel("noobs");
          
          assertThat( chat.selectedChannel, chat.channels.getChannel("noobs") );
-      };
-      
+      }
       
       [Test]
-      public function should_dispatch_SLECTED_CHANNEL_CHANGE_event_when_selected_another_channel() : void
-      {
+      public function should_dispatch_SLECTED_CHANNEL_CHANGE_event_when_selected_another_channel() : void {
          var eventDispatched:Boolean = false;
          chat.addEventListener(
             MChatEvent.SELECTED_CHANNEL_CHANGE,
@@ -82,47 +81,52 @@ package tests.chat.models.chat
          chat.selectChannel("noobs");
          
          assertThat( eventDispatched, isTrue() );
-      };
-      
+      }
       
       [Test]
-      public function should_be_visible_after_chat_has_been_shown() : void
-      {
+      public function should_be_visible_after_chat_has_been_shown() : void {
          chat.visible = false;
          chat.screenShowHandler();
          
          assertThat( chat.visible, isTrue() );
-      };
-      
+      }
       
       [Test]
-      public function should_not_be_visible_after_chat_has_been_hidden() : void
-      {
+      public function should_not_be_visible_after_chat_has_been_hidden() : void {
          chat.visible = true;
          chat.screenHideHandler();
          assertThat( chat.visible, isFalse() );
-      };
-      
+      }
       
       [Test]
-      public function when_chat_is_shown_selected_channel_should_be_visible() : void
-      {
+      public function eventsAreDispatchedWhenChatVisibilityChanges() : void {
+         chat.visible = false;
+         assertThat(
+            "making chat visible", function():void{ chat.visible = true },
+            causesTarget(chat) .toDispatchEvent (MChatEvent.VISIBLE_CHANGE)
+         );
+         assertThat(
+            "making chat invisible", function():void{ chat.visible = false },
+            causesTarget(chat) .toDispatchEvent (MChatEvent.VISIBLE_CHANGE)
+         );
+      }
+      
+      [Test]
+      public function when_chat_is_shown_selected_channel_should_be_visible() : void {
          chat.visible = false;
          chat.screenShowHandler();
          
          assertThat(chat.selectedChannel.visible, isTrue() );
-      };
-      
+      }
       
       [Test]
-      public function when_chat_is_hidden_selected_channel_should_not_be_visible() : void
-      {
+      public function when_chat_is_hidden_selected_channel_should_not_be_visible() : void {
          chat.visible = true;
          chat.selectedChannel.visible = true;
          chat.screenHideHandler();
          
          assertThat( chat.selectedChannel.visible, isFalse() );
-      };
+      }
       
       
       [Test]

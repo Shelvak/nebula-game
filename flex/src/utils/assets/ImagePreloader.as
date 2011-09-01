@@ -61,7 +61,7 @@ package utils.assets
     * be retrieved either using static method <code>getInstance()</code> or
     * using <code>utils.SingletonFactory</code>.</p>
     */ 
-   public final class ImagePreloader extends EventDispatcher
+   public class ImagePreloader extends EventDispatcher
    {
       private function get STARTUP_INFO() : StartupInfo
       {

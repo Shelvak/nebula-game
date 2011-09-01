@@ -206,6 +206,8 @@ package utils.locale
       private static function getPluralForms(locale:String, number:int) : Array
       {
          Objects.paramNotNull("locale", locale);
+         // negatives are treated the same way as positives
+         number = Math.abs(number);
          switch (locale)
          {
             case Locale.EN:
@@ -217,26 +219,15 @@ package utils.locale
             
             case Locale.LT:
                if (number == 0) 
-               {
                   return [PluralForm.LT_ZERO, PluralForm.LT_TENS];
-               }
                else if (number == 1) 
-               {
-                  return [PluralForm.LT_ONE, PluralForm.LT_FIRSTS]; 
-               }
+                  return [PluralForm.LT_ONE, PluralForm.LT_FIRSTS];
                else if (number % 10 == 1 && number != 11)
-               {
                   return [PluralForm.LT_FIRSTS, PluralForm.LT_ONE];
-               }
                else
-               {
-                  return (
-                     number % 10 == 0 || 
-                     10 <= number % 100 && number % 100 <= 20
-                  ) ?
+                  return (number % 10 == 0 || 10 <= number % 100 && number % 100 <= 20) ?
                      [PluralForm.LT_TENS] :
                      [PluralForm.LT_ELSE];
-               }
             
             default:
                throw new ArgumentError("Unsupported locale: " + locale);

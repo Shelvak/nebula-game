@@ -710,6 +710,7 @@
                         width="100%" id="queueGroup">
                   <elements:BuildingProgressElement id="progressElement"
                                                     width="100%"
+                                                    cancelable="true"
                                                     constructableModel="{selectedConstructionModel}"/>
                   <s:List id="queueList" dataProvider="{selectedFacility.constructionQueueEntries}"
                           useVirtualLayout="false"

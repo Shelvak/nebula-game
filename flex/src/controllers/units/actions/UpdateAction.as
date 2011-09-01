@@ -17,7 +17,6 @@ package controllers.units.actions
    {
       public override function result(rmo:ClientRMO) : void
       {
-         new GUnitEvent(GUnitEvent.FLANK_APPROVED);
          GlobalFlags.getInstance().lockApplication = false;
          MCUnitScreen.getInstance().confirmChanges();
       }

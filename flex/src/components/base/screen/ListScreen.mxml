@@ -10,6 +10,10 @@
    
    <fx:Script>
       <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import globalevents.GlobalEvent;
+         
          import mx.collections.IList;
          import mx.core.IVisualElement;
          import mx.events.CollectionEvent;
@@ -65,6 +69,11 @@
          /**
           * A component that will render items in the data provider (either <code>DataGroup</code> or
           * <code>SkinnableDataContainer</code>). Required. Should always return the same instance.
+          * 
+          * <p><b>Warning!</b> <code>dataProvider</code> property of the container may be <code>null</code>
+          * so add checks and gouards throughout the code of the implementation of your data container
+          * accordingly. <code>dataProvider</code> property will be set to <code>null</code> when application
+          * is reset.</p>
           */
          protected function get dataContainer() : IVisualElement {
             throw new IllegalOperationError("This property is abstract");
@@ -110,7 +119,26 @@
             updateDataProviderEmpty();
             header.title = title;
             lblEmptyListMessage.text = emptyListMessage;
+            
+            EventBroker.subscribe(GlobalEvent.APP_RESET, globalEvent_appResetHandler);
+            EventBroker.subscribe(GlobalEvent.APP_READY, globalEvent_appReadyHandler);
          }
+
+         
+         private function globalEvent_appReadyHandler(event:GlobalEvent) : void {
+            setDataProvider(dataProvider);
+         }
+         
+         private function globalEvent_appResetHandler(event:GlobalEvent) : void {
+            setDataProvider(null);
+         }
+         
+         private function setDataProvider(dataProvider:IList) : void {
+            if (dataContainer != null) {
+               dataContainer["dataProvider"] = dataProvider;
+            }
+         }
+         
          
          public var layoutGap: int = 0;
          
@@ -133,7 +161,7 @@
             layout.variableRowHeight = true;
             layout.gap = layoutGap;
             dataContainer["layout"] = layout;
-            dataContainer["dataProvider"] = dataProvider;
+            setDataProvider(dataProvider);
             grpListContainer.addElement(dataContainer);
             
             if (colorLegend != null) {

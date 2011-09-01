@@ -44,6 +44,29 @@ describe PlayersController do
         end
       end
       
+      it "should push announcement if it is set" do
+        ends_at = 5.minutes.from_now
+        message = "Hello!"
+        AnnouncementsController.should_receive(:get).
+          and_return([ends_at, message])
+        invoke @action, @params
+        
+        @dispatcher.pushed_messages[@test_player.id].should include(
+          {'action' => AnnouncementsController::ACTION_NEW, 
+            'params' => {'ends_at' => ends_at, 'message' => message}}
+        )
+      end
+      
+      it "should not push announcement if it is not set" do
+        AnnouncementsController.should_receive(:get).
+          and_return([nil, nil])
+        invoke @action, @params
+        
+        @dispatcher.pushed_messages[@test_player.id].find do |message|
+          message['action'] == AnnouncementsController::ACTION_NEW
+        end.should be_nil
+      end
+      
       it "should push daily_bonus|show if there is a bonus available" do
         @test_player.daily_bonus_at = 1.day.ago
         @test_player.save!

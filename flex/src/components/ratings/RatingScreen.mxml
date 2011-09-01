@@ -162,7 +162,6 @@
    </fx:Script>
    <screens:GradientBackground gradientWidth="{(width - searchHeader.width) / 2}"/>
    <base:AdvancedContainer left="0" right="0" top="0" bottom="0">
-      <s:Button click="theList.verticalScrollPosition = 30"/>
       <ratings:RatingsSearchHeader id="searchHeader"
                                    searchTextInputChangeHandler="{textinput1_changeHandler}"
                                    filterOnlineCheckBoxChangeHandler="{onlyOnline_changeHandler}"/>

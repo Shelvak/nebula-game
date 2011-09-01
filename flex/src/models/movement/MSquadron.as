@@ -7,6 +7,7 @@ package models.movement
    import models.BaseModel;
    import models.ModelsCollection;
    import models.Owner;
+   import models.location.ILocationUser;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.movement.events.MRouteEvent;
@@ -46,22 +47,17 @@ package models.movement
    /**
     * Squadrons that have <code>pending</code> set to <code>true</code> are not moved.
     */
-   public class MSquadron extends BaseModel implements ICleanable
+   public class MSquadron extends BaseModel implements ICleanable, ILocationUser
    {
       public function MSquadron() : void
       {
          super();
          units = Collections.filter(ML.units,
-            function(unit:Unit) : Boolean
-            {
+            function(unit:Unit) : Boolean {
                if (isMoving)
-               {
                   return id == unit.squadronId;
-               }
-               else if (!unit.isMoving && currentHop)
-               { 
+               else if (!unit.isMoving && currentHop != null)
                   return unit.location.equals(currentHop.location) && unit.playerId == playerId;
-               }
                return false;
             }
          );
@@ -76,23 +72,18 @@ package models.movement
        * 
        * @see ICleanable#cleanup()
        */
-      public function cleanup() : void
-      {
-         if (units)
-         {
+      public function cleanup() : void {
+         if (units != null) {
             units.list = null;
             units.filterFunction = null;
             units = null;
          }
-         if (_route)
-         {
+         if (_route != null) {
             _route = null;
          }
       }
       
-      
-      protected override function get collectionsFilterProperties() : Object
-      {
+      protected override function get collectionsFilterProperties() : Object {
          return {"units": ["id", "currentHop", "playerId"]};
       }
       
@@ -100,7 +91,6 @@ package models.movement
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
-      
       
       [Optional]
       [Bindable(event="modelIdChange")]
@@ -112,20 +102,16 @@ package models.movement
        * [Optional]<br/>
        * [Bindable(event="modelIdChange")]</i></p>
        */
-      public override function set id(value:int):void
-      {
-         if (super.id != value)
-         {
+      public override function set id(value:int) : void {
+         if (super.id != value) {
             units.disableAutoUpdate();
-            for each (var unit:Unit in units.toArray())
-            {
+            for each (var unit:Unit in units.toArray()) {
                unit.squadronId = value;
             }
             units.enableAutoUpdate();
             super.id = value;
          }
       }
-      
       
       private var _playerId:int = PlayerId.NO_PLAYER;
       [Required]
@@ -138,13 +124,10 @@ package models.movement
        * [Required]<br/>
        * [Bindable]</i></p>
        */
-      public function set playerId(value:int) : void
-      {
-         if (_playerId != value)
-         {
+      public function set playerId(value:int) : void {
+         if (_playerId != value) {
             units.disableAutoUpdate();
-            for each (var unit:Unit in units.toArray())
-            {
+            for each (var unit:Unit in units.toArray()) {
                unit.playerId = value;
             }
             units.enableAutoUpdate();
@@ -154,11 +137,9 @@ package models.movement
       /**
        * @private
        */
-      public function get playerId() : int
-      {
+      public function get playerId() : int {
          return _playerId;
       }
-      
       
       private var _player:PlayerMinimal = null;
       [Optional]
@@ -171,13 +152,10 @@ package models.movement
        * [Optional]<br/>
        * [Bindable]</i></p>
        */
-      public function set player(value:PlayerMinimal) : void
-      {
-         if (_player != value)
-         {
+      public function set player(value:PlayerMinimal) : void {
+         if (_player != value) {
             units.disableAutoUpdate();
-            for each (var unit:Unit in units.toArray())
-            {
+            for each (var unit:Unit in units.toArray()) {
                unit.player = value;
             }
             units.enableAutoUpdate();
@@ -187,8 +165,7 @@ package models.movement
       /**
        * @private
        */
-      public function get player() : PlayerMinimal
-      {
+      public function get player() : PlayerMinimal {
          return _player;
       }
       
@@ -205,21 +182,16 @@ package models.movement
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable]</i></p>
        */
-      public function set route(value:MRoute) : void
-      {
+      public function set route(value:MRoute) : void {
          if (_route != value)
-         {
             _route = value;
-         }
       }
       /**
        * @private
        */
-      public function get route() : MRoute
-      {
+      public function get route() : MRoute {
          return _route;
       }
-      
       
       private var _owner:int = Owner.ENEMY;
       [Bindable]
@@ -233,14 +205,11 @@ package models.movement
        * [Bindable]<br/>
        * [Optional]</i></p>
        */
-      public function set owner(value:int) : void
-      {
-         if (_owner != value )
-         {
+      public function set owner(value:int) : void {
+         if (_owner != value ) {
             _owner = value != Owner.UNDEFINED ? value : Owner.ENEMY;
             units.disableAutoUpdate();
-            for each (var unit:Unit in units)
-            {
+            for each (var unit:Unit in units) {
                unit.owner = _owner;
             }
             units.enableAutoUpdate();
@@ -249,23 +218,17 @@ package models.movement
       /**
        * @private
        */
-      public function get owner() : int
-      {
+      public function get owner() : int {
          return _owner;
       }
       
-      
-      public function get isFriendly() : Boolean
-      {
+      public function get isFriendly() : Boolean {
          return owner == Owner.PLAYER || owner == Owner.ALLY;
       }
       
-      
-      public function get isHostile() : Boolean
-      {
+      public function get isHostile() : Boolean {
          return !isFriendly;
       }
-      
       
       [Bindable]
       /**
@@ -277,7 +240,6 @@ package models.movement
        */
       public var currentHop:MHop = null;
       
-      
       [Bindable(event="willNotChange")]
       /**
        * List of units in this squadron.
@@ -287,15 +249,12 @@ package models.movement
        */
       public var units:ListCollectionView;
       
-      
       /**
        * Indicates if there are any units in <code>units</code> list.
        */
-      public function get hasUnits() : Boolean
-      {
+      public function get hasUnits() : Boolean {
          return units.length > 0;
       }
-      
       
       /**
        * Hops that make up the route of this squadron. Do not modify this list directly: use
@@ -303,34 +262,27 @@ package models.movement
        */
       public var hops:ModelsCollection = new ModelsCollection();
       
-      
       /**
        * Last hop of the route of the squadron.
        */
-      public function get lastHop() : MHop
-      {
+      public function get lastHop() : MHop {
          return MHop(hops.getLast());
       }
-      
       
       /**
        * Next hop this squadron will move to.
        */
-      public function get nextHop() : MHop
-      {
+      public function get nextHop() : MHop {
          return MHop(hops.getFirst());
       }
-      
       
       /**
        * Indicates if the squadron has any hops remaining in its route.
        */
-      public function get hasHopsRemaining() : Boolean
-      {
+      public function get hasHopsRemaining() : Boolean {
          return !hops.isEmpty;
       }
-      
-      
+            
       [Bindable(event="modelIdChange")]
       /**
        * Indicates if a squadron is moving.
@@ -338,8 +290,7 @@ package models.movement
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable(event="modelIdChange")]</i></p>
        */
-      public function get isMoving() : Boolean
-      {
+      public function get isMoving() : Boolean {
          return id > 0;
       }
       
@@ -355,15 +306,12 @@ package models.movement
        * 
        * @throws IllegalOperationError if <code>route</code> has not been set
        */
-      client_internal function rebuildCachedUnits() : void
-      {
+      client_internal function rebuildCachedUnits() : void {
          checkRoute();
          var source:Array = new Array();
-         for each (var unit:Unit in units)
-         {
+         for each (var unit:Unit in units) {
             var entry:UnitBuildingEntry = route.findEntryByType(unit.type);
-            if (!entry)
-            {
+            if (!entry) {
                entry = new UnitBuildingEntry(unit.type);
                source.push(entry);
             }
@@ -372,35 +320,30 @@ package models.movement
          _route.cachedUnits = new ModelsCollection(source);
       }
       
-      
       /**
        * Caches <code>owner</code> and <code>id</code> values from <code>route</code>
        * in private variables. Creates current hop form <code>route.currentLocation</code>. 
        * 
        * @throws IllegalOperationError if <code>route</code> has not been set
        */
-      client_internal function captureRouteValues() : void
-      {
+      client_internal function captureRouteValues() : void {
          checkRoute();
          id = _route.id;
          owner = _route.owner;
          createCurrentHop(_route.currentLocation);
       }
       
-      
       /**
        * Creates and sets <code>currentHop</code> from given location. <code>currentHop.index</code>
        * is set to <code>0</code>. 
        */
-      public function createCurrentHop(location:LocationMinimal) : void
-      {
+      public function createCurrentHop(location:LocationMinimal) : void {
          var hop:MHop = new MHop();
          hop.index = 0;
          hop.routeId = id;
          hop.location = location;
          currentHop = hop;
       }
-      
       
       /**
        * Adds new hop to the route of this squadron.
@@ -415,21 +358,15 @@ package models.movement
        * </ul>
        * Other rules are not checked.
        */
-      public function addHop(hop:MHop) : void
-      {
+      public function addHop(hop:MHop) : void {
          Objects.paramNotNull("hop", hop);
          if (hasLocationEqualTo(hop.location))
-         {
             throwLocationAlreadyInRouteError(hop.location);
-         }
          if (lastHop && hop.index - lastHop.index != 1)
-         {
             throwHopOutOfOrderError(hop);
-         }
          hops.addItem(hop);
          dispatchHopAddEvent(hop);
       }
-      
       
       /**
        * Adds all hops to the route of this squadron. <code>MRouteEvent.UPDATE</code> event is dispatched
@@ -437,14 +374,11 @@ package models.movement
        * 
        * @param hops list of all hops to add
        */
-      public function addAllHops(hops:IList) : void
-      {
-         for each (var hop:MHop in hops.toArray())
-         {
+      public function addAllHops(hops:IList) : void {
+         for each (var hop:MHop in hops.toArray()) {
             addHop(hop);
          }
       }
-      
       
       /**
        * Moves squadron to the next hop: sets the <code>currentHop</code> property to the next hop in
@@ -465,67 +399,50 @@ package models.movement
        * 
        * @throws IllegalOperationError if there are no hops
        */
-      public function moveToNextHop(time:Number = NaN) : MHop
-      {
+      public function moveToNextHop(time:Number = NaN) : MHop {
          if (!hasHopsRemaining)
-         {
             throw new IllegalOperationError(
                "No hops in the route of squadron " + this + ": you can't call this method if " +
                "there are no hops in a route of a squadron."
             );
-         }
-         if (isNaN(time))
-         {
+         if (isNaN(time)) {
             var fromHop:MHop = currentHop;
             currentHop = MHop(hops.removeItemAt(0));
-            if (fromHop.location.type == currentHop.location.type)
-            {
+            if (fromHop.location.type == currentHop.location.type) {
                dispatchHopRemoveEvent(currentHop);
                dispatchMoveEvent(fromHop.location, currentHop.location);
             }
          }
-         else
-         {
+         else {
             var startHop:MHop = currentHop;
             var endHop:MHop = null;
             var hop:MHop = null;
             
             // look for the last hop the squad has to jump to
-            for each (hop in hops)
-            {
+            for each (hop in hops) {
                if (hop.arrivesAt.time <= time)
-               {
                   endHop = hop;
-               }
                else
-               {
                   break;
-               }
             }
             
             // no hops in the past
-            if (!endHop)
-            {
+            if (endHop == null)
                return currentHop;
-            }
             
             hop = null;
             // jump between maps: don't need dispatching any events
             if (endHop.location.type != startHop.location.type ||
-                endHop.location.id   != startHop.location.id)
-            {
-               while (hop != endHop)
-               {
+                endHop.location.id   != startHop.location.id) {
+               while (hop != endHop) {
                   hop = MHop(hops.removeItemAt(0));
                }
                currentHop = hop;
             }
             
             // jump in the same map
-            else
-            {
-               while (hop != endHop)
-               {
+            else {
+               while (hop != endHop) {
                   hop = MHop(hops.removeItemAt(0));
                   dispatchHopRemoveEvent(hop);
                }
@@ -533,12 +450,10 @@ package models.movement
                dispatchMoveEvent(startHop.location, endHop.location);
             }
          }
-         if (hasUnits)
-         {
+         if (hasUnits) {
             var loc:Location = currentHop.location.toLocation();
             units.disableAutoUpdate();
-            for each (var unit:Unit in units.toArray())
-            {
+            for each (var unit:Unit in units.toArray()) {
                unit.location = loc;
             }
             units.enableAutoUpdate();
@@ -546,33 +461,36 @@ package models.movement
          return currentHop;
       }
       
-      
       /**
        * Moves this squadron to the last hop if it has hops remaining.
        */ 
-      public function moveToLastHop() : void
-      {
+      public function moveToLastHop() : void {
          if (!hasHopsRemaining)
-         {
             return;
-         }
          moveToNextHop(new Date(2200, 0, 1).time);
       }
       
-      
-      public function removeAllHops() : void
-      {
+      public function removeAllHops() : void {
          hops.removeAll();
       }
       
-      
-      public function removeAllHopsButNext() : void
-      {
+      public function removeAllHopsButNext() : void {
          var nextHop:MHop = this.nextHop;
          hops.removeAll();
          if (nextHop != null)
-         {
             addHop(nextHop);
+      }
+      
+      
+      /* ##################### */
+      /* ### ILocationUser ### */
+      /* ##################### */
+      
+      public function updateLocationName(id:int, name:String) : void {
+         if (currentHop != null)
+            currentHop.updateLocationName(id, name);
+         for each (var hop:MHop in hops) {
+            hop.updateLocationName(id, name);
          }
       }
       
@@ -581,33 +499,24 @@ package models.movement
       /* ### BaseModel OVERRIDES ### */
       /* ########################### */
       
-      public override function equals(o:Object) : Boolean
-      {
+      public override function equals(o:Object) : Boolean {
          if (!super.equals(o))
-         {
             return false;
-         }
          var squad:MSquadron = MSquadron(o);
          if (!squad.isMoving)
-         {
             return squad.owner == owner && squad.currentHop.equals(currentHop);
-         }
          return true;
       }
-      
       
       /**
        * <code>MSquadron.hashKey()</code> returns string of the following format: </br>
        * <pre>{super.hashKey()},{owner}</pre>
        */
-      public override function hashKey() : String
-      {
+      public override function hashKey() : String {
          return super.hashKey() + "," + owner;
       }
       
-      
-      public override function toString() : String
-      {
+      public override function toString() : String {
          return "[class: " + className + ", id: " + id + ", owner: " + owner + ", currentHop: " + currentHop +
                 ", playerId: " + playerId + ", player: " + player + "]";
       }
@@ -616,7 +525,6 @@ package models.movement
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
-      
       
       /**
        * Lets you check if a location in hops list already defines the point in space defined by
@@ -627,11 +535,9 @@ package models.movement
        * @return <code>true</code> if a location defining the same point in space defined by the
        * given hop already exists in the route of the squadron or <code>false</code> otherwise
        */
-      private function hasLocationEqualTo(location:LocationMinimal) : Boolean
-      {
+      private function hasLocationEqualTo(location:LocationMinimal) : Boolean {
          return !hops.filter(
-            function(hopInRoute:MHop) : Boolean
-            {
+            function(hopInRoute:MHop) : Boolean {
                return hopInRoute.location.equals(location);
             }
          ).isEmpty;
@@ -642,11 +548,8 @@ package models.movement
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
       
-      
-      private function dispatchHopAddEvent(hop:MHop) : void
-      {
-         if (hasEventListener(MRouteEvent.CHANGE))
-         {
+      private function dispatchHopAddEvent(hop:MHop) : void {
+         if (hasEventListener(MRouteEvent.CHANGE)) {
             var event:MRouteEvent = new MRouteEvent(MRouteEvent.CHANGE);
             event.kind = MRouteEventChangeKind.HOP_ADD;
             event.hop = hop;
@@ -654,11 +557,8 @@ package models.movement
          }
       }
       
-      
-      private function dispatchHopRemoveEvent(hop:MHop) : void
-      {
-         if (hasEventListener(MRouteEvent.CHANGE))
-         {
+      private function dispatchHopRemoveEvent(hop:MHop) : void {
+         if (hasEventListener(MRouteEvent.CHANGE)) {
             var event:MRouteEvent = new MRouteEvent(MRouteEvent.CHANGE);
             event.kind = MRouteEventChangeKind.HOP_REMOVE;
             event.hop = hop;
@@ -666,11 +566,8 @@ package models.movement
          }
       }
       
-      
-      private function dispatchMoveEvent(from:LocationMinimal, to:LocationMinimal) : void
-      {
-         if (hasEventListener(MSquadronEvent.MOVE))
-         {
+      private function dispatchMoveEvent(from:LocationMinimal, to:LocationMinimal) : void {
+         if (hasEventListener(MSquadronEvent.MOVE)) {
             var event:MSquadronEvent = new MSquadronEvent(MSquadronEvent.MOVE);
             event.moveFrom = from;
             event.moveTo = to;
@@ -683,38 +580,28 @@ package models.movement
       /* ### ERROR THROWING HELPERS ### */
       /* ############################## */
       
-      
-      private function throwMergeError(squad:MSquadron, reason:String) : void
-      {
+      private function throwMergeError(squad:MSquadron, reason:String) : void {
          throw new ArgumentError
             ("Can not merge squadron " + squad + " into this " + this + ": " + reason);
       }
       
-      
-      private function throwHopOutOfOrderError(hop:MHop) : void
-      {
+      private function throwHopOutOfOrderError(hop:MHop) : void {
          throw new ArgumentError(
             "A hop you are trying to add to the route of this squadron is out of order: hops - " +
             hops + ", new hop - " + hop + "."
          );
       }
-      
 
-      private function throwLocationAlreadyInRouteError(location:LocationMinimal) : void
-      {
+      private function throwLocationAlreadyInRouteError(location:LocationMinimal) : void {
          throw new ArgumentError(
             "A hop defining the same point in space (" + location + ") is already in the route of " +
             "this squadron: a route can't have two hops defining the same point in space."
          );
       }
       
-      
-      private function checkRoute() : void
-      {
-         if (!_route)
-         {
+      private function checkRoute() : void {
+         if (_route == null)
             throw new IllegalOperationError("Unable to perform operation: [prop route] has not been set");
-         }
       }
    }
 }
