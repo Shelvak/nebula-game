@@ -1,25 +1,28 @@
 package models
 {
    import com.adobe.errors.IllegalStateError;
-   
+
    import flash.events.EventDispatcher;
    import flash.utils.describeType;
 
    import interfaces.IEqualsComparable;
-   
+   import interfaces.IUpdatable;
+
    import models.events.BaseModelEvent;
-   
+
    import mx.collections.ICollectionView;
    import mx.events.PropertyChangeEvent;
-   
+
    import namespaces.prop_name;
-   
+
    import utils.Events;
    import utils.Objects;
+   import utils.TypeChecker;
    import utils.assets.ImagePreloader;
-   
-   
-   /** 
+   import utils.datastructures.iterators.IIteratorFactory;
+
+
+   /**
     * @see models.events.BaseModelEvent#PENDING_CHANGE
     * @eventType models.events.BaseModelEvent.PENDING_CHANGE
     */
@@ -54,6 +57,57 @@ package models
     */
    public class BaseModel extends EventDispatcher implements IBaseModel
    {
+      /**
+       * Invokes <code>update()</code> method on given <code>IUpdatable</code>
+       * if it is not <code>null</code>.
+       */
+      public static function updateItem(updatable: IUpdatable): void {
+         if (updatable != null) {
+            updatable.update();
+         }
+      }
+      
+      /**
+       * Invokes <code>update()</code> method on each <code>IUpdatable</code>
+       * in the list if it is not <code>null</code>.
+       */
+      public static function updateList(list:*) : void {
+         if (list != null) {
+            if (!TypeChecker.isCollection(list))
+               throw new TypeError(
+                  "[param list] must be [class Array], [class Vector] or"
+                     + "[class IList] but was " + Objects.getClass(list)
+               );
+            IIteratorFactory.getIterator(list).forEach(updateItem);
+         }
+      }
+      
+      /**
+       * Invokes <code>resetChangeFlags()</code> method on given <code>updatable</code>
+       * if it is not <code>null</code>.
+       */
+      public static function resetChangeFlagsOf(updatable: IUpdatable): void {
+         if (updatable != null) {
+            updatable.resetChangeFlags();
+         }
+      }
+      
+      /**
+       * Invokes <code>resetChangeFlags()</code> method on each <code>IUpdatable</code> in the list
+       * if it is not <code>null</code>.
+       */
+      public static function resetChangeFlagsOfList(list:*) : void {
+         if (list != null) {
+            if (!TypeChecker.isCollection(list))
+               throw new TypeError(
+                  "[param list] must be [class Array], [class Vector] or "
+                     + "[class IList] but was " + Objects.getClass(list)
+               ); 
+            IIteratorFactory.getIterator(list).forEach(resetChangeFlagsOf);
+         }
+      }
+      
+      
       /**
        * Reference to <code>ImagePreloader</code> singleton.
        */

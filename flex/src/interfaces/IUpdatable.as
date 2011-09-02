@@ -7,7 +7,9 @@ package interfaces
    public interface IUpdatable
    {
       /**
-       * This method will be called each second so that object could update itself.
+       * This method will be called each second so that object could update itself. If you override this
+       * method in a subclass, then you have to invoke <code>super.update()</code> after all other actions
+       * in the overriden method.
        */
       function update() : void;
       
