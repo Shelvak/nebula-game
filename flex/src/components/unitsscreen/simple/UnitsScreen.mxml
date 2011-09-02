@@ -31,26 +31,30 @@
       <unitsscreen:leftControls>
          <base:AdvancedContainer>
             <base:layout><s:HorizontalLayout gap="1"/></base:layout>
-            <s:ToggleButton name="{UnitKind.GROUND}" 
-                            click="US.tabChanged(UnitKind.GROUND)"
+            <s:ToggleButton name="{UnitKind.GROUND}"
+                            id="btnGround"
+                            click="US.tabChanged(btnGround)"
                             label="{getText('kind.ground',
                             [US.getUnitCount(UnitKind.GROUND)])}"
                             visible="{US.groundVisible}"
                             selected="{US.currentKind == UnitKind.GROUND}"/>
             <s:ToggleButton name="{UnitKind.SPACE}" 
-                            click="US.tabChanged(UnitKind.SPACE)"
+                            id="btnSpace"
+                            click="US.tabChanged(btnSpace)"
                             label="{getText('kind.space',
                             [US.getUnitCount(UnitKind.SPACE)])}"
                             visible="{US.spaceVisible}"
                             selected="{US.currentKind == UnitKind.SPACE}"/>
             <s:ToggleButton name="{UnitKind.MOVING}" 
-                            click="US.tabChanged(UnitKind.MOVING)"
+                            id="btnMove"
+                            click="US.tabChanged(btnMove)"
                             label="{getText('kind.launch',
                             [US.getUnitCount(UnitKind.MOVING)])}"
                             visible="{US.moveVisible}"
                             selected="{US.currentKind == UnitKind.MOVING}"/>
             <s:ToggleButton name="{UnitKind.SQUADRON}" 
-                            click="US.tabChanged(UnitKind.SQUADRON)"
+                            id="btnSquad"
+                            click="US.tabChanged(btnSquad)"
                             label="{getText('kind.squadron',
                             [US.getUnitCount(UnitKind.SQUADRON)])}"
                             visible="{US.squadronVisible}"

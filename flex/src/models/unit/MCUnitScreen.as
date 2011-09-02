@@ -28,6 +28,7 @@ package models.unit
    
    import spark.components.Button;
    import spark.components.Label;
+   import spark.components.ToggleButton;
    
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
@@ -101,11 +102,38 @@ package models.unit
          return item.unit.kind == UnitKind.GROUND;
       }
       
+      private function updateIfNeeded(e: CollectionEvent): void
+      {
+         if (e.kind == CollectionEventKind.ADD || e.kind == CollectionEventKind.REMOVE
+            || e.kind == CollectionEventKind.RESET)
+         {
+            if (hasGroundUnits)
+            {
+               groundVisible = true;
+            }
+            if (hasSpaceUnits)
+            {
+               spaceVisible = true;
+            }
+            if (!unitsHasChanged)
+            {
+               unitsHasChanged = true;
+               FlexGlobals.topLevelApplication.callLater(
+                  dispatchUnitsChangeEvent);
+            }
+         }
+      }
+      
       public function prepare(sUnits: ListCollectionView, sLocation: *,
                               sTarget: *, sKind: String, sOwner: int): void
       {
+         if (units)
+         {
+            units.removeEventListener(CollectionEvent.COLLECTION_CHANGE, updateIfNeeded);
+         }
          //Set screen values
          units = sUnits;
+         units.addEventListener(CollectionEvent.COLLECTION_CHANGE, updateIfNeeded);
          location = sLocation;
          target = sTarget;
          currentKind = sKind;
@@ -129,30 +157,7 @@ package models.unit
             }
          }
          
-         groundVisible = hasGroundUnits;
-         spaceVisible = hasSpaceUnits;
-         moveVisible = hasMovingUnits;
          
-         
-         deselectUnits();
-         //Prepare currentScreen
-         refreshScreen();
-      }
-      
-      private function refreshScreen(): void
-      {
-         if (currentKind == UnitKind.MOVING)
-         {
-            createRoutes();
-         }
-         else
-         {
-            createFlanks();
-         }
-      }
-      
-      private function createRoutes(): void
-      {
          if (routes)
          {
             routes.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshRoutesButton);
@@ -175,6 +180,26 @@ package models.unit
          {
             routes.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshRoutesButton);
          }
+         
+         groundVisible = hasGroundUnits;
+         spaceVisible = hasSpaceUnits;
+         moveVisible = hasMovingUnits;
+         
+         
+         deselectUnits();
+         //Prepare currentScreen
+         refreshScreen();
+         
+         dispatchUnitsChangeEvent();
+         dispatchFormationChangeEvent();
+      }
+      
+      private function refreshScreen(): void
+      {
+         if (currentKind != UnitKind.MOVING)
+         {
+            createFlanks();
+         }
       }
       
       private var filteredUnits: ListCollectionView;
@@ -184,6 +209,7 @@ package models.unit
          if (filteredUnits != null)
          {
             filteredUnits.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+            filteredUnits.list = null;
          }
          buildFlanks();
          if (currentKind != UnitKind.SQUADRON)
@@ -217,10 +243,9 @@ package models.unit
          }
          if (transformedUnits != null)
          {
-            
+            transformedUnits.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshModels);
          }
          transformedUnits = new ArrayCollection(source);
-         transformedUnits.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshModels);
          unitsToFlanks();
       }
       
@@ -330,11 +355,12 @@ package models.unit
          }
       }
       
-      public function tabChanged(tabName: String):void
+      public function tabChanged(tab: ToggleButton):void
       {
          deselectUnits();
          cancel();
-         currentKind = tabName;
+         currentKind = tab.name;
+         tab.selected = true;
          if (currentKind == UnitKind.GROUND || currentKind == UnitKind.SPACE)
          {
             NavigationController.getInstance().switchActiveUnitButtonKind(currentKind);

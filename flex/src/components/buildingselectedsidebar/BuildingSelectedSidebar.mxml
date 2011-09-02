@@ -53,6 +53,7 @@
          import models.resource.ResourcesAmount;
          import models.solarsystem.MSSObject;
          import models.unit.Unit;
+         import models.unit.UnitKind;
          
          import mx.core.ScrollPolicy;
          import mx.events.DragEvent;
@@ -262,8 +263,8 @@
          private function refreshCancelProperties(): void
          {
             if (_selectedModel != null &&
-                _selectedModel.upgradePart != null &&
-                _selectedModel.upgradePart.upgradeEndsAt != null) {
+               _selectedModel.upgradePart != null &&
+               _selectedModel.upgradePart.upgradeEndsAt != null) {
                builtPart = _selectedModel.upgradePart.upgradeProgress;
             }
          }
@@ -340,10 +341,8 @@
          
          protected function attack_clickHandler(event:MouseEvent):void
          {
-            NC.showUnits(Collections.filter(ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), function(item: Unit): Boolean
-            {
-               return item.hasGuns;
-            }), ML.latestPlanet.toLocation(), _selectedModel);
+            NC.showUnits(ML.latestPlanet.getAgressiveGroundUnits(), 
+               ML.latestPlanet.toLocation(), _selectedModel);
          }
          
          private function refreshConstructor(e: Event = null): void
@@ -468,7 +467,7 @@
             var lbl: Label = new Label();
             lbl.minWidth = 300;
             lbl.text = Localizer.string('Popups', 'message.' + 
-            (_selectedModel.upgradePart.level > 0?'cancelUpgrade':'cancelConstructor'));
+               (_selectedModel.upgradePart.level > 0?'cancelUpgrade':'cancelConstructor'));
             popUp.addElement(lbl);
             popUp.title = Localizer.string('Popups', 'title.' +
                (_selectedModel.upgradePart.level > 0?'cancelUpgrade':'cancelConstructor'));
@@ -549,7 +548,7 @@
          
          private function renamePlanet(): void {
             new PlanetsCommand(PlanetsCommand.EDIT, new EditActionParams(ML.latestPlanet, newPlanetName.text))
-               .dispatch();
+            .dispatch();
             newPlanetName.text = "";
          }
          
@@ -807,9 +806,9 @@
                            
                            <base:AdvancedContainer visible="{_selectedModel.npc}">
                               <s:Label text="{getString('noUnits')}" 
-                                       visible="{ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length == 0}"
+                                       visible="{ML.latestPlanet.getAgressiveGroundUnits().length == 0}"
                                        styleName="unsatisfied" fontSize="16"/>
-                              <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length != 0}" 
+                              <s:Button enabled="{ML.latestPlanet.getAgressiveGroundUnits().length != 0}" 
                                         horizontalCenter="0" click="attack_clickHandler(event)"
                                         skinClass="components.skins.RedButtonSkin"
                                         label="{getString('attack')}"/>
@@ -869,7 +868,7 @@
                                       visible="{_selectedModel.upgradePart.level == 0 &amp;&amp;  
                                       ML.latestPlanet.getBuildingByConstructable(_selectedModel.id,
                                       ObjectClass.BUILDING) == null}" width="100%"
-                                      paddingTop="6" paddingBottom="6"/>
+                                                                      paddingTop="6" paddingBottom="6"/>
                         <s:Group width="100%">
                            <s:Button right="6" label="{getString('label.cancel')}"
                                      click="cancelUpgrade()"/>

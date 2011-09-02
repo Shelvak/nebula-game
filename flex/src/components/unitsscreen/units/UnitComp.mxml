@@ -41,6 +41,7 @@
          import models.unit.MCUnit;
          import models.unit.MCUnitScreen;
          import models.unit.Unit;
+         import models.unit.UnitKind;
          
          import mx.events.EffectEvent;
          
@@ -196,7 +197,7 @@
                       || (!model.unit.location.isSSObject)
                       || (!ML.latestPlanet)
                       || (model.unit.owner != Owner.PLAYER)
-                      || (ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length == 0
+                      || (ML.latestPlanet.getActiveUnits(Owner.PLAYER, UnitKind.GROUND).length == 0
                       &amp;&amp; (ML.latestPlanet.ssObject.owner == 
                       Owner.ALLY))
                       || (ML.latestPlanet.ssObject.owner == Owner.ENEMY))}"

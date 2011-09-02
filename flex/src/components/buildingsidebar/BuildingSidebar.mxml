@@ -531,13 +531,10 @@
             }
             else if (e.building.npc)
             {
-               if (ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length != 0)
+               if (ML.latestPlanet.getAgressiveGroundUnits().length != 0)
                {
-                  NC.showUnits(Collections.filter(ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), 
-                     function(item: Unit): Boolean
-                     {
-                        return item.hasGuns;
-                     }), ML.latestPlanet.toLocation(), e.building);
+                  NC.showUnits(ML.latestPlanet.getAgressiveGroundUnits(), 
+                     ML.latestPlanet.toLocation(), e.building);
                }
                return;
             }

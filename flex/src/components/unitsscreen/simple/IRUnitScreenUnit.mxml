@@ -43,6 +43,7 @@
          import models.unit.MCUnitScreen;
          import models.unit.Unit;
          import models.unit.UnitBuildingEntry;
+         import models.unit.UnitKind;
          
          import mx.collections.ArrayCollection;
          import mx.core.FlexGlobals;
@@ -276,7 +277,7 @@
                       || (!model.unit.location.isSSObject)
                       || (!ML.latestPlanet)
                       || (model.unit.owner != Owner.PLAYER)
-                      || (ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length == 0
+                      || (ML.latestPlanet.getActiveUnits(Owner.PLAYER, UnitKind.GROUND).length == 0
                       &amp;&amp; (ML.latestPlanet.ssObject.owner == 
                       Owner.ALLY)))}"
                       toolTip="{Localizer.string('Units', 'label.load')}"
