@@ -613,7 +613,7 @@
       <p>
         Pirmtakai buvo nepaprastai išsivysčiusi rasė, tačiau tai netrukdė jiems
         būti ir itin religingais. Jie rinkdavosi šiose šventyklose, jog 
-        melstųsi savo technologiniams dievams.</p>
+        melstusi savo technologiniams dievams.</p>
       <p>Sakoma, jog žemė, ant kurios stovi šie pastatai yra šventa. Nežinia
       ar tai tiesa, tačiau ji yra ypatingai saugoma.</p>
     </NpcTemple.about>
@@ -637,9 +637,9 @@
       <p>Šie vartai buvo naudojami perkelti karius ir netgi kosminius laivus 
       milžiniškais atstumais akimirksniu. Jie galėdavo perskrosti tarpus tarp
       planetų ar netgi saulės sistemų per kelias sekundes.</p>
-      <p>Ir netgi jiems nebefunkcionuojant prie vartų stovi didžiulės 
-      pajėgos, kurios pasiruošusios ginti šiuos vartus bet kurią akimirką. Jos
-      neleis tau užimti šio pastato.</p>
+      <p>Ir netgi jiems nebefunkcionuojant, prie šių vartų stovi didžiulės 
+      pajėgos, pasiruošusios ginti vartus bet kurią akimirką. Jos neleis 
+      užimti šio pastato.</p>
     </NpcJumpgate.about>
 
     <!-- Žaidėjo pastatai -->
@@ -1582,7 +1582,7 @@
     </message.allianceJoined>
     <content.allianceJoined>
       <p>Žaidėjas (-a) "{0}" prisijungė prie tavo sąjungos "{1}".</p>
-      <p>Prašome jį ar ją šilai sutikti!</p>
+      <p>Prašome jį ar ją šiltai sutikti!</p>
     </content.allianceJoined>
 
     <prop.alive value="Gyvi" />
@@ -2034,7 +2034,7 @@
 
       <p>
         Apylinkėse dirbę žvalgai pranešė apie įdomų radinį. Panašu, kad tai 
-        kažkokio milžiniško padaro liekanos. Deja, bet žvalgams trūksta žinių, 
+        kažkokio milžiniško padaro liekanos. Deja žvalgams trūksta žinių, 
         tad apžiūrėję grunte palaidotas liekanas tepranešė, kad rado „kaulus“.
       </p>
 
@@ -3479,7 +3479,7 @@
     <HeavyFlight.about>
       <p>Panaudojant gama daleles mūsų sunkiųjų variklių procesuose mes galime
       pasiekti didesnius greičius ir sumažinti skrydžio laiką.</p>
-      <p>Deja, bet ši technologija pritaikoma tik UX-20 varikliuose, kurie 
+      <p>Deja ši technologija pritaikoma tik UX-20 varikliuose, kurie 
       naudojami tik didžiausiuose mūsų laivuose. Kita vertus - jie yra ir 
       patys lėčiausi mūsų laivai, tad ši technologija yra labai pravarti.</p>
       <p>Sutrumpina skrydžio laiką mulo ir raganosio klasės laivams.</p>
