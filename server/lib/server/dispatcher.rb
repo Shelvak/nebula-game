@@ -117,7 +117,7 @@ class Dispatcher
       begin
         process_message(message)
       rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid,
-          GameError => e
+          ActiveRecord::RecordNotDestroyed, GameError => e
         failed = true
         LOGGER.info "Action failed: #{e.message}"
       end

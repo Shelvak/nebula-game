@@ -193,6 +193,7 @@ describe Dispatcher do
     [
       ActiveRecord::RecordNotFound.new,
       ActiveRecord::RecordInvalid.new(Factory.create(:player)),
+      ActiveRecord::RecordNotDestroyed.new,
       GameError.new
     ].each do |ex|
       it "should confirm with failed if #{ex.class.to_s} was raised" do

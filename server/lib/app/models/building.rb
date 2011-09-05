@@ -252,7 +252,7 @@ class Building < ActiveRecord::Base
       end
       planet.save!
       Objective::SelfDestruct.progress(self)
-      destroy
+      destroy!
     end
 
     EventBroker.fire(planet, EventBroker::CHANGED, 
@@ -364,6 +364,8 @@ class Building < ActiveRecord::Base
     when :activated
       on_activation
     end
+    
+    true
   end
 
   # Called when building is deactivated (after save)
