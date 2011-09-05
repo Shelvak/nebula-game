@@ -23,4 +23,4 @@ puts
 
 # Run fix_visibility to ensure all visibility things are ok.
 puts "Running fix_visiblity.rb"
-`ruby fix_visibility.rb`
+system("ruby fix_visibility.rb")
