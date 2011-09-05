@@ -301,7 +301,7 @@ class SsObject::Planet < SsObject
         all.each \
       do |market_offer|
         old_player.creds += market_offer.from_amount
-        market_offer.destroy
+        market_offer.destroy!
       end
     end
     

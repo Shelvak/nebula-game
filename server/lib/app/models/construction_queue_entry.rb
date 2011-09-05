@@ -27,7 +27,7 @@ class ConstructionQueueEntry < ActiveRecord::Base
   def merge!(model)
     transaction do
       self.count += model.count
-      model.destroy
+      model.destroy!
 
       save!
     end

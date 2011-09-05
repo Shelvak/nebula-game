@@ -254,7 +254,7 @@ class Unit < ActiveRecord::Base
       case event 
       when CallbackManager::EVENT_DESTROY
         unit = find(id)
-        unit.destroy
+        unit.destroy!
         EventBroker.fire(unit, EventBroker::DESTROYED)
       else
         super(id, event)

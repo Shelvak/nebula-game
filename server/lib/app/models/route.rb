@@ -146,7 +146,7 @@ class Route < ActiveRecord::Base
 
     if cached_units.blank?
       # No units - no route. Destroy self.
-      destroy
+      destroy!
     else
       save!
     end

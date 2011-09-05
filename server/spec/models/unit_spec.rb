@@ -24,7 +24,7 @@ describe Unit do
       it "should destroy unit" do
         unit = Factory.create(:unit)
         Unit.stub!(:find).with(unit.id).and_return(unit)
-        unit.should_receive(:destroy)
+        unit.should_receive(:destroy!)
         Unit.on_callback(unit.id, CallbackManager::EVENT_DESTROY)
       end
       

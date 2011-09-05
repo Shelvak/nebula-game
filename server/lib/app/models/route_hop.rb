@@ -131,9 +131,9 @@ class RouteHop < ActiveRecord::Base
 
         # Flag route as being completed.
         route.completed = true
-        next_hop ? route.save! : route.destroy
+        next_hop ? route.save! : route.destroy!
 
-        destroy
+        destroy!
       end
     end
   end

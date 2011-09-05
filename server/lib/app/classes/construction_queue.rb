@@ -71,7 +71,7 @@ class ConstructionQueue
     model = resolve_model(model_or_id)
 
     if count == model.count
-      model.destroy
+      model.destroy!
       merge_outer(model.constructor_id, model.position)
     elsif count > model.count
       raise GameLogicError.new(

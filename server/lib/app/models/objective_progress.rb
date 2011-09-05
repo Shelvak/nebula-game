@@ -44,7 +44,7 @@ class ObjectiveProgress < ActiveRecord::Base
 
   def on_complete
     # I won't be needed anymore
-    destroy
+    destroy!
 
     # Record this objective as completed
     qp = objective.quest.quest_progresses.where(

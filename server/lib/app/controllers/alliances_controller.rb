@@ -93,7 +93,7 @@ class AlliancesController < GenericController
       respond :success => false
     else
       alliance.accept(player)
-      notification.destroy
+      notification.destroy!
       EventBroker.fire(notification, EventBroker::DESTROYED)
       Notification.create_for_alliance_joined(alliance, player)
       respond :success => true
@@ -121,7 +121,7 @@ class AlliancesController < GenericController
     player.save!
 
     if alliance.owner_id == player.id
-      alliance.destroy
+      alliance.destroy!
     else
       alliance.throw_out(player)
     end

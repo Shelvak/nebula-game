@@ -202,7 +202,7 @@ class SolarSystem < ActiveRecord::Base
         player.last_login >= CONFIG.evalproperty(
         'galaxy.player.inactivity_check.last_login_in').ago)
       # This player is inactive. Destroy him.
-      player.destroy
+      player.destroy!
       
       # Change solar system into a dead one.
       find(id).die!
