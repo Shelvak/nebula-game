@@ -22,6 +22,9 @@
          public var paddingTop: int = 0;
          
          [Bindable]
+         public var paddingBottom: int = 0;
+         
+         [Bindable]
          public var showSign: Boolean = true;
          
          [Bindable]
@@ -39,7 +42,7 @@
          }
       ]]>
    </fx:Script>
-   <s:Group top="{paddingTop}" left="0" right="0" bottom="0">
+   <s:Group top="{paddingTop}" left="0" right="0" bottom="{paddingBottom}">
       <base:WarningContainer left="0" right="0" bottom="0" top="0"/>
       
       <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'warning_sign')}" 

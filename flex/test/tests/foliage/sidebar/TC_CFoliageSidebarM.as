@@ -8,10 +8,14 @@ package tests.foliage.sidebar
    import ext.hamcrest.object.equals;
    
    import models.ModelLocator;
+   import models.Owner;
    import models.folliage.BlockingFolliage;
+   import models.galaxy.Galaxy;
    import models.planet.Planet;
    import models.solarsystem.MSSObject;
+   import models.solarsystem.SSKind;
    import models.solarsystem.SSObjectType;
+   import models.solarsystem.SolarSystem;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.object.isFalse;
@@ -24,10 +28,15 @@ package tests.foliage.sidebar
       
       [Before]
       public function setUp() : void {
+         var galaxy:Galaxy = new Galaxy();
+         galaxy.id = 1;
+         galaxy.battlegroundId = 1000;
+         ML.latestGalaxy = galaxy;
          var ssObject:MSSObject = new MSSObject();
          ssObject.type = SSObjectType.PLANET;
          ssObject.width = 5;
          ssObject.height = 5;
+         ssObject.owner = Owner.PLAYER;
          ML.latestPlanet = new Planet(ssObject);
          model = new CFoliageSidebarM();
       }
@@ -54,15 +63,39 @@ package tests.foliage.sidebar
          assertThat(
             "if no foliage selected",
             model.terraformPanelVisible, isFalse()
-         );         
+         );
          
+         ML.latestPlanet.ssObject.owner = Owner.ALLY;
          ML.selectedFoliage = new BlockingFolliage();
          explorationEndsAt = null;
          assertThat(
-            "if foliage selected and exploration is not underway",
+            "if foliage selected and exploration is not underway and player is not owner",
+            model.terraformPanelVisible, isFalse()
+         );
+         
+         ML.latestPlanet.ssObject.owner = Owner.PLAYER;
+         assertThat(
+            "if foliage selected and exploration is not underway and player is owner",
             model.terraformPanelVisible, isTrue()
          );
          
+         ML.latestPlanet.solarSystemId = ML.latestGalaxy.battlegroundId;
+         assertThat(
+            "if folliage selected but planet is in battleground",
+            model.terraformPanelVisible, isFalse()
+         );
+
+         var pulsar:SolarSystem = new SolarSystem();
+         pulsar.id = 10;
+         pulsar.kind = SSKind.BATTLEGROUND;
+         ML.latestGalaxy.addObject(pulsar);
+         ML.latestPlanet.solarSystemId = pulsar.id;
+         assertThat(
+            "if folliage selected but planet is in pulsar",
+            model.terraformPanelVisible, isFalse()
+         );
+         
+         ML.latestPlanet.solarSystemId = 1;
          ML.latestPlanet.addObject(ML.selectedFoliage);
          explorationEndsAt = new Date(new Date().time + 1000);
          ML.latestPlanet.ssObject.explorationX = 0;
@@ -126,12 +159,16 @@ package tests.foliage.sidebar
          assertThat( "changing selected foliage",
             function():void{ ML.selectedFoliage = new BlockingFolliage() }, triggersStateChangeEvent()
          );
+         assertThat( "changing owner of planet",
+            function():void{ ML.latestPlanet.ssObject.owner = Owner.ENEMY }, triggersStateChangeEvent()
+         );
          assertThat( "starting exploration",
             function():void{ explorationEndsAt = new Date(new Date().time + 1000) }, triggersStateChangeEvent()
          );
          assertThat( "completing exploration",
             function():void{ explorationEndsAt = null }, triggersStateChangeEvent()
          );
+
       }
       
       

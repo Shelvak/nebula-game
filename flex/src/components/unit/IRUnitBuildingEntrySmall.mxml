@@ -10,7 +10,6 @@
          
          import controllers.ui.NavigationController;
          
-         import models.ModelLocator;
          import models.building.Building;
          import models.unit.Unit;
          import models.unit.UnitBuildingEntry;
@@ -27,8 +26,7 @@
                temp.type = entry.type;
             }
             temp.upgradePart.level = 0;
-            ModelLocator.getInstance().infoModel = temp;
-            NavigationController.getInstance().showInfo();
+            NavigationController.getInstance().showInfo(temp);
          }
          
       ]]>

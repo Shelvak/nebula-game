@@ -32,9 +32,6 @@
    <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'start_up')}"
                   source.down="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'start_down_over')}"
                   source.over="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'start_down_over')}"
-                  source.overAndSelected="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'start_down_over')}"
-                  source.downAndSelected="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'start_down_over')}"
-                  source.upAndSelected="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'start_down_over')}"
-                  source.disabledAndSelected="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'start_down_over')}"/>
+                  source.selectedStates="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'start_down_over')}"/>
    
 </base:BaseSkin>

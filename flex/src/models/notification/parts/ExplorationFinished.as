@@ -34,5 +34,8 @@ package models.notification.parts
       public var location:Location;
       public var rewards:Reward;
       
+      public function updateLocationName(id:int, name:String) : void {
+         Location.updateName(location, id, name);
+      }
    }
 }

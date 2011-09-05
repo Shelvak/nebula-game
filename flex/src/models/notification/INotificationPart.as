@@ -1,6 +1,8 @@
 package models.notification
 {
-   public interface INotificationPart
+   import models.location.ILocationUser;
+
+   public interface INotificationPart extends ILocationUser
    {
       /**
        * Custom title of notification.

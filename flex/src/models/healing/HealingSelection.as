@@ -5,12 +5,12 @@ package models.healing
    import controllers.navigation.Navigation;
    import controllers.screens.MainAreaScreens;
    
-   import globalevents.GHealingScreenEvent;
-   
    import models.building.Building;
+   import models.unit.MCUnit;
    import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.ListCollectionView;
    
    import utils.locale.Localizer;
    
@@ -18,9 +18,11 @@ package models.healing
    {      
       public var flanks: ArrayCollection;
       
+      public var allFlanks: Array;
+      
       public var center: Building;
       
-      public function selectUnit(unit: Unit, flank: MHealFlank): Boolean
+      public function selectUnit(unit: MCUnit, flank: MHealFlank): Boolean
       {
          if (!selectedPrice)
          {
@@ -28,7 +30,8 @@ package models.healing
          }
          if (selectedPrice.addIfPossible(HealPrice.calculateHealingPrice([unit], center.level, center.type)))
          {
-            flank.selection.push(unit);
+            flank.selection.addItem(unit);
+            unit.selected = true;
             return true;
          }
          return false;
@@ -37,7 +40,7 @@ package models.healing
       public function clear(): void
       {
          flanks = null;
-         selectedPrice = null;
+         allFlanks = null;
       }
       
       public var selectedPrice: HealPrice;
@@ -45,9 +48,9 @@ package models.healing
       public function selectFlank(flank: MHealFlank): Boolean
       {
          var selectedAll: Boolean = true;
-         for each (var unit: Unit in flank.flank)
+         for each (var unit: MCUnit in flank.flankUnits)
          {
-            if (flank.selection.indexOf(unit) == -1)
+            if (flank.selection.getItemIndex(unit) == -1)
             {
                if (!selectUnit(unit, flank))
                {
@@ -69,42 +72,6 @@ package models.healing
                selectedAll = false;
             }
          }
-         new GHealingScreenEvent(GHealingScreenEvent.SELECTION_UPDATED);
-         return selectedAll;
-      }
-      
-      public function updateSelection(flank: MHealFlank, selection: Vector.<Object>): Boolean
-      {
-         var selectedAll: Boolean = true;
-         for each (var unit: Unit in flank.selection)
-         {
-            if (selection.indexOf(unit) == -1)
-            {
-               selectedPrice.substract(HealPrice.calculateHealingPrice([unit], center.level, center.type));
-            }
-         }
-         var newSelection: Vector.<Object> = new Vector.<Object>;
-         for each (unit in selection)
-         {
-            if (flank.selection.indexOf(unit) == -1)
-            {
-               if (!selectUnit(unit, flank))
-               {
-                  selectedAll = false;
-               }
-               else
-               {
-                  newSelection.push(unit);
-               }
-            }
-            else
-            {
-               newSelection.push(unit);
-            }
-         }
-         
-         flank.selection = newSelection;
-         
          return selectedAll;
       }
       
@@ -114,8 +81,9 @@ package models.healing
          {
             if (flank.selection.length > 0)
             {
-               var deselectedUnit: Unit = flank.selection.pop();
+               var deselectedUnit: MCUnit = MCUnit(flank.selection.getItemAt(flank.selection.length-1));
                selectedPrice.substract(HealPrice.calculateHealingPrice([deselectedUnit], center.level, center.type));
+               deselectedUnit.selected = false;
                checkIfNotNegative();
                return;
             }

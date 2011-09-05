@@ -837,6 +837,11 @@ describe SsObject::Planet do
         player.reload
       end.should change(player, :scientists).by(@scientists)
     end
+    
+    it "should not fail if planet has no player" do
+      @planet.player = nil
+      @planet.stop_exploration!
+    end
 
     %w{exploration_x exploration_y exploration_ends_at}.each do |attr|
       it "should nullify ##{attr}" do
@@ -898,6 +903,21 @@ describe SsObject::Planet do
       lambda do
         @planet.finish_exploration!
       end.should raise_error(GameLogicError)
+    end
+    
+    describe "when planet has no owner" do
+      before(:each) do
+        @planet.player = nil
+      end
+      
+      it "should stop exploration" do
+        @planet.should_receive(:stop_exploration!)
+        @planet.finish_exploration!
+      end
+      
+      it "should return false" do
+        @planet.finish_exploration!.should be_false
+      end
     end
     
     it "should get winning chance based on width and height" do
@@ -1031,6 +1051,16 @@ describe SsObject::Planet do
     
     it "should fail if exploring" do
       @planet.stub!(:exploring?).and_return(true)
+      lambda do
+        @planet.remove_foliage!(@x, @y)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if planet is in battleground solar system" do
+      ss = @planet.solar_system
+      ss.kind = SolarSystem::KIND_BATTLEGROUND
+      ss.save!
+
       lambda do
         @planet.remove_foliage!(@x, @y)
       end.should raise_error(GameLogicError)
@@ -1188,15 +1218,16 @@ describe SsObject::Planet do
   end
 
   describe ".buildings" do
-    describe ".shooting" do
-      it "should return shooting buildings of that planet" do
+    describe ".combat" do
+      it "should return buildings of that planet that participate " +
+      "in combat" do
         planet = Factory.create :planet
-        shooting = Factory.create :building, :planet => planet
+        combat_building = Factory.create :building, :planet => planet
         Factory.create :b_collector_t1, :planet => planet,
           :x => 10, :y => 10
 
         with_config_values('buildings.test_building.guns' => [:aa]) do
-          planet.buildings.shooting.should == [shooting]
+          planet.buildings.combat.should == [combat_building]
         end
       end
     end

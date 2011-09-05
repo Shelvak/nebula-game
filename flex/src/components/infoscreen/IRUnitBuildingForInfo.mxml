@@ -34,8 +34,7 @@
                temp.type = ModelUtil.getModelClass(entry.type, true);
             }
             temp.upgradePart.level = 0;
-            ModelLocator.getInstance().infoModel = temp;
-            NavigationController.getInstance().showInfo();
+            NavigationController.getInstance().showInfo(temp);
          }
          
          

@@ -11,18 +11,14 @@
          import components.foliage.CFoliageSidebar;
          import components.healing.HealingSidebar;
          import components.market.MarketSidebar;
-         import components.screens.LoadingScreen;
-         import components.screens.MainScreen;
          import components.technologytree.TechnologySelectedSidebar;
          import components.technologytree.TechnologySidebar;
-         import components.unitsscreen.LoadUnloadSidebar;
-         import components.unitsscreen.UnitsSelectedSidebar;
+         import components.unitsscreen.loadunload.LoadUnloadSidebar;
+         import components.unitsscreen.simple.UnitsSelectedSidebar;
          
          import controllers.navigation.MCSidebar;
-         import controllers.screens.Screens;
          import controllers.screens.SidebarScreens;
          
-         import models.events.LocaleEvent;
          import models.events.ScreensSwitchEvent;
          
          private var created: Boolean = false;

@@ -121,11 +121,15 @@ module Parts
         decrease_player_points(points_on_upgrade)
         
         self.upgrade_ends_at = nil
-        if level == 0
-          destroy
-        else
-          before_save.call unless before_save.nil?
-          save!
+        transaction do
+          CallbackManager.
+            unregister(self, CallbackManager::EVENT_UPGRADE_FINISHED)
+          if level == 0
+            destroy
+          else
+            before_save.call unless before_save.nil?
+            save!
+          end
         end
       end
 

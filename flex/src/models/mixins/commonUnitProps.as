@@ -33,6 +33,7 @@ public function get hp() : int
 	return _hp;
 }
 
+[Bindable (event="willNotChange")]
 public function get hpMax(): int
 {
 	return Config.getUnitHp(type);

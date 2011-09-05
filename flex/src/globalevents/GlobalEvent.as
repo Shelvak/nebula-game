@@ -22,6 +22,12 @@ package globalevents
        */
       public static const APP_RESET:String = "applicationReset";
       
+      /**
+       * Dispatched when player has loggen in and all initial models and lists of models have been created.
+       * This method is dispatched after <code>galaxies|show</code> has been processed. 
+       */ 
+      public static const APP_READY:String = "applicationReady";
+      
       
       /**
        * Dispatched each time FP starts a new frame. All models, controllers, components or other objects

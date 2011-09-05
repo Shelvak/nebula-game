@@ -13,7 +13,7 @@ package models.resource
    import models.solarsystem.MSSObject;
    import models.unit.Unit;
    
-   import org.hamcrest.BaseMatcher;
+   import mx.collections.ArrayCollection;
    
    import utils.MathUtil;
    import utils.StringUtil;
@@ -226,7 +226,7 @@ package models.resource
          return revenue;
       }
       
-      public static function calculateUnitDestructRevenue(units: Array, resource: String): Number
+      public static function calculateUnitDestructRevenue(units: ArrayCollection, resource: String): Number
       {
          var revenue: Number = 0;
          var gain: int = Config.getUnitDestructResourceGain();

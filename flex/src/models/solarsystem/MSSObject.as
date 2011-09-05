@@ -18,13 +18,11 @@ package models.solarsystem
    import models.IMStaticSpaceObject;
    import models.Owner;
    import models.cooldown.MCooldown;
-   import models.folliage.BlockingFolliage;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
    import models.map.MMapSpace;
-   import models.player.PlayerId;
    import models.player.PlayerMinimal;
    import models.resource.Resource;
    import models.resource.ResourceType;
@@ -139,7 +137,14 @@ package models.solarsystem
        * Idicates if this <code>MSSObject</code> in a battleground solar system.
        */
       public function get inBattleground() : Boolean {
-         return ML.latestGalaxy.battlegroundId == solarSystemId;
+         return ML.latestGalaxy.isBattleground(solarSystemId);
+      }
+      
+      /**
+       * Idicates if this <code>MSSObject</code> in a mini-battleground solar system.
+       */
+      public function get inMiniBattleground() : Boolean {
+         return ML.latestGalaxy.isMiniBattleground(solarSystemId);
       }
       
       private var _name:String = "";
@@ -438,11 +443,14 @@ package models.solarsystem
                id            = this.id;
                type          = LocationType.SS_OBJECT;
                variation     = this.variation;
-               player        = isOwned ? this.player : null;
                solarSystemId = this.solarSystemId;
+               name          = this.name;
             }
          }
-         _toLocationCache.name = this.name;
+         if (isOwned)
+            _toLocationCache.player = player;
+         else if (isPlanet)
+            _toLocationCache.player = PlayerMinimal.NPC_PLAYER;
          return _toLocationCache;
       }
       

@@ -6,7 +6,6 @@ package models.location
    import flash.errors.IllegalOperationError;
    
    import models.building.Building;
-   import models.map.MMap;
    import models.player.PlayerMinimal;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
@@ -14,13 +13,46 @@ package models.location
    import models.tile.TerrainType;
    
    import utils.NameResolver;
+   import utils.Objects;
    import utils.assets.AssetNames;
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
    
+   /**
+    * @see models.location.LocationEvent#NAME_CHANGE 
+    */
+   [Event(name="nameChange", type="models.location.LocationEvent")]
    
    public class Location extends LocationMinimal
    {
+      /**
+       * Updates name property of <code>location</code> if:
+       * <ul>
+       *    <li><code>location</code> is not <code>null</code></li>
+       *    <li><code>location</code> is <code>Location</code> of type <code>LocationType.SS_OBJECT</code></li>
+       *    <li><code>location.id</code> equals <code>locationId</code></li>
+       * </ul>
+       * 
+       * @param location instance of <code>Location</code> that needs to be updated.
+       *                 <b>Optional. May not be instance of <code>Location</code>.
+       *                 May not be of <code>LocationType.SS_OBJECT</code> type.</b>
+       * @param locationId a location that needs to be updated.
+       *                   <b>Greater than 0.</b>
+       * @param locationName new value of <code>name</code> property.
+       *                     <b>Not null. Not empty string.</b>
+       */
+      public static function updateName(location:LocationMinimal, locationId:int, locationName:String) : void {
+         Objects.paramNotEquals("locationName", locationName, [null, ""]);
+         if (locationId <= 0)
+            throw new IllegalOperationError("[param locationId] must be greater than 0 but was " + locationId);
+         
+         if (location == null || !(location is Location) || !location.isSSObject || location.id != locationId)
+            return;
+         
+         Location(location).name = locationName;
+      }
+      
+      
       private static function get NAV_CTRL() : NavigationController {
          return NavigationController.getInstance();
       }
@@ -33,8 +65,19 @@ package models.location
       
       [Optional]
       public var terrain:int = TerrainType.GRASS;
+      
+      private var _name:String = null;
       [Optional]
-      public var name:String = null;
+      public function set name(value:String) : void {
+         if (_name != value) {
+            _name = value;
+            dispatchSimpleEvent(LocationEvent, LocationEvent.NAME_CHANGE);
+         }
+      }
+      public function get name() : String {
+         return _name;
+      }
+      
       [Optional]
       [Bindable]
       public var player:PlayerMinimal;
@@ -63,19 +106,20 @@ package models.location
       public function get solarSystemName() : String {
          if (isBattleground || inBattleground)
             return Localizer.string("Galaxy", "label.wormhole");
-         if (isMiniBattleground || isSSObject && ML.latestGalaxy.getSSById(solarSystemId).isMiniBattleground)
+         if (isMiniBattleground)
+            return Localizer.string("Galaxy", "label.pulsar", [id])
+         if (isSSObject && ML.latestGalaxy.isMiniBattleground(solarSystemId))
             return Localizer.string("Galaxy", "label.pulsar", [solarSystemId]);
          return NameResolver.resolveSolarSystem(solarSystemId == 0 ? id : solarSystemId);
       }
       
-      [Bindable(event="willNotChange")]
-      public function get planetName() : String
-      {
-         return name;
+      [Bindable(event="nameChange")]
+      public function get planetName() : String {
+         return _name;
       }
       
       
-      [Bindable(event="willNotChange")]
+      [Bindable(event="nameChange")]
       public function get shortDescription() : String
       {
          if (isGalaxy)
@@ -99,7 +143,7 @@ package models.location
       }
       
       
-      [Bindable(event="willNotChange")]
+      [Bindable(event="nameChange")]
       public function get longDescription() : String
       {
          switch(type)
@@ -315,6 +359,21 @@ package models.location
                ML.latestSolarSystem.moveTo(ML.latestSolarSystem.getSSObjectById(id).currentLocation);
             }
          );
+      }
+      
+      
+      /* ########################### */
+      /* ### BaseModel OVERRIDES ### */
+      /* ########################### */
+      
+      /**
+       * If this location is SS_OBJECT sets <code>player</code> to <code>PlayerMinimal.NPC_PLAYER</code>
+       * it it has not been set yet.
+       */
+      protected override function afterCreateModel(data:Object) : void {
+         if (isSSObject && player == null)
+            player = PlayerMinimal.NPC_PLAYER;
+         super.afterCreateModel(data);
       }
       
       

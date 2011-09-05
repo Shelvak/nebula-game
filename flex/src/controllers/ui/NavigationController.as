@@ -2,7 +2,6 @@ package controllers.ui
 {
    import com.developmentarc.core.utils.EventBroker;
    
-   import components.alliance.AllianceScreen;
    import components.base.viewport.ViewportZoomable;
    import components.defensiveportal.DefensivePortalScreen;
    import components.factories.MapFactory;
@@ -14,7 +13,6 @@ package controllers.ui
    import components.screens.MainAreaContainer;
    
    import controllers.GlobalFlags;
-   import controllers.alliances.AlliancesCommand;
    import controllers.market.MarketCommand;
    import controllers.navigation.MCMainArea;
    import controllers.navigation.MCSidebar;
@@ -31,19 +29,18 @@ package controllers.ui
    import flash.events.MouseEvent;
    import flash.external.ExternalInterface;
    
-   import globalevents.GHealingScreenEvent;
-   import globalevents.GLoadUnloadScreenEvent;
    import globalevents.GRatingsEvent;
    import globalevents.GUnitsScreenEvent;
    import globalevents.GlobalEvent;
    
    import models.ModelLocator;
    import models.Owner;
-   import models.alliance.MAlliance;
    import models.building.Building;
    import models.chat.MChat;
    import models.events.ScreensSwitchEvent;
    import models.galaxy.Galaxy;
+   import models.healing.MCHealingScreen;
+   import models.infoscreen.MCInfoScreen;
    import models.map.MMap;
    import models.map.MapType;
    import models.market.MCMarketScreen;
@@ -53,6 +50,8 @@ package controllers.ui
    import models.ratings.MCRatingsScreen;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
+   import models.unit.MCLoadUnloadScreen;
+   import models.unit.MCUnitScreen;
    import models.unit.MCUnitsBuild;
    import models.unit.Unit;
    import models.unit.UnitKind;
@@ -483,8 +482,9 @@ package controllers.ui
       }
       
       
-      public function showInfo() : void
+      public function showInfo(obj: *) : void
       {
+         MCInfoScreen.getInstance().infoModel = obj;
          showNonMapScreen(_screenProperties[MainAreaScreens.INFO]);
       }
       
@@ -492,25 +492,8 @@ package controllers.ui
       
       public function showHealing(location: *, units: ListCollectionView): void
       {
-         var setData: Function = function(e: Event): void
-         {
-            createdScreens[MainAreaScreens.HEAL] = true;
-            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CHANGED, setData);
-            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-            new GHealingScreenEvent(GHealingScreenEvent.OPEN_SCREEN, {
-               'location': location,
-               'units': units});
-         }
-         if (createdScreens[MainAreaScreens.HEAL])
-         {
-            MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, setData);
-         }
-         else
-         {
-            MA.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-         }
+         MCHealingScreen.getInstance().prepare(units, location);
          showNonMapScreen(_screenProperties[MainAreaScreens.HEAL]);
-         
       }
       
       public function showStorage(transporter: Unit, oldUnits: ListCollectionView, oldLocation: *): void
@@ -537,62 +520,15 @@ package controllers.ui
       
       public function showLoadUnload(location: *, target: *, units: ListCollectionView): void
       {
-         var setData: Function = function(e: Event): void
-         {
-            createdScreens[MainAreaScreens.LOAD_UNLOAD] = true;
-            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CHANGED, setData);
-            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-            new GLoadUnloadScreenEvent(GLoadUnloadScreenEvent.OPEN_SCREEN, {
-               'location': location,
-               'target': target,
-               'units': units});
-         }
-         if (createdScreens[MainAreaScreens.LOAD_UNLOAD])
-         {
-            MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, setData);
-         }
-         else
-         {
-            MA.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-         }
+         MCLoadUnloadScreen.getInstance().prepare(units, location, target);
          showNonMapScreen(_screenProperties[MainAreaScreens.LOAD_UNLOAD]);
-         
       }
       
       public function showUnits(units:ListCollectionView, location: * = null, target: Building = null,
                                 kind: String = null, owner: int = Owner.PLAYER) : void
       {
-         function setData(e: Event): void
-         {
-            createdScreens[MainAreaScreens.UNITS] = true;
-            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CHANGED, setData);
-            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
-               'target': target,
-               'units': units,
-               'kind': kind,
-               'owner': owner});
-         }
-         if (MA.currentName != MainAreaScreens.UNITS)
-         {
-            if (createdScreens[MainAreaScreens.UNITS])
-            {
-               MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, setData);
-            }
-            else
-            {
-               MA.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setData);
-            }
-            showNonMapScreen(_screenProperties[MainAreaScreens.UNITS]);
-         }
-         else
-         {
-            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_SCREEN, {'location': location,
-               'target': target,
-               'units': units,
-               'kind': kind,
-               'owner': owner});
-         }
+         MCUnitScreen.getInstance().prepare(units, location, target, kind, owner);
+         showNonMapScreen(_screenProperties[MainAreaScreens.UNITS]);
       }
       
       public function showFacilities(facilityId: int, 
@@ -778,9 +714,8 @@ package controllers.ui
       }
       
       
-      public function showChat() : void
-      {
-         resetToNonMapScreen(_screenProperties[MainAreaScreens.CHAT]);
+      public function showChat() : void {
+         showNonMapScreen(_screenProperties[MainAreaScreens.CHAT]);
       }
       
       
@@ -990,6 +925,10 @@ package controllers.ui
                "instead."
             );
          }
+         
+         if (_currentScreenProps != null && _currentScreenProps.screenName == screenProps.screenName)
+            return;
+         
          beforeScreenChange();
          MA.showScreen(screenProps.screenName, unlockAfter);
          resetActiveButton(screenProps.button);

@@ -33,5 +33,5 @@
          
       ]]>
    </fx:Script>
-   <mx:ProgressBar id="bar" mode="manual" minimum="0" fontSize="10" labelPlacement="center" height="16" width="100%"/>
+   <mx:ProgressBar id="bar" mode="manual" minimum="0" fontSize="12" labelPlacement="center" height="20" width="100%"/>
 </s:Group>

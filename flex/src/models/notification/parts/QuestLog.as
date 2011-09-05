@@ -44,5 +44,10 @@ package models.notification.parts
       
       
       public var quest: Quest;
+      
+      /**
+       * No-op.
+       */
+      public function updateLocationName(id:int, name:String) : void {}
    }
 }

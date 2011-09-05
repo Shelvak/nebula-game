@@ -74,12 +74,12 @@
             var notif:Notification
             if (oldValue != null) {
                notif = Notification(oldValue);
-               notif.removeEventListener(NotificationEvent.ISNEW_CHANGE, notification_isNewChange, false);
+               notif.removeEventListener(NotificationEvent.IS_NEW_CHANGE, notification_isNewChange, false);
                notif.removeEventListener(NotificationEvent.READ_CHANGE,  notification_readChange,  false);
             }
             if (newValue != null) {
                notif = Notification(newValue);
-               notif.addEventListener(NotificationEvent.ISNEW_CHANGE, notification_isNewChange, false, 0, true);
+               notif.addEventListener(NotificationEvent.IS_NEW_CHANGE, notification_isNewChange, false, 0, true);
                notif.addEventListener(NotificationEvent.READ_CHANGE,  notification_readChange,  false, 0, true);
             }
             createCustomPart();

@@ -16,7 +16,6 @@
          import components.credits.AccelerateSelector;
          import components.credits.ConfirmCredsLabel;
          import components.popups.ActionConfirmationPopup;
-         import components.popups.ErrorPopup;
          import components.popups.WaitingCredsPopup;
          import components.skins.ButtonSkin;
          import components.skins.CreditButtonSkin;
@@ -31,6 +30,7 @@
          import controllers.navigation.MCSidebar;
          import controllers.objects.ObjectClass;
          import controllers.planets.PlanetsCommand;
+         import controllers.planets.actions.EditActionParams;
          import controllers.ui.NavigationController;
          
          import flashx.textLayout.elements.TextFlow;
@@ -50,12 +50,10 @@
          import models.constructionqueueentry.ConstructionQueueEntry;
          import models.parts.Upgradable;
          import models.parts.events.UpgradeEvent;
-         import models.planet.MBoost;
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.resource.ResourcesAmount;
          import models.solarsystem.MSSObject;
-         import models.unit.Unit;
          
          import mx.core.ScrollPolicy;
          import mx.events.DragEvent;
@@ -70,7 +68,6 @@
          import utils.NumberUtil;
          import utils.UrlNavigate;
          import utils.assets.AssetNames;
-         import utils.datastructures.Collections;
          import utils.locale.Localizer;
          
          private static const PRECISION: int = 1;
@@ -264,11 +261,11 @@
          
          private function refreshCancelProperties(): void
          {
-            if (_selectedModel.upgradePart.upgradeEndsAt == null)
-            {
-               return;
+            if (_selectedModel != null &&
+               _selectedModel.upgradePart != null &&
+               _selectedModel.upgradePart.upgradeEndsAt != null) {
+               builtPart = _selectedModel.upgradePart.upgradeProgress;
             }
-            builtPart = _selectedModel.upgradePart.upgradeProgress;
          }
          
          protected function queueList_dragStartHandler(event:DragEvent):void
@@ -289,6 +286,8 @@
          
          protected function recalculateCosts(): void
          {
+            if (_selectedModel == null || _selectedModel.upgradePart == null)
+               return;
             var resources:ResourcesAmount = _selectedModel.upgradePart.resourcesNeededForNextLevel();
             metalCost = resources.metal;
             energyCost = resources.energy;
@@ -315,8 +314,7 @@
          
          protected function infoButton_clickHandler(event:MouseEvent):void
          {
-            ML.infoModel = _selectedModel;
-            NavigationController.getInstance().showInfo();
+            NavigationController.getInstance().showInfo(_selectedModel);
          }
          
          
@@ -341,10 +339,8 @@
          
          protected function attack_clickHandler(event:MouseEvent):void
          {
-            NC.showUnits(Collections.filter(ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), function(item: Unit): Boolean
-            {
-               return item.hasGuns;
-            }), ML.latestPlanet.toLocation(), _selectedModel);
+            NC.showUnits(ML.latestPlanet.getAgressiveGroundUnits(), 
+               ML.latestPlanet.toLocation(), _selectedModel);
          }
          
          private function refreshConstructor(e: Event = null): void
@@ -366,6 +362,8 @@
                }
                if (constructor)
                {
+                  // TODO: this breaks when constructor.constructableType or constructor.constructableId are null
+                  // user report: http://forum.nebula44.lt/topic/104/klaida-ismete-kai-bandziau-paleisti-statyti-pastata/
                   if (ModelUtil.getModelClass(constructor.constructableType) == ObjectClass.UNIT)
                   {
                      constructable = ML.latestPlanet.getUnitById(constructor.constructableId);
@@ -467,7 +465,7 @@
             var lbl: Label = new Label();
             lbl.minWidth = 300;
             lbl.text = Localizer.string('Popups', 'message.' + 
-            (_selectedModel.upgradePart.level > 0?'cancelUpgrade':'cancelConstructor'));
+               (_selectedModel.upgradePart.level > 0?'cancelUpgrade':'cancelConstructor'));
             popUp.addElement(lbl);
             popUp.title = Localizer.string('Popups', 'title.' +
                (_selectedModel.upgradePart.level > 0?'cancelUpgrade':'cancelConstructor'));
@@ -475,7 +473,7 @@
             {
                var _constructor: Building = ML.latestPlanet.getBuildingByConstructable(
                   _selectedModel.id, ObjectClass.BUILDING);
-               new BuildingsCommand(_selectedModel.upgradePart.level > 0 || _selectedModel.constructorId == 0
+               new BuildingsCommand(_selectedModel.upgradePart.level > 0 || _constructor == null
                   ?BuildingsCommand.CANCEL_UPGRADE:BuildingsCommand.CANCEL_CONSTRUCTOR, 
                   {'id': (_selectedModel.upgradePart.level > 0 || _constructor == null
                      ? _selectedModel.id
@@ -546,10 +544,9 @@
             }
          }
          
-         private function renamePlanet(e: Event): void
-         {
-            ML.latestPlanet.ssObject.name = newPlanetName.text;
-            new PlanetsCommand(PlanetsCommand.EDIT, ML.latestPlanet).dispatch();
+         private function renamePlanet(): void {
+            new PlanetsCommand(PlanetsCommand.EDIT, new EditActionParams(ML.latestPlanet, newPlanetName.text))
+            .dispatch();
             newPlanetName.text = "";
          }
          
@@ -807,9 +804,9 @@
                            
                            <base:AdvancedContainer visible="{_selectedModel.npc}">
                               <s:Label text="{getString('noUnits')}" 
-                                       visible="{ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length == 0}"
+                                       visible="{ML.latestPlanet.getAgressiveGroundUnits().length == 0}"
                                        styleName="unsatisfied" fontSize="16"/>
-                              <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length != 0}" 
+                              <s:Button enabled="{ML.latestPlanet.getAgressiveGroundUnits().length != 0}" 
                                         horizontalCenter="0" click="attack_clickHandler(event)"
                                         skinClass="components.skins.RedButtonSkin"
                                         label="{getString('attack')}"/>
@@ -844,11 +841,11 @@
                      <base:AdvancedContainer left="0" right="0">
                         <s:Group width="100%" visible="{_selectedModel.upgradePart.level > 0}">
                            <s:Label text="{getString('label.cancelUpgrade')}"
-                                    left="0" right="0"/>
+                                    left="0" right="0" paddingBottom="6" />
                         </s:Group>
                         <s:Group width="100%" visible="{_selectedModel.upgradePart.level == 0}">
                            <s:Label text="{getString('label.cancelConstructor')}"
-                                    left="0" right="0"/>
+                                    left="0" right="0" paddingBottom="6" />
                         </s:Group>
                         <base:ImageAndLabel type="{ResourceType.METAL}" paddingLeft="6" 
                                             visible="{Resource.getModelCancelRevenueString(
@@ -866,8 +863,10 @@
                                             textToDisplay="{Resource.getModelCancelRevenueString(
                                             _selectedModel, ResourceType.ZETIUM, builtPart)}"/>
                         <base:Warning showSign="false" text="{getString('warning.deployCancel')}" 
-                                      visible="{ML.latestPlanet.getBuildingByConstructable(_selectedModel.id,
-                                      ObjectClass.BUILDING) == null}"/>
+                                      visible="{_selectedModel.upgradePart.level == 0 &amp;&amp;  
+                                      ML.latestPlanet.getBuildingByConstructable(_selectedModel.id,
+                                      ObjectClass.BUILDING) == null}" width="100%"
+                                                                      paddingTop="6" paddingBottom="6"/>
                         <s:Group width="100%">
                            <s:Button right="6" label="{getString('label.cancel')}"
                                      click="cancelUpgrade()"/>
@@ -942,12 +941,12 @@
                         <s:Label text="{getString('message.changeName')}" 
                                  left="6" right="6"/>
                      </s:Group>
-                     <base:BaseTextInput width="80%" id="newPlanetName" enter="renamePlanet(event)"
+                     <base:BaseTextInput width="80%" id="newPlanetName" enter="renamePlanet()"
                                          maxChars="{Config.getMaxPlanetNameLength()}"/>
                      <s:Group width="100%">
                         <s:Button right="6" enabled="{newPlanetName.text.length >= Config.getMinPlanetNameLength()
                                   &amp;&amp; !ML.latestPlanet.pending}"
-                                  click="renamePlanet(event)" 
+                                  click="renamePlanet()" 
                                   label="{getString('label.changeName')}"/>
                      </s:Group>
                      <base:layout>

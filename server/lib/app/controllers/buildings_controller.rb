@@ -162,7 +162,7 @@ class BuildingsController < GenericController
   #
   def action_cancel_constructor
     constructor = find_building
-    constructor.cancel!
+    constructor.cancel_constructable!
   end
     
   # Cancels upgrade of the building. Partially returns 

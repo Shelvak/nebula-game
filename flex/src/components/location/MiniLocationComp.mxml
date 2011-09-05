@@ -139,6 +139,7 @@
             <s:Label styleName="locationHeader"
                      text="{Localizer.string('Location', 'header.owner')}:"/>
             <s:Button skinClass="components.skins.LinkButtonSkin"
+                      enabled="{_location.player != null}"
                       label="{_location.player == null?
                       Localizer.string('Players', 'npc')
                       :_location.player.name}"

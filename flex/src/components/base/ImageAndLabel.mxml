@@ -9,6 +9,8 @@
          [Bindable]
          public var type: String;
          
+         public var userLargeIcon:Boolean = false;
+         
          [Bindable]
          public function get textToDisplay(): String
          {
@@ -52,9 +54,15 @@
          public var count: int = 0;
          
          private var _textToDisplay: String;
+         
+         private function getImage(type:String) : BitmapData {
+            if (userLargeIcon)
+               type += "_large";
+            return IMG.getImage(AssetNames.getIconImageName(type));
+         }
       ]]>
    </fx:Script>
-   <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(type))}"/>
+   <s:BitmapImage source="{getImage(type)}"/>
    <s:Label fontWeight="bold" text="{count + 'x'}" verticalCenter="1" visible="{count != 0}"/>
    <s:Label id="label" text="{textToDisplay}" verticalCenter="1" paddingTop="{textTopPadding}"
             styleName="{customStyle}"/>

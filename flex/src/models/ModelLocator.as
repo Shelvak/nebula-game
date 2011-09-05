@@ -84,21 +84,6 @@ package models
          latestPlanet = null;
          latestSolarSystem = null;
          latestGalaxy = null;
-         infoModel = null;
-      }
-      
-      
-      private var _infoModel:*;
-      public function set infoModel(value:*) : void
-      {
-         if (_infoModel != value)
-         {
-            _infoModel = value;
-         }
-      }
-      public function get infoModel() : *
-      {
-         return _infoModel;
       }
       
       

@@ -44,6 +44,10 @@ package models.notification.parts
       
       public var location: Location;
       
+      public function updateLocationName(id:int, name:String) : void {
+         Location.updateName(location, id, name);
+      }
+      
       public var outcome: int;
       
       public var units: Object; //+

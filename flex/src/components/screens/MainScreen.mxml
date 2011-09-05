@@ -45,7 +45,7 @@ bars and so on.
    </fx:Script>
    
    
-   <screens:MainAreaContainer id="mainAreaContainer" left="0" right="0" top="26" bottom="24">
+   <screens:MainAreaContainer id="mainAreaContainer" left="0" right="0" top="26" bottom="34">
       <screens:creationComplete>
          NavigationController.getInstance().registerMainAreaContainer(mainAreaContainer);
       </screens:creationComplete>
@@ -57,7 +57,7 @@ bars and so on.
    </s:SkinnableContainer>
    
    <s:SkinnableContainer id="bottomToolbarContainer" mouseEnabled="false"
-                         left="0" bottom="0" right="0" height="24"
+                         left="0" bottom="0" right="0" height="34"
                          skinClass="components.skins.BottomToolbarContainerSkin">
       <base:AdvancedContainer bottom="0" top="0">
          <base:layout><s:HorizontalLayout verticalAlign="bottom" gap="10"/></base:layout>
@@ -68,11 +68,14 @@ bars and so on.
                                               ML.player.planetsCount >= Config.getRaidingPlanetLimit() &amp;&amp;
                                               ML.latestPlanet.ssObject.owner == Owner.PLAYER &amp;&amp;
                                               ML.latestPlanet.ssObject.nextRaidAt}"/>
-         <ui:IconWithLabel id="icoPlanetCooldown" toolTip="{Localizer.string('General', 'label.cooldownEndsIn')}"
-                           icon="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 'cooldown')}"
-                           text="{getPlanetCooldownLabel(ML.latestPlanet.ssObject.cooldown.endsIn)}"
-                           visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
-                                     ML.latestPlanet.ssObject.cooldown != null}"/>
+         <s:Group>
+            <ui:IconWithLabel id="icoPlanetCooldown" toolTip="{Localizer.string('General', 'label.cooldownEndsIn')}"
+                              icon="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 'cooldown_large')}"
+                              text="{getPlanetCooldownLabel(ML.latestPlanet.ssObject.cooldown.endsIn)}"
+                              visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
+                              ML.latestPlanet.ssObject.cooldown != null}"
+                              left="0" right="0" top="0" bottom="4"/>
+         </s:Group>
       </base:AdvancedContainer>
       <cchat:CChatOpenChanButtons right="0" bottom="0"/>
    </s:SkinnableContainer>

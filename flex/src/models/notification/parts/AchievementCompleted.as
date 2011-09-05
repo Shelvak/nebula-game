@@ -1,18 +1,11 @@
 package models.notification.parts
 {
-   import controllers.objects.ObjectClass;
-   
    import models.BaseModel;
    import models.achievement.MAchievement;
    import models.factories.AchievementFactory;
-   import models.location.Location;
    import models.notification.INotificationPart;
    import models.notification.Notification;
-   import models.unit.UnitBuildingEntry;
    
-   import mx.collections.ArrayCollection;
-   
-   import utils.ModelUtil;
    import utils.locale.Localizer;
    
    
@@ -50,5 +43,10 @@ package models.notification.parts
       }
       
       public var achievement:MAchievement;
+      
+      /**
+       * No-op.
+       */
+      public function updateLocationName(id:int, name:String) : void {}
    }
 }

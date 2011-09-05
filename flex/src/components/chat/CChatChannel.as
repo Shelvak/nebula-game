@@ -17,7 +17,6 @@ package components.chat
    import models.chat.events.MChatChannelContentEvent;
    import models.chat.events.MChatChannelEvent;
    
-   import mx.core.mx_internal;
    import mx.events.PropertyChangeEvent;
    
    import spark.components.Button;

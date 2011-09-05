@@ -233,26 +233,25 @@
          
          protected function details_clickHandler(event:MouseEvent):void
          {
-            ML.infoModel = _selectedModel;
-            NavigationController.getInstance().showInfo();
+            NavigationController.getInstance().showInfo(_selectedModel);
          }
          
          
          protected function unlocks_clickHandler(event:MouseEvent):void
          {
+            var temp: *;
             if (ModelUtil.getModelClass(Config.unlockHash[_selectedModel.type]) == ObjectClass.BUILDING)
             {
-               ML.infoModel = BuildingFactory.createDefault(
+               temp = BuildingFactory.createDefault(
                   ModelUtil.getModelSubclass(Config.unlockHash[_selectedModel.type]));
             }
             else
             {
-               var temp: Unit = new Unit();
+               temp = new Unit();
                temp.type = ModelUtil.getModelSubclass(Config.unlockHash[_selectedModel.type]);
                temp.upgradePart.level = 0;
-               ML.infoModel = temp;
             }
-            NavigationController.getInstance().showInfo();
+            NavigationController.getInstance().showInfo(temp);
          }
          
          

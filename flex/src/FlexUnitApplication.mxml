@@ -12,6 +12,7 @@
          
          import tests._old.testsuites.*;
          import tests.animation.TS_Animation;
+         import tests.announcement.TS_Announcement;
          import tests.chat.TS_Chat;
          import tests.controllers.ui.TS_UIControllers;
          import tests.foliage.TS_Foliage;
@@ -45,6 +46,7 @@
                TS_Chat,
                TS_Time,
                TS_Foliage,
+               TS_Announcement,
                CommunicationsTestSuite,
                ModelsTestSuite,
                UtilsTestSuite

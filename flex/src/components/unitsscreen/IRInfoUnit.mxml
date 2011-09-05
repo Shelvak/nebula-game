@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark" 
+                xmlns:base="components.base.*"
+                xmlns:mx="library://ns.adobe.com/flex/mx" 
+                xmlns:unitsscreen="components.unitsscreen.*"
+                autoDrawBackground="false"
+                rollOver="basecontainer1_rollOverHandler(event)"
+                rollOut="basecontainer1_rollOutHandler(event)" 
+                xmlns:components="utils.components.*">
+   <fx:Declarations>
+      <s:Resize id="expandLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="50"
+                effectStart="expandLabel_effectStartHandler(event)"/>
+      <s:Resize id="colapseLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="0"
+                effectEnd="colapseLabel_effectEndHandler(event)"/>
+   </fx:Declarations>
+   <fx:Script>
+      <![CDATA[
+         import config.Config;
+         
+         import controllers.ui.NavigationController;
+         
+         import models.ModelLocator;
+         import models.unit.Unit;
+         
+         import mx.events.EffectEvent;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         private static const IMG:ImagePreloader = ImagePreloader.getInstance();
+         
+         [Bindable]
+         private var ML:ModelLocator = ModelLocator.getInstance();
+         
+         [Bindable]
+         private var type: String;
+         [Bindable]
+         private var hp: int;
+         [Bindable]
+         private var level: int;
+         [Bindable]
+         private var stance: String;
+         
+         
+         public override function set data(value:Object) : void
+         {
+            if (data != value)
+            {
+               super.data = value;
+               if (data)
+               {
+                  type = data.type;
+                  hp = data.hp;
+                  level = data.level;
+                  stance = data.stance;
+               }
+            }
+         }
+         
+         protected function basecontainer1_rollOverHandler(event:MouseEvent):void
+         {
+            colapseLabel.stop();
+            expandLabel.play();
+         }
+         
+         
+         protected function basecontainer1_rollOutHandler(event:MouseEvent):void
+         {
+            expandLabel.stop();
+            colapseLabel.play();
+         }
+         
+         
+         protected function info_clickHandler(event:MouseEvent):void
+         {
+            var unit: Unit = new Unit();
+            unit.level = level;
+            unit.type = type;
+            ModelLocator.getInstance().infoModel = unit;
+            NavigationController.getInstance().showInfo();
+         }
+         
+         [Bindable]
+         private var expanded: Boolean = false;
+         
+         protected function expandLabel_effectStartHandler(event:EffectEvent):void
+         {
+            expanded = true;
+         }
+         
+         protected function colapseLabel_effectEndHandler(event:EffectEvent):void
+         {
+            expanded = false;
+         }
+         
+      ]]>
+   </fx:Script>
+   <s:Group id="contGroup" width="76" height="76">
+      <s:Group left="0" right="24" top="0" bottom="0">
+         <base:SetableProgressBar id="sBar" maxStock="{Config.getUnitHp(type)}" 
+                                  curentStock="{hp}"
+                                  specialHeight="6" width="50" text="" top="0" useColorCoding="true"/>
+         <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(type))}" 
+                                         width="50" height="50" horizontalCenter="0" top="9"/>
+         
+         <unitsscreen:StarsContainer starCount="{level-1}" horizontalCenter="0" top="62"/>
+         <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
+                  text="{hp+'\n'+'/'+'\n'+Config.getUnitHp(type)}" verticalAlign="middle"
+                  backgroundColor="#0f0f0f" backgroundAlpha="0.7"/>
+         
+      </s:Group>
+      <s:Group right="0" width="24" bottom="0" top="0">
+         <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(Unit.STANCE_WORD + stance))}" 
+                        top="10" horizontalCenter="0"/>
+         <s:Button skinClass="components.skins.InfoButtonSkin" horizontalCenter="0" bottom="10"
+                   click="info_clickHandler(event)"/>
+      </s:Group>
+   </s:Group>
+</s:ItemRenderer>

@@ -36,9 +36,12 @@ Spork.prefork do
 
     # Truncate test tables
     def cleanup_database
-      ActiveRecord::Base.connection.tables.each do |table|
-        ActiveRecord::Base.connection.execute("TRUNCATE #{table}")
+      c = ActiveRecord::Base.connection
+      c.execute("SET foreign_key_checks=0")
+      c.tables.each do |table|
+        c.execute("TRUNCATE `#{table}`")
       end
+      c.execute("SET foreign_key_checks=1")
     end
 
     $SPEC_INITIALIZED = true

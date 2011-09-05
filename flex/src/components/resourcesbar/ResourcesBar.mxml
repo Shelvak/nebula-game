@@ -40,8 +40,8 @@
       <s:Fade id="fadeOut" duration="{DURATION_TIME}"/>
    </fx:Declarations>
    <s:Group mouseEnabledWhereTransparent="true">
-      <s:Group width="100%" height="0" id="infoPanel" 
-               bottom="24" visible="false" clipAndEnableScrolling="true"
+      <s:Group height="0" id="infoPanel" 
+               visible="false" clipAndEnableScrolling="true"
                rollOver="{shorten.stop(); fadeOut.stop(); widen.play([infoPanel]); fadeIn.play([infoPanel])}"
                rollOut="{widen.stop(); fadeIn.stop();  shorten.play([infoPanel]); fadeOut.play([infoPanel])}" >
          <!-- content rect background -->
@@ -66,21 +66,21 @@
          <custom:ResourceDetailsComp left="13" top="140" resource="{ML.latestPlanet.ssObject.zetium}" columnWidth="{COLUMN_WIDTH}"/>
          
       </s:Group>
-      <s:Group id="resourcesBarsGroup" bottom="0"
+      <s:Group id="resourcesBarsGroup"
                rollOver="{shorten.stop(); widen.play([infoPanel])}"
                rollOut="{widen.stop(); shorten.play([infoPanel])}" >
-         <custom:ResourceBar id="metalBar" _model="{ML.latestPlanet.ssObject.metal}" barWidth="{COLUMN_WIDTH - 10}"
+         <custom:ResourceBar id="metalBar" _model="{ML.latestPlanet.ssObject.metal}" barWidth="{120}"
                              toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
-         <custom:ResourceBar id="energyBar" _model="{ML.latestPlanet.ssObject.energy}" barWidth="{COLUMN_WIDTH - 10}"
+         <custom:ResourceBar id="energyBar" _model="{ML.latestPlanet.ssObject.energy}" barWidth="{120}"
                              toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
-         <custom:ResourceBar id="zetiumBar" _model="{ML.latestPlanet.ssObject.zetium}" barWidth="{COLUMN_WIDTH - 10}"
+         <custom:ResourceBar id="zetiumBar" _model="{ML.latestPlanet.ssObject.zetium}" barWidth="{120}"
                              toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
          <s:layout>
             <s:HorizontalLayout verticalAlign="middle"/>
          </s:layout>
       </s:Group>
       <s:layout>
-         <s:VerticalLayout gap="1" paddingBottom="2"/>
+         <s:VerticalLayout gap="1" paddingBottom="5"/>
       </s:layout>
    </s:Group>
 </base:BaseContainer>

@@ -24,11 +24,11 @@ class Unit < ActiveRecord::Base
   # Return Array of String unit types that do not participate in combat.
   def self.non_combat_types
     types = []
-    CONFIG.each_matching(GUNS_REGEXP) do |key, value|
+    CONFIG.each_matching(GUNS_REGEXP) do |key, guns|
       underscore_key = key.match(GUNS_REGEXP)[1]
       # All space units participate in combat.
-      is_space = CONFIG["units.#{underscore_key}.kind"] == :space
-      types.push underscore_key.camelcase if value.blank? && ! is_space
+      is_ground = CONFIG["units.#{underscore_key}.kind"] == :ground
+      types.push underscore_key.camelcase if guns.blank? && is_ground
     end
     types
   end

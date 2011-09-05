@@ -107,45 +107,11 @@ namespace :db do
     Rake::Task['snapshot:load'].invoke("main")
   end
 
-  desc "Truncates the database."
-  task :truncate => :environment do
-    env = ENV['environment']
-    ActiveRecord::Base.establish_connection(DB_CONFIG[env])
-    
-    ActiveRecord::Base.connection.tables.each do |table|
-      ActiveRecord::Base.connection.execute("TRUNCATE #{table}")
-    end
-  end
-
   namespace :test do
     desc "Clone database from current environment"
     task :clone => :environment do
       env = ENV['environment']
-      ActiveRecord::Base.establish_connection(DB_CONFIG[env])
-
-      # Get table data
-      tables = []
-      ActiveRecord::Base.connection.tables.reject do |table|
-        table == 'schema_migrations'
-      end.each do |table|
-        res = ActiveRecord::Base.connection.select_one(
-          "SHOW CREATE TABLE `#{table}`")
-        sql = res["Create Table"]
-        tables.push sql
-      end
-
-      ActiveRecord::Base.establish_connection(DB_CONFIG['test'])
-
-      # Disable FK checks
-      ActiveRecord::Base.connection.execute('SET foreign_key_checks = 0')
-
-      # Drop existing tables
-      ActiveRecord::Base.connection.tables.each do |table|
-        ActiveRecord::Base.connection.execute("DROP TABLE `#{table}`")
-      end
-
-      # Create tables
-      tables.each { |sql| ActiveRecord::Base.connection.execute(sql) }
+      ActiveRecord::Cloner.clone_db(DB_CONFIG[env], DB_CONFIG['test'])
     end
   end
 end

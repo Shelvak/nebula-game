@@ -104,11 +104,7 @@ package models.galaxy
        * system returns <code>false</code>.
        */
       public function isWormhole(ssId:int) : Boolean {
-         var ss:SolarSystem = Collections.findFirst(_wormholes,
-            function(ss:SolarSystem) : Boolean {
-               return ss.id == ssId;
-            }
-         );
+         var ss:SolarSystem = Collections.findFirstWithId(_wormholes, ssId);
          return ss != null && ss.isWormhole;
       }
       
@@ -117,6 +113,14 @@ package models.galaxy
        */
       public function isBattleground(ssId:int) : Boolean {
          return ssId == battlegroundId;
+      }
+      
+      /**
+       * Determines if the given solar system id is that of a battleground solar system.
+       */
+      public function isMiniBattleground(ssId:int) : Boolean {
+         var ss:SolarSystem = Collections.findFirstWithId(_solarSystems, ssId);
+         return ss != null && ss.isMiniBattleground;
       }
       
       [Bindable(event="hasWormholesChange")]
