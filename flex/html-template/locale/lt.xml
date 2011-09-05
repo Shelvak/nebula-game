@@ -1701,34 +1701,40 @@
        <p>Ar esi tikras?</p>
     </message.moveBuilding>
 
-    <!-- TODO: is this even used anymore? -->
-    <title.loginFailed value="Login failed!" />
+    <title.loginFailed value="Prisijungimas nepavyko!" />
     <message.loginFailed>
-      <p>Username or password incorrect. Refresh the page and try again.</p>
+      <p>Serveriui nepavyko tavęs atpažinti. Pabandyk prisijungti 
+      pagrindiniame puslapyje iš naujo.</p>
     </message.loginFailed>
+    
+    <lookIntoForum>
+      <p>Be to - pažiūrėk į forumą, galbūt ten bus naudingos 
+      informacijos.</p>
+    </lookIntoForum>
 
     <title.connectionLost value="Ryšys nutrūko!" />
     <message.connectionLost>
       <p>Su serveriu nutrūko ryšys. Paspausk „{0}“ kad prisijungti iš naujo.</p>
+      <p>[reference:lookIntoForum]</p>
     </message.connectionLost>
 
+    <!-- Rodomas jeigu serveris neatsakė per kažkokį laiko tarpą -->
     <title.connectionTimeout value="Nepavyko prisijungti!" />
     <message.connectionTimeout>
       <p>Per {0 one[? sekundę] tens[? sekundžių] many[? sekundes]} nepavyko
       susisiekti su serveriu. Paspausk „{1}“ kad pabandyti dar kartelį.</p>
+      <p>[reference:lookIntoForum]</p>
     </message.connectionTimeout>
 
-    <!-- TODO: How this differs from title.connectionTimeout? -->
-    <title.ioError value="IO Error!" />
+    <!-- Rodomas jeigu įvyko kita bendravimo klaida. -->
+    <title.ioError value="Ryšio klaida!" />
     <message.ioError>
-      <p>
-        Unable to communicate with the server (it is probably down). Try again 
-        later. 
-      </p>
+      <p>Negalime susirišti su serveriu.</p>
+      <p>[reference:lookIntoForum]</p>
     </message.ioError>
 
-    <!-- TODO: WTF? same as below? -->
-    <title.disconnect.default value="Serverio klaida!" />
+    <!-- If reason is not provided in locale this one is shown instead. -->
+    <title.disconnect.default value="Serveris tave atjungė!" />
     <message.disconnect.default>
       <p>Tu buvai atjungtas nuo serverio! Paspausk „{0}“ kad prisijungtum iš 
       naujo.</p>
@@ -1754,14 +1760,8 @@
     <title.disconnect.playerErased value="Viso gero!" />
     <message.disconnect.playerErased>
       <p>Tavo paskyra buvo ištrinta. Pasiilgsime tavęs...</p>
-      <p>Beje, '{0}' gali nebespausti. Vis tiek neveiks.</p>
+      <p>Beje, „{0}“ gali nebespausti. Vis tiek neveiks.</p>
     </message.disconnect.playerErased>
-
-    <!-- TODO: WTF? -->
-    <title.disconnect.notFound value="Resource missing!" />
-    <message.disconnect.notFound>
-      <p>A resource has not been found!  Click „{0}“ to reconnect.</p>
-    </message.disconnect.notFound>
 
     <title.disconnect.jsonError value="Bendravimo klaida!" />
     <message.disconnect.jsonError>
