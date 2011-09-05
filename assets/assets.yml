@@ -1014,6 +1014,7 @@ assets:
         squad_ally.png:                   AllianceShip2_move.png
         squad_nap.png:                    Whiteship_move.png
         squad_enemy.png:                  EnemyShip_move.png
+        squad_npc.png:                    Squad_npc.png
         squad_level.tar.gz:               SquadronLevels.tar.gz
         squad_popup_left.png:             Movementunits_left.png
         squad_popup_center.png:           Movementunits_center.png

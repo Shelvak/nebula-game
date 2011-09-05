@@ -198,8 +198,7 @@ package models.movement
       [Optional(alias="status")]
       /**
        * Owner type of this squadron. Settings this property will also set <code>owner</code> property on all units
-       * that belong to this squadron. If you try setting this to <code>Owner.UNDEFINED</code> property will be set
-       * to <code>Owner.ENEMY</code>.
+       * that belong to this squadron.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable]<br/>
@@ -207,7 +206,7 @@ package models.movement
        */
       public function set owner(value:int) : void {
          if (_owner != value ) {
-            _owner = value != Owner.UNDEFINED ? value : Owner.ENEMY;
+            _owner = value;
             units.disableAutoUpdate();
             for each (var unit:Unit in units) {
                unit.owner = _owner;
