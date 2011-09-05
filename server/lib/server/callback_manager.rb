@@ -52,7 +52,7 @@ class CallbackManager
     EVENT_VIP_STOP => "vip stop",
     EVENT_CREATE_METAL_SYSTEM_OFFER => "create metal system offer",
     EVENT_CREATE_ENERGY_SYSTEM_OFFER => "create energy system offer",
-    EVENT_CREATE_ZETIUM_SYSTEM_OFFER => "create zetium system offerp",
+    EVENT_CREATE_ZETIUM_SYSTEM_OFFER => "create zetium system offer",
   }
 
   # Maximum time for callback
@@ -131,16 +131,19 @@ class CallbackManager
 
     # Run every callback that should happen by now.
     #
-    def tick
+    def tick(include_failed=false)
       sleep 1 while $IRB_RUNNING
       
       now = Time.now.to_s(:db)
+      conditions = include_failed \
+        ? "ends_at <= '#{now}'" \
+        : "ends_at <= '#{now}' AND failed = 0"
 
       get_row = lambda do
         LOGGER.suppress(:debug) do
           ActiveRecord::Base.connection.select_one(
             "SELECT class, ruleset, object_id, event FROM callbacks
-              WHERE ends_at <= '#{now}' LIMIT 1"
+              WHERE #{conditions} LIMIT 1"
           )
         end
       end
@@ -148,7 +151,16 @@ class CallbackManager
       delete_row = lambda do
         LOGGER.suppress(:debug) do
           ActiveRecord::Base.connection.execute(
-            "DELETE FROM callbacks WHERE ends_at <= '#{now}' LIMIT 1"
+            "DELETE FROM callbacks WHERE #{conditions} LIMIT 1"
+          )
+        end
+      end
+      
+      mark_row_as_failed = lambda do
+        LOGGER.suppress(:debug) do
+          LOGGER.info "Marking row as failed."
+          ActiveRecord::Base.connection.execute(
+            "UPDATE callbacks SET failed=1 WHERE #{conditions} LIMIT 1"
           )
         end
       end
@@ -161,12 +173,12 @@ class CallbackManager
           process_callback(row, delete_row)
         rescue Exception => error
           if ENV['environment'] == 'production'
-            LOGGER.fatal(
+            LOGGER.error(
               "Error in callback manager!\n%s\n\nBacktrace:\n%s" % [
                 error.to_s, error.backtrace.join("\n")
               ]
             )
-            exit
+            mark_row_as_failed.call
           else
             fail
           end

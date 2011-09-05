@@ -5,8 +5,6 @@ require File.expand_path(
 
 LOGGER.info "Starting server..."
 
-callback_manager = proc { CallbackManager.tick }
-
 if ENV["environment"] == "development"
   # Initialize IRB support for drop-in development console.
   require File.expand_path(File.join(ROOT_DIR, 'lib', 'server',
@@ -48,7 +46,7 @@ EventMachine::run do
     ControlServer
 
   LOGGER.info "Starting callback manager..."
-  EventMachine::PeriodicTimer.new(1, &callback_manager)
+  EventMachine::PeriodicTimer.new(1) { CallbackManager.tick }
 
   if ENV["environment"] == "development"
     EventMachine::PeriodicTimer.new(0.1) do
@@ -66,7 +64,7 @@ EventMachine::run do
   end
   
   LOGGER.info "Running callback manager..."
-  callback_manager.call
+  CallbackManager.tick(true)
 
   LOGGER.info "Server initialized."
   if RUBY_PLATFORM =~ /mingw/
