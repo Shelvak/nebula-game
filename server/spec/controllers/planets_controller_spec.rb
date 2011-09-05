@@ -483,5 +483,17 @@ describe PlanetsController do
         @planet.reload
       end.should change(@planet, :player).from(nil).to(player)
     end
+    
+    it "should push show action if current planet id == planet.id" do
+      @controller.current_planet_id = @planet.id
+      should_push PlanetsController::ACTION_SHOW, 'id' => @planet.id
+      invoke @action, @params
+    end
+    
+    it "should not push show if current planet id != planet.id" do
+      @controller.current_planet_id = @planet.id - 1
+      should_not_push PlanetsController::ACTION_SHOW, 'id' => @planet.id
+      invoke @action, @params
+    end
   end
 end
