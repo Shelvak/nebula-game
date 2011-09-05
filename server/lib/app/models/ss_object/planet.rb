@@ -194,44 +194,6 @@ class SsObject::Planet < SsObject
 
     changes
   end
-  
-  # Boosts planets _resource_ _attribute_.
-  #
-  # _resource_ can be one of the +Resource::TYPES+ symbol.
-  # _attribute_ can be either :rate or :storage.
-  def boost!(resource, attribute)
-    resource = resource.to_sym
-    attribute = attribute.to_sym
-    
-    raise GameLogicError.new("Unknown resource #{resource}!") \
-      unless Resources::TYPES.include?(resource)
-    raise GameLogicError.new("Unknown attribute #{attribute}!") \
-      unless [:rate, :storage].include?(attribute)
-
-    player = self.player
-    raise ArgumentError.new("Planet player cannot be nil!") if player.nil?
-    creds_needed = Cfg.planet_boost_cost
-    raise GameLogicError.new("Not enough creds! Required #{creds_needed
-      }, has: #{player.creds}.") if player.creds < creds_needed
-    stats = CredStats.boost(player, resource, attribute)
-    player.creds -= creds_needed
-    
-    attr = :"#{resource}_#{attribute}_boost_ends_at"
-    duration = Cfg.planet_boost_duration
-    current = self.send(attr)
-    self.send(:"#{attr}=",
-      current.nil? ? duration.from_now : current + duration)
-
-    ActiveRecord::Base.transaction do
-      self.save!
-      player.save!
-      EventBroker.fire(self, EventBroker::CHANGED,
-        EventBroker::REASON_OWNER_PROP_CHANGE)
-      stats.save!
-    end
-    
-    self
-  end
 
   def player_change
     old_id, new_id = player_id_change

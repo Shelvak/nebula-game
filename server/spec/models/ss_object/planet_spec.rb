@@ -97,7 +97,7 @@ describe SsObject::Planet do
         @planet.boost!(:metal, :rate)
         @planet.reload
         @planet.metal_rate_boost_ends_at.should be_close(
-          CONFIG['creds.planet.resources.boost.duration'].from_now,
+          Cfg.planet_boost_duration.from_now,
           SPEC_TIME_PRECISION
         )
       end
@@ -109,7 +109,19 @@ describe SsObject::Planet do
         @planet.boost!(:metal, :rate)
         @planet.reload
         @planet.metal_rate_boost_ends_at.should be_close(
-          (3.days + CONFIG['creds.planet.resources.boost.duration']).from_now,
+          (3.days + Cfg.planet_boost_duration).from_now,
+          SPEC_TIME_PRECISION
+        )
+      end
+      
+      it "should set boost expiration date from now if boost is expired" do
+        @planet.metal_rate_boost_ends_at = 3.days.ago
+        @planet.save!
+
+        @planet.boost!(:metal, :rate)
+        @planet.reload
+        @planet.metal_rate_boost_ends_at.should be_close(
+          Cfg.planet_boost_duration.from_now,
           SPEC_TIME_PRECISION
         )
       end
