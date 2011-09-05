@@ -3,7 +3,6 @@ package controllers.planets.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
-   import controllers.screens.MainAreaScreens;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    
@@ -18,7 +17,6 @@ package controllers.planets.actions
    import models.solarsystem.SSKind;
    import models.solarsystem.SolarSystem;
    
-   import utils.ArrayUtil;
    import utils.remote.rmo.ClientRMO;
    
    
@@ -71,6 +69,11 @@ package controllers.planets.actions
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
+         if (ML.latestPlanet != null) {
+            ML.latestPlanet.setFlag_destructionPending();
+            ML.latestPlanet = null;
+         }
+         
          var params:Object = cmd.parameters;
          ML.units.addAll(UnitFactory.fromObjects(params.units, params.players));
          ML.units.addAll(UnitFactory.fromObjects(params.npcUnits, new Object()));
@@ -139,11 +142,6 @@ package controllers.planets.actions
             ML.latestSolarSystem = ss;
          }
          
-         if (ML.latestPlanet != null)
-         {
-            ML.latestPlanet.setFlag_destructionPending();
-            ML.latestPlanet = null;
-         }
          SQUADS_CTRL.createSquadronsForUnits(planet.units);
          NAV_CTRL.showPlanet(planet);
          GF.lockApplication = false;
