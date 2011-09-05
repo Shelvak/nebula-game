@@ -8,8 +8,8 @@ package models
     */
    public final class OwnerColor
    {
-      public static const UNDEFINED:int = 0xFF0000;
-      public static const ENEMY:int     = UNDEFINED;
+      public static const UNDEFINED:int = 0xF9DB09;
+      public static const ENEMY:int     = 0xFF0000;
       public static const PLAYER:int    = 0x00FF00;
       public static const ALLY:int      = 0x00C0FF;
       public static const NAP:int       = 0xFFFFFF;
