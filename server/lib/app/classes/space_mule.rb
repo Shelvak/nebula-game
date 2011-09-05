@@ -136,7 +136,8 @@ class SpaceMule
     source_solar_system = source.solar_system
     if source_solar_system
       message['from_solar_system'] = source_solar_system.travel_attrs
-      avoidable_points += source_solar_system.npc_unit_locations if avoid_npc
+      avoidable_points += source_solar_system.npc_unit_locations \
+        if avoid_npc
     end
 
     target_solar_system = target.solar_system
