@@ -1747,6 +1747,12 @@
       </p>
       <p>Click '{0}' to reconnect.</p>
     </message.disconnect.otherLogin>
+    
+    <title.disconnect.playerErased value="Bye bye!" />
+    <message.disconnect.playerErased>
+      <p>Your account has been erased. We'll miss you.</p>
+      <p>Don't bother pressing '{0}'. It won't work.</p>
+    </message.disconnect.playerErased>
 
     <title.disconnect.notFound value="Resource missing!" />
     <message.disconnect.notFound>

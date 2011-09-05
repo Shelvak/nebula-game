@@ -1750,6 +1750,12 @@
       saugumą.</p>
       <p>Paspausk „{0}“ kad prisijungtum iš naujo.</p>
     </message.disconnect.otherLogin>
+    
+    <title.disconnect.playerErased value="Viso gero!" />
+    <message.disconnect.playerErased>
+      <p>Tavo paskyra buvo ištrinta. Pasiilgsime tavęs...</p>
+      <p>Beje, '{0}' gali nebespausti. Vis tiek neveiks.</p>
+    </message.disconnect.playerErased>
 
     <!-- TODO: WTF? -->
     <title.disconnect.notFound value="Resource missing!" />

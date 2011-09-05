@@ -881,6 +881,13 @@ describe Player do
       player.invoked_from_control_manager = true
       player.destroy
     end
+    
+    it "should disconnect player from dispatcher if he's connected" do
+      player = Factory.create(:player)
+      Dispatcher.instance.should_receive(:disconnect).
+        with(player.id, Dispatcher::DISCONNECT_PLAYER_ERASED)
+      player.destroy
+    end
 
     describe "solar systems" do
       before(:each) do
