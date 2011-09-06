@@ -249,7 +249,7 @@
                   <s:layout>
                      <s:VerticalLayout gap="0" horizontalAlign="contentJustify"/>
                   </s:layout>
-                  <alliance:MembersRatingsHeader id="header" 
+                  <alliance:MembersRatingsHeader id="header"
                                                  listSort="model.header_ratingsSortHandler(event)"/>
                   <s:DataGroup dataProvider="{model.alliance.players}"
                                itemRenderer="components.alliance.IRMembersRatingsRow">
