@@ -315,7 +315,7 @@ class Dispatcher
   #
   # This should only be called from #change_player
   def change_client_id(from, to)
-    disconnect(to, DISCONNECT_OTHER_LOGIN, false) if connected?(to)
+    disconnect(to, DISCONNECT_OTHER_LOGIN) if connected?(to)
 
     info "Changing client id from #{from} to #{to}"
     @io_to_client_id[ @client_id_to_io[from] ] = to
