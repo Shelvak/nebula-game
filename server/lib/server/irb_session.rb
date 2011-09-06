@@ -65,8 +65,9 @@ module Dev
 
   def self.seed(player_id=1, player_count=10)
     players = {}
+    current_pid = Player.maximum(:id) + 1
     player_count.times do |i|
-      name = "p #{i} #{Time.now.to_f}"
+      name = "p-#{current_pid + i}"
       players[name] = name
     end
 
@@ -76,7 +77,7 @@ module Dev
     event_dispatched = radar(player_id)
     FowGalaxyEntry.dispatch_changed(player) unless event_dispatched
     
-    true
+    players.keys
   end
 
   def self.radar(player_id=1, x=0, y=0, strength=10)
