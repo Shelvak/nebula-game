@@ -27,10 +27,10 @@ if ENV["environment"] == "development"
 end
 
 LOGGER.info "Running EventMachine..."
-EventMachine::run do
+EventMachine.run do
   stop_server = proc do
     LOGGER.info "Caught interrupt, shutting down..."
-    EventMachine::stop_event_loop
+    EventMachine.stop_event_loop
   end
   trap("INT", &stop_server)
   trap("TERM", &stop_server)
@@ -39,10 +39,10 @@ EventMachine::run do
   SpaceMule.instance
 
   LOGGER.info "Starting game server..."
-  EventMachine::start_server "0.0.0.0", CONFIG['game']['port'], GameServer
+  EventMachine.start_server "0.0.0.0", CONFIG['game']['port'], GameServer
 
   LOGGER.info "Starting control server..."
-  EventMachine::start_server "0.0.0.0", CONFIG['control']['port'],
+  EventMachine.start_server "0.0.0.0", CONFIG['control']['port'],
     ControlServer
 
   LOGGER.info "Starting callback manager..."
