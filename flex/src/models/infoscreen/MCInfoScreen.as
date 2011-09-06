@@ -3,6 +3,10 @@ package models.infoscreen
    import com.developmentarc.core.utils.EventBroker;
    
    import components.infoscreen.UnitBuildingInfoEntry;
+   import components.infoscreen.table.IRInfoTableRowEmpty;
+   import components.infoscreen.table.IRInfoTableRowFull;
+   import components.infoscreen.table.IRInfoTableRowHalf;
+   import components.infoscreen.table.InfoTableLevel;
    
    import config.Config;
    
@@ -32,6 +36,8 @@ package models.infoscreen
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    import mx.collections.SortField;
+   import mx.core.ClassFactory;
+   import mx.core.IFactory;
    
    import utils.DateUtil;
    import utils.MathUtil;
@@ -187,6 +193,42 @@ package models.infoscreen
          selectedLevel = model.usefulLevel;
          dispatchLevelChangeEvent();
          refreshDataForTable();
+      }
+      
+      public function getTableItemRenderer(currentLvl: int, maxLvl: int,
+                                           selectedLvl: int): IFactory
+      {
+         switch (getTableLevel(currentLvl, maxLvl, selectedLvl))
+         {
+            case InfoTableLevel.FULL:
+               return new ClassFactory(IRInfoTableRowFull);
+               break;
+            case InfoTableLevel.HALF:
+               return new ClassFactory(IRInfoTableRowHalf);
+               break;
+            case InfoTableLevel.EMPTY:
+               return new ClassFactory(IRInfoTableRowEmpty);
+               break;
+         }
+         return null;
+      }
+      
+      public function getTableLevel(currentLvl: int, maxLvl: int,
+                                    selectedLvl: int): int
+      {
+         if ((currentLvl != maxLvl) && selectedLvl != currentLvl &&
+            !(currentLvl == 0 && selectedLvl == 1))
+         {
+            return InfoTableLevel.FULL;
+         }
+         else if (currentLvl != maxLvl)
+         {
+            return InfoTableLevel.HALF;
+         }
+         else
+         {
+            return InfoTableLevel.EMPTY;
+         }
       }
       
       public function refreshDataForTable(): void
@@ -369,13 +411,7 @@ package models.infoscreen
                      diffString = '-';
                   }
                   dataForTable.addItem(
-                     {
-                        'property': label,
-                        'current':currentValueString,
-                        'after':newValueString,
-                        'diff':diffString
-                     }
-                  );
+                     new MInfoRow(label, currentValueString, newValueString, diffString));
                }
             }
          }
