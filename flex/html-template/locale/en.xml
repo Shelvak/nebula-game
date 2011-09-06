@@ -1348,6 +1348,8 @@
     <description.short.planet value="Planet {0}" />
     <description.long.galaxy value="Sector {0}:{1} in Galaxy" />
     <description.long.solarSystem value="Sector {1}:{2} in Solar System {0}" />
+    <description.long.pulsar value="Sector {1}:{2} in Pulsar {0}"/>
+    <description.long.battleground value="Sector {0}:{1} in battleground"/>
     <description.long.planet value="Planet {0} in Solar System {1}" />
     <description.long.planetInBattleground value="Planet {0} in Battleground"/>
 
