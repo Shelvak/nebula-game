@@ -93,7 +93,7 @@
                      <s:Group width="100%" visible="{quest.rewards.units.length > 0}">
                         <s:Label text="{getString('units')}" fontWeight="bold"/>
                         <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" width="100%" 
-                                     dataProvider="{new ArrayCollection(quest.rewards.units)}"
+                                     dataProvider="{quest.rewards.units}"
                                      height="{85 * unitsLayout.rowCount}">
                            <s:layout>
                               <s:TileLayout id="unitsLayout"/>

@@ -89,17 +89,21 @@
       </s:stroke>
    </s:Path>
    
+   <!-- Strange behavior: 
+   when binding folowing path data to it's self width or height
+   it gets not constructed, so does its container...
+   So we temporary bind it to the innerTL width and height, as it is almost same size-->
+   
    <!-- layer 2: borders (bottom-right) inner -->
-   <s:Path id="innerBR"
-           alpha="0.14" alpha.over="0.55"
+   <s:Path alpha="0.14" alpha.over="0.55"
            winding="nonZero" left="1" right="1" top="1" bottom="1">
       <s:data>
-         M {innerBR.width-1} 0
-         L {innerBR.width-1} {innerBR.height-1}
-         L 0 {innerBR.height-1}
+         M {innerTL.width-1} 0
+         L {innerTL.width-1} {innerTL.height-1}
+         L 0 {innerTL.height-1}
       </s:data>
       <s:stroke>
-         <s:SolidColorStroke caps="none" color="0xa4a4a4" joints="miter" miterLimit="3.9" weight="1"/>
+         <s:SolidColorStroke caps="none" color="#a4a4a4" joints="miter" miterLimit="3.9" weight="1"/>
       </s:stroke>
    </s:Path>
    

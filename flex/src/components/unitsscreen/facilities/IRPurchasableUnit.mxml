@@ -347,14 +347,18 @@
             return isValid?[]:NOT_VALID_FILTER;
          }
          
+         private function rolledOver(): void
+         {
+            lightsAlpha = lights.alpha; 
+            fadeOut.stop();
+            fadeIn.play();
+         }
+         
       ]]>
    </fx:Script>
    <base:SpinnerContainer busy="{purchasePending}" top="0" left="0" right="0" bottom="0"  timeoutEnabled="false">
       
-      <s:Group rollOver="
-               lightsAlpha = lights.alpha; 
-               fadeOut.stop(); 
-               fadeIn.play()" 
+      <s:Group rollOver="rolledOver()" 
                rollOut="
                fadeOut.play()"
                filters="{filter}">
@@ -401,15 +405,13 @@
             </s:layout>
          </s:Group>
       </s:Group>
-      <s:Group left="158" top="{priceGroup.height + 13}" rollOver="{lightsAlpha = lights.alpha; 
-               fadeOut.stop();
-               fadeIn.play()}"
+      <s:Group left="158" top="{priceGroup.height + 11}" rollOver="rolledOver()"
                filters="{filter}">
          <s:NumericStepper id="selector" value="1" change="changeHandler(event)" minimum="1"
                            enabled="{isValid}"
-                           top="0" bottom="0" focusEnabled="false" snapInterval="1"
+                           top="2" bottom="0" focusEnabled="false" snapInterval="1"
                            maximum="{Math.max(1, facility.getQueueEmptySpace())}" width="50" textAlign="right"
-                           rollOver="{lightsAlpha = lights.alpha; fadeOut.stop(); lights.alpha = 1}"
+                           rollOver="rolledOver()"
                            creationComplete="selector_creationCompleteHandler(event)"/>
          <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin"
                    enabled="{!(
@@ -417,9 +419,7 @@
                    (!isValid) ||
                    !(facility.constructableType != null || canBeUpgraded))}"
                    left="{selector.width}" click="bButton_clickHandler(event)"
-                   rollOver="{lightsAlpha = lights.alpha; 
-                   fadeOut.stop();
-                   fadeIn.play()}"/>
+                   rollOver="rolledOver()"/>
       </s:Group>
       <s:Label verticalCenter="0" horizontalCenter="0" text="{Localizer.string('Units','label.technologyNeeded')}" fontSize="12" fontWeight="bold" color="#eec500"
                alpha="{isValid?0:1}" id="lblValidation"/>

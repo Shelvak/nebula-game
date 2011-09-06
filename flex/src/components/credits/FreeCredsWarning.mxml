@@ -8,8 +8,6 @@
       <![CDATA[
          import mx.events.FlexEvent;
          
-         import org.osmf.layout.PaddingLayoutFacet;
-         
          import spark.layouts.HorizontalAlign;
          import spark.layouts.HorizontalLayout;
          import spark.layouts.VerticalAlign;

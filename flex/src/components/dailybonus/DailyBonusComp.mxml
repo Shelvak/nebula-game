@@ -118,7 +118,7 @@
             </s:layout>
          </s:Group>
          <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" 
-                      dataProvider="{new ArrayCollection(bonus.units)}"
+                      dataProvider="{bonus.units}"
                       height="85" visible="{bonus.units.length > 0}" 
                       click="datagroup1_clickHandler(event)">
             <s:layout>

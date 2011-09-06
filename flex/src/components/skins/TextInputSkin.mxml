@@ -42,13 +42,17 @@
       </s:stroke>
    </s:Path>
    
+   <!-- Strange behavior: 
+   when binding folowing path data to it's self width or height
+   it gets not constructed, so does its container...
+   So we temporary bind it to the outerTL width and height, as it is almost same size-->
    <!-- layer 2: border (bottom-right) outter -->
    <s:Path id="outterBR"
            winding="nonZero" left="0" top="0" right="0" bottom="0">
       <s:data>
-         M 0 {outterBR.height-1}
-         L {outterBR.width-1} {outterBR.height-1}
-         L {outterBR.width-1} 0
+         M 0 {outterLT.height-1}
+         L {outterLT.width-1} {outterLT.height-1}
+         L {outterLT.width-1} 0
       </s:data>
       <s:stroke>
          <s:SolidColorStroke color="0x000000" caps="none" joints="miter" miterLimit="3.9" weight="1"/>
@@ -68,13 +72,17 @@
       </s:stroke>
    </s:Path>
    
+   <!-- Strange behavior: 
+   when binding folowing path data to it's self width or height
+   it gets not constructed, so does its container...
+   So we temporary bind it to the innerTL width and height, as it is almost same size-->
    <!-- layer 2: border (bottom-right) inner -->
    <s:Path id="innerBR" alpha="0.14"
            winding="nonZero" left="1" right="1" top="1" bottom="1">
       <s:data>
-         M 0 {innerBR.height-1}
-         L {innerBR.width-1} {innerBR.height-1}
-         L {innerBR.width-1} 0
+         M 0 {innerLT.height-1}
+         L {innerLT.width-1} {innerLT.height-1}
+         L {innerLT.width-1} 0
       </s:data>
       <s:stroke>
          <s:SolidColorStroke caps="none" color="0xa4a4a4" joints="miter" miterLimit="3.9" weight="1"/>

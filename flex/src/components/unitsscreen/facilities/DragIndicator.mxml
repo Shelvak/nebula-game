@@ -27,14 +27,19 @@
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready')}"/>
    <s:Group width="{imageSize}" height="{imageSize}" left="19" top="9">
       <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(_type))}" 
-                width="100%" height="100%"/>
+                                      width="100%" height="100%"/>
    </s:Group>
    
-      <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_counter')}"
-                     left="131" top="8"/>
-      
-      <s:Label  left="137" top="10" styleName="h3" 
+   <s:Group right="16" top="8">
+      <s:BitmapImage source="{IMG.getImage(
+                     AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_counter_left')}"
+                     left="0" top="0" id="countLeft"/>
+      <s:BitmapImage source="{IMG.getImage(
+                     AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_counter_repeat')}"
+                     right="0" left="{countLeft.width}" top="0"/>
+      <s:Label  left="6" top="2" right="3" bottom="2" styleName="h3" 
                 text="{count != -1?count.toString():''}"/>
+   </s:Group>
    
    <s:Label text="{_type == null?'':Localizer.string('Units', _type + '.name')}"  left="42" top="148" width="89" height="9" textAlign="center"/>
 </base:BaseContainer>

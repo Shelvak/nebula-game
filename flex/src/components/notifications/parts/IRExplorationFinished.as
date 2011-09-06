@@ -60,7 +60,7 @@ package components.notifications.parts
          if (f_NotificationPartChange)
          {
             var part:ExplorationFinished = ExplorationFinished(notificationPart);
-            unitsGroup.dataProvider = new ArrayCollection(part.rewards.units);
+            unitsGroup.dataProvider = part.rewards.units;
             location.location = part.location;
             message.text = part.message;
             metalIL.textToDisplay = part.rewards.metal.toString();
