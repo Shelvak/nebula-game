@@ -116,7 +116,7 @@ describe Dispatcher do
       @dispatcher.register io
       client_id = @dispatcher.instance_variable_get("@io_to_client_id")[io]
       @dispatcher.should_receive(:disconnect).with(
-        @change_id, Dispatcher::DISCONNECT_OTHER_LOGIN, false).and_return(true)
+        @change_id, Dispatcher::DISCONNECT_OTHER_LOGIN).and_return(true)
       @dispatcher.send(:change_client_id, client_id, @change_id)
     end
 

@@ -76,6 +76,7 @@ class SpaceMule
   #   *     )
   #   *   ],
   #   *   "loaded_troops" -> Map[transporterId: Int, Troop],
+  #   *   "unloaded_troop_ids" -> Seq[Int],
   #   *   "buildings" -> Seq[
   #   *     Map(
   #   *       "id" -> Int,
@@ -86,7 +87,7 @@ class SpaceMule
   #   *   ]
   #   * )
   def combat(location, planet_owner_id, nap_rules, alliance_names, players,
-      troops, loaded_troops, buildings)
+      troops, loaded_troops, unloaded_unit_ids, buildings)
     message = {
       'action' => 'combat',
       'location' => location,
@@ -96,6 +97,7 @@ class SpaceMule
       'players' => players,
       'troops' => troops,
       'loaded_troops' => loaded_troops,
+      "unloaded_troop_ids" => unloaded_unit_ids,
       'buildings' => buildings
     }
 

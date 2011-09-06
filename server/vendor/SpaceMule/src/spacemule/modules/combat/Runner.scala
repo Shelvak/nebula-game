@@ -51,7 +51,10 @@ object Runner extends BenchmarkableMock {
    *       "xp" -> Int
    *     )
    *   ],
+   *   // Troops that are loaded in transporters
    *   "loaded_troops" -> Map[transporterId: String, Seq[Troop]],
+   *   // IDs of units that are unloaded to planet.
+   *   "unloaded_troop_ids" -> Seq[Int],
    *   "planet_owner_id" -> Int | null,
    *   "buildings" -> Seq[
    *     Map(
@@ -108,6 +111,9 @@ object Runner extends BenchmarkableMock {
         }.toSeq
         (transporterId.toInt -> troops)
     }
+    
+    val unloadedTroopIds = input.getOrError("unloaded_troop_ids").
+      asInstanceOf[Seq[Int]].toSet
 
     val planetOwner = location.kind match {
       case Location.Planet => input.getOptOrError("planet_owner_id") match {
@@ -138,6 +144,7 @@ object Runner extends BenchmarkableMock {
           napRules,
           troops,
           loadedTroops,
+          unloadedTroopIds,
           buildings
         )
       )

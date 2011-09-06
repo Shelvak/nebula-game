@@ -13,14 +13,15 @@ module Combat::Simulation
 
       # Prepare arguments for SpaceMule.
       mule_location, planet_owner_id, alliance_names, mule_players, troops,
-        unloaded_units, unloaded_troops, mule_buildings = prepare_arguments(
-        location, players, units, buildings)
+        unloaded_units, unloaded_unit_ids, unloaded_troops, 
+        mule_buildings = 
+        prepare_arguments(location, players, units, buildings)
 
       # Invoke simulation.
       response = SpaceMule.instance.combat(
         mule_location.as_json, planet_owner_id,
-        nap_rules, alliance_names, mule_players, troops, unloaded_troops,
-        mule_buildings)
+        nap_rules, alliance_names, mule_players, troops, unloaded_troops, 
+        unloaded_unit_ids, mule_buildings)
 
       if response['no_combat']
         nil
@@ -117,12 +118,14 @@ module Combat::Simulation
     [damage_mods, armor_mods]
   end
 
-  # Returns loaded units which are inside _transporters_. If _unload_ is
-  # true, then also unloads them to _location_. In such case transporter
-  # #stored attributes are also reduced.
+  # Returns loaded units which are inside _transporters_ and +Set+ of 
+  # unloaded unit ids. If _unload_ is true, then also unloads them to 
+  # _location_. In such case transporter #stored attributes are also 
+  # reduced.
   #
   def loaded_units(location, transporters, unload)
     loaded_units = {}
+    unloaded_unit_ids = Set.new
     non_combat_types = Unit.non_combat_types
 
     transporters.each do |unit|
@@ -132,6 +135,7 @@ module Combat::Simulation
           loaded_units[unit.id].push loaded_unit
           if unload && ! non_combat_types.include?(loaded_unit[:type])
             # Don't unload non-combat types.
+            unloaded_unit_ids.add loaded_unit.id
             unit.stored -= loaded_unit.volume
             loaded_unit.location = location
           end
@@ -139,7 +143,7 @@ module Combat::Simulation
       end
     end
 
-    loaded_units
+    [loaded_units, unloaded_unit_ids]
   end
 
   # Applies _changes_ to items hashed by id.
@@ -219,7 +223,7 @@ module Combat::Simulation
 
     troops = units.map { |u| troop(u) }
     # Units which are loaded into transporters.
-    loaded_units = loaded_units(location, units,
+    loaded_units, unloaded_unit_ids = loaded_units(location, units,
       location.is_a?(SsObject::Planet))
     loaded_troops = loaded_units.inject({}) do |hash, entry|
       transporter_id, unloaded = entry
@@ -233,6 +237,7 @@ module Combat::Simulation
     end
 
     [mule_location, planet_owner_id, alliance_names, mule_players,
-      troops, loaded_units, loaded_troops, mule_buildings]
+      troops, loaded_units, unloaded_unit_ids, loaded_troops, 
+      mule_buildings]
   end
 end

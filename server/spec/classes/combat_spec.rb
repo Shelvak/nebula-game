@@ -41,12 +41,15 @@ describe Combat do
       end
       
       it "should return all units in transporters" do
-        Combat.loaded_units(@location, @transporters, false).should ==
-          @loaded.group_by(&:location_id)
+        loaded_units, unloaded_unit_ids = Combat.
+          loaded_units(@location, @transporters, false)
+        loaded_units.should == @loaded.group_by(&:location_id)
+        unloaded_unit_ids.should be_instance_of(Set)
       end
       
       it "should not change unit locations" do
-        loaded_units = Combat.loaded_units(@location, @transporters, false)
+        loaded_units, _ = Combat.
+          loaded_units(@location, @transporters, false)
         @loaded.each do |unit|
           loaded_units[unit.location_id].find do |unit_in_transporter|
             unit_in_transporter.id == unit.id
@@ -56,7 +59,8 @@ describe Combat do
       
       describe "unload=true" do
         it "should change combat unit location" do
-          loaded_units = Combat.loaded_units(@location, @transporters, true)
+          loaded_units, _ = Combat.
+            loaded_units(@location, @transporters, true)
           @loaded.each do |unit|
             loaded_units[unit.location_id].find do |unit_in_transporter|
               unit_in_transporter.id == unit.id
@@ -64,15 +68,32 @@ describe Combat do
           end
         end
         
-        it "should not change non-combat unit location" do
-          transporter = @transporters[0]
-          transporter.stored += Unit::Mdh.volume
-          mdh = Factory.create!(:u_mdh, :location => transporter)
+        it "should return changed unit locations in a set" do
+          _, unloaded_unit_ids = Combat.
+            loaded_units(@location, @transporters, true)
+          unloaded_unit_ids.should == Set.new(@loaded.map(&:id))
+        end
+        
+        describe "non-combat units" do
+          before(:each) do
+            transporter = @transporters[0]
+            transporter.stored += Unit::Mdh.volume
+            @mdh = Factory.create!(:u_mdh, :location => transporter)
+          end
+        
+          it "should not change non-combat unit location" do
+            loaded_units, _ = Combat.
+              loaded_units(@location, @transporters, true)
+            loaded_units[@mdh.location_id].find do |unit_in_transporter|
+              unit_in_transporter.id == @mdh.id
+            end.location.should == @mdh.location
+          end
           
-          loaded_units = Combat.loaded_units(@location, @transporters, true)
-          loaded_units[mdh.location_id].find do |unit_in_transporter|
-            unit_in_transporter.id == mdh.id
-          end.location.should == mdh.location
+          it "should not include non-combat unit id in unloaded ids" do
+            _, unloaded_unit_ids = Combat.
+              loaded_units(@location, @transporters, true)
+            unloaded_unit_ids.should_not include(@mdh.id)
+          end
         end
       end
     end
@@ -412,7 +433,7 @@ describe Combat do
       mdh = nil
       @dsl = CombatDsl.new do
         planet = location(:planet).location
-        player = self.player(:planet_owner => true) do
+        player = self.player do
           units { mule { trooper; shocker :hp => 1; mdh = self.mdh } }
         end
         player { units { shocker :hp => 1, :count => 2 } }
@@ -449,6 +470,22 @@ describe Combat do
       notification.params['units']['yours']['alive'].should include(
         "Unit::Trooper")
     end
+  end
+  
+  it "should not kill non-combat types" do
+    mule = nil
+    mdh = nil
+    dsl = CombatDsl.new do
+      planet = location(:planet).location
+      player = self.player do
+        units { mule = self.mule { mdh = self.mdh } }
+      end
+      player { units { glancer :count => 10 } }
+    end.run
+    
+    mdh.reload
+    mdh.location.should == mule.location_point
+    mdh.hp_percentage.should == 1.0
   end
 
   describe "units destroyed with their transporter" do
