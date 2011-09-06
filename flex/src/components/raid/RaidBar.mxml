@@ -50,7 +50,7 @@
    </fx:Script>
    
    <fx:Declarations>
-      <s:Resize id="widen" heightTo="{background.height}"
+      <s:Resize id="widen" heightTo="{background.height + 10}"
                 duration="{DURATION_TIME}" effectStart="widen_effectStartHandler(event)"/>
       
       <s:Resize id="shorten" heightTo="0" effectStart="shorten_effectStartHandler(event)"
