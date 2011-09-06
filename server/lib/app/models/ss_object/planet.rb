@@ -129,9 +129,11 @@ class SsObject::Planet < SsObject
 
   def landable?; true; end
 
+  # Returns player ids which can look into this planet.
   def observer_player_ids
-    (player.nil? ? [] : player.friendly_ids) |
-      Unit.player_ids_in_location(self)
+    Player.find(
+      (Unit.player_ids_in_location(self) | [player_id]).compact
+    ).map(&:friendly_ids).flatten.uniq
   end
 
   # #metal=(value)
