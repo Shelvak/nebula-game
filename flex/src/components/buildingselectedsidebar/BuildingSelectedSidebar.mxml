@@ -360,7 +360,7 @@
                {
                   constructor = null;
                }
-               if (constructor)
+               if (constructor != null && constructor.constructableType != null)
                {
                   // TODO: this breaks when constructor.constructableType or constructor.constructableId are null
                   // user report: http://forum.nebula44.lt/topic/104/klaida-ismete-kai-bandziau-paleisti-statyti-pastata/
