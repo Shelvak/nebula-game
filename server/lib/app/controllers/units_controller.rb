@@ -107,7 +107,7 @@ class UnitsController < GenericController
       # Destroy NPC building if there are no more units there.
       if target.units.blank?
         Objective::DestroyNpcBuilding.progress(target, player)
-        target.destroy
+        target.destroy!
       end
 
       # We are pushing this to invert flow of messages. If we respond

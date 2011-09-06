@@ -87,7 +87,7 @@ class Notification < ActiveRecord::Base
   def self.on_callback(id, event)
     if event == CallbackManager::EVENT_DESTROY
       model = find(id)
-      model.destroy
+      model.destroy!
     else
       raise CallbackManager::UnknownEvent.new(self, id, event)
     end

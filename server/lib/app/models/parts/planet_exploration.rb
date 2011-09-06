@@ -184,7 +184,7 @@ module Parts::PlanetExploration
       player.creds -= cost
       
       self.class.transaction do
-        tile.destroy
+        tile.destroy!
         stats.save!
         player.save!
       end

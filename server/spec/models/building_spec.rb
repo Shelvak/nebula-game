@@ -141,6 +141,27 @@ describe Building do
         @building.self_destruct!
       end
     end
+
+    describe "0000873: Radar visibility gone bug." do
+      it "should not fail" do
+        player = Factory.create(:player)
+        ss = Factory.create(:solar_system)
+        p1 = Factory.create(:planet, :solar_system => ss, :player => player)
+        p2 = Factory.create(:planet, :solar_system => ss, :position => 1,
+          :player => player)
+
+        r1 = Factory.create!(:b_radar, opts_inactive + {:planet => p1})
+        r2 = Factory.create!(:b_radar, opts_inactive + {:planet => p2})
+
+        r1.activate!
+        r2.activate!
+
+        r2.self_destruct!
+        lambda do
+          r2.reload
+        end.should raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
   end
 
   describe "#move!" do

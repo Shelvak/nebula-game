@@ -133,7 +133,7 @@ class MarketOffer < ActiveRecord::Base
         # Schedule creation of new system offer. 
         CallbackManager.register(galaxy, CALLBACK_MAPPINGS[from_kind],
           Cfg.market_bot_random_resource_cooldown_date) if system?
-        destroy
+        destroy!
       else
         save!
       end
@@ -160,7 +160,7 @@ class MarketOffer < ActiveRecord::Base
     seller_source, attr = self.class.resolve_kind(self.planet, from_kind)
     seller_source.send(:"#{attr}=", seller_source.send(attr) + from_amount)
     self.class.save_obj_with_event(seller_source)
-    destroy
+    destroy!
   end
   
   # Resolves _kind_ into _source_ (+SsObject::Planet+ or +Player+ and 

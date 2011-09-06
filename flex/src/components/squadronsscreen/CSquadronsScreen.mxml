@@ -21,6 +21,8 @@
       <![CDATA[
          import controllers.ui.NavigationController;
          
+         import globalevents.GlobalEvent;
+         
          import models.ModelLocator;
          import models.Owner;
          import models.movement.MRoute;
@@ -102,6 +104,12 @@
          
          protected override function get closeButton() : Group {
             return _btnClose;
+         }
+         
+         
+         protected override function globalEvent_appReadyHandler(event:GlobalEvent) : void {
+            super.globalEvent_appReadyHandler(event);
+            _filterButtons.select(btnPlayerRoutes);
          }
       ]]>
    </fx:Script>

@@ -1,5 +1,11 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
+class CBTest
+  attr_reader :id
+  def initialize(id); @id = id; end
+  def self.on_callback(id, event); end
+end
+
 describe CallbackManager do
   describe ".has?" do
     before(:each) do
@@ -48,14 +54,12 @@ describe CallbackManager do
   end
   
   describe ".tick" do
+    before(:each) do
+      ActiveRecord::Base.connection.execute("DELETE FROM callbacks")
+    end
+    
     it "should run callbacks in correct order if one callback inserts " +
     "other in the middle of timeline" do
-      class CBTest
-        attr_reader :id
-        def initialize(id); @id = id; end
-        def self.on_callback(id, event); end
-      end
-
       e = CallbackManager::EVENT_SPAWN
 
       CallbackManager.register(CBTest.new(1), e, 30.seconds.ago)
@@ -68,6 +72,51 @@ describe CallbackManager do
       CBTest.should_receive(:on_callback).with(2, e).ordered
       
       CallbackManager.tick
+    end
+      
+    describe "if exception is raised while processing" do
+      before(:each) do
+        @e = CallbackManager::EVENT_SPAWN
+        @old_env = ENV['environment']
+        ENV['environment'] = 'production'
+        CallbackManager.register(CBTest.new(1), @e, 30.seconds.ago)
+        CBTest.stub!(:on_callback).and_raise(Exception)
+      end
+      
+      after(:each) do
+        ENV['environment'] = @old_env
+      end
+      
+      it "should mark callback as failed if exception is raised" do
+        CallbackManager.tick
+        ActiveRecord::Base.connection.
+          select_all("SELECT * FROM callbacks WHERE failed=1").size.
+          should > 0
+      end
+      
+      it "should write error to logger" do
+        LOGGER.should_receive(:error).with(an_instance_of(String))
+        CallbackManager.tick
+      end
+    end
+    
+    describe "failed callbacks" do
+      before(:each) do
+        @e = CallbackManager::EVENT_SPAWN
+        CallbackManager.register(CBTest.new(1), @e, 30.seconds.ago)
+        ActiveRecord::Base.connection.
+          execute("UPDATE callbacks SET failed=1")
+      end
+    
+      it "should not run failed callbacks ordinarily" do
+        CBTest.should_not_receive(:on_callback)
+        CallbackManager.tick
+      end
+
+      it "should run failed callbacks if forced" do
+        CBTest.should_receive(:on_callback).with(1, @e)
+        CallbackManager.tick(true)
+      end
     end
   end
 end

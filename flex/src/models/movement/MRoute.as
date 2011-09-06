@@ -55,7 +55,7 @@ package models.movement
       public var player:PlayerMinimal = null;
       
       private var _owner:int = Owner.PLAYER;
-      [Optional]
+      [Optional(alias="status")]
       [Bindable]
       /**
        * Owner type of this route.

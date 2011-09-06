@@ -5,8 +5,6 @@ require File.expand_path(
 
 LOGGER.info "Starting server..."
 
-callback_manager = proc { CallbackManager.tick }
-
 if ENV["environment"] == "development"
   # Initialize IRB support for drop-in development console.
   require File.expand_path(File.join(ROOT_DIR, 'lib', 'server',
@@ -29,10 +27,10 @@ if ENV["environment"] == "development"
 end
 
 LOGGER.info "Running EventMachine..."
-EventMachine::run do
+EventMachine.run do
   stop_server = proc do
     LOGGER.info "Caught interrupt, shutting down..."
-    EventMachine::stop_event_loop
+    EventMachine.stop_event_loop
   end
   trap("INT", &stop_server)
   trap("TERM", &stop_server)
@@ -41,14 +39,14 @@ EventMachine::run do
   SpaceMule.instance
 
   LOGGER.info "Starting game server..."
-  EventMachine::start_server "0.0.0.0", CONFIG['game']['port'], GameServer
+  EventMachine.start_server "0.0.0.0", CONFIG['game']['port'], GameServer
 
   LOGGER.info "Starting control server..."
-  EventMachine::start_server "0.0.0.0", CONFIG['control']['port'],
+  EventMachine.start_server "0.0.0.0", CONFIG['control']['port'],
     ControlServer
 
   LOGGER.info "Starting callback manager..."
-  EventMachine::PeriodicTimer.new(1, &callback_manager)
+  EventMachine::PeriodicTimer.new(1) { CallbackManager.tick }
 
   if ENV["environment"] == "development"
     EventMachine::PeriodicTimer.new(0.1) do
@@ -66,7 +64,7 @@ EventMachine::run do
   end
   
   LOGGER.info "Running callback manager..."
-  callback_manager.call
+  CallbackManager.tick(true)
 
   LOGGER.info "Server initialized."
   if RUBY_PLATFORM =~ /mingw/

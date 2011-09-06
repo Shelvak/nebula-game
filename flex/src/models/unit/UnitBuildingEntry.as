@@ -16,7 +16,7 @@ package models.unit
    
    public class UnitBuildingEntry extends BaseModel
    {
-      public function UnitBuildingEntry(type:String = "", count:int = 0, terrainType:int = TerrainType.GRASS, level:int = 0)
+      public function UnitBuildingEntry(type:String = "", count:int = 0, terrainType:int = 0, level:int = 0)
       {
          super();
          _terrainType = terrainType;

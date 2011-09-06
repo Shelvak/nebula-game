@@ -125,7 +125,7 @@ module Parts
           CallbackManager.
             unregister(self, CallbackManager::EVENT_UPGRADE_FINISHED)
           if level == 0
-            destroy
+            destroy!
           else
             before_save.call unless before_save.nil?
             save!

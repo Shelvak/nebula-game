@@ -300,6 +300,10 @@ class Player < ActiveRecord::Base
   after_destroy :unless => :invoked_from_control_manager do
     ControlManager.instance.player_destroyed(self)
   end
+  # Disconnect erased player from server.
+  after_destroy do
+    Dispatcher.instance.disconnect(id, Dispatcher::DISCONNECT_PLAYER_ERASED)
+  end
 
   # Update player in dispatcher if it is connected so alliance ids and other
   # things would be intact.

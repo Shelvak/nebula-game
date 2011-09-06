@@ -123,21 +123,14 @@ package models.location
       public function get shortDescription() : String
       {
          if (isGalaxy)
-         {
             return getString("description.short.galaxy");
-         }
-         if (isSolarSystem)
-         {
-            if (isBattleground)
-            {
+         if (isSolarSystem) {
+            if (isBattleground || isMiniBattleground)
                return solarSystemName;
-            }
             return getString("description.short.solarSystem", [solarSystemName]);
          }
          if (isSSObject)
-         {
             return getString("description.short.planet", [planetName]);
-         }
          throwUnsupportedLocationTypeError();
          return null;   // unreachable
       }
@@ -153,7 +146,9 @@ package models.location
                
             case LocationType.SOLAR_SYSTEM:
                if (isBattleground)
-                  return solarSystemName;
+                  return getString("description.long.battleground", [x, y]);
+               if (isMiniBattleground)
+                  return getString("description.long.pulsar", [x, y]);
                return getString("description.long.solarSystem", [solarSystemName, x, y]);
                
             case LocationType.SS_OBJECT:
@@ -185,13 +180,11 @@ package models.location
             
             case LocationType.SOLAR_SYSTEM:
                if (isBattleground)
-               {
                   imageName = AssetNames.WORMHOLE_IMAGE_NAME;
-               }
+               else if (isMiniBattleground)
+                  imageName = AssetNames.MINI_BATTLEGROUND_IMAGE_NAME;
                else
-               {
                   imageName = AssetNames.getSSImageName(variation);
-               }
                break;
             
             case LocationType.SS_OBJECT:

@@ -97,4 +97,8 @@ class Cfg; class << self
     CONFIG.evalproperty("creds.exploration.finish", 
       'width' => width, 'height' => height).round
   end
+  
+  def move_speed_modifier_range
+    CONFIG['units.move.modifier.min']..CONFIG['units.move.modifier.max']
+  end
 end; end

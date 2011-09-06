@@ -5,7 +5,7 @@ class CredStats < ActiveRecord::Base
   ACTION_SELF_DESTRUCT = 1
   # Move a building
   ACTION_MOVE = 2
-  # Boost resource extraction.
+  # Boost resource extraction/storage.
   ACTION_BOOST = 3
   # Change alliance data.
   ACTION_ALLIANCE_CHANGE = 4
@@ -84,7 +84,7 @@ class CredStats < ActiveRecord::Base
 
   def self.boost(player, resource, attribute)
     new_record(
-      player, ACTION_BOOST, CONFIG['creds.planet.resources.boost.cost'],
+      player, ACTION_BOOST, Cfg.planet_boost_cost,
       :resource => resource.to_s,
       :attr => attribute.to_s
     )

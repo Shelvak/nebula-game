@@ -36,6 +36,6 @@ class RoutesController < GenericController
     param_options :required => %w{id}
 
     route = Route.where(:player_id => player.id).find(params['id'])
-    route.destroy
+    route.destroy!
   end
 end

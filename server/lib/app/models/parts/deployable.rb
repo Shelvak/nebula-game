@@ -23,7 +23,7 @@ module Parts::Deployable
         EventBroker.fire(building, EventBroker::CREATED)
 
         # Destroy unit, it has been consumed.
-        destroy
+        destroy!
         EventBroker.fire(self, EventBroker::DESTROYED)
       end
     end

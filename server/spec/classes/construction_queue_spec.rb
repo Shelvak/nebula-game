@@ -257,14 +257,14 @@ describe ConstructionQueue do
         end
 
         it "should delete merged objects" do
-          model6 = ConstructionQueue.push(@constructor_id, @model2.constructable_type,
-            15)
+          model6 = ConstructionQueue.push(@constructor_id, 
+            @model2.constructable_type, 15)
           model6 = ConstructionQueue.move(model6, @model3.position)
         end
 
         it "should not reorder existing items" do
-          model6 = ConstructionQueue.push(@constructor_id, @model2.constructable_type,
-            15)
+          model6 = ConstructionQueue.push(@constructor_id, 
+            @model2.constructable_type, 15)
           ConstructionQueue.move(model6, @model3.position)
 
           positions = [@model1, @model2, @model3, @model4, @model5].map do |o|
@@ -284,7 +284,7 @@ describe ConstructionQueue do
       end
     end
 
-    describe "complex tests" do
+    describe "complex moving tests" do
       [        
         ["A1 B1 C1 B1 A1 C1", 0, 0, nil, "in place same spot",
           "A1 B1 C1 B1 A1 C1"],
@@ -321,7 +321,7 @@ describe ConstructionQueue do
         ["F1 S1 F1 T1 F4", 2, 5, nil, "move to the end (merge bug)",
           "F1 S1 T1 F5"],
         ["F1 S1 T1 S3", 3, 0, nil, "move to begining (merge bug)",
-          "S3 F1 S1 T1"]
+          "S3 F1 S1 T1"],
       ].each do |source_set, from, to, count, desc, dest_set|
         it "should #{desc} from #{from} to #{to} (count: #{count}) in '#{
         source_set}' and get #{dest_set}" do
@@ -335,13 +335,30 @@ describe ConstructionQueue do
 
           ConstructionQueue.move(source_set[from], to, count)
 
-          result = ConstructionQueueEntry.find(:all, :conditions => {
-          :constructor_id => @constructor_id}).map do |entry|
+          result = ConstructionQueueEntry.
+            where(:constructor_id => @constructor_id).map \
+          do |entry|
             "#{entry.constructable_type.split("_")[1]}#{entry.count}"
           end.join(" ")
 
           result.should == dest_set
         end
+      end
+    end
+  
+    describe "0000840: Units queue merge algorythm fails again" do
+      it "should not fail" do
+        entry_m = ConstructionQueue.push(@constructor_id, "Mule", 2)
+        entry_c = ConstructionQueue.push(@constructor_id, "Crow", 2)
+        ConstructionQueue.move(entry_m, 2, 1)
+        ConstructionQueue.move(entry_c, 3, 1)
+        ConstructionQueue.push(@constructor_id, "Crow", 1)
+        
+        result = ConstructionQueueEntry.
+          where(:constructor_id => @constructor_id).map \
+        do |entry|
+          "#{entry.count}x#{entry.constructable_type}"
+        end.join(" ").should == "1xMule 1xCrow 1xMule 2xCrow"
       end
     end
   end

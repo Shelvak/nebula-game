@@ -117,6 +117,9 @@ package components.map.space
        */      
       private function getSlotCoords(loc:LocationMinimal, owner:int, slot:int) : Point
       {
+         // NPC units align together with enemy units
+         if (owner == Owner.UNDEFINED)
+            owner = Owner.ENEMY;
          var obj:IVisualElement = _grid.getStaticObjectInSector(loc);
          return obj ?
             getSlotCoordsStatic(loc, owner, slot, obj) :

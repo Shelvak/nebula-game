@@ -1,7 +1,8 @@
 class MoveSpeedModifier
   def initialize(modifier)
-    sm_min = CONFIG['units.move.modifier.min']
-    sm_max = CONFIG['units.move.modifier.max']
+    sm_range = Cfg.move_speed_modifier_range
+    sm_min = sm_range.first
+    sm_max = sm_range.last
     
     raise GameLogicError.new(
       "Speed Modifier #{modifier} cannot be < #{sm_min}") \

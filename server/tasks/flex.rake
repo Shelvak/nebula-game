@@ -240,9 +240,15 @@ namespace :flex do
       args = ["mxmlc", "-static-rsls=true", 
         "-source-path=#{FLEX_SOURCE_DIR}", source]
 
-      puts "=> " + args.map { |e| '"%s"' % e }.join(" ")
+      cmd = args.map { |e| '"%s"' % e }.join(" ")
+      puts "=> " + cmd
       system(*args)
-
+      unless $?.success?
+        puts
+        puts "Running `#{cmd}` failed with exit status #{$?.exitstatus}!"
+        exit
+      end
+      
       source.sub(/\.as$/, '.swf')
     end
 

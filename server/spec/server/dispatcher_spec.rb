@@ -116,7 +116,7 @@ describe Dispatcher do
       @dispatcher.register io
       client_id = @dispatcher.instance_variable_get("@io_to_client_id")[io]
       @dispatcher.should_receive(:disconnect).with(
-        @change_id, "other_login", false).and_return(true)
+        @change_id, Dispatcher::DISCONNECT_OTHER_LOGIN).and_return(true)
       @dispatcher.send(:change_client_id, client_id, @change_id)
     end
 
@@ -141,19 +141,24 @@ describe Dispatcher do
       @dispatcher.register @io
       @id = @dispatcher.instance_variable_get("@io_to_client_id")[@io]
     end
+    
+    it "should not fail if client is not connected" do
+      @dispatcher.send(:disconnect, 0, Dispatcher::DISCONNECT_OTHER_LOGIN).
+        should be_nil
+    end
 
     it "should call transmit_by_io (called by id)" do
       @dispatcher.should_receive(:transmit_by_io).with(@io,
         {"action" => Dispatcher::ACTION_DISCONNECT,
-          "params" => {"reason" => "other_login"}})
-      @dispatcher.send(:disconnect, @id, "other_login")
+          "params" => {"reason" => Dispatcher::DISCONNECT_OTHER_LOGIN}})
+      @dispatcher.send(:disconnect, @id, Dispatcher::DISCONNECT_OTHER_LOGIN)
     end
 
     it "should call transmit_by_io (called by io)" do
       @dispatcher.should_receive(:transmit_by_io).with(@io,
         {"action" => Dispatcher::ACTION_DISCONNECT,
-          "params" => {"reason" => "other_login"}})
-      @dispatcher.send(:disconnect, @io, "other_login")
+          "params" => {"reason" => Dispatcher::DISCONNECT_OTHER_LOGIN}})
+      @dispatcher.send(:disconnect, @io, Dispatcher::DISCONNECT_OTHER_LOGIN)
     end
 
     it "should close connection" do
@@ -193,6 +198,7 @@ describe Dispatcher do
     [
       ActiveRecord::RecordNotFound.new,
       ActiveRecord::RecordInvalid.new(Factory.create(:player)),
+      ActiveRecord::RecordNotDestroyed.new,
       GameError.new
     ].each do |ex|
       it "should confirm with failed if #{ex.class.to_s} was raised" do

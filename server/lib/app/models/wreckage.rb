@@ -103,7 +103,7 @@ class Wreckage < ActiveRecord::Base
     if metal < REMOVAL_TOLERANCE &&
         energy < REMOVAL_TOLERANCE &&
         zetium < REMOVAL_TOLERANCE
-      destroy
+      destroy!
       true
     else
       super
