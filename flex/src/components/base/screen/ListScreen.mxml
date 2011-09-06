@@ -125,11 +125,11 @@
          }
 
          
-         private function globalEvent_appReadyHandler(event:GlobalEvent) : void {
+         protected function globalEvent_appReadyHandler(event:GlobalEvent) : void {
             setDataProvider(dataProvider);
          }
          
-         private function globalEvent_appResetHandler(event:GlobalEvent) : void {
+         protected function globalEvent_appResetHandler(event:GlobalEvent) : void {
             setDataProvider(null);
          }
          
