@@ -663,6 +663,11 @@
             }
          }
          
+         private function getLength(text: String): int
+         {
+            return text.length;
+         }
+         
          private function getString(key: String, params: Array = null): String
          {
             return Localizer.string('BuildingSelectedSidebar', key, params);
@@ -942,7 +947,7 @@
                      <base:BaseTextInput width="80%" id="newPlanetName" enter="renamePlanet()"
                                          maxChars="{Config.getMaxPlanetNameLength()}"/>
                      <s:Group width="100%">
-                        <s:Button right="6" enabled="{newPlanetName.text.length >= Config.getMinPlanetNameLength()
+                        <s:Button right="6" enabled="{getLength(newPlanetName.text) >= Config.getMinPlanetNameLength()
                                   &amp;&amp; !ML.latestPlanet.pending}"
                                   click="renamePlanet()" 
                                   label="{getString('label.changeName')}"/>
