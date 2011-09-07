@@ -1704,6 +1704,11 @@
     <message.loginFailed>
       <p>Username or password incorrect. Refresh the page and try again.</p>
     </message.loginFailed>
+    
+    <lookIntoForum>
+      <p>Also - please check out our forum, there might be some useful
+      information regarding this issue there.</p>
+    </lookIntoForum>
 
     <title.noConnection value="Connection lost!" />
     <message.noConnection>
