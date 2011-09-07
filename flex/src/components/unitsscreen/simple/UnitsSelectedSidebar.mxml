@@ -89,8 +89,6 @@
    </fx:Script>
    <base:Scroller top="0" left="0" right="0" bottom="0" stepMultiplier="3">
       <s:Group left="0" right="0">
-         <s:Label top="20" text="{getText('label.pleaseWait')}" fontWeight="bold"
-                  color="#eec500" fontSize="14" textAlign="center" left="6" right="6"/>
          <s:Label top="20" text="{getText('label.leavingSquadrons')}" fontWeight="bold"
                   color="#eec500" fontSize="14" textAlign="center" left="6" right="6" 
                   visible="{US.currentKind == UnitKind.MOVING}"/>
