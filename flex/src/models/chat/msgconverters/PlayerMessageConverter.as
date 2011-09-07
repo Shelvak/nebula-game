@@ -1,10 +1,6 @@
 package models.chat.msgconverters
 {
-   import flashx.textLayout.elements.ParagraphElement;
-   import flashx.textLayout.elements.SpanElement;
-   
    import models.chat.ChatTextStyles;
-   import models.chat.MChatMessage;
    
    import utils.SingletonFactory;
    
@@ -14,24 +10,18 @@ package models.chat.msgconverters
     */
    public class PlayerMessageConverter extends BaseMessageConverter
    {
-      public static function getInstance() : PlayerMessageConverter
-      {
+      public static function getInstance() : PlayerMessageConverter {
          return SingletonFactory.getSingletonInstance(PlayerMessageConverter);
       }
       
       
-      public function PlayerMessageConverter()
-      {
+      public function PlayerMessageConverter() {
          super();
       }
       
       
-      protected override function addCustomContent(message:MChatMessage, paragraph:ParagraphElement) : void
-      {
-         var text:SpanElement = new SpanElement();
-         text.color = ChatTextStyles.PLAYER_MESSAGE_COLOR;
-         text.text = message.message;
-         paragraph.addChild(text);
+      protected override function get textColor() : uint {
+         return ChatTextStyles.PLAYER_MESSAGE_COLOR;
       }
    }
 }

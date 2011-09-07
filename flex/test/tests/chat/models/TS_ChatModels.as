@@ -8,6 +8,7 @@ package tests.chat.models
    [RunWith("org.flexunit.runners.Suite")]
    public class TS_ChatModels
    {
+      public var tc_MessageConverters:TC_MessageConverters;
       public var tc_MChatMembersList:TC_MChatMembersList;
       public var tc_MChatMember:TC_MChatMember;
       public var tc_MChatChannelsList:TC_MChatChannelsList;
