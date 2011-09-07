@@ -165,6 +165,8 @@ class PlanetsController < GenericController
 
     if planet.changed?
       EventBroker.fire(planet, EventBroker::CHANGED)
+      EventBroker.fire(planet, EventBroker::CHANGED,
+                       EventBroker::REASON_OWNER_PROP_CHANGE)
       planet.save!
     end
   end
