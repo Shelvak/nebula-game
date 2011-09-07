@@ -10,7 +10,6 @@
       [HostComponent("components.unitsscreen.simple.CUnitScreenFlank")]
    </fx:Metadata>
    <fx:Script>
-      import components.unitsscreen.UnitsDragIndicator;
       import components.unitsscreen.events.UnitsScreenEvent;
       
       import config.BattleConfig;

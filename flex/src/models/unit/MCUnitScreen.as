@@ -752,9 +752,9 @@ package models.unit
       
       public function dispatchSelectionChangeEvent(): void
       {
+         cachedSelection = null;
          if (hasEventListener(UnitsScreenEvent.SELECTION_CHANGE))
          {
-            cachedSelection = null;
             dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.SELECTION_CHANGE));
          }
       }

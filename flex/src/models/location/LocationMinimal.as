@@ -147,6 +147,9 @@ package models.location
             case LocationType.SS_OBJECT:
                map = ML.latestPlanet;
                break;
+            default:
+               throw new ArgumentError("Location type " + type + " not supported");
+               break;
          }
          return map.getLocation(x, y);
       }

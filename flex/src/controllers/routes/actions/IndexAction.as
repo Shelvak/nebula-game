@@ -8,7 +8,6 @@ package controllers.routes.actions
    import models.location.Location;
    import models.location.LocationType;
    import models.movement.MRoute;
-   import models.unit.UnitBuildingEntry;
    
    
    public class IndexAction extends CommunicationAction

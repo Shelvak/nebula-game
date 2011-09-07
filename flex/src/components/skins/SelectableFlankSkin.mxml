@@ -20,7 +20,6 @@
       [HostComponent("components.unitsscreen.SelectableFlank")]
    </fx:Metadata>
    <fx:Script>
-      import components.unitsscreen.UnitsDragIndicator;
       import components.unitsscreen.events.UnitsScreenEvent;
       
       import models.Owner;
