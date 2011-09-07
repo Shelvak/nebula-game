@@ -20,10 +20,15 @@
          import globalevents.GCreditEvent;
          
          import models.parts.events.UpgradeEvent;
+         import models.resource.Resource;
+         import models.resource.ResourceType;
+         import models.unit.MCUnitsBuild;
          import models.unit.Unit;
          
          import mx.events.FlexEvent;
          
+         import spark.components.Button;
+         import spark.components.Label;
          import spark.effects.Fade;
          import spark.effects.animation.RepeatBehavior;
          
@@ -62,7 +67,13 @@
             }
          }
          
+         [Bindable]
+         public var facilityId: int;
+         
          private static const imageSize: int = 132;
+         
+         [Bindable]
+         private var builtPart: Number;
          
          override protected function updateDisplayList(uw:Number, uh:Number) : void
          {
@@ -75,6 +86,7 @@
             if (!_unitModel.upgradePart.upgradeCompleted)
             {
                progBar.setProgress(_unitModel.upgradePart.upgradeProgress, 1);
+               builtPart = _unitModel.upgradePart.upgradeProgress;
             }
             else
             {
@@ -123,17 +135,92 @@
             speedPopUp.show();
          }
          
+         [Bindable]
+         private var BS: MCUnitsBuild = MCUnitsBuild.getInstance();
+         
+         private function getString(prop: String, params: Array = null): String
+         {
+            return Localizer.string('Units', prop, params);
+         }
+         
+         private function cancelUpgrade(): void
+         {
+            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+            var lbl: Label = new Label();
+            lbl.minWidth = 300;
+            lbl.text = Localizer.string('Popups', 'message.cancelUnitTraining');
+            popUp.addElement(lbl);
+            popUp.title = Localizer.string('Popups', 'title.cancelUnitTraining');
+            popUp.confirmButtonClickHandler = function (button: Button = null): void
+            {
+               new BuildingsCommand(BuildingsCommand.CANCEL_CONSTRUCTOR, 
+                  {'id': facilityId}).dispatch();
+            };
+            popUp.show();
+         }
          
       ]]>
    </fx:Script>
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready')}"/>
    <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
       <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(_unitModel.type))}" 
-                                      width="100%" height="100%"/>
+                                      width="100%" height="100%"
+                                      mouseOver="BS.cancelId = facilityId"
+                                      mouseOut="BS.cancelId = -1"/> 
+      <s:Group visible="{BS.cancelId == facilityId}" top="0" left="0" right="0" bottom="0"
+               mouseOver="BS.cancelId = facilityId"
+               mouseOut="BS.cancelId = -1">
+         <s:Rect top="0" bottom="0" left="0" right="0" alpha="0.9">
+            <s:fill>
+               <s:SolidColor color="#000000"/>
+            </s:fill>
+         </s:Rect>
+         <s:Button right="3" top="3" skinClass="components.skins.DeleteButtonSkin"
+                   click="cancelUpgrade()"
+                   mouseOver="BS.cancelId = facilityId"
+                   mouseOut="BS.cancelId = -1"/>
+         <base:AdvancedContainer top="6" bottom="6" left="6" right="20"
+                                 mouseOver="BS.cancelId = facilityId"
+                                 mouseOut="BS.cancelId = -1">
+            <s:Group width="100%">
+               <s:Label text="{getString('label.cancelTraining')}"
+                        left="0" right="0"
+                        mouseOver="BS.cancelId = facilityId"
+                        mouseOut="BS.cancelId = -1"
+                        paddingBottom="6"/>
+            </s:Group>
+            <base:ImageAndLabel type="{ResourceType.METAL}" paddingLeft="6" 
+                                visible="{Resource.getModelCancelRevenueString(
+                                _unitModel, ResourceType.METAL, builtPart) != null}"
+                                textToDisplay="{Resource.getModelCancelRevenueString(
+                                _unitModel, ResourceType.METAL, builtPart)}"
+                                mouseOver="BS.cancelId = facilityId"
+                                mouseOut="BS.cancelId = -1"/>
+            <base:ImageAndLabel type="{ResourceType.ENERGY}" paddingLeft="6" 
+                                visible="{Resource.getModelCancelRevenueString(
+                                _unitModel, ResourceType.ENERGY, builtPart) != null}"
+                                textToDisplay="{Resource.getModelCancelRevenueString(
+                                _unitModel, ResourceType.ENERGY, builtPart)}"
+                                mouseOver="BS.cancelId = facilityId"
+                                mouseOut="BS.cancelId = -1"/>
+            <base:ImageAndLabel type="{ResourceType.ZETIUM}" paddingLeft="6"
+                                visible="{Resource.getModelCancelRevenueString(
+                                _unitModel, ResourceType.ZETIUM, builtPart) != null}"
+                                textToDisplay="{Resource.getModelCancelRevenueString(
+                                _unitModel, ResourceType.ZETIUM, builtPart)}"
+                                mouseOver="BS.cancelId = facilityId"
+                                mouseOut="BS.cancelId = -1"/>
+            <base:layout>
+               <s:VerticalLayout />
+            </base:layout>
+         </base:AdvancedContainer>
+      </s:Group>
    </s:Group>
    <mx:ProgressBar id="progBar" left="42" top="148" width="89" height="9" 
                    labelPlacement="center" mode="manual"
-                   label="{Localizer.string('Units','property.timeToFinish.short', 
+                   label="{getString('property.timeToFinish.short', 
                    [_unitModel.upgradePart.timeToFinishString])}"/>
    <credits:CoinComp top="144" left="139" click="coincomp1_clickHandler(event)"
                      enabled="{_unitModel.upgradePart.upgradeProgress &lt; 1}"/>

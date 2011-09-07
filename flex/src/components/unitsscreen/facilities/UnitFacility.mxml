@@ -387,21 +387,21 @@
          {
             facility = null;
          }
-
+         
          protected function advancedcontainer1_addedToStageHandler(event:Event):void
          {
             scrollTimer.addEventListener(TimerEvent.TIMER, scrollViewport);
             EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
          }
-
-
+         
+         
          protected function advancedcontainer1_removedFromStageHandler(event:Event):void
          {
             scrollTimer.stop();
             scrollTimer.removeEventListener(TimerEvent.TIMER, scrollViewport);
          }
-
-
+         
+         
          protected function nextShop_clickHandler(event:MouseEvent):void
          {
             if (shopViewport.horizontalScrollPosition < (shop.width - shopCont.width))
@@ -410,8 +410,8 @@
                   Math.min((shop.width - shopCont.width)-shopViewport.horizontalScrollPosition, SHOP_SKIP_STEP);
             }
          }
-
-
+         
+         
          protected function previousShop_clickHandler(event:MouseEvent):void
          {
             if (shopViewport.horizontalScrollPosition > 0)
@@ -420,7 +420,7 @@
                   Math.min(shopViewport.horizontalScrollPosition, SHOP_SKIP_STEP);
             }
          }
-
+         
       ]]>
    </fx:Script>  
    <fx:Declarations>
@@ -497,9 +497,9 @@
             <s:Group width="{imageSize}" height="{imageSize}" left="4" top="4">
                <components:CenteredBitmapImage 
                   source="{IMG.getImage(AssetNames.getConceptBuildingImageName(_facility.type))}" 
-                         width="100%" height="100%"/>
+                  width="100%" height="100%"/>
                <base:BackgroundedLabel right="3" bottom="3" visible="{_facility.totalConstructorMod > 0}"
-                  text="{_facility.totalConstructorMod + '%'}"/>
+                                       text="{_facility.totalConstructorMod + '%'}"/>
             </s:Group>
          </s:Group>
          
@@ -512,8 +512,8 @@
             <s:Group left="0" right="0" height="100%">
                <s:Group left="0" right="0" height="100%">
                   <facilities:BuildElement unitModel="{ML.latestPlanet.getUnitById(_facility.constructableId)}" height="100%"
-                                            visible="{_facility.constructableType != null}" id="buildElem"
-                                            left="0" top="6"/> 
+                                           visible="{_facility.constructableType != null}" id="buildElem"
+                                           left="0" top="6" facilityId="{_facility.id}" />
                   <s:Group id="queueGroup" left="{buildElem.visible?buildElem.width:0}" height="100%" right="0">
                      <base:Scroller horizontalScrollPolicy="off" verticalScrollPolicy="off" 
                                     id="queueCont" top="0" bottom="0" left="{previousQueue.visible?24:0}" right="{nextQueue.visible?24:0}">
