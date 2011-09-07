@@ -579,11 +579,6 @@ package models.movement
       /* ### ERROR THROWING HELPERS ### */
       /* ############################## */
       
-      private function throwMergeError(squad:MSquadron, reason:String) : void {
-         throw new ArgumentError
-            ("Can not merge squadron " + squad + " into this " + this + ": " + reason);
-      }
-      
       private function throwHopOutOfOrderError(hop:MHop) : void {
          throw new ArgumentError(
             "A hop you are trying to add to the route of this squadron is out of order: hops - " +
