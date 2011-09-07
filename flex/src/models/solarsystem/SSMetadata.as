@@ -53,5 +53,22 @@ package models.solarsystem
          napPlanets = 
          napShips = false;
       }
+      
+      
+      /* ########################### */
+      /* ### BaseModel OVERRIDES ### */
+      /* ########################### */
+      
+      public override function toString() : String {
+         return "[class: " + className +
+                ", playerPlanets: " + playerPlanets +
+                ", playerShips: " + playerShips +
+                ", alliancePlanets: " + alliancePlanets +
+                ", allianceShips: " + allianceShips +
+                ", napPlanets: " + napPlanets +
+                ", napShips: " + napShips +
+                ", enemyPlanets: " + enemyPlanets +
+                ", enemyShips: " + enemyShips + "]";
+      }
    }
 }

@@ -1,6 +1,5 @@
 package utils.remote
 {
-   import controllers.game.GameCommand;
    import controllers.messages.ResponseMessagesTracker;
    
    import flash.errors.IOError;
@@ -16,6 +15,7 @@ package utils.remote
    
    import utils.DateUtil;
    import utils.Objects;
+   import utils.logging.targets.MessagesLogger;
    import utils.remote.events.ServerProxyEvent;
    import utils.remote.rmo.*;
    
@@ -64,9 +64,12 @@ package utils.remote
       private static const HISTORY_SIZE:int = 20;
       
       
-      private function get LOG() : ILogger
-      {
+      private function get log() : ILogger {
          return Log.getLogger(Objects.getClassName(this, true));
+      }
+      
+      private function get msgLog() : MessagesLogger {
+         return MessagesLogger.getInstance();
       }
       
       
@@ -123,17 +126,6 @@ package utils.remote
       }
       
       
-      private var _disabledLogKeywords:Array = new Array();
-      private function shouldBeLogged(msg:String) : Boolean {
-         Objects.paramNotNull("msg", msg);
-         for each (var keyword:String in _disabledLogKeywords) {
-            if (msg.indexOf(keyword) != -1)
-               return false;
-         }
-         return true;
-      }
-      
-      
       /**
        * As messages may be very long (<code>galaxies|show</code> for example) needed to implement a buffer. 
        */
@@ -148,8 +140,7 @@ package utils.remote
          while (index != -1)
          {
             var msg:String = _buffer.substring(0, index);
-            if (shouldBeLogged(msg))
-               LOG.info(" ~->| Incoming message: {0}", msg);
+            msgLog.logMessage(msg, " ~->| Incoming message: {0}", msg);
             var rmo:ServerRMO = ServerRMO.parse(msg);
             DateUtil.updateTimeDiff(rmo.id, new Date());
             _unprocessedMessages.push(rmo);
@@ -161,7 +152,7 @@ package utils.remote
       
       private function socket_ioErrorHandler(event:IOErrorEvent) : void
       {
-         LOG.error(event.text);
+         log.error(event.text);
          dispatchIOErrorEvent();
       }
       
@@ -176,7 +167,7 @@ package utils.remote
          // Apparently the famous #2048 error is thrown every time connection is closed so just ignore it.
          else
          {
-            LOG.debug("Expected security error after disconnect: {0}", event.text);
+            log.debug("Expected security error after disconnect: {0}", event.text);
          }
       }
       
@@ -195,11 +186,6 @@ package utils.remote
       // ######################### //
       // ### INTERFACE METHODS ### //
       // ######################### //
-      
-      public function disableLogging(keywords:Array) : void {
-         Objects.paramNotNull("keywords", keywords);
-         _disabledLogKeywords = keywords;
-      }
       
       
       public function connect(host:String, port:int) : void
@@ -232,8 +218,7 @@ package utils.remote
          if (_socket.connected)
          {
             var msg:String = rmo.toJSON();
-            if (shouldBeLogged(msg))
-               LOG.info("<-~ | Outgoing message: {0}", msg);
+            msgLog.logMessage(msg, "<-~ | Outgoing message: {0}", msg);
             _socket.writeUTFBytes(msg + "\n");
             _socket.flush();
          }
