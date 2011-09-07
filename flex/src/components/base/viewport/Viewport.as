@@ -14,8 +14,6 @@ package components.base.viewport
    import flash.geom.Point;
    import flash.ui.Keyboard;
    
-   import globalevents.GlobalEvent;
-   
    import interfaces.ICleanable;
    
    import mx.core.ScrollPolicy;
@@ -537,9 +535,7 @@ package components.base.viewport
                                             -_viewport.horizontalScrollPosition * _underlayScrollSpeedRatio,
                                             -_viewport.verticalScrollPosition * _underlayScrollSpeedRatio),
                                  true, true);
-               g.drawRect(0, 0,
-                          _underlaySprite.getLayoutBoundsWidth(),
-                          _underlaySprite.getLayoutBoundsHeight());
+               g.drawRect(0, 0, uw, uh);
                g.endFill();
             }
          }
