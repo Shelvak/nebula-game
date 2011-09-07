@@ -1,14 +1,22 @@
 package models.chat.msgconverters
 {
+   import flash.errors.IllegalOperationError;
+   import flash.net.URLRequest;
+   import flash.net.navigateToURL;
+   
    import flashx.textLayout.elements.FlowElement;
+   import flashx.textLayout.elements.FlowGroupElement;
+   import flashx.textLayout.elements.LinkElement;
    import flashx.textLayout.elements.ParagraphElement;
    import flashx.textLayout.elements.SpanElement;
+   import flashx.textLayout.events.FlowElementMouseEvent;
    
    import models.chat.ChatTextStyles;
    import models.chat.MChatMessage;
    
    import mx.formatters.DateFormatter;
    
+   import utils.Objects;
    import utils.locale.Localizer;
    
    
@@ -20,6 +28,13 @@ package models.chat.msgconverters
     */
    public class BaseMessageConverter implements IChatMessageConverter
    {
+      // Expression taken form: http://regexlib.com/REDetails.aspx?regexp_id=96
+      private static const URL_REGEXP:RegExp = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/;
+      
+      
+      private var _timeFormatter:DateFormatter;
+      
+      
       public function BaseMessageConverter()
       {
          _timeFormatter = new DateFormatter();
@@ -27,27 +42,28 @@ package models.chat.msgconverters
       }
       
       
-      private var _timeFormatter:DateFormatter;
-      
-      
-      public function toFlowElement(message:MChatMessage):FlowElement
-      {
+      public function toFlowElement(message:MChatMessage):FlowElement {
          var p:ParagraphElement = new ParagraphElement();
+         addTime(message, p);
+         addPlayer(message, p);
+         addText(message, p);
+         return p;
+      }
+      
+      /**
+       * Adds time to the message.  If you don't need it, override this to no-op.
+       */
+      protected function addTime(message:MChatMessage, p:ParagraphElement) : void {
          var time:SpanElement = new SpanElement();
          time.color = ChatTextStyles.TIME_COLOR;
          time.text = "[" + _timeFormatter.format(message.time) + "] ";
          p.addChild(time);
-         addPlayer(message, p);
-         addCustomContent(message, p);
-         return p;
       }
-      
       
       /**
        * Adds player name to the message. If you don't need it, override this to no-op.
        */
-      protected function addPlayer(message:MChatMessage, p:ParagraphElement) : void
-      {
+      protected function addPlayer(message:MChatMessage, p:ParagraphElement) : void {
          var name:SpanElement = new SpanElement();
          name.color = ChatTextStyles.PLAYER_NAME_COLOR;
          name.fontWeight = ChatTextStyles.PLAYER_NAME_FONT_WEIGHT;
@@ -55,17 +71,55 @@ package models.chat.msgconverters
          p.addChild(name);
       }
       
+      protected function get textColor() : uint {
+         throw new IllegalOperationError("Property is abstract");
+      }
       
       /**
-       * Adds additional content to the given <code>ParagraphElement</code>. You should generate
-       * this content from <code>message</code>. In <code>BaseMessageConverter</code> this method is
-       * a no-op.
+       * Adds additional text (or any content) to the given <code>ParagraphElement</code>. You should
+       * generate this text from <code>message</code>. In <code>BaseMessageConverter</code> this method parses
+       * <code>message.message</code> to a sequence of <code>SpanElement</code> and <code>LinkElement</code>
+       * elements.
        * 
-       * @param message <code>MChatMessage</code> containing all information needed for content generation. 
-       * @param paragraph <code>ParagraphElement</code> with time part already added.
+       * @param message <code>MChatMessage</code> containing all information needed for text generation. 
+       * @param paragraph <code>ParagraphElement</code> with time and player parts already added.
        */
-      protected function addCustomContent(message:MChatMessage, paragraph:ParagraphElement) : void
-      {
+      protected function addText(message:MChatMessage, paragraph:ParagraphElement) : void {
+         var msgText:String = message.message;
+         var match:Object;
+         while ( (match = URL_REGEXP.exec(msgText)) != null ) {
+            var matchUrl:String = match[0];
+            var matchUrlIdx:int = match["index"];
+            var textBeforeURL:String = msgText.substr(0, matchUrlIdx);
+            
+            addSpan(paragraph, textBeforeURL, textColor);
+            addUrl(paragraph, matchUrl);
+            
+            // remove stuff that we processed and go on
+            msgText = msgText.substr(matchUrlIdx + matchUrl.length);
+         }
+         addSpan(paragraph, msgText, textColor);
       }
+    
+      
+      private function addUrl(parent:FlowGroupElement, url:String) : void {
+         Objects.paramNotNull("parent", parent);
+         Objects.paramNotEquals("url", url, [null, ""]);
+         var link:LinkElement = new LinkElement();
+         link.href = url;
+         link.target = "_blank";
+         addSpan(link, url, ChatTextStyles.URL_COLOR);
+         parent.addChild(link);
+      }
+      
+      private function addSpan(parent:FlowGroupElement, text:String, textColor:uint) : void {
+         Objects.paramNotNull("parent", parent);
+         if (text == null || text.length == 0)
+            return;
+         var span:SpanElement = new SpanElement();
+         span.color = textColor;
+         span.text  = text;
+         parent.addChild(span);
+      }      
    }
 }

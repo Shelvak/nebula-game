@@ -28,11 +28,10 @@ package models.chat
    {
       public function MChatChannelContent() {
          super();
-         _text = new TextFlow();
       }
       
       
-      private var _text:TextFlow;
+      private const _text:TextFlow = new TextFlow();
       /**
        * All messages held in this <code>MChatChannelContent</code>. <code>TextFlow</code>
        * will have at most <code>ChatConstants.MAX_MESSAGES_IN_CHANNEL</code> elements at a time. Do not
