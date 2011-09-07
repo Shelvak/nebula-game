@@ -1,16 +1,12 @@
 package components.map.planet.objects
 {
    
-   import components.battle.HpBar;
-   import components.skins.BuildButtonSkin;
-   
    import config.Config;
    
    import flash.display.Graphics;
    import flash.filters.ColorMatrixFilter;
    import flash.geom.Point;
    
-   import models.OwnerColor;
    import models.building.Building;
    import models.building.events.BuildingEvent;
    import models.events.BaseModelEvent;
@@ -40,6 +36,8 @@ package components.map.planet.objects
    public class MapBuilding extends InteractivePlanetMapObject
    {
       private static const LEVEL_INDICATOR_OFFSET:int = 0;
+      private static const BASEMENT_COLOR_FRIENDLY:uint = 0x00FF00;
+      private static const BASEMENT_COLOR_ENEMY:uint = 0xFF0000;
       
       
       private static const DISABLED_FILTERS:Array = [
@@ -294,16 +292,13 @@ package components.map.planet.objects
       {
          super.createChildren();
          
-		 var b: Building = getBuilding();
-         if (b.npc)
-         {
+         var b:Building = getBuilding();
+         if (b.npc) {
             styleName = "npc";
-            basement.color = OwnerColor.UNDEFINED;
+            basement.color = BASEMENT_COLOR_ENEMY;
          }
          else
-         {
-            basement.color = OwnerColor.PLAYER;
-         }
+            basement.color = BASEMENT_COLOR_FRIENDLY;
          
          mainImageContainer.depth = 200;
          
