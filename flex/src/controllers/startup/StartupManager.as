@@ -80,7 +80,7 @@ package controllers.startup
    import utils.SingletonFactory;
    import utils.StringUtil;
    import utils.logging.targets.InMemoryTarget;
-   import utils.remote.ServerProxyInstance;
+   import utils.logging.targets.MessagesLogger;
    
    
    public final class StartupManager
@@ -217,8 +217,10 @@ package controllers.startup
       
       private static function initializeLogging() : void
       {
-         ServerProxyInstance.getInstance().disableLogging([
-            "chat|",
+         MessagesLogger.getInstance().disableLogging([
+            ChatCommand.MESSAGE_PRIVATE,
+            ChatCommand.MESSAGE_PUBLIC,
+            "reply_to",
             GameCommand.CONFIG
          ]);
          

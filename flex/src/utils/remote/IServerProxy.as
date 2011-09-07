@@ -20,12 +20,7 @@ package utils.remote
     * @see #connect()
     */
    public interface IServerProxy extends IEventDispatcher
-   {
-      /**
-       * Disables logging of messages that containg any of given keywords.
-       */
-      function disableLogging(keywords:Array) : void;
-      
+   {      
       /**
        * Tries to connect to the server. Once the connection has been established, dispatches
        * <code>ServerProxyEvent.CONNECTION_ESTABLISHED</code> event. If connection could not be
