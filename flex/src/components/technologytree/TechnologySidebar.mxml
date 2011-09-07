@@ -12,11 +12,12 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import controllers.navigation.MCSidebar;
          import controllers.screens.SidebarScreens;
          
-         import globalevents.GScreenChangeEvent;
          import globalevents.GlobalEvent;
          
+         import models.events.ScreensSwitchEvent;
          import models.parts.events.UpgradeEvent;
          import models.resource.ResourceType;
          import models.technology.Technology;
@@ -40,9 +41,11 @@
             researchContainer.removeAllElements();
          }
          
+         private var SD: MCSidebar = MCSidebar.getInstance();
+         
          protected function techSidebar_creationCompleteHandler(event:FlexEvent):void
          {
-            EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, prepareList);
+            SD.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, prepareList);
             EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
             prepareList();
          }
@@ -72,9 +75,9 @@
             }
          }
          
-         public function prepareList(e: GScreenChangeEvent = null): void
+         public function prepareList(e: ScreensSwitchEvent = null): void
          {
-            if (!e || e.newScreenName == SidebarScreens.TECH_TREE_BASE)
+            if (!e || SD.currentName == SidebarScreens.TECH_TREE_BASE)
             {
                refreshResearchElements();
             }

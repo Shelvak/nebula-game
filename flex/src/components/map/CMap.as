@@ -15,7 +15,6 @@ package components.map
    import flash.geom.Rectangle;
    
    import globalevents.GMapEvent;
-   import globalevents.GScreenChangeEvent;
    import globalevents.GlobalEvent;
    
    import interfaces.ICleanable;

@@ -33,7 +33,6 @@
          import globalevents.GObjectEvent;
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
-         import globalevents.GScreenChangeEvent;
          import globalevents.GSelectConstructableEvent;
          import globalevents.GlobalEvent;
          
@@ -450,9 +449,9 @@
             refreshConstructableStates();
          }
          
-         private function handleSidebarChange(e: GScreenChangeEvent): void
+         private function handleSidebarChange(e: ScreensSwitchEvent): void
          {
-            if (e.newScreenName == SidebarScreens.CONSTRUCTION)
+            if (SD.currentName == SidebarScreens.CONSTRUCTION)
             {
                setConstructables();
             }
@@ -465,6 +464,7 @@
          }
          
          private var MA: MCMainArea = MCMainArea.getInstance();
+         private var SD: MCSidebar = MCSidebar.getInstance();
          
          protected function this_creationCompleteHandler(event:FlexEvent):void
          {
@@ -475,7 +475,7 @@
             EventBroker.subscribe(GBuildingEvent.MOVE_INIT, constructionMoveHandler);
             EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
-            EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleSidebarChange);
+            SD.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, handleSidebarChange);
             MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, handleScreenChange);
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshFacilities);
