@@ -10,8 +10,9 @@ package controllers.messages
    
    import spark.components.Button;
    
-   import utils.locale.Localizer;
    import utils.SingletonFactory;
+   import utils.locale.Localizer;
+   import utils.logging.targets.MessagesLogger;
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
    
@@ -35,8 +36,11 @@ package controllers.messages
       public static const MAX_WAIT_TIME:uint = 30 * 1000;
       
       
-      private function get CONN_MANAGER() : ConnectionManager
-      {
+      private function get msgLog() : MessagesLogger {
+         return MessagesLogger.getInstance();
+      }
+      
+      private function get CONN_MANAGER() : ConnectionManager {
          return ConnectionManager.getInstance();
       }
       
@@ -115,20 +119,18 @@ package controllers.messages
          if (pendingRMOs[sRMO.replyTo])
          {
             var record:PendingRMORecord = PendingRMORecord(pendingRMOs[sRMO.replyTo]);
+            var rmo:ClientRMO = record.rmo;
             delete pendingRMOs[record.key];
-            if (record.rmo.model)
+            if (rmo.model)
             {
-               record.rmo.model.pending = false;
+               rmo.model.pending = false;
             }
+            msgLog.logMessage(rmo.action, "Processing response message to {0}", rmo.id);
             if (sRMO.failed)
-            {
-               record.rmo.responder.cancel(record.rmo);
-            }
+               rmo.responder.cancel(rmo);
             else
-            {
-               record.rmo.responder.result(record.rmo);
-            }
-            return record.rmo;
+               rmo.responder.result(rmo);
+            return rmo;
          }
          return null;
       }

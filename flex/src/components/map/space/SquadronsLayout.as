@@ -24,12 +24,11 @@ package components.map.space
       internal static const GAP:int = 0;
       
       
-      private var _grid:Grid,
-                  _squadsController:SquadronsController;
+      private var _grid:Grid;
+      private var _squadsController:SquadronsController;
       
       
-      public function SquadronsLayout(squadsController:SquadronsController, grid:Grid)
-      {
+      public function SquadronsLayout(squadsController:SquadronsController, grid:Grid) {
          _grid = grid;
          _squadsController = squadsController;
       }
@@ -41,11 +40,12 @@ package components.map.space
        * positioned correctly, that is the first squad uccupies the first slot and there are no vacant slots
        * between them.
        */
-      public function getFreeSlotCoords(squadM:MSquadron) : Point
-      {
+      public function getFreeSlotCoords(squadM:MSquadron) : Point {
          var squads:ICollectionView = Collections.filter(
             getSquadsInLocation(squadM.currentHop.location, squadM),
-            function(squadC:CSquadronMapIcon) : Boolean { return squadC.squadronOwner == squadM.owner }
+            function(squadC:CSquadronMapIcon) : Boolean {
+               return goesToSameSection(squadC.squadronOwner, squadM.owner);
+            }
          );
          return getSlotCoords(squadM.currentHop.location, squadM.owner, squads.length);
       }
@@ -54,10 +54,8 @@ package components.map.space
       /**
        * Positions all squadrons on a map.
        */
-      public function repositionAllSquadrons() : void
-      {
-         for each (var location:LocationMinimal in _grid.getAllSectors())
-         {
+      public function repositionAllSquadrons() : void {
+         for each (var location:LocationMinimal in _grid.getAllSectors()) {
             repositionSquadrons(location);
          }
       }
@@ -67,41 +65,18 @@ package components.map.space
        * Repositions all squadrons in given location that belong to the given owner type or
        * all squadrons in that location if owner type has not been provided.
        */
-      public function repositionSquadrons(location:LocationMinimal, owner:int = Owner.UNDEFINED) : void
-      {
+      public function repositionSquadrons(location:LocationMinimal, owner:int = Owner.UNDEFINED) : void {
          var squads:ArrayCollection = getSquadsInLocation(location);
-         for each (var ownerType:int in [Owner.PLAYER, Owner.ALLY, Owner.NAP, Owner.ENEMY])
-         {
-            if (ownerType == owner || owner == Owner.UNDEFINED)
-            {
-               squads.filterFunction = function(squadC:CSquadronMapIcon) : Boolean
-               {
-                  return squadC.squadronOwner == ownerType;
+         for each (var ownerType:int in [Owner.PLAYER, Owner.ALLY, Owner.NAP, Owner.ENEMY]) {
+            if (goesToSameSection(ownerType, owner)) {
+               squads.filterFunction = function(squadC:CSquadronMapIcon) : Boolean {
+                  return goesToSameSection(squadC.squadronOwner, ownerType);
                };
                squads.sort = new Sort();
-               squads.sort.compareFunction = function(squadA:CSquadronMapIcon,
-                                                      squadB:CSquadronMapIcon,
-                                                      fields:Array = null) : int
-               {
-                  if (!squadA.squadron.isMoving &&
-                      !squadB.squadron.isMoving)
-                  {
-                     return 0;
-                  }
-                  if (!squadA.squadron.isMoving)
-                  {
-                     return -1;
-                  }
-                  if (!squadB.squadron.isMoving)
-                  {
-                     return 1;
-                  }
-                  return 0;
-               }
+               squads.sort.compareFunction = cf_squadComponents;
                squads.refresh();
                var slot:int = 0;
-               for each (var squad:CSquadronMapIcon in squads)
-               {
+               for each (var squad:CSquadronMapIcon in squads) {
                   var coords:Point = getSlotCoords(location, ownerType, slot);
                   squad.x = coords.x
                   squad.y = coords.y;
@@ -111,12 +86,23 @@ package components.map.space
          }
       }
       
+      private function cf_squadComponents(squadA:CSquadronMapIcon,
+                                          squadB:CSquadronMapIcon,
+                                          fields:Array = null) : int {
+         if (!squadA.squadron.isMoving && !squadB.squadron.isMoving)
+            return 0;
+         if (!squadA.squadron.isMoving)
+            return -1;
+         if (!squadB.squadron.isMoving)
+            return 1;
+         return 0;
+      }
+      
       
       /**
        * Chooses between <code>getSlotCoordsEmpty()</code> and <code>getSlotCoordsStatic()</code>.
        */      
-      private function getSlotCoords(loc:LocationMinimal, owner:int, slot:int) : Point
-      {
+      private function getSlotCoords(loc:LocationMinimal, owner:int, slot:int) : Point {
          // NPC units align together with enemy units
          if (owner == Owner.UNDEFINED)
             owner = Owner.ENEMY;
@@ -130,8 +116,7 @@ package components.map.space
       /**
        * #return coordinates of top-left corner of slot in an empty sector
        */
-      private function getSlotCoordsEmpty(loc:LocationMinimal, owner:int, slot:int) : Point
-      {
+      private function getSlotCoordsEmpty(loc:LocationMinimal, owner:int, slot:int) : Point {
          slot++;
          // find logical corrdinates in the first quarter
          var diag:int = Math.ceil((Math.sqrt(1 + 8 * slot) - 1) / 2);
@@ -153,8 +138,7 @@ package components.map.space
       /**
        * @return coordinates of top-left corner of slot in a sector where static object is
        */      
-      private function getSlotCoordsStatic(loc:LocationMinimal, owner:int, slot:int, obj:IVisualElement) : Point
-      {
+      private function getSlotCoordsStatic(loc:LocationMinimal, owner:int, slot:int, obj:IVisualElement) : Point {
          var sectorCoords:Point = _grid.getSectorRealCoordinates(loc);
          var w:Number = CSquadronMapIcon.WIDTH;
          var h:Number = CSquadronMapIcon.HEIGHT;
@@ -167,24 +151,28 @@ package components.map.space
       }
       
       
-      private function getSquadsInLocation(location:LocationMinimal, exclude:MSquadron = null) : ArrayCollection
-      {
+      private function getSquadsInLocation(location:LocationMinimal, exclude:MSquadron = null) : ArrayCollection {
          var squads:ArrayCollection = new ArrayCollection();
          squads.addAll(_squadsController.getCSquadronsIn(location));
-         if (exclude)
-         {
+         if (exclude) {
             var removeIdx:int = Collections.findFirstIndex(squads,
-               function(squadC:CSquadronMapIcon) : Boolean
-               {
+               function(squadC:CSquadronMapIcon) : Boolean {
                   return squadC.squadron.equals(exclude);
                }
             );
-            if (removeIdx >= 0)
-            {
+            if (removeIdx >= 0) {
                squads.removeItemAt(removeIdx);
             }
          }
          return squads;
+      }
+      
+      private function goesToEnemySection(owner:int) : Boolean {
+         return owner == Owner.UNDEFINED || owner == Owner.ENEMY;
+      }
+      
+      private function goesToSameSection(owner0:int, owner1:int) : Boolean {
+         return owner0 == owner1 || goesToEnemySection(owner0) && goesToEnemySection(owner1);
       }
    }
 }

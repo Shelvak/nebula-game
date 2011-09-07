@@ -459,5 +459,19 @@ package models.solarsystem
          return locWrapper.type == LocationType.SOLAR_SYSTEM && locWrapper.id == id &&
             locWrapper.position >= 0 && locWrapper.position <= orbitsTotal;
       }
+      
+      
+      /* ########################### */
+      /* ### BaseModel OVERRIDES ### */
+      /* ########################### */
+      
+      public override function toString() : String {
+         return "[class: " + className +
+                ", id: " + id +
+                ", x: " + x +
+                ", y: " + y +
+                ", kind:" + kind +
+                ", metadata: " + metadata + "]";
+      }
    }
 }
