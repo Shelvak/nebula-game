@@ -198,6 +198,7 @@ package controllers.units
          var squadStationary:MSquadron = findSquad(0, squadToStop.playerId, squadToStop.currentHop.location);
          if (squadStationary != null)
          {
+            squadStationary.units.refresh();
             squadToStop.cleanup();
          }
          else if (!squadToStop.currentHop.location.isSSObject)
@@ -288,7 +289,7 @@ package controllers.units
             {
                destroySquadron(squad.id, false);
             }
-            // otherwise make the jump
+               // otherwise make the jump
             else
             {
                squad.createCurrentHop(sampleUnit.location);
@@ -297,7 +298,7 @@ package controllers.units
                squad.addAllHops(hops);
             }
          }
-         // or create new squadron
+            // or create new squadron
          else if (sampleUnit.location.isObserved)
          {
             UNITS.addAll(units);
@@ -373,7 +374,7 @@ package controllers.units
                Messenger.show(Localizer.string("Movement", "message.orderComplete"), Messenger.MEDIUM);
             }
          }
-         // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
+            // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
          else if (route.target !== undefined)
          {
             if (createRoute(route).owner == Owner.PLAYER  && ORDERS_CTRL.issuingOrders)
@@ -433,14 +434,18 @@ package controllers.units
             if (unit.kind == UnitKind.SPACE)
             {
                var squad:MSquadron = findSquad(unit.squadronId, unit.playerId, unit.location);
-               if (squad && !squad.hasUnits)
+               if (squad != null)
                {
-                  SQUADS.removeExact(squad);
-                  if (squad.isMoving && squad.isFriendly)
+                  squad.units.refresh();
+                  if (!squad.hasUnits)
                   {
-                     ROUTES.remove(squad.id);
+                     SQUADS.removeExact(squad);
+                     if (squad.isMoving && squad.isFriendly)
+                     {
+                        ROUTES.remove(squad.id);
+                     }
+                     squad.cleanup();
                   }
-                  squad.cleanup();
                }
             }
          }
