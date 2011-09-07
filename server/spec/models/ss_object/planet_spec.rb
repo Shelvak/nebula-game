@@ -1196,7 +1196,12 @@ describe SsObject::Planet do
       @alliance = Factory.create :alliance
       @player = Factory.create :player, :alliance => @alliance
       @ally = Factory.create :player, :alliance => @alliance
-      @enemy_with_units = Factory.create :player
+      
+      @enemy_allliance = Factory.create(:alliance)
+      @enemy_with_units = Factory.create :player, 
+        :alliance => @enemy_allliance
+      @enemy_ally = Factory.create :player, 
+        :alliance => @enemy_allliance
       @enemy = Factory.create :player
 
       @planet = Factory.create :planet, :player => @player
@@ -1210,12 +1215,16 @@ describe SsObject::Planet do
       @result.should include(@player.id)
     end
 
-    it "should include alliance members" do
+    it "should include owners alliance members" do
       @result.should include(@ally.id)
     end
 
     it "should include other players that have units there" do
       @result.should include(@enemy_with_units.id)
+    end
+    
+    it "should include player with units alliance members too" do
+      @result.should include(@enemy_ally.id)
     end
 
     it "should work without owning player" do

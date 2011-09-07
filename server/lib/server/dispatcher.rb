@@ -9,6 +9,13 @@ class Dispatcher
   MESSAGE_ID_KEY = 'id'
   # Disconnect action name.
   ACTION_DISCONNECT = 'players|disconnect'
+  
+  # Unhandled message was sent.
+  DISCONNECT_UNHANDLED_MESSAGE = "unhandled_message"
+  # Other player has logged in as you.
+  DISCONNECT_OTHER_LOGIN = "other_login"
+  # Player was erased from server.
+  DISCONNECT_PLAYER_ERASED = "player_erased"
 
   # Initialize the dispatcher.
   def initialize
@@ -189,8 +196,9 @@ class Dispatcher
   end
 
   # Disconnect client. Send message and close connection.
-  def disconnect(io_or_id, reason=nil, cancel_handling=true)
+  def disconnect(io_or_id, reason=nil)
     io = io_or_id.is_a?(Fixnum) ? @client_id_to_io[io_or_id] : io_or_id
+    return if io.nil?
 
     transmit_by_io(io, {
       "action" => ACTION_DISCONNECT,
@@ -298,7 +306,7 @@ class Dispatcher
       if @controllers[controller]
         @controllers[controller].receive(message)
       else
-        disconnect(message['client_id'], "unhandled_message")
+        disconnect(message['client_id'], DISCONNECT_UNHANDLED_MESSAGE)
       end
     end
   end
@@ -307,7 +315,7 @@ class Dispatcher
   #
   # This should only be called from #change_player
   def change_client_id(from, to)
-    disconnect(to, "other_login", false) if connected?(to)
+    disconnect(to, DISCONNECT_OTHER_LOGIN) if connected?(to)
 
     info "Changing client id from #{from} to #{to}"
     @io_to_client_id[ @client_id_to_io[from] ] = to

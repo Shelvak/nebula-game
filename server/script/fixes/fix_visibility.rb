@@ -2,16 +2,22 @@
 
 # Recalculates visibility counters for every SS in the server.
 
+STDOUT.sync = true
 require File.dirname(__FILE__) + '/../../lib/initializer.rb'
 
 c = ActiveRecord::Base.connection
 
 c.transaction do
+  puts "Deactivating radars."
   rd = Building::Radar.all.map do |r|
+    $stdout.write "."
     r.active? ? (r.deactivate!; r) : nil
   end.compact
+  puts
   
+  puts "Deleting FowGalaxyEntries"
   FowGalaxyEntry.delete_all
+  puts "Deleting FowSsEntries"
   FowSsEntry.delete_all
 
   SolarSystem.all.each do |ss|
@@ -48,7 +54,7 @@ c.transaction do
       counts[player_id] += player_units.size
     end
 
-    puts counts.inspect
+    puts "Counts (pid -> player_unis): " + counts.inspect
     counts.each do |player_id, count|
       fse = FowSsEntry.new
       fse.solar_system_id = ss.id
@@ -57,8 +63,14 @@ c.transaction do
       fse.save!
       puts "  FSE: #{fse.inspect}"
     end
+    puts "Recalculating FSE for #{ss.id}"
     FowSsEntry.recalculate(ss.id)
   end
 
-  rd.each { |r| r.activate! }
+  puts "Activating radars..."
+  rd.each do |r|
+    r.activate!
+    $stdout.write "."
+  end
+  puts
 end

@@ -36,9 +36,10 @@ object Combat {
             allianceNames: Combat.AllianceNames,
             napRules: NapRules, troops: Set[Troop],
             loadedTroops: Map[Int, Seq[Troop]],
+            unloadedTroopIds: Set[Int],
             buildings: Set[Building]) =
     new Combat(location, planetOwner, players, allianceNames, napRules,
-               troops, loadedTroops, buildings)
+               troops, loadedTroops, unloadedTroopIds, buildings)
 }
 
 /**
@@ -49,9 +50,17 @@ class Combat(location: Location, planetOwner: Option[Player],
              allianceNames: Combat.AllianceNames,
              napRules: Combat.NapRules, troops: Set[Troop],
              loadedTroops: Map[Int, Seq[Troop]],
+             unloadedTroopIds: Set[Int],
              buildings: Set[Building]) {
-  private def isInPlanet = location.kind == Location.Planet
-
+  // Units unloaded to ground.
+  val unloadedTroops = loadedTroops.map { case (transporterId, troops) => 
+    transporterId -> troops.filter { t => unloadedTroopIds.contains(t.id) }
+  }
+  // Units still kept in their transporters.
+  val stillLoadedTroops = loadedTroops.map { case (transporterId, troops) =>
+    transporterId -> troops.filterNot(t => unloadedTroopIds.contains(t.id))
+  }
+  
   /**
    * Log of this combat.
    * 
@@ -59,23 +68,20 @@ class Combat(location: Location, planetOwner: Option[Player],
    * as a first tick.
    */
   val log = {
-    val grouped = if (isInPlanet) {
-      L.debug("%d troops unloaded".format(loadedTroops.foldLeft(0) {
-        case (sum, (transporterId, troops)) => sum + troops.size
-      }))
-
-      loadedTroops.map {
-        case (transporterId, troops) => (transporterId -> troops.map { _.id })
+    L.debug("%d troops unloaded".format(unloadedTroopIds.size))
+    val grouped = 
+      if (unloadedTroopIds.isEmpty) Map.empty[Int, Seq[Int]]
+      else unloadedTroops.map {
+        case (transporterId, troops) =>
+          transporterId -> troops.map { _.id }.toSeq
       }
-    }
-    else Map[Int, Seq[Int]]()
     
     new Log(grouped)
   }
 
   // Only include loaded troops if we are in planet.
   private val combatants = troops ++ buildings ++ 
-    (if (isInPlanet) loadedTroops.values.flatten else Set.empty)
+    unloadedTroops.values.flatten
 
   /**
    * Map of alliance id => alliance and player id => alliance id.
@@ -99,11 +105,10 @@ class Combat(location: Location, planetOwner: Option[Player],
   /**
    * Yours/Alliance/Nap/Enemy alive/dead counts calculator.
    *
-   * If the combat is not in planet then also pass loaded troops map to
+   * Also pass troops still loaded in transporters to
    * calculator so it could report units killed with transporter.
    */
-  val yane = new YANECalculator(alliances, combatants,
-    if (! isInPlanet) loadedTroops else Map.empty)
+  val yane = new YANECalculator(alliances, combatants, stillLoadedTroops)
 
   val classifiedAlliances = new AlliancesClassifier(alliances)
 

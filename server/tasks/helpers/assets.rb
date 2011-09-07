@@ -11,7 +11,7 @@ JPG_RE = /\.jpe?g$/i
 class BadExitStatusError < StandardError
   def initialize(cmd, status)
     @status = status
-    super("Bad exit status for #{cmd.inspect}: #{status.exitstatus}")
+    super("Bad exit status for `#{cmd}`: #{status.exitstatus}")
   end
 end
 
@@ -350,8 +350,9 @@ class Processor
   private
   def system(*args)
     status = Kernel.system(*args)
-    raise BadExitStatusError.new(args.join(" "), $?) \
-      unless $?.exitstatus == 0
+    raise BadExitStatusError.new(
+      args.map { |a| %Q{"#{a}"} }.join(" "), $?
+    ) unless $?.success?
     status
   end
 
@@ -374,7 +375,7 @@ class Processor
     cmd = %Q{convert "%s" %s "%s"} % [path, options, target_convert]
 
     system(cmd)
-	FileUtils.rm path if File.exists?(path)
+	  FileUtils.rm path if File.exists?(path)
     FileUtils.mv target_convert, path, :force => true
   end
   

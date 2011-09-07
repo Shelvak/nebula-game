@@ -13,6 +13,9 @@ class ZonePath
       [first.x, first.y]
     elsif first.is_a?(SsObject)
       [first.position, first.angle]
+    elsif first.is_a?(Unit)
+      point = first.location
+      [point.x, point.y]
     else
       [first, second]
     end

@@ -93,6 +93,7 @@ namespace :wiki do
       rescue BadExitStatusError => error
         puts error
         puts "Cancelling further processing."
+        exit 1
       end
 
       puts

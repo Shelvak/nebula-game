@@ -613,7 +613,7 @@
       <p>
         Pirmtakai buvo nepaprastai išsivysčiusi rasė, tačiau tai netrukdė jiems
         būti ir itin religingais. Jie rinkdavosi šiose šventyklose, jog 
-        melstųsi savo technologiniams dievams.</p>
+        melstusi savo technologiniams dievams.</p>
       <p>Sakoma, jog žemė, ant kurios stovi šie pastatai yra šventa. Nežinia
       ar tai tiesa, tačiau ji yra ypatingai saugoma.</p>
     </NpcTemple.about>
@@ -637,9 +637,9 @@
       <p>Šie vartai buvo naudojami perkelti karius ir netgi kosminius laivus 
       milžiniškais atstumais akimirksniu. Jie galėdavo perskrosti tarpus tarp
       planetų ar netgi saulės sistemų per kelias sekundes.</p>
-      <p>Ir netgi jiems nebefunkcionuojant prie vartų stovi didžiulės 
-      pajėgos, kurios pasiruošusios ginti šiuos vartus bet kurią akimirką. Jos
-      neleis tau užimti šio pastato.</p>
+      <p>Ir netgi jiems nebefunkcionuojant, prie šių vartų stovi didžiulės 
+      pajėgos, pasiruošusios ginti vartus bet kurią akimirką. Jos neleis 
+      užimti šio pastato.</p>
     </NpcJumpgate.about>
 
     <!-- Žaidėjo pastatai -->
@@ -1308,7 +1308,7 @@
       bokšteliai turi silpnesnius šarvus ir mūšyje juos sugriaus greičiau.
     </tip.3>
     <tip.4>
-      Ieškok stiprios tamsios žemės, kurioje galėtum statyti savo ginybinius
+      Ieškok stiprios tamsios žemės, kurioje galėtum statyti savo gynybinius
       bokštelius. Ši žemė yra ypač tvirta ir suteikia jiems papildomų šarvų.
     </tip.4>
     <tip.5>
@@ -1584,7 +1584,7 @@
     </message.allianceJoined>
     <content.allianceJoined>
       <p>Žaidėjas (-a) "{0}" prisijungė prie tavo sąjungos "{1}".</p>
-      <p>Prašome jį ar ją šilai sutikti!</p>
+      <p>Prašome jį ar ją šiltai sutikti!</p>
     </content.allianceJoined>
 
     <prop.alive value="Gyvi" />
@@ -1703,34 +1703,40 @@
        <p>Ar esi tikras?</p>
     </message.moveBuilding>
 
-    <!-- TODO: is this even used anymore? -->
-    <title.loginFailed value="Login failed!" />
+    <title.loginFailed value="Prisijungimas nepavyko!" />
     <message.loginFailed>
-      <p>Username or password incorrect. Refresh the page and try again.</p>
+      <p>Serveriui nepavyko tavęs atpažinti. Pabandyk prisijungti 
+      pagrindiniame puslapyje iš naujo.</p>
     </message.loginFailed>
+    
+    <lookIntoForum>
+      <p>Be to - pažiūrėk į forumą, galbūt ten bus naudingos 
+      informacijos.</p>
+    </lookIntoForum>
 
     <title.connectionLost value="Ryšys nutrūko!" />
     <message.connectionLost>
       <p>Su serveriu nutrūko ryšys. Paspausk „{0}“ kad prisijungti iš naujo.</p>
+      <p>[reference:lookIntoForum]</p>
     </message.connectionLost>
 
+    <!-- Rodomas jeigu serveris neatsakė per kažkokį laiko tarpą -->
     <title.connectionTimeout value="Nepavyko prisijungti!" />
     <message.connectionTimeout>
       <p>Per {0 one[? sekundę] tens[? sekundžių] many[? sekundes]} nepavyko
       susisiekti su serveriu. Paspausk „{1}“ kad pabandyti dar kartelį.</p>
+      <p>[reference:lookIntoForum]</p>
     </message.connectionTimeout>
 
-    <!-- TODO: How this differs from title.connectionTimeout? -->
-    <title.ioError value="IO Error!" />
+    <!-- Rodomas jeigu įvyko kita bendravimo klaida. -->
+    <title.ioError value="Ryšio klaida!" />
     <message.ioError>
-      <p>
-        Unable to communicate with the server (it is probably down). Try again 
-        later. 
-      </p>
+      <p>Negalime susirišti su serveriu.</p>
+      <p>[reference:lookIntoForum]</p>
     </message.ioError>
 
-    <!-- TODO: WTF? same as below? -->
-    <title.disconnect.default value="Serverio klaida!" />
+    <!-- If reason is not provided in locale this one is shown instead. -->
+    <title.disconnect.default value="Serveris tave atjungė!" />
     <message.disconnect.default>
       <p>Tu buvai atjungtas nuo serverio! Paspausk „{0}“ kad prisijungtum iš 
       naujo.</p>
@@ -1752,12 +1758,12 @@
       saugumą.</p>
       <p>Paspausk „{0}“ kad prisijungtum iš naujo.</p>
     </message.disconnect.otherLogin>
-
-    <!-- TODO: WTF? -->
-    <title.disconnect.notFound value="Resource missing!" />
-    <message.disconnect.notFound>
-      <p>A resource has not been found!  Click „{0}“ to reconnect.</p>
-    </message.disconnect.notFound>
+    
+    <title.disconnect.playerErased value="Viso gero!" />
+    <message.disconnect.playerErased>
+      <p>Tavo paskyra buvo ištrinta. Pasiilgsime tavęs...</p>
+      <p>Beje, „{0}“ gali nebespausti. Vis tiek neveiks.</p>
+    </message.disconnect.playerErased>
 
     <title.disconnect.jsonError value="Bendravimo klaida!" />
     <message.disconnect.jsonError>
@@ -2030,7 +2036,7 @@
 
       <p>
         Apylinkėse dirbę žvalgai pranešė apie įdomų radinį. Panašu, kad tai 
-        kažkokio milžiniško padaro liekanos. Deja, bet žvalgams trūksta žinių, 
+        kažkokio milžiniško padaro liekanos. Deja žvalgams trūksta žinių, 
         tad apžiūrėję grunte palaidotas liekanas tepranešė, kad rado „kaulus“.
       </p>
 
@@ -3475,7 +3481,7 @@
     <HeavyFlight.about>
       <p>Panaudojant gama daleles mūsų sunkiųjų variklių procesuose mes galime
       pasiekti didesnius greičius ir sumažinti skrydžio laiką.</p>
-      <p>Deja, bet ši technologija pritaikoma tik UX-20 varikliuose, kurie 
+      <p>Deja ši technologija pritaikoma tik UX-20 varikliuose, kurie 
       naudojami tik didžiausiuose mūsų laivuose. Kita vertus - jie yra ir 
       patys lėčiausi mūsų laivai, tad ši technologija yra labai pravarti.</p>
       <p>Sutrumpina skrydžio laiką mulo ir raganosio klasės laivams.</p>

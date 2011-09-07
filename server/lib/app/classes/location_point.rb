@@ -83,6 +83,10 @@ class LocationPoint
   def to_s
     "<LP t:#{@type}@#{@id},#{@x}:#{@y}>"
   end
+  
+  def inspect
+    to_s
+  end
 
   def ==(other); eql?(other); end
 

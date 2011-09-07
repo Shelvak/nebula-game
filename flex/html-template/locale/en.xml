@@ -1351,7 +1351,7 @@
     <description.long.pulsar value="Sector {1}:{2} in Pulsar {0}"/>
     <description.long.battleground value="Sector {0}:{1} in battleground"/>
     <description.long.planet value="Planet {0} in Solar System {1}" />
-    <description.long.planetInBattleground value="Planet {0} in battleground"/>
+    <description.long.planetInBattleground value="Planet {0} in Battleground"/>
 
     <message.locationNotAvailable>
       <p>You can no longer view this location</p>
@@ -1702,29 +1702,38 @@
 
     <title.loginFailed value="Login failed!" />
     <message.loginFailed>
-      <p>Username or password incorrect. Refresh the page and try again.</p>
+      <p>Server failed to authorize you. Please relogin in the main page
+      and try again.</p>
     </message.loginFailed>
+    
+    <lookIntoForum>
+      <p>Also - please check out our forum, there might be some useful
+      information regarding this issue there.</p>
+    </lookIntoForum>
 
     <title.connectionLost value="Connection lost!" />
     <message.connectionLost>
       <p>Connection lost with the server. Click '{0}' to reconnect.</p>
+      <p>[reference:lookIntoForum]</p>
     </message.connectionLost>
 
     <title.connectionTimeout value="Unable to connect!" />
     <message.connectionTimeout>
       <p>We tried to connect but the server was not able to respond in 
       {0} seconds. Click '{1}' to try again.</p>
+      <p>[reference:lookIntoForum]</p>
     </message.connectionTimeout>
 
-    <title.ioError value="IO Error!" />
+    <title.ioError value="Connection error!" />
     <message.ioError>
       <p>
         Unable to communicate with the server (it is probably down). Try again 
         later. 
       </p>
+      <p>[reference:lookIntoForum]</p>
     </message.ioError>
 
-    <title.disconnect.default value="Server error!" />
+    <title.disconnect.default value="Server has disconnected you!" />
     <message.disconnect.default>
       <p>
         You have been disconnected from the server! Click '{0}' to reconnect. 
@@ -1749,11 +1758,12 @@
       </p>
       <p>Click '{0}' to reconnect.</p>
     </message.disconnect.otherLogin>
-
-    <title.disconnect.notFound value="Resource missing!" />
-    <message.disconnect.notFound>
-      <p>A resource has not been found!  Click '{0}' to reconnect.</p>
-    </message.disconnect.notFound>
+    
+    <title.disconnect.playerErased value="Bye bye!" />
+    <message.disconnect.playerErased>
+      <p>Your account has been erased. We'll miss you.</p>
+      <p>Don't bother pressing '{0}'. It won't work.</p>
+    </message.disconnect.playerErased>
 
     <title.disconnect.jsonError value="Communication error!" />
     <message.disconnect.jsonError>
