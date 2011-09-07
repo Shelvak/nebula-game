@@ -233,21 +233,22 @@ package controllers.connection
          }
          // do not process any leftover messages after disconnect
          SERVER_PROXY.getUnprocessedMessages();
-         showErrorPopup("connectionLost", "connectionLost", [reconnectLabelText]);
+         showNoConnectionPopup();
       }
       
       
-      private function serverProxy_connectionTimeoutHandler(event:ServerProxyEvent) : void
-      {
-         showErrorPopup("connectionTimeout", "connectionTimeout",
-                        [ResponseMessagesTracker.MAX_WAIT_TIME / 1000, reconnectLabelText]); 
+      private function serverProxy_connectionTimeoutHandler(event:ServerProxyEvent) : void {
+         showNoConnectionPopup(); 
       }
       
       
-      private function serverProxy_ioErrorHandler(event:ServerProxyEvent) : void
-      {
-         showErrorPopup("ioError", "ioError", [reconnectLabelText]);
+      private function serverProxy_ioErrorHandler(event:ServerProxyEvent) : void {
+         showNoConnectionPopup();
          disconnect();
+      }
+      
+      private function showNoConnectionPopup() : void {
+         showErrorPopup("noConnection", "noConnection", [reconnectLabelText]);
       }
       
       

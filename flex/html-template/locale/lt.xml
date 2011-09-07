@@ -1714,26 +1714,11 @@
       informacijos.</p>
     </lookIntoForum>
 
-    <title.connectionLost value="Ryšys nutrūko!" />
-    <message.connectionLost>
+    <title.noConnection value="Ryšys nutrūko!" />
+    <message.noConnection>
       <p>Su serveriu nutrūko ryšys. Paspausk „{0}“ kad prisijungti iš naujo.</p>
       <p>[reference:lookIntoForum]</p>
-    </message.connectionLost>
-
-    <!-- Rodomas jeigu serveris neatsakė per kažkokį laiko tarpą -->
-    <title.connectionTimeout value="Nepavyko prisijungti!" />
-    <message.connectionTimeout>
-      <p>Per {0 one[? sekundę] tens[? sekundžių] many[? sekundes]} nepavyko
-      susisiekti su serveriu. Paspausk „{1}“ kad pabandyti dar kartelį.</p>
-      <p>[reference:lookIntoForum]</p>
-    </message.connectionTimeout>
-
-    <!-- Rodomas jeigu įvyko kita bendravimo klaida. -->
-    <title.ioError value="Ryšio klaida!" />
-    <message.ioError>
-      <p>Negalime susirišti su serveriu.</p>
-      <p>[reference:lookIntoForum]</p>
-    </message.ioError>
+    </message.noConnection>
 
     <!-- If reason is not provided in locale this one is shown instead. -->
     <title.disconnect.default value="Serveris tave atjungė!" />

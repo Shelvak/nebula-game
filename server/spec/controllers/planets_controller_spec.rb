@@ -358,6 +358,13 @@ describe PlanetsController do
       end
     end
 
+    it "should push changed (with reason owner prop change)" do
+      should_fire_event(@planet, EventBroker::CHANGED,
+                        EventBroker::REASON_OWNER_PROP_CHANGE) do
+        invoke @action, @params
+      end
+    end
+
     it "should change name if provided" do
       lambda do
         invoke @action, @params
