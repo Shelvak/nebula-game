@@ -1705,24 +1705,11 @@
       <p>Username or password incorrect. Refresh the page and try again.</p>
     </message.loginFailed>
 
-    <title.connectionLost value="Connection lost!" />
-    <message.connectionLost>
-      <p>Connection lost with the server. Click '{0}' to reconnect.</p>
-    </message.connectionLost>
-
-    <title.connectionTimeout value="Unable to connect!" />
-    <message.connectionTimeout>
-      <p>We tried to connect but the server was not able to respond in 
-      {0} seconds. Click '{1}' to try again.</p>
-    </message.connectionTimeout>
-
-    <title.ioError value="IO Error!" />
-    <message.ioError>
-      <p>
-        Unable to communicate with the server (it is probably down). Try again 
-        later. 
-      </p>
-    </message.ioError>
+    <title.noConnection value="Connection lost!" />
+    <message.noConnection>
+      <p>No connection to server. Click '{0}' to reestablish it.</p>
+      <p>[reference:lookIntoForum]</p>
+    </message.noConnection>
 
     <title.disconnect.default value="Server error!" />
     <message.disconnect.default>
