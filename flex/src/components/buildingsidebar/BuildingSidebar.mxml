@@ -692,8 +692,8 @@
                        width="100%"/>
          <s:Button label="{Localizer.string ('BuildingSidebar','label.claimPlanet')}"
                    visible="{ML.latestPlanet.ssObject.player == null
-                   &amp;&amp; ML.latestPlanet.getActiveUnits(Owner.ENEMY).length == 0
-                   &amp;&amp; ML.latestPlanet.getActiveUnits(Owner.PLAYER).length != 0}"
+                   &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY)
+                   &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)}"
                    skinClass="components.skins.GreenButtonSkin"
                    click="button1_clickHandler(event)"/>
       </s:Group>

@@ -751,31 +751,44 @@ package models.planet
       
       
       [Bindable(event="unitRefresh")]
-      public function get hasActiveUnits(): Boolean
+      public function hasActiveUnits(owner: int = -1, kind: String = null): Boolean
       {
-         return hasActiveGroundUnits || hasActiveSpaceUnits;
+         if (kind == UnitKind.SPACE)
+         {
+            return hasActiveSpaceUnits(owner);
+         }
+         else if (kind == UnitKind.GROUND)
+         {
+            return hasActiveGroundUnits(owner);
+         }
+         else
+         {
+            return hasActiveGroundUnits(owner) || hasActiveSpaceUnits(owner);
+         }
       }
       
       
       [Bindable(event="unitRefresh")]
-      public function get hasActiveGroundUnits(): Boolean
+      public function hasActiveGroundUnits(owner: int = -1): Boolean
       {
          return Collections.findFirst(units,
             function(unit:Unit) : Boolean
             {
-               return unit.level > 0 && unit.kind == UnitKind.GROUND;
+               return unit.level > 0 && unit.kind == UnitKind.GROUND
+               && (owner == -1 || owner == unit.owner);
             }
          ) != null;
       }
       
       
       [Bindable(event="unitRefresh")]
-      public function get hasActiveSpaceUnits(): Boolean
+      public function hasActiveSpaceUnits(owner: int = -1): Boolean
       {
          return Collections.findFirst(units,
             function(unit:Unit) : Boolean
             {
-               return unit.level > 0 && unit.kind == UnitKind.SPACE;
+               return unit.level > 0 && unit.kind == UnitKind.SPACE
+               && (owner == -1 || owner == unit.owner);
             }
          ) != null;
       }
@@ -813,7 +826,12 @@ package models.planet
          });
       }
       
-      [Bindable(event="unitRefresh")]
+      [Bindable (event="unitRefresh")]
+      public function getActiveUnitsCount(owner: int, kind: String): int
+      {
+         return getActiveUnits(owner, kind).length;
+      }
+      
       public function getActiveUnits(owner: int, kind: String = null): ListCollectionView
       {
          // For some reason if i filter this planet units i dont get all CollectionChange events in filtered

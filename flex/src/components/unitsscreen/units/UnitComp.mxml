@@ -190,7 +190,7 @@
                       || (!model.unit.location.isSSObject)
                       || (!ML.latestPlanet)
                       || (model.unit.owner != Owner.PLAYER)
-                      || (ML.latestPlanet.getActiveUnits(Owner.PLAYER, UnitKind.GROUND).length == 0
+                      || (!ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER)
                       &amp;&amp; (ML.latestPlanet.ssObject.owner == 
                       Owner.ALLY))
                       || (ML.latestPlanet.ssObject.owner == Owner.ENEMY))}"

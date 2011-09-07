@@ -295,10 +295,6 @@ package controllers.units
                squad.addHop(squad.currentHop);
                squad.moveToNextHop();
                squad.addAllHops(hops);
-               if (sampleUnit.location.isSSObject && ML.latestPlanet)
-               {
-                  ML.latestPlanet.dispatchUnitRefreshEvent();
-               }
             }
          }
          // or create new squadron
@@ -312,10 +308,6 @@ package controllers.units
                squad.route = findRoute(squad.id);
             }
             SQUADS.addItem(squad);
-            if (sampleUnit.location.isSSObject && ML.latestPlanet)
-            {
-               ML.latestPlanet.dispatchUnitRefreshEvent();
-            }
          }
       }
       
@@ -359,6 +351,10 @@ package controllers.units
             for each (unit in units)
             {
                unit.squadronId = squad.id;
+            }
+            if (unit.location.isSSObject)
+            {
+               ML.latestPlanet.dispatchUnitRefreshEvent();
             }
             units.enableAutoUpdate();
             if (squad.isFriendly)
