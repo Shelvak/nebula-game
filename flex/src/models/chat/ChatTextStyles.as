@@ -45,6 +45,6 @@ package models.chat
       /**
        * Color of URLs.
        */
-      public static const URL_COLOR:uint = 0x0000FF;
+      public static const URL_COLOR:uint = 0x00D8E3;
    }
 }
