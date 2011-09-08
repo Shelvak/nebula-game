@@ -62,34 +62,40 @@
             {
                if (_selectedModel != null)
                {
-                  _selectedModel.upgradePart.removeEventListener(UpgradeEvent.LEVEL_CHANGE, 
-                     refreshPriceOrientatedProperties);
+                  if (_selectedModel.upgradePart != null)
+                  {
+                     _selectedModel.upgradePart.removeEventListener(UpgradeEvent.LEVEL_CHANGE, 
+                        refreshPriceOrientatedProperties);
+                     _selectedModel.upgradePart.removeEventListener(
+                        UpgradeEvent.UPGRADE_PROGRESS,
+                        model_upgradeProgressHandler
+                     );
+                     _selectedModel.upgradePart.removeEventListener(
+                        UpgradeEvent.UPGRADE_STOPPED,
+                        model_upgradeProgressHandler
+                     );
+                  }
                   _selectedModel.removeEventListener(TechnologyEvent.SELECTED_CHANGE, 
                      refreshPriceOrientatedProperties);
-                  _selectedModel.upgradePart.removeEventListener(
-                     UpgradeEvent.UPGRADE_PROGRESS,
-                     model_upgradeProgressHandler
-                  );
-                  _selectedModel.upgradePart.removeEventListener(
-                     UpgradeEvent.UPGRADE_STOPPED,
-                     model_upgradeProgressHandler
-                  );
                }
                _selectedModel = tScreen.selectedTechnology;
                if (_selectedModel != null)
                {
-                  _selectedModel.upgradePart.addEventListener(UpgradeEvent.LEVEL_CHANGE,
-                     refreshPriceOrientatedProperties);
+                  if (_selectedModel.upgradePart != null)
+                  {
+                     _selectedModel.upgradePart.addEventListener(UpgradeEvent.LEVEL_CHANGE,
+                        refreshPriceOrientatedProperties);
+                     _selectedModel.upgradePart.addEventListener(
+                        UpgradeEvent.UPGRADE_PROGRESS,
+                        model_upgradeProgressHandler
+                     );
+                     _selectedModel.upgradePart.addEventListener(
+                        UpgradeEvent.UPGRADE_STOPPED,
+                        model_upgradeProgressHandler
+                     );
+                  }
                   _selectedModel.addEventListener(TechnologyEvent.SELECTED_CHANGE, 
                      refreshPriceOrientatedProperties);
-                  _selectedModel.upgradePart.addEventListener(
-                     UpgradeEvent.UPGRADE_PROGRESS,
-                     model_upgradeProgressHandler
-                  );
-                  _selectedModel.upgradePart.addEventListener(
-                     UpgradeEvent.UPGRADE_STOPPED,
-                     model_upgradeProgressHandler
-                  );
                   
                }
             }

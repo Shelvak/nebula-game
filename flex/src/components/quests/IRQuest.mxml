@@ -137,14 +137,14 @@
             
             <base:Warning text="{getString('warning.cantClaimReward')}"
                           visible="{completed &amp;&amp;
-                                    ML.player.population >= ML.player.populationMax &amp;&amp;
-                                    quest.rewards.units.length > 0}"/>
+                          ML.player.population >= ML.player.populationMax &amp;&amp;
+                          quest.rewards.units.length > 0}"/>
             
             <s:Button label="{getString('label.claimReward')}" 
                       click="btnClaim_clickHandler(event)"
                       visible="{completed &amp;&amp;
-                               (ML.player.population &lt; ML.player.populationMax ||
-                                quest.rewards.units.length == 0)}"
+                      (ML.player.population &lt; ML.player.populationMax ||
+                      quest.rewards.units.length == 0)}"
                       skinClass="components.skins.GreenButtonSkin"/>
             
             <s:Button label="{getString('label.tutorial')}" 
@@ -152,7 +152,7 @@
                       visible="{!completed &amp;&amp; (quest.helpUrlId != null)}" 
                       skinClass="components.skins.YellowButtonSkin"/>
          </base:AdvancedContainer>
-
+         
       </s:Group>
    </fx:Declarations>
    <fx:Binding source="itemIndex == ML.quests.length - 1" destination="bottomLineVisible"/>
@@ -259,10 +259,13 @@
          }
          
          private function refreshTitle(event:Event = null) : void {
-            title = quest.title;
-            progress = getString('label.progress', [quest.completed, quest.objectives.length]);
-            completed = (quest.status == Quest.STATUS_COMPLETED);
-            ML.quests.applyCurrentFilter();
+            if (quest)
+            {  
+               title = quest.title;
+               progress = getString('label.progress', [quest.completed, quest.objectives.length]);
+               completed = (quest.status == Quest.STATUS_COMPLETED);
+               ML.quests.applyCurrentFilter();
+            }
          }
          
          private function setTextColor() : void {
