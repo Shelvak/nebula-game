@@ -72,9 +72,23 @@ package tests.chat.models
       public function messageParsing_onlyURL() : void {
          message.message = "http://nebula44.com/";
          convertToParagraph();
-         
          assertParagraphNumChildren(3);
          linkAssertions(2);
+         
+         message.message = "www.nebula44.lt";
+         convertToParagraph();
+         assertParagraphNumChildren(3);
+         linkAssertions(2, "www.nebula44.lt");
+         
+         message.message = "http://www.nebula44.com";
+         convertToParagraph();
+         assertParagraphNumChildren(3);
+         linkAssertions(2, "http://www.nebula44.com");
+         
+         message.message = "www.nebula44.com/list?user=mikism";
+         convertToParagraph();
+         assertParagraphNumChildren(3);
+         linkAssertions(2, "www.nebula44.com/list?user=mikism");
       }
       
       [Test]
@@ -104,8 +118,8 @@ package tests.chat.models
          
          assertParagraphNumChildren(8);
          spanAssersions(2, "Hi! Check this out: ");
-         linkAssertions(3, "http://nebula44.com/");
-         spanAssersions(4, ". And these also: ");
+         linkAssertions(3, "http://nebula44.com/.");
+         spanAssersions(4, " And these also: ");
          linkAssertions(5, "http://one.com");
          spanAssersions(6, " ");
          linkAssertions(7, "http://two.com");

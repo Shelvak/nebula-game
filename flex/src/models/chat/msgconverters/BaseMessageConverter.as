@@ -1,15 +1,12 @@
 package models.chat.msgconverters
 {
    import flash.errors.IllegalOperationError;
-   import flash.net.URLRequest;
-   import flash.net.navigateToURL;
    
    import flashx.textLayout.elements.FlowElement;
    import flashx.textLayout.elements.FlowGroupElement;
    import flashx.textLayout.elements.LinkElement;
    import flashx.textLayout.elements.ParagraphElement;
    import flashx.textLayout.elements.SpanElement;
-   import flashx.textLayout.events.FlowElementMouseEvent;
    
    import models.chat.ChatTextStyles;
    import models.chat.MChatMessage;
@@ -28,8 +25,7 @@ package models.chat.msgconverters
     */
    public class BaseMessageConverter implements IChatMessageConverter
    {
-      // Expression taken form: http://regexlib.com/REDetails.aspx?regexp_id=96
-      private static const URL_REGEXP:RegExp = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/;
+      private static const URL_REGEXP:RegExp = /(\s|^)((www\.|\w+:\/\/).+?)(\s|$)/i;
       
       
       private var _timeFormatter:DateFormatter;
@@ -88,8 +84,10 @@ package models.chat.msgconverters
          var msgText:String = message.message;
          var match:Object;
          while ( (match = URL_REGEXP.exec(msgText)) != null ) {
-            var matchUrl:String = match[0];
-            var matchUrlIdx:int = match["index"];
+            var matchWhole:String = match[0];
+            var matchBeforeUrl:String = match[1] != null ? match[1] : "";
+            var matchUrl:String = match[2];
+            var matchUrlIdx:int = match["index"] + matchBeforeUrl.length;
             var textBeforeURL:String = msgText.substr(0, matchUrlIdx);
             
             addSpan(paragraph, textBeforeURL, textColor);
