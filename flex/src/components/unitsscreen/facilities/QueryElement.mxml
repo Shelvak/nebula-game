@@ -110,7 +110,7 @@
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready_over')}"
                   id="lights" alpha="0"/>
    
-   <s:Group right="16" top="8">
+   <s:Group right="16" top="9">
       <s:BitmapImage source="{IMG.getImage(
                      AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_counter_left')}"
                      left="0" top="0" id="countLeft"/>

@@ -25,12 +25,12 @@
       ]]>
    </fx:Script>
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready')}"/>
-   <s:Group width="{imageSize}" height="{imageSize}" left="19" top="9">
+   <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
       <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(_type))}" 
                                       width="100%" height="100%"/>
    </s:Group>
    
-   <s:Group right="16" top="8">
+   <s:Group right="16" top="9">
       <s:BitmapImage source="{IMG.getImage(
                      AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_counter_left')}"
                      left="0" top="0" id="countLeft"/>
