@@ -33,7 +33,10 @@
             if (TL.currentName == screenName)
             {
                addElement(TL.currentMapViewport);
-               addElement(TL.currentMapController);
+               if (TL.currentMapController != null)
+               {
+                  addElement(TL.currentMapController);
+               }
                callLater(
                   ViewportZoomable(TL.currentMapViewport).invalidateDisplayList);
             }
