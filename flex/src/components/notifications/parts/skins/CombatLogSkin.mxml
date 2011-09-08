@@ -214,7 +214,7 @@
       <s:Group width="{mainGroup.width}" height="{lvlLayout.rowCount * 78}" 
                visible="{leveledList.dataProvider.length != 0}">
          <s:DataGroup id="leveledList" height="100%" left="6" right="6"
-                      itemRenderer="components.unitsscreen.IRSimpleUnit">
+                      itemRenderer="components.unitsscreen.IRInfoUnit">
             <s:layout>
                <s:TileLayout id="lvlLayout" verticalGap="2" horizontalGap="2"
                              requestedColumnCount="{Math.round(Math.max(1,mainGroup.width/102))}"/>
