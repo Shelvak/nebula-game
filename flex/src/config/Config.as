@@ -439,6 +439,11 @@ package config
          return getUnitProperty(type, "deploysTo");
       }
       
+      public static function getUnitXpNeeded(type: String): String
+      {
+         return getUnitProperty(type, "xpNeeded");
+      }
+      
       public static function getUnitStorage(type: String): int
       {
          return getUnitProperty(type, "storage");

@@ -46,6 +46,12 @@ package models.unit
          return resultList;
       }
       
+      public static function getXpMax(type: String, level: int): int
+      {
+         return Math.round(StringUtil.evalFormula(Config.getUnitXpNeeded(type),
+            {'level': level}));
+      }
+      
       public static function getMovementSpeedUpCredsCost(
          percentage: Number, hopCount: int): int
       {
@@ -244,11 +250,14 @@ package models.unit
          return Config.getUnitProperties(type);
       }
       
-      
+      [Bindable (event="willNotChange")]
       public function get maxLevel(): int
       {
          return Config.getUnitMaxLevel(type);
       }
+      
+      [Optional]
+      public var xp: int;
       
       
       private var _squadronId:int = 0;

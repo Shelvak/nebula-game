@@ -4,31 +4,32 @@
          xmlns:mx="library://ns.adobe.com/flex/mx">
    <fx:Script>
       <![CDATA[
-		  import com.developmentarc.core.utils.EventBroker;
-		  
-		  import components.skins.ProgressBarColorCodedSkin;
-		  import components.skins.ProgressBarSkin;
-		  import components.unitsscreen.UnitHpColors;
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.skins.ProgressBarColorCodedSkin;
+         import components.skins.ProgressBarSkin;
+         import components.skins.ProgressBarTrackSkin;
+         import components.unitsscreen.UnitHpColors;
          
          public function set curentStock(v: Number):void{
             bar.setProgress(v, bar.maximum);
-			if (useColorCoding)
-				refreshColor();
+            if (useColorCoding)
+               refreshColor();
          }
          
          public function set maxStock(v: Number):void{
             bar.setProgress(bar.value, v);
-			if (useColorCoding)
-				refreshColor();
+            if (useColorCoding)
+               refreshColor();
          }
-		  
-		  private function refreshColor(): void
-		  {
-			  var colorId: int = Math.ceil(bar.value/(bar.maximum/UnitHpColors.hpBarColors.length)) - 1;
-			  if (colorId >= UnitHpColors.hpBarColors.length)
-				  colorId = UnitHpColors.hpBarColors.length - 1;
-			  bar.setStyle('chromeColor', UnitHpColors.hpBarColors[colorId]);
-		  }
+         
+         private function refreshColor(): void
+         {
+            var colorId: int = Math.ceil(bar.value/(bar.maximum/UnitHpColors.hpBarColors.length)) - 1;
+            if (colorId >= UnitHpColors.hpBarColors.length)
+               colorId = UnitHpColors.hpBarColors.length - 1;
+            bar.setStyle('chromeColor', UnitHpColors.hpBarColors[colorId]);
+         }
          
          public function set text(v: String):void{
             bar.label = v;
@@ -36,14 +37,22 @@
          
          [Bindable]
          public var specialHeight: Number = 0;
-		  
-		  [Bindable]
-		 public var useColorCoding: Boolean = false;
-
+         
+         [Bindable]
+         public var useColorCoding: Boolean = false;
+         
+         [Bindable]
+         public var defaultSkin: Class = null;
+         
+         [Bindable]
+         public var trackSkin: Class = null;
+         
          
       ]]>
    </fx:Script>
    <mx:ProgressBar id="bar" mode="manual" minimum="0" labelPlacement="center" 
-				   barSkin="{useColorCoding ? ProgressBarColorCodedSkin : ProgressBarSkin}"
+                   trackSkin="{trackSkin != null?trackSkin:ProgressBarTrackSkin}"
+                   barSkin="{defaultSkin != null?defaultSkin
+                   : (useColorCoding ? ProgressBarColorCodedSkin : ProgressBarSkin)}"
                    height="{specialHeight == 0?16:specialHeight}" width="100%"/>
 </s:Group>

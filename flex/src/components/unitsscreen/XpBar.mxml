@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         [Bindable]
+         public var xpNeeded: int;
+         [Bindable]
+         public var xpCurrent: int;
+      ]]>
+   </fx:Script>
+   <base:SetableProgressBar curentStock="{xpCurrent}" maxStock="{xpNeeded}"
+                            text=" "
+                            left="0" right="0" top="0" bottom="0"
+                            trackSkin="components.skins.XpBarTrackSkin"
+                            defaultSkin="components.skins.XpBarSkin"
+                            specialHeight="12"/>
+</s:Group>
