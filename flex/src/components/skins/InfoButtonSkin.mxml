@@ -22,7 +22,7 @@
       <s:State name="disabled" />
    </base:states>
    
-   <!-- layer 1: fill -->
+
    <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'info_up')}"
                   source.down="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'info_down')}"
                   source.disabled="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'info_disabled')}"/>

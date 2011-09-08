@@ -3,7 +3,8 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:base="components.base.*"
                     xmlns:mx="library://ns.adobe.com/flex/mx"
-                    xmlns:components="utils.components.*" xmlns:ui="components.ui.*">
+                    xmlns:components="utils.components.*" 
+                    xmlns:ui="components.ui.*">
    
    <fx:Script>
       <![CDATA[

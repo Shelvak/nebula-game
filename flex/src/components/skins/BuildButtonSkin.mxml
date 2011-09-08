@@ -3,7 +3,7 @@
                xmlns:s="library://ns.adobe.com/flex/spark"
                xmlns:mx="library://ns.adobe.com/flex/halo"
                xmlns:base="components.base.*"
-               minWidth="16" minHeight="16"
+               minWidth="25" minHeight="23"
                mouseEnabled="false" mouseChildren="false" >
    
    <fx:Metadata>
@@ -22,7 +22,7 @@
       <s:State name="disabled" />
    </base:states>
    
-   <s:Group excludeFrom="down" width="24" height="22">
+   <s:Group excludeFrom="down" width="24" height="22" horizontalCenter="0" verticalCenter="0">
       <s:Rect alpha="0.42" width="24" height="22">
          <s:fill>
             <s:LinearGradient x="12" y="0" scaleX="22" rotation="90">
@@ -43,7 +43,7 @@
       </s:Path>
    </s:Group>
    
-   <s:Group includeIn="down" width="24" height="22">
+   <s:Group includeIn="down" width="24" height="22" horizontalCenter="0" verticalCenter="0">
       <s:Rect alpha="0.42" width="24" height="22">
          <s:fill>
             <s:LinearGradient x="12" y="0" scaleX="22" rotation="90">

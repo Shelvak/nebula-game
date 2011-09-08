@@ -3684,8 +3684,8 @@
     <label.enoughIn value="Pakaks už {0}" />
     <label.currentUnits value="Kariai" />
     <label.currentFacilities value="Gamyklos" />
-    <label.flankNr1 value="Pirmas" />
-    <label.flankNr2 value="Antras" />
+    <label.flankNr0 value="Pirmas" />
+    <label.flankNr1 value="Antras" />
     <tooltip.flank>
       <p>{0} flangas</p>
       <p>Kariai šiame flange turi {1}% tikimybę, kad į juos pataikys.</p>
@@ -3778,11 +3778,11 @@
     <kind.space value="Kosmoso ({0})" />
     <!-- TODO: is this used? -->
     <kind.moving value="Judantys ({0})" />
-    <kind.launch value="Ruošiasi išskristi" />
+    <kind.launch value="Ruošiasi išskristi ({0})" />
     <kind.stored value="Saugoma ({0})" />
     <kind.land value="Žemės ({0})" />
     <kind.resources value="Resursai" />
-    <kind.squadron value="Laivynas" />
+    <kind.squadron value="Laivynas ({0})" />
     <kind.self value="Tavo kariai" />
     <kind.nap  value="NS kariai" />
     <kind.ally value="Sąjungos kariai" />

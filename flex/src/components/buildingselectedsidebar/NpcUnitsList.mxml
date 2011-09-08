@@ -6,6 +6,7 @@
    <fx:Script>
       <![CDATA[
          import models.ModelsCollection;
+         import models.Owner;
          import models.building.Building;
          import models.building.Npc;
          import models.unit.Unit;
@@ -38,15 +39,18 @@
                      flanksHash[unit.flank] = new Array();
                   (flanksHash[unit.flank] as Array).push(unit);
                }
-            
-               for (var flankKey: String in flanksHash) {
-                  flanks.addItem(new UnitsFlank(new ModelsCollection(flanksHash[flankKey]), int(flankKey)+1));
+               
+               for (var flankKey: String in flanksHash)
+               {
+                  var flnk: UnitsFlank = new UnitsFlank(int(flankKey), Owner.ENEMY);
+                  flnk.flankUnits = new ArrayCollection(flanksHash[flankKey] as Array);
+                  flanks.addItem(flnk);
                }
+               
+               flanks.sort = new Sort();
+               flanks.sort.fields = [new SortField('nr', false, false, true)];
+               flanks.refresh();
             }
-            
-            flanks.sort = new Sort();
-            flanks.sort.fields = [new SortField('nr', false, false, true)];
-            flanks.refresh();
          }
       ]]>
    </fx:Script>

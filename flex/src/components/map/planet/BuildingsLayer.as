@@ -15,8 +15,8 @@ package components.map.planet
    import controllers.Messenger;
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.MoveActionParams;
+   import controllers.navigation.MCSidebar;
    import controllers.screens.SidebarScreens;
-   import controllers.screens.SidebarScreensSwitch;
    
    import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
@@ -32,6 +32,7 @@ package components.map.planet
    import models.ModelLocator;
    import models.building.Building;
    import models.building.Extractor;
+   import models.building.MCBuildingSelectedSidebar;
    import models.planet.Planet;
    import models.planet.events.PlanetEvent;
    import models.tile.Tile;
@@ -69,7 +70,6 @@ package components.map.planet
    public class BuildingsLayer extends PlanetVirtualLayer
    {
       private var ML:ModelLocator = ModelLocator.getInstance();
-      private var SSS:SidebarScreensSwitch = SidebarScreensSwitch.getInstance();
       
       
       override protected function get componentClass() : Class
@@ -631,20 +631,28 @@ package components.map.planet
       /* ### BUILDING SELECTION / DESELECTION ### */
       /* ######################################## */
       
+      private function get buildingSidebar(): MCBuildingSelectedSidebar
+      {
+         return MCBuildingSelectedSidebar.getInstance();
+      }
       
       protected override function objectSelectedImpl(object:IInteractivePlanetMapObject) : void
       {
-         ML.selectedBuilding = Building(object.model);
-         SidebarScreensSwitch.getInstance().showScreen(SidebarScreens.BUILDING_SELECTED);
+         buildingSidebar.selectedBuilding = Building(object.model);
+         SD.showScreen(SidebarScreens.BUILDING_SELECTED);
       }
       
+      private function get SD(): MCSidebar
+      {
+         return MCSidebar.getInstance();
+      }
       
       protected override function objectDeselectedImpl(object:IInteractivePlanetMapObject) : void
       {
-         ML.selectedBuilding = null;
+         buildingSidebar.selectedBuilding = null;
          if (!_buildingMoveProcessStarted)
          {
-            SidebarScreensSwitch.getInstance().showPrevious();
+            SD.showPrevious();
          }
       }
       

@@ -3,6 +3,7 @@ package controllers.units.actions
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.GlobalFlags;
    
    import globalevents.GResourcesEvent;
    import globalevents.GUnitEvent;
@@ -23,7 +24,13 @@ package controllers.units.actions
       public override function result(rmo:ClientRMO) : void
       {
          new GResourcesEvent(GResourcesEvent.WRECKAGES_UPDATED);
-         new GUnitEvent(GUnitEvent.LOAD_APPROVED);
+         GlobalFlags.getInstance().lockApplication = false;
+      }
+      
+      public override function cancel(rmo:ClientRMO):void
+      {
+         super.cancel(rmo);
+         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

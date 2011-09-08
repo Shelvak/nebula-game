@@ -41,12 +41,12 @@
                        :null)}"/>
    <menus:KindUnitsMenu id="space" kind="{UnitKind.SPACE}" visible="{!((width &lt; (space.width + ground.width))
                         || (ML.activeMapType != MapType.PLANET) 
-                        || (!ML.latestPlanet.hasActiveSpaceUnits))}"/>
+                        || (!ML.latestPlanet.hasActiveSpaceUnits()))}"/>
    <menus:KindUnitsMenu id="ground" kind="{width &lt; (space.width + ground.width)?null:UnitKind.GROUND}"
                         visible="{ML.activeMapType == MapType.PLANET &amp;&amp; 
-                        (ML.latestPlanet.hasActiveGroundUnits || 
+                        (ML.latestPlanet.hasActiveGroundUnits() || 
                         (width &lt; (space.width + ground.width) &amp;&amp;
-                        ML.latestPlanet.hasActiveUnits))}"/>
+                        ML.latestPlanet.hasActiveUnits()))}"/>
    <base:layout>
       <s:HorizontalLayout gap="-3" horizontalAlign="right"/>
    </base:layout>

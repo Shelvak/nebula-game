@@ -2,6 +2,7 @@ package controllers.units.actions
 {
    
    import controllers.CommunicationAction;
+   import controllers.GlobalFlags;
    
    import globalevents.GUnitEvent;
    
@@ -16,13 +17,13 @@ package controllers.units.actions
    {
       public override function result(rmo:ClientRMO) : void
       {
-         new GUnitEvent(GUnitEvent.LOAD_APPROVED);
+         GlobalFlags.getInstance().lockApplication = false;
       }
       
       public override function cancel(rmo:ClientRMO) : void
       {
          super.cancel(rmo);
-         new GUnitEvent(GUnitEvent.LOAD_APPROVED);
+         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

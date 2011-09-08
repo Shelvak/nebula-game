@@ -6,6 +6,7 @@ package models.healing
    import models.parts.UpgradableType;
    import models.resource.ResourceType;
    import models.solarsystem.MSSObject;
+   import models.unit.MCUnit;
    import models.unit.Unit;
 
    [Bindable]
@@ -25,8 +26,9 @@ package models.healing
                                  'healing.cost.mod', {'level': level});
          var cooldownMod: Number = Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, type,
                         'healing.time.mod', {'level': level});
-         for each (var unit: Unit in units)
+         for each (var mUnit: MCUnit in units)
          {
+            var unit: Unit = mUnit.unit;
             price.metal += Math.round(Upgradable.calculateCost(UpgradableType.UNITS, unit.type, 
                ResourceType.METAL, {}) * priceMod * unit.damagePercentage);
             price.energy += Math.round(Upgradable.calculateCost(UpgradableType.UNITS, unit.type, 

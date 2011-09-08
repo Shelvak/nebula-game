@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark" 
+                xmlns:base="components.base.*"
+                xmlns:mx="library://ns.adobe.com/flex/mx" 
+                xmlns:unitsscreen="components.unitsscreen.*"
+                autoDrawBackground="false"
+                rollOver="basecontainer1_rollOverHandler(event)"
+                rollOut="basecontainer1_rollOutHandler(event)" 
+                xmlns:components="utils.components.*"
+                mouseDown="itemrenderer1_mouseDownHandler(event)"
+                mouseMove="itemrenderer1_mouseMoveHandler(event)"
+                mouseUp="itemrenderer1_mouseUpHandler(event)">
+   <fx:Declarations>
+      <s:Resize id="expandLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="50"
+                effectStart="expandLabel_effectStartHandler(event)"/>
+      <s:Resize id="colapseLabel" target="{hpLabel}" duration="100" heightFrom="{hpLabel.height}" heightTo="0"
+                effectEnd="colapseLabel_effectEndHandler(event)"/>
+   </fx:Declarations>
+   <fx:Script>
+      <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
+         import components.skins.DeployButtonSkin;
+         
+         import config.Config;
+         
+         import controllers.ui.NavigationController;
+         import controllers.units.UnitsCommand;
+         
+         import globalevents.GSelectConstructableEvent;
+         import globalevents.GUnitEvent;
+         
+         import models.ModelLocator;
+         import models.Owner;
+         import models.building.Building;
+         import models.factories.BuildingFactory;
+         import models.location.LocationType;
+         import models.planet.Planet;
+         import models.unit.MCUnit;
+         import models.unit.MCUnitScreen;
+         import models.unit.Unit;
+         import models.unit.UnitBuildingEntry;
+         import models.unit.UnitKind;
+         
+         import mx.collections.ArrayCollection;
+         import mx.core.FlexGlobals;
+         import mx.events.EffectEvent;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.datastructures.Collections;
+         import utils.locale.Localizer;
+         
+         private static const IMG:ImagePreloader = ImagePreloader.getInstance();
+         
+         [Bindable]
+         private var ML:ModelLocator = ModelLocator.getInstance();
+         
+         [Bindable]
+         public var model: MCUnit;
+         
+         
+         public override function set data(value:Object) : void
+         {
+            if (data != value)
+            {
+               super.data = value;
+               if (data)
+               {
+                  model = MCUnit(data);
+               }
+            }
+         }
+         
+         protected function basecontainer1_rollOverHandler(event:MouseEvent):void
+         {
+            colapseLabel.stop();
+            expandLabel.play();
+         }
+         
+         
+         protected function basecontainer1_rollOutHandler(event:MouseEvent):void
+         {
+            expandLabel.stop();
+            colapseLabel.play();
+         }
+         
+         
+         protected function info_clickHandler(event:MouseEvent):void
+         {
+            NavigationController.getInstance().showInfo(model.unit);
+         }
+         
+         protected function deploy_clickHandler(event:MouseEvent):void
+         {
+            NavigationController.getInstance().toPlanet(ML.latestPlanet.ssObject);
+            var building: Building = BuildingFactory.createDefault(model.unit.deploysTo);
+            building.cleanup();
+            building.unitDeployed = model.unit;
+            new GSelectConstructableEvent(building);
+         }
+         
+         private var unitsLoading: Boolean;
+         
+         private function show_inside(load: Boolean): void
+         {
+            unitsLoading = load;
+            if (model.unit.stored > 0)
+            {
+               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
+               new UnitsCommand(UnitsCommand.SHOW, model.unit).dispatch();
+            }
+            else
+            {
+               openUnit();
+            }
+         }
+         
+         private function openUnit(e: GUnitEvent = null): void
+         {
+            var planet:Planet = ModelLocator.getInstance().latestPlanet;
+            if (e != null)
+            {
+               EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
+            }
+            NavigationController.getInstance().enableActiveButton();
+            if (unitsLoading)
+            {
+               NavigationController.getInstance().showLoadUnload(planet.toLocation(), model.unit, 
+                  Collections.filter(planet.units, 
+                     function (unit: Unit): Boolean {
+                        return (unit.level > 0) && (unit.volume > 0) && (unit.owner == Owner.PLAYER)
+                        && unit.location.type == LocationType.SS_OBJECT}));
+            }
+            else
+            {
+               NavigationController.getInstance().showLoadUnload(model.unit, planet.toLocation(),
+                  Collections.filter(ModelLocator.getInstance().units, 
+                     function (unit: Unit): Boolean {
+                        return (unit.level > 0) && (unit.location.type == LocationType.UNIT) && (model.unit != null) 
+                        && (unit.location.id == model.unit.id);}));
+            }
+         }
+         
+         
+         protected function showStorage():void
+         {
+            if (model.unit != null && !model.unit.pending)
+            {
+               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
+               new UnitsCommand(UnitsCommand.SHOW, model.unit).dispatch();
+            }
+         }
+         
+         private var uScreen: MCUnitScreen = MCUnitScreen.getInstance();
+         
+         private function switchToStorage(e: GUnitEvent): void
+         {
+            EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
+            NavigationController.getInstance().enableActiveButton();
+            uScreen.switchToStorage(model.unit);
+         }
+         
+         [Bindable]
+         private var expanded: Boolean = false;
+         
+         
+         protected function expandLabel_effectStartHandler(event:EffectEvent):void
+         {
+            expanded = true;
+         }
+         
+         
+         protected function colapseLabel_effectEndHandler(event:EffectEvent):void
+         {
+            expanded = false;
+         }
+
+         private var downPressed: Boolean = false;
+
+         protected function itemrenderer1_mouseDownHandler(event:MouseEvent):void
+         {
+            downPressed = true;
+            if (!model.selected)
+            {
+               model.selected = !model.selected;
+               model.flankModel.invertSelection(model);
+            }
+            else
+            {
+               deselectOnUp = true;
+            }
+         }
+         
+         private var deselectOnUp: Boolean = false;
+
+
+         protected function itemrenderer1_mouseMoveHandler(event:MouseEvent):void
+         {
+            if (downPressed && uScreen.owner == Owner.PLAYER)
+            {
+               downPressed = false;
+               deselectOnUp = false;
+               
+               model.flankModel.startDrag();
+               
+               var ammounts: Object = {};
+               for each (var item: MCUnit in model.flankModel.selection)
+               {
+                  if (ammounts[item.unit.type] == null)
+                  {
+                     ammounts[item.unit.type] = 0;
+                  }
+                  ammounts[item.unit.type]++;
+               }
+               var units: ArrayCollection = new ArrayCollection();
+               for (var type: String in ammounts)
+               {
+                  units.addItem(new UnitBuildingEntry('Unit::'+type, ammounts[type]));
+               }
+               
+               
+               var indicator: DraggedUnitsIndicator = new DraggedUnitsIndicator();
+               indicator.cachedUnits = units;
+               FlexGlobals.topLevelApplication.addElement(indicator);
+               indicator.x = event.stageX - (indicator.width/2);               
+               indicator.y = event.stageY - (indicator.height/2);
+            }
+         }
+
+
+         protected function itemrenderer1_mouseUpHandler(event:MouseEvent):void
+         {
+            downPressed = false;
+            
+            if (deselectOnUp)
+            {
+               deselectOnUp = false;
+               model.selected = !model.selected;
+               model.flankModel.invertSelection(model);
+            }
+         }
+
+      ]]>
+   </fx:Script>
+   <s:Group id="contGroup" width="100" height="76">
+      <s:Rect left="0" right="0" top="0" bottom="0">
+         <s:fill>
+            <s:SolidColor color="{model.selected?0x2f2f2f:0x0f0f0f}"/>
+         </s:fill>
+      </s:Rect>
+      <base:AdvancedContainer left="0" width="24" bottom="0" top="0">
+         <base:layout>
+            <s:VerticalLayout/>
+         </base:layout>
+         
+         <!-- actionGroup -->
+         <s:Button id="deploy" click="deploy_clickHandler(event)" 
+                   visible="{!(!(model.unit.deploysTo != null)
+                   || (model.unit.owner != Owner.PLAYER)
+                   || (!ML.latestPlanet)
+                   || (ML.latestPlanet.ssObject.owner != Owner.PLAYER))}"
+                   skinClass="components.skins.DeployButtonSkin" 
+                   toolTip="{Localizer.string('Units', 'label.deploy')}"/>
+         
+         <base:AdvancedContainer id="loadGroup" visible="{model.unit != null}" width="100%">
+            <base:layout>
+               <s:VerticalLayout/>
+            </base:layout>
+            <s:Button id="load" click="show_inside(true)" visible="{!(
+                      (model.unit.storage == 0)
+                      || (!model.unit.location.isSSObject)
+                      || (!ML.latestPlanet)
+                      || (model.unit.owner != Owner.PLAYER)
+                      || (!ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER)
+                      &amp;&amp; (ML.latestPlanet.ssObject.owner == 
+                      Owner.ALLY)))}"
+                      toolTip="{Localizer.string('Units', 'label.load')}"
+                      skinClass="components.skins.LoadButtonSkin"/>
+            <s:Button id="unload" click="show_inside(false)" visible="{!(model.unit.stored == 0 
+                      || !model.unit.location.isSSObject
+                      || (model.unit.owner != Owner.PLAYER)
+                      || (!ML.latestPlanet)
+                      || (!(
+                      (ML.latestPlanet.ssObject.owner == Owner.PLAYER)
+                      ||
+                      (ML.latestPlanet.ssObject.owner == Owner.ALLY))))}"
+                      toolTip="{Localizer.string('Units', 'label.unload')}"
+                      skinClass="components.skins.UnloadButtonSkin"/>
+            <s:Button id="show" click="showStorage()" visible="{!(model.unit.location.isSSObject || 
+                      model.unit.storage == 0
+                      || model.unit.owner != Owner.PLAYER)}"
+                      toolTip="{Localizer.string('Units', 'label.show')}"
+                      skinClass="components.skins.ShowButtonSkin"/>
+         </base:AdvancedContainer>
+      </base:AdvancedContainer>
+      <s:Group left="24" right="24" top="0" bottom="0">
+         <base:SetableProgressBar id="sBar" maxStock="{Config.getUnitHp(model.unit.type)}" curentStock="{model.unit.hp}"
+                                  specialHeight="6" width="50" text="" top="0" useColorCoding="true"/>
+         <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(model.unit.type))}" 
+                                         width="50" height="50" horizontalCenter="0" top="9"/>
+         
+         <unitsscreen:XpBar xpCurrent="{model.unit.xp}" xpNeeded="{Unit.getXpMax(model.unit.type, model.unit.level + 1)}" 
+                            left="0" right="0" top="61" visible="{model.unit.level &lt; model.unit.maxLevel}"/>
+         <unitsscreen:StarsContainer id="starsCont" starCount="{model.unit.upgradePart.level-1}" horizontalCenter="0" top="62"/>
+         <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
+                  text="{model.unit.hp+'\n'+'/'+'\n'+Config.getUnitHp(model.unit.type)}" verticalAlign="middle"
+                  backgroundColor="#0f0f0f" backgroundAlpha="0.7"/>
+         
+      </s:Group>
+      <base:BackgroundedLabel visible="{model.unit &amp;&amp; model.unit.stored 
+                              &amp;&amp; !expanded}" 
+                              bottom="17" right="24" 
+                              text="{Localizer.string('Units', 'stored.short', 
+                              [Unit.getStoredResourcesPercent(model.unit.storage, model.unit.metal, 
+                              model.unit.energy, model.unit.zetium), Unit.getStoredUnitsPercent(model.unit.storage,
+                              model.unit.stored, model.unit.metal, model.unit.energy, model.unit.zetium)])}"
+                              defaultFontSize="10"/>
+      <s:Group right="0" width="24" bottom="0" top="0">
+         <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(Unit.STANCE_WORD + model.stance))}" 
+                        top="10" horizontalCenter="0"/>
+         <s:Button skinClass="components.skins.InfoButtonSkin" horizontalCenter="0" bottom="10"
+                   click="info_clickHandler(event)"/>
+      </s:Group>
+   </s:Group>
+</s:ItemRenderer>

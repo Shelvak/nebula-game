@@ -5,17 +5,19 @@
                     xmlns:base="components.base.*"
                     xmlns:technology="components.technologytree.*" 
                     xmlns:buildingsidebar="components.buildingsidebar.*"
+                    width="100%" height="100%"
                     creationComplete="techSidebar_creationCompleteHandler(event)">
    
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
+         import controllers.navigation.MCSidebar;
          import controllers.screens.SidebarScreens;
          
-         import globalevents.GScreenChangeEvent;
          import globalevents.GlobalEvent;
          
+         import models.events.ScreensSwitchEvent;
          import models.parts.events.UpgradeEvent;
          import models.resource.ResourceType;
          import models.technology.Technology;
@@ -39,9 +41,11 @@
             researchContainer.removeAllElements();
          }
          
+         private var SD: MCSidebar = MCSidebar.getInstance();
+         
          protected function techSidebar_creationCompleteHandler(event:FlexEvent):void
          {
-            EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, prepareList);
+            SD.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, prepareList);
             EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
             prepareList();
          }
@@ -71,9 +75,9 @@
             }
          }
          
-         public function prepareList(e: GScreenChangeEvent = null): void
+         public function prepareList(e: ScreensSwitchEvent = null): void
          {
-            if (!e || e.newScreenName == SidebarScreens.TECH_TREE_BASE)
+            if (!e || SD.currentName == SidebarScreens.TECH_TREE_BASE)
             {
                refreshResearchElements();
             }
@@ -106,7 +110,7 @@
          <base:Scroller top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off">
             <base:AdvancedContainer id="researchContainer" left="0" right="0">
                <base:layout>
-                  <s:VerticalLayout/>
+                  <s:VerticalLayout paddingTop="6" gap="3"/>
                </base:layout>
             </base:AdvancedContainer>
          </base:Scroller>

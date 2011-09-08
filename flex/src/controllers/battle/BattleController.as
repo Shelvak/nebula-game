@@ -20,7 +20,8 @@ package controllers.battle
    
    import config.BattleConfig;
    
-   import controllers.screens.ScreensSwitch;
+   import controllers.navigation.MCTopLevel;
+   import controllers.screens.Screens;
    import controllers.ui.NavigationController;
    
    import flash.events.Event;
@@ -53,8 +54,8 @@ package controllers.battle
    
    import spark.components.NavigatorContent;
    
-   import utils.Objects;
    import utils.MathUtil;
+   import utils.Objects;
    import utils.StringUtil;
    
    
@@ -75,21 +76,9 @@ package controllers.battle
          }
          _battleController = new BattleController(battle, BattleMap(viewport.content));
          
-         var content:NavigatorContent = ScreensSwitch.getInstance().currentScreenContent;
-         if (content.numElements > 0)
-         {
-            ViewportZoomable(content.getElementAt(0)).cleanup();
-         }
-         if (content.numElements > 1)
-         {
-            IMapViewportController(content.getElementAt(1)).cleanup();
-         }
-         content.removeAllElements();
-         content.addElement(viewport);
-         if (viewportCtrl != null)
-         {
-            content.addElement(viewportCtrl);
-         }
+         var TL: MCTopLevel = MCTopLevel.getInstance();
+         TL.destroyScreenMap(Screens.BATTLE);
+         TL.addMapElements(viewport, viewportCtrl);
       }
       
       

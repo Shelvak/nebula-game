@@ -16,6 +16,7 @@ package controllers.galaxies.actions
    import models.MStaticSpaceObjectsAggregator;
    import models.MWreckage;
    import models.ModelsCollection;
+   import models.building.MCBuildingSelectedSidebar;
    import models.cooldown.MCooldownSpace;
    import models.factories.GalaxyFactory;
    import models.factories.UnitFactory;
@@ -24,6 +25,7 @@ package controllers.galaxies.actions
    import models.map.MapType;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
+   import models.technology.MCTechnologySelectedSidebar;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
@@ -157,12 +159,13 @@ package controllers.galaxies.actions
             ML.latestGalaxy.setFOWEntries(fowEntries, units);
          }
          else {
-            ML.selectedBuilding = null;
+            MCBuildingSelectedSidebar.getInstance().selectedBuilding = null;
             ML.selectedFoliage = null;
-            ML.selectedTechnology = null;
+            MCTechnologySelectedSidebar.getInstance().selectedTechnology = null;
          }
-         
+         ML.units.disableAutoUpdate();
          ML.units.addAll(units);
+         ML.units.enableAutoUpdate();
          SQUADS_CTRL.createSquadronsForUnits(units);
          SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
          if (ML.latestGalaxy == null) {

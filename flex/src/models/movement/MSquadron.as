@@ -1,6 +1,7 @@
 package models.movement
 {
    import flash.errors.IllegalOperationError;
+   import flash.sampler.getInvocationCount;
    
    import interfaces.ICleanable;
    
@@ -104,11 +105,18 @@ package models.movement
        */
       public override function set id(value:int) : void {
          if (super.id != value) {
-            units.disableAutoUpdate();
-            for each (var unit:Unit in units.toArray()) {
-               unit.squadronId = value;
+            if (hasUnits)
+            {
+               units.disableAutoUpdate();
+               for each (var unit:Unit in units.toArray()) {
+                  unit.squadronId = value;
+               }
+               units.enableAutoUpdate();
+               if(Unit(units.getItemAt(0)).location.isSSObject)
+               {
+                  ML.latestPlanet.dispatchUnitRefreshEvent();
+               }
             }
-            units.enableAutoUpdate();
             super.id = value;
          }
       }
@@ -281,7 +289,7 @@ package models.movement
       public function get hasHopsRemaining() : Boolean {
          return !hops.isEmpty;
       }
-            
+      
       [Bindable(event="modelIdChange")]
       /**
        * Indicates if a squadron is moving.
@@ -432,14 +440,14 @@ package models.movement
             hop = null;
             // jump between maps: don't need dispatching any events
             if (endHop.location.type != startHop.location.type ||
-                endHop.location.id   != startHop.location.id) {
+               endHop.location.id   != startHop.location.id) {
                while (hop != endHop) {
                   hop = MHop(hops.removeItemAt(0));
                }
                currentHop = hop;
             }
-            
-            // jump in the same map
+               
+               // jump in the same map
             else {
                while (hop != endHop) {
                   hop = MHop(hops.removeItemAt(0));
@@ -451,11 +459,17 @@ package models.movement
          }
          if (hasUnits) {
             var loc:Location = currentHop.location.toLocation();
+            var fromPlanet: Boolean = Unit(units.getItemAt(0)).location.isSSObject;
             units.disableAutoUpdate();
             for each (var unit:Unit in units.toArray()) {
                unit.location = loc;
             }
             units.enableAutoUpdate();
+            // If units navigate from or to planet we need to refresh some getters
+            if ((loc.isSSObject || fromPlanet) && ML.latestPlanet)
+            {
+               ML.latestPlanet.dispatchUnitRefreshEvent();
+            }
          }
          return currentHop;
       }
@@ -517,7 +531,7 @@ package models.movement
       
       public override function toString() : String {
          return "[class: " + className + ", id: " + id + ", owner: " + owner + ", currentHop: " + currentHop +
-                ", playerId: " + playerId + ", player: " + player + "]";
+            ", playerId: " + playerId + ", player: " + player + "]";
       }
       
       
@@ -578,14 +592,14 @@ package models.movement
       /* ############################## */
       /* ### ERROR THROWING HELPERS ### */
       /* ############################## */
-      
+
       private function throwHopOutOfOrderError(hop:MHop) : void {
          throw new ArgumentError(
             "A hop you are trying to add to the route of this squadron is out of order: hops - " +
             hops + ", new hop - " + hop + "."
          );
       }
-
+      
       private function throwLocationAlreadyInRouteError(location:LocationMinimal) : void {
          throw new ArgumentError(
             "A hop defining the same point in space (" + location + ") is already in the route of " +

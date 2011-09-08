@@ -35,29 +35,29 @@
                                   blink="{ML.latestPlanet.hasMovingUnits(Owner.PLAYER, kind)}"
                                   ownerColorString="green"
                                   originalColor="{statusColor(Owner.PLAYER)}"
-                                  visible="{ML.latestPlanet.getActiveUnits(Owner.PLAYER, kind).length > 0}"
-                                  label="{ML.latestPlanet.getActiveUnits(Owner.PLAYER, kind).length}"/>
+                                  visible="{ML.latestPlanet.hasActiveUnits(Owner.PLAYER, kind)}"
+                                  label="{ML.latestPlanet.getActiveUnitsCount(Owner.PLAYER, kind)}"/>
          <unitsscreen:UnitsButton id="btnAllyUnits" name="{MainAreaScreens.UNITS+Owner.ALLY+
                                   (kind==UnitKind.SPACE?UnitKind.SPACE:UnitKind.GROUND)}"
                                   blink="{ML.latestPlanet.hasMovingUnits(Owner.ALLY, kind)}"
                                   ownerColorString="blue"
                                   originalColor="{statusColor(Owner.ALLY)}"
-                                  visible="{ML.latestPlanet.getActiveUnits(Owner.ALLY, kind).length > 0}"
-                                  label="{ML.latestPlanet.getActiveUnits(Owner.ALLY, kind).length}"/>
+                                  visible="{ML.latestPlanet.hasActiveUnits(Owner.ALLY, kind)}"
+                                  label="{ML.latestPlanet.getActiveUnitsCount(Owner.ALLY, kind)}"/>
          <unitsscreen:UnitsButton id="btnEnemyUnits" name="{MainAreaScreens.UNITS+Owner.ENEMY+
                                   (kind==UnitKind.SPACE?UnitKind.SPACE:UnitKind.GROUND)}"
                                   blink="{ML.latestPlanet.hasMovingUnits(Owner.ENEMY, kind)}"
                                   ownerColorString="orange"
                                   originalColor="{statusColor(Owner.ENEMY)}"
-                                  visible="{ML.latestPlanet.getActiveUnits(Owner.ENEMY, kind).length > 0}"
-                                  label="{ML.latestPlanet.getActiveUnits(Owner.ENEMY, kind).length}"/>
+                                  visible="{ML.latestPlanet.hasActiveUnits(Owner.ENEMY, kind)}"
+                                  label="{ML.latestPlanet.getActiveUnitsCount(Owner.ENEMY, kind)}"/>
          <unitsscreen:UnitsButton id="btnNapUnits" name="{MainAreaScreens.UNITS+Owner.NAP+
                                   (kind==UnitKind.SPACE?UnitKind.SPACE:UnitKind.GROUND)}"
                                   blink="{ML.latestPlanet.hasMovingUnits(Owner.NAP, kind)}"
                                   ownerColorString="white"
                                   originalColor="{statusColor(Owner.NAP)}"
-                                  visible="{ML.latestPlanet.getActiveUnits(Owner.NAP, kind).length > 0}"
-                                  label="{ML.latestPlanet.getActiveUnits(Owner.NAP, kind).length}"/>
+                                  visible="{ML.latestPlanet.hasActiveUnits(Owner.NAP, kind)}"
+                                  label="{ML.latestPlanet.getActiveUnitsCount(Owner.NAP, kind)}"/>
          <base:layout>
             <s:HorizontalLayout gap="7"/>
          </base:layout>

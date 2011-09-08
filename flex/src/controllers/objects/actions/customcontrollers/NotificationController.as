@@ -1,7 +1,8 @@
 package controllers.objects.actions.customcontrollers
 {
+   import controllers.navigation.MCMainArea;
+   import controllers.navigation.Navigation;
    import controllers.screens.MainAreaScreens;
-   import controllers.screens.MainAreaScreensSwitch;
    
    import flash.external.ExternalInterface;
    
@@ -19,12 +20,13 @@ package controllers.objects.actions.customcontrollers
          super();
       }
       
+      private var MA: MCMainArea = MCMainArea.getInstance();
       
       public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
          var notification:Notification = BaseModel.createModel(Notification, object);
          notification.isNew = true;
          ML.notifications.addItem(notification);
-         if (MainAreaScreensSwitch.getInstance().currentScreenName != MainAreaScreens.NOTIFICATIONS) {
+         if (MA.currentName != MainAreaScreens.NOTIFICATIONS) {
             if (ExternalInterface.available)
                ExternalInterface.call("setUnreadNotifications", ML.notifications.unreadNotifsTotal);
             ML.notificationAlerts.addItem(notification);

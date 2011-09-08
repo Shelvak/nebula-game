@@ -14,6 +14,9 @@ package models.parts
    import models.resource.ResourcesAmount;
    import models.solarsystem.MSSObject;
    
+   import mx.events.PropertyChangeEvent;
+   import mx.events.PropertyChangeEventKind;
+   
    import utils.DateUtil;
    import utils.StringUtil;
    
@@ -468,6 +471,8 @@ package models.parts
          {
             _parent.dispatchEvent(new UpgradeEvent(UpgradeEvent.LEVEL_CHANGE));
          }
+         _parent.dispatchEvent(new PropertyChangeEvent(PropertyChangeEvent.PROPERTY_CHANGE, 
+            false, false, PropertyChangeEventKind.UPDATE, 'level'));
       }
       
       private var suppressUpgradablePropChangeEvent:Boolean = false;

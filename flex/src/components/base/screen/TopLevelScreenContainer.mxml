@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<screen:ScreenContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                        xmlns:s="library://ns.adobe.com/flex/spark" 
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        width="100%" height="100%" 
+                        xmlns:screen="components.base.screen.*">
+   <fx:Metadata>
+      /**
+      * Dispatched when data has been loaded successfully or when an error occured.
+      */
+      [Event (name="localeBundlesLoaded", type="models.events.LocaleEvent")]
+   </fx:Metadata>
+   <fx:Script>
+      <![CDATA[
+         import components.base.viewport.ViewportZoomable;
+         import components.map.controllers.IMapViewportController;
+         import components.screens.LoadingScreen;
+         import components.screens.MainScreen;
+         
+         import controllers.navigation.MCTopLevel;
+         import controllers.screens.Screens;
+         import controllers.ui.NavigationController;
+         
+         import models.events.LocaleEvent;
+         import models.events.ScreensSwitchEvent;
+         
+         private var created: Boolean = false;
+         
+         private var NC: NavigationController = NavigationController.getInstance();
+         
+         private function addMapElements(e: ScreensSwitchEvent): void
+         {
+            if (TL.currentName == screenName)
+            {
+               addElement(TL.currentMapViewport);
+               if (TL.currentMapController != null)
+               {
+                  addElement(TL.currentMapController);
+               }
+               callLater(
+                  ViewportZoomable(TL.currentMapViewport).invalidateDisplayList);
+            }
+         }
+         
+         private function destroyMapElements(e: ScreensSwitchEvent): void
+         {
+            if (screenName == e.screenName)
+            {
+               if (numElements > 1)
+               {
+                  IMapViewportController(getElementAt(1)).cleanup();
+               }
+               if (numElements > 0)
+               {
+                  ViewportZoomable(getElementAt(0)).cleanup();
+               }
+               removeAllElements();
+            }
+         }
+         
+         protected override function addEventListeners():void
+         {
+            TL.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, createContent);
+         }
+         
+         private function createContent(e: ScreensSwitchEvent): void
+         {
+            if (TL.currentName != screenName)
+            {
+               this.visible = false;
+               return;
+            }
+            else
+            {
+               this.visible = true;
+            }
+            if (!created)
+            {
+               created = true;
+               switch (screenName)
+               {
+                  case Screens.BATTLE:
+                     TL.addEventListener(ScreensSwitchEvent.MAP_ELEMENTS_ADDED, addMapElements);
+                     TL.addEventListener(ScreensSwitchEvent.DESTROY_MAP_ELEMENTS, destroyMapElements);
+                     break;
+                  case Screens.LOADING:
+                     var lScreen: LoadingScreen = new LoadingScreen();
+                     lScreen.addEventListener(LocaleEvent.BUNDLES_LOADED, dispatchBundlesLoadedEvent);
+                     addElement(lScreen);
+                     break;
+                  case Screens.MAIN:
+                     addElement(new MainScreen());
+                     break;
+               }
+            }
+         }
+         
+         [Bindable]
+         private var TL: MCTopLevel = MCTopLevel.getInstance();
+         
+         private function dispatchBundlesLoadedEvent(e: LocaleEvent): void
+         {
+            if (hasEventListener(LocaleEvent.BUNDLES_LOADED))
+            {
+               dispatchEvent(new LocaleEvent(LocaleEvent.BUNDLES_LOADED));
+            }
+         }
+         
+      ]]>
+   </fx:Script>
+</screen:ScreenContainer>

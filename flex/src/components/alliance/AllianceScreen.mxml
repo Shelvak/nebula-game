@@ -6,7 +6,8 @@
          xmlns:alliance="components.alliance.*"
          xmlns:base="components.base.*"
          xmlns:screens="components.screens.*"
-         creationComplete="this_creationCompleteHandler(event)">
+         creationComplete="this_creationCompleteHandler(event)"
+         width="100%" height="100%">
    <fx:Binding source="ML.player.allianceCooldown.occuresIn" destination="leftTime"/>
    <fx:Script>
       <![CDATA[
@@ -248,7 +249,7 @@
                   <s:layout>
                      <s:VerticalLayout gap="0" horizontalAlign="contentJustify"/>
                   </s:layout>
-                  <alliance:MembersRatingsHeader id="header" 
+                  <alliance:MembersRatingsHeader id="header"
                                                  listSort="model.header_ratingsSortHandler(event)"/>
                   <s:DataGroup dataProvider="{model.alliance.players}"
                                itemRenderer="components.alliance.IRMembersRatingsRow">

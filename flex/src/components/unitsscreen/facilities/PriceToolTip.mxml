@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<!-- tooltips/ToolTipComponents/PanelToolTip.mxml -->
+<s:Group 
+   xmlns:fx="http://ns.adobe.com/mxml/2009"    
+   xmlns:mx="library://ns.adobe.com/flex/mx"    
+   xmlns:base="components.base.*"  
+   xmlns:s="library://ns.adobe.com/flex/spark"
+   implements="mx.core.IToolTip">
+   <fx:Script>
+      <![CDATA[
+         import models.resource.ResourceType;
+         
+         import utils.locale.Localizer;
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+			
+			
+         [Bindable]
+         public var metalCost: String;
+         
+         [Bindable]
+         public var energyCost: String;
+         
+         [Bindable]
+         public var zetiumCost: String;
+         
+         [Bindable]
+         public var populationCost: String;
+         
+         [Bindable]
+         public var timeCost: String;
+         
+         [Bindable]
+         public var qMetalCost: String;
+         
+         [Bindable]
+         public var qEnergyCost: String;
+			
+         [Bindable]
+         public var qZetiumCost: String;
+         
+         [Bindable]
+         public var qPopulationCost: String;
+         
+         [Bindable]
+         public var qTimeCost: String;
+         
+         
+         public function get text():String { 
+            return ""; 
+         } 
+         public function set text(value:String):void {
+         }
+         
+         
+         private function getImg(name:String) : BitmapData
+         {
+            return ImagePreloader.getInstance().getImage
+               (AssetNames.UNITS_SCREEN_IMAGE_FOLDER + "hint_" + name);
+         }
+		]]>
+	</fx:Script>
+   <s:Rect left="1" right="1" top="2" bottom="2" alpha="0.75">
+      <s:fill>
+         <s:SolidColor color="#000000"/>
+      </s:fill>
+   </s:Rect>
+   <s:Group left="0" right="0" top="0" bottom="0">
+      <s:layout>
+         <s:VerticalLayout gap="0" horizontalAlign="justify"/>
+      </s:layout>
+      <s:Group>
+         <s:layout><s:HorizontalLayout gap="0" verticalAlign="top"/></s:layout>
+         <s:BitmapImage source="{getImg('top_left')}"/>
+         <s:BitmapImage source="{getImg('top_center')}" width="100%" fillMode="repeat"/>
+         <s:BitmapImage source="{getImg('top_right')}"/>
+      </s:Group>
+      <s:Group height="100%">
+         <s:BitmapImage source="{getImg('center_left')}" top="0" bottom="0" left="0" fillMode="repeat"/>
+         <s:BitmapImage source="{getImg('center_right')}" top="0" bottom="0" right="0" fillMode="repeat"/>
+      </s:Group>
+      <s:Group>
+         <s:layout><s:HorizontalLayout gap="0" verticalAlign="bottom"/></s:layout>
+         <s:BitmapImage source="{getImg('bottom_left')}"/>
+         <s:BitmapImage source="{getImg('bottom_center')}" width="100%" fillMode="repeat"/>
+         <s:BitmapImage source="{getImg('bottom_right')}"/>
+      </s:Group>
+   </s:Group>
+   <s:Group left="2" right="2" top="4" bottom="4">
+      <s:Group>
+         <s:Label text="{Localizer.string('InfoScreen', 'forOne')}"/>
+         <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCost}"/>
+         <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyCost}"/>
+         <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCost}"/>
+         <base:ImageAndLabel type="{ResourceType.POPULATION}" textToDisplay="{populationCost}"/>
+         <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{timeCost}"/>
+         <s:layout>
+            <s:VerticalLayout paddingLeft="6" paddingTop="6" paddingBottom="6" paddingRight="6" gap="6"/>
+         </s:layout>
+      </s:Group>
+      <s:Group>
+         <s:Label text="{Localizer.string('InfoScreen', 'total')}"/>
+         <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{qMetalCost}"/>
+         <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{qEnergyCost}"/>
+         <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qZetiumCost}"/>
+         <base:ImageAndLabel type="{ResourceType.POPULATION}" textToDisplay="{qPopulationCost}"/>
+         <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{qTimeCost}"/>
+         <s:layout>
+            <s:VerticalLayout paddingLeft="6" paddingTop="6" paddingBottom="6" paddingRight="6" gap="6"/>
+         </s:layout>
+      </s:Group>
+      <s:layout>
+         <s:HorizontalLayout/>
+      </s:layout>
+   </s:Group>
+</s:Group>

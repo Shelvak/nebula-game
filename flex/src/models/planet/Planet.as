@@ -95,8 +95,6 @@ package models.planet
       {
          _ssObject = ssObject;
          super();
-         units.addEventListener(CollectionEvent.COLLECTION_CHANGE,
-            dispatchUnitRefreshEvent, false, 0, true);
          _zIndexCalculator = new ZIndexCalculator(this);
          _folliagesAnimator = new PlanetFolliagesAnimator();
          initMatrices();
@@ -720,8 +718,8 @@ package models.planet
        */
       public function get exploredFoliage() : BlockingFolliage {
          if (_ssObject.explorationEndsAt != null &&
-             _ssObject.explorationX >= 0 &&
-             _ssObject.explorationY >= 0)
+            _ssObject.explorationX >= 0 &&
+            _ssObject.explorationY >= 0)
             return BlockingFolliage(getObject(_ssObject.explorationX, _ssObject.explorationY));
          return null;
       }
@@ -753,31 +751,44 @@ package models.planet
       
       
       [Bindable(event="unitRefresh")]
-      public function get hasActiveUnits(): Boolean
+      public function hasActiveUnits(owner: int = -1, kind: String = null): Boolean
       {
-         return hasActiveGroundUnits || hasActiveSpaceUnits;
+         if (kind == UnitKind.SPACE)
+         {
+            return hasActiveSpaceUnits(owner);
+         }
+         else if (kind == UnitKind.GROUND)
+         {
+            return hasActiveGroundUnits(owner);
+         }
+         else
+         {
+            return hasActiveGroundUnits(owner) || hasActiveSpaceUnits(owner);
+         }
       }
       
       
       [Bindable(event="unitRefresh")]
-      public function get hasActiveGroundUnits(): Boolean
+      public function hasActiveGroundUnits(owner: int = -1): Boolean
       {
          return Collections.findFirst(units,
             function(unit:Unit) : Boolean
             {
-               return unit.level > 0 && unit.kind == UnitKind.GROUND;
+               return unit.level > 0 && unit.kind == UnitKind.GROUND
+               && (owner == -1 || owner == unit.owner);
             }
          ) != null;
       }
       
       
       [Bindable(event="unitRefresh")]
-      public function get hasActiveSpaceUnits(): Boolean
+      public function hasActiveSpaceUnits(owner: int = -1): Boolean
       {
          return Collections.findFirst(units,
             function(unit:Unit) : Boolean
             {
-               return unit.level > 0 && unit.kind == UnitKind.SPACE;
+               return unit.level > 0 && unit.kind == UnitKind.SPACE
+               && (owner == -1 || owner == unit.owner);
             }
          ) != null;
       }
@@ -815,7 +826,12 @@ package models.planet
          });
       }
       
-      [Bindable(event="unitRefresh")]
+      [Bindable (event="unitRefresh")]
+      public function getActiveUnitsCount(owner: int, kind: String): int
+      {
+         return getActiveUnits(owner, kind).length;
+      }
+      
       public function getActiveUnits(owner: int, kind: String = null): ListCollectionView
       {
          // For some reason if i filter this planet units i dont get all CollectionChange events in filtered
@@ -839,33 +855,25 @@ package models.planet
          });
       }
       
-      
-      [Bindable(event="unitRefresh")]
-      public function getActiveGroundUnits(owner: int): ListCollectionView
+      public function getAgressiveGroundUnits(): ListCollectionView
       {
-         return Collections.filter(units, function(unit: Unit): Boolean
+         return Collections.filter(ML.units, function(unit: Unit): Boolean
          {
-            return ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && (unit.owner == owner));
-         });
-      }
-      
-      
-      [Bindable(event="unitRefresh")]
-      public function getActiveSpaceUnits(owner: int): ListCollectionView
-      {
-         return Collections.filter(units, function(unit: Unit): Boolean
-         {
-            return ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && (unit.owner == owner));
-         });
-      }
-      
-      
-      [Bindable(event="unitRefresh")]
-      public function getActiveStorableGroundUnits(owner: int): ListCollectionView
-      {
-         return Collections.filter(units, function(unit: Unit): Boolean
-         {
-            return ((unit.level > 0) && (unit.kind == UnitKind.GROUND) && (unit.volume > 0) && (unit.owner == owner));
+            try
+            {
+               return (unit.level > 0
+                  && definesLocation(unit.location) 
+                  && unit.kind == UnitKind.GROUND 
+                  && unit.owner == Owner.PLAYER 
+                  && unit.hasGuns);
+            }
+            catch (err:Error)
+            {
+               // NPE is thrown when cleanup() method has been called on the instance of a Planet and global
+               // units list is modified. definesLocation() no longer works but the filter function is
+               // called anyway.
+            }
+            return false;
          });
       }
       
@@ -1410,7 +1418,7 @@ package models.planet
       }
       
       
-      public function dispatchUnitRefreshEvent(e: Event = null) : void
+      public function dispatchUnitRefreshEvent() : void
       {
          if (!f_cleanupStarted &&
             !f_cleanupComplete &&

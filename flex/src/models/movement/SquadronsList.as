@@ -5,6 +5,7 @@ package models.movement
    import models.ModelsCollection;
    import models.location.LocationMinimal;
    
+   import mx.collections.ISort;
    import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    
@@ -78,11 +79,10 @@ package models.movement
          throwFilterAndSortNotSupportedError();
       }
       
-      override public function set sort(s:Sort) : void
+      public override function set sort(s:ISort):void
       {
          throwFilterAndSortNotSupportedError();
       }
-      
       
       private function throwFilterAndSortNotSupportedError() : *
       {

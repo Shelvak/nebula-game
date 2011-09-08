@@ -27,10 +27,10 @@
          import controllers.Messenger;
          import controllers.buildings.BuildingsCommand;
          import controllers.constructionqueues.ConstructionQueuesCommand;
+         import controllers.navigation.MCSidebar;
          import controllers.objects.ObjectClass;
          import controllers.planets.PlanetsCommand;
          import controllers.planets.actions.EditActionParams;
-         import controllers.screens.SidebarScreensSwitch;
          import controllers.ui.NavigationController;
          
          import flashx.textLayout.elements.TextFlow;
@@ -44,7 +44,9 @@
          import models.Owner;
          import models.building.Building;
          import models.building.BuildingType;
+         import models.building.MCBuildingSelectedSidebar;
          import models.building.events.BuildingEvent;
+         import models.building.events.BuildingSidebarEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
          import models.parts.Upgradable;
          import models.parts.events.UpgradeEvent;
@@ -52,7 +54,6 @@
          import models.resource.ResourceType;
          import models.resource.ResourcesAmount;
          import models.solarsystem.MSSObject;
-         import models.unit.Unit;
          
          import mx.core.ScrollPolicy;
          import mx.events.DragEvent;
@@ -67,7 +68,6 @@
          import utils.NumberUtil;
          import utils.UrlNavigate;
          import utils.assets.AssetNames;
-         import utils.datastructures.Collections;
          import utils.locale.Localizer;
          
          private static const PRECISION: int = 1;
@@ -92,11 +92,6 @@
          
          [Bindable]
          private var upgradePending: Boolean = false;
-         
-         public function get selectedModel(): Building
-         {
-            return _selectedModel;
-         }
          
          /**
           * how many seconds are left to fulfill resources needs for building
@@ -124,11 +119,16 @@
             resLeftString = getStringFromSeconds(resLeft);
          }
          
+         private var bSidebar: MCBuildingSelectedSidebar = 
+            MCBuildingSelectedSidebar.getInstance();
+         
          protected function creationHandler(e: Event): void
          {
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPriceOrientatedProperties);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshConstructor);
+            bSidebar.addEventListener(BuildingSidebarEvent.SELECTED_CHANGE, refreshBuilding);
             EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
+            refreshBuilding();
          }
          
          [Bindable]
@@ -172,11 +172,11 @@
             }
          }
          
-         public function set selectedModel(value: Building): void
+         private function refreshBuilding(e: BuildingSidebarEvent = null): void
          {
             constructable = null;
             resource = null;
-            if (_selectedModel != value)
+            if (_selectedModel != bSidebar.selectedBuilding)
             {
                if (_selectedModel != null)
                {
@@ -202,7 +202,7 @@
                      }
                   }
                }
-               _selectedModel = value;
+               _selectedModel = bSidebar.selectedBuilding;
                if (_selectedModel != null)
                {
                   _selectedModel.addEventListener(
@@ -244,7 +244,7 @@
             }
             refreshPriceOrientatedProperties();
             refreshConstructor();
-            if (_selectedModel.isGhost)
+            if (_selectedModel != null && _selectedModel.isGhost)
             {
                constructor.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
             }
@@ -262,8 +262,8 @@
          private function refreshCancelProperties(): void
          {
             if (_selectedModel != null &&
-                _selectedModel.upgradePart != null &&
-                _selectedModel.upgradePart.upgradeEndsAt != null) {
+               _selectedModel.upgradePart != null &&
+               _selectedModel.upgradePart.upgradeEndsAt != null) {
                builtPart = _selectedModel.upgradePart.upgradeProgress;
             }
          }
@@ -314,8 +314,7 @@
          
          protected function infoButton_clickHandler(event:MouseEvent):void
          {
-            ML.infoModel = _selectedModel;
-            NavigationController.getInstance().showInfo();
+            NavigationController.getInstance().showInfo(_selectedModel);
          }
          
          
@@ -340,10 +339,8 @@
          
          protected function attack_clickHandler(event:MouseEvent):void
          {
-            NC.showUnits(Collections.filter(ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), function(item: Unit): Boolean
-            {
-               return item.hasGuns;
-            }), ML.latestPlanet.toLocation(), _selectedModel);
+            NC.showUnits(ML.latestPlanet.getAgressiveGroundUnits(), 
+               ML.latestPlanet.toLocation(), _selectedModel);
          }
          
          private function refreshConstructor(e: Event = null): void
@@ -363,10 +360,8 @@
                {
                   constructor = null;
                }
-               if (constructor)
+               if (constructor != null && constructor.constructableType != null)
                {
-                  // TODO: this breaks when constructor.constructableType or constructor.constructableId are null
-                  // user report: http://forum.nebula44.lt/topic/104/klaida-ismete-kai-bandziau-paleisti-statyti-pastata/
                   if (ModelUtil.getModelClass(constructor.constructableType) == ObjectClass.UNIT)
                   {
                      constructable = ML.latestPlanet.getUnitById(constructor.constructableId);
@@ -468,7 +463,7 @@
             var lbl: Label = new Label();
             lbl.minWidth = 300;
             lbl.text = Localizer.string('Popups', 'message.' + 
-            (_selectedModel.upgradePart.level > 0?'cancelUpgrade':'cancelConstructor'));
+               (_selectedModel.upgradePart.level > 0?'cancelUpgrade':'cancelConstructor'));
             popUp.addElement(lbl);
             popUp.title = Localizer.string('Popups', 'title.' +
                (_selectedModel.upgradePart.level > 0?'cancelUpgrade':'cancelConstructor'));
@@ -549,7 +544,7 @@
          
          private function renamePlanet(): void {
             new PlanetsCommand(PlanetsCommand.EDIT, new EditActionParams(ML.latestPlanet, newPlanetName.text))
-               .dispatch();
+            .dispatch();
             newPlanetName.text = "";
          }
          
@@ -606,7 +601,7 @@
          {
             if (ML.player.creds >= Config.getMoveCredits())
             {
-               SidebarScreensSwitch.getInstance().showPrevious();
+               MCSidebar.getInstance().showPrevious();
                new GBuildingEvent(GBuildingEvent.MOVE_INIT, _selectedModel);
             }
             else
@@ -666,6 +661,11 @@
                };
                popUp.show();
             }
+         }
+         
+         private function getLength(text: String): int
+         {
+            return text.length;
          }
          
          private function getString(key: String, params: Array = null): String
@@ -807,9 +807,9 @@
                            
                            <base:AdvancedContainer visible="{_selectedModel.npc}">
                               <s:Label text="{getString('noUnits')}" 
-                                       visible="{ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length == 0}"
+                                       visible="{ML.latestPlanet.getAgressiveGroundUnits().length == 0}"
                                        styleName="unsatisfied" fontSize="16"/>
-                              <s:Button enabled="{ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length != 0}" 
+                              <s:Button enabled="{ML.latestPlanet.getAgressiveGroundUnits().length != 0}" 
                                         horizontalCenter="0" click="attack_clickHandler(event)"
                                         skinClass="components.skins.RedButtonSkin"
                                         label="{getString('attack')}"/>
@@ -869,7 +869,7 @@
                                       visible="{_selectedModel.upgradePart.level == 0 &amp;&amp;  
                                       ML.latestPlanet.getBuildingByConstructable(_selectedModel.id,
                                       ObjectClass.BUILDING) == null}" width="100%"
-                                      paddingTop="6" paddingBottom="6"/>
+                                                                      paddingTop="6" paddingBottom="6"/>
                         <s:Group width="100%">
                            <s:Button right="6" label="{getString('label.cancel')}"
                                      click="cancelUpgrade()"/>
@@ -947,7 +947,7 @@
                      <base:BaseTextInput width="80%" id="newPlanetName" enter="renamePlanet()"
                                          maxChars="{Config.getMaxPlanetNameLength()}"/>
                      <s:Group width="100%">
-                        <s:Button right="6" enabled="{newPlanetName.text.length >= Config.getMinPlanetNameLength()
+                        <s:Button right="6" enabled="{getLength(newPlanetName.text) >= Config.getMinPlanetNameLength()
                                   &amp;&amp; !ML.latestPlanet.pending}"
                                   click="renamePlanet()" 
                                   label="{getString('label.changeName')}"/>

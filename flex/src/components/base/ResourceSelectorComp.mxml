@@ -44,8 +44,20 @@
          [Bindable]
          private var _maxAmmount: Number;
          
-         [Bindable]
-         public var selectedVal: Number = 0;
+         private var _selectedVal: Number = 0;
+         public function set selectedVal(value: Number): void
+         {
+            if (_selectedVal != value)
+            {
+               _selectedVal = value;
+               setValue(value);
+            }
+         }
+         [Bindable (event="selectedResourcesChange")]
+         public function get selectedVal(): Number
+         {
+            return _selectedVal;
+         }
          
          public function setValue(value: Number): void
          {

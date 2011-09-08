@@ -112,9 +112,9 @@
       <!--- All the content goes here -->
       <s:Group id="contentGroup" left="20" right="1" top="13" height="100%">
          <s:Group width="100%" height="{flankLayout.rowCount * 79}">
-            <s:DataGroup id="unitsList" dataProvider="{hostComponent.flankModel.flank}" 
+            <s:DataGroup id="unitsList" dataProvider="{hostComponent.flankModel.flankUnits}" 
                          left="0" right="0"
-                         itemRenderer="components.buildingselectedsidebar.NpcUnitComp">
+                         itemRenderer="components.unitsscreen.IRSimpleUnit">
                <s:layout>
                   <s:TileLayout horizontalGap="3" id="flankLayout" verticalGap="3"
                                 requestedColumnCount="2"/>

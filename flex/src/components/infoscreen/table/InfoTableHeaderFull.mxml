@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         width="100%">
+   <fx:Metadata>
+      [Event (name="listSort", type="models.events.HeaderEvent")]
+   </fx:Metadata>
+   <fx:Script>
+      <![CDATA[
+         import flash.text.engine.FontWeight;
+         
+         import models.events.HeaderEvent;
+         import models.infoscreen.MCInfoScreen;
+         
+         import utils.locale.Localizer;
+         
+         protected function label_rollOverHandler(event:MouseEvent):void
+         {
+            Label(event.currentTarget).setStyle('fontWeight', FontWeight.BOLD);
+         }
+         
+         
+         protected function label_rollOutHandler(event:MouseEvent):void
+         {
+            if (currentSortLabel != event.currentTarget)
+            {
+               Label(event.currentTarget).setStyle('fontWeight', FontWeight.NORMAL);
+            }
+         }
+         
+         private var currentSortLabel: Label;
+         
+         protected function label_clickHandler(event: MouseEvent, key: String):void
+         {
+            if (currentSortLabel && event.currentTarget != currentSortLabel)
+            {
+               currentSortLabel.setStyle('fontWeight', FontWeight.NORMAL);
+            }
+            currentSortLabel = Label(event.currentTarget);
+            dispatchEvent(new HeaderEvent(HeaderEvent.LIST_SORT, key));
+         }
+         
+         public function reset(): void
+         {
+            if (currentSortLabel)
+            {
+               currentSortLabel.setStyle('fontWeight', FontWeight.NORMAL);
+            }
+            currentSortLabel = null;
+         }
+         
+         private function getString(prop: String, params: Array = null): String
+         {
+            return Localizer.string('InfoScreen', prop, params);
+         }
+         
+         [Bindable]
+         private var INFO: MCInfoScreen = MCInfoScreen.getInstance();
+      ]]>
+   </fx:Script>
+   
+   <!-- layer 1: fill -->
+   <s:Rect left="0" right="0" top="0" bottom="0">
+      <s:fill>
+         <s:LinearGradient rotation="90">
+            <s:GradientEntry color="#393939" alpha="1" ratio="0"/>
+            <s:GradientEntry color="#0a0a0a" alpha="1" ratio="1"/>
+         </s:LinearGradient>
+      </s:fill>
+   </s:Rect>
+   
+   <s:Group left="0" right="0" id="row">
+      <s:Label width="{190}" 
+               text="{getString('property')}" textAlign="center"
+               rollOver="label_rollOverHandler(event)" 
+               rollOut="label_rollOutHandler(event)"
+               click="label_clickHandler(event, 'property')"/>
+      <s:Line yFrom="0" yTo="24">
+         <s:stroke>
+            <s:SolidColorStroke color="0xffffff" weight="1"/>
+         </s:stroke>
+      </s:Line>
+      <s:Label width="{(row.width - 196) / 3}" 
+               text="{getString('atLevel', [INFO.model.usefulLevel.toString()])}" 
+               textAlign="center"
+               rollOver="label_rollOverHandler(event)" 
+               rollOut="label_rollOutHandler(event)"
+               click="label_clickHandler(event, 'current')"/>
+      <s:Line yFrom="0" yTo="24">
+         <s:stroke>
+            <s:SolidColorStroke color="0xffffff" weight="1"/>
+         </s:stroke>
+      </s:Line>
+      <s:Label width="{(row.width - 196) / 3}" 
+               text="{getString('atLevel', [INFO.selectedLevel.toString()])}" 
+               textAlign="center"
+               rollOver="label_rollOverHandler(event)" 
+               rollOut="label_rollOutHandler(event)"
+               click="label_clickHandler(event, 'after')"/>
+      <s:Line yFrom="0" yTo="24">
+         <s:stroke>
+            <s:SolidColorStroke color="0xffffff" weight="1"/>
+         </s:stroke>
+      </s:Line>
+      <s:Label width="{(row.width - 196) / 3}" 
+               text="{getString('difference')}" 
+               textAlign="center"
+               rollOver="label_rollOverHandler(event)" 
+               rollOut="label_rollOutHandler(event)"
+               click="label_clickHandler(event, 'diff')"/>
+      <s:layout>
+         <s:HorizontalLayout gap="0" verticalAlign="middle" paddingTop="3" paddingBottom="3"/>
+      </s:layout>
+   </s:Group>
+</s:Group>

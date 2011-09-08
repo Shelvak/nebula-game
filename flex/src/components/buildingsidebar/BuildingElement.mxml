@@ -66,8 +66,7 @@
          {
             e.stopImmediatePropagation();
             var temp: Building = BuildingFactory.createDefault(_data.type);
-            ML.infoModel = temp;
-            NavigationController.getInstance().showInfo();
+            NavigationController.getInstance().showInfo(temp);
          }
          
          public function refreshState(e: Event = null): void

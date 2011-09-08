@@ -6,10 +6,9 @@ package controllers.players.actions
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
    import controllers.galaxies.GalaxiesCommand;
+   import controllers.navigation.MCTopLevel;
    import controllers.screens.MainAreaScreens;
-   import controllers.screens.MainAreaScreensSwitch;
    import controllers.screens.Screens;
-   import controllers.screens.ScreensSwitch;
    import controllers.startup.StartupInfo;
    
    import utils.locale.Localizer;
@@ -45,7 +44,7 @@ package controllers.players.actions
       public override function applyServerAction(cmd:CommunicationCommand) : void {
          if (cmd.parameters["success"]) {
             ML.player.loggedIn = true;
-            ScreensSwitch.getInstance().showScreen(Screens.MAIN);
+            MCTopLevel.getInstance().showScreen(Screens.MAIN);
          }
          else {
             GF.lockApplication = false;

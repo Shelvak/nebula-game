@@ -70,16 +70,6 @@ skins|ProgressBarSkin {
    chrome-color: #00b3d0;
 }
 
-/* DEFAULT DataGrid */
-mx|DataGrid {
-   color : #FFFFFF;
-   alternating-item-colors : #0e0e0e , #141414;
-   border-color : #0e0e0e;
-   roll-over-color : #4f4f4f;
-   selection-color : #2f2f2f;
-   vertical-grid-lines : false;
-}
-
 /* DEFAULT ToolTip */
 
 mx|ToolTip {

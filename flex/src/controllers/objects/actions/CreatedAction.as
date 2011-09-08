@@ -1,5 +1,7 @@
 package controllers.objects.actions
 {
+   import controllers.objects.ObjectClass;
+   
    import globalevents.GObjectEvent;
    
    
@@ -15,9 +17,15 @@ package controllers.objects.actions
                                                         reason:String,
                                                         objects:Array) : void
       {
+         ML.units.disableAutoUpdate();
          for each (var object:Object in objects)
          {
             getCustomController(objectClass).objectCreated(objectSubclass, object, reason);
+         }
+         ML.units.enableAutoUpdate();
+         if (objectClass == ObjectClass.UNIT && ML.latestPlanet != null)
+         {
+            ML.latestPlanet.dispatchUnitRefreshEvent();
          }
       }
    }

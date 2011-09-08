@@ -3,9 +3,9 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:base="components.base.*"
+                    width="100%" height="100%"
                     addedToStage="basecontainer1_addedToStageHandler(event)"
-                    removedFromStage="basecontainer1_removedFromStageHandler(event)"
-                    creationComplete="basecontainer1_creationCompleteHandler(event)">
+                    removedFromStage="basecontainer1_removedFromStageHandler(event)">
    
    <fx:Script>
       <![CDATA[
@@ -16,19 +16,18 @@
          
          import controllers.GlobalFlags;
          import controllers.ui.NavigationController;
-         
-         import globalevents.GHealingScreenEvent;
          import globalevents.GlobalEvent;
          
          import models.building.Building;
          import models.healing.HealPrice;
+         import models.healing.MCHealingScreen;
          import models.resource.ResourceType;
          
          import mx.events.FlexEvent;
          
          import utils.DateUtil;
-         import utils.locale.Localizer;
          import utils.assets.AssetNames;
+         import utils.locale.Localizer;
          
          protected function button1_clickHandler(event:MouseEvent):void
          {
@@ -36,53 +35,12 @@
          }
          
          [Bindable]
-         private var showPending: Boolean = false;
-         
-         private function removePending(e: Event): void
-         {
-            GlobalFlags.getInstance().lockApplication = false;
-         }
-         
-         [Bindable]
-         private var selectedPrice: HealPrice = null;
-         [Bindable]
-         private var location: Building;
-         
-         [Bindable]
-         private var cooldownEndsAt: Number = 0;
-         
-         private function invalidatePanelState(e: GHealingScreenEvent): void
-         {
-            location = e.location;
-            cooldownEndsAt = location.cooldownEndsAt.time;
-            selectedPrice = e.price;
-            loaded = true;
-         }
-         
-         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
-         {
-            EventBroker.subscribe(GHealingScreenEvent.REFRESH_SIDEBAR, invalidatePanelState);
-         }
-         
-         private function selectAll(): void
-         {
-            new GHealingScreenEvent(GHealingScreenEvent.SELECT_ALL);
-         }
-         
-         private function selectNone(): void
-         {
-            new GHealingScreenEvent(GHealingScreenEvent.DESELECT_UNITS);
-         }
+         private var HS: MCHealingScreen = MCHealingScreen.getInstance();
          
          private function heal_clickHandler(e: Event): void
          {
-            GlobalFlags.getInstance().lockApplication = true;
-            EventBroker.subscribe(GHealingScreenEvent.HEAL_APPROVED, removePending);
-            new GHealingScreenEvent(GHealingScreenEvent.HEALING_CONFIRMED);
+            HS.confirmHeal();
          }
-         
-         [Bindable]
-         private var loaded: Boolean = false;
          
          [Bindable]
          private var currentTime: Number;
@@ -108,19 +66,17 @@
    </fx:Script>
    <base:Scroller top="0" left="0" right="0" bottom="0" stepMultiplier="3">
       <s:Group left="0" right="0">
-         <s:Label top="20" text="{Localizer.string('Units','label.pleaseWait')}" fontWeight="bold"
-                  color="#eec500" fontSize="14" horizontalCenter="0" visible="{!loaded}"/>
-         <base:AdvancedContainer left="0" right="0" visible="{loaded}">
+         <base:AdvancedContainer left="0" right="0">
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
                <base:layout>
                   <s:HorizontalLayout gap="10" horizontalAlign="center"/>
                </base:layout>
-               <s:Button label="{Localizer.string ('Units', 'label.all')}" click="selectAll()"/>
-               <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()"/>
+               <s:Button label="{Localizer.string ('Units', 'label.all')}" click="HS.selectAll()"/>
+               <s:Button label="{Localizer.string ('Units', 'label.none')}" click="HS.selectNone()"/>
             </base:Panel>
             
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.noSelection')}"
-                        visible="{selectedPrice == null}">
+                        visible="{HS.price == null}">
                <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'arrow_select_units')}"/>
                <s:Group width="100%">
                   <s:Label text="{Localizer.string('Units', 'label.selectUnits')}" fontSize="20" fontWeight="bold" 
@@ -132,22 +88,22 @@
             </base:Panel>
             
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.healing')}"
-                        visible="{selectedPrice != null}">
+                        visible="{HS.price != null}">
                <base:AdvancedContainer width="100%">
                   <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.willHeal')}"/>
-                  <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{selectedPrice.metal}"/>
-                  <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{selectedPrice.energy}"/>
-                  <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{selectedPrice.zetium}"/>
+                  <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{HS.price.metal}"/>
+                  <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{HS.price.energy}"/>
+                  <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{HS.price.zetium}"/>
                   <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.healCooldown', 
-                           [DateUtil.secondsToHumanString(selectedPrice.cooldown)])}" 
-                           visible="{cooldownEndsAt &lt; currentTime}"/>
+                           [DateUtil.secondsToHumanString(HS.price.cooldown)])}" 
+                           visible="{HS.cooldownEndsAt &lt; currentTime}"/>
                   <s:Group>
-                     <s:Button label="{cooldownEndsAt &lt; currentTime? Localizer.string ('Units', 'label.heal')
-                               :DateUtil.secondsToHumanString((cooldownEndsAt - currentTime)/1000)}"
+                     <s:Button label="{HS.cooldownEndsAt &lt; currentTime? Localizer.string ('Units', 'label.heal')
+                               :DateUtil.secondsToHumanString((HS.cooldownEndsAt - currentTime)/1000)}"
                                click="heal_clickHandler(event)"
                                horizontalCenter="0"
-                               toolTip="{cooldownEndsAt &lt; currentTime?'':Localizer.string ('Units', 'toolTip.healCooldown')}"
-                               enabled="{cooldownEndsAt &lt; currentTime}"
+                               toolTip="{HS.cooldownEndsAt &lt; currentTime?'':Localizer.string ('Units', 'toolTip.healCooldown')}"
+                               enabled="{HS.cooldownEndsAt &lt; currentTime}"
                                skinClass="components.skins.GreenButtonSkin"/>
                   </s:Group>
                   <base:layout>

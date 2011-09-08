@@ -2,6 +2,8 @@ package models
 {
    import models.tile.TerrainType;
    import models.unit.UnitBuildingEntry;
+   
+   import mx.collections.ArrayCollection;
 
    [Bindable]
    public class Reward
@@ -14,10 +16,12 @@ package models
          points = (obj.points == null)? 0 : obj.points;
          scientists = (obj.scientists == null)?0:obj.scientists;
          creds = (obj.creds == null)?0:obj.creds;
+         var tUnits: Array = [];
          for each (var unit: Object in obj.units)
          {
-            units.push(new UnitBuildingEntry('Unit::'+unit.type, unit.count, TerrainType.GRASS, unit.level));
+            tUnits.push(new UnitBuildingEntry('Unit::'+unit.type, unit.count, TerrainType.GRASS, unit.level));
          }
+         units = new ArrayCollection(tUnits);
       }
       
       public var metal: Number = 0;
@@ -26,6 +30,6 @@ package models
       public var points: int = 0;
       public var scientists: int = 0;
       public var creds: int = 0;
-      public var units: Array = [];
+      public var units: ArrayCollection;
    }
 }

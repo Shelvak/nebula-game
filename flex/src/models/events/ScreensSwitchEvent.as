@@ -5,6 +5,41 @@ package models.events
    public class ScreensSwitchEvent extends Event
    {
       /**
+       * Dispatched when main screens container has been created
+       * 
+       * @eventType containerLoaded
+       */
+      public static const CONTAINER_LOADED:String = "containerLoaded";
+      
+      
+      /**
+       * Dispatched when destroying map elements
+       * 
+       * @eventType destroyMapElements
+       */
+      public static const DESTROY_MAP_ELEMENTS:String = "destroyMapElements";
+      
+      /**
+       * Dispatched when switching to new map
+       * 
+       * @eventType mapElementsAdded
+       */
+      public static const MAP_ELEMENTS_ADDED:String = "mapElementsAdded";
+      
+      /**
+       * Dispatched when currentScreen property is about to change
+       * 
+       * @eventType screenChanging
+       */
+      public static const SCREEN_CHANGING:String = "screenChanging";
+      
+      /**
+       * Dispatched when currentScreen property changes
+       * 
+       * @eventType screenChanged
+       */
+      public static const SCREEN_CHANGED:String = "screenChanged";
+      /**
        * Dispatched when screen switching operation has finished creating
        * new screen
        * 
@@ -19,8 +54,11 @@ package models.events
        */      
       public static const SCREEN_CONSTRUCTION_COMPLETED:String = "newScreenConstructionCompleted";
       
-      public function ScreensSwitchEvent(type:String)
+      public var screenName: String;
+      
+      public function ScreensSwitchEvent(type:String, _screenName: String = null)
       {
+         screenName = _screenName;
          super(type, false, false);
       }
    }

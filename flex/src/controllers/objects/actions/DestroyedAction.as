@@ -22,17 +22,20 @@ package controllers.objects.actions
       protected override function applyServerActionImpl(objectClass:String,
                                                         objectSubclass:String,
                                                         reason:String,
-                                                        objects:Array) : void {
-         if (ML.latestPlanet != null)
-            ML.latestPlanet.units.disableAutoUpdate();
+                                                        objects:Array) : void
+      {
+         ML.units.disableAutoUpdate();
          if (objectClass == ObjectClass.UNIT)
             UnitController.getInstance().unitsDestroyed(objects, reason);
          else
             for each (var objectId:int in objects) {
-               getCustomController(objectClass).objectDestroyed(objectSubclass, objectId, reason);
-            }
-         if (ML.latestPlanet != null)
-            ML.latestPlanet.units.enableAutoUpdate();
+            getCustomController(objectClass).objectDestroyed(objectSubclass, objectId, reason);
+         }
+         ML.units.enableAutoUpdate();
+         if (objectClass == ObjectClass.UNIT && ML.latestPlanet)
+         {
+            ML.latestPlanet.dispatchUnitRefreshEvent();
+         }
       }
    }
 }

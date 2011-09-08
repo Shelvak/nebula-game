@@ -13,12 +13,13 @@
          
          import config.Config;
          
+         import controllers.navigation.MCSidebar;
          import controllers.screens.SidebarScreens;
-         import controllers.screens.SidebarScreensSwitch;
          
          import globalevents.GResourcesEvent;
          
          import models.parts.events.UpgradeEvent;
+         import models.technology.MCTechnologySelectedSidebar;
          import models.technology.Technology;
          import models.technology.events.TechnologyEvent;
          
@@ -100,9 +101,9 @@
          
          protected function handleTechClick(e: MouseEvent): void
          {
-            ML.selectedTechnology = modelObj;
-            ML.selectedTechnology.dispatchEvent(new Event(TechnologyEvent.SELECTED_CHANGE));
-            SidebarScreensSwitch.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_INFO);
+            MCTechnologySelectedSidebar.getInstance().selectedTechnology = modelObj;
+            modelObj.dispatchEvent(new Event(TechnologyEvent.SELECTED_CHANGE));
+            MCSidebar.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_INFO);
          }
 
       ]]>

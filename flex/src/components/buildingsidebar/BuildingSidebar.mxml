@@ -5,7 +5,8 @@
                     xmlns:base="components.base.*"
                     xmlns:elements="components.buildingsidebar.*"
                     rollOver="basecontainer1_rollOverHandler(event)"
-                    creationComplete="this_creationCompleteHandler(event)">
+                    creationComplete="this_creationCompleteHandler(event)"
+                    width="100%" height="100%">
    
    <fx:Script>
       <![CDATA[
@@ -18,11 +19,12 @@
          import controllers.GlobalFlags;
          import controllers.buildings.BuildingsCommand;
          import controllers.constructionqueues.ConstructionQueuesCommand;
+         import controllers.navigation.MCMainArea;
+         import controllers.navigation.MCSidebar;
          import controllers.objects.ObjectClass;
          import controllers.planets.PlanetsCommand;
          import controllers.screens.MainAreaScreens;
          import controllers.screens.SidebarScreens;
-         import controllers.screens.SidebarScreensSwitch;
          import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
@@ -31,7 +33,6 @@
          import globalevents.GObjectEvent;
          import globalevents.GPlanetEvent;
          import globalevents.GResourcesEvent;
-         import globalevents.GScreenChangeEvent;
          import globalevents.GSelectConstructableEvent;
          import globalevents.GlobalEvent;
          
@@ -39,8 +40,10 @@
          import models.building.Building;
          import models.building.BuildingBonuses;
          import models.building.BuildingType;
+         import models.building.MCBuildingSelectedSidebar;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
+         import models.events.ScreensSwitchEvent;
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
          import models.planet.PlanetObject;
@@ -281,8 +284,8 @@
             constructable.deselectBuilding();
             if (e.type == GBuildingEvent.MOVE_CANCEL || e.type == GBuildingEvent.MOVE_CONFIRM)
             {
-               ML.selectedBuilding = e.building;
-               SidebarScreensSwitch.getInstance().showScreen(SidebarScreens.BUILDING_SELECTED);
+               MCBuildingSelectedSidebar.getInstance().selectedBuilding = e.building;
+               MCSidebar.getInstance().showScreen(SidebarScreens.BUILDING_SELECTED);
             }
          }
          
@@ -412,9 +415,9 @@
                ResourceType.ZETIUM, {"level": 1});
          }
          
-         private function handleScreenChange(e: GScreenChangeEvent): void
+         private function handleScreenChange(e: ScreensSwitchEvent): void
          {
-            if (e.newScreenName != MainAreaScreens.PLANET)
+            if (MA.currentName != MainAreaScreens.PLANET)
             {
                if (selectedBuilding != null)
                {
@@ -446,9 +449,9 @@
             refreshConstructableStates();
          }
          
-         private function handleSidebarChange(e: GScreenChangeEvent): void
+         private function handleSidebarChange(e: ScreensSwitchEvent): void
          {
-            if (e.newScreenName == SidebarScreens.CONSTRUCTION)
+            if (SD.currentName == SidebarScreens.CONSTRUCTION)
             {
                setConstructables();
             }
@@ -460,6 +463,8 @@
             waitingForApproval = false;
          }
          
+         private var MA: MCMainArea = MCMainArea.getInstance();
+         private var SD: MCSidebar = MCSidebar.getInstance();
          
          protected function this_creationCompleteHandler(event:FlexEvent):void
          {
@@ -470,8 +475,8 @@
             EventBroker.subscribe(GBuildingEvent.MOVE_INIT, constructionMoveHandler);
             EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
-            EventBroker.subscribe(GScreenChangeEvent.SIDEBAR_CHANGE, handleSidebarChange);
-            EventBroker.subscribe(GScreenChangeEvent.MAIN_AREA_CHANGED, handleScreenChange);
+            SD.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, handleSidebarChange);
+            MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, handleScreenChange);
             EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshFacilities);
             EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, prepare);
@@ -531,13 +536,10 @@
             }
             else if (e.building.npc)
             {
-               if (ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER).length != 0)
+               if (ML.latestPlanet.getAgressiveGroundUnits().length != 0)
                {
-                  NC.showUnits(Collections.filter(ML.latestPlanet.getActiveGroundUnits(Owner.PLAYER), 
-                     function(item: Unit): Boolean
-                     {
-                        return item.hasGuns;
-                     }), ML.latestPlanet.toLocation(), e.building);
+                  NC.showUnits(ML.latestPlanet.getAgressiveGroundUnits(), 
+                     ML.latestPlanet.toLocation(), e.building);
                }
                return;
             }
@@ -690,7 +692,8 @@
                        width="100%"/>
          <s:Button label="{Localizer.string ('BuildingSidebar','label.claimPlanet')}"
                    visible="{ML.latestPlanet.ssObject.player == null
-                   &amp;&amp; ML.latestPlanet.getActiveUnits(Owner.ENEMY).length == 0}"
+                   &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY)
+                   &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)}"
                    skinClass="components.skins.GreenButtonSkin"
                    click="button1_clickHandler(event)"/>
       </s:Group>

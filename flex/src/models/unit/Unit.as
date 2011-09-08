@@ -46,6 +46,12 @@ package models.unit
          return resultList;
       }
       
+      public static function getXpMax(type: String, level: int): int
+      {
+         return Math.round(StringUtil.evalFormula(Config.getUnitXpNeeded(type),
+            {'level': level}));
+      }
+      
       public static function getMovementSpeedUpCredsCost(
          percentage: Number, hopCount: int): int
       {
@@ -54,10 +60,10 @@ package models.unit
             Math.min(
                Math.round(
                   StringUtil.evalFormula(Config.getMovementSpeedUpCredsCost(),
-                  {
-                     'percentage': percentage,
-                     'hop_count': hopCount
-                  })
+                     {
+                        'percentage': percentage,
+                        'hop_count': hopCount
+                     })
                ),
                Config.getMovementSpeedUpMaxCredsCost()
             )
@@ -65,13 +71,13 @@ package models.unit
       }
       
       public static function getStoredResourcesPercent(_storage: int, _metal: Number, 
-                                                _energy: Number, _zetium: Number): int
+                                                       _energy: Number, _zetium: Number): int
       {
          return Math.round(100 * Resource.getResourcesVolume(_metal, _energy, _zetium)/_storage);
       }
       
       public static function getStoredUnitsPercent(_storage: int, _stored: int, _metal: Number, 
-                                                       _energy: Number, _zetium: Number): int
+                                                   _energy: Number, _zetium: Number): int
       {
          return Math.round(100 * (_stored - Resource.getResourcesVolume(_metal, _energy, _zetium))/_storage);
       }
@@ -145,7 +151,7 @@ package models.unit
          return Config.getUnitVolume(type);
       }
       
-      
+      [Bindable (event="storedAmountChange")]
       [Optional]
       /**
        * How many volume this unit has stored in
@@ -155,7 +161,20 @@ package models.unit
        * 
        * @default 0
        */
-      public var stored:int = 0;
+      public function set stored(value: int): void
+      {
+         if (_stored != value)
+         {
+            _stored = value;
+            dispatchStoredChangeEvent();
+         }
+      }
+      
+      public function get stored(): int
+      {
+         return _stored;
+      }
+      private var _stored:int = 0;
       
       /**
        * for drawing double progressbar in units screen (storage) 
@@ -231,11 +250,14 @@ package models.unit
          return Config.getUnitProperties(type);
       }
       
-      
+      [Bindable (event="willNotChange")]
       public function get maxLevel(): int
       {
          return Config.getUnitMaxLevel(type);
       }
+      
+      [Optional]
+      public var xp: int;
       
       
       private var _squadronId:int = 0;
@@ -336,15 +358,12 @@ package models.unit
       public static const STANCE_DEFENSIVE: int = 1;
       public static const STANCE_AGGRESSIVE: int = 2;
       
-      
-      public var newStance: int;
       private var _stance: int;
       [Required]
       [Bindable (event="unitStanceChange")]
       public function set stance(value: int): void
       {
          _stance = value;
-         newStance = value;
          dispatchStanceChangeEvent();
          dispatchPropertyUpdateEvent("stance", value);
       }
@@ -395,11 +414,19 @@ package models.unit
          }
       }
       
+      private function dispatchStoredChangeEvent() : void
+      {
+         if (hasEventListener(UnitEvent.STORED_CHANGE))
+         {
+            dispatchEvent(new UnitEvent(UnitEvent.STORED_CHANGE));
+         }
+      }
+      
       
       public override function toString() : String
       {
          return "[class: " + className + ", id: " + id + ", type: " + type + ", squadronId: " + squadronId +
-                ", owner: " + owner + ", palyerId: " + playerId + ", location: " + location + "]";
+            ", owner: " + owner + ", palyerId: " + playerId + ", location: " + location + "]";
       }
       
    }

@@ -4,358 +4,45 @@
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*" 
                     xmlns:location="components.location.*"
-                    creationComplete="basecontainer1_creationCompleteHandler(event)" 
-                    addedToStage="basecontainer1_addedToStageHandler(event)"
-                    removedFromStage="basecontainer1_removedFromStageHandler(event)"
-                    xmlns:unitsscreen="components.unitsscreen.*" xmlns:healing="components.healing.*">
+                    width="100%" height="100%"
+                    xmlns:unitsscreen="components.unitsscreen.*">
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
+         import models.healing.MCHealingScreen;
          
-         import controllers.Messenger;
-         import controllers.ui.NavigationController;
-         import controllers.units.UnitsCommand;
-         
-         import globalevents.GHealingScreenEvent;
-         import globalevents.GResourcesEvent;
-         import globalevents.GUnitsScreenEvent;
-         
-         import models.ModelsCollection;
-         import models.Owner;
-         import models.building.Building;
-         import models.healing.HealPrice;
-         import models.healing.HealingSelection;
-         import models.healing.MHealFlank;
-         import models.unit.Unit;
-         
-         import mx.collections.ArrayCollection;
-         import mx.collections.ListCollectionView;
-         import mx.collections.Sort;
-         import mx.collections.SortField;
-         import mx.events.CollectionEvent;
-         import mx.events.CollectionEventKind;
-         import mx.events.FlexEvent;
-         
-         import utils.datastructures.Collections;
          import utils.locale.Localizer;
          
          [Bindable]
-         public var location: Building = null;
-         
-         [Bindable]
-         private var flanks: ArrayCollection = new ArrayCollection();
-         [Bindable]
-         private var napFlanks: ArrayCollection = new ArrayCollection();
-         [Bindable]
-         private var allyFlanks: ArrayCollection = new ArrayCollection();
-         
-         private var oldProvider: ListCollectionView;
-         
-         private static const MAX_FLANKS: int = 2;
-         
-         private function get currentFlanks(): ArrayCollection
-         {
-            if (selfButton.selected)
-            {
-               return flanks;
-            }
-            else if (napButton.selected)
-            {
-               return napFlanks;
-            }
-            else
-            {
-               return allyFlanks;
-            }
-            
-         }
-         
-         private function get selectionIds(): Array
-         {
-            var _selection: Array = [];
-            for each (var flank: MHealFlank in currentFlanks)
-            {
-               for each (var unit: Unit in flank.selection)
-               {
-                  _selection.push(unit.id);
-               }
-            }
-            return _selection;
-         }
-         
-         private function setData(e: GHealingScreenEvent): void
-         {
-            location = null;
-            location = e.location;
-            selectionClass.clear();
-            selectionClass.center = location;
-            if (oldProvider != null)
-            {
-               oldProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
-            }
-            oldProvider = Collections.filter(e.unitsCollection, function (item: Unit): Boolean
-            {
-               return item.hp < item.hpMax;
-            });
-            sortByHp(oldProvider);
-            
-            oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
-            
-            buildFlanks();
-            
-            deselectAllButtons();
-            if (getUnitCount(flanks) > 0)
-            {
-               selfButton.selected = true;
-            }
-            else if (getUnitCount(allyFlanks) > 0)
-            {
-               napButton.selected = true;
-            }
-            else if (getUnitCount(napFlanks) > 0)
-            {
-               allyButton.selected = true;
-            }
-            else
-            {
-               selfButton.selected = true;
-            }
-            selectionClass.flanks = currentFlanks;
-         }
-         
-         
-         
-         private function confirmHeal(e: GHealingScreenEvent): void
-         {
-            var _selectionIds: Array = selectionIds;
-            if (_selectionIds.length > 0)
-            {
-               new UnitsCommand(
-                  UnitsCommand.HEAL,
-                  {
-                     buildingId: location.id,
-                     unitIds: _selectionIds
-                  }).dispatch();
-            }
-            new GHealingScreenEvent(GHealingScreenEvent.DESELECT_UNITS);
-            refreshSidebarState();
-         }
-         
-         private var selectionClass: HealingSelection = new HealingSelection();
-         
-         private function cleanFlanks(): void
-         {
-            flanks.removeAll();
-            allyFlanks.removeAll();
-            napFlanks.removeAll();
-         }
-         
-         private function buildFlanks(): void
-         {
-            cleanFlanks();
-            var tempSelfObj: Object = {};
-            var tempAllyObj: Object = {};
-            var tempNapObj: Object = {};
-            for each (var unit: Unit in oldProvider)
-            {
-               var tempObj: Object = unit.owner == Owner.PLAYER?tempSelfObj
-                  :(unit.owner == Owner.ALLY?tempAllyObj:tempNapObj);
-               if (tempObj[unit.flank] == null)
-               {
-                  tempObj[unit.flank] = new Array();
-               }
-               tempObj[unit.flank].push(unit);
-            }
-            for (var key: int = 0; key < MAX_FLANKS; key++)
-            {
-               flanks.addItem(new MHealFlank(new ModelsCollection(tempSelfObj[key]), key+1,
-                  Owner.PLAYER, selectionClass));
-               napFlanks.addItem(new MHealFlank(new ModelsCollection(tempNapObj[key]), key+1,
-                  Owner.NAP, selectionClass));
-               allyFlanks.addItem(new MHealFlank(new ModelsCollection(tempAllyObj[key]), key+1,
-                  Owner.ALLY, selectionClass));
-            }
-            dispatchUnitsChangeEvent();
-            refreshSidebarState ();
-         }
-         
-         private function sortByHp(list: ListCollectionView): void
-         {
-            list.sort = new Sort();
-            list.sort.fields = [new SortField('type'), 
-               new SortField('hp', false, true, true), 
-               new SortField('id', false, false, true)];
-            list.refresh();
-         }
-         
-         private function refreshList(e: CollectionEvent): void
-         {
-            if (e.kind == CollectionEventKind.ADD)
-            {
-               if (e.items.length != 0)
-               {
-                  for each (var unitToAdd: Unit in e.items)
-                  {
-                     var cFlanks: ArrayCollection = 
-                        unitToAdd.owner == Owner.PLAYER? flanks
-                        : (unitToAdd.owner == Owner.ALLY?allyFlanks:napFlanks);
-                     for each (var flank: MHealFlank in cFlanks)
-                     {
-                        if (flank.nr == (unitToAdd.flank+1))
-                        {
-                           flank.flank.addItem(unitToAdd);
-                        }
-                     }
-                  }
-                  refreshSidebarState();
-               }
-            }
-            else if (e.kind == CollectionEventKind.REMOVE)
-            {
-               if (e.items.length != 0)
-               {
-                  new GUnitsScreenEvent(GUnitsScreenEvent.DESTROY_UNIT, e.items);
-                  refreshSidebarState();
-               }
-            }
-            dispatchUnitsChangeEvent();
-         }
-         
-         //private var selectionClass: 
-         
-         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
-         {
-            EventBroker.subscribe(GHealingScreenEvent.OPEN_SCREEN, setData);
-            EventBroker.subscribe(GHealingScreenEvent.HEALING_CONFIRMED, confirmHeal);
-            EventBroker.subscribe(GHealingScreenEvent.SELECT_ALL, selectAllReq);
-            NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
-         }
-         
-         private function selectAllReq(e: GHealingScreenEvent): void
-         {
-            if (!selectionClass.selectAll())
-            {
-               Messenger.show(Localizer.string('Units', 'message.noResources'), Messenger.MEDIUM);
-            }
-         }
-         
-         private function refreshMaxHealing(e: GResourcesEvent): void
-         {
-            selectionClass.checkIfNotNegative();
-         }
-         
-         /**
-          * returns HealPrice object with price for all selected units
-          * or null if there is no selection
-          **/
-         private function get price(): HealPrice
-         {
-            var _selection: Array = selection;
-            if (_selection.length == 0 || !location || !location.upgradePart)
-            {
-               return null;
-            }
-            return HealPrice.calculateHealingPrice(_selection, location.upgradePart.level, location.type);
-         }
-         
-         private function get selection(): Array
-         {
-            var _selection: Array = [];
-            for each (var flank: MHealFlank in currentFlanks)
-            {
-               for each (var unit: Unit in flank.selection)
-               {
-                  _selection.push(unit);
-               }
-            }
-            return _selection;
-         }
-         
-         private function refreshSidebarState(e: GUnitsScreenEvent = null): void
-         {
-            var selectedPrice: HealPrice = price;
-            selectionClass.selectedPrice = selectedPrice;
-            new GHealingScreenEvent(GHealingScreenEvent.REFRESH_SIDEBAR, {
-               'location': location,
-               'price': selectedPrice
-            });
-         }
-         
-         
-         
-         protected function basecontainer1_addedToStageHandler(event:Event):void
-         {
-            EventBroker.subscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
-            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshMaxHealing);
-         }
-         
-         
-         protected function basecontainer1_removedFromStageHandler(event:Event):void
-         {
-            EventBroker.unsubscribe(GUnitsScreenEvent.SELECTION_PRECHANGE, refreshSidebarState);
-            EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshMaxHealing);
-         }
-         
-         private function deselectAllButtons(): void
-         {
-            selfButton.selected = false;
-            napButton.selected = false;
-            allyButton.selected = false;
-         }
-         
-         
-         protected function unitsButton_clickHandler(event:MouseEvent):void
-         {
-            deselectAllButtons();
-            ToggleButton(event.currentTarget).selected = true;
-            selectionClass.flanks = currentFlanks;
-            refreshSidebarState();
-         }
-         
-         [Bindable (event = 'unitsChange')]
-         private function getUnitCount(_flanks: ArrayCollection): int
-         {
-            var count: int = 0;
-            if (_flanks)
-            {
-               for each (var flank: MHealFlank in _flanks)
-               count += flank.flank.length;
-            }
-            return count;
-         }
-         
-         private function dispatchUnitsChangeEvent(): void
-         {
-            dispatchEvent(new Event('unitsChange'));
-         }
-         
+         private var HS: MCHealingScreen = MCHealingScreen.getInstance();
       ]]>
    </fx:Script>
    <base:layout>
       <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6" paddingRight="6"/>
    </base:layout>
-   <!--s:Label text="{Localizer.string('Units', 'label.currentUnits')}" fontSize="26" color="#3bc133"/-->
    <s:Group width="100%">
       <s:Label text="{Localizer.string('Units', 'label.location')}" styleName="h3"/>
-      <location:MiniLocationComp id="locComp" location="{location}"/>
+      <location:MiniLocationComp id="locComp" location="{HS.location}"/>
       <s:layout>
          <s:VerticalLayout/>
       </s:layout>
    </s:Group>
    <base:AdvancedContainer width="100%">
-      <s:ToggleButton id="selfButton" click="unitsButton_clickHandler(event)"
-                      label="{Localizer.string('Units', 'kind.self',[getUnitCount(flanks)])}"/>
-      <s:ToggleButton id="allyButton" click="unitsButton_clickHandler(event)"
-                      label="{Localizer.string('Units', 'kind.ally',[getUnitCount(allyFlanks)])}"/>
-      <s:ToggleButton id="napButton" click="unitsButton_clickHandler(event)"
-                      label="{Localizer.string('Units', 'kind.nap', [getUnitCount(napFlanks)])}"/>
+      <s:ToggleButton name="self" click="HS.unitsButton_clickHandler(event)"
+                      selected="{HS.selfSelected}"
+                      label="{Localizer.string('Units', 'kind.self',[HS.getUnitCount(HS.selfFlanks)])}"/>
+      <s:ToggleButton name="ally" click="HS.unitsButton_clickHandler(event)"
+                      selected="{HS.allySelected}"
+                      label="{Localizer.string('Units', 'kind.ally',[HS.getUnitCount(HS.allyFlanks)])}"/>
+      <s:ToggleButton name="nap" click="HS.unitsButton_clickHandler(event)"
+                      selected="{HS.napSelected}"
+                      label="{Localizer.string('Units', 'kind.nap', [HS.getUnitCount(HS.napFlanks)])}"/>
       <base:layout>
          <s:HorizontalLayout gap="1"/>
       </base:layout>
    </base:AdvancedContainer>
    
    <s:Group width="100%" height="100%">
-      <s:DataGroup id="selfUnitsList" dataProvider="{flanks}" visible="{selfButton.selected}" width="100%" height="100%"> 
+      <s:DataGroup id="selfUnitsList" dataProvider="{HS.selfFlanks}" visible="{HS.selfSelected}" width="100%" height="100%"> 
          <s:itemRenderer>
             <fx:Component>
                <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
@@ -364,7 +51,7 @@
                         import models.unit.Unit;
                      ]]>
                   </fx:Script>
-                  <healing:HealingFlank flankModel="{data}" height="100%" width="100%"/>
+                  <unitsscreen:SelectableFlank flankModel="{data}" height="100%" width="100%"/>
                </s:ItemRenderer>
             </fx:Component>
          </s:itemRenderer>
@@ -373,7 +60,7 @@
          </s:layout>
       </s:DataGroup>
       
-      <s:DataGroup id="napUnitsList" dataProvider="{napFlanks}" visible="{napButton.selected}" width="100%" height="100%"> 
+      <s:DataGroup id="napUnitsList" dataProvider="{HS.napFlanks}" visible="{HS.napSelected}" width="100%" height="100%"> 
          <s:itemRenderer>
             <fx:Component>
                <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
@@ -382,7 +69,7 @@
                         import models.unit.Unit;
                      ]]>
                   </fx:Script>
-                  <healing:HealingFlank flankModel="{data}" height="100%" width="100%"/>
+                  <unitsscreen:SelectableFlank flankModel="{data}" height="100%" width="100%"/>
                </s:ItemRenderer>
             </fx:Component>
          </s:itemRenderer>
@@ -391,7 +78,7 @@
          </s:layout>
       </s:DataGroup>
       
-      <s:DataGroup id="allyUnitsList" dataProvider="{allyFlanks}" visible="{allyButton.selected}" width="100%" height="100%"> 
+      <s:DataGroup id="allyUnitsList" dataProvider="{HS.allyFlanks}" visible="{HS.allySelected}" width="100%" height="100%"> 
          <s:itemRenderer>
             <fx:Component>
                <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
@@ -400,7 +87,7 @@
                         import models.unit.Unit;
                      ]]>
                   </fx:Script>
-                  <healing:HealingFlank flankModel="{data}" height="100%" width="100%"/>
+                  <unitsscreen:SelectableFlank flankModel="{data}" height="100%" width="100%"/>
                </s:ItemRenderer>
             </fx:Component>
          </s:itemRenderer>
