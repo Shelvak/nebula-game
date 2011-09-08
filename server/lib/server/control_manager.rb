@@ -310,7 +310,7 @@ class ControlManager
 
   def only_in_production(message)
     LOGGER.block(message, :server_name => TAG) do
-      if ENV['environment'] == 'production'
+      if App.in_production?
         yield
       else
         LOGGER.info("Not in production, doing nothing.", TAG)

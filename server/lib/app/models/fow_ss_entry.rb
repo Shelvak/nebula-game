@@ -11,10 +11,10 @@ class FowSsEntry < ActiveRecord::Base
   include Parts::FowEntry
 
   custom_serialize :alliance_planet_player_ids, :alliance_ship_player_ids,
-    :serialize => Proc.new { |value|
+    :serialize => lambda { |value|
       value.blank? ? nil : value.join(",")
     },
-    :unserialize => Proc.new { |value|
+    :unserialize => lambda { |value|
       value.nil? ? [] : value.split(",").map(&:to_i)
     }
 
@@ -59,38 +59,34 @@ class FowSsEntry < ActiveRecord::Base
       LOGGER.block("Recalculating metadata for #{solar_system_id}",
         :level => :debug) do
         # Select data we need
-        planet_player_ids = connection.select_values(
-          "SELECT DISTINCT(player_id) FROM `#{
-            SsObject.table_name}` WHERE #{
-            sanitize_sql_hash_for_conditions({
-              :solar_system_id => solar_system_id
-            }, SsObject.table_name)} AND player_id IS NOT NULL"
-        ).map(&:to_i)
-        unit_player_ids = connection.select_values(
-          "SELECT DISTINCT(player_id) FROM `#{
-            Unit.table_name}` WHERE #{
-            sanitize_sql_hash_for_conditions({
-              :location_type => Location::SOLAR_SYSTEM,
-              :location_id => solar_system_id
-            }, Unit.table_name)} AND player_id IS NOT NULL"
-        ).map(&:to_i)
-        planet_alliance_ids = connection.select_values(
-          "SELECT DISTINCT(alliance_id) FROM `#{Player.table_name}` WHERE #{
-            sanitize_sql_hash_for_conditions({
-              :id => planet_player_ids
-            }, Player.table_name)}"
-        ).map(&:to_i)
-        unit_alliance_ids = connection.select_values(
-          "SELECT DISTINCT(alliance_id) FROM `#{Player.table_name}` WHERE #{
-            sanitize_sql_hash_for_conditions({
-              :id => unit_player_ids
-            }, Player.table_name)}"
-        ).map(&:to_i)
+        planet_player_ids = SsObject.
+          select("DISTINCT(player_id)").
+          where(
+            "solar_system_id=? AND player_id IS NOT NULL", 
+            solar_system_id
+          ).
+          c_select_values.map(&:to_i)
+        unit_player_ids = Unit.
+          select("DISTINCT(player_id)").
+          where(
+            "location_type=? AND location_id=? AND player_id IS NOT NULL",
+            Location::SOLAR_SYSTEM, solar_system_id
+          ).
+          c_select_values.map(&:to_i)
+        planet_alliance_ids = Player.
+          select("DISTINCT(alliance_id)").
+          where(:id => planet_player_ids).
+          c_select_values.map(&:to_i)
+        unit_alliance_ids = Player.
+          select("DISTINCT(alliance_id)").
+          where(:id => unit_player_ids).
+          c_select_values.map(&:to_i)
 
         changed = []
 
         # Find all entries that relate to that solar system.
-        self.where(:solar_system_id => solar_system_id).each do |entry|
+        entries = self.where(:solar_system_id => solar_system_id)
+        entries.each do |entry|
           # It's a Player entry
           if entry.player_id
             # Resolve planets
@@ -112,12 +108,10 @@ class FowSsEntry < ActiveRecord::Base
 
           # It's an Alliance entry
           else
-            alliance_player_ids = connection.select_values(
-              "SELECT id FROM `#{Player.table_name}` WHERE #{
-              sanitize_sql_hash_for_conditions({
-                :alliance_id => entry.alliance_id
-              }, Player.table_name)}"
-            ).map(&:to_i)
+            alliance_player_ids = Player.
+              select("id").
+              where(:alliance_id => entry.alliance_id).
+              c_select_values.map(&:to_i)
 
             # Get established naps.
             nap_ids = Nap.alliance_ids_for(entry.alliance_id,

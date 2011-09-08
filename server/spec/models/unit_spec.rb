@@ -574,9 +574,9 @@ describe Unit do
       @model = Factory.create :unit
     end
 
-    @required_fields = %w{type hp level id player_id flank upgrade_ends_at}
+    @required_fields = %w{type hp level id player_id flank upgrade_ends_at xp}
     @ommited_fields = %w{location_id location_x location_y
-      location_type hp_remainder pause_remainder xp
+      location_type hp_remainder pause_remainder
       stored metal energy zetium}
     it_should_behave_like "to json"
 

@@ -1,40 +1,58 @@
+# Misc random files
 .*.swp
 *~
 *.log
 *_prof.html
+Thumbs.db
+
+# RDoc/RCov stuff
 coverage
 doc/app
-.metadata
+
+# Asset ignores
+assets/current/*
+assets/config/*.yml
+
+# Flex ignores
+flex/.settings
+flex/.project
+flex/.metadata
 flex/.actionScriptProperties
 flex/.flexProperties
-flex/target
+flex/.FlexUnitSettings
 flex/html-template/history
+flex/assets/*
+flex/src/assets/*
+flex/catalyst
+# Text flex apps
+flex/Test.mxml
+flex/src/flex.mxml
+# Compilation targets.
+flex/bin-debug
+flex/target
+
+# Server ignores
 server/config/database.yml
-web/config/database.yml
-Thumbs.db
-.settings
-.project
-bin-debug
-catalyst
-ClientArchitectureUML
-testmapgen_prof.html
-temp
-server/vendor/planet_map_generator/build
-Test.mxml
-.FlexUnitSettings
-build
+# Temp output files
+server/script/odsimport/*.txt
+
+# SpaceMule ignores
+server/vendor/SpaceMule/target/
+server/vendor/SpaceMule/project/boot/
+server/vendor/SpaceMule/project/target/
+
+# StripMaker ignores
 lib/StripMaker/data
+lib/StripMaker/build
+
+# Misc ignores
 lib/flyers/output/*.pdf
 
+# Netbeans ignores
+nbproject
+
+# Intellij IDEA ignores
 .idea
 *.iml
 .rakeTasks
 
-nbproject
-server/script/odsimport/*.txt
-flex/src/flex.mxml
-server/db/snapshots/beta_keys.sql
-assets/current/*
-assets/config/*.yml
-flex/assets/*
-flex/src/assets/*

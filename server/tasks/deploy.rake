@@ -53,6 +53,8 @@ DEPLOY_CONFIG = {
         File.join("script", "fixes"),
         "vendor",
         "Rakefile",
+        "Gemfile",
+        "Gemfile.lock",
         ".rvmrc",
       ].map do |relative|
         [relative, File.join(PROJECT_ROOT, 'server', relative)]
@@ -166,7 +168,7 @@ class DeployHelpers; class << self
   def exec_server(ssh, cmd)
     ssh.exec!("source $HOME/.profile > /dev/null && cd #{
       DEPLOY_CONFIG_SERVER_CURRENT
-    } && #{cmd}")
+    } && bundle exec #{cmd}")
   end
   
   CHECK_SERVER_CMD = "ruby lib/daemon.rb status"
@@ -247,7 +249,7 @@ class DeployHelpers; class << self
   end
 
   def install_gems(ssh)
-    exec_server(ssh, "rake gems:install INSTALL_ARGS='--no-ri --no-rdoc'")
+    exec_server(ssh, "rake gems:install:deploy")
   end
 
   def migrate_db(ssh)

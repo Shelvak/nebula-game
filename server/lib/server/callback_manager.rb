@@ -172,7 +172,7 @@ class CallbackManager
         begin
           process_callback(row, delete_row)
         rescue Exception => error
-          if ENV['environment'] == 'production'
+          if App.in_production?
             LOGGER.error(
               "Error in callback manager!\n%s\n\nBacktrace:\n%s" % [
                 error.to_s, error.backtrace.join("\n")

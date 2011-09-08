@@ -1,5 +1,5 @@
 if [ "$environment" == "production" ]; then
-  rvm use jruby@nebulaserver --create > /dev/null
+  rvm use jruby
 else
   rvm use jruby@nebulaserver --create
 fi

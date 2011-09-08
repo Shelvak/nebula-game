@@ -58,7 +58,7 @@ class Unit < ActiveRecord::Base
     attributes.except(
       *(
         %w{location_id location_type location_x
-        location_y hp_remainder pause_remainder xp hp_percentage} +
+        location_y hp_remainder pause_remainder hp_percentage} +
         TRANSPORTATION_ATTRIBUTES
       )
     ).symbolize_keys.merge(additional).as_json

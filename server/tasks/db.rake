@@ -28,7 +28,7 @@ namespace :db do
     puts "Migrating in #{env}..."
     ActiveRecord::Base.establish_connection(DB_CONFIG[env])
     ActiveRecord::Migrator.migrate(
-      File.dirname(__FILE__) + '/../db/migrate',
+      DB_MIGRATIONS_DIR,
       ENV["VERSION"] ? ENV["VERSION"].to_i : nil
     )
     puts "Done!\n"

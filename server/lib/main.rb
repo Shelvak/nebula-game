@@ -5,7 +5,7 @@ require File.expand_path(
 
 LOGGER.info "Starting server..."
 
-if ENV["environment"] == "development"
+if App.in_development?
   # Initialize IRB support for drop-in development console.
   require File.expand_path(File.join(ROOT_DIR, 'lib', 'server',
       'irb_session.rb'))
@@ -48,7 +48,7 @@ EventMachine.run do
   LOGGER.info "Starting callback manager..."
   EventMachine::PeriodicTimer.new(1) { CallbackManager.tick }
 
-  if ENV["environment"] == "development"
+  if App.in_development?
     EventMachine::PeriodicTimer.new(0.1) do
       if irb_running
         puts "\n\nDropping into IRB shell. Server operation suspended."

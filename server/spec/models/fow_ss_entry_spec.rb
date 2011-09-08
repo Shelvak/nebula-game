@@ -542,6 +542,43 @@ describe FowSsEntry do
           end
         end
       end
+
+      describe "player ss as alliance ss bug" do
+        # This happened when player was in alliance, had planet and ships in
+        # SS and lifted off from planet with more ships.
+        #
+        # This used to turn SS from player, to alliance one, because customly
+        # serialized attributes were thought to be "changed" by activerecord.
+        #
+        it "should not change ss from player to alliance" do
+          alliance = Factory.create(:alliance)
+          player = Factory.create(:player, :alliance => alliance,
+                                  :galaxy_id => alliance.galaxy_id)
+          ss = Factory.create(:solar_system, :galaxy_id => alliance.galaxy_id)
+          planet = Factory.create(:planet, :player => player,
+                                  :solar_system => ss,
+                                  :position => 0, :angle => 0)
+          Factory.create(
+            :u_crow, :location => SolarSystemPoint.new(ss.id, 0, 90),
+            :player => player
+          )
+          ship = Factory.create(
+            :u_crow, :location => planet, :player => player
+          )
+
+          fse_player = Factory.create(:fse_player, :player => player,
+                                      :solar_system => ss, :counter => 2)
+          fse_ally = Factory.create(:fse_ally, :alliance => alliance,
+                                    :solar_system => ss, :counter => 2)
+
+          FowSsEntry.recalculate(ss.id)
+
+          SPEC_EVENT_HANDLER.clear_events!
+          ship.location = SolarSystemPoint.new(ss.id, 0, 0)
+          FowSsEntry.recalculate(ss.id)
+          SPEC_EVENT_HANDLER.events.should == []
+        end
+      end
     end
 
     describe ".merge_metadata" do
@@ -628,6 +665,25 @@ describe FowSsEntry do
           FowSsEntry.merge_metadata(@fse_player, nil)[
             :"alliance_#{type}"
           ].should be_false
+        end
+      end
+    end
+  end
+
+  describe "serialization" do
+    %w{alliance_planet_player_ids alliance_ship_player_ids}.each do |attr|
+      describe "##{attr}" do
+        it "should save string joined by ," do
+          fse = Factory.create(:fow_ss_entry, attr => [1,2,3,4])
+          fse.class.select(attr).where(:id => fse.id).c_select_value.
+            should == "1,2,3,4"
+        end
+
+        it "should restore array of Fixnums" do
+          fse = Factory.create(:fow_ss_entry)
+          fse.class.update_all "#{attr}='1,2,3,4'", "id=#{fse.id}"
+          fse.reload
+          fse.send(attr).should == [1,2,3,4]
         end
       end
     end

@@ -77,14 +77,14 @@ describe CallbackManager do
     describe "if exception is raised while processing" do
       before(:each) do
         @e = CallbackManager::EVENT_SPAWN
-        @old_env = ENV['environment']
-        ENV['environment'] = 'production'
+        @old_env = App.env
+        App.env = 'production'
         CallbackManager.register(CBTest.new(1), @e, 30.seconds.ago)
         CBTest.stub!(:on_callback).and_raise(Exception)
       end
       
       after(:each) do
-        ENV['environment'] = @old_env
+        App.env = @old_env
       end
       
       it "should mark callback as failed if exception is raised" do
