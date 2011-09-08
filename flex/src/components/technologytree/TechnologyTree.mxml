@@ -490,7 +490,7 @@
       <s:BitmapImage source="{IMG.getImage(AssetNames.TECHNOLOGIES_IMAGE_FOLDER + 'background')}"/>
       
       <!-- left fade -->
-      <s:Rect top="2" bottom="0" left="0" width="100">
+      <s:Rect top="0" bottom="0" left="0" width="100">
          <s:fill>
             <s:LinearGradient x="0" y="50">
                <s:GradientEntry ratio="0"/>
@@ -500,7 +500,7 @@
       </s:Rect>
       
       <!-- right fade -->
-      <s:Rect top="2" bottom="0" right="0" width="100">
+      <s:Rect top="0" bottom="0" right="0" width="100">
          <s:fill>
             <s:LinearGradient x="0" y="50">
                <s:GradientEntry alpha="0" ratio="0"/>
