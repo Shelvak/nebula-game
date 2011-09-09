@@ -70,11 +70,11 @@ package models.infoscreen
       
       //properties that dont need to be displayed in difference column of datagrid
       private static const diffIgnorableProperties: Array =
-         ['upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost', 'deploysTo', 'volume'];
+         ['upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost', 'deploysTo', 'volume', 'width', 'height'];
       
       //properties that dont need to be displayed in data grid
       private static const ignorableProperties: Array = 
-         ['width', 'height', 'metal.starting', 'energy.starting', 'zetium.starting', 'maxLevel', 'coords', 'constructor.items',
+         ['metal.starting', 'energy.starting', 'zetium.starting', 'maxLevel', 'coords', 'constructor.items',
             'kind', 'constructable.position', 'constructable', 'npc', 'requirement', 'ui', 'actions', 'box', 'dead.passable', 'frameWidth',
             'gunPoints', 'targetPoint', 'xpModifier', 'appliesTo', 'armor', 'deploysTo', 'upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost',
             'unitBonus', 'destroyable', 'cooldown', 'managable'];

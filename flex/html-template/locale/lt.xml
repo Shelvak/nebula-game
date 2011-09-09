@@ -549,6 +549,8 @@
     <property.creds value="Kredai" />
     <property.victoryPoints value="Pergalės taškai" />
     <property.fee value="Mokesčio procentas" />
+    <property.width value="Pastato ilgis" />
+    <property.height value="Pastato plotis" />
 
     <text.deactivated>
       <p>
