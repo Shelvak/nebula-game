@@ -79,8 +79,8 @@ package controllers.startup
    import utils.Objects;
    import utils.SingletonFactory;
    import utils.StringUtil;
-   import utils.logging.targets.InMemoryTarget;
-   import utils.logging.targets.MessagesLogger;
+   import utils.logging.InMemoryTarget;
+   import utils.logging.MessagesLogger;
    
    
    public final class StartupManager
@@ -218,8 +218,7 @@ package controllers.startup
       private static function initializeLogging() : void
       {
          MessagesLogger.getInstance().disableLogging([
-            ChatCommand.MESSAGE_PRIVATE,
-            ChatCommand.MESSAGE_PUBLIC,
+            "chat|",
             "reply_to",
             GameCommand.CONFIG
          ]);

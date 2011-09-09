@@ -1,4 +1,4 @@
-package utils.logging.targets
+package utils.logging
 {
    import mx.logging.ILogger;
    import mx.logging.Log;

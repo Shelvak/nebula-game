@@ -54,5 +54,18 @@ package models.folliage
       {
          return _terrainType;
       }
+      
+      
+      /* ########################### */
+      /* ### BaseModel OVERRIDES ### */
+      
+      public override function toString() : String {
+         return "[class: " + className +
+                ", id: " + id +
+                ", x: " + x +
+                ", xEnd: " + xEnd +
+                ", y: " + y +
+                ", yEnd: " + yEnd + "]"
+      }
    }
 }
