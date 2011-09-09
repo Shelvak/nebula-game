@@ -1,8 +1,12 @@
 package tests.utils.tests
 {
+   import mx.resources.ResourceBundle;
+   
    import org.flexunit.asserts.assertEquals;
    
    import utils.DateUtil;
+   import utils.locale.Locale;
+   import utils.locale.Localizer;
    
    
    public class TC_DateUtil
@@ -10,8 +14,17 @@ package tests.utils.tests
       private var str: String;
       private var date: Date;
       
+      [Before]
+      public function setUp():void
+      {
+         var bundle: ResourceBundle = new ResourceBundle(Locale.EN, 'General');
+         bundle.content['day.short'] = 'd';
+         bundle.content['hour.short'] = 'h';
+         bundle.content['minute.short'] = 'm';
+         bundle.content['second.short'] = 's';
+         Localizer.addBundle(bundle);
+      }
       
-      [Ignore("Does not work")]
       [Test]
       public function secondsToHumanStringTest() : void
       {

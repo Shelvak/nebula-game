@@ -13,10 +13,10 @@ package tests.animation.tests
    {
       
       private var napRules: Object = {12: [13, 14], 13: [12, 14], 14: [12, 13]};
-      private var ally1: Array = [{'id':1, 'name': 'orc'}, {'id':2, 'name': 'arc'}, {'id':3, 'name': 'vrc'}];
-      private var ally2: Array = [{'id':4, 'name': 'onc'}, {'id':5, 'name': 'auio'}, {'id':6, 'name': 'dfg'}];
-      private var ally3: Array = [{'id':7, 'name': 'swfgh'}, {'id':8, 'name': 'vghk'}, {'id':9, 'name': 'gho'}];
-      private var ally4: Array = [{'id':10, 'name': 'zrv'}, {'id':11, 'name': 'scg'}, {'id':12, 'name': 'xcg'}];
+      private var ally1: Array = [[1, 'orc'], [2, 'arc'], [3, 'vrc']];
+      private var ally2: Array = [[4, 'onc'], [5, 'auio'], [6, 'dfg']];
+      private var ally3: Array = [[7, 'swfgh'], [8, 'vghk'], [9, 'gho']];
+      private var ally4: Array = [[10, 'zrv'], [11, 'scg'], [12, 'xcg']];
       private var players: BPlayers = new BPlayers();
       
       [Before]
@@ -30,7 +30,6 @@ package tests.animation.tests
         players.addAlliance(ally4, '15', "alliance1", 2);
       }
       
-      [Ignore("Does not pass!")]
       [Test]
       public function playerStatusTest (): void
       {
