@@ -4,7 +4,7 @@ def path(description)
   Path.new(description)
 end
 
-describe "adding new solar systems", :shared => true do
+shared_examples_for "adding new solar systems" do
   it "should add homeworld solar system" do
     FowSsEntry.where(@conditions).map do |fse|
       {
@@ -38,7 +38,7 @@ describe "adding new solar systems", :shared => true do
   end
 end
 
-describe "with orbit units", :shared => true do
+shared_examples_for "with orbit units" do
   it "should have correct number of planet orbit units" do
     @solar_systems.each do |solar_system|
       (@planets || solar_system.planets).each do |planet|
@@ -71,7 +71,7 @@ describe "with orbit units", :shared => true do
   end
 end
 
-describe "with planet units", :shared => true do
+shared_examples_for "with planet units" do
   it "should have correct number of planet ground units" do
     @solar_systems.each do |solar_system|
       (@planets || solar_system.planets).each do |planet|
@@ -112,7 +112,7 @@ describe SpaceMule do
       end
 
       it "should have created_at set" do
-        @galaxy.created_at.should be_close(Time.now, 10.seconds)
+        @galaxy.created_at.should be_within(10.seconds).of(Time.now)
       end
     end
 
@@ -357,7 +357,7 @@ describe SpaceMule do
         
         it "should set #owner_changed" do
           @homeworld.owner_changed.
-            should be_close(Time.now, SPEC_TIME_PRECISION)
+            should be_within(SPEC_TIME_PRECISION).of(Time.now)
         end
         
         describe "resources" do

@@ -7,7 +7,7 @@ describe BuildingsController do
     init_controller BuildingsController, :login => true
   end
 
-  describe "finding building", :shared => true do
+  shared_examples_for "finding building" do
     @required_params = %w{id}
     it_should_behave_like "with param options"
     
@@ -180,7 +180,7 @@ describe BuildingsController do
     end
   end
 
-  describe "accelerate", :shared => true do
+  shared_examples_for "accelerate" do
     @required_params = %w{id index}
     it_should_behave_like "with param options"
     

@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe "resolving you/enemy", :shared => true do
+shared_examples_for "resolving you/enemy" do
   it "should resolve YOU" do
     @resolver.status(@player.id).should == StatusResolver::YOU
   end

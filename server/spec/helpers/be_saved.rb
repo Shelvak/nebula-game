@@ -1,4 +1,4 @@
-Spec::Matchers.define :be_saved do
+RSpec::Matchers.define :be_saved do
   match do |actual|
     @memory_attributes = actual.attributes
     @db_attributes = actual.class.find(actual.id).attributes

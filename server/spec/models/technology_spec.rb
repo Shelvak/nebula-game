@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe "releasing scientists", :shared => true do
+shared_examples_for "releasing scientists" do
   it "should set scientists to nil" do
     lambda do
       @model.send(@method)
@@ -186,8 +186,7 @@ describe Technology do
       )
 
       model.resume!
-      model.upgrade_ends_at.should be_close(predicted_time, 
-        SPEC_TIME_PRECISION)
+      model.upgrade_ends_at.should be_within(SPEC_TIME_PRECISION).of(predicted_time)
     end
 
     it "should recalculate pause_remainder according to new scientists" +
@@ -205,8 +204,7 @@ describe Technology do
       model.scientists = scientists
       
       model.resume!
-      model.upgrade_ends_at.should be_close(predicted_time, 
-        SPEC_TIME_PRECISION)
+      model.upgrade_ends_at.should be_within(SPEC_TIME_PRECISION).of(predicted_time)
     end
   end
 
@@ -267,8 +265,7 @@ describe Technology do
         model.scientists *= 2
         model.save!
 
-        model.upgrade_ends_at.should be_close((time / 2).since, 
-          SPEC_TIME_PRECISION)
+        model.upgrade_ends_at.should be_within(SPEC_TIME_PRECISION).of((time / 2).since)
       end
 
       it "should update callback to the new time" do

@@ -330,7 +330,7 @@ describe Player do
       it "should write vip_creds_until" do
         @player.vip_tick!
         @player.vip_creds_until.should \
-          be_close(1.day.from_now, SPEC_TIME_PRECISION)
+          be_within(SPEC_TIME_PRECISION).of(1.day.from_now)
       end
 
       it "should add tick callback" do

@@ -1,4 +1,4 @@
-Spec::Matchers.define :have_cooldown do |time|
+RSpec::Matchers.define :have_cooldown do |time|
   match do |object|
     cooldown = Cooldown.in_location(object).first
     if cooldown.nil?

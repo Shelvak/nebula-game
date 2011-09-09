@@ -122,9 +122,9 @@ describe Wreckage do
       energy = unit.energy_cost * 0.1
       zetium = unit.zetium_cost * 0.1
       w_metal, w_energy, w_zetium = Wreckage.calculate([unit])
-      w_metal.should be_close(metal, 0.1)
-      w_energy.should be_close(energy, 0.1)
-      w_zetium.should be_close(zetium, 0.1)
+      w_metal.should be_within(0.1).of(metal)
+      w_energy.should be_within(0.1).of(energy)
+      w_zetium.should be_within(0.1).of(zetium)
     end
 
     it "should add transported resources" do
@@ -143,9 +143,9 @@ describe Wreckage do
       energy = (unit.energy_cost + loaded.energy_cost) * 0.1
       zetium = (unit.zetium_cost + loaded.zetium_cost) * 0.1
       w_metal, w_energy, w_zetium = Wreckage.calculate([unit])
-      w_metal.should be_close(metal, 0.1)
-      w_energy.should be_close(energy, 0.1)
-      w_zetium.should be_close(zetium, 0.1)
+      w_metal.should be_within(0.1).of(metal)
+      w_energy.should be_within(0.1).of(energy)
+      w_zetium.should be_within(0.1).of(zetium)
     end
 
     it "should support buildings" do

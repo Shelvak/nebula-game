@@ -1,4 +1,4 @@
-describe "fast finding", :shared => true do
+shared_examples_for "fast finding" do
   before(:all) do
     @result = @klass.fast_find_all_for_planet(@planet)
   end

@@ -1,4 +1,4 @@
-Spec::Matchers.define :need_technology do |technology, options|
+RSpec::Matchers.define :need_technology do |technology, options|
   options ||= {:level => 1}
 
   match do |klass|

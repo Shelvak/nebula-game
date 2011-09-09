@@ -10,7 +10,7 @@ def create_planet(player)
   planet
 end
 
-describe "visible planet", :shared => true do
+shared_examples_for "visible planet" do
   it "should set currently viewed planet" do
     @controller.current_planet_id.should == @planet.id
   end

@@ -2,7 +2,7 @@ require File.expand_path(
   File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 )
 
-describe "only by owner", :shared => true do
+shared_examples_for "only by owner" do
   it "should fail if invoked not by alliance owner" do
     @alliance.owner = Factory.create(:player)
     @alliance.save!

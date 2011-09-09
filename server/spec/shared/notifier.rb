@@ -1,4 +1,4 @@
-describe "notifier", :shared => true do
+shared_examples_for "notifier" do
   if @should_not_notify_create
     it "should not notify on create if it's not wanted" do
       model = @build.call

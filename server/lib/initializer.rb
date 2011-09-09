@@ -72,9 +72,14 @@ benchmark :gems do
   require "erb"
   require "pp"
 
-  groups = [:default, :"#{App.env}_env"]
-  groups.push :run_env unless App.in_test?
-  Bundler.require(*groups)
+  setup_groups = [:default, :"#{App.env}_setup"]
+  setup_groups.push :run_setup unless App.in_test?
+  require_groups = [:default, :"#{App.env}_require"]
+  require_groups.push :run_require unless App.in_test?
+
+  # We need to setup both groups, because bundler only does setup one time.
+  Bundler.setup(*(setup_groups | require_groups))
+  Bundler.require(*require_groups)
 
   require 'active_support/dependencies'
 end

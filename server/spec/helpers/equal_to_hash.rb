@@ -1,4 +1,4 @@
-Spec::Matchers.define :equal_to_hash do |target|
+RSpec::Matchers.define :equal_to_hash do |target|
   match do |actual|
     equal = true
     

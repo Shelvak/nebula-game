@@ -1,4 +1,4 @@
-describe "shieldable", :shared => true do
+shared_examples_for "shieldable" do
   describe "#as_json" do
     fields = %w{shield_ends_at shield_owner_id}
 

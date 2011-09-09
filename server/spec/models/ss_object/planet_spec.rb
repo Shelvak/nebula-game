@@ -449,7 +449,7 @@ describe SsObject::Planet do
 
     it "should save new #owner_changed" do
       @planet.save!
-      @planet.owner_changed.should be_close(Time.now, SPEC_TIME_PRECISION)
+      @planet.owner_changed.should be_within(SPEC_TIME_PRECISION).of(Time.now)
     end
     
     it "should call FowSsEntry.change_planet_owner after save" do
@@ -581,7 +581,7 @@ describe SsObject::Planet do
       end
     end
 
-    describe "transfering attribute", :shared => true do
+    shared_examples_for "transfering attribute" do
       it "should reduce attribute value from previous owner" do
         lambda do
           @planet.save!
@@ -597,7 +597,7 @@ describe SsObject::Planet do
       end
     end
     
-    describe "not transfering attribute", :shared => true do
+    shared_examples_for "not transfering attribute" do
       it "should reduce attribute value from previous owner" do
         lambda do
           @planet.save!

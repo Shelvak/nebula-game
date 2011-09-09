@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe "respecting player", :shared => true do
+shared_examples_for "respecting player" do
   it "should not allow changing other player notifications" do
     @notification.player = Factory.create :player
     @notification.save!

@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe "checking ownership", :shared => true do
+shared_examples_for "checking ownership" do
   it "should not allow changing queues of constructor player doesn't own" do
     @planet.player = nil
     @planet.save!

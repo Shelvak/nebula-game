@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe "create for", :shared => true do
+shared_examples_for "create for" do
   it "should set event" do
     Notification.send(@method, *@args).event.should == @event
   end
@@ -14,7 +14,7 @@ describe "create for", :shared => true do
   end
 end
 
-describe "with location", :shared => true do
+shared_examples_for "with location" do
   it "should set params[:location]" do
     Notification.send(@method, *@args
       ).params[:location].should == @location.client_location.as_json
@@ -324,7 +324,7 @@ describe Notification do
     end
   end
 
-  describe "quest notification", :shared => true do
+  shared_examples_for "quest notification" do
   end
 
   describe ".create_for_achievement_completed" do

@@ -79,7 +79,7 @@ describe MarketOffer do
   end
   
   describe "#buy!" do    
-    describe "buying goods", :shared => true do
+    shared_examples_for "buying goods" do
       it "should increase in goods he bought" do
         lambda do
           @offer.buy!(@buyer_planet, @offer.from_amount)
@@ -87,7 +87,7 @@ describe MarketOffer do
       end
     end
     
-    describe "dispatching planet changed", :shared => true do
+    shared_examples_for "dispatching planet changed" do
       it "should dispatch changed event" do
         should_fire_event(@planet, EventBroker::CHANGED, 
             EventBroker::REASON_OWNER_PROP_CHANGE) do
@@ -96,7 +96,7 @@ describe MarketOffer do
       end
     end
     
-    describe "selling for resources", :shared => true do
+    shared_examples_for "selling for resources" do
       it "should fail if buyer does not have enough goods" do
         @buyer_planet.zetium = @to_amount - 1
         lambda do
@@ -110,7 +110,7 @@ describe MarketOffer do
       end
     end
     
-    describe "seller planet", :shared => true do
+    shared_examples_for "seller planet" do
       it_should_behave_like "dispatching planet changed"
 
       it "should increase in goods he requested" do

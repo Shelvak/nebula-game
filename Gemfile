@@ -1,20 +1,11 @@
 source "http://rubygems.org"
 source "http://gems.github.com"
 
+# Gems that are necessary for correct functioning of the server.
 gem 'activesupport', '~>3.0.9', :require => 'active_support'
 gem 'activerecord', '~>3.0.9', :require => 'active_record'
 gem 'json', '>=1.4.6', :require => "json/ext"
 gem 'activerecord-jdbcmysql-adapter', '~>1.1'
-
-# Gems that are needed for running (not testing).
-group :run_env do
-  gem 'eventmachine', '>=0.12.6'
-end
-
-# Only needed in production.
-group :production_env do
-  gem 'mail', '>=2.2'
-end
 
 # Gems that are needed but should never be activated.
 group :installation do
@@ -24,11 +15,19 @@ group :installation do
   gem "chronic", ">=0.6.2"
 end
 
-# Gems that are only needed for development of the server.
-group :development do
-  gem "rspec", "~>1.3"
+# Gems that are needed for running (not testing).
+group :run_require do
+  gem 'eventmachine', '>=0.12.6'
+end
+
+# Only needed in production.
+group :production_require do
+  gem 'mail', '>=2.2'
+end
+
+# Gems that are only needed for development of the server. Setuped
+group :development_setup do
   gem "minitar"
-  gem "thoughtbot-factory_girl"
   # Needed for mediawiki-gateway, somehow not specified in mw-gw gemfile.
   gem "rest-client"
   gem "mediawiki-gateway"
@@ -36,4 +35,10 @@ group :development do
   gem "net-sftp", "~>2.0"
   gem "net-scp", "~>1.0"
   gem "xml-simple", "~>1.0"
+end
+
+# Only setuped, but not required (in test env).
+group :test_setup do
+  gem "rspec", "~>2.0"
+  gem "factory_girl", "~>2.0"
 end

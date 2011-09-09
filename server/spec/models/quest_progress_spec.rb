@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe "completed quest", :shared => true do
+shared_examples_for "completed quest" do
   it "should change status to COMPLETED" do
     lambda do
       @qp.save!

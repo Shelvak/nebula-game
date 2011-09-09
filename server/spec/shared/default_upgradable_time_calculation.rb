@@ -1,4 +1,4 @@
-describe "default upgradable time calculation", :shared => true do
+shared_examples_for "default upgradable time calculation" do
   describe "#calculate_ugprade_time" do
     it "should account for construction mod" do
       old_time = @model.upgrade_time(1)

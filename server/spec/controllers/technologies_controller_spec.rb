@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe "technology upgradable", :shared => true do
+shared_examples_for "technology upgradable" do
   it "should return technology in upgrading state" do
     invoke @action, @params
     Technology.find(
@@ -16,7 +16,7 @@ describe "technology upgradable", :shared => true do
   end
 end
 
-describe "technology existing", :shared => true do
+shared_examples_for "technology existing" do
   it "should not allow to change other player technology" do
     @technology.player = Factory.create(:player)
     @technology.save!

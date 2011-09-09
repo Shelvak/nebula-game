@@ -152,7 +152,7 @@ class Path
   end
 end
 
-Spec::Matchers.define :be_path do |points|
+RSpec::Matchers.define :be_path do |points|
   match do |actual|
     @actual_path = actual.map do |point|
       case point['type']
@@ -180,7 +180,7 @@ Actual  : #{@actual_path.join(" ")}"
   end
 end
 
-Spec::Matchers.define :include_points do |type, *points|
+RSpec::Matchers.define :include_points do |type, *points|
   mapped_points = []
   ZonePath.rip_points(points) { |x, y| mapped_points.push [type, x, y] }
 

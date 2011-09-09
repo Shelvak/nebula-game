@@ -1,4 +1,4 @@
-describe "npc special factory", :shared => true do
+shared_examples_for "npc special factory" do
   it_should_behave_like "with resetable cooldown"
   it_should_behave_like "with looped cooldown"
   it_should_behave_like "with unit bonus"

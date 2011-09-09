@@ -1,4 +1,4 @@
-describe "only push", :shared => true do
+shared_examples_for "only push" do
   it "should fail when invoked" do
     lambda do
       invoke @action, @params

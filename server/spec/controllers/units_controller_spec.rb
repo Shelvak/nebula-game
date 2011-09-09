@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe "checking visibility", :shared => true do
+shared_examples_for "checking visibility" do
   it "should raise GameLogicError if target is not visible" do
     FowSsEntry.decrease(@target.id, player)
     lambda do
