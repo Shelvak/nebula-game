@@ -87,11 +87,13 @@ package models.chat.msgconverters
             var matchWhole:String = match[0];
             var matchBeforeUrl:String = match[1] != null ? match[1] : "";
             var matchUrl:String = match[2];
+            var link:String = matchUrl.indexOf("www.") == 0 
+               ? "http://" + matchUrl : matchUrl;
             var matchUrlIdx:int = match["index"] + matchBeforeUrl.length;
             var textBeforeURL:String = msgText.substr(0, matchUrlIdx);
             
             addSpan(paragraph, textBeforeURL, textColor);
-            addUrl(paragraph, matchUrl);
+            addUrl(paragraph, link);
             
             // remove stuff that we processed and go on
             msgText = msgText.substr(matchUrlIdx + matchUrl.length);
