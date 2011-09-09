@@ -12,6 +12,8 @@
          import components.market.events.MarketEvent;
          import components.skins.LargePanelSkin;
          
+         import flashx.textLayout.container.ScrollPolicy;
+         
          import globalevents.GMarketEvent;
          
          import models.ModelsCollection;
@@ -121,16 +123,18 @@
                                listSort="header_listSortHandler(event)"
                                visible="{!_offers.isEmpty}"/>
    <base:Scroller id="contScroller" left="0" right="0" 
-                  top="{header.height}" bottom="0" stepMultiplier="10"
+                  top="{header.height}" bottom="0"
+                  horizontalScrollPolicy="off" 
+                  verticalScrollPolicy="{_offers.length == 0
+                  ?ScrollPolicy.OFF
+                  :ScrollPolicy.AUTO}"
                   visible="{!_offers.isEmpty}">
-      <s:Group width="100%" id="contGroup">
          <s:DataGroup dataProvider="{_offers}" left="0" right="0"
                       itemRenderer="components.market.IRMarketOffer">
             <s:layout>
-               <s:VerticalLayout gap="0"/>
+               <s:VerticalLayout gap="0" useVirtualLayout="true"/>
             </s:layout>
          </s:DataGroup>
-      </s:Group>
    </base:Scroller>
    
    <s:Label visible="{_offers.isEmpty}"
