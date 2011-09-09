@@ -209,7 +209,10 @@ package models.unit
          if (filteredUnits != null)
          {
             filteredUnits.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
-            filteredUnits.list = null;
+            if (filteredUnits != filteredSquadronUnits)
+            {
+               filteredUnits.list = null;
+            }
          }
          buildFlanks();
          if (currentKind != UnitKind.SQUADRON)
@@ -219,6 +222,11 @@ package models.unit
                {
                   return item.kind == currentKind;
                });
+         }
+         else
+         {
+            filteredUnits = filteredSquadronUnits;
+            dispatchUnitsChangeEvent();
          }
          
          filteredUnits.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
@@ -552,10 +560,12 @@ package models.unit
          NavigationController.getInstance().showStorage(transporter, units, location);
       }
       
+      private var filteredSquadronUnits: ListCollectionView;
+      
       public function showSquadron(list: ListCollectionView): void
       {
          squadronVisible = true;
-         filteredUnits = list;
+         filteredSquadronUnits = list;
          currentKind = UnitKind.SQUADRON;
          refreshScreen();
       }
