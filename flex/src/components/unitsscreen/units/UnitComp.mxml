@@ -215,6 +215,8 @@
          <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(model.unit.type))}" 
                                          width="50" height="50" horizontalCenter="0" top="9"/>
          
+         <unitsscreen:XpBar xpCurrent="{model.unit.xp}" xpNeeded="{Unit.getXpMax(model.unit.type, model.unit.level + 1)}" 
+                            left="0" right="0" top="61" visible="{model.unit.level &lt; model.unit.maxLevel}"/>
          <unitsscreen:StarsContainer starCount="{model.unit.upgradePart.level-1}" horizontalCenter="0" top="62"/>
          <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
                   text="{model.unit.hp+'\n'+'/'+'\n'+model.unit.hpMax}" verticalAlign="middle"
