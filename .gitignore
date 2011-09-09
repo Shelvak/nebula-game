@@ -32,6 +32,10 @@ flex/bin-debug
 flex/target
 
 # Server ignores
+# Gemfile symlinks
+server/Gemfile
+server/Gemfile.lock
+# Configs
 server/config/database.yml
 # Temp output files
 server/script/odsimport/*.txt
