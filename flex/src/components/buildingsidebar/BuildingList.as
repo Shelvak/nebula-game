@@ -24,7 +24,9 @@ package components.buildingsidebar
       {
          super();
          EventBroker.subscribe(KeyboardEvent.KEY_DOWN, handleKeyDown);
-         addEventListener(MouseEvent.MOUSE_DOWN, changeHandler);
+         addEventListener(MouseEvent.MOUSE_DOWN, downHandler);
+         addEventListener(MouseEvent.MOUSE_MOVE, changeHandler);
+         addEventListener(MouseEvent.MOUSE_UP, changeHandler);
          miniML = new ArrayCollection();
          dataProvider = miniML;
          itemRenderer = new ClassFactory(BuildingElement);
@@ -113,10 +115,21 @@ package components.buildingsidebar
          }
       }
       
-      private function changeHandler(e: MouseEvent = null): void
+      private var selectionStarted: Boolean = false;
+      
+      private function downHandler(e: MouseEvent = null): void
       {
          if (!dontDispatch)
          {
+            selectionStarted = true;
+         }
+      }
+      
+      private function changeHandler(e: MouseEvent = null): void
+      {
+         if (selectionStarted)
+         {
+            selectionStarted = false;
             if (selectedItem != null)
             {
                var element: MCSidebarBuilding = selectedItem;
