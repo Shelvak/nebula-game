@@ -36,6 +36,7 @@ module Arturaz
         define_method(:custom_unserialize_attributes) do
           attributes.each do |attribute|
             send(:"#{attribute}=", options[:unserialize].call(send(attribute)))
+            changed_attributes.delete attribute.to_s
           end
 
           super() if defined?(super)
