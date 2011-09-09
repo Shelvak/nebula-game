@@ -60,6 +60,16 @@ package controllers.alliances.actions
             player.rank = i;
          }
          AllianceScreenM.getInstance().alliance = ally;
+      }
+      
+      public override function result(rmo:ClientRMO):void
+      {
+         GlobalFlags.getInstance().lockApplication = false;
+      }
+      
+      public override function cancel(rmo:ClientRMO):void
+      {
+         super.cancel(rmo);
          GlobalFlags.getInstance().lockApplication = false;
       }
    }

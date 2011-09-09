@@ -3,7 +3,7 @@ package controllers.messages
    import controllers.CommunicationCommand;
    
    import utils.SingletonFactory;
-   import utils.logging.targets.MessagesLogger;
+   import utils.logging.MessagesLogger;
    import utils.remote.IServerProxy;
    import utils.remote.ServerProxyInstance;
    import utils.remote.rmo.ClientRMO;

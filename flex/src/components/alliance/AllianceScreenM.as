@@ -260,7 +260,7 @@ package components.alliance
       
       public function refresh_clickHandler(event:MouseEvent):void
       {
-         new AlliancesCommand(AlliancesCommand.SHOW, {'id': ML.player.allianceId}).dispatch();
+         new AlliancesCommand(AlliancesCommand.SHOW, {'id': alliance.id}).dispatch();
       }
       
       public function leave_clickHandler(event:MouseEvent):void

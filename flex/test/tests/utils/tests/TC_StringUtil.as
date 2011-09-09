@@ -50,22 +50,14 @@ package tests.utils.tests
          );
       };
       
-      [Ignore("Does not pass!")]
       [Test]
       public function evalFormulaTest() : void
       {
-         assertEquals(
-            "Should filter out wrong symbols", 9, StringUtil.evalFormula("5 + fg 6 * 2 / 3 sfg"));
-         
          assertEquals(
             "Should replace vars", 15, StringUtil.evalFormula("10 + a", {a: 5}));
          
          assertEquals(
             "Should accept float vars", 8.7, StringUtil.evalFormula("10 + a", {a: -1.3}));
-         
-         
-         /*
-         Might do in the future.
          
          assertEquals(
          "Should allow ** operator",
@@ -84,7 +76,6 @@ package tests.utils.tests
          12.6,
          StringUtil.evalFormula("10 + (a - b + 10) / 5 + (2 ** c / 5)", {a: 2, b: 7, c: 3})
          );
-         */
          
          assertEquals(
             "Should solve complex equations",
