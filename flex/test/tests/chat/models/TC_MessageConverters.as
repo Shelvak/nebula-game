@@ -78,7 +78,7 @@ package tests.chat.models
          message.message = "www.nebula44.lt";
          convertToParagraph();
          assertParagraphNumChildren(3);
-         linkAssertions(2, "www.nebula44.lt");
+         linkAssertions(2, "http://www.nebula44.lt");
          
          message.message = "http://www.nebula44.com";
          convertToParagraph();
@@ -88,7 +88,7 @@ package tests.chat.models
          message.message = "www.nebula44.com/list?user=mikism";
          convertToParagraph();
          assertParagraphNumChildren(3);
-         linkAssertions(2, "www.nebula44.com/list?user=mikism");
+         linkAssertions(2, "http://www.nebula44.com/list?user=mikism");
       }
       
       [Test]
