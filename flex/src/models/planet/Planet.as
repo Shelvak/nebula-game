@@ -775,7 +775,8 @@ package models.planet
             function(unit:Unit) : Boolean
             {
                return unit.level > 0 && unit.kind == UnitKind.GROUND
-               && (owner == -1 || owner == unit.owner);
+               && (owner == -1 || owner == unit.owner
+                  || (owner == Owner.ENEMY && unit.owner == Owner.UNDEFINED));
             }
          ) != null;
       }
@@ -788,7 +789,9 @@ package models.planet
             function(unit:Unit) : Boolean
             {
                return unit.level > 0 && unit.kind == UnitKind.SPACE
-               && (owner == -1 || owner == unit.owner);
+               && (owner == -1
+                  || owner == unit.owner
+                  || (owner == Owner.ENEMY && unit.owner == Owner.UNDEFINED));
             }
          ) != null;
       }
@@ -800,7 +803,9 @@ package models.planet
          return Collections.findFirst(units,
             function(unit:Unit) : Boolean
             {
-               return unit.level > 0 && unit.owner == owner && unit.isMoving &&
+               return unit.level > 0 && (unit.owner == owner
+                  || (owner == Owner.ENEMY && unit.owner == Owner.UNDEFINED)) 
+               && unit.isMoving &&
                (unit.kind == kind || kind == null);
             }
          ) != null;
