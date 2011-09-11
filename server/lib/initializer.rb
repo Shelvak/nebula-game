@@ -212,7 +212,9 @@ benchmark :db do
   DB_CONFIG = read_config(config_dir, 'database.yml')
   DB_CONFIG.each { |env, config| config["adapter"] = "jdbcmysql" }
   USED_DB_CONFIG = DB_CONFIG[ENV['db_environment']]
-  DB_MIGRATIONS_DIR = File.dirname(__FILE__) + '/../../db/migrate'
+  DB_MIGRATIONS_DIR = File.expand_path(
+    File.dirname(__FILE__) + '/../db/migrate'
+  )
 
   if USED_DB_CONFIG.nil?
     puts "Unable to retrieve db configuration!"
@@ -257,20 +259,6 @@ benchmark :activerecord_config do
   ActiveRecord::Base.include_root_in_json = false
   ActiveRecord::Base.store_full_sti_class = false
   ActiveRecord::Base.logger = LOGGER
-
-  class ActiveRecord::Migration
-    def self.add_fk(source_table, target_table, type=nil,
-        source_key=nil, target_key=nil)
-      type ||= "CASCADE"
-      source_key ||= "id"
-      target_key ||= "#{source_table.to_s.singularize}_id"
-      puts "-- FK #{source_table}[#{source_key}] -> #{target_table}[#{
-      target_key}] (#{type})"
-      ActiveRecord::Base.connection.execute "ALTER TABLE `#{
-      target_table}` ADD FOREIGN KEY (`#{target_key}`) REFERENCES `#{
-      source_table}` (`#{source_key}`) ON DELETE #{type}"
-    end
-  end
 
   class ActiveRecord::Relation
     # Add c_select_* methods.

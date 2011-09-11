@@ -14,7 +14,7 @@ class CreateCredStat < ActiveRecord::Migration
 
     add_index :cred_stats, :action, :name => 'by_action'
     add_index :cred_stats, :player_id, :name => 'by_player'
-    add_fk("players", "cred_stats", "SET NULL")
+    add_fk("players", "cred_stats", :on_delete => "SET NULL")
   end
 
   def self.down
