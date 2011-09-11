@@ -96,10 +96,9 @@ describe SsObject::Planet do
       it "should set boost expiration date" do
         @planet.boost!(:metal, :rate)
         @planet.reload
-        @planet.metal_rate_boost_ends_at.should be_close(
-          Cfg.planet_boost_duration.from_now,
+        @planet.metal_rate_boost_ends_at.should be_within(
           SPEC_TIME_PRECISION
-        )
+        ).of(Cfg.planet_boost_duration.from_now)
       end
 
       it "should increase boost expiration date if already set" do
@@ -108,10 +107,9 @@ describe SsObject::Planet do
 
         @planet.boost!(:metal, :rate)
         @planet.reload
-        @planet.metal_rate_boost_ends_at.should be_close(
-          (3.days + Cfg.planet_boost_duration).from_now,
+        @planet.metal_rate_boost_ends_at.should be_within(
           SPEC_TIME_PRECISION
-        )
+        ).of((3.days + Cfg.planet_boost_duration).from_now)
       end
       
       it "should set boost expiration date from now if boost is expired" do
@@ -120,10 +118,9 @@ describe SsObject::Planet do
 
         @planet.boost!(:metal, :rate)
         @planet.reload
-        @planet.metal_rate_boost_ends_at.should be_close(
-          Cfg.planet_boost_duration.from_now,
+        @planet.metal_rate_boost_ends_at.should be_within(
           SPEC_TIME_PRECISION
-        )
+        ).of(Cfg.planet_boost_duration.from_now)
       end
 
       it "should reduce creds from player" do
@@ -786,9 +783,9 @@ describe SsObject::Planet do
 
     it "should store #exploration_ends_at" do
       @planet.explore!(@x, @y)
-      @planet.exploration_ends_at.should be_close(
-        Tile.exploration_time(@kind).since,
-        SPEC_TIME_PRECISION)
+      @planet.exploration_ends_at.should be_within(SPEC_TIME_PRECISION).of(
+        Tile.exploration_time(@kind).since
+      )
     end
 
     it "should reduce scientists from player" do

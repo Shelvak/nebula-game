@@ -104,6 +104,7 @@ describe Combat::Annexer do
             lambda do
               Combat::Annexer.annex!(@planet, @check_report, @outcomes)
               @planet.reload
+              puts @planet.player.inspect
             end.should change(@planet, :player).to(nil)
           end
           

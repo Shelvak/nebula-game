@@ -262,9 +262,8 @@ describe AlliancesController do
     it "should set alliance cooldown" do
       invoke @action, @params
       player.reload
-      player.alliance_cooldown_ends_at.should be_close(
-        CONFIG.evalproperty('alliances.leave.cooldown').from_now,
-        SPEC_TIME_PRECISION
+      player.alliance_cooldown_ends_at.should be_within(SPEC_TIME_PRECISION).of(
+        CONFIG.evalproperty('alliances.leave.cooldown').from_now
       )
     end
 

@@ -108,10 +108,9 @@ describe Building do
     it "should set new timestamp on planet" do
       @building.self_destruct!
       @planet.reload
-      @planet.can_destroy_building_at.should be_close(
-        CONFIG.evalproperty("buildings.self_destruct.cooldown").since,
+      @planet.can_destroy_building_at.should be_within(
         SPEC_TIME_PRECISION
-      )
+      ).of(CONFIG.evalproperty("buildings.self_destruct.cooldown").since)
     end
 
     it "should not fail if resources does not fit to planet" do

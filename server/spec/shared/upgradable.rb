@@ -159,9 +159,8 @@ shared_examples_for "upgradable" do
       with_config_values(@values) do
         old_uea = @model.upgrade_ends_at
         Creds.accelerate!(@model, 0)
-        @model.upgrade_ends_at.should be_close(
-          old_uea - @time,
-          SPEC_TIME_PRECISION
+        @model.upgrade_ends_at.should be_within(SPEC_TIME_PRECISION).of(
+          old_uea - @time
         )
       end
     end
@@ -170,10 +169,8 @@ shared_examples_for "upgradable" do
       with_config_values(@values) do
         old_uea = @model.upgrade_ends_at
         seconds_reduced = Creds.accelerate!(@model, 0)
-        (@model.upgrade_ends_at + seconds_reduced).should be_close(
-          old_uea,
-          SPEC_TIME_PRECISION
-        )
+        (@model.upgrade_ends_at + seconds_reduced).should be_within(
+          SPEC_TIME_PRECISION).of(old_uea)
       end
     end
 

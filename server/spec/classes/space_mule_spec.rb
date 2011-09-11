@@ -268,10 +268,9 @@ describe SpaceMule do
       end
 
       it "should have correct shield time" do
-        @ss.shield_ends_at.should be_close(
+        @ss.shield_ends_at.should be_within(10).of(
           CONFIG.evalproperty('galaxy.player.shield_duration').
-            seconds.from_now,
-          10
+            seconds.from_now
         )
       end
 
@@ -372,10 +371,12 @@ describe SpaceMule do
               ["store", "_storage"]
             ].each do |config_name, attr_name|
               it "should set #{resource} #{config_name}" do
-                @homeworld.send("#{resource}#{attr_name}").should be_close(
-                  CONFIG.evalproperty(
-                    "buildings.mothership.#{resource}.#{config_name}"
-                  ), 0.5)
+                @homeworld.send("#{resource}#{attr_name}").should be_within(
+                  0.5).of(
+                    CONFIG.evalproperty(
+                      "buildings.mothership.#{resource}.#{config_name}"
+                    )
+                  )
               end
             end
           end

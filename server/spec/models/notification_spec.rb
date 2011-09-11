@@ -119,9 +119,8 @@ describe Notification do
 
     it "should set expiration time" do
       @model.save!
-      @model.expires_at.should be_close(
-        CONFIG.evalproperty('notifications.expiration_time').from_now,
-        SPEC_TIME_PRECISION
+      @model.expires_at.should be_witin(SPEC_TIME_PRECISION).of(
+        CONFIG.evalproperty('notifications.expiration_time').from_now
       )
     end
 

@@ -100,9 +100,8 @@ describe Player do
     it "should set to now + cooldown if previous value was nil" do
       player = Factory.build(:player)
       player.set_next_daily_bonus
-      player.daily_bonus_at.should be_close(
-        CONFIG['daily_bonus.cooldown'].from_now,
-        SPEC_TIME_PRECISION
+      player.daily_bonus_at.should be_within(SPEC_TIME_PRECISION).of(
+        CONFIG['daily_bonus.cooldown'].from_now
       )
     end
     
@@ -111,8 +110,8 @@ describe Player do
       player = Factory.build(:player, :daily_bonus_at => 
            next_bonus - 10 * CONFIG['daily_bonus.cooldown'])
       player.set_next_daily_bonus
-      player.daily_bonus_at.should be_close(
-        next_bonus, SPEC_TIME_PRECISION
+      player.daily_bonus_at.should be_within(SPEC_TIME_PRECISION).of(
+        next_bonus
       )
     end
   end
@@ -276,8 +275,8 @@ describe Player do
 
       it "should write vip_until" do
         @player.vip_start!(@vip_level)
-        @player.vip_until.should be_close(
-          @duration.from_now, SPEC_TIME_PRECISION)
+        @player.vip_until.should be_within(SPEC_TIME_PRECISION).of(
+          @duration.from_now)
       end
 
       it "should add stop callback" do
