@@ -22,11 +22,11 @@ if ARGV[0] == "config"
   end
 else
   require File.expand_path(File.dirname(__FILE__) + 
-      '/../lib/server/control_client.rb')
+      '/../../lib/server/control_client.rb')
   
   begin
     client = ControlClient.new
-    data = client.message('statistics')
+    data = client.message('stats|players')
   rescue ControlClient::ConnectionError
     # Stub data if server is down.
     data = {}

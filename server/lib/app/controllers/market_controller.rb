@@ -8,15 +8,15 @@ class MarketController < GenericController
   # - to_kind (Fixnum): resource kind you are demanding
   # 
   # Response:
-  # - avg_rate (Float): average market rate for that resource pair
+  # - average (Float): average market rate for that resource pair
   #
   def action_avg_rate
     param_options :required => {:from_kind => Fixnum, :to_kind => Fixnum}
     
-    avg_rate = MarketOffer.avg_rate(player.galaxy_id, params['from_kind'], 
+    avg_rate = MarketRate.average(player.galaxy_id, params['from_kind'],
       params['to_kind'])
     
-    respond :avg_rate => avg_rate
+    respond :average => avg_rate
   end
   
   # Send list of all market offers in the galaxy.

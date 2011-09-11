@@ -40,7 +40,7 @@ class MarketOffer < ActiveRecord::Base
   
   before_create do
     self.galaxy_id ||= player.galaxy_id
-    avg_rate = self.class.avg_rate(galaxy_id, from_kind, to_kind)
+    avg_rate = MarketRate.average(galaxy_id, from_kind, to_kind)
     offset = Cfg.market_rate_offset
     
     low = avg_rate * (1 - offset)
@@ -53,7 +53,15 @@ class MarketOffer < ActiveRecord::Base
     
     true
   end
-  
+
+  after_create do
+    MarketRate.add(galaxy_id, from_kind, to_kind, from_amount, to_rate)
+  end
+
+  after_destroy do
+    MarketRate.subtract(galaxy_id, from_kind, to_kind, from_amount)
+  end
+
   # Is this offer created by system?
   def system?; planet_id.nil?; end
   
@@ -138,7 +146,9 @@ class MarketOffer < ActiveRecord::Base
         save!
       end
       percentage_bought = amount.to_f / original_amount
-      
+
+      MarketRate.subtract(galaxy_id, from_kind, to_kind, amount)
+
       # Create notification if:
       # * It's not a system notification
       # * Enough of the percentage was bought
@@ -205,39 +215,17 @@ class MarketOffer < ActiveRecord::Base
     end
   end
   
-  # Return average market rate for given resource pair. Raises 
-  # ArgumentError if rates pair is invalid.
-  #
-  # Returns Float.
-  def self.avg_rate(galaxy_id, from_kind, to_kind)
-    seed_amount, seed_rate = CONFIG[
-      "market.avg_rate.seed.#{from_kind}.#{to_kind}"
-    ]
-    raise ArgumentError.new("Unknown kind pair! from_kind: #{
-      from_kind.inspect}, to_kind: #{to_kind.inspect}") if seed_amount.nil?
-    
-    connection.select_value("
-      SELECT SUM(rate * amount) / SUM(amount) as avg_rate FROM (
-        SELECT #{seed_amount} as amount, #{seed_rate} as rate
-        UNION
-        #{where(:from_kind => from_kind, :to_kind => to_kind, 
-                :galaxy_id => galaxy_id).
-          select("from_amount as amount, to_rate as rate").to_sql}
-      ) as subselect
-    ").to_f # JRuby compatibility.
-  end
-  
   # Creates system offer for resource specified by _resource_kind_ in galaxy
   # specified by _galaxy_id_.
   #
   # System offer is an offer which does not belong to any planet and trades
   # resource for creds.
   # 
-  # Its #to_rate is calculated by using #avg_rate and selling in most 
+  # Its #to_rate is calculated by using #average and selling in most
   # expensive possible value.
   #
   def self.create_system_offer(galaxy_id, resource_kind)
-    avg_rate = self.avg_rate(galaxy_id, resource_kind, KIND_CREDS)
+    avg_rate = MarketRate.average(galaxy_id, resource_kind, KIND_CREDS)
     to_rate = avg_rate * (1 + Cfg.market_rate_offset)
     from_amount = Cfg.market_bot_random_resource(resource_kind)
     
