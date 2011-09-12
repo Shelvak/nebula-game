@@ -38,7 +38,7 @@ describe MarketOffer do
       end
     end
     
-    describe "to_rate ajustment to fit avg. market rate" do
+    describe "to_rate adjustment to fit avg. market rate" do
       it "should adjust it if it's too low" do
         offer = Factory.build(:market_offer, :to_rate => 1)
         MarketRate.stub!(:average).
