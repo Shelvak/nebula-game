@@ -96,7 +96,7 @@ describe Notification do
     it_behaves_like "notifier",
       :build => lambda { Factory.build :notification },
       :change => lambda { |model| model.expires_at += 1.week },
-      :notify_on_update => false
+      :notify_on_update => false, :notify_on_destroy => false
   end
 
   describe "create" do
@@ -116,7 +116,7 @@ describe Notification do
 
     it "should set expiration time" do
       @model.save!
-      @model.expires_at.should be_witin(SPEC_TIME_PRECISION).of(
+      @model.expires_at.should be_within(SPEC_TIME_PRECISION).of(
         CONFIG.evalproperty('notifications.expiration_time').from_now
       )
     end

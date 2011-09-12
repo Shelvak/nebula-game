@@ -7,20 +7,14 @@ end
 
 Factory.define :planet, :class => SsObject::Planet,
 :parent => :ss_object do |m|
-  m.solar_system do |r|
-    galaxy = r.player \
-      ? r.player.galaxy \
-      : Factory.create(:galaxy)
-    Factory.create :solar_system, :galaxy => galaxy,
-      :x => (galaxy.solar_systems.maximum(:x) || 0) + 1,
-      :y => (galaxy.solar_systems.maximum(:y) || 0) + 1
+  m.solar_system do
+    Factory.create :solar_system,
+      :x => (SolarSystem.maximum(:x) || 0) + 1, :y => 0
   end
   m.width 50
   m.height 50
   m.size 80
-  m.name do |r|
-    "P-#{rand(100000)}"
-  end
+  m.seq(:name) { |i| "P-#{i}" }
 
   # Order is important here, storage must be increased first.
   m.metal_storage 100000
@@ -36,7 +30,9 @@ Factory.define :planet, :class => SsObject::Planet,
 end
 
 Factory.define :planet_with_player, :parent => :planet do |m|
-  m.association :player
+  m.player do |record|
+    Factory.create(:player, :galaxy_id => record.solar_system.galaxy_id)
+  end
 end
 
 Factory.define :sso_jumpgate, :parent => :ss_object,
