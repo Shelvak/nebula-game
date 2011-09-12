@@ -110,7 +110,7 @@
          <base:Scroller top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off">
             <base:AdvancedContainer id="researchContainer" left="0" right="0">
                <base:layout>
-                  <s:VerticalLayout paddingTop="6" gap="3"/>
+                  <s:VerticalLayout paddingTop="6" gap="15"/>
                </base:layout>
             </base:AdvancedContainer>
          </base:Scroller>
