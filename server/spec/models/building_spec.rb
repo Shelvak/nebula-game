@@ -108,10 +108,9 @@ describe Building do
     it "should set new timestamp on planet" do
       @building.self_destruct!
       @planet.reload
-      @planet.can_destroy_building_at.should be_close(
-        CONFIG.evalproperty("buildings.self_destruct.cooldown").since,
+      @planet.can_destroy_building_at.should be_within(
         SPEC_TIME_PRECISION
-      )
+      ).of(CONFIG.evalproperty("buildings.self_destruct.cooldown").since)
     end
 
     it "should not fail if resources does not fit to planet" do
@@ -387,16 +386,9 @@ describe Building do
   end
 
   describe "notifier" do
-    before(:each) do
-      @build = lambda { Factory.build :building }
-      @change = lambda do |model|
-        model.level += 1
-      end
-    end
-
-    @should_not_notify_create = true
-    @should_not_notify_update = true
-    it_should_behave_like "notifier"
+    it_behaves_like "notifier", :build => lambda { Factory.build :building },
+      :change => lambda { |model| model.level += 1 },
+      :notify_on_create => false, :notify_on_update => false
   end
 
   describe "#upgrade_time" do
@@ -571,7 +563,7 @@ describe Building do
 
     @required_fields = %w{hp}
     @ommited_fields = %w{pause_remainder hp_percentage}
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
   end
 
   describe "on create" do
@@ -929,9 +921,9 @@ describe Building do
       )
     end
 
-    it_should_behave_like "upgradable"
-    it_should_behave_like "upgradable with hp"
-    it_should_behave_like "default upgradable time calculation"
+    it_behaves_like "upgradable"
+    it_behaves_like "upgradable with hp"
+    it_behaves_like "default upgradable time calculation"
   end
   
   describe "#cancel!" do

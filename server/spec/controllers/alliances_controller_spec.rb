@@ -2,7 +2,7 @@ require File.expand_path(
   File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 )
 
-describe "only by owner", :shared => true do
+shared_examples_for "only by owner" do
   it "should fail if invoked not by alliance owner" do
     @alliance.owner = Factory.create(:player)
     @alliance.save!
@@ -29,7 +29,7 @@ describe AlliancesController do
     end
 
     @required_params = %w{name}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should fail if player does not have level 1 technology" do
       @tech.level = 0
@@ -116,8 +116,8 @@ describe AlliancesController do
     end
 
     @required_params = %w{planet_id}
-    it_should_behave_like "with param options"
-    it_should_behave_like "only by owner"
+    it_behaves_like "with param options"
+    it_behaves_like "only by owner"
 
     it "should fail if player does not see that planet" do
       @fse.destroy
@@ -175,7 +175,7 @@ describe AlliancesController do
     end
 
     @required_params = %w{notification_id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should fail if notification belongs to other player" do
       @notification.player = Factory.create(:player)
@@ -262,9 +262,8 @@ describe AlliancesController do
     it "should set alliance cooldown" do
       invoke @action, @params
       player.reload
-      player.alliance_cooldown_ends_at.should be_close(
-        CONFIG.evalproperty('alliances.leave.cooldown').from_now,
-        SPEC_TIME_PRECISION
+      player.alliance_cooldown_ends_at.should be_within(SPEC_TIME_PRECISION).of(
+        CONFIG.evalproperty('alliances.leave.cooldown').from_now
       )
     end
 
@@ -309,8 +308,8 @@ describe AlliancesController do
     end
 
     @required_params = %w{player_id}
-    it_should_behave_like "with param options"
-    it_should_behave_like "only by owner"
+    it_behaves_like "with param options"
+    it_behaves_like "only by owner"
 
     it "should fail if current player is not in alliance" do
       player.alliance = nil
@@ -371,7 +370,7 @@ describe AlliancesController do
     end
 
     @required_params = %w{id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should respond with alliance name" do
       invoke @action, @params
@@ -407,7 +406,7 @@ describe AlliancesController do
       @params = {'name' => "Foobar Heroes"}
     end
 
-    it_should_behave_like "only by owner"
+    it_behaves_like "only by owner"
 
     it "should reduce creds" do
       lambda do
@@ -448,7 +447,7 @@ describe AlliancesController do
     end
 
     @required_params = %w{description}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should change alliance description" do
       invoke @action, @params

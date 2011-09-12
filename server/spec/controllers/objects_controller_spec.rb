@@ -15,8 +15,8 @@ describe ObjectsController do
     end
 
     @required_params = %w{objects}
-    it_should_behave_like "with param options"
-    it_should_behave_like "only push"
+    it_behaves_like "with param options"
+    it_behaves_like "only push"
 
     it "should include object" do
       push @action, @params
@@ -34,8 +34,8 @@ describe ObjectsController do
     end
 
     @required_params = %w{objects reason}
-    it_should_behave_like "with param options"
-    it_should_behave_like "only push"
+    it_behaves_like "with param options"
+    it_behaves_like "only push"
 
     it "should cast planets to perspective" do
       planet = Factory.create(:planet, :player => player)
@@ -74,8 +74,8 @@ describe ObjectsController do
     end
 
     @required_params = %w{objects reason}
-    it_should_behave_like "with param options"
-    it_should_behave_like "only push"
+    it_behaves_like "with param options"
+    it_behaves_like "only push"
 
     it "should include objects id" do
       push @action, @params

@@ -12,7 +12,7 @@ package controllers.messages
    
    import utils.SingletonFactory;
    import utils.locale.Localizer;
-   import utils.logging.targets.MessagesLogger;
+   import utils.logging.MessagesLogger;
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
    

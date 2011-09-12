@@ -20,7 +20,7 @@ describe RoutesController do
       ]
     end
 
-    it_should_behave_like "only push"
+    it_behaves_like "only push"
 
     it "should respond with routes" do
       push @action, @params
@@ -42,7 +42,7 @@ describe RoutesController do
     end
 
     @required_params = %w{id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should check player" do
       route = Factory.create(:route)

@@ -15,7 +15,7 @@ class CreateMarketOffer < ActiveRecord::Migration
     add_index(:market_offers, [:from_kind, :to_kind], 
       :name => "avg. market value")
     add_fk(:galaxies, :market_offers)
-    add_fk(:ss_objects, :market_offers, nil, nil, "planet_id")
+    add_fk(:ss_objects, :market_offers, :target_key => "planet_id")
   end
 
   def self.down

@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe "resolving you/enemy", :shared => true do
+shared_examples_for "resolving you/enemy" do
   it "should resolve YOU" do
     @resolver.status(@player.id).should == StatusResolver::YOU
   end
@@ -19,7 +19,7 @@ describe StatusResolver do
         @resolver = StatusResolver.new(@player)
       end
 
-      it_should_behave_like "resolving you/enemy"
+      it_behaves_like "resolving you/enemy"
     end
 
     describe "player in alliance" do
@@ -33,7 +33,7 @@ describe StatusResolver do
         @resolver = StatusResolver.new(@player)
       end
 
-      it_should_behave_like "resolving you/enemy"
+      it_behaves_like "resolving you/enemy"
 
       it "should resolve ALLY" do
         @resolver.status(@ally.id).should == StatusResolver::ALLY

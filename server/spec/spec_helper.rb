@@ -9,7 +9,7 @@ if $SPEC_INITIALIZED.nil?
   SPEC_TIME_PRECISION = 10
   SPEC_FLOAT_PRECISION = 0.0001
 
-  require 'spec'
+  require 'rspec'
   require 'pp'
 
   # Include helpers/shared
@@ -132,7 +132,7 @@ if $SPEC_INITIALIZED.nil?
   # Disable logging. Who looks at it anyway?
   LOGGER.level = GameLogger::LEVEL_FATAL
 
-  Spec::Runner.configure do |config|
+  RSpec.configure do |config|
     last_gc_run = Time.now
 
     config.before(:each) do
@@ -155,35 +155,35 @@ if $SPEC_INITIALIZED.nil?
       end
     end
   end
+
+  ActiveRecord::Base.establish_connection(DB_CONFIG['test'])
+  cleanup_database
+
+  # Include factories
+  require 'factory_girl'
+  FactoryGirl.definition_file_paths = [
+    File.expand_path(File.join(File.dirname(__FILE__), 'factories'))
+  ]
+  FactoryGirl.find_definitions
+
+  # Build and stub out all unnecessary validation methods
+  def Factory.build!(*args)
+    model = Factory.build(*args)
+    model.stub!(:validate_technologies).and_return(true)
+
+    model
+  end
+
+  # Create but stub out all unnecessary validation methods
+  def Factory.create!(*args)
+    model = Factory.build(*args)
+    model.stub!(:validate_technologies).and_return(true)
+    model.save!
+
+    model
+  end
+
+  SPEC_EVENT_HANDLER = RSpecEventHandler.new
 end
-
-ActiveRecord::Base.establish_connection(DB_CONFIG['test'])
-cleanup_database
-
-# Include factories
-require 'factory_girl'
-glob = File.expand_path(
-  File.join(File.dirname(__FILE__), 'factories', '*.rb')
-)
-Dir[glob].each { |file| require file }
-
-# Build and stub out all unnecessary validation methods
-def Factory.build!(*args)
-  model = Factory.build(*args)
-  model.stub!(:validate_technologies).and_return(true)
-
-  model
-end
-
-# Create but stub out all unnecessary validation methods
-def Factory.create!(*args)
-  model = Factory.build(*args)
-  model.stub!(:validate_technologies).and_return(true)
-  model.save!
-
-  model
-end
-
-SPEC_EVENT_HANDLER = SpecEventHandler.new
 
 

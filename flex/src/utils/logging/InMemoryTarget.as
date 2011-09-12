@@ -1,4 +1,4 @@
-package utils.logging.targets
+package utils.logging
 {
    import mx.core.mx_internal;
    import mx.logging.targets.LineFormattedTarget;

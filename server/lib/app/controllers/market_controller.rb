@@ -13,7 +13,7 @@ class MarketController < GenericController
   def action_avg_rate
     param_options :required => {:from_kind => Fixnum, :to_kind => Fixnum}
     
-    avg_rate = MarketOffer.avg_rate(player.galaxy_id, params['from_kind'], 
+    avg_rate = MarketRate.average(player.galaxy_id, params['from_kind'],
       params['to_kind'])
     
     respond :avg_rate => avg_rate

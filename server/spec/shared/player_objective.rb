@@ -1,4 +1,4 @@
-describe "player objective", :shared => true do
+shared_examples_for "player objective" do
   it "should not progress for other player" do
     player = Factory.create(:player, @other_player_params || {})
     lambda do

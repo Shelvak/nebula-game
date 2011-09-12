@@ -22,11 +22,8 @@ namespace :db do
   desc "Migrate the database through scripts in db/migrate. Target specific " +
     "version with VERSION=x."
   task :migrate => [:environment] do
-    env = ENV['environment']
-    require File.join(ROOT_DIR, 'tasks', 'helpers', 'migration.rb')
-
-    puts "Migrating in #{env}..."
-    ActiveRecord::Base.establish_connection(DB_CONFIG[env])
+    puts "Migrating in #{App.env}..."
+    ActiveRecord::Base.establish_connection(DB_CONFIG[App.env])
     ActiveRecord::Migrator.migrate(
       DB_MIGRATIONS_DIR,
       ENV["VERSION"] ? ENV["VERSION"].to_i : nil
@@ -36,6 +33,16 @@ namespace :db do
     unless ENV['environment'] == 'production'
       puts "Cloning database schema to test."
       Rake::Task['db:test:clone'].invoke
+    end
+  end
+
+  namespace :migrate do
+    desc "Reapply latest migration to DB."
+    task :reapply => :environment do
+      puts "Rollbacking in #{App.env}..."
+      ActiveRecord::Base.establish_connection(DB_CONFIG[App.env])
+      ActiveRecord::Migrator.rollback(DB_MIGRATIONS_DIR, 1)
+      Rake::Task['db:migrate'].invoke
     end
   end
 
@@ -110,8 +117,7 @@ namespace :db do
   namespace :test do
     desc "Clone database from current environment"
     task :clone => :environment do
-      env = ENV['environment']
-      ActiveRecord::Cloner.clone_db(DB_CONFIG[env], DB_CONFIG['test'])
+      ActiveRecord::Cloner.clone_db(DB_CONFIG[App.env], DB_CONFIG['test'])
     end
   end
 end

@@ -5,5 +5,5 @@ describe Building::GroundFactory do
     @model = Factory.build(:b_ground_factory)
   end
 
-  it_should_behave_like "with army points"
+  it_behaves_like "with army points"
 end

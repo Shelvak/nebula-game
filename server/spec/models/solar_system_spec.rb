@@ -6,7 +6,7 @@ describe SolarSystem do
       @model = Factory.create(:solar_system)
     end
 
-    it_should_behave_like "shieldable"
+    it_behaves_like "shieldable"
   end
 
   describe "#as_json" do
@@ -16,7 +16,7 @@ describe SolarSystem do
 
     @required_fields = [:id, :x, :y, :kind]
     @ommited_fields = [:galaxy_id]
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
   end
 
   describe "#npc_unit_locations" do

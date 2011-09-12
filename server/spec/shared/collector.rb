@@ -1,4 +1,4 @@
-describe "collector", :shared => true do
+shared_examples_for "collector" do
   it "should manage resources" do
     @model.class.should manage_resources
   end

@@ -7,5 +7,5 @@ describe Building::NpcTankFactory do
     @model = Factory.create(:b_npc_tank_factory, :planet => @planet)
   end
 
-  it_should_behave_like "npc special factory"
+  it_behaves_like "npc special factory"
 end

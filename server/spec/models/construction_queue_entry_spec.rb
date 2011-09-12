@@ -70,13 +70,9 @@ describe ConstructionQueueEntry do
   end
 
   describe "notifier" do
-    before(:all) do
-      @build = lambda { Factory.build(:construction_queue_entry) }
-      @change = lambda { |model| model.count += 1 }
-    end
-
-    @should_not_notify_update = true
-    @should_not_notify_destroy = true
-    it_should_behave_like "notifier"
+    it_behaves_like "notifier",
+      :build => lambda { Factory.build(:construction_queue_entry) },
+      :change => lambda { |model| model.count += 1 },
+      :notify_on_update => false, :notify_on_destroy => false
   end
 end

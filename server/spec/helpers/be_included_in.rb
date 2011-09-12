@@ -1,4 +1,4 @@
-Spec::Matchers.define :be_included_in do |target|
+RSpec::Matchers.define :be_included_in do |target|
   match do |given|
     target.include?(given)
   end

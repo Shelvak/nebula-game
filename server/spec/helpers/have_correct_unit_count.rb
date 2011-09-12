@@ -1,4 +1,4 @@
-Spec::Matchers.define :have_correct_unit_count do |*config_keys|
+RSpec::Matchers.define :have_correct_unit_count do |*config_keys|
   match do |location|
     @location = location
     @errors = {}

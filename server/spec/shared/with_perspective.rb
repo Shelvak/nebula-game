@@ -1,4 +1,4 @@
-describe "with :perspective", :shared => true do
+shared_examples_for "with :perspective" do
   it "should include status if given player id" do
     @model.as_json(:perspective => @player)["status"].should == @status
   end

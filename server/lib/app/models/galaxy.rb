@@ -7,6 +7,8 @@ class Galaxy < ActiveRecord::Base
   has_many :players
   # FK :dependent => :delete_all
   has_many :solar_systems
+  # FK :dependent => :delete_all
+  has_many :market_rates
 
   # Returns ID of battleground solar system.
   def self.battleground_id(galaxy_id)

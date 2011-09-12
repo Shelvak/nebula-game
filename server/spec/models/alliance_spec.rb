@@ -33,7 +33,7 @@ describe Alliance do
     @required_fields = %w{id name description victory_points owner_id}
     @ommited_fields = Alliance.columns.map(&:name) - @required_fields
     
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
   end
   
   describe "#player_ratings" do
@@ -52,7 +52,7 @@ describe Alliance do
       @model = Factory.build(:alliance)
     end
 
-    it_should_behave_like "name validation"
+    it_behaves_like "name validation"
   end
 
   describe "players relation" do

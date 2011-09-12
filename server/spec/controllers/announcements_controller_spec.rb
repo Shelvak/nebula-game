@@ -51,8 +51,8 @@ describe AnnouncementsController do
     end
     
     @required_params = %w{message ends_at}
-    it_should_behave_like "with param options"
-    it_should_behave_like "only push"
+    it_behaves_like "with param options"
+    it_behaves_like "only push"
     
     %w{message ends_at}.each do |attr|
       it "should respond with #{attr}" do

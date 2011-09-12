@@ -549,9 +549,8 @@
     <property.creds value="Creds" />
     <property.victoryPoints value="Victory points" />
     <property.fee value="Fee percentage" />
-    <!-- TODO translate these -->
-    <property.width value="Building width" />
-    <property.height value="Building height" />
+    <property.width value="TODO: Building width" />
+    <property.height value="TODO: Building height" />
 
     <text.deactivated>
       <p>

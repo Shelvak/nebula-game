@@ -39,7 +39,7 @@ describe Building::ConstructorTest do
     end
 
     @required_fields = %w{construction_queue_entries}
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
   end
 
   describe "#construction_queue_entries" do

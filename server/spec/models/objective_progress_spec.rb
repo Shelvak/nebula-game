@@ -6,7 +6,7 @@ describe ObjectiveProgress do
       @class = ObjectiveProgress
     end
 
-    it_should_behave_like "object"
+    it_behaves_like "object"
   end
 
   it "should not allow setting completed < 0" do
@@ -48,23 +48,21 @@ describe ObjectiveProgress do
   end
 
   describe "notification" do
-    before(:each) do
-      @build = lambda do
-        quest = Factory.create(:quest)
-        qp = Factory.create(:quest_progress, :quest => quest)
-        objective = Factory.create(:objective, :quest => quest,
-          :count => 2)
-        Factory.build(:objective_progress, :objective => objective,
-          :player => qp.player)
-      end
-      @change = lambda { |model| model.completed += 1 }
+    build = lambda do
+      quest = Factory.create(:quest)
+      qp = Factory.create(:quest_progress, :quest => quest)
+      objective = Factory.create(:objective, :quest => quest,
+        :count => 2)
+      Factory.build(:objective_progress, :objective => objective,
+        :player => qp.player)
     end
+    change = lambda { |model| model.completed += 1 }
 
-    @should_not_notify_create = true
-    it_should_behave_like "notifier"
+    it_behaves_like "notifier", :build => build, :change => change,
+      :notify_on_create => false
 
     it "should not dispatch updated if it's going to be destroyed" do
-      model = @build.call.tap(&:save!)
+      model = build.call.tap(&:save!)
       should_not_fire_event(model, EventBroker::CHANGED,
           EventBroker::REASON_UPDATED) do
         model.completed = 2
@@ -74,7 +72,7 @@ describe ObjectiveProgress do
 
     describe "for achievement" do
       before(:each) do
-        @model = @build.call.tap(&:save!)
+        @model = build.call.tap(&:save!)
         quest = @model.objective.quest
         quest.achievement = true
         quest.save!
@@ -83,7 +81,7 @@ describe ObjectiveProgress do
       it "should not dispatch updated if it's for achievement" do
         should_not_fire_event(@model, EventBroker::CHANGED,
             EventBroker::REASON_UPDATED) do
-          @change.call(@model)
+          change.call(@model)
           @model.save!
         end
       end

@@ -1,4 +1,4 @@
-describe "upgradable with hp", :shared => true do
+shared_examples_for "upgradable with hp" do
   describe "#hp=" do
     it "should not allow setting hp more than hp_max" do
       @model.level = 5

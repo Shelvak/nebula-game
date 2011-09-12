@@ -1,4 +1,4 @@
-class SpecOptionsHelper < Hash
+class RSpecOptionsHelper < Hash
   def initialize(params)
     params.each do |key, value|
       self[key] = value
@@ -41,19 +41,19 @@ class SpecOptionsHelper < Hash
 end
 
 def opts_active
-  SpecOptionsHelper.new(:state => Building::STATE_ACTIVE)
+  RSpecOptionsHelper.new(:state => Building::STATE_ACTIVE)
 end
 
 def opts_inactive
-  SpecOptionsHelper.new(:state => Building::STATE_INACTIVE)
+  RSpecOptionsHelper.new(:state => Building::STATE_INACTIVE)
 end
 
 def opts_working
-  SpecOptionsHelper.new(:state => Building::STATE_WORKING)
+  RSpecOptionsHelper.new(:state => Building::STATE_WORKING)
 end
 
 def opts_upgrading
-  SpecOptionsHelper.new(
+  RSpecOptionsHelper.new(
     :upgrade_ends_at => 20.minutes.from_now,
     :pause_remainder => nil
   )
@@ -76,10 +76,10 @@ def opts_paused
 end
 
 def opts_built
-  SpecOptionsHelper.new(:level => 1)
+  RSpecOptionsHelper.new(:level => 1)
 end
 
 def opts_shielded(player_id)
-  SpecOptionsHelper.new(:shield_ends_at => 10.hours.from_now, 
+  RSpecOptionsHelper.new(:shield_ends_at => 10.hours.from_now,
     :shield_owner_id => player_id)
 end

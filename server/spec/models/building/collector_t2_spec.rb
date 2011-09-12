@@ -5,5 +5,5 @@ describe Building::CollectorT2 do
     @model = Factory.create!(:b_collector_t2)
   end
 
-  it_should_behave_like "collector"
+  it_behaves_like "collector"
 end

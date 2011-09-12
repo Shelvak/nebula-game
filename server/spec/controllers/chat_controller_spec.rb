@@ -17,7 +17,7 @@ describe ChatController do
       @hub.register(player)
     end
 
-    it_should_behave_like "only push"
+    it_behaves_like "only push"
 
     it "should respond with channels" do
       push @action, @params
@@ -46,8 +46,8 @@ describe ChatController do
     end
 
     @required_params = %w{channel player}
-    it_should_behave_like "with param options"
-    it_should_behave_like "only push"
+    it_behaves_like "with param options"
+    it_behaves_like "only push"
 
     it "should have channel name" do
       push @action, @params
@@ -74,8 +74,8 @@ describe ChatController do
     end
 
     @required_params = %w{channel player}
-    it_should_behave_like "with param options"
-    it_should_behave_like "only push"
+    it_behaves_like "with param options"
+    it_behaves_like "only push"
 
     it "should have channel name" do
       push @action, @params
@@ -99,7 +99,7 @@ describe ChatController do
     end
 
     @required_params = %w{chan msg}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should invoke #channel_msg on hub" do
       hub = mock(Chat::Hub)
@@ -119,7 +119,7 @@ describe ChatController do
     end
 
     @required_params = %w{pid msg}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should invoke #private_msg on hub" do
       hub = mock(Chat::Hub)

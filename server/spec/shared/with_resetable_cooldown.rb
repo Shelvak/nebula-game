@@ -1,4 +1,4 @@
-describe "with resetable cooldown", :shared => true do
+shared_examples_for "with resetable cooldown" do
   describe "#start_cooldown!" do
     it "should reset cooldown if cooldown is nil" do
       @model.cooldown_ends_at = nil

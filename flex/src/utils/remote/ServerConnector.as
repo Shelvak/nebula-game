@@ -15,7 +15,7 @@ package utils.remote
    
    import utils.DateUtil;
    import utils.Objects;
-   import utils.logging.targets.MessagesLogger;
+   import utils.logging.MessagesLogger;
    import utils.remote.events.ServerProxyEvent;
    import utils.remote.rmo.*;
    

@@ -4,7 +4,7 @@ def path(description)
   Path.new(description)
 end
 
-describe "adding new solar systems", :shared => true do
+shared_examples_for "adding new solar systems" do
   it "should add homeworld solar system" do
     FowSsEntry.where(@conditions).map do |fse|
       {
@@ -38,7 +38,7 @@ describe "adding new solar systems", :shared => true do
   end
 end
 
-describe "with orbit units", :shared => true do
+shared_examples_for "with orbit units" do
   it "should have correct number of planet orbit units" do
     @solar_systems.each do |solar_system|
       (@planets || solar_system.planets).each do |planet|
@@ -71,7 +71,7 @@ describe "with orbit units", :shared => true do
   end
 end
 
-describe "with planet units", :shared => true do
+shared_examples_for "with planet units" do
   it "should have correct number of planet ground units" do
     @solar_systems.each do |solar_system|
       (@planets || solar_system.planets).each do |planet|
@@ -112,7 +112,7 @@ describe SpaceMule do
       end
 
       it "should have created_at set" do
-        @galaxy.created_at.should be_close(Time.now, 10.seconds)
+        @galaxy.created_at.should be_within(10.seconds).of(Time.now)
       end
     end
 
@@ -158,8 +158,8 @@ describe SpaceMule do
         end
       end
       
-      it_should_behave_like "with planet units"
-      it_should_behave_like "with orbit units"
+      it_behaves_like "with planet units"
+      it_behaves_like "with orbit units"
     end
   
     it "should have spawn callback for first convoy" do
@@ -268,10 +268,9 @@ describe SpaceMule do
       end
 
       it "should have correct shield time" do
-        @ss.shield_ends_at.should be_close(
+        @ss.shield_ends_at.should be_within(10).of(
           CONFIG.evalproperty('galaxy.player.shield_duration').
-            seconds.from_now,
-          10
+            seconds.from_now
         )
       end
 
@@ -357,7 +356,7 @@ describe SpaceMule do
         
         it "should set #owner_changed" do
           @homeworld.owner_changed.
-            should be_close(Time.now, SPEC_TIME_PRECISION)
+            should be_within(SPEC_TIME_PRECISION).of(Time.now)
         end
         
         describe "resources" do
@@ -372,10 +371,12 @@ describe SpaceMule do
               ["store", "_storage"]
             ].each do |config_name, attr_name|
               it "should set #{resource} #{config_name}" do
-                @homeworld.send("#{resource}#{attr_name}").should be_close(
-                  CONFIG.evalproperty(
-                    "buildings.mothership.#{resource}.#{config_name}"
-                  ), 0.5)
+                @homeworld.send("#{resource}#{attr_name}").should be_within(
+                  0.5).of(
+                    CONFIG.evalproperty(
+                      "buildings.mothership.#{resource}.#{config_name}"
+                    )
+                  )
               end
             end
           end
@@ -393,7 +394,7 @@ describe SpaceMule do
           @type = 'homeworld'
         end
         
-        it_should_behave_like "with planet units"
+        it_behaves_like "with planet units"
 
         describe "orbit units" do
           before(:each) do
@@ -404,7 +405,7 @@ describe SpaceMule do
             Unit.in_location(@homeworld.solar_system_point).size.should == 0
           end
           
-          it_should_behave_like "with orbit units"
+          it_behaves_like "with orbit units"
         end
       end
         
@@ -419,8 +420,8 @@ describe SpaceMule do
           @type = 'regular'
         end
         
-        it_should_behave_like "with planet units"
-        it_should_behave_like "with orbit units"
+        it_behaves_like "with planet units"
+        it_behaves_like "with orbit units"
       end
       
       describe "mini battleground solar systems" do
@@ -434,8 +435,8 @@ describe SpaceMule do
           @type = 'battleground'
         end
         
-        it_should_behave_like "with planet units"
-        it_should_behave_like "with orbit units"
+        it_behaves_like "with planet units"
+        it_behaves_like "with orbit units"
       end
     end
     
@@ -464,7 +465,7 @@ describe SpaceMule do
           @conditions = {:player_id => @player_fge.player_id}
         end
 
-        it_should_behave_like "adding new solar systems"
+        it_behaves_like "adding new solar systems"
       end
 
       describe "alliance" do
@@ -472,7 +473,7 @@ describe SpaceMule do
           @conditions = {:alliance_id => @alliance_fge.alliance_id}
         end
 
-        it_should_behave_like "adding new solar systems"
+        it_behaves_like "adding new solar systems"
       end
     end
   end

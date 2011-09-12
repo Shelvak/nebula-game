@@ -15,7 +15,7 @@ describe DailyBonusController do
       @params = {}
     end
     
-    it_should_behave_like "only push"
+    it_behaves_like "only push"
     
     it "should fail if bonus is not available" do
       player.stub!(:daily_bonus_available?).and_return(false)
@@ -40,7 +40,7 @@ describe DailyBonusController do
     end
     
     @required_params = %w{planet_id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
     
     it "should fail if user does not own that planet" do
       @planet.player = nil

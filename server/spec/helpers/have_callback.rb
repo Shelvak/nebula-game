@@ -1,4 +1,4 @@
-Spec::Matchers.define :have_callback do |type, time|
+RSpec::Matchers.define :have_callback do |type, time|
   match do |object|
     match_time = time.is_a?(Time) \
       ? (time - SPEC_TIME_PRECISION)..(time + SPEC_TIME_PRECISION) \

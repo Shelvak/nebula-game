@@ -1,4 +1,4 @@
-describe "shieldable", :shared => true do
+shared_examples_for "shieldable" do
   describe "#as_json" do
     fields = %w{shield_ends_at shield_owner_id}
 
@@ -9,7 +9,7 @@ describe "shieldable", :shared => true do
 
       @required_fields = fields
 
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
     end
 
     describe "when does not have shield" do
@@ -19,7 +19,7 @@ describe "shieldable", :shared => true do
 
       @ommited_fields = fields
 
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
     end
   end
 end

@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe "technology upgradable", :shared => true do
+shared_examples_for "technology upgradable" do
   it "should return technology in upgrading state" do
     invoke @action, @params
     Technology.find(
@@ -16,7 +16,7 @@ describe "technology upgradable", :shared => true do
   end
 end
 
-describe "technology existing", :shared => true do
+shared_examples_for "technology existing" do
   it "should not allow to change other player technology" do
     @technology.player = Factory.create(:player)
     @technology.save!
@@ -44,7 +44,7 @@ describe TechnologiesController do
       @action = "technologies|index"
     end
 
-    it_should_behave_like "only push"
+    it_behaves_like "only push"
 
     it "should return list of player technologies" do
       should_respond_with :technologies => player.technologies
@@ -65,7 +65,7 @@ describe TechnologiesController do
     end
 
     @required_params = %w{type planet_id scientists speed_up}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should return new technology" do
       invoke @action, @params
@@ -81,7 +81,7 @@ describe TechnologiesController do
       ).player.should == player
     end
 
-    it_should_behave_like "technology upgradable"
+    it_behaves_like "technology upgradable"
   end
 
   describe "technologies|upgrade" do
@@ -99,10 +99,10 @@ describe TechnologiesController do
     end
 
     @required_params = %w{id planet_id scientists speed_up}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
-    it_should_behave_like "technology upgradable"
-    it_should_behave_like "technology existing"
+    it_behaves_like "technology upgradable"
+    it_behaves_like "technology existing"
   end
 
   describe "tehcnologies|update" do
@@ -115,9 +115,9 @@ describe TechnologiesController do
     end
 
     @required_params = %w{id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
-    it_should_behave_like "technology existing"
+    it_behaves_like "technology existing"
 
     it "should update scientist count" do
       invoke @action, @params
@@ -135,9 +135,9 @@ describe TechnologiesController do
     end
 
     @required_params = %w{id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
-    it_should_behave_like "technology existing"
+    it_behaves_like "technology existing"
 
     it "should return paused technology" do
       invoke @action, @params
@@ -157,9 +157,9 @@ describe TechnologiesController do
     end
 
     @required_params = %w{id scientists}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
-    it_should_behave_like "technology existing"
+    it_behaves_like "technology existing"
 
     it "should return resumed technology" do
       invoke @action, @params

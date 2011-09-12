@@ -13,14 +13,10 @@ describe Tile do
   end
   
   describe "notifier" do
-    before(:all) do
-      @build = lambda { Factory.build(:tile, :kind => Tile::SAND) }
-      @change = lambda { |tile| tile.kind = Tile::TITAN }
-    end
-
-    @should_not_notify_create = true
-    @should_not_notify_update = true
-    it_should_behave_like "notifier"
+    it_behaves_like "notifier",
+      :build => lambda { Factory.build(:tile, :kind => Tile::SAND) },
+      :change => lambda { |tile| tile.kind = Tile::TITAN },
+      :notify_on_create => false, :notify_on_update => false
   end
 
   describe "#as_json" do
@@ -30,7 +26,7 @@ describe Tile do
 
     @ommited_fields = %w{}
     @required_fields = Tile.columns.map(&:name) - @ommited_fields
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
   end
 
   describe ".for_building" do
@@ -53,6 +49,6 @@ describe Tile do
       Factory.create(:tile, :planet => @planet)
     end
 
-    it_should_behave_like "fast finding"
+    it_behaves_like "fast finding"
   end
 end

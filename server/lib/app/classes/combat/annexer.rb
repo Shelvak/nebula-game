@@ -13,9 +13,11 @@ class Combat::Annexer
         # Don't do anything if no shots were shot.
         return if outcomes.nil?
         
-        # There was a combat. Lets check if the owner of that planet lost.
-        if outcomes[planet.player_id] == Combat::OUTCOME_LOSE
-          if planet.player && planet.player.planets_count == 1
+        # There was a combat. Lets check if the owner of that planet lost (and
+        # he is not NPC).
+        if outcomes[planet.player_id] == Combat::OUTCOME_LOSE &&
+            ! planet.player_id.nil?
+          if planet.player.planets_count == 1
             # Don't take players last planet.
             protect(planet, outcomes)
           else

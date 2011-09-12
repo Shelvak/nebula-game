@@ -95,7 +95,7 @@ class FowSsEntry < ActiveRecord::Base
             entry.enemy_planets = !! (planet_player_ids.find do |id|
               id != entry.player_id
             end)
-            entry.alliance_planet_player_ids = nil
+            entry.alliance_planet_player_ids = []
             entry.nap_planets = nil
 
             # Resolve ships
@@ -103,7 +103,7 @@ class FowSsEntry < ActiveRecord::Base
             entry.enemy_ships = !! (unit_player_ids.find do |id|
               id != entry.player_id
             end)
-            entry.alliance_ship_player_ids = nil
+            entry.alliance_ship_player_ids = []
             entry.nap_ships = nil
 
           # It's an Alliance entry

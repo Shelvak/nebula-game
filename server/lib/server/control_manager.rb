@@ -78,7 +78,29 @@ class ControlManager
   # - 2w (Fixnum): no. of players logged in 2 weeks.
   # - total (Fixnum): total no. of players
   #
-  ACTION_STATISTICS = 'statistics'
+  ACTION_STATS_PLAYERS = 'stats|players'
+
+  # Return market rate for given resource pair in different galaxies.
+  #
+  # Parameters:
+  # - from_kind (Fixnum)
+  # - to_kind (Fixnum)
+  #
+  # Response:
+  # - rates (Hash): +Hash+ of {galaxy_id => rate} pairs.
+  #
+  ACTION_STATS_MARKET_RATES = 'stats|market_rates'
+
+  # Return number of market offers for given resource pair in different galaxies.
+  #
+  # Parameters:
+  # - from_kind (Fixnum)
+  # - to_kind (Fixnum)
+  #
+  # Response:
+  # - counts (Hash): +Hash+ of {galaxy_id => count} pairs.
+  #
+  ACTION_STATS_MARKET_COUNTS = 'stats|market_counts'
   
   # Send announcement to all the connected players.
   # 
@@ -189,8 +211,12 @@ class ControlManager
       action_destroy_player(io, message)
     when ACTION_ADD_CREDS
       action_add_creds(io, message)
-    when ACTION_STATISTICS
-      action_statistics(io)
+    when ACTION_STATS_PLAYERS
+      action_stats_players(io)
+    when ACTION_STATS_MARKET_COUNTS
+      action_stats_market_counts(io, message)
+    when ACTION_STATS_MARKET_RATES
+      action_stats_market_rates(io, message)
     when ACTION_ANNOUNCE
       action_announce(io, message)
     else
@@ -254,8 +280,8 @@ class ControlManager
     raise e
   end
 
-  def action_statistics(io)
-    statistics = {
+  def action_stats_players(io)
+    stats = {
       :current => Dispatcher.instance.logged_in_count,
       :"24h" => get_player_count_in(24.hours),
       :"48h" => get_player_count_in(48.hours),
@@ -264,7 +290,28 @@ class ControlManager
       :total => Player.count,
     }
 
-    io.send_message statistics
+    io.send_message stats
+  end
+
+  def action_stats_market_counts(io, message)
+    stats = Galaxy.select("id").c_select_values.inject({}) do |hash, galaxy_id|
+      count = MarketOffer.where(:from_kind => message['from_kind'],
+                                :to_kind => message['to_kind']).count
+      hash[galaxy_id] = count
+      hash
+    end
+
+    io.send_message stats
+  end
+
+  def action_stats_market_rates(io, message)
+    stats = Galaxy.select("id").c_select_values.inject({}) do |hash, galaxy_id|
+      hash[galaxy_id] = MarketRate.
+        average(galaxy_id, message['from_kind'], message['to_kind'])
+      hash
+    end
+
+    io.send_message stats
   end
   
   def action_announce(io, message)

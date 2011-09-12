@@ -1,4 +1,4 @@
-describe "fow entry", :shared => true do
+shared_examples_for "fow entry" do
   describe ".for" do
     it "should return player entries" do
       model = Factory.create :"#{@short_factory_name}_player"

@@ -145,7 +145,7 @@ describe RouteHop do
       }
     end
 
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
   end
 
   describe "#hop_type" do

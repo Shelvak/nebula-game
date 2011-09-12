@@ -76,7 +76,7 @@ describe FowGalaxyEntry do
 
     @required_fields = %w{x y x_end y_end}
     @ommited_fields = %w{id player_id alliance_id counter}
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
   end
 
   describe "fow entry" do
@@ -98,7 +98,7 @@ describe FowGalaxyEntry do
       }
     end
 
-    it_should_behave_like "fow entry"
+    it_behaves_like "fow entry"
 
     it "should fire event if destroyed" do
       @klass.increase(@first_arg, @player, 2)

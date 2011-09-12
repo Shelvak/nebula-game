@@ -1,4 +1,4 @@
-describe "resource increasing technology", :shared => true do
+shared_examples_for "resource increasing technology" do
   before(:each) do
     @time = 5.seconds.ago.drop_usec
 
@@ -43,6 +43,6 @@ describe "resource increasing technology", :shared => true do
     )
     # JRuby compatibility
     time = Time.parse(time) unless time.is_a?(Time)
-    time.should be_close(Time.now, SPEC_TIME_PRECISION)
+    time.should be_within(SPEC_TIME_PRECISION).of(Time.now)
   end
 end

@@ -1,4 +1,4 @@
-Spec::Matchers.define :cover do |value|
+RSpec::Matchers.define :cover do |value|
   match do |range|
     range.cover?(value)
   end
