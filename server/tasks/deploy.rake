@@ -48,7 +48,6 @@ DEPLOY_CONFIG = {
         "tasks",
         File.join("script", "announce.rb"),
         File.join("script", "log_analyzer.rb"),
-        File.join("script", "munin_logged_in.rb"),
         File.join("script", "munin-plugins"),
         File.join("script", "fixes"),
         "vendor",
@@ -165,10 +164,12 @@ class DeployHelpers; class << self
     ssh.exec!("ln -s #{deploy_dir} #{releases_dir}/current")
   end
 
-  def exec_server(ssh, cmd)
+  def exec_server(ssh, cmd, use_bundler=true)
+    cmd = "bundle exec #{cmd}" if use_bundler
+
     ssh.exec!("source $HOME/.profile > /dev/null && cd #{
       DEPLOY_CONFIG_SERVER_CURRENT
-    } && bundle exec #{cmd}")
+    } && #{cmd}")
   end
   
   CHECK_SERVER_CMD = "ruby lib/daemon.rb status"
@@ -239,7 +240,7 @@ class DeployHelpers; class << self
   def server_symlink(ssh)
     current_dir = DEPLOY_CONFIG_SERVER_CURRENT
     shared_dir = "#{DEPLOY_CONFIG[:paths][:remote][:server]}/shared"
-    %w{log}.each do |dir|
+    %w{log vendor/bundle}.each do |dir|
       ssh.exec!("mkdir -p #{shared_dir}/#{dir}")
       ssh.exec!("ln -nfs #{shared_dir}/#{dir} #{current_dir}/#{dir}")
     end
@@ -249,7 +250,7 @@ class DeployHelpers; class << self
   end
 
   def install_gems(ssh)
-    exec_server(ssh, "rake gems:install:deploy")
+    exec_server(ssh, "rake gems:install:deploy", false)
   end
 
   def migrate_db(ssh)

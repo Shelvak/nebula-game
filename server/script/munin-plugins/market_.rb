@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'pathname'
 
 # For gathering average rates/market offer counts.
 
@@ -39,8 +40,10 @@ if match.nil?
   exit 1
 end
 
-require File.expand_path(File.dirname(__FILE__) +
-    '/../../lib/server/control_client.rb')
+require File.expand_path(
+  File.dirname(Pathname.new(__FILE__).realpath) +
+  '/../../lib/server/control_client.rb'
+)
 
 begin
   client = ControlClient.new

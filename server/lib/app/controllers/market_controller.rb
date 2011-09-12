@@ -8,7 +8,7 @@ class MarketController < GenericController
   # - to_kind (Fixnum): resource kind you are demanding
   # 
   # Response:
-  # - average (Float): average market rate for that resource pair
+  # - avg_rate (Float): average market rate for that resource pair
   #
   def action_avg_rate
     param_options :required => {:from_kind => Fixnum, :to_kind => Fixnum}

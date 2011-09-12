@@ -78,7 +78,7 @@ class ControlManager
   # - 2w (Fixnum): no. of players logged in 2 weeks.
   # - total (Fixnum): total no. of players
   #
-  ACTION_STATS_PLAYERS = 'stats|users'
+  ACTION_STATS_PLAYERS = 'stats|players'
 
   # Return market rate for given resource pair in different galaxies.
   #

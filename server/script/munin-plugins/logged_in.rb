@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'pathname'
 
 NAMES = [
   ["current", "Currently logged in"],
@@ -21,8 +22,10 @@ if ARGV[0] == "config"
     puts "#{name}.min 0"
   end
 else
-  require File.expand_path(File.dirname(__FILE__) + 
-      '/../../lib/server/control_client.rb')
+  require File.expand_path(
+    File.dirname(Pathname.new(__FILE__).realpath) +
+      '/../../lib/server/control_client.rb'
+  )
   
   begin
     client = ControlClient.new
