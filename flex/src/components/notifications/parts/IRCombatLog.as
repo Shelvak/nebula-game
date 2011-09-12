@@ -568,7 +568,7 @@ package components.notifications.parts
       //==================================================
       private function get myAliveList(): ArrayCollection
       {
-         if (combatLog == null)
+         if (combatLog == null || combatLog.units == null || combatLog.units.yours == null)
          {
             return null;  
          }
@@ -584,7 +584,7 @@ package components.notifications.parts
       
       private function get myDestroyedList(): ArrayCollection
       {
-         if (combatLog == null)
+         if (combatLog == null || combatLog.units == null || combatLog.units.yours == null)
          {
             return new ArrayCollection();  
          }
@@ -600,7 +600,7 @@ package components.notifications.parts
       
       private function get allianceAliveList(): ArrayCollection
       {
-         if (combatLog == null)
+         if (combatLog == null || combatLog.units == null || combatLog.units.alliance == null)
          {
             return new ArrayCollection();
          }
@@ -616,7 +616,7 @@ package components.notifications.parts
       
       private function get allianceDestroyedList(): ArrayCollection
       {
-         if (combatLog == null)
+         if (combatLog == null || combatLog.units == null || combatLog.units.alliance == null)
          {
             return new ArrayCollection();
          }
@@ -632,7 +632,7 @@ package components.notifications.parts
       
       private function get napAliveList(): ArrayCollection
       {
-         if (combatLog == null)
+         if (combatLog == null || combatLog.units == null || combatLog.units.nap == null)
          {
             return new ArrayCollection();
          }
@@ -648,7 +648,7 @@ package components.notifications.parts
       
       private function get napDestroyedList(): ArrayCollection
       {
-         if (combatLog == null)
+         if (combatLog == null || combatLog.units == null || combatLog.units.nap == null)
          {
             return new ArrayCollection();
          }
@@ -664,7 +664,7 @@ package components.notifications.parts
       
       private function get enemyAliveList(): ArrayCollection
       {
-         if (combatLog == null)
+         if (combatLog == null || combatLog.units == null || combatLog.units.enemy == null)
          {
             return new ArrayCollection();
          }
@@ -680,7 +680,7 @@ package components.notifications.parts
       
       private function get enemyDestroyedList(): ArrayCollection
       {
-         if (combatLog == null)
+         if (combatLog == null || combatLog.units == null || combatLog.units.enemy == null)
          {
             return new ArrayCollection();
          }
