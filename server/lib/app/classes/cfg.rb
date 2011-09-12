@@ -2,7 +2,7 @@
 class Cfg; class << self
   # Returns +Float+ offset (like 0.10) for MarketOffer#to_rate deviation 
   # from MarketOffer#average.
-  def market_rate_offset; CONFIG['market.average.offset']; end
+  def market_rate_offset; CONFIG['market.avg_rate.offset']; end
 
   # Returns [seed_amount, seed_rate] for resource pair.
   def market_seed(from_kind, to_kind)

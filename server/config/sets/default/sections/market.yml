@@ -1,6 +1,6 @@
 ---
 
-# Maximum number of active simulateneous offers for player.
+# Maximum number of active simultaneous offers for player.
 offers.max: 15
 
 # Minimal amount of resource you are able to offer.
@@ -8,7 +8,7 @@ offer.min_amount: 500
 
 # Float percentage that we allow user submitted rate to vary from average market
 # value.
-average.offset: 0.10
+avg_rate.offset: 0.10
 
 # How much of the offer person should buy so that seller would get notified?
 buy.notification.threshold: 0.03
