@@ -16,7 +16,7 @@ class MarketController < GenericController
     avg_rate = MarketRate.average(player.galaxy_id, params['from_kind'],
       params['to_kind'])
     
-    respond :average => avg_rate
+    respond :avg_rate => avg_rate
   end
   
   # Send list of all market offers in the galaxy.

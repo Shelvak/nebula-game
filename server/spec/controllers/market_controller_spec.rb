@@ -22,8 +22,9 @@ describe MarketController do
     it "should return average rate" do
       rate = 0.45
       
-      MarketOffer.should_receive(:avg_rate).with(player.galaxy_id, 
-        @params['from_kind'], @params['to_kind']).and_return(rate)
+      MarketRate.should_receive(:average).
+        with(player.galaxy_id, @params['from_kind'], @params['to_kind']).
+        and_return(rate)
       invoke @action, @params
       response_should_include(:avg_rate => rate)
     end

@@ -143,8 +143,8 @@ describe MarketOffer do
       end
 
       it "should not fail if planet is currently unoccupied" do
-        @seller_planet.player = nil
-        @seller_planet.save!
+        # Update row to prevent callbacks kicking in.
+        @seller_planet.update_row! "player_id=NULL"
 
         @offer.buy!(@buyer_planet, @offer.from_amount)
       end
