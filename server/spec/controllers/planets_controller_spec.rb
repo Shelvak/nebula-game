@@ -110,7 +110,7 @@ describe PlanetsController do
           invoke @action, @params
         end
 
-        it_should_behave_like "visible planet"
+        it_behaves_like "visible planet"
 
         it "should include planet without resources" do
           response_should_include(
@@ -126,7 +126,7 @@ describe PlanetsController do
           invoke @action, @params
         end
 
-        it_should_behave_like "visible planet"
+        it_behaves_like "visible planet"
 
         it "should include planet with resources" do
           response_should_include(
@@ -142,7 +142,7 @@ describe PlanetsController do
           invoke @action, @params
         end
 
-        it_should_behave_like "visible planet"
+        it_behaves_like "visible planet"
 
         it "should not include npc units" do
           response_should_include(:npc_units => [])
@@ -156,7 +156,7 @@ describe PlanetsController do
           invoke @action, @params
         end
 
-        it_should_behave_like "visible planet"
+        it_behaves_like "visible planet"
 
         it "should include npc units" do
           response_should_include(
@@ -173,7 +173,7 @@ describe PlanetsController do
       @params = {}
     end
 
-    it_should_behave_like "only push"
+    it_behaves_like "only push"
 
     it "should return players planets" do
       planet0 = Factory.create :planet_with_player
@@ -205,7 +205,7 @@ describe PlanetsController do
     end
 
     @required_params = %w{planet_id x y}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should fail if planet does not belong to player" do
       @planet.player = nil
@@ -264,7 +264,7 @@ describe PlanetsController do
     end
     
     @required_params = %w{id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
     
     it "should fail if a planet does not belong to player" do
       @planet.update_row! ["player_id=?", Factory.create(:player).id]
@@ -295,7 +295,7 @@ describe PlanetsController do
     end
     
     @required_params = %w{id x y}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
     
     it "should fail if planet does not belong to player" do
       @planet.update_row! ["player_id=?", Factory.create(:player).id]
@@ -326,7 +326,7 @@ describe PlanetsController do
     end
 
     @required_params = %w{id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should fail if you are not the planet owner" do
       @planet.player = Factory.create(:player)
@@ -392,7 +392,7 @@ describe PlanetsController do
     end
 
     @required_params = %w{id resource attribute}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should fail if planet does not belong to you" do
       @planet.player = Factory.create(:player)
@@ -425,7 +425,7 @@ describe PlanetsController do
     end
 
     @required_params = %w{id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should fail if trying to access not yours planet" do
       planet = Factory.create(:planet)
@@ -459,7 +459,7 @@ describe PlanetsController do
     end
     
     @required_params = %w{id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
     
     it "should fail if planet does not belong to npc" do
       @planet.player = Factory.create(:player)

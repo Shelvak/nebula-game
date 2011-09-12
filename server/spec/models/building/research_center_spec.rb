@@ -9,5 +9,5 @@ describe Building::ResearchCenter do
     Building::ResearchCenter.should include(Trait::HasScientists)
   end
 
-  it_should_behave_like "with science points"
+  it_behaves_like "with science points"
 end

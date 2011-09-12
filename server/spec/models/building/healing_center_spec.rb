@@ -44,7 +44,7 @@ describe Building::HealingCenter do
     end
 
     @required_fields = %w{cooldown_ends_at}
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
   end
 
   describe "#heal!" do

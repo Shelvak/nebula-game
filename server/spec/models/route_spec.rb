@@ -85,18 +85,14 @@ describe Route do
   end
 
   describe "notifier" do
-    before(:each) do
-      @build = lambda { Factory.build(:route) }
-      @change = lambda do |model|
-        model.arrives_at += 1.minute
-      end
-    end
+    build = lambda { Factory.build(:route) }
 
-    @should_not_notify_create = true
-    it_should_behave_like "notifier"
+    it_behaves_like "notifier", :build => build,
+      :change => lambda { |model| model.arrives_at += 1.minute },
+      :notify_on_create => false
     
     it "should dispatch destroyed with reason 'completed' if flag is set" do
-      model = @build.call
+      model = build.call
       model.save!
       model.completed = true
       should_fire_event(model, EventBroker::DESTROYED, 

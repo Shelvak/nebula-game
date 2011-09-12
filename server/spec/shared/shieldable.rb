@@ -9,7 +9,7 @@ shared_examples_for "shieldable" do
 
       @required_fields = fields
 
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
     end
 
     describe "when does not have shield" do
@@ -19,7 +19,7 @@ shared_examples_for "shieldable" do
 
       @ommited_fields = fields
 
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
     end
   end
 end

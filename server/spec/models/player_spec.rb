@@ -576,7 +576,7 @@ describe Player do
 
       @required_fields = %w{id name}
       @ommited_fields = fields - @required_fields
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
     end
 
     describe "normal mode" do
@@ -586,7 +586,7 @@ describe Player do
         alliance_id alliance_cooldown_ends_at
         free_creds vip_level vip_creds vip_until vip_creds_until}
       @ommited_fields = fields - @required_fields
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
 
       describe "if in alliance" do
         before(:each) do
@@ -1128,13 +1128,9 @@ describe Player do
   end
 
   describe "notifier" do
-    before(:all) do
-      @build = lambda { Factory.build(:player) }
-      @change = lambda { |player| player.scientists += 1 }
-    end
-
-    @should_not_notify_create = true
-    @should_not_notify_destroy = true
-    it_should_behave_like "notifier"
+    it_behaves_like "notifier",
+                    :build => lambda { Factory.build(:player) },
+                    :change => lambda { |player| player.scientists += 1 },
+                    :notify_on_create => false, :notify_on_destroy => false
   end
 end

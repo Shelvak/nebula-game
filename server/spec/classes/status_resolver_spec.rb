@@ -19,7 +19,7 @@ describe StatusResolver do
         @resolver = StatusResolver.new(@player)
       end
 
-      it_should_behave_like "resolving you/enemy"
+      it_behaves_like "resolving you/enemy"
     end
 
     describe "player in alliance" do
@@ -33,7 +33,7 @@ describe StatusResolver do
         @resolver = StatusResolver.new(@player)
       end
 
-      it_should_behave_like "resolving you/enemy"
+      it_behaves_like "resolving you/enemy"
 
       it "should resolve ALLY" do
         @resolver.status(@ally.id).should == StatusResolver::ALLY

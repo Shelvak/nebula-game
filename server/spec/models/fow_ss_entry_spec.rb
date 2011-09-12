@@ -175,7 +175,7 @@ describe FowSsEntry do
         FowSsEntry.stub!(:recalculate).and_return(false)
       end
 
-      it_should_behave_like "fow entry"
+      it_behaves_like "fow entry"
 
       it "should dispatch destroyed for that solar system" do
         @klass.increase(@first_arg, @player, 2)
@@ -360,7 +360,7 @@ describe FowSsEntry do
             :enemy_planets => false, :enemy_ships => false
         end
 
-        it_should_behave_like "fow ss entry recalculate"
+        it_behaves_like "fow ss entry recalculate"
 
         asset_types.each do |type, create_asset|
           it "should set player_#{type}=true if player has #{type}" do
@@ -457,7 +457,7 @@ describe FowSsEntry do
           @enemy = Factory.create :player
         end
         
-        it_should_behave_like "fow ss entry recalculate"
+        it_behaves_like "fow ss entry recalculate"
 
         asset_types.each do |type, create_asset|
           alliance_accessor = "alliance_#{type.singularize}_player_ids"

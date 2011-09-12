@@ -297,7 +297,7 @@ describe SsObject::Planet do
       @model = Factory.build(:planet)
     end
 
-    it_should_behave_like "name validation"
+    it_behaves_like "name validation"
   end
 
   describe "#can_destroy_building?" do
@@ -625,7 +625,7 @@ describe SsObject::Planet do
           end
           
           describe "building active" do
-            it_should_behave_like "transfering attribute"
+            it_behaves_like "transfering attribute"
           end
 
           describe "inactinet ve building" do
@@ -633,7 +633,7 @@ describe SsObject::Planet do
               @research_center.deactivate!
             end
             
-            it_should_behave_like "not transfering attribute"
+            it_behaves_like "not transfering attribute"
           end
         end
       end
@@ -649,7 +649,7 @@ describe SsObject::Planet do
       end
 
       describe "building active" do
-        it_should_behave_like "transfering attribute"
+        it_behaves_like "transfering attribute"
       end
 
       describe "inactive building" do
@@ -657,7 +657,7 @@ describe SsObject::Planet do
           @housing.deactivate!
         end
 
-        it_should_behave_like "not transfering attribute"
+        it_behaves_like "not transfering attribute"
       end
     end
 
@@ -1285,7 +1285,7 @@ describe SsObject::Planet do
       @model = Factory.create(:planet)
     end
 
-    it_should_behave_like "shieldable"
+    it_behaves_like "shieldable"
   end
 
   describe "#as_json" do
@@ -1310,7 +1310,7 @@ describe SsObject::Planet do
         zetium zetium_generation_rate metal_usage_rate zetium_storage
         last_resources_update energy_diminish_registered status
         exploration_x exploration_y exploration_ends_at}
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
     end
     
     describe "with :view" do
@@ -1319,7 +1319,7 @@ describe SsObject::Planet do
       end
 
       @required_fields = %w{width height}
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
     end
 
     describe "with :resources" do
@@ -1339,7 +1339,7 @@ describe SsObject::Planet do
         next_raid_at
         owner_changed}
       @ommited_fields = %w{energy_diminish_registered}
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
     end
 
     describe "with :perspective" do
@@ -1348,7 +1348,7 @@ describe SsObject::Planet do
         @status = StatusResolver::NPC
       end
 
-      it_should_behave_like "with :perspective"
+      it_behaves_like "with :perspective"
 
       describe "viewable" do
         it "should be true if planet is yours" do

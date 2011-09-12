@@ -8,7 +8,7 @@ describe Folliage do
       Factory.create(:folliage, :planet => @planet)
     end
 
-    it_should_behave_like "fast finding"
+    it_behaves_like "fast finding"
   end
 
   describe "#to_json" do
@@ -17,6 +17,6 @@ describe Folliage do
     end
 
     @ommited_fields = %w{planet_id}
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
   end
 end

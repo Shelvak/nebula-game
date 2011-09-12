@@ -578,7 +578,7 @@ describe Unit do
     @ommited_fields = %w{location_id location_x location_y
       location_type hp_remainder pause_remainder
       stored metal energy zetium}
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
 
     it "should include location" do
       @model.as_json["location"].should == @model.location.as_json
@@ -595,7 +595,7 @@ describe Unit do
         @options = {}
       end
 
-      it_should_behave_like "with :perspective"
+      it_behaves_like "with :perspective"
       
       describe "you" do
         before(:each) do
@@ -609,7 +609,7 @@ describe Unit do
 
           @required_fields = %w{stored metal energy zetium}
           @ommited_fields = %w{}
-          it_should_behave_like "to json"
+          it_behaves_like "to json"
         end
 
         describe "non-transporter" do
@@ -619,7 +619,7 @@ describe Unit do
           
           @required_fields = %w{}
           @ommited_fields = %w{stored metal energy zetium}
-          it_should_behave_like "to json"
+          it_behaves_like "to json"
         end
       end
       
@@ -630,7 +630,7 @@ describe Unit do
 
         @required_fields = %w{}
         @ommited_fields = %w{stored metal energy zetium}
-        it_should_behave_like "to json"
+        it_behaves_like "to json"
       end
     end
   end
@@ -889,9 +889,9 @@ describe Unit do
       )
     end
 
-    it_should_behave_like "upgradable"
-    it_should_behave_like "upgradable with hp"
-    it_should_behave_like "default upgradable time calculation"
+    it_behaves_like "upgradable"
+    it_behaves_like "upgradable with hp"
+    it_behaves_like "default upgradable time calculation"
   end
 
   describe "#method" do

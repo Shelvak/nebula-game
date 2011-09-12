@@ -27,7 +27,7 @@ describe Notification do
       @class = Notification
     end
 
-    it_should_behave_like "object"
+    it_behaves_like "object"
   end
 
   describe "ordering" do
@@ -93,13 +93,10 @@ describe Notification do
   end
 
   describe "notifier" do
-    before(:each) do
-      @build = lambda { Factory.build :notification }
-      @change = lambda { |model| model.expires_at += 1.week }
-    end
-
-    @should_not_notify_update = true
-    it_should_behave_like "notifier"
+    it_behaves_like "notifier",
+      :build => lambda { Factory.build :notification },
+      :change => lambda { |model| model.expires_at += 1.week },
+      :notify_on_update => false
   end
 
   describe "create" do
@@ -184,8 +181,8 @@ describe Notification do
       @args = [@player_id, @constructor, @constructables]
     end
 
-    it_should_behave_like "create for"
-    it_should_behave_like "with location"
+    it_behaves_like "create for"
+    it_behaves_like "with location"
 
     it "should set params[:constructor_type]" do
       Notification.send(@method, *@args
@@ -234,8 +231,8 @@ describe Notification do
       @args = [@planet, @changes]
     end
 
-    it_should_behave_like "create for"
-    it_should_behave_like "with location"
+    it_behaves_like "create for"
+    it_behaves_like "with location"
 
     it "should set params[:buildings]" do
       Notification.send(@method, *@args
@@ -270,7 +267,7 @@ describe Notification do
         @yane_units, @leveled_up, @statistics, @resources]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should set params['alliance_id']" do
       Notification.send(
@@ -339,7 +336,7 @@ describe Notification do
       @args = [@quest_progress]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should set achievement" do
       Notification.send(
@@ -365,7 +362,7 @@ describe Notification do
       @args = [@quest_progress, @started_quests]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should set finished quest id" do
       Notification.send(
@@ -391,7 +388,7 @@ describe Notification do
       @args = [@planet, @rewards]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should have :location" do
       Notification.send(
@@ -417,7 +414,7 @@ describe Notification do
       @args = [@player_id, @planet, @outcome]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should have :planet" do
       Notification.send(
@@ -449,7 +446,7 @@ describe Notification do
       @args = [@alliance, @player]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should have :alliance" do
       Notification.send(
@@ -474,7 +471,7 @@ describe Notification do
       @args = [@player_id, @planet, @outcome]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should have :planet" do
       Notification.send(
@@ -512,7 +509,7 @@ describe Notification do
       @args = [@alliance, @player]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should have :alliance" do
       Notification.send(

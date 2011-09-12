@@ -10,7 +10,7 @@ describe SsObject::Asteroid do
       @ommited_fields = %w{width height metal energy zetium
         last_resources_update metal_rate metal_storage
         energy_rate energy_storage zetium_rate zetium_storage}
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
     end
 
     describe "with resources" do
@@ -22,7 +22,7 @@ describe SsObject::Asteroid do
       energy_rate energy_storage zetium_rate zetium_storage}
       @ommited_fields = %w{width height metal energy zetium
         last_resources_update}
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
     end
   end
   

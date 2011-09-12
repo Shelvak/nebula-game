@@ -30,7 +30,7 @@ describe GalaxiesController do
         player.galaxy_id, 0, 3)
     end
     
-    it_should_behave_like "only push"
+    it_behaves_like "only push"
 
     it "should allow listing visible SS in galaxy" do
       visible_solar_systems = :visible_ss

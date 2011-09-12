@@ -6,7 +6,7 @@ describe ClientQuest do
       @class = ClientQuest
     end
 
-    it_should_behave_like "object"
+    it_behaves_like "object"
   end
 
   describe "#as_json" do

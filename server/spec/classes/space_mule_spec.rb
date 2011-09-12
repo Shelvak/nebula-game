@@ -158,8 +158,8 @@ describe SpaceMule do
         end
       end
       
-      it_should_behave_like "with planet units"
-      it_should_behave_like "with orbit units"
+      it_behaves_like "with planet units"
+      it_behaves_like "with orbit units"
     end
   
     it "should have spawn callback for first convoy" do
@@ -394,7 +394,7 @@ describe SpaceMule do
           @type = 'homeworld'
         end
         
-        it_should_behave_like "with planet units"
+        it_behaves_like "with planet units"
 
         describe "orbit units" do
           before(:each) do
@@ -405,7 +405,7 @@ describe SpaceMule do
             Unit.in_location(@homeworld.solar_system_point).size.should == 0
           end
           
-          it_should_behave_like "with orbit units"
+          it_behaves_like "with orbit units"
         end
       end
         
@@ -420,8 +420,8 @@ describe SpaceMule do
           @type = 'regular'
         end
         
-        it_should_behave_like "with planet units"
-        it_should_behave_like "with orbit units"
+        it_behaves_like "with planet units"
+        it_behaves_like "with orbit units"
       end
       
       describe "mini battleground solar systems" do
@@ -435,8 +435,8 @@ describe SpaceMule do
           @type = 'battleground'
         end
         
-        it_should_behave_like "with planet units"
-        it_should_behave_like "with orbit units"
+        it_behaves_like "with planet units"
+        it_behaves_like "with orbit units"
       end
     end
     
@@ -465,7 +465,7 @@ describe SpaceMule do
           @conditions = {:player_id => @player_fge.player_id}
         end
 
-        it_should_behave_like "adding new solar systems"
+        it_behaves_like "adding new solar systems"
       end
 
       describe "alliance" do
@@ -473,7 +473,7 @@ describe SpaceMule do
           @conditions = {:alliance_id => @alliance_fge.alliance_id}
         end
 
-        it_should_behave_like "adding new solar systems"
+        it_behaves_like "adding new solar systems"
       end
     end
   end

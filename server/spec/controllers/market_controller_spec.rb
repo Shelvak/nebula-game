@@ -17,7 +17,7 @@ describe MarketController do
     end
     
     @required_params = %w{from_kind to_kind}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
     
     it "should return average rate" do
       rate = 0.45
@@ -53,7 +53,7 @@ describe MarketController do
     end
     
     @required_params = %w{planet_id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
     
     it "should fail if planet does not belong to player" do
       @planet.player = Factory.create(:player)
@@ -102,7 +102,7 @@ describe MarketController do
     
     @required_params = %w{market_id from_amount from_kind to_kind 
       to_rate}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
     
     it "should fail if planet does not belong to player" do
       @planet.player = Factory.create(:player)
@@ -135,7 +135,7 @@ describe MarketController do
     end
     
     @required_params = %w{offer_id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
     
     it "should fail if planet does not belong to player" do
       @planet.player = Factory.create(:player)
@@ -173,7 +173,7 @@ describe MarketController do
     end
     
     @required_params = %w{offer_id planet_id amount}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
     
     it "should fail if offer is not from this galaxy" do
       @offer.galaxy = Factory.create(:galaxy)

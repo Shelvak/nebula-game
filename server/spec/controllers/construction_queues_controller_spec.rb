@@ -33,10 +33,10 @@ describe ConstructionQueuesController do
       @params = {'constructor_id' => @constructor.id}
     end
 
-    it_should_behave_like "only push"
+    it_behaves_like "only push"
 
     @required_params = %w{constructor_id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should respond with constructor id" do
       should_respond_with \
@@ -63,8 +63,8 @@ describe ConstructionQueuesController do
     end
 
     @required_params = %w{id position}
-    it_should_behave_like "with param options"
-    it_should_behave_like "checking ownership"
+    it_behaves_like "with param options"
+    it_behaves_like "checking ownership"
 
     it "should move the entry" do
       ConstructionQueue.should_receive(:move).with(
@@ -81,8 +81,8 @@ describe ConstructionQueuesController do
     end
 
     @required_params = %w{id count}
-    it_should_behave_like "with param options"
-    it_should_behave_like "checking ownership"
+    it_behaves_like "with param options"
+    it_behaves_like "checking ownership"
 
     it "should reduce the entry" do
       ConstructionQueue.should_receive(:reduce).with(

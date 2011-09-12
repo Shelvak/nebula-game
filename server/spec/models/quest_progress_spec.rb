@@ -57,7 +57,7 @@ describe QuestProgress do
       @class = QuestProgress
     end
 
-    it_should_behave_like "object"
+    it_behaves_like "object"
   end
 
   describe "creation" do
@@ -110,7 +110,7 @@ describe QuestProgress do
           :quest => @quest)
       end
 
-      it_should_behave_like "completed quest"
+      it_behaves_like "completed quest"
 
       it "should first dispatch created and then do #on_quest_completed" do
         @qp.should_receive(:dispatch_client_quest).ordered.and_return(true)
@@ -155,7 +155,7 @@ describe QuestProgress do
       @qp.completed = 2
     end
 
-    it_should_behave_like "completed quest"
+    it_behaves_like "completed quest"
   end
 
   describe "#claim_rewards!" do
@@ -212,23 +212,20 @@ describe QuestProgress do
   end
 
   describe "notifier" do
-    before(:each) do
-      @build = lambda { Factory.create(:quest_progress) }
-      @after_build = lambda do |model|
-        Factory.create(:objective, :quest => model.quest)
-        Factory.create(:objective, :quest => model.quest)
-      end
-      @change = lambda { |model| model.completed += 1 }
+    build = lambda { Factory.create(:quest_progress) }
+    after_build = lambda do |model|
+      Factory.create(:objective, :quest => model.quest)
+      Factory.create(:objective, :quest => model.quest)
     end
+    change = lambda { |model| model.completed += 1 }
 
-    @should_not_notify_create = true
-    @should_not_notify_destroy = true
-    it_should_behave_like "notifier"
+    it_behaves_like "notifier", :build => build, :after_build => after_build,
+      :change => change, :notify_on_create => false, :notify_on_destroy => false
 
     describe "for achievement" do
       before(:each) do
-        @model = @build.call.tap(&:save!)
-        @after_build.call(@model)
+        @model = build.call.tap(&:save!)
+        after_build.call(@model)
         quest = @model.quest
         quest.achievement = true
         quest.save!
@@ -237,7 +234,7 @@ describe QuestProgress do
       it "should not dispatch updated" do
         should_not_fire_event(@model, EventBroker::CHANGED,
             EventBroker::REASON_UPDATED) do
-          @change.call(@model)
+          change.call(@model)
           @model.save!
         end
       end

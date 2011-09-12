@@ -34,7 +34,7 @@ describe NotificationsController do
       @params = {}
     end
     
-    it_should_behave_like "only push"
+    it_behaves_like "only push"
 
     it "should limit number of notifications sent" do
       with_config_values('notifications.limit' => @limit) do
@@ -85,7 +85,7 @@ describe NotificationsController do
     end
 
     @required_params = %w{ids}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should mark notifications as read" do
       invoke @action, @params
@@ -110,7 +110,7 @@ describe NotificationsController do
     end
 
     @required_params = %w{id mark}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     [
       ['starred', :should, true],
@@ -123,6 +123,6 @@ describe NotificationsController do
       end
     end
 
-    it_should_behave_like "respecting player"
+    it_behaves_like "respecting player"
   end
 end

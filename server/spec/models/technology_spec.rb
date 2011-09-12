@@ -100,7 +100,7 @@ describe Technology do
     @required_fields = %w{upgrade_ends_at type pause_remainder
     scientists level id pause_scientists}
     @ommited_fields = %w{player_id}
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
   end
 
   it "should change player.scientists when model.scientists changes" do
@@ -129,7 +129,7 @@ describe Technology do
       @method = :pause!
     end
 
-    it_should_behave_like "releasing scientists"
+    it_behaves_like "releasing scientists"
 
     it "should store scientists to #pause_scientists" do
       lambda do
@@ -369,7 +369,7 @@ describe Technology do
       end
     end
 
-    it_should_behave_like "upgradable"
+    it_behaves_like "upgradable"
   end
 
   describe "#upgrade" do
@@ -458,7 +458,7 @@ describe Technology do
       @method = :on_upgrade_finished
     end
 
-    it_should_behave_like "releasing scientists"
+    it_behaves_like "releasing scientists"
 
     it "should not raise exception when saved" do
       @model.send(@method)

@@ -90,7 +90,7 @@ describe MarketOffer do
       created_at}
     @ommited_params = MarketOffer.columns.map(&:name) - @required_params
     
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
     
     it "should not fail with system offer" do
       @model.planet = nil
@@ -133,7 +133,7 @@ describe MarketOffer do
     end
     
     shared_examples_for "seller planet" do
-      it_should_behave_like "dispatching planet changed"
+      it_behaves_like "dispatching planet changed"
 
       it "should increase in goods he requested" do
         lambda do
@@ -166,14 +166,14 @@ describe MarketOffer do
             @to_amount + 1000
         end
 
-        it_should_behave_like "selling for resources"
+        it_behaves_like "selling for resources"
         
         describe "seller planet" do
           before(:each) do
             @planet = @seller_planet
           end
 
-          it_should_behave_like "seller planet"
+          it_behaves_like "seller planet"
         end
 
         describe "buyer planet" do
@@ -181,8 +181,8 @@ describe MarketOffer do
             @planet = @buyer_planet
           end
 
-          it_should_behave_like "buying goods"
-          it_should_behave_like "dispatching planet changed"
+          it_behaves_like "buying goods"
+          it_behaves_like "dispatching planet changed"
 
           it "should decrease from goods with which he sold it" do
             lambda do
@@ -264,8 +264,8 @@ describe MarketOffer do
             @planet = @buyer_planet
           end
 
-          it_should_behave_like "dispatching planet changed"
-          it_should_behave_like "buying goods"
+          it_behaves_like "dispatching planet changed"
+          it_behaves_like "buying goods"
 
           it "should reduce creds from buyer account" do
             lambda do
@@ -294,14 +294,14 @@ describe MarketOffer do
             @to_amount + 1000
         end
 
-        it_should_behave_like "selling for resources"
+        it_behaves_like "selling for resources"
 
         describe "seller planet" do
           before(:each) do
             @planet = @seller_planet
           end
           
-          it_should_behave_like "seller planet"
+          it_behaves_like "seller planet"
         end
 
         describe "buyer" do

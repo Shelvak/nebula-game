@@ -9,7 +9,7 @@ describe BuildingsController do
 
   shared_examples_for "finding building" do
     @required_params = %w{id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
     
     it "should raise error if building is not found" do
       @building.destroy
@@ -67,7 +67,7 @@ describe BuildingsController do
     end
     
     @required_params = %w{constructor_id x y type}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
   end
 
   describe "buildings|upgrade" do
@@ -80,7 +80,7 @@ describe BuildingsController do
       @params = {'id' => @building.id}
     end
 
-    it_should_behave_like "finding building"
+    it_behaves_like "finding building"
 
     it "should return building" do
       invoke @action, @params
@@ -106,7 +106,7 @@ describe BuildingsController do
       @params = {'id' => @building.id}
     end
 
-    it_should_behave_like "finding building"
+    it_behaves_like "finding building"
     
     it "should activate building" do
       lambda do
@@ -129,7 +129,7 @@ describe BuildingsController do
       @params = {'id' => @building.id}
     end
     
-    it_should_behave_like "finding building"
+    it_behaves_like "finding building"
 
     it "should deactivate building" do
       lambda do
@@ -150,8 +150,8 @@ describe BuildingsController do
     end
 
     @required_params = %w{id with_creds}
-    it_should_behave_like "with param options"
-    it_should_behave_like "finding building"
+    it_behaves_like "with param options"
+    it_behaves_like "finding building"
 
     it "should self destruct the building" do
       invoke @action, @params
@@ -170,8 +170,8 @@ describe BuildingsController do
     end
 
     @required_params = %w{id x y}
-    it_should_behave_like "with param options"
-    it_should_behave_like "finding building"
+    it_behaves_like "with param options"
+    it_behaves_like "finding building"
 
     it "should move building" do
       Building.stub!(:find).with(@building.id, anything).and_return(@building)
@@ -182,7 +182,7 @@ describe BuildingsController do
 
   shared_examples_for "accelerate" do
     @required_params = %w{id index}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
     
     it "should raise error when providing wrong index" do
       lambda do
@@ -206,8 +206,8 @@ describe BuildingsController do
         'index' => CONFIG['creds.upgradable.speed_up'].size - 1}
     end
 
-    it_should_behave_like "finding building"
-    it_should_behave_like "accelerate"
+    it_behaves_like "finding building"
+    it_behaves_like "accelerate"
 
     it "should accelerate building" do
       @controller.should_receive(:find_building).and_return(@building)
@@ -230,8 +230,8 @@ describe BuildingsController do
         'index' => CONFIG['creds.upgradable.speed_up'].size - 1}
     end
 
-    it_should_behave_like "finding building"
-    it_should_behave_like "accelerate"
+    it_behaves_like "finding building"
+    it_behaves_like "accelerate"
 
     it "should accelerate building" do
       @controller.should_receive(:find_building).and_return(@building)
@@ -252,7 +252,7 @@ describe BuildingsController do
       @params = {'id' => @building.id}
     end
     
-    it_should_behave_like "finding building"
+    it_behaves_like "finding building"
     
     it "should call #cancel_constructable! on constructor" do
       @controller.should_receive(:find_building).and_return(@building)
@@ -271,7 +271,7 @@ describe BuildingsController do
       @params = {'id' => @building.id}
     end
     
-    it_should_behave_like "finding building"
+    it_behaves_like "finding building"
     
     it "should call #cancel! on building" do
       @controller.should_receive(:find_building).and_return(@building)

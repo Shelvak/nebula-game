@@ -34,7 +34,7 @@ describe Objective::BecomeVip do
       @klass = @objective.class
     end
 
-    it_should_behave_like "player objective"
+    it_behaves_like "player objective"
 
     it "should progress if vip level is greater" do
       @player.vip_level += 1

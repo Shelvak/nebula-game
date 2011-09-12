@@ -5,5 +5,5 @@ describe Building::Screamer do
     @model = Factory.build(:b_screamer)
   end
 
-  it_should_behave_like "with army points"
+  it_behaves_like "with army points"
 end

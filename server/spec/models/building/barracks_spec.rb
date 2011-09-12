@@ -5,5 +5,5 @@ describe Building::Barracks do
     @model = Factory.build(:b_barracks)
   end
 
-  it_should_behave_like "with army points"
+  it_behaves_like "with army points"
 end
