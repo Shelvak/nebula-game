@@ -5,7 +5,7 @@ require 'pathname'
 
 # Usage:
 #
-# Link as: market_{counts,rates}_{resource}_{resource}
+# Link as: nebula44_market_{counts,rates}_{resource}_{resource}
 # where resource is one of the: metal, energy, zetium, creds
 #
 
@@ -27,7 +27,7 @@ basename = File.basename(File.expand_path(__FILE__))
 match = basename.match(
   %r{
     ^
-    market_
+    nebula44_market_
     (#{COUNTS}|#{RATES})_
     (#{KIND_NAMES[0]}|#{KIND_NAMES[1]}|#{KIND_NAMES[2]}|#{KIND_NAMES[3]})_
     (#{KIND_NAMES[0]}|#{KIND_NAMES[1]}|#{KIND_NAMES[2]}|#{KIND_NAMES[3]})

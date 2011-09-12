@@ -296,7 +296,8 @@ class ControlManager
   def action_stats_market_counts(io, message)
     stats = Galaxy.select("id").c_select_values.inject({}) do |hash, galaxy_id|
       count = MarketOffer.where(:from_kind => message['from_kind'],
-                                :to_kind => message['to_kind']).count
+                                :to_kind => message['to_kind'],
+                                :galaxy_id => galaxy_id).count
       hash[galaxy_id] = count
       hash
     end

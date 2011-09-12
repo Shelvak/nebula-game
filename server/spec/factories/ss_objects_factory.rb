@@ -14,7 +14,7 @@ Factory.define :planet, :class => SsObject::Planet,
   m.width 50
   m.height 50
   m.size 80
-  m.seq(:name) { |i| "P-#{i}" }
+  m.sequence(:name) { |i| "P-#{i}" }
 
   # Order is important here, storage must be increased first.
   m.metal_storage 100000

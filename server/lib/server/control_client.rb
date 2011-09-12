@@ -14,7 +14,7 @@ class ControlClient
   def initialize
     begin
       @socket = TCPSocket.open("127.0.0.1", CONFIG['control']['port'])
-    rescue Errno::ECONNREFUSED
+    rescue Errno::ECONNREFUSED, Errno::ECONNRESET
       raise ConnectionError
     end
   end
