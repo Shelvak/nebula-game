@@ -438,7 +438,9 @@
                totalDestructTimeLbl = Localizer.string('BuildingSelectedSidebar', 'destructCooldown.total', 
                   [DateUtil.secondsToHumanString(totalCooldown)]);
             }
-            // TODO: find out when ML.latestPlanet or ML.latestPlanet.ssObject becomes null and fix this
+            // TODO ML.latestPlanet gets changed to null when entering new ss or after reset,
+            // maby later we whould set priority for these events to remove listeners which calls
+            // this method and add them when navigating back to some planet again.
             var proceed:Boolean = ML.latestPlanet != null && ML.latestPlanet.ssObject != null;
             if (proceed && canDestroyBuilding != ML.latestPlanet.ssObject.canDestroyBuilding)
             {

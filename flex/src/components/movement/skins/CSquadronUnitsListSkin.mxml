@@ -19,7 +19,7 @@
       <s:DataGroup id="dataGroup" itemRenderer="components.unitsscreen.IRSimpleUnit"
                    left="6" right="6">
          <s:layout>
-            <s:TileLayout orientation="rows" requestedColumnCount="4" requestedRowCount="1"
+            <s:TileLayout orientation="rows" requestedColumnCount="5" requestedRowCount="1"
                           verticalGap="0" horizontalGap="12" />
          </s:layout>
       </s:DataGroup>

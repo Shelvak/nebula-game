@@ -274,8 +274,8 @@
                       || (!ML.latestPlanet)
                       || (model.unit.owner != Owner.PLAYER)
                       || (!ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER)
-                      &amp;&amp; (ML.latestPlanet.ssObject.owner == 
-                      Owner.ALLY)))}"
+                      &amp;&amp; (ML.latestPlanet.ssObject.owner != 
+                      Owner.PLAYER)))}"
                       toolTip="{Localizer.string('Units', 'label.load')}"
                       skinClass="components.skins.LoadButtonSkin"/>
             <s:Button id="unload" click="show_inside(false)" visible="{!(model.unit.stored == 0 

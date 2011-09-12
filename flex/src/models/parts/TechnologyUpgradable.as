@@ -54,8 +54,8 @@ package models.parts
       public override function get timeToFinishString(): String
       {
          if (Technology(parent).pauseRemainder == 0)
-            return super.timeToFinishString;
-         return DateUtil.secondsToHumanString(Technology(parent).pauseRemainder);
+            return DateUtil.secondsToHumanString(timeToFinish, 2);;
+         return DateUtil.secondsToHumanString(Technology(parent).pauseRemainder, 2);
       }
       
       public override function calcUpgradeTime(params:Object) : Number

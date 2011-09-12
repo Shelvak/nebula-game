@@ -570,7 +570,7 @@ package components.notifications.parts
       {
          if (combatLog == null || combatLog.units == null || combatLog.units.yours == null)
          {
-            return null;  
+            return new ArrayCollection();  
          }
          else
          {
