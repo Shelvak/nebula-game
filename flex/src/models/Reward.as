@@ -1,5 +1,7 @@
 package models
 {
+   import config.Config;
+   
    import models.tile.TerrainType;
    import models.unit.UnitBuildingEntry;
    
@@ -17,13 +19,18 @@ package models
          scientists = (obj.scientists == null)?0:obj.scientists;
          creds = (obj.creds == null)?0:obj.creds;
          var tUnits: Array = [];
+         var pop: int = 0;
          for each (var unit: Object in obj.units)
          {
             tUnits.push(new UnitBuildingEntry('Unit::'+unit.type, unit.count, TerrainType.GRASS, unit.level));
+            pop += (Config.getUnitPopulation(unit.type) * unit.count);
          }
          units = new ArrayCollection(tUnits);
+         unitsPopulation = pop;
       }
       
+      
+      public var unitsPopulation: int = 0;
       public var metal: Number = 0;
       public var energy: Number = 0;
       public var zetium: Number = 0;
