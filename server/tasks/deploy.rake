@@ -241,8 +241,10 @@ class DeployHelpers; class << self
     current_dir = DEPLOY_CONFIG_SERVER_CURRENT
     shared_dir = "#{DEPLOY_CONFIG[:paths][:remote][:server]}/shared"
     %w{log vendor/bundle}.each do |dir|
+      target = "#{current_dir}/#{dir}"
       ssh.exec!("mkdir -p #{shared_dir}/#{dir}")
-      ssh.exec!("ln -nfs #{shared_dir}/#{dir} #{current_dir}/#{dir}")
+      ssh.exec!("rm -rf #{target}")
+      ssh.exec!("ln -nfs #{shared_dir}/#{dir} #{target}")
     end
 
     ssh.exec!("ln -nfs ~/config/db.game.yml #{
