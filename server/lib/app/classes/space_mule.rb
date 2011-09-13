@@ -1,8 +1,76 @@
+lambda do
+  jar_path = File.join(ROOT_DIR, 'vendor', 'SpaceMule', 'dist', 'SpaceMule.jar')
+
+  # Win32 requires us to manually require all the jars before requiring
+  # main jar.
+  Dir[File.dirname(jar_path) + "/lib/*.jar"].each { |jar| require jar }
+  require jar_path
+
+  # Scala <-> Ruby interoperability.
+  class Object
+    def to_scala
+      case self
+      when Hash
+        scala_hash = Java::scala.collection.immutable.HashMap.new
+        each do |key, value|
+          scala_hash = scala_hash.updated(key.to_scala, value.to_scala)
+        end
+        scala_hash
+      when Set
+        scala_set = Java::scala.collection.immutable.HashSet.new
+        each { |item| scala_set = scala_set.send(:"$plus", item.to_scala) }
+        scala_set
+      when Array
+        scala_array = Java::scala.collection.mutable.ArrayBuffer.new
+        each { |value| scala_array.send(:"$plus$eq", value.to_scala) }
+        scala_array.to_indexed_seq
+      when Symbol
+        to_s
+      else
+        self
+      end
+    end
+
+    def from_scala
+      case self
+      when Java::scala.collection.Map, Java::scala.collection.immutable.Map,
+          Java::scala.collection.mutable.Map
+        ruby_hash = {}
+        foreach { |tuple| ruby_hash[tuple._1.from_scala] = tuple._2.from_scala }
+        ruby_hash
+      when Java::scala.collection.Set, Java::scala.collection.immutable.Set,
+          Java::scala.collection.mutable.Set
+        ruby_set = Set.new
+        foreach { |item| ruby_set.add item.from_scala }
+        ruby_set
+      when Java::scala.collection.Seq
+        ruby_array = []
+        foreach { |item| ruby_array.push item.from_scala }
+        ruby_array
+      else
+        self
+      end
+    end
+  end
+
+  module Kernel
+    def Some(value); Java::scala.Some.new(value); end
+    None = Java::spacemule.helpers.JRuby.None
+  end
+end.call
+
 # Heavy work mule written in Java.
 class SpaceMule
   include Singleton
-  JAR_PATH = File.join(ROOT_DIR, 'vendor', 'SpaceMule', 'dist',
-  'SpaceMule.jar')
+
+  # Scala constants
+  SmModules = Java::spacemule.modules
+
+  Pmg = SmModules.pmg
+  Coords = Pmg.classes.geom.Coords
+
+  Pf = SmModules.pathfinder
+  PfO = Pf.objects
 
   class Crash < RuntimeError; end
 
@@ -17,8 +85,7 @@ class SpaceMule
   # Create a new galaxy with battleground solar system. Returns id of that
   # galaxy.
   def create_galaxy(ruleset, callback_url)
-    command('action' => 'create_galaxy', 'ruleset' => ruleset,
-      'callback_url' => callback_url)['id']
+    Pmg.Runner.create_galaxy(ruleset, callback_url)
   end
 
   # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
@@ -28,11 +95,8 @@ class SpaceMule
       :galaxy_id => galaxy_id, :auth_token => players.keys
     ).all.each { |player| players.delete player.auth_token }
 
-    if players.size > 0
-      command('action' => 'create_players',
-        'galaxy_id' => galaxy_id, 'ruleset' => ruleset,
-        'players' => players)
-    end
+    Pmg.Runner.create_players(ruleset, galaxy_id, players.to_scala).from_scala \
+      if players.size > 0
   end
 
   # Sends message to space mule for combat simulation.
@@ -114,199 +178,179 @@ class SpaceMule
   # _avoid_npc_ is +Boolean+ if we should try to avoid NPC units in
   # solar systems.
   #
-  # Example output:
-  # [
-  #   {'id' => ..., 'type' => ..., 'x' => ..., 'y' => ...},
-  #   ...
-  # ]
+  # Returns Array of PmO.ServerLocation:
+  #   id: Int,
+  #   kind: Location.Kind,
+  #   coords: Option[Coords],
+  #   timeMultiplier: Double
   #
   def find_path(source, target, avoid_npc=true)
-    message = {
-      'action' => 'find_path',
-      'from' => source.route_attrs,
-      'from_jumpgate' => nil,
-      'from_solar_system' => nil,
-      'from_ss_galaxy_coords' => nil,
-      'to' => target.route_attrs,
-      'to_jumpgate' => nil,
-      'to_solar_system' => nil,
-      'to_ss_galaxy_coords' => nil,
-    }
-
     avoidable_points = []
 
     source_solar_system = source.solar_system
+    sm_source_solar_system = None
     if source_solar_system
-      message['from_solar_system'] = source_solar_system.travel_attrs
-      avoidable_points += source_solar_system.npc_unit_locations \
-        if avoid_npc
+      sm_source_solar_system = to_pf_solar_system(source_solar_system)
+
+      if avoid_npc
+        avoidable_points += source_solar_system.npc_unit_locations.map do
+          |solar_system_point|
+          
+          PfO.SolarSystemPoint.new(
+            sm_source_solar_system,
+            Coords.new(solar_system_point.x, solar_system_point.y)
+          )
+        end
+      end
     end
 
     target_solar_system = target.solar_system
+    sm_target_solar_system = None
     if target_solar_system
-      message['to_solar_system'] = target_solar_system.travel_attrs
-      avoidable_points += target_solar_system.npc_unit_locations \
-        if avoid_npc && source_solar_system != target_solar_system
+      sm_target_solar_system = to_pf_solar_system(target_solar_system)
+
+      if avoid_npc && source_solar_system != target_solar_system
+        avoidable_points += target_solar_system.npc_unit_locations.map do
+          |solar_system_point|
+
+          PfO.SolarSystemPoint.new(
+            sm_target_solar_system,
+            Coords.new(solar_system_point.x, solar_system_point.y)
+          )
+        end
+      end
     end
 
     # Add avoidable points if we have something to avoid.
-    message['avoidable_points'] = avoidable_points \
-      unless avoidable_points.blank?
+    sm_avoidable_points = avoidable_points.blank? \
+      ? None : Some(avoidable_points.to_scala)
+
+    sm_source_jumpgates = Set.new.to_scala
+    sm_target_jumpgates = Set.new.to_scala
+    sm_source_ss_galaxy_coords = None
+    sm_target_ss_galaxy_coords = None
 
     if source_solar_system && target.is_a?(GalaxyPoint)
       # SS -> Galaxy hop, only source JGs needed.
-      set_source_jgs(message, source_solar_system)
-      set_wormhole(message, 'from_ss_galaxy_coords', target.id, target,
-        source_solar_system)
+      sm_source_jumpgates = jumpgates_for(sm_source_solar_system)
+      sm_source_ss_galaxy_coords =
+        Some(jump_coords(target.id, target, source_solar_system))
     elsif source.is_a?(GalaxyPoint) && target_solar_system
       # Galaxy -> SS hop, only target JGs needed
-      set_target_jgs(message, target_solar_system)
-      set_wormhole(message, 'to_ss_galaxy_coords', source.id, source,
-        target_solar_system)
+      sm_target_jumpgates = jumpgates_for(sm_target_solar_system)
+      sm_target_ss_galaxy_coords =
+        Some(jump_coords(source.id, source, target_solar_system))
     elsif source_solar_system && target_solar_system && (
-      source_solar_system.id != target_solar_system.id)
+      source_solar_system.id != target_solar_system.id
+    )
       # Different SS -> SS hop, we need all jumpgates
-      set_source_jgs(message, source_solar_system)
-      set_target_jgs(message, target_solar_system)
+      sm_source_jumpgates = jumpgates_for(sm_source_solar_system)
+      sm_target_jumpgates = jumpgates_for(sm_target_solar_system)
 
-      set_wormhole(message, 'from_ss_galaxy_coords', 
-        target_solar_system.galaxy_id,
-        target_solar_system, source_solar_system)
-      set_wormhole(message, 'to_ss_galaxy_coords',
-        source_solar_system.galaxy_id,
-        source_solar_system, target_solar_system)
+      sm_source_ss_galaxy_coords = Some(jump_coords(
+        target_solar_system.galaxy_id, target_solar_system,
+        source_solar_system
+      ))
+      sm_target_ss_galaxy_coords = Some(jump_coords(
+        source_solar_system.galaxy_id, source_solar_system,
+        target_solar_system
+      ))
     else
       # No jumpgates needed.
     end
 
-    command(message)['locations']
+    sm_source = to_pf_locatable(source, sm_source_solar_system)
+    sm_target = to_pf_locatable(target, sm_target_solar_system)
+
+    puts [sm_source, sm_source_jumpgates, sm_source_solar_system,
+      sm_source_ss_galaxy_coords,
+
+      sm_target, sm_target_jumpgates, sm_target_solar_system,
+      sm_target_ss_galaxy_coords,
+
+      sm_avoidable_points].inspect
+    PfO.Finder.find(
+      sm_source, sm_source_jumpgates, sm_source_solar_system,
+      sm_source_ss_galaxy_coords,
+
+      sm_target, sm_target_jumpgates, sm_target_solar_system,
+      sm_target_ss_galaxy_coords,
+
+      sm_avoidable_points
+    ).from_scala
   end
 
   protected
+  # Converts Ruby +SolarSystem+ to SpaceMule +SolarSystem+ used in pathfinder.
+  def to_pf_solar_system(solar_system)
+    PfO.SolarSystem.new(
+      solar_system.id,
+      solar_system.x.nil? || solar_system.y.nil? \
+        ? None \
+        : Some(Coords.new(solar_system.x, solar_system.y)),
+      solar_system.galaxy_id
+    )
+  end
+
+  # Converts Ruby +Location+ to SpaceMule pathfinders +Locatable+.
+  # _sm_solar_system_ is used if _location_ is in solar system.
+  def to_pf_locatable(location, sm_solar_system)
+    coords = Coords.new(location.x, location.y)
+    case location
+    when GalaxyPoint
+      PfO.GalaxyPoint.new(location.id, coords, 1.0)
+    when SolarSystemPoint
+      PfO.SolarSystemPoint.new(sm_solar_system, coords)
+    when SsObject
+      PfO.Planet.new(location.id, sm_solar_system, coords)
+    else
+      raise ArgumentError.new(
+        "Cannot convert #{location.inspect} to pathfinder Locatable!"
+      )
+    end
+  end
+
   # Checks if _solar_system_ is a battleground. If so - links entry/exit
   # point to closest wormhole in the galaxy.
   #
   # Otherwise travels as expected.
-  def set_wormhole(message, name, galaxy_id, wormhole_proximity_point,
-      solar_system)
+  def jump_coords(galaxy_id, wormhole_proximity_point, solar_system)
     if solar_system.main_battleground?
-      wormhole = Galaxy.closest_wormhole(galaxy_id, 
+      wormhole = Galaxy.closest_wormhole(galaxy_id,
         wormhole_proximity_point.x, wormhole_proximity_point.y)
-      message[name] = [wormhole.x, wormhole.y]
+      Coords.new(wormhole.x, wormhole.y)
     else
-      message[name] = [solar_system.x, solar_system.y]
+      Coords.new(solar_system.x, solar_system.y)
     end
   end
 
-  def set_source_jgs(message, from_solar_system)
-    message['from_jumpgates'] = SsObject::Jumpgate.where(
-      :solar_system_id => from_solar_system.id).all.map(&:route_attrs)
-  end
-
-  def set_target_jgs(message, target_solar_system)
-    message['to_jumpgates'] = SsObject::Jumpgate.where(
-      :solar_system_id => target_solar_system.id).all.map(&:route_attrs)
+  # Given PmO.SolarSystem returns Set of +PmO.SolarSystemPoint+s.
+  def jumpgates_for(sm_solar_system)
+    points = SsObject::Jumpgate.where(:solar_system_id => sm_solar_system.id).
+      all.map do |jumpgate|
+        PfO.SolarSystemPoint.new(
+          sm_solar_system,
+          Coords.new(jumpgate.x, jumpgate.y)
+        )
+      end
+    Set.new(points).to_scala
   end
 
   def initialize_mule
     LOGGER.block "Initializing SpaceMule", :level => :info do
-      LOGGER.info "Loading SpaceMule"
-      @worker = SpaceMule::Worker.new
       send_config
     end
     true
   end
-  
+
   def send_config
     LOGGER.info "Sending configuration"
     # Suppress huge configuration. No need to have it in logs.
     LOGGER.suppress(:debug) do
-      command({
-        'action' => 'config',
-        'db' => USED_DB_CONFIG,
-        'sets' => CONFIG.full_set_values
-      })
-    end
-  end
-
-  def command(message)
-    parsed = @worker.issue message
-    if parsed["error"]
-      raise ArgumentError.new("Mule responded with error: #{parsed['error']}")
-    else
-      parsed
-    end
-  rescue SpaceMule::Crash => ex
-    initialize_mule
-    # Notify that something went wrong
-    raise ex
-  end
-end
-
-if RUBY_PLATFORM == 'java'
-  # Win32 requires us to manually require all the jars before requiring
-  # main jar.
-  Dir[File.dirname(SpaceMule::JAR_PATH) + "/lib/*.jar"].each do |jar|
-    require jar
-  end
-
-  require SpaceMule::JAR_PATH
-
-  class SpaceMule::Worker
-    def issue(message)
-      json = JSON.generate(message)
-      LOGGER.debug("Issuing message: #{json}", "SpaceMule")
-      response = Java::spacemule.main.Main.rubyCommand(json)
-      LOGGER.debug("Received answer: #{response}", "SpaceMule")
-      JSON.parse(response)
-    end
-  end
-else
-  class SpaceMule::Worker
-    def initialize
-      @mule = IO.popen(
-        'java -server -jar "%s" 2>&1' % SpaceMule::JAR_PATH,
-        "w+"
+      SmModules.config.Runner.run(
+        USED_DB_CONFIG.to_scala,
+        CONFIG.full_set_values.to_scala
       )
-    end
-
-    def issue(message)
-      json = JSON.generate(message)
-      response = issue_raw(json)
-      JSON.parse(response)
-    rescue Exception => ex
-      error = (response || "") + @mule.read
-
-      exception = "SpaceMule has crashed, restarting!
-Message:
-#{json}
-
-Java info:
-#{error}
-
-Ruby info:
-#{ex.inspect}"
-      
-      case ex
-      when Errno::EPIPE, EOFError, JSON::ParserError
-        # Java crashed, restart it for next request.
-        # and notify that something went wrong
-        raise SpaceMule::Crash.new(exception)
-      else
-        LOGGER.error("Error @ SpaceMule! Details:\n\n#{exception}")
-        raise ex
-      end
-    end
-    
-    def issue_raw(json)
-      LOGGER.debug("Issuing message: #{json}", "SpaceMule")
-      @mule.write json
-      @mule.write "\n"
-      response = @mule.readline.strip
-      LOGGER.debug("Received answer: #{response}", "SpaceMule")
-#      raise "Response does not look like JSON message!" \
-#        unless response[0..0] == "{"
-      response
     end
   end
 end

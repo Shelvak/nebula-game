@@ -25,8 +25,8 @@ case class MapData(area: Area, tilesMap: AreaMap,
  * Used in reading maps from config.
  */
 object MapReader {
-  def parseMap(map: List[String], 
-               npcBuildingChances: List[UnitChance],
+  def parseMap(map: Seq[String],
+               npcBuildingChances: Seq[UnitChance],
                buildingLevel: Int = 1): MapData = {
     val area = Area(map(0).length() / 2, map.length)
     val tilesMap = new AreaMap(area)
@@ -77,7 +77,7 @@ object MapReader {
                           buildingTiles: HashSet[Coords],
                           coord: Coords,
                           char: String,
-                          chances: List[UnitChance],
+                          chances: Seq[UnitChance],
                           level: Int) = {
     val name = char.toLowerCase match {
       case " " | "-" => null

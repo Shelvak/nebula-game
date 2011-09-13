@@ -139,16 +139,6 @@ class SolarSystem < ActiveRecord::Base
     hash
   end
 
-  # Used in SpaceMule to calculate traveling paths.
-  def travel_attrs
-    {
-      :id => id,
-      :x => x,
-      :y => y,
-      :galaxy_id => galaxy_id
-    }
-  end
-
   def galaxy_point
     GalaxyPoint.new(galaxy_id, x, y)
   end

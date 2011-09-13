@@ -3,7 +3,6 @@ package spacemule.modules.combat.post_combat
 import scala.collection.mutable.ListBuffer
 import spacemule.modules.combat.objects.Combatant
 import spacemule.modules.combat.objects.Gun
-import spacemule.helpers.json.Json
 
 object Log {
   /**
@@ -76,6 +75,4 @@ class Log(unloadedUnitIds: Map[Int, Seq[Int]]) {
     "unloaded" -> unloadedUnitIds,
     "ticks" -> ticks.map { _.asJson }
   )
-
-  def toJson = Json.toJson(asJson)
 }

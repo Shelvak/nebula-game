@@ -29,17 +29,17 @@ class UnitsEntry(val kind: String, val count: Either[Int, Range],
     this(
       definition(0).asInstanceOf[String].camelcase,
       definition(1) match {
-        case int: Int => Left(int)
+        case long: Long => Left(long.toInt)
         case any: Any => {
-            val seq = any.asInstanceOf[Seq[Int]]
-            Right(seq(0) to seq(1))
+            val seq = any.asInstanceOf[Seq[Long]]
+            Right(seq(0).toInt to seq(1).toInt)
         }
       },
       definition(2) match {
-        case int: Int => IndexedSeq(int)
+        case long: Long => IndexedSeq(long.toInt)
         case any: Any => {
-            val seq = any.asInstanceOf[Seq[Int]]
-            seq.toIndexedSeq
+            val seq = any.asInstanceOf[Seq[Long]]
+            seq.map { _.toInt }.toIndexedSeq
         }
       }
     )

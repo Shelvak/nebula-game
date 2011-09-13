@@ -154,25 +154,27 @@ end
 
 RSpec::Matchers.define :be_path do |points|
   match do |actual|
-    @actual_path = actual.map do |point|
-      case point['type']
+    @actual_path = actual.map do |server_location|
+      x, y = server_location.coords.empty? \
+        ? [nil, nil] \
+        : [server_location.coords.get.x, server_location.coords.get.y]
+      case server_location.kind.id
       when Location::GALAXY
-        GalaxyPoint.new(point['id'], point['x'], point['y'])
+        GalaxyPoint.new(server_location.id, x, y)
       when Location::SOLAR_SYSTEM
-        SolarSystemPoint.new(point['id'], point['x'], point['y'])
+        SolarSystemPoint.new(server_location.id, x, y)
       else
-        LocationPoint.new(point['id'], point['type'],
-          point['x'], point['y'])
+        LocationPoint.new(server_location.id, server_location.kind.id, x, y)
       end
     end
     @actual_path == points
   end
-  failure_message_for_should do |actual|
+  failure_message_for_should do |_|
     "Paths were not equal!
 Expected: #{points.join(" ")}
 Actual  : #{@actual_path.join(" ")}"
   end
-  failure_message_for_should_not do |player|
+  failure_message_for_should_not do |_|
     "target and actual paths should have not been equal but they were"
   end
   description do
@@ -202,13 +204,13 @@ RSpec::Matchers.define :include_points do |type, *points|
     "[%s]" % points.map { |point| "%d: %d,%d" % point }.join(" ")
   end
 
-  failure_message_for_should do |actual|
+  failure_message_for_should do |_|
     "Path did not include all points!
 Expected: #{pp_points(mapped_points)}
 Included: #{pp_points(@included_points)}
 Path:   : #{pp_points(@mapped_actual)}"
   end
-  failure_message_for_should_not do |player|
+  failure_message_for_should_not do |_|
     "Path should not have included #{pp_points(@included_points)
       } but it did!"
   end

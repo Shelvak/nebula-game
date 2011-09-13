@@ -1,7 +1,6 @@
 package spacemule.modules.combat
 
 import spacemule.helpers.StdErrLog
-import spacemule.helpers.json.Json
 import spacemule.modules.combat.objects._
 import spacemule.modules.pmg.objects.Location
 import spacemule.helpers.Converters._
@@ -70,12 +69,10 @@ object Runner extends BenchmarkableMock {
     val location = Location.read(
       input.getOrError("location").asInstanceOf[Map[String, Any]]
     )
-    val allianceNames = Json.intifyKeys(
-      input.getOrError("alliance_names").asInstanceOf[Map[String, String]]
-    )
-    val napRules = Json.intifyKeys(
-      input.getOrError("nap_rules").asInstanceOf[Map[String, Set[Int]]]
-    )
+    val allianceNames =
+      input.getOrError("alliance_names").asInstanceOf[Map[Int, String]]
+    val napRules =
+      input.getOrError("nap_rules").asInstanceOf[Map[Int, Set[Int]]]
     val players = input.getOrError("players").asInstanceOf[
       Map[String, Map[String, Any]]
     ].map { case (playerIdString, data) =>

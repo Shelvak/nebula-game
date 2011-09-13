@@ -14,8 +14,7 @@ case class Planet(
 ) extends Locatable with InSolarSystem {
   override def toServerLocation = toServerLocation(Config.planetLinkWeight)
   def toServerLocation(timeModifier: Double) = 
-    ServerLocation(id, objects.Location.Planet,
-      None, None, timeModifier)
+    ServerLocation(id, objects.Location.Planet, None, timeModifier)
   def solarSystemId = solarSystem.id
   def solarSystemPoint = SolarSystemPoint(solarSystem, coords)
 }

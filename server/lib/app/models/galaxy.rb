@@ -63,11 +63,9 @@ class Galaxy < ActiveRecord::Base
     when CallbackManager::EVENT_SPAWN
       galaxy = find(id)
       galaxy.spawn_convoy!
-      
-      CONFIG.with_set_scope(galaxy.ruleset) do
-        CallbackManager.register(galaxy, CallbackManager::EVENT_SPAWN,
-          CONFIG.evalproperty('galaxy.convoy.time').from_now)
-      end
+
+      CallbackManager.register(galaxy, CallbackManager::EVENT_SPAWN,
+        CONFIG.evalproperty('galaxy.convoy.time').from_now)
     when CallbackManager::EVENT_CREATE_METAL_SYSTEM_OFFER,
         CallbackManager::EVENT_CREATE_ENERGY_SYSTEM_OFFER, 
         CallbackManager::EVENT_CREATE_ZETIUM_SYSTEM_OFFER

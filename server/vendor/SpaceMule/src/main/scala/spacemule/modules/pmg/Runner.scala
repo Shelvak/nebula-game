@@ -14,12 +14,13 @@ import spacemule.modules.pmg.persistence.objects.GalaxyRow
 import spacemule.persistence.DB
 
 object Runner extends BenchmarkableMock {
-  def createGalaxy(input: Map[String, Any]): Map[String, Any] = {
-    val ruleset = getRuleset(input)
-    val callbackUrl = input.getOrError("callback_url").asInstanceOf[String]
-    return Config.withSetScope(ruleset) { () =>
+  /**
+   * Creates galaxy with ruleset and callbackUrl. Returns galaxy id.
+   */
+  def createGalaxy(ruleset: String, callbackUrl: String): Int = {
+    Config.withSetScope(ruleset) { () =>
       val createdAt = DB.date(new Date())
-      TableIds.initialize
+      TableIds.initialize()
       val galaxyRow = new GalaxyRow(ruleset, callbackUrl, createdAt)
       CallbackRow.initConvoySpawn
 
@@ -43,7 +44,7 @@ object Runner extends BenchmarkableMock {
           ).foreach { event => 
             Manager.callbacks += CallbackRow(
               galaxyRow, ruleset, Some(event),
-              Some(Config.marketBotRandomResourceCooldown.fromNow)
+              Some(Config.marketBotRandomResourceCooldown.fromNow())
             ).values
           }
           Manager.readBattleground(
@@ -55,27 +56,21 @@ object Runner extends BenchmarkableMock {
       }
       printBenchmarkResults()
       
-      Map("id" -> galaxyRow.id)
+      galaxyRow.id
     }
   }
 
-  def createPlayers(input: Map[String, Any]): Map[String, Any] = {
-    val ruleset = getRuleset(input)
-
-    return Config.withSetScope(ruleset) { () =>
-      val galaxy = new Galaxy(
-        input.getOrError(
-          "galaxy_id", "'galaxy_id' was not defined!"
-        ).asInstanceOf[Int],
-        ruleset
-      )
+  def createPlayers(
+    ruleset: String,
+    galaxyId: Int,
+    players: Map[String, String]
+  ): Map[String, Any] = {
+    Config.withSetScope(ruleset) { () =>
+      val galaxy = new Galaxy(galaxyId, ruleset)
 
       benchmark("load galaxy") { () => Manager.load(galaxy) }
 
-      input.getOrError(
-        "players",
-        "'players' must be defined!"
-      ).asInstanceOf[Map[String, String]].foreach { case(authToken, name) =>
+      players.foreach { case(authToken, name) =>
         val player = Player(name, authToken)
         benchmark("create player") { () => galaxy.createZoneFor(player) }
       }
@@ -89,8 +84,4 @@ object Runner extends BenchmarkableMock {
       )
     }
   }
-
-  private def getRuleset(input: Map[String, Any]): String = input.getOrError(
-    "ruleset", "'ruleset' was not defined!"
-  ).asInstanceOf[String]
 }

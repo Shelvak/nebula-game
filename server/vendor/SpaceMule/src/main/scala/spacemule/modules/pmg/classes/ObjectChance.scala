@@ -12,8 +12,7 @@ import spacemule.helpers.Random
  */
 
 object ObjectChance {
-  def foreachByChance(chances: List[ObjectChance])(
-               block: (String) => Unit) = {
+  def foreachByChance(chances: Seq[ObjectChance])(block: (String) => Unit) = {
     chances.foreach { chance =>
       if (Random.boolean(chance.chance)) block(chance.name)
     }

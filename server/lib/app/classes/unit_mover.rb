@@ -106,18 +106,21 @@ class UnitMover
       first_hop = nil
       last_hop = nil
       index = 0
-      hops = path.map do |location|
+      hops = path.map do |server_location|
         hop = RouteHop.new
+        x, y = server_location.coords.empty? \
+          ? [nil, nil] \
+          : [server_location.coords.get.x, server_location.coords.get.y]
         hop.location = LocationPoint.new(
-          location['id'].to_i,
-          location['type'].to_i,
-          location['x'] ? location['x'].to_i : nil,
-          location['y'] ? location['y'].to_i : nil
+          server_location.id.to_i,
+          server_location.kind.id,
+          x,
+          y
         )
         hop.index = index
 
         hop.arrives_at = (last_hop.try(:arrives_at) || Time.now) +
-          (hop_times[hop.hop_type] * location['time'] *
+          (hop_times[hop.hop_type] * server_location.time_multiplier *
             speed_modifier).round
 
         # Set previous hop as jump hop.

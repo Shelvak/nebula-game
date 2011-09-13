@@ -10,17 +10,9 @@ import spacemule.persistence.DB
 import objects.Config
 
 object Runner {
-  def run(input: Map[String, Any]): Map[String, Any] = {
-    val db = input.getOrError(
-      "db", "key 'db' in action 'config' not found!"
-    ).asInstanceOf[Map[String, String]]
-    processDb(db)
-
-    Config.sets = input.getOrError(
-      "sets", "key 'sets' in action 'config' not found!"
-    ).asInstanceOf[Map[String, Map[String, Any]]]
-
-    return Map[String, Any]("success" -> true)
+  def run(dbConfig: Map[String, String], sets: Map[String, Map[String, Any]]) {
+    processDb(dbConfig)
+    Config.sets = sets
   }
 
   private def processDb(config: Map[String, String]) = {

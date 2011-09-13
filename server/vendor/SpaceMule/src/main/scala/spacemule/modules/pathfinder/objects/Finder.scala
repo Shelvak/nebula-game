@@ -12,16 +12,17 @@ import spacemule.modules.pmg.objects
 import spacemule.modules.config.objects.Config
 
 object Finder {
-  def find(source: Locatable,
-           fromJumpgates: Set[SolarSystemPoint],
-           sourceSs: Option[SolarSystem],
-           sourceSsGalaxyCoords: Option[Coords],
-           target: Locatable,
-           targetJumpgates: Set[SolarSystemPoint],
-           targetSs: Option[SolarSystem],
-           targetSsGalaxyCoords: Option[Coords],
-           avoidablePoints: Option[Seq[SolarSystemPoint]]):
-  Seq[ServerLocation] = {
+  def find(
+    source: Locatable,
+    sourceJumpgates: Set[SolarSystemPoint],
+    sourceSs: Option[SolarSystem],
+    sourceSsGalaxyCoords: Option[Coords],
+    target: Locatable,
+    targetJumpgates: Set[SolarSystemPoint],
+    targetSs: Option[SolarSystem],
+    targetSsGalaxyCoords: Option[Coords],
+    avoidablePoints: Option[Seq[SolarSystemPoint]]
+  ): Seq[ServerLocation] = {
 
     // Initialize
     val locations = ListBuffer[ServerLocation]()
@@ -54,12 +55,12 @@ object Finder {
       // Nop, outer hyperspace awaits us.
 
       // Travel to the jumpgate
-      if (fromJumpgates.isEmpty)
+      if (sourceJumpgates.isEmpty)
         sys.error(
           "from jumpgates cannot be Empty if travelling outside SS!"
         )
 
-      locations ++= findInSolarSystem(fromPoint, fromJumpgates,
+      locations ++= findInSolarSystem(fromPoint, sourceJumpgates,
                                       avoidablePoints)
 
       // Switch traveling source to galaxy.
@@ -122,7 +123,7 @@ object Finder {
                                                      avoidablePoints)
     }
 
-    return locations
+    locations
   }
 
   private def travelToSolarSystemPointOrPlanet(
@@ -172,7 +173,7 @@ object Finder {
       hop =>
 
       ServerLocation(from.solarSystemId, objects.Location.SolarSystem,
-                     Some(hop.coords.x), Some(hop.coords.y), hop.timeMultiplier)
+                     Some(hop.coords), hop.timeMultiplier)
     }
   }
 
@@ -213,7 +214,7 @@ object Finder {
                            to: GalaxyPoint): Seq[ServerLocation] = {
     galaxy.Finder.find(from.coords, to.coords).map { hop =>
       ServerLocation(from.id, objects.Location.Galaxy,
-                     Some(hop.coords.x), Some(hop.coords.y), hop.timeMultiplier)
+                     Some(hop.coords), hop.timeMultiplier)
     }
   }
 }

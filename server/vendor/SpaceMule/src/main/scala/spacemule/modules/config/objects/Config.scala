@@ -66,18 +66,24 @@ object Config {
 
   private def int(key: String) = get[Any](key) match {
     case i: Int => i
+    case l: Long => l.toInt
     case d: Double => d.toInt
-    case value => sys.error("Cannot convert %s to Int (key: %s)!".format(
-          value.toString, key))
+    case value => sys.error(
+      "Cannot convert %s of class %s to Int (key: %s)!".format(
+        value.toString, value.getClass, key)
+      )
   }
   private def string(key: String) = get[String](key)
   private def double(key: String) = get[Any](key) match {
     case i: Int => i.toDouble
+    case l: Long => l.toDouble
     case d: Double => d
-    case value => sys.error("Cannot convert %s to Double (key: %s)!".format(
-          value.toString, key))
+    case value => sys.error(
+      "Cannot convert %s of class %s to Double (key: %s)!".format(
+        value.toString, value.getClass, key)
+      )
   }
-  private def list[T](key: String) = get[List[T]](key)
+  private def seq[T](key: String) = get[Seq[T]](key)
   private def area(key: String) = new Area(
     int("%s.width".format(key)), int("%s.height".format(key))
   )
@@ -110,15 +116,15 @@ object Config {
   }
 
   private def range(key: String): Range = {
-    val rangeData = list[Int](key)
-    return Range.inclusive(rangeData(0), rangeData(1))
+    val rangeData = seq[Long](key)
+    return Range.inclusive(rangeData(0).toInt, rangeData(1).toInt)
   }
   
   /**
    * Same as range(), but range limits are forumlas with speed.
    */
   private def evalRange(key: String): Range = {
-    val rangeData = list[String](key)
+    val rangeData = seq[String](key)
     val params = Map("speed" -> new BigDecimal(speed))
     val from = formula(rangeData(0), params).intValue
     val to = formula(rangeData(1), params).intValue
@@ -132,35 +138,35 @@ object Config {
     )
   }
 
-  private def objectChances(name: String): List[ObjectChance] = {
-    list[List[Any]](name).map { chanceList =>
+  private def objectChances(name: String): Seq[ObjectChance] = {
+    seq[Seq[Any]](name).map { chanceSeq =>
         ObjectChance(
-          chanceList(0).asInstanceOf[Int],
-          chanceList(1).asInstanceOf[String].camelcase
+          chanceSeq(0).asInstanceOf[Long].toInt,
+          chanceSeq(1).asInstanceOf[String].camelcase
         )
     }
   }
 
-  private def unitChances(name: String): List[UnitChance] = {
-    list[List[Any]](name).map { chanceList =>
+  private def unitChances(name: String): Seq[UnitChance] = {
+    seq[Seq[Any]](name).map { chanceSeq =>
         UnitChance(
-          chanceList(0).asInstanceOf[Int],
-          chanceList(1).asInstanceOf[Int],
-          chanceList(2).asInstanceOf[String].camelcase,
-          chanceList(3).asInstanceOf[Int]
+          chanceSeq(0).asInstanceOf[Long].toInt,
+          chanceSeq(1).asInstanceOf[Long].toInt,
+          chanceSeq(2).asInstanceOf[String].camelcase,
+          chanceSeq(3).asInstanceOf[Long].toInt
         )
     }
   }
 
-  private def positions(name: String): List[Coords] = {
-    list[List[Int]](name).map { coordsList =>
-      Coords(coordsList(0), coordsList(1))
+  private def positions(name: String): Seq[Coords] = {
+    seq[Seq[Long]](name).map { coordsSeq =>
+      Coords(coordsSeq(0).toInt, coordsSeq(1).toInt)
     }
   }
 
-  private def map(name: String) = get[List[String]](name).reverse
+  private def map(name: String) = get[Seq[String]](name).reverse
 
-  private def unitsEntry(name: String) = get[List[Seq[Any]]](name).map {
+  private def unitsEntry(name: String) = get[Seq[Seq[Any]]](name).map {
     entry => new UnitsEntry(entry)
   }
 
@@ -198,7 +204,7 @@ object Config {
     "damages.%s.%s".format(Damage.toString(damage), Armor.toString(armor)))
 
   def stanceProperty(stance: Stance.Type, property: String) = stance match {
-    case Stance.Normal => 1
+    case Stance.Normal => 1.0
     case _ => double("combat.stance.%d.%s".format(stance.id, property))
   }
   def stanceDamageMod(stance: Stance.Type) = stanceProperty(stance, "damage")
@@ -380,7 +386,7 @@ object Config {
   type GunDefinition = Map[String, Any]
   private val gunDefinitionsCache = HashMap[String, Seq[GunDefinition]]()
   private def gunDefinitions(name: String) = {
-    gunDefinitionsCache ||= (name, list[GunDefinition](name))
+    gunDefinitionsCache ||= (name, seq[GunDefinition](name))
     gunDefinitionsCache(name)
   }
 
@@ -488,15 +494,15 @@ object Config {
   def folliageCount1stType = range("planet.folliage.type.1.count").random
   def folliageSpacingRadius1stType = 
     int("planet.folliage.type.2.spacing_radius")
-  def folliageKinds1stType(terrainType: Int) = list[Int](
+  def folliageKinds1stType(terrainType: Int) = seq[Long](
     "planet.folliage.type.1.variations.%d".format(terrainType)
-  )
+  ).map { _.toInt }
 
   def folliagePercentage2ndType = 
     range("planet.folliage.type.2.percentage").random
   def folliageSpacingRadius2ndType = 
     int("planet.folliage.type.2.spacing_radius")
-  def folliageKinds2ndType(terrainType: Int) = list[Int](
+  def folliageKinds2ndType(terrainType: Int) = seq[Long](
     "planet.folliage.type.2.variations.%d".format(terrainType)
-  )
+  ).map { _.toInt }
 }
