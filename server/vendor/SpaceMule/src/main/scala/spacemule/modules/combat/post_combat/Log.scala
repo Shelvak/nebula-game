@@ -56,7 +56,7 @@ object Log {
   }
 }
 
-class Log(unloadedUnitIds: Map[Int, Seq[Int]]) {
+class Log(unloadedUnitIds: collection.Map[Int, Seq[Int]]) {
   private val ticks = ListBuffer[Log.Tick]()
 
   def +=(tick: Log.Tick) = ticks += tick
@@ -71,7 +71,7 @@ class Log(unloadedUnitIds: Map[Int, Seq[Int]]) {
    *   "ticks" -> Seq[Log.Tick]
    * )
    */
-  def asJson: Map[String, Any] = Map(
+  def toMap: Map[String, Any] = Map(
     "unloaded" -> unloadedUnitIds,
     "ticks" -> ticks.map { _.asJson }
   )

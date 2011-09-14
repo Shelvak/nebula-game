@@ -52,8 +52,8 @@ class Alliance(val id: Int,
    */
   def reset() = {
     L.debug("Resetting alliance (id: %d) initiative lists".format(id))
-    groundFlanks.reset
-    spaceFlanks.reset
+    groundFlanks.reset()
+    spaceFlanks.reset()
   }
 
   /**

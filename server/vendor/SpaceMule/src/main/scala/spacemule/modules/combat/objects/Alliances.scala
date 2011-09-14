@@ -6,6 +6,8 @@ import spacemule.helpers.{StdErrLog => L}
 import spacemule.modules.combat.Combat
 
 object Alliances {
+  type DataMap = Map[Int, Map[String, Any]]
+
   /**
    * Group players to map where keys are alliance ids and values are alliances.
    *
@@ -250,7 +252,7 @@ class Alliances(planetOwner: Option[Player],
    *   allianceId: Int -> Alliance
    * )
    */
-  lazy val asJson = alliancesMap.map { case (allianceId, alliance) =>
-      (allianceId -> alliance.asJson)
+  lazy val toMap: Alliances.DataMap = alliancesMap.map {
+    case (allianceId, alliance) => (allianceId -> alliance.asJson)
   }
 }

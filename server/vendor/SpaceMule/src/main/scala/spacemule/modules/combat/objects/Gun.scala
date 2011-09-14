@@ -15,7 +15,7 @@ object Gun {
         definition.getOrError("dpt").toString,
         Map("level" -> new BigDecimal(owner.level))
       ).intValue,
-      definition.getOrError("period").asInstanceOf[Int]
+      definition.getOrError("period").asInstanceOf[Long].intValue()
     )
 
   /**

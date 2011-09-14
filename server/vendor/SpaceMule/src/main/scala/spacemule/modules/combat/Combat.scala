@@ -12,6 +12,7 @@ import spacemule.modules.pmg.objects.Location
 object Combat {
   type AllianceNames = sc.Map[Int, String]
   type NapRules = sc.Map[Int, Set[Int]]
+  type LoadedTroops = sc.Map[Int, Set[Troop]]
 
   object Outcome extends Enumeration {
     /**
@@ -35,7 +36,7 @@ object Combat {
             players: Set[Option[Player]],
             allianceNames: Combat.AllianceNames,
             napRules: NapRules, troops: Set[Troop],
-            loadedTroops: Map[Int, Seq[Troop]],
+            loadedTroops: Combat.LoadedTroops,
             unloadedTroopIds: Set[Int],
             buildings: Set[Building]) =
     new Combat(location, planetOwner, players, allianceNames, napRules,
@@ -49,7 +50,7 @@ class Combat(location: Location, planetOwner: Option[Player],
              players: Set[Option[Player]],
              allianceNames: Combat.AllianceNames,
              napRules: Combat.NapRules, troops: Set[Troop],
-             loadedTroops: Map[Int, Seq[Troop]],
+             loadedTroops: Combat.LoadedTroops,
              unloadedTroopIds: Set[Int],
              buildings: Set[Building]) {
   // Units unloaded to ground.
@@ -63,20 +64,20 @@ class Combat(location: Location, planetOwner: Option[Player],
   
   /**
    * Log of this combat.
-   * 
+   *
    * If there is any units to unload and we are in planet they are unloaded
    * as a first tick.
    */
   val log = {
     L.debug("%d troops unloaded".format(unloadedTroopIds.size))
-    val grouped = 
+    val groupedUnloadedTroopIds =
       if (unloadedTroopIds.isEmpty) Map.empty[Int, Seq[Int]]
       else unloadedTroops.map {
         case (transporterId, troops) =>
           transporterId -> troops.map { _.id }.toSeq
       }
     
-    new Log(grouped)
+    new Log(groupedUnloadedTroopIds)
   }
 
   // Only include loaded troops if we are in planet.
@@ -90,7 +91,7 @@ class Combat(location: Location, planetOwner: Option[Player],
                             combatants)
   // Generate JSON representation before running combat because after combat all
   // HP properties will be changed.
-  alliances.asJson
+  alliances.toMap
 
   val statistics = new Statistics(alliances)
 

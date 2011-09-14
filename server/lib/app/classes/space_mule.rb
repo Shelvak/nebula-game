@@ -59,20 +59,13 @@ lambda do
   end
 end.call
 
-# Heavy work mule written in Java.
+# Heavy work mule written in Scala.
 class SpaceMule
   include Singleton
 
   # Scala constants
   SmModules = Java::spacemule.modules
-
   Pmg = SmModules.pmg
-  Coords = Pmg.classes.geom.Coords
-
-  Pf = SmModules.pathfinder
-  PfO = Pf.objects
-
-  class Crash < RuntimeError; end
 
   def restart!
     send_config
@@ -101,73 +94,18 @@ class SpaceMule
 
   # Sends message to space mule for combat simulation.
   #
-  # Input:
-  #   * Map(
-  #   *   "location" -> Map(
-  #   *     "id" -> Int,
-  #   *     "kind" -> Int,
-  #   *     "x" -> Int | null
-  #   *     "y" -> Int | null
-  #   *   ),
-  #   *   "planet_owner_id" -> Int | null,
-  #   *   "nap_rules" -> Map[allianceId: Int -> napIds: Seq[Int]],
-  #   *   "alliance_names" -> Map[allianceId: Int -> name: String]
-  #   *   "players" -> Map[
-  #   *     Int -> Map(
-  #   *       "alliance_id" -> Int | null,
-  #   *       "name" -> String,
-  #   *       "damage_tech_mods" -> Map(
-  #   *         "Unit::Trooper" -> Double,
-  #   *         ...
-  #   *       ),
-  #   *       "armor_tech_mods" -> Map(
-  #   *         "Unit::Trooper" -> Double,
-  #   *         ...
-  #   *       )
-  #   *     )
-  #   *   ],
-  #   *   "troops" -> Seq[
-  #   *     // This is Troop
-  #   *     Map(
-  #   *       "id" -> Int,
-  #   *       "type" -> String,
-  #   *       "level" -> Int,
-  #   *       "hp" -> Int,
-  #   *       "flank" -> Int,
-  #   *       "player_id" -> Int | null,
-  #   *       "stance" -> Int,
-  #   *       "xp" -> Int
-  #   *     )
-  #   *   ],
-  #   *   "loaded_troops" -> Map[transporterId: Int, Troop],
-  #   *   "unloaded_troop_ids" -> Seq[Int],
-  #   *   "buildings" -> Seq[
-  #   *     Map(
-  #   *       "id" -> Int,
-  #   *       "type" -> String,
-  #   *       "hp" -> Int,
-  #   *       "level" -> Int
-  #   *     )
-  #   *   ]
-  #   * )
-  def combat(location, planet_owner_id, nap_rules, alliance_names, players,
-      troops, loaded_troops, unloaded_unit_ids, buildings)
-    message = {
-      'action' => 'combat',
-      'location' => location,
-      'planet_owner_id' => planet_owner_id,
-      'nap_rules' => nap_rules,
-      'alliance_names' => alliance_names,
-      'players' => players,
-      'troops' => troops,
-      'loaded_troops' => loaded_troops,
-      "unloaded_troop_ids" => unloaded_unit_ids,
-      'buildings' => buildings
-    }
-
-    LOGGER.block("Issuing combat to SpaceMule") do
-      command(message)
-    end
+  # _location_ is +Location+ object.
+  # _players_ is Array of +Player+s.
+  # _nap_rules_ is Hash received from Nap#get_rules
+  # _units_ is Array of +Unit+s.
+  # _loaded_units_ is Hash of {transporter_id => Set of +Unit+s}
+  # _unloaded_unit_ids_ is Set[unit_id]
+  # _buildings_ is Array of +Building+s.
+  def combat(location, players, nap_rules, units, loaded_units,
+             unloaded_unit_ids, buildings)
+    response = Combat.invoke(location, players, nap_rules, units, loaded_units,
+                             unloaded_unit_ids, buildings)
+    response.empty? ? nil : response.get
   end
 
   # Finds traveling path from _source_ to _target_ and returns path.
@@ -185,157 +123,10 @@ class SpaceMule
   #   timeMultiplier: Double
   #
   def find_path(source, target, avoid_npc=true)
-    avoidable_points = []
-
-    source_solar_system = source.solar_system
-    sm_source_solar_system = None
-    if source_solar_system
-      sm_source_solar_system = to_pf_solar_system(source_solar_system)
-
-      if avoid_npc
-        avoidable_points += source_solar_system.npc_unit_locations.map do
-          |solar_system_point|
-          
-          PfO.SolarSystemPoint.new(
-            sm_source_solar_system,
-            Coords.new(solar_system_point.x, solar_system_point.y)
-          )
-        end
-      end
-    end
-
-    target_solar_system = target.solar_system
-    sm_target_solar_system = None
-    if target_solar_system
-      sm_target_solar_system = to_pf_solar_system(target_solar_system)
-
-      if avoid_npc && source_solar_system != target_solar_system
-        avoidable_points += target_solar_system.npc_unit_locations.map do
-          |solar_system_point|
-
-          PfO.SolarSystemPoint.new(
-            sm_target_solar_system,
-            Coords.new(solar_system_point.x, solar_system_point.y)
-          )
-        end
-      end
-    end
-
-    # Add avoidable points if we have something to avoid.
-    sm_avoidable_points = avoidable_points.blank? \
-      ? None : Some(avoidable_points.to_scala)
-
-    sm_source_jumpgates = Set.new.to_scala
-    sm_target_jumpgates = Set.new.to_scala
-    sm_source_ss_galaxy_coords = None
-    sm_target_ss_galaxy_coords = None
-
-    if source_solar_system && target.is_a?(GalaxyPoint)
-      # SS -> Galaxy hop, only source JGs needed.
-      sm_source_jumpgates = jumpgates_for(sm_source_solar_system)
-      sm_source_ss_galaxy_coords =
-        Some(jump_coords(target.id, target, source_solar_system))
-    elsif source.is_a?(GalaxyPoint) && target_solar_system
-      # Galaxy -> SS hop, only target JGs needed
-      sm_target_jumpgates = jumpgates_for(sm_target_solar_system)
-      sm_target_ss_galaxy_coords =
-        Some(jump_coords(source.id, source, target_solar_system))
-    elsif source_solar_system && target_solar_system && (
-      source_solar_system.id != target_solar_system.id
-    )
-      # Different SS -> SS hop, we need all jumpgates
-      sm_source_jumpgates = jumpgates_for(sm_source_solar_system)
-      sm_target_jumpgates = jumpgates_for(sm_target_solar_system)
-
-      sm_source_ss_galaxy_coords = Some(jump_coords(
-        target_solar_system.galaxy_id, target_solar_system,
-        source_solar_system
-      ))
-      sm_target_ss_galaxy_coords = Some(jump_coords(
-        source_solar_system.galaxy_id, source_solar_system,
-        target_solar_system
-      ))
-    else
-      # No jumpgates needed.
-    end
-
-    sm_source = to_pf_locatable(source, sm_source_solar_system)
-    sm_target = to_pf_locatable(target, sm_target_solar_system)
-
-    puts [sm_source, sm_source_jumpgates, sm_source_solar_system,
-      sm_source_ss_galaxy_coords,
-
-      sm_target, sm_target_jumpgates, sm_target_solar_system,
-      sm_target_ss_galaxy_coords,
-
-      sm_avoidable_points].inspect
-    PfO.Finder.find(
-      sm_source, sm_source_jumpgates, sm_source_solar_system,
-      sm_source_ss_galaxy_coords,
-
-      sm_target, sm_target_jumpgates, sm_target_solar_system,
-      sm_target_ss_galaxy_coords,
-
-      sm_avoidable_points
-    ).from_scala
+    Pathfinder.invoke(source, target, avoid_npc)
   end
 
   protected
-  # Converts Ruby +SolarSystem+ to SpaceMule +SolarSystem+ used in pathfinder.
-  def to_pf_solar_system(solar_system)
-    PfO.SolarSystem.new(
-      solar_system.id,
-      solar_system.x.nil? || solar_system.y.nil? \
-        ? None \
-        : Some(Coords.new(solar_system.x, solar_system.y)),
-      solar_system.galaxy_id
-    )
-  end
-
-  # Converts Ruby +Location+ to SpaceMule pathfinders +Locatable+.
-  # _sm_solar_system_ is used if _location_ is in solar system.
-  def to_pf_locatable(location, sm_solar_system)
-    coords = Coords.new(location.x, location.y)
-    case location
-    when GalaxyPoint
-      PfO.GalaxyPoint.new(location.id, coords, 1.0)
-    when SolarSystemPoint
-      PfO.SolarSystemPoint.new(sm_solar_system, coords)
-    when SsObject
-      PfO.Planet.new(location.id, sm_solar_system, coords)
-    else
-      raise ArgumentError.new(
-        "Cannot convert #{location.inspect} to pathfinder Locatable!"
-      )
-    end
-  end
-
-  # Checks if _solar_system_ is a battleground. If so - links entry/exit
-  # point to closest wormhole in the galaxy.
-  #
-  # Otherwise travels as expected.
-  def jump_coords(galaxy_id, wormhole_proximity_point, solar_system)
-    if solar_system.main_battleground?
-      wormhole = Galaxy.closest_wormhole(galaxy_id,
-        wormhole_proximity_point.x, wormhole_proximity_point.y)
-      Coords.new(wormhole.x, wormhole.y)
-    else
-      Coords.new(solar_system.x, solar_system.y)
-    end
-  end
-
-  # Given PmO.SolarSystem returns Set of +PmO.SolarSystemPoint+s.
-  def jumpgates_for(sm_solar_system)
-    points = SsObject::Jumpgate.where(:solar_system_id => sm_solar_system.id).
-      all.map do |jumpgate|
-        PfO.SolarSystemPoint.new(
-          sm_solar_system,
-          Coords.new(jumpgate.x, jumpgate.y)
-        )
-      end
-    Set.new(points).to_scala
-  end
-
   def initialize_mule
     LOGGER.block "Initializing SpaceMule", :level => :info do
       send_config

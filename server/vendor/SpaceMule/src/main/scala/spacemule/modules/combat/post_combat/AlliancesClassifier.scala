@@ -2,10 +2,14 @@ package spacemule.modules.combat.post_combat
 
 import spacemule.modules.combat.objects._
 
-protected object Classification extends Enumeration {
+object Classification extends Enumeration {
   val Friend = Value(0, "friend")
   val Enemy = Value(1, "enemy")
   val Nap = Value(2, "nap")
+}
+
+object AlliancesClassifier {
+  type ClassificationMap = Map[Int, Map[Int, Map[String, Any]]]
 }
 
 /**
@@ -23,22 +27,25 @@ class AlliancesClassifier(alliances: Alliances) {
    *   )
    * )
    */
-  lazy val asJson = alliances.alliancesMap.map {
-    case (allianceId, alliance) =>
-      alliance.players.map { case player =>
-        player match {
-          // NPC players don't need this info.
-          case None => None
-          case Some(player) => {
-              val perspectives = alliances.alliancesMap.map {
-                case (allianceId, alliance) => view(alliances, player, alliance)
-              }
+  lazy val toMap: AlliancesClassifier.ClassificationMap = {
+    alliances.alliancesMap.map {
+      case (allianceId, alliance) =>
+        alliance.players.map {
+          _ match {
+            // NPC players don't need this info.
+            case None => None
+            case Some(player) => {
+                val perspectives = alliances.alliancesMap.map {
+                  case (allianceId, alliance) =>
+                    view(alliances, player, alliance)
+                }
 
-              Some(player.id -> perspectives)
+                Some(player.id -> perspectives)
+            }
           }
-        }
-      }.flatten
-  }.flatten.toMap
+        }.flatten
+    }.flatten.toMap
+  }
 
   /**
    * View of the player of this alliance.

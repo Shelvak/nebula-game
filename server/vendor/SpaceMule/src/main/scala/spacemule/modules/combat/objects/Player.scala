@@ -1,11 +1,6 @@
 package spacemule.modules.combat.objects
 
 object Player {
-  def idForJson(player: Option[Player]) = player match {
-    case Some(player) => player.id
-    case None => null
-  }
-
   object Technologies {
     /**
      * Map of combatant full name (Building::Thunder, Unit::Trooper, etc.) to

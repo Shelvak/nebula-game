@@ -3,8 +3,11 @@ package spacemule.modules.combat.post_combat
 import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
 import spacemule.modules.combat.objects._
+import spacemule.modules.combat.Combat
 
-protected object Entry {
+object Entry {
+  type DataMap = Map[String, collection.Map[String, Int]]
+
   val empty = new Entry {
     override def +=(combatant: Combatant) = throw new NoSuchMethodError(
       "This set is immutable!")
@@ -29,17 +32,21 @@ protected class Entry {
     map(combatant.rubyName) += 1
   }
 
-  def asJson: Map[String, collection.Map[String, Int]] = Map(
+  def asJson: Entry.DataMap = Map(
     "alive" -> alive,
     "dead" -> dead
   )
+}
+
+object YANECalculator {
+  type DataMap = Map[Int, Map[String, Entry.DataMap]]
 }
 
 /**
  * Yours, alliance, NAP, enemy alive/dead calculator.
  */
 class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant],
-                     loadedTroops: Map[Int, Seq[Troop]]) {
+                     loadedTroops: Combat.LoadedTroops) {
   private val playerEntries = HashMap[Int, Entry]()
   private val allianceEntries = HashMap[Int, Entry]()
   private val enemyEntries = HashMap[Int, Entry]()
@@ -48,7 +55,7 @@ class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant],
   /**
    * Map[playerId: Int -> Map[String, Entry]]
    */
-  lazy val asJson = {
+  lazy val toMap: YANECalculator.DataMap = {
     def add(map: HashMap[Int, Entry], player: Player, combatant: Combatant) = {
       map ||= (player.id, new Entry())
       map(player.id) += combatant
@@ -96,13 +103,13 @@ class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant],
     }.flatten.map { _.id }
 
     playerIds.map { case id =>
-        val map = Map(
-          "yours" -> playerEntries.getOrElse(id, Entry.empty).asJson,
-          "alliance" -> allianceEntries.getOrElse(id, Entry.empty).asJson,
-          "enemy" -> enemyEntries.getOrElse(id, Entry.empty).asJson,
-          "nap" -> napEntries.getOrElse(id, Entry.empty).asJson
-        )
-        (id -> map)
+      val map = Map(
+        "yours" -> playerEntries.getOrElse(id, Entry.empty).asJson,
+        "alliance" -> allianceEntries.getOrElse(id, Entry.empty).asJson,
+        "enemy" -> enemyEntries.getOrElse(id, Entry.empty).asJson,
+        "nap" -> napEntries.getOrElse(id, Entry.empty).asJson
+      )
+      (id -> map)
     }.toMap
   }
 }
