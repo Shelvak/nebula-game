@@ -94,7 +94,7 @@ describe MarketController do
       @params = {
         'market_id' => @market.id, 
         'from_kind' => MarketOffer::KIND_METAL,
-        'from_amount' => CONFIG['market.offer.min_amount'],
+        'from_amount' => Cfg.market_offer_min_amount,
         'to_kind' => MarketOffer::KIND_ZETIUM,
         'to_rate' => 0.2
       }

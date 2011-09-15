@@ -42,7 +42,7 @@ object Player {
   }
 }
 
-class Player(val id: Int, val name: String, val allianceId: Option[Int],
+class Player(val id: Long, val name: String, val allianceId: Option[Long],
              val technologies: Player.Technologies=Player.Technologies.empty) {
   override def equals(other: Any) = other match {
     case player: Player => id == player.id

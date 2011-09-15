@@ -39,7 +39,8 @@ protected class Entry {
 }
 
 object YANECalculator {
-  type DataMap = Map[Int, Map[String, Entry.DataMap]]
+  // player id -> data map
+  type DataMap = Map[Long, Map[String, Entry.DataMap]]
 }
 
 /**
@@ -47,16 +48,16 @@ object YANECalculator {
  */
 class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant],
                      loadedTroops: Combat.LoadedTroops) {
-  private val playerEntries = HashMap[Int, Entry]()
-  private val allianceEntries = HashMap[Int, Entry]()
-  private val enemyEntries = HashMap[Int, Entry]()
-  private val napEntries = HashMap[Int, Entry]()
+  private val playerEntries = HashMap[Long, Entry]()
+  private val allianceEntries = HashMap[Long, Entry]()
+  private val enemyEntries = HashMap[Long, Entry]()
+  private val napEntries = HashMap[Long, Entry]()
 
   /**
    * Map[playerId: Int -> Map[String, Entry]]
    */
   lazy val toMap: YANECalculator.DataMap = {
-    def add(map: HashMap[Int, Entry], player: Player, combatant: Combatant) = {
+    def add(map: HashMap[Long, Entry], player: Player, combatant: Combatant) = {
       map ||= (player.id, new Entry())
       map(player.id) += combatant
 
@@ -76,7 +77,7 @@ class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant],
       }
     }
 
-    def addAll(map: HashMap[Int, Entry], players: Iterable[Player],
+    def addAll(map: HashMap[Long, Entry], players: Iterable[Player],
             combatant: Combatant) =
       players.foreach { player => add(map, player, combatant) }
 

@@ -27,13 +27,13 @@ describe MarketOffer do
     describe "when #from_amount is below minimal amount" do
       it "should fail if creating a record" do
         Factory.build(:market_offer, 
-          :from_amount => CONFIG['market.offer.min_amount'] - 1).
+          :from_amount => Cfg.market_offer_min_amount - 1).
           should_not be_valid
       end
       
       it "should not fail if record is being updated" do
         offer = Factory.create(:market_offer)
-        offer.from_amount = CONFIG['market.offer.min_amount'] - 1
+        offer.from_amount = Cfg.market_offer_min_amount - 1
         offer.should be_valid
       end
     end
@@ -45,7 +45,7 @@ describe MarketOffer do
           with(offer.player.galaxy_id, offer.from_kind, offer.to_kind).
           and_return(7)
         offer.save!
-        offer.to_rate.should == 7 * (1 - CONFIG['market.average.offset'])
+        offer.to_rate.should == 7 * (1 - Cfg.market_rate_offset)
       end
       
       it "should adjust it if it's too big" do
@@ -54,7 +54,7 @@ describe MarketOffer do
           with(offer.player.galaxy_id, offer.from_kind, offer.to_kind).
           and_return(7)
         offer.save!
-        offer.to_rate.should == 7 * (1 + CONFIG['market.average.offset'])
+        offer.to_rate.should == 7 * (1 + Cfg.market_rate_offset)
       end
     end
   end

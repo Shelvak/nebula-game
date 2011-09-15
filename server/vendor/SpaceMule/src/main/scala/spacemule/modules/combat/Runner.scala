@@ -12,7 +12,7 @@ object Runner extends BenchmarkableMock {
   /**
    * Maps attribute changes (ID -> Map[attribute -> newValue]).
    */
-  type ChangesMap = Map[Int, Map[String, Any]]
+  type ChangesMap = Map[Long, Map[String, Any]]
 
   case class Response(
     log: Map[String, Any],
@@ -38,8 +38,8 @@ object Runner extends BenchmarkableMock {
     allianceNames: Combat.AllianceNames,
     napRules: Combat.NapRules,
     troops: Set[Troop],
-    loadedTroops: Map[Int, Set[Troop]],
-    unloadedTroopIds: Set[Int],
+    loadedTroops: Map[Long, Set[Troop]],
+    unloadedTroopIds: Set[Long],
     buildings: Set[Building]
   ): Option[Response] = {
 //    StdErrLog.level = StdErrLog.Debug

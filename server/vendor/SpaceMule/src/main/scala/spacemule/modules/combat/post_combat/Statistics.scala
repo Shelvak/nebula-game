@@ -44,8 +44,8 @@ object Statistics {
 class Statistics(alliances: Alliances) {
   private val damageDealtPlayer = HashMap[Option[Player], Int]()
   private val damageTakenPlayer = HashMap[Option[Player], Int]()
-  private val damageDealtAlliance = HashMap[Int, Int]()
-  private val damageTakenAlliance = HashMap[Int, Int]()
+  private val damageDealtAlliance = HashMap[Long, Int]()
+  private val damageTakenAlliance = HashMap[Long, Int]()
   private val xpEarned = HashMap[Option[Player], Int]()
   private val pointsEarned = HashMap[Option[Player], Int]()
 

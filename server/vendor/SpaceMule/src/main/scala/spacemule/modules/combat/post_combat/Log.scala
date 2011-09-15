@@ -56,7 +56,7 @@ object Log {
   }
 }
 
-class Log(unloadedUnitIds: collection.Map[Int, Seq[Int]]) {
+class Log(unloadedUnitIds: collection.Map[Long, Seq[Long]]) {
   private val ticks = ListBuffer[Log.Tick]()
 
   def +=(tick: Log.Tick) = ticks += tick

@@ -7,7 +7,7 @@ package spacemule.modules.combat.objects
 
 import spacemule.modules.config.objects.Config
 
-class Building(val id: Int, val player: Option[Player], val name: String,
+class Building(val id: Long, val player: Option[Player], val name: String,
                var hp: Int, var level: Int)
 extends Combatant {
   val rubyName = "Building::" + name

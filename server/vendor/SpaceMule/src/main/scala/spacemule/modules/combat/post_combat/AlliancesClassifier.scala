@@ -9,7 +9,12 @@ object Classification extends Enumeration {
 }
 
 object AlliancesClassifier {
-  type ClassificationMap = Map[Int, Map[Int, Map[String, Any]]]
+  // Map[key, value]
+  type Perspective = Map[String, Any]
+  // alliance id -> entry map
+  type Entry = Map[Long, Perspective]
+  // player id -> entry
+  type ClassificationMap = Map[Long, Entry]
 }
 
 /**
@@ -29,16 +34,19 @@ class AlliancesClassifier(alliances: Alliances) {
    */
   lazy val toMap: AlliancesClassifier.ClassificationMap = {
     alliances.alliancesMap.map {
-      case (allianceId, alliance) =>
+      case (_, alliance) =>
         alliance.players.map {
           _ match {
             // NPC players don't need this info.
             case None => None
             case Some(player) => {
-                val perspectives = alliances.alliancesMap.map {
-                  case (allianceId, alliance) =>
-                    view(alliances, player, alliance)
-                }
+                val perspectives: AlliancesClassifier.Entry =
+                  alliances.alliancesMap.map {
+                    case (allianceId, allianceInPerspective) =>
+                      allianceId -> view(
+                        alliances, player, allianceInPerspective
+                      )
+                  }
 
                 Some(player.id -> perspectives)
             }
@@ -51,7 +59,7 @@ class AlliancesClassifier(alliances: Alliances) {
    * View of the player of this alliance.
    */
   private def view(alliances: Alliances, player: Player,
-                alliance: Alliance) = {
+                alliance: Alliance): AlliancesClassifier.Perspective = {
     val classification =
       if (alliances.isFriend(Some(player), alliance.id))
         Classification.Friend
@@ -66,6 +74,6 @@ class AlliancesClassifier(alliances: Alliances) {
       "players" -> alliance.playersAsMapData
     )
 
-    (alliance.id -> allianceMap)
+    allianceMap
   }
 }

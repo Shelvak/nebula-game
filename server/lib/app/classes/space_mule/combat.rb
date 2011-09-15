@@ -28,7 +28,7 @@ module SpaceMule::Combat
           location.player_id == player_id
         end
         raise ArgumentError.new("No planet owner in given players! Players: #{
-          players.inspect}, planet owner id: #{location.player_id}") \
+          players.inspect}, planet owner id: #{location.player_id.inspect}") \
           if sm_planet_owner.nil?
       end
 
@@ -60,15 +60,6 @@ module SpaceMule::Combat
         buildings.map { |building| convert_building(sm_planet_owner, building) }
       ).to_scala
 
-      puts "sm_location: #{sm_location.to_s}"
-      puts "sm_planet_owner: #{sm_planet_owner.to_s}"
-      puts "sm_players: #{sm_players.to_s}"
-      puts "sm_alliance_names: #{sm_alliance_names.to_s}"
-      puts "nap_rules: #{nap_rules.to_scala.to_s}"
-      puts "sm_troops: #{sm_troops.to_s}"
-      puts "sm_loaded_units: #{sm_loaded_units.to_s}"
-      puts "unloaded_unit_ids: #{unloaded_unit_ids.to_scala.to_s}"
-      puts "sm_buildings: #{sm_buildings.to_s}"
       Combat.Runner.run(
         sm_location,
         sm_planet_owner,

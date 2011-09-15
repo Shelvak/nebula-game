@@ -5,8 +5,6 @@ class Combat
 
   # NPC player
   NPC = nil
-  # NPC player as represented in SpaceMule keys.
-  NPC_SM = "null"
 
   # Neutral stance doesn't give any bonuses.
   STANCE_NEUTRAL = 0

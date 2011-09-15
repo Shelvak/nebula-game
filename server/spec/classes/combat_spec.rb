@@ -2,31 +2,6 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb
 
 describe Combat do
   describe "simulation" do
-    describe ".parse_killed_by" do
-      it "should return units" do
-        unit = Factory.create(:unit)
-        player_id = 30
-        Combat.parse_killed_by(
-          {unit.id => unit}, {}, {"t#{unit.id}" => player_id}
-        ).should == {unit => player_id}
-      end
-      
-      it "should return buildings" do
-        building = Factory.create(:building)
-        player_id = 30
-        Combat.parse_killed_by(
-          {}, {building.id => building}, {"b#{building.id}" => player_id}
-        ).should == {building => player_id}
-      end
-    end
-  
-    describe ".unwrap_json_hash" do
-      it "should unwrap string keys" do
-        Combat.unwrap_json_hash('1' => 'foo', Combat::NPC_SM => 'bar').
-          should == {1 => 'foo', Combat::NPC => 'bar'}
-      end
-    end
-  
     describe ".loaded_units" do
       before(:each) do
         @transporters = [
@@ -43,7 +18,11 @@ describe Combat do
       it "should return all units in transporters" do
         loaded_units, unloaded_unit_ids = Combat.
           loaded_units(@location, @transporters, false)
-        loaded_units.should == @loaded.group_by(&:location_id)
+        loaded_units.should == @loaded.inject({}) do |hash, unit|
+          hash[unit.location_id] ||= Set.new
+          hash[unit.location_id].add unit
+          hash
+        end
         unloaded_unit_ids.should be_instance_of(Set)
       end
       

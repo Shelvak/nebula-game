@@ -5,7 +5,7 @@ import scala.collection.immutable._
 import spacemule.helpers.Converters._
 import spacemule.helpers.{StdErrLog => L}
 
-class Alliance(val id: Int,
+class Alliance(val id: Long,
                val name: Option[String],
                val players: Set[Option[Player]],
                combatants: Set[Combatant]) {
@@ -92,7 +92,7 @@ class Alliance(val id: Int,
 
     Map(
       "name" -> (name match {
-        case Some(name) => name
+        case Some(string) => string
         case None => null
       }),
       "players" -> playersAsMapData,
