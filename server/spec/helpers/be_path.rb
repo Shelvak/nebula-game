@@ -188,7 +188,10 @@ RSpec::Matchers.define :include_points do |type, *points|
 
   match do |actual|
     @mapped_actual = actual.map do |point|
-      [point['type'], point['x'], point['y']]
+      # point is Scala ServerLocation
+      x, y = point.coords.empty? \
+        ? [nil, nil] : [point.coords.get.x, point.coords.get.y]
+      [point.kind.id, x, y]
     end
 
     @included_points = []

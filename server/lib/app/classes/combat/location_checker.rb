@@ -118,9 +118,8 @@ class Combat::LocationChecker
         buildings = []
       end
       
-      # Do not include NPCs in players listing. Create a set from our
-      # players array.
-      players = Set.new(players.compact)
+      # Create a set from our players array.
+      players = Set.new(players)
       units = Set.new(units)
       buildings = Set.new(buildings)
 

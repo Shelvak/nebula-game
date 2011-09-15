@@ -84,9 +84,12 @@ module Combat::Integration
 
   # Give players their points ;)
   def save_players(players, statistics)
+    puts statistics.inspect
     players.each do |player|
-      player.war_points += statistics[player.id]['points_earned']
-      player.save!
+      unless player.nil?
+        player.war_points += statistics[player.id]['points_earned']
+        player.save!
+      end
     end
   end
 

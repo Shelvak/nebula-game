@@ -19,22 +19,23 @@ module SpaceMule::Combat
       # Convert players
       hashed_sm_players = convert_players(players)
       sm_players = Set.new(hashed_sm_players.values).to_scala
-      puts sm_players.to_s
 
       # Figure out planet owner
       sm_planet_owner = None
       if location.is_a?(SsObject::Planet)
-        sm_planet_owner = sm_players.find do |sm_player|
-          location.player_id == sm_player.id
+        # If we find one it's already Some(Player) or None.
+        _, sm_planet_owner = hashed_sm_players.find do |player_id, _|
+          location.player_id == player_id
         end
         raise ArgumentError.new("No planet owner in given players! Players: #{
           players.inspect}, planet owner id: #{location.player_id}") \
           if sm_planet_owner.nil?
-        sm_planet_owner = Some(sm_planet_owner)
       end
 
       # Figure out alliance names
-      alliance_ids = players.map(&:alliance_id).compact.uniq
+      alliance_ids = players.map do |player|
+        player.nil? ? nil : player.alliance_id
+      end.compact.uniq
       sm_alliance_names = Alliance.names_for(alliance_ids).to_scala
 
       # Convert and partition troops.
@@ -59,6 +60,15 @@ module SpaceMule::Combat
         buildings.map { |building| convert_building(sm_planet_owner, building) }
       ).to_scala
 
+      puts "sm_location: #{sm_location.to_s}"
+      puts "sm_planet_owner: #{sm_planet_owner.to_s}"
+      puts "sm_players: #{sm_players.to_s}"
+      puts "sm_alliance_names: #{sm_alliance_names.to_s}"
+      puts "nap_rules: #{nap_rules.to_scala.to_s}"
+      puts "sm_troops: #{sm_troops.to_s}"
+      puts "sm_loaded_units: #{sm_loaded_units.to_s}"
+      puts "unloaded_unit_ids: #{unloaded_unit_ids.to_scala.to_s}"
+      puts "sm_buildings: #{sm_buildings.to_s}"
       Combat.Runner.run(
         sm_location,
         sm_planet_owner,

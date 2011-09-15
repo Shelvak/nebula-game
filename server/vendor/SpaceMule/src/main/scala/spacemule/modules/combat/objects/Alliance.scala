@@ -72,13 +72,13 @@ class Alliance(val id: Int,
    *
    * Map(
    *   "name" -> String | null,
-   *   "players" -> Seq[(id: Int, name: String) | null],
+   *   "players" -> Seq[Seq(id: Int, name: String) | null],
    *   "flanks" -> Map(flankIndex: Int, flank: Map(
    *     "ground" -> Seq[Combatant], "space" -> Seq[Combatant]
    *   ))
    * )
    */
-  def asJson: Map[String, Any] = {
+  def toMap: Map[String, Any] = {
     val groundFlanksMap = groundFlanks.asJson
     val spaceFlanksMap = spaceFlanks.asJson
 
@@ -95,16 +95,16 @@ class Alliance(val id: Int,
         case Some(name) => name
         case None => null
       }),
-      "players" -> playersAsJson,
+      "players" -> playersAsMapData,
       "flanks" -> flanks
     )
   }
 
   /**
-   * Seq[(id: Int, name: String) | null]
+   * Seq[Seq(id: Int, name: String) | null]
    */
-  def playersAsJson = players.map { _ match {
-    case Some(player) => (player.id, player.name)
+  def playersAsMapData = players.map { _ match {
+    case Some(player) => Seq(player.id, player.name)
     case None => null
   } }
 }

@@ -27,8 +27,8 @@ module Combat::Simulation
         ruby_response = {
           'log' => response.log.from_scala,
           'killed_by' => response.killedBy.from_scala,
-          'statistics' => response.statistics.from_scala,
-          'outcomes' => response.outcomes.from_scala,
+          'statistics' => transform_statistics(response.statistics),
+          'outcomes' => transform_outcomes(response.outcomes),
           'alliances' => response.alliances.from_scala,
           'classified_alliances' => response.classifiedAlliances.from_scala,
           'troop_changes' => response.troopChanges.from_scala,
@@ -49,6 +49,27 @@ module Combat::Simulation
           killed_by, ruby_response, options)
       end
     end
+  end
+
+  # Transforms Scala statistics to Ruby statistics +Hash+
+  def transform_statistics(scala_statistics)
+    statistics = {}
+    scala_statistics.foreach do |tuple|
+      player, player_data = tuple._1, tuple._2
+      statistics[player.empty? ? nil : player.get.id] =
+        player_data.to_map.from_scala
+    end
+    statistics
+  end
+
+  # Transforms Scala outcomes to Ruby outcomes +Hash+
+  def transform_outcomes(scala_outcomes)
+    outcomes = {}
+    scala_outcomes.foreach do |tuple|
+      player, outcome = tuple._1, tuple._2
+      outcomes[player.empty? ? nil : player.get.id] = outcome.id
+    end
+    outcomes
   end
 
   def generate_assets(players, location, nap_rules, units, buildings,

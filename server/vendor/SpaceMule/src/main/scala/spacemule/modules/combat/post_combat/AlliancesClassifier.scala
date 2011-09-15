@@ -63,7 +63,7 @@ class AlliancesClassifier(alliances: Alliances) {
     val allianceMap = Map(
       "name" -> alliance.name.getOrElse(null),
       "classification" -> classification.id,
-      "players" -> alliance.playersAsJson
+      "players" -> alliance.playersAsMapData
     )
 
     (alliance.id -> allianceMap)

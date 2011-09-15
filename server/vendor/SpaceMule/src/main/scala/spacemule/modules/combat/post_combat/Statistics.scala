@@ -1,6 +1,5 @@
 package spacemule.modules.combat.post_combat
 
-import scala.{collection => sc}
 import scala.collection.mutable.HashMap
 import spacemule.modules.combat.objects.Alliances
 import spacemule.modules.combat.objects.Combatant
@@ -15,7 +14,16 @@ object Statistics {
     damageTakenAlliance: Int,
     xpEarned: Int,
     pointsEarned: Int
-  )
+  ) {
+    lazy val toMap = Map(
+      "damage_dealt_player" -> damageDealtPlayer,
+      "damage_taken_player" -> damageTakenPlayer,
+      "damage_dealt_alliance" -> damageDealtAlliance,
+      "damage_taken_alliance" -> damageTakenAlliance,
+      "xp_earned" -> xpEarned,
+      "points_earned" -> pointsEarned
+    )
+  }
 
   type PlayerDataMap = Map[Option[Player], PlayerData]
 

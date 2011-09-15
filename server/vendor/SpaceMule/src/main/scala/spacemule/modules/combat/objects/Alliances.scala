@@ -253,6 +253,6 @@ class Alliances(planetOwner: Option[Player],
    * )
    */
   lazy val toMap: Alliances.DataMap = alliancesMap.map {
-    case (allianceId, alliance) => (allianceId -> alliance.asJson)
+    case (allianceId, alliance) => (allianceId -> alliance.toMap)
   }
 }

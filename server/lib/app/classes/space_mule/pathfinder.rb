@@ -10,7 +10,7 @@ module SpaceMule::Pathfinder
     avoidable_points = []
 
     source_solar_system = source.solar_system
-    sm_source_solar_system = None
+    sm_source_solar_system = nil
     if source_solar_system
       sm_source_solar_system = to_pf_solar_system(source_solar_system)
 
@@ -27,7 +27,7 @@ module SpaceMule::Pathfinder
     end
 
     target_solar_system = target.solar_system
-    sm_target_solar_system = None
+    sm_target_solar_system = nil
     if target_solar_system
       sm_target_solar_system = to_pf_solar_system(target_solar_system)
 
@@ -85,10 +85,12 @@ module SpaceMule::Pathfinder
     sm_target = to_pf_locatable(target, sm_target_solar_system)
 
     PfO.Finder.find(
-      sm_source, sm_source_jumpgates, sm_source_solar_system,
+      sm_source, sm_source_jumpgates,
+      sm_source_solar_system.nil? ? None : Some(sm_source_solar_system),
       sm_source_ss_galaxy_coords,
 
-      sm_target, sm_target_jumpgates, sm_target_solar_system,
+      sm_target, sm_target_jumpgates,
+      sm_target_solar_system.nil? ? None : Some(sm_target_solar_system),
       sm_target_ss_galaxy_coords,
 
       sm_avoidable_points
@@ -109,17 +111,20 @@ module SpaceMule::Pathfinder
   # Converts Ruby +Location+ to SpaceMule pathfinders +Locatable+.
   # _sm_solar_system_ is used if _location_ is in solar system.
   def self.to_pf_locatable(location, sm_solar_system)
-    coords = Coords.new(location.x, location.y)
-    case location
-    when GalaxyPoint
-      PfO.GalaxyPoint.new(location.id, coords, 1.0)
-    when SolarSystemPoint
+    attrs = location.route_attrs
+    coords = Coords.new(attrs[:x], attrs[:y])
+
+    case attrs[:type]
+    when Location::GALAXY
+      PfO.GalaxyPoint.new(attrs[:id], coords, 1.0)
+    when Location::SOLAR_SYSTEM
       PfO.SolarSystemPoint.new(sm_solar_system, coords)
-    when SsObject
-      PfO.Planet.new(location.id, sm_solar_system, coords)
+    when Location::SS_OBJECT
+      PfO.Planet.new(attrs[:id], sm_solar_system, coords)
     else
       raise ArgumentError.new(
-        "Cannot convert #{location.inspect} to pathfinder Locatable!"
+        "Cannot convert #{location.inspect
+        } to pathfinder Locatable, attrs were: #{attrs.inspect}!"
       )
     end
   end
@@ -144,7 +149,7 @@ module SpaceMule::Pathfinder
       all.map do |jumpgate|
         PfO.SolarSystemPoint.new(
           sm_solar_system,
-          Coords.new(jumpgate.x, jumpgate.y)
+          Coords.new(jumpgate.position, jumpgate.angle)
         )
       end
     Set.new(points).to_scala

@@ -32,7 +32,7 @@ class Combat
     npc_units = Unit.in_location(target.location_attrs).all
     run(
       planet,
-      [planet.player],
+      [planet.player, nil],
       {},
       npc_units + player_units,
       [],
