@@ -148,7 +148,7 @@ package models.location
                if (isBattleground)
                   return getString("description.long.battleground", [x, y]);
                if (isMiniBattleground)
-                  return getString("description.long.pulsar", [x, y]);
+                  return getString("description.long.pulsar", [id, x, y]);
                return getString("description.long.solarSystem", [solarSystemName, x, y]);
                
             case LocationType.SS_OBJECT:
