@@ -24,6 +24,7 @@ flex/html-template/history
 flex/assets/*
 flex/src/assets/*
 flex/catalyst
+flex/temp
 # Text flex apps
 flex/Test.mxml
 flex/src/flex.mxml
