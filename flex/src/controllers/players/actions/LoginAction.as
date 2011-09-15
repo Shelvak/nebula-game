@@ -5,9 +5,7 @@ package controllers.players.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
-   import controllers.galaxies.GalaxiesCommand;
    import controllers.navigation.MCTopLevel;
-   import controllers.screens.MainAreaScreens;
    import controllers.screens.Screens;
    import controllers.startup.StartupInfo;
    

@@ -16,12 +16,13 @@ package controllers.ui
    import controllers.market.MarketCommand;
    import controllers.navigation.MCMainArea;
    import controllers.navigation.MCSidebar;
-   import controllers.navigation.Navigation;
    import controllers.planets.PlanetsCommand;
+   import controllers.planets.actions.ShowActionParams;
    import controllers.players.PlayersCommand;
    import controllers.screens.MainAreaScreens;
    import controllers.screens.SidebarScreens;
    import controllers.solarsystems.SolarSystemsCommand;
+   import controllers.solarsystems.actions.ShowActionParams;
    
    import flash.errors.IllegalOperationError;
    import flash.events.Event;
@@ -58,15 +59,13 @@ package controllers.ui
    
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
-   import mx.containers.ViewStack;
    import mx.events.FlexEvent;
    
    import spark.components.Button;
-   import spark.components.NavigatorContent;
+   import spark.components.Group;
    
    import utils.Objects;
    import utils.SingletonFactory;
-   import utils.SyncUtil;
    import utils.datastructures.Collections;
    
    
@@ -360,36 +359,29 @@ package controllers.ui
        * This handles both cases: when id is of a simple solar system or a wormhole and when its of
        * battleground system.
        */
-      public function toSolarSystem(id:int, completeHandler:Function = null) : void
-      {
+      public function toSolarSystem(id:int, completeHandler:Function = null) : void {
          callAfterMapLoaded(completeHandler);
          var ss:SolarSystem;
          if (ML.latestGalaxy.isBattleground(id))
-         {
             ss = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
-         }
-         else
-         {
+         else {
             ss = Collections.findFirst(ML.latestGalaxy.wormholes,
-               function (wormhole:SolarSystem) : Boolean
-               {
+               function (wormhole:SolarSystem) : Boolean {
                   return wormhole.id == id;
                }
             );
-            if (ss == null)
-            {
+            if (ss == null) {
                ss = new SolarSystem();
                ss.id = id;
             }
          }
          if (ss.cached)
-         {
             showSolarSystem();
-         }
          else
-         {
-            new SolarSystemsCommand(SolarSystemsCommand.SHOW, {"id": ss.id}).dispatch();
-         }
+            new SolarSystemsCommand(
+               SolarSystemsCommand.SHOW,
+               new controllers.solarsystems.actions.ShowActionParams(ss.id, false)
+            ).dispatch();
       }
       
       
@@ -416,13 +408,12 @@ package controllers.ui
          }
          callAfterMapLoaded(completeHandler);
          if (new Planet(planet).cached)
-         {
             showPlanet();
-         }
          else
-         {
-            new PlanetsCommand(PlanetsCommand.SHOW, {"planet": planet}).dispatch();
-         }
+            new PlanetsCommand(
+               PlanetsCommand.SHOW,
+               new controllers.planets.actions.ShowActionParams(planet.id, false)
+            ).dispatch();
       }
       
       
@@ -801,50 +792,67 @@ package controllers.ui
                                completeHandler:Function = null) : void
       {
          if (!screenProps.holdsMap)
-         {
             throw new IllegalOperationError(
                "Screen '" + screenProps.screenName + "' is not " + "supposed to hold a map"
             );
-         }
          if (newMap != null && screenProps.heldMapType != newMap.mapType)
-         {
             throw new IllegalOperationError(
                "Screen '" + screenProps.screenName + "' is not " + "supposed to hold map of type " + newMap.mapType
             );
-         }
          beforeScreenChange();
          ML.activeMapType = screenProps.heldMapType;
          if (newMap != null)
-         {
             ML[screenProps.mapPropInModelLoc] = newMap;
-         }
          MA.resetToScreen(screenProps.screenName);
          resetActiveButton(screenProps.button);
          resetSidebarToCurrentScreenDefault();
          updateContainerState();
-         if (newMap == null)
-         {
+         if (newMap == null) {
             afterScreenChange();
             dispatchMapLoadEvent(ML[screenProps.mapPropInModelLoc]);
          }
-         else
-         {
-            destroyOldMap(screenProps.screenName);
-            
-            var viewport:ViewportZoomable = MapFactory.getViewportWithMap(newMap);
-            var controller:IMapViewportController = MapFactory.getViewportController(newMap);
-            controller.setViewport(viewport);
-            function mapCreationCompleteHandler(event:FlexEvent) : void
-            {
-               viewport.content.removeEventListener(FlexEvent.CREATION_COMPLETE,
-                  mapCreationCompleteHandler);
-               dispatchMapLoadEvent(newMap);
-            };
-            viewport.content.addEventListener(FlexEvent.CREATION_COMPLETE,
-               mapCreationCompleteHandler);
-            MA.addMapElements(viewport, controller);
+         else {
+            recreateMap(
+               newMap,
+               function mapCreationCompleteHandler(event:FlexEvent) : void {
+                  dispatchMapLoadEvent(newMap);
+               }
+            );
             afterScreenChange();
          }
+      }
+      
+      /**
+       * Forces recreation of a given map.
+       * 
+       * @param map model of a map that needs to be recreated.
+       * <ul><b>
+       *    <li>Not null.</li>
+       * </b></ul>
+       * @param completeHandler handler of <code>FlexEvent.CREATION_COMPLETE</code> event of viewport's content.
+       */
+      public function recreateMap(map:MMap, completeHandler:Function = null) : void {
+         Objects.paramNotNull("map", map);
+         var screenName:String;
+         switch (map.mapType) {
+            case MapType.GALAXY: screenName = MainAreaScreens.GALAXY; break;
+            case MapType.SOLAR_SYSTEM: screenName = MainAreaScreens.SOLAR_SYSTEM; break;
+            case MapType.PLANET: screenName = MainAreaScreens.PLANET; break;
+         }
+         destroyOldMap(screenName);
+         
+         var viewport:ViewportZoomable = MapFactory.getViewportWithMap(map);
+         var controller:IMapViewportController = MapFactory.getViewportController(map);
+         controller.setViewport(viewport);
+         if (completeHandler != null) {
+            var content:Group = viewport.content;
+            function content_creationCompleteHandler(event:FlexEvent) : void {
+               content.removeEventListener(FlexEvent.CREATION_COMPLETE, content_creationCompleteHandler);
+               completeHandler.call(null, event);
+            }
+            content.addEventListener(FlexEvent.CREATION_COMPLETE, content_creationCompleteHandler);
+         }
+         MA.addMapElements(viewport, controller);
       }
       
       
@@ -857,16 +865,13 @@ package controllers.ui
        */
       public function destroyOldMap(screenName:String) : void
       {
-         if (!ScreenProperties(_screenProperties[screenName]).holdsMap)
-         {
+         if (!ScreenProperties(_screenProperties[screenName]).holdsMap) {
             throw new IllegalOperationError("Screen '" + screenName + "' is not " + "supposed to hold a map");
          }
-         try
-         {
+         try {
             MA.destroyScreenMap(screenName);
          }
-         catch (error:Error)
-         {
+         catch (error:Error) {
             return;
          }
       }
@@ -883,8 +888,8 @@ package controllers.ui
          if (screenProps.holdsMap)
          {
             throw new IllegalOperationError(
-               "Screen '" + screenProps.screenName + "' is a map screen. Use showMapScreen() or resetToMapScreen() " +
-               "instead."
+               "Screen '" + screenProps.screenName + "' is a map screen. " +
+               "Use showMapScreen() or resetToMapScreen() instead."
             );
          }
          beforeScreenChange();

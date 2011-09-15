@@ -3,7 +3,10 @@ package controllers.galaxies.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
-   import controllers.screens.MainAreaScreens;
+   import controllers.planets.PlanetsCommand;
+   import controllers.planets.actions.ShowActionParams;
+   import controllers.solarsystems.SolarSystemsCommand;
+   import controllers.solarsystems.actions.ShowActionParams;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    
@@ -11,41 +14,40 @@ package controllers.galaxies.actions
    
    import globalevents.GlobalEvent;
    
-   import interfaces.ICleanable;
-   
-   import models.MStaticSpaceObjectsAggregator;
+   import models.BaseModel;
    import models.MWreckage;
-   import models.ModelsCollection;
-   import models.building.MCBuildingSelectedSidebar;
    import models.cooldown.MCooldownSpace;
    import models.factories.GalaxyFactory;
    import models.factories.UnitFactory;
    import models.galaxy.Galaxy;
-   import models.location.LocationMinimal;
    import models.map.MapType;
+   import models.movement.MHop;
+   import models.planet.Planet;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
-   import models.technology.MCTechnologySelectedSidebar;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
-   
-   import utils.datastructures.Collections;
    
    
    /**
     * Downloads list of solar systems for a galaxy and shows galaxy map.
     * 
     * <p>
-    * Client -->> Server
-    * <ul>
-    *    <li>no parameters</li>
-    * </ul>
+    * Client -->> Server: no parameters
     * </p>
     * <p>
     * Client <<-- Server
     * <ul>
-    *    <li><code>solarSystems</code> - array of generic objects representing solar systems</li>
+    *    <li><code>reason</code></li>
+    *    <li><code>battlegroundId</code></li>
+    *    <li><code>solarSystems</code></li>
+    *    <li><code>fowEntries</code></li>
+    *    <li><code>wreckages</code></li>
+    *    <li><code>cooldows</code></li>
+    *    <li><code>units</code></li>
+    *    <li><code>players</code></li>
+    *    <li><code>routeHops</code></li>
     * </ul>
     * </p>
     */
@@ -68,6 +70,7 @@ package controllers.galaxies.actions
          super();
       }
       
+      
       override public function applyClientAction(cmd:CommunicationCommand) : void {
          GF.lockApplication = true;
          super.applyClientAction(cmd);
@@ -75,136 +78,124 @@ package controllers.galaxies.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void {
          var params:Object = cmd.parameters;
-         var galaxy:Galaxy = GalaxyFactory.fromObject({
-            "id": ML.player.galaxyId,
-            "battlegroundId": params.battlegroundId,
-            "solarSystems": params.solarSystems,
-            "wreckages": params.wreckages,
-            "cooldowns": params.cooldowns
-         });
-         var fowEntries:Vector.<Rectangle> = GalaxyFactory.createFowEntries(galaxy, params.fowEntries);
-         var units:IList = UnitFactory.fromObjects(params.units, params.players);
-         
-         // Update existing galaxy if this is not the first galaxies|show message
-         if (ML.latestGalaxy != null) {
-            var ssListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.naturalObjects);
-            var ssListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.naturalObjects);
-            var ssInNew:SolarSystem;
-            var ssInOld:SolarSystem;
-            // remove solar systems that became invisible and update all others
-            for each (ssInOld in ssListOld) {
-               ssInNew = ssListNew.find(ssInOld.id);
-               if (ssInNew == null) {
-                  ML.latestGalaxy.removeObject(ssInOld);
-                  if (ML.latestPlanet != null && ML.latestPlanet.solarSystemId == ssInOld.id)
-                     destroyCachedPlanet();
-                  if (ML.latestSolarSystem != null && ML.latestSolarSystem.id == ssInOld.id)
-                     destroyCachedSolarSystem();
-                  ssInOld.cleanup();
+         var startup:Boolean = ML.latestGalaxy == null;
+         createGalaxy(
+            ML.player.galaxyId,
+            params["battlegroundId"],
+            GalaxyFactory.createFowEntries(params["fowEntries"]),
+            GalaxyFactory.createSolarSystems(params["solarSystems"]),
+            BaseModel.createCollection(ArrayCollection, MWreckage, params["wreckages"]),
+            BaseModel.createCollection(ArrayCollection, MCooldownSpace, params["cooldowns"]),
+            UnitFactory.fromObjects(params["units"], params["players"]),
+            IList(BaseModel.createCollection(ArrayCollection, MHop, params["routeHops"])).toArray()
+         );
+         var galaxy:Galaxy = ML.latestGalaxy;
+         if (!startup) {
+            if (params["reason"] == "alliance") {
+               reloadPlanetMap();
+               reloadSolarSystemMap();
+            }
+            NAV_CTRL.recreateMap(galaxy);
+            if (ML.activeMapType == MapType.PLANET) {
+               if (ML.latestPlanet == null) {
+                  if (ML.latestSolarSystem != null)
+                     NAV_CTRL.toSolarSystem(ML.latestSolarSystem.id);
+                  else
+                     NAV_CTRL.toGalaxy();
                }
-               else
-                  ssInOld.metadata = ssInNew.metadata;
             }
-            // add solar systems that were not visible before
-            for each (ssInNew in ssListNew) {
-               ssInOld = ssListOld.find(ssInNew.id);
-               if (ssInOld == null)
-                  ML.latestGalaxy.addObject(ssInNew);
+            else if (ML.activeMapType == MapType.SOLAR_SYSTEM) {
+               if (ML.latestSolarSystem == null)
+                  NAV_CTRL.toGalaxy();
             }
-            // now if we don't see any wormholes and we have a cached wormhole - invalidate
-            if (!ML.latestGalaxy.hasWormholes &&
-               ML.latestSolarSystem != null &&
-               ML.latestSolarSystem.isWormhole)
-               destroyCachedSolarSystem();
-            
-            var wreckListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.wreckages);
-            var wreckListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.wreckages);
-            var wreckInNew:MWreckage;
-            var wreckInOld:MWreckage;
-            // remove wreckages that became absent and update all others
-            for each (wreckInOld in wreckListOld) {
-               wreckInNew = wreckListNew.find(wreckInOld.id);
-               if (!wreckInNew)
-                  ML.latestGalaxy.removeObject(wreckInOld);
-               else
-                  wreckInOld.copyProperties(wreckInNew);
-            }
-            // add wreckages that were not visible before
-            for each (wreckInNew in wreckListNew) {
-               wreckInOld = wreckListOld.find(wreckInNew.id);
-               if (!wreckInOld)
-                  ML.latestGalaxy.addObject(wreckInNew);
-            }
-            
-            
-            var cooldownListOld:ModelsCollection = ModelsCollection.createFrom(ML.latestGalaxy.cooldowns);
-            var cooldownListNew:ModelsCollection = ModelsCollection.createFrom(galaxy.cooldowns);
-            var cooldownInNew:MCooldownSpace;
-            var cooldownInOld:MCooldownSpace;
-            // remove cooldonws that became absent
-            for each (cooldownInOld in cooldownListOld) {
-               cooldownInNew = cooldownListNew.find(cooldownInOld.id);
-               if (cooldownInNew == null)
-                  ML.latestGalaxy.removeObject(cooldownInOld);
-            }
-            // add cooldowns that were not visible before
-            for each (cooldownInNew in cooldownListNew) {
-               cooldownInOld = cooldownListOld.find(cooldownInNew.id);
-               if (wreckInOld == null)
-                  ML.latestGalaxy.addObject(wreckInNew);
-            }
-            
-            Collections.cleanListOfICleanables(ML.latestGalaxy.squadrons);
-            Collections.cleanListOfICleanables(ML.latestGalaxy.units);
-            ML.latestGalaxy.setFOWEntries(fowEntries, units);
          }
          else {
-            MCBuildingSelectedSidebar.getInstance().selectedBuilding = null;
-            ML.selectedFoliage = null;
-            MCTechnologySelectedSidebar.getInstance().selectedTechnology = null;
-         }
-         ML.units.disableAutoUpdate();
-         ML.units.addAll(units);
-         ML.units.enableAutoUpdate();
-         SQUADS_CTRL.createSquadronsForUnits(units);
-         SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
-         if (ML.latestGalaxy == null) {
-            galaxy.setFOWEntries(fowEntries, units);
-            if (ML.player.firstTime ||
-               !galaxy.hasMoreThanOneObject && !galaxy.hasUnits && ML.player.planetsCountAll == 1) {
+            var deepOpen:Boolean =
+               ML.player.firstTime ||
+               ML.player.planetsCountAll == 1 && !galaxy.hasMoreThanOneObject && !galaxy.hasUnits;
+            if (deepOpen) {
                NAV_CTRL.toGalaxy(galaxy,
                   function() : void {
                      new GlobalEvent(GlobalEvent.APP_READY);
                      NAV_CTRL.toPlanet(MSSObject(ML.player.planets.getItemAt(0)),
                         function() : void {
                            if (ML.player.firstTime)
-                           {
                               NAV_CTRL.showWelcomeScreen();
-                           }
-                        });
-                  });
+                        }
+                     );
+                  }
+               );
             }
             else {
                NAV_CTRL.toGalaxy(galaxy);
                new GlobalEvent(GlobalEvent.APP_READY);
             }
-            GF.lockApplication = false;
+         }
+         
+         GF.lockApplication = false;
+      }
+      
+      public function createGalaxy(galaxyId:int,
+                                   battlegroundId:int,
+                                   fowEntries:Array,
+                                   solarSystems:IList,
+                                   wreckages:IList,
+                                   cooldowns:IList,
+                                   units:IList,
+                                   hops:Array) : void {
+         var galaxy:Galaxy = new Galaxy();
+         galaxy.id = galaxyId;
+         galaxy.battlegroundId = battlegroundId;
+         galaxy.addAllObjects(solarSystems);
+         galaxy.addAllObjects(wreckages);
+         galaxy.addAllObjects(cooldowns);
+         ML.units.disableAutoUpdate();
+         ML.units.addAll(units);
+         ML.units.enableAutoUpdate();
+         galaxy.setFOWEntries(Vector.<Rectangle>(fowEntries), units);
+         SQUADS_CTRL.createSquadronsForUnits(units);
+         SQUADS_CTRL.addHopsToSquadrons(hops);
+         
+         var cachedSS:SolarSystem = ML.latestSolarSystem;
+         var ssInGalaxy:SolarSystem = cachedSS != null ?
+            galaxy.getSSById(cachedSS.id) :
+            null;
+         var cachedPlanet:Planet = ML.latestPlanet;
+         if (cachedPlanet != null) {
+            var planetInSS:MSSObject = ssInGalaxy != null ?
+               ssInGalaxy.getSSObjectById(cachedPlanet.id) :
+               null;
+            if (planetInSS == null || !planetInSS.viewable)
+               ML.latestPlanet = null;
+         }
+         if (ssInGalaxy == null)
+            ML.latestSolarSystem = null;
+         
+         ML.latestGalaxy = galaxy;
+      }
+      
+      private function reloadPlanetMap() : void {
+         if (ML.latestPlanet != null) {
+            ML.latestPlanet.fake = true;
+            if (ML.activeMapType == MapType.PLANET) {
+               new PlanetsCommand(
+                  PlanetsCommand.SHOW,
+                  new controllers.planets.actions.ShowActionParams(ML.latestPlanet.id, true)
+               ).dispatch();
+            }
          }
       }
       
-      private function destroyCachedPlanet() : void {
-         ML.latestPlanet.setFlag_destructionPending();
-         ML.latestPlanet = null;
-         if (ML.activeMapType == MapType.PLANET)
-            NAV_CTRL.toGalaxy();
-      }
-      
-      private function destroyCachedSolarSystem() : void
-      {
-         ML.latestSolarSystem.setFlag_destructionPending();
-         ML.latestSolarSystem = null;
-         if (ML.activeMapType == MapType.SOLAR_SYSTEM)
-            NAV_CTRL.toGalaxy();
+      private function reloadSolarSystemMap() : void {
+         if (ML.latestSolarSystem != null) {
+            ML.latestSolarSystem.fake = true;
+            if (ML.activeMapType == MapType.SOLAR_SYSTEM) {
+               new SolarSystemsCommand(
+                  SolarSystemsCommand.SHOW,
+                  new controllers.solarsystems.actions.ShowActionParams(ML.latestSolarSystem.id, true)
+               ).dispatch();
+            }
+         }
       }
    }
 }
