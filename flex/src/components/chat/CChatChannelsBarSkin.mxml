@@ -5,7 +5,7 @@
    
    <fx:Metadata>
       [HostComponent("spark.components.ButtonBar")]
-   </fx:Metadata> 
+   </fx:Metadata>
    
    <s:states>
       <s:State name="normal" />
@@ -24,7 +24,23 @@
       </fx:Component>
    </fx:Declarations>
    
-   <s:DataGroup id="dataGroup" left="0" right="0" top="0" bottom="0">
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         private function getImage(name:String) : BitmapData {
+            return ImagePreloader.getInstance().getImage(AssetNames.CHAT_IMAGES_FOLDER + name);
+         }
+      ]]>
+   </fx:Script>
+   
+   <s:layout>
+      <s:HorizontalLayout horizontalAlign="left" verticalAlign="bottom" gap="0"/>
+   </s:layout>
+   
+   <s:BitmapImage source="{getImage('tab_bar_left')}"/>
+   <s:DataGroup id="dataGroup" height="100%" width="100%">
       <s:layout>
          <s:ButtonBarHorizontalLayout gap="0"/>
       </s:layout>
