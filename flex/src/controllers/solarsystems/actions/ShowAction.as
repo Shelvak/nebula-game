@@ -6,11 +6,14 @@ package controllers.solarsystems.actions
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    
+   import models.BaseModel;
    import models.factories.SolarSystemFactory;
    import models.factories.UnitFactory;
+   import models.movement.MHop;
    import models.solarsystem.SolarSystem;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    
    import utils.remote.rmo.ClientRMO;
    
@@ -70,11 +73,11 @@ package controllers.solarsystems.actions
          var params:Object = cmd.parameters;
          
          // objects come as separate parameter so put it to the solar system
-         params.solarSystem.ssObjects = params.ssObjects;
-         params.solarSystem.wreckages = params.wreckages;
-         params.solarSystem.cooldowns = params.cooldowns;
-         
-         var ss:SolarSystem = SolarSystemFactory.fromObject(params.solarSystem);
+         var paramsSS:Object = params["solarSystem"];
+         paramsSS["ssObjects"] = params["ssObjects"];
+         paramsSS["wreckages"] = params["wreckages"];
+         paramsSS["cooldowns"] = params["cooldowns"];         
+         var ss:SolarSystem = SolarSystemFactory.fromObject(paramsSS);
          
          // destroy latest a planet if its not in the given solar system
          if (ML.latestPlanet != null && (!ML.latestPlanet.inBattleground || !ss.isGlobalBattleground)) {
@@ -89,12 +92,12 @@ package controllers.solarsystems.actions
             ML.latestSolarSystem.setFlag_destructionPending();
             ML.latestSolarSystem = null;
          }
-         var units:ArrayCollection = UnitFactory.fromObjects(params.units, params.players);
+         var units:ArrayCollection = UnitFactory.fromObjects(params["units"], params["players"]);
          ML.units.disableAutoUpdate();
          ML.units.addAll(units);
          ML.units.enableAutoUpdate();
          SQUADS_CTRL.createSquadronsForUnits(units);
-         SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
+         SQUADS_CTRL.addHopsToSquadrons(IList(BaseModel.createCollection(ArrayCollection, MHop, params["routeHops"])).toArray());
          if (f_createMapOnly)
             NAV_CTRL.recreateMap(ss);
          else

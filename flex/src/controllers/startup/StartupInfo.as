@@ -11,8 +11,7 @@ package controllers.startup
    
    public final class StartupInfo extends BaseModel
    {
-      public static function getInstance() : StartupInfo
-      {
+      public static function getInstance() : StartupInfo {
          return SingletonFactory.getSingletonInstance(StartupInfo);
       }
       
@@ -20,8 +19,7 @@ package controllers.startup
       public var loadSuccessful:Boolean = false;
       
       
-      public function get port() : int
-      {
+      public function get port() : int {
          return 55345;
       }
       
@@ -49,28 +47,26 @@ package controllers.startup
       [Optional]
       public var playerId:int = 0;
       
-      public var assetsSums: Object;
+      public var assetsSums:Object;
       
-      public var localeSums: Object;
-      
-      public function get checksumsDownloaded(): Boolean
-      {
-         return _checksumsDownloaded;
-      }
+      public var localeSums:Object;
       
       private var _checksumsDownloaded: Boolean = false;
+      public function get checksumsDownloaded() : Boolean {
+         return _checksumsDownloaded;
+      }      
       
-      public function handleChecksumsDownloaded(): void
-      {
+      public function handleChecksumsDownloaded() : void {
          _checksumsDownloaded = true;
-         if (hasEventListener(StartupEvent.CHECKSUMS_DOWNLOADED))
-         {
-            dispatchEvent(new StartupEvent(StartupEvent.CHECKSUMS_DOWNLOADED));
-         }
+         dispatchSimpleEvent(StartupEvent, StartupEvent.CHECKSUMS_DOWNLOADED);
       }
       
-      public override function toString() : String
-      {
+      
+      /* ########################### */
+      /* ### BaseModel OVERRIDES ### */
+      /* ########################### */
+      
+      public override function toString() : String {
          return ObjectUtil.toString(this);
       }
    }

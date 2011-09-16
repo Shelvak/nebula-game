@@ -111,72 +111,72 @@ package controllers.startup
       {
          initializeLogging();
          var startupInfo:StartupInfo;
-         if (!ExternalInterface.available)
-         {
+         if (!ExternalInterface.available) {
             registerStartupInfo(new StartupInfo());
             return false;
          }
          startupInfo = BaseModel.createModel(StartupInfo, ExternalInterface.call("getGameOptions"));
-         if (startupInfo == null)
-         {
+         if (startupInfo == null) {
             registerStartupInfo(new StartupInfo());
             return false;
          }
          registerStartupInfo(startupInfo);
          
          startupInfo.loadSuccessful = true;
-         if (startupInfo.mode == StartupMode.BATTLE)
-         {
+         if (startupInfo.mode == StartupMode.BATTLE) {
             ML.player.id = startupInfo.playerId;
          }
          
-         //=============DOWNLOADING CHECKSUM FILES===============
-         var tStamp: String = (new Date().time).toString();
-         var responses: int = 0;
-         function checkIfDone(): void
-         {
-            if (responses == 2)
-            {
-               startupInfo.handleChecksumsDownloaded();
-            }
-         }
-         function handleFail(e: FaultEvent): void
-         {
-            trace('Checksum download failed');
-            responses++;
-            checkIfDone();
-         }
-         var checksumForLocale: HTTPService = new HTTPService();
-         checksumForLocale.url = 'locale/checksums?'+tStamp;
-         checksumForLocale.addEventListener(ResultEvent.RESULT, 
-            function (e: ResultEvent): void
-            {
-               trace('Content of locale checksum: ' + e.result);
-               startupInfo.localeSums = StringUtil.parseChecksums(String(e.result));
-               responses++;
-               checkIfDone();
-            });
-         checksumForLocale.addEventListener(FaultEvent.FAULT, handleFail);
-         checksumForLocale.send();
-         var checksumForAssets: HTTPService = new HTTPService();
-         checksumForAssets.url = 'assets/checksums?'+tStamp;
-         checksumForAssets.addEventListener(ResultEvent.RESULT, 
-            function (e: ResultEvent): void
-            {
-               trace('Content of assets checksum: ' + e.result);
-               startupInfo.assetsSums = StringUtil.parseChecksums(String(e.result));
-               responses++;
-               checkIfDone();
-            });
-         checksumForAssets.addEventListener(FaultEvent.FAULT, handleFail);
-         checksumForAssets.send();
+         downloadChecksums();
          
          return true;
       }
+      
       private static function registerStartupInfo(instance:StartupInfo) : void
       {
          Objects.paramNotNull("instance", instance);
          SingletonFactory.client_internal::registerSingletonInstance(StartupInfo, instance);
+      }
+      
+      private static function downloadChecksums() : void {
+         var startupInfo:StartupInfo = StartupInfo.getInstance();
+         var timestamp:String = (new Date().time).toString();
+         var responses:int = 0;
+         function checkIfDone() : void {
+            responses++;
+            if (responses == 2)
+               startupInfo.handleChecksumsDownloaded();
+         }
+         function handleFail(event:FaultEvent): void {
+            logger.fatal("Checksum download failed");
+            checkIfDone();
+         }
+         
+         // locale
+         var checksumForLocale:HTTPService = new HTTPService();
+         checksumForLocale.url = "locale/checksums?" + timestamp;
+         checksumForLocale.addEventListener(ResultEvent.RESULT, 
+            function (event:ResultEvent) : void {
+               logger.info("Content of locale checksum: {0}", event.result);
+               startupInfo.localeSums = StringUtil.parseChecksums(String(event.result));
+               checkIfDone();
+            }
+         );
+         checksumForLocale.addEventListener(FaultEvent.FAULT, handleFail);
+         checksumForLocale.send();
+         
+         // assets
+         var checksumForAssets:HTTPService = new HTTPService();
+         checksumForAssets.url = "assets/checksums?" + timestamp;
+         checksumForAssets.addEventListener(ResultEvent.RESULT, 
+            function (event: ResultEvent): void {
+               logger.info("Content of locale checksum: {0}", event.result);
+               startupInfo.assetsSums = StringUtil.parseChecksums(String(event.result));
+               checkIfDone();
+            }
+         );
+         checksumForAssets.addEventListener(FaultEvent.FAULT, handleFail);
+         checksumForAssets.send();
       }
       
       
@@ -210,7 +210,6 @@ package controllers.startup
          MChat.getInstance().reset();
          MAnnouncement.getInstance().reset();
          AllianceScreenM.getInstance().reset();
-         //ScreensSwitch.getInstance().showScreen(Screens.LOGIN);
          GlobalFlags.getInstance().lockApplication = false;
       }
       
