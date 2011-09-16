@@ -15,7 +15,7 @@ object UnitChance {
     new UnitChance(minImportance, chance, name, flank)
 
 
-  def foreachByChance(chances: List[UnitChance], importance: Int)(
+  def foreachByChance(chances: Seq[UnitChance], importance: Int)(
                block: (String, Int) => Unit) = {
     chances.foreach { chance =>
       if (importance >= chance.minImportance &&
@@ -24,9 +24,10 @@ object UnitChance {
   }
 }
 
-class UnitChance(val minImportance: Int,
-                      override val chance: Int,
-                      override val name: String, val flank: Int
-        ) extends ObjectChance(chance, name) {
+class UnitChance(
+  val minImportance: Int,
+  override val chance: Int,
+  override val name: String, val flank: Int
+) extends ObjectChance(chance, name) {
 
 }

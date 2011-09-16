@@ -1,6 +1,5 @@
 package spacemule.modules.combat.post_combat
 
-import scala.{collection => sc}
 import scala.collection.mutable.HashMap
 import spacemule.modules.combat.objects.Alliances
 import spacemule.modules.combat.objects.Combatant
@@ -8,6 +7,26 @@ import spacemule.modules.combat.objects.Player
 import spacemule.modules.combat.objects.Resources
 
 object Statistics {
+  case class PlayerData(
+    damageDealtPlayer: Int,
+    damageTakenPlayer: Int,
+    damageDealtAlliance: Int,
+    damageTakenAlliance: Int,
+    xpEarned: Int,
+    pointsEarned: Int
+  ) {
+    lazy val toMap = Map(
+      "damage_dealt_player" -> damageDealtPlayer,
+      "damage_taken_player" -> damageTakenPlayer,
+      "damage_dealt_alliance" -> damageDealtAlliance,
+      "damage_taken_alliance" -> damageTakenAlliance,
+      "xp_earned" -> xpEarned,
+      "points_earned" -> pointsEarned
+    )
+  }
+
+  type PlayerDataMap = Map[Option[Player], PlayerData]
+
   def xp(target: Combatant, damage: Int) = {
     val attackerXp = damage
     val targetXp = 2 * damage
@@ -25,8 +44,8 @@ object Statistics {
 class Statistics(alliances: Alliances) {
   private val damageDealtPlayer = HashMap[Option[Player], Int]()
   private val damageTakenPlayer = HashMap[Option[Player], Int]()
-  private val damageDealtAlliance = HashMap[Int, Int]()
-  private val damageTakenAlliance = HashMap[Int, Int]()
+  private val damageDealtAlliance = HashMap[Long, Int]()
+  private val damageTakenAlliance = HashMap[Long, Int]()
   private val xpEarned = HashMap[Option[Player], Int]()
   private val pointsEarned = HashMap[Option[Player], Int]()
 
@@ -55,20 +74,18 @@ class Statistics(alliances: Alliances) {
     pointsEarned(source.player) += Statistics.points(target, damage)
   }
 
-  lazy val asJson: Map[Any, Map[String, Any]] = players.map {
+  def byPlayer: Statistics.PlayerDataMap = players.map {
     case (player, allianceId) =>
-
-      val playerId = Player.idForJson(player)
-      val map = Map(
-        "damage_dealt_player" -> damageDealtPlayer(player),
-        "damage_taken_player" -> damageTakenPlayer(player),
-        "damage_dealt_alliance" -> damageDealtAlliance(allianceId),
-        "damage_taken_alliance" -> damageTakenAlliance(allianceId),
-        "xp_earned" -> xpEarned(player),
-        "points_earned" -> pointsEarned(player)
+      val playerData = Statistics.PlayerData(
+        damageDealtPlayer(player),
+        damageTakenPlayer(player),
+        damageDealtAlliance(allianceId),
+        damageTakenAlliance(allianceId),
+        xpEarned(player),
+        pointsEarned(player)
       )
 
-      (playerId -> map)
+      (player -> playerData)
   }.toMap
 
   override def toString = """Combat statistics:

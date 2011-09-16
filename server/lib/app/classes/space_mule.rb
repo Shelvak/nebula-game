@@ -1,10 +1,80 @@
-# Heavy work mule written in Java.
+lambda do
+  jar_path = File.join(ROOT_DIR, 'vendor', 'SpaceMule', 'dist', 'SpaceMule.jar')
+
+  # Win32 requires us to manually require all the jars before requiring
+  # main jar.
+  Dir[File.dirname(jar_path) + "/lib/*.jar"].each { |jar| require jar }
+  require jar_path
+
+  # Scala <-> Ruby interoperability.
+  class Object
+    def to_scala
+      case self
+      when Hash
+        scala_hash = Java::scala.collection.immutable.HashMap.new
+        each do |key, value|
+          scala_hash = scala_hash.updated(key.to_scala, value.to_scala)
+        end
+        scala_hash
+      when Set
+        scala_set = Java::scala.collection.immutable.HashSet.new
+        each { |item| scala_set = scala_set.send(:"$plus", item.to_scala) }
+        scala_set
+      when Array
+        scala_array = Java::scala.collection.mutable.ArrayBuffer.new
+        each { |value| scala_array.send(:"$plus$eq", value.to_scala) }
+        scala_array.to_indexed_seq
+      when Symbol
+        to_s
+      else
+        self
+      end
+    end
+
+    def from_scala
+      case self
+      when Java::scala.collection.Map, Java::scala.collection.immutable.Map,
+          Java::scala.collection.mutable.Map
+        ruby_hash = {}
+        foreach { |tuple| ruby_hash[tuple._1.from_scala] = tuple._2.from_scala }
+        ruby_hash
+      when Java::scala.collection.Set, Java::scala.collection.immutable.Set,
+          Java::scala.collection.mutable.Set
+        ruby_set = Set.new
+        foreach { |item| ruby_set.add item.from_scala }
+        ruby_set
+      when Java::scala.collection.Seq
+        ruby_array = []
+        foreach { |item| ruby_array.push item.from_scala }
+        ruby_array
+      when Java::scala.Product
+        if self.class.to_s.match /Tuple\d+$/
+          # Conversion from scala Tuples.
+          ruby_array = []
+          productIterator.foreach { |item| ruby_array.push item.from_scala }
+          ruby_array
+        else
+          self
+        end
+      else
+        self
+      end
+    end
+  end
+
+  module Kernel
+    def Some(value); Java::scala.Some.new(value); end
+    None = Java::spacemule.helpers.JRuby.None
+  end
+end.call
+
+# Heavy work mule written in Scala.
 class SpaceMule
   include Singleton
-  JAR_PATH = File.join(ROOT_DIR, 'vendor', 'SpaceMule', 'dist',
-  'SpaceMule.jar')
 
-  class Crash < RuntimeError; end
+  # Scala constants
+  SmModules = Java::spacemule.modules
+  Pmg = SmModules.pmg
 
   def restart!
     send_config
@@ -17,8 +87,7 @@ class SpaceMule
   # Create a new galaxy with battleground solar system. Returns id of that
   # galaxy.
   def create_galaxy(ruleset, callback_url)
-    command('action' => 'create_galaxy', 'ruleset' => ruleset,
-      'callback_url' => callback_url)['id']
+    Pmg.Runner.create_galaxy(ruleset, callback_url)
   end
 
   # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
@@ -28,82 +97,24 @@ class SpaceMule
       :galaxy_id => galaxy_id, :auth_token => players.keys
     ).all.each { |player| players.delete player.auth_token }
 
-    if players.size > 0
-      command('action' => 'create_players',
-        'galaxy_id' => galaxy_id, 'ruleset' => ruleset,
-        'players' => players)
-    end
+    Pmg.Runner.create_players(ruleset, galaxy_id, players.to_scala).from_scala \
+      if players.size > 0
   end
 
   # Sends message to space mule for combat simulation.
   #
-  # Input:
-  #   * Map(
-  #   *   "location" -> Map(
-  #   *     "id" -> Int,
-  #   *     "kind" -> Int,
-  #   *     "x" -> Int | null
-  #   *     "y" -> Int | null
-  #   *   ),
-  #   *   "planet_owner_id" -> Int | null,
-  #   *   "nap_rules" -> Map[allianceId: Int -> napIds: Seq[Int]],
-  #   *   "alliance_names" -> Map[allianceId: Int -> name: String]
-  #   *   "players" -> Map[
-  #   *     Int -> Map(
-  #   *       "alliance_id" -> Int | null,
-  #   *       "name" -> String,
-  #   *       "damage_tech_mods" -> Map(
-  #   *         "Unit::Trooper" -> Double,
-  #   *         ...
-  #   *       ),
-  #   *       "armor_tech_mods" -> Map(
-  #   *         "Unit::Trooper" -> Double,
-  #   *         ...
-  #   *       )
-  #   *     )
-  #   *   ],
-  #   *   "troops" -> Seq[
-  #   *     // This is Troop
-  #   *     Map(
-  #   *       "id" -> Int,
-  #   *       "type" -> String,
-  #   *       "level" -> Int,
-  #   *       "hp" -> Int,
-  #   *       "flank" -> Int,
-  #   *       "player_id" -> Int | null,
-  #   *       "stance" -> Int,
-  #   *       "xp" -> Int
-  #   *     )
-  #   *   ],
-  #   *   "loaded_troops" -> Map[transporterId: Int, Troop],
-  #   *   "unloaded_troop_ids" -> Seq[Int],
-  #   *   "buildings" -> Seq[
-  #   *     Map(
-  #   *       "id" -> Int,
-  #   *       "type" -> String,
-  #   *       "hp" -> Int,
-  #   *       "level" -> Int
-  #   *     )
-  #   *   ]
-  #   * )
-  def combat(location, planet_owner_id, nap_rules, alliance_names, players,
-      troops, loaded_troops, unloaded_unit_ids, buildings)
-    message = {
-      'action' => 'combat',
-      'location' => location,
-      'planet_owner_id' => planet_owner_id,
-      'nap_rules' => nap_rules,
-      'alliance_names' => alliance_names,
-      'players' => players,
-      'troops' => troops,
-      'loaded_troops' => loaded_troops,
-      "unloaded_troop_ids" => unloaded_unit_ids,
-      'buildings' => buildings
-    }
-
-    LOGGER.block("Issuing combat to SpaceMule") do
-      command(message)
-    end
+  # _location_ is +Location+ object.
+  # _players_ is Array of +Player+s.
+  # _nap_rules_ is Hash received from Nap#get_rules
+  # _units_ is Array of +Unit+s.
+  # _loaded_units_ is Hash of {transporter_id => Set of +Unit+s}
+  # _unloaded_unit_ids_ is Set[unit_id]
+  # _buildings_ is Array of +Building+s.
+  def combat(location, players, nap_rules, units, loaded_units,
+             unloaded_unit_ids, buildings)
+    response = Combat.invoke(location, players, nap_rules, units, loaded_units,
+                             unloaded_unit_ids, buildings)
+    response.empty? ? nil : response.get
   end
 
   # Finds traveling path from _source_ to _target_ and returns path.
@@ -114,199 +125,32 @@ class SpaceMule
   # _avoid_npc_ is +Boolean+ if we should try to avoid NPC units in
   # solar systems.
   #
-  # Example output:
-  # [
-  #   {'id' => ..., 'type' => ..., 'x' => ..., 'y' => ...},
-  #   ...
-  # ]
+  # Returns Array of PmO.ServerLocation:
+  #   id: Int,
+  #   kind: Location.Kind,
+  #   coords: Option[Coords],
+  #   timeMultiplier: Double
   #
   def find_path(source, target, avoid_npc=true)
-    message = {
-      'action' => 'find_path',
-      'from' => source.route_attrs,
-      'from_jumpgate' => nil,
-      'from_solar_system' => nil,
-      'from_ss_galaxy_coords' => nil,
-      'to' => target.route_attrs,
-      'to_jumpgate' => nil,
-      'to_solar_system' => nil,
-      'to_ss_galaxy_coords' => nil,
-    }
-
-    avoidable_points = []
-
-    source_solar_system = source.solar_system
-    if source_solar_system
-      message['from_solar_system'] = source_solar_system.travel_attrs
-      avoidable_points += source_solar_system.npc_unit_locations \
-        if avoid_npc
-    end
-
-    target_solar_system = target.solar_system
-    if target_solar_system
-      message['to_solar_system'] = target_solar_system.travel_attrs
-      avoidable_points += target_solar_system.npc_unit_locations \
-        if avoid_npc && source_solar_system != target_solar_system
-    end
-
-    # Add avoidable points if we have something to avoid.
-    message['avoidable_points'] = avoidable_points \
-      unless avoidable_points.blank?
-
-    if source_solar_system && target.is_a?(GalaxyPoint)
-      # SS -> Galaxy hop, only source JGs needed.
-      set_source_jgs(message, source_solar_system)
-      set_wormhole(message, 'from_ss_galaxy_coords', target.id, target,
-        source_solar_system)
-    elsif source.is_a?(GalaxyPoint) && target_solar_system
-      # Galaxy -> SS hop, only target JGs needed
-      set_target_jgs(message, target_solar_system)
-      set_wormhole(message, 'to_ss_galaxy_coords', source.id, source,
-        target_solar_system)
-    elsif source_solar_system && target_solar_system && (
-      source_solar_system.id != target_solar_system.id)
-      # Different SS -> SS hop, we need all jumpgates
-      set_source_jgs(message, source_solar_system)
-      set_target_jgs(message, target_solar_system)
-
-      set_wormhole(message, 'from_ss_galaxy_coords', 
-        target_solar_system.galaxy_id,
-        target_solar_system, source_solar_system)
-      set_wormhole(message, 'to_ss_galaxy_coords',
-        source_solar_system.galaxy_id,
-        source_solar_system, target_solar_system)
-    else
-      # No jumpgates needed.
-    end
-
-    command(message)['locations']
+    Pathfinder.invoke(source, target, avoid_npc)
   end
 
   protected
-  # Checks if _solar_system_ is a battleground. If so - links entry/exit
-  # point to closest wormhole in the galaxy.
-  #
-  # Otherwise travels as expected.
-  def set_wormhole(message, name, galaxy_id, wormhole_proximity_point,
-      solar_system)
-    if solar_system.main_battleground?
-      wormhole = Galaxy.closest_wormhole(galaxy_id, 
-        wormhole_proximity_point.x, wormhole_proximity_point.y)
-      message[name] = [wormhole.x, wormhole.y]
-    else
-      message[name] = [solar_system.x, solar_system.y]
-    end
-  end
-
-  def set_source_jgs(message, from_solar_system)
-    message['from_jumpgates'] = SsObject::Jumpgate.where(
-      :solar_system_id => from_solar_system.id).all.map(&:route_attrs)
-  end
-
-  def set_target_jgs(message, target_solar_system)
-    message['to_jumpgates'] = SsObject::Jumpgate.where(
-      :solar_system_id => target_solar_system.id).all.map(&:route_attrs)
-  end
-
   def initialize_mule
     LOGGER.block "Initializing SpaceMule", :level => :info do
-      LOGGER.info "Loading SpaceMule"
-      @worker = SpaceMule::Worker.new
       send_config
     end
     true
   end
-  
+
   def send_config
     LOGGER.info "Sending configuration"
     # Suppress huge configuration. No need to have it in logs.
     LOGGER.suppress(:debug) do
-      command({
-        'action' => 'config',
-        'db' => USED_DB_CONFIG,
-        'sets' => CONFIG.full_set_values
-      })
-    end
-  end
-
-  def command(message)
-    parsed = @worker.issue message
-    if parsed["error"]
-      raise ArgumentError.new("Mule responded with error: #{parsed['error']}")
-    else
-      parsed
-    end
-  rescue SpaceMule::Crash => ex
-    initialize_mule
-    # Notify that something went wrong
-    raise ex
-  end
-end
-
-if RUBY_PLATFORM == 'java'
-  # Win32 requires us to manually require all the jars before requiring
-  # main jar.
-  Dir[File.dirname(SpaceMule::JAR_PATH) + "/lib/*.jar"].each do |jar|
-    require jar
-  end
-
-  require SpaceMule::JAR_PATH
-
-  class SpaceMule::Worker
-    def issue(message)
-      json = JSON.generate(message)
-      LOGGER.debug("Issuing message: #{json}", "SpaceMule")
-      response = Java::spacemule.main.Main.rubyCommand(json)
-      LOGGER.debug("Received answer: #{response}", "SpaceMule")
-      JSON.parse(response)
-    end
-  end
-else
-  class SpaceMule::Worker
-    def initialize
-      @mule = IO.popen(
-        'java -server -jar "%s" 2>&1' % SpaceMule::JAR_PATH,
-        "w+"
+      SmModules.config.Runner.run(
+        USED_DB_CONFIG.to_scala,
+        CONFIG.full_set_values.to_scala
       )
-    end
-
-    def issue(message)
-      json = JSON.generate(message)
-      response = issue_raw(json)
-      JSON.parse(response)
-    rescue Exception => ex
-      error = (response || "") + @mule.read
-
-      exception = "SpaceMule has crashed, restarting!
-Message:
-#{json}
-
-Java info:
-#{error}
-
-Ruby info:
-#{ex.inspect}"
-      
-      case ex
-      when Errno::EPIPE, EOFError, JSON::ParserError
-        # Java crashed, restart it for next request.
-        # and notify that something went wrong
-        raise SpaceMule::Crash.new(exception)
-      else
-        LOGGER.error("Error @ SpaceMule! Details:\n\n#{exception}")
-        raise ex
-      end
-    end
-    
-    def issue_raw(json)
-      LOGGER.debug("Issuing message: #{json}", "SpaceMule")
-      @mule.write json
-      @mule.write "\n"
-      response = @mule.readline.strip
-      LOGGER.debug("Received answer: #{response}", "SpaceMule")
-#      raise "Response does not look like JSON message!" \
-#        unless response[0..0] == "{"
-      response
     end
   end
 end

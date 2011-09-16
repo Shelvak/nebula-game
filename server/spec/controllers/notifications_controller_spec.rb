@@ -61,6 +61,16 @@ describe NotificationsController do
       end
     end
 
+    it "should include alliance invitation notifications over the limit" do
+      with_config_values('notifications.limit' => @limit) do
+        invitation = @notifications[1]
+        invitation.update_row! ["`event`=?",
+                                Notification::EVENT_ALLIANCE_INVITATION]
+        push @action, @params
+        response[:notifications].should include(invitation.as_json)
+      end
+    end
+
     it "should order all notifications by created_at reversed" do
       with_config_values('notifications.limit' => @limit) do
         starred = @notifications[1]

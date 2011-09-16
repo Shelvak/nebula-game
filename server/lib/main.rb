@@ -30,6 +30,7 @@ LOGGER.info "Running EventMachine..."
 EventMachine.run do
   stop_server = proc do
     LOGGER.info "Caught interrupt, shutting down..."
+    App.server_state = App::SERVER_STATE_SHUTDOWNING
     EventMachine.stop_event_loop
   end
   trap("INT", &stop_server)
@@ -66,13 +67,8 @@ EventMachine.run do
   LOGGER.info "Running callback manager..."
   CallbackManager.tick(true)
 
+  App.server_state = App::SERVER_STATE_RUNNING
   LOGGER.info "Server initialized."
-  if RUBY_PLATFORM =~ /mingw/
-    puts "Server initialized."
-    puts
-    puts "Console is log closed for performance reasons."
-    puts "Everything is logged to file."
-  end
 end
 
 LOGGER.info "Server stopped."

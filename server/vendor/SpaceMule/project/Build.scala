@@ -2,6 +2,31 @@ import sbt._
 import Keys._
 
 object SpaceMule extends Build {
+  lazy val dist = TaskKey[Unit](
+    "dist", "Copies files from target to dist and appends libraries."
+  )
+  lazy val distTask =
+    dist <<= (name, scalaVersion, version, update, crossTarget).map {
+      case (projectName, scalaVersion, projectVersion, updateReport, out) =>
+        val dist = (out / ".." / ".." / "dist").getAbsoluteFile
+        // Clean up dist dir.
+        IO.delete(dist)
+
+        // Copy packaged jar.
+        IO.copyFile(
+          out / "%s_%s-%s.jar".format(
+            projectName.toLowerCase, scalaVersion, projectVersion
+          ),
+          dist / "%s.jar".format(projectName)
+        )
+
+        // Copy libs.
+        updateReport.allFiles.foreach { srcPath =>
+          val destPath = dist / "lib" / srcPath.getName
+          IO.copyFile(srcPath, destPath, preserveLastModified=true)
+        }
+    }
+
   lazy val spaceMule = Project(
     "SpaceMule",
     file("."),
@@ -22,8 +47,6 @@ object SpaceMule extends Build {
 
           // MySQL connector
           "mysql" % "mysql-connector-java" % "5.1.17",
-          // JSON parsing/generation
-          "com.googlecode.json-simple" % "json-simple" % "1.1",
           // Evaluation of the formulas
           "net.java.dev.eval" % "eval" % "0.5",
           // Apache Commons IO
@@ -35,7 +58,8 @@ object SpaceMule extends Build {
 
           // Converting between Java and Scala collections
           "org.scalaj" %% "scalaj-collection" % "1.2"
-        )
+        ),
+        distTask
       )
   )
 }

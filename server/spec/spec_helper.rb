@@ -133,25 +133,10 @@ if $SPEC_INITIALIZED.nil?
   LOGGER.level = GameLogger::LEVEL_FATAL
 
   RSpec.configure do |config|
-    last_gc_run = Time.now
-
-    config.before(:each) do
-      conn = ActiveRecord::Base.connection
-      conn.begin_db_transaction
-      conn.increment_open_transactions
-
-      GC.disable unless RUBY_PLATFORM == "java"
-    end
-
-    config.after(:each) do
-      conn = ActiveRecord::Base.connection
-      conn.decrement_open_transactions
-      conn.rollback_db_transaction
-
-      if RUBY_PLATFORM != "java" && Time.now - last_gc_run > 5.0
-        GC.enable
-        GC.start
-        last_gc_run = Time.now
+    config.around(:each) do |example|
+      App.server_state = App::SERVER_STATE_INITIALIZING
+      ActiveRecord::Base.transaction do
+        example.call
       end
     end
   end

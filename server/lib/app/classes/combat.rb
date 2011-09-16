@@ -5,8 +5,6 @@ class Combat
 
   # NPC player
   NPC = nil
-  # NPC player as represented in SpaceMule keys.
-  NPC_SM = "null"
 
   # Neutral stance doesn't give any bonuses.
   STANCE_NEUTRAL = 0
@@ -32,7 +30,7 @@ class Combat
     npc_units = Unit.in_location(target.location_attrs).all
     run(
       planet,
-      [planet.player],
+      [planet.player, nil],
       {},
       npc_units + player_units,
       [],

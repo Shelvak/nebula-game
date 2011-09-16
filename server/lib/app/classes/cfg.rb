@@ -1,5 +1,11 @@
 # Configuration shortcuts instead of using strings everywhere.
 class Cfg; class << self
+  # Minimal amount you can offer in market.
+  def market_offer_min_amount; CONFIG['market.offer.min_amount']; end
+
+  # Maximum number of market offers player can offer.
+  def market_offers_max; CONFIG['market.offers.max']; end
+
   # Returns +Float+ offset (like 0.10) for MarketOffer#to_rate deviation 
   # from MarketOffer#average.
   def market_rate_offset; CONFIG['market.avg_rate.offset']; end

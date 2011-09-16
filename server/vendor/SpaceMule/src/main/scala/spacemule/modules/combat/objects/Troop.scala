@@ -2,7 +2,7 @@ package spacemule.modules.combat.objects
 
 import spacemule.modules.config.objects.Config
 
-class Troop(val id: Int,
+class Troop(val id: Long,
             val name: String,
             var level: Int,
             var hp: Int,

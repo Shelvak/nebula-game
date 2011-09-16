@@ -3,7 +3,6 @@ package spacemule.modules.combat.post_combat
 import scala.collection.mutable.ListBuffer
 import spacemule.modules.combat.objects.Combatant
 import spacemule.modules.combat.objects.Gun
-import spacemule.helpers.json.Json
 
 object Log {
   /**
@@ -15,7 +14,7 @@ object Log {
     object Fire {
       /**
        * Represents one hit from one gun to one target when combatant is
-       * fireing.
+       * firring.
        */
       case class Hit(gun: Gun, target: Combatant, damage: Int) {
         /**
@@ -24,7 +23,7 @@ object Log {
          *  target_id - same as unit_id
          *  damage - how much damage has target received
          */
-        def asJson = List(gun.index, Log.id(target), damage)
+        def toData = Seq(gun.index, Log.id(target), damage)
       }
     }
 
@@ -39,7 +38,7 @@ object Log {
 
       def isEmpty = hits.isEmpty
 
-      def asJson = (Log.id(source), hits.map { _.asJson })
+      def toData = (Log.id(source), hits.map { _.toData })
     }
   }
 
@@ -53,11 +52,11 @@ object Log {
 
     def isEmpty = fires.isEmpty
 
-    def asJson = fires.map { _.asJson }
+    def toData = fires.map { _.toData }
   }
 }
 
-class Log(unloadedUnitIds: Map[Int, Seq[Int]]) {
+class Log(unloadedUnitIds: collection.Map[Long, Seq[Long]]) {
   private val ticks = ListBuffer[Log.Tick]()
 
   def +=(tick: Log.Tick) = ticks += tick
@@ -72,10 +71,8 @@ class Log(unloadedUnitIds: Map[Int, Seq[Int]]) {
    *   "ticks" -> Seq[Log.Tick]
    * )
    */
-  def asJson: Map[String, Any] = Map(
+  def toMap: Map[String, Any] = Map(
     "unloaded" -> unloadedUnitIds,
-    "ticks" -> ticks.map { _.asJson }
+    "ticks" -> ticks.map { _.toData }
   )
-
-  def toJson = Json.toJson(asJson)
 }

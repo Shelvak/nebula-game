@@ -79,7 +79,7 @@ describe klass do
       before(:each) do
         @player1 = Factory.create :player
         @player2 = Factory.create :player
-        @players = Set.new([@planet.player, @player1, @player2].compact)
+        @players = Set.new([@planet.player, @player1, @player2])
         @alliances = Player.grouped_by_alliance(
           [@planet.player_id, @player1.id, @player2.id]
         )
@@ -123,8 +123,8 @@ describe klass do
             with(@planet).and_return(portal_units)
 
           units = @units + Set.new(portal_units)
-          players = Set.new(
-            Player.find(units.map(&:player_id).uniq.compact))
+          players = Set.new(Player.find(units.map(&:player_id).uniq))
+          players.add @planet.player
           Combat.should_receive(:run).with(@planet, players, @nap_rules,
             units, @buildings).and_return(@stubbed_assets)
           Combat::LocationChecker.check_location(@location)

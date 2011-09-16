@@ -2,10 +2,19 @@ package spacemule.modules.combat.post_combat
 
 import spacemule.modules.combat.objects._
 
-protected object Classification extends Enumeration {
+object Classification extends Enumeration {
   val Friend = Value(0, "friend")
   val Enemy = Value(1, "enemy")
   val Nap = Value(2, "nap")
+}
+
+object AlliancesClassifier {
+  // Map[key, value]
+  type Perspective = Map[String, Any]
+  // alliance id -> entry map
+  type Entry = Map[Long, Perspective]
+  // player id -> entry
+  type ClassificationMap = Map[Long, Entry]
 }
 
 /**
@@ -23,28 +32,34 @@ class AlliancesClassifier(alliances: Alliances) {
    *   )
    * )
    */
-  lazy val asJson = alliances.alliancesMap.map {
-    case (allianceId, alliance) =>
-      alliance.players.map { case player =>
-        player match {
-          // NPC players don't need this info.
-          case None => None
-          case Some(player) => {
-              val perspectives = alliances.alliancesMap.map {
-                case (allianceId, alliance) => view(alliances, player, alliance)
-              }
+  lazy val toMap: AlliancesClassifier.ClassificationMap = {
+    alliances.alliancesMap.map {
+      case (_, alliance) =>
+        alliance.players.map {
+          _ match {
+            // NPC players don't need this info.
+            case None => None
+            case Some(player) => {
+                val perspectives: AlliancesClassifier.Entry =
+                  alliances.alliancesMap.map {
+                    case (allianceId, allianceInPerspective) =>
+                      allianceId -> view(
+                        alliances, player, allianceInPerspective
+                      )
+                  }
 
-              Some(player.id -> perspectives)
+                Some(player.id -> perspectives)
+            }
           }
-        }
-      }.flatten
-  }.flatten.toMap
+        }.flatten
+    }.flatten.toMap
+  }
 
   /**
    * View of the player of this alliance.
    */
   private def view(alliances: Alliances, player: Player,
-                alliance: Alliance) = {
+                alliance: Alliance): AlliancesClassifier.Perspective = {
     val classification =
       if (alliances.isFriend(Some(player), alliance.id))
         Classification.Friend
@@ -56,9 +71,9 @@ class AlliancesClassifier(alliances: Alliances) {
     val allianceMap = Map(
       "name" -> alliance.name.getOrElse(null),
       "classification" -> classification.id,
-      "players" -> alliance.playersAsJson
+      "players" -> alliance.playersAsMapData
     )
 
-    (alliance.id -> allianceMap)
+    allianceMap
   }
 }

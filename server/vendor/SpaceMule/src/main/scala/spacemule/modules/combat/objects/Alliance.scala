@@ -5,7 +5,7 @@ import scala.collection.immutable._
 import spacemule.helpers.Converters._
 import spacemule.helpers.{StdErrLog => L}
 
-class Alliance(val id: Int,
+class Alliance(val id: Long,
                val name: Option[String],
                val players: Set[Option[Player]],
                combatants: Set[Combatant]) {
@@ -52,8 +52,8 @@ class Alliance(val id: Int,
    */
   def reset() = {
     L.debug("Resetting alliance (id: %d) initiative lists".format(id))
-    groundFlanks.reset
-    spaceFlanks.reset
+    groundFlanks.reset()
+    spaceFlanks.reset()
   }
 
   /**
@@ -72,13 +72,13 @@ class Alliance(val id: Int,
    *
    * Map(
    *   "name" -> String | null,
-   *   "players" -> Seq[(id: Int, name: String) | null],
+   *   "players" -> Seq[Seq(id: Int, name: String) | null],
    *   "flanks" -> Map(flankIndex: Int, flank: Map(
    *     "ground" -> Seq[Combatant], "space" -> Seq[Combatant]
    *   ))
    * )
    */
-  def asJson: Map[String, Any] = {
+  def toMap: Map[String, Any] = {
     val groundFlanksMap = groundFlanks.asJson
     val spaceFlanksMap = spaceFlanks.asJson
 
@@ -92,19 +92,19 @@ class Alliance(val id: Int,
 
     Map(
       "name" -> (name match {
-        case Some(name) => name
+        case Some(string) => string
         case None => null
       }),
-      "players" -> playersAsJson,
+      "players" -> playersAsMapData,
       "flanks" -> flanks
     )
   }
 
   /**
-   * Seq[(id: Int, name: String) | null]
+   * Seq[Seq(id: Int, name: String) | null]
    */
-  def playersAsJson = players.map { _ match {
-    case Some(player) => (player.id, player.name)
+  def playersAsMapData = players.map { _ match {
+    case Some(player) => Seq(player.id, player.name)
     case None => null
-  } }
+  } }.toSeq
 }

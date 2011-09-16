@@ -17,7 +17,7 @@ trait Trackable {
   /**
    * Returns map of changed attributes.
    */
-  def changes = {
+  def changes: Map[String, Tuple2[Any, Any]] = {
     trackedAttributes.map { case(key, value) =>
         val oldValue = attributes(key)
         if (oldValue != value) {

@@ -28,14 +28,14 @@ class MarketOffer < ActiveRecord::Base
   CALLBACK_MAPPINGS_FLIPPED = CALLBACK_MAPPINGS.flip
   
   validate :on => :create do
-    min_amount = CONFIG['market.offer.min_amount']
+    min_amount = Cfg.market_offer_min_amount
     errors.add(:from_amount, 
       "cannot be less than minimal #{min_amount}, however #{from_amount
       } was offered.") if from_amount < min_amount
     # System offers do not belong to player, so there is no limit.
     errors.add(:base, "Maximum number of market offers reached!") \
       if ! system? && 
-      player.market_offers.size >= CONFIG['market.offers.max']
+      player.market_offers.size >= Cfg.market_offers_max
   end
   
   before_create do

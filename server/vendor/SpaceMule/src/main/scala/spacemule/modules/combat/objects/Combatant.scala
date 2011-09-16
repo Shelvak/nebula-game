@@ -27,7 +27,7 @@ trait Combatant extends Trackable {
   /**
    * ID of this combatant in database.
    */
-  val id: Int
+  val id: Long
   /**
    * String name for the combatant type.
    */

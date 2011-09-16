@@ -10,8 +10,11 @@ import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.objects.Location
 
 object Combat {
-  type AllianceNames = sc.Map[Int, String]
-  type NapRules = sc.Map[Int, Set[Int]]
+  // alliance id -> alliance name
+  type AllianceNames = sc.Map[Long, String]
+  // alliance id -> Set[napped alliance ids]
+  type NapRules = sc.Map[Long, Set[Long]]
+  type LoadedTroops = sc.Map[Long, Set[Troop]]
 
   object Outcome extends Enumeration {
     /**
@@ -35,8 +38,8 @@ object Combat {
             players: Set[Option[Player]],
             allianceNames: Combat.AllianceNames,
             napRules: NapRules, troops: Set[Troop],
-            loadedTroops: Map[Int, Seq[Troop]],
-            unloadedTroopIds: Set[Int],
+            loadedTroops: Combat.LoadedTroops,
+            unloadedTroopIds: Set[Long],
             buildings: Set[Building]) =
     new Combat(location, planetOwner, players, allianceNames, napRules,
                troops, loadedTroops, unloadedTroopIds, buildings)
@@ -48,35 +51,43 @@ object Combat {
 class Combat(location: Location, planetOwner: Option[Player],
              players: Set[Option[Player]],
              allianceNames: Combat.AllianceNames,
-             napRules: Combat.NapRules, troops: Set[Troop],
-             loadedTroops: Map[Int, Seq[Troop]],
-             unloadedTroopIds: Set[Int],
+             napRules: Combat.NapRules,
+             troops: Set[Troop],
+             loadedTroops: Combat.LoadedTroops,
+             unloadedTroopIds: Set[Long],
              buildings: Set[Building]) {
-  // Units unloaded to ground.
-  val unloadedTroops = loadedTroops.map { case (transporterId, troops) => 
-    transporterId -> troops.filter { t => unloadedTroopIds.contains(t.id) }
-  }
-  // Units still kept in their transporters.
-  val stillLoadedTroops = loadedTroops.map { case (transporterId, troops) =>
-    transporterId -> troops.filterNot(t => unloadedTroopIds.contains(t.id))
+  // Units unloaded to ground, and those who are still kept in their
+  // transporters.
+  val (unloadedTroops, stillLoadedTroops) = {
+    var unloaded = Map[Long, Set[Troop]]()
+    var retained = Map[Long, Set[Troop]]()
+
+    loadedTroops.foreach { case (transporterId, transporterTroops) =>
+      val (transporterUnloaded, transporterRetained) =
+        transporterTroops.partition { t => unloadedTroopIds.contains(t.id) }
+      unloaded = unloaded.updated(transporterId, transporterUnloaded)
+      retained = retained.updated(transporterId, transporterRetained)
+    }
+
+    (unloaded, retained)
   }
   
   /**
    * Log of this combat.
-   * 
+   *
    * If there is any units to unload and we are in planet they are unloaded
    * as a first tick.
    */
   val log = {
     L.debug("%d troops unloaded".format(unloadedTroopIds.size))
-    val grouped = 
-      if (unloadedTroopIds.isEmpty) Map.empty[Int, Seq[Int]]
+    val groupedUnloadedTroopIds =
+      if (unloadedTroopIds.isEmpty) Map.empty[Long, Seq[Long]]
       else unloadedTroops.map {
         case (transporterId, troops) =>
           transporterId -> troops.map { _.id }.toSeq
       }
     
-    new Log(grouped)
+    new Log(groupedUnloadedTroopIds)
   }
 
   // Only include loaded troops if we are in planet.
@@ -90,7 +101,7 @@ class Combat(location: Location, planetOwner: Option[Player],
                             combatants)
   // Generate JSON representation before running combat because after combat all
   // HP properties will be changed.
-  alliances.asJson
+  alliances.toMap
 
   val statistics = new Statistics(alliances)
 
@@ -155,7 +166,7 @@ class Combat(location: Location, planetOwner: Option[Player],
     tick
   }
 
-  private def shootGuns(allianceId: Int, combatant: Combatant) = {
+  private def shootGuns(allianceId: Long, combatant: Combatant) = {
     val fire = new Log.Tick.Fire(combatant)
 
     combatant.guns.foreach { gun =>

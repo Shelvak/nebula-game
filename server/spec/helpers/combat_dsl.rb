@@ -189,10 +189,10 @@ class CombatDsl
   end
 
   def players
-    Set.new(player_containers.accept do |player_container|
+    location = @location.location
+    players = Set.new(player_containers.accept do |player_container|
       # Only include player if he has any units or is a planet owner.
       has_units = (player_container.read_units.try(:units).try(:size) || 0) > 0
-      location = @location.location
       if location.is_a?(SsObject::Planet)
         planet_owner = player_container.player == location.player
       else
@@ -200,10 +200,14 @@ class CombatDsl
       end
       has_units || planet_owner
     end.map(&:player))
+    players.add(nil) \
+      if location.is_a?(SsObject::Planet) && location.player_id.nil?
+
+    players
   end
 
   def alliances
-    ids = players.map(&:id)
+    ids = players.map { |player| player.nil? ? nil : player.id }
     ::Player.grouped_by_alliance(ids)
   end
 

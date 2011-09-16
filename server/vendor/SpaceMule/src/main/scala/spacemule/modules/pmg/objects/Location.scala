@@ -7,46 +7,12 @@ object Location extends Enumeration {
 
   val Galaxy = Value(0, "galaxy")
   val SolarSystem = Value(1, "solar system")
-  val Planet = Value(2, "planet")
+  val SsObject = Value(2, "ss object")
   val Unit = Value(3, "unit")
-  val BuildingKind = Value(4, "building")
+  val Building = Value(4, "building")
 
   def apply(id: Int, kind: Location.Kind, x: Option[Int], y: Option[Int]) =
     new Location(id, kind, x, y)
-
-  /**
-   * Reads location from such map:
-   *
-   * Map(
-   *   "id" -> Int,
-   *   "kind" -> Int,
-   *   "x" -> Int | null
-   *   "y" -> Int | null
-   * )
-   *
-   * Optionally "kind" can be substituted with "type".
-   */
-  def read(input: Map[String, Any]) = {
-    val kind = Location(
-      (input.get("kind") match {
-        case None => input.getOrError("type", "neither kind nor type was defined!")
-        case Some(kind) => kind
-      }).asInstanceOf[Int]
-    )
-
-    new Location(
-      input.getOrError("id").asInstanceOf[Int],
-      kind,
-      kind match {
-        case Planet => None
-        case _ => Some(input.getOrError("x").asInstanceOf[Int])
-      },
-      kind match {
-        case Planet => None
-        case _ => Some(input.getOrError("y").asInstanceOf[Int])
-      }
-    )
-  }
 }
 
 class Location(val id: Int, val kind: Location.Kind, val x: Option[Int],

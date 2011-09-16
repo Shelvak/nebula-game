@@ -20,8 +20,7 @@ case class SolarSystemPoint(
   def toServerLocation(timeMultiplier: Double) = 
     ServerLocation(solarSystem.id,
                    objects.Location.SolarSystem,
-                   Some(coords.position),
-                   Some(coords.angle),
+                   Some(coords),
                    timeMultiplier)
   def solarSystemId = solarSystem.id
   def solarSystemPoint = this

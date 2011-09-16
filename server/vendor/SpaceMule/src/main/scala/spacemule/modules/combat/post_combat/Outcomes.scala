@@ -5,10 +5,14 @@ import spacemule.modules.combat.objects.Alliances
 import spacemule.modules.combat.objects.Player
 import spacemule.modules.combat.Combat
 
+object Outcomes {
+  type PlayerMap = Map[Option[Player], Combat.Outcome.Value]
+}
+
 class Outcomes(alliances: Alliances) {
   private var _outcomes = HashMap[Option[Player], Combat.Outcome.Value]()
 
-  lazy val initialized =
+  lazy private val initialized =
     alliances.players.foreach { case(player, allianceId) =>
       val outcome =
         if (alliances.isAlive(player))
@@ -30,7 +34,5 @@ class Outcomes(alliances: Alliances) {
     case (player, outcome) => outcome == Combat.Outcome.Tie
   }.isEmpty}
 
-  def asJson = {initialized; _outcomes.map { case (player, outcome) =>
-    (Player.idForJson(player) -> outcome.id)
-  }}
+  def byPlayer: Outcomes.PlayerMap = {initialized; _outcomes}
 }

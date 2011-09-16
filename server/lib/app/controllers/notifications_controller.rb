@@ -12,7 +12,8 @@ class NotificationsController < GenericController
     only_push!
     
     base = Notification.where(:player_id => player.id)
-    main = base.where("`starred`=? OR `read`=?", true, false).all
+    main = base.where("`starred`=? OR `read`=? OR event=?",
+      true, false, Notification::EVENT_ALLIANCE_INVITATION).all
     extras = base.where(:starred => false, :read => true).
       limit(Cfg.notification_limit).all
     notifications = (main | extras).sort do |n1, n2|

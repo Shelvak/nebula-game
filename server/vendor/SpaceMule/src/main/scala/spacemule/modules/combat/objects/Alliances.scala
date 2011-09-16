@@ -6,17 +6,27 @@ import spacemule.helpers.{StdErrLog => L}
 import spacemule.modules.combat.Combat
 
 object Alliances {
+  // alliance id -> alliance data
+  type DataMap = Map[Long, Map[String, Any]]
+  // alliance id -> alliance
+  type AlliancesMap = Map[Long, Alliance]
+  // alliance id -> Seq[enemy alliance ids]
+  type EnemiesMap = Map[Long, IndexedSeq[Long]]
+
   /**
    * Group players to map where keys are alliance ids and values are alliances.
    *
    * Players that do not belong to any alliance get negative alliance ids
    * starting from -1.
    */
-  def apply(planetOwner: Option[Player], players: Set[Option[Player]],
-            allianceNames: Combat.AllianceNames,
-            napRules: Combat.NapRules,
-            combatants: Set[Combatant]): Alliances = {
-    val notAllied = 0
+  def apply(
+    planetOwner: Option[Player],
+    players: Set[Option[Player]],
+    allianceNames: Combat.AllianceNames,
+    napRules: Combat.NapRules,
+    combatants: Set[Combatant]
+  ): Alliances = {
+    val notAllied: Long = 0
 
     // Players grouped by alliance ids, not allied players are in one alliance.
     val grouped = players.groupBy { player =>
@@ -41,9 +51,10 @@ object Alliances {
     )
 
     // Player -> alliance ID cache.
-    val cache = Map() ++ expanded.map { case (allianceId, players) =>
-      players.map { player => (player, allianceId) }
-    }.flatten
+    val cache: Map[Option[Player], Long] = expanded.map {
+      case (allianceId, players) =>
+        players.map { player => (player -> allianceId) }
+    }.flatten.toMap
 
     // Create alliance id -> alliance map wth players and combatants.
     val alliances = expanded.map { case (allianceId, players) =>
@@ -69,9 +80,9 @@ object Alliances {
 }
 
 class Alliances(planetOwner: Option[Player],
-                val alliancesMap: Map[Int, Alliance],
-                enemies: Map[Int, IndexedSeq[Int]],
-                playerCache: Map[Option[Player], Int]) {
+                val alliancesMap: Alliances.AlliancesMap,
+                enemies: Alliances.EnemiesMap,
+                playerCache: Map[Option[Player], Long]) {
   /**
    * Map of who was killed by who.
    */
@@ -101,7 +112,7 @@ class Alliances(planetOwner: Option[Player],
   /**
    * Traverse initiatives. Yields combatants that should shoot in this sub-tick.
    */
-  def traverseInitiatives(block: (Int, Combatant) => Unit) = {
+  def traverseInitiatives(block: (Long, Combatant) => Unit) = {
     // Sequence of alliance ids to shoot. Planet owner alliance always shoots 
     // first unless owner is NPC. This is also because we get None if we're
     // not fighting in the planet.
@@ -147,7 +158,7 @@ class Alliances(planetOwner: Option[Player],
   /**
    * Does given alliance has any enemies left?
    */
-  def hasAliveEnemies(allianceId: Int) = ! aliveEnemies(allianceId).isEmpty
+  def hasAliveEnemies(allianceId: Long) = ! aliveEnemies(allianceId).isEmpty
 
   /**
    * Is given player still alive? (has any troops/buildings)
@@ -157,30 +168,30 @@ class Alliances(planetOwner: Option[Player],
   /**
    * Checks if this alliance is alive.
    */
-  def isAlive(allianceId: Int) = alliancesMap(allianceId).isAlive
+  def isAlive(allianceId: Long) = alliancesMap(allianceId).isAlive
 
   /**
    * Is alliance with this id a friend for player?
    */
-  def isFriend(player: Option[Player], allianceId: Int) =
+  def isFriend(player: Option[Player], allianceId: Long) =
     allianceIdFor(player) == allianceId
 
   /**
    * Is alliance with this id an enemy for player?
    */
-  def isEnemy(player: Option[Player], allianceId: Int) =
+  def isEnemy(player: Option[Player], allianceId: Long) =
     enemies(allianceIdFor(player)).contains(allianceId)
 
   /**
    * Is alliance with this id a nap for player?
    */
-  def isNap(player: Option[Player], allianceId: Int) =
+  def isNap(player: Option[Player], allianceId: Long) =
     ! napsFor(player).find { _.id == allianceId }.isEmpty
 
   /**
    * Returns seq of alive enemy alliances.
    */
-  def aliveEnemies(allianceId: Int) =
+  def aliveEnemies(allianceId: Long) =
     enemies(allianceId).map { enemyAllianceId =>
       val enemyAlliance = alliancesMap(enemyAllianceId)
 
@@ -191,7 +202,8 @@ class Alliances(planetOwner: Option[Player],
   /**
    * Returns Alliance set which are enemies with this alliance.
    */
-  def enemiesFor(allianceId: Int) = enemies(allianceId).map { alliancesMap(_) }.toSet
+  def enemiesFor(allianceId: Long) = 
+    enemies(allianceId).map { alliancesMap(_) }.toSet
 
   /**
    * Returns Alliance set which are enemies with this player.
@@ -202,7 +214,7 @@ class Alliances(planetOwner: Option[Player],
   /**
    * Returns Alliance set which are naps with this alliance.
    */
-  def napsFor(allianceId: Int) =
+  def napsFor(allianceId: Long) =
     (alliancesMap.keySet - allianceId -- enemies(allianceId)).map { alliancesMap(_) }
 
   /**
@@ -214,7 +226,7 @@ class Alliances(planetOwner: Option[Player],
   /**
    * Returns target combatant for alliance or None if no such combatants exist.
    */
-  def targetFor(allianceId: Int, gun: Gun): Option[Combatant] = {
+  def targetFor(allianceId: Long, gun: Gun): Option[Combatant] = {
     val enemies = aliveEnemies(allianceId)
     if (enemies.isEmpty) return None
 
@@ -247,10 +259,10 @@ class Alliances(planetOwner: Option[Player],
    * Returns JSON like map for alliances.
    *
    * Map(
-   *   allianceId: Int -> Alliance
+   *   allianceId: Long -> Alliance
    * )
    */
-  lazy val asJson = alliancesMap.map { case (allianceId, alliance) =>
-      (allianceId -> alliance.asJson)
+  lazy val toMap: Alliances.DataMap = alliancesMap.map {
+    case (allianceId, alliance) => (allianceId -> alliance.toMap)
   }
 }

@@ -367,7 +367,7 @@ object Manager {
     obj.units.foreach { unit =>
       val unitRow = new UnitRow(
         ssRow.galaxyId,
-        Location(ssoRow.id, Location.Planet, None, None),
+        Location(ssoRow.id, Location.SsObject, None, None),
         unit
       )
       units += unitRow.values
@@ -419,7 +419,7 @@ object Manager {
       building.units.foreach { unit =>
         val unitRow = new UnitRow(
           galaxyId,
-          Location(buildingRow.id, Location.BuildingKind, None, None),
+          Location(buildingRow.id, Location.Building, None, None),
           unit
         )
         units += unitRow.values

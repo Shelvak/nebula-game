@@ -2,7 +2,6 @@ package spacemule.helpers
 
 import collection.SeqLike
 import java.awt.Rectangle
-import spacemule.helpers.json.Json
 import spacemule.modules.pmg.classes.geom.Coords
 import java.util.Calendar
 import scala.collection.Map
@@ -99,8 +98,6 @@ class SmartMap[K, +V](map: Map[K, V]) {
 
   def getOrError(key: K): V = getOrError(
     key, "%s must be defined for %s!".format(key, map.toString()))
-  
-  def toJson = Json.toJson[K, V](map)
 }
 
 class SmartMutableMap[K, V](map: mutable.Map[K, V]) {

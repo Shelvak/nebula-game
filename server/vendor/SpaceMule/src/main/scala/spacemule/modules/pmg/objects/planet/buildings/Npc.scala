@@ -17,7 +17,7 @@ class Npc(name: String, x: Int, y: Int, level: Int)
 extends Building(name, x, y, level) {
   override val importance = Config.npcBuildingImportance(this)
 
-  def createUnits(chances: List[UnitChance]) {
+  def createUnits(chances: Seq[UnitChance]) {
     UnitChance.foreachByChance(chances, importance) { case (name, flank) =>
       units += Unit(name, flank)
     }

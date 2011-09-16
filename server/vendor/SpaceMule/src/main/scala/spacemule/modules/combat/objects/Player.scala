@@ -1,11 +1,6 @@
 package spacemule.modules.combat.objects
 
 object Player {
-  def idForJson(player: Option[Player]) = player match {
-    case Some(player) => player.id
-    case None => null
-  }
-
   object Technologies {
     /**
      * Map of combatant full name (Building::Thunder, Unit::Trooper, etc.) to
@@ -47,7 +42,7 @@ object Player {
   }
 }
 
-class Player(val id: Int, val name: String, val allianceId: Option[Int],
+class Player(val id: Long, val name: String, val allianceId: Option[Long],
              val technologies: Player.Technologies=Player.Technologies.empty) {
   override def equals(other: Any) = other match {
     case player: Player => id == player.id
