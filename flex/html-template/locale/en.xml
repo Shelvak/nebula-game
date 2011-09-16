@@ -1947,6 +1947,8 @@
     <label.claimReward value="Claim reward!" />
     <label.claimLater value="Claim later" />
     <label.tutorial value="Tutorial" />
+    <label.populationIncrease 
+    value="These units will increase your population by {0}." />
     <label.choosePlanet value="Choose planet:" />
     <warning.wontFit> 
       <p> 

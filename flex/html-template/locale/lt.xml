@@ -549,8 +549,8 @@
     <property.creds value="Kredai" />
     <property.victoryPoints value="Pergalės taškai" />
     <property.fee value="Mokesčio procentas" />
-    <property.width value="Pastato ilgis" />
-    <property.height value="Pastato plotis" />
+    <property.width value="Pastato plotis" />
+    <property.height value="Pastato ilgis" />
 
     <text.deactivated>
       <p>
@@ -1954,6 +1954,7 @@
     <label.claimReward value="Pasiimti atlygį!" />
     <label.claimLater value="Pasiimti vėliau" />
     <label.tutorial value="Pradžiamokslis" />
+    <label.populationIncrease value="Šie kariai padidins tavo populiaciją {0}." />
     <label.choosePlanet value="Pasirink planetą:" />
     <warning.wontFit> 
       <p>Atsiimdamas atlygį į pasirinktą planetą dėl nepakankamų talpyklų

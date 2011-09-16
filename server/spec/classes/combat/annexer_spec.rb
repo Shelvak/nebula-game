@@ -1,4 +1,6 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb'))
+require File.expand_path(
+  File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
+)
 
 describe Combat::Annexer do
   describe ".annex!" do
@@ -100,6 +102,11 @@ describe Combat::Annexer do
         end
         
         describe "when it's not the last planet" do
+          before(:each) do
+            @owner.planets_count = 4
+            @owner.save!
+          end
+
           it "should take ownership of the planet" do
             lambda do
               Combat::Annexer.annex!(@planet, @check_report, @outcomes)

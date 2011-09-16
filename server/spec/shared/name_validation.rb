@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-describe "name validation", :shared => true do
+shared_examples_for "name validation" do
   it "should not allow setting name shorter than min symbols" do
     @model.name = "a" * (@min - 1)
     @model.should_not be_valid

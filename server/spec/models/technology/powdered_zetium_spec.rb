@@ -6,6 +6,6 @@ describe Technology::PowderedZetium do
       @model = Factory.create! :t_powdered_zetium
     end
 
-    it_should_behave_like "resource increasing technology"
+    it_behaves_like "resource increasing technology"
   end
 end

@@ -11,7 +11,7 @@ def count_for_alliance(alliance_id)
   solar_system_counters
 end
 
-describe "fow ss entry recalculate", :shared => true do
+shared_examples_for "fow ss entry recalculate" do
   describe "if entry was changed" do
     before(:each) do
       FowSsEntry.stub!(:where).and_return([@fse])
@@ -175,7 +175,7 @@ describe FowSsEntry do
         FowSsEntry.stub!(:recalculate).and_return(false)
       end
 
-      it_should_behave_like "fow entry"
+      it_behaves_like "fow entry"
 
       it "should dispatch destroyed for that solar system" do
         @klass.increase(@first_arg, @player, 2)
@@ -360,7 +360,7 @@ describe FowSsEntry do
             :enemy_planets => false, :enemy_ships => false
         end
 
-        it_should_behave_like "fow ss entry recalculate"
+        it_behaves_like "fow ss entry recalculate"
 
         asset_types.each do |type, create_asset|
           it "should set player_#{type}=true if player has #{type}" do
@@ -457,7 +457,7 @@ describe FowSsEntry do
           @enemy = Factory.create :player
         end
         
-        it_should_behave_like "fow ss entry recalculate"
+        it_behaves_like "fow ss entry recalculate"
 
         asset_types.each do |type, create_asset|
           alliance_accessor = "alliance_#{type.singularize}_player_ids"
@@ -470,9 +470,8 @@ describe FowSsEntry do
             lambda do
               FowSsEntry.recalculate(@fse.solar_system_id)
               @fse.reload
-            end.should change(@fse, alliance_accessor).from(false).to([
-                @player.id, @ally.id
-            ])
+            end.should change(@fse, alliance_accessor).
+              to([@player.id, @ally.id])
           end
 
           it "should set #{alliance_accessor} to " +
@@ -566,10 +565,10 @@ describe FowSsEntry do
             :u_crow, :location => planet, :player => player
           )
 
-          fse_player = Factory.create(:fse_player, :player => player,
+          Factory.create(:fse_player, :player => player,
                                       :solar_system => ss, :counter => 2)
-          fse_ally = Factory.create(:fse_ally, :alliance => alliance,
-                                    :solar_system => ss, :counter => 2)
+          Factory.create(:fse_alliance, :alliance => alliance,
+                                        :solar_system => ss, :counter => 2)
 
           FowSsEntry.recalculate(ss.id)
 

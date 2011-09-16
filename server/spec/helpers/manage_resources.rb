@@ -1,4 +1,4 @@
-Spec::Matchers.define :manage_resources do
+RSpec::Matchers.define :manage_resources do
   match do |klass|
     klass.manages_resources?
   end

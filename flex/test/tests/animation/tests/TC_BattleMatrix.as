@@ -29,9 +29,9 @@ package tests.animation.tests
       private static const oneUnitMatrix: Array = 
          [[0, 0, 0, 0, 0, 0, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 5, 5, 0, 0, 0, 0],
-         [0, 0, 5, 5, 0, 0, 0, 0],
-         [0, 0, 5, 5, 0, 0, 0, 0],
+         [0, 0, BattleMatrix.TAKEN, BattleMatrix.TAKEN, 0, 0, 0, 0],
+         [0, 0, BattleMatrix.TAKEN, BattleMatrix.TAKEN, 0, 0, 0, 0],
+         [0, 0, BattleMatrix.TAKEN, BattleMatrix.TAKEN, 0, 0, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 0]];
@@ -39,9 +39,9 @@ package tests.animation.tests
       private static const oneUnitMovedMatrix: Array = 
          [[0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 5, 5, 0],
-            [0, 0, 0, 0, 0, 5, 5, 0],
-            [0, 0, 0, 0, 0, 5, 5, 0],
+            [0, 0, 0, 0, 0, BattleMatrix.TAKEN, BattleMatrix.TAKEN, 0],
+            [0, 0, 0, 0, 0, BattleMatrix.TAKEN, BattleMatrix.TAKEN, 0],
+            [0, 0, 0, 0, 0, BattleMatrix.TAKEN, BattleMatrix.TAKEN, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0]];
@@ -50,9 +50,9 @@ package tests.animation.tests
       private static const preparedMatrix: Array = 
          [[0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 5, 5, -1],
-            [0, 0, 0, 0, 0, 5, 5, 0],
-            [0, 0, -1, 0, 0, 5, 5, 0],
+            [0, 0, 0, 0, 0, BattleMatrix.TAKEN, BattleMatrix.TAKEN, -1],
+            [0, 0, 0, 0, 0, BattleMatrix.TAKEN, BattleMatrix.TAKEN, 0],
+            [0, 0, -1, 0, 0, BattleMatrix.TAKEN, BattleMatrix.TAKEN, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0]];
@@ -60,9 +60,9 @@ package tests.animation.tests
       private static const oneUnitBlockedMatrix: Array = 
          [[0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 1, 1, 1],
-            [0, 0, 0, 0, 0, 1, 1, 0],
-            [0, 0, 1, 0, 0, 1, 1, 0],
+            [0, 0, 0, 0, 0, BattleMatrix.TAKEN, BattleMatrix.TAKEN, -1],
+            [0, 0, 0, 0, 0, BattleMatrix.TAKEN, BattleMatrix.TAKEN, 0],
+            [0, 0, -1, 0, 0, BattleMatrix.TAKEN, BattleMatrix.TAKEN, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0]];
@@ -74,14 +74,13 @@ package tests.animation.tests
          for (var i : int = 0; i < 8; i++)
             testMatrix.addColumn();
       }
+
       [Test]
       public function returnTestMatrixTest(): void
       {
          assertThat(testMatrix.returnTestMatrix(), hasSameValuesLikeMatrix(emptyMatrix));
       }
       
-      
-      [Ignore("Does not pass!")]
       [Test]
       public function occupyTest (): void
       {
@@ -89,7 +88,6 @@ package tests.animation.tests
          assertThat(testMatrix.returnTestMatrix(), hasSameValuesLikeMatrix(oneUnitMatrix));
       }
       
-      [Ignore("Does not pass!")]
       [Test]
       public function moveTest (): void
       {
@@ -97,8 +95,7 @@ package tests.animation.tests
          testMatrix.move(new Point(2, 2), new Point(3, 4), 3);
          assertThat(testMatrix.returnTestMatrix(), hasSameValuesLikeMatrix(oneUnitMovedMatrix));
       }
-
-      [Ignore("Does not pass!")]
+      
       [Test]
       public function horizontalFreeSpaceTest (): void
       {

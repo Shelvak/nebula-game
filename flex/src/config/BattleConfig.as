@@ -48,7 +48,7 @@ package config
       public static function getFlankHitChance(flank: int): int
       {
          var chance: Number = Config.getValue('combat.lineHitChance');
-         return (flank == 1?chance*100:(1-chance)*100);
+         return (flank == 0?chance*100:(1-chance)*100);
       }
       
       public static function getStanceProps(stance: int): Array

@@ -4,7 +4,8 @@ class AddOwnerToAlliance < ActiveRecord::Migration
       t.belongs_to :owner, :null => false
     end
 
-    add_fk("players", "alliances", "NO ACTION", nil, "owner_id")
+    add_fk("players", "alliances", :target_key => "owner_id",
+           :on_delete => "NO ACTION")
   end
 
   def self.down

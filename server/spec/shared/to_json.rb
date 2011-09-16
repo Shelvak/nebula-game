@@ -1,4 +1,4 @@
-describe "to json", :shared => true do
+shared_examples_for "to json" do
   (@required_fields || []).each do |attr|
     if attr.is_a?(Array)
       attr, block, title = attr

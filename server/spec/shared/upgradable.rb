@@ -1,4 +1,4 @@
-describe "upgradable", :shared => true do
+shared_examples_for "upgradable" do
   describe ".on_upgrade_finished" do
     before(:each) do
       @klass = @model.class.to_s.split("::")[0].constantize
@@ -80,7 +80,7 @@ describe "upgradable", :shared => true do
         current = @planet.send(resource)
         @model.cancel!
         @planet.reload
-        @planet.send(resource).should be_close(current + increasement, 5)
+        @planet.send(resource).should be_within(5).of(current + increasement)
       end
     end
     
@@ -159,9 +159,8 @@ describe "upgradable", :shared => true do
       with_config_values(@values) do
         old_uea = @model.upgrade_ends_at
         Creds.accelerate!(@model, 0)
-        @model.upgrade_ends_at.should be_close(
-          old_uea - @time,
-          SPEC_TIME_PRECISION
+        @model.upgrade_ends_at.should be_within(SPEC_TIME_PRECISION).of(
+          old_uea - @time
         )
       end
     end
@@ -170,10 +169,8 @@ describe "upgradable", :shared => true do
       with_config_values(@values) do
         old_uea = @model.upgrade_ends_at
         seconds_reduced = Creds.accelerate!(@model, 0)
-        (@model.upgrade_ends_at + seconds_reduced).should be_close(
-          old_uea,
-          SPEC_TIME_PRECISION
-        )
+        (@model.upgrade_ends_at + seconds_reduced).should be_within(
+          SPEC_TIME_PRECISION).of(old_uea)
       end
     end
 
@@ -349,7 +346,7 @@ describe "upgradable", :shared => true do
   it "should store remaining time to pause_remainder on #pause" do
     @model.upgrade_ends_at = 5.minutes.since
     @model.pause
-    @model.pause_remainder.should be_close(5.minutes, SPEC_TIME_PRECISION)
+    @model.pause_remainder.should be_within(SPEC_TIME_PRECISION).of(5.minutes)
   end
 
   it "should register to CallbackManager on #resume!" do

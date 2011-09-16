@@ -1,4 +1,4 @@
-class SpecEventHandler
+class RSpecEventHandler
   attr_reader :events
 
   def initialize
@@ -51,7 +51,7 @@ def should_not_fire_event(object, event_name, reason=nil, count=nil)
     count)
 end
 
-Spec::Matchers.define :have_fired_event do 
+RSpec::Matchers.define :have_fired_event do
   |object, event_name, reason, count|
 
   match do |handler|

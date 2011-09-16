@@ -57,7 +57,7 @@ describe SsObject do
       energy energy_rate energy_storage
       zetium zetium_rate zetium_storage
       last_resources_update energy_diminish_registered}
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
   end
 
 #  describe "resources entry" do

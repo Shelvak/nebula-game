@@ -96,10 +96,9 @@ describe SsObject::Planet do
       it "should set boost expiration date" do
         @planet.boost!(:metal, :rate)
         @planet.reload
-        @planet.metal_rate_boost_ends_at.should be_close(
-          Cfg.planet_boost_duration.from_now,
+        @planet.metal_rate_boost_ends_at.should be_within(
           SPEC_TIME_PRECISION
-        )
+        ).of(Cfg.planet_boost_duration.from_now)
       end
 
       it "should increase boost expiration date if already set" do
@@ -108,10 +107,9 @@ describe SsObject::Planet do
 
         @planet.boost!(:metal, :rate)
         @planet.reload
-        @planet.metal_rate_boost_ends_at.should be_close(
-          (3.days + Cfg.planet_boost_duration).from_now,
+        @planet.metal_rate_boost_ends_at.should be_within(
           SPEC_TIME_PRECISION
-        )
+        ).of((3.days + Cfg.planet_boost_duration).from_now)
       end
       
       it "should set boost expiration date from now if boost is expired" do
@@ -120,10 +118,9 @@ describe SsObject::Planet do
 
         @planet.boost!(:metal, :rate)
         @planet.reload
-        @planet.metal_rate_boost_ends_at.should be_close(
-          Cfg.planet_boost_duration.from_now,
+        @planet.metal_rate_boost_ends_at.should be_within(
           SPEC_TIME_PRECISION
-        )
+        ).of(Cfg.planet_boost_duration.from_now)
       end
 
       it "should reduce creds from player" do
@@ -300,7 +297,7 @@ describe SsObject::Planet do
       @model = Factory.build(:planet)
     end
 
-    it_should_behave_like "name validation"
+    it_behaves_like "name validation"
   end
 
   describe "#can_destroy_building?" do
@@ -449,7 +446,7 @@ describe SsObject::Planet do
 
     it "should save new #owner_changed" do
       @planet.save!
-      @planet.owner_changed.should be_close(Time.now, SPEC_TIME_PRECISION)
+      @planet.owner_changed.should be_within(SPEC_TIME_PRECISION).of(Time.now)
     end
     
     it "should call FowSsEntry.change_planet_owner after save" do
@@ -581,7 +578,7 @@ describe SsObject::Planet do
       end
     end
 
-    describe "transfering attribute", :shared => true do
+    shared_examples_for "transfering attribute" do
       it "should reduce attribute value from previous owner" do
         lambda do
           @planet.save!
@@ -597,7 +594,7 @@ describe SsObject::Planet do
       end
     end
     
-    describe "not transfering attribute", :shared => true do
+    shared_examples_for "not transfering attribute" do
       it "should reduce attribute value from previous owner" do
         lambda do
           @planet.save!
@@ -628,7 +625,7 @@ describe SsObject::Planet do
           end
           
           describe "building active" do
-            it_should_behave_like "transfering attribute"
+            it_behaves_like "transfering attribute"
           end
 
           describe "inactinet ve building" do
@@ -636,7 +633,7 @@ describe SsObject::Planet do
               @research_center.deactivate!
             end
             
-            it_should_behave_like "not transfering attribute"
+            it_behaves_like "not transfering attribute"
           end
         end
       end
@@ -652,7 +649,7 @@ describe SsObject::Planet do
       end
 
       describe "building active" do
-        it_should_behave_like "transfering attribute"
+        it_behaves_like "transfering attribute"
       end
 
       describe "inactive building" do
@@ -660,7 +657,7 @@ describe SsObject::Planet do
           @housing.deactivate!
         end
 
-        it_should_behave_like "not transfering attribute"
+        it_behaves_like "not transfering attribute"
       end
     end
 
@@ -786,9 +783,9 @@ describe SsObject::Planet do
 
     it "should store #exploration_ends_at" do
       @planet.explore!(@x, @y)
-      @planet.exploration_ends_at.should be_close(
-        Tile.exploration_time(@kind).since,
-        SPEC_TIME_PRECISION)
+      @planet.exploration_ends_at.should be_within(SPEC_TIME_PRECISION).of(
+        Tile.exploration_time(@kind).since
+      )
     end
 
     it "should reduce scientists from player" do
@@ -1288,7 +1285,7 @@ describe SsObject::Planet do
       @model = Factory.create(:planet)
     end
 
-    it_should_behave_like "shieldable"
+    it_behaves_like "shieldable"
   end
 
   describe "#as_json" do
@@ -1313,7 +1310,7 @@ describe SsObject::Planet do
         zetium zetium_generation_rate metal_usage_rate zetium_storage
         last_resources_update energy_diminish_registered status
         exploration_x exploration_y exploration_ends_at}
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
     end
     
     describe "with :view" do
@@ -1322,7 +1319,7 @@ describe SsObject::Planet do
       end
 
       @required_fields = %w{width height}
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
     end
 
     describe "with :resources" do
@@ -1342,7 +1339,7 @@ describe SsObject::Planet do
         next_raid_at
         owner_changed}
       @ommited_fields = %w{energy_diminish_registered}
-      it_should_behave_like "to json"
+      it_behaves_like "to json"
     end
 
     describe "with :perspective" do
@@ -1351,7 +1348,7 @@ describe SsObject::Planet do
         @status = StatusResolver::NPC
       end
 
-      it_should_behave_like "with :perspective"
+      it_behaves_like "with :perspective"
 
       describe "viewable" do
         it "should be true if planet is yours" do

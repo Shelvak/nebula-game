@@ -223,9 +223,9 @@ describe Combat do
       Combat::Integration.stub!(:has_tie?).and_return(true)
       @dsl.run
       Cooldown.in_location(@location.location_attrs).first.ends_at.should \
-        be_close(
-          CONFIG.evalproperty('combat.cooldown.planet.duration').from_now,
-          SPEC_TIME_PRECISION)
+        be_within(SPEC_TIME_PRECISION).of(
+          CONFIG.evalproperty('combat.cooldown.planet.duration').from_now
+        )
     end
   end
 
@@ -244,9 +244,9 @@ describe Combat do
       Combat::Integration.stub!(:has_tie?).and_return(true)
       @dsl.run
       Cooldown.in_location(@location.location_attrs).first.ends_at.should \
-        be_close(
-          CONFIG.evalproperty('combat.cooldown.duration').from_now,
-          SPEC_TIME_PRECISION)
+        be_within(SPEC_TIME_PRECISION).of(
+          CONFIG.evalproperty('combat.cooldown.duration').from_now
+        )
     end
 
     it "should not unload units into space" do

@@ -1,4 +1,4 @@
-describe "with unit bonus", :shared => true do
+shared_examples_for "with unit bonus" do
   it "should return property on #unit_bonus" do
     @model.unit_bonus.should == @model.property('unit_bonus')
   end

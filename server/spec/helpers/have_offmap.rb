@@ -1,4 +1,4 @@
-Spec::Matchers.define :have_offmap do |klass|
+RSpec::Matchers.define :have_offmap do |klass|
   match do |planet|
     if klass == Tile || klass == Folliage
       @items = klass.where(

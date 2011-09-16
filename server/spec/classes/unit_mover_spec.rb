@@ -17,10 +17,9 @@ describe UnitMover do
       arrives_at, _ = 
         UnitMover.move_meta(@player.id, @units.map(&:id), @ssp1, @ssp2)
       arrives_at.
-        should be_close(
+        should be_within(SPEC_TIME_PRECISION).of(
           UnitMover.move(@player.id, @units.map(&:id), @ssp1, @ssp2).
-            arrives_at,
-          SPEC_TIME_PRECISION
+            arrives_at
         )
     end
     
@@ -249,9 +248,8 @@ describe UnitMover do
         UnitMover.move_meta(@player.id, @unit_ids, @source, @target)
       UnitMover.move(
         @player.id, @unit_ids, @source, @target, true, mult
-      ).arrives_at.should be_close(
-        ((arrives_at - Time.now) * mult).seconds.from_now,
-        30.seconds
+      ).arrives_at.should be_within(30.seconds).of(
+        ((arrives_at - Time.now) * mult).seconds.from_now
       )
     end
 
@@ -261,7 +259,7 @@ describe UnitMover do
       slow_route, _ = UnitMover.move_meta(
         @player.id, @units_slow.map(&:id), @source, @target)
 
-      route_with_all.should be_close(slow_route, SPEC_TIME_PRECISION)
+      route_with_all.should be_within(SPEC_TIME_PRECISION).of(slow_route)
     end
 
     it "should use technologies for movement" do
@@ -276,8 +274,8 @@ describe UnitMover do
       decreasement = (without_tech - Time.now) *
         tech.movement_time_decrease_mod.to_f / 100
 
-      (without_tech - decreasement).should be_close(
-        with_tech, SPEC_TIME_PRECISION)
+      (without_tech - decreasement).should be_within(SPEC_TIME_PRECISION).
+        of(with_tech)
     end
     
     it "should use weights" do
@@ -306,8 +304,8 @@ describe UnitMover do
       galaxy_to_ss = UnitMover.move(@player.id, [u2.id],
         @ss1.galaxy_point, @jg1.solar_system_point)
 
-      ss_to_galaxy.arrives_at.should be_close(
-        galaxy_to_ss.arrives_at, 2.minutes)
+      ss_to_galaxy.arrives_at.should be_within(2.minutes).of(
+        galaxy_to_ss.arrives_at)
     end
 
     it "should set #next? to true for the nearest hop" do

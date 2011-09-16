@@ -7,8 +7,8 @@ describe Building::NpcHall do
     @model = Factory.create(:b_npc_hall, :planet => @planet)
   end
 
-  it_should_behave_like "with resetable cooldown"
-  it_should_behave_like "with looped cooldown"
+  it_behaves_like "with resetable cooldown"
+  it_behaves_like "with looped cooldown"
 
   describe "cooldown hit" do
     it "should give VP to player that owns the planet" do

@@ -274,8 +274,8 @@
                       || (!ML.latestPlanet)
                       || (model.unit.owner != Owner.PLAYER)
                       || (!ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER)
-                      &amp;&amp; (ML.latestPlanet.ssObject.owner == 
-                      Owner.ALLY)))}"
+                      &amp;&amp; (ML.latestPlanet.ssObject.owner != 
+                      Owner.PLAYER)))}"
                       toolTip="{Localizer.string('Units', 'label.load')}"
                       skinClass="components.skins.LoadButtonSkin"/>
             <s:Button id="unload" click="show_inside(false)" visible="{!(model.unit.stored == 0 
@@ -303,7 +303,7 @@
          
          <unitsscreen:XpBar xpCurrent="{model.unit.xp}" xpNeeded="{Unit.getXpMax(model.unit.type, model.unit.level + 1)}" 
                             left="0" right="0" top="61" visible="{model.unit.level &lt; model.unit.maxLevel}"/>
-         <unitsscreen:StarsContainer id="starsCont" starCount="{model.unit.upgradePart.level-1}" horizontalCenter="0" top="62"/>
+         <unitsscreen:StarsContainer starCount="{model.unit.upgradePart.level-1}" horizontalCenter="0" top="62"/>
          <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
                   text="{model.unit.hp+'\n'+'/'+'\n'+Config.getUnitHp(model.unit.type)}" verticalAlign="middle"
                   backgroundColor="#0f0f0f" backgroundAlpha="0.7"/>

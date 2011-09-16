@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe "checking visibility", :shared => true do
+shared_examples_for "checking visibility" do
   it "should raise GameLogicError if target is not visible" do
     FowSsEntry.decrease(@target.id, player)
     lambda do
@@ -32,7 +32,7 @@ describe UnitsController do
     end
 
     @required_params = %w{type count constructor_id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should not reply" do
       invoke @action, @params
@@ -61,7 +61,7 @@ describe UnitsController do
     end
 
     @required_params = %w{updates}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should update flanks" do
       Unit.should_receive(:update_combat_attributes).with(
@@ -190,7 +190,7 @@ describe UnitsController do
       end
       
       @required_params = %w{notification_id}
-      it_should_behave_like "with param options"
+      it_behaves_like "with param options"
 
       it "should respond with notification id" do
         should_respond_with :notification_id => @notification_id
@@ -220,8 +220,8 @@ describe UnitsController do
     end
 
     @required_params = %w{unit_ids source target}
-    it_should_behave_like "with param options"
-    it_should_behave_like "checking visibility"
+    it_behaves_like "with param options"
+    it_behaves_like "checking visibility"
 
     it "should invoke UnitMover" do
       UnitMover.should_receive(:move_meta).with(
@@ -272,8 +272,8 @@ describe UnitsController do
     end
 
     @required_params = %w{unit_ids source target speed_modifier}
-    it_should_behave_like "with param options"
-    it_should_behave_like "checking visibility"
+    it_behaves_like "with param options"
+    it_behaves_like "checking visibility"
 
     it "should invoke UnitMover" do
       UnitMover.should_receive(:move).with(player.id, @unit_ids, @source,
@@ -319,8 +319,8 @@ describe UnitsController do
     end
 
     @required_params = %w{route unit_ids route_hops}
-    it_should_behave_like "with param options"
-    it_should_behave_like "only push"
+    it_behaves_like "with param options"
+    it_behaves_like "only push"
   end
 
   describe "units|movement" do
@@ -338,8 +338,8 @@ describe UnitsController do
     end
 
     @required_params = %w{units route_hops hide_id}
-    it_should_behave_like "with param options"
-    it_should_behave_like "only push"
+    it_behaves_like "with param options"
+    it_behaves_like "only push"
 
     it "should respond with units with perspective" do
       push @action, @params
@@ -379,7 +379,7 @@ describe UnitsController do
     end
 
     @required_params = %w{planet_id unit_id x y}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should not fail if unit is in another unit in same planet" do
       @unit.location = Factory.create(:unit, :location => @planet)
@@ -456,7 +456,7 @@ describe UnitsController do
     end
 
     @required_params = %w{unit_ids transporter_id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should fail if transporter does not belong to player" do
       @transporter.player = Factory.create(:player)
@@ -513,7 +513,7 @@ describe UnitsController do
     end
 
     @required_params = %w{unit_ids transporter_id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should fail if some of the units are not found" do
       @units[0].destroy
@@ -599,7 +599,7 @@ describe UnitsController do
     end
 
     @required_params = %w{transporter_id metal energy zetium}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     describe "loading" do
       it "should fail if planet belongs to ally" do
@@ -717,7 +717,7 @@ describe UnitsController do
     end
 
     @required_params = %w{unit_id}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should work if transporter belongs to ally" do
       player.alliance = Factory.create(:alliance)
@@ -818,7 +818,7 @@ describe UnitsController do
     end
 
     @required_params = %w{planet_id unit_ids}
-    it_should_behave_like "with param options"
+    it_behaves_like "with param options"
 
     it "should fail if planet does not belong to player" do
       @planet.player = Factory.create(:player)

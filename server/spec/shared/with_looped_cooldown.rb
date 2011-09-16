@@ -1,4 +1,4 @@
-describe "with looped cooldown", :shared => true do
+shared_examples_for "with looped cooldown" do
   it "should register new cooldown when cooldown hits" do
     @model.class.on_callback(@model.id,
       CallbackManager::EVENT_COOLDOWN_EXPIRED)

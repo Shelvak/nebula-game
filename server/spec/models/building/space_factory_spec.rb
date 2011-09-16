@@ -5,5 +5,5 @@ describe Building::SpaceFactory do
     @model = Factory.build(:b_space_factory)
   end
 
-  it_should_behave_like "with army points"
+  it_behaves_like "with army points"
 end

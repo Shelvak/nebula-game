@@ -21,7 +21,7 @@ describe PlayersController do
       end
 
       @required_params = %w{galaxy_id auth_token}
-      it_should_behave_like "with param options"
+      it_behaves_like "with param options"
 
       it "should allow players to login" do
         should_respond_with :success => true
@@ -110,7 +110,7 @@ describe PlayersController do
         @params = {}
       end
 
-      it_should_behave_like "only push"
+      it_behaves_like "only push"
 
       it "should respond with player" do
         should_respond_with :player => player.as_json
@@ -125,7 +125,7 @@ describe PlayersController do
       end
 
       @required_params = %w{id}
-      it_should_behave_like "with param options"
+      it_behaves_like "with param options"
 
       it "should include player" do
         invoke @action, @params
@@ -183,7 +183,7 @@ describe PlayersController do
       end
 
       @required_params = %w{vip_level}
-      it_should_behave_like "with param options"
+      it_behaves_like "with param options"
 
       it "should invoke vip_start!" do
         player.should_receive(:vip_start!).with(@params['vip_level'])
@@ -208,8 +208,8 @@ describe PlayersController do
       end
 
       @required_params = %w{changes}
-      it_should_behave_like "with param options"
-      it_should_behave_like "only push"
+      it_behaves_like "with param options"
+      it_behaves_like "only push"
       
       it "should respond" do
         should_respond_with :changes => @params['changes']
@@ -227,7 +227,7 @@ describe PlayersController do
       end
       
       @required_params = %w{amount}
-      it_should_behave_like "with param options"
+      it_behaves_like "with param options"
       
       it "should call player#vip_convert" do
         player.should_receive(:vip_convert).with(@params['amount'])

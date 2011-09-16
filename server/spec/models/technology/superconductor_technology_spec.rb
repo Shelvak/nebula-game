@@ -6,6 +6,6 @@ describe Technology::SuperconductorTechnology do
       @model = Factory.create :t_superconductor_technology
     end
 
-    it_should_behave_like "resource increasing technology"
+    it_behaves_like "resource increasing technology"
   end
 end

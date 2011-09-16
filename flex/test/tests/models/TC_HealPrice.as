@@ -3,6 +3,7 @@ package tests.models
    import config.Config;
    
    import models.healing.HealPrice;
+   import models.unit.MCUnit;
    import models.unit.Unit;
    
    import org.hamcrest.assertThat;
@@ -32,19 +33,19 @@ package tests.models
          var unit: Unit = new Unit();
          unit.hp = 50; // 13, 16, 26
          unit.type = 'Shocker';
-         units.push(unit);
+         units.push(new MCUnit(unit));
          var unit1: Unit = new Unit();
          unit1.hp = 80; // 12, 14, 24
          unit1.type = 'Shocker';
-         units.push(unit1);
+         units.push(new MCUnit(unit1));
          var unit2: Unit = new Unit();
          unit2.hp = 99; //6, 8, 5
          unit2.type = 'Seeker';
-         units.push(unit2);
+         units.push(new MCUnit(unit2));
          var unit3: Unit = new Unit();
          unit3.hp = 85; // 90, 113, 68
          unit3.type = 'Seeker';
-         units.push(unit3);
+         units.push(new MCUnit(unit3));
          
       }
       

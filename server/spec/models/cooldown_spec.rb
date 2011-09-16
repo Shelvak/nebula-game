@@ -2,14 +2,10 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb
 
 describe Cooldown do
   describe "notifier" do
-    before(:all) do
-      @build = lambda { Factory.build(:cooldown) }
-      @change = lambda { |cooldown| cooldown.ends_at += 1.minute }
-    end
-
-    @should_not_notify_update = true
-    @should_not_notify_destroy = true
-    it_should_behave_like "notifier"
+    it_behaves_like "notifier",
+      :build => lambda { Factory.build(:cooldown) },
+      :change => lambda { |cooldown| cooldown.ends_at += 1.minute },
+      :notify_on_update => false, :notify_on_destroy => false
   end
 
   describe "#as_json" do
@@ -19,7 +15,7 @@ describe Cooldown do
 
     @required_fields = %w{location ends_at}
     @ommited_fields = Cooldown.column_names - @required_fields
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
   end
 
   describe ".for_planet" do

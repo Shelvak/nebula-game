@@ -1,4 +1,4 @@
-Spec::Matchers.define :have_folliages_on do |klass|
+RSpec::Matchers.define :have_folliages_on do |klass|
   match do |planet|
     if klass == Building
       @buildings = klass.where(:planet_id => planet.id)

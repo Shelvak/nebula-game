@@ -44,7 +44,7 @@ describe Building::HealingCenter do
     end
 
     @required_fields = %w{cooldown_ends_at}
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
   end
 
   describe "#heal!" do
@@ -91,7 +91,7 @@ describe Building::HealingCenter do
         @unit.hit_points - @unit.hp).seconds.from_now
       @building.heal!(@units)
       @building.reload
-      @building.cooldown_ends_at.should be_close(time, SPEC_TIME_PRECISION)
+      @building.cooldown_ends_at.should be_within(SPEC_TIME_PRECISION).of(time)
     end
 
     %w{metal energy zetium}.each_with_index do |resource, index|

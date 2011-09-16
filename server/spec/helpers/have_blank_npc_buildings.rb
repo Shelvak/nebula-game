@@ -1,4 +1,4 @@
-Spec::Matchers.define :have_blank_npc_buildings do
+RSpec::Matchers.define :have_blank_npc_buildings do
   match do |planet|
     @items = []
 

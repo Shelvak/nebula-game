@@ -1,7 +1,7 @@
-describe "npc special factory", :shared => true do
-  it_should_behave_like "with resetable cooldown"
-  it_should_behave_like "with looped cooldown"
-  it_should_behave_like "with unit bonus"
+shared_examples_for "npc special factory" do
+  it_behaves_like "with resetable cooldown"
+  it_behaves_like "with looped cooldown"
+  it_behaves_like "with unit bonus"
   
   describe "cooldown" do
     describe "related to building level" do

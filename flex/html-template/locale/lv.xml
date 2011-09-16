@@ -549,9 +549,8 @@
     <property.creds value="Creds" />
     <property.victoryPoints value="Victory points" />
     <property.fee value="Fee percentage" />
-    <!-- TODO translate these -->
-    <property.width value="Building width" />
-    <property.height value="Building height" />
+    <property.width value="TODO: Building width" />
+    <property.height value="TODO: Building height" />
 
     <text.deactivated>
       <p>
@@ -1946,6 +1945,9 @@
     <label.claimReward value="Claim reward!" />
     <label.claimLater value="Claim later" />
     <label.tutorial value="Tutorial" />
+    <!-- TODO translate this -->
+    <label.populationIncrease 
+    value="These units will increase your population by {0}." />
     <label.choosePlanet value="Choose planet:" />
     <warning.wontFit> 
       <p> 

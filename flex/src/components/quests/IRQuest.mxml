@@ -92,15 +92,20 @@
                      </s:Group>
                      <s:Group width="100%" visible="{quest.rewards.units.length > 0}">
                         <s:Label text="{getString('units')}" fontWeight="bold"/>
-                        <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall" width="100%" 
+                        <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall"
                                      dataProvider="{quest.rewards.units}"
                                      height="{85 * unitsLayout.rowCount}">
                            <s:layout>
                               <s:TileLayout id="unitsLayout"/>
                            </s:layout>
                         </s:DataGroup>
+                        <s:Label text="{getString('label.populationIncrease',
+                                 [quest.rewards.unitsPopulation])}"
+                                 fontWeight="bold"
+                                 styleName="{quest.rewards.unitsPopulation + ML.player.population >
+                                 ML.player.populationMax? 'unsatisfied': null}"/>
                         <s:layout>
-                           <s:VerticalLayout/>
+                           <s:VerticalLayout horizontalAlign="justify"/>
                         </s:layout>
                      </s:Group>
                      <base:layout>

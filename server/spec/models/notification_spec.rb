@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe "create for", :shared => true do
+shared_examples_for "create for" do
   it "should set event" do
     Notification.send(@method, *@args).event.should == @event
   end
@@ -14,7 +14,7 @@ describe "create for", :shared => true do
   end
 end
 
-describe "with location", :shared => true do
+shared_examples_for "with location" do
   it "should set params[:location]" do
     Notification.send(@method, *@args
       ).params[:location].should == @location.client_location.as_json
@@ -27,7 +27,7 @@ describe Notification do
       @class = Notification
     end
 
-    it_should_behave_like "object"
+    it_behaves_like "object"
   end
 
   describe "ordering" do
@@ -93,13 +93,10 @@ describe Notification do
   end
 
   describe "notifier" do
-    before(:each) do
-      @build = lambda { Factory.build :notification }
-      @change = lambda { |model| model.expires_at += 1.week }
-    end
-
-    @should_not_notify_update = true
-    it_should_behave_like "notifier"
+    it_behaves_like "notifier",
+      :build => lambda { Factory.build :notification },
+      :change => lambda { |model| model.expires_at += 1.week },
+      :notify_on_update => false, :notify_on_destroy => false
   end
 
   describe "create" do
@@ -119,9 +116,8 @@ describe Notification do
 
     it "should set expiration time" do
       @model.save!
-      @model.expires_at.should be_close(
-        CONFIG.evalproperty('notifications.expiration_time').from_now,
-        SPEC_TIME_PRECISION
+      @model.expires_at.should be_within(SPEC_TIME_PRECISION).of(
+        CONFIG.evalproperty('notifications.expiration_time').from_now
       )
     end
 
@@ -185,8 +181,8 @@ describe Notification do
       @args = [@player_id, @constructor, @constructables]
     end
 
-    it_should_behave_like "create for"
-    it_should_behave_like "with location"
+    it_behaves_like "create for"
+    it_behaves_like "with location"
 
     it "should set params[:constructor_type]" do
       Notification.send(@method, *@args
@@ -235,8 +231,8 @@ describe Notification do
       @args = [@planet, @changes]
     end
 
-    it_should_behave_like "create for"
-    it_should_behave_like "with location"
+    it_behaves_like "create for"
+    it_behaves_like "with location"
 
     it "should set params[:buildings]" do
       Notification.send(@method, *@args
@@ -271,7 +267,7 @@ describe Notification do
         @yane_units, @leveled_up, @statistics, @resources]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should set params['alliance_id']" do
       Notification.send(
@@ -324,7 +320,7 @@ describe Notification do
     end
   end
 
-  describe "quest notification", :shared => true do
+  shared_examples_for "quest notification" do
   end
 
   describe ".create_for_achievement_completed" do
@@ -340,7 +336,7 @@ describe Notification do
       @args = [@quest_progress]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should set achievement" do
       Notification.send(
@@ -366,7 +362,7 @@ describe Notification do
       @args = [@quest_progress, @started_quests]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should set finished quest id" do
       Notification.send(
@@ -392,7 +388,7 @@ describe Notification do
       @args = [@planet, @rewards]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should have :location" do
       Notification.send(
@@ -418,7 +414,7 @@ describe Notification do
       @args = [@player_id, @planet, @outcome]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should have :planet" do
       Notification.send(
@@ -450,7 +446,7 @@ describe Notification do
       @args = [@alliance, @player]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should have :alliance" do
       Notification.send(
@@ -475,7 +471,7 @@ describe Notification do
       @args = [@player_id, @planet, @outcome]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should have :planet" do
       Notification.send(
@@ -513,7 +509,7 @@ describe Notification do
       @args = [@alliance, @player]
     end
 
-    it_should_behave_like "create for"
+    it_behaves_like "create for"
 
     it "should have :alliance" do
       Notification.send(

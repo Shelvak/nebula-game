@@ -11,6 +11,6 @@ describe Objective::AccelerateFlight do
         :objective => @objective)
     end
 
-    it_should_behave_like "player objective"
+    it_behaves_like "player objective"
   end
 end

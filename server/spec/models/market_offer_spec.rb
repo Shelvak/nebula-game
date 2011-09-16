@@ -38,24 +38,46 @@ describe MarketOffer do
       end
     end
     
-    describe "to_rate ajustment to fit avg. market rate" do
+    describe "to_rate adjustment to fit avg. market rate" do
       it "should adjust it if it's too low" do
         offer = Factory.build(:market_offer, :to_rate => 1)
-        offer.class.stub!(:avg_rate).
+        MarketRate.stub!(:average).
           with(offer.player.galaxy_id, offer.from_kind, offer.to_kind).
           and_return(7)
         offer.save!
-        offer.to_rate.should == 7 * (1 - CONFIG['market.avg_rate.offset'])
+        offer.to_rate.should == 7 * (1 - CONFIG['market.average.offset'])
       end
       
       it "should adjust it if it's too big" do
         offer = Factory.build(:market_offer, :to_rate => 10)
-        offer.class.stub!(:avg_rate).
+        MarketRate.stub!(:average).
           with(offer.player.galaxy_id, offer.from_kind, offer.to_kind).
           and_return(7)
         offer.save!
-        offer.to_rate.should == 7 * (1 + CONFIG['market.avg_rate.offset'])
+        offer.to_rate.should == 7 * (1 + CONFIG['market.average.offset'])
       end
+    end
+  end
+
+  describe "creation" do
+    it "should add to galaxy market rate" do
+      galaxy = Factory.create(:galaxy)
+      offer = Factory.build(:market_offer, :galaxy => galaxy)
+      offer.to_rate = MarketRate.
+        average(galaxy.id, offer.from_kind, offer.to_kind)
+      MarketRate.should_receive(:add).with(offer.galaxy_id, offer.from_kind,
+        offer.to_kind, offer.from_amount, offer.to_rate)
+      offer.save!
+    end
+  end
+
+  describe "destruction" do
+    it "should subtract from MarketRate" do
+      offer = Factory.create(:market_offer)
+      MarketRate.should_receive(:subtract).with(
+        offer.galaxy_id, offer.from_kind, offer.to_kind, offer.from_amount
+      )
+      offer.destroy!
     end
   end
   
@@ -68,7 +90,7 @@ describe MarketOffer do
       created_at}
     @ommited_params = MarketOffer.columns.map(&:name) - @required_params
     
-    it_should_behave_like "to json"
+    it_behaves_like "to json"
     
     it "should not fail with system offer" do
       @model.planet = nil
@@ -79,7 +101,7 @@ describe MarketOffer do
   end
   
   describe "#buy!" do    
-    describe "buying goods", :shared => true do
+    shared_examples_for "buying goods" do
       it "should increase in goods he bought" do
         lambda do
           @offer.buy!(@buyer_planet, @offer.from_amount)
@@ -87,7 +109,7 @@ describe MarketOffer do
       end
     end
     
-    describe "dispatching planet changed", :shared => true do
+    shared_examples_for "dispatching planet changed" do
       it "should dispatch changed event" do
         should_fire_event(@planet, EventBroker::CHANGED, 
             EventBroker::REASON_OWNER_PROP_CHANGE) do
@@ -96,7 +118,7 @@ describe MarketOffer do
       end
     end
     
-    describe "selling for resources", :shared => true do
+    shared_examples_for "selling for resources" do
       it "should fail if buyer does not have enough goods" do
         @buyer_planet.zetium = @to_amount - 1
         lambda do
@@ -110,8 +132,8 @@ describe MarketOffer do
       end
     end
     
-    describe "seller planet", :shared => true do
-      it_should_behave_like "dispatching planet changed"
+    shared_examples_for "seller planet" do
+      it_behaves_like "dispatching planet changed"
 
       it "should increase in goods he requested" do
         lambda do
@@ -121,8 +143,8 @@ describe MarketOffer do
       end
 
       it "should not fail if planet is currently unoccupied" do
-        @seller_planet.player = nil
-        @seller_planet.save!
+        # Update row to prevent callbacks kicking in.
+        @seller_planet.update_row! "player_id=NULL"
 
         @offer.buy!(@buyer_planet, @offer.from_amount)
       end
@@ -144,14 +166,14 @@ describe MarketOffer do
             @to_amount + 1000
         end
 
-        it_should_behave_like "selling for resources"
+        it_behaves_like "selling for resources"
         
         describe "seller planet" do
           before(:each) do
             @planet = @seller_planet
           end
 
-          it_should_behave_like "seller planet"
+          it_behaves_like "seller planet"
         end
 
         describe "buyer planet" do
@@ -159,8 +181,8 @@ describe MarketOffer do
             @planet = @buyer_planet
           end
 
-          it_should_behave_like "buying goods"
-          it_should_behave_like "dispatching planet changed"
+          it_behaves_like "buying goods"
+          it_behaves_like "dispatching planet changed"
 
           it "should decrease from goods with which he sold it" do
             lambda do
@@ -242,8 +264,8 @@ describe MarketOffer do
             @planet = @buyer_planet
           end
 
-          it_should_behave_like "dispatching planet changed"
-          it_should_behave_like "buying goods"
+          it_behaves_like "dispatching planet changed"
+          it_behaves_like "buying goods"
 
           it "should reduce creds from buyer account" do
             lambda do
@@ -272,14 +294,14 @@ describe MarketOffer do
             @to_amount + 1000
         end
 
-        it_should_behave_like "selling for resources"
+        it_behaves_like "selling for resources"
 
         describe "seller planet" do
           before(:each) do
             @planet = @seller_planet
           end
           
-          it_should_behave_like "seller planet"
+          it_behaves_like "seller planet"
         end
 
         describe "buyer" do
@@ -341,14 +363,14 @@ describe MarketOffer do
         end.should change(@buyer_planet, :zetium).by(- @buyer_planet.zetium)
       end
       
-      it "should reduce amount from offer if offer is not exausted" do
+      it "should reduce amount from offer if offer is not exhausted" do
         lambda do
           @offer.buy!(@buyer_planet, @offer.from_amount / 2)
           @offer.reload
         end.should change(@offer, :from_amount).by(- @offer.from_amount / 2)
       end
 
-      it "should destroy offer if it is exausted" do
+      it "should destroy offer if it is exhausted" do
         @offer.buy!(@buyer_planet, @offer.from_amount)
         lambda do
           @offer.reload
@@ -392,7 +414,15 @@ describe MarketOffer do
           )
         @offer.buy!(@buyer_planet, @offer.from_amount)
       end
-      
+
+      it "should subtract amount bought from MarketRate" do
+        amount = @offer.from_amount / 2
+        MarketRate.should_receive(:subtract).with(
+          @offer.galaxy_id, @offer.from_kind, @offer.to_kind, amount
+        )
+        @offer.buy!(@buyer_planet, amount)
+      end
+
       describe "system offers" do
         before(:each) do
           @offer.planet = nil
@@ -449,14 +479,16 @@ describe MarketOffer do
     end
     
     it "should return from_amount to player if creds" do
-      @offer.from_kind = MarketOffer::KIND_CREDS
-      player = @offer.player
+      offer = Factory.create(:market_offer,
+                             :from_kind => MarketOffer::KIND_CREDS)
+
+      player = offer.player
       lambda do
-        @offer.cancel!
+        offer.cancel!
         player.reload
-      end.should change(player, :market_creds).by(@offer.from_amount)
+      end.should change(player, :market_creds).by(offer.from_amount)
     end
-    
+
     it "should dispatch changed with planet" do
       should_fire_event(@offer.planet, EventBroker::CHANGED, 
           EventBroker::REASON_OWNER_PROP_CHANGE) do
@@ -524,34 +556,6 @@ describe MarketOffer do
       fetched.size.should == 1
     end
   end
-  
-  describe ".avg_rate" do
-    it "should raise error if no such config value exists" do
-      lambda do
-        MarketOffer.avg_rate(0, -1, -1)
-      end.should raise_error(ArgumentError)
-    end
-    
-    it "should combine config seed data & offers data" do
-      MarketOffer.delete_all
-      offer = Factory.create(:market_offer, 
-        :from_kind => MarketOffer::KIND_METAL,
-        :to_kind => MarketOffer::KIND_ENERGY)
-      seed_amount, seed_rate = CONFIG[
-        "market.avg_rate.seed.#{MarketOffer::KIND_METAL}.#{
-        MarketOffer::KIND_ENERGY}"
-      ]
-      MarketOffer.
-        avg_rate(offer.galaxy_id, 
-          MarketOffer::KIND_METAL, MarketOffer::KIND_ENERGY).
-        should be_close(
-          (
-            offer.from_amount * offer.to_rate + seed_amount * seed_rate
-          ) / (offer.from_amount + seed_amount),
-          0.01
-        )
-    end
-  end
 
   describe ".create_system_offer" do
     before(:all) do
@@ -584,7 +588,7 @@ describe MarketOffer do
       MarketOffer.create_system_offer(@galaxy.id, @kind).to_rate.
         should == 
       (
-        MarketOffer.avg_rate(@galaxy.id, @kind, MarketOffer::KIND_CREDS) *
+        MarketRate.average(@galaxy.id, @kind, MarketOffer::KIND_CREDS) *
         (1 + Cfg.market_rate_offset)
       )
     end

@@ -9,8 +9,8 @@ class CreateChatMessage < ActiveRecord::Migration
 
     add_index :chat_messages, :source_id
     add_index :chat_messages, :target_id
-    add_fk("players", "chat_messages", nil, nil, "source_id")
-    add_fk("players", "chat_messages", nil, nil, "target_id")
+    add_fk("players", "chat_messages", :target_key => "source_id")
+    add_fk("players", "chat_messages", :target_key => "target_id")
   end
 
   def self.down

@@ -1,61 +1,62 @@
-describe "notifier", :shared => true do
-  if @should_not_notify_create
-    it "should not notify on create if it's not wanted" do
-      model = @build.call
-      should_not_fire_event(@model, EventBroker::CREATED) do
+shared_examples_for "notifier" do |options|
+  options.reverse_merge! :notify_on_create => true, :notify_on_update => true,
+    :notify_on_destroy => true
+
+  def create_model(options)
+    model ||= options[:model] || options[:build].call.tap(&:save!)
+    options[:after_build].call(model) if options[:after_build]
+    model
+  end
+
+  if options[:notify_on_create]
+    it "should notify on create" do
+      model = options[:build].call
+      should_fire_event(model, EventBroker::CREATED) do
         model.save!
       end
     end
   else
-    it "should notify on create" do
-      model = @build.call
-      should_fire_event(model, EventBroker::CREATED) do
+    it "should not notify on create if it's not wanted" do
+      model = options[:build].call
+      should_not_fire_event(@model, EventBroker::CREATED) do
         model.save!
       end
     end
   end
   
-  if @should_not_notify_update
-    it "should not notify on update if it's not wanted" do
-      @model ||= @build.call.tap(&:save!)
-      @after_build.call(@model) if @after_build
-
-      should_not_fire_event(@model, EventBroker::CHANGED,
+  if options[:notify_on_update]
+    it "should notify on update" do
+      model = create_model(options)
+      should_fire_event(model, EventBroker::CHANGED,
           EventBroker::REASON_UPDATED) do
-        @change.call(@model)
-        @model.save!
+        options[:change].call(model)
+        model.save!
       end
     end
   else
-    it "should notify on update" do
-      @model ||= @build.call.tap(&:save!)
-      @after_build.call(@model) if @after_build
-
-      should_fire_event(@model, EventBroker::CHANGED,
+    it "should not notify on update if it's not wanted" do\
+      model = create_model(options)
+      should_not_fire_event(model, EventBroker::CHANGED,
           EventBroker::REASON_UPDATED) do
-        @change.call(@model)
-        @model.save!
+        options[:change].call(model)
+        model.save!
       end
     end
   end
 
-  if @should_not_notify_destroy
-    it "should not notify on destroy if it's not wanted" do
-      @model ||= @build.call.tap(&:save!)
-      @after_build.call(@model) if @after_build
-
-      should_not_fire_event(@model, EventBroker::DESTROYED) do
-        @model.destroy
-      end unless Parts::Notifier.should_notify?(@model.class, :destroy)
+  if options[:notify_on_destroy]
+    it "should notify on destroy" do
+      model = create_model(options)
+      should_fire_event(model, EventBroker::DESTROYED) do
+        model.destroy
+      end
     end
   else
-    it "should notify on destroy" do
-      @model ||= @build.call.tap(&:save!)
-      @after_build.call(@model) if @after_build
-
-      should_fire_event(@model, EventBroker::DESTROYED) do
-        @model.destroy
-      end if Parts::Notifier.should_notify?(@model.class, :destroy)
+    it "should not notify on destroy if it's not wanted" do
+      model = create_model(options)
+      should_not_fire_event(model, EventBroker::DESTROYED) do
+        model.destroy
+      end
     end
   end
 end
