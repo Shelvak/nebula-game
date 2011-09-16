@@ -103,8 +103,12 @@ end
 # Require plugins so all their functionality is present during
 # initialization
 benchmark :plugins do
-  Dir[File.join(ROOT_DIR, 'vendor', 'plugins', '*', 'init.rb')].
-    each { |file| require file }
+  Dir[File.join(ROOT_DIR, 'vendor', 'plugins', '*')].each do |plugin_dir|
+    plugin = File.join(plugin_dir, 'init.rb')
+    raise "Cannot find plugin initializer #{plugin.inspect}!" \
+      unless File.exists?(plugin)
+    require plugin
+  end
 end
 
 ENV['db_environment'] ||= App.env
