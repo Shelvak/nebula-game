@@ -62,9 +62,13 @@ class Dispatcher
     unless id.nil?
       info "Unregistering [#{io}] (client id #{id})"
 
-      player = resolve_player(id)
-      Chat::Pool.instance.hub_for(player).unregister(player) \
-        unless player.nil?
+      # There is no point of notifying about leaves if server is shutdowning.
+      # Also this generates NPE in buggy EM version.
+      unless App.server_shutdowning?
+        player = resolve_player(id)
+        Chat::Pool.instance.hub_for(player).unregister(player) \
+          unless player.nil?
+      end
 
       # Filter message queue to remove this client messages.
       @message_queue = @message_queue.reject do |message|

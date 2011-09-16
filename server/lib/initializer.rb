@@ -17,6 +17,10 @@ ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
   unless defined?(ROOT_DIR)
 
 class App
+  SERVER_STATE_INITIALIZING = :initializing
+  SERVER_STATE_RUNNING = :running
+  SERVER_STATE_SHUTDOWNING = :shutdowning
+
   class << self
     def env
       @@environment ||= ENV['environment'] || 'development'
@@ -29,6 +33,18 @@ class App
     def in_production?; env == 'production'; end
     def in_development?; env == 'development'; end
     def in_test?; env == 'test'; end
+
+    def server_state
+      @@server_state ||= SERVER_STATE_INITIALIZING
+    end
+
+    def server_state=(value)
+      @@server_state = value
+    end
+
+    def server_initializing?; server_state == SERVER_STATE_INITIALIZING; end
+    def server_running?; server_state == SERVER_STATE_RUNNING; end
+    def server_shutdowning?; server_state == SERVER_STATE_SHUTDOWNING; end
   end
 end
 

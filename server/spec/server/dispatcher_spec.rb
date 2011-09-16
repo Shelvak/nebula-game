@@ -99,6 +99,14 @@ describe Dispatcher do
       hub.should_receive(:unregister).with(@player)
       @dispatcher.unregister @io
     end
+
+    it "should not unregister player from chat if server is shutdowning" do
+      # Otherwise EM tries to write to non-existing sockets and whole thing
+      # blows up with hundreds of errors.
+      Chat::Pool.instance.should_not_receive(:hub_for)
+      App.server_state = App::SERVER_STATE_SHUTDOWNING
+      @dispatcher.unregister @io
+    end
   end
 
   describe "#change_client_id" do
