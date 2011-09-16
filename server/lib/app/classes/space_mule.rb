@@ -47,6 +47,15 @@ lambda do
         ruby_array = []
         foreach { |item| ruby_array.push item.from_scala }
         ruby_array
+      when Java::scala.Product
+        if self.class.to_s.match /Tuple\d+$/
+          # Conversion from scala Tuples.
+          ruby_array = []
+          productIterator.foreach { |item| ruby_array.push item.from_scala }
+          ruby_array
+        else
+          self
+        end
       else
         self
       end

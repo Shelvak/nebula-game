@@ -106,5 +106,5 @@ class Alliance(val id: Long,
   def playersAsMapData = players.map { _ match {
     case Some(player) => Seq(player.id, player.name)
     case None => null
-  } }
+  } }.toSeq
 }

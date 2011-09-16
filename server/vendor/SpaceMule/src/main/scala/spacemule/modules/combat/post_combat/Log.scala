@@ -14,7 +14,7 @@ object Log {
     object Fire {
       /**
        * Represents one hit from one gun to one target when combatant is
-       * fireing.
+       * firring.
        */
       case class Hit(gun: Gun, target: Combatant, damage: Int) {
         /**
@@ -23,7 +23,7 @@ object Log {
          *  target_id - same as unit_id
          *  damage - how much damage has target received
          */
-        def asJson = List(gun.index, Log.id(target), damage)
+        def toData = Seq(gun.index, Log.id(target), damage)
       }
     }
 
@@ -38,7 +38,7 @@ object Log {
 
       def isEmpty = hits.isEmpty
 
-      def asJson = (Log.id(source), hits.map { _.asJson })
+      def toData = (Log.id(source), hits.map { _.toData })
     }
   }
 
@@ -52,7 +52,7 @@ object Log {
 
     def isEmpty = fires.isEmpty
 
-    def asJson = fires.map { _.asJson }
+    def toData = fires.map { _.toData }
   }
 }
 
@@ -73,6 +73,6 @@ class Log(unloadedUnitIds: collection.Map[Long, Seq[Long]]) {
    */
   def toMap: Map[String, Any] = Map(
     "unloaded" -> unloadedUnitIds,
-    "ticks" -> ticks.map { _.asJson }
+    "ticks" -> ticks.map { _.toData }
   )
 }
