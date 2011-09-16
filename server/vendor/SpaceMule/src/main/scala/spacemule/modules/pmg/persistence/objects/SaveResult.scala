@@ -7,5 +7,6 @@ package spacemule.modules.pmg.persistence.objects
 
 import scala.collection.Set
 
-case class SaveResult(val updatedPlayerIds: Set[Int],
-                      val updatedAllianceIds: Set[Int])
+case class SaveResult(playerRows: Set[PlayerRow],
+                      updatedPlayerIds: Set[Int],
+                      updatedAllianceIds: Set[Int])

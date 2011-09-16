@@ -35,19 +35,19 @@ class ControlManager
   # 
   # Parameters:
   # - galaxy_id (Fixnum)
-  # - auth_token (String): 64 char authentication token
+  # - web_user_id (Fixnum)
   # - name (String): player name
   #
   # Response:
   # - success (Boolean)
+  # - player_id (Fixnum): Player#id
   #
   ACTION_CREATE_PLAYER = 'create_player'
 
   # Destroy an existing player.
   #
   # Parameters:
-  # - galaxy_id (Fixnum)
-  # - auth_token (String): 64 char authentication token
+  # - player_id (Fixnum): Player#id
   #
   # Response:
   # - success (Boolean)
@@ -57,8 +57,7 @@ class ControlManager
   # Adds creds to player.
   #
   # Parameters:
-  # - galaxy_id (Fixnum)
-  # - auth_token (String): 64 char authentication token
+  # - player_id (Fixnum): Player#id
   # - creds: (Fixnum): number of creds to add
   #
   # Response:
@@ -119,6 +118,23 @@ class ControlManager
     else
       io.disconnect(GenericServer::REASON_AUTH_ERROR)
     end
+  end
+
+  # Checks if login was authorized by web.
+  def login_authorized?(player, web_player_id)
+    player_str = "#{player} (web_id: #{web_player_id.inspect}"
+    only_in_production("authorization for #{player_str}") do
+      response = post_to_web(player.galaxy.callback_url,
+        "check_play_auth",
+        'web_player_id' => web_player_id,
+        'server_player_id' => player.id
+      )
+
+      check_response(response)
+    end
+  rescue Error => e
+    LOGGER.warn("Login authorization for #{player_str} failed:\n\n#{e.message}")
+    false
   end
 
   def player_destroyed(player)
@@ -244,37 +260,32 @@ class ControlManager
   end
 
   def action_create_player(io, message)
-		Galaxy.create_player(message['galaxy_id'], message['name'],
-			message['auth_token'])
-		io.send_message :success => true
+		response = Galaxy.create_player(
+      message['galaxy_id'], message['web_user_id'], message['name']
+    )
+
+		io.send_message :success => true,
+                    :player_id => response.player_ids[message['web_user_id']]
   rescue Exception => e
     io.send_message :success => false
     raise e
   end
   
   def action_destroy_player(io, message)
-    player = find_player(message)
-    if player
-      player.invoked_from_control_manager = true
-      player.destroy
-      io.send_message :success => true
-    else
-      io.send_message :success => false
-    end
+    player = Player.find(message['player_id'])
+    player.invoked_from_control_manager = true
+    player.destroy
+    io.send_message :success => true
   rescue Exception => e
     io.send_message :success => false
     raise e
   end
 
   def action_add_creds(io, message)
-    player = find_player(message)
-    if player
-      player.pure_creds += message['creds']
-      player.save!
-      io.send_message :success => true
-    else
-      io.send_message :success => false
-    end
+    player = Player.find(message['player_id'])
+    player.pure_creds += message['creds']
+    player.save!
+    io.send_message :success => true
   rescue Exception => e
     io.send_message :success => false
     raise e
@@ -340,11 +351,6 @@ class ControlManager
       (Time.now - time).to_s(:db)}'")
   end
 
-  def find_player(message)
-    Player.where(:galaxy_id => message['galaxy_id'],
-      :auth_token => message['auth_token']).first
-  end
-
   def post_to_web(callback_url, path, params={})
     Net::HTTP.post_form(
       web_uri_for(callback_url, path),
@@ -373,7 +379,6 @@ class ControlManager
       true
     else
       raise Error.new("Failure! Server said:\n\n#{response.body}")
-      false
     end
   end
 end

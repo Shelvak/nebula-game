@@ -54,8 +54,8 @@ class Galaxy < ActiveRecord::Base
     SpaceMule.instance.create_galaxy(ruleset, callback_url)
   end
 
-  def self.create_player(galaxy_id, name, auth_token)
-    find(galaxy_id).create_player(name, auth_token)
+  def self.create_player(galaxy_id, web_user_id, name)
+    find(galaxy_id).create_player(web_user_id, name)
   end
   
   def self.on_callback(id, event)
@@ -123,10 +123,10 @@ class Galaxy < ActiveRecord::Base
     end
   end
 
-  def create_player(name, auth_token)
+  def create_player(web_user_id, name)
     # To expand * speed things
     CONFIG.with_set_scope(ruleset) do
-      SpaceMule.instance.create_players(id, ruleset, {auth_token => name})
+      SpaceMule.instance.create_players(id, ruleset, {web_user_id => name})
     end
   end
 

@@ -91,14 +91,9 @@ class SpaceMule
   end
 
   # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
-  # {auth_key => player_name} pairs.
+  # {web_user_id => player_name} pairs.
   def create_players(galaxy_id, ruleset, players)
-    Player.where(
-      :galaxy_id => galaxy_id, :auth_token => players.keys
-    ).all.each { |player| players.delete player.auth_token }
-
-    Pmg.Runner.create_players(ruleset, galaxy_id, players.to_scala).from_scala \
-      if players.size > 0
+    PlayerCreator.invoke(galaxy_id, ruleset, players)
   end
 
   # Sends message to space mule for combat simulation.

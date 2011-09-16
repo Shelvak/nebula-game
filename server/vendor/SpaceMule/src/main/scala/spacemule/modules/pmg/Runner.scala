@@ -1,5 +1,6 @@
 package spacemule.modules.pmg
 
+import persistence.objects.{SaveResult, CallbackRow, GalaxyRow}
 import spacemule.helpers.Converters._
 import java.util.Date
 import spacemule.helpers.BenchmarkableMock
@@ -9,8 +10,6 @@ import spacemule.modules.pmg.objects.solar_systems.Battleground
 import spacemule.modules.pmg.persistence.Manager
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.persistence.TableIds
-import spacemule.modules.pmg.persistence.objects.CallbackRow
-import spacemule.modules.pmg.persistence.objects.GalaxyRow
 import spacemule.persistence.DB
 
 object Runner extends BenchmarkableMock {
@@ -63,25 +62,23 @@ object Runner extends BenchmarkableMock {
   def createPlayers(
     ruleset: String,
     galaxyId: Int,
-    players: Map[String, String]
-  ): Map[String, Any] = {
+    // web user id -> player name
+    players: Map[Long, String]
+  ): SaveResult = {
     Config.withSetScope(ruleset) { () =>
       val galaxy = new Galaxy(galaxyId, ruleset)
 
       benchmark("load galaxy") { () => Manager.load(galaxy) }
 
-      players.foreach { case(authToken, name) =>
-        val player = Player(name, authToken)
+      players.foreach { case(webUserId, name) =>
+        val player = Player(name, webUserId)
         benchmark("create player") { () => galaxy.createZoneFor(player) }
       }
 
       val result = benchmark("save galaxy") { () => Manager.save(galaxy) }
       printBenchmarkResults()
 
-      Map(
-        "updated_player_ids" -> result.updatedPlayerIds,
-        "updated_alliance_ids" -> result.updatedAllianceIds
-      )
+      result
     }
   }
 }
