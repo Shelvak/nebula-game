@@ -5,7 +5,6 @@ package controllers.game.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
-   import controllers.galaxies.GalaxiesCommand;
    import controllers.startup.StartupInfo;
    import controllers.startup.StartupMode;
    
@@ -16,14 +15,10 @@ package controllers.game.actions
     */	
    public class ConfigAction extends CommunicationAction
    {
-      override public function applyServerAction(cmd:CommunicationCommand) : void
-      {
+      override public function applyServerAction(cmd:CommunicationCommand) : void {
          Config.setConfig(cmd.parameters.config);
          if (StartupInfo.getInstance().mode == StartupMode.GAME)
-         {
             GlobalFlags.getInstance().lockApplication = true;
-            //new GalaxiesCommand(GalaxiesCommand.SHOW).dispatch();
-         }
       }
    }
 }

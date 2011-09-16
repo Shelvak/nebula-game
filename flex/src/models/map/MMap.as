@@ -12,10 +12,12 @@ package models.map
    import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
    
+   import utils.Objects;
    import utils.datastructures.Collections;
    
    /**
@@ -225,7 +227,20 @@ package models.map
        * Adds given object to objects list.
        */
       public function addObject(object:BaseModel) : void {
+         Objects.paramNotNull("object", object);
          _objects.addItem(object);
+      }
+      
+      /**
+       * Adds all objects in the given list to objects list.
+       */
+      public function addAllObjects(list:IList) : void {
+         Objects.paramNotNull("list", list);
+         objects.disableAutoUpdate();
+         for each (var object:BaseModel in list) {
+            addObject(object);
+         }
+         objects.enableAutoUpdate();
       }
       
       /**

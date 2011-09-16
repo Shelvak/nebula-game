@@ -5,8 +5,6 @@ package models.planet
    import controllers.folliages.PlanetFolliagesAnimator;
    import controllers.objects.ObjectClass;
    
-   import flash.events.Event;
-   
    import interfaces.ICleanable;
    
    import models.BaseModel;
@@ -33,10 +31,10 @@ package models.planet
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
-   import mx.events.CollectionEvent;
    
    import utils.ModelUtil;
    import utils.Objects;
@@ -974,21 +972,16 @@ package models.planet
        * Adds all objects to this planet. <code>PlanetEvent.OBJECT_ADD</code> event is suppressed during
        * this operation.
        * 
-       * @param objects collection of <code>PlanetObject<code>s to add to this planet.
+       * @param list list of <code>PlanetObject<code>s to add to this planet.
        * 
        * @see #addObject()
        */
-      public function addAllObjects(objects:ArrayCollection) : void
+      public override function addAllObjects(list:IList) : void
       {
          _suppressObjectAddEvent = true;
          _suppressZIndexCalculation = true;
          _suppressFolliagesAnimatorUpdate = true;
-         objects.disableAutoUpdate();
-         for each (var object:PlanetObject in objects)
-         {
-            addObject(object);
-         }
-         objects.enableAutoUpdate();
+         super.addAllObjects(list);
          _suppressObjectAddEvent = false;
          _suppressZIndexCalculation = false;
          _suppressFolliagesAnimatorUpdate = false;

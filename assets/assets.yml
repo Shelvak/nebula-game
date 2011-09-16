@@ -668,9 +668,13 @@ assets:
       "chat":
         btn_chan_close_up.png:          Closetab_up.png
         btn_chan_close_down.png:        Closetab_down.png
+        tab_bar_left.png:               Chat_tabs_begin.png
         tab_chan_active_left.png:       Tab_active_left.png
         tab_chan_active_right.png:      Tab_active_right.png
         tab_chan_active_center.png:     Tab_active_center.png
+        tab_chan_newmsg_left.png:       Chat_tab_newmsg_left.png
+        tab_chan_newmsg_right.png:      Chat_tab_newmsg_right.png
+        tab_chan_newmsg_center.png:     Chat_tab_newmsg_center.png
         tab_chan_inactive_left.png:     Tab_inactive_left.png
         tab_chan_inactive_right.png:    Tab_inactive_right.png
         tab_chan_inactive_center.png:   Tab_inactive_center.png

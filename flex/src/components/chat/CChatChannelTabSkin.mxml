@@ -2,7 +2,7 @@
 <s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
              xmlns:s="library://ns.adobe.com/flex/spark"
              xmlns:base="components.base.*"
-             minWidth="50" height="15"
+             minWidth="50"
              mouseEnabled="false">
    
    <fx:Metadata>
@@ -10,19 +10,13 @@
    </fx:Metadata>
    
    <fx:Declarations>
-      <s:AnimateFilter id="newMessageAnim"
-                       bitmapFilter="{new GlowFilter(0x38D9EB)}"
-                       duration="500"
-                       repeatCount="0"
-                       repeatBehavior="reverse">
-         <s:SimpleMotionPath property="strength" valueFrom="0.0" valueTo="1.0"/>
-      </s:AnimateFilter>
+      <s:Animate id="newMessageAnim" duration="1000" repeatBehavior="loop" repeatCount="0">
+         <s:SimpleMotionPath property="animationValue" valueFrom="0.0" valueTo="1.0"/>
+      </s:Animate>
    </fx:Declarations>
    
    <fx:Script>
       <![CDATA[
-         import spark.filters.GlowFilter;
-         
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          
@@ -31,10 +25,24 @@
             return ImagePreloader.getInstance().getImage(AssetNames.CHAT_IMAGES_FOLDER + "tab_chan_" + key);
          }
          
+         private var _animationValue:Number = 0.0;
+         public function get animationValue() : Number {
+            return _animationValue;
+         }
+         public function set animationValue(value:Number) : void {
+            if (_animationValue != value) {
+               _animationValue = value;
+               var imageKey:String = _animationValue < 0.5 ? "inactive" : "newmsg";
+               bmpLeft.source = getImage(imageKey + "_left");
+               bmpRight.source = getImage(imageKey + "_right");
+               bmpCenter.source = getImage(imageKey + "_center");
+            }
+         }
+         
          protected override function stateChanged(oldState:String, newState:String, recursive:Boolean) : void {
             super.stateChanged(oldState, newState, recursive);
             if (oldState == CChatChannelTab.SKIN_STATE_NEW_MESSAGE) newMessageAnim.end();
-            if (newState == CChatChannelTab.SKIN_STATE_NEW_MESSAGE) newMessageAnim.play([grpArtwork]);
+            if (newState == CChatChannelTab.SKIN_STATE_NEW_MESSAGE) newMessageAnim.play([this]);
          }
       ]]>
    </fx:Script>
@@ -57,23 +65,27 @@
       <s:layout>
          <s:HorizontalLayout gap="0"/>
       </s:layout>
-      <s:BitmapImage source.unselectedStates="{getImage('inactive_left')}"
+      <s:BitmapImage id="bmpLeft"
+                     source.unselectedStates="{getImage('inactive_left')}"
                      source.selectedStates="{getImage('active_left')}"/>
-      <s:BitmapImage source.unselectedStates="{getImage('inactive_center')}"
+      <s:BitmapImage id="bmpCenter"
+                     source.unselectedStates="{getImage('inactive_center')}"
                      source.selectedStates="{getImage('active_center')}"
                      width="100%"/>
-      <s:BitmapImage source.unselectedStates="{getImage('inactive_right')}"
+      <s:BitmapImage id="bmpRight"
+                     source.unselectedStates="{getImage('inactive_right')}"
                      source.selectedStates="{getImage('active_right')}"/>
    </s:Group>
    
    <!-- layer 2: text and close button -->
    <s:Label id="labelDisplay" maxDisplayedLines="1"
             mouseEnabled="false" mouseChildren="false"
-            left="18" right="26" bottom="1"
-            fontSize="10"
-            color.selectedStates="0xF6AC22"/>
+            left="30" right="30" verticalCenter="2"
+            fontSize="13"
+            color="0xC7C7C7"
+            color.selectedStates="0xEEC500"/>
    
-   <s:Button id="btnClose" right="12" bottom="1"
+   <s:Button id="btnClose" right="11" verticalCenter="-1"
              skinClass="components.chat.CChatChannelCloseButtonSkin"/>
    
    

@@ -4,11 +4,6 @@ package controllers.routes.actions
    import controllers.CommunicationCommand;
    import controllers.units.SquadronsController;
    
-   import models.ModelsCollection;
-   import models.location.Location;
-   import models.location.LocationType;
-   import models.movement.MRoute;
-   
    
    public class IndexAction extends CommunicationAction
    {
@@ -21,10 +16,11 @@ package controllers.routes.actions
       }
       
       
-      public override function applyServerAction(cmd:CommunicationCommand) : void
-      {
-         SQUAD_CTRL.destroyAllMovingFriendlySquadrons();
-         SQUAD_CTRL.createRoutes(cmd.parameters.routes, cmd.parameters.players);
+      public override function applyServerAction(cmd:CommunicationCommand) : void {
+         if (ML.latestGalaxy == null)
+            SQUAD_CTRL.createRoutes(cmd.parameters.routes, cmd.parameters.players);
+         else
+            SQUAD_CTRL.recreateRoutes(cmd.parameters.routes, cmd.parameters.players);
       }
    }
 }

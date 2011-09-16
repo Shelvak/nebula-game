@@ -13,7 +13,6 @@ package controllers.planets.actions
    import models.factories.SSObjectFactory;
    import models.factories.UnitFactory;
    import models.planet.Planet;
-   import models.solarsystem.MSSObject;
    import models.solarsystem.SSKind;
    import models.solarsystem.SolarSystem;
    
@@ -32,10 +31,7 @@ package controllers.planets.actions
     * planet.
     * 
     * <p>
-    * Client -->> Server
-    * <ul>
-    *    <li><code>planet</code> - a planet to show</li>
-    * </ul>
+    * Client -->> Server: <code>ShowActionParams</code>
     * </p>
     * <p>
     * Client <<-- Server
@@ -47,28 +43,40 @@ package controllers.planets.actions
     *    <li><code>units</code> - array of generic objects representing units</li>
     * </ul>
     * </p>
+    * 
+    * @see controllers.planets.actions.ShowActionParams
     */
    public class ShowAction extends CommunicationAction
    {
-      private var GF:GlobalFlags = GlobalFlags.getInstance();
-      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
-      private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
+      private function get GF() : GlobalFlags {
+         return GlobalFlags.getInstance();
+      }
       
+      private function get NAV_CTRL() : NavigationController {
+         return NavigationController.getInstance();
+      }
       
-      override public function applyClientAction(cmd:CommunicationCommand) : void
-      {
-         var planet:MSSObject = MSSObject(cmd.parameters.planet);
-         if (!planet.viewable)
-         {
-            return;
-         }
-         GF.lockApplication = true;
-         sendMessage(new ClientRMO({"id": planet.id}));
+      private function get SQUADS_CTRL() : SquadronsController {
+         return SquadronsController.getInstance();
       }
       
       
-      override public function applyServerAction(cmd:CommunicationCommand) : void
-      {
+      // Should applyServerAction() create only the map or also switch screen?
+      private var f_createMapOnly:Boolean = false;
+      private function resetFlags() : void {
+         f_createMapOnly = false;
+         GF.lockApplication = false;
+      }
+      
+      
+      override public function applyClientAction(cmd:CommunicationCommand) : void {
+         var params:ShowActionParams = ShowActionParams(cmd.parameters);
+         GF.lockApplication = true;
+         f_createMapOnly = params.createMapOnly;
+         sendMessage(new ClientRMO({"id": params.planetId}));
+      }
+      
+      override public function applyServerAction(cmd:CommunicationCommand) : void {
          if (ML.latestPlanet != null) {
             ML.latestPlanet.setFlag_destructionPending();
             ML.latestPlanet = null;
@@ -134,11 +142,7 @@ package controllers.planets.actions
             ss.id = planet.solarSystemId;
             var ssInGalaxy:SolarSystem = ML.latestGalaxy.getSSById(ss.id);
             if (ssInGalaxy == null)
-            {
-               throw new Error("Can't find solar system with id " + ss.id
-                  + " in galaxy map. Man, that's funky! " 
-                  + "It should be there because you have a planet in it.");
-            }
+               throw new Error("Can't find solar system with id " + ss.id + " in galaxy.");
             ss.x = ssInGalaxy.x;
             ss.y = ssInGalaxy.y;
             ML.latestSolarSystem = ss;
@@ -146,21 +150,27 @@ package controllers.planets.actions
          
          SQUADS_CTRL.createSquadronsForUnits(planet.units);
          planet.dispatchUnitRefreshEvent();
-         NAV_CTRL.showPlanet(planet);
-         GF.lockApplication = false;
+         if (f_createMapOnly)
+            NAV_CTRL.recreateMap(planet);
+         else
+            NAV_CTRL.showPlanet(planet);
          dispatchPlanetBuildingsChangeEvent();
+         resetFlags();
       }
       
-      private function dispatchPlanetBuildingsChangeEvent() : void
-      {
+      private function dispatchPlanetBuildingsChangeEvent() : void {
          new GPlanetEvent(GPlanetEvent.BUILDINGS_CHANGE, ML.latestPlanet);
       }
       
       
-      public override function cancel(rmo:ClientRMO) : void
-      {
+      public override function cancel(rmo:ClientRMO) : void {
+         resetFlags();
          super.cancel(rmo);
-         GF.lockApplication = false;
+      }
+      
+      public override function result(rmo:ClientRMO) : void {
+         resetFlags();
+         super.result(rmo);
       }
    }
 }

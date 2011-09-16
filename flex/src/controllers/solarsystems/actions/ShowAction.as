@@ -3,7 +3,6 @@ package controllers.solarsystems.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
-   import controllers.screens.MainAreaScreens;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    
@@ -20,24 +19,31 @@ package controllers.solarsystems.actions
     * Downloads objects for one solar system and shows solar system map.
     * 
     * <p>
-    * Client -->> Server
-    * <ul>
-    *    <li><code>id</code> - id of a solar system</li>
-    * </ul>
+    * Client -->> Server: <code>ShowActionParams</code>
     * </p>
     * <p>
-    * Client <<-- Server  
+    * Client <<-- Server
     * <ul>
     *    <li><code>solarSystem</code> - a generic object that represents a solar system</li>
     *    <li><code>ssObjects</code> - array of generic objects representing objects in the solar system</li>
     * </ul>
     * </p>
+    * 
+    * @see controllers.solarsystems.actions.ShowActionParams
     */
    public class ShowAction extends CommunicationAction
    {
-      private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
-      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
-      private var GF:GlobalFlags = GlobalFlags.getInstance();
+      private function get SQUADS_CTRL() : SquadronsController {
+         return SquadronsController.getInstance();
+      }
+      
+      private function get NAV_CTRL() : NavigationController {
+         return NavigationController.getInstance();
+      }
+      
+      private function get GF() : GlobalFlags {
+         return GlobalFlags.getInstance();
+      }
       
       
       public function ShowAction()
@@ -45,16 +51,22 @@ package controllers.solarsystems.actions
          super();
       }
       
-      
-      override public function applyClientAction(cmd:CommunicationCommand) :void
-      {
-         GF.lockApplication = true;
-         super.applyClientAction(cmd);
+      // Should applyServerAction() create only the map or also switch screen?
+      private var f_createMapOnly:Boolean = false;
+      private function resetFlags() : void {
+         f_createMapOnly = false;
+         GF.lockApplication = false;
       }
       
       
-      override public function applyServerAction(cmd:CommunicationCommand) : void
-      {
+      override public function applyClientAction(cmd:CommunicationCommand) : void {
+         GF.lockApplication = true;
+         var params:ShowActionParams = ShowActionParams(cmd.parameters);
+         f_createMapOnly = params.createMapOnly;
+         sendMessage(new ClientRMO({"id": params.solarSystemId}));
+      }
+      
+      override public function applyServerAction(cmd:CommunicationCommand) : void {
          var params:Object = cmd.parameters;
          
          // objects come as separate parameter so put it to the solar system
@@ -65,18 +77,15 @@ package controllers.solarsystems.actions
          var ss:SolarSystem = SolarSystemFactory.fromObject(params.solarSystem);
          
          // destroy latest a planet if its not in the given solar system
-         if (ML.latestPlanet != null && (!ML.latestPlanet.inBattleground || !ss.isGlobalBattleground))
-         {
+         if (ML.latestPlanet != null && (!ML.latestPlanet.inBattleground || !ss.isGlobalBattleground)) {
             if ( !(ML.latestPlanet.inBattleground && ss.isGlobalBattleground ||
-                   ML.latestPlanet.solarSystemId == ss.id) )
-            {
+                   ML.latestPlanet.solarSystemId == ss.id) ) {
                ML.latestPlanet.setFlag_destructionPending();
                ML.latestPlanet = null;
             }
          }
          // destroy old solar system
-         if (ML.latestSolarSystem != null)
-         {
+         if (ML.latestSolarSystem != null) {
             ML.latestSolarSystem.setFlag_destructionPending();
             ML.latestSolarSystem = null;
          }
@@ -86,15 +95,22 @@ package controllers.solarsystems.actions
          ML.units.enableAutoUpdate();
          SQUADS_CTRL.createSquadronsForUnits(units);
          SQUADS_CTRL.addHopsToSquadrons(params.routeHops);
-         NAV_CTRL.showSolarSystem(ss);
-         GF.lockApplication = false;
+         if (f_createMapOnly)
+            NAV_CTRL.recreateMap(ss);
+         else
+            NAV_CTRL.showSolarSystem(ss);
+         resetFlags();
       }
       
       
-      public override function cancel(rmo:ClientRMO):void
-      {
-         GF.lockApplication = false;
+      public override function cancel(rmo:ClientRMO) : void {
+         resetFlags();
          super.cancel(rmo);
+      }
+      
+      public override function result(rmo:ClientRMO) : void {
+         resetFlags();
+         super.result(rmo);
       }
    }
 }

@@ -1,7 +1,5 @@
 package controllers.units
 {
-   import com.developmentarc.core.utils.EventBroker;
-   
    import components.map.space.SquadronsController;
    
    import controllers.GlobalFlags;
@@ -30,8 +28,6 @@ package controllers.units
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.utils.ObjectUtil;
-   
-   import namespaces.client_internal;
    
    import utils.SingletonFactory;
    import utils.StringUtil;
@@ -74,28 +70,23 @@ package controllers.units
        * Use to add a hop to any squadron when that hop is received from the server. Will
        * ignore given hop if squadron to add the hop to can't be found.
        */
-      public function addHopToSquadron(hop:Object) : void
-      {
-         var hopM:MHop = BaseModel.createModel(MHop, hop);
-         var squad:MSquadron = findSquad(hopM.routeId);
-         if (squad)
-         {
-            squad.addHop(hopM);
-         }
+      public function addHopToSquadron(hop:MHop) : void {
+         var squad:MSquadron = findSquad(hop.routeId);
+         if (squad != null)
+            squad.addHop(hop);
       }
       
       
       /**
        * Use to add hops to squadrons.
        * 
-       * @param hops an array of generic objects that represent hops. May hold hops for different squadrons
+       * @param hops an array of <code>MHop</code> instances. May hold hops for different squadrons.
        * 
        * @see #addHopToSquadron()
        */
       public function addHopsToSquadrons(hops:Array) : void
       {
-         for each (var hop:Object in hops)
-         {
+         for each (var hop:MHop in hops) {
             addHopToSquadron(hop);
          }
       }
@@ -128,23 +119,6 @@ package controllers.units
          if (removeRoute)
          {
             ROUTES.remove(id, true);
-         }
-      }
-      
-      /**
-       * Used by routes|index action to remove all moving friendly squadrons.
-       */
-      public function destroyAllMovingFriendlySquadrons() : void {
-         var toRemove:ArrayCollection = new ArrayCollection();
-         toRemove.addAll(SQUADS);
-         Collections.applyFilter(
-            toRemove,
-            function(squad:MSquadron) : Boolean {
-               return squad.isFriendly && squad.isMoving
-            }
-         );
-         for each (var squad:MSquadron in toRemove) {
-            destroySquadron(squad.id);
          }
       }
       
@@ -216,6 +190,18 @@ package controllers.units
             
             SQUADS.addItem(squadStationary);
             squadToStop.cleanup();
+         }
+      }
+      
+      /**
+       * Use when new routes are pushed by the server in the middle of the game. This method removes all
+       * existing routes, creates new ones, adds them to routes list and attached those routes to squadorns.
+       */ 
+      public function recreateRoutes(routes:Array, playersHash:Object) : void {
+         ROUTES.removeAll();
+         createRoutes(routes, playersHash);
+         for each (var route:MRoute in ROUTES) {
+            MSquadron(SQUADS.find(route.id)).route = route;
          }
       }
       
@@ -397,23 +383,17 @@ package controllers.units
       public function createSquadronsForUnits(units:IList) : void
       {
          var squad:MSquadron;
-         for each (var unit:Unit in units.toArray())
-         {
+         for each (var unit:Unit in units.toArray()) {
             if (unit.kind != UnitKind.SPACE || !unit.isMoving && (!unit.location || unit.location.isSSObject))
-            {
                continue;
-            }
             
             squad = findSquad(unit.squadronId, unit.playerId, unit.location);
             
             // No squadron for the unit: create one
-            if (!squad)
-            {
+            if (!squad) {
                squad = SquadronFactory.fromUnit(unit);
                if (squad.isMoving && squad.isFriendly)
-               {
                   squad.route = ROUTES.find(squad.id);
-               }
                SQUADS.addItem(squad);
             }
          }
