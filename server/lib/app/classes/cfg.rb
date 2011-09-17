@@ -1,5 +1,7 @@
 # Configuration shortcuts instead of using strings everywhere.
 class Cfg; class << self
+  def control_token; CONFIG['control']['token']; end
+
   # Minimal amount you can offer in market.
   def market_offer_min_amount; CONFIG['market.offer.min_amount']; end
 

@@ -29,5 +29,25 @@ task :environment do
   require File.expand_path(File.dirname(__FILE__) + "/lib/initializer.rb")
 end
 
+def run(*args)
+  status = system(*args)
+  unless $?.success?
+    cmd = args.map(&:inspect).join(" ")
+    puts
+    puts "Running `#{cmd}` failed with exit status #{$?.exitstatus}!"
+    exit
+  end
+  status
+end
+
+class File
+  def self.modify(name)
+    modified = yield File.read(name)
+    File.open(name, "w") do |file|
+      file.write(modified)
+    end
+  end
+end
+
 # Load tasks located in tasks/*.rake
 Dir.glob(File.dirname(__FILE__) + "/tasks/*.rake").each { |file| load file }

@@ -4,7 +4,8 @@ require 'uri'
 # Monolithic class for controlling server.
 class ControlManager
   class Error < RuntimeError; end
-  
+
+  TOKEN_KEY = 'token'
   TAG = "ControlManager"
 
   include Singleton
@@ -113,7 +114,7 @@ class ControlManager
   ACTION_ANNOUNCE = 'announce'
 
   def receive(io, message)
-    if message['token'] == CONFIG['control']['token']
+    if message[TOKEN_KEY] == Cfg.control_token
       process(io, message)
     else
       io.disconnect(GenericServer::REASON_AUTH_ERROR)

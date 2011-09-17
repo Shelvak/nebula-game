@@ -1,0 +1,273 @@
+require 'rubygems'
+require 'rake'
+require 'fileutils'
+require 'digest/sha1'
+
+basedir = File.dirname(__FILE__)
+load basedir + '/../Rakefile'
+
+namespace :build do
+  # Required flash version
+  FLASH_VERSION = "10.2.0"
+  # Name of output swf file (without .swf!)
+  swf_name = "SpaceGame"
+
+  # Values used in tasks.
+  FLEX_HOME = ENV["FLEX_HOME"] or raise(
+    "FLEX_HOME environment variable is not set!"
+  )
+  src_dir = "#{basedir}/src"
+  html_template_dir = "#{basedir}/html-template"
+  locale_dir = "#{html_template_dir}/locale"
+  assets_dir = "#{src_dir}/assets"
+  lib_dir = "#{basedir}/libs"
+  output_dir = "#{basedir}/target"
+  bin_dir = "#{output_dir}/bin"
+  bin_swf = "#{bin_dir}/#{swf_name}.swf"
+  test_report_dir = "#{output_dir}/report"
+  dist_dir = "#{output_dir}/dist"
+  dist_locale_dir = "#{dist_dir}/locale"
+  dist_assets_dir = "#{dist_dir}/assets"
+
+  def info(message)
+    format = "%Y-%m-%d %H:%M:%S"
+    now = Time.now
+    puts "[%s] %s" % [now.strftime(format), message]
+    if block_given?
+      yield
+      end_time = Time.now
+      time_taken = end_time - now
+      puts "[%s] Done. (took %3.1fs)" % [
+        end_time.strftime(format), time_taken
+      ]
+    end
+  end
+
+  # Compiles _source_mxml_ to _output_swf_.
+  def mxmlc(source_mxml, output_swf, options={})
+    args = []
+
+    add_args = Proc.new do |name, flag, block|
+      if options[name] && options[name].size > 0
+        args.push flag unless flag.nil?
+        options[name].each do |item|
+          item = block.nil? ? item : block.call(item)
+          args.push item
+        end
+      end
+    end
+
+    # Add flex libraries to library path.
+    fw = "#{FLEX_HOME}/frameworks"
+    options[:libraries] = %W{
+      #{fw}/libs/*.swc
+      #{fw}/libs/player/*.swc
+      #{fw}/libs/player/#{FLASH_VERSION.split(".")[0..1].join(".")}/*.swc
+      #{fw}/locale/en_US/*.swc
+    }.map { |glob| Dir[glob] }.flatten + (options[:libraries] || [])
+    # Add metadata required for binding.
+    options[:keep_metadata] = %w{
+      Bindable Managed ChangeEvent NonCommittingChangeEvent Transient
+    } + (options[:keep_metadata] || [])
+
+    # Construct args array.
+    add_args.call :libraries, "-compiler.library-path",
+                  lambda { |path| File.expand_path(path) }
+    add_args.call :keep_metadata, "-compiler.keep-as3-metadata"
+    add_args.call :compiler_flags, nil,
+                  lambda { |flag| "-compiler.#{flag}" }
+    add_args.call :flags
+
+    args.unshift "mxmlc"
+    args += %W{-output #{File.expand_path(output_swf)}
+      #{File.expand_path(source_mxml)}}
+
+    info "Running %s" % args.map(&:inspect).join(" ")
+    run(*args)
+  end
+
+  # Calculates and returns SHA1 checksum of file contents.
+  def checksum(file)
+    digest = Digest::SHA1.new
+    digest.hexdigest(File.read(file))
+  end
+
+  # Return file name with checksum appended before extension.
+  def append_checksum(file_name, checksum)
+    file_name.sub(/\.(\w+)$/, "-#{checksum}.\\1")
+  end
+
+  # Copies all files matched by glob, and writes their new names into
+  # destination/checksums
+  def copy_and_checksum(glob, destination)
+    checksums = ""
+    FileUtils.mkdir_p destination
+    Dir[glob].each do |path|
+      info "Checksumming and copying #{path}"
+      checksum = checksum(path)
+      basename = File.basename(path)
+      checksummed_name = append_checksum(basename, checksum)
+      FileUtils.cp path, "#{destination}/#{checksummed_name}"
+      checksums += "#{basename} #{checksummed_name}\n"
+    end
+    File.open("#{destination}/checksums", "w") { |f| f.write checksums }
+  end
+
+  desc "Remove all directories created during the build process."
+  task :clean do
+    info "Removing #{output_dir}."
+    FileUtils.rm_rf output_dir
+  end
+
+  namespace :prepare do
+    desc "Synchronize assets with wiki"
+    task :assets do
+      info "Synchronizing assets" do
+        Rake::Task['wiki:files:sync'].invoke
+      end
+    end
+  end
+
+  namespace :compile do
+    desc "Compile assets into SWF files"
+    task :assets do
+      info "Compiling assets" do
+        Rake::Task['flex:assets:build'].invoke
+      end
+    end
+    
+    desc "Compile SpaceGame into SWF file"
+    task :swf do
+      [output_dir, bin_dir, dist_dir].each do |dir|
+        info "Creating #{dir}."
+        FileUtils.mkdir_p dir
+      end
+
+      info "Compiling SpaceGame..." do
+        mxmlc(
+          "#{src_dir}/SpaceGame.mxml",
+          bin_swf,
+          :libraries => Dir["#{lib_dir}/*.swc"],
+          :keep_metadata => %w{Required Optional ArrayElementType SkipProperty},
+          :flags => %w{-static-link-runtime-shared-libraries},
+          # Each one is translated into -compiler.item_name
+          :compiler_flags => %w{as3 strict incremental optimize
+            verbose-stacktraces
+            headless-server report-invalid-styles-as-warnings
+            show-actionscript-warnings show-binding-warnings
+            show-invalid-css-property-warnings show-unused-type-selector-warnings
+            warn-array-tostring-changes warn-assignment-within-conditional
+            warn-bad-array-cast warn-bad-bool-assignment warn-bad-date-cast
+            warn-bad-es3-type-method warn-bad-es3-type-prop
+            warn-bad-nan-comparison
+            warn-bad-null-assignment warn-bad-null-comparison
+            warn-bad-undefined-comparison warn-boolean-constructor-with-no-args
+            warn-changes-in-resolve warn-class-is-sealed
+            warn-const-not-initialized
+            warn-constructor-returns-value warn-deprecated-event-handler-error
+            warn-deprecated-function-error warn-deprecated-property-error
+            warn-duplicate-argument-names warn-duplicate-variable-def
+            warn-instance-of-changes warn-internal-error warn-level-not-supported
+            warn-missing-namespace-decl warn-negative-uint-literal
+            warn-no-type-decl
+            warn-number-from-string-changes warn-slow-text-field-addition
+            warn-unlikely-function-value
+          }
+        )
+      end
+    end
+  end
+
+  namespace :copy do
+    desc "Copy SWF with prepared html-template to #{dist_dir}"
+    task :swf do
+      info "Cleaning #{dist_dir}"
+      FileUtils.rm_rf dist_dir
+      FileUtils.mkdir_p dist_dir
+
+      info "Copying SWF"
+      FileUtils.cp bin_swf, dist_dir
+
+      info "Copying html-template"
+      Dir["#{html_template_dir}/*"].each do |path|
+        FileUtils.cp path, dist_dir unless File.directory?(path)
+      end
+
+      checksums = %W{game.js #{swf_name}.swf}.inject({}) do |hash, file|
+        info "Checksuming and moving #{file}"
+        path = "#{dist_dir}/#{file}"
+        hash[file] = checksum(path)
+        FileUtils.mv(
+          path,
+          "#{dist_dir}/#{append_checksum(file, hash[file])}"
+        )
+        hash
+      end
+
+      info "Processing index.html"
+      index_html = "#{dist_dir}/index.html"
+      FileUtils.mv("#{dist_dir}/index.template.html", index_html)
+      File.modify(index_html) do |content|
+        {
+          "${swf}" => swf_name,
+          "${gamejs.checksum}" => checksums["game.js"],
+          "${swf.checksum}" => checksums["#{swf_name}.swf"],
+          "${flashVersion}" => FLASH_VERSION,
+          "binDebug: true" => "binDebug: false"
+        }.each { |from, to| content.gsub!(from, to) }
+
+        content
+      end
+    end
+
+    desc "Copy and checksum locales from html-template to #{dist_locale_dir}"
+    task :locales do
+      info "Checking locale syntax and validity" do
+        Rake::Task["flex:locales:check"].invoke
+      end
+      copy_and_checksum("#{locale_dir}/*.xml", dist_locale_dir)
+    end
+
+    desc "Copy and checksum assets from src/assets to #{dist_locale_dir}"
+    task :assets do
+      copy_and_checksum("#{assets_dir}/*.swf", dist_assets_dir)
+    end
+  end
+
+  compile_deps = ["build:compile:assets", "build:compile:swf"]
+  desc "Compile assets and SWF."
+  task :compile => compile_deps
+
+  copy_deps = ["build:copy:swf", "build:copy:locales", "build:copy:assets"]
+  desc "Copy SWF, locales and assets to #{dist_dir}"
+  task :copy => copy_deps
+
+  desc "Generate a build ready for distribution"
+  task :dist do
+    columns = 50
+    times = []
+    (["build:prepare:assets"] + compile_deps + copy_deps).each do |task|
+      start_time = Time.now
+      Rake::Task[task].invoke
+      time_taken = Time.now - start_time
+      times.push [task, time_taken]
+    end
+    info "Dist build complete."
+    info ""
+    info "Time taken:"
+    info "-" * columns
+    times.each do |task_name, time_taken|
+      info "  %-#{columns - 11}s %5.1fs" % [task_name, time_taken]
+    end
+    info "-" * columns
+    info "%#{columns - 4}s" % [
+      "Total: %5.1fs" %
+        times.inject(0.0) { |sum, (_, time_taken)| sum + time_taken}
+    ]
+  end
+
+  namespace :dist do
+    desc "Generate a build ready for distribution (but clean up at first)"
+    task :clean => ["clean", "dist"]
+  end
+end

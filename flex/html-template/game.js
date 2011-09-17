@@ -1,11 +1,70 @@
-var developmentAuthToken = "0000000000000000000000000000000000000000000000000000000000000000";
-var developmentServers = ["", "localhost"];
-// Read cookies immediatly because other window might overwrite them.
-var galaxyId = readCookie('galaxy_id');
-var authToken = readCookie('auth_token');
-var title = readCookie('title');
+// Store url params {{{
+var urlParams = {};
+(function () {
+    var e,
+        a = /\+/g,  // Regex for replacing addition symbol with a space
+        r = /([^&=]+)=?([^&]*)/g,
+        d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
+        q = window.location.search.substring(1);
 
-if (! Array.prototype.indexOf) {
+    while (e = r.exec(q))
+       urlParams[d(e[1])] = d(e[2]);
+})();
+// }}}
+
+var locales = { // {{{
+  loadingTitle: function(locale) {
+    if (locale == "lt") return "Nebula 44 kraunasi...";
+    if (locale == "lv") return "LOCALE: Nebula 44 is loading...";
+    return "Nebula 44 is loading...";
+  },
+  combatReplayTitle: function(locale) {
+    if (locale == "lt") return "Mūšio įrašas";
+    if (locale == "lv") return "LOCALE: Combat Replay";
+    return "Combat Replay";
+  },
+  failedAuth: function(locale) {
+    if (locale == "lt") return "Serveriui nepavyko tavęs prijungti. " +
+      "Gali būti, jog esi atsijungęs nuo puslapio.\n\n" +
+      "Pabandyk prisijungti prie puslapio iš naujo.";
+    if (locale == "lv") return "LOCALE: fixme";
+    return "Server was unable to authorize you. " +
+      "Perhaps your web page session has expired?\n\n" +
+      "Please try to relogin to our main web page.";
+  }
+} // }}}
+
+var developmentServerPlayerId = 1;
+var developmentWebPlayerId = 0;
+
+// Authentification data
+var server = urlParams['server'];
+var webPlayerId = urlParams['web_player_id'];
+var serverPlayerId = urlParams['server_player_id'];
+
+// Combat replay data.
+var combatLogId = urlParams['combat_log_id'];
+var playerId = urlParams['player_id'];
+
+// Support data.
+var locale = urlParams['locale'];
+var webHost = urlParams['web_host'];
+var assetsUrl = urlParams['assets_url'];
+var title = urlParams['title'];
+var titleSuffix = " :: Nebula 44";
+
+// If running a local debug build, take assets from relative url.
+if (fp.binDebug) assetsUrl = ""; 
+// Local file, but built with rake.
+else if (location.href.indexOf('file://') == 0) assetsUrl = ""
+// Networking via local lan, dev mode
+else if (location.href.indexOf('nebula44.') == -1) assetsUrl = ""
+// Backwards compatibility for combat replays.
+else if (! assetsUrl) assetsUrl = "http://static." + webHost + "/";
+
+document.title = locales.loadingTitle(locale);
+
+if (! Array.prototype.indexOf) { // {{{
   Array.prototype.indexOf = function (obj, fromIndex) {
     if (fromIndex == null) {
         fromIndex = 0;
@@ -18,38 +77,39 @@ if (! Array.prototype.indexOf) {
     }
     return -1;
   };
-}
+} // }}}
 
-function isDevelopmentMode() {
-  return queryString('dev') == '1' || 
-    developmentServers.indexOf(location.hostname) != -1;
+function inLocalComputer() { 
+  return location.href.indexOf("file://") == 0 ||
+    location.href.indexOf("localhost") != -1; 
 }
+function inDeveloperMode() { return urlParams['dev'] == '1'; }
 
-function developmentServer() {
+function developmentServer() { // {{{
   server = location.hostname;
   // Support for file://
   if (server == "") server = "localhost";
 
   return server;
-}
+} // }}}
 
 var notificationTimerId = 0;
 var notificationToggle = false;
 var notificationOldTitle = "";
 
 // Call me when notifications window is opened.
-function notificationsOpened() {
+function notificationsOpened() { // {{{
   if (notificationTimerId != 0) {
     clearInterval(notificationTimerId);
     notificationTimerId = 0;
     notificationToggle = false;
     document.title = notificationOldTitle;
   }
-}
+} // }}}
 
 // Call me when we have unread notifications.
 //noinspection JSUnusedGlobalSymbols
-function setUnreadNotifications(count) {
+function setUnreadNotifications(count) { // {{{
   notificationsOpened();  
   notificationOldTitle = document.title;
   
@@ -63,114 +123,135 @@ function setUnreadNotifications(count) {
     
     notificationToggle = ! notificationToggle;
   }, 1000);
+} // }}}
+
+function missingParam(name) {
+  window.alert("Missing query parameter: " + name);
 }
 
-// Call me to know what to do.
-//noinspection JSUnusedGlobalSymbols
-function getGameOptions() {
-  var server = queryString('server');
-  var combatLogId = queryString('combat_log_id');
-  var playerId = queryString('player_id');
-  var locale = queryString('locale');
-  var webHost = queryString('web_host');
-
-  // dev mode
-  if (! galaxyId) galaxyId = queryString('galaxy_id');
-  if (! authToken) authToken = queryString('auth_token');
-  if (! title) title = "Dev Login Mode";
-  if (! locale) locale = "en";
-  if (! webHost) webHost = "localhost";
-  
-  var titleSuffix = " :: Nebula 44";
-
+// Returns game options for the Flash Client.
+//
+// If it returns null, client should stop initialization.
+function getGameOptions() { // {{{
   // Let's show us some combat!
+  //
+  // Example:
+  //   ?mode=combatLog&server=game.nebula44.com&combat_log_id=a1s2d3f4&
+  //     player_id=3&locale=lt&web_host=nebula44.com&
+  //     assets_url=http://static.nebula44.com/
   if (combatLogId) {
-    document.title = "Combat Replay" + titleSuffix;
-    return {mode: 'combatLog', server: server, logId: combatLogId, 
-      playerId: playerId, locale: locale, webHost: webHost};
-  }
-  // Let's play the game!
-  else if (authToken) {
-    document.title = urlDecode(title) + titleSuffix;
-    return {mode: 'game', galaxyId: galaxyId, server: server, 
-      authToken: authToken, locale: locale, webHost: webHost};
-  }
-  // Allow for quick launch in dev mode
-  else if (isDevelopmentMode()) {
-    document.title = "Dev Mode" + titleSuffix;
-    if (! server)
-      server = developmentServer();
-    
-    return {'mode': 'game', 'galaxyId': 1, 'server': server, 
-      'authToken': developmentAuthToken, locale: locale, webHost: webHost};
-  }
-  // This should not happen.
-  else {
-    if (locale == "lt") {
-      window.alert(
-        "Tavo autorizacijos sausainiuko galiojimo laikas pasibaigė. " +
-        "Pagrindiniame puslapyje vėl paspausk žaisti, jog prisijungtum prie " +
-        "žaidimo. Dabar būsi nukreiptas į " + webHost + ".");
+    if (server && playerId && locale && webHost && assetsUrl) {
+      document.title = locales.combatReplayTitle(locale) + titleSuffix;
+      return {'mode': 'combatLog', 'server': server, 'logId': combatLogId, 
+        'playerId': playerId, 'locale: locale', 'webHost': webHost,
+        'assetsUrl': assetsUrl};
     }
     else {
-      window.alert("You authentification cookie has expired. You must press" +
-        " play in the main page again. You will be redirected to " +
-        webHost + " now.");
+      if (! server) missingParam('server');
+      if (! playerId) missingParam('player_id');
+      if (! locale) missingParam('locale');
+      if (! webHost) missingParam('web_host');
+      if (! assetsUrl) missingParam('assets_url');
+      return null;
     }
-    window.location = "http://" + webHost;
-    return null;
   }
+  // Normal game.
+  //
+  // Example:
+  //   ?server=game.nebula44.com&server_player_id=10&web_player_id=3&
+  //     locale=lt&web_host=nebula44.com&
+  //     assets_url=http://static.nebula44.com/
+  //
+  // You can append &dev=1 to skip requesting for web authentification.
+  else {
+    if (inLocalComputer() && ! inDeveloperMode()) {
+      if (! server) server = developmentServer();
+      if (! webPlayerId) webPlayerId = developmentWebPlayerId;
+      if (! serverPlayerId) serverPlayerId = developmentServerPlayerId;
+      if (! locale) locale = "en";
+      if (! webHost) webHost = "localhost";
+
+      document.title = "Local Dev Mode" + titleSuffix;
+    }
+    else {
+      if (server && webPlayerId && serverPlayerId && locale && webHost && 
+          assetsUrl && title) {
+        document.title = title + titleSuffix;
+      }
+      else {
+        if (! server) missingParam('server');
+        if (! webPlayerId) missingParam('web_player_id');
+        if (! serverPlayerId) missingParam('server_player_id');
+        if (! locale) missingParam('locale');
+        if (! webHost) missingParam('web_host');
+        if (! assetsUrl) missingParam('assets_url');
+        if (! title) missingParam('title');
+        return null;
+      }
+    }
+    
+    return {'mode': 'game', 'server': server, 'webPlayerId': webPlayerId,
+      'serverPlayerId': serverPlayerId, 'locale': locale, 'webHost': webHost,
+      'assetsUrl': assetsUrl};
+  }
+} // }}}
+
+// Try to authorize with the web server
+function authorize() { // {{{
+  if (inLocalComputer() || inDeveloperMode()) {
+    authorizationSuccessful();
+  }
+  else {
+    $.ajax({
+      'url': "http://" + webHost + "/play/client_auth/" + webPlayerId,
+      'timeout': 5000, // 5 seconds.
+      'success': authorizationSuccessful,
+      'error': authorizationFailed
+    });
+  }
+} // }}}
+
+// Called when authorization succeeds.
+function authorizationSuccessful() {
+  swf.authorizationSuccessful();
+}
+
+// Called when authorization fails.
+function authorizationFailed() {
+  window.alert(locales.failedAuth(locale));
+  window.location = "http://" + webHost;
 }
 
 // Get combat log URL for log with given ID.
-//noinspection JSUnusedGlobalSymbols
 function getCombatLogUrl(id, playerId, server, webHost, locale) {
   return location.href.replace(location.search, '') + "?server=" + server +
     "&combat_log_id=" + id + "&player_id=" + playerId + "&web_host=" + webHost +
     "&locale=" + locale;
 }
 
-// Helper functions
-function readCookie(name) {
-	var nameEQ = name + "=";
-	var ca = document.cookie.split(';');
-	for(var i=0;i < ca.length;i++) {
-		var c = ca[i];
-		while (c.charAt(0)==' ') c = c.substring(1,c.length);
-		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-	}
-	return null;
-}
-
-function queryString(parameter) { 
-  var loc = location.search.substring(1, location.search.length);
-  var param_value = false;
-
-  var params = loc.split("&");
-  for (i=0; i<params.length;i++) {
-      param_name = params[i].substring(0,params[i].indexOf('='));
-      if (param_name == parameter) {
-          param_value = params[i].substring(params[i].indexOf('=')+1)
-      }
-  }
-  if (param_value) {
-      return param_value;
-  }
-  else {
-      return false; //Here determine return if no parameter is found
-  }
-}
-
-function urlDecode(encodedString) {
-  var output = encodedString;
-  var binVal, thisString;
-  var myregexp = /(%[^%]{2})/;
-  while ((match = myregexp.exec(output)) != null
-             && match.length > 1
-             && match[1] != '') {
-    binVal = parseInt(match[1].substr(1),16);
-    thisString = String.fromCharCode(binVal);
-    output = output.replace(match[1], thisString);
-  }
-  return output.replace(/\+/g, " ");
-}
+// Load our swf.
+// {{{
+var swf = null;
+$(document).ready(function() {
+  var flashvars = {};
+  var params = {};
+  params.quality = "high";
+  params.bgcolor = "#ffffff";
+  params.allowscriptaccess = "sameDomain";
+  params.allowfullscreen = "true";
+  var attributes = {};
+  attributes.id = "nebula44";
+  attributes.name = "nebula44";
+  attributes.align = "middle";
+  var swfName = fp.binDebug
+    ? "SpaceGame.swf"
+    : assetsUrl + fp.swf + "-" + fp.swfChecksum + ".swf"
+  swf = swfobject.embedSWF(swfName, "flashContent", 
+      "100%", "100%", 
+      fp.swfVersionStr, "playerProductInstall.swf", 
+      flashvars, params, attributes);
+  // JavaScript enabled so display the flashContent div in case it 
+  // is not replaced with a swf object.
+  swfobject.createCSS("#flashContent", "display:block;text-align:left;"); 
+});
+// }}}
