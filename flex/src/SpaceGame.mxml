@@ -7,11 +7,12 @@
                xmlns:logging="com.adobe.ac.logging.*"
                xmlns:popups="components.popups.*"
                xmlns:utils="utils.*"
+               xmlns:screen="components.base.screen.*"
                skinClass="components.skins.ApplicationContainerSkin"
                width="100%" height="100%"
                initialize="StartupManager.loadStartupInfo()"
                applicationComplete="this_applicationCompleteHandler(event)"
-               keyDown="this_keyDownHandler(event)" xmlns:screen="components.base.screen.*">
+               keyDown="this_keyDownHandler(event)">
    
    
    <fx:Declarations>

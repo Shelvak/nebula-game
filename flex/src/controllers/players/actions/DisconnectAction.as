@@ -12,13 +12,10 @@ package controllers.players.actions
     */
    public class DisconnectAction extends CommunicationAction
    {
-      override public function applyServerAction (cmd:CommunicationCommand) :void
-      {
+      override public function applyServerAction(cmd:CommunicationCommand) : void {
          var reason:String = cmd.parameters.reason;
          if (reason == null)
-         {
             return;
-         }
          reason = StringUtil.underscoreToCamelCaseFirstLower(reason);
          ConnectionManager.getInstance().serverWillDisconnect(reason);
       }

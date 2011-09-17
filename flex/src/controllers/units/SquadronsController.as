@@ -231,7 +231,7 @@ package controllers.units
       public function createRoute(data:Object, owner:int = Owner.UNDEFINED) : MRoute
       {
          var route:MRoute = BaseModel.createModel(MRoute, data);
-         route.cachedUnits.addAll(createCachedUnits(data.cachedUnits));
+         route.cachedUnits.addAll(createCachedUnits(data["cachedUnits"]));
          if (owner != Owner.UNDEFINED)
             route.owner = owner;
          ROUTES.addItem(route);
@@ -310,7 +310,7 @@ package controllers.units
       {
          var squad:MSquadron;
          var unitIds:ArrayCollection = new ArrayCollection($unitIds);
-         var currentLocation:LocationMinimal = BaseModel.createModel(LocationMinimal, route.current);
+         var currentLocation:LocationMinimal = BaseModel.createModel(LocationMinimal, route["current"]);
          if (currentLocation.isSSObject) {
             currentLocation.setDefaultCoordinates();
          }
@@ -328,10 +328,10 @@ package controllers.units
          {
             var unit:Unit = Unit(units.getItemAt(0));
             var squadExisting:MSquadron = findSquad(unit.squadronId, unit.playerId, currentLocation);
-            route.status = unit.owner; 
+            route["status"] = unit.owner; 
             squad = SquadronFactory.fromObject(route);
             squad.player = unit.player;
-            squad.addAllHops(BaseModel.createCollection(ArrayCollection, MHop, route.hops));
+            squad.addAllHops(BaseModel.createCollection(ArrayCollection, MHop, route["hops"]));
             units.disableAutoUpdate();
             for each (unit in units)
             {
@@ -360,11 +360,11 @@ package controllers.units
                Messenger.show(Localizer.string("Movement", "message.orderComplete"), Messenger.MEDIUM);
             }
          }
-            // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
-         else if (route.target !== undefined)
-         {
-            if (createRoute(route).owner == Owner.PLAYER  && ORDERS_CTRL.issuingOrders)
-            {
+         // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
+         else if (route["target"] !== undefined) {
+            var owner:int = route["playerId"] == ML.player.id ? Owner.PLAYER : Owner.ALLY;
+            createRoute(route, owner);
+            if (owner == Owner.PLAYER && ORDERS_CTRL.issuingOrders) {
                ORDERS_CTRL.orderComplete();
                GF.lockApplication = false;
             }

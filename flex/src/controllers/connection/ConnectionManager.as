@@ -214,13 +214,9 @@ package controllers.connection
       private function serverProxy_connectionEstablishedHandler(event:ServerProxyEvent) : void
       {
          if (STARTUP_INFO.mode == StartupMode.GAME)
-         {
             new PlayersCommand(PlayersCommand.LOGIN).dispatch();
-         }
          else
-         {
             new CombatLogsCommand(CombatLogsCommand.SHOW).dispatch();
-         }
       }
       
       
@@ -229,7 +225,8 @@ package controllers.connection
          // if we do, don't show the message here: soon serverWillDisconnect() will be called
          // and the user will be notified
          for each (var rmo:ServerRMO in SERVER_PROXY.unprocessedMessages) {
-            if (rmo.action == PlayersCommand.DISCONNECT) return;
+            if (rmo.action == PlayersCommand.DISCONNECT)
+               return;
          }
          // do not process any leftover messages after disconnect
          SERVER_PROXY.getUnprocessedMessages();
