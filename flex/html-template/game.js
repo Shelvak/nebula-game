@@ -57,8 +57,6 @@ var titleSuffix = " :: Nebula 44";
 if (fp.binDebug) assetsUrl = ""; 
 // Local file, but built with rake.
 else if (location.href.indexOf('file://') == 0) assetsUrl = ""
-// Networking via local lan, dev mode
-else if (location.href.indexOf('nebula44.') == -1) assetsUrl = ""
 // Backwards compatibility for combat replays.
 else if (! assetsUrl) assetsUrl = "http://static." + webHost + "/";
 
