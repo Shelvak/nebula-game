@@ -57,8 +57,6 @@ var titleSuffix = " :: Nebula 44";
 if (fp.binDebug) assetsUrl = ""; 
 // Local file, but built with rake.
 else if (location.href.indexOf('file://') == 0) assetsUrl = ""
-// Networking via local lan, dev mode
-else if (location.href.indexOf('nebula44.') == -1) assetsUrl = ""
 // Backwards compatibility for combat replays.
 else if (! assetsUrl) assetsUrl = "http://static." + webHost + "/";
 
@@ -142,9 +140,9 @@ function getGameOptions() { // {{{
   if (combatLogId) {
     if (server && playerId && locale && webHost && assetsUrl) {
       document.title = locales.combatReplayTitle(locale) + titleSuffix;
-      return {'mode': 'combatLog', 'server': server, 'logId': combatLogId, 
-        'playerId': playerId, 'locale: locale', 'webHost': webHost,
-        'assetsUrl': assetsUrl};
+      return {mode: 'combatLog', server: server, logId: combatLogId, 
+        playerId: playerId, locale: locale, webHost: webHost,
+        assetsUrl: assetsUrl};
     }
     else {
       if (! server) missingParam('server');
@@ -190,9 +188,9 @@ function getGameOptions() { // {{{
       }
     }
     
-    return {'mode': 'game', 'server': server, 'webPlayerId': webPlayerId,
-      'serverPlayerId': serverPlayerId, 'locale': locale, 'webHost': webHost,
-      'assetsUrl': assetsUrl};
+    return {mode: 'game', server: server, webPlayerId: webPlayerId,
+      serverPlayerId: serverPlayerId, locale: locale, webHost: webHost,
+      assetsUrl: assetsUrl};
   }
 } // }}}
 
