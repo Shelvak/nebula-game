@@ -193,29 +193,46 @@ describe SpaceMule do
         :galaxy => @galaxy)
       @alliance_fge = Factory.create(:fge_alliance, :rectangle => rectangle,
         :galaxy => @galaxy)
+      @existing_player = Factory.create(:player, :galaxy => @galaxy)
+      @web_user_id = @existing_player.web_user_id + 1
       @players = {
-        "jkghuitughihui78t67g78b87bd43fdgwejedfvewfwevds" => "Some player"
+        @web_user_id => "Some player",
+        @existing_player.web_user_id => @existing_player.name
       }
-      @player_id = (Player.maximum(:id) || 0) + 1
       @result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-      @player = Player.find(@player_id)
+      @player = Player.where(:galaxy_id => @galaxy.id,
+                             :web_user_id => @web_user_id).first
     end
 
     it "should start quests for player" do
-      QuestProgress.where(:player_id => @player_id,
+      QuestProgress.where(:player_id => @player.id,
         :quest_id => @quest.id, :completed => 0).count.should == 1
     end
 
     it "should start objectives for player" do
-      ObjectiveProgress.where(:player_id => @player_id,
+      ObjectiveProgress.where(:player_id => @player.id,
         :objective_id => @objective.id, :completed => 0).count.should == 1
     end
 
-    describe "player attributes" do
-      before(:all) do
-        @player = Player.find(@player_id)
+    describe "returned value" do
+      it "should return created player ids" do
+        @result.player_ids[@web_user_id].should == @player.id
       end
 
+      it "should return existing player ids too" do
+        @mule.create_players(@galaxy.id, @galaxy.ruleset, @players).
+          player_ids[@web_user_id].should == @player.id
+      end
+
+      it "should merge created player ids with existing player ids" do
+        @result.player_ids.should equal_to_hash(
+          @web_user_id => @player.id,
+          @existing_player.web_user_id => @existing_player.id
+        )
+      end
+    end
+
+    describe "player attributes" do
       it "should set scientists" do
         @player.scientists.should ==
           CONFIG["buildings.mothership.scientists"].to_i
@@ -233,7 +250,7 @@ describe SpaceMule do
     end
 
     it "should create homeworld for player" do
-      SsObject::Planet.where(:player_id => @player_id).count.should == 1
+      SsObject::Planet.where(:player_id => @player.id).count.should == 1
     end
 
     it "should not create other homeworld if we try that again" do
@@ -255,7 +272,7 @@ describe SpaceMule do
 
     describe "home solar system" do
       before(:all) do
-        @ss = SsObject::Planet.where(:player_id => @player_id
+        @ss = SsObject::Planet.where(:player_id => @player.id
           ).first.solar_system
       end
 
@@ -264,7 +281,7 @@ describe SpaceMule do
       end
 
       it "should have correct shield owner" do
-        @ss.shield_owner_id.should == @player_id
+        @ss.shield_owner_id.should == @player.id
       end
 
       it "should have correct shield time" do
@@ -351,7 +368,7 @@ describe SpaceMule do
       describe "homeworld" do
         before(:all) do
           @homeworld = SsObject::Planet.where(
-            :player_id => @player_id).first
+            :player_id => @player.id).first
         end
         
         it "should set #owner_changed" do
@@ -387,7 +404,7 @@ describe SpaceMule do
     describe "units" do
       describe "home solar system" do
         before(:each) do
-          @homeworld = SsObject::Planet.where(:player_id => @player_id).
+          @homeworld = SsObject::Planet.where(:player_id => @player.id).
             first
           @ss = @homeworld.solar_system
           @solar_systems = [@ss]
@@ -412,7 +429,7 @@ describe SpaceMule do
       describe "regular solar systems" do
         before(:each) do
           homeworld_ss_id = SsObject::Planet.
-            where(:player_id => @player_id).first.solar_system_id
+            where(:player_id => @player.id).first.solar_system_id
           @solar_systems = SolarSystem.where(
             "galaxy_id=? AND kind=? AND id!=?", 
             @galaxy.id, SolarSystem::KIND_NORMAL, homeworld_ss_id
@@ -427,7 +444,7 @@ describe SpaceMule do
       describe "mini battleground solar systems" do
         before(:each) do
           homeworld_ss_id = SsObject::Planet.
-            where(:player_id => @player_id).first.solar_system_id
+            where(:player_id => @player.id).first.solar_system_id
           @solar_systems = SolarSystem.where(
             "galaxy_id=? AND kind=? AND x IS NOT NULL AND y IS NOT NULL", 
             @galaxy.id, SolarSystem::KIND_BATTLEGROUND
@@ -441,7 +458,7 @@ describe SpaceMule do
     end
     
     it "should create fow ss entry" do
-      fse = FowSsEntry.where(:player_id => @player_id).first
+      fse = FowSsEntry.where(:player_id => @player.id).first
       {
         :player_planets => fse.player_planets,
         :player_ships => fse.player_ships,
@@ -456,7 +473,7 @@ describe SpaceMule do
     end
 
     it "should only create one fow ss entry" do
-      FowSsEntry.where(:player_id => @player_id).count.should == 1
+      FowSsEntry.where(:player_id => @player.id).count.should == 1
     end
 
     describe "visibility for existing ss where radar covers it" do

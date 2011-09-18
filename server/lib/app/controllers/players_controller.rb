@@ -2,43 +2,46 @@ class PlayersController < GenericController
   # Log player in.
   #
   # Parameters:
-  # - auth_token (String): authentication token for player
-  # - galaxy_id (Fixnum): galaxy ID player wants to log in to.
+  # - server_player_id (Fixnum): Player#id
+  # - web_player_id (Fixnum): player id in the website
   #
   # Return message params:
   # - success (Boolean)
   def action_login
-    param_options :required => %w{auth_token galaxy_id}
+    param_options :required => {
+      :server_player_id => Fixnum,
+      :web_player_id => Fixnum
+    }
 
-    player = Player.where(
-      :auth_token => params['auth_token'],
-      :galaxy_id => params['galaxy_id']
-    ).first
-    if player
+    player = Player.find(params['server_player_id'])
+    if ControlManager.instance.
+        login_authorized?(player, params['web_player_id'])
       login player
 
-      ["game|config", "players|show", "planets|player_index", 
-        "technologies|index", "quests|index", "notifications|index", 
-        RoutesController::ACTION_INDEX, 
-        ChatController::ACTION_INDEX, 
+      ["game|config", "players|show", "planets|player_index",
+        "technologies|index", "quests|index", "notifications|index",
+        RoutesController::ACTION_INDEX,
+        ChatController::ACTION_INDEX,
         GalaxiesController::ACTION_SHOW
       ].each { |action| push action }
-      
+
       # Dispatch current announcement if we have one.
       ends_at, announcement = AnnouncementsController.get
       unless ends_at.nil?
         push AnnouncementsController::ACTION_NEW,
           {'ends_at' => ends_at, 'message' => announcement}
       end
-      
+
       push DailyBonusController::ACTION_SHOW \
         if player.daily_bonus_available?
 
       respond :success => true
     else
-      respond :success => false
-      disconnect
+      raise ActiveRecord::RecordNotFound
     end
+  rescue ActiveRecord::RecordNotFound
+    respond :success => false
+    disconnect
   end
 
   ACTION_SHOW = 'players|show'

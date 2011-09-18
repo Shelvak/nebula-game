@@ -21,8 +21,11 @@
   <property name="dist.loc.assets" location="${dist.loc}/assets" />
   <property name="dist.loc.locales" location="${dist.loc}/locale" />
 
-  <!-- Setup Flex and FlexUnit ant tasks -->
-  <!-- You can set this directly so mxmlc will work correctly, or set FLEX_HOME as an environment variable and use as below -->
+  <!--
+  Setup Flex and FlexUnit ant tasks.
+  You can set this directly so mxmlc will work correctly, or set FLEX_HOME
+  as an environment variable and use as below.
+  -->
   <property name="FLEX_HOME" location="${env.FLEX_HOME}" />
   <taskdef resource="flexTasks.tasks"
     classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
@@ -155,105 +158,7 @@
     </junitreport>
   </target>
  
-  <target name="copy-swf">
-    <!-- Assemble final website -->
-    <copy file="${bin.loc}/${swf.name}.swf" todir="${dist.loc}" />
-    <copy todir="${dist.loc}">
-      <fileset dir="${html.src.loc}" />
-    </copy>
-    
-    <property name="index.html" location="${dist.loc}/index.html" />
-    <move file="${dist.loc}/index.template.html" tofile="${index.html}" />
-    
-    <!-- Calculate checksums -->
-    <checksum file="${dist.loc}/${swf.name}.swf" algorithm="sha1"
-      property="swf.checksum" />
-    <checksum file="${dist.loc}/game.js" algorithm="sha1"
-      property="gamejs.checksum" />
-    
-    <!-- Generate proper index.html -->
-    <replace file="${index.html}">
-      <!-- We must leave ${swf} for flash builder compatibility -->
-      <replacefilter>
-        <replacetoken expandproperties="false">${swf}</replacetoken>
-        <replacevalue expandproperties="true"
-          >${swf.name}</replacevalue>
-      </replacefilter>
-      <replacefilter>
-        <replacetoken expandproperties="false">${gamejs.checksum}</replacetoken>
-        <replacevalue expandproperties="true"
-          >${gamejs.checksum}</replacevalue>
-      </replacefilter>
-      <replacefilter>
-        <replacetoken expandproperties="false">${swf.checksum}</replacetoken>
-        <replacevalue expandproperties="true"
-          >${swf.checksum}</replacevalue>
-      </replacefilter>
-      <replacefilter>
-        <replacetoken expandproperties="false">${width}</replacetoken>
-        <replacevalue>100%</replacevalue>
-      </replacefilter>
-      <replacefilter>
-        <replacetoken expandproperties="false">${height}</replacetoken>
-        <replacevalue>100%</replacevalue>
-      </replacefilter>
-      <replacefilter>
-        <replacetoken expandproperties="false">${bgcolor}</replacetoken>
-        <replacevalue>#ffffff</replacevalue>
-      </replacefilter>
-      <replacefilter>
-        <replacetoken expandproperties="false">${application}</replacetoken>
-        <replacevalue>Nebula 44</replacevalue>
-      </replacefilter>
-      <replacefilter>
-        <replacetoken expandproperties="false">${expressInstallSwf}</replacetoken>
-        <replacevalue>playerProductInstall.swf</replacevalue>
-      </replacefilter>
-      <replacefilter>
-        <replacetoken expandproperties="false">${version_major}</replacetoken>
-        <replacevalue expandproperties="true">${version.major}</replacevalue>
-      </replacefilter>
-      <replacefilter>
-        <replacetoken expandproperties="false">${version_minor}</replacetoken>
-        <replacevalue expandproperties="true">${version.minor}</replacevalue>
-      </replacefilter>
-      <replacefilter>
-        <replacetoken expandproperties="false">${version_revision}</replacetoken>
-        <replacevalue expandproperties="true">${version.revision}</replacevalue>
-      </replacefilter>
-    </replace>
-  </target>
-  
-  <target name="copy-locales">
-    <exec executable="cmd" osfamily="windows">
-       <arg value="/c" />
-       <arg value="rake.bat" />
-       <arg value="flex:locales:check" />
-    </exec>
-    <exec executable="rake" osfamily="unix">
-      <arg value="flex:locales:check" />
-    </exec>
-    
-    <!-- Copy locales -->
-    <mkdir dir="${dist.loc.locales}" />
-    <copy todir="${dist.loc.locales}">
-      <fileset dir="${html.src.loc}/locale" includes="*.xml" />
-    </copy>
-    
-    <!-- Calculate sha1 checksums to locates/checksums file -->
-    <checksum algorithm="sha1" pattern="{1} {0}"
-    todir="${dist.loc.locales}">
-      <fileset dir="${dist.loc.locales}" includes="*.xml" />
-    </checksum>
-    
-    <concat destfile="${dist.loc.locales}/checksums">
-      <fileset dir="${dist.loc.locales}" includes="*.sha1"/>
-    </concat>
-    
-    <delete>
-      <fileset dir="${dist.loc.locales}" includes="*.sha1"/>
-    </delete>
-  </target>
+
   
   <target name="build-swf" depends="compile,copy-swf" />
   

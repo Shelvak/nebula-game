@@ -3,12 +3,12 @@ package spacemule.modules.pmg.persistence
 import collection.mutable.{ListBuffer}
 import java.util.Date
 import objects._
-import spacemule.modules.pmg.objects.{Location, Galaxy, Zone, SolarSystem, SSObject}
+import spacemule.modules.pmg.objects.{Location, Galaxy, Zone, SolarSystem,
+  SSObject, Player}
 import scala.collection.mutable.HashSet
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.ss_objects.Planet
 import spacemule.modules.pmg.objects.solar_systems.Battleground
-import spacemule.modules.pmg.objects.solar_systems.Homeworld
 import spacemule.modules.pmg.objects.solar_systems.Homeworld
 import spacemule.modules.pmg.objects.ss_objects
 import spacemule.persistence.DB
@@ -27,7 +27,7 @@ object Manager {
   val ssObjects = ListBuffer[String]()
   val units = ListBuffer[String]()
   val buildings = ListBuffer[String]()
-  val folliages = ListBuffer[String]()
+  val foliages = ListBuffer[String]()
   val tiles = ListBuffer[String]()
   val players = ListBuffer[String]()
   val fowSsEntries = ListBuffer[String]()
@@ -39,7 +39,7 @@ object Manager {
   val solarSystemsTable = "solar_systems"
   val ssObjectsTable = "ss_objects"
   val tilesTable = "tiles"
-  val folliagesTable = "folliages"
+  val foliagesTable = "folliages"
   val buildingsTable = "buildings"
   val unitsTable = "units"
   val playersTable = "players"
@@ -57,11 +57,15 @@ object Manager {
   var currentDateTime = "0000-00-00 00:00:00"
 
   /**
-   * Fow updates shoould be dispatched for these players.
+   * Created player rows.
+   */
+  private val playerRows = HashSet[PlayerRow]()
+  /**
+   * Fow updates should be dispatched for these players.
    */
   private val updatedPlayerIds = HashSet[Int]()
   /**
-   * Fow updates shoould be dispatched for these alliances.
+   * Fow updates should be dispatched for these alliances.
    */
   private val updatedAllianceIds = HashSet[Int]()
 
@@ -112,7 +116,8 @@ object Manager {
     )
   }
 
-  private val saveTempHolders = updatedPlayerIds :: updatedAllianceIds :: Nil
+  private val saveTempHolders = updatedPlayerIds :: updatedAllianceIds ::
+    playerRows :: Nil
 
   def save(beforeSave: Option[() => Unit]) = {
     TableIds.initialize()
@@ -144,7 +149,11 @@ object Manager {
 
   def save(galaxy: Galaxy): SaveResult = {
     save { () => readGalaxy(galaxy) }
-    return SaveResult(updatedPlayerIds.toSet, updatedAllianceIds.toSet)
+    SaveResult(
+      playerRows.toSet,
+      updatedPlayerIds.toSet,
+      updatedAllianceIds.toSet
+    )
   }
 
   /**
@@ -152,7 +161,7 @@ object Manager {
    */
   private def clearBuffers() = {
     List(galaxies, solarSystems, ssObjects, units, buildings,
-         folliages, tiles, players, fowSsEntries, questProgresses,
+         foliages, tiles, players, fowSsEntries, questProgresses,
          objectiveProgresses
     ).foreach { buffer => buffer.clear }
   }
@@ -220,7 +229,7 @@ object Manager {
     saveBuffer(solarSystemsTable, SolarSystemRow.columns, solarSystems)
     saveBuffer(ssObjectsTable, SSObjectRow.columns, ssObjects)
     saveBuffer(tilesTable, TileRow.columns, tiles)
-    saveBuffer(folliagesTable, TileRow.columns, folliages)
+    saveBuffer(foliagesTable, TileRow.columns, foliages)
     saveBuffer(buildingsTable, BuildingRow.columns, buildings)
     saveBuffer(unitsTable, UnitRow.columns, units)
     saveBuffer(fowSsEntriesTable, FowSsEntryRow.columns, fowSsEntries)
@@ -253,7 +262,7 @@ object Manager {
   }
 
   private def readZone(galaxy: Galaxy, zone: Zone): Unit = {
-    // Don't read zones without a defined player.
+    // Don't read zones without any defined players.
     if (! zone.hasNewPlayers) return ()
 
     zone.solarSystems.foreach { 
@@ -324,7 +333,7 @@ object Manager {
     val ssRow = new SolarSystemRow(galaxy, solarSystem, coords)
     solarSystems += ssRow.values
 
-    // Add visiblity for other players
+    // Add visibility for other players
     solarSystem match {
       case h: Homeworld => {
           addSsVisibilityForExistingPlayers(ssRow, false, galaxy, coords)
@@ -334,6 +343,7 @@ object Manager {
           val playerRow = ssRow.playerRow.get
           fowSsEntries += FowSsEntryRow(ssRow, Some(playerRow.id), None, 1,
                                         false).values
+          playerRows += playerRow
           players += playerRow.values
           startQuests(playerRow)
 
@@ -409,7 +419,7 @@ object Manager {
 
     planet.foreachFolliage { case (coord, kind) =>
         val folliageRow = new TileRow(ssoRow, kind, coord.x, coord.y)
-        folliages += folliageRow.values
+        foliages += folliageRow.values
     }
 
     planet.foreachBuilding { building =>

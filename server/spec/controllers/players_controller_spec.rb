@@ -16,85 +16,100 @@ describe PlayersController do
         @test_player = Factory.create(:player)
 
         @action = "players|login"
-        @params = {'galaxy_id' => @test_player.galaxy_id,
-          'auth_token' => @test_player.auth_token}
+        @params = {'server_player_id' => @test_player.id, 'web_player_id' => 3}
       end
 
-      @required_params = %w{galaxy_id auth_token}
+      @required_params = %w{server_player_id web_player_id}
       it_behaves_like "with param options"
 
-      it "should allow players to login" do
-        should_respond_with :success => true
-        invoke @action, @params
-      end
+      describe "successfully authorized by web" do
+        before(:each) do
+          ControlManager.instance.should_receive(:login_authorized?).with(
+            @test_player, @params['web_player_id']
+          ).and_return(true)
+        end
 
-      it "should push actions" do
-        invoke @action, @params
-        
-        [
-          "game|config", "players|show", "planets|player_index", 
-          "technologies|index", "quests|index", "notifications|index", 
-          RoutesController::ACTION_INDEX, 
-          ChatController::ACTION_INDEX, 
-          GalaxiesController::ACTION_SHOW
-        ].each_with_index do |action, index|
-          message = {'action' => action, 'params' => {}}
-          @dispatcher.pushed_messages[@test_player.id][index].should == 
-            message
+        it "should allow players to login" do
+          should_respond_with :success => true
+          invoke @action, @params
+        end
+
+        it "should push actions" do
+          invoke @action, @params
+
+          [
+            "game|config", "players|show", "planets|player_index",
+            "technologies|index", "quests|index", "notifications|index",
+            RoutesController::ACTION_INDEX,
+            ChatController::ACTION_INDEX,
+            GalaxiesController::ACTION_SHOW
+          ].each_with_index do |action, index|
+            message = {'action' => action, 'params' => {}}
+            @dispatcher.pushed_messages[@test_player.id][index].should ==
+              message
+          end
+        end
+
+        it "should push announcement if it is set" do
+          ends_at = 5.minutes.from_now
+          message = "Hello!"
+          AnnouncementsController.should_receive(:get).
+            and_return([ends_at, message])
+          invoke @action, @params
+
+          @dispatcher.pushed_messages[@test_player.id].should include(
+            {'action' => AnnouncementsController::ACTION_NEW,
+              'params' => {'ends_at' => ends_at, 'message' => message}}
+          )
+        end
+
+        it "should not push announcement if it is not set" do
+          AnnouncementsController.should_receive(:get).
+            and_return([nil, nil])
+          invoke @action, @params
+
+          @dispatcher.pushed_messages[@test_player.id].find do |message|
+            message['action'] == AnnouncementsController::ACTION_NEW
+          end.should be_nil
+        end
+
+        it "should push daily_bonus|show if there is a bonus available" do
+          @test_player.daily_bonus_at = 1.day.ago
+          @test_player.save!
+          invoke @action, @params
+
+          @dispatcher.pushed_messages[@test_player.id].should include(
+            {'action' => DailyBonusController::ACTION_SHOW, 'params' => {}}
+          )
+        end
+
+        it "should not push daily_bonus|show if there is no bonus" do
+          @test_player.daily_bonus_at = 1.day.from_now
+          @test_player.save!
+          invoke @action, @params
+
+          @dispatcher.pushed_messages[@test_player.id].should_not include(
+            {'action' => DailyBonusController::ACTION_SHOW, 'params' => {}}
+          )
         end
       end
-      
-      it "should push announcement if it is set" do
-        ends_at = 5.minutes.from_now
-        message = "Hello!"
-        AnnouncementsController.should_receive(:get).
-          and_return([ends_at, message])
-        invoke @action, @params
-        
-        @dispatcher.pushed_messages[@test_player.id].should include(
-          {'action' => AnnouncementsController::ACTION_NEW, 
-            'params' => {'ends_at' => ends_at, 'message' => message}}
-        )
-      end
-      
-      it "should not push announcement if it is not set" do
-        AnnouncementsController.should_receive(:get).
-          and_return([nil, nil])
-        invoke @action, @params
-        
-        @dispatcher.pushed_messages[@test_player.id].find do |message|
-          message['action'] == AnnouncementsController::ACTION_NEW
-        end.should be_nil
-      end
-      
-      it "should push daily_bonus|show if there is a bonus available" do
-        @test_player.daily_bonus_at = 1.day.ago
-        @test_player.save!
-        invoke @action, @params
-        
-        @dispatcher.pushed_messages[@test_player.id].should include(
-          {'action' => DailyBonusController::ACTION_SHOW, 'params' => {}}
-        )
-      end
-      
-      it "should not push daily_bonus|show if there is no bonus" do
-        @test_player.daily_bonus_at = 1.day.from_now
-        @test_player.save!
-        invoke @action, @params
-        
-        @dispatcher.pushed_messages[@test_player.id].should_not include(
-          {'action' => DailyBonusController::ACTION_SHOW, 'params' => {}}
-        )
-      end
 
-      it "should validate login data" do
-        should_respond_with :success => false
-        invoke @action, @params.merge('auth_token' => "ASDASD")
-      end
+      describe "not authorized by web" do
+        before(:each) do
+          ControlManager.instance.should_receive(:login_authorized?).with(
+            @test_player, @params['web_player_id']
+          ).and_return(false)
+        end
 
-      it "should disconnect on invalid login" do
-        @controller.should_receive(:disconnect)
-        invoke @action, @params.merge('auth_token' => "ASDASD")
+        it "should return success => false" do
+          should_respond_with :success => false
+          invoke @action, @params
+        end
+
+        it "should disconnect on invalid login" do
+          @controller.should_receive(:disconnect)
+          invoke @action, @params
+        end
       end
     end
   end
