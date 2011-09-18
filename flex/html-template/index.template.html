@@ -32,8 +32,10 @@ var fp = {
   binDebug: true // Rake changes this to be false.
 }
 
-if (fp.binDebug) $.getScript("game.js");
-else $.getScript("game-${gamejs.checksum}.js");
+var gameJs = fp.binDebug ? "game.js" : "game-${gamejs.checksum}.js";
+document.write(
+  "<script type='text/javascript' src='" + gameJs + "'><\/script>"
+);
         //]]</script>
     </head>
     <body>

@@ -140,9 +140,9 @@ function getGameOptions() { // {{{
   if (combatLogId) {
     if (server && playerId && locale && webHost && assetsUrl) {
       document.title = locales.combatReplayTitle(locale) + titleSuffix;
-      return {'mode': 'combatLog', 'server': server, 'logId': combatLogId, 
-        'playerId': playerId, 'locale: locale', 'webHost': webHost,
-        'assetsUrl': assetsUrl};
+      return {mode: 'combatLog', server: server, logId: combatLogId, 
+        playerId: playerId, locale: locale, webHost: webHost,
+        assetsUrl: assetsUrl};
     }
     else {
       if (! server) missingParam('server');
@@ -188,9 +188,9 @@ function getGameOptions() { // {{{
       }
     }
     
-    return {'mode': 'game', 'server': server, 'webPlayerId': webPlayerId,
-      'serverPlayerId': serverPlayerId, 'locale': locale, 'webHost': webHost,
-      'assetsUrl': assetsUrl};
+    return {mode: 'game', server: server, webPlayerId: webPlayerId,
+      serverPlayerId: serverPlayerId, locale: locale, webHost: webHost,
+      assetsUrl: assetsUrl};
   }
 } // }}}
 
