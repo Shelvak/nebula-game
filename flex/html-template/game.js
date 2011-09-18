@@ -52,6 +52,8 @@ var webHost = urlParams['web_host'];
 var assetsUrl = urlParams['assets_url'];
 var title = urlParams['title'];
 var titleSuffix = " :: Nebula 44";
+// Used as element id.
+var appName = "nebula44";
 
 // If running a local debug build, take assets from relative url.
 if (fp.binDebug) assetsUrl = ""; 
@@ -211,7 +213,7 @@ function authorize() { // {{{
 
 // Called when authorization succeeds.
 function authorizationSuccessful() {
-  swf.authorizationSuccessful();
+  document.getElementById(appName).authorizationSuccessful();
 }
 
 // Called when authorization fails.
@@ -229,7 +231,6 @@ function getCombatLogUrl(id, playerId, server, webHost, locale) {
 
 // Load our swf.
 // {{{
-var swf = null;
 $(document).ready(function() {
   var flashvars = {};
   var params = {};
@@ -238,13 +239,13 @@ $(document).ready(function() {
   params.allowscriptaccess = "sameDomain";
   params.allowfullscreen = "true";
   var attributes = {};
-  attributes.id = "nebula44";
-  attributes.name = "nebula44";
+  attributes.id = appName;
+  attributes.name = appName;
   attributes.align = "middle";
   var swfName = fp.binDebug
     ? "SpaceGame.swf"
     : assetsUrl + fp.swf + "-" + fp.swfChecksum + ".swf"
-  swf = swfobject.embedSWF(swfName, "flashContent", 
+  swfobject.embedSWF(swfName, "flashContent", 
       "100%", "100%", 
       fp.swfVersionStr, "playerProductInstall.swf", 
       flashvars, params, attributes);
