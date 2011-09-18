@@ -245,9 +245,9 @@ $(document).ready(function() {
   var swfName = fp.binDebug
     ? "SpaceGame.swf"
     : assetsUrl + fp.swf + "-" + fp.swfChecksum + ".swf"
+  var minVersion = fp.binDebug ? "0.0.0" : fp.swfVersionStr;
   swfobject.embedSWF(swfName, "flashContent", 
-      "100%", "100%", 
-      fp.swfVersionStr, "playerProductInstall.swf", 
+      "100%", "100%", minVersion, "playerProductInstall.swf", 
       flashvars, params, attributes);
   // JavaScript enabled so display the flashContent div in case it 
   // is not replaced with a swf object.
