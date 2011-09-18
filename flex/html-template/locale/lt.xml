@@ -4080,8 +4080,8 @@
   </Announcements>
   
   <Authorization>
-    <status.authorization value="Prašome palaukti. Autorizuojama..."/>
-    <status.login value="Prašome palaukti. Jungiamasi į serverį..."/>
+    <status.authorization value="Autorizuojama..."/>
+    <status.login value="Jungiamasi į serverį..."/>
   </Authorization>
 
 </locale>
