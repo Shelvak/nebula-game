@@ -18,6 +18,7 @@
       <![CDATA[
          import controllers.DisplayManager;
          import controllers.navigation.MCTopLevel;
+         import controllers.players.AuthorizationManager;
          import controllers.screens.Screens;
          import controllers.startup.StartupInfo;
          import controllers.startup.StartupManager;
@@ -28,6 +29,7 @@
          import mx.binding.utils.BindingUtils;
          import mx.controls.Alert;
          
+         import utils.EventUtils;
          import utils.MathUtil;
          import utils.UrlNavigate;
          import utils.assets.events.ImagePreloaderEvent;
@@ -57,7 +59,7 @@
                   loadLocaleXML();
                else
                   STARTUP_INFO.addEventListener(StartupEvent.CHECKSUMS_DOWNLOADED,
-                     function (e: StartupEvent): void {
+                     function (eevent:StartupEvent): void {
                         loadLocaleXML();
                      }
                   );
@@ -81,14 +83,11 @@
             _bundlesLoader.load();
          }
          
-         
-         private function bundlesLoader_completeHandler(event:Event) : void
-         {
-            if (_bundlesLoader.loadSuccessful)
-            {
+         private function bundlesLoader_completeHandler(event:Event) : void {
+            if (_bundlesLoader.loadSuccessful) {
                dispatchBundlesLoadedEvent();
-               lblPleaseWait.text = getString('label.pleaseWait');
-               lblTipLabel.text = getString('label.tip');
+               lblPleaseWait.text = getString("label.pleaseWait");
+               lblTipLabel.text = getString("label.tip");
                BindingUtils.bindSetter(setLblDownloadProgressText, downloadProgress, "value", false, true);
                
                var tipsTotal:int = _bundlesLoader.data.child("Tips").children().length();
@@ -99,9 +98,7 @@
                loadImages();
             }
             else
-            {
                Alert.show("Unable to load locale data: " + _bundlesLoader.error, "Error!");
-            }
             _bundlesLoader = null;
          }
          
@@ -110,46 +107,38 @@
          /* ### IMAGES ### */
          /* ############## */
          
-         
-         private function IMG_unpackProgressHandler(event:ImagePreloaderEvent) : void
-         {
+         private function IMG_unpackProgressHandler(event:ImagePreloaderEvent) : void {
             unpackProgress.setProgress(IMG.currentUnpackingProgress, 1);
          }
-         
          
          /**
           * Starts downloading images.
           */
-         private function loadImages() : void
-         {
+         private function loadImages() : void {
             IMG.addEventListener(ProgressEvent.PROGRESS, imageLoaded);
             IMG.addEventListener(ImagePreloaderEvent.UNPACK_PROGRESS, IMG_unpackProgressHandler);
             IMG.addEventListener(Event.COMPLETE, imagesLoadComplete);
             IMG.startDownload();
          }
          
-         
          /**
           * Updates progress bar when image is downloaded.
           */ 
-         private function imageLoaded(event:ProgressEvent) : void
-         {
+         private function imageLoaded(event:ProgressEvent) : void {
             downloadProgress.setProgress(event.bytesLoaded, event.bytesTotal);
             setLblDownloadProgressText(event.bytesLoaded);
          }
          
-         
          /**
           * Switch to login screen when download is complete.
           */ 
-         private function imagesLoadComplete(event:Event) : void
-         {
+         private function imagesLoadComplete(event:Event) : void {
             DisplayManager.setFPSForGame();
             IMG.removeEventListener(ProgressEvent.PROGRESS, imageLoaded);
             IMG.removeEventListener(ImagePreloaderEvent.UNPACK_PROGRESS, IMG_unpackProgressHandler);
             IMG.removeEventListener(Event.COMPLETE, imagesLoadComplete);
-            MCTopLevel.getInstance().showScreen(Screens.LOGIN);
             StartupManager.initializeApp();
+            AuthorizationManager.getInstance().authorizeLoginAndProceed();
          }
          
          
@@ -157,24 +146,17 @@
          /* ### HELPERS ### */
          /* ############### */
          
-         
-         private function getString(property:String, parameters:Array = null) : String
-         {
+         private function getString(property:String, parameters:Array = null) : String {
             return Localizer.string("LoadingScreen", property, parameters);
          }
          
          
-         private function setLblDownloadProgressText(value:Number) : void
-         {
-            lblDownloadProgress.text = getString('label.progress', [downloadProgress.value]);
+         private function setLblDownloadProgressText(value:Number) : void {
+            lblDownloadProgress.text = getString("label.progress", [downloadProgress.value]);
          }
          
-         private function dispatchBundlesLoadedEvent() : void
-         {
-            if (hasEventListener(LocaleEvent.BUNDLES_LOADED))
-            {
-               dispatchEvent(new LocaleEvent(LocaleEvent.BUNDLES_LOADED));
-            }
+         private function dispatchBundlesLoadedEvent() : void {
+            EventUtils.dispatchSimpleEvent(this, LocaleEvent, LocaleEvent.BUNDLES_LOADED);
          }
       ]]>
    </fx:Script>

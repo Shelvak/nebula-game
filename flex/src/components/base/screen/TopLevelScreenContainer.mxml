@@ -14,6 +14,7 @@
       <![CDATA[
          import components.base.viewport.ViewportZoomable;
          import components.map.controllers.IMapViewportController;
+         import components.screens.AuthorizationScreen;
          import components.screens.LoadingScreen;
          import components.screens.MainScreen;
          
@@ -79,6 +80,10 @@
                created = true;
                switch (screenName)
                {
+                  case Screens.AUTHORIZATION:
+                     addElement(new AuthorizationScreen());
+                     break;
+                  
                   case Screens.BATTLE:
                      TL.addEventListener(ScreensSwitchEvent.MAP_ELEMENTS_ADDED, addMapElements);
                      TL.addEventListener(ScreensSwitchEvent.DESTROY_MAP_ELEMENTS, destroyMapElements);

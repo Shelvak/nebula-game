@@ -4,7 +4,6 @@ package controllers.startup
    
    import com.developmentarc.core.actions.ActionDelegate;
    import com.developmentarc.core.actions.actions.AbstractAction;
-   import com.developmentarc.core.utils.EventBroker;
    
    import components.alliance.AllianceScreenM;
    
@@ -19,7 +18,6 @@ package controllers.startup
    import controllers.chat.actions.*;
    import controllers.combatlogs.CombatLogsCommand;
    import controllers.combatlogs.actions.*;
-   import controllers.connection.ConnectionManager;
    import controllers.constructionqueues.ConstructionQueuesCommand;
    import controllers.constructionqueues.actions.*;
    import controllers.dailybonus.DailyBonusCommand;
@@ -46,7 +44,6 @@ package controllers.startup
    import controllers.quests.actions.*;
    import controllers.routes.RoutesCommand;
    import controllers.routes.actions.*;
-   import controllers.screens.Screens;
    import controllers.solarsystems.SolarSystemsCommand;
    import controllers.solarsystems.actions.*;
    import controllers.technologies.TechnologiesCommand;
@@ -154,7 +151,7 @@ package controllers.startup
          
          // locale
          var checksumForLocale:HTTPService = new HTTPService();
-         checksumForLocale.url = "locale/checksums?" + timestamp;
+         checksumForLocale.url = startupInfo.assetsUrl + "locale/checksums?" + timestamp;
          checksumForLocale.addEventListener(ResultEvent.RESULT, 
             function (event:ResultEvent) : void {
                logger.info("Content of locale checksum: {0}", event.result);
@@ -167,7 +164,7 @@ package controllers.startup
          
          // assets
          var checksumForAssets:HTTPService = new HTTPService();
-         checksumForAssets.url = "assets/checksums?" + timestamp;
+         checksumForAssets.url = startupInfo.assetsUrl +  "assets/checksums?" + timestamp;
          checksumForAssets.addEventListener(ResultEvent.RESULT, 
             function (event: ResultEvent): void {
                logger.info("Content of locale checksum: {0}", event.result);
@@ -194,7 +191,6 @@ package controllers.startup
          bindCommandsToActions();
          setupBaseModel();
          ML.player.galaxyId = StartupInfo.getInstance().galaxyId;
-         ConnectionManager.getInstance().connect();
          masterTrigger = new MasterUpdateTrigger();
       }
       
@@ -204,7 +200,7 @@ package controllers.startup
        */
       public static function resetApp() : void {
          logger.info("-------------- APPLICATION RESET --------------");
-         EventBroker.broadcast(new GlobalEvent(GlobalEvent.APP_RESET));         
+         new GlobalEvent(GlobalEvent.APP_RESET);         
          StringUtil.reset();
          ML.reset();
          MChat.getInstance().reset();

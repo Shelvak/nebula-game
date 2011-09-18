@@ -33,7 +33,10 @@ package controllers.startup
       public var server:String = "localhost";
       
       [Optional]
-      public var webHost:String;
+      public var assetsUrl:String = "";
+      
+      [Optional]
+      public var webHost:String;      
       
       [Optional]
       public var logId:String = "";
@@ -42,10 +45,16 @@ package controllers.startup
       public var galaxyId:int = 1;
       
       [Optional]
-      public var authToken:String = "";
+      /**
+       * Used only for combat replays.
+       */
+      public var playerId:int = 0;
       
       [Optional]
-      public var playerId:int = 0;
+      public var webPlayerId:int = 0;
+      
+      [Optional]
+      public var serverPlayerId:int = 0;
       
       public var assetsSums:Object;
       

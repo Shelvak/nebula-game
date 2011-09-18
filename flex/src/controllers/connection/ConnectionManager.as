@@ -8,6 +8,7 @@ package controllers.connection
    import controllers.GlobalFlags;
    import controllers.combatlogs.CombatLogsCommand;
    import controllers.messages.ResponseMessagesTracker;
+   import controllers.players.AuthorizationManager;
    import controllers.players.PlayersCommand;
    import controllers.startup.StartupInfo;
    import controllers.startup.StartupManager;
@@ -104,9 +105,7 @@ package controllers.connection
       /**
        * Connects to the server.
        */
-      public function connect() : void
-      {
-         G_FLAGS.lockApplication = true;
+      public function connect() : void {
          SERVER_PROXY.connect(STARTUP_INFO.server, STARTUP_INFO.port);
       }
       
@@ -114,8 +113,7 @@ package controllers.connection
       /**
        * Disconnects from the server.
        */
-      public function disconnect() : void
-      {
+      public function disconnect() : void {
          SERVER_PROXY.disconnect();
       }
       
@@ -202,7 +200,7 @@ package controllers.connection
       private function retryButton_clickHandler(button:Button) : void
       {
          StartupManager.resetApp();
-         connect();
+         AuthorizationManager.getInstance().authorizeLoginAndProceed();
       }
       
       

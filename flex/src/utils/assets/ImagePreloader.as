@@ -196,13 +196,13 @@ package utils.assets
       public function startDownload () :void
       {
          var _assetsModuleInfo: IModuleInfo;
-         _assetsModuleInfo = ModuleManager.getModule("assets/AssetsConfig.swf"
-         +getModuleChecksum('AssetsConfig'));
+         _assetsModuleInfo = ModuleManager.getModule(
+            STARTUP_INFO.assetsUrl + "assets/" + getModuleFileName('AssetsConfig')
+         );
          
          _assetsModuleInfo.addEventListener(
             ModuleEvent.READY,
-            function(event:ModuleEvent) : void
-            {
+            function(event:ModuleEvent) : void {
                Config.assetsConfig =
                   PropertiesTransformer.objectToCamelCase(_assetsModuleInfo.factory.create().config);
                _modulesTotal = getModules().length;
@@ -212,11 +212,11 @@ package utils.assets
          _assetsModuleInfo.load();
          
       }
-      private function getModuleChecksum(moduleName: String): String
-      {
-         return STARTUP_INFO.assetsSums == null
-            ? '?0'
-            : '?'+STARTUP_INFO.assetsSums[moduleName + '.swf'];
+      private function getModuleFileName(moduleName:String): String {
+         var fileName:String = moduleName + ".swf";
+         if (STARTUP_INFO.assetsSums != null)
+            fileName = STARTUP_INFO.assetsSums[fileName];
+         return fileName
       }
       private function downloadNextModule() : void
       {
@@ -236,8 +236,9 @@ package utils.assets
          
          _currentModule = getModules().pop();
          setCurrentModuleLabel();
-         _moduleInfo = ModuleManager.getModule("assets/" + _currentModule + ".swf"
-         +getModuleChecksum(_currentModule));
+         _moduleInfo = ModuleManager.getModule(
+            STARTUP_INFO.assetsUrl + "assets/" + getModuleFileName(_currentModule)
+         );
          _moduleInfo.addEventListener(
             ModuleEvent.READY,
             function(event:ModuleEvent) : void

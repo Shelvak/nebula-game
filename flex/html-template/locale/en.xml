@@ -4180,5 +4180,10 @@
     <title.popup value="Announcement"/>
     <label.close value="Close"/>
   </Announcements>
+  
+  <Authorization>
+    <status.authorization value="Please wait. Authorizing..."/>
+    <status.login value="Please wait. Logging into the server..."/>
+  </Authorization>
 
 </locale>

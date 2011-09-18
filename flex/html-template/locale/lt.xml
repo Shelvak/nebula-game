@@ -4078,5 +4078,10 @@
     <title.popup value="Skelbimas"/>
     <label.close value="Uždaryti"/>
   </Announcements>
+  
+  <Authorization>
+    <status.authorization value="Prašome palaukti. Autorizuojama..."/>
+    <status.login value="Prašome palaukti. Jungiamasi į serverį..."/>
+  </Authorization>
 
 </locale>

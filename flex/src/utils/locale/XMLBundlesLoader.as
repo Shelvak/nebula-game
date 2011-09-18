@@ -76,11 +76,11 @@ package utils.locale
        */
       public function load() : void
       {
-         var SI: StartupInfo = StartupInfo.getInstance();
-         _loader.load(new URLRequest("locale/" + _locale + ".xml?" +
-         (SI.localeSums == null
-            ? '0'
-            : SI.localeSums[_locale + ".xml"])));
+         var SI:StartupInfo = StartupInfo.getInstance();
+         var fileName:String = _locale + ".xml";
+         if (SI.localeSums != null)
+            fileName = SI.localeSums[_locale + ".xml"];
+         _loader.load(new URLRequest(SI.assetsUrl + "locale/" + fileName));
       }
       
       

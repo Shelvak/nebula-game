@@ -1,18 +1,17 @@
 package controllers.players.actions
 {
-   import components.popups.ErrorPopup;
-   
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
    import controllers.navigation.MCTopLevel;
+   import controllers.players.AuthorizationManager;
    import controllers.screens.Screens;
    import controllers.startup.StartupInfo;
    
-   import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
    
    
+   // TODO: new authentication mechanism: authentication with game server
    /**
     * Performs a login operation.
     */
@@ -32,26 +31,26 @@ package controllers.players.actions
       }
       
       
-      public override function applyClientAction(cmd:CommunicationCommand) : void {         
+      public override function applyClientAction(cmd:CommunicationCommand) : void {
          sendMessage(new ClientRMO({
-            "galaxyId":  STARTUP_INFO.galaxyId,
-            "authToken": STARTUP_INFO.authToken
+            "webPlayerId": STARTUP_INFO.webPlayerId,
+            "serverPlayerId": STARTUP_INFO.serverPlayerId
          }));
       }
       
       public override function applyServerAction(cmd:CommunicationCommand) : void {
-         if (cmd.parameters["success"]) {
-            ML.player.loggedIn = true;
-            MCTopLevel.getInstance().showScreen(Screens.MAIN);
-         }
+         var authManager:AuthorizationManager = AuthorizationManager.getInstance();
+         if (cmd.parameters["success"])
+            authManager.loginSuccessful();
          else {
             GF.lockApplication = false;
-            var popup:ErrorPopup = new ErrorPopup();
-            popup.title = Localizer.string("Popups", "title.loginFailed");
-            popup.message = Localizer.string("Popups", "message.loginFailed");
-            popup.cancelButtonLabel = Localizer.string("Popups", "label.ok");
-            popup.showRetryButton = false;
-            popup.show();
+            authManager.loginFailed();
+//            var popup:ErrorPopup = new ErrorPopup();
+//            popup.title = Localizer.string("Popups", "title.loginFailed");
+//            popup.message = Localizer.string("Popups", "message.loginFailed");
+//            popup.cancelButtonLabel = Localizer.string("Popups", "label.ok");
+//            popup.showRetryButton = false;
+//            popup.show();
          }
       }
    }

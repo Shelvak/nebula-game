@@ -5,7 +5,7 @@ package controllers.screens
 	 */
 	public final class Screens
 	{
-		public static const LOGIN:String = "Login";
+		public static const AUTHORIZATION:String = "Auth";
 		public static const MAIN:String = "Main";
 		public static const LOADING:String = "Loading";
       public static const INFO:String = "Info";

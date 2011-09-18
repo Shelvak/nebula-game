@@ -28,6 +28,7 @@
                           left="0" right="0" top="0" bottom="0">
       <s:Group x="0" y="0" id="vstTopLevelScreens" width="100%" height="100%"
                     creationComplete="vstTopLevelScreens_creationCompleteHandler(event)">
+         <screen:TopLevelScreenContainer screenName="{Screens.AUTHORIZATION}"/>
          <screen:TopLevelScreenContainer screenName="{Screens.LOADING}"
                                          localeBundlesLoaded="loadingscreen1_localeBundlesLoadedHandler(event)"/>
          <screen:TopLevelScreenContainer screenName="{Screens.MAIN}"/>

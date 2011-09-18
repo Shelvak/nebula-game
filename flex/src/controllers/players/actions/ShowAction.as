@@ -14,8 +14,7 @@ package controllers.players.actions
     */
    public class ShowAction extends CommunicationAction
    {
-      public override function applyServerAction(cmd:CommunicationCommand) : void
-      {
+      public override function applyServerAction(cmd:CommunicationCommand) : void {
          var player:Object = cmd.parameters["player"];
          var allianceCooldown:String = player["allianceCooldownEndsAt"];
          ML.player.copyProperties(BaseModel.createModel(Player, player));
