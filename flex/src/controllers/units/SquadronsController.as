@@ -20,6 +20,7 @@ package controllers.units
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
    import models.player.PlayerId;
+   import models.unit.MCUnitScreen;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
    import models.unit.UnitKind;
@@ -191,6 +192,20 @@ package controllers.units
             SQUADS.addItem(squadStationary);
             squadToStop.cleanup();
          }
+         else
+         {
+            if (ML.latestPlanet != null)
+            {
+               // TODO: Find out why some filters don't refresh if you dont call 
+               // refresh function on the list
+               var US: MCUnitScreen = MCUnitScreen.getInstance();
+               if (US.units != null)
+               {
+                  US.units.refresh();
+                  US.refreshScreen();
+               }
+            }
+         }
       }
       
       /**
@@ -360,7 +375,7 @@ package controllers.units
                Messenger.show(Localizer.string("Movement", "message.orderComplete"), Messenger.MEDIUM);
             }
          }
-         // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
+            // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
          else if (route["target"] !== undefined) {
             var owner:int = route["playerId"] == ML.player.id ? Owner.PLAYER : Owner.ALLY;
             createRoute(route, owner);
