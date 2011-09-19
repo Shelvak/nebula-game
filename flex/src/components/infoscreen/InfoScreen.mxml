@@ -164,15 +164,24 @@
                            <s:Label text="{Localizer.string('InfoScreen', 'guns')}" 
                                     styleName="h2" top="6"/>
                            <s:BitmapImage top="25" source="{IMG.getImage(AssetNames.INFO_SCREEN_IMAGES_FOLDER + 'line')}"/>
-                           <s:Group width="100%" visible="{INFO.getTechDamageMod(INFO.model.type) != 0}" top="38">
-                              
-                              <s:Label text="{Localizer.string('InfoScreen', 'damageFromTechs')}"/>
-                              <s:Label text="{(INFO.getTechDamageMod(INFO.model.type) > 0? '+':'') + INFO.getTechDamageMod(INFO.model.type) + '%'}"
-                                       color="{INFO.getTechDamageMod(INFO.model.type) > 0?0x00ff00 : 0xff0000}"/>
-                              <s:layout>
-                                 <s:HorizontalLayout paddingTop="4"/>
-                              </s:layout>
-                           </s:Group>
+                           <base:AdvancedContainer top="38" width="100%">
+                              <s:Group visible="{INFO.getTechDamageMod(INFO.model.type) != 0}">
+                                 
+                                 <s:Label text="{Localizer.string('InfoScreen', 'damageFromTechs')}"/>
+                                 <s:Label text="{(INFO.getTechDamageMod(INFO.model.type) > 0? '+':'') + INFO.getTechDamageMod(INFO.model.type) + '%'}"
+                                          color="{INFO.getTechDamageMod(INFO.model.type) > 0?0x00ff00 : 0xff0000}"/>
+                                 <s:layout>
+                                    <s:HorizontalLayout/>
+                                 </s:layout>
+                              </s:Group>
+                              <s:Group visible="{ML.player.population > ML.player.populationMax}">
+                                 <s:Label text="{Localizer.string('Units', 'tooltip.overPopulation', [ML.player.overPopulationAntibonus])}"
+                                          styleName="unsatisfied"/>
+                              </s:Group>
+                              <base:layout>
+                                 <s:VerticalLayout horizontalAlign="justify" paddingTop="4"/>
+                              </base:layout>
+                           </base:AdvancedContainer>
                         </s:Group>
                         <s:Group width="100%" height="{gunLayout.rowCount * 35}" visible="{gunsList.dataProvider.length != 0}">
                            <base:AdvancedList id="gunsList" height="100%" 
