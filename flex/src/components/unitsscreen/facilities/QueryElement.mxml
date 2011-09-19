@@ -138,6 +138,6 @@
    
     
    
-   <s:Label text="{_queryElementModel.title}"  left="42" top="148" width="89" height="9" textAlign="center"/>
+   <s:Label text="{_queryElementModel.title}"  left="42" top="148" width="89" textAlign="center"/>
    
 </base:BaseContainer>
