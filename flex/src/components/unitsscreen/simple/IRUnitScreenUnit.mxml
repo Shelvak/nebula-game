@@ -176,9 +176,9 @@
          {
             expanded = false;
          }
-
+         
          private var downPressed: Boolean = false;
-
+         
          protected function itemrenderer1_mouseDownHandler(event:MouseEvent):void
          {
             downPressed = true;
@@ -194,8 +194,8 @@
          }
          
          private var deselectOnUp: Boolean = false;
-
-
+         
+         
          protected function itemrenderer1_mouseMoveHandler(event:MouseEvent):void
          {
             if (downPressed && uScreen.owner == Owner.PLAYER)
@@ -228,8 +228,8 @@
                indicator.y = event.stageY - (indicator.height/2);
             }
          }
-
-
+         
+         
          protected function itemrenderer1_mouseUpHandler(event:MouseEvent):void
          {
             downPressed = false;
@@ -241,7 +241,12 @@
                model.flankModel.invertSelection(model);
             }
          }
-
+         
+         private function planetResourcesLoadable(pOwner: int): Boolean
+         {
+            return (pOwner == Owner.PLAYER || pOwner == Owner.UNDEFINED);
+         }
+         
       ]]>
    </fx:Script>
    <s:Group id="contGroup" width="100" height="76">
@@ -268,31 +273,42 @@
             <base:layout>
                <s:VerticalLayout/>
             </base:layout>
-            <s:Button id="load" click="show_inside(true)" visible="{!(
-                      (model.unit.storage == 0)
-                      || (!model.unit.location.isSSObject)
-                      || (!ML.latestPlanet)
-                      || (model.unit.owner != Owner.PLAYER)
-                      || (!ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER)
-                      &amp;&amp; (ML.latestPlanet.ssObject.owner != 
-                      Owner.PLAYER)))}"
-                      toolTip="{Localizer.string('Units', 'label.load')}"
-                      skinClass="components.skins.LoadButtonSkin"/>
-            <s:Button id="unload" click="show_inside(false)" visible="{!(model.unit.stored == 0 
-                      || !model.unit.location.isSSObject
-                      || (model.unit.owner != Owner.PLAYER)
-                      || (!ML.latestPlanet)
-                      || (!(
-                      (ML.latestPlanet.ssObject.owner == Owner.PLAYER)
-                      ||
-                      (ML.latestPlanet.ssObject.owner == Owner.ALLY))))}"
-                      toolTip="{Localizer.string('Units', 'label.unload')}"
-                      skinClass="components.skins.UnloadButtonSkin"/>
-            <s:Button id="show" click="showStorage()" visible="{!(model.unit.location.isSSObject || 
-                      model.unit.storage == 0
-                      || model.unit.owner != Owner.PLAYER)}"
-                      toolTip="{Localizer.string('Units', 'label.show')}"
-                      skinClass="components.skins.ShowButtonSkin"/>
+            <!-- LOAD -->
+            <s:Group visible="{!(
+                     (model.unit.storage == 0)
+                     || (!model.unit.location.isSSObject)
+                     || (!ML.latestPlanet)
+                     || (model.unit.owner != Owner.PLAYER)
+                     || (!ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER)
+                     &amp;&amp; !planetResourcesLoadable(ML.latestPlanet.ssObject.owner))
+                     )}"
+                     toolTip="{(!planetResourcesLoadable(ML.latestPlanet.ssObject.owner)
+                     &amp;&amp; !ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER))
+                     ? Localizer.string('Units', 'tooltip.nothingToLoad')
+                     : Localizer.string('Units', 'label.load')}">
+               <s:Button click="show_inside(true)" 
+                         enabled="{!(!planetResourcesLoadable(ML.latestPlanet.ssObject.owner)
+                         &amp;&amp; !ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER))}"
+                         skinClass="components.skins.LoadButtonSkin"/>
+            </s:Group>
+            <!-- UNLOAD -->
+            <s:Group visible="{!(!model.unit.location.isSSObject
+                     || (model.unit.owner != Owner.PLAYER)
+                     || (!ML.latestPlanet))}"
+                     toolTip="{model.unit.stored == 0? Localizer.string('Units', 'tooltip.nothingToUnload')
+                     : Localizer.string('Units', 'label.unload')}">
+               <s:Button click="show_inside(false)" 
+                         enabled="{model.unit.stored > 0}"
+                         skinClass="components.skins.UnloadButtonSkin"/>
+            </s:Group>
+            <!-- SHOW -->
+            <s:Group visible="{!(model.unit.location.isSSObject || 
+                     model.unit.storage == 0
+                     || model.unit.owner != Owner.PLAYER)}"
+                     toolTip="{Localizer.string('Units', 'label.show')}">
+               <s:Button click="showStorage()" 
+                         skinClass="components.skins.ShowButtonSkin"/>
+            </s:Group>
          </base:AdvancedContainer>
       </base:AdvancedContainer>
       <s:Group left="24" right="24" top="0" bottom="0">

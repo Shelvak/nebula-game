@@ -111,6 +111,23 @@ package models.unit
       }
       
       [Bindable (event="selectedResourcesChange")]
+      public function get transporterIsFull(): Boolean
+      {
+         var minVol: int = Math.max(
+         Resource.getResourceVolume(1, ResourceType.METAL),
+         Resource.getResourceVolume(1, ResourceType.ENERGY),
+         Resource.getResourceVolume(1, ResourceType.ZETIUM));
+         return (transporter.storage - transporter.stored < minVol);
+      }
+      
+      [Bindable (event="selectedResourcesChange")]
+      public function get planetIsEmpty(): Boolean
+      {
+         return (!transporterIsFull && getMaxStock(ResourceType.METAL) == 0
+         && getMaxStock(ResourceType.ENERGY) == 0 && getMaxStock(ResourceType.ZETIUM) == 0);
+      }
+      
+      [Bindable (event="selectedResourcesChange")]
       public function getMaxStock(resource: String): Number
       {
          var possibleStore: Number = 

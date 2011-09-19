@@ -3655,6 +3655,14 @@
       maksimalios populiacijos.</p>
     </tooltip.overPopulation>
     
+    <tooltip.nothingToUnload>
+      <p>Nėra ką iškrauti</p>
+    </tooltip.nothingToUnload>
+    
+    <tooltip.nothingToLoad>
+      <p>Nėra ką įkrauti</p>
+    </tooltip.nothingToLoad>
+    
     <title.defensivePool value="Tavo gynybinis rezervas" />
     <title.emptyDefensivePool>
       <p>Tavo gynybinis rezervas yra tuščias. Priešams užpuolus šią planetą
@@ -3743,6 +3751,11 @@
       <p>Tu negali įkrauti resursų į šį krovininį laivą, nes jame nebėra 
       laisvos vietos.</p>
     </label.transporterFull>
+    <label.planetEmpty>
+      <p>
+        Šioje planetoje nėra jokių resursų kuriuos galėtum įkrauti. 
+      </p>
+    </label.planetEmpty>
     <label.empty>
       <p>Šis krovininis laivas yra tuščias ir toje vietoje, kur jis yra, nėra
       nieko, ką jis galėtų įsikrauti.</p>
