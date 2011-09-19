@@ -232,6 +232,83 @@ describe SolarSystem do
     end
   end
 
+  describe "#spawn!" do
+    let(:solar_system) { Factory.create(:battleground) }
+
+    describe "when it already has more spots taken than max" do
+      around(:each) do |example|
+        with_config_values(
+          'solar_system.spawn.battleground.max_spots' => 0
+        ) { example.call }
+      end
+
+      it "should not spawn any units" do
+        lambda do
+          solar_system.spawn!
+        end.should_not change(Unit, :count)
+      end
+
+      it "should return nil" do
+        solar_system.spawn!.should be_nil
+      end
+    end
+
+    describe "when it has less spots taken than max" do
+      before(:all) do
+        @all_points = SolarSystemPoint.all_orbit_points(solar_system.id)
+      end
+
+      around(:each) do |example|
+        with_config_values(
+          'solar_system.spawn.battleground.max_spots' => @all_points.size
+        ) { example.call }
+      end
+
+      it "should conform to the definition" do
+        location = solar_system.spawn!
+        check_spawned_units_by_random_definition(
+          Cfg.solar_system_spawn_units_definition(solar_system.kind),
+          solar_system.galaxy_id,
+          location,
+          nil
+        )
+      end
+
+      it "should spawn and save units" do
+        units = :units
+        UnitBuilder.should_receive(:from_random_ranges).with(
+          Cfg.solar_system_spawn_units_definition(solar_system.kind),
+          solar_system.galaxy_id,
+          an_instance_of(SolarSystemPoint),
+          nil
+        ).and_return(units)
+        Unit.should_receive(:save_all_units).
+          with(units, nil, EventBroker::CREATED)
+        solar_system.spawn!
+      end
+
+      it "should check location after spawning" do
+        Combat::LocationChecker.should_receive(:check_location).
+          with(an_instance_of(SolarSystemPoint))
+        solar_system.spawn!
+      end
+
+      it "should not spawn in points taken by npc" do
+        all_points = @all_points.to_a
+        all_points[0..-2].each do |point|
+          Factory.create(:u_dirac, :galaxy_id => solar_system.galaxy_id,
+            :location => point, :level => 1, :player => nil)
+        end
+
+        solar_system.spawn!.should == all_points[-1]
+      end
+    end
+
+    it "should not raise any errors" do
+      solar_system.spawn!
+    end
+  end
+
   describe ".on_callback" do
     describe "player inactivity check" do
       before(:each) do
@@ -308,6 +385,25 @@ describe SolarSystem do
         lambda do
           @ss.reload
         end.should_not raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    describe "spawn" do
+      before(:each) do
+        @solar_system = Factory.create(:battleground)
+        SolarSystem.stub!(:find).with(@solar_system.id).
+          and_return(@solar_system)
+      end
+
+      it "should call #spawn! on solar system" do
+        @solar_system.should_receive(:spawn!)
+        SolarSystem.on_callback(@solar_system.id, CallbackManager::EVENT_SPAWN)
+      end
+
+      it "should register new callback" do
+        date = SolarSystem.
+          on_callback(@solar_system.id, CallbackManager::EVENT_SPAWN)
+        @solar_system.should have_callback(CallbackManager::EVENT_SPAWN, date)
       end
     end
   end

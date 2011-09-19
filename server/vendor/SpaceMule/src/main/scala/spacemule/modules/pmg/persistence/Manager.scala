@@ -1,17 +1,17 @@
 package spacemule.modules.pmg.persistence
 
 import collection.mutable.{ListBuffer}
-import java.util.Date
 import objects._
 import spacemule.modules.pmg.objects.{Location, Galaxy, Zone, SolarSystem,
-  SSObject, Player}
+  SSObject}
 import scala.collection.mutable.HashSet
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.ss_objects.Planet
-import spacemule.modules.pmg.objects.solar_systems.Battleground
-import spacemule.modules.pmg.objects.solar_systems.Homeworld
 import spacemule.modules.pmg.objects.ss_objects
 import spacemule.persistence.DB
+import spacemule.modules.pmg.objects.solar_systems.{
+  MiniBattleground, Battleground, Homeworld}
+import java.util.{Calendar, Date}
 
 /**
  * Created by IntelliJ IDEA.
@@ -258,6 +258,7 @@ object Manager {
     SolarSystemRow.initShieldEndsAt
     CallbackRow.initPlayerInactivityCheck
     CallbackRow.initAsteroidSpawn
+    CallbackRow.initSsUnitsSpawn
     galaxy.zones.foreach { case (coords, zone) => readZone(galaxy, zone) }
   }
 
@@ -335,21 +336,28 @@ object Manager {
 
     // Add visibility for other players
     solarSystem match {
-      case h: Homeworld => {
-          addSsVisibilityForExistingPlayers(ssRow, false, galaxy, coords)
+      case h: Homeworld =>
+        addSsVisibilityForExistingPlayers(ssRow, false, galaxy, coords)
 
-          // Add visibility, player and start quests for that player
-          // if this is a homeworld.
-          val playerRow = ssRow.playerRow.get
-          fowSsEntries += FowSsEntryRow(ssRow, Some(playerRow.id), None, 1,
-                                        false).values
-          playerRows += playerRow
-          players += playerRow.values
-          startQuests(playerRow)
+        // Add visibility, player and start quests for that player
+        // if this is a homeworld.
+        val playerRow = ssRow.playerRow.get
+        fowSsEntries += FowSsEntryRow(ssRow, Some(playerRow.id), None, 1,
+                                      false).values
+        playerRows += playerRow
+        players += playerRow.values
+        startQuests(playerRow)
 
-          // Add player inactivity check
-          callbacks += CallbackRow(ssRow, galaxy.ruleset).values
-      }
+        // Add player inactivity check
+        callbacks += CallbackRow(ssRow, galaxy.ruleset).values
+      case mg: MiniBattleground =>
+        addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords)
+
+        // Spawn callback
+        callbacks += CallbackRow(
+          ssRow, galaxy.ruleset,
+          Some(CallbackRow.Events.Spawn), Some(Calendar.getInstance)
+        ).values
       case _ => addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords)
     }
 
@@ -361,9 +369,8 @@ object Manager {
   private def readSSObjects(galaxy: Galaxy, ssRow: SolarSystemRow,
                             solarSystem: SolarSystem) = {
     solarSystem.objects.foreach {
-      case(coords, obj) => {
-          val ssoRow = readSSObject(galaxy, ssRow, coords, obj)
-      }
+      case(coords, obj) =>
+        readSSObject(galaxy, ssRow, coords, obj)
     }
   }
 

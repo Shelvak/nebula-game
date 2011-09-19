@@ -98,17 +98,9 @@ class Galaxy < ActiveRecord::Base
 
       # Create units.
       transaction do
-        units = []
-        CONFIG['galaxy.convoy.units'].each do |count_from, count_to, type, flank|
-          count = rand(count_from, count_to + 1)
-          klass = "Unit::#{type}".constantize
-          count.times do 
-            unit = klass.new(:level => 1,
-              :location => source, :galaxy_id => id, :flank => flank)
-            units.push unit
-          end
-        end
-
+        units = UnitBuilder.from_random_ranges(
+          Cfg.galaxy_convoy_units_definition, id, source, nil
+        )
         Unit.save_all_units(units, nil, EventBroker::CREATED)
         route = UnitMover.move(nil, units.map(&:id), source, target, false,
           CONFIG['galaxy.convoy.speed_modifier'])

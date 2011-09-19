@@ -20,9 +20,36 @@ class SolarSystemPoint < LocationPoint
   def self.angle_valid?(position, angle)
     return false unless (0...360).include?(angle)
 
-    num_of_quarter_points = position + 1
-    quarter_point_degrees = 90 / num_of_quarter_points
+    num_of_quarter_points = num_of_quarter_points(position)
+    quarter_point_degrees = quarter_point_degrees(num_of_quarter_points)
     (angle % 90) % quarter_point_degrees == 0
+  end
+
+  # Returns all possible solar system points for solar system with _id_.
+  def self.all_orbit_points(id)
+    points = Set.new
+    0.upto(Cfg.solar_system_orbit_count) do |position|
+      num_of_quarter_points = num_of_quarter_points(position)
+      quarter_point_degrees = quarter_point_degrees(num_of_quarter_points)
+
+      0.upto(3) do |quarter|
+        0.upto(num_of_quarter_points - 1) do |qp_index|
+          points.add new(
+            id, position, quarter * 90 + qp_index * quarter_point_degrees
+          )
+        end
+      end
+    end
+
+    points
+  end
+
+  def self.num_of_quarter_points(position)
+    position + 1
+  end
+
+  def self.quarter_point_degrees(num_of_quarter_points)
+    90 / num_of_quarter_points
   end
 
   alias :position :x

@@ -319,12 +319,24 @@ describe SpaceMule do
         :kind => SolarSystem::KIND_WORMHOLE
       ).count.should == CONFIG['galaxy.wormholes.positions'].count
     end
-    
-    it "should create mini battlegrounds in area" do
-      @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-      SolarSystem.where(:galaxy_id => @galaxy.id, 
-        :kind => SolarSystem::KIND_BATTLEGROUND
-      ).count.should == CONFIG['galaxy.mini_battlegrounds.positions'].count
+
+    describe "mini battlegrounds" do
+      before(:all) do
+        @pulsars = SolarSystem.where(:galaxy_id => @galaxy.id,
+          :kind => SolarSystem::KIND_BATTLEGROUND
+        )
+      end
+
+      it "should create them in area" do
+        @pulsars.count.should ==
+          CONFIG['galaxy.mini_battlegrounds.positions'].count
+      end
+
+      it "should have spawn callbacks registered" do
+        @pulsars.each do |pulsar|
+          pulsar.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+        end
+      end
     end
 
     describe "in planets" do

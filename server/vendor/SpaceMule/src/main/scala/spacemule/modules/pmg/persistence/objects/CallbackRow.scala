@@ -46,6 +46,13 @@ object CallbackRow {
   private var _convoySpawn: String = null
   def convoySpawn = _convoySpawn
   def initConvoySpawn = _convoySpawn = DB.date(Config.convoyTime.fromNow)
+
+  private var _ssUnitsSpawn: Calendar = null
+  def ssUnitsSpawn = _ssUnitsSpawn
+  def initSsUnitsSpawn = _ssUnitsSpawn = {
+    // Spawn units in pulsars immediately
+    Calendar.getInstance
+  }
 }
 
 case class CallbackRow(
