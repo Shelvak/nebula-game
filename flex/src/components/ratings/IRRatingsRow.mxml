@@ -2,7 +2,7 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                 xmlns:s="library://ns.adobe.com/flex/spark" 
                 xmlns:mx="library://ns.adobe.com/flex/mx"
-                autoDrawBackground="false" xmlns:base="components.base.*">
+                autoDrawBackground="false" xmlns:base="components.base.*" xmlns:unitsscreen="components.unitsscreen.*">
    <fx:Script>
       <![CDATA[
          import components.alliance.AllianceScreenM;
@@ -29,6 +29,49 @@
             return player;
          }
          
+         private function getImaginaryLevel(rank: int): int
+         {
+            if (rank > 1000)
+            {
+               return 0;
+            }
+            else if (rank > 500)
+            {
+               return 1;
+            }
+            else if (rank > 250)
+            {
+               return 2;
+            }
+            else if (rank > 150)
+            {
+               return 3;
+            }
+            else if (rank > 100)
+            {
+               return 4;
+            }
+            else if (rank > 50)
+            {
+               return 5;
+            }
+            else if (rank > 30)
+            {
+               return 6;
+            }
+            else if (rank > 20)
+            {
+               return 7;
+            }
+            else if (rank > 10)
+            {
+               return 8;
+            }
+            else
+            {
+               return 9;
+            }
+         }
       ]]>
    </fx:Script>
    <s:Rect left="0" right="0" top="0" bottom="0">
@@ -38,12 +81,13 @@
                        :itemIndex%2==0?0x0e0e0e:0x141414}"/>
       </s:fill>
    </s:Rect>
-   <s:Group top="3" bottom="3">
-      <s:layout>
+   <base:AdvancedContainer top="3" bottom="3">
+      <base:layout>
          <s:HorizontalLayout gap="1" verticalAlign="middle"/>
-      </s:layout>
+      </base:layout>
       <s:Label text="{player.rank}" width="{RatingsWidths.rank}" textAlign="center"/>
-      <base:AdvancedContainer width="{RatingsWidths.player}"
+      <base:AdvancedContainer width="{RatingsWidths.player -
+                              (getImaginaryLevel(player.rank) > 0?47:0)}"
                               toolTip="{Localizer.string('Ratings', player.online
                               ?'online':'offline')}">
          <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
@@ -54,6 +98,10 @@
             <s:HorizontalLayout verticalAlign="middle" paddingLeft="6" paddingRight="3"/>
          </base:layout>
       </base:AdvancedContainer>
+      <s:Group width="46" visible="{getImaginaryLevel(player.rank) > 0}">
+         <unitsscreen:StarsContainer starCount="{getImaginaryLevel(player.rank)}" 
+                                     horizontalCenter="-3"/>
+      </s:Group>
       <s:Group width="{RatingsWidths.playerAlliance}">
          <s:Button label="{player.getAllianceName()}" left="6" right="3"
                    visible="{player.alliance != null}"
@@ -74,5 +122,5 @@
                textAlign="center"/>
       <s:Label text="{player.points}" width="{RatingsWidths.points}" 
                textAlign="center"/>
-   </s:Group>
+   </base:AdvancedContainer>
 </s:ItemRenderer>
