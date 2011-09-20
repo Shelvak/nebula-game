@@ -1,5 +1,6 @@
 module Trait::MetalExtractor
   include Trait::RequiringTile
+  include Trait::Overdriveable
 
 	module ClassMethods
 

@@ -3,10 +3,10 @@ package spacemule.modules.pmg.persistence.objects
 import java.util.Calendar
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
-import spacemule.persistence.DB
+import spacemule.persistence.{DB, RowObject, Row}
 
-object CallbackRow {
-  val columns = "`class`, `object_id`, `event`, `ends_at`, `ruleset`"
+object CallbackRow extends RowObject {
+  val columnsSeq = List("class", "object_id", "event", "ends_at", "ruleset")
 
   object Events extends Enumeration {
     type Event = Value
@@ -46,6 +46,13 @@ object CallbackRow {
   private var _convoySpawn: String = null
   def convoySpawn = _convoySpawn
   def initConvoySpawn = _convoySpawn = DB.date(Config.convoyTime.fromNow)
+
+  private var _ssUnitsSpawn: Calendar = null
+  def ssUnitsSpawn = _ssUnitsSpawn
+  def initSsUnitsSpawn = _ssUnitsSpawn = {
+    // Spawn units in pulsars immediately
+    Calendar.getInstance
+  }
 }
 
 case class CallbackRow(
@@ -53,8 +60,8 @@ case class CallbackRow(
   ruleset: String, 
   event: Option[CallbackRow.Events.Event] = None,
   time: Option[Calendar] = None
-) {
-  val values = "%s\t%d\t%d\t%s\t%s".format(
+) extends Row {
+  val valuesSeq = List(
     row match {
       case galaxy: GalaxyRow => "Galaxy"
       case asteroid: SSObjectRow => "SsObject::Asteroid"

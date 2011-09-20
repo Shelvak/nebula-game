@@ -1,6 +1,9 @@
 # Module that is included for buildings that manage resources.
 #
 module Parts::ResourceManager
+  OVERDRIVE_OUTPUT_ATTRIBUTES = (Resources::TYPES - [:energy]).
+    map { |attr| "#{attr}_generation_rate" }
+
 	def self.included(receiver)
     receiver.extend ClassMethods
     receiver.send(:include, InstanceMethods)
@@ -8,7 +11,7 @@ module Parts::ResourceManager
 
 	module ClassMethods
     def manages_resources?
-      %w{metal energy zetium}.each do |resource|
+      Resources::TYPES.each do |resource|
         %w{generate use store}.each do |type|
           return true unless property("#{resource}.#{type}").nil?
         end
@@ -20,7 +23,7 @@ module Parts::ResourceManager
     # TODO: ditch the stupid .generate/use and replace it with single .rate
     # property.
 
-    %w{metal energy zetium}.each do |resource|
+    Resources::TYPES.each do |resource|
       define_method("#{resource}_generation_rate") do |level|
         raise ArgumentError.new("level must not be nil!") if level.nil?
         evalproperty("#{resource}.generate", 0, 'level' => level).to_f.
@@ -56,13 +59,25 @@ module Parts::ResourceManager
 	end
 
 	module InstanceMethods
-    %w{metal energy zetium}.each do |resource|
+    Resources::TYPES.each do |resource|
       [
         "#{resource}_generation_rate", "#{resource}_usage_rate",
         "#{resource}_storage"
       ].each do |method|
         define_method(method) do |*args|
-          self.class.send(method, args[0] || level)
+          value = self.class.send(method, args[0] || level)
+
+          # Overdrive support.
+          if overdriven?
+            if method == "energy_usage_rate"
+              value *= Cfg.buildings_overdrive_energy_usage_multiplier
+            elsif Parts::ResourceManager::OVERDRIVE_OUTPUT_ATTRIBUTES.
+                include?(method)
+              value *= Cfg.buildings_overdrive_output_multiplier
+            end
+          end
+          
+          value
         end
       end
 

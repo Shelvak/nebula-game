@@ -17,14 +17,12 @@
    <fx:Script>
       <![CDATA[
          import controllers.DisplayManager;
-         import controllers.navigation.MCTopLevel;
          import controllers.players.AuthorizationManager;
-         import controllers.screens.Screens;
+         import controllers.startup.ChecksumsLoader;
          import controllers.startup.StartupInfo;
          import controllers.startup.StartupManager;
          
          import models.events.LocaleEvent;
-         import models.events.StartupEvent;
          
          import mx.binding.utils.BindingUtils;
          import mx.controls.Alert;
@@ -37,8 +35,7 @@
          import utils.locale.XMLBundlesLoader;
          
          
-         private function this_addedToStageHandler(event:Event):void
-         {
+         private function this_addedToStageHandler(event:Event) : void {
             DisplayManager.setFPSForStartup();
          }
          
@@ -47,39 +44,46 @@
          /* ### STARTUP CHECK ### */
          /* ##################### */
          
-         
          private function get STARTUP_INFO() : StartupInfo {
             return StartupInfo.getInstance();
          }
          
-         
          private function this_creationCompleteHandler() : void {
-            if (STARTUP_INFO.loadSuccessful) {
-               if (STARTUP_INFO.checksumsDownloaded)
-                  loadLocaleXML();
-               else
-                  STARTUP_INFO.addEventListener(StartupEvent.CHECKSUMS_DOWNLOADED,
-                     function (eevent:StartupEvent): void {
-                        loadLocaleXML();
-                     }
-                  );
-            }
+            if (STARTUP_INFO.loadSuccessful)
+               loadChecksums();
             else
                Alert.show("ExternalInterface not available: please upgrade your browser.", "Error!");
          }
          
          
-         /* ############### */
-         /* ### BUNDLES ### */
-         /* ############### */
+         /* ################# */
+         /* ### CHECKSUMS ### */
+         /* ################# */
          
+         private var _checksumsLoader:ChecksumsLoader;
+         
+         private function loadChecksums() : void {
+            _checksumsLoader = new ChecksumsLoader(STARTUP_INFO);
+            _checksumsLoader.addEventListener(Event.COMPLETE, checksumsLoader_completeHandler, false, 0, true);
+            _checksumsLoader.load();
+         }
+         
+         private function checksumsLoader_completeHandler(event:Event) : void {
+            _checksumsLoader.removeEventListener(Event.COMPLETE, checksumsLoader_completeHandler, false);
+            _checksumsLoader = null;
+            loadLocaleXML();
+         }
+         
+         
+         /* ############## */
+         /* ### LOCALE ### */
+         /* ############## */
          
          private var _bundlesLoader:XMLBundlesLoader;
-         
           
          private function loadLocaleXML() : void {
             _bundlesLoader = new XMLBundlesLoader(STARTUP_INFO.locale);
-            _bundlesLoader.addEventListener(Event.COMPLETE, bundlesLoader_completeHandler);
+            _bundlesLoader.addEventListener(Event.COMPLETE, bundlesLoader_completeHandler, false, 0, true);
             _bundlesLoader.load();
          }
          
@@ -99,6 +103,7 @@
             }
             else
                Alert.show("Unable to load locale data: " + _bundlesLoader.error, "Error!");
+            _bundlesLoader.removeEventListener(Event.COMPLETE, bundlesLoader_completeHandler, false);
             _bundlesLoader = null;
          }
          
@@ -149,7 +154,6 @@
          private function getString(property:String, parameters:Array = null) : String {
             return Localizer.string("LoadingScreen", property, parameters);
          }
-         
          
          private function setLblDownloadProgressText(value:Number) : void {
             lblDownloadProgress.text = getString("label.progress", [downloadProgress.value]);

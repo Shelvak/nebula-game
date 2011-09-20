@@ -1,7 +1,6 @@
 package controllers.startup
 {
    import models.BaseModel;
-   import models.events.StartupEvent;
    
    import mx.utils.ObjectUtil;
    
@@ -59,16 +58,6 @@ package controllers.startup
       public var assetsSums:Object;
       
       public var localeSums:Object;
-      
-      private var _checksumsDownloaded: Boolean = false;
-      public function get checksumsDownloaded() : Boolean {
-         return _checksumsDownloaded;
-      }      
-      
-      public function handleChecksumsDownloaded() : void {
-         _checksumsDownloaded = true;
-         dispatchSimpleEvent(StartupEvent, StartupEvent.CHECKSUMS_DOWNLOADED);
-      }
       
       
       /* ########################### */

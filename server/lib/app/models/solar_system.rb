@@ -166,10 +166,47 @@ class SolarSystem < ActiveRecord::Base
     Unit.in_zone(self).delete_all
   end
 
+  # Spawns NPC units in random, unoccupied (meaning no NPC ships) sector if
+  # free spots are available.
+  #
+  # Then checks that spot for combat.
+  def spawn!
+    npc_taken_points = lambda do
+      fields = "location_x, location_y"
+      Unit.in_zone(self).select(fields).group(fields).where(:player_id => nil).
+        c_select_all
+    end.call.inject(Set.new) do |set, row|
+      set.add SolarSystemPoint.new(id, row['location_x'], row['location_y'])
+      set
+    end
+
+    if npc_taken_points.size < Cfg.solar_system_spawn_max_spots(kind)
+      definition = Cfg.solar_system_spawn_units_definition(kind)
+      all_points = SolarSystemPoint.all_orbit_points(id)
+      location = (all_points - npc_taken_points).to_a.random_element
+      
+      units = UnitBuilder.from_random_ranges(
+        definition, galaxy_id, location, nil
+      )
+      Unit.save_all_units(units, nil, EventBroker::CREATED)
+      Combat::LocationChecker.check_location(location)
+      
+      location
+    else
+      nil
+    end
+  end
+
   def self.on_callback(id, event)
     case event
     when CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
       check_player_activity(id)
+    when CallbackManager::EVENT_SPAWN
+      solar_system = find(id)
+      solar_system.spawn!
+      date = Cfg.solar_system_spawn_random_delay_date(solar_system.kind)
+      CallbackManager.register(solar_system, event, date)
+      date
     else
       raise CallbackManager::UnknownEvent.new(self, id, event)
     end

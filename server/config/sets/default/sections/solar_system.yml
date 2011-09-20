@@ -58,3 +58,20 @@ resources.jumpgate.count: [2, 4]
 # Fixed positions of jumpgates in battleground.
 # Must have spaces between numbers!
 battleground.jumpgate.positions: [[3, 22], [3, 134], [3, 270]]
+
+### Unit spawning
+
+# Time range for spawning.
+spawn.battleground.delay: [<%= 30.minutes %> / speed, <%= 2.hours %> / speed]
+# Maximum number of spots occupied by NPC units in pulsar.
+spawn.battleground.max_spots: 6
+# - [count_from, count_to, type, flank]
+#
+# count numbers are inclusive.
+spawn.battleground.units:
+  - [5, 10, Dirac, 0]
+  - [5, 10, Dirac, 1]
+  - [5, 10, Thor, 0]
+  - [4, 15, Thor, 1]
+  - [1, 6, Demosis, 0]
+  - [0, 10, Demosis, 1]

@@ -2,22 +2,20 @@ package spacemule.modules.pmg.persistence.objects
 
 import spacemule.modules.pmg.persistence.TableIds
 import spacemule.modules.pmg.objects.planet.Building
-import spacemule.modules.config.objects.Config
+import spacemule.persistence.{RowObject, Row}
 
-object BuildingRow {
-  val columns = "`id`, `type`, `planet_id`, `x`, `y`, `x_end`, `y_end`, " +
-  "`armor_mod`, `construction_mod`, `energy_mod`, `constructor_mod`, " +
-  "`level`, `state`"
+object BuildingRow extends RowObject {
+  val columnsSeq = List("id", "type", "planet_id", "x", "y", "x_end", "y_end",
+    "armor_mod", "construction_mod", "energy_mod", "constructor_mod", "level",
+    "state")
 
   val StateActive = 1
 }
 
-case class BuildingRow(planetRow: SSObjectRow, building: Building) {
+case class BuildingRow(planetRow: SSObjectRow, building: Building) extends Row {
   val id = TableIds.building.next
 
-  val values = (
-    "%d\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d"
-  ).format(
+  val valuesSeq = List(
     id,
     building.name,
     planetRow.id,

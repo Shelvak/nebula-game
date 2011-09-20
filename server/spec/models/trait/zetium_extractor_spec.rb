@@ -21,4 +21,8 @@ describe Building::ZetiumExtractorTraitMock do
     building = Factory.build(:b_zetium_extractor_trait)
     building.should_not be_valid
   end
+
+  it "should include overdriveable" do
+    Building::ZetiumExtractorTraitMock.should include(Trait::Overdriveable)
+  end
 end

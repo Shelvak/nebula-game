@@ -141,6 +141,68 @@ describe BuildingsController do
     end
   end
 
+  describe "buildings|activate_overdrive" do
+    before(:each) do
+      @planet = Factory.create(:planet_with_player, :player => player)
+      tile = Factory.create(:t_ore, :planet => @planet)
+      @building = Factory.create(:b_metal_extractor, opts_active + {
+        :planet => @planet, :x => tile.x, :y => tile.y
+      })
+
+      @action = "buildings|activate_overdrive"
+      @params = {'id' => @building.id}
+    end
+
+    it_behaves_like "finding building"
+
+    it "should activate overdrive on building" do
+      lambda do
+        invoke @action, @params
+        @building.reload
+      end.should change(@building, :overdriven).from(false).to(true)
+    end
+
+    it "should fail if building is not overdriveable" do
+      building = Factory.create(:b_collector_t1, opts_active + {
+        :planet => @planet, :x => 10
+      })
+      lambda do
+        invoke @action, @params.merge('id' => building.id)
+      end.should raise_error(GameLogicError)
+    end
+  end
+
+  describe "buildings|deactivate_overdrive" do
+    before(:each) do
+      @planet = Factory.create(:planet_with_player, :player => player)
+      tile = Factory.create(:t_ore, :planet => @planet)
+      @building = Factory.create(:b_metal_extractor, opts_active + {
+        :planet => @planet, :x => tile.x, :y => tile.y, :overdriven => true
+      })
+
+      @action = "buildings|deactivate_overdrive"
+      @params = {'id' => @building.id}
+    end
+
+    it_behaves_like "finding building"
+
+    it "should deactivate overdrive on building" do
+      lambda do
+        invoke @action, @params
+        @building.reload
+      end.should change(@building, :overdriven).from(true).to(false)
+    end
+
+    it "should fail if building is not overdriveable" do
+      building = Factory.create(:b_collector_t1, opts_active + {
+        :planet => @planet, :x => 10, :overdriven => true
+      })
+      lambda do
+        invoke @action, @params.merge('id' => building.id)
+      end.should raise_error(GameLogicError)
+    end
+  end
+
   describe "buildings|self_destruct" do
     before(:each) do
       @action = "buildings|self_destruct"

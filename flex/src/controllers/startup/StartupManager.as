@@ -66,9 +66,6 @@ package controllers.startup
    import mx.logging.LogEventLevel;
    import mx.logging.targets.TraceTarget;
    import mx.managers.ToolTipManager;
-   import mx.rpc.events.FaultEvent;
-   import mx.rpc.events.ResultEvent;
-   import mx.rpc.http.HTTPService;
    
    import namespaces.client_internal;
    
@@ -124,8 +121,7 @@ package controllers.startup
             ML.player.id = startupInfo.playerId;
          }
          
-         downloadChecksums();
-         
+         // LoadingScreen takes over from this point forward
          return true;
       }
       
@@ -133,47 +129,6 @@ package controllers.startup
       {
          Objects.paramNotNull("instance", instance);
          SingletonFactory.client_internal::registerSingletonInstance(StartupInfo, instance);
-      }
-      
-      private static function downloadChecksums() : void {
-         var startupInfo:StartupInfo = StartupInfo.getInstance();
-         var timestamp:String = (new Date().time).toString();
-         var responses:int = 0;
-         function checkIfDone() : void {
-            responses++;
-            if (responses == 2)
-               startupInfo.handleChecksumsDownloaded();
-         }
-         function handleFail(event:FaultEvent): void {
-            logger.fatal("Checksum download failed");
-            checkIfDone();
-         }
-         
-         // locale
-         var checksumForLocale:HTTPService = new HTTPService();
-         checksumForLocale.url = startupInfo.assetsUrl + "locale/checksums?" + timestamp;
-         checksumForLocale.addEventListener(ResultEvent.RESULT, 
-            function (event:ResultEvent) : void {
-               logger.info("Content of locale checksum: {0}", event.result);
-               startupInfo.localeSums = StringUtil.parseChecksums(String(event.result));
-               checkIfDone();
-            }
-         );
-         checksumForLocale.addEventListener(FaultEvent.FAULT, handleFail);
-         checksumForLocale.send();
-         
-         // assets
-         var checksumForAssets:HTTPService = new HTTPService();
-         checksumForAssets.url = startupInfo.assetsUrl +  "assets/checksums?" + timestamp;
-         checksumForAssets.addEventListener(ResultEvent.RESULT, 
-            function (event: ResultEvent): void {
-               logger.info("Content of locale checksum: {0}", event.result);
-               startupInfo.assetsSums = StringUtil.parseChecksums(String(event.result));
-               checkIfDone();
-            }
-         );
-         checksumForAssets.addEventListener(FaultEvent.FAULT, handleFail);
-         checksumForAssets.send();
       }
       
       

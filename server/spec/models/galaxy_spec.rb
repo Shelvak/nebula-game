@@ -160,7 +160,7 @@ describe Galaxy do
       it "should create route" do
         @route.should be_instance_of(Route)
       end
-      
+
       it "should fire created on units" do
         SPEC_EVENT_HANDLER.clear_events!
         @galaxy.spawn_convoy!
@@ -178,13 +178,12 @@ describe Galaxy do
       end
       
       it "should create units in source location" do
-        counts = Unit.in_location(@route.source).where(:player_id => nil).
-          all.grouped_counts { |unit| [unit.type, unit.flank] }
-        CONFIG['galaxy.convoy.units'].each do
-          |count_from, count_to, type, flank|
-          
-          (count_from..count_to).should include(counts[[type, flank]] || 0)
-        end
+        check_spawned_units_by_random_definition(
+          Cfg.galaxy_convoy_units_definition,
+          @galaxy.id,
+          @route.source,
+          nil
+        )
       end
 
       it "should have route that goes to other wormhole" do
@@ -195,7 +194,7 @@ describe Galaxy do
         end
       end
       
-      it "should have callbacks for units which destroys them upon arival" do
+      it "should have callbacks for units which destroys them upon arrival" do
         Unit.in_location(@route.source).each do |unit|
           unit.should have_callback(CallbackManager::EVENT_DESTROY, 
             @route.arrives_at)

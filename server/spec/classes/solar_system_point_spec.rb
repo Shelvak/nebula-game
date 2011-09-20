@@ -19,6 +19,27 @@ describe SolarSystemPoint do
     end
   end
 
+  describe ".all_orbit_points" do
+    it "should return orbit points" do
+      id = 10
+      Cfg.stub!(:solar_system_orbit_count).and_return(1)
+      SolarSystemPoint.all_orbit_points(id).should == Set.new([
+        SolarSystemPoint.new(id, 0, 0),
+        SolarSystemPoint.new(id, 0, 90),
+        SolarSystemPoint.new(id, 0, 180),
+        SolarSystemPoint.new(id, 0, 270),
+        SolarSystemPoint.new(id, 1, 0),
+        SolarSystemPoint.new(id, 1, 45),
+        SolarSystemPoint.new(id, 1, 90),
+        SolarSystemPoint.new(id, 1, 135),
+        SolarSystemPoint.new(id, 1, 180),
+        SolarSystemPoint.new(id, 1, 225),
+        SolarSystemPoint.new(id, 1, 270),
+        SolarSystemPoint.new(id, 1, 315),
+      ])
+    end
+  end
+
   describe "galaxy delegation" do
     it "should delegate galaxy" do
       model = Factory.create :solar_system

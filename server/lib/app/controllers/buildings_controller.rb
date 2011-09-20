@@ -65,6 +65,38 @@ class BuildingsController < GenericController
     building.deactivate!
   end
 
+  # Turn overdrive on for particular building.
+  #
+  # Parameters:
+  # - id (Fixnum)
+  #
+  # Response: None
+  #
+  def action_activate_overdrive
+    building = find_building
+    if building.is_a?(Trait::Overdriveable)
+      building.activate_overdrive!
+    else
+      raise GameLogicError.new("Targeted building is not overdriveable!")
+    end
+  end
+
+  # Turn overdrive off for particular building.
+  #
+  # Parameters:
+  # - id (Fixnum)
+  #
+  # Response: None
+  #
+  def action_deactivate_overdrive
+    building = find_building
+    if building.is_a?(Trait::Overdriveable)
+      building.deactivate_overdrive!
+    else
+      raise GameLogicError.new("Targeted building is not overdriveable!")
+    end
+  end
+
   ACTION_SELF_DESTRUCT = 'buildings|self_destruct'
   # Initiates self-destruct on +Building+ in +SsObject::Planet+.
   #

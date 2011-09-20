@@ -83,6 +83,31 @@ shared_examples_for "with planet units" do
   end
 end
 
+shared_examples_for "starting resources" do |resolver, additional_items|
+  Resources::TYPES.each do |resource|
+    (
+      [[:_generation_rate, nil], [:_usage_rate, nil], [:_storage, nil]] +
+      (additional_items || []).map { |block| block.call(resource) }
+    ).each do |attr_suffix, value|
+      attr = :"#{resource}#{attr_suffix}"
+      value = resolver.call(attr) if value.nil?
+
+      it "should have correct ##{attr}" do
+        models = @models || [@model]
+        models.each do |model|
+          model.send(attr).should be_within(0.1).of(value)
+        end
+      end
+    end
+  end
+end
+
+# Buildings which are standing in battleground.
+bg_planet_buildings = [
+  Building::NpcHall, Building::NpcInfantryFactory,
+  Building::NpcTankFactory, Building::NpcSpaceFactory
+]
+
 describe SpaceMule do
   before(:all) do
     @mule = SpaceMule.instance
@@ -148,14 +173,16 @@ describe SpaceMule do
       end
 
       describe "battleground planets" do
-        %w{metal energy zetium}.each do |resource|
-          it "should have storage" do
-            @ss.planets.each do |planet|
-              planet.send("#{resource}_storage").should ==
-                CONFIG["battleground.planet.#{resource}.storage"]
-            end
-          end
+        before(:all) do
+          @models = @ss.planets.all
         end
+
+        it_should_behave_like "starting resources",
+          lambda { |attr|
+            bg_planet_buildings.inject(0.0) do |sum, klass|
+              sum + klass.send(attr, klass.max_level)
+            end
+          }
       end
       
       it_behaves_like "with planet units"
@@ -249,11 +276,25 @@ describe SpaceMule do
       end
     end
 
-    it "should create homeworld for player" do
-      SsObject::Planet.where(:player_id => @player.id).count.should == 1
+    describe "homeworld" do
+      before(:all) do
+        @model = SsObject::Planet.where(:player_id => @player.id).first
+      end
+
+      it "should create one homeworld for player" do
+        SsObject::Planet.where(:player_id => @player.id).count.should == 1
+      end
+
+      it_should_behave_like "starting resources",
+        lambda { |attr| Building::Mothership.send(attr, 1) },
+        [
+          lambda { |resource|
+            ["", CONFIG["buildings.mothership.#{resource}.starting"]]
+          }
+        ]
     end
 
-    it "should not create other homeworld if we try that again" do
+    it "should not create other player if we try that again" do
       player_count = Player.count
       @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
       Player.count.should == player_count
@@ -319,12 +360,41 @@ describe SpaceMule do
         :kind => SolarSystem::KIND_WORMHOLE
       ).count.should == CONFIG['galaxy.wormholes.positions'].count
     end
-    
-    it "should create mini battlegrounds in area" do
-      @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-      SolarSystem.where(:galaxy_id => @galaxy.id, 
-        :kind => SolarSystem::KIND_BATTLEGROUND
-      ).count.should == CONFIG['galaxy.mini_battlegrounds.positions'].count
+
+    describe "mini battlegrounds" do
+      before(:all) do
+        @pulsars = SolarSystem.
+          where("x IS NOT NULL AND y IS NOT NULL").
+          where(
+            :galaxy_id => @galaxy.id,
+            :kind => SolarSystem::KIND_BATTLEGROUND
+          )
+      end
+
+      it "should create them in area" do
+        @pulsars.count.should ==
+          CONFIG['galaxy.mini_battlegrounds.positions'].count
+      end
+
+      it "should have spawn callbacks registered" do
+        @pulsars.each do |pulsar|
+          pulsar.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+        end
+      end
+
+      describe "planets" do
+        before(:all) do
+          @models = SsObject::Planet.
+            where(:solar_system_id => @pulsars.map(&:id)).all
+        end
+
+        it_should_behave_like "starting resources",
+          lambda { |attr|
+            bg_planet_buildings.inject(0.0) do |sum, klass|
+              sum + klass.send(attr, 1)
+            end
+          }
+      end
     end
 
     describe "in planets" do

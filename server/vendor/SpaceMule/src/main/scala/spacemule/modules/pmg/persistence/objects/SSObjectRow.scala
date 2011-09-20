@@ -7,19 +7,21 @@ import spacemule.modules.pmg.objects.ss_objects._
 import spacemule.helpers.Converters._
 import spacemule.modules.pmg.objects.SSObject
 import spacemule.modules.config.objects.Config
-import spacemule.persistence.DB
+import spacemule.persistence.{DB, RowObject, Row}
 
-object SSObjectRow {
-  val columns = "`id`, `type`, `solar_system_id`, `angle`, `position`," +
-          "`width`, `height`, `terrain`, `player_id`, `name`, `size`, " +
-          "`metal`, `metal_generation_rate`, `metal_storage`, " +
-          "`energy`, `energy_generation_rate`, `energy_storage`, " +
-          "`zetium`, `zetium_generation_rate`, `zetium_storage`, " +
-          "`last_resources_update`, `owner_changed`"
+object SSObjectRow extends RowObject {
+  val columnsSeq = List(
+    "id", "type", "solar_system_id", "angle", "position", "width", "height",
+    "terrain", "player_id", "name", "size",
+    "metal", "metal_generation_rate", "metal_usage_rate", "metal_storage",
+    "energy", "energy_generation_rate", "energy_usage_rate", "energy_storage",
+    "zetium", "zetium_generation_rate", "zetium_usage_rate", "zetium_storage",
+    "last_resources_update", "owner_changed"
+  )
 }
 
 case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
-                  ssObject: SSObject) {
+                  ssObject: SSObject) extends Row {
   val id = TableIds.ssObject.next
   val width = ssObject match {
     case planet: Planet => planet.area.width
@@ -55,62 +57,57 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
     case _ => DB.loadInFileNull
   }
 
-  val values = (
-    "%d\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s\t%d\t%s"
-  ).format(
-    id,
-    ssObject.name,
-    solarSystemRow.id,
-    coord.angle,
-    coord.position,
-    width,
-    height,
-    terrain,
-    playerId,
-    name,
-    size,
-    ssObject match {
-      case asteroid: Asteroid =>
-        "%d\t%f\t%d\t%d\t%f\t%d\t%d\t%f\t%d\t%s\t%s".format(
-          0, asteroid.metalRate, 0,
-          0, asteroid.energyRate, 0,
-          0, asteroid.zetiumRate, 0,
-          DB.loadInFileNull, DB.loadInFileNull
-        )
-      case bgPlanet: BgPlanet =>
-        "%d\t%d\t%f\t%d\t%d\t%f\t%d\t%d\t%f\t%s\t%s".format(
-          0, 0, Config.bgPlanetMetalStorage,
-          0, 0, Config.bgPlanetEnergyStorage,
-          0, 0, Config.bgPlanetZetiumStorage,
-          DB.loadInFileNull, DB.loadInFileNull
-        )
-      case homeworld: Homeworld =>
-        "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%s\t%s".format(
-          Config.homeworldStartingMetal,
-          Config.homeworldStartingMetalRate,
-          Config.homeworldStartingMetalStorage,
-          Config.homeworldStartingEnergy,
-          Config.homeworldStartingEnergyRate,
-          Config.homeworldStartingEnergyStorage,
-          Config.homeworldStartingZetium,
-          Config.homeworldStartingZetiumRate,
-          Config.homeworldStartingZetiumStorage,
-          Manager.currentDateTime, Manager.currentDateTime
-        )
-      case planet: Planet =>
-        "%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s".format(
-          0, 0, 0,
-          0, 0, 0,
-          0, 0, 0,
-          Manager.currentDateTime, DB.loadInFileNull
-        )
-      case _ =>
-        "%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s".format(
-          0, 0, 0,
-          0, 0, 0,
-          0, 0, 0,
-          DB.loadInFileNull, DB.loadInFileNull
-        )
-    }
-  )
+  val valuesSeq = List(
+    id, ssObject.name, solarSystemRow.id, coord.angle, coord.position,
+    width, height, terrain, playerId, name, size
+  ) ++ (ssObject match {
+    case asteroid: Asteroid =>
+      List(
+        0, asteroid.metalRate, 0,
+        0, asteroid.energyRate, 0,
+        0, asteroid.zetiumRate, 0,
+        DB.loadInFileNull, DB.loadInFileNull
+      )
+    case homeworld: Homeworld =>
+      List(
+        Config.homeworldStartingMetal,
+        homeworld.metalGenerationRate,
+        homeworld.metalUsageRate,
+        homeworld.metalStorage,
+        Config.homeworldStartingEnergy,
+        homeworld.energyGenerationRate,
+        homeworld.energyUsageRate,
+        homeworld.energyStorage,
+        Config.homeworldStartingZetium,
+        homeworld.zetiumGenerationRate,
+        homeworld.zetiumUsageRate,
+        homeworld.zetiumStorage,
+        Manager.currentDateTime,
+        Manager.currentDateTime
+      )
+    case planet: Planet =>
+      List(
+        0,
+        planet.metalGenerationRate,
+        planet.metalUsageRate,
+        planet.metalStorage,
+        0,
+        planet.energyGenerationRate,
+        planet.energyUsageRate,
+        planet.energyStorage,
+        0,
+        planet.zetiumGenerationRate,
+        planet.zetiumUsageRate,
+        planet.zetiumStorage,
+        Manager.currentDateTime,
+        DB.loadInFileNull
+      )
+    case _ =>
+      List(
+        0, 0, 0,
+        0, 0, 0,
+        0, 0, 0,
+        DB.loadInFileNull, DB.loadInFileNull
+      )
+  })
 }

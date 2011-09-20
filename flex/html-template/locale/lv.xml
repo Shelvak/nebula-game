@@ -4209,8 +4209,8 @@
   </Announcements>
   
   <Authorization>
-    <status.authorization value="Please wait. Authorizing..."/>
-    <status.login value="Please wait. Logging into the server..."/>
+    <status.authorization value="Authorizing..."/>
+    <status.login value="Logging into the server..."/>
   </Authorization>
 
 </locale>

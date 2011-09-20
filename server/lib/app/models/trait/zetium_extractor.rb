@@ -1,5 +1,6 @@
 module Trait::ZetiumExtractor
   include Trait::RequiringTile
+  include Trait::Overdriveable
 
 	module ClassMethods
 
