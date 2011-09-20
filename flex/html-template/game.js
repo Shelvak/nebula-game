@@ -243,7 +243,7 @@ $(document).ready(function() {
   attributes.name = appName;
   attributes.align = "middle";
   var swfName = fp.binDebug
-    ? "SpaceGame.swf"
+    ? fp.swf + ".swf"
     : assetsUrl + fp.swf + "-" + fp.swfChecksum + ".swf"
   var minVersion = fp.binDebug ? "0.0.0" : fp.swfVersionStr;
   swfobject.embedSWF(swfName, "flashContent", 
