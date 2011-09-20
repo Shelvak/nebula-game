@@ -283,8 +283,6 @@ class Building < ActiveRecord::Base
     raise ActiveRecord::RecordInvalid.new(self) unless errors.blank?
     calculate_mods(true)
 
-    puts armor_mod.inspect
-    puts armor_mod_change.inspect
     armor_mod_changed = armor_mod_changed?
     transaction do
       stats.save!

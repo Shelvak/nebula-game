@@ -556,7 +556,7 @@ describe Player do
   it "should not allow creating two players in same galaxy" do
     p1 = Factory.create(:player)
     p2 = Factory.build(:player, :galaxy_id => p1.galaxy_id,
-      :auth_token => p1.auth_token)
+      :web_user_id => p1.web_user_id)
     lambda do
       p2.save!
     end.should raise_error(ActiveRecord::RecordNotUnique)
@@ -849,14 +849,6 @@ describe Player do
         -1 => [Combat::NPC]
       }
     end
-  end
-
-  it "should validate uniqueness of auth_token/galaxy_id" do
-    model = Factory.create :player
-    lambda do
-      Factory.create(:player, :galaxy => model.galaxy,
-        :auth_token => model.auth_token)
-    end.should raise_error(ActiveRecord::RecordNotUnique)
   end
 
   describe "destruction" do

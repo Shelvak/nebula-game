@@ -6,7 +6,7 @@ end
 
 Factory.define :b_overdriveable_trait, :parent => :b_trait_mock,
 :class => Building::OverdriveableTraitMock do |m|
-  opts_active.apply m
+  opts_active.factory m
 end
 
 describe Building::OverdriveableTraitMock do
