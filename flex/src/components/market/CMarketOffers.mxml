@@ -58,11 +58,11 @@
          
          private static const sortFields: Object = 
             {
-               'from':[fromField, createdAtField, idField],
-               'what':[fromResourceField, whatField, fromField, createdAtField, idField],
-               'forWhat':[toResourceField, forWhatField, fromField, createdAtField, idField],
-               'rate':[rateField, fromField, createdAtField, idField],
-               'createdAt':[createdAtField, fromField, idField]
+               'from':[fromField, fromResourceField, toResourceField, rateField, createdAtField, idField],
+               'what':[fromResourceField, toResourceField, rateField, createdAtField, fromField, idField],
+               'forWhat':[toResourceField, fromResourceField, rateField, createdAtField, fromField, idField],
+               'rate':[fromResourceField, toResourceField, rateField, createdAtField, fromField, idField],
+               'createdAt':[createdAtField, fromResourceField, toResourceField, rateField, fromField, idField]
             }
          
          protected function header_listSortHandler(event:HeaderEvent):void
@@ -77,7 +77,7 @@
             if (_offers != null)
             {
                _offers.sort = new Sort();
-               _offers.sort.fields = sortFields['createdAt'];
+               _offers.sort.fields = sortFields['what'];
                _offers.refresh();
                header.reset();
             }
