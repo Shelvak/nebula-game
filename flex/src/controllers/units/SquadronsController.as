@@ -154,9 +154,7 @@ package controllers.units
       public function stopSquadron(id:int, atLastHop:Boolean) : void
       {
          if (id <= 0)
-         {
             throwIllegalMovingSquadId(id);
-         }
          ROUTES.remove(id, true);
          var squadToStop:MSquadron = SQUADS.remove(id, true);
          if (squadToStop == null)
@@ -275,7 +273,7 @@ package controllers.units
             {
                destroySquadron(squad.id, false);
             }
-               // otherwise make the jump
+            // otherwise make the jump
             else
             {
                squad.createCurrentHop(sampleUnit.location);
@@ -284,7 +282,7 @@ package controllers.units
                squad.addAllHops(hops);
             }
          }
-            // or create new squadron
+         // or create new squadron
          else if (sampleUnit.location.isObserved)
          {
             UNITS.addAll(units);

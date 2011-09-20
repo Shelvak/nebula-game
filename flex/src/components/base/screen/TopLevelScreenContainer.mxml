@@ -31,15 +31,15 @@
          
          private function addMapElements(e: ScreensSwitchEvent): void
          {
-            if (TL.currentName == screenName)
+            if (e.screenName == screenName)
             {
-               addElement(TL.currentMapViewport);
-               if (TL.currentMapController != null)
+               addElement(e.mapViewport);
+               if (e.mapController != null)
                {
-                  addElement(TL.currentMapController);
+                  addElement(e.mapController);
                }
                callLater(
-                  ViewportZoomable(TL.currentMapViewport).invalidateDisplayList);
+                  ViewportZoomable(e.mapViewport).invalidateDisplayList);
             }
          }
          

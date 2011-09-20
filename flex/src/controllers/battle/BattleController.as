@@ -78,7 +78,7 @@ package controllers.battle
          
          var TL: MCTopLevel = MCTopLevel.getInstance();
          TL.destroyScreenMap(Screens.BATTLE);
-         TL.addMapElements(viewport, viewportCtrl);
+         TL.addMapElements(TL.currentName, viewport, viewportCtrl);
       }
       
       

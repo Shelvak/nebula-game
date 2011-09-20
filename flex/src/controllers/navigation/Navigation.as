@@ -90,19 +90,11 @@ package controllers.navigation
          }
       }
       
-      public function addMapElements(viewport: IVisualElement, 
-                                     controller: IVisualElement): void
-      {
-         currentMapViewport = viewport;
-         currentMapController = controller;
-         dispatchMapElementsAddedEvent();
+      public function addMapElements(screen:String,
+                                     viewport: IVisualElement, 
+                                     controller: IVisualElement): void {
+         dispatchMapElementsAddedEvent(screen, viewport, controller);
       }
-      
-      [Bindable]
-      public var currentMapViewport: IVisualElement;
-      
-      [Bindable]
-      public var currentMapController: IVisualElement;
       
       /**
        * Shows a screen with a given name but does not add current screen
@@ -149,11 +141,16 @@ package controllers.navigation
          }
       }  
       
-      private function dispatchMapElementsAddedEvent(): void
+      private function dispatchMapElementsAddedEvent(screen:String,
+                                                     viewport:IVisualElement,
+                                                     controller:IVisualElement) : void
       {
          if (hasEventListener(ScreensSwitchEvent.MAP_ELEMENTS_ADDED))
          {
-            dispatchEvent(new ScreensSwitchEvent(ScreensSwitchEvent.MAP_ELEMENTS_ADDED));
+            dispatchEvent(new ScreensSwitchEvent(
+               ScreensSwitchEvent.MAP_ELEMENTS_ADDED,
+               screen, viewport, controller
+            ));
          }
       } 
       
