@@ -7,7 +7,9 @@ Factory.define :b_resource_manager_test, :parent => :b_trait_mock,
 :class => Building::ResourceManagerPartTest do |m|; end
 
 describe Building::ResourceManagerPartTest do
-  %w{metal energy zetium}.each do |resource|
+  let(:model) { Factory.create :b_resource_manager_test }
+  
+  Resources::TYPES.each do |resource|
     it "should add storage diff for #{resource} on #on_upgrade_finished" do
       model = Factory.create :b_resource_manager_test, opts_upgrading + {
         :level => 4}
@@ -83,11 +85,7 @@ describe Building::ResourceManagerPartTest do
     model.energy_rate
   end
 
-  before(:all) do
-    @model = Factory.create :b_resource_manager_test
-  end
-
-  %w{metal energy zetium}.each do |resource|
+  Resources::TYPES.each do |resource|
     [
       ["generation", "generate"],
       ["usage", "use"]
@@ -96,7 +94,7 @@ describe Building::ResourceManagerPartTest do
         key = "buildings.resource_manager_part_test.#{resource}.#{cfg_type}"
         rate = 0.3336233463
         with_config_values key => rate do
-          @model.send("#{resource}_#{type}_rate").should == rate.round(
+          model.send("#{resource}_#{type}_rate").should == rate.round(
             ROUNDING_PRECISION)
         end
       end
@@ -106,25 +104,51 @@ describe Building::ResourceManagerPartTest do
       key = "buildings.resource_manager_part_test.#{resource}.store"
       storage = 333.6233463
       with_config_values key => storage do
-        @model.send("#{resource}_storage").should == storage.round(
+        model.send("#{resource}_storage").should == storage.round(
           ROUNDING_PRECISION)
       end
     end
 
     it "should have ##{resource}_rate" do
-      @model.should respond_to("#{resource}_rate")
+      model.should respond_to("#{resource}_rate")
+    end
+  end
+
+  describe "overdrive" do
+    it "should multiply energy_usage_rate" do
+      rate = model.energy_usage_rate
+      model.overdriven = true
+      model.energy_usage_rate.should == \
+        rate * Cfg.buildings_overdrive_energy_usage_multiplier
+    end
+
+    it "should have correct overdrive attributes" do
+      Parts::ResourceManager::OVERDRIVE_OUTPUT_ATTRIBUTES.each do |attr|
+        attr.should match(/^\w+?_generation_rate$/)
+        attr.should_not match(/^energy/)
+      end
+    end
+
+    it "should multiply overdrive attributes" do
+      Parts::ResourceManager::OVERDRIVE_OUTPUT_ATTRIBUTES.each do |attr|
+        model.overdriven = false
+        rate = model.send(attr)
+        model.overdriven = true
+        model.send(attr).should == \
+          rate * Cfg.buildings_overdrive_output_multiplier
+      end
     end
   end
 
   describe "resource accessors" do
     it "should return value if it's defined" do
-      @model.metal_generation_rate.should == @model.send(
+      model.metal_generation_rate.should == model.send(
         :evalproperty, 'metal.generate')
     end
 
     it "should return 0 if it's not defined" do
-      with_config_values "#{@model.class.config_name}.metal.use" => nil do
-        @model.metal_usage_rate.should == 0
+      with_config_values "#{model.class.config_name}.metal.use" => nil do
+        model.metal_usage_rate.should == 0
       end
     end
   end

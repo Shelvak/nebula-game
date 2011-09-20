@@ -20,4 +20,8 @@ describe Building::MetalExtractorTraitMock do
     building = Factory.build(:b_metal_extractor_trait)
     building.should_not be_valid
   end
+
+  it "should include overdriveable" do
+    Building::MetalExtractorTraitMock.should include(Trait::Overdriveable)
+  end
 end

@@ -13,8 +13,3 @@ planet.bonus:
   - [spudder, 1]
   - [glancer, 1]
   - [gnat, 3]
-
-# Must be .0, spacemule expects double
-planet.metal.storage: 100000.0
-planet.energy.storage: 200000.0
-planet.zetium.storage: 25000.0

@@ -14,6 +14,11 @@ self_destruct.cooldown: <%= 6.hours %> / speed
 # How much % of resources you gain when you destroy a building?
 self_destruct.resource_gain: 60
 
+# How much more resources does overdriven building give?
+overdrive.multiplier.output: 2
+# How much more energy does overdriven building use?
+overdrive.multiplier.energy_usage: 6
+
 # building.trait_name.property
 
 # name, width, height, hp, units

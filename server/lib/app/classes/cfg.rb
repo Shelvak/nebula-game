@@ -4,6 +4,16 @@ class Cfg; class << self
 
   def control_token; CONFIG['control']['token']; end
 
+  ### buildings.yml ###
+
+  def buildings_overdrive_output_multiplier
+    CONFIG['buildings.overdrive.multiplier.output']
+  end
+
+  def buildings_overdrive_energy_usage_multiplier
+    CONFIG['buildings.overdrive.multiplier.energy_usage']
+  end
+
   ### market.yml ###
 
   # Minimal amount you can offer in market.
