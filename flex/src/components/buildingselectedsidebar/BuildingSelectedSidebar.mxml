@@ -1151,26 +1151,31 @@
                            </s:layout>
                         </s:Group>
                         
-                        <s:Group visible="{_selectedModel.overdriven}">
-                           <s:Label text="{getString('label.activateOverdrive')}"/>
+                        <s:Group visible="{(_selectedModel.zetiumRate > 0 || _selectedModel.metalRate > 0)
+                                 &amp;&amp; _selectedModel.energyRate &lt; 0
+                                 &amp;&amp; !_selectedModel.overdriven}">
+                           <s:Label text="{getString('label.activateOverdrive', 
+                                    [Config.getBuildingOverdriveOutput(),
+                                    Config.getBuildingOverdriveUsage()])}"/>
                            <s:Group>
                               <s:Button right="6" label="{getString('button.activateOverdrive')}"
                                         click="toggleOverdrive(true)"/>
                            </s:Group>
                            <s:layout>
-                              <s:VerticalLayout horizontalAlign="justify"/>
+                              <s:VerticalLayout horizontalAlign="justify" paddingTop="6" gap="6"/>
                            </s:layout>
                         </s:Group>
                         
-                        <s:Group visible="{(_selectedModel.zetiumRate > 0 || _selectedModel.metalRate > 0)
-                                 &amp;&amp; _selectedModel.energyRate &lt; 0}">
-                           <s:Label text="{getString('label.deactivateOverdrive')}"/>
+                        <s:Group visible="{_selectedModel.overdriven}">
+                           <s:Label text="{getString('label.deactivateOverdrive', 
+                                    [Config.getBuildingOverdriveOutput(),
+                                    Config.getBuildingOverdriveUsage()])}"/>
                            <s:Group>
                               <s:Button right="6" label="{getString('button.deactivateOverdrive')}"
                                         click="toggleOverdrive(false)"/>
                            </s:Group>
                            <s:layout>
-                              <s:VerticalLayout horizontalAlign="justify"/>
+                              <s:VerticalLayout horizontalAlign="justify" paddingTop="6" gap="6"/>
                            </s:layout>
                         </s:Group>
                         

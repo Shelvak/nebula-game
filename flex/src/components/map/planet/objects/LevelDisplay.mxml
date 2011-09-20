@@ -7,8 +7,8 @@
       <![CDATA[
          import mx.core.UIComponent;
          
-         import spark.effects.AnimateFilter;
-         import spark.filters.GlowFilter;
+         import flash.filters.GlowFilter;
+         import flash.filters.BitmapFilter;
          
          import utils.MathUtil;
          import utils.assets.AssetNames;
@@ -26,17 +26,19 @@
          [Bindable]
          private var _maxLevel: int;
          
-         private var glowFilter: AnimateFilter = null;
+         private var glowFilter: BitmapFilter = null;
          
          public function set overdriven(value: Boolean): void
          {
             if (glowFilter == null && value == true)
             {
-               glowFilter = new AnimateFilter(baseLayer, new GlowFilter(0xeec500, 0.9, 5, 5));
+               glowFilter = new GlowFilter(0xffd800, 1.0, 21, 21);
+               baseLayer.filters = [glowFilter];
             }
             else if (glowFilter != null && value == false)
             {
                glowFilter = null;
+               baseLayer.filters = [];
             }
          }
          
