@@ -16,6 +16,15 @@ package models.building.events
       public static const HP_CHANGE:String="hpChange";
       
       /**
+       * Dispached when <code>overdriven</code> property
+       * of <code>Building</code> change.
+       * 
+       * @eventType overdrivenChange
+       */
+      public static const OVERDRIVEN_CHANGE:String="overdrivenChange";
+      
+      
+      /**
        * Dispached when current upgrade time for chosen
        * building change. As a result of this change, BildingSidebar refreshes
        * its labels.
@@ -74,6 +83,7 @@ package models.building.events
        * Dispatched when <code>BUILDINGS|UPDATED</code> is received, <code>FacilitiesElement</code>
        * refreshes it's state on this event
        * 
+       public static var OVERDRIVEN_CHANGE:String;
        * @eventType constructionFinished
        */
       public static const CONSTRUCTION_FINISHED:String="constructionFinished";

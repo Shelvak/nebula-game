@@ -487,7 +487,20 @@
     <label.battlegroundOwner> 
       <p>Kuo ilgiau valdysi šią planetą tuo mažesnis bus ateivių fabrikų 
       produktyvumas</p>
-    </label.battlegroundOwner> 
+    </label.battlegroundOwner>     
+    <label.activateOverdrive> 
+      <p>Įjunk šiam pastatui perkrovos rėžimą, kad jis išgautų 
+      {0 1sts[? kartą] tens[? kartų] many[? kartus]} daugiau resursų bei
+      naudotų {1 1sts[? kartą] tens[? kartų] many[? kartus]} daugiau energijos.</p>
+    </label.activateOverdrive>
+    <label.deactivateOverdrive> 
+      <p>Šis pastatas dirba perkrovos rėžimu. Jis išgauna
+      {0 1sts[? kartą] tens[? kartų] many[? kartus]} daugiau resursų bei
+      naudoja {1 1sts[? kartą] tens[? kartų] many[? kartus]} daugiau energijos. 
+      Išjunk perkrovos rėžimą, kad pastatas grįžtų į įprastinę būseną.</p>
+    </label.deactivateOverdrive>
+    <button.activateOverdrive value="Aktyvuoti perkrovą" />
+    <button.deactivateOverdrive value="Deaktyvuoti perkrovą" />
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>

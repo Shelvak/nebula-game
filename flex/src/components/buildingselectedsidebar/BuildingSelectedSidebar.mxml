@@ -189,7 +189,7 @@
                   {
                      GlobalEvent.unsubscribe_TIMED_UPDATE(global_timedUpdateHandler);
                   }
-                  if (_selectedModel.type == BuildingType.NPC_HALL || _selectedModel.unitBonus != null)
+                  if (_selectedModel.type == BuildingType.NPC_HALL)
                   {
                      EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, refreshBonusTime);
                   }
@@ -231,7 +231,7 @@
                         refreshDestructProperties();
                      }
                   }
-                  if (_selectedModel.type == BuildingType.NPC_HALL || _selectedModel.unitBonus != null)
+                  if (_selectedModel.type == BuildingType.NPC_HALL)
                   {
                      EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshBonusTime);
                   }
@@ -687,6 +687,20 @@
             queueList.scroller.setStyle('horizontalScrollPolicy', ScrollPolicy.OFF);
          }
          
+         private function toggleOverdrive(turnOn: Boolean): void
+         {
+            if (turnOn)
+            {
+               new BuildingsCommand(BuildingsCommand.ACTIVATE_OVERDRIVE, 
+                  _selectedModel).dispatch();
+            }
+            else
+            {
+               new BuildingsCommand(BuildingsCommand.DEACTIVATE_OVERDRIVE, 
+                  _selectedModel).dispatch();
+            }
+         }
+         
       ]]>
    </fx:Script>
    <s:Group id="sidebarContainer" left="0" right="0" bottom="0" top="0">
@@ -701,7 +715,7 @@
                            title="{_selectedModel.name}">
                   <base:Warning paddingTop="6" 
                                 text="{Localizer.string('BuildingSidebar', 'notYourPlanet')}"/>
-                  <s:Group visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}">
+                  <s:Group visible="{_selectedModel.type == BuildingType.NPC_HALL}">
                      <s:Label textAlign="left" text="{getString('label.nextBonus')}"/>
                      <s:Label text="{bonusTime}" textAlign="right"/>
                      <s:layout>
@@ -826,7 +840,7 @@
                            
                         </base:AdvancedContainer>
                         
-                        <s:Group visible="{_selectedModel.unitBonus != null || _selectedModel.type == BuildingType.NPC_HALL}"
+                        <s:Group visible="{_selectedModel.type == BuildingType.NPC_HALL}"
                                  width="100%">
                            <s:Label textAlign="left" text="{getString('label.nextBonus')}"/>
                            <base:TimeLabel text="{bonusTime}" textAlign="right"/>
@@ -1065,7 +1079,8 @@
                         <s:Group visible="{_selectedModel.metalRate != 0}">
                            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{
                                                (_selectedModel.metalRate >= 0? 
-                                               ('+' + NumberUtil.toShortString(_selectedModel.metalRate * 
+                                               ('+' + NumberUtil.toShortString(_selectedModel.metalRate *
+                                               (_selectedModel.overdriven ? Config.getBuildingOverdriveOutput() : 1) *
                                                ML.resourcesMods.getRateMod(ResourceType.METAL)* 
                                                ML.latestPlanet.ssObject.metal.boost.getRateBoost() * 3600, PRECISION)):
                                                NumberUtil.toShortString(_selectedModel.metalRate * 3600, PRECISION))+ ' / ' +
@@ -1073,6 +1088,7 @@
                                                toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
                            <base:NextValueComp textToDisplay="{(_selectedModel.nextMetalRate >= 0? 
                                                ('+' + NumberUtil.toShortString(_selectedModel.nextMetalRate * 
+                                               (_selectedModel.overdriven ? Config.getBuildingOverdriveOutput() : 1) *
                                                ML.resourcesMods.getRateMod(ResourceType.METAL)* 
                                                ML.latestPlanet.ssObject.metal.boost.getRateBoost() * 3600, PRECISION)):
                                                NumberUtil.toShortString(_selectedModel.nextMetalRate * 3600, PRECISION))+ ' / ' +
@@ -1090,14 +1106,18 @@
                                                ('+' + NumberUtil.toShortString(_selectedModel.energyRate * 
                                                ML.resourcesMods.getRateMod(ResourceType.ENERGY)* 
                                                ML.latestPlanet.ssObject.energy.boost.getRateBoost() * 3600, PRECISION)):
-                                               NumberUtil.toShortString(_selectedModel.energyRate * 3600, PRECISION))+ ' / ' +
+                                               NumberUtil.toShortString(_selectedModel.energyRate *
+                                               (_selectedModel.overdriven ? Config.getBuildingOverdriveUsage() : 1) * 
+                                               3600, PRECISION))+ ' / ' +
                                                Localizer.string('General', 'hour.short')}"
                                                toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
                            <base:NextValueComp textToDisplay="{(_selectedModel.nextEnergyRate >= 0? 
                                                ('+' + NumberUtil.toShortString(_selectedModel.nextEnergyRate * 
                                                ML.resourcesMods.getRateMod(ResourceType.ENERGY)* 
                                                ML.latestPlanet.ssObject.energy.boost.getRateBoost() * 3600, PRECISION)):
-                                               NumberUtil.toShortString(_selectedModel.nextEnergyRate * 3600, PRECISION))+ ' / ' +
+                                               NumberUtil.toShortString(_selectedModel.nextEnergyRate *
+                                               (_selectedModel.overdriven ? Config.getBuildingOverdriveUsage() : 1) * 
+                                               3600, PRECISION))+ ' / ' +
                                                Localizer.string('General', 'hour.short')}"
                                                lblColor="{_selectedModel.nextEnergyRate &lt; 0?0xff0000:0x00ff00}"
                                                visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
@@ -1110,6 +1130,7 @@
                            <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{
                                                (_selectedModel.zetiumRate >= 0? 
                                                ('+' + NumberUtil.toShortString(_selectedModel.zetiumRate * 
+                                               (_selectedModel.overdriven ? Config.getBuildingOverdriveOutput() : 1) *
                                                ML.resourcesMods.getRateMod(ResourceType.ZETIUM)* 
                                                ML.latestPlanet.ssObject.zetium.boost.getRateBoost() * 3600, PRECISION)):
                                                NumberUtil.toShortString(_selectedModel.zetiumRate * 3600, PRECISION))+ ' / ' +
@@ -1117,6 +1138,7 @@
                                                toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
                            <base:NextValueComp textToDisplay="{(_selectedModel.nextZetiumRate >= 0? 
                                                ('+' + NumberUtil.toShortString(_selectedModel.nextZetiumRate * 
+                                               (_selectedModel.overdriven ? Config.getBuildingOverdriveOutput() : 1) *
                                                ML.resourcesMods.getRateMod(ResourceType.ZETIUM)* 
                                                ML.latestPlanet.ssObject.zetium.boost.getRateBoost() * 3600, PRECISION)):
                                                NumberUtil.toShortString(_selectedModel.nextZetiumRate * 3600, PRECISION))+ ' / ' +
@@ -1126,6 +1148,29 @@
                                                toolTip="{getString('toolTip.afterUpgrade')}"/>
                            <s:layout>
                               <s:HorizontalLayout/>
+                           </s:layout>
+                        </s:Group>
+                        
+                        <s:Group visible="{_selectedModel.overdriven}">
+                           <s:Label text="{getString('label.activateOverdrive')}"/>
+                           <s:Group>
+                              <s:Button right="6" label="{getString('button.activateOverdrive')}"
+                                        click="toggleOverdrive(true)"/>
+                           </s:Group>
+                           <s:layout>
+                              <s:VerticalLayout horizontalAlign="justify"/>
+                           </s:layout>
+                        </s:Group>
+                        
+                        <s:Group visible="{(_selectedModel.zetiumRate > 0 || _selectedModel.metalRate > 0)
+                                 &amp;&amp; _selectedModel.energyRate &lt; 0}">
+                           <s:Label text="{getString('label.deactivateOverdrive')}"/>
+                           <s:Group>
+                              <s:Button right="6" label="{getString('button.deactivateOverdrive')}"
+                                        click="toggleOverdrive(false)"/>
+                           </s:Group>
+                           <s:layout>
+                              <s:VerticalLayout horizontalAlign="justify"/>
                            </s:layout>
                         </s:Group>
                         
@@ -1433,8 +1478,7 @@
                   </base:layout>
                </base:AdvancedContainer>
                <base:Panel title="{getString('title.buildingBonus')}"
-                           visible="{_selectedModel.unitBonus != null
-                           || Config.getBuildingCredsBonus(_selectedModel.type) > 0
+                           visible="{Config.getBuildingCredsBonus(_selectedModel.type) > 0
                            || Config.getBuildingVictoryPtsBonus(_selectedModel.type) > 0}">
                   <base:AdvancedContainer left="0" right="0">
                      <s:Label visible="{_selectedModel.type == BuildingType.NPC_HALL}" 
@@ -1443,14 +1487,6 @@
                      <s:Label visible="{_selectedModel.type == BuildingType.NPC_HALL}" 
                               text="{'\u2022 '+getString('label.cred',
                               [Config.getBuildingCredsBonus(_selectedModel.type)])}"/>
-                     <s:DataGroup visible="{_selectedModel.unitBonus != null}"
-                                  dataProvider="{_selectedModel.unitBonus}" id="uBonusGroup"
-                                  itemRenderer="components.unit.IRUnitBuildingEntrySmall">
-                        <s:layout>
-                           <s:TileLayout requestedRowCount="{Math.max(1, 
-                                         Math.ceil(Number(_selectedModel.unitBonus.length)/3))}"/>
-                        </s:layout>
-                     </s:DataGroup>
                      <base:layout>
                         <s:VerticalLayout horizontalAlign="justify" paddingLeft="6" paddingRight="6"/>
                      </base:layout>

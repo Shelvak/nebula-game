@@ -487,6 +487,17 @@
       <p>The longer you rule this planet, the less productive 
       will the NPC factories become.</p>
     </label.battlegroundOwner>
+    <label.activateOverdrive> 
+      <p>Overdrive this building to make it extract {0} times more resources
+      while using {1} times more energy.</p>
+    </label.activateOverdrive>
+    <label.deactivateOverdrive> 
+      <p>This building is currently overdriven. It is extracting {0} times 
+      more resources and using {1} times more energy. Deactivate overdrive
+      to return it to its normal state.</p>
+    </label.deactivateOverdrive>
+    <button.activateOverdrive value="Activate overdrive" />
+    <button.deactivateOverdrive value="Deactivate overdrive" />
     <warning.deployCancel value="You will not get your deployed unit back" /> 
   </BuildingSelectedSidebar>
 

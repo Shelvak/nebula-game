@@ -7,6 +7,9 @@
       <![CDATA[
          import mx.core.UIComponent;
          
+         import spark.effects.AnimateFilter;
+         import spark.filters.GlowFilter;
+         
          import utils.MathUtil;
          import utils.assets.AssetNames;
          private static const emptyName: String = "level_empty";
@@ -22,6 +25,20 @@
          
          [Bindable]
          private var _maxLevel: int;
+         
+         private var glowFilter: AnimateFilter = null;
+         
+         public function set overdriven(value: Boolean): void
+         {
+            if (glowFilter == null && value == true)
+            {
+               glowFilter = new AnimateFilter(baseLayer, new GlowFilter(0xeec500, 0.9, 5, 5));
+            }
+            else if (glowFilter != null && value == false)
+            {
+               glowFilter = null;
+            }
+         }
          
          [Bindable]
          private var _currentLevel: int;
@@ -140,13 +157,13 @@
          
       ]]>
    </fx:Script>
-      
+   
    <!-- maby later this wheel should be added to the group for common filter, but for now
-        that was not done, because grafics doesnt seem to work that way -->
-      <s:BitmapImage id="baseLayer" source="{IMG.getImage(AssetNames.getLevelDisplayImageName(emptyName))}"/>
-      <s:BitmapImage source="{IMG.getImage(AssetNames.getLevelDisplayImageName(spaceName))}" mask="{spaceMask}"/>
-      <s:BitmapImage source="{IMG.getImage(AssetNames.getLevelDisplayImageName(fillName))}" 
-                     mask="{_currentLevel == _maxLevel?null:fillMask}"/>
+   that was not done, because grafics doesnt seem to work that way -->
+   <s:BitmapImage id="baseLayer" source="{IMG.getImage(AssetNames.getLevelDisplayImageName(emptyName))}"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.getLevelDisplayImageName(spaceName))}" mask="{spaceMask}"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.getLevelDisplayImageName(fillName))}" 
+                  mask="{_currentLevel == _maxLevel?null:fillMask}"/>
    
    
    <s:Label horizontalCenter="0" verticalCenter="2" fontSize="17" text="{_currentLevel.toString()}"
