@@ -3,15 +3,12 @@ package controllers.players.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
-   import controllers.navigation.MCTopLevel;
    import controllers.players.AuthorizationManager;
-   import controllers.screens.Screens;
    import controllers.startup.StartupInfo;
    
    import utils.remote.rmo.ClientRMO;
    
    
-   // TODO: new authentication mechanism: authentication with game server
    /**
     * Performs a login operation.
     */
@@ -45,12 +42,6 @@ package controllers.players.actions
          else {
             GF.lockApplication = false;
             authManager.loginFailed();
-//            var popup:ErrorPopup = new ErrorPopup();
-//            popup.title = Localizer.string("Popups", "title.loginFailed");
-//            popup.message = Localizer.string("Popups", "message.loginFailed");
-//            popup.cancelButtonLabel = Localizer.string("Popups", "label.ok");
-//            popup.showRetryButton = false;
-//            popup.show();
          }
       }
    }

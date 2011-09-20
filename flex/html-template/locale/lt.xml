@@ -3242,7 +3242,7 @@
     <property.mod.zetium.store value="Zetiumo talpos priedas" />
     <property.mod.metal.generate value="Metalo išgavimo greičio priedas" />
     <property.mod.metal.store value="Metalo talpos priedas" />
-    <property.mod.energy.generate value="Energy išgavimo greičio priedas" />
+    <property.mod.energy.generate value="Energijos išgavimo greičio priedas" />
     <property.mod.energy.store value="Energijos talpos priedas" />
     <property.mod.armor value="Šarvų priedas" />
     <property.mod.damage value="Žalos priedas" />
