@@ -54,10 +54,7 @@ class Building < ActiveRecord::Base
   scope :in_solar_system, Proc.new { |solar_system|
     solar_system = solar_system.id if solar_system.is_a? SolarSystem
 
-    {
-      :conditions => ["`#{SsObject.table_name}`.solar_system_id=?", solar_system],
-      :include => :planet
-    }
+    where(:planet => {:solar_system_id => solar_system})
   }
 
   # This needs to be Proc because we can't test it otherwise.
@@ -286,6 +283,9 @@ class Building < ActiveRecord::Base
     raise ActiveRecord::RecordInvalid.new(self) unless errors.blank?
     calculate_mods(true)
 
+    puts armor_mod.inspect
+    puts armor_mod_change.inspect
+    armor_mod_changed = armor_mod_changed?
     transaction do
       stats.save!
       player.save!
@@ -294,6 +294,9 @@ class Building < ActiveRecord::Base
     end
 
     EventBroker.fire(self, EventBroker::CHANGED)
+    EventBroker.fire(
+      planet, EventBroker::CHANGED, EventBroker::REASON_OWNER_PROP_CHANGE
+    ) if armor_mod_changed
   end
 
   def points_on_destroy
@@ -322,9 +325,6 @@ class Building < ActiveRecord::Base
     self.x_end = x + width - 1 if x
     self.y_end = y + height - 1 if y
   end
-
-  # THIS IS RUBYMINE
-  # it finds most of my stuff.
 
   # Calculate mods before creation if needed
   before_create :calculate_mods

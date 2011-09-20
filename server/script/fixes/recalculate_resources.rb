@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Recalculates resource rates in planets.
+# Recalculates resource rates and storages in planets.
 
 STDOUT.sync = true
 require File.dirname(__FILE__) + '/../../lib/initializer.rb'
@@ -13,6 +13,7 @@ SsObject::Planet.all.each do |planet|
     [:metal, :energy, :zetium].each do |resource|
       planet.send("#{resource}_generation_rate=", 0)
       planet.send("#{resource}_usage_rate=", 0)
+      planet.send("#{resource}_storage=", 0)
     end
 
     planet.buildings.each do |building|
@@ -27,6 +28,10 @@ SsObject::Planet.all.each do |planet|
           planet.send("#{resource}_usage_rate=",
             planet.send("#{resource}_usage_rate") +
             building.send("#{resource}_usage_rate")
+          )
+          planet.send("#{resource}_storage=",
+            planet.send("#{resource}_storage") +
+            building.send("#{resource}_storage")
           )
         end
       end

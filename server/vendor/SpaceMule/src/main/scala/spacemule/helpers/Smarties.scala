@@ -6,6 +6,7 @@ import spacemule.modules.pmg.classes.geom.Coords
 import java.util.Calendar
 import scala.collection.Map
 import scala.collection.mutable
+import java.math.BigDecimal
 
 object Converters {
   implicit def intToSmartInt(int: Int) = new SmartInt(int)
@@ -44,6 +45,8 @@ class SmartInt(int: Int) {
     calendar.add(Calendar.SECOND, int)
     calendar
   }
+  
+  def toBigDecimal() = new BigDecimal(int)
 }
 
 class SmartString(string: String) {

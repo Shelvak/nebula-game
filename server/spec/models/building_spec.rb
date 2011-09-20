@@ -228,6 +228,40 @@ describe Building do
       end
     end
 
+    it "should not dispatch changed for planet if energy mod is not changed" do
+      should_not_fire_event(
+        @model.planet, EventBroker::CHANGED,
+        EventBroker::REASON_OWNER_PROP_CHANGE
+      ) do
+        @model.move!(10, 15)
+      end
+    end
+
+    describe "energy mod changes" do
+      before(:each) do
+
+      end
+
+      it "should dispatch planet changed" do
+        Factory.create(:tile, :kind => Tile::NOXRIUM, :planet => @model.planet,
+          :x => 10, :y => 15)
+        should_fire_event(
+          @model.planet, EventBroker::CHANGED,
+          EventBroker::REASON_OWNER_PROP_CHANGE
+        ) do
+          @model.move!(10, 15)
+        end
+      end
+
+      it "should actually change energy for planet" do
+        planet = @model.planet
+        lambda do
+          @model.move!(10, 15)
+          planet.reload
+        end.should change(planet, :energy_generation_rate)
+      end
+    end
+
     it "should progress objective" do
       Objective::MoveBuilding.should_receive(:progress).with(@model)
       @model.move!(10, 15)

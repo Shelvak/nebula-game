@@ -100,6 +100,14 @@ object Config {
     val formula = get[Any](key).toString
     return formulaEval(parseFormula(formula), vars)
   }
+
+  def formulaEval(key: String, vars: Map[String, BigDecimal],
+                  default: BigDecimal): BigDecimal = {
+    getOpt[Any](key) match {
+      case Some(value) => this.formula(value.toString(), vars)
+      case None => default
+    }
+  }
   
   private def formulaEval(exp: Expression,
                           vars: Map[String, BigDecimal]): BigDecimal = {
@@ -308,29 +316,13 @@ object Config {
   def battlegroundPlanetMaps = (0 until battlegroundPlanetPositions.size).map {
     index => map("planet.battleground.map.%d".format(index))
   }
-
-  def bgPlanetMetalStorage = double("battleground.planet.metal.storage")
-  def bgPlanetEnergyStorage = double("battleground.planet.energy.storage")
-  def bgPlanetZetiumStorage = double("battleground.planet.zetium.storage")
   
   def homeworldStartingMetal: Double = 
     double("buildings.mothership.metal.starting")
-  def homeworldStartingMetalRate: Double =
-    double("buildings.mothership.metal.generate")
-  def homeworldStartingMetalStorage: Double =
-    double("buildings.mothership.metal.store")
   def homeworldStartingEnergy: Double =
     double("buildings.mothership.energy.starting")
-  def homeworldStartingEnergyRate: Double =
-    double("buildings.mothership.energy.generate")
-  def homeworldStartingEnergyStorage: Double =
-    double("buildings.mothership.energy.store")
   def homeworldStartingZetium: Double =
     double("buildings.mothership.zetium.starting")
-  def homeworldStartingZetiumRate: Double =
-    double("buildings.mothership.zetium.generate")
-  def homeworldStartingZetiumStorage: Double =
-    double("buildings.mothership.zetium.store")
   def startingScientists: Int =
     double("buildings.mothership.scientists").toInt
   def startingPopulationMax: Int =
@@ -368,6 +360,52 @@ object Config {
 
   def getBuildingArea(name: String): Area = area(
     "buildings.%s".format(name.underscore))
+
+  private def buildingRate(kind: String)
+                          (building: Building, resource: String) = {
+    val name = building.name.underscore
+    val level = building.level.toBigDecimal
+    val default = 0.toBigDecimal
+    
+    formulaEval(
+      "buildings.%s.%s.%s".format(name, resource, kind), Map("level" -> level),
+      default
+    )
+  }
+
+  private val buildingGenerationRate = buildingRate("generate") _
+  def buildingMetalGenerationRate(building: Building) = 
+    buildingGenerationRate(building, "metal")
+  def buildingEnergyGenerationRate(building: Building) = 
+    buildingGenerationRate(building, "energy")
+  def buildingZetiumGenerationRate(building: Building) = 
+    buildingGenerationRate(building, "zetium")
+
+  private val buildingUsageRate = buildingRate("use") _
+  def buildingMetalUsageRate(building: Building) = 
+    buildingUsageRate(building, "metal")
+  def buildingEnergyUsageRate(building: Building) = 
+    buildingUsageRate(building, "energy")
+  def buildingZetiumUsageRate(building: Building) = 
+    buildingUsageRate(building, "zetium")
+
+  private def buildingStorage(building: Building, resource: String) = {
+    val name = building.name.underscore
+    val level = building.level.toBigDecimal
+    val default = 0.toBigDecimal
+
+    formulaEval(
+      "buildings.%s.%s.store".format(name, resource), Map("level" -> level),
+      default
+    )
+  }
+
+  def buildingMetalStorage(building: Building) =
+    buildingStorage(building, "metal")
+  def buildingEnergyStorage(building: Building) =
+    buildingStorage(building, "energy")
+  def buildingZetiumStorage(building: Building) =
+    buildingStorage(building, "zetium")
 
   def npcBuildingChances = objectChances("planet.npc.building.chances")
 

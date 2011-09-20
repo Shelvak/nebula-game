@@ -1,9 +1,8 @@
 package spacemule.modules.pmg.objects.ss_objects
 
-import collection.mutable.ListBuffer
+import java.math.BigDecimal
 import java.awt.Rectangle
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.HashSet
 import spacemule.helpers.Converters._
 import spacemule.modules.pmg.classes.ObjectChance
 import spacemule.modules.pmg.classes.geom.Coords
@@ -74,6 +73,26 @@ class Planet(planetArea: Int, terrains: Seq[Int]) extends SSObject
     }
   }
   def foreachBuilding(block: (Building) => Unit) = buildings.foreach(block)
+
+  private def buildingsPropSum(f: (Building) => BigDecimal) = 
+    buildings.foldLeft(0.0) { 
+      case (sum, building) => sum + f(building).doubleValue()
+    }
+  
+  def metalGenerationRate = 
+    buildingsPropSum(Config.buildingMetalGenerationRate)
+  def energyGenerationRate = 
+    buildingsPropSum(Config.buildingEnergyGenerationRate)
+  def zetiumGenerationRate = 
+    buildingsPropSum(Config.buildingZetiumGenerationRate)
+  
+  def metalUsageRate = buildingsPropSum(Config.buildingMetalUsageRate)
+  def energyUsageRate = buildingsPropSum(Config.buildingEnergyUsageRate)
+  def zetiumUsageRate = buildingsPropSum(Config.buildingZetiumUsageRate)
+  
+  def metalStorage = buildingsPropSum(Config.buildingMetalStorage)
+  def energyStorage = buildingsPropSum(Config.buildingEnergyStorage)
+  def zetiumStorage = buildingsPropSum(Config.buildingZetiumStorage)
 
   /**
    * Fills planet with objects: tiles, folliages and buildings 
