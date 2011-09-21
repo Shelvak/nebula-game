@@ -1,17 +1,3 @@
-// Store url params {{{
-var urlParams = {};
-(function () {
-    var e,
-        a = /\+/g,  // Regex for replacing addition symbol with a space
-        r = /([^&=]+)=?([^&]*)/g,
-        d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
-        q = window.location.search.substring(1);
-
-    while (e = r.exec(q))
-       urlParams[d(e[1])] = d(e[2]);
-})();
-// }}}
-
 var locales = { // {{{
   loadingTitle: function(locale) {
     if (locale == "lt") return "Nebula 44 kraunasi...";
@@ -48,19 +34,10 @@ var playerId = urlParams['player_id'];
 
 // Support data.
 var locale = urlParams['locale'];
-var webHost = urlParams['web_host'];
-var assetsUrl = urlParams['assets_url'];
 var title = urlParams['title'];
 var titleSuffix = " :: Nebula 44";
 // Used as element id.
 var appName = "nebula44";
-
-// If running a local debug build, take assets from relative url.
-if (fp.binDebug) assetsUrl = ""; 
-// Local file, but built with rake.
-else if (location.href.indexOf('file://') == 0) assetsUrl = ""
-// Backwards compatibility for combat replays.
-else if (! assetsUrl) assetsUrl = "http://static." + webHost + "/";
 
 document.title = locales.loadingTitle(locale);
 
@@ -223,9 +200,10 @@ function authorizationFailed() {
 }
 
 // Get combat log URL for log with given ID.
-function getCombatLogUrl(id, playerId, server, webHost, locale) {
-  return location.href.replace(location.search, '') + "?server=" + server +
-    "&combat_log_id=" + id + "&player_id=" + playerId + "&web_host=" + webHost +
+function getCombatLogUrl(combatLogId, playerId) {
+  return assetsUrl + "?server=" + server + 
+    "&web_host=" + webHost + "&assets_url=" + assetsUrl +
+    "&combat_log_id=" + combatLogId + "&player_id=" + playerId +
     "&locale=" + locale;
 }
 
@@ -244,13 +222,11 @@ $(document).ready(function() {
   attributes.align = "middle";
   var swfName = fp.binDebug
     ? fp.swf + ".swf"
-    : assetsUrl + fp.swf + "-" + fp.swfChecksum + ".swf"
+    : fp.swf + "-" + fp.swfChecksum + ".swf"
   var minVersion = fp.binDebug ? "0.0.0" : fp.swfVersionStr;
-  swfobject.embedSWF(swfName, "flashContent", 
-      "100%", "100%", minVersion, "playerProductInstall.swf", 
+  swfobject.embedSWF(assetsUrl + swfName, "flashContent", 
+      "100%", "100%", minVersion, assetsUrl + "playerProductInstall.swf", 
       flashvars, params, attributes);
-  // JavaScript enabled so display the flashContent div in case it 
-  // is not replaced with a swf object.
   swfobject.createCSS("#flashContent", "display:block;text-align:left;"); 
 });
 // }}}

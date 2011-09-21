@@ -14,15 +14,27 @@
         <style type="text/css" media="screen"> 
          html, body  { height:100%; }
          body { margin:0; padding:0; overflow:auto; text-align:center; 
-                background-color: ${bgcolor}; }   
+                background-color: white; }   
          object:focus { outline:none; }
          #flashContent { display:none; }
         </style>
          
-        <script type="text/javascript" src="swfobject-2.2.js"></script>
-        <script type="text/javascript" src="jquery-1.6.4.min.js"></script>
         <script type="text/javascript">//<![CDATA[
-// Flash params.
+// {{{ Store url params
+var urlParams = {};
+(function () {
+    var e,
+        a = /\+/g,  // Regex for replacing addition symbol with a space
+        r = /([^&=]+)=?([^&]*)/g,
+        d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
+        q = window.location.search.substring(1);
+
+    while (e = r.exec(q))
+       urlParams[d(e[1])] = d(e[2]);
+})();
+// }}}
+
+// {{{ Flash params. 
 var fp = {
   // For version detection, set to min. required Flash Player version, 
   // or 0 (or 0.0.0), for no version detection.
@@ -30,12 +42,29 @@ var fp = {
   swf: "${swf}",
   swfChecksum: "${swf.checksum}",
   binDebug: true // Rake changes this to be false.
+} // }}}
+
+// {{{ Get assets URL
+var webHost = urlParams['web_host'];
+var assetsUrl = urlParams['assets_url'];
+// If running a local debug build, take assets from relative url.
+if (fp.binDebug) assetsUrl = ""; 
+// Local file, but built with rake.
+else if (location.href.indexOf('file://') == 0) assetsUrl = ""
+// Backwards compatibility for combat replays.
+else if (! assetsUrl) assetsUrl = "http://static." + webHost + "/";
+// }}}
+
+function include(jsName) {
+  document.write(
+    "<script type='text/javascript' src='" + assetsUrl + jsName + "'><\/script>"
+  );
 }
 
+include("swfobject-2.2.js");
+include("jquery-1.6.4.min.js");
 var gameJs = fp.binDebug ? "game.js" : "game-${gamejs.checksum}.js";
-document.write(
-  "<script type='text/javascript' src='" + gameJs + "'><\/script>"
-);
+include(gameJs);
         //]]</script>
     </head>
     <body>
