@@ -18,7 +18,7 @@ package controllers.objects.actions.customcontrollers
       }
       
       
-      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
+      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
          var wreck:MWreckage = BaseModel.createModel(MWreckage, object);
          if (wreck.currentLocation.isObserved) {
             if (wreck.currentLocation.type == LocationType.SOLAR_SYSTEM)
@@ -26,6 +26,7 @@ package controllers.objects.actions.customcontrollers
             else
                ML.latestGalaxy.addObject(wreck);
          }
+         return wreck;
       }
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {

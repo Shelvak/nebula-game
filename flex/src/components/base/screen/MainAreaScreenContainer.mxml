@@ -43,12 +43,11 @@
          
          private function addMapElements(e: ScreensSwitchEvent): void
          {
-            if (MA.currentName == screenName)
+            if (e.screenName == screenName)
             {
-               addElement(MA.currentMapViewport);
-               addElement(MA.currentMapController);
-               callLater(
-                  ViewportZoomable(MA.currentMapViewport).invalidateDisplayList);
+               addElement(e.mapViewport);
+               addElement(e.mapController);
+               callLater(ViewportZoomable(e.mapViewport).invalidateDisplayList);
             }
          }
          

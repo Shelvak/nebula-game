@@ -2,6 +2,8 @@ package models.events
 {
    import flash.events.Event;
    
+   import mx.core.IVisualElement;
+   
    public class ScreensSwitchEvent extends Event
    {
       /**
@@ -55,10 +57,17 @@ package models.events
       public static const SCREEN_CONSTRUCTION_COMPLETED:String = "newScreenConstructionCompleted";
       
       public var screenName: String;
+      public var mapViewport:IVisualElement;
+      public var mapController:IVisualElement;
       
-      public function ScreensSwitchEvent(type:String, _screenName: String = null)
+      public function ScreensSwitchEvent(type:String,
+                                         _screenName: String = null,
+                                         mapViewport:IVisualElement = null,
+                                         mapController:IVisualElement = null)
       {
          screenName = _screenName;
+         this.mapViewport = mapViewport;
+         this.mapController = mapController
          super(type, false, false);
       }
    }

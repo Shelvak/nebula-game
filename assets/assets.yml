@@ -537,6 +537,7 @@ assets:
         cooldown.png: CooldownIcon.png
         cooldown_large.png: 20x20_cooldown.png
         population.png: PopulationIcon.png
+        overdrive.png: Overdrive.png
 
       "notifications":
         outcome_loose.jpg:          Outcome_loose.jpg

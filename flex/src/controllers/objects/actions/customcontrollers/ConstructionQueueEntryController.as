@@ -20,7 +20,7 @@ package controllers.objects.actions.customcontrollers
          super();
       }
       
-      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
+      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
          var query:ConstructionQueueEntry = ConstructionQueryEntryFactory.fromObject(object);
          var constructor:Building = ML.latestPlanet.getBuildingById(query.constructorId);
          constructor.constructionQueueEntries.addItemAt(query, query.position); 
@@ -32,6 +32,7 @@ package controllers.objects.actions.customcontrollers
                query.params.y,
                constructor.id
             );
+         return query;
       }
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {

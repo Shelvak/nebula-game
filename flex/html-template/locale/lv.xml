@@ -488,6 +488,19 @@
       will the NPC factories become.</p>
     </label.battlegroundOwner>
     <warning.deployCancel value="You will not get your deployed unit back" /> 
+    
+    <!-- TODO translate this -->
+        <label.activateOverdrive> 
+      <p>Overdrive this building to make it extract {0} times more resources
+      while using {1} times more energy.</p>
+    </label.activateOverdrive>
+    <label.deactivateOverdrive> 
+      <p>This building is currently overdriven. It is extracting {0} times 
+      more resources and using {1} times more energy. Deactivate overdrive
+      to return it to its normal state.</p>
+    </label.deactivateOverdrive>
+    <button.activateOverdrive value="Activate overdrive" />
+    <button.deactivateOverdrive value="Deactivate overdrive" />
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>
@@ -3710,6 +3723,15 @@
       <p>Your units and buildings will be {0}% weaker due to overpopulation.</p>
     </tooltip.overPopulation>
     
+    <!-- TODO translate this -->
+    <tooltip.nothingToUnload>
+      <p>Nothing to unload</p>
+    </tooltip.nothingToUnload>
+    
+    <tooltip.nothingToLoad>
+      <p>Nothing to load</p>
+    </tooltip.nothingToLoad>
+    
     <title.defensivePool value="Your defensive army pool" />
     <title.emptyDefensivePool>
       <p>Your defensive pool is empty. That means no units will be teleported
@@ -3793,6 +3815,12 @@
         any free storage space left. 
       </p>
     </label.transporterFull>
+    <!-- TODO translate this -->
+    <label.planetEmpty>
+      <p>
+        There are no resources in this planet to load. 
+      </p>
+    </label.planetEmpty>
     <label.empty>
       <p>
         Transporter is empty and there is nothing to load in it's current 

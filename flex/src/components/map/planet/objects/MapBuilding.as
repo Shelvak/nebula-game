@@ -101,6 +101,7 @@ package components.map.planet.objects
                   f_buildingTypeChanged:Boolean = true,
                   f_buildingStateChanged:Boolean = true,
                   f_buildingLevelChanged:Boolean = true,
+                  f_buildingOverdrivenChanged:Boolean = true,
                   f_buildingHpChanged:Boolean = true,
                   f_selectionChanged:Boolean = true;
       
@@ -149,6 +150,12 @@ package components.map.planet.objects
          {
             _levelIndicator.currentLevel = b.level;
          }
+         if (f_buildingOverdrivenChanged)
+         {
+            _levelIndicator.overdriven = b.overdriven;
+            f_levelIdicatorResized = true;
+            invalidateDisplayList();
+         }
          if (f_buildingHpChanged)
          {
             _hpBar.setProgress(b.hp, b.hpMax);
@@ -168,7 +175,7 @@ package components.map.planet.objects
             _constructionProgressBar.visible = !b.isGhost && !b.upgradePart.upgradeCompleted;
          }
          f_buildingIdChanged = f_buildingTypeChanged = f_buildingStateChanged =
-         f_buildingLevelChanged = f_selectionChanged = false;
+         f_buildingLevelChanged = f_buildingOverdrivenChanged = f_selectionChanged = false;
       }
       
       
@@ -348,8 +355,8 @@ package components.map.planet.objects
          var corner:Point = PlanetObject.getBasementBottomCorner(model.width, model.height);
          corner.x += model.imageWidth - model.realBasementWidth - _levelIndicator.width / 2;
          corner.y += model.imageHeight - model.realBasementHeight - _levelIndicator.height - LEVEL_INDICATOR_OFFSET;
-         _levelIndicator.x = corner.x;
-         _levelIndicator.y = corner.y;
+         _levelIndicator.x = corner.x - _levelIndicator.hOverdrivenOffset;
+         _levelIndicator.y = corner.y - _levelIndicator.vOverdrivenOffset;
          _npcIndicator.x = corner.x;
          _npcIndicator.y = corner.y;
          
@@ -371,6 +378,7 @@ package components.map.planet.objects
          b.addEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler, false, 0, true);
          b.addEventListener(BaseModelEvent.MODEL_ID_CHANGE, model_idChangeHandler, false, 0, true);
          b.addEventListener(UpgradeEvent.LEVEL_CHANGE, model_levelChangeHandler, false, 0, true);
+         b.addEventListener(BuildingEvent.OVERDRIVEN_CHANGE, model_overdrivenChangeHandler, false);
          b.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler, false, 0, true);
       }
       
@@ -385,6 +393,7 @@ package components.map.planet.objects
          b.removeEventListener(BuildingEvent.TYPE_CHANGE, model_typeChangeHandler, false);
          b.removeEventListener(BaseModelEvent.MODEL_ID_CHANGE, model_idChangeHandler, false);
          b.removeEventListener(UpgradeEvent.LEVEL_CHANGE, model_levelChangeHandler, false);
+         b.removeEventListener(BuildingEvent.OVERDRIVEN_CHANGE, model_overdrivenChangeHandler, false);
          b.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, model_propertyChangeHandler, false);
       }
       
@@ -422,6 +431,13 @@ package components.map.planet.objects
       private function model_levelChangeHandler(event:UpgradeEvent) : void
       {
          f_buildingLevelChanged = true;
+         invalidateProperties();
+      }
+      
+      
+      private function model_overdrivenChangeHandler(event:BuildingEvent) : void
+      {
+         f_buildingOverdrivenChanged = true;
          invalidateProperties();
       }
       

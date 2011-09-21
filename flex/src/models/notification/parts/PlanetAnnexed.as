@@ -16,8 +16,6 @@ package models.notification.parts
       {
          super();
          var params: Object = notif.params;
-         oldPlayer = params.oldPlayer?BaseModel.createModel(PlayerMinimal, params.oldPlayer):null;
-         newPlayer = params.newPlayer?BaseModel.createModel(PlayerMinimal, params.newPlayer):null;
          location = BaseModel.createModel(Location, params.planet);
          owner = params.owner?BaseModel.createModel(PlayerMinimal, params.owner):null;
          //if outcome is null this means there was no battle fought
@@ -27,10 +25,6 @@ package models.notification.parts
       public var outcome: int;
       
       public var owner: PlayerMinimal;
-      
-      public var oldPlayer: PlayerMinimal;
-      
-      public var newPlayer: PlayerMinimal;
       
       public var location: Location;
       
@@ -79,7 +73,7 @@ package models.notification.parts
          }
          else
          {
-            if (owner != null && oldPlayer != null && owner.id == oldPlayer.id)
+            if (owner != null && owner.id == ML.player.id)
             {
                return Localizer.string("Notifications", "label.planetAnnexed.selfLose",
                   [location.planetName]);

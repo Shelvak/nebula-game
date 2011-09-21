@@ -487,7 +487,20 @@
     <label.battlegroundOwner> 
       <p>Kuo ilgiau valdysi šią planetą tuo mažesnis bus ateivių fabrikų 
       produktyvumas</p>
-    </label.battlegroundOwner> 
+    </label.battlegroundOwner>     
+    <label.activateOverdrive> 
+      <p>Įjunk šiam pastatui perkrovos rėžimą, kad jis išgautų 
+      {0 1sts[? kartą] tens[? kartų] many[? kartus]} daugiau resursų bei
+      naudotų {1 1sts[? kartą] tens[? kartų] many[? kartus]} daugiau energijos.</p>
+    </label.activateOverdrive>
+    <label.deactivateOverdrive> 
+      <p>Šis pastatas dirba perkrovos rėžimu. Jis išgauna
+      {0 1sts[? kartą] tens[? kartų] many[? kartus]} daugiau resursų bei
+      naudoja {1 1sts[? kartą] tens[? kartų] many[? kartus]} daugiau energijos. 
+      Išjunk perkrovos rėžimą, kad pastatas grįžtų į įprastinę būseną.</p>
+    </label.deactivateOverdrive>
+    <button.activateOverdrive value="Aktyvuoti perkrovą" />
+    <button.deactivateOverdrive value="Deaktyvuoti perkrovą" />
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>
@@ -1123,7 +1136,7 @@
     </label.destructPrice>
     <label.notEnough>
      <p>Nepakanka kredų.<br/>Tau dar reikia 
-       {0 one[vieno kredo] tens[? kredų] many[? kredų]}.</p>
+       {0 one[vieno kredo] 1sts[? kredo] tens[? kredų] many[? kredų]}.</p>
     </label.notEnough>
     <warning.notEnoughVipCreds 
     value="Tu turi turėti bent {0} VIP kredus, kad galėtum juos keisti" />
@@ -3655,6 +3668,14 @@
       maksimalios populiacijos.</p>
     </tooltip.overPopulation>
     
+    <tooltip.nothingToUnload>
+      <p>Nėra ką iškrauti</p>
+    </tooltip.nothingToUnload>
+    
+    <tooltip.nothingToLoad>
+      <p>Nėra ką įkrauti</p>
+    </tooltip.nothingToLoad>
+    
     <title.defensivePool value="Tavo gynybinis rezervas" />
     <title.emptyDefensivePool>
       <p>Tavo gynybinis rezervas yra tuščias. Priešams užpuolus šią planetą
@@ -3743,6 +3764,11 @@
       <p>Tu negali įkrauti resursų į šį krovininį laivą, nes jame nebėra 
       laisvos vietos.</p>
     </label.transporterFull>
+    <label.planetEmpty>
+      <p>
+        Šioje planetoje nėra jokių resursų kuriuos galėtum įkrauti. 
+      </p>
+    </label.planetEmpty>
     <label.empty>
       <p>Šis krovininis laivas yra tuščias ir toje vietoje, kur jis yra, nėra
       nieko, ką jis galėtų įsikrauti.</p>

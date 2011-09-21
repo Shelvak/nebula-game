@@ -5,6 +5,9 @@
                     xmlns:mx="library://ns.adobe.com/flex/halo">
    <fx:Script>
       <![CDATA[
+         import flash.filters.BitmapFilter;
+         import flash.filters.GlowFilter;
+         
          import mx.core.UIComponent;
          
          import utils.MathUtil;
@@ -22,6 +25,14 @@
          
          [Bindable]
          private var _maxLevel: int;
+         
+         [Bindable]
+         private var _overdriven: Boolean = false;
+         
+         public function set overdriven(value: Boolean): void
+         {
+            _overdriven = value;
+         }
          
          [Bindable]
          private var _currentLevel: int;
@@ -68,6 +79,8 @@
                fillMask.graphics.lineTo(r, r);
             }
             fillMask.graphics.endFill();
+            fillMask.horizontalCenter = 0;
+            fillMask.verticalCenter = 0;
          }
          
          private function boundsDrawingHelper(alfa: Number, beta: Number, target: UIComponent): void
@@ -129,6 +142,8 @@
                spaceMask.graphics.lineTo(r, r);
             }
             spaceMask.graphics.endFill();
+            spaceMask.horizontalCenter = 0;
+            spaceMask.verticalCenter = 0;
          }
          
          
@@ -138,15 +153,33 @@
             invalidateDisplayList();
          }
          
+         public function get hOverdrivenOffset(): Number
+         {
+            return _overdriven?Math.floor((width - 73)/2)-1:0;
+         }
+         
+         public function get vOverdrivenOffset(): Number
+         {
+            return _overdriven?Math.floor((height - 71)/2)-1:0;
+         }
+         
       ]]>
    </fx:Script>
-      
+   
+   <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName('overdrive'))}" 
+                  horizontalCenter="1" verticalCenter="1"
+                  visible="{_overdriven}"
+                  id="overdrivenIndicator"/>
+   
    <!-- maby later this wheel should be added to the group for common filter, but for now
-        that was not done, because grafics doesnt seem to work that way -->
-      <s:BitmapImage id="baseLayer" source="{IMG.getImage(AssetNames.getLevelDisplayImageName(emptyName))}"/>
-      <s:BitmapImage source="{IMG.getImage(AssetNames.getLevelDisplayImageName(spaceName))}" mask="{spaceMask}"/>
-      <s:BitmapImage source="{IMG.getImage(AssetNames.getLevelDisplayImageName(fillName))}" 
-                     mask="{_currentLevel == _maxLevel?null:fillMask}"/>
+   that was not done, because grafics doesnt seem to work that way -->
+   <s:BitmapImage id="baseLayer" source="{IMG.getImage(AssetNames.getLevelDisplayImageName(emptyName))}"
+                  horizontalCenter="0" verticalCenter="0"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.getLevelDisplayImageName(spaceName))}" mask="{spaceMask}"
+                  horizontalCenter="0" verticalCenter="0"/>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.getLevelDisplayImageName(fillName))}" 
+                  mask="{_currentLevel == _maxLevel?null:fillMask}"
+                  horizontalCenter="0" verticalCenter="0"/>
    
    
    <s:Label horizontalCenter="0" verticalCenter="2" fontSize="17" text="{_currentLevel.toString()}"

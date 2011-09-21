@@ -181,25 +181,26 @@ package models.unit
             routes.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshRoutesButton);
          }
          
-         groundVisible = hasGroundUnits;
-         spaceVisible = hasSpaceUnits;
-         moveVisible = hasMovingUnits;
          
          
          deselectUnits();
          //Prepare currentScreen
          refreshScreen();
          
-         dispatchUnitsChangeEvent();
          dispatchFormationChangeEvent();
       }
       
-      private function refreshScreen(): void
+      public function refreshScreen(): void
       {
          if (currentKind != UnitKind.MOVING)
          {
             createFlanks();
          }
+         
+         groundVisible = hasGroundUnits || currentKind == UnitKind.GROUND;
+         spaceVisible = hasSpaceUnits || currentKind == UnitKind.SPACE
+         moveVisible = hasMovingUnits || currentKind == UnitKind.MOVING;
+         dispatchUnitsChangeEvent();
       }
       
       private var filteredUnits: ListCollectionView;

@@ -150,12 +150,6 @@ package models.building
             {'level': upgradePart.level + 1}));
       }
       
-      [Bindable (event="typeChange")]
-      public function get unitBonus(): ArrayCollection
-      {
-         return Config.getBuildingUnitBonus(type);
-      }
-      
       /**
        * Calculates and returns given resource usage rate for the given building. The value returned has
        * already been rounded and should not be modified in similar way.
@@ -404,6 +398,20 @@ package models.building
        */
       public var state: int = 0;
       
+      private var _overdriven: Boolean = false;
+      
+      public function set overdriven(value: Boolean): void
+      {
+         _overdriven = value;
+         dispatchOverdrivenChangeEvent();
+      }
+      
+      [Optional]
+      [Bindable (event="overdrivenChange")]
+      public function get overdriven(): Boolean
+      {
+         return _overdriven;
+      }
       
       /**
        * Id of the constructable item which this building is currently constructing
@@ -819,6 +827,14 @@ package models.building
          if (hasEventListener(BuildingEvent.QUERY_CHANGE))
          {
             dispatchEvent(new BuildingEvent(BuildingEvent.QUERY_CHANGE));
+         }
+      }
+      
+      private function dispatchOverdrivenChangeEvent(): void
+      {
+         if (hasEventListener(BuildingEvent.OVERDRIVEN_CHANGE))
+         {
+            dispatchEvent(new BuildingEvent(BuildingEvent.OVERDRIVEN_CHANGE));
          }
       }
       

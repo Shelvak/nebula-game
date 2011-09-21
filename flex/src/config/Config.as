@@ -571,6 +571,16 @@ package config
       /* ### BUILDINGS CONFIG GETTERS ### */
       /* ################################ */
       
+      public static function getBuildingOverdriveOutput(): Number
+      {
+         return getValue('buildings.overdrive.multiplier.output');
+      }
+      
+      public static function getBuildingOverdriveUsage(): Number
+      {
+         return getValue('buildings.overdrive.multiplier.energyUsage');
+      }
+      
       public static function getBuildingCredsBonus(type: String): int
       {
          return getBuildingProperty(type, 'creds');
@@ -765,22 +775,6 @@ package config
       public static function getBuildingScientists(type: String) : String
       {
          return getBuildingProperty(type, "scientists");
-      }
-      
-      public static function getBuildingUnitBonus(type: String) : ArrayCollection
-      {
-         var data: Array = getBuildingProperty(type, 'unitBonus');
-         var tempResult: Array = [];
-         if (!data || data.length == 0)
-         {
-            return null;
-         }
-         for (var i: int = 0; i < data.length; i++)
-         {
-            tempResult[i] = new UnitBuildingEntry(ModelUtil.getModelType(
-               ObjectClass.UNIT, data[i][0]), data[i][1]);
-         }
-         return new ArrayCollection(tempResult);
       }
       
       

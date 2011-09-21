@@ -316,6 +316,8 @@ package controllers.startup
          bindPair(BuildingsCommand.SELF_DESTRUCT, new controllers.buildings.actions.SelfDestructAction());
          bindPair(BuildingsCommand.ACTIVATE, new controllers.buildings.actions.ActivateAction());
          bindPair(BuildingsCommand.DEACTIVATE, new controllers.buildings.actions.DeactivateAction());
+         bindPair(BuildingsCommand.ACTIVATE_OVERDRIVE, new controllers.buildings.actions.ActivateOverdriveAction());
+         bindPair(BuildingsCommand.DEACTIVATE_OVERDRIVE, new controllers.buildings.actions.DeactivateOverdriveAction());
          bindPair(BuildingsCommand.ACCELERATE_CONSTRUCTOR, new controllers.buildings.actions.AccelerateConstructorAction());
          bindPair(BuildingsCommand.ACCELERATE_UPGRADE, new controllers.buildings.actions.AccelerateUpgradeAction());
          bindPair(BuildingsCommand.CANCEL_CONSTRUCTOR, new controllers.buildings.actions.CancelConstructorAction());

@@ -20,6 +20,7 @@ package controllers.units
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
    import models.player.PlayerId;
+   import models.unit.MCUnitScreen;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
    import models.unit.UnitKind;
@@ -154,9 +155,7 @@ package controllers.units
       public function stopSquadron(id:int, atLastHop:Boolean) : void
       {
          if (id <= 0)
-         {
             throwIllegalMovingSquadId(id);
-         }
          ROUTES.remove(id, true);
          var squadToStop:MSquadron = SQUADS.remove(id, true);
          if (squadToStop == null)
@@ -190,6 +189,20 @@ package controllers.units
             
             SQUADS.addItem(squadStationary);
             squadToStop.cleanup();
+         }
+         else
+         {
+            if (ML.latestPlanet != null)
+            {
+               // TODO: Find out why some filters don't refresh if you dont call 
+               // refresh function on the list
+               var US: MCUnitScreen = MCUnitScreen.getInstance();
+               if (US.units != null)
+               {
+                  US.units.refresh();
+                  US.refreshScreen();
+               }
+            }
          }
       }
       
@@ -275,7 +288,7 @@ package controllers.units
             {
                destroySquadron(squad.id, false);
             }
-               // otherwise make the jump
+            // otherwise make the jump
             else
             {
                squad.createCurrentHop(sampleUnit.location);
@@ -284,7 +297,7 @@ package controllers.units
                squad.addAllHops(hops);
             }
          }
-            // or create new squadron
+         // or create new squadron
          else if (sampleUnit.location.isObserved)
          {
             UNITS.addAll(units);
@@ -360,7 +373,7 @@ package controllers.units
                Messenger.show(Localizer.string("Movement", "message.orderComplete"), Messenger.MEDIUM);
             }
          }
-         // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
+            // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
          else if (route["target"] !== undefined) {
             var owner:int = route["playerId"] == ML.player.id ? Owner.PLAYER : Owner.ALLY;
             createRoute(route, owner);

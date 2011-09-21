@@ -262,7 +262,7 @@ package tests.galaxy
          var ssObj:MSSObject = new MSSObject();
          ssObj.id = 1;
          ssObj.type = SSObjectType.PLANET;
-         ssObj.viewable = true;
+         ssObj.solarSystemId = 1;
          var planet:Planet = new Planet(ssObj);
          planet.units.addItem(makeUnit(1));
          planet.units.addItem(makeUnit(2));
@@ -272,7 +272,7 @@ package tests.galaxy
          var g:Galaxy = new Galaxy();
          g.id = GALAXY_ID;
          g.battlegroundId = BATTLEGROUND_ID;
-         g.addObject(ss);
+         g.addObject(makeSS(1, 0, 0));
          ML.latestGalaxy = g;
          ML.latestSolarSystem = ss;
          ML.latestPlanet = planet;
@@ -287,52 +287,18 @@ package tests.galaxy
       }
       
       [Test]
-      public function createGalaxyInvalidatesCachedPlanetIfItIsNotViewable() : void {
+      public function createGalaxyLeavesChachedPlanetIfSolarSystemIsVisible() : void {
          var ssObj:MSSObject = new MSSObject();
          ssObj.id = 1;
          ssObj.type = SSObjectType.PLANET;
-         ssObj.viewable = true;
+         ssObj.solarSystemId = 1;
          var planet:Planet = new Planet(ssObj);
          var ss:SolarSystem = makeSS(1, 0, 0);
          ss.addObject(ssObj);
          var g:Galaxy = new Galaxy();
          g.id = GALAXY_ID;
          g.battlegroundId = BATTLEGROUND_ID;
-         g.addObject(ss);
-         ML.latestGalaxy = g;
-         ML.latestSolarSystem = ss;
-         ML.latestPlanet = planet;
-         
-         ssObj.viewable = false;
-         showAction.createGalaxy(
-            GALAXY_ID,
-            BATTLEGROUND_ID,
-            new Array(),
-            new ArrayCollection([ss]),
-            new ArrayCollection(),
-            new ArrayCollection(),
-            new ArrayCollection(),
-            new Array()
-         );
-         
-         assertThat( "# of solar systems unchanged", galaxy.solarSystems, arrayWithSize(1) );
-         assertThat( "still has solar system 1", galaxy.getSSById(1), notNullValue() );
-         assertThat( "cached planet destroyed", ML.latestPlanet, nullValue() );
-      }
-      
-      [Test]
-      public function createGalaxyLeavesCachedPlanetIfSSIsVisibleAndPlanetIsViewable() : void {
-         var ssObj:MSSObject = new MSSObject();
-         ssObj.id = 1;
-         ssObj.type = SSObjectType.PLANET;
-         ssObj.viewable = true;
-         var planet:Planet = new Planet(ssObj);
-         var ss:SolarSystem = makeSS(1, 0, 0);
-         ss.addObject(ssObj);
-         var g:Galaxy = new Galaxy();
-         g.id = GALAXY_ID;
-         g.battlegroundId = BATTLEGROUND_ID;
-         g.addObject(ss);
+         g.addObject(makeSS(1, 0, 0));
          ML.latestGalaxy = g;
          ML.latestSolarSystem = ss;
          ML.latestPlanet = planet;
@@ -341,16 +307,17 @@ package tests.galaxy
             GALAXY_ID,
             BATTLEGROUND_ID,
             new Array(),
-            new ArrayCollection([ss]),
+            new ArrayCollection([makeSS(1, 0, 0)]),
             new ArrayCollection(),
             new ArrayCollection(),
             new ArrayCollection(),
             new Array()
          );
          
-         assertThat( "# of solar systems unchanged", galaxy.solarSystems, arrayWithSize(1) );
-         assertThat( "still has solar system 1", galaxy.getSSById(1), notNullValue() );
-         assertThat( "cached planet is intact", ML.latestPlanet, sameInstance (planet) );
+         assertThat( "# of solar systems", galaxy.solarSystems, arrayWithSize (1) );
+         assertThat( "solar system in galaxy created", galaxy.getSSById(1), notNullValue() );
+         assertThat( "cached solar system is the same", ML.latestSolarSystem, sameInstance (ss) );
+         assertThat( "cached planet is the same", ML.latestPlanet, sameInstance (planet) );
       }
       
       

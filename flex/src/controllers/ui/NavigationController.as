@@ -852,7 +852,7 @@ package controllers.ui
             }
             content.addEventListener(FlexEvent.CREATION_COMPLETE, content_creationCompleteHandler);
          }
-         MA.addMapElements(viewport, controller);
+         MA.addMapElements(screenName, viewport, controller);
       }
       
       

@@ -36,27 +36,27 @@
          
          [Bindable]
          private var addPlanet: int = 1;
-
+         
          protected function shorten_effectStartHandler(event:EffectEvent):void
          {
-            if (nextGroup.x < 235)
+            if (nextGroup.x < background.width)
             {
                switchTo.play([nextGroup], true);
                addPlanet = 1;
             }
          }
-
+         
       ]]>
    </fx:Script>
    
    <fx:Declarations>
-      <s:Resize id="widen" heightTo="{background.height + 10}"
+      <s:Resize id="widen" heightTo="{background.height + 8}"
                 duration="{DURATION_TIME}" effectStart="widen_effectStartHandler(event)"/>
       
       <s:Resize id="shorten" heightTo="0" effectStart="shorten_effectStartHandler(event)"
                 duration="{DURATION_TIME}" effectEnd="shorten_effectEndHandler(event)"/>
       
-      <s:Move id="switchTo" xFrom="235" xTo="0" duration="{DURATION_TIME}" target="{nextGroup}"/>
+      <s:Move id="switchTo" xFrom="{background.width}" xTo="0" duration="{DURATION_TIME}" target="{nextGroup}"/>
       
       <s:Fade id="fadeIn" duration="{DURATION_TIME}"/>
       <s:Fade id="fadeOut" duration="{DURATION_TIME}"/>
@@ -69,21 +69,18 @@
          <!-- content rect background -->
          <s:Group width="100%" height="100%">
             <s:BitmapImage id="background" source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'raiders_bar')}"/>
-            <s:Group left="40" top="2">
-               <s:Label paddingTop="5" fontSize="12" fontWeight="bold" color="#f4c300" 
-                        text="{Localizer.string('Units', 'label.incomingRaiders')}"/>
-               <s:Button skinClass="components.skins.RightButtonSkin"
-                         click="switchTo.play([nextGroup])"/>
-               <s:layout>
-                  <s:HorizontalLayout verticalAlign="middle" gap="1"/>
-               </s:layout>
-            </s:Group>
+            <s:Label left="48" top="7" fontSize="12" fontWeight="bold" color="#f4c300" 
+                     text="{Localizer.string('Units', 'label.incomingRaiders')}"
+                     right="32" textAlign="center"/>
+            <s:Button skinClass="components.skins.RightButtonSkin"
+                      right="12" top="2"
+                      click="switchTo.play([nextGroup])"/>
             
             <s:Group top="25" left="10" right="10">
                <s:Label fontSize="12" fontWeight="bold" 
-                  text="{ML.latestPlanet.ssObject.nextRaidAt == null?''
-                  :DateUtil.formatShortDateTime(ML.latestPlanet.ssObject.nextRaidAt)}" 
-                  left="0" right="0" textAlign="center"/>
+                        text="{ML.latestPlanet.ssObject.nextRaidAt == null?''
+                        :DateUtil.formatShortDateTime(ML.latestPlanet.ssObject.nextRaidAt)}" 
+                        left="0" right="0" textAlign="center"/>
             </s:Group>
             
             <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRUnitBuildingEntrySmall"
@@ -95,9 +92,9 @@
             </s:DataGroup>
          </s:Group>
          <s:Group id="nextGroup" width="100%" height="100%" x="{background.width}">
-            <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'raiders_bar')}"/>            
-            <s:Group left="23" top="2">
+            <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'raiders_bar')}"/>   
                <s:Button skinClass="components.skins.LeftButtonSkin"
+                         left="28" top="2"
                          click="
                          if (addPlanet > 1)
                          {
@@ -107,14 +104,11 @@
                          {
                          switchTo.play([nextGroup], true)
                          }"/>
-               <s:Label paddingTop="5" fontSize="12" fontWeight="bold" color="#f4c300" 
+               <s:Label top="7" left="48" right="32" textAlign="center" fontSize="12" fontWeight="bold" color="#f4c300" 
                         text="{Localizer.string('Units', 'label.incomingRaiders')}"/>
                <s:Button skinClass="components.skins.RightButtonSkin"
+                         right="12" top="2"
                          click="addPlanet++"/>
-               <s:layout>
-                  <s:HorizontalLayout verticalAlign="middle" gap="1"/>
-               </s:layout>
-            </s:Group>
             
             <s:Group top="25" left="20" right="30">
                <s:Label fontSize="12" fontWeight="bold" 
@@ -125,7 +119,7 @@
             <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRUnitBuildingEntrySmall"
                          dataProvider="{Planet.getRaiders(ML.player.planetsCount + addPlanet)}">
                <s:layout>
-                  <s:TileLayout requestedRowCount="{Math.max(1, 
+                  <s:TileLayout requestedColumnCount="4" requestedRowCount="{Math.max(1, 
                                 Math.ceil(Number(Planet.getRaiders(ML.player.planetsCount + addPlanet).length)/4))}"/>
                </s:layout>
             </s:DataGroup>

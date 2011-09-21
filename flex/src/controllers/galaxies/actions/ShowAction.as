@@ -143,6 +143,7 @@ package controllers.galaxies.actions
                                    cooldowns:IList,
                                    units:IList,
                                    hops:Array) : void {
+         ML.latestGalaxy = null;
          var galaxy:Galaxy = new Galaxy();
          galaxy.id = galaxyId;
          galaxy.battlegroundId = battlegroundId;
@@ -161,12 +162,9 @@ package controllers.galaxies.actions
             galaxy.getSSById(cachedSS.id) :
             null;
          var cachedPlanet:Planet = ML.latestPlanet;
-         if (cachedPlanet != null) {
-            var planetInSS:MSSObject = ssInGalaxy != null ?
-               ssInGalaxy.getSSObjectById(cachedPlanet.id) :
-               null;
-            if (planetInSS == null || !planetInSS.viewable)
-               ML.latestPlanet = null;
+         if (cachedPlanet != null &&
+             galaxy.getSSById(cachedPlanet.solarSystemId) == null) {
+            ML.latestPlanet = null;
          }
          if (ssInGalaxy == null)
             ML.latestSolarSystem = null;

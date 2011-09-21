@@ -109,9 +109,11 @@
                              visible="{LS.missingStorageString.length > 0 &amp;&amp; LS.location is Unit}"/>
                <base:Warning text="{Localizer.string('Units', 'label.transporterFull')}" 
                              horizontalCenter="0" visible="{LS.target is Unit &amp;&amp;
-                             LS.getMaxStock(ResourceType.ZETIUM) == 0 &amp;&amp;
-                             LS.getMaxStock(ResourceType.ENERGY) == 0 &amp;&amp;
-                             LS.getMaxStock(ResourceType.METAL) == 0}"
+                             LS.transporterIsFull}"
+                             maxWidth="{storagePanel.width - 60}" paddingTop="10"/>
+               <base:Warning text="{Localizer.string('Units', 'label.planetEmpty')}" 
+                             horizontalCenter="0" visible="{LS.target is Unit &amp;&amp;
+                             LS.planetIsEmpty}"
                              maxWidth="{storagePanel.width - 60}" paddingTop="10"/>
                <base:layout>
                   <s:VerticalLayout horizontalAlign="center"/>

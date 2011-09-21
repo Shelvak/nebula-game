@@ -32,7 +32,7 @@ package controllers.objects.actions.customcontrollers
       }
       
       
-      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
+      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
          var unit:Unit = UnitFactory.fromObject(object);
          if (unit.playerId == PlayerId.NO_PLAYER)
             unit.player = NPC_PLAYER;
@@ -41,6 +41,7 @@ package controllers.objects.actions.customcontrollers
          if (unit.level == 0)
             unit.upgradePart.startUpgrade();
          ML.units.addItem(unit);
+         return unit;
       }
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {

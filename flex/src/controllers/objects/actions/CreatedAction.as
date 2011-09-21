@@ -1,8 +1,11 @@
 package controllers.objects.actions
 {
    import controllers.objects.ObjectClass;
+   import controllers.units.SquadronsController;
    
    import globalevents.GObjectEvent;
+   
+   import mx.collections.ArrayCollection;
    
    
    /**
@@ -15,17 +18,23 @@ package controllers.objects.actions
       protected override function applyServerActionImpl(objectClass:String,
                                                         objectSubclass:String,
                                                         reason:String,
-                                                        objects:Array) : void
-      {
-         ML.units.disableAutoUpdate();
-         for each (var object:Object in objects)
-         {
-            getCustomController(objectClass).objectCreated(objectSubclass, object, reason);
+                                                        objects:Array) : void {
+         var object:Object;
+         if (objectClass == ObjectClass.UNIT) {
+            var unitsCreated:ArrayCollection = new ArrayCollection();
+            ML.units.disableAutoUpdate();
+            for each (object in objects) {
+               unitsCreated.addItem(getCustomController(objectClass).objectCreated(objectSubclass, object, reason));
+            }
+            ML.units.enableAutoUpdate();
+            SquadronsController.getInstance().createSquadronsForUnits(unitsCreated);
+            if (ML.latestPlanet != null)
+               ML.latestPlanet.dispatchUnitRefreshEvent();
          }
-         ML.units.enableAutoUpdate();
-         if (objectClass == ObjectClass.UNIT && ML.latestPlanet != null)
-         {
-            ML.latestPlanet.dispatchUnitRefreshEvent();
+         else {
+            for each (object in objects) {
+               getCustomController(objectClass).objectCreated(objectSubclass, object, reason);
+            }
          }
       }
    }
