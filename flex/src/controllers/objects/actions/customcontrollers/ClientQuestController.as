@@ -11,10 +11,11 @@ package controllers.objects.actions.customcontrollers
          super();
       }
       
-      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
+      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
          var quest:Quest = QuestFactory.fromObject(object);
          ML.quests.addItem(quest);
          quest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
+         return quest;
       }
    }
 }

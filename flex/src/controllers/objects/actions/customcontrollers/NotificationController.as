@@ -22,7 +22,7 @@ package controllers.objects.actions.customcontrollers
       
       private var MA: MCMainArea = MCMainArea.getInstance();
       
-      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
+      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
          var notification:Notification = BaseModel.createModel(Notification, object);
          notification.isNew = true;
          ML.notifications.addItem(notification);
@@ -39,6 +39,7 @@ package controllers.objects.actions.customcontrollers
                planet.removeObject(remove);
             }
          }
+         return notification;
       }
       
       public override function objectDestroyed(objectSubclass:String, objectId:int, reason:String) : void {

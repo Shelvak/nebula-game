@@ -17,7 +17,7 @@ package controllers.objects.actions.customcontrollers
          super();
       }
       
-      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
+      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
          var location:LocationMinimal = BaseModel.createModel(LocationMinimal, object.location);
          
          // don't need cooldowns for other objects than maps
@@ -39,6 +39,8 @@ package controllers.objects.actions.customcontrollers
             Collections.removeFirstEqualTo(map.cooldowns, cooldown, true);
             map.addObject(cooldown);
          }
+         
+         return cooldown;
       }
    }
 }

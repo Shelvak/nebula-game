@@ -15,7 +15,7 @@ package controllers.objects.actions.customcontrollers
       }
       
       
-      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
+      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
          var building:Building = BuildingFactory.fromObject(object);
          if (ML.latestPlanet && ML.latestPlanet.id == building.planetId) {
             var objectOnPoint:PlanetObject = ML.latestPlanet.getObject(building.x, building.y);
@@ -29,6 +29,7 @@ package controllers.objects.actions.customcontrollers
                building.upgradePart.startUpgrade();
             }
          }
+         return building;
       }
       
       

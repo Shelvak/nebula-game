@@ -3,6 +3,7 @@ package controllers.objects.actions.customcontrollers
    import flash.errors.IllegalOperationError;
    
    import models.ModelLocator;
+   import mx.collections.IList;
    
    
    public class BaseObjectController
@@ -17,7 +18,7 @@ package controllers.objects.actions.customcontrollers
       }
       
       
-      public function objectCreated(objectSubclass:String, object:Object, reason:String) : void {
+      public function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
          throw new IllegalOperationError("This operation is not supported");
       }
       
