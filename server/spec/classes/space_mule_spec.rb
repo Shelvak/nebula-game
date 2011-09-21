@@ -352,6 +352,10 @@ describe SpaceMule do
           CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
           CONFIG.evalproperty('galaxy.player.inactivity_check').from_now)
       end
+
+      it "should register callback for spawn" do
+         @ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+      end
     end
 
     it "should create wormholes in area" do
@@ -394,6 +398,22 @@ describe SpaceMule do
               sum + klass.send(attr, 1)
             end
           }
+      end
+    end
+
+    describe "fixed free solar systems" do
+      before(:all) do
+        @solar_systems = SolarSystem.where(
+          :galaxy_id => @galaxy.id, :kind => SolarSystem::KIND_NORMAL
+        ).all.reject do |ss|
+          ss.planets.where("player_id IS NOT NULL").count > 0
+        end
+      end
+
+      it "should register callback for spawn" do
+        @solar_systems.each do |ss|
+          ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+        end
       end
     end
 

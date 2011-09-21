@@ -157,6 +157,8 @@ class Cfg; class << self
   # Returns config key for spawn depending on _solar_system_kind_
   def solar_system_spawn_key(solar_system_kind)
     "solar_system.spawn." + case solar_system_kind
+    when SolarSystem::KIND_NORMAL
+      "regular"
     when SolarSystem::KIND_BATTLEGROUND
       "battleground"
     else
@@ -188,5 +190,9 @@ class Cfg; class << self
 
   def solar_system_spawn_units_definition(solar_system_kind)
     CONFIG[solar_system_spawn_key(solar_system_kind) + ".units"]
+  end
+
+  def solar_system_spawn_strategy(solar_system_kind)
+    CONFIG[solar_system_spawn_key(solar_system_kind) + ".strategy"]
   end
 end; end

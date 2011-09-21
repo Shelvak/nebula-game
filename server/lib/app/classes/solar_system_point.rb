@@ -29,15 +29,23 @@ class SolarSystemPoint < LocationPoint
   def self.all_orbit_points(id)
     points = Set.new
     0.upto(Cfg.solar_system_orbit_count) do |position|
-      num_of_quarter_points = num_of_quarter_points(position)
-      quarter_point_degrees = quarter_point_degrees(num_of_quarter_points)
+      points = points | orbit_points(id, position)
+    end
 
-      0.upto(3) do |quarter|
-        0.upto(num_of_quarter_points - 1) do |qp_index|
-          points.add new(
-            id, position, quarter * 90 + qp_index * quarter_point_degrees
-          )
-        end
+    points
+  end
+
+  # Returns all possible solar system points for its one orbit with _position_.
+  def self.orbit_points(id, position)
+    points = Set.new
+    num_of_quarter_points = num_of_quarter_points(position)
+    quarter_point_degrees = quarter_point_degrees(num_of_quarter_points)
+
+    0.upto(3) do |quarter|
+      0.upto(num_of_quarter_points - 1) do |qp_index|
+        points.add new(
+          id, position, quarter * 90 + qp_index * quarter_point_degrees
+        )
       end
     end
 

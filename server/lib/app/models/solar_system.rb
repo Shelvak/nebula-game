@@ -54,17 +54,19 @@ class SolarSystem < ActiveRecord::Base
   def wormhole?; kind == KIND_WORMHOLE; end
   scope :wormhole, where(:kind => KIND_WORMHOLE)
 
+  def to_s
+    "<SolarSystem(#{id} @ #{x},#{y}) gid: #{galaxy_id} kind: #{kind}>"
+  end
+
   # Return +SolarSystemPoint+s where NPC units are standing.
   def npc_unit_locations
-    Unit.connection.select_all("SELECT location_x, location_y
-      FROM `#{Unit.table_name}`
-      WHERE location_id=#{id}
-      AND location_type=#{Location::SOLAR_SYSTEM}
-      AND player_id IS NULL
-      GROUP BY location_x, location_y"
-    ).map do |row|
-      SolarSystemPoint.new(id, row['location_x'].to_i,
-        row['location_y'].to_i)
+    lambda do
+      fields = "location_x, location_y"
+      Unit.in_zone(self).select(fields).group(fields).where(:player_id => nil).
+        c_select_all
+    end.call.inject(Set.new) do |set, row|
+      set.add SolarSystemPoint.new(id, row['location_x'], row['location_y'])
+      set
     end
   end
 
@@ -115,7 +117,6 @@ class SolarSystem < ActiveRecord::Base
 
   # Retrieves metadata for single solar system and player.
   def self.metadata_for(id, player)
-
     FowSsEntry.merge_metadata(
       entries.find { |entry| entry.player_id == player.id },
       # Try to find alliance entry if player is in alliance.
@@ -171,19 +172,12 @@ class SolarSystem < ActiveRecord::Base
   #
   # Then checks that spot for combat.
   def spawn!
-    npc_taken_points = lambda do
-      fields = "location_x, location_y"
-      Unit.in_zone(self).select(fields).group(fields).where(:player_id => nil).
-        c_select_all
-    end.call.inject(Set.new) do |set, row|
-      set.add SolarSystemPoint.new(id, row['location_x'], row['location_y'])
-      set
-    end
+    npc_taken_points = self.npc_unit_locations
 
     if npc_taken_points.size < Cfg.solar_system_spawn_max_spots(kind)
       definition = Cfg.solar_system_spawn_units_definition(kind)
-      all_points = SolarSystemPoint.all_orbit_points(id)
-      location = (all_points - npc_taken_points).to_a.random_element
+      strategy = SsSpawnStrategy.new(self, npc_taken_points)
+      location = strategy.pick
       
       units = UnitBuilder.from_random_ranges(
         definition, galaxy_id, location, nil

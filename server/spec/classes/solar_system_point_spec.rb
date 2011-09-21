@@ -20,14 +20,21 @@ describe SolarSystemPoint do
   end
 
   describe ".all_orbit_points" do
-    it "should return orbit points" do
+    it "should return all orbit points" do
       id = 10
-      Cfg.stub!(:solar_system_orbit_count).and_return(1)
-      SolarSystemPoint.all_orbit_points(id).should == Set.new([
-        SolarSystemPoint.new(id, 0, 0),
-        SolarSystemPoint.new(id, 0, 90),
-        SolarSystemPoint.new(id, 0, 180),
-        SolarSystemPoint.new(id, 0, 270),
+      points = Set.new
+      0.upto(Cfg.solar_system_orbit_count) do |position|
+        points = points | SolarSystemPoint.orbit_points(id, position)
+      end
+
+      SolarSystemPoint.all_orbit_points(id).should == points
+    end
+  end
+
+  describe ".orbit_points" do
+    it "should return all points for one orbit" do
+      id = 10
+      SolarSystemPoint.orbit_points(id, 1).should == Set.new([
         SolarSystemPoint.new(id, 1, 0),
         SolarSystemPoint.new(id, 1, 45),
         SolarSystemPoint.new(id, 1, 90),

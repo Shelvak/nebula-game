@@ -293,14 +293,15 @@ describe SolarSystem do
         solar_system.spawn!
       end
 
-      it "should not spawn in points taken by npc" do
-        all_points = @all_points.to_a
-        all_points[0..-2].each do |point|
-          Factory.create(:u_dirac, :galaxy_id => solar_system.galaxy_id,
-            :location => point, :level => 1, :player => nil)
-        end
+      it "should spawn in point returned by spawn strategy" do
+        strategy = mock(SsSpawnStrategy)
+        SsSpawnStrategy.should_receive(:new).with(
+          solar_system, an_instance_of(Set)
+        ).and_return(strategy)
+        point = SolarSystemPoint.new(solar_system.id, 0, 0)
+        strategy.should_receive(:pick).and_return(point)
 
-        solar_system.spawn!.should == all_points[-1]
+        solar_system.spawn!.should == point
       end
     end
 

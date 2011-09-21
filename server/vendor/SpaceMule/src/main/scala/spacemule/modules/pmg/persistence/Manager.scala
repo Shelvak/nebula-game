@@ -9,9 +9,8 @@ import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.ss_objects.Planet
 import spacemule.modules.pmg.objects.ss_objects
 import spacemule.persistence.DB
-import spacemule.modules.pmg.objects.solar_systems.{
-  MiniBattleground, Battleground, Homeworld}
 import java.util.{Calendar, Date}
+import spacemule.modules.pmg.objects.solar_systems.{Wormhole, MiniBattleground, Battleground, Homeworld}
 
 /**
  * Created by IntelliJ IDEA.
@@ -334,6 +333,13 @@ object Manager {
     val ssRow = new SolarSystemRow(galaxy, solarSystem, coords)
     solarSystems += ssRow.values
 
+    def addSpawn() = {
+      callbacks += CallbackRow(
+        ssRow, galaxy.ruleset,
+        Some(CallbackRow.Events.Spawn), Some(Calendar.getInstance)
+      ).values
+    }
+
     // Add visibility for other players
     solarSystem match {
       case h: Homeworld =>
@@ -350,15 +356,12 @@ object Manager {
 
         // Add player inactivity check
         callbacks += CallbackRow(ssRow, galaxy.ruleset).values
-      case mg: MiniBattleground =>
+        addSpawn() // Spawn callback
+      case wh: Wormhole =>
         addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords)
-
-        // Spawn callback
-        callbacks += CallbackRow(
-          ssRow, galaxy.ruleset,
-          Some(CallbackRow.Events.Spawn), Some(Calendar.getInstance)
-        ).values
-      case _ => addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords)
+      case _ =>
+        addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords)
+        addSpawn() // Spawn callback
     }
 
     readSSObjects(galaxy, ssRow, solarSystem)
