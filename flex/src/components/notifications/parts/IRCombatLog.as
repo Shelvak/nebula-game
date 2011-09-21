@@ -278,10 +278,7 @@ package components.notifications.parts
       
       private function get combatLogUrl() : String
       {
-         var info:StartupInfo = StartupInfo.getInstance();
-         return ExternalInterface.call("getCombatLogUrl",
-            combatLog.logId, ML.player.id, info.server, info.webHost,
-            StartupInfo.getInstance().locale);
+         return ExternalInterface.call("getCombatLogUrl", combatLog.logId, ML.player.id);
       }
       
       
