@@ -70,6 +70,8 @@ function developmentServer() { // {{{
   return server;
 } // }}}
 
+function defined(argument) { return argument != undefined; }
+
 var notificationTimerId = 0;
 var notificationToggle = false;
 var notificationOldTitle = "";
@@ -117,18 +119,19 @@ function getGameOptions() { // {{{
   //     player_id=3&locale=lt&web_host=nebula44.com&
   //     assets_url=http://static.nebula44.com/
   if (combatLogId) {
-    if (server && playerId && locale && webHost && assetsUrl) {
+    if (defined(server) && defined(playerId) && defined(locale) && 
+        defined(webHost) && defined(assetsUrl)) {
       document.title = locales.combatReplayTitle(locale) + titleSuffix;
       return {mode: 'combatLog', server: server, logId: combatLogId, 
         playerId: playerId, locale: locale, webHost: webHost,
         assetsUrl: assetsUrl};
     }
     else {
-      if (! server) missingParam('server');
-      if (! playerId) missingParam('player_id');
-      if (! locale) missingParam('locale');
-      if (! webHost) missingParam('web_host');
-      if (! assetsUrl) missingParam('assets_url');
+      if (! defined(server)) missingParam('server');
+      if (! defined(playerId)) missingParam('player_id');
+      if (! defined(locale)) missingParam('locale');
+      if (! defined(webHost)) missingParam('web_host');
+      if (! defined(assetsUrl)) missingParam('assets_url');
       return null;
     }
   }
@@ -142,27 +145,28 @@ function getGameOptions() { // {{{
   // You can append &dev=1 to skip requesting for web authentification.
   else {
     if (inLocalComputer() && ! inDeveloperMode()) {
-      if (! server) server = developmentServer();
-      if (! webPlayerId) webPlayerId = developmentWebPlayerId;
-      if (! serverPlayerId) serverPlayerId = developmentServerPlayerId;
-      if (! locale) locale = "en";
-      if (! webHost) webHost = "localhost";
+      if (! defined(server)) server = developmentServer();
+      if (! defined(webPlayerId)) webPlayerId = developmentWebPlayerId;
+      if (! defined(serverPlayerId)) serverPlayerId = developmentServerPlayerId;
+      if (! defined(locale)) locale = "en";
+      if (! defined(webHost)) webHost = "localhost";
 
       document.title = "Local Dev Mode" + titleSuffix;
     }
     else {
-      if (server && webPlayerId && serverPlayerId && locale && webHost && 
-          assetsUrl && title) {
+      if (defined(server) && defined(webPlayerId) && defined(serverPlayerId) && 
+          defined(locale) && defined(webHost) && defined(assetsUrl) && 
+          defined(title)) {
         document.title = title + titleSuffix;
       }
       else {
-        if (! server) missingParam('server');
-        if (! webPlayerId) missingParam('web_player_id');
-        if (! serverPlayerId) missingParam('server_player_id');
-        if (! locale) missingParam('locale');
-        if (! webHost) missingParam('web_host');
-        if (! assetsUrl) missingParam('assets_url');
-        if (! title) missingParam('title');
+        if (! defined(server)) missingParam('server');
+        if (! defined(webPlayerId)) missingParam('web_player_id');
+        if (! defined(serverPlayerId)) missingParam('server_player_id');
+        if (! defined(locale)) missingParam('locale');
+        if (! defined(webHost)) missingParam('web_host');
+        if (! defined(assetsUrl)) missingParam('assets_url');
+        if (! defined(title)) missingParam('title');
         return null;
       }
     }
@@ -201,7 +205,11 @@ function authorizationFailed() {
 
 // Get combat log URL for log with given ID.
 function getCombatLogUrl(combatLogId, playerId) {
-  return assetsUrl + "?server=" + server + 
+  var clAssetsUrl = assetsUrl == ""
+    ? location.href.replace(location.search, '')
+    : assetsUrl;
+
+  return clAssetsUrl + "?server=" + server + 
     "&web_host=" + webHost + "&assets_url=" + assetsUrl +
     "&combat_log_id=" + combatLogId + "&player_id=" + playerId +
     "&locale=" + locale;
