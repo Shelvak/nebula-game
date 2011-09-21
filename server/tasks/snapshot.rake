@@ -60,6 +60,8 @@ namespace :snapshot do
 
   desc "Load snapshot of database from file"
   task :load, [:name] => :environment do |task, args|
+    check_for_production!
+
     path = snapshot_path(args[:name])
     puts "Loading DB from #{path}..."
     `

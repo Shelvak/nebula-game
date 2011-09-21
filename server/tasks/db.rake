@@ -39,6 +39,8 @@ namespace :db do
   namespace :migrate do
     desc "Reapply latest migration to DB."
     task :reapply => :environment do
+      check_for_production!
+
       puts "Rollbacking in #{App.env}..."
       ActiveRecord::Base.establish_connection(DB_CONFIG[App.env])
       ActiveRecord::Migrator.rollback(DB_MIGRATIONS_DIR, 1)
@@ -90,6 +92,8 @@ namespace :db do
 
   desc 'Drops the database.'
   task :drop => [:environment] do
+    check_for_production!
+
     each_unique_db_config do |config|
       ActiveRecord::Base.establish_connection(config)
       database = config['database']

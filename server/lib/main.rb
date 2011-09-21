@@ -10,20 +10,6 @@ if App.in_development?
   require File.expand_path(File.join(ROOT_DIR, 'lib', 'server',
       'irb_session.rb'))
   root_binding = binding
-  irb_running = false
-  
-  # This evil thing is needed because ctrl+c kills subprocesses too.
-  # fucking lame.
-  Thread.new {
-    loop do
-      if irb_running
-        sleep 0.1
-      else
-        input = gets.strip
-        irb_running = true if input == "con" || input == "cc"
-      end
-    end
-  }
 end
 
 LOGGER.info "Running EventMachine..."
@@ -33,7 +19,22 @@ EventMachine.run do
     App.server_state = App::SERVER_STATE_SHUTDOWNING
     EventMachine.stop_event_loop
   end
-  trap("INT", &stop_server)
+  if App.in_development?
+    trap("INT") do
+      if $IRB_RUNNING
+        stop_server.call
+        throw :IRB_EXIT
+      else
+       puts "\n\nDropping into IRB shell. Server operation suspended."
+       puts "Press CTRL+C again to exit the server.\n\n"
+
+       IRB.start_session(root_binding)
+       puts "\nIRB done. Server operation resumed.\n\n"
+      end
+    end
+  else
+    trap("INT", &stop_server)
+  end
   trap("TERM", &stop_server)
 
   # Initialize space mule.
@@ -49,21 +50,6 @@ EventMachine.run do
   LOGGER.info "Starting callback manager..."
   EventMachine::PeriodicTimer.new(1) { CallbackManager.tick }
 
-  if App.in_development?
-    EventMachine::PeriodicTimer.new(0.1) do
-      if irb_running
-        puts "\n\nDropping into IRB shell. Server operation suspended."
-        puts "Press CTRL+C to exit the shell.\n\n"
-        old_handler = trap("INT") { throw :IRB_EXIT }
-        
-        IRB.start_session(root_binding)
-        puts "\nIRB done. Server operation resumed.\n\n"
-        irb_running = false
-        trap("INT", &old_handler)
-      end
-    end
-  end
-  
   LOGGER.info "Running callback manager..."
   CallbackManager.tick(true)
 

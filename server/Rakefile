@@ -49,5 +49,18 @@ class File
   end
 end
 
+def check_for_production!
+  if App.in_production? && ENV["IM_SURE"] != "1"
+    puts
+    puts "Hey, dude, you are in PRODUCTION!"
+    puts
+    puts "Are you really really sure you want to invoke this?"
+    puts
+    puts "Pass IM_SURE=1 to proceed."
+    puts
+    exit
+  end
+end
+
 # Load tasks located in tasks/*.rake
 Dir.glob(File.dirname(__FILE__) + "/tasks/*.rake").each { |file| load file }
