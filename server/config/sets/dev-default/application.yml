@@ -27,3 +27,6 @@ units.<%= u %>.move.galaxy.hop_time: 10
 combat.cooldown.duration: 30
 combat.cooldown.planet.duration: 60
 combat.cooldown.after_jump.duration: 2
+
+solar_system.spawn.regular.delay: [<%= 30.seconds %>, <%= 1.minute %>]
+solar_system.spawn.battleground.delay: [<%= 30.seconds %>, <%= 1.minute %>]
