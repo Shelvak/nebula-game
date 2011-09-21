@@ -25,7 +25,7 @@ package controllers.startup
       
       public function load() : void {
          _assetsLoader = new ChecksumsFileLoader("assets", assetsChecksumsLoaded);
-         _localesLoader = new ChecksumsFileLoader("locales", localesChecksumsLoaded);         
+         _localesLoader = new ChecksumsFileLoader("locale", localesChecksumsLoaded);         
       }
       
       private function localesChecksumsLoaded(data:Object) : void {
