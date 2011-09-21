@@ -222,7 +222,7 @@ $(document).ready(function() {
   var params = {};
   params.quality = "high";
   params.bgcolor = "#ffffff";
-  params.allowscriptaccess = "sameDomain";
+  params.allowscriptaccess = "always";
   params.allowfullscreen = "true";
   var attributes = {};
   attributes.id = appName;

@@ -97,6 +97,7 @@
          
          private function this_applicationCompleteHandler(event:FlexEvent) : void
          {
+	    flash.system.Security.allowDomain("*");
             stage.addEventListener(KeyboardEvent.KEY_UP, stage_keyboardEventHandler);
             stage.addEventListener(KeyboardEvent.KEY_DOWN, stage_keyboardEventHandler);
             _mainTimer = new Timer(500);
