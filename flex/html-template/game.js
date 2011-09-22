@@ -208,11 +208,12 @@ function getCombatLogUrl(combatLogId, playerId) {
   var clAssetsUrl = assetsUrl == ""
     ? location.href.replace(location.search, '')
     : assetsUrl;
+  var e = encodeURIComponent;
 
-  return clAssetsUrl + "?server=" + server + 
-    "&web_host=" + webHost + "&assets_url=" + assetsUrl +
-    "&combat_log_id=" + combatLogId + "&player_id=" + playerId +
-    "&locale=" + locale;
+  return encodeURI(clAssetsUrl) + "?server=" + e(server) + 
+    "&web_host=" + e(webHost) + "&assets_url=" + e(assetsUrl) +
+    "&combat_log_id=" + e(combatLogId) + "&player_id=" + e(playerId) +
+    "&locale=" + e(locale);
 }
 
 // Load our swf.
