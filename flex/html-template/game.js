@@ -70,8 +70,6 @@ function developmentServer() { // {{{
   return server;
 } // }}}
 
-function defined(argument) { return argument != undefined; }
-
 var notificationTimerId = 0;
 var notificationToggle = false;
 var notificationOldTitle = "";
