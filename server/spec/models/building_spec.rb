@@ -1023,6 +1023,25 @@ describe Building do
     end
   end
 
+  describe "#on_upgrade_finished!" do
+    describe "combat check after upgrade is finished" do
+      let(:building) { Factory.create!(:building, opts_upgrading) }
+
+      it "should check for combat in it's location if it can fight'" do
+        building.stub!(:can_fight?).and_return(true)
+        Combat::LocationChecker.should_receive(:check_location).
+          with(building.planet.location_point)
+        building.send(:on_upgrade_finished!)
+      end
+
+      it "should not check for combat in it's location if it cannot fight'" do
+        building.stub!(:can_fight?).and_return(false)
+        Combat::LocationChecker.should_not_receive(:check_location)
+        building.send(:on_upgrade_finished!)
+      end
+    end
+  end
+
   %w{width height}.each do |attr|
     it "should respond to #{attr}" do
       @model = Factory.create(:building)

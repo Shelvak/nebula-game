@@ -134,6 +134,12 @@ class Building < ActiveRecord::Base
   # Buildings don't accumulate XP. This method always returns 0.
   def can_upgrade_by; 0; end
 
+  # Check for combat after upgrading.
+  def on_upgrade_just_finished_after_save
+    super if defined?(super)
+    Combat::LocationChecker.check_location(planet.location_point) if can_fight?
+  end
+
   # Deactivate building before destruction.
   before_destroy do
     deactivate if active? && ! npc?
