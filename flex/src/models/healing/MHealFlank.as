@@ -35,7 +35,12 @@ package models.healing
          {
             var mUnit: MCUnit = MCUnit(flankUnits.getItemAt(i));
             if (mUnit.unit == unit)
-            {
+            {    
+               if (lastUnit == mUnit)
+               {
+                  selectionMode = UNDEFINED_SELECTION;
+                  lastUnit = null;
+               }
                flankUnits.removeItemAt(i);
                var idx: int = selection.getItemIndex(mUnit);
                if (idx != -1)
@@ -66,31 +71,65 @@ package models.healing
       
       public override function selectAll(dispatchEvnt:Boolean=true):void
       {
-         if (!selectionClass.selectFlank(this))
+         for each (var unit: MCUnit in flankUnits)
          {
-            Messenger.show(Localizer.string('Units', 'message.noResources'), Messenger.MEDIUM);
+            if (selection.getItemIndex(unit) == -1)
+            {
+               unit.selected = true;
+               selection.addItem(unit);
+            }
          }
          HS.refreshPrice();
       }
       
-      public override function invertSelection(model:MCUnit):void
+      public override function invertSelection(model:MCUnit, shiftPressed:Boolean):void
       {
-         if (model.selected)
+         if (selectionMode == UNDEFINED_SELECTION || !shiftPressed
+            || model == lastUnit)
          {
-            if (!selectionClass.selectUnit(model, this))
+            if (model.selected)
             {
-               model.selected = false;
-               Messenger.show(Localizer.string('Units', 'message.noResources'), Messenger.MEDIUM);
+               selection.addItem(model);
+               selectionMode = SELECTING;
             }
             else
             {
-               HS.refreshPrice();
+               selection.removeItemAt(selection.getItemIndex(model));
+               selectionMode = DESELECTING;
             }
+            lastUnit = model;
          }
          else
          {
-            selection.removeItemAt(selection.getItemIndex(model));
-            HS.refreshPrice();
+            executeShiftSelection(model);
+         }
+         HS.refreshPrice();
+      }
+      
+      private function executeShiftSelection(model: MCUnit): void
+      {
+         var fromIndex: int = flankUnits.getItemIndex(lastUnit);
+         var toIndex: int = flankUnits.getItemIndex(model);
+         for (var i: int = Math.min(fromIndex, toIndex); i <= Math.max(fromIndex, toIndex); i++)
+         {
+            var currentModel: MCUnit = MCUnit(flankUnits.getItemAt(i));
+            if (selectionMode == SELECTING)
+            {
+               currentModel.selected = true;
+               if (selection.getItemIndex(currentModel) == -1)
+               {
+                  selection.addItem(currentModel);
+               }
+            }
+            else
+            {
+               currentModel.selected = false;
+               var idx: int = selection.getItemIndex(currentModel);
+               if (idx != -1)
+               {
+                  selection.removeItemAt(idx);
+               }
+            }
          }
       }
       
