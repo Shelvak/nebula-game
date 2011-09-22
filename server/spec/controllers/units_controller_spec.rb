@@ -9,6 +9,42 @@ shared_examples_for "checking visibility" do
   end
 end
 
+shared_examples_for "checking all planet owner variations" do |wanted_results|
+  [
+    ["ally", lambda do |player, planet|
+      ally, alliance = create_alliance(player)
+      planet.update_row! ["player_id=?", ally.id]
+    end],
+    ["nap", lambda do |player, planet|
+      nap, alliance, nap_alliance = create_nap(player)
+      planet.update_row! ["player_id=?", nap.id]
+    end],
+    ["enemy", lambda do |player, planet|
+      planet.update_row! ["player_id=?", Factory.create(:player).id]
+    end],
+    ["you", lambda do |player, planet|
+      planet.update_row! ["player_id=?", player.id]
+    end],
+    ["no one", lambda do |player, planet|
+      planet.update_row! ["player_id=?", nil]
+    end],
+  ].each do |name, runnable|
+    raise ArgumentError.
+      new("wanted_results does not have key #{name.inspect}") \
+      unless wanted_results.has_key?(name)
+
+    should_fail = wanted_results[name]
+    fail_name = should_fail ? "fail" : "not fail"
+    it "should #{fail_name} if planet belongs to #{name}" do
+      fail_method = should_fail ? :should : :should_not
+      runnable.call player, @planet
+      lambda do
+        invoke @action, @params
+      end.send(fail_method, raise_error(GameLogicError))
+    end
+  end
+end
+
 describe UnitsController do
   include ControllerSpecHelper
 
@@ -457,6 +493,10 @@ describe UnitsController do
 
     @required_params = %w{unit_ids transporter_id}
     it_behaves_like "with param options"
+    
+    it_should_behave_like "checking all planet owner variations",
+        {"you" => false, "no one" => false, "enemy" => false, "ally" => false,
+         "nap" => false}
 
     it "should fail if transporter does not belong to player" do
       @transporter.player = Factory.create(:player)
@@ -484,7 +524,7 @@ describe UnitsController do
         invoke @action, @params
       end.should raise_error(GameLogicError)
     end
-
+    
     it "should move units" do
       invoke @action, @params
       @units.each(&:reload)
@@ -515,6 +555,10 @@ describe UnitsController do
     @required_params = %w{unit_ids transporter_id}
     it_behaves_like "with param options"
 
+    it_should_behave_like "checking all planet owner variations",
+        {"you" => false, "no one" => false, "enemy" => false, "ally" => false,
+         "nap" => false}
+
     it "should fail if some of the units are not found" do
       @units[0].destroy
       
@@ -542,12 +586,12 @@ describe UnitsController do
       end.should raise_error(GameLogicError)
     end
     
-    it "should fail if planet belongs to enemy" do
+    it "should not fail if planet belongs to enemy" do
       @planet.update_row! ["player_id=?", Factory.create(:player).id]
 
       lambda do
         invoke @action, @params
-      end.should raise_error(GameLogicError)
+      end.should_not raise_error(GameLogicError)
     end
     
     it "should not fail if planet belongs to self" do
@@ -566,14 +610,14 @@ describe UnitsController do
       end.should_not raise_error(GameLogicError)
     end
 
-    it "should fail if planet belongs to nap" do
+    it "should not fail if planet belongs to nap" do
       nap, alliance, nap_alliance = create_nap(player)
 
       @planet.update_row! ["player_id=?", nap.id]
 
       lambda do
         invoke @action, @params
-      end.should raise_error(GameLogicError)
+      end.should_not raise_error(GameLogicError)
     end
 
     it "should move units" do
@@ -602,33 +646,9 @@ describe UnitsController do
     it_behaves_like "with param options"
 
     describe "loading" do
-      it "should fail if planet belongs to ally" do
-        ally, alliance = create_alliance(player)
-
-        @planet.update_row! ["player_id=?", ally.id]
-
-        lambda do
-          invoke @action, @params
-        end.should raise_error(GameLogicError)
-      end
-
-      it "should fail if planet belongs to nap" do
-        nap, alliance, nap_alliance = create_nap(player)
-
-        @planet.update_row! ["player_id=?", nap.id]
-
-        lambda do
-          invoke @action, @params
-        end.should raise_error(GameLogicError)
-      end
-
-      it "should raise error if planet does not belong to player" do
-        @planet.update_row! ["player_id=?", Factory.create(:player).id]
-
-        lambda do
-          invoke @action, @params
-        end.should raise_error(GameLogicError)
-      end
+      it_should_behave_like "checking all planet owner variations",
+        {"you" => false, "no one" => false, "enemy" => true, "ally" => true,
+         "nap" => true}
     end
 
     describe "unloading" do
@@ -641,33 +661,9 @@ describe UnitsController do
           'zetium' => -10)
       end
 
-      it "should not fail if planet belongs to ally" do
-        ally, alliance = create_alliance(player)
-
-        @planet.update_row! ["player_id=?", ally.id]
-
-        lambda do
-          invoke @action, @params
-        end.should_not raise_error(GameLogicError)
-      end
-
-      it "should fail if planet belongs to nap" do
-        nap, alliance, nap_alliance = create_nap(player)
-
-        @planet.update_row! ["player_id=?", nap.id]
-
-        lambda do
-          invoke @action, @params
-        end.should raise_error(GameLogicError)
-      end
-
-      it "should raise error if planet does not belong to player" do
-        @planet.update_row! ["player_id=?", Factory.create(:player).id]
-
-        lambda do
-          invoke @action, @params
-        end.should raise_error(GameLogicError)
-      end
+      it_should_behave_like "checking all planet owner variations",
+        {"you" => false, "no one" => false, "enemy" => false, "ally" => false,
+         "nap" => false}
     end
 
     it "should raise error if transporter does not belong to player" do
