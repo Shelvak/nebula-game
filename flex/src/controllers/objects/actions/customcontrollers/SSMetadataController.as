@@ -17,6 +17,7 @@ package controllers.objects.actions.customcontrollers
          var ss:SolarSystem = ML.latestGalaxy.getSSById(ssMetadata.id);
          var metadata:SSMetadata = ss.metadata;
          metadata.copyProperties(ssMetadata);
+         ML.latestGalaxy.refreshSolarSystemsWithPlayer();
       }
       
       public override function objectDestroyed(objectSubclass:String, objectId:int, reason:String) : void {

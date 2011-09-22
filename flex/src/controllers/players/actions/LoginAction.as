@@ -14,12 +14,16 @@ package controllers.players.actions
     */
    public class LoginAction extends CommunicationAction
    {
-      private function get STARTUP_INFO() : StartupInfo {
+      private function get SI() : StartupInfo {
          return StartupInfo.getInstance();
       }
       
       private function get GF() : GlobalFlags {
          return GlobalFlags.getInstance();
+      }
+      
+      private function get AM() : AuthorizationManager {
+         return AuthorizationManager.getInstance();
       }
       
       
@@ -30,19 +34,21 @@ package controllers.players.actions
       
       public override function applyClientAction(cmd:CommunicationCommand) : void {
          sendMessage(new ClientRMO({
-            "webPlayerId": STARTUP_INFO.webPlayerId,
-            "serverPlayerId": STARTUP_INFO.serverPlayerId
+            "webPlayerId": SI.webPlayerId,
+            "serverPlayerId": SI.serverPlayerId
          }));
       }
       
       public override function applyServerAction(cmd:CommunicationCommand) : void {
-         var authManager:AuthorizationManager = AuthorizationManager.getInstance();
          if (cmd.parameters["success"])
-            authManager.loginSuccessful();
-         else {
-            GF.lockApplication = false;
-            authManager.loginFailed();
-         }
+            AM.loginSuccessful();
+         else
+            cancel(null);
+      }
+      
+      public override function cancel(rmo:ClientRMO) : void {
+         GF.lockApplication = false;
+         AM.loginFailed();
       }
    }
 }

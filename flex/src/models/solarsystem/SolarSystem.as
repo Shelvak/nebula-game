@@ -17,6 +17,8 @@ package models.solarsystem
    import models.map.MapType;
    import models.solarsystem.events.SolarSystemEvent;
    
+   import mx.collections.ListCollectionView;
+   
    import namespaces.change_flag;
    
    import utils.DateUtil;
@@ -57,6 +59,25 @@ package models.solarsystem
       
       
       private var NAV_CTRL:NavigationController = NavigationController.getInstance();
+      
+      
+      public function SolarSystem() {
+         super();
+         _importantObjects = Collections.filter(naturalObjects, ff_importantObjects);
+      }
+      
+      
+      private var _importantObjects:ListCollectionView;
+      private function ff_importantObjects(object:MSSObject) : Boolean {
+         return object.isPlanet || object.isJumpgate;
+      }
+      [Bindable(event="willNotChange")]
+      /**
+       * Important to player objects (planets and jumpgates).
+       */
+      public function get importantObjects() : ListCollectionView {
+         return _importantObjects;
+      }
       
       
       public override function get cached() : Boolean
@@ -312,10 +333,9 @@ package models.solarsystem
          return Math.max(0, (shieldEndsAt.time - DateUtil.now) / 1000); 
       }
       
-      
-      /* ################ */
-      /* ### WORMHOLE ### */
-      /* ################ */
+      /* ############ */
+      /* ### KIND ### */
+      /* ############ */
       
       
       [Required]
@@ -328,12 +348,14 @@ package models.solarsystem
        */
       public var kind:int = SSKind.NORMAL;
       
+      public function get isRegular() : Boolean {
+         return kind == SSKind.NORMAL;
+      }
       
       /**
        * Indicates if this is a wormhole to a global battleground solar system (one in whole galaxy).
        */
-      public function get isWormhole() : Boolean
-      {
+      public function get isWormhole() : Boolean {
          return kind == SSKind.WORMHOLE;
       }
       
@@ -342,18 +364,15 @@ package models.solarsystem
          return kind == SSKind.DEAD_STAR;
       }
       
-      
       /**
        * Indicates if this solar systems is global battleground system. Wormholes are not battlegrounds: just
        * gates to global battleground.
        */
-      public function get isGlobalBattleground() : Boolean
-      {
+      public function get isGlobalBattleground() : Boolean {
          return id == ML.latestGalaxy.battlegroundId;
       }
       
-      public function get isBattleground(): Boolean
-      {
+      public function get isBattleground(): Boolean {
          return kind == SSKind.BATTLEGROUND;
       }
       
