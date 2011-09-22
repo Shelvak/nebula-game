@@ -273,6 +273,9 @@ class Building < ActiveRecord::Base
       "Cannot move while upgrading or working (#{self.inspect})!") \
       if upgrading? || working?
 
+    active = active?
+    deactivate! if active
+
     stats = CredStats.move(self)
     player.creds -= creds_needed
     self.armor_mod = self.energy_mod = self.construction_mod = 0
@@ -283,18 +286,14 @@ class Building < ActiveRecord::Base
     raise ActiveRecord::RecordInvalid.new(self) unless errors.blank?
     calculate_mods(true)
 
-    armor_mod_changed = armor_mod_changed?
     transaction do
       stats.save!
       player.save!
-      save!
+      active ? activate! : save!
       Objective::MoveBuilding.progress(self)
     end
 
     EventBroker.fire(self, EventBroker::CHANGED)
-    EventBroker.fire(
-      planet, EventBroker::CHANGED, EventBroker::REASON_OWNER_PROP_CHANGE
-    ) if armor_mod_changed
   end
 
   def points_on_destroy

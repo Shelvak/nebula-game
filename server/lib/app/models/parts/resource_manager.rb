@@ -67,6 +67,13 @@ module Parts::ResourceManager
         define_method(method) do |*args|
           value = self.class.send(method, args[0] || level)
 
+          # Account for energy mod
+          if method == "energy_generation_rate"
+            calculate_mods if energy_mod.nil?
+            value = (value * (100.0 + energy_mod) / 100).to_f.
+              round(ROUNDING_PRECISION)
+          end
+
           # Overdrive support.
           if overdriven?
             if method == "energy_usage_rate"
@@ -85,14 +92,6 @@ module Parts::ResourceManager
         send("#{resource}_generation_rate", args[0] || level) -
           send("#{resource}_usage_rate", args[0] || level)
       end
-    end
-
-    def energy_generation_rate(level=nil)
-      value = self.class.energy_generation_rate(level || self.level)
-
-      # Account for energy mod
-      calculate_mods if energy_mod.nil?
-      (value * (100.0 + energy_mod) / 100).to_f.round(ROUNDING_PRECISION)
     end
 	end
 
