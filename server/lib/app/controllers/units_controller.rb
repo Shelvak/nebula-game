@@ -378,7 +378,9 @@ class UnitsController < GenericController
         "Cannot load resources from planet: not owner and it's not empty!"
       ) if (
         params['metal'] > 0 || params['energy'] > 0 || params['zetium'] > 0
-      ) && ! (planet.player_id == player.id || planet.player_id.nil?)
+      ) && ! (planet.player_id == player.id)
+      # This will be enabled when player protection will be implemented.
+      # ! (planet.player_id == player.id || planet.player_id.nil?)
     end
 
     transporter.transfer_resources!(params['metal'], params['energy'],

@@ -647,7 +647,7 @@ describe UnitsController do
 
     describe "loading" do
       it_should_behave_like "checking all planet owner variations",
-        {"you" => false, "no one" => false, "enemy" => true, "ally" => true,
+        {"you" => false, "no one" => true, "enemy" => true, "ally" => true,
          "nap" => true}
     end
 
