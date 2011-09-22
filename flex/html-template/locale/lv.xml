@@ -512,6 +512,14 @@
     <pressEsc value="To deselect press ESC" />
     <notYourPlanet value="This planet does not belong to you!" />
     <label.claimPlanet value="Claim planet" />
+    <!-- TODO translate this -->
+    <label.planetHasEnemies>
+      <p>You can not claim this planet because it still has some enemy units or 
+      turrets left</p>
+    </label.planetHasEnemies>
+    <label.noPlayerUnits>
+      <p>You can not claim this planet because you don't have any units in it</p>
+    </label.noPlayerUnits>
 
     <deselectButtonText value="deselect building" />
 
@@ -3781,6 +3789,11 @@
     <label.select value="Select" />
     <label.all value="All" />
     <label.none value="None" />
+    <!-- TODO translate this -->
+    <label.allHealable value="All healable" />
+    <tooltip.allHealable>
+      <p>Select all units in current tab for which you have resources to heal</p>
+    </tooltip.allHealable>
     <label.transfer value="Transfer" />
     <label.load value="Load" />
     <label.close value="Close" />
