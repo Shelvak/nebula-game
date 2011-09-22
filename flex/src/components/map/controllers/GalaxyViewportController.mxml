@@ -49,7 +49,7 @@
             }
             if (solarSystems)
             {
-               solarSystems.dataProvider = ML.latestGalaxy.solarSystems;
+               solarSystems.dataProvider = ML.latestGalaxy.solarSystemsWithPlayer;
             }
          }
       ]]>

@@ -38,9 +38,10 @@ package models.galaxy
       
       public function Galaxy() {
          super();
-         _wormholes = Collections.filter(naturalObjects, filterFunction_wormholes);
+         _wormholes = Collections.filter(naturalObjects, ff_wormholes);
          _wormholes.addEventListener(CollectionEvent.COLLECTION_CHANGE, wormholes_collectionChangeHandler);
-         _solarSystems = Collections.filter(naturalObjects, filterFunction_solarSystems);
+         _solarSystems = Collections.filter(naturalObjects, ff_solarSystems);
+         _solarSystemsWithPlayer = Collections.filter(naturalObjects, ff_solarSystemsWithPlayer);
       }
       
       public override function get cached() : Boolean {
@@ -62,7 +63,7 @@ package models.galaxy
       public var battlegroundId:int = 0;
       
       private var _solarSystems:ListCollectionView;
-      private function filterFunction_solarSystems(ss:SolarSystem) : Boolean {
+      private function ff_solarSystems(ss:SolarSystem) : Boolean {
          return !ss.isWormhole;
       }
       [Bindable(event="willNotChange")]
@@ -78,8 +79,28 @@ package models.galaxy
          return _solarSystems;
       }
       
+      private var _solarSystemsWithPlayer:ListCollectionView = new ListCollectionView();
+      private function ff_solarSystemsWithPlayer(ss:SolarSystem) : Boolean {
+         return ss.isRegular &&
+                ss.metadata != null &&
+                ss.metadata.playerAssets;
+      }
+      [Bindable(event="willNotChange")]
+      /**
+       * List of solar systems player has any military assets in. <p><b>Never null.</b></p>
+       */
+      public function get solarSystemsWithPlayer() : ListCollectionView {
+         return _solarSystemsWithPlayer;
+      }
+      /**
+       * Refreshes <code>solarSystemsWithPlayer</code> collection.
+       */
+      public function refreshSolarSystemsWithPlayer() : void {
+         _solarSystemsWithPlayer.refresh();
+      }
+      
       private var _wormholes:ListCollectionView;
-      private function filterFunction_wormholes(ss:SolarSystem) : Boolean {
+      private function ff_wormholes(ss:SolarSystem) : Boolean {
          return ss.isWormhole;
       }
       [Bindable(event="willNotChange")]

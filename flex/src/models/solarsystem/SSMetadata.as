@@ -54,6 +54,13 @@ package models.solarsystem
          napShips = false;
       }
       
+      /**
+       * Does the player has any ships or planets in a solar system?
+       */ 
+      public function get playerAssets() : Boolean {
+         return playerPlanets || playerShips;
+      }
+      
       
       /* ########################### */
       /* ### BaseModel OVERRIDES ### */

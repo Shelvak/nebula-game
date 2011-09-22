@@ -43,7 +43,7 @@
             }
             if (planets)
             {
-               planets.dataProvider = ML.latestSolarSystem.naturalObjects;
+               planets.dataProvider = ML.latestSolarSystem.importantObjects;
             }
          }
       ]]>

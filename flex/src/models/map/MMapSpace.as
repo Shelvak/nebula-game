@@ -17,14 +17,14 @@ package models.map
       public function MMapSpace()
       {
          super();
-         _naturalObjects = Collections.filter(objects, filterFunction_naturalObjects);
-         _wreckages = Collections.filter(objects, filterFunction_wreckages);
-         _cooldowns = Collections.filter(objects, filterFunction_cooldowns);
+         _naturalObjects = Collections.filter(objects, ff_naturalObjects);
+         _wreckages = Collections.filter(objects, ff_wreckages);
+         _cooldowns = Collections.filter(objects, ff_cooldowns);
       }
       
       
       private var _wreckages:ListCollectionView;
-      private function filterFunction_wreckages(object:IMStaticSpaceObject) : Boolean
+      private function ff_wreckages(object:IMStaticSpaceObject) : Boolean
       {
          return object.objectType == STATIC_OBJECT_WRECKAGE;
       }
@@ -39,7 +39,7 @@ package models.map
       
       
       private var _naturalObjects:ListCollectionView;
-      private function filterFunction_naturalObjects(object:IMStaticSpaceObject) : Boolean
+      private function ff_naturalObjects(object:IMStaticSpaceObject) : Boolean
       {
          return object.objectType == STATIC_OBJECT_NATURAL;
       }
@@ -54,7 +54,7 @@ package models.map
       
       
       private var _cooldowns:ListCollectionView;
-      private function filterFunction_cooldowns(object:IMStaticSpaceObject) : Boolean
+      private function ff_cooldowns(object:IMStaticSpaceObject) : Boolean
       {
          return object.objectType == STATIC_OBJECT_COOLDOWN;
       }
