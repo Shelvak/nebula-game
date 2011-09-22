@@ -204,7 +204,7 @@ function authorizationFailed() {
 }
 
 // Get combat log URL for log with given ID.
-function getCombatLogUrl(combatLogId, playerId) {
+function getCombatLogUrl(combatLogId, playerId) { // {{{
   var clAssetsUrl = assetsUrl == ""
     ? location.href.replace(location.search, '')
     : assetsUrl;
@@ -214,7 +214,7 @@ function getCombatLogUrl(combatLogId, playerId) {
     "&web_host=" + e(webHost) + "&assets_url=" + e(assetsUrl) +
     "&combat_log_id=" + e(combatLogId) + "&player_id=" + e(playerId) +
     "&locale=" + e(locale);
-}
+} // }}}
 
 // Load our swf.
 // {{{
@@ -223,7 +223,10 @@ $(document).ready(function() {
   var params = {};
   params.quality = "high";
   params.bgcolor = "#ffffff";
-  params.allowscriptaccess = "sameDomain";
+  // When AllowScriptAccess is "always," the SWF file can communicate with 
+  // the HTML page in which it is embedded. This rule applies even when the
+  // SWF file is from a different domain than the HTML page.
+  params.allowscriptaccess = "always";
   params.allowfullscreen = "true";
   var attributes = {};
   attributes.id = appName;
