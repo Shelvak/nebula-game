@@ -135,6 +135,18 @@ class GenericController
   # Ensure params options. See Hash#ensure_options! for documentation.
   # This one raises ControllerArgumentError if option validation fails.
   def param_options(options={})
+    case options[:required]
+    when Hash
+      options[:required] = options[:required].stringify_keys
+    when Array
+      options[:required] = options[:required].map(&:to_s)
+    end
+
+    case options[:valid]
+    when Array
+      options[:valid] = options[:valid].map(&:to_s)
+    end
+
     params.ensure_options!(options)
   rescue ArgumentError => e
     raise ControllerArgumentError.new(

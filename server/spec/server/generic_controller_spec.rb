@@ -47,6 +47,30 @@ describe GenericController do
       @controller.send :param_options, options
     end
 
+    it "should convert required keys to strings when required is Array" do
+      required = [:foo, :bar, :baz]
+      options = {:required => required}
+      @params.should_receive(:ensure_options!).
+        with(:required => required.map(&:to_s))
+      @controller.send :param_options, options
+    end
+
+    it "should convert required keys to strings when required is Hash" do
+      required = {:foo => true, :bar => true}
+      options = {:required => required}
+      @params.should_receive(:ensure_options!).
+        with(:required => required.inject({}) { |h, (k, v)| h[k.to_s] = v; h })
+      @controller.send :param_options, options
+    end
+
+    it "should convert valid keys to strings" do
+      valid = [:foo, :bar, :baz]
+      options = {:valid => valid}
+      @params.should_receive(:ensure_options!).
+        with(:valid => valid.map(&:to_s))
+      @controller.send :param_options, options
+    end
+
     it "call raise ControllerArgumentError if #ensure_options! raises error" do
       options = {:required => 'lol'}
       @params.should_receive(:ensure_options!).with(options).
