@@ -53,6 +53,8 @@ package controllers.startup
    import controllers.units.actions.*;
    
    import flash.external.ExternalInterface;
+   import flash.system.Security;
+   import flash.system.SecurityDomain;
    
    import globalevents.GlobalEvent;
    
@@ -120,6 +122,8 @@ package controllers.startup
          if (startupInfo.mode == StartupMode.BATTLE) {
             ML.player.id = startupInfo.playerId;
          }
+         
+         Security.allowDomain(startupInfo.webHost);
          
          // LoadingScreen takes over from this point forward
          return true;
