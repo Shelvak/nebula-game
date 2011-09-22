@@ -391,7 +391,7 @@ describe Combat do
       mule = nil
       dsl = CombatDsl.new do
         planet = location(:planet).location
-        player = self.player(:planet_owner => true) do
+        self.player(:planet_owner => true) do
           units { mule = self.mule { trooper :hp => 1 } }
         end
         player { units { shocker } }
@@ -450,7 +450,25 @@ describe Combat do
         "Unit::Trooper")
     end
   end
-  
+
+  describe "#895" do
+    # Units are not sent in CombatLog notification if player had no units while
+    # attacked in SsObject
+
+    it "should send units in notification" do
+      player = nil
+      assets = CombatDsl.new do
+        planet = location(:planet).location
+        player = self.player(:planet_owner => true).player
+        player { units { shocker } }
+      end.run
+
+      notification_id = assets.notification_ids[player.id]
+      notification = Notification.find(notification_id)
+      notification.params['units'].should_not be_nil
+    end
+  end
+
   it "should not kill non-combat types" do
     mule = nil
     mdh = nil
