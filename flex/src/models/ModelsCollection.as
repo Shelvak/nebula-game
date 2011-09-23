@@ -2,6 +2,7 @@ package models
 {
    import mx.collections.ArrayCollection;
    
+   import utils.datastructures.Collections;
    import utils.random.Rndm;
    
    
@@ -88,16 +89,8 @@ package models
        * Looks for model with given id and returns its index or <code>-1</code> if such model
        * does not exist.
        */
-      public function findIndex(id:int) : int
-      {
-         for (var idx:int = 0; idx < length; idx++)
-         {
-            if (BaseModel(getItemAt(idx)).id == id)
-            {
-               return idx;
-            }
-         }
-         return -1;
+      public function findIndex(id:int) : int {
+         return Collections.findFirstIndexWithId(this, id);
       }
       
       
@@ -105,16 +98,8 @@ package models
        * Looks for model equal to given one (uses <code>equals()</code>) and returns its index or
        * <code>-1</code> if such model does not exist.
        */
-      public function findIndexExact(model:BaseModel) : int
-      {
-         for (var idx:int = 0; idx < length; idx++)
-         {
-            if (model.equals(getItemAt(idx)))
-            {
-               return idx;
-            }
-         }
-         return -1;
+      public function findIndexExact(model:BaseModel) : int {
+         return Collections.findFirstIndexEqualTo(this, model);
       }
       
       
@@ -122,14 +107,8 @@ package models
        * Looks for model with given id and returns that model or <code>null</code> if one could not
        * be found.
        */
-      public function find(id:int) : *
-      {
-         var idx:int = findIndex(id);
-         if (idx >= 0)
-         {
-            return getItemAt(idx);
-         }
-         return null;
+      public function find(id:int) : * {
+         return Collections.findFirstWithId(this, id);
       }
       
       
@@ -137,14 +116,8 @@ package models
        * Looks for for model equal to given one (uses <code>equals()</code>) and returns that model
        * or <code>null</code> if one could not be found.
        */
-      public function findExact(model:BaseModel) : *
-      {
-         var idx:int = findIndexExact(model);
-         if (idx >= 0)
-         {
-            return getItemAt(idx);
-         }
-         return null;
+      public function findExact(model:BaseModel) : * {
+         return Collections.findFirstEqualTo(this, model);
       }
       
       
@@ -156,24 +129,9 @@ package models
        * 
        * @see mx.collections.ArrayCollection#addItemAt()
        */
-      public override function addItemAt(item:Object, index:int) : void
-      {
+      public override function addItemAt(item:Object, index:int) : void {
          checkItemType(item);
-//         var newModel:BaseModel = BaseModel(item);
-//         if (newModel.id == 0)
-//         {
-//            super.addItemAt(item, index);
-//            return;
-//         }
-//         var model:BaseModel = findExact(newModel);
-//         if (model)
-//         {
-//            model.copyProperties(newModel);
-//         }
-//         else
-//         {
-            super.addItemAt(item, index);
-//         }
+         super.addItemAt(item, index);
       }
       
       
@@ -223,15 +181,13 @@ package models
        */
       public function remove(id:int, silent:Boolean = false) : *
       {
-         var idx:int = findIndex(id);
-         if (silent && idx < 0)
-         {
-            return null;
-         }
-         else
-         {
-            return removeItemAt(idx);
-         }
+         return Collections.removeFirst(
+            this,
+            function(model:BaseModel) : Boolean {
+               return model.id == id;
+            },
+            silent
+         );
       }
       
       
@@ -239,17 +195,8 @@ package models
        * Removes model equal to (uses <code>equals()</code> method) the given one or throws error if
        * such model does not exist.
        */
-      public function removeExact(model:BaseModel, silent:Boolean = false) : *
-      {
-         var idx:int = findIndexExact(model);
-         if (silent && idx < 0)
-         {
-            return null;
-         }
-         else
-         {
-            return removeItemAt(idx);
-         }
+      public function removeExact(model:BaseModel, silent:Boolean = false) : * {
+         return Collections.removeFirstEqualTo(this, model, silent);
       }
       
       

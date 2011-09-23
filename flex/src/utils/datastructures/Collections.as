@@ -161,7 +161,7 @@ package utils.datastructures
       {
          try
          {
-            list.removeItemAt(findFirstIndex(list, testFunction));
+            return list.removeItemAt(findFirstIndex(list, testFunction));
          }
          catch (error:RangeError)
          {
@@ -185,7 +185,7 @@ package utils.datastructures
       {
          try
          {
-            list.removeItemAt(findFirstIndexEqualTo(list, example));
+            return list.removeItemAt(findFirstIndexEqualTo(list, example));
          }
          catch (error:RangeError)
          {
