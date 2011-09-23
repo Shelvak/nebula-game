@@ -447,7 +447,7 @@ package models.movement
                currentHop = hop;
             }
                
-               // jump in the same map
+            // jump in the same map
             else {
                while (hop != endHop) {
                   hop = MHop(hops.removeItemAt(0));

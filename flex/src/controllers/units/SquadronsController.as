@@ -271,42 +271,23 @@ package controllers.units
       
       
       /**
-       * Call this when any units have made a jump between maps or when hostile units have jumped
-       * into player's visible area.
+       * Call this when any units have made a jump between maps (new batch of hops is received form 
+       * the server) or when some units have jumped into player's visible area.
        */
-      public function executeJump(units:IList, hops:IList) : void
-      {
+      public function executeJump(units:IList, hops:IList) : void {
          var sampleUnit:Unit = Unit(units.getItemAt(0));
-         // either move existing squadron to another map
+         // either add hops to existing squadron
          var squad:MSquadron = findSquad(sampleUnit.squadronId);
-         if (squad)
-         {
-            Collections.cleanListOfICleanables(units);
-            // if we don't see location given units have jumped to, destroy the squadron (units are
-            // removed by destroySquadron() method)
-            if (!sampleUnit.location.isObserved)
-            {
-               destroySquadron(squad.id, false);
-            }
-            // otherwise make the jump
-            else
-            {
-               squad.createCurrentHop(sampleUnit.location);
-               squad.addHop(squad.currentHop);
-               squad.moveToNextHop();
-               squad.addAllHops(hops);
-            }
+         if (squad != null) {
+            squad.addAllHops(hops);
          }
          // or create new squadron
-         else if (sampleUnit.location.isObserved)
-         {
+         else if (sampleUnit.location.isObserved) {
             UNITS.addAll(units);
             squad = SquadronFactory.fromUnit(sampleUnit);
             squad.addAllHops(hops);
             if (squad.isFriendly)
-            {
                squad.route = findRoute(squad.id);
-            }
             SQUADS.addItem(squad);
          }
       }
@@ -449,16 +430,17 @@ package controllers.units
       /* ### SQUADS MOVEMENT AUTOMATION ### */
       /* ################################## */
       
-      
-      
-      private function global_timedUpdateHandler(event:GlobalEvent) : void
-      {
+      private function global_timedUpdateHandler(event:GlobalEvent) : void {
          var currentTime:Number = new Date().time;
-         for each (var squad:MSquadron in SQUADS)
-         {
-            if (squad.isMoving && squad.hasHopsRemaining && !squad.pending)
-            {
+         for each (var squad:MSquadron in SQUADS.toArray()) {
+            if (squad.isMoving && squad.hasHopsRemaining && !squad.pending) {
                squad.moveToNextHop(currentTime + MOVE_EFFECT_DURATION);
+               var loc:LocationMinimal = squad.currentHop.location;
+               var squadId:int = squad.id;
+               if (squad.isHostile && !loc.isObserved)
+                  destroySquadron(squadId, true);
+               else if (squad.isFriendly && !loc.isGalaxy && !loc.isObserved)
+                  destroySquadron(squadId, false);
             }
          }
       }
