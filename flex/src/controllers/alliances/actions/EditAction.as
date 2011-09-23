@@ -30,7 +30,8 @@ package controllers.alliances.actions
       {
          if (cmd.parameters.error == AlliancesErrorType.NOT_UNIQUE)
          {
-            Messenger.show(Localizer.string('Alliances','label.allyExists'), Messenger.SHORT);
+            Messenger.show(Localizer.string('Alliances','label.allyExists'),
+               Messenger.LONG);
          }
          else
          {
