@@ -73,14 +73,16 @@ class ObjectsController < GenericController
   def prepare(objects)
     resolver = StatusResolver.new(player)
 
-    group_by_class(objects).map_values do |class_name, class_objects|
-      cast_perspective(class_objects, resolver)
+    group_by_class(objects).inject({}) do |hash, (class_name, class_objects)|
+      hash[class_name] = cast_perspective(class_objects, resolver)
+      hash
     end
   end
   
   def prepare_destroyed(objects)
-    group_by_class(objects).map_values do |class_name, class_objects|
-      class_objects.map(&:id)
+    group_by_class(objects).inject({}) do |hash, (class_name, class_objects)|
+      hash[class_name] = class_objects.map(&:id)
+      hash
     end
   end
 
@@ -91,20 +93,17 @@ class ObjectsController < GenericController
   # Cast given objects to players perspective. E.g. If object is a planet
   # and that player owns it, it should get more data than the one that does
   # not own it.
-  def cast_perspective(objects, resolver=nil)
-    resolver ||= StatusResolver.new(player)
-    
+  def cast_perspective(objects, resolver)
     objects.map do |object|
       case object
       when Unit
         object.as_json(:perspective => resolver)
       when SsObject::Planet
         object.as_json(
-          :resources => object.can_view_resources?(player.id),
+          :owner => object.player_id == player.id,
+          :view => object.observer_player_ids.include?(player.id),
           :perspective => resolver
         )
-      when SsObject::Asteroid
-        object.as_json(:resources => true)
       else
         object.as_json
       end
