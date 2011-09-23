@@ -103,10 +103,9 @@ describe PlanetsController do
         @controller.current_ss_id.should == @planet.solar_system_id
       end
 
-      describe "without resources" do
+      describe "without owner attributes" do
         before(:each) do
-          @planet.stub!(:can_view_resources?).with(player.id).and_return(
-            false)
+          @planet.player = Factory.create(:player)
           invoke @action, @params
         end
 
@@ -114,15 +113,15 @@ describe PlanetsController do
 
         it "should include planet without resources" do
           response_should_include(
-            :planet => @planet.as_json(:resources => false, :view => true)
+            :planet => @planet.as_json(:owner => false, :view => true,
+                                       :perspective => player)
           )
         end
       end
 
-      describe "with resources" do
+      describe "with owner attributes" do
         before(:each) do
-          @planet.stub!(:can_view_resources?).with(player.id).and_return(
-            true)
+          @planet.player = player
           invoke @action, @params
         end
 
@@ -130,7 +129,8 @@ describe PlanetsController do
 
         it "should include planet with resources" do
           response_should_include(
-            :planet => @planet.as_json(:resources => true, :view => true)
+            :planet => @planet.as_json(:owner => true, :view => true,
+                                       :perspective => player)
           )
         end
       end
@@ -188,7 +188,7 @@ describe PlanetsController do
       [planet1, planet2].each_with_index do |planet, index|
         planet.reload
         response[:planets][index].should equal_to_hash(
-          planet.as_json(:resources => true))
+          planet.as_json(:view => true))
       end
     end
   end

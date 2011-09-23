@@ -40,12 +40,7 @@ class SolarSystemsController < GenericController
       |ss_object|
       case ss_object
       when SsObject::Planet
-        ss_object.as_json(
-          :resources => ss_object.can_view_resources?(player.id),
-          :perspective => resolver
-        )
-      when SsObject::Asteroid
-        ss_object.as_json(:resources => true)
+        ss_object.as_json(:perspective => resolver)
       else
         ss_object.as_json
       end

@@ -629,7 +629,7 @@ package models.solarsystem
       
       private var timedUpdateHandlerRegistered:Boolean = false;
       private function registerOrUnregisterTimedUpdateHandler() : void {
-         if (isPlanet && ownerIsPlayer)
+         if (isPlanet && ownerIsPlayer && lastResourcesUpdate != null)
             registerTimedUpdateHandler();
          else
             unregisterTimedUpdateHandler();
