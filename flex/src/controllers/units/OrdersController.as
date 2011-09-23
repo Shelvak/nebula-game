@@ -155,7 +155,10 @@ package controllers.units
                   break;
                
                case MapType.PLANET:
-                  locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
+                  if (!ML.latestPlanet.inBattleground)
+                     locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
+                  else
+                     locationSourceGalaxy = null;
                   locationSourceSolarSystem = ML.latestPlanet.currentLocation;
                   break;
             }

@@ -77,11 +77,7 @@ package controllers.planets.actions
       }
       
       override public function applyServerAction(cmd:CommunicationCommand) : void {
-         if (ML.latestPlanet != null) {
-            ML.latestPlanet.setFlag_destructionPending();
-            ML.latestPlanet = null;
-         }
-         
+         ML.latestPlanet = null;
          var params:Object = cmd.parameters;
          ML.units.disableAutoUpdate();
          ML.units.addAll(UnitFactory.fromObjects(params.units, params.players));
