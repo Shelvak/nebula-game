@@ -5,7 +5,10 @@ package controllers.alliances.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
+   import controllers.Messenger;
+   import controllers.alliances.AlliancesErrorType;
    
+   import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
    
    /**
@@ -23,9 +26,20 @@ package controllers.alliances.actions
          super.applyClientAction(cmd);
       }
       
+      public override function applyServerAction(cmd:CommunicationCommand):void
+      {
+         if (cmd.parameters.error == AlliancesErrorType.NOT_UNIQUE)
+         {
+            Messenger.show(Localizer.string('Alliances','label.allyExists'), Messenger.SHORT);
+         }
+         else
+         {
+            AllianceScreenM.getInstance().alliance.name = allyName;
+         }
+      }
+      
       public override function result(rmo:ClientRMO):void
       {
-         AllianceScreenM.getInstance().alliance.name = allyName;
          GlobalFlags.getInstance().lockApplication = false;
       }
       
