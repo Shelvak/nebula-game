@@ -142,8 +142,8 @@ class ControlManager
     only_in_production("player_destroyed invoked for #{player}") do
       response = post_to_web(player.galaxy.callback_url, 
         "remove_player_from_galaxy",
-        'player_auth_token' => player.auth_token,
-        'galaxy_id' => player.galaxy_id
+        'player_id' => player.id,
+        'web_user_id' => player.web_user_id
       )
 
       check_response(response)
@@ -182,6 +182,7 @@ class ControlManager
     only_in_production("alliance_destroyed invoked for #{alliance}") do
       response = post_to_web(alliance.galaxy.callback_url,
         "alliance_destroyed",
+        'galaxy_id' => alliance.galaxy_id,
         'alliance_id' => alliance.id
       )
 
@@ -194,6 +195,7 @@ class ControlManager
         alliance}") do
       response = post_to_web(alliance.galaxy.callback_url,
         "player_joined_alliance",
+        'galaxy_id' => alliance.galaxy_id,
         'alliance_id' => alliance.id,
         'player_name' => player.name
       )
@@ -207,6 +209,7 @@ class ControlManager
         alliance}") do
       response = post_to_web(alliance.galaxy.callback_url,
         "player_left_alliance",
+        'galaxy_id' => alliance.galaxy_id,
         'alliance_id' => alliance.id,
         'player_name' => player.name
       )
