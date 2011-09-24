@@ -77,10 +77,16 @@ class Building < ActiveRecord::Base
     combat_types + [Building::DefensivePortal.to_s.demodulize]
   end
 
+  # #flags is currently tiny int, so it can store 8 flags.
+  flag_attributes(
+    "overdriven"                => 0b00000001,
+    "with_points"               => 0b00000010
+  )
+
   def to_s
     ("<Building::%s(%s) hp:%d/%d (%3.2f%%), x: %s, y: %s, x_end: %s, " +
     "y_end: %s, lvl: %d, planet_id: %s>") % [
-      type, id.to_s, hp, hit_points, hp_percentage * 100, x.to_s, y.to_s, 
+      type, id.to_s, hp, hit_points, hp_percentage * 100, x.to_s, y.to_s,
       x_end.to_s, y_end.to_s, level, planet_id.to_s
     ]
   end
@@ -194,7 +200,7 @@ class Building < ActiveRecord::Base
   def cancel!
     super(proc { activate })
   end
-  
+
   def upgrade
     forbid_unmanagable!
     super
@@ -258,7 +264,7 @@ class Building < ActiveRecord::Base
       destroy!
     end
 
-    EventBroker.fire(planet, EventBroker::CHANGED, 
+    EventBroker.fire(planet, EventBroker::CHANGED,
       EventBroker::REASON_OWNER_PROP_CHANGE)
   end
 
@@ -367,7 +373,7 @@ class Building < ActiveRecord::Base
     when :activated
       on_activation
     end
-    
+
     true
   end
 
