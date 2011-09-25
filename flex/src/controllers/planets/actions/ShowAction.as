@@ -8,7 +8,6 @@ package controllers.planets.actions
    
    import globalevents.GPlanetEvent;
    
-   import models.Owner;
    import models.factories.PlanetFactory;
    import models.factories.SSObjectFactory;
    import models.factories.UnitFactory;
@@ -79,18 +78,18 @@ package controllers.planets.actions
       override public function applyServerAction(cmd:CommunicationCommand) : void {
          ML.latestPlanet = null;
          var params:Object = cmd.parameters;
+         var paramsPlanet:Object = params["planet"];
          ML.units.disableAutoUpdate();
-         ML.units.addAll(UnitFactory.fromObjects(params.units, params.players));
-         ML.units.addAll(UnitFactory.fromObjects(params.npcUnits, new Object()));
+         ML.units.addAll(UnitFactory.fromObjects(params["units"], params["players"]));
+         ML.units.addAll(UnitFactory.fromObjects(params["npcUnits"], new Object()));
          ML.units.enableAutoUpdate();
-         params.planet.cooldownEndsAt = params.cooldownEndsAt;
+         paramsPlanet["cooldownEndsAt"] = params["cooldownEndsAt"];
          var planet:Planet = PlanetFactory.fromSSObject(
-            SSObjectFactory.fromObject(params.planet),
-            params.tiles,
-            params.buildings,
-            params.folliages
+            SSObjectFactory.fromObject(paramsPlanet),
+            params["tiles"],
+            params["buildings"],
+            params["folliages"]
          );
-         planet.ssObject.owner = params.planet.lastResourcesUpdate ? Owner.PLAYER : Owner.UNDEFINED;
          planet.initUpgradeProcess();
          var ss:SolarSystem;
          
