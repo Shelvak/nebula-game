@@ -37,83 +37,47 @@ describe GenericController do
       end
       @controller.stub!(:before_invoke!).and_return(true)
       @controller.stub!(:action_bar).and_return(true)
-      @action = 'foo|bar'
+      @params = {'aa' => 10}
+      @controller.receive('action' => 'foo|bar', 'params' => @params)
     end
 
-    describe "requirements" do
-      it "should raise ControllerArgumentError if required param " +
-      "is missing" do
-        lambda do
-          @controller.receive('action' => @action, 'params' => {'aa' => 10})
-          @controller.send :param_options, :required => 'lol'
-        end.should raise_error(ControllerArgumentError)
-      end
-      
-      it "should support array syntax" do
-        lambda do
-          @controller.receive('action' => @action, 
-            'params' => {'foo' => 10, 'bar' => 20})
-          @controller.send :param_options, :required => %w{foo bar}
-        end.should_not raise_error(ControllerArgumentError)
-      end
-      
-      it "should support hash syntax" do
-        lambda do
-          @controller.receive('action' => @action, 
-            'params' => {'foo' => 10, 'bar' => "20"})
-          @controller.send :param_options, :required => {:foo => Fixnum,
-            :bar => String}
-        end.should_not raise_error(ControllerArgumentError)
-      end
-      
-      it "should support multiple type checking" do
-        lambda do
-          @controller.receive('action' => @action, 
-            'params' => {'foo' => 10, 'bar' => false})
-          @controller.send :param_options, :required => {:foo => Fixnum,
-            :bar => [TrueClass, FalseClass]}
-        end.should_not raise_error(ControllerArgumentError)
-      end
-      
-      it "should fail if types mismatch" do
-        lambda do
-          @controller.receive('action' => @action, 
-            'params' => {'foo' => 10, 'bar' => nil})
-          @controller.send :param_options, :required => {:foo => Fixnum,
-            :bar => [TrueClass, FalseClass]}
-        end.should raise_error(ControllerArgumentError)
-      end
-
-      it "should pass if required params is given" do
-        lambda do
-          @controller.receive('action' => @action, 'params' => {'lol' => 10})
-          @controller.send :param_options, :required => 'lol'
-        end.should_not raise_error(ArgumentError)
-      end
-    end
-    
-    describe "validity" do
-      it "should raise ControllerArgumentError if param is not from valid list" do      
-        lambda do
-          @controller.receive('action' => @action, 'params' => {'aa' => 10})
-          @controller.send :param_options, :valid => 'lol'
-        end.should raise_error(ControllerArgumentError)
-      end
-
-      it "should pass if params are from valid list" do
-        lambda do
-          @controller.receive('action' => @action, 'params' => {'lol' => 10})
-          @controller.send :param_options, :valid => 'lol'
-        end.should_not raise_error(ArgumentError)
-      end  
+    it "call #ensure_options! on params" do
+      options = {:required => 'lol'}
+      @params.should_receive(:ensure_options!).with(options)
+      @controller.send :param_options, options
     end
 
-    it "should pass if all params are valid and required are provided" do
+    it "should convert required keys to strings when required is Array" do
+      required = [:foo, :bar, :baz]
+      options = {:required => required}
+      @params.should_receive(:ensure_options!).
+        with(:required => required.map(&:to_s))
+      @controller.send :param_options, options
+    end
+
+    it "should convert required keys to strings when required is Hash" do
+      required = {:foo => true, :bar => true}
+      options = {:required => required}
+      @params.should_receive(:ensure_options!).
+        with(:required => required.inject({}) { |h, (k, v)| h[k.to_s] = v; h })
+      @controller.send :param_options, options
+    end
+
+    it "should convert valid keys to strings" do
+      valid = [:foo, :bar, :baz]
+      options = {:valid => valid}
+      @params.should_receive(:ensure_options!).
+        with(:valid => valid.map(&:to_s))
+      @controller.send :param_options, options
+    end
+
+    it "call raise ControllerArgumentError if #ensure_options! raises error" do
+      options = {:required => 'lol'}
+      @params.should_receive(:ensure_options!).with(options).
+        and_raise(ArgumentError)
       lambda do
-        @controller.receive('action' => @action, 'params' => {'baz' => 10,
-            'lol' => 20})
-        @controller.send :param_options, :valid => 'lol', :required => 'baz'
-      end.should_not raise_error(ArgumentError)
+        @controller.send :param_options, options
+      end.should raise_error(ControllerArgumentError)
     end
   end
 

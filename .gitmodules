@@ -1,15 +1,15 @@
 [submodule "server/vendor/plugins/ar_clone_db"]
 	path = server/vendor/plugins/ar_clone_db
-	url = git://github.com/arturaz/ar_clone_db.git
+	url = git@github.com:arturaz/ar_clone_db.git
 [submodule "server/vendor/plugins/ar_destroy_bang"]
 	path = server/vendor/plugins/ar_destroy_bang
-	url = git://github.com/arturaz/ar_destroy_bang.git
+	url = git@github.com:arturaz/ar_destroy_bang.git
 [submodule "server/vendor/plugins/ar_mysql_migration_fk"]
 	path = server/vendor/plugins/ar_mysql_migration_fk
-	url = git://github.com/arturaz/ar_mysql_migration_fk.git
+	url = git@github.com:arturaz/ar_mysql_migration_fk.git
 [submodule "server/vendor/plugins/custom_serialize"]
 	path = server/vendor/plugins/custom_serialize
-	url = git://github.com/arturaz/custom_serialize.git
+	url = git@github.com:arturaz/custom_serialize.git
 [submodule "server/vendor/plugins/ruby_extensions"]
 	path = server/vendor/plugins/ruby_extensions
-	url = git://github.com/arturaz/ruby_extensions.git
+	url = git@github.com:arturaz/ruby_extensions.git

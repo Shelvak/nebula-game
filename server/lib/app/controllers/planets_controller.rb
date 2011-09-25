@@ -29,8 +29,9 @@ class PlanetsController < GenericController
       resolver = StatusResolver.new(player)
       respond \
         :planet => planet.as_json(
-          :resources => planet.can_view_resources?(player.id),
-          :view => true
+          :owner => planet.player_id == player.id,
+          :view => true,
+          :perspective => player
         ),
         :tiles => Tile.fast_find_all_for_planet(planet),
         :folliages => Folliage.fast_find_all_for_planet(planet),
@@ -62,10 +63,8 @@ class PlanetsController < GenericController
   #
   def action_player_index
     only_push!
-    planets = SsObject::Planet.for_player(player).map do
-      |planet|
-      planet.as_json(:resources => true)
-    end
+    planets = SsObject::Planet.for_player(player).
+      map { |planet| planet.as_json(:view => true) }
     respond :planets => planets
   end
 

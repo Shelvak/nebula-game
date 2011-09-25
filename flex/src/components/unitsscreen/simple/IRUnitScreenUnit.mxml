@@ -185,11 +185,18 @@
             if (!model.selected)
             {
                model.selected = !model.selected;
-               model.flankModel.invertSelection(model);
+               model.flankModel.invertSelection(model, event.shiftKey);
             }
             else
             {
-               deselectOnUp = true;
+               if (event.shiftKey && model.flankModel.handleShiftClick(model))
+               {
+                  deselectOnUp = false;
+               }
+               else
+               {
+                  deselectOnUp = true;
+               }
             }
          }
          
@@ -203,29 +210,32 @@
                downPressed = false;
                deselectOnUp = false;
                
-               model.flankModel.startDrag();
-               
-               var ammounts: Object = {};
-               for each (var item: MCUnit in model.flankModel.selection)
+               if (model.flankModel.selection.length > 0)
                {
-                  if (ammounts[item.unit.type] == null)
+                  model.flankModel.startDrag();
+                  
+                  var ammounts: Object = {};
+                  for each (var item: MCUnit in model.flankModel.selection)
                   {
-                     ammounts[item.unit.type] = 0;
+                     if (ammounts[item.unit.type] == null)
+                     {
+                        ammounts[item.unit.type] = 0;
+                     }
+                     ammounts[item.unit.type]++;
                   }
-                  ammounts[item.unit.type]++;
+                  var units: ArrayCollection = new ArrayCollection();
+                  for (var type: String in ammounts)
+                  {
+                     units.addItem(new UnitBuildingEntry('Unit::'+type, ammounts[type]));
+                  }
+                  
+                  
+                  var indicator: DraggedUnitsIndicator = new DraggedUnitsIndicator();
+                  indicator.cachedUnits = units;
+                  FlexGlobals.topLevelApplication.addElement(indicator);
+                  indicator.x = event.stageX - (indicator.width/2);               
+                  indicator.y = event.stageY - (indicator.height/2);
                }
-               var units: ArrayCollection = new ArrayCollection();
-               for (var type: String in ammounts)
-               {
-                  units.addItem(new UnitBuildingEntry('Unit::'+type, ammounts[type]));
-               }
-               
-               
-               var indicator: DraggedUnitsIndicator = new DraggedUnitsIndicator();
-               indicator.cachedUnits = units;
-               FlexGlobals.topLevelApplication.addElement(indicator);
-               indicator.x = event.stageX - (indicator.width/2);               
-               indicator.y = event.stageY - (indicator.height/2);
             }
          }
          
@@ -238,13 +248,14 @@
             {
                deselectOnUp = false;
                model.selected = !model.selected;
-               model.flankModel.invertSelection(model);
+               model.flankModel.invertSelection(model, event.shiftKey);
             }
          }
          
          private function planetResourcesLoadable(pOwner: int): Boolean
          {
-            return (pOwner == Owner.PLAYER || pOwner == Owner.UNDEFINED);
+            // TODO uncomment this when exp protection will be implemented 
+            return (pOwner == Owner.PLAYER);// || pOwner == Owner.UNDEFINED);
          }
          
       ]]>
@@ -294,6 +305,7 @@
             <!-- UNLOAD -->
             <s:Group visible="{!(!model.unit.location.isSSObject
                      || (model.unit.owner != Owner.PLAYER)
+                     || (model.unit.storage == 0)
                      || (!ML.latestPlanet))}"
                      toolTip="{model.unit.stored == 0? Localizer.string('Units', 'tooltip.nothingToUnload')
                      : Localizer.string('Units', 'label.unload')}">

@@ -430,6 +430,12 @@ describe AlliancesController do
       @alliance.name.should == @params['name']
     end
 
+    it "should respond with error if alliance name is not unique" do
+      other = Factory.create(:alliance, :galaxy => @alliance.galaxy)
+      invoke @action, @params.merge("name" => other.name)
+      response_should_include :error => 'not_unique'
+    end
+
     it "should record cred stats" do
       should_record_cred_stats(:alliance_change, [player]) \
         { invoke @action, @params }

@@ -207,6 +207,8 @@ class Unit < ActiveRecord::Base
         ? location.object.solar_system_id : location.id
       FowSsEntry.increase(location_id, player, 1)
     end
+
+    Combat::LocationChecker.check_location(location_point) if can_fight?
   end
 
   before_save :upgrade_through_xp

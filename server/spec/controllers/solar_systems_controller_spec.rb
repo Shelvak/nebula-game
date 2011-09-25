@@ -19,31 +19,12 @@ describe SolarSystemsController do
 
     describe "listing" do
       describe "planets" do
-        it "should include them with resources if friendly" do
-          planet = Factory.create(:planet, :solar_system => @solar_system,
-            :player => player)
-
-          invoke @action, @params
-          response[:ss_objects].should include(
-            planet.as_json(:resources => true, :perspective => player))
-        end
-
-        it "should include them without resources if not friendly" do
-          planet = Factory.create(:planet, :solar_system => @solar_system,
-            :player => Factory.create(:player))
-
-          invoke @action, @params
-          response[:ss_objects].should include(
-            planet.as_json(:resources => false, :perspective => player)
-          )
-        end
-
-        it "should include them with unknown status if npc" do
+        it "should include them" do
           planet = Factory.create(:planet, :solar_system => @solar_system)
 
           invoke @action, @params
           response[:ss_objects].should include(
-            planet.as_json(:resources => false, :perspective => player)
+            planet.as_json(:perspective => player)
           )
         end
       end
@@ -54,10 +35,9 @@ describe SolarSystemsController do
             :solar_system => @solar_system)
         end
 
-        it "should include them with resources" do
+        it "should include them" do
           invoke @action, @params
-          response[:ss_objects].should include(
-            @asteroid.as_json(:resources => true))
+          response[:ss_objects].should include(@asteroid.as_json)
         end
       end
 

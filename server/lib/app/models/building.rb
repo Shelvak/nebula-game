@@ -134,6 +134,12 @@ class Building < ActiveRecord::Base
   # Buildings don't accumulate XP. This method always returns 0.
   def can_upgrade_by; 0; end
 
+  # Check for combat after upgrading.
+  def on_upgrade_just_finished_after_save
+    super if defined?(super)
+    Combat::LocationChecker.check_location(planet.location_point) if can_fight?
+  end
+
   # Deactivate building before destruction.
   before_destroy do
     deactivate if active? && ! npc?
@@ -273,6 +279,9 @@ class Building < ActiveRecord::Base
       "Cannot move while upgrading or working (#{self.inspect})!") \
       if upgrading? || working?
 
+    active = active?
+    deactivate! if active
+
     stats = CredStats.move(self)
     player.creds -= creds_needed
     self.armor_mod = self.energy_mod = self.construction_mod = 0
@@ -283,18 +292,14 @@ class Building < ActiveRecord::Base
     raise ActiveRecord::RecordInvalid.new(self) unless errors.blank?
     calculate_mods(true)
 
-    armor_mod_changed = armor_mod_changed?
     transaction do
       stats.save!
       player.save!
-      save!
+      active ? activate! : save!
       Objective::MoveBuilding.progress(self)
     end
 
     EventBroker.fire(self, EventBroker::CHANGED)
-    EventBroker.fire(
-      planet, EventBroker::CHANGED, EventBroker::REASON_OWNER_PROP_CHANGE
-    ) if armor_mod_changed
   end
 
   def points_on_destroy

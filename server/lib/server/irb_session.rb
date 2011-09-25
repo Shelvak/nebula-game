@@ -66,9 +66,10 @@ module Dev
   def self.seed(player_id=1, player_count=10)
     players = {}
     current_pid = Player.maximum(:id) + 1
+    current_web_user_id = Player.maximum(:web_user_id) + 1
     player_count.times do |i|
       name = "p-#{current_pid + i}"
-      players[name] = name
+      players[current_web_user_id + i] = name
     end
 
     player = Player.find(player_id)

@@ -512,6 +512,13 @@
     <pressEsc value="Spausk ESC klavišą, jog atžymėtum savo pasirinkimą" />
     <notYourPlanet value="Ši planeta tau nepriklauso!" />
     <label.claimPlanet value="Perimti planetą" />
+    <label.planetHasEnemies>
+      <p>Tu negali perimti šios planetos, nes joje vis dar yra priešo karių ar 
+      bokštelių</p>
+    </label.planetHasEnemies>
+    <label.noPlayerUnits>
+      <p>Tu negali perimti šios planetos, nes neturi joje savo karių</p>
+    </label.noPlayerUnits>
 
     <deselectButtonText value="atžymėti pastatą" />
 
@@ -3729,6 +3736,10 @@
     <label.select value="Pasirinkti" />
     <label.all value="Visus" />
     <label.none value="Nei vieno" />
+    <label.allHealable value="Visus pagydomus" />
+    <tooltip.allHealable>
+      <p>Pažymėti visus karius kurių pagydimui turi pakankamai resursų</p>
+    </tooltip.allHealable>
     <label.transfer value="Perkelti" />
     <label.load value="Įkrauti" />
     <label.close value="Uždaryti" />

@@ -20,6 +20,8 @@
         </style>
          
         <script type="text/javascript">//<![CDATA[
+function defined(argument) { return argument != undefined; }
+
 // {{{ Store url params
 var urlParams = {};
 (function () {
@@ -52,7 +54,10 @@ if (fp.binDebug) assetsUrl = "";
 // Local file, but built with rake.
 else if (location.href.indexOf('file://') == 0) assetsUrl = ""
 // Backwards compatibility for combat replays.
-else if (! assetsUrl) assetsUrl = "http://static." + webHost + "/";
+else if (! defined(assetsUrl)) {
+  if (defined(webHost)) assetsUrl = "http://static." + webHost + "/";
+  else window.alert("Both assets_url and web_host are undefined!");
+}
 // }}}
 
 function include(jsName) {

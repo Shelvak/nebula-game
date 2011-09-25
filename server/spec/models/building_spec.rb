@@ -168,8 +168,9 @@ describe Building do
       @player = Factory.create(:player,
         :creds => CONFIG['creds.building.move'])
       @planet = Factory.create(:planet, :player => @player)
-      @model = Factory.create(:b_collector_t1, :planet => @planet, :x => 0,
-        :y => 0, :level => 1)
+      @model = Factory.create(:b_collector_t1, opts_active + {
+        :planet => @planet, :x => 0, :y => 0, :level => 1}
+      )
     end
 
     it "should fail if building is not managable" do
@@ -239,26 +240,51 @@ describe Building do
 
     describe "energy mod changes" do
       before(:each) do
-
-      end
-
-      it "should dispatch planet changed" do
         Factory.create(:tile, :kind => Tile::NOXRIUM, :planet => @model.planet,
           :x => 10, :y => 15)
-        should_fire_event(
-          @model.planet, EventBroker::CHANGED,
-          EventBroker::REASON_OWNER_PROP_CHANGE
-        ) do
-          @model.move!(10, 15)
+      end
+
+      describe "when active" do
+        it "should dispatch planet changed" do
+          should_fire_event(
+            @model.planet, EventBroker::CHANGED,
+            EventBroker::REASON_OWNER_PROP_CHANGE,
+            2 # deactivate/activate
+          ) do
+            @model.move!(10, 15)
+          end
+        end
+
+        it "should actually change energy for planet" do
+          planet = @model.planet
+          lambda do
+            @model.move!(10, 15)
+            planet.reload
+          end.should change(planet, :energy_generation_rate)
         end
       end
 
-      it "should actually change energy for planet" do
-        planet = @model.planet
-        lambda do
-          @model.move!(10, 15)
-          planet.reload
-        end.should change(planet, :energy_generation_rate)
+      describe "when inactive" do
+        before(:each) do
+          opts_inactive.apply @model
+        end
+
+        it "should not dispatch planet changed" do
+          should_not_fire_event(
+            @model.planet, EventBroker::CHANGED,
+            EventBroker::REASON_OWNER_PROP_CHANGE
+          ) do
+            @model.move!(10, 15)
+          end
+        end
+
+        it "should actually change energy for planet" do
+          planet = @model.planet
+          lambda do
+            @model.move!(10, 15)
+            planet.reload
+          end.should_not change(planet, :energy_generation_rate)
+        end
       end
     end
 
@@ -994,6 +1020,25 @@ describe Building do
         @model.send(:on_upgrade_finished!)
       end.should change(@model, :construction_mod).from(10).to(
         CONFIG["tiles.junkyard.mod.construction"])
+    end
+  end
+
+  describe "#on_upgrade_finished!" do
+    describe "combat check after upgrade is finished" do
+      let(:building) { Factory.create!(:building, opts_upgrading) }
+
+      it "should check for combat in it's location if it can fight'" do
+        building.stub!(:can_fight?).and_return(true)
+        Combat::LocationChecker.should_receive(:check_location).
+          with(building.planet.location_point)
+        building.send(:on_upgrade_finished!)
+      end
+
+      it "should not check for combat in it's location if it cannot fight'" do
+        building.stub!(:can_fight?).and_return(false)
+        Combat::LocationChecker.should_not_receive(:check_location)
+        building.send(:on_upgrade_finished!)
+      end
     end
   end
 

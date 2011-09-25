@@ -13,15 +13,20 @@
          
          import components.skins.GreenButtonSkin;
          import components.skins.RedButtonSkin;
+         import components.unitsscreen.events.UnitsScreenEvent;
          
          import controllers.GlobalFlags;
          import controllers.ui.NavigationController;
+         
+         import globalevents.GResourcesEvent;
          import globalevents.GlobalEvent;
          
          import models.building.Building;
          import models.healing.HealPrice;
          import models.healing.MCHealingScreen;
+         import models.resource.Resource;
          import models.resource.ResourceType;
+         import models.solarsystem.MSSObject;
          
          import mx.events.FlexEvent;
          
@@ -54,12 +59,65 @@
          {
             calcCurrentTime();
             EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, calcCurrentTime);
+            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshResources);
+            HS.addEventListener(UnitsScreenEvent.HEALING_PRICE_CHANGE, refreshResources);
+            refreshResources();
          }
          
          
          protected function basecontainer1_removedFromStageHandler(event:Event):void
          {
             EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, calcCurrentTime);
+            EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshResources);
+            HS.removeEventListener(UnitsScreenEvent.HEALING_PRICE_CHANGE, refreshResources);
+         }
+         
+         private function refreshResources(e: Event = null): void
+         {
+            if (ML.latestPlanet == null || HS.price == null)
+            {
+               hasEnoughResources = true;
+               enoughStorage = true;
+               resLeft = 0;
+               return;
+            }
+            var ssObj: MSSObject = ML.latestPlanet.ssObject;
+            hasEnoughResources = !(
+               HS.price.metal > ssObj.metal.currentStock
+               || HS.price.energy > ssObj.energy.currentStock
+               || HS.price.zetium > ssObj.zetium.currentStock);
+            
+            missingStorageString = Resource.getMissingStoragesString(ssObj,
+               HS.price.metal, HS.price.energy, HS.price.zetium);
+            enoughStorage = (missingStorageString == ''?true:false);
+            resLeft = Resource.getTimeToReachResources
+               (ssObj.metal, ssObj.energy, ssObj.zetium, 
+                  HS.price.metal, HS.price.energy, HS.price.zetium);
+         }
+         
+         /**
+          * how many seconds are left to fulfill resources needs for building
+          **/
+         [Bindable]
+         private var resLeft: int = 0;
+         
+         [Bindable]
+         private var enoughStorage: Boolean = true;
+         
+         [Bindable]
+         private var missingStorageString: String = '';
+         
+         [Bindable]
+         private var hasEnoughResources: Boolean = true;
+         
+         private function getStringFromSeconds(seconds: int): String
+         {
+            return DateUtil.secondsToHumanString(seconds);
+         }
+         
+         private function getTime(from: Date): Number
+         {
+            return from.time;
          }
          
       ]]>
@@ -68,11 +126,20 @@
       <s:Group left="0" right="0">
          <base:AdvancedContainer left="0" right="0">
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
+               <s:Group>
+                  <s:layout>
+                     <s:HorizontalLayout gap="10"/>
+                  </s:layout>
+                  <s:Button label="{Localizer.string ('Units', 'label.all')}" click="HS.selectAll()"/>
+                  <s:Button label="{Localizer.string ('Units', 'label.none')}" click="HS.selectNone()"/>
+               </s:Group>
+               <s:Group toolTip="{Localizer.string ('Units', 'tooltip.allHealable')}">
+                  <s:Button label="{Localizer.string ('Units', 'label.allHealable')}" click="HS.selectAll(true)"
+                            enabled="{hasEnoughResources}"/>
+               </s:Group>
                <base:layout>
-                  <s:HorizontalLayout gap="10" horizontalAlign="center"/>
+                  <s:VerticalLayout gap="10" horizontalAlign="center"/>
                </base:layout>
-               <s:Button label="{Localizer.string ('Units', 'label.all')}" click="HS.selectAll()"/>
-               <s:Button label="{Localizer.string ('Units', 'label.none')}" click="HS.selectNone()"/>
             </base:Panel>
             
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.noSelection')}"
@@ -91,19 +158,48 @@
                         visible="{HS.price != null}">
                <base:AdvancedContainer width="100%">
                   <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.willHeal')}"/>
-                  <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{HS.price.metal}"/>
-                  <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{HS.price.energy}"/>
-                  <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{HS.price.zetium}"/>
+                  <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{HS.price.metal}"
+                                      labelStyleName="{HS.price.metal > ML.latestPlanet.ssObject.metal.currentStock
+                                      ?'unsatisfied':null}"/>
+                  <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{HS.price.energy}"
+                                      labelStyleName="{HS.price.energy > ML.latestPlanet.ssObject.energy.currentStock
+                                      ?'unsatisfied':null}"/>
+                  <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{HS.price.zetium}"
+                                      labelStyleName="{HS.price.zetium > ML.latestPlanet.ssObject.zetium.currentStock
+                                      ?'unsatisfied':null}"/>
+                  
+                  <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
+                           visible="{resLeft != 0}"/>
+                  <s:Group visible="{resLeft > 0}">
+                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}" fontWeight="bold"/>  
+                     <base:TimeLabel text="{getStringFromSeconds(resLeft)}"/>
+                     <s:layout>
+                        <s:VerticalLayout paddingRight="6" horizontalAlign="justify"/>
+                     </s:layout>
+                  </s:Group>
+                  
+                  <s:Group width="100%" visible="{!enoughStorage}">
+                     <s:Label text="{
+                              missingStorageString == '' 
+                              ? '' 
+                              : Localizer.string('Resources','additionalStorage', [missingStorageString])
+                              }" 
+                              styleName="unsatisfied" left="0" right="0"/>
+                  </s:Group>
+                  
                   <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.healCooldown', 
                            [DateUtil.secondsToHumanString(HS.price.cooldown)])}" 
-                           visible="{HS.cooldownEndsAt &lt; currentTime}"/>
-                  <s:Group>
-                     <s:Button label="{HS.cooldownEndsAt &lt; currentTime? Localizer.string ('Units', 'label.heal')
-                               :DateUtil.secondsToHumanString((HS.cooldownEndsAt - currentTime)/1000)}"
+                           visible="{getTime(HS.location.cooldownEndsAt) &lt; currentTime}"
+                           paddingTop="6"/>
+                  
+                  <s:Group
+                     toolTip="{getTime(HS.location.cooldownEndsAt) &lt; currentTime?'':Localizer.string ('Units', 'toolTip.healCooldown')}">
+                     <s:Button label="{getTime(HS.location.cooldownEndsAt) &lt; currentTime? Localizer.string ('Units', 'label.heal')
+                               :DateUtil.secondsToHumanString((getTime(HS.location.cooldownEndsAt) - currentTime)/1000)}"
                                click="heal_clickHandler(event)"
                                horizontalCenter="0"
-                               toolTip="{HS.cooldownEndsAt &lt; currentTime?'':Localizer.string ('Units', 'toolTip.healCooldown')}"
-                               enabled="{HS.cooldownEndsAt &lt; currentTime}"
+                               enabled="{getTime(HS.location.cooldownEndsAt) &lt; currentTime
+                               &amp;&amp; hasEnoughResources}"
                                skinClass="components.skins.GreenButtonSkin"/>
                   </s:Group>
                   <base:layout>

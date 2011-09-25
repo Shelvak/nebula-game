@@ -57,8 +57,7 @@ if (! Array.prototype.indexOf) { // {{{
 } // }}}
 
 function inLocalComputer() { 
-  return location.href.indexOf("file://") == 0 ||
-    location.href.indexOf("localhost") != -1; 
+  return location.href.indexOf("file://") == 0; 
 }
 function inDeveloperMode() { return urlParams['dev'] == '1'; }
 
@@ -69,8 +68,6 @@ function developmentServer() { // {{{
 
   return server;
 } // }}}
-
-function defined(argument) { return argument != undefined; }
 
 var notificationTimerId = 0;
 var notificationToggle = false;
@@ -204,16 +201,17 @@ function authorizationFailed() {
 }
 
 // Get combat log URL for log with given ID.
-function getCombatLogUrl(combatLogId, playerId) {
+function getCombatLogUrl(combatLogId, playerId) { // {{{
   var clAssetsUrl = assetsUrl == ""
     ? location.href.replace(location.search, '')
     : assetsUrl;
+  var e = encodeURIComponent;
 
-  return clAssetsUrl + "?server=" + server + 
-    "&web_host=" + webHost + "&assets_url=" + assetsUrl +
-    "&combat_log_id=" + combatLogId + "&player_id=" + playerId +
-    "&locale=" + locale;
-}
+  return encodeURI(clAssetsUrl) + "?server=" + e(server) + 
+    "&web_host=" + e(webHost) + "&assets_url=" + e(assetsUrl) +
+    "&combat_log_id=" + e(combatLogId) + "&player_id=" + e(playerId) +
+    "&locale=" + e(locale);
+} // }}}
 
 // Load our swf.
 // {{{
@@ -222,6 +220,9 @@ $(document).ready(function() {
   var params = {};
   params.quality = "high";
   params.bgcolor = "#ffffff";
+  // When AllowScriptAccess is "always," the SWF file can communicate with 
+  // the HTML page in which it is embedded. This rule applies even when the
+  // SWF file is from a different domain than the HTML page.
   params.allowscriptaccess = "always";
   params.allowfullscreen = "true";
   var attributes = {};

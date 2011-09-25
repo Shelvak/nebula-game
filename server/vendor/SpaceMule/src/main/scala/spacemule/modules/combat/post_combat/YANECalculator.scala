@@ -81,26 +81,28 @@ class YANECalculator(alliances: Alliances, combatants: Iterable[Combatant],
             combatant: Combatant) =
       players.foreach { player => add(map, player, combatant) }
 
-    val playerIds = combatants.groupBy { _.player }.map {
-      case (owner, combatants) =>
-        val alliancePlayers = alliances.allianceFor(owner).players.
-          filter { owner != _ }.flatten
-        val enemyPlayers = alliances.enemiesFor(owner).map {
-          _.players
-        }.flatten.flatten
-        val napPlayers = alliances.napsFor(owner).map {
-          _.players
-        }.flatten.flatten
+    val players = alliances.players.map { case (player, allianceId) => player }
+    val groupedCombatants = combatants.groupBy { _.player }
+    val playerIds = players.map { player =>
+      val combatants = groupedCombatants.getOrElse(player, Seq.empty[Combatant])
+      val alliancePlayers = alliances.allianceFor(player).players.
+        filter { player != _ }.flatten
+      val enemyPlayers = alliances.enemiesFor(player).map {
+        _.players
+      }.flatten.flatten
+      val napPlayers = alliances.napsFor(player).map {
+        _.players
+      }.flatten.flatten
 
-        combatants.foreach { combatant =>
-          // NPCs don't need these stats.
-          if (! owner.isEmpty) add(playerEntries, owner.get, combatant)
-          addAll(allianceEntries, alliancePlayers, combatant)
-          addAll(enemyEntries, enemyPlayers, combatant)
-          addAll(napEntries, napPlayers, combatant)
-        }
+      combatants.foreach { combatant =>
+        // NPCs don't need these stats.
+        if (! player.isEmpty) add(playerEntries, player.get, combatant)
+        addAll(allianceEntries, alliancePlayers, combatant)
+        addAll(enemyEntries, enemyPlayers, combatant)
+        addAll(napEntries, napPlayers, combatant)
+      }
 
-        owner
+      player
     }.flatten.map { _.id }
 
     playerIds.map { case id =>
