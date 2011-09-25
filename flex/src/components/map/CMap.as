@@ -408,7 +408,7 @@ package components.map
       /* ############### */
       
       
-      protected function getModel() : MMap
+      public function getModel() : MMap
       {
          return MMap(model);
       }

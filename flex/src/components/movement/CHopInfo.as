@@ -44,6 +44,9 @@ package components.movement
             invalidateDisplayList();
          }
       }
+      public function get text() : String {
+         return _text;
+      }
       
       
       private var _squadOwner:int = Owner.ENEMY;
