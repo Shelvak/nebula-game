@@ -37,16 +37,6 @@ shared_examples_for "upgradable" do
       @model.upgrade
       lambda { @model.upgrade }.should raise_error(GameLogicError)
     end
-
-    it "should increase player points" do
-      points = @model.points_on_upgrade
-      player = @model.player
-
-      lambda do
-        @model.upgrade!
-        player.reload
-      end.should change(player, @model.points_attribute).by(points)
-    end
   end
 
   describe "#upgrade_time" do
@@ -110,15 +100,6 @@ shared_examples_for "upgradable" do
         @model.cancel!
         @model.reload
       end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-    
-    it "should decrease player points" do
-      player = @model.player
-      lambda do
-        @model.cancel!
-        player.reload
-      end.should change(player, @model.points_attribute).
-        by(- @model.points_on_upgrade)
     end
   end
 
@@ -311,22 +292,38 @@ shared_examples_for "upgradable" do
     @model.save!
   end
 
-  %w{upgrade_ends_at}.each do |attr|
-    it "should set #{attr} to nil in #on_upgrade_finished" do
-      value = 1
+  describe "#on_upgrade_finished!" do
+    before(:each) do
       opts_upgrading.apply(@model)
-      @model.send("#{attr}=", value)
-      lambda do
-        @model.send(:on_upgrade_finished)
-      end.should change(@model, attr).from(value).to(nil)
     end
-  end
 
-  it "should upgrade level on finished models in #on_upgrade_finished" do
-    opts_upgrading.apply(@model)
-    lambda {
-      @model.send(:on_upgrade_finished)
-    }.should change(@model, :level).by(1)
+    %w{upgrade_ends_at}.each do |attr|
+      it "should set #{attr} to nil" do
+        value = 1
+        @model.send("#{attr}=", value)
+        lambda do
+          @model.send(:on_upgrade_finished!)
+        end.should change(@model, attr).from(value).to(nil)
+      end
+    end
+
+    it "should upgrade level on finished models" do
+      lambda do
+        @model.send(:on_upgrade_finished!)
+      end.should change(@model, :level).by(1)
+    end
+
+    it "should increase player points" do
+      @model.level += 1
+      points = @model.points_on_upgrade
+      @model.level -= 1
+      player = @model.player
+
+      lambda do
+        @model.send :on_upgrade_finished!
+        player.reload
+      end.should change(player, @model.points_attribute).by(points)
+    end
   end
 
   it "should unregister from CallbackManager on #pause!" do

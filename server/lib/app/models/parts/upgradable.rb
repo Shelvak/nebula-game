@@ -118,7 +118,6 @@ module Parts
         
         SsObject::Planet.change_resources(planet_id,
           metal, energy, zetium)
-        decrease_player_points(points_on_upgrade)
         
         self.upgrade_ends_at = nil
         transaction do
@@ -233,12 +232,12 @@ module Parts
         self.class.zetium_cost(for_level || level)
       end
 
-      # Return number of points obtained from upgrade.
+      # Return number of points obtained from upgrade to current level.
       def points_on_upgrade
         Resources.total_volume(
-          self.metal_cost(level + 1),
-          self.energy_cost(level + 1),
-          self.zetium_cost(level + 1)
+          self.metal_cost(level),
+          self.energy_cost(level),
+          self.zetium_cost(level)
         )
       end
 
@@ -313,7 +312,6 @@ module Parts
 
         SsObject::Planet.change_resources(planet_id,
           -metal_cost, -energy_cost, -zetium_cost)
-        increase_player_points(points_on_upgrade)
       end
 
       # Override me to implement logic for increasing player points based
@@ -378,6 +376,7 @@ module Parts
       end
 
       def on_upgrade_just_finished_after_save
+        increase_player_points(points_on_upgrade)
         # Unregister just finished in case we accelerated upgrading.
         CallbackManager.unregister(self,
           CallbackManager::EVENT_UPGRADE_FINISHED)

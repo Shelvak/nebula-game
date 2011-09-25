@@ -80,7 +80,7 @@ class Building < ActiveRecord::Base
   # #flags is currently tiny int, so it can store 8 flags.
   flag_attributes(
     "overdriven"                => 0b00000001,
-    "with_points"               => 0b00000010
+    "without_points"            => 0b00000010
   )
 
   def to_s
@@ -308,13 +308,21 @@ class Building < ActiveRecord::Base
     EventBroker.fire(self, EventBroker::CHANGED)
   end
 
+  def points_on_upgrade
+    without_points? ? 0 : super()
+  end
+
   def points_on_destroy
-    (1..(upgrading? ? self.level + 1 : self.level)).inject(0) do |sum, level|
-      sum + Resources.total_volume(
-        self.metal_cost(level),
-        self.energy_cost(level),
-        self.zetium_cost(level)
-      )
+    if without_points?
+      0
+    else
+      (1..level).inject(0) do |sum, level|
+        sum + Resources.total_volume(
+          self.metal_cost(level),
+          self.energy_cost(level),
+          self.zetium_cost(level)
+        )
+      end
     end
   end
 

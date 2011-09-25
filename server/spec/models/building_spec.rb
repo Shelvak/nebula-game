@@ -331,34 +331,37 @@ describe Building do
     end
   end
 
-  describe "#points_on_destroy" do
-    before(:each) do
-      @building = Factory.build(:building, :level => 4)
+  describe "#points_on_upgrade" do
+    let(:building) { Factory.create(:building, :level => 2) }
+
+    it "should return points" do
+      building.points_on_upgrade.should_not == 0
     end
+
+    it "should return 0 if #without_points? is set" do
+      building.without_points = true
+      building.points_on_upgrade.should == 0
+    end
+  end
+
+  describe "#points_on_destroy" do
+    let(:building) { Factory.build(:building, :level => 4) }
 
     it "should return points for all levels" do
       points = 0
-      (1..(@building.level)).each do |level|
+      (1..(building.level)).each do |level|
         points += Resources.total_volume(
-          @building.metal_cost(level),
-          @building.energy_cost(level),
-          @building.zetium_cost(level)
+          building.metal_cost(level),
+          building.energy_cost(level),
+          building.zetium_cost(level)
         )
       end
-      @building.points_on_destroy.should == points
+      building.points_on_destroy.should == points
     end
 
-    it "should return points for all levels + 1 if upgrading" do
-      opts_just_started.apply(@building)
-      points = 0
-      (1..(@building.level + 1)).each do |level|
-        points += Resources.total_volume(
-          @building.metal_cost(level),
-          @building.energy_cost(level),
-          @building.zetium_cost(level)
-        )
-      end
-      @building.points_on_destroy.should == points
+    it "should return 0 if #without_points? is set" do
+      building.without_points = true
+      building.points_on_destroy.should == 0
     end
   end
 

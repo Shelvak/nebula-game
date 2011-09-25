@@ -15,6 +15,11 @@ class Technology < ActiveRecord::Base
   attr_accessor :planet_id
   belongs_to :player
 
+  # #flags is currently tiny int, so it can store 8 flags.
+  flag_attributes(
+    "speed_up"                  => 0b00000001
+  )
+
   def as_json(options=nil)
     attributes.except('player_id')
   end
