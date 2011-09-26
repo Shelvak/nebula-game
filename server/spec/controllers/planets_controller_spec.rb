@@ -188,7 +188,7 @@ describe PlanetsController do
       [planet1, planet2].each_with_index do |planet, index|
         planet.reload
         response[:planets][index].should equal_to_hash(
-          planet.as_json(:view => true))
+          planet.as_json(:index => true, :view => true))
       end
     end
   end

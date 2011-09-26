@@ -63,6 +63,9 @@ class SsObject::Planet < SsObject
     last_resources_update
   }
 
+  # Attributes needed for planets|index
+  INDEX_ATTRIBUTES = %w{next_raid_at}
+
   # Attributes which are included when :owner => true is passed to
   # #as_json
   OWNER_ATTRIBUTES = %w{
@@ -88,6 +91,7 @@ class SsObject::Planet < SsObject
   # These options can be passed:
   # * :owner => true to include owner only attributes
   # * :view => true to include properties necessary to view planet.
+  # * :index => true to include properties used in planets|index.
   # * :perspective => perspective to include :status.
   #
   # _perspective_ can be either Player for which StatusResolver will be
@@ -100,13 +104,15 @@ class SsObject::Planet < SsObject
     additional = {"player" => Player.minimal(player_id), "name" => name,
       "terrain" => terrain}
     if options
-      options.assert_valid_keys :owner, :view, :perspective
+      options.assert_valid_keys :owner, :view, :perspective, :index
 
       additional_attributes = []
       additional_attributes = additional_attributes | OWNER_ATTRIBUTES \
         if options[:owner]
       additional_attributes = additional_attributes | VIEW_ATTRIBUTES \
         if options[:view]
+      additional_attributes = additional_attributes | INDEX_ATTRIBUTES \
+        if options[:index]
 
       read_attributes(additional_attributes, additional)
 
