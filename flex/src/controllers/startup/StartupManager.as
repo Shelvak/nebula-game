@@ -123,7 +123,9 @@ package controllers.startup
             ML.player.id = startupInfo.playerId;
          }
          
-         Security.allowDomain(startupInfo.webHost);
+         // We need to find correct domain to allow staging.nebula44.lt
+         // to access flash. Setting it to * for now. arturaz.
+         Security.allowDomain("*");//startupInfo.webHost);
          
          // LoadingScreen takes over from this point forward
          return true;
