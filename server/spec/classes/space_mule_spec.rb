@@ -292,6 +292,12 @@ describe SpaceMule do
             ["", CONFIG["buildings.mothership.#{resource}.starting"]]
           }
         ]
+
+      it "should set your starting buildings to be without points" do
+        @model.buildings.each do |building|
+          building.should be_without_points
+        end
+      end
     end
 
     it "should not create other player if we try that again" do

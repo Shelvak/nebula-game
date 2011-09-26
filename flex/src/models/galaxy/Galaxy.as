@@ -81,8 +81,7 @@ package models.galaxy
       
       private var _solarSystemsWithPlayer:ListCollectionView = new ListCollectionView();
       private function ff_solarSystemsWithPlayer(ss:SolarSystem) : Boolean {
-         return ss.isRegular &&
-                ss.metadata != null &&
+         return ss.metadata != null &&
                 ss.metadata.playerAssets;
       }
       [Bindable(event="willNotChange")]

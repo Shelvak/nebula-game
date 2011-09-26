@@ -57,8 +57,7 @@ if (! Array.prototype.indexOf) { // {{{
 } // }}}
 
 function inLocalComputer() { 
-  return location.href.indexOf("file://") == 0 ||
-    location.href.indexOf("localhost") != -1; 
+  return location.href.indexOf("file://") == 0; 
 }
 function inDeveloperMode() { return urlParams['dev'] == '1'; }
 

@@ -13,3 +13,6 @@
 [submodule "server/vendor/plugins/ruby_extensions"]
 	path = server/vendor/plugins/ruby_extensions
 	url = git@github.com:arturaz/ruby_extensions.git
+[submodule "server/vendor/plugins/ar_binary_flag_attributes"]
+	path = server/vendor/plugins/ar_binary_flag_attributes
+	url = git@github.com:arturaz/ar_binary_flag_attributes.git
