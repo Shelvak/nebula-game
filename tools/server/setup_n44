@@ -776,13 +776,17 @@ production: &production
   password: "#{pass}"
 
 staging:
-  <<: &production
+  <<: *production
 
-nebula_forum:
+forum_production: &forum_production
   adapter: mysql2
   database: "#{forum_dbuser}"
   username: "#{forum_dbuser}"
   password: "#{forum_pass}"
+
+forum_staging:
+  <<: *forum_production
+
 }, nil, UCH)
 
   File.write("#{HOME}/config/web.rb", %Q{
