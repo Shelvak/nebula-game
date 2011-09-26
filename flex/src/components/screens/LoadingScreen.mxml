@@ -17,7 +17,6 @@
    <fx:Script>
       <![CDATA[
          import controllers.DisplayManager;
-         import controllers.players.AuthorizationManager;
          import controllers.startup.ChecksumsLoader;
          import controllers.startup.StartupInfo;
          import controllers.startup.StartupManager;
@@ -142,8 +141,7 @@
             IMG.removeEventListener(ProgressEvent.PROGRESS, imageLoaded);
             IMG.removeEventListener(ImagePreloaderEvent.UNPACK_PROGRESS, IMG_unpackProgressHandler);
             IMG.removeEventListener(Event.COMPLETE, imagesLoadComplete);
-            StartupManager.initializeApp();
-            AuthorizationManager.getInstance().authorizeLoginAndProceed();
+            StartupManager.initializeAppAfterLoad();
          }
          
          

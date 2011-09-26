@@ -26,35 +26,23 @@ package utils.datastructures.editors
       {
          Objects.paramNotNull("collection", collection);
          if (collection is Array)
-         {
             return arrayEditor(collection);
-         }
          if (TypeChecker.isVector(collection))
-         {
             return vectorEditor(collection);
-         }
          if (collection is IList)
-         {
             return listEditor(collection);
-         }
          throw new ArgumentError("Unsupported collection type: " + Objects.getClassName(collection));
       }
       
-      
-      private static function arrayEditor(a:Array) : ICollectionEditor
-      {
+      private static function arrayEditor(a:Array) : ICollectionEditor {
          return new ArrayEditor(a);
-      }
+      } 
       
-      
-      private static function vectorEditor(v:Object) : ICollectionEditor
-      {
+      private static function vectorEditor(v:Object) : ICollectionEditor {
          return new VectorEditor(v);
       }
       
-      
-      private static function listEditor(l:IList) : ICollectionEditor
-      {
+      private static function listEditor(l:IList) : ICollectionEditor {
          return new ListEditor(l);
       }
    }

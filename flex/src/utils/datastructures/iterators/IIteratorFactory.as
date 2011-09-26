@@ -23,39 +23,27 @@ package utils.datastructures.iterators
        * 
        * @param collection instance of a collection. <b>Not null</b>.
        */
-      public static function getIterator(collection:*) : IIterator
-      {
+      public static function getIterator(collection:*) : IIterator {
          Objects.paramNotNull("collection", collection);
          if (collection is Array)
-         {
             return arrayIterator(collection);
-         }
          if (TypeChecker.isVector(collection))
-         {
             return vectorIterator(collection);
-         }
          if (collection is IList)
-         {
             return listIterator(collection);
-         }
          throw new ArgumentError("Unsupported collection type: " + Objects.getClassName(collection));
       }
       
       
-      private static function arrayIterator(a:Array) : IIterator
-      {
+      private static function arrayIterator(a:Array) : IIterator {
          return new ArrayIterator(a);
       }
       
-      
-      private static function vectorIterator(v:Object) : IIterator
-      {
+      private static function vectorIterator(v:Object) : IIterator {
          return new VectorIterator(v);
       }
       
-      
-      private static function listIterator(l:IList) : IIterator
-      {
+      private static function listIterator(l:IList) : IIterator {
          return new ListIterator(l);
       }
    }
