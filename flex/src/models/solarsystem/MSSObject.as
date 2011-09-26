@@ -615,7 +615,17 @@ package models.solarsystem
        * <p><i><b>Metadata</b>:<br/>
        * [Optional]</i></p>
        */
-      public var lastResourcesUpdate:Date;
+      public function set lastResourcesUpdate (value: Date): void
+      {
+         _lastResourcesUpdate = value;
+         registerOrUnregisterTimedUpdateHandler();
+      }
+      
+      public function get lastResourcesUpdate (): Date
+      {
+         return _lastResourcesUpdate;
+      }
+      private var _lastResourcesUpdate:Date;
       
       [Bindable]
       public var metal:Resource;
@@ -629,7 +639,7 @@ package models.solarsystem
       
       private var timedUpdateHandlerRegistered:Boolean = false;
       private function registerOrUnregisterTimedUpdateHandler() : void {
-         if (isPlanet && ownerIsPlayer && lastResourcesUpdate != null)
+         if (isPlanet && lastResourcesUpdate != null)
             registerTimedUpdateHandler();
          else
             unregisterTimedUpdateHandler();
