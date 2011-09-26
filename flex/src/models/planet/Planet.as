@@ -858,7 +858,13 @@ package models.planet
          });
       }
       
-      public function getAgressiveGroundUnits(): ListCollectionView
+      [Bindable(event="unitRefresh")]
+      public function hasAgressiveGroundUnits(owner: int = Owner.PLAYER): Boolean
+      {
+         return getAgressiveGroundUnits(owner).length > 0;
+      }
+      
+      public function getAgressiveGroundUnits(owner: int = Owner.PLAYER): ListCollectionView
       {
          return Collections.filter(ML.units, function(unit: Unit): Boolean
          {
@@ -867,7 +873,7 @@ package models.planet
                return (unit.level > 0
                   && definesLocation(unit.location) 
                   && unit.kind == UnitKind.GROUND 
-                  && unit.owner == Owner.PLAYER 
+                  && unit.owner == owner 
                   && unit.hasGuns);
             }
             catch (err:Error)
@@ -1008,6 +1014,19 @@ package models.planet
             if (object is ICleanable)
                ICleanable(object).cleanup();
          }
+      }
+      
+      [Bindable (event="planetBuildingUpgraded")]
+      public function get hasBuildingsWithGuns(): Boolean
+      {
+         for each (var building: Building in buildings)
+         {
+            if (building.hasGuns && building.level > 0)
+            {
+               return true;
+            }
+         }
+         return false;
       }
       
       

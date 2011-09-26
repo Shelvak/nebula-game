@@ -48,11 +48,6 @@ class SsObject::Planet < SsObject
       ">"
   end
 
-  # Can given _player_id_ view resources on this planet?
-  def can_view_resources?(player_id)
-    self.player_id == player_id
-  end
-
   # Can given _player_id_ view NPC units on this planet?
   #
   # Also see Building#observer_player_ids
@@ -60,23 +55,28 @@ class SsObject::Planet < SsObject
     self.player_id == player_id
   end
 
-  # Attributes which are included when :resources => true is passed to 
-  # #as_json
+  # Attributes which are related to resources.
   RESOURCE_ATTRIBUTES = %w{
     metal metal_generation_rate metal_usage_rate metal_storage
-    metal_rate_boost_ends_at metal_storage_boost_ends_at
     energy energy_generation_rate energy_usage_rate energy_storage
-    energy_rate_boost_ends_at energy_storage_boost_ends_at
     zetium zetium_generation_rate zetium_usage_rate zetium_storage
+    last_resources_update
+  }
+
+  # Attributes which are included when :owner => true is passed to
+  # #as_json
+  OWNER_ATTRIBUTES = %w{
+    metal_rate_boost_ends_at metal_storage_boost_ends_at
+    energy_rate_boost_ends_at energy_storage_boost_ends_at
     zetium_rate_boost_ends_at zetium_storage_boost_ends_at
-    last_resources_update 
     exploration_x exploration_y exploration_ends_at 
     can_destroy_building_at
-    next_raid_at owner_changed}
+    next_raid_at owner_changed
+  } + RESOURCE_ATTRIBUTES
 
   # Attributes which are included when :view => true is passed to
   # #as_json
-  VIEW_ATTRIBUTES = %w{width height}
+  VIEW_ATTRIBUTES = %w{width height} + RESOURCE_ATTRIBUTES
 
   # Returns Planet JSON representation. It's basically same as 
   # SsObject#as_json but includes additional fields:
@@ -86,7 +86,7 @@ class SsObject::Planet < SsObject
   # * terrain (Fixnum): terrain variation
   #
   # These options can be passed:
-  # * :resources => true to include resources
+  # * :owner => true to include owner only attributes
   # * :view => true to include properties necessary to view planet.
   # * :perspective => perspective to include :status.
   #
@@ -100,13 +100,15 @@ class SsObject::Planet < SsObject
     additional = {"player" => Player.minimal(player_id), "name" => name,
       "terrain" => terrain}
     if options
-      options.assert_valid_keys :resources, :view, :perspective
-      
-      read_attributes(RESOURCE_ATTRIBUTES, additional) \
-        if options[:resources]
+      options.assert_valid_keys :owner, :view, :perspective
 
-      read_attributes(VIEW_ATTRIBUTES, additional) \
+      additional_attributes = []
+      additional_attributes = additional_attributes | OWNER_ATTRIBUTES \
+        if options[:owner]
+      additional_attributes = additional_attributes | VIEW_ATTRIBUTES \
         if options[:view]
+
+      read_attributes(additional_attributes, additional)
 
       if options[:perspective]
         resolver = options[:perspective]

@@ -34,7 +34,8 @@ class TechnologiesController < GenericController
   #   speed_up: Boolean, should we speed up the research?
   #
   def action_upgrade
-    param_options :required => %w{id planet_id scientists speed_up}
+    param_options :required => {:id => Fixnum, :planet_id => Fixnum,
+      :scientists => Fixnum, :speed_up => [TrueClass, FalseClass]}
 
     technology = player.technologies.find(params['id'])
     technology.scientists = params['scientists']

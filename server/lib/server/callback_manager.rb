@@ -157,12 +157,10 @@ class CallbackManager
       end
       
       mark_row_as_failed = lambda do
-        LOGGER.suppress(:debug) do
-          LOGGER.info "Marking row as failed."
-          ActiveRecord::Base.connection.execute(
-            "UPDATE callbacks SET failed=1 WHERE #{conditions} LIMIT 1"
-          )
-        end
+        LOGGER.info "Marking row as failed."
+        ActiveRecord::Base.connection.execute(
+          "UPDATE callbacks SET failed=1 WHERE #{conditions} LIMIT 1"
+        )
       end
 
       # Request unprocessed entries that have hit

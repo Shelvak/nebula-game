@@ -570,67 +570,63 @@ describe Unit do
   end
 
   describe "#as_json" do
-    before(:each) do
-      @model = Factory.create :unit
-    end
+    it_behaves_like "as json",
+      Factory.create(:unit),
+      nil,
+      %w{id level player_id upgrade_ends_at type flank route_id stance
+      construction_mod location hp},
+      %w{location_id location_x location_y location_type hp_remainder
+      pause_remainder stored metal energy zetium galaxy_id xp}
 
-    @required_fields = %w{type hp level id player_id flank upgrade_ends_at xp}
-    @ommited_fields = %w{location_id location_x location_y
-      location_type hp_remainder pause_remainder
-      stored metal energy zetium}
-    it_behaves_like "to json"
-
-    it "should include location" do
-      @model.as_json["location"].should == @model.location.as_json
+    it "should include location#as_json" do
+      model = Factory.create(:unit)
+      model.as_json["location"].should == model.location.as_json
     end
 
     describe "with :perspective" do
-      before(:all) do
-        @enemy = Factory.create(:player)
-      end
+      player = Factory.create(:player)
 
-      before(:each) do
-        @player = @model.player
-        @status = StatusResolver::YOU
-        @options = {}
-      end
+      it_behaves_like "with :perspective",
+        Factory.create(:unit),
+        player,
+        StatusResolver::ENEMY
 
-      it_behaves_like "with :perspective"
-      
       describe "you" do
-        before(:each) do
-          @options[:perspective] = @player
-        end
+        it_behaves_like "as json",
+          Factory.create(:unit, :player => player),
+          {:perspective => player},
+          %w{xp},
+          %w{}
 
         describe "transporter" do
-          before(:each) do
-            @model.stub!(:transporter?).and_return(true)
-          end
-
-          @required_fields = %w{stored metal energy zetium}
-          @ommited_fields = %w{}
-          it_behaves_like "to json"
+          it_behaves_like "as json",
+            lambda {
+              Factory.create(:u_mule, :player => player)
+            }.call,
+            {:perspective => player},
+            %w{stored metal energy zetium},
+            %w{}
         end
 
         describe "non-transporter" do
-          before(:each) do
-            @model.stub!(:transporter?).and_return(false)
-          end
-          
-          @required_fields = %w{}
-          @ommited_fields = %w{stored metal energy zetium}
-          it_behaves_like "to json"
+          it_behaves_like "as json",
+            lambda {
+              model = Factory.create(:u_trooper, :player => player)
+            }.call,
+            {:perspective => player},
+            %w{},
+            %w{stored metal energy zetium}
         end
       end
       
       describe "enemy" do
-        before(:each) do
-          @options[:perspective] = @enemy
-        end
+        enemy = Factory.create(:player)
 
-        @required_fields = %w{}
-        @ommited_fields = %w{stored metal energy zetium}
-        it_behaves_like "to json"
+        it_behaves_like "as json",
+          Factory.create(:unit, :player => enemy),
+          {:perspective => player},
+          %w{},
+          %w{xp stored metal energy zetium}
       end
     end
   end
@@ -975,38 +971,57 @@ describe Unit do
     end
   end
 
-  describe "upgrading complete" do
-    it "should add visibility if it's level 1 (in planet)" do
-      p = Factory.create(:planet)
-      u = Factory.create(:u_crow, opts_upgrading + {:level => 0,
-          :location => p, :player => Factory.create(:player), :hp => 0})
-      FowSsEntry.should_receive(:increase).with(p.solar_system_id,
-        u.player, 1)
-      u.send(:on_upgrade_finished!)
+  describe "#on_upgrade_finished!" do
+    describe "visibility" do
+      it "should add visibility if it's level 1 (in planet)" do
+        p = Factory.create(:planet)
+        u = Factory.create(:u_crow, opts_upgrading + {:level => 0,
+            :location => p, :player => Factory.create(:player), :hp => 0})
+        FowSsEntry.should_receive(:increase).with(p.solar_system_id,
+          u.player, 1)
+        u.send(:on_upgrade_finished!)
+      end
+
+      it "should not add visibility if it's NPC" do
+        p = Factory.create(:planet)
+        u = Factory.create(:u_crow, opts_upgrading + {:level => 0,
+            :location => p, :hp => 0, :player => nil})
+        FowSsEntry.should_not_receive(:increase)
+        u.send(:on_upgrade_finished!)
+      end
+
+      it "should not add visibility if it's ground" do
+        p = Factory.create(:planet)
+        u = Factory.create(:u_trooper, opts_upgrading + {:level => 0,
+            :location => p, :player => Factory.create(:player), :hp => 0})
+        FowSsEntry.should_not_receive(:increase)
+        u.send(:on_upgrade_finished!)
+      end
+
+      it "should not add visibility if it's level > 1" do
+        p = Factory.create(:planet)
+        u = Factory.create(:u_crow, opts_upgrading + {:level => 1,
+            :location => p, :player => Factory.create(:player)})
+        FowSsEntry.should_not_receive(:increase)
+        u.send(:on_upgrade_finished!)
+      end
     end
 
-    it "should not add visibility if it's NPC" do
-      p = Factory.create(:planet)
-      u = Factory.create(:u_crow, opts_upgrading + {:level => 0,
-          :location => p, :hp => 0, :player => nil})
-      FowSsEntry.should_not_receive(:increase)
-      u.send(:on_upgrade_finished!)
-    end
+    describe "combat check after upgrade is finished" do
+      let(:unit) { Factory.create!(:unit, opts_upgrading) }
 
-    it "should not add visibility if it's ground" do
-      p = Factory.create(:planet)
-      u = Factory.create(:u_trooper, opts_upgrading + {:level => 0,
-          :location => p, :player => Factory.create(:player), :hp => 0})
-      FowSsEntry.should_not_receive(:increase)
-      u.send(:on_upgrade_finished!)
-    end
+      it "should check for combat in it's location if it can fight'" do
+        unit.stub!(:can_fight?).and_return(true)
+        Combat::LocationChecker.should_receive(:check_location).
+          with(unit.location_point)
+        unit.send(:on_upgrade_finished!)
+      end
 
-    it "should not add visibility if it's level > 1" do
-      p = Factory.create(:planet)
-      u = Factory.create(:u_crow, opts_upgrading + {:level => 1,
-          :location => p, :player => Factory.create(:player)})
-      FowSsEntry.should_not_receive(:increase)
-      u.send(:on_upgrade_finished!)
+      it "should not check for combat in it's location if it cannot fight'" do
+        unit.stub!(:can_fight?).and_return(false)
+        Combat::LocationChecker.should_not_receive(:check_location)
+        unit.send(:on_upgrade_finished!)
+      end
     end
   end
 

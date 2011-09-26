@@ -353,6 +353,12 @@ package models.building
          return _type;
       }
       
+      public function get hasGuns(): Boolean
+      {
+         var guns: Array = Config.getBuildingGuns(type);
+         return ((guns != null) && (guns.length > 0));
+      }
+      
       
       [Bindable(event="modelIdChange")]
       public function get isGhost() : Boolean

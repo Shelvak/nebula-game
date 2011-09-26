@@ -28,7 +28,7 @@ module Parts::BattleParticipant
     def npc?; property('npc', false); end
     def ground?; property('kind') == :ground; end
     def space?; property('kind') == :space; end
-    def can_fight?; ! property('guns', []).blank? ; end
+    def can_fight?; ! property('guns', []).blank? || space? ; end
 
     # Return armor mod for _level_.
     def armor_mod(level)

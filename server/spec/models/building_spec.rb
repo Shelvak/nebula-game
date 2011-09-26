@@ -1,6 +1,8 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Building do
+
+
   describe "#managable?" do
     before(:each) do
       @building = Factory.build(:building)
@@ -168,8 +170,9 @@ describe Building do
       @player = Factory.create(:player,
         :creds => CONFIG['creds.building.move'])
       @planet = Factory.create(:planet, :player => @player)
-      @model = Factory.create(:b_collector_t1, :planet => @planet, :x => 0,
-        :y => 0, :level => 1)
+      @model = Factory.create(:b_collector_t1, opts_active + {
+        :planet => @planet, :x => 0, :y => 0, :level => 1}
+      )
     end
 
     it "should fail if building is not managable" do
@@ -239,26 +242,51 @@ describe Building do
 
     describe "energy mod changes" do
       before(:each) do
-
-      end
-
-      it "should dispatch planet changed" do
         Factory.create(:tile, :kind => Tile::NOXRIUM, :planet => @model.planet,
           :x => 10, :y => 15)
-        should_fire_event(
-          @model.planet, EventBroker::CHANGED,
-          EventBroker::REASON_OWNER_PROP_CHANGE
-        ) do
-          @model.move!(10, 15)
+      end
+
+      describe "when active" do
+        it "should dispatch planet changed" do
+          should_fire_event(
+            @model.planet, EventBroker::CHANGED,
+            EventBroker::REASON_OWNER_PROP_CHANGE,
+            2 # deactivate/activate
+          ) do
+            @model.move!(10, 15)
+          end
+        end
+
+        it "should actually change energy for planet" do
+          planet = @model.planet
+          lambda do
+            @model.move!(10, 15)
+            planet.reload
+          end.should change(planet, :energy_generation_rate)
         end
       end
 
-      it "should actually change energy for planet" do
-        planet = @model.planet
-        lambda do
-          @model.move!(10, 15)
-          planet.reload
-        end.should change(planet, :energy_generation_rate)
+      describe "when inactive" do
+        before(:each) do
+          opts_inactive.apply @model
+        end
+
+        it "should not dispatch planet changed" do
+          should_not_fire_event(
+            @model.planet, EventBroker::CHANGED,
+            EventBroker::REASON_OWNER_PROP_CHANGE
+          ) do
+            @model.move!(10, 15)
+          end
+        end
+
+        it "should actually change energy for planet" do
+          planet = @model.planet
+          lambda do
+            @model.move!(10, 15)
+            planet.reload
+          end.should_not change(planet, :energy_generation_rate)
+        end
       end
     end
 
@@ -305,34 +333,37 @@ describe Building do
     end
   end
 
-  describe "#points_on_destroy" do
-    before(:each) do
-      @building = Factory.build(:building, :level => 4)
+  describe "#points_on_upgrade" do
+    let(:building) { Factory.create(:building, :level => 2) }
+
+    it "should return points" do
+      building.points_on_upgrade.should_not == 0
     end
+
+    it "should return 0 if #without_points? is set" do
+      building.without_points = true
+      building.points_on_upgrade.should == 0
+    end
+  end
+
+  describe "#points_on_destroy" do
+    let(:building) { Factory.build(:building, :level => 4) }
 
     it "should return points for all levels" do
       points = 0
-      (1..(@building.level)).each do |level|
+      (1..(building.level)).each do |level|
         points += Resources.total_volume(
-          @building.metal_cost(level),
-          @building.energy_cost(level),
-          @building.zetium_cost(level)
+          building.metal_cost(level),
+          building.energy_cost(level),
+          building.zetium_cost(level)
         )
       end
-      @building.points_on_destroy.should == points
+      building.points_on_destroy.should == points
     end
 
-    it "should return points for all levels + 1 if upgrading" do
-      opts_just_started.apply(@building)
-      points = 0
-      (1..(@building.level + 1)).each do |level|
-        points += Resources.total_volume(
-          @building.metal_cost(level),
-          @building.energy_cost(level),
-          @building.zetium_cost(level)
-        )
-      end
-      @building.points_on_destroy.should == points
+    it "should return 0 if #without_points? is set" do
+      building.without_points = true
+      building.points_on_destroy.should == 0
     end
   end
 
@@ -590,14 +621,14 @@ describe Building do
     end
   end
 
-  describe "#to_json" do
-    before(:all) do
-      @model = Factory.create :building
-    end
-
-    @required_fields = %w{hp}
-    @ommited_fields = %w{pause_remainder hp_percentage}
-    it_behaves_like "to json"
+  describe "#as_json" do
+    it_behaves_like "as json",
+      Factory.create(:building),
+      nil,
+      %w{id planet_id x y x_end y_end armor_mod constructor_mod
+      construction_mod energy_mod level type upgrade_ends_at state
+      constructable_type constructable_id cooldown_ends_at hp overdriven},
+      %w{pause_remainder hp_percentage without_points}
   end
 
   describe "on create" do
@@ -994,6 +1025,25 @@ describe Building do
         @model.send(:on_upgrade_finished!)
       end.should change(@model, :construction_mod).from(10).to(
         CONFIG["tiles.junkyard.mod.construction"])
+    end
+  end
+
+  describe "#on_upgrade_finished!" do
+    describe "combat check after upgrade is finished" do
+      let(:building) { Factory.create!(:building, opts_upgrading) }
+
+      it "should check for combat in it's location if it can fight'" do
+        building.stub!(:can_fight?).and_return(true)
+        Combat::LocationChecker.should_receive(:check_location).
+          with(building.planet.location_point)
+        building.send(:on_upgrade_finished!)
+      end
+
+      it "should not check for combat in it's location if it cannot fight'" do
+        building.stub!(:can_fight?).and_return(false)
+        Combat::LocationChecker.should_not_receive(:check_location)
+        building.send(:on_upgrade_finished!)
+      end
     end
   end
 

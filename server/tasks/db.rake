@@ -48,6 +48,12 @@ namespace :db do
     end
   end
 
+  desc "Seed database with initial values."
+  task :seed => :environment do
+    ActiveRecord::Base.establish_connection(DB_CONFIG[App.env])
+    require File.join(ROOT_DIR, 'db', 'seeds.rb')
+  end
+
   namespace :password do
     desc 'Clone config/database.sample.yml and write to database.yml ' +
       'with your password set'

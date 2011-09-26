@@ -77,10 +77,16 @@ class Building < ActiveRecord::Base
     combat_types + [Building::DefensivePortal.to_s.demodulize]
   end
 
+  # #flags is currently tiny int, so it can store 8 flags.
+  flag_attributes(
+    "overdriven"                => 0b00000001,
+    "without_points"            => 0b00000010
+  )
+
   def to_s
     ("<Building::%s(%s) hp:%d/%d (%3.2f%%), x: %s, y: %s, x_end: %s, " +
     "y_end: %s, lvl: %d, planet_id: %s>") % [
-      type, id.to_s, hp, hit_points, hp_percentage * 100, x.to_s, y.to_s, 
+      type, id.to_s, hp, hit_points, hp_percentage * 100, x.to_s, y.to_s,
       x_end.to_s, y_end.to_s, level, planet_id.to_s
     ]
   end
@@ -99,6 +105,7 @@ class Building < ActiveRecord::Base
   def as_json(options=nil)
     hash = attributes.except('pause_remainder', 'hp_percentage')
     hash['hp'] = hp
+    hash['overdriven'] = overdriven
     yield hash if block_given?
     hash
   end
@@ -133,6 +140,12 @@ class Building < ActiveRecord::Base
   def xp=(value); end
   # Buildings don't accumulate XP. This method always returns 0.
   def can_upgrade_by; 0; end
+
+  # Check for combat after upgrading.
+  def on_upgrade_just_finished_after_save
+    super if defined?(super)
+    Combat::LocationChecker.check_location(planet.location_point) if can_fight?
+  end
 
   # Deactivate building before destruction.
   before_destroy do
@@ -188,7 +201,7 @@ class Building < ActiveRecord::Base
   def cancel!
     super(proc { activate })
   end
-  
+
   def upgrade
     forbid_unmanagable!
     super
@@ -252,7 +265,7 @@ class Building < ActiveRecord::Base
       destroy!
     end
 
-    EventBroker.fire(planet, EventBroker::CHANGED, 
+    EventBroker.fire(planet, EventBroker::CHANGED,
       EventBroker::REASON_OWNER_PROP_CHANGE)
   end
 
@@ -273,6 +286,9 @@ class Building < ActiveRecord::Base
       "Cannot move while upgrading or working (#{self.inspect})!") \
       if upgrading? || working?
 
+    active = active?
+    deactivate! if active
+
     stats = CredStats.move(self)
     player.creds -= creds_needed
     self.armor_mod = self.energy_mod = self.construction_mod = 0
@@ -283,27 +299,31 @@ class Building < ActiveRecord::Base
     raise ActiveRecord::RecordInvalid.new(self) unless errors.blank?
     calculate_mods(true)
 
-    armor_mod_changed = armor_mod_changed?
     transaction do
       stats.save!
       player.save!
-      save!
+      active ? activate! : save!
       Objective::MoveBuilding.progress(self)
     end
 
     EventBroker.fire(self, EventBroker::CHANGED)
-    EventBroker.fire(
-      planet, EventBroker::CHANGED, EventBroker::REASON_OWNER_PROP_CHANGE
-    ) if armor_mod_changed
+  end
+
+  def points_on_upgrade
+    without_points? ? 0 : super()
   end
 
   def points_on_destroy
-    (1..(upgrading? ? self.level + 1 : self.level)).inject(0) do |sum, level|
-      sum + Resources.total_volume(
-        self.metal_cost(level),
-        self.energy_cost(level),
-        self.zetium_cost(level)
-      )
+    if without_points?
+      0
+    else
+      (1..level).inject(0) do |sum, level|
+        sum + Resources.total_volume(
+          self.metal_cost(level),
+          self.energy_cost(level),
+          self.zetium_cost(level)
+        )
+      end
     end
   end
 
@@ -362,7 +382,7 @@ class Building < ActiveRecord::Base
     when :activated
       on_activation
     end
-    
+
     true
   end
 

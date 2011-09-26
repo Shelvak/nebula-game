@@ -322,7 +322,7 @@ class UnitsController < GenericController
   # transporter.
   #
   def action_load
-    param_options :required => %w{unit_ids transporter_id}
+    param_options :required => {:unit_ids => Array, :transporter_id => Fixnum}
 
     transporter = Unit.where(:player_id => player.id).find(
       params['transporter_id'])
@@ -363,7 +363,10 @@ class UnitsController < GenericController
   # - objects|updated or objects|destroyed with wreckage
   #
   def action_transfer_resources
-    param_options :required => %w{transporter_id metal energy zetium}
+    param_options :required => {
+      :transporter_id => Fixnum, :metal => [Fixnum, Float],
+      :energy => [Fixnum, Float], :zetium => [Fixnum, Float]
+    }
 
     transporter = Unit.where(:player_id => player.id).find(
       params['transporter_id'])
@@ -372,15 +375,12 @@ class UnitsController < GenericController
     if transporter.location.type == Location::SS_OBJECT
       planet = transporter.location.object
       raise GameLogicError.new(
-        "Cannot load resources from planet that you don't own!"
+        "Cannot load resources from planet: not owner and it's not empty!"
       ) if (
         params['metal'] > 0 || params['energy'] > 0 || params['zetium'] > 0
-      ) && planet.player_id != player.id
-      raise GameLogicError.new(
-        "Cannot unload resources to planet that is not friendly to you!"
-      ) if (
-        params['metal'] < 0 || params['energy'] < 0 || params['zetium'] < 0
-      ) && ! player.friendly_ids.include?(planet.player_id)
+      ) && ! (planet.player_id == player.id)
+      # This will be enabled when player protection will be implemented.
+      # ! (planet.player_id == player.id || planet.player_id.nil?)
     end
 
     transporter.transfer_resources!(params['metal'], params['energy'],
@@ -417,10 +417,6 @@ class UnitsController < GenericController
     ) unless transporter.location.type == Location::SS_OBJECT
 
     location = transporter.location.object
-    raise GameLogicError.new(
-      "You can only unload to friendly planets!"
-    ) unless (player.friendly_ids).include?(location.player_id)
-
     units = transporter.units.find(params['unit_ids'])
     raise GameLogicError.new(
       "Cannot find all requested units! Requested #{

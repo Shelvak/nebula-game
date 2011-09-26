@@ -10,6 +10,7 @@ package models.healing
    
    import flash.events.EventDispatcher;
    import flash.events.MouseEvent;
+   
    import globalevents.GResourcesEvent;
    import globalevents.GUnitsScreenEvent;
    
@@ -37,7 +38,6 @@ package models.healing
       public function MCHealingScreen()
       {
          super();
-         EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshMaxHealing);
       }
       
       private static const MAX_FLANKS: int = 2;
@@ -47,14 +47,10 @@ package models.healing
          return SingletonFactory.getSingletonInstance(MCHealingScreen);
       }
       
-      [Bindable]
-      public var cooldownEndsAt: Number = 0;
-      
       public function prepare(sUnits: ListCollectionView, sLocation: *): void
       {
          //Set screen values
          location = sLocation;
-         cooldownEndsAt = location.cooldownEndsAt.time;
          selectionClass.clear();
          selectionClass.center = location;         
          if (oldProvider != null)
@@ -252,9 +248,9 @@ package models.healing
          dispatchUnitsChangeEvent();
       }
       
-      public function selectAll(): void
+      public function selectAll(onlyHealable: Boolean = false): void
       {
-         if (!selectionClass.selectAll())
+         if (!selectionClass.selectAll(onlyHealable))
          {
             Messenger.show(Localizer.string('Units', 'message.noResources'), Messenger.SHORT);
          }
@@ -270,13 +266,19 @@ package models.healing
          refreshPrice();
       }
       
-      private function refreshMaxHealing(e: GResourcesEvent): void
+      [Bindable (event="healingPriceChange")]
+      public function get price(): HealPrice
       {
-         selectionClass.checkIfNotNegative();
+         return _price;
       }
       
-      [Bindable]
-      public var price: HealPrice
+      public function set price(value: HealPrice): void
+      {
+         _price = value;
+         dispatchPriceChangedEvent();
+      }
+      
+      private var _price: HealPrice
       /**
        * refreshed HealPrice object with price for all selected units
        * signs null if there is no selection
@@ -340,7 +342,18 @@ package models.healing
       
       private function dispatchUnitsChangeEvent(): void
       {
-         dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.UNIT_COUNT_CHANGE));
+         if (hasEventListener(UnitsScreenEvent.UNIT_COUNT_CHANGE))
+         {
+            dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.UNIT_COUNT_CHANGE));
+         }
+      }
+      
+      private function dispatchPriceChangedEvent(): void
+      {
+         if (hasEventListener(UnitsScreenEvent.HEALING_PRICE_CHANGE))
+         {
+            dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.HEALING_PRICE_CHANGE));
+         }
       }
       
       [Bindable]

@@ -82,7 +82,7 @@ describe CallbackManager do
         CallbackManager.register(CBTest.new(1), @e, 30.seconds.ago)
         CBTest.stub!(:on_callback).and_raise(Exception)
       end
-      
+
       after(:each) do
         App.env = @old_env
       end

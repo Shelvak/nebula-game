@@ -292,6 +292,12 @@ describe SpaceMule do
             ["", CONFIG["buildings.mothership.#{resource}.starting"]]
           }
         ]
+
+      it "should set your starting buildings to be without points" do
+        @model.buildings.each do |building|
+          building.should be_without_points
+        end
+      end
     end
 
     it "should not create other player if we try that again" do
@@ -358,11 +364,23 @@ describe SpaceMule do
       end
     end
 
-    it "should create wormholes in area" do
-      @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-      SolarSystem.where(:galaxy_id => @galaxy.id, 
-        :kind => SolarSystem::KIND_WORMHOLE
-      ).count.should == CONFIG['galaxy.wormholes.positions'].count
+    describe "wormholes" do
+      before(:all) do
+        @wormholes = SolarSystem.where(
+          :galaxy_id => @galaxy.id,
+          :kind => SolarSystem::KIND_WORMHOLE
+        )
+      end
+
+      it "should create wormholes in area" do
+        @wormholes.count.should == CONFIG['galaxy.wormholes.positions'].count
+      end
+
+      it "should not register spawn callback" do
+        @wormholes.each do |wormhole|
+          wormhole.should_not have_callback(CallbackManager::EVENT_SPAWN)
+        end
+      end
     end
 
     describe "mini battlegrounds" do

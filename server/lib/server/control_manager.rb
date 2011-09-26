@@ -142,8 +142,8 @@ class ControlManager
     only_in_production("player_destroyed invoked for #{player}") do
       response = post_to_web(player.galaxy.callback_url, 
         "remove_player_from_galaxy",
-        'player_auth_token' => player.auth_token,
-        'galaxy_id' => player.galaxy_id
+        'player_id' => player.id,
+        'web_user_id' => player.web_user_id
       )
 
       check_response(response)
@@ -182,6 +182,7 @@ class ControlManager
     only_in_production("alliance_destroyed invoked for #{alliance}") do
       response = post_to_web(alliance.galaxy.callback_url,
         "alliance_destroyed",
+        'galaxy_id' => alliance.galaxy_id,
         'alliance_id' => alliance.id
       )
 
@@ -194,6 +195,7 @@ class ControlManager
         alliance}") do
       response = post_to_web(alliance.galaxy.callback_url,
         "player_joined_alliance",
+        'galaxy_id' => alliance.galaxy_id,
         'alliance_id' => alliance.id,
         'player_name' => player.name
       )
@@ -207,6 +209,7 @@ class ControlManager
         alliance}") do
       response = post_to_web(alliance.galaxy.callback_url,
         "player_left_alliance",
+        'galaxy_id' => alliance.galaxy_id,
         'alliance_id' => alliance.id,
         'player_name' => player.name
       )
@@ -242,6 +245,9 @@ class ControlManager
   end
 
   def action_create_galaxy(io, message)
+    message.ensure_options! :required => {
+      'ruleset' => String, 'callback_url' => String
+    }
     galaxy_id = Galaxy.create_galaxy(message['ruleset'], 
       message['callback_url'])
     io.send_message :success => true, :galaxy_id => galaxy_id
@@ -251,6 +257,7 @@ class ControlManager
   end
 
   def action_destroy_galaxy(io, message)
+    message.ensure_options! :required => {'id' => Fixnum}
     Galaxy.find(message['id']).destroy
     io.send_message :success => true
   rescue ActiveRecord::RecordNotFound
@@ -261,18 +268,23 @@ class ControlManager
   end
 
   def action_create_player(io, message)
-		response = Galaxy.create_player(
-      message['galaxy_id'], message['web_user_id'], message['name']
-    )
+    message.ensure_options! :required => {
+      'galaxy_id' => Fixnum, 'web_user_id' => Fixnum, 'name' => String
+    }
+    galaxy_id = message['galaxy_id']
+    web_user_id = message['web_user_id']
+    name = message['name']
+		response = Galaxy.create_player(galaxy_id, web_user_id, name)
 
 		io.send_message :success => true,
-                    :player_id => response.player_ids[message['web_user_id']]
+                    :player_id => response.player_ids[web_user_id]
   rescue Exception => e
     io.send_message :success => false
     raise e
   end
   
   def action_destroy_player(io, message)
+    message.ensure_options! :required => {'player_id' => Fixnum}
     player = Player.find(message['player_id'])
     player.invoked_from_control_manager = true
     player.destroy
@@ -283,6 +295,7 @@ class ControlManager
   end
 
   def action_add_creds(io, message)
+    message.ensure_options! :required => {'player_id' => Fixnum}
     player = Player.find(message['player_id'])
     player.pure_creds += message['creds']
     player.save!
@@ -306,6 +319,10 @@ class ControlManager
   end
 
   def action_stats_market_counts(io, message)
+    message.ensure_options! :required => {
+      'from_kind' => Fixnum, 'to_kind' => Fixnum
+    }
+
     stats = Galaxy.select("id").c_select_values.inject({}) do |hash, galaxy_id|
       count = MarketOffer.where(:from_kind => message['from_kind'],
                                 :to_kind => message['to_kind'],
@@ -318,6 +335,10 @@ class ControlManager
   end
 
   def action_stats_market_rates(io, message)
+    message.ensure_options! :required => {
+      'from_kind' => Fixnum, 'to_kind' => Fixnum
+    }
+
     stats = Galaxy.select("id").c_select_values.inject({}) do |hash, galaxy_id|
       hash[galaxy_id] = MarketRate.
         average(galaxy_id, message['from_kind'], message['to_kind'])
@@ -328,6 +349,10 @@ class ControlManager
   end
   
   def action_announce(io, message)
+    message.ensure_options! :required => {
+      'ends_at' => [String, Time], 'message' => String
+    }
+
     unless message['ends_at'].is_a?(Time)
       parsed = Time.parse(message['ends_at'])
       if parsed

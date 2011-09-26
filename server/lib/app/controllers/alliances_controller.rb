@@ -190,7 +190,9 @@ class AlliancesController < GenericController
   # Parameters:
   # - name (String, Optional): new alliance name
   #
-  # Response: None
+  # Response:
+  # - if successful: None
+  # - if failed: 
   #
   def action_edit
     param_options :valid => %w{name}
@@ -211,6 +213,8 @@ class AlliancesController < GenericController
       player.save!
       stats.save!
     end
+  rescue ActiveRecord::RecordNotUnique
+    respond :error => 'not_unique'
   end
 
   # Edits an alliance description. Only owner can do this.

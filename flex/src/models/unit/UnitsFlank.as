@@ -65,17 +65,76 @@ package models.unit
          }
       }
       
-      public function invertSelection(model: MCUnit): void
+      public static const UNDEFINED_SELECTION: int = -1;
+      public static const SELECTING: int = 0;
+      public static const DESELECTING: int = 1;
+      
+      protected var selectionMode: int = UNDEFINED_SELECTION;
+      protected var lastUnit: MCUnit;
+      
+      public function handleShiftClick(model: MCUnit): Boolean
       {
-         if (model.selected)
+         if (selectionMode != UNDEFINED_SELECTION && model != lastUnit)
          {
-            selection.addItem(model);
+            executeShiftSelection(model);
+            return true;
          }
          else
          {
-            selection.removeItemAt(selection.getItemIndex(model));
+            return false;
+         }
+      }
+      
+      public function invertSelection(model: MCUnit, shiftPressed: Boolean): void
+      {
+         if (selectionMode == UNDEFINED_SELECTION || !shiftPressed
+         || model == lastUnit)
+         {
+            if (model.selected)
+            {
+               selection.addItem(model);
+               selectionMode = SELECTING;
+               lastUnit = model;
+            }
+            else
+            {
+               selection.removeItemAt(selection.getItemIndex(model));
+               selectionMode = DESELECTING;
+               lastUnit = model;
+            }
+         }
+         else
+         {
+            executeShiftSelection(model);
          }
          US.dispatchSelectionChangeEvent();
+      }
+      
+      private function executeShiftSelection(model: MCUnit): void
+      {
+         var fromIndex: int = flankUnits.getItemIndex(lastUnit);
+         var toIndex: int = flankUnits.getItemIndex(model);
+         for (var i: int = Math.min(fromIndex, toIndex); i <= Math.max(fromIndex, toIndex); i++)
+         {
+            var currentModel: MCUnit = MCUnit(flankUnits.getItemAt(i));
+            if (selectionMode == SELECTING)
+            {
+               currentModel.selected = true;
+               if (selection.getItemIndex(currentModel) == -1)
+               {
+                  selection.addItem(currentModel);
+               }
+            }
+            else
+            {
+               currentModel.selected = false;
+               var idx: int = selection.getItemIndex(currentModel);
+               if (idx != -1)
+               {
+                  selection.removeItemAt(idx);
+               }
+            }
+         }
       }
       
       public function deselectAll(dispatchEvnt: Boolean = true): void
@@ -111,6 +170,11 @@ package models.unit
       {
          for (var i: int = 0; i < selection.length; i++)
          {
+            if (lastUnit != null && unitId == lastUnit.unit.id)
+            {
+               lastUnit = null;
+               selectionMode = UNDEFINED_SELECTION;
+            }
             if (MCUnit(selection.getItemAt(i)).unit.id == unitId)
             {
                selection.removeItemAt(i);

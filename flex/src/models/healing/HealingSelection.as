@@ -62,44 +62,24 @@ package models.healing
          return selectedAll;
       }
       
-      public function selectAll(): Boolean
+      public function selectAll(onlyHealable: Boolean): Boolean
       {
          var selectedAll: Boolean = true;
          for each (var flank: MHealFlank in flanks)
          {
-            if (!selectFlank(flank))
+            if (onlyHealable)
             {
-               selectedAll = false;
+               if (!selectFlank(flank))
+               {
+                  selectedAll = false;
+               }
+            }
+            else
+            {
+               flank.selectAll();
             }
          }
          return selectedAll;
-      }
-      
-      private function deselectLast(): void
-      {
-         for each (var flank: MHealFlank in flanks)
-         {
-            if (flank.selection.length > 0)
-            {
-               var deselectedUnit: MCUnit = MCUnit(flank.selection.getItemAt(flank.selection.length-1));
-               selectedPrice.substract(HealPrice.calculateHealingPrice([deselectedUnit], center.level, center.type));
-               deselectedUnit.selected = false;
-               checkIfNotNegative();
-               return;
-            }
-         }
-      }
-      
-      public function checkIfNotNegative(): void
-      {
-         if (selectedPrice && !selectedPrice.validate())
-         {
-            deselectLast();
-            if (MCMainArea.getInstance().currentName == MainAreaScreens.HEAL)
-            {
-               Messenger.show(Localizer.string('Units', 'message.wasDeselected'), Messenger.MEDIUM);
-            }
-         }
       }
    }
 }

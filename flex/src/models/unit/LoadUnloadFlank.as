@@ -25,7 +25,12 @@ package models.unit
          {
             var mUnit: MCUnit = MCUnit(flankUnits.getItemAt(i));
             if (mUnit.unit == unit)
-            {
+            {         
+               if (lastUnit == mUnit)
+               {
+                  selectionMode = UNDEFINED_SELECTION;
+                  lastUnit = null;
+               }
                flankUnits.removeItemAt(i);
                var idx: int = selection.getItemIndex(mUnit);
                if (idx != -1)
@@ -36,22 +41,69 @@ package models.unit
          }
       }
       
-      public override function invertSelection(model: MCUnit): void
+      public override function invertSelection(model:MCUnit, shiftPressed:Boolean):void
       {
-         if (model.selected)
+         if (selectionMode == UNDEFINED_SELECTION || !shiftPressed
+            || model == lastUnit)
          {
-            if (!LS.selectionClass.selectUnit(model, this))
+            if (model.selected)
             {
-               model.selected = false;
-               Messenger.show(Localizer.string('Units', 'message.notSelected'), 
-                  Messenger.SHORT);
+               trySelecting(model);
+               selectionMode = SELECTING;
+               lastUnit = model;
+            }
+            else
+            {
+               selection.removeItemAt(selection.getItemIndex(model));
+               selectionMode = DESELECTING;
+               lastUnit = model;
             }
          }
          else
          {
-            selection.removeItemAt(selection.getItemIndex(model));
+            executeShiftSelection(model);
          }
          LS.refreshVolume();
+      }
+      
+      private function trySelecting(model: MCUnit): void
+      {
+         if (!LS.selectionClass.selectUnit(model, this))
+         {
+            model.selected = false;
+            Messenger.show(Localizer.string('Units', 'message.notSelected'), 
+               Messenger.SHORT);
+         }
+      }
+      
+      private function executeShiftSelection(model: MCUnit): void
+      {
+         var fromIndex: int = flankUnits.getItemIndex(lastUnit);
+         var toIndex: int = flankUnits.getItemIndex(model);
+         for (var i: int = Math.min(fromIndex, toIndex); i <= Math.max(fromIndex, toIndex); i++)
+         {
+            var currentModel: MCUnit = MCUnit(flankUnits.getItemAt(i));
+            if (selectionMode == SELECTING)
+            {
+               if (selection.getItemIndex(currentModel) == -1)
+               {
+                  trySelecting(currentModel);
+               }
+               else
+               {
+                  currentModel.selected = true;
+               }
+            }
+            else
+            {
+               currentModel.selected = false;
+               var indx: int = selection.getItemIndex(currentModel);
+               if (indx != -1)
+               {
+                  selection.removeItemAt(indx);
+               }
+            }
+         }
       }
       
       private var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();
