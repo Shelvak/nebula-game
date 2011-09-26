@@ -39,23 +39,6 @@ describe ObjectsController do
     it_behaves_like "with param options"
     it_behaves_like "only push"
 
-    it "should cast planets to perspective" do
-      planet = Factory.create(:planet, :player => player)
-      push @action, @params.merge('objects' => [planet])
-      response[:objects]["SsObject::Planet"].should include(
-        planet.as_json(:owner => true, :perspective => player)
-      )
-    end
-
-    it "should cast asteroids to perspective" do
-      asteroid = Factory.create(:sso_asteroid)
-      Factory.create(:fse_player, :player => player,
-        :solar_system => asteroid.solar_system, :player_planets => true)
-      push @action, @params.merge('objects' => [asteroid])
-      response[:objects]["SsObject::Asteroid"].should include(
-        asteroid.as_json)
-    end
-
     it "should include prepared objects" do
       prepared = :prepared
       @controller.should_receive(:prepare).with(@params['objects']).

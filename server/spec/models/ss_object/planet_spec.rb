@@ -1129,22 +1129,6 @@ describe SsObject::Planet do
     end
   end
   
-  describe "#can_view_resources?" do
-    it "should return false if planet is unowned" do
-      Factory.create(:planet).can_view_resources?(1).should be_false
-    end
-
-    it "should return true if self" do
-      planet = Factory.create(:planet_with_player)
-      planet.can_view_resources?(planet.player_id).should be_true
-    end
-
-    it "should return false otherwise" do
-      planet = Factory.create(:planet_with_player)
-      planet.can_view_resources?(planet.player_id + 1).should be_false
-    end
-  end
-
   describe ".change_resources" do
     before(:each) do
       @planet = Factory.create(:planet)
@@ -1343,72 +1327,72 @@ describe SsObject::Planet do
     end
 
     describe "with :perspective" do
-      before(:all) do
-        @player = Factory.create(:player)
-        @status = StatusResolver::NPC
-      end
-
-      it_behaves_like "with :perspective"
+      it_behaves_like "with :perspective",
+        Factory.create(:planet),
+        Factory.create(:player),
+        StatusResolver::NPC
 
       describe "viewable" do
+        let(:player) { Factory.create(:player) }
+
         it "should be true if planet is yours" do
-          planet = Factory.create(:planet, :player => @player)
-          planet.as_json(:perspective => @player)["viewable"].should be_true
+          planet = Factory.create(:planet, :player => player)
+          planet.as_json(:perspective => player)["viewable"].should be_true
         end
 
         it "should be true if planet is alliance" do
-          @player.alliance = Factory.create(:alliance)
-          @player.save!
+          player.alliance = Factory.create(:alliance)
+          player.save!
 
           planet = Factory.create(:planet, :player => Factory.create(
-              :player, :alliance => @player.alliance))
+              :player, :alliance => player.alliance))
 
-          planet.as_json(:perspective => @player)["viewable"].should be_true
+          planet.as_json(:perspective => player)["viewable"].should be_true
         end
 
         it "should be true if you have units there" do
           planet = Factory.create(:planet)
           Factory.create(:u_trooper, :location => planet,
-            :player => @player)
-          planet.as_json(:perspective => @player)["viewable"].should be_true
+            :player => player)
+          planet.as_json(:perspective => player)["viewable"].should be_true
         end
 
         it "should be true if your alliance has units there" do
           planet = Factory.create(:planet)
-          @player.alliance = Factory.create(:alliance)
-          @player.save!
+          player.alliance = Factory.create(:alliance)
+          player.save!
 
-          ally = Factory.create(:player, :alliance => @player.alliance)
+          ally = Factory.create(:player, :alliance => player.alliance)
           Factory.create(:u_trooper, :location => planet, :player => ally)
 
-          planet.as_json(:perspective => @player)["viewable"].should be_true
+          planet.as_json(:perspective => player)["viewable"].should be_true
         end
 
         it "should be false if planet is enemy" do
           planet = Factory.create(:planet,
             :player => Factory.create(:player))
 
-          planet.as_json(:perspective => @player)["viewable"].should be_false
+          planet.as_json(:perspective => player)["viewable"].should be_false
         end
 
         it "should be false if planet is nap" do
-          @player.alliance = Factory.create(:alliance)
-          @player.save!
+          player.alliance = Factory.create(:alliance)
+          player.save!
 
           nap_alliance = Factory.create(:alliance)
           Factory.create(:nap, :initiator => nap_alliance,
-            :acceptor => @player.alliance)
+            :acceptor => player.alliance)
           nap = Factory.create(:player, :alliance => nap_alliance)
 
           planet = Factory.create(:planet, :player => nap)
 
-          planet.as_json(:perspective => @player)["viewable"].should be_false
+          planet.as_json(:perspective => player)["viewable"].should be_false
         end
 
         it "should be false if planet is npc" do
           planet = Factory.create(:planet)
           
-          planet.as_json(:perspective => @player)["viewable"].should be_false
+          planet.as_json(:perspective => player)["viewable"].should be_false
         end
       end
     end

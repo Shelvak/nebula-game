@@ -24,6 +24,15 @@ describe Technology do
     end
   end
 
+  describe "#as_json" do
+    it_should_behave_like "as json",
+      Factory.create(:technology),
+      nil,
+      %w{id upgrade_ends_at pause_remainder scientists level type
+      pause_scientists speed_up},
+      %w{player_id flags}
+  end
+
   describe "#upgrade_time" do
     it "should floor value" do
       with_config_values(
@@ -90,17 +99,6 @@ describe Technology do
         Factory.build(:technology).scientists_min(1).should == 4
       end
     end
-  end
-
-  describe "#to_json" do
-    before(:all) do
-      @model = Factory.create :technology
-    end
-
-    @required_fields = %w{upgrade_ends_at type pause_remainder
-    scientists level id pause_scientists}
-    @ommited_fields = %w{player_id}
-    it_behaves_like "to json"
   end
 
   it "should change player.scientists when model.scientists changes" do
