@@ -150,7 +150,6 @@ package controllers.startup
          initializeFreeSingletons();
          bindCommandsToActions();
          setupBaseModel();
-         ML.player.galaxyId = StartupInfo.getInstance().galaxyId;
          masterTrigger = new MasterUpdateTrigger();
          if (StartupInfo.getInstance().mode == StartupMode.GAME)
             AuthorizationManager.getInstance().authorizeLoginAndProceed();

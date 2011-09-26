@@ -79,6 +79,7 @@ package controllers.galaxies.actions
       public override function applyServerAction(cmd:CommunicationCommand) : void {
          var params:Object = cmd.parameters;
          var startup:Boolean = ML.latestGalaxy == null;
+         ML.player.galaxyId = params["galaxyId"];
          createGalaxy(
             ML.player.galaxyId,
             params["battlegroundId"],
