@@ -36,8 +36,9 @@ class Unit < ActiveRecord::Base
   belongs_to :player
   belongs_to :route
 
-  # Attributes that are shown to owner. Says what is being transported.
-  TRANSPORTATION_ATTRIBUTES = %w{stored metal energy zetium}
+  # Attributes that are shown to owner or ally.
+  FRIENDLY_ATTRIBUTES = %w{xp}
+  TRANSPORTER_ATTRIBUTES = %w{stored metal energy zetium}
 
   def as_json(options=nil)
     additional = {:location => location.as_json, :hp => hp}
@@ -49,17 +50,26 @@ class Unit < ActiveRecord::Base
         resolver = StatusResolver.new(resolver) if resolver.is_a?(Player)
         additional[:status] = resolver.status(player_id)
 
-        TRANSPORTATION_ATTRIBUTES.each do |attr|
-          additional[attr.to_sym] = send(attr).as_json
-        end if transporter? && additional[:status] == StatusResolver::YOU
+        if additional[:status] == StatusResolver::YOU ||
+            additional[:status] == StatusResolver::ALLY
+          FRIENDLY_ATTRIBUTES.each do |attr|
+            additional[attr.to_sym] = send(attr).as_json
+          end
+
+          if transporter?
+            TRANSPORTER_ATTRIBUTES.each do |attr|
+              additional[attr.to_sym] = send(attr).as_json
+            end
+          end
+        end
       end
     end
     
     attributes.except(
       *(
         %w{location_id location_type location_x
-        location_y hp_remainder pause_remainder hp_percentage} +
-        TRANSPORTATION_ATTRIBUTES
+        location_y hp_remainder pause_remainder hp_percentage galaxy_id} +
+        FRIENDLY_ATTRIBUTES + TRANSPORTER_ATTRIBUTES
       )
     ).symbolize_keys.merge(additional).as_json
   end

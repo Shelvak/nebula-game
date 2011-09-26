@@ -21,7 +21,16 @@ class Technology < ActiveRecord::Base
   )
 
   def as_json(options=nil)
-    attributes.except('player_id')
+    {
+      'id' => id,
+      'upgrade_ends_at' => upgrade_ends_at,
+      'pause_remainder' => pause_remainder,
+      'scientists' => scientists,
+      'level' => level,
+      'type' => type,
+      'pause_scientists' => pause_scientists,
+      'speed_up' => speed_up
+    }
   end
 
   def planet

@@ -1,6 +1,8 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Building do
+
+
   describe "#managable?" do
     before(:each) do
       @building = Factory.build(:building)
@@ -619,14 +621,14 @@ describe Building do
     end
   end
 
-  describe "#to_json" do
-    before(:all) do
-      @model = Factory.create :building
-    end
-
-    @required_fields = %w{hp}
-    @ommited_fields = %w{pause_remainder hp_percentage}
-    it_behaves_like "to json"
+  describe "#as_json" do
+    it_behaves_like "as json",
+      Factory.create(:building),
+      nil,
+      %w{id planet_id x y x_end y_end armor_mod constructor_mod
+      construction_mod energy_mod level type upgrade_ends_at state
+      constructable_type constructable_id cooldown_ends_at hp overdriven},
+      %w{pause_remainder hp_percentage without_points}
   end
 
   describe "on create" do
