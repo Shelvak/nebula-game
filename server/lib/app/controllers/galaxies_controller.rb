@@ -7,6 +7,7 @@ class GalaxiesController < GenericController
   # Parameters: None.
   #
   # Response:
+  # - galaxy_id (Fixnum): ID of current galaxy
   # - solar_systems (Hash[]): Array of of such hashes:
   #   {
   #     :solar_system => +SolarSystem+,
@@ -31,7 +32,9 @@ class GalaxiesController < GenericController
     route_hops = RouteHop.find_all_for_player(player,
       player.galaxy, units)
     resolver = StatusResolver.new(player)
-    respond :solar_systems => SolarSystem.visible_for(player).as_json,
+    respond \
+      :galaxy_id => player.galaxy_id,
+      :solar_systems => SolarSystem.visible_for(player).as_json,
       :battleground_id => Galaxy.battleground_id(player.galaxy_id),
       :units => units.map {
         |unit| unit.as_json(:perspective => resolver) },
