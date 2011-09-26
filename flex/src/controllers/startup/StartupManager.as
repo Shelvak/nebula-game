@@ -18,6 +18,7 @@ package controllers.startup
    import controllers.chat.actions.*;
    import controllers.combatlogs.CombatLogsCommand;
    import controllers.combatlogs.actions.*;
+   import controllers.connection.ConnectionManager;
    import controllers.constructionqueues.ConstructionQueuesCommand;
    import controllers.constructionqueues.actions.*;
    import controllers.dailybonus.DailyBonusCommand;
@@ -38,6 +39,7 @@ package controllers.startup
    import controllers.objects.actions.*;
    import controllers.planets.PlanetsCommand;
    import controllers.planets.actions.*;
+   import controllers.players.AuthorizationManager;
    import controllers.players.PlayersCommand;
    import controllers.players.actions.*;
    import controllers.quests.QuestsCommand;
@@ -54,7 +56,6 @@ package controllers.startup
    
    import flash.external.ExternalInterface;
    import flash.system.Security;
-   import flash.system.SecurityDomain;
    
    import globalevents.GlobalEvent;
    
@@ -139,8 +140,8 @@ package controllers.startup
       /**
        * Call this once during application startup. This method will bind commands to appropriate actions as
        * well as initialize any classes that need special treatment.
-       */	   
-      public static function initializeApp() : void
+       */
+      public static function initializeAppAfterLoad():void
       {
          AnimationTimer.forUi.start();
          AnimationTimer.forMovement.start();
@@ -151,6 +152,10 @@ package controllers.startup
          setupBaseModel();
          ML.player.galaxyId = StartupInfo.getInstance().galaxyId;
          masterTrigger = new MasterUpdateTrigger();
+         if (StartupInfo.getInstance().mode == StartupMode.GAME)
+            AuthorizationManager.getInstance().authorizeLoginAndProceed();
+         else
+            ConnectionManager.getInstance().connect();
       }
       
       

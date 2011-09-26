@@ -9,7 +9,6 @@ package controllers.players
    
    import models.ModelLocator;
    
-   import utils.Objects;
    import utils.SingletonFactory;
    import utils.locale.Localizer;
 
@@ -18,6 +17,10 @@ package controllers.players
       private static const JSFN_AUTHORIZE:String = "authorize";
       private static const JSFN_AUTHORIZATION_FAIL:String = "authorizationFailed";
       private static const ASFN_AUTHORIZATION_SUCCESS:String = "authorizationSuccessful";
+      
+      private function get SI() : StartupInfo {
+         return StartupInfo.getInstance();
+      }
       
       private function get ML() : ModelLocator {
          return ModelLocator.getInstance();
@@ -56,7 +59,7 @@ package controllers.players
       
       private function initiateAuthorization() : void {
          statusText = getString("authorization");
-         ExternalInterface.call(JSFN_AUTHORIZE, StartupInfo.getInstance().webPlayerId);
+         ExternalInterface.call(JSFN_AUTHORIZE, SI.webPlayerId);
       }
       
       private function authorizationSuccess() : void {
