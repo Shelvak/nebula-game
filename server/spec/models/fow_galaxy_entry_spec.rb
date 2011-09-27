@@ -70,13 +70,9 @@ describe FowGalaxyEntry do
   end
 
   describe "as json" do
-    before(:each) do
-      @model = Factory.create(:fow_galaxy_entry)
-    end
-
-    @required_fields = %w{x y x_end y_end}
-    @ommited_fields = %w{id player_id alliance_id counter}
-    it_behaves_like "to json"
+    it_behaves_like "as json", Factory.create(:fow_galaxy_entry), nil,
+                    %w{x y x_end y_end},
+                    %w{id player_id alliance_id counter}
   end
 
   describe "fow entry" do

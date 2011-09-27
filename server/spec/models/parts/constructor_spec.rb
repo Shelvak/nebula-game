@@ -33,13 +33,9 @@ describe Building::ConstructorTest do
     end
   end
 
-  describe "#to_json" do
-    before(:each) do
-      @model = Factory.create(:b_constructor_test)
-    end
-
-    @required_fields = %w{construction_queue_entries}
-    it_behaves_like "to json"
+  describe "#as_json" do
+    it_behaves_like "as json", Factory.create(:b_constructor_test), nil,
+                    %w{construction_queue_entries}, []
   end
 
   describe "#construction_queue_entries" do

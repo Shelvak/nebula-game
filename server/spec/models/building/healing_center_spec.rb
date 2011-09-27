@@ -39,12 +39,8 @@ describe Building::HealingCenter do
   end
 
   describe "#as_json" do
-    before(:each) do
-      @model = Factory.build(:b_healing_center)
-    end
-
-    @required_fields = %w{cooldown_ends_at}
-    it_behaves_like "to json"
+    it_behaves_like "as json", Factory.build(:b_healing_center), nil,
+                    %w{cooldown_ends_at}, []
   end
 
   describe "#heal!" do

@@ -123,7 +123,7 @@ class ControlManager
 
   # Checks if login was authorized by web.
   def login_authorized?(player, web_player_id)
-    player_str = "#{player} (web_id: #{web_player_id.inspect}"
+    player_str = "#{player} (web_id: #{web_player_id.inspect})"
     only_in_production("authorization for #{player_str}") do
       response = post_to_web(player.galaxy.callback_url,
         "check_play_auth",

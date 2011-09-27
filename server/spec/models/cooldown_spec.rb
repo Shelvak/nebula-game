@@ -9,13 +9,10 @@ describe Cooldown do
   end
 
   describe "#as_json" do
-    before(:each) do
-      @model = Factory.create(:cooldown)
-    end
-
-    @required_fields = %w{location ends_at}
-    @ommited_fields = Cooldown.column_names - @required_fields
-    it_behaves_like "to json"
+    required_fields = %w{location ends_at}
+    it_behaves_like "as json", Factory.create(:cooldown), nil,
+                    required_fields,
+                    Cooldown.column_names - required_fields
   end
 
   describe ".for_planet" do

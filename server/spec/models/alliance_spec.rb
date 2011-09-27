@@ -26,14 +26,10 @@ describe Alliance do
   end
 
   describe "#as_json" do
-    before(:all) do
-      @model = Factory.create(:alliance)
-    end
-    
-    @required_fields = %w{id name description victory_points owner_id}
-    @ommited_fields = Alliance.columns.map(&:name) - @required_fields
-    
-    it_behaves_like "to json"
+    required_fields = %w{id name description victory_points owner_id}
+    it_behaves_like "as json", Factory.create(:alliance), nil,
+                    required_fields,
+                    Alliance.columns.map(&:name) - required_fields
   end
   
   describe "#player_ratings" do

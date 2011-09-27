@@ -2,13 +2,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb
 
 describe Wreckage do
   describe "#as_json" do
-    before(:each) do
-      @model = Factory.create(:wreckage)
-    end
-
-    @required_fields = %w{id location metal energy zetium}
-    @ommited_fields = %w{galaxy_id}
-    it_behaves_like "to json"
+    it_behaves_like "as json", Factory.create(:wreckage), nil,
+                    %w{id location metal energy zetium},
+                    %w{galaxy_id}
   end
 
   describe ".add" do

@@ -147,9 +147,9 @@ class Player < ActiveRecord::Base
       )
       json['creds'] = creds
       unless alliance_id.nil?
-        owner = id == alliance.owner_id
-        json['alliance_owner'] = owner
-        json['alliance_player_count'] = alliance.players.count if owner
+        is_owner = id == alliance.owner_id
+        json['alliance_owner'] = is_owner
+        json['alliance_player_count'] = alliance.players.count if is_owner
       end
 
       json

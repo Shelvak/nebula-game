@@ -10,7 +10,6 @@
 class SsObject::Planet < SsObject
   include Parts::PlanetExploration
   include Parts::PlanetBoosts
-  include Parts::Shieldable
   include Parts::DelayedEventDispatcher
   include Parts::Raiding
 
@@ -64,7 +63,7 @@ class SsObject::Planet < SsObject
   }
 
   # Attributes needed for planets|index
-  INDEX_ATTRIBUTES = %w{next_raid_at}
+  INDEX_ATTRIBUTES = %w{next_raid_at} + RESOURCE_ATTRIBUTES
 
   # Attributes which are included when :owner => true is passed to
   # #as_json

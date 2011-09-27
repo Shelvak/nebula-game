@@ -82,21 +82,17 @@ describe MarketOffer do
   end
   
   describe "#as_json" do
-    before(:each) do
-      @model = Factory.create(:market_offer)
-    end
-    
-    @required_params = %w{id player from_kind from_amount to_kind to_rate
+    required_params = %w{id player from_kind from_amount to_kind to_rate
       created_at}
-    @ommited_params = MarketOffer.columns.map(&:name) - @required_params
-    
-    it_behaves_like "to json"
+    it_behaves_like "as json", Factory.create(:market_offer), nil,
+                               required_params,
+                               MarketOffer.columns.map(&:name) - required_params
+
     
     it "should not fail with system offer" do
-      @model.planet = nil
-      @model.save!
-      
-      @model.as_json['player'].should be_nil
+      model = Factory.create(:market_offer, :galaxy => Factory.create(:galaxy),
+                             :planet => nil)
+      model.as_json['player'].should be_nil
     end
   end
   

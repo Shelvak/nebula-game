@@ -563,34 +563,29 @@ describe Player do
   end
 
   describe "#as_json" do
-    before(:all) do
-      @model = Factory.create(:player)
-    end
-
     fields = Player.columns.map(&:name)
 
     describe ":minimal mode" do
-      before(:all) do
-        @options = {:mode => :minimal}
-      end
-
-      @required_fields = %w{id name}
-      @ommited_fields = fields - @required_fields
-      it_behaves_like "to json"
+      required_fields = %w{id name}
+      ommited_fields = fields - required_fields
+      it_behaves_like "as json", Factory.create(:player), {:mode => :minimal},
+                      required_fields, ommited_fields
     end
 
     describe "normal mode" do
-      @required_fields = %w{id name scientists scientists_total xp
+      required_fields = %w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
         victory_points creds population population_cap planets_count
         alliance_id alliance_cooldown_ends_at
         free_creds vip_level vip_creds vip_until vip_creds_until}
-      @ommited_fields = fields - @required_fields
-      it_behaves_like "to json"
+      ommited_fields = fields - required_fields
+      it_behaves_like "as json", Factory.create(:player), nil,
+                      required_fields, ommited_fields
 
       describe "if in alliance" do
         before(:each) do
-          @alliance = Factory.create(:alliance, :owner => @model)
+          @alliance = Factory.create(:alliance)
+          @model = @alliance.owner
           @model.alliance = @alliance
           @model.save!
         end

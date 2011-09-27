@@ -47,17 +47,12 @@ describe SsObject do
   end
 
   describe "#as_json" do
-    before(:all) do
-      @model = Factory.create(:ss_object)
-    end
-
-    @required_fields = %w{id solar_system_id position angle type
-      size}
-    @ommited_fields = %w{width height metal metal_rate metal_storage
-      energy energy_rate energy_storage
-      zetium zetium_rate zetium_storage
-      last_resources_update energy_diminish_registered}
-    it_behaves_like "to json"
+    it_behaves_like "as json", Factory.create(:ss_object), nil,
+                    %w{id solar_system_id position angle type size},
+                    %w{width height metal metal_rate metal_storage
+                       energy energy_rate energy_storage
+                       zetium zetium_rate zetium_storage
+                       last_resources_update energy_diminish_registered}
   end
 
 #  describe "resources entry" do
