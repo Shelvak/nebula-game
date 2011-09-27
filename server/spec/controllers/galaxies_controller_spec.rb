@@ -34,7 +34,7 @@ describe GalaxiesController do
 
     it "should include galaxy id" do
       push @action, @params
-      response_should_include :galaxy_id => player.id
+      response_should_include :galaxy_id => player.galaxy_id
     end
 
     it "should allow listing visible SS in galaxy" do
