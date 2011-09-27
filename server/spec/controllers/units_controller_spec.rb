@@ -564,7 +564,18 @@ describe UnitsController do
       
       lambda do
         invoke @action, @params
-      end.should raise_error(GameLogicError)
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should not fail when unloading 1 unit and it cannot be found" do
+      # This was an actual bug, where Unit.first.units.find([non_existant_id])
+      # returned [nil]...
+      @units[0].destroy
+      @params['unit_ids'].pop
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "should fail if transporter does not belong to player" do
