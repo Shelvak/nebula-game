@@ -40,6 +40,7 @@ group :development_setup do
   gem "net-scp", "~>1.0"
   gem "xml-simple", "~>1.0"
   gem "ruby-debug"
+  gem "mocha"
 end
 
 # Only setuped, but not required (in test env).
