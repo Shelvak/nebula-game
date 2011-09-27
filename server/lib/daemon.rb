@@ -14,15 +14,6 @@ def server_pid
   server_process_line.split[1]
 end
 
-def kill_server(signal="")
-  if running?
-    pid = server_pid
-    `kill #{signal} #{pid}`
-  else
-    puts "Server is not running."
-  end
-end
-
 case ARGV[0]
 when "start"
   unless running?
@@ -32,9 +23,20 @@ when "start"
     puts "Server is already running."
   end
 when "stop"
-  kill_server
+  if running?
+    pid = server_pid
+    `kill #{pid}`
+  else
+    puts "Server is not running."
+  end
 when "hup"
-  kill_server("-HUP")
+  require File.dirname(__FILE__) + '/server/control_client'
+  begin
+    client = ControlClient.new
+    client.message('reopen_logs')
+  rescue ControlClient::ConnectionError
+    puts "Unable to connect to server."
+  end
 when "status"
   puts running? ? "ok" : "error"
 else

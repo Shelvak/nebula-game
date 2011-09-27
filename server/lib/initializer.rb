@@ -166,17 +166,6 @@ benchmark :logger do
   end
 end
 
-benchmark :signals do
-  begin
-    trap("HUP") do
-      LOGGER.info "Got HUP, reopening log outputs."
-      LOGGER.reopen!
-    end
-  rescue ArgumentError
-    LOGGER.warn "HUP signal not supported, no way to reopen log outputs!"
-  end
-end
-
 config_dir = nil
 benchmark :game_config do
   require File.join(ROOT_DIR, 'config', 'environments', App.env)

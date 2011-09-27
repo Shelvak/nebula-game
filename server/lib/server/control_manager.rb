@@ -10,6 +10,15 @@ class ControlManager
 
   include Singleton
 
+  # Reopens log files.
+  #
+  # Parameters: None
+  #
+  # Response:
+  # - success (Boolean)
+  #
+  ACTION_REOPEN_LOGS = 'reopen_logs'
+
   # Create a new galaxy.
   #
   # Parameters:
@@ -221,6 +230,8 @@ class ControlManager
   private
   def process(io, message)
     case message['action']
+    when ACTION_REOPEN_LOGS
+      action_reopen_logs(io)
     when ACTION_CREATE_GALAXY
       action_create_galaxy(io, message)
     when ACTION_DESTROY_GALAXY
@@ -242,6 +253,12 @@ class ControlManager
     else
       io.send_message(:success => false, :reason => "Action Unknown!")
     end
+  end
+
+  def action_reopen_logs(io)
+    LOGGER.info "Got request to control manager, reopening log outputs."
+    LOGGER.reopen!
+    io.send_message :success => true
   end
 
   def action_create_galaxy(io, message)
