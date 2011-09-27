@@ -95,9 +95,13 @@ package components.base.viewport
          addGlobalEventHandlers();
       }
       
+      private var f_cleanupCalled:Boolean = false;
       
       public function cleanup() : void
       {
+         if (f_cleanupCalled)
+            return;
+         
          removeSelfEventHandlers();
          removeGlobalEventHandlers();
          if (_contentScrollAnimator)
@@ -129,6 +133,8 @@ package components.base.viewport
          _underlayImage = null;
          _contentContainer = null;
          _viewport = null;
+         
+         f_cleanupCalled;
       }
       
       
@@ -158,6 +164,11 @@ package components.base.viewport
       
       protected override function createChildren() : void
       {
+         if (f_cleanupCalled) {
+            super.createChildren();
+            return;
+         }
+         
          _contentContainer = new Group();
          _contentContainer.mouseEnabled = false;
          _viewport = new Group();
@@ -195,6 +206,10 @@ package components.base.viewport
       protected override function partAdded(partName:String, instance:Object) : void
       {
          super.partAdded(partName, instance);
+         
+         if (f_cleanupCalled)
+            return;
+         
          if (instance == contentGroup)
          {
             contentGroup.mouseEnabled = false;
@@ -465,6 +480,9 @@ package components.base.viewport
       {
          super.commitProperties();
          
+         if (f_cleanupCalled)
+            return;
+         
          if (f_contentChanged)
          {
             var event:ViewportEvent = new ViewportEvent(ViewportEvent.CONTENT_CHANGE);
@@ -508,6 +526,9 @@ package components.base.viewport
       protected override function updateDisplayList(uw:Number, uh:Number) : void
       {
          super.updateDisplayList(uw, uh);
+         
+         if (f_cleanupCalled)
+            return;
          
          if ((f_paddingChanged || f_contentSizeChanged || f_sizeChanged) && _content)
          {
@@ -554,6 +575,9 @@ package components.base.viewport
        */      
       public function centerContent() : void
       {
+         if (f_cleanupCalled)
+            return;
+         
          if (_content)
          {
             updateScrollPosition(new Point(
@@ -573,10 +597,9 @@ package components.base.viewport
        */      
       public function moveContentBy(delta:Point, useAnimation:Boolean = false, animationCompleteHandler:Function = null) : void
       {
-         if (!_content)
-         {
+         if (f_cleanupCalled || !_content)
             return;
-         }
+         
          var endPosition:Point = getBoundedScrollPosition(new Point(
             _viewport.horizontalScrollPosition - delta.x * content.scaleX,
             _viewport.verticalScrollPosition - delta.y * content.scaleY
@@ -631,6 +654,9 @@ package components.base.viewport
        */      
       public function moveContentTo(point:Point, useAnimation:Boolean = false, animationCompleteHandler:Function = null) : void
       {
+         if (f_cleanupCalled)
+            return;
+         
          if (_content)
          {
             moveContentBy(
@@ -661,7 +687,8 @@ package components.base.viewport
       
       private function startContentDrag(event:MouseEvent) : void
       {
-         if (!_content ||
+         if (f_cleanupCalled ||
+             !_content ||
              DisplayListUtil.isInsideType(event.target, VScrollBar) ||
              DisplayListUtil.isInsideType(event.target, HScrollBar) ||
              _overlay && DisplayListUtil.isInsideInstance(event.target, _overlay))
@@ -680,7 +707,7 @@ package components.base.viewport
       
       private function doContentDrag(event:MouseEvent) : void
       {
-         if (_content && f_contentOnDrag && event.buttonDown)
+         if (!f_cleanupCalled && _content && f_contentOnDrag && event.buttonDown)
          {
             var mouseX:Number = stage.mouseX;
             var mouseY:Number = stage.mouseY;
@@ -698,6 +725,9 @@ package components.base.viewport
       
       private function stopContentDrag() : void
       {
+         if (f_cleanupCalled)
+            return;
+         
          f_contentOnDrag = false;
          removeEventListener(MouseEvent.MOUSE_MOVE, doContentDrag);
       }
@@ -783,7 +813,7 @@ package components.base.viewport
       protected var f_keyboarControlActive:Boolean = false;
       protected function global_keyDownHandler(event:KeyboardEvent) : void
       {
-         if (f_keyboarControlActive)
+         if (!f_cleanupCalled && f_keyboarControlActive)
          {
             var delta:Point;
             switch (event.keyCode)

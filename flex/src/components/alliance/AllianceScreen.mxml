@@ -173,7 +173,7 @@
                       click="model.selectManagementTab()"/>
    </s:Group>
    
-   <base:Scroller id="contentScroller" top="230" bottom="10" width="100%" horizontalScrollPolicy="off"
+   <base:Scroller id="contentScroller" top="230" bottom="90" width="100%" horizontalScrollPolicy="off"
                   stepMultiplier="15">
       
       <s:Group left="0" right="0">
@@ -355,7 +355,6 @@
       </s:Group>
    </base:Scroller>
 
-   <screens:ScreenCloseButton scroller="{contentScroller}" label="{getString('label.close')}"
-                              right="0" bottom="0"
+   <screens:ScreenCloseButton label="{getString('label.close')}" right="0" bottom="0"
                               click="NavigationController.getInstance().showPreviousScreen()"/>
 </s:Group>

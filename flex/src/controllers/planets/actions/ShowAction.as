@@ -140,6 +140,7 @@ package controllers.planets.actions
                throw new Error("Can't find solar system with id " + ss.id + " in galaxy.");
             ss.x = ssInGalaxy.x;
             ss.y = ssInGalaxy.y;
+            ss.kind = ssInGalaxy.kind;
             ML.latestSolarSystem = ss;
          }
          
