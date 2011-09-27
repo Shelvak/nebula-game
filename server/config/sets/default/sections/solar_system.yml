@@ -62,11 +62,11 @@ battleground.jumpgate.positions: [[3, 22], [3, 134], [3, 270]]
 ### Unit spawning
 # Available strategies:
 # - outer_circle: Spawn only in last circle of solar system, avoiding jumpgates.
-# - random: Spawn anywhere in solar system.
+# - random: Spawn anywhere in the solar system.
 
 # Time range for spawning.
 spawn.regular.delay: [<%= 12.hours %> / speed, <%= 24.hours %> / speed]
-# Maximum number of spots occupied by NPC units in pulsar.
+# Maximum number of spots occupied by NPC units in SS.
 spawn.regular.max_spots: 4
 # - [count_from, count_to, type, flank]
 #
@@ -83,7 +83,7 @@ spawn.regular.strategy: outer_circle
 
 # Time range for spawning.
 spawn.battleground.delay: [<%= 30.minutes %> / speed, <%= 2.hours %> / speed]
-# Maximum number of spots occupied by NPC units in pulsar.
+# Maximum number of spots occupied by NPC units in SS.
 spawn.battleground.max_spots: 6
 # - [count_from, count_to, type, flank]
 #
