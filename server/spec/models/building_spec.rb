@@ -1,8 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Building do
-
-
   describe "#managable?" do
     before(:each) do
       @building = Factory.build(:building)
@@ -287,6 +285,29 @@ describe Building do
             planet.reload
           end.should_not change(planet, :energy_generation_rate)
         end
+      end
+    end
+
+    describe "when not an energy provider" do
+      before(:each) do
+        @model = Factory.create!(:b_radar, opts_active + {
+          :planet => @planet, :x => 10, :y => 0, :level => 1}
+        )
+      end
+
+      it "should not deactivate it" do
+        @model.should_not_receive(:deactivate!)
+        @model.move!(10, 15)
+      end
+
+      it "should not activate it" do
+        @model.should_not_receive(:activate!)
+        @model.move!(10, 15)
+      end
+
+      it "should save it" do
+        @model.should_receive(:save!)
+        @model.move!(10, 15)
       end
     end
 

@@ -286,8 +286,9 @@ class Building < ActiveRecord::Base
       "Cannot move while upgrading or working (#{self.inspect})!") \
       if upgrading? || working?
 
-    active = active?
-    deactivate! if active
+    energy_provider = self.class.manages_resources? &&
+      self.class.energy_generation_rate(1) > 0 && active?
+    deactivate! if energy_provider
 
     stats = CredStats.move(self)
     player.creds -= creds_needed
@@ -302,7 +303,7 @@ class Building < ActiveRecord::Base
     transaction do
       stats.save!
       player.save!
-      active ? activate! : save!
+      energy_provider ? activate! : save!
       Objective::MoveBuilding.progress(self)
     end
 
