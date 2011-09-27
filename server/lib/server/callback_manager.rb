@@ -133,33 +133,43 @@ class CallbackManager
     #
     def tick(include_failed=false)
       sleep 1 while $IRB_RUNNING
-      
+
+      conn = ActiveRecord::Base.connection
+
       now = Time.now.to_s(:db)
       conditions = include_failed \
-        ? "ends_at <= '#{now}'" \
+        ? "ends_at <= '#{now}' AND failed <= 1" \
         : "ends_at <= '#{now}' AND failed = 0"
+      sql = "WHERE #{conditions} ORDER BY ends_at"
+
+      # Reset failed callbacks to 0 fails so we could try to process them
+      # again.
+      conn.execute(
+        "UPDATE callbacks SET failed=0 WHERE ends_at <= '#{now
+          }' AND failed > 1"
+      ) if include_failed
 
       get_row = lambda do
         LOGGER.suppress(:debug) do
-          ActiveRecord::Base.connection.select_one(
+          conn.select_one(
             "SELECT class, ruleset, object_id, event FROM callbacks
-              WHERE #{conditions} LIMIT 1"
+              #{sql} LIMIT 1"
           )
         end
       end
 
       delete_row = lambda do
         LOGGER.suppress(:debug) do
-          ActiveRecord::Base.connection.execute(
-            "DELETE FROM callbacks WHERE #{conditions} LIMIT 1"
+          conn.execute(
+            "DELETE FROM callbacks #{sql} LIMIT 1"
           )
         end
       end
-      
+
       mark_row_as_failed = lambda do
         LOGGER.info "Marking row as failed."
-        ActiveRecord::Base.connection.execute(
-          "UPDATE callbacks SET failed=1 WHERE #{conditions} LIMIT 1"
+        conn.execute(
+          "UPDATE callbacks SET failed=failed+1 #{sql} LIMIT 1"
         )
       end
 
@@ -194,7 +204,7 @@ class CallbackManager
         row['object_id']}, ruleset: #{row['ruleset']})"
       LOGGER.block(title, :level => :info) do
         time = Benchmark.realtime do
-          ActiveRecord::Base.transaction do
+          ActiveRecord::Base.transaction(:joinable => false) do
             # Delete entry before processing. This is needed because
             # some callbacks may want to add same type callback to same
             # object.
