@@ -281,8 +281,8 @@
             constructionBonus = 0;
             selectedBuilding = null;
             deployInProgress = false;
-            constructable.moving = false;
             constructable.deselectBuilding();
+            constructable.moving = false;
             if (e.type == GBuildingEvent.MOVE_CANCEL || e.type == GBuildingEvent.MOVE_CONFIRM)
             {
                MCBuildingSelectedSidebar.getInstance().selectedBuilding = e.building;
