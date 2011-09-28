@@ -153,14 +153,9 @@
             invalidateDisplayList();
          }
          
-         public function get hOverdrivenOffset(): Number
-         {
-            return _overdriven?Math.floor((width - 73)/2)-1:0;
-         }
-         
          public function get vOverdrivenOffset(): Number
          {
-            return _overdriven?Math.floor((height - 71)/2)-1:0;
+            return _overdriven?Math.floor((71 - 44)/2)+1:0;
          }
          
       ]]>
