@@ -802,6 +802,10 @@ LOCALE = :#{LOCALE}
 # Email configuration
 ActionMailer::Base.default_url_options[:host] = "nebula44.#{DOMAIN}"
 ActionMailer::Base.perform_deliveries = true
+ActionMailer::Base.delivery_method = :sendmail
+# -i means ".\n" does not terminate mail.
+# -t is skipped because it fucks up delivery on some MTAs
+ActionMailer::Base.sendmail_settings[:arguments] = "-i"
 }, nil, UCH)
 
   as(USER) { "ln -sf #{HOME}/web/shared/web/log #{LOGS}/web" }
