@@ -24,7 +24,7 @@ module Location
         player_ids.push planet.player_id 
       end
     end
-    player_ids | Unit.player_ids_in_location(location_point)
+    player_ids | Unit.player_ids_in_location(location_point, true)
   end
 
   # Returns +Location+ object for given _attrs_ as obtained by

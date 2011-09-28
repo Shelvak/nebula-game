@@ -117,7 +117,11 @@ class CombatDsl
 
     def initialize(alliance, location_container, options, &block)
       options.reverse_merge! :alliance => alliance
-      @player = Factory.create(:player, options)
+      if options[:npc]
+        @player = nil
+      else
+        @player = Factory.create(:player, options)
+      end
       @location_container = location_container
 
       instance_eval(&block) if block

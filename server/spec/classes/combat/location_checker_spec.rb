@@ -157,6 +157,17 @@ describe Combat::LocationChecker do
           Combat::LocationChecker.check_location(@location)
         end
 
+        it "should not run combat if npc only has non-combat units" do
+          planet = nil
+          CombatDsl.new do
+            planet = location(:planet).location
+            player(:npc => true) { units { mdh } }
+            player { units { glancer :count => 10 } }
+          end
+          Combat::LocationChecker.check_location(planet.location_point).
+            should be_false
+        end
+
         it "should not include units with level 0" do
           unit = Factory.create(:unit, :location => @location, :level => 0,
             :player => @player1)
