@@ -105,7 +105,7 @@ package models.chat.msgconverters
       private function addUrl(parent:FlowGroupElement, url:String) : void {
          Objects.paramNotNull("parent", parent);
          Objects.paramNotEquals("url", url, [null, ""]);
-         url = decodeURI(url);
+         url = decodeURIComponent(url);
          var link:LinkElement = new LinkElement();
          link.href = url;
          link.target = "_blank";
