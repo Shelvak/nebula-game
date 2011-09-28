@@ -51,6 +51,7 @@
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
          import models.unit.Unit;
+         import models.unit.UnitKind;
          
          import mx.collections.ListCollectionView;
          import mx.core.ScrollPolicy;
@@ -695,7 +696,8 @@
          </base:layout>
          <base:Warning text="{getString('notYourPlanet')}"
                        width="100%"/>
-         <s:Group width="100%" visible="{(ML.latestPlanet.hasActiveUnits(Owner.ENEMY)
+         <s:Group width="100%" visible="{(ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY)
+                  || ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE)
                   || ML.latestPlanet.hasBuildingsWithGuns)
                   &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
             <s:Label text="{getString('label.planetHasEnemies')}" styleName="unsatisfied"
@@ -709,6 +711,7 @@
          <s:Button label="{getString('label.claimPlanet')}"
                    visible="{ML.latestPlanet.ssObject.player == null
                    &amp;&amp; !ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY)
+                   &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE)
                    &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
                    &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}"
                    skinClass="components.skins.GreenButtonSkin"
