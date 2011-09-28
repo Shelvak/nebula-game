@@ -695,7 +695,7 @@
          </base:layout>
          <base:Warning text="{getString('notYourPlanet')}"
                        width="100%"/>
-         <s:Group width="100%" visible="{(ML.latestPlanet.hasActiveUnits(Owner.ENEMY)
+         <s:Group width="100%" visible="{(ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY)
                   || ML.latestPlanet.hasBuildingsWithGuns)
                   &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
             <s:Label text="{getString('label.planetHasEnemies')}" styleName="unsatisfied"
