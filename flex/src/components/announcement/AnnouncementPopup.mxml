@@ -48,6 +48,7 @@
          }
          
          override public function show() : void {
+            width = getImage('image').width - 20;
             if (_isShown)
                PopUpManager.bringToFront(this);
             else {
@@ -79,13 +80,14 @@
       ]]>
    </fx:Script>
    <popups:layout>
-      <s:VerticalLayout horizontalAlign="contentJustify" gap="20"/>
+      <s:VerticalLayout horizontalAlign="justify" gap="20"/>
    </popups:layout>
    <s:Group>      
       <s:BitmapImage source="{getImage('image')}" left="-10" right="-10" top="-13" bottom="0"/>
    </s:Group>
    <s:Group>
-      <s:RichText fontSize="16" left="0" right="0" lineBreak="toFit" textAlign="center"
+      <s:RichText fontSize="16" left="0" right="0" top="0" bottom="0"
+                  lineBreak="toFit" textAlign="center"
                   textFlow="{ANNOUNCEMENT.messageTextFlow}"/>
    </s:Group>
    <s:Group>
