@@ -4,7 +4,7 @@ require File.expand_path(
 
 klass = Combat::LocationChecker
 
-describe klass do
+describe Combat::LocationChecker do
   describe ".check_location" do
     before(:each) do
       @planet = Factory.create(:planet)
@@ -112,6 +112,22 @@ describe klass do
           Combat.should_receive(:run).with(@planet, @players, @nap_rules,
             @units, @buildings).and_return(@stubbed_assets)
           Combat::LocationChecker.check_location(@location)
+        end
+
+        describe "when planet belongs to npc" do
+          before(:each) do
+            @planet.player = nil
+            @planet.save!
+          end
+
+          it "should not fail if planet belongs to npc" do
+            Combat::LocationChecker.check_location(@location)
+          end
+
+          it "should not fail if planet belongs to npc and it has no buildings" do
+            @buildings.each(&:destroy)
+            Combat::LocationChecker.check_location(@location)
+          end
         end
 
         it "should include defensive portal units" do

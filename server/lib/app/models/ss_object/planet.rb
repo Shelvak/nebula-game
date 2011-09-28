@@ -54,6 +54,10 @@ class SsObject::Planet < SsObject
     self.player_id == player_id
   end
 
+  def cooldown
+    Cooldown.for_planet(self)
+  end
+
   # Attributes which are related to resources.
   RESOURCE_ATTRIBUTES = %w{
     metal metal_generation_rate metal_usage_rate metal_storage
