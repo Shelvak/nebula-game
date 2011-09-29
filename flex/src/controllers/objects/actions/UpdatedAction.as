@@ -1,7 +1,10 @@
 package controllers.objects.actions
 {
    import controllers.objects.ObjectClass;
-
+   
+   import models.unit.MCLoadUnloadScreen;
+   import models.unit.MCUnitScreen;
+   
    /**
     *is received after battle for every unit that was updated 
     * @author Jho
@@ -22,7 +25,23 @@ package controllers.objects.actions
          ML.units.enableAutoUpdate();
          if (objectClass == ObjectClass.UNIT && ML.latestPlanet != null)
          {
-           ML.latestPlanet.dispatchUnitRefreshEvent();
+            ML.latestPlanet.units.refresh();
+            ML.latestPlanet.dispatchUnitRefreshEvent();
+            // TODO: Find out why some filters don't refresh if you dont call 
+            // refresh function on the list
+            var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();
+            if (LS.oldProvider != null)
+            {
+               LS.oldProvider.refresh();
+               LS.refreshScreen();
+            }               // TODO: Find out why some filters don't refresh if you dont call 
+            // refresh function on the list
+            var US: MCUnitScreen = MCUnitScreen.getInstance();
+            if (US.units != null)
+            {
+               US.units.refresh();
+               US.refreshScreen();
+            }
          }
       }
    }
