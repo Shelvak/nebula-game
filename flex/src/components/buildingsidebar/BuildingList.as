@@ -94,12 +94,15 @@ package components.buildingsidebar
       
       public function deselectBuilding(): void
       {
-         selectedIndex = undefined;
-         selectedItem = null;
-         changeHandler();
-         if (!moving)
+         if (selectedItem != null)
          {
-            new GSelectConstructableEvent(null);
+            selectedIndex = undefined;
+            selectedItem = null;
+            changeHandler();
+            if (!moving)
+            {
+               new GSelectConstructableEvent(null);
+            }
          }
       }
       
