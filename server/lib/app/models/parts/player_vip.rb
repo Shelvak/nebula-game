@@ -87,7 +87,8 @@ module Parts
         raise GameLogicError.new("Not a VIP!") unless vip?
 
         self.vip_creds = vip_creds_per_tick
-        self.vip_creds_until = CONFIG['creds.vip.tick.duration'].from_now
+        self.vip_creds_until ||= Time.now
+        self.vip_creds_until += Cfg.player_vip_tick_duration
 
         self.class.transaction do
           save!

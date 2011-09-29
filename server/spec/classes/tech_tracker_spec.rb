@@ -2,8 +2,6 @@ require File.expand_path(
   File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 )
 
-class Technology::TestResourceMod < Technology; end
-
 describe TechTracker do
   it "should register all mod technologies upon instantiating" do
     Technology::MODS.each do |name, property|

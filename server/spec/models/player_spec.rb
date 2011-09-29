@@ -326,10 +326,19 @@ describe Player do
         @player.vip_creds.should == @per_day
       end
 
-      it "should write vip_creds_until" do
+      it "should write #vip_creds_until if #vip_creds_until is nil" do
+        @player.vip_creds_until = nil
         @player.vip_tick!
         @player.vip_creds_until.should \
           be_within(SPEC_TIME_PRECISION).of(1.day.from_now)
+      end
+
+      it "should write #vip_creds_until based on previous #vip_creds_until" do
+        time = 5.minutes.ago
+        @player.vip_creds_until = time
+        @player.vip_tick!
+        @player.vip_creds_until.should \
+          be_within(SPEC_TIME_PRECISION).of(time + 1.day)
       end
 
       it "should add tick callback" do

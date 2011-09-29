@@ -117,6 +117,8 @@ class Cfg; class << self
 
   ### creds.yml ###
 
+  def player_vip_tick_duration; CONFIG['creds.vip.tick.duration']; end
+
   def planet_boost_cost; CONFIG['creds.planet.resources.boost.cost']; end
   def planet_boost_duration
     CONFIG['creds.planet.resources.boost.duration']
