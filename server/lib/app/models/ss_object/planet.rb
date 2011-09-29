@@ -423,7 +423,7 @@ class SsObject::Planet < SsObject
   end
 
   def resource_modifier_technologies
-    player_id ? TechTracker.query_active(player_id,
+    player_id ? TechTracker.instance.query_active(player_id,
       "metal_generate", "metal_store", "energy_generate", "energy_store",
       "zetium_generate", "zetium_store").all : []
   end
@@ -450,7 +450,7 @@ class SsObject::Planet < SsObject
       end
 
       @resource_modifiers.keys.each do |type|
-        @resource_modifiers[type] += CONFIG['creds.planet.resources.boost'] \
+        @resource_modifiers[type] += Cfg.planet_boost_amount \
           if send(:"#{type}_boosted?")
       end
     end

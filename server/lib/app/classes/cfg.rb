@@ -122,6 +122,8 @@ class Cfg; class << self
     CONFIG['creds.planet.resources.boost.duration']
   end
 
+  def planet_boost_amount; CONFIG['creds.planet.resources.boost']; end
+
   def units_speed_up(speed_modifier, hop_count)
     [
       CONFIG.evalproperty('creds.move.speed_up',

@@ -4,14 +4,6 @@ class Technology < ActiveRecord::Base
   include Parts::NeedsTechnology
   include Parts::SciencePoints
 
-  # Register technologies to technology tracker if they boost abilities.
-  def self.inherited(subclass)
-    super(subclass)
-    MODS.each do |name, property|
-      TechTracker.register(name, subclass) if subclass.send(:"#{name}_mod?")
-    end
-  end
-
   attr_accessor :planet_id
   belongs_to :player
 
