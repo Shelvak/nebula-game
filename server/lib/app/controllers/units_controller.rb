@@ -254,7 +254,8 @@ class UnitsController < GenericController
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom units belong.
   # - route_hops (RouteHop[]): Array of hop objects that should be visible
-  # to you.
+  # to you. If switching zones, always include hop to which you arrive in new
+  # zone.
   #
   def action_movement
     param_options :required => {:units => Array, :route_hops => Array}

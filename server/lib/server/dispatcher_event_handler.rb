@@ -214,7 +214,8 @@ class DispatcherEventHandler
           case state_change
           when STATE_CHANGED_TO_VISIBLE
             units = movement_event.route.units
-            route_hops = [next_hop].compact
+            # Include current hop so client could position squadron.
+            route_hops = [current_hop, next_hop].compact
           when STATE_UNCHANGED
             # Return if we have no units to show/hide and no route hops
             return unless next_hop
@@ -238,8 +239,9 @@ class DispatcherEventHandler
               movement_event.route.hops_in_current_zone)
           else
             dispatch_movement(filter, player_id, units,
-              # This movement could be last hop, so next hop would be nil
-              [movement_event.next_hop].compact)
+              # This movement could be last hop, so next hop would be nil.
+              # Include current hop so client could position squadron.
+              [movement_event.current_hop, movement_event.next_hop].compact)
           end
         end
       else
