@@ -237,10 +237,7 @@ class UnitsController < GenericController
   # Otherwise there are three cases based on units visibility state:
   # 1. State did not change, units are still visible: you would be sent next
   # route hop of the given route.
-  # 2. Units became hidden: they were in visible zone and entered hidden
-  # one. units and route_hops will be empty arrays, hide_id will be
-  # set to Fixnum. Client should hide units belonging to given route.
-  # 3. Units became visible: they were in hidden zone and entered visible
+  # 2. Units became visible: they were in hidden zone and entered visible
   # one. units will be array with units, route_hops will have the next hop.
   #
   # If those movements are between zones (i.e. galaxy->solar system) you
@@ -251,7 +248,6 @@ class UnitsController < GenericController
   # Parameters:
   # - units
   # - route_hops
-  # - hide_id
   #
   # Response:
   # - units (Hash[]): Unit#as_json with :perspective
@@ -259,19 +255,18 @@ class UnitsController < GenericController
   # whom units belong.
   # - route_hops (RouteHop[]): Array of hop objects that should be visible
   # to you.
-  # - hide_id (Fixnum): ID of a +Route+. All units belonging to this route
-  # must be hidden by client.
   #
   def action_movement
-    param_options :required => %w{units route_hops hide_id}
+    param_options :required => {:units => Array, :route_hops => Array}
     only_push!
 
     resolver = StatusResolver.new(player)
 
-    respond :units => params['units'].map {
-      |unit| unit.as_json(:perspective => resolver) },
+    respond \
+      :units => params['units'].
+        map { |unit| unit.as_json(:perspective => resolver) },
       :players => Player.minimal_from_objects(params['units']),
-      :route_hops => params['route_hops'], :hide_id => params['hide_id']
+      :route_hops => params['route_hops']
   end
 
   # Deploy a deployable unit onto +SsObject+.

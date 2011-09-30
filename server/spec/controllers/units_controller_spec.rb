@@ -367,13 +367,12 @@ describe UnitsController do
           Factory.create!(:u_dart),
           Factory.create!(:u_dart),
         ],
-        'route_hops' => :route_hops,
-        'hide_id' => :hide_id
+        'route_hops' => [:route_hops]
       }
       @method = :push
     end
 
-    @required_params = %w{units route_hops hide_id}
+    @required_params = %w{units route_hops}
     it_behaves_like "with param options"
     it_behaves_like "only push"
 
@@ -396,11 +395,6 @@ describe UnitsController do
     it "should respond with route_hops" do
       push @action, @params
       response_should_include(:route_hops => @params['route_hops'])
-    end
-
-    it "should respond with hide_id" do
-      push @action, @params
-      response_should_include(:hide_id => @params['hide_id'])
     end
   end
 

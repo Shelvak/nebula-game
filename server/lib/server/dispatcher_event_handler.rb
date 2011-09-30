@@ -211,7 +211,6 @@ class DispatcherEventHandler
 
           units = []
           route_hops = []
-          hide_id = nil
           # Nullify next hop if it leads to other zone - client doesn't want
           # to know about that.
           current_hop = movement_event.current_hop
@@ -223,8 +222,6 @@ class DispatcherEventHandler
           when STATE_CHANGED_TO_VISIBLE
             units = movement_event.route.units
             route_hops = [next_hop].compact
-          when STATE_CHANGED_TO_HIDDEN
-            hide_id = movement_event.route.id
           when STATE_UNCHANGED
             # Return if we have no units to show/hide and no route hops
             return unless next_hop
@@ -234,8 +231,7 @@ class DispatcherEventHandler
               state_change.inspect}")
           end
 
-          dispatch_movement(filters, player_id, units, route_hops,
-            hide_id)
+          dispatch_movement(filters, player_id, units, route_hops)
         end
       when EventBroker::REASON_BETWEEN_ZONES
         # Movement was between zones.
@@ -295,13 +291,10 @@ class DispatcherEventHandler
 
   STATE_UNCHANGED = :unchanged
   STATE_CHANGED_TO_VISIBLE = :changed_to_visible
-  STATE_CHANGED_TO_HIDDEN = :changed_to_hidden
 
   # Checks how did state change between locations.
   def self.state_changed?(player_id, previous, current)
-    if previous.include?(player_id) && ! current.include?(player_id)
-      STATE_CHANGED_TO_HIDDEN
-    elsif ! previous.include?(player_id) && current.include?(player_id)
+    if ! previous.include?(player_id) && current.include?(player_id)
       STATE_CHANGED_TO_VISIBLE
     else
       STATE_UNCHANGED
@@ -448,11 +441,11 @@ class DispatcherEventHandler
   end
 
   # Dispatches movement action to player
-  def dispatch_movement(filter, player_id, units, route_hops, hide_id=nil)
+  def dispatch_movement(filter, player_id, units, route_hops)
     @dispatcher.push_to_player(
       player_id,
       UnitsController::ACTION_MOVEMENT,
-      {'units' => units, 'route_hops' => route_hops, 'hide_id' => hide_id},
+      {'units' => units, 'route_hops' => route_hops},
       filter
     )
   end
