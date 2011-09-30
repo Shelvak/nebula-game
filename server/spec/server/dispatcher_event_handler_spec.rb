@@ -372,6 +372,29 @@ describe DispatcherEventHandler do
   end
 
   describe ".resolve_location" do
+    it "should resolve GALAXY" do
+      galaxy = Factory.create(:galaxy)
+      point = GalaxyPoint.new(galaxy.id, 0, 0)
+      unit = Factory.create(:unit, :location => point)
+      Factory.create(:fge_player, :player => unit.player, :x => -5, :y => -5,
+        :x_end => 5, :y_end => 5)
+      DispatcherEventHandler.resolve_location(unit.location).should == [
+        FowGalaxyEntry.observer_player_ids(point.id, point.x, point.y),
+        nil
+      ]
+    end
+
+    it "should resolve SOLAR_SYSTEM" do
+      ss = Factory.create(:solar_system)
+      point = SolarSystemPoint.new(ss.id, 0, 0)
+      unit = Factory.create(:unit, :location => point)
+      Factory.create(:fse_player, :player => unit.player, :solar_system => ss)
+      DispatcherEventHandler.resolve_location(unit.location).should == [
+        FowSsEntry.observer_player_ids(point.id),
+        DispatcherPushFilter.new(DispatcherPushFilter::SOLAR_SYSTEM, point.id)
+      ]
+    end
+
     it "should resolve SS_OBJECT" do
       planet = Factory.create(:planet_with_player)
       unit = Factory.create(:unit, :location => planet)
@@ -389,6 +412,28 @@ describe DispatcherEventHandler do
         planet.observer_player_ids,
         DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
       ]
+    end
+  end
+
+  describe ".resolve_movement_location" do
+    it "should return unmodified values if location is not an galaxy point" do
+      point = SolarSystemPoint.new(1, 0, 0)
+      DispatcherEventHandler.should_receive(:resolve_location).
+        with(point).and_return([:player_ids, :filter])
+      DispatcherEventHandler.resolve_movement_location(
+        point,
+        [1,2,3]
+      ).should == [:player_ids, :filter]
+    end
+
+    it "should add friendly ids if location is galaxy point" do
+      point = GalaxyPoint.new(1, 0, 0)
+      DispatcherEventHandler.should_receive(:resolve_location).
+        with(point).and_return([[1], :filter])
+      DispatcherEventHandler.resolve_movement_location(
+        point,
+        [1,2,3]
+      ).should == [[1,2,3], :filter]
     end
   end
 

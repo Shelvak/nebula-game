@@ -172,16 +172,19 @@ class DispatcherEventHandler
   # TODO: spec
   def handle_movement(movement_event, reason)
     debug "Handling movement event (reason: #{reason})" do
-      previous_player_ids, previous_filter = self.class.resolve_location(
-        movement_event.previous_location
-      )
-      current_player_ids, current_filter = self.class.resolve_location(
-        movement_event.current_hop.location
-      )
-
       player = movement_event.route.player
       friendly_player_ids = player.nil? ? [] : player.friendly_ids
       next_hop = movement_event.next_hop
+
+      previous_player_ids, previous_filter = self.class.
+        resolve_movement_location(
+          movement_event.previous_location, friendly_player_ids
+        )
+      current_player_ids, current_filter = self.class.
+        resolve_movement_location(
+          movement_event.current_hop.location, friendly_player_ids
+        )
+
       # We need previous and current filters to ensure that we always get
       # the message
       # If we only use current filter, then it wont be sent when:
@@ -334,7 +337,8 @@ class DispatcherEventHandler
 
       case location.type
       when Location::GALAXY
-        [location.object.observer_player_ids, nil]
+        [FowGalaxyEntry.
+           observer_player_ids(location.id, location.x, location.y), nil]
       when Location::SOLAR_SYSTEM
         [
           FowSsEntry.observer_player_ids(location.id),
@@ -367,6 +371,18 @@ class DispatcherEventHandler
         ]
       end
     end
+  end
+
+  # Resolves player ids that should be notified about movement in _location_.
+  # Also returns filter for that location.
+  #
+  # This one extends #resolve_location. If location is a galaxy point, friendly
+  # players should be notified even if they have no radars enabled.
+  #
+  def self.resolve_movement_location(location, friendly_ids)
+    player_ids, filter = resolve_location(location)
+    player_ids |= friendly_ids if location.type == Location::GALAXY
+    [player_ids, filter]
   end
 
   # Resolves player ids that should be notified about _objects_ and that

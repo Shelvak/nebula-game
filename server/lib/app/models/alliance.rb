@@ -55,13 +55,8 @@ class Alliance < ActiveRecord::Base
   # Returns +Array+ of +Player+ ids who are in _alliance_ids_.
   # _alliance_ids_ can be Array or Fixnum.
   def self.player_ids_for(alliance_ids)
-    Player.connection.select_values(%Q{
-      SELECT id FROM `#{Player.table_name}` WHERE #{
-        Player.sanitize_sql_hash_for_conditions(
-          :alliance_id => alliance_ids
-        )
-      }
-    }).map(&:to_i)
+    Player.select("id").where(:alliance_id => alliance_ids).c_select_values.
+      map(&:to_i)
   end
 
   # Returns +Hash+ of {id => name} pairs.
