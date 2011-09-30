@@ -283,6 +283,8 @@ package controllers.units
          var squad:MSquadron = findSquad(sampleUnit.squadronId);
          if (squad != null) {
             squad.addAllHops(hops);
+            // in case squad is still in another map, move it to correct one
+            squad.moveToNextHop(DateUtil.now);
          }
          // or create new squadron
          else if (sampleUnit.location.isObserved) {
