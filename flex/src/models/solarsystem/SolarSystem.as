@@ -427,12 +427,18 @@ package models.solarsystem
       }
       
       
-      public function getSSObjectById(id:int) : MSSObject
-      {
+      public function getSSObjectById(id:int) : MSSObject {
          return Collections.findFirst(naturalObjects,
-            function(ssObject:MSSObject) : Boolean
-            {
+            function(ssObject:MSSObject) : Boolean {
                return ssObject.id == id;
+            }
+         );
+      }
+      
+      public function getSSObjectAt(position:int, angle:int) : MSSObject {
+         return Collections.findFirst(naturalObjects,
+            function(ssObject:MSSObject) : Boolean {
+               return ssObject.position == position && ssObject.angle == angle;
             }
          );
       }

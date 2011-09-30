@@ -195,6 +195,18 @@ package models.galaxy
          );
       }
       
+      /**
+       * Looks for a solar system, pulsar or wormhole at given coordinates and returns it
+       * if successful.
+       */
+      public function getSSAt(x:int, y:int) : SolarSystem {
+         return Collections.findFirst(naturalObjects,
+            function (ss:SolarSystem) : Boolean {
+               return ss.x == x && ss.y == y;
+            }
+         );
+      }
+      
       [Bindable(event="willNotChange")]
       /**
        * Returns <code>MapType.GALAXY</code>.

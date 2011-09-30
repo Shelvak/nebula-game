@@ -1415,6 +1415,8 @@
     <label.changeSpeed value="Skrydžio laiko valdymas" />
     <label.flightTime value="Skrydžio laikas: {0}" />
     <label.arrivesIn value="Atvyks po: {0}" />
+    <label.jumpsIn value="Šoks po: {0}" />
+    <label.landsIn value="Leisis po: {0}" />
     <label.arrivesAt value="Atvyks: {0}" />
     <label.owner value="Žaidėjo:" />
     <label.confirm value="Patvirtinti"/>

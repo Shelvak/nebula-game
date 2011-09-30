@@ -1,6 +1,9 @@
 package controllers.objects.actions.customcontrollers
 {
+   import controllers.ui.NavigationController;
+   
    import models.BaseModel;
+   import models.map.MapType;
    import models.solarsystem.SSMetadata;
    import models.solarsystem.SolarSystem;
    
@@ -23,8 +26,18 @@ package controllers.objects.actions.customcontrollers
       }
       
       public override function objectDestroyed(objectSubclass:String, objectId:int, reason:String) : void {
-         var ssMetadata:SSMetadata = ML.latestGalaxy.getSSById(objectId).metadata;
-         ssMetadata.reset();
+         var navCtrl:NavigationController = NavigationController.getInstance();
+         var ss:SolarSystem = ML.latestGalaxy.getSSById(objectId);
+         ML.latestGalaxy.removeObject(ss);
+         if (ML.activeMapType != MapType.GALAXY) {
+            navCtrl.toGalaxy();
+         }
+         if (ML.latestPlanet.solarSystemId == ss.id) {
+            ML.latestPlanet = null;
+         }
+         if (ML.latestSolarSystem.id == ss.id) {
+            ML.latestSolarSystem = null;
+         }
       }
    }
 }

@@ -164,6 +164,14 @@ package components.map.space
       
       
       /**
+       * Proxy to <code>mapModel.definesLocation()</code>.
+       */
+      public function definesLocation(location:LocationMinimal) : Boolean {
+         return _map.getModel().definesLocation(location);
+      }
+      
+      
+      /**
        * Calculates and returns real map size in the screen.
        * 
        * @return A point where <code>x</code> holds width of a map and <code>y</code> -

@@ -399,7 +399,7 @@ package models.solarsystem
        * 
        * @default 0
        */
-      public var angle:Number = 0;
+      public var angle:int = 0;
       
       private var _currentLocation:LocationMinimal
       [Bindable(event="willNotChange")]
