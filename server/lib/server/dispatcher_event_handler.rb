@@ -176,29 +176,19 @@ class DispatcherEventHandler
       friendly_player_ids = player.nil? ? [] : player.friendly_ids
       next_hop = movement_event.next_hop
 
-      previous_player_ids, previous_filter = self.class.
+      previous_player_ids, _ = self.class.
         resolve_movement_location(
           movement_event.previous_location, friendly_player_ids
         )
-      current_player_ids, current_filter = self.class.
+      current_player_ids, filter = self.class.
         resolve_movement_location(
           movement_event.current_hop.location, friendly_player_ids
         )
 
-      # We need previous and current filters to ensure that we always get
-      # the message
-      # If we only use current filter, then it wont be sent when:
-      # * galaxy -> ss, but ss is not selected
-      # * ss -> planet, but planet is not selected.
-      #
-      # It fails other way around if only previous filter is used.
-      filters = [previous_filter, current_filter]
-
       debug "previous_player_ids: #{previous_player_ids.inspect}"
       debug "current_player_ids: #{current_player_ids.inspect}"
       debug "friendly_player_ids: #{friendly_player_ids.inspect}"
-      debug "previous_filter: #{previous_filter}"
-      debug "current_filter: #{current_filter}"
+      debug "filter: #{filter}"
 
       # Only dispatch movement to enemy players, players that own these units
       # have their all zone route hops anyways.
@@ -234,7 +224,7 @@ class DispatcherEventHandler
               state_change.inspect}")
           end
 
-          dispatch_movement(filters, player_id, units, route_hops)
+          dispatch_movement(filter, player_id, units, route_hops)
         end
       when EventBroker::REASON_BETWEEN_ZONES
         # Movement was between zones.
@@ -244,10 +234,10 @@ class DispatcherEventHandler
         # owner or alliance and only next hop otherwise.
         current_player_ids.each do |player_id|
           if friendly_player_ids.include?(player_id)
-            dispatch_movement(filters, player_id, units,
+            dispatch_movement(filter, player_id, units,
               movement_event.route.hops_in_current_zone)
           else
-            dispatch_movement(filters, player_id, units,
+            dispatch_movement(filter, player_id, units,
               # This movement could be last hop, so next hop would be nil
               [movement_event.next_hop].compact)
           end
