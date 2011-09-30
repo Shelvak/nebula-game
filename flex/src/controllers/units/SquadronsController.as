@@ -30,6 +30,7 @@ package controllers.units
    import mx.collections.ListCollectionView;
    import mx.utils.ObjectUtil;
    
+   import utils.DateUtil;
    import utils.SingletonFactory;
    import utils.StringUtil;
    import utils.datastructures.Collections;
@@ -431,16 +432,23 @@ package controllers.units
       /* ################################## */
       
       private function global_timedUpdateHandler(event:GlobalEvent) : void {
-         var currentTime:Number = new Date().time;
+         var currentTime:Number = DateUtil.now;
          for each (var squad:MSquadron in SQUADS.toArray()) {
-            if (squad.isMoving && squad.hasHopsRemaining && !squad.pending) {
-               squad.moveToNextHop(currentTime + MOVE_EFFECT_DURATION);
-               var loc:LocationMinimal = squad.currentHop.location;
+            if (squad.isMoving && !squad.pending) {
                var squadId:int = squad.id;
-               if (squad.isHostile && !loc.isObserved)
-                  destroySquadron(squadId, true);
-               else if (squad.isFriendly && !loc.isGalaxy && !loc.isObserved)
+               if (squad.hasHopsRemaining) {
+                  squad.moveToNextHop(currentTime + MOVE_EFFECT_DURATION);
+                  var loc:LocationMinimal = squad.currentHop.location;
+                  if (squad.isHostile && !loc.isObserved) {
+                     destroySquadron(squadId, true);
+                  }
+                  else if (squad.isFriendly && !loc.isGalaxy && !loc.isObserved) {
+                     destroySquadron(squadId, false);
+                  }
+               }
+               else if (squad.jumpPending && squad.jumpHop.jumpsAt.time <= currentTime) {
                   destroySquadron(squadId, false);
+               }
             }
          }
       }

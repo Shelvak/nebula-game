@@ -10,11 +10,16 @@ package components.movement
    
    import interfaces.ICleanable;
    
+   import models.ModelLocator;
    import models.OwnerColor;
+   import models.location.Location;
+   import models.location.LocationMinimal;
+   import models.location.LocationMinimalSolarSystem;
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
+   import models.solarsystem.SolarSystem;
    
    import spark.components.Group;
    
@@ -99,8 +104,6 @@ package components.movement
       private var _hopsEndpoints:Vector.<CHopInfo>;
       
       private function createHopEndpoint(newHop:MHop) : void {
-         if (!_grid.definesLocation(newHop.location))
-            return;
          var hopInfo:CHopInfo = new CHopInfo();
          hopInfo.squadOwner = squadron.owner;
          _hopsEndpoints.push(hopInfo);
@@ -108,41 +111,47 @@ package components.movement
       }
       
       private function removeFirstHopEndpoint() : void {
-         if (_hopsEndpoints.length > 0)
-            removeElement(_hopsEndpoints.shift());
+         if (_hopsEndpoints.length > 1 || !squadron.jumpPending) {
+            removeElement(_hopsEndpoints.shift());            
+         }
       }
       
       private function updateHopsEndpoints() : void {
-         var hopTime:String = null;
          var hop:MHop = null;
          var hopInfo:CHopInfo = null;
+         var hopTime:String = "";
          var coords:Point = null;
          for each (hopInfo in _hopsEndpoints) {
             hopInfo.text = "";
          }
          for (var idx:int = 0; idx < _squadM.hops.length; idx++)  {
             hop = MHop(_squadM.hops.getItemAt(idx));
-            hopTime = DateUtil.secondsToHumanString((hop.arrivesAt.time - DateUtil.now) / 1000);
-            if (_grid.definesLocation(hop.location)) {
-               hopInfo = _hopsEndpoints[idx];
-               hopTime = getLabel("arrivesIn", [hopTime]);
+            hopInfo = _hopsEndpoints[idx];
+            hopTime = getLabel("arrivesIn", [getEventInString(hop.arrivesAt.time)]);
+            coords = _grid.getSectorRealCoordinates(hop.location);
+            hopInfo.x = coords.x;
+            hopInfo.y = coords.y;
+            hopInfo.text = hopTime;
+         }
+         if (_hopsEndpoints.length > 0 && _squadM.jumpPending) {
+            hop = _squadM.jumpHop;
+            hopInfo = _hopsEndpoints[_hopsEndpoints.length - 1];
+            hopTime = getEventInString(hop.jumpsAt.time);
+            var loc:LocationMinimal = hop.location;
+            var locWrap:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(loc);
+            var ss:SolarSystem = ModelLocator.getInstance().latestSolarSystem;
+            if (loc.isGalaxy ||
+                loc.isSolarSystem && ss.getSSObjectAt(locWrap.position, locWrap.angle).isJumpgate) {
+               hopTime = getLabel("jumpsIn", [hopTime]);
             }
             else {
-               hopInfo = _hopsEndpoints[idx > 0 ? idx - 1 : idx];
-               if (hop.location.isSSObject)
-                  hopTime = getLabel("landsIn", [hopTime]);
-               else
-                  hopTime = getLabel("jumpsIn", [hopTime]);
+               hopTime = getLabel("landsIn", [hopTime]);
             }
-            if (hopInfo.text.length == 0)
+            if (hopInfo.text.length > 0) {
+               hopInfo.text += "\n" + hopTime
+            }
+            else {
                hopInfo.text = hopTime;
-            else
-               hopInfo.text += "\n" + hopTime;
-            if (!_grid.definesLocation(hop.location)) {
-               if (idx == 0)
-                  hop = _squadM.currentHop;
-               else
-                  hop = MHop(_squadM.hops.getItemAt(idx - 1));
             }
             coords = _grid.getSectorRealCoordinates(hop.location);
             hopInfo.x = coords.x;
@@ -227,6 +236,10 @@ package components.movement
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
+      
+      private function getEventInString(time:Number) : String {
+         return DateUtil.secondsToHumanString(Math.max(0, (time - DateUtil.now) / 1000));
+      }
       
       private function getLabel(property:String, parameters:Array = null) : String {
          return Localizer.string("Movement", "label." + property, parameters);

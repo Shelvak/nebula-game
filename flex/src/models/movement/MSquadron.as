@@ -1,7 +1,6 @@
 package models.movement
 {
    import flash.errors.IllegalOperationError;
-   import flash.sampler.getInvocationCount;
    
    import interfaces.ICleanable;
    
@@ -11,11 +10,14 @@ package models.movement
    import models.location.ILocationUser;
    import models.location.Location;
    import models.location.LocationMinimal;
+   import models.location.LocationMinimalSolarSystem;
+   import models.location.LocationType;
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
    import models.movement.events.MSquadronEvent;
    import models.player.PlayerId;
    import models.player.PlayerMinimal;
+   import models.solarsystem.MSSObject;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
    
@@ -247,6 +249,18 @@ package models.movement
        */
       public var currentHop:MHop = null;
       
+      /**
+       * A hop that holds information about a jump to another map.
+       */
+      public var jumpHop:MHop;
+      
+      /**
+       * Will this squad have to jump between maps?
+       */
+      public function get jumpPending() : Boolean {
+         return jumpHop != null;
+      }
+      
       [Bindable(event="willNotChange")]
       /**
        * List of units in this squadron.
@@ -260,7 +274,7 @@ package models.movement
        * Indicates if there are any units in <code>units</code> list.
        */
       public function get hasUnits() : Boolean {
-         return units.length > 0;
+         return units != null && units.length > 0;
       }
       
       /**
@@ -372,6 +386,7 @@ package models.movement
          if (lastHop && hop.index - lastHop.index != 1)
             throwHopOutOfOrderError(hop);
          hops.addItem(hop);
+         jumpHop = hop.jumpsAt != null ? hop : null;
          dispatchHopAddEvent(hop);
       }
       
@@ -406,57 +421,50 @@ package models.movement
        * 
        * @throws IllegalOperationError if there are no hops
        */
-      public function moveToNextHop(time:Number = NaN) : MHop {
+      public function moveToNextHop(time:Number) : MHop {
          if (!hasHopsRemaining)
             throw new IllegalOperationError(
                "No hops in the route of squadron " + this + ": you can't call this method if " +
                "there are no hops in a route of a squadron."
             );
-         if (isNaN(time)) {
-            var fromHop:MHop = currentHop;
-            currentHop = MHop(hops.removeItemAt(0));
-            if (fromHop.location.type == currentHop.location.type) {
-               dispatchHopRemoveEvent(currentHop);
-               dispatchMoveEvent(fromHop.location, currentHop.location);
+         
+         var startHop:MHop = currentHop;
+         var endHop:MHop = null;
+         var hop:MHop = null;
+         
+         // look for the last hop the squad has to jump to
+         for each (hop in hops) {
+            if (hop.arrivesAt.time <= time) {
+               endHop = hop;
             }
-         }
-         else {
-            var startHop:MHop = currentHop;
-            var endHop:MHop = null;
-            var hop:MHop = null;
-            
-            // look for the last hop the squad has to jump to
-            for each (hop in hops) {
-               if (hop.arrivesAt.time <= time)
-                  endHop = hop;
-               else
-                  break;
-            }
-            
-            // no hops in the past
-            if (endHop == null)
-               return currentHop;
-            
-            hop = null;
-            // jump between maps: don't need dispatching any events
-            if (endHop.location.type != startHop.location.type ||
-               endHop.location.id   != startHop.location.id) {
-               while (hop != endHop) {
-                  hop = MHop(hops.removeItemAt(0));
-               }
-               currentHop = hop;
-            }
-               
-            // jump in the same map
             else {
-               while (hop != endHop) {
-                  hop = MHop(hops.removeItemAt(0));
-                  dispatchHopRemoveEvent(hop);
-               }
-               currentHop = hop;
-               dispatchMoveEvent(startHop.location, endHop.location);
+               break;
             }
          }
+         
+         // no hops in the past
+         if (endHop == null)
+            return currentHop;
+         
+         hop = null;
+         // jump between maps: don't need dispatching any events
+         if (endHop.location.type != startHop.location.type ||
+             endHop.location.id   != startHop.location.id) {
+            while (hop != endHop) {
+               hop = MHop(hops.removeItemAt(0));
+            }
+            currentHop = hop;
+         }
+         // jump in the same map
+         else {
+            while (hop != endHop) {
+               hop = MHop(hops.removeItemAt(0));
+               dispatchHopRemoveEvent(hop);
+            }
+            currentHop = hop;
+            dispatchMoveEvent(startHop.location, endHop.location);
+         }
+         
          if (hasUnits) {
             var loc:Location = currentHop.location.toLocation();
             var fromPlanet: Boolean = Unit(units.getItemAt(0)).location.isSSObject;
@@ -466,8 +474,7 @@ package models.movement
             }
             units.enableAutoUpdate();
             // If units navigate from or to planet we need to refresh some getters
-            if ((loc.isSSObject || fromPlanet) && ML.latestPlanet)
-            {
+            if ((loc.isSSObject || fromPlanet) && ML.latestPlanet) {
                ML.latestPlanet.dispatchUnitRefreshEvent();
             }
          }
@@ -478,9 +485,9 @@ package models.movement
        * Moves this squadron to the last hop if it has hops remaining.
        */ 
       public function moveToLastHop() : void {
-         if (!hasHopsRemaining)
-            return;
-         moveToNextHop(new Date(2200, 0, 1).time);
+         if (hasHopsRemaining) {
+            moveToNextHop(new Date(2200, 0, 1).time);
+         }
       }
       
       public function removeAllHops() : void {
