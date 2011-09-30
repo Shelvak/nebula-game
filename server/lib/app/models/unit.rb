@@ -298,9 +298,11 @@ class Unit < ActiveRecord::Base
       :level => :debug do
         # Do not compact here, because NPC units are also distinct player id
         # values.
-        where(location.location_attrs).
-          where("type NOT IN (?)", non_combat_types).
-          select("DISTINCT(player_id)").
+        query = where(location.location_attrs)
+        query = query.where("type NOT IN (?)", non_combat_types) \
+          if exclude_non_combat
+
+        query.select("DISTINCT(player_id)").
           c_select_values.map { |id| id.nil? ? nil : id.to_i }
       end
     end

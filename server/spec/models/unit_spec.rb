@@ -661,6 +661,11 @@ describe Unit do
       Unit.player_ids_in_location(@location).should == [nil]
     end
 
+    it "should include ids from non combat types" do
+      Factory.create!(:u_mdh, :location => @location, :player => @p1)
+      Unit.player_ids_in_location(@location).should_not be_blank
+    end
+
     describe "exclude_non_combat_types=true" do
       it "should not include ids from non combat types" do
         Factory.create!(:u_mdh, :location => @location, :player => @p1)
