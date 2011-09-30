@@ -235,7 +235,7 @@ class FowSsEntry < ActiveRecord::Base
       status = increase_for_kind(solar_system_id, 'player_id',
         player.id, increasement, 
         lambda { |id| destroyed_player_id = id })
-      increase_for_kind(solar_system_id, 'alliance_id',
+      alliance_status = increase_for_kind(solar_system_id, 'alliance_id',
         player.alliance_id, increasement,
         lambda { |id| destroyed_alliance_id = id }) \
         unless player.alliance_id.nil?
@@ -244,7 +244,9 @@ class FowSsEntry < ActiveRecord::Base
       dispatch_event = recalculate(solar_system_id, false) || dispatch_event
       dispatch_event = dispatch_event && should_dispatch
 
-      if status == :destroyed
+      # Only dispatch destroyed if both alliance and player records has been
+      # destroyed
+      if status == :destroyed && alliance_status == :destroyed
         EventBroker.fire(
           FowChangeEvent::SsDestroyed.new(solar_system_id,
             destroyed_player_id, destroyed_alliance_id),

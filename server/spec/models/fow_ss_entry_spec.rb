@@ -162,7 +162,8 @@ describe FowSsEntry do
       @alliance = Factory.create(:alliance)
       @player = Factory.create(:player, :alliance => @alliance)
       @player_id = @player.id
-      @solar_system_id = Factory.create(:solar_system).id
+      @solar_system = Factory.create(:solar_system)
+      @solar_system_id = @solar_system.id
 
       @klass = FowSsEntry
       @first_arg = @solar_system_id
@@ -177,7 +178,7 @@ describe FowSsEntry do
 
       it_behaves_like "fow entry"
 
-      it "should dispatch destroyed for that solar system" do
+      it "should dispatch destroyed for that solar system when decreasing" do
         @klass.increase(@first_arg, @player, 2)
         should_fire_event(kind_of(FowChangeEvent::SsDestroyed),
           EventBroker::FOW_CHANGE,
@@ -223,6 +224,23 @@ describe FowSsEntry do
       ) do
         @klass.stub!(:recalculate).and_return(true)
         @klass.increase(@first_arg, @player)
+      end
+    end
+
+    describe "when i have ships and alliance has planets in same ss" do
+      it "should fire updated instead of destroyed when i fly out of that ss" do
+        Factory.create(:fse_player, :solar_system => @solar_system,
+          :counter => 1, :player => @player)
+        Factory.create(:fse_alliance,
+          :solar_system => @solar_system, :counter => 2, :alliance => @alliance)
+
+        should_fire_event(
+          FowChangeEvent::SolarSystem.new(@solar_system_id),
+          EventBroker::FOW_CHANGE, @event_reason
+        ) do
+          @klass.stub!(:recalculate).and_return(true)
+          FowSsEntry.decrease(@solar_system_id, @player, 1)
+        end
       end
     end
 
