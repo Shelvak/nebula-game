@@ -14,6 +14,7 @@ package controllers.players
 
    public class AuthorizationManager
    {
+      private static const JSFN_LOGIN_SUCCESSFUL:String = "loginSuccessful";
       private static const JSFN_AUTHORIZE:String = "authorize";
       private static const JSFN_AUTHORIZATION_FAIL:String = "authorizationFailed";
       private static const ASFN_AUTHORIZATION_SUCCESS:String = "authorizationSuccessful";
@@ -82,6 +83,7 @@ package controllers.players
       }
       
       public function loginSuccessful() : void {
+         ExternalInterface.call(JSFN_LOGIN_SUCCESSFUL);
          ML.player.loggedIn = true;
          SCREEN_SWITCH.showScreen(Screens.MAIN);
          resetStatusVars();

@@ -60,9 +60,11 @@ else if (! defined(assetsUrl)) {
 }
 // }}}
 
-function include(jsName) {
+function include(jsName, additional) {
+  var src = jsName.indexOf("http") == 0 ? jsName : assetsUrl + jsName;
   document.write(
-    "<script type='text/javascript' src='" + assetsUrl + jsName + "'><\/script>"
+    "<script type='text/javascript' src='" + src + "'" + 
+      (defined(additional) ? " " + additional : "") + "><\/script>"
   );
 }
 
@@ -73,14 +75,14 @@ include(gameJs);
         //]]</script>
     </head>
     <body>
-        <!-- SWFObject's dynamic embed method replaces this alternative HTML content with Flash content when enough 
+      <!-- SWFObject's dynamic embed method replaces this alternative HTML content with Flash content when enough 
           JavaScript and Flash plug-in support is available. The div is initially hidden so that it doesn't show
           when JavaScript is disabled.
       -->
         <div id="flashContent">
          <p>
             To view this page ensure that Adobe Flash Player version 
-            ${version_major}.${version_minor}.${version_revision} or greater is installed. 
+            ${flashVersion} or greater is installed. 
          </p>
          <script type="text/javascript"> 
             var pageHost = ((document.location.protocol == "https:") ? "https://" : "http://"); 

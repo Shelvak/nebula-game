@@ -207,6 +207,11 @@ function authorizationFailed() {
   window.location = "http://" + webHost;
 }
 
+// Called when player successfully logs in into server.
+function loginSuccessful() {
+  _gaq.push(['_trackPageview', '/play/client/success']);
+}
+
 // Get combat log URL for log with given ID.
 function getCombatLogUrl(combatLogId, playerId) { // {{{
   var clAssetsUrl = assetsUrl == ""
@@ -220,8 +225,14 @@ function getCombatLogUrl(combatLogId, playerId) { // {{{
     "&locale=" + e(locale);
 } // }}}
 
-// Load our swf.
-// {{{
+// Setup google analytics {{{
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', gaAccountId], ['_trackPageview']);
+if (! inLocalComputer() && ! inDeveloperMode())
+  include("http://www.google-analytics.com/ga.js", 'async="true"');
+// }}}
+
+// Load our swf {{{
 $(document).ready(function() {
   var flashvars = {};
   var params = {};
@@ -244,5 +255,6 @@ $(document).ready(function() {
       "100%", "100%", minVersion, assetsUrl + "playerProductInstall.swf", 
       flashvars, params, attributes);
   swfobject.createCSS("#flashContent", "display:block;text-align:left;"); 
+
 });
 // }}}
