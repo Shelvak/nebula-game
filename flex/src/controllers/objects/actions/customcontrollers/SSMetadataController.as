@@ -15,6 +15,8 @@ package controllers.objects.actions.customcontrollers
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
          var ssMetadata:SSMetadata = BaseModel.createModel(SSMetadata, object);
          var ss:SolarSystem = ML.latestGalaxy.getSSById(ssMetadata.id);
+         throw new Error("Unable to find solar system with id " + 
+            ssMetadata.id + " to update its metadata!");
          var metadata:SSMetadata = ss.metadata;
          metadata.copyProperties(ssMetadata);
          ML.latestGalaxy.refreshSolarSystemsWithPlayer();
