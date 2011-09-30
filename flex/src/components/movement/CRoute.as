@@ -229,7 +229,9 @@ package components.movement
       }     
       
       private function global_timedUpdateHandler(event:GlobalEvent) : void {
-         updateHopsEndpoints();
+         if (_squadM != null) {
+            updateHopsEndpoints();
+         }
       }
       
       
