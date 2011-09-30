@@ -18,8 +18,10 @@ package controllers.objects.actions.customcontrollers
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
          var ssMetadata:SSMetadata = BaseModel.createModel(SSMetadata, object);
          var ss:SolarSystem = ML.latestGalaxy.getSSById(ssMetadata.id);
-         throw new Error("Unable to find solar system with id " + 
-            ssMetadata.id + " to update its metadata!");
+         if (ss == null) {
+            throw new Error("Unable to find solar system with id " + 
+               ssMetadata.id + " to update its metadata!");
+         }
          var metadata:SSMetadata = ss.metadata;
          metadata.copyProperties(ssMetadata);
          ML.latestGalaxy.refreshSolarSystemsWithPlayer();
@@ -32,7 +34,7 @@ package controllers.objects.actions.customcontrollers
          if (ML.activeMapType != MapType.GALAXY) {
             navCtrl.toGalaxy();
          }
-         if (ML.latestPlanet.solarSystemId == ss.id) {
+         if (ML.latestPlanet != null && ML.latestPlanet.solarSystemId == ss.id) {
             ML.latestPlanet = null;
          }
          if (ML.latestSolarSystem.id == ss.id) {
