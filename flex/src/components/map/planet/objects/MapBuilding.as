@@ -355,8 +355,8 @@ package components.map.planet.objects
          var corner:Point = PlanetObject.getBasementBottomCorner(model.width, model.height);
          corner.x += model.imageWidth - model.realBasementWidth - _levelIndicator.width / 2;
          corner.y += model.imageHeight - model.realBasementHeight - _levelIndicator.height - LEVEL_INDICATOR_OFFSET;
-         _levelIndicator.x = corner.x - _levelIndicator.hOverdrivenOffset;
-         _levelIndicator.y = corner.y - _levelIndicator.vOverdrivenOffset;
+         _levelIndicator.x = corner.x;
+         _levelIndicator.y = corner.y + _levelIndicator.vOverdrivenOffset;
          _npcIndicator.x = corner.x;
          _npcIndicator.y = corner.y;
          

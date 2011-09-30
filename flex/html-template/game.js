@@ -183,7 +183,14 @@ function authorize() { // {{{
     $.ajax({
       'url': "http://" + webHost + "/play/client_auth/" + webPlayerId,
       'timeout': 5000, // 5 seconds.
-      'success': authorizationSuccessful,
+      'success': function(data) {
+        if (data == "success") {
+          authorizationSuccessful();
+        }
+        else {
+          authorizationFailed();
+        }
+      }, 
       'error': authorizationFailed
     });
   }

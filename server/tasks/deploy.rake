@@ -371,6 +371,36 @@ namespace :deploy do
         end
       end
     end
+
+    desc "Cold deploy server to given environment"
+    task :cold, [:env] do |task, args|
+      env = DeployHelpers.get_env(args[:env])
+      DeployHelpers.check_git_branch!(env)
+
+      DEPLOY_CONFIG[:servers][env][:server].each do |server|
+        DeployHelpers.info env, "Cold deploying server to #{server}" do
+          puts "..."
+          DeployHelpers.start(Net::SSH, server) do |ssh|
+            deploy_dir = DeployHelpers.info env, "  Sending files" do
+              DeployHelpers.deploy(ssh, server, :server)
+            end
+
+            DeployHelpers.info env, "  Symlinking" do
+              DeployHelpers.symlink(ssh, deploy_dir)
+              DeployHelpers.server_symlink(ssh)
+            end
+            DeployHelpers.info env, "  Chmoding" do
+              DeployHelpers.chmod(ssh)
+            end
+            DeployHelpers.info env, "  Installing gems" do
+              DeployHelpers.install_gems(ssh)
+            end
+          end
+
+          $stdout.write("Done")
+        end
+      end
+    end
   end
 
   desc "Deploy server to given environment"

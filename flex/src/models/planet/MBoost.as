@@ -71,7 +71,7 @@ package models.planet
          }
       }
       
-      private var lastUpdate: Date;
+      private var lastUpdate: Date = new Date();
       
       public function refreshBoosts(): void
       {

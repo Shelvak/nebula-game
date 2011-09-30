@@ -385,7 +385,7 @@ describe Combat do
     
     assets.should be_nil
   end
-  
+
   describe "#572: Update transporters after battle" do
     it "should dispatch transporters even if they didn't get damage" do
       mule = nil
@@ -472,7 +472,7 @@ describe Combat do
   it "should not kill non-combat types" do
     mule = nil
     mdh = nil
-    dsl = CombatDsl.new do
+    CombatDsl.new do
       planet = location(:planet).location
       player = self.player do
         units { mule = self.mule { mdh = self.mdh } }
@@ -483,6 +483,14 @@ describe Combat do
     mdh.reload
     mdh.location.should == mule.location_point
     mdh.hp_percentage.should == 1.0
+  end
+
+  it "should still run combat if one player only has non combat types" do
+    CombatDsl.new do
+      location(:planet)
+      player(:planet_owner => true) { units { mdh } }
+      player { units { glancer :count => 10 } }
+    end.run.should_not be_nil
   end
 
   describe "units destroyed with their transporter" do

@@ -11,6 +11,7 @@ if $SPEC_INITIALIZED.nil?
 
   require 'rspec'
   require 'pp'
+  require 'mocha'
 
   # Include helpers/shared
   glob = File.expand_path(
@@ -133,11 +134,23 @@ if $SPEC_INITIALIZED.nil?
   LOGGER.level = GameLogger::LEVEL_FATAL
 
   RSpec.configure do |config|
-    config.around(:each) do |example|
-      App.server_state = App::SERVER_STATE_INITIALIZING
-      ActiveRecord::Base.transaction do
-        example.call
+    def break_transaction
+      conn = ActiveRecord::Base.connection
+      unless conn.open_transactions == 0
+        conn.decrement_open_transactions
+        conn.rollback_db_transaction
       end
+    end
+
+    config.before(:each) do
+      App.server_state = App::SERVER_STATE_INITIALIZING
+      conn = ActiveRecord::Base.connection
+      conn.begin_db_transaction
+      conn.increment_open_transactions
+    end
+
+    config.after(:each) do
+      break_transaction
     end
   end
 

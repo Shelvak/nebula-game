@@ -74,11 +74,11 @@ class RouteHop < ActiveRecord::Base
   #noinspection RubyUnusedLocalVariable
   def as_json(options=nil)
     {
-      :route_id => route_id,
-      :location => location.as_json,
-      :arrives_at => arrives_at.as_json,
-      :jumps_at => jumps_at.as_json,
-      :index => index
+      "route_id" => route_id,
+      "location" => location.as_json,
+      "arrives_at" => arrives_at.as_json,
+      "jumps_at" => jumps_at.as_json,
+      "index" => index
     }
   end
 

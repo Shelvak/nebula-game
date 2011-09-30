@@ -178,11 +178,15 @@
       
       <s:Group left="0" right="0">
          
-         <base:AdvancedContainer horizontalCenter="0" width="{pnlPlayers.width}">
+         <base:AdvancedContainer horizontalCenter="0" minWidth="{pnlPlayers.width}">
+            
+            <base:layout>
+               <s:VerticalLayout horizontalAlign="contentJustify" paddingBottom="90"/>
+            </base:layout>
             
             <!-- Description -->
             <base:Panel title="{model.alliance.name}" skinClass="components.skins.LargePanelSkin"
-                        visible="{model.descriptionPanelVisible}" width="100%">
+                        visible="{model.descriptionPanelVisible}">
                <base:layout>
                   <s:VerticalLayout/>
                </base:layout>
@@ -264,7 +268,7 @@
             </base:Panel>
             
             <!-- Management -->
-            <base:Panel title="{model.alliance.name}" width="100%" minHeight="200"
+            <base:Panel title="{model.alliance.name}" minHeight="200"
                         visible="{model.managementPanelVisible}"
                         skinClass="components.skins.LargePanelSkin">
                
@@ -311,7 +315,7 @@
             
             <!-- New alliance creation -->
             <base:Panel title="{getString('title.section.newAlliance')}"
-                        skinClass="components.skins.LargePanelSkin" width="100%"
+                        skinClass="components.skins.LargePanelSkin"
                         visible="{model.alliance == null &amp;&amp; allianceTech.upgradePart.level > 0 &amp;&amp;
                                   ML.player.allianceId == 0 &amp;&amp; leftTime == 0}">
                <base:layout>
@@ -332,6 +336,7 @@
                </s:Group>
             </base:Panel>
             
+         
          </base:AdvancedContainer>
          
          <base:AdvancedContainer top="100" width="100%">
@@ -355,7 +360,7 @@
       </s:Group>
    </base:Scroller>
 
-   <screens:ScreenCloseButton scroller="{contentScroller}" label="{getString('label.close')}"
-                              right="0" bottom="0"
+   <screens:ScreenCloseButton scroller="{contentScroller}"
+                              label="{getString('label.close')}" right="0" bottom="0"
                               click="NavigationController.getInstance().showPreviousScreen()"/>
 </s:Group>

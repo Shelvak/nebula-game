@@ -9,7 +9,7 @@ class PlanetsController < GenericController
   # - planet (SsObject): planet data
   # - tiles (Array): planet tiles
   # - buildings (Building[]): planet buildings
-  # - foliages (Array): list of 1x1 foliages (like flowers and trees)
+  # - folliages (Array): list of 1x1 folliages (like flowers and trees)
   # - units (Hash[]): Unit#as_json with :perspective
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom units belong.
@@ -64,7 +64,7 @@ class PlanetsController < GenericController
   def action_player_index
     only_push!
     planets = SsObject::Planet.for_player(player).
-      map { |planet| planet.as_json(:view => true) }
+      map { |planet| planet.as_json(:index => true, :view => true) }
     respond :planets => planets
   end
 

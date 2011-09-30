@@ -1,22 +1,23 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe SolarSystem do
-  describe "object" do
-    before(:each) do
-      @model = Factory.create(:solar_system)
-    end
-
-    it_behaves_like "shieldable"
-  end
-
   describe "#as_json" do
-    before(:each) do
-      @model = Factory.create(:solar_system)
+    it_behaves_like "as json", Factory.create(:solar_system), nil,
+                    %w{id x y kind},
+                    %w{galaxy_id}
+
+    shieldable_fields = %w{shield_ends_at shield_owner_id}
+
+    describe "when has shield" do
+      it_behaves_like "as json", 
+                      Factory.create(:solar_system, opts_shielded),
+                      nil, shieldable_fields, []
     end
 
-    @required_fields = [:id, :x, :y, :kind]
-    @ommited_fields = [:galaxy_id]
-    it_behaves_like "to json"
+    describe "when does not have shield" do
+      it_behaves_like "as json", Factory.create(:solar_system),
+                      nil, [], shieldable_fields
+    end
   end
 
   describe "#npc_unit_locations" do
@@ -223,6 +224,12 @@ describe SolarSystem do
       @ss.die!
       fse.reload
       [fse.enemy_planets, fse.enemy_ships].should == [false, false]
+    end
+
+    it "should unregister spawn from callback manager" do
+      CallbackManager.should_receive(:unregister).
+        with(@ss, CallbackManager::EVENT_SPAWN)
+      @ss.die!
     end
     
     it "should dispatch changed" do

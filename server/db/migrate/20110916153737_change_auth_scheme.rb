@@ -1,5 +1,6 @@
 class ChangeAuthScheme < ActiveRecord::Migration
   def self.up
+    connection.execute("UPDATE players SET auth_token=id")
     add_index :players, :galaxy_id, :name => :temp
     remove_index :players, :name => :authentication
 

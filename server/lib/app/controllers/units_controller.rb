@@ -418,10 +418,6 @@ class UnitsController < GenericController
 
     location = transporter.location.object
     units = transporter.units.find(params['unit_ids'])
-    raise GameLogicError.new(
-      "Cannot find all requested units! Requested #{
-        params['unit_ids'].size}, found #{units.size}."
-    ) unless units.size == params['unit_ids'].size
     transporter.unload(units, location)
 
     true

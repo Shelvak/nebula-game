@@ -341,7 +341,7 @@ describe Technology do
         end.should_not change(@player, :scientists)
       end
 
-      it "should not dispatch player changed twice" do
+      it "should not dispatch player changed thrice" do
         should_fire_event(@player, EventBroker::CHANGED, 
           EventBroker::REASON_UPDATED, 1
         ) do

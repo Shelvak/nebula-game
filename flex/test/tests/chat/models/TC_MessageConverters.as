@@ -102,6 +102,26 @@ package tests.chat.models
       }
       
       [Test]
+      public function messageParsing_URLEncodedUrls() : void {
+         message.message = "My website: http://static.nebula44.lt/?server=" +
+            "game.nebula44.lt&web_host=nebula44.lt%3A80&assets_url=" +
+            "http%3A%2F%2Fstatic.nebula44.lt%2F&combat_log_id=" +
+            "3e84b7f016b4cc19e7ad2d3da1e885cce956c98e&player_id=684&locale=lt";
+         convertToParagraph();
+         assertParagraphNumChildren(4);
+         spanAssersions(2, "My website: ");
+         linkAssertions(3, "http://static.nebula44.lt/?server=" +
+            "game.nebula44.lt&web_host=nebula44.lt:80&assets_url=" +
+            "http://static.nebula44.lt/&combat_log_id=" +
+            "3e84b7f016b4cc19e7ad2d3da1e885cce956c98e&player_id=684&locale=lt");
+         
+         message.message = "http://wiki.nebula44.lt/wiki/Galaktikos_tyrin%C4%97jimas";
+         convertToParagraph();
+         assertParagraphNumChildren(3);
+         linkAssertions(2, "http://wiki.nebula44.lt/wiki/Galaktikos_tyrinėjimas");
+      }
+      
+      [Test]
       public function messageParsing_simpleTextAfterURL() : void {
          message.message = "http://nebula44.com/list?user=mikism is my website";
          convertToParagraph();

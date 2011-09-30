@@ -130,22 +130,22 @@ describe RouteHop do
     end
   end
 
-  describe "serialization" do
-    before(:all) do
-      @model = Factory.create :route_hop
-    end
-
+  describe "#as_json" do
     it "should return Hash on #as_json" do
-      @model.as_json.should == {
-        :route_id => @model.route_id,
-        :location => @model.location.as_json,
-        :arrives_at => @model.arrives_at.as_json,
-        :jumps_at => @model.jumps_at.as_json,
-        :index => @model.index
+      model = Factory.create(:route_hop)
+      model.as_json.should == {
+        "route_id" => model.route_id,
+        "location" => model.location.as_json,
+        "arrives_at" => model.arrives_at.as_json,
+        "jumps_at" => model.jumps_at.as_json,
+        "index" => model.index
       }
     end
 
-    it_behaves_like "to json"
+    required_fields = %w{route_id location arrives_at jumps_at index}
+    ommited_fields = RouteHop.columns.map(&:name) - required_fields
+    it_behaves_like "as json", Factory.create(:route_hop), nil,
+                    required_fields, ommited_fields
   end
 
   describe "#hop_type" do

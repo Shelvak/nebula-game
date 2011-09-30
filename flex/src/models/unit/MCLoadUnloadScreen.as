@@ -72,7 +72,7 @@ package models.unit
          }
          
          transporter = (location is Unit? location: target);
-            
+         
          if (transporter != null)
          {
             transporter.addEventListener(UnitEvent.STORED_CHANGE, refreshVolume)
@@ -110,13 +110,18 @@ package models.unit
          refreshVolume();
       }
       
+      public function refreshScreen(): void
+      {
+         buildFlanks();
+      }
+      
       [Bindable (event="selectedResourcesChange")]
       public function get transporterIsFull(): Boolean
       {
          var minVol: int = Math.max(
-         Resource.getResourceVolume(1, ResourceType.METAL),
-         Resource.getResourceVolume(1, ResourceType.ENERGY),
-         Resource.getResourceVolume(1, ResourceType.ZETIUM));
+            Resource.getResourceVolume(1, ResourceType.METAL),
+            Resource.getResourceVolume(1, ResourceType.ENERGY),
+            Resource.getResourceVolume(1, ResourceType.ZETIUM));
          return (transporter.storage - transporter.stored < minVol);
       }
       
@@ -124,7 +129,7 @@ package models.unit
       public function get planetIsEmpty(): Boolean
       {
          return (!transporterIsFull && getMaxStock(ResourceType.METAL) == 0
-         && getMaxStock(ResourceType.ENERGY) == 0 && getMaxStock(ResourceType.ZETIUM) == 0);
+            && getMaxStock(ResourceType.ENERGY) == 0 && getMaxStock(ResourceType.ZETIUM) == 0);
       }
       
       [Bindable (event="selectedResourcesChange")]

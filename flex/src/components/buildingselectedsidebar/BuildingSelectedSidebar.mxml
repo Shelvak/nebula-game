@@ -150,7 +150,7 @@
          
          public function refreshUpgradeState(e: Event = null): void
          {
-            if (_selectedModel != null)
+            if (_selectedModel != null && _selectedModel.upgradePart != null)
             {
                var planet:MSSObject = ML.latestPlanet.ssObject;
                canBeUpgraded = _selectedModel.upgradePart.enoughResourcesForNextLevel(planet);
@@ -169,6 +169,7 @@
             {
                recalculateCosts();
                refreshUpgradeState();
+               refreshResource();
             }
          }
          
@@ -615,7 +616,7 @@
          [Bindable]
          private var resource: Resource;
          
-         private function refreshResource(e: GCreditEvent): void
+         private function refreshResource(e: GCreditEvent = null): void
          {
             EventBroker.unsubscribe(GCreditEvent.BOOST_CONFIRMED, refreshResource);
             if (_selectedModel != null && 

@@ -215,7 +215,9 @@ package controllers.units
          ROUTES.removeAll();
          createRoutes(routes, playersHash);
          for each (var route:MRoute in ROUTES) {
-            MSquadron(SQUADS.find(route.id)).route = route;
+            var squad:MSquadron = SQUADS.find(route.id);
+            if (squad != null)
+               squad.route = route;
          }
       }
       

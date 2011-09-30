@@ -41,9 +41,6 @@ package controllers.startup
       public var logId:String = "";
       
       [Optional]
-      public var galaxyId:int = 1;
-      
-      [Optional]
       /**
        * Used only for combat replays.
        */

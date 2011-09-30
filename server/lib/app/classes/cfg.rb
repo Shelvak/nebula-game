@@ -117,10 +117,14 @@ class Cfg; class << self
 
   ### creds.yml ###
 
+  def player_vip_tick_duration; CONFIG['creds.vip.tick.duration']; end
+
   def planet_boost_cost; CONFIG['creds.planet.resources.boost.cost']; end
   def planet_boost_duration
     CONFIG['creds.planet.resources.boost.duration']
   end
+
+  def planet_boost_amount; CONFIG['creds.planet.resources.boost']; end
 
   def units_speed_up(speed_modifier, hop_count)
     [

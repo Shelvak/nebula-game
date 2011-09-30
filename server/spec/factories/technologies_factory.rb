@@ -3,6 +3,7 @@ class Technology::TestLarger < Technology; end
 class Technology::TestT2 < Technology; end
 class Technology::TestT3 < Technology; end
 class Technology::TestT4 < Technology; end
+class Technology::TestResourceMod < Technology; end
 
 Factory.define :technology, :class => Technology::TestTechnology do |m|
   m.level 0

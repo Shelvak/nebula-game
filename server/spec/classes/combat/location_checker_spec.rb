@@ -4,7 +4,7 @@ require File.expand_path(
 
 klass = Combat::LocationChecker
 
-describe klass do
+describe Combat::LocationChecker do
   describe ".check_location" do
     before(:each) do
       @planet = Factory.create(:planet)
@@ -114,6 +114,22 @@ describe klass do
           Combat::LocationChecker.check_location(@location)
         end
 
+        describe "when planet belongs to npc" do
+          before(:each) do
+            @planet.player = nil
+            @planet.save!
+          end
+
+          it "should not fail if planet belongs to npc" do
+            Combat::LocationChecker.check_location(@location)
+          end
+
+          it "should not fail if planet belongs to npc and it has no buildings" do
+            @buildings.each(&:destroy)
+            Combat::LocationChecker.check_location(@location)
+          end
+        end
+
         it "should include defensive portal units" do
           portal_units = [
             Factory.create(:unit, :player => @planet.player),
@@ -139,6 +155,28 @@ describe klass do
             @stubbed_assets
           end
           Combat::LocationChecker.check_location(@location)
+        end
+
+        it "should not run combat if npc only has non-combat units" do
+          planet = nil
+          CombatDsl.new do
+            planet = location(:planet).location
+            player(:npc => true) { units { mdh } }
+            player { units { glancer :count => 10 } }
+          end
+          Combat::LocationChecker.check_location(planet.location_point).
+            should be_false
+        end
+
+        it "should run combat if player only has non-combat units" do
+          planet = nil
+          CombatDsl.new do
+            planet = location(:planet).location
+            player(:planet_owner => true) { units { mdh } }
+            player { units { glancer :count => 10 } }
+          end
+          Combat::LocationChecker.check_location(planet.location_point).
+            should_not be_false
         end
 
         it "should not include units with level 0" do

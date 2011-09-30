@@ -12,12 +12,19 @@ describe Location do
       player_ids.should == player_ids.uniq
     end
 
-    it "should return include players from units" do
+    it "should include players from units" do
       player = Factory.create(:player)
       Factory.create(:unit, :location => @location, :player => player)
       Factory.create(:unit, :location => @location, :player => player)
 
       Location.combat_player_ids(@location).should include(player.id)
+    end
+
+    it "should not include players from non-combat units" do
+      player = Factory.create(:player)
+      Factory.create!(:u_mdh, :location => @location, :player => player)
+
+      Location.combat_player_ids(@location).should_not include(player.id)
     end
 
     it "should include nils" do

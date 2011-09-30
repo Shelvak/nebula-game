@@ -11,12 +11,8 @@ describe Folliage do
     it_behaves_like "fast finding"
   end
 
-  describe "#to_json" do
-    before(:all) do
-      @model = Factory.create :folliage
-    end
-
-    @ommited_fields = %w{planet_id}
-    it_behaves_like "to json"
+  describe "#as_json" do
+    it_behaves_like "as json", Factory.create(:folliage), nil,
+                    %w{}, %w{planet_id}
   end
 end

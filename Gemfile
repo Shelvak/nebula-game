@@ -25,6 +25,10 @@ group :production_require do
   gem 'mail', '>=2.2'
 end
 
+group :development_require, :test_require do
+  gem 'pry'
+end
+
 # Gems that are only needed for development of the server. Setuped
 group :development_setup do
   gem "minitar"
@@ -35,6 +39,8 @@ group :development_setup do
   gem "net-sftp", "~>2.0"
   gem "net-scp", "~>1.0"
   gem "xml-simple", "~>1.0"
+  gem "ruby-debug"
+  gem "mocha"
 end
 
 # Only setuped, but not required (in test env).

@@ -32,6 +32,11 @@ describe GalaxiesController do
     
     it_behaves_like "only push"
 
+    it "should include galaxy id" do
+      push @action, @params
+      response_should_include :galaxy_id => player.galaxy_id
+    end
+
     it "should allow listing visible SS in galaxy" do
       visible_solar_systems = :visible_ss
       SolarSystem.stub!(:visible_for).with(player).and_return(

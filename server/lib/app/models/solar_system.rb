@@ -156,6 +156,7 @@ class SolarSystem < ActiveRecord::Base
     save!
     delete_assets!
     fow_ss_entries.update_all(:enemy_planets => false, :enemy_ships => false)
+    CallbackManager.unregister(self, CallbackManager::EVENT_SPAWN)
     
     EventBroker.fire(self, EventBroker::CHANGED)
   end

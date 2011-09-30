@@ -2,9 +2,20 @@
 class TechTracker
   include Singleton
 
+  # Regular expression for matching technologies.
+  REGEXP = /^technologies\.\w+\.mod\./
+
   def initialize
     # Hash of {name => Set} pairs.
     @tracker = {}
+
+    # Initialize technologies which have mods.
+    CONFIG.each_matching(REGEXP) do |key, value|
+      klass = "Technology::#{key.split(".")[1].camelcase}".constantize
+      Technology::MODS.each do |name, property|
+        register(name, klass) if klass.send(:"#{name}_mod?")
+      end
+    end
   end
 
   def register(name, klass)

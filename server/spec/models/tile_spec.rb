@@ -20,13 +20,8 @@ describe Tile do
   end
 
   describe "#as_json" do
-    before(:all) do
-      @model = Factory.create(:tile)
-    end
-
-    @ommited_fields = %w{}
-    @required_fields = Tile.columns.map(&:name) - @ommited_fields
-    it_behaves_like "to json"
+    it_behaves_like "as json", Factory.create(:tile), nil,
+                    Tile.columns.map(&:name), []
   end
 
   describe ".for_building" do

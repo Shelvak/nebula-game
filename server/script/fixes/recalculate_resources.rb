@@ -19,16 +19,21 @@ SsObject::Planet.all.each do |planet|
     planet.buildings.each do |building|
       $stdout.write("b")
       
-      if building.class.manages_resources? && building.active?
-        [:metal, :energy, :zetium].each do |resource|
-          planet.send("#{resource}_generation_rate=",
-            planet.send("#{resource}_generation_rate") +
-            building.send("#{resource}_generation_rate")
-          )
-          planet.send("#{resource}_usage_rate=",
-            planet.send("#{resource}_usage_rate") +
-            building.send("#{resource}_usage_rate")
-          )
+      if building.class.manages_resources?
+        if building.active?
+          Resources::TYPES.each do |resource|
+            planet.send("#{resource}_generation_rate=",
+              planet.send("#{resource}_generation_rate") +
+              building.send("#{resource}_generation_rate")
+            )
+            planet.send("#{resource}_usage_rate=",
+              planet.send("#{resource}_usage_rate") +
+              building.send("#{resource}_usage_rate")
+            )
+          end
+        end
+
+        Resources::TYPES.each do |resource|
           planet.send("#{resource}_storage=",
             planet.send("#{resource}_storage") +
             building.send("#{resource}_storage")

@@ -112,8 +112,11 @@ class Combat::LocationChecker
         units += dp_units
         buildings = location.buildings.combat.active.all
 
-        # Add players that have units from defensive portal.
-        players = players | Player.find(dp_units.map(&:player_id))
+        # Add players that have units from defensive portal. Also add planet
+        # owner event if he has no assets, because other players might be
+        # fighting in an empty planet.
+        players = players | Player.find(dp_units.map(&:player_id)) |
+          [location.player]
       else
         buildings = []
       end

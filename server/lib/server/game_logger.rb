@@ -42,6 +42,7 @@ class GameLogger
     @outputs.each do |output|
       case output
       when File
+        output.flush
         output.reopen(output.path)
       end
     end

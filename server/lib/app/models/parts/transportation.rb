@@ -4,9 +4,9 @@ module Parts::Transportation
     receiver.send :include, InstanceMethods
     receiver.extend ClassMethods
 
-    receiver.send :has_many, :units, :finder_sql => proc {
-      "SELECT * FROM `#{receiver.table_name}` WHERE `location_id`=#{id
-        } AND `location_type`=#{Location::UNIT}" }
+    receiver.send :has_many, :units,
+                  :foreign_key => "location_id",
+                  :conditions => {:location_type => Location::UNIT}
     receiver.send :after_destroy do
       # Unit instead of self.class because it would use subclass like
       # Unit::Mule

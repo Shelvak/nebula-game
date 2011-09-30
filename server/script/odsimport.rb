@@ -286,7 +286,6 @@ sections["units"]["galaxy_ss_hop_ratio"] = sheet[19][1].to_f
 
 IGNORED_KEYS = [
   /^buildings\.(.+?)\.(armor|armor_mod|xp_needed)$/,
-  /^units\.(gnat|glancer|gnawer|spudder|dirac|thor|demosis)\.upgrade_time$/,
   /^technologies\.mdh\.mod\.(armor|damage)$/
 ]
 

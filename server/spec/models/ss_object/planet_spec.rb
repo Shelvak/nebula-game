@@ -1264,66 +1264,61 @@ describe SsObject::Planet do
     end
   end
 
-  describe "object" do
-    before(:each) do
-      @model = Factory.create(:planet)
-    end
-
-    it_behaves_like "shieldable"
-  end
-
   describe "#as_json" do
-    before(:all) do
-      @model = Factory.create(:planet)
-    end
-
     it "should include player if it's available" do
       model = Factory.create(:planet_with_player)
       model.as_json["player"].should == Player.minimal(model.player_id)
     end
 
     describe "without options" do
-      before(:all) do
-        @options = nil
-      end
-
-      @required_fields = %w{name terrain}
-      @ommited_fields = %w{width height 
-        metal metal_generation_rate metal_usage_rate metal_storage
-        energy energy_generation_rate energy_usage_rate energy_storage
-        zetium zetium_generation_rate metal_usage_rate zetium_storage
-        last_resources_update energy_diminish_registered status
-        exploration_x exploration_y exploration_ends_at}
-      it_behaves_like "to json"
+      it_behaves_like "as json", Factory.create(:planet), nil,
+        %w{name terrain},
+        %w{width height
+          metal metal_generation_rate metal_usage_rate metal_storage
+          energy energy_generation_rate energy_usage_rate energy_storage
+          zetium zetium_generation_rate metal_usage_rate zetium_storage
+          last_resources_update energy_diminish_registered status
+          exploration_x exploration_y exploration_ends_at}
     end
     
     describe "with :view" do
-      before(:all) do
-        @options = {:view => true}
-      end
-
-      @required_fields = %w{width height}
-      it_behaves_like "to json"
+      it_behaves_like "as json", Factory.create(:planet), {:view => true},
+        %w{
+          width height
+          metal metal_generation_rate metal_usage_rate metal_storage
+          energy energy_generation_rate energy_usage_rate energy_storage
+          zetium zetium_generation_rate zetium_usage_rate zetium_storage
+          last_resources_update
+        }, %w{energy_diminish_registered}
     end
 
-    describe "with :resources" do
-      before(:all) do
-        @options = {:resources => true}
-      end
-
-      @required_fields = %w{
-        metal metal_generation_rate metal_usage_rate metal_storage
-        energy energy_generation_rate energy_usage_rate energy_storage
-        zetium zetium_generation_rate zetium_usage_rate zetium_storage
+    describe "with :owner" do
+      it_behaves_like "as json", Factory.create(:planet), {:owner => true},
+        %w{
         metal_rate_boost_ends_at metal_storage_boost_ends_at
         energy_rate_boost_ends_at energy_storage_boost_ends_at
         zetium_rate_boost_ends_at zetium_storage_boost_ends_at
-        last_resources_update 
-        exploration_x exploration_y exploration_ends_at 
+        exploration_x exploration_y exploration_ends_at
+        can_destroy_building_at
+        next_raid_at owner_changed
+        metal metal_generation_rate metal_usage_rate metal_storage
+        energy energy_generation_rate energy_usage_rate energy_storage
+        zetium zetium_generation_rate zetium_usage_rate zetium_storage
+        last_resources_update
+        },
+        %w{energy_diminish_registered}
+    end
+
+    describe "with :index" do
+      it_behaves_like "as json", Factory.create(:planet), {:index => true},
+        %w{
+        metal metal_generation_rate metal_usage_rate metal_storage
+        energy energy_generation_rate energy_usage_rate energy_storage
+        zetium zetium_generation_rate zetium_usage_rate zetium_storage
+        last_resources_update
         next_raid_at
-        owner_changed}
-      @ommited_fields = %w{energy_diminish_registered}
-      it_behaves_like "to json"
+        },
+        %w{energy_diminish_registered}
     end
 
     describe "with :perspective" do
