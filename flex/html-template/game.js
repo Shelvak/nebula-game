@@ -227,9 +227,10 @@ function getCombatLogUrl(combatLogId, playerId) { // {{{
 
 // Setup google analytics {{{
 var _gaq = _gaq || [];
-_gaq.push(['_setAccount', gaAccountId], ['_trackPageview']);
-if (! inLocalComputer() && ! inDeveloperMode())
+if (! inLocalComputer() && ! inDeveloperMode()) {
+  _gaq.push(['_setAccount', gaAccountId], ['_trackPageview']);
   include("http://www.google-analytics.com/ga.js", 'async="true"');
+}
 // }}}
 
 // Load our swf {{{
