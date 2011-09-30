@@ -88,6 +88,14 @@ module Dev
         (y - strength)..(y + strength)
       ], Player.find(player_id))
   end
+
+  def self.radar_off(player_id=1, x=0, y=0, strength=10)
+    Trait::Radar.decrease_vision(
+      [
+        (x - strength)..(x + strength),
+        (y - strength)..(y + strength)
+      ], Player.find(player_id))
+  end
   
   # Example:
   # 
