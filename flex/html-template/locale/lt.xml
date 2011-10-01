@@ -1415,8 +1415,6 @@
     <label.changeSpeed value="Skrydžio laiko valdymas" />
     <label.flightTime value="Skrydžio laikas: {0}" />
     <label.arrivesIn value="Atvyks po: {0}" />
-    <label.jumpsIn value="Šoks po: {0}" />
-    <label.landsIn value="Leisis po: {0}" />
     <label.arrivesAt value="Atvyks: {0}" />
     <label.owner value="Žaidėjo:" />
     <label.confirm value="Patvirtinti"/>
@@ -1424,6 +1422,9 @@
     <label.reset value="Atstatyti"/>
     <label.buyCreds value="Pirkti kredus"/>
     <label.learnMore value="Sužinok daugiau"/>
+    <label.hop.arrivesIn value="Atvyks po:"/>
+    <label.hop.jumpsIn value="Šoks po:"/>
+    <label.hop.landsIn value="Leisis po:"/>
     <message.combatCooldownInfo 
       value="Atvykus į vietą bus {0} pertrauka prieš prasidedant kovai."/>
     <message.speedUpCost
