@@ -147,7 +147,11 @@ package controllers.units
                   break;
                
                case MapType.SOLAR_SYSTEM:
-                  locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
+                  if (!ML.latestSolarSystem.isBattleground)
+                     locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
+                  else
+                     locationSourceGalaxy = null;
+                  
                   if (locationSource.isSSObject)
                      locationSourceSolarSystem = ML.latestPlanet.currentLocation;
                   else
