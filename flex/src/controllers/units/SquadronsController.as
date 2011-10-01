@@ -31,6 +31,7 @@ package controllers.units
    import mx.utils.ObjectUtil;
    
    import utils.DateUtil;
+   import utils.Objects;
    import utils.SingletonFactory;
    import utils.StringUtil;
    import utils.datastructures.Collections;
@@ -333,6 +334,7 @@ package controllers.units
             squad = SquadronFactory.fromObject(route);
             squad.player = unit.player;
             squad.addAllHops(BaseModel.createCollection(ArrayCollection, MHop, route["hops"]));
+            createJumpHopFor(squad, DateUtil.parseServerDTF(route["firstHop"]));
             units.disableAutoUpdate();
             for each (unit in units)
             {
@@ -361,7 +363,7 @@ package controllers.units
                Messenger.show(Localizer.string("Movement", "message.orderComplete"), Messenger.MEDIUM);
             }
          }
-            // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
+         // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
          else if (route["target"] !== undefined) {
             var owner:int = route["playerId"] == ML.player.id ? Owner.PLAYER : Owner.ALLY;
             createRoute(route, owner);
@@ -464,6 +466,17 @@ package controllers.units
       /* ### HELPERS ### */
       /* ############### */
       
+      private function createJumpHopFor(squad:MSquadron, firstHop:Date) : void {
+         Objects.paramNotNull("squad", squad);
+         if (!squad.hasHopsRemaining) {
+            var jumpHop:MHop = new MHop();
+            jumpHop.routeId = squad.id;
+            jumpHop.location = squad.currentHop.location;
+            jumpHop.arrivesAt = new Date(DateUtil.now - 1);
+            jumpHop.jumpsAt = firstHop;
+            squad.addHop(jumpHop);
+         }
+      }
       
       private function findSquad(id:int,
                                  palyerId:int = PlayerId.NO_PLAYER,
