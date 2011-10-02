@@ -3355,7 +3355,7 @@
     <ShipUpgradeTech>
       <p>kosminiams laivams statomiems laivų gamykloje, tokiems kaip 
       varno ar cyrikso klasės laivai.</p>
-      <p>Ji NEPAGERINA raganosio klasės laivų.</p>
+      <p>Ji NEPAGERINA raganosio ir mulo klasės laivų.</p>
     </ShipUpgradeTech>
 
     <ShipsArmor.name ref="Objects/ShipsArmor" />
