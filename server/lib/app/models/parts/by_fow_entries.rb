@@ -1,8 +1,8 @@
 module Parts::ByFowEntries
 	module ClassMethods
     # Returns objects visible by _fow_entries_ in +Galaxy+.
-    def by_fow_entries(fow_entries)
-      where(FowGalaxyEntry.conditions(fow_entries)).all
+    def by_fow_entries(fow_entries, prefix="location_")
+      where(FowGalaxyEntry.conditions(fow_entries, prefix))
     end
 	end
 

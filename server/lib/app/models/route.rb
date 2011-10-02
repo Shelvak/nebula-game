@@ -46,6 +46,11 @@ class Route < ActiveRecord::Base
       :mapping => ClientLocation.attributes_mapping_for(side)
   end
 
+  # Returns routes where Route#player_id do not belong to given player ids.
+  scope :not_of, proc {
+    |player_ids| where("id NOT IN (?)", [player_ids].flatten)
+  }
+
   include Parts::Object
   # Order matters here, notification control methods should be above
   # included module.
@@ -53,6 +58,15 @@ class Route < ActiveRecord::Base
   # UnitsControler::ACTION_MOVEMENT_PREPARE takes care of that.
   def self.notify_on_create?; false; end
   include Parts::Notifier
+
+  FOW_PREFIX_SOURCE = "source_"
+  FOW_PREFIX_CURRENT = "current_"
+  FOW_PREFIX_TARGET = "target_"
+  include Parts::ByFowEntries
+  def self.by_fow_entries(fow_entries, prefix=nil)
+    prefix ||= FOW_PREFIX_CURRENT
+    super(fow_entries, prefix)
+  end
 
   # Flags route as being completed. If this flag is set - when route destroyed
   # is dispatched to client, it has reason attached to it.
@@ -150,5 +164,18 @@ class Route < ActiveRecord::Base
     else
       save!
     end
+  end
+
+  # Returns non friendly routes for zones covered with _fow_entries_.
+  def self.non_friendly_for_galaxy(fow_entries, friendly_ids)
+    by_fow_entries(fow_entries, "current_").not_of(friendly_ids)
+  end
+
+  # Returns non friendly routes for solar system.
+  def self.non_friendly_for_galaxy(solar_system_id, friendly_ids)
+    where(
+      :current_id => solar_system_id,
+      :current_type => Location::SOLAR_SYSTEM
+    ).not_of(friendly_ids)
   end
 end

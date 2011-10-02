@@ -1,6 +1,68 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Route do
+  let(:route) { Factory.create(:route) }
+
+  describe ".by_fow_entries" do
+    let(:player) { Factory.create(:player) }
+    let(:fow_entries) { [Factory.create(:fge_player, :galaxy => player.galaxy,
+                                        :player => player)] }
+    let(:entry) { fow_entries[0] }
+    let(:galaxy) { player.galaxy }
+
+    it "should include routes which are in visible zone" do
+      route = Factory.create(:route, :player => player,
+        :current => GalaxyPoint.new(galaxy.id, entry.x, entry.y).client_location
+      )
+      Route.by_fow_entries(fow_entries).should include(route)
+    end
+
+    describe "when currently out of visible zone" do
+      it "should not include routes which started in it" do
+        route = Factory.create(:route, :player => player,
+          :source => GalaxyPoint.new(galaxy.id, entry.x, entry.y).
+            client_location,
+          :current => GalaxyPoint.new(galaxy.id, entry.x - 1, entry.y).
+            client_location
+        )
+        Route.by_fow_entries(fow_entries).should_not include(route)
+      end
+
+      it "should not include routes which ends in it" do
+        route = Factory.create(:route, :player => player,
+          :target => GalaxyPoint.new(galaxy.id, entry.x, entry.y).
+            client_location,
+          :current => GalaxyPoint.new(galaxy.id, entry.x - 1, entry.y).
+            client_location
+        )
+        Route.by_fow_entries(fow_entries).should_not include(route)
+      end
+    end
+  end
+
+  describe ".not_of" do
+    it "should not include routes where player_id is in given set" do
+      Route.not_of(route.player_id).should_not include(route)
+    end
+
+    it "should include routes where player_id is not in given set" do
+      route = Factory.create(:route)
+      other_route = Factory.create(:route)
+      Route.not_of(other_route.player_id).should include(route)
+    end
+  end
+
+  describe ".non_friendly_for_galaxy" do
+    it "should chain .by_fow_entries and .not_of together" do
+      mock = mock(Arel::Relation)
+      Route.should_receive(:by_fow_entries).with(:fow_entries).
+        and_return(mock)
+      mock.should_receive(:not_of).with(:friendly_ids).and_return(:result)
+      Route.non_friendly_for_galaxy(:fow_entries, :friendly_ids).should ==
+        :result
+    end
+  end
+
   describe "#cached_units" do
     it "should be serializable" do
       route = Factory.create :route
