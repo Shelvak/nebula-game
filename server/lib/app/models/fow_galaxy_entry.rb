@@ -137,13 +137,13 @@ class FowGalaxyEntry < ActiveRecord::Base
     # _table_name_ to limits of _fow_entries_.
     #
     # Only useful for units!
-    def conditions(fow_entries)
+    def conditions(fow_entries, prefix="location_")
       return "1=0" if fow_entries.blank?
 
-      "(" + conditions_for_coordinates(fow_entries, "location_") +
+      "(" + conditions_for_coordinates(fow_entries, prefix) +
         ") AND (#{sanitize_sql_for_conditions(
           [
-            "location_type=? AND location_id=?",
+            "#{prefix}type=? AND #{prefix}id=?",
             Location::GALAXY,
             fow_entries[0].galaxy_id
           ]

@@ -3356,8 +3356,8 @@
         [reference:Units/Crow.name] or [reference:Units/Cyrix.name]. 
       </p>
       <p>
-        This technology DOES NOT improve [reference:Units/Rhyno.name] class 
-        ships. 
+        This technology DOES NOT improve [reference:Units/Rhyno.name] and 
+        [reference:Units/Mule.name] class ships. 
       </p>
     </ShipUpgradeTech>
 

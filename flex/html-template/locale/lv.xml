@@ -3352,6 +3352,7 @@
       </p>
     </HighVelocityCharges.about>
 
+    <!-- TODO: Add mention that it does not improve mule class ships too. -->
     <ShipUpgradeTech>
       <p>
         for spaceships built in [reference:Buildings/SpaceFactory.name] like 

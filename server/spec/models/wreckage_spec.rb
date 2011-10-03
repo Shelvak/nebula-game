@@ -155,7 +155,8 @@ describe Wreckage do
     it "should return wreckages" do
       w1 = Factory.create(:wreckage)
       Factory.create(:wreckage)
-      FowGalaxyEntry.stub!(:conditions).with([]).and_return("id=#{w1.id}")
+      FowGalaxyEntry.stub!(:conditions).
+        with([], Parts::ByFowEntries::DEFAULT_PREFIX).and_return("id=#{w1.id}")
       Wreckage.by_fow_entries([]).should == [w1]
     end
   end

@@ -48,19 +48,11 @@ class RouteHop < ActiveRecord::Base
     route_ids = units.map { |unit| unit.route_id }.compact
     unless route_ids.blank?
       player_ids = player.alliance_id \
-        ? connection.select_values(
-          "SELECT id FROM `#{Player.table_name}` WHERE #{
-            sanitize_sql_hash_for_conditions(
-              {:alliance_id => player.alliance_id},
-              Player.table_name
-            )
-          }"
-        ) \
+        ? Player.select("id").where(:alliance_id => player.alliance_id).
+          c_select_values \
         : [player.id]
 
-      self.for(player_ids).in_zone(zone).find(
-        :all, :conditions => {:route_id => route_ids}
-      )
+      self.for(player_ids).in_zone(zone).where(:route_id => route_ids).all
     else
       []
     end
