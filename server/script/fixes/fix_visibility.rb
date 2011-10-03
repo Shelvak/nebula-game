@@ -55,7 +55,7 @@ LOGGER.suppress(:debug) do
         counts[player_id] += player_units.size
       end
 
-      puts "Counts (pid -> player_unis): " + counts.inspect
+      puts "Player counts (pid -> count): " + counts.inspect
       counts.each do |player_id, count|
         fse = FowSsEntry.new
         fse.solar_system_id = ss.id
@@ -73,7 +73,7 @@ LOGGER.suppress(:debug) do
         end
         hash
       end
-      puts ally_grouped.inspect
+      puts "Alliance counts (pid -> count): " + ally_grouped.inspect
       ally_grouped.each do |alliance_id, count|
         fse = FowSsEntry.new
         fse.solar_system_id = ss.id
