@@ -48,7 +48,7 @@ class Route < ActiveRecord::Base
 
   # Returns routes where Route#player_id do not belong to given player ids.
   scope :not_of, proc { |player_ids|
-    where("id NOT IN (?)", [player_ids].flatten)
+    where("player_id NOT IN (?)", [player_ids].flatten)
   }
   # Returns routes which are currently in solar system.
   scope :currently_in_solar_system, proc { |solar_system_id|

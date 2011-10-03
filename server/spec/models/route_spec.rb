@@ -140,7 +140,8 @@ describe Route do
   describe ".non_friendly_for_galaxy" do
     it "should chain .by_fow_entries and .not_of together" do
       mock = mock(Arel::Relation)
-      Route.should_receive(:by_fow_entries).with(:fow_entries).
+      Route.should_receive(:by_fow_entries).
+        with(:fow_entries, Route::FOW_PREFIX_CURRENT).
         and_return(mock)
       mock.should_receive(:not_of).with(:friendly_ids).and_return(:result)
       Route.non_friendly_for_galaxy(:fow_entries, :friendly_ids).should ==
