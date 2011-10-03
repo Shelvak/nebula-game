@@ -40,7 +40,8 @@ object Runner extends BenchmarkableMock {
     troops: Set[Troop],
     loadedTroops: Map[Long, Set[Troop]],
     unloadedTroopIds: Set[Long],
-    buildings: Set[Building]
+    buildings: Set[Building],
+    calculateVictoryPoints: Boolean
   ): Option[Response] = {
 //    StdErrLog.level = StdErrLog.Debug
     val combat = benchmark("Combat simulation") { () =>
@@ -54,7 +55,8 @@ object Runner extends BenchmarkableMock {
           troops,
           loadedTroops,
           unloadedTroopIds,
-          buildings
+          buildings,
+          calculateVictoryPoints
         )
       )
     }

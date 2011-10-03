@@ -222,6 +222,15 @@ object Config {
   lazy val energyVolume = double("units.transportation.volume.energy")
   lazy val zetiumVolume = double("units.transportation.volume.zetium")
 
+  private lazy val combatVictoryPointsExpression = parseFormula(
+    get[String]("battleground.battle.victory_points")
+  )
+  def combatVictoryPoints(groundDamage: Int, spaceDamage: Int): Double =
+    formulaEval(combatVictoryPointsExpression, Map(
+      "damage_dealt_to_ground" -> groundDamage.toBigDecimal(),
+      "damage_dealt_to_space" -> spaceDamage.toBigDecimal()
+    )).doubleValue()
+
   // End of combat attributes
 
   def orbitCount = int("solar_system.orbit.count")
