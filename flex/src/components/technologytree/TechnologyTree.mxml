@@ -55,7 +55,6 @@
             {
                drawTechnology(tech);
                var requirements: Object = Config.getTechnologyRequirements(tech.type);
-               var groupDrawed: Boolean = false;
                for (var requirement: String in requirements)
                {
                   if (requirements[requirement].invert)
@@ -405,9 +404,9 @@
             {
                //=================================
                //else need to reach other technology by folowing directions
-               createVLine(from.coords[0], from.coords[1], from.coords[1] + 1, to, true, true, false);
+               createVLine(from.coords[0], from.coords[1], to.coords[1] - 1, to, true, true, false);
                //check if target can be reached directly by y axis
-               var needsWalkAround: Boolean = !rowIsFree(to.coords[0], from.coords[1], to.coords[1]);
+               var needsWalkAround: Boolean = !rowIsFree(to.coords[0], to.coords[1] - 1, to.coords[1]);
                var yMark: int = to.coords[0]; 
                
                if (needsWalkAround)
@@ -417,13 +416,13 @@
                      yMark += 1;
                   }
                   //draw horizontal line to the destination element cell
-                  createHLine(from.coords[1] + 1, from.coords[0], yMark, to, true);
+                  createHLine(to.coords[1] - 1, from.coords[0], yMark, to, true);
                   //draw vertical line to the destination element cell
-                  createVLine(yMark, from.coords[1] + 1, to.coords[1], to);
+                  createVLine(yMark, to.coords[1], to.coords[1], to);
                   //draw horizontal fix to element
-                  createHLine(to.coords[1], yMark, to.coords[0], to, false, true);
-                  //finish connection by drawing small line inside targets cell
-                  createVLine(to.coords[0], to.coords[1], to.coords[1], to, true, false, true);
+//                  createHLine(to.coords[1], yMark, to.coords[0], to, false, true);
+//                  //finish connection by drawing small line inside targets cell
+//                  createVLine(to.coords[0], to.coords[1], to.coords[1], to, true, false, true);
                }
                else
                {
