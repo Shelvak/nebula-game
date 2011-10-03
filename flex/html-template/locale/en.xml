@@ -34,7 +34,19 @@
     <MDH value="MDH" />
     <MDH-what value="{0 one[one MDH] many[? MDH's]}" />
     <MDH-whos ref="MDH-what" />
+
+    <MobileVulcan value="Vulcan-M" />
+    <MobileVulcan-what value="{0 one[one Vulcan-M] many[? Vulcan-M's]}" />
+    <MobileVulcan-whos ref="MobileVulcan-what" />   
     
+    <MobileScreamer value="Screamer-M" />
+    <MobileScreamer-what value="{0 one[one Screamer-M] many[? Screamer-M's]}" />
+    <MobileScreamer-whos ref="MobileScreamer-what" />   
+
+    <MobileThunder value="Thunder-M" />
+    <MobileThunder-what value="{0 one[one Thunder-M] many[? Thunder-M's]}" />
+    <MobileThunder-whos ref="MobileThunder-what" />   
+
     <!-- Self space units -->
     
     <Mule value="Mule" />
@@ -918,6 +930,15 @@
       <p>Only capable of hitting ground units.</p>
     </Vulcan.about>
 
+    <DeployedFromMobile value="Deployed from mobile version." />
+
+    <MobileVulcan.name ref="Objects/MobileVulcan" />
+    <MobileVulcan.tooltip ref="Vulcan.tooltip" />
+    <MobileVulcan.about>
+      <p>[reference:Vulcan.about]</p>
+      <p>[reference:DeployedFromMobile]</p>
+    </MobileVulcan.about>
+
     <Screamer.name ref="Objects/Screamer" />
     <Screamer.tooltip value="Defends against tanks" />
     <Screamer.about>
@@ -927,6 +948,13 @@
       </p>
       <p>Only capable of hitting ground units.</p>
     </Screamer.about>
+
+    <MobileScreamer.name ref="Objects/MobileScreamer" />
+    <MobileScreamer.tooltip ref="Screamer.tooltip" />
+    <MobileScreamer.about>
+      <p>[reference:Screamer.about]</p>
+      <p>[reference:DeployedFromMobile]</p>
+    </MobileScreamer.about>
 
     <Thunder.name ref="Objects/Thunder" />
     <Thunder.tooltip value="Defends against space units" />
@@ -938,6 +966,13 @@
       </p>
       <p>Only capable of hitting space units.</p>
     </Thunder.about>
+
+    <MobileThunder.name ref="Objects/MobileThunder" />
+    <MobileThunder.tooltip ref="Thunder.tooltip" />
+    <MobileThunder.about>
+      <p>[reference:Thunder.about]</p>
+      <p>[reference:DeployedFromMobile]</p>
+    </MobileThunder.about>
 
     <GroundFactory.name ref="Objects/GroundFactory" />
     <GroundFactory.tooltip value="Builds tanks" />
@@ -3495,11 +3530,20 @@
     <Vulcan.name ref="Buildings/Vulcan.name" />
     <Vulcan.about ref="Buildings/Vulcan.about" />
 
+    <MobileVulcan.name ref="Units/MobileVulcan.name" />
+    <MobileVulcan.about ref="Units/MobileVulcan.about" />
+
     <Screamer.name ref="Buildings/Screamer.name" />
     <Screamer.about ref="Buildings/Screamer.about" />
 
+    <MobileScreamer.name ref="Units/MobileScreamer.name" />
+    <MobileScreamer.about ref="Units/MobileScreamer.about" />
+
     <Thunder.name ref="Buildings/Thunder.name" />
     <Thunder.about ref="Buildings/Thunder.about" />
+
+    <MobileThunder.name ref="Units/MobileThunder.name" />
+    <MobileThunder.about ref="Units/MobileThunder.about" />
 
     <GroundFactory.name ref="Buildings/GroundFactory.name" />
     <GroundFactory.about>
@@ -4118,6 +4162,29 @@
         any protection or guns and cannot sustain even lightest enemy fire.
       </p>
     </Jumper.about>
+
+    <MobileTurret>
+      <p>Can be transported in transporter ships. Does not shoot until 
+      deployed. Cannot be undeployed after deploying.</p>
+    </MobileTurret>
+
+    <MobileVulcan.name ref="Objects/MobileVulcan" />
+    <MobileVulcan.about>
+      <p>Mobile version of Vulcan defensive tower. [reference:MobileTurret]</p>
+      <p>[reference:Buildings/Vulcan.about]</p>
+    </MobileVulcan.about>
+
+    <MobileScreamer.name ref="Objects/MobileScreamer" />
+    <MobileScreamer.about>
+      <p>Mobile version of Screamer defensive tower. [reference:MobileTurret]</p>
+      <p>[reference:Buildings/Screamer.about]</p>
+    </MobileScreamer.about>
+
+    <MobileThunder.name ref="Objects/MobileThunder" />
+    <MobileThunder.about>
+      <p>Mobile version of Thunder defensive tower. [reference:MobileTurret]</p>
+      <p>[reference:Buildings/Thunder.about]</p>
+    </MobileThunder.about>
   </Units>
 
   <WelcomeScreen>

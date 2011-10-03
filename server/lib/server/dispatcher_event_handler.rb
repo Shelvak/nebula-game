@@ -405,8 +405,8 @@ class DispatcherEventHandler
           [object.player.friendly_ids, nil]
         when CONTEXT_DESTROYED
           player_ids, filter = resolve_location(object.current)
-          player_ids += object.player.friendly_ids
-          [player_ids.uniq, nil]
+          player_ids |= object.player.friendly_ids
+          [player_ids, nil]
         else
           raise ArgumentError.new(
             "Unknown Route context for objects resolver: #{context.inspect}")

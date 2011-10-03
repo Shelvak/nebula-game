@@ -34,7 +34,19 @@
     <MDH value="Mobilus štabas" />
     <MDH-what value="{0 one[mobilų štabą] 1sts[? mobilų štabą] tens[? mobilių štabų] many[? mobilius štabus]}" />
     <MDH-whos value="{0 one[mobilaus štabo] 1sts[? mobilaus štabo] tens[? mobilių štabų] many[? mobilių štabų]}" />
+
+    <MobileVulcan value="Vulkanas-M" />
+    <MobileVulcan-what value="{0 one[vulkaną-M] 1sts[? vulkaną-M] tens[? vulkanų-M] many[? vulkanus-M]}" />
+    <MobileVulcan-whos value="{0 one[vulkano-M] 1sts[? vulkano-M] tens[? vulkanų-M] many[? vulkanų-M]}" />
     
+    <MobileScreamer value="Rėksnys-M" />
+    <MobileScreamer-what value="{0 one[rėksnį-M] 1sts[? rėksnį-M] tens[? rėksnių-M] many[? rėksnius-M]}" />
+    <MobileScreamer-whos value="{0 one[rėksnio-M] 1sts[? rėksnio-M] tens[? rėksnių-M] many[? rėksnių-M]}" />
+
+    <MobileThunder value="Griausmas-M" />
+    <MobileThunder-what value="{0 one[griausmą-M] 1sts[? griausmą-M] tens[? griausmų-M] many[? griausmus-M]}" />
+    <MobileThunder-whos value="{0 one[griausmo-M] 1sts[? griausmo-M] tens[? griausmų-M] many[? griausmų-M]}" />
+
     <!-- Savi kosmoso unitai -->
     
     <Mule value="Mulas" />
@@ -925,6 +937,15 @@
       <p>Šaudo tik į žemės karius.</p>
     </Vulcan.about>
 
+    <DeployedFromMobile value="Išskleistas iš mobilios versijos." />
+
+    <MobileVulcan.name ref="Objects/MobileVulcan" />
+    <MobileVulcan.tooltip ref="Vulcan.tooltip" />
+    <MobileVulcan.about>
+      <p>[reference:Vulcan.about]</p>
+      <p>[reference:DeployedFromMobile]</p>
+    </MobileVulcan.about>
+
     <Screamer.name ref="Objects/Screamer" />
     <Screamer.tooltip value="Gynybinis bokštelis prieš šarvuotus karius" />
     <Screamer.about>
@@ -936,6 +957,13 @@
       <p>Šaudo tik į žemės karius.</p>
     </Screamer.about>
 
+    <MobileScreamer.name ref="Objects/MobileScreamer" />
+    <MobileScreamer.tooltip ref="Screamer.tooltip" />
+    <MobileScreamer.about>
+      <p>[reference:Screamer.about]</p>
+      <p>[reference:DeployedFromMobile]</p>
+    </MobileScreamer.about>
+
     <Thunder.name ref="Objects/Thunder" />
     <Thunder.tooltip value="Gynybinis bokštelis prieš kosmoso flotiles" />
     <Thunder.about>
@@ -946,6 +974,13 @@
       </p>
       <p>Šaudo tik į kosminius laivus.</p>
     </Thunder.about>
+
+    <MobileThunder.name ref="Objects/MobileThunder" />
+    <MobileThunder.tooltip ref="Thunder.tooltip" />
+    <MobileThunder.about>
+      <p>[reference:Thunder.about]</p>
+      <p>[reference:DeployedFromMobile]</p>
+    </MobileThunder.about>
 
     <GroundFactory.name ref="Objects/GroundFactory" />
     <GroundFactory.tooltip value="Stato tankus" />
@@ -3469,11 +3504,20 @@
     <Vulcan.name ref="Buildings/Vulcan.name" />
     <Vulcan.about ref="Buildings/Vulcan.about" />
 
+    <MobileVulcan.name ref="Units/MobileVulcan.name" />
+    <MobileVulcan.about ref="Units/MobileVulcan.about" />
+
     <Screamer.name ref="Buildings/Screamer.name" />
     <Screamer.about ref="Buildings/Screamer.about" />
 
+    <MobileScreamer.name ref="Units/MobileScreamer.name" />
+    <MobileScreamer.about ref="Units/MobileScreamer.about" />
+
     <Thunder.name ref="Buildings/Thunder.name" />
     <Thunder.about ref="Buildings/Thunder.about" />
+
+    <MobileThunder.name ref="Units/MobileThunder.name" />
+    <MobileThunder.about ref="Units/MobileThunder.about" />
 
     <GroundFactory.name ref="Buildings/GroundFactory.name" />
     <GroundFactory.about>
@@ -4016,6 +4060,29 @@
       priešo planetose. Jų dizainas suteikia jiems milžinišką greitį, tačiau 
       jie neturi jokių šarvų ar ginklų ir žūna nuo menkiausios ugnies.</p>
     </Jumper.about>
+
+    <MobileTurret>
+      <p>Gali būti gabėnamas kroviniais laivais. Neišskleistas nešaudo.
+      Po išskleidimo nebesuskleidžiamas.</p>
+    </MobileTurret>
+
+    <MobileVulcan.name ref="Objects/MobileVulcan" />
+    <MobileVulcan.about>
+      <p>Mobili vulkano gynybinio bokštelio versija. [reference:MobileTurret]</p>
+      <p>[reference:Buildings/Vulcan.about]</p>
+    </MobileVulcan.about>
+
+    <MobileScreamer.name ref="Objects/MobileScreamer" />
+    <MobileScreamer.about>
+      <p>Mobili rėksnio gynybinio bokštelio versija. [reference:MobileTurret]</p>
+      <p>[reference:Buildings/Screamer.about]</p>
+    </MobileScreamer.about>
+
+    <MobileThunder.name ref="Objects/MobileThunder" />
+    <MobileThunder.about>
+      <p>Mobili griausmo gynybinio bokštelio versija. [reference:MobileTurret]</p>
+      <p>[reference:Buildings/Thunder.about]</p>
+    </MobileThunder.about>
   </Units>
 
   <WelcomeScreen>
