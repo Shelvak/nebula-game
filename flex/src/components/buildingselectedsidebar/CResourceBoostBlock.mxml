@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                        xmlns:s="library://ns.adobe.com/flex/spark" 
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+         import components.popups.ActionConfirmationPopup;
+         
+         import config.Config;
+         
+         import controllers.GlobalFlags;
+         import controllers.planets.PlanetsCommand;
+         
+         import flashx.textLayout.elements.TextFlow;
+         
+         import models.resource.Resource;
+         
+         import spark.utils.TextFlowUtil;
+         
+         import utils.DateUtil;
+         import utils.UrlNavigate;
+         import utils.locale.Localizer;
+         [Bindable]
+         public var resource: Resource;
+         
+         protected function boost_clickHandler(attribute: String):void
+         {
+            if (ML.player.creds < Config.getPlanetBoostCost())
+            {
+               UrlNavigate.getInstance().showBuyCreds();
+            }
+            else
+            {
+               var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+               popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+               popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+               var lbl: Label = new Label();
+               lbl.minWidth = 300;
+               lbl.text = Localizer.string('Popups', 'message.areYouSure');
+               popUp.addElement(lbl);
+               popUp.title = Localizer.string('Popups', 'title.boostPlanet');
+               popUp.confirmButtonClickHandler = function (button: Button = null): void
+               {
+                  GlobalFlags.getInstance().lockApplication = true;
+                  new PlanetsCommand(PlanetsCommand.BOOST, {'planet': ML.latestPlanet,
+                     'resource': resource.type,
+                     'attribute': attribute
+                  }).dispatch();
+               };
+               popUp.show();
+            }
+         }
+         
+         private function getTextFlow(from: String): TextFlow
+         {
+            return TextFlowUtil.importFromString(from);
+         }
+      ]]>
+   </fx:Script>
+   <!-- RATES BOOST -->
+   <s:RichText textFlow="{getTextFlow(
+               Localizer.string('Credits', 'label.boostInactive',
+               [resource.type, 'rate',
+               Config.getPlanetBoost(), DateUtil.secondsToHumanString(
+               Config.getPlanetBoostDuration())]))}"
+               visible="{resource.boost.rateTime == null}"/>
+   <s:Label text="{Localizer.string('Credits', 'label.boostActive1',
+            [resource.type, 'rate',
+            Config.getPlanetBoost(),
+            DateUtil.secondsToHumanString(
+            Config.getPlanetBoostDuration())])}"
+            visible="{resource.boost.rateTime != null}"/> 
+   <base:TimeLabel text="{resource.boost.rateTime}"
+                   visible="{resource.boost.rateTime != null}"/>                    
+   <s:Label text="{Localizer.string('Credits', 'label.boostActive2',
+            [DateUtil.secondsToHumanString(
+            Config.getPlanetBoostDuration())])}"
+            visible="{resource.boost.rateTime != null}"/>
+   <s:RichText textFlow="{getTextFlow(
+               Localizer.string('Credits','label.boostCost',
+               [Config.getPlanetBoostCost(), resource.type]))}"/>
+   <s:Group width="100%">
+      <s:Button skinClass="components.skins.CreditButtonSkin"
+                label="{ML.player.creds &lt; Config.getPlanetBoostCost()
+                ?Localizer.string('Credits', 'label.buy')
+                :Localizer.string('Credits', 'label.boostRate')}" 
+                right="6" click="boost_clickHandler('rate')"
+                bottom="10"/>
+   </s:Group>
+   
+   <!-- STORAGES BOOST -->
+   <s:RichText textFlow="{getTextFlow(
+               Localizer.string('Credits', 'label.boostInactive',
+               [resource.type, 'storage',
+               Config.getPlanetBoost(), DateUtil.secondsToHumanString(
+               Config.getPlanetBoostDuration())]))}"
+               visible="{resource.boost.storageTime == null}"/>
+   <s:Label text="{Localizer.string('Credits', 'label.boostActive1',
+            [resource.type, 'storage',
+            Config.getPlanetBoost(),
+            DateUtil.secondsToHumanString(
+            Config.getPlanetBoostDuration())])}"
+            visible="{resource.boost.storageTime != null}"/>
+   <base:TimeLabel text="{resource.boost.storageTime}"
+                   visible="{resource.boost.storageTime != null}"/>
+   <s:Label text="{Localizer.string('Credits', 'label.boostActive2',
+            [DateUtil.secondsToHumanString(
+            Config.getPlanetBoostDuration())])}"
+            visible="{resource.boost.storageTime != null}"/>
+   <s:RichText textFlow="{getTextFlow(
+               Localizer.string('Credits','label.boostCost',
+               [Config.getPlanetBoostCost(), resource.type]))}"/>
+   <s:Group width="100%">
+      <s:Button skinClass="components.skins.CreditButtonSkin"
+                label="{ML.player.creds &lt; Config.getPlanetBoostCost()
+                ?Localizer.string('Credits', 'label.buy')
+                :Localizer.string('Credits', 'label.boostStorage')}" 
+                right="6" click="boost_clickHandler('storage')"/>
+   </s:Group>
+   <base:layout>
+      <s:VerticalLayout paddingLeft="6" horizontalAlign="justify"/>
+   </base:layout>
+</base:AdvancedContainer>

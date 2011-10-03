@@ -1501,6 +1501,7 @@
     <label.dmgTakenAlliance value="Damage taken by alliance" />
     <label.xp value="XP earned" />
     <label.points value="War points earned" />
+    <label.victoryPoints value="Victory points earned" />
     <label.stats value="Combat statistics" />
     <label.close value="Close" />
     <label.players value="Players" />

@@ -479,13 +479,13 @@ package utils.assets
       
       public static function getLocationUnitImageName(type:String) : String
       {
-         return NOTIFICATION_IMAGE_FOLDER + 'location'+StringUtil.firstToUpperCase(type);
+         return NOTIFICATION_IMAGE_FOLDER + 'location'+StringUtil.underscoreToCamelCase(type);
       }
       
       
       public static function getUnitImageName(type:String) : String
       {
-         return UNIT_IMAGE_FOLDER + StringUtil.firstToUpperCase(type);
+         return UNIT_IMAGE_FOLDER + StringUtil.underscoreToCamelCase(type);
       }
       
       

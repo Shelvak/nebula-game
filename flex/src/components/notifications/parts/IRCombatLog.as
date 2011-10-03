@@ -370,6 +370,19 @@ package components.notifications.parts
       }
       
       [SkinPart(required="true")]
+      public var lblVictoryPoints:Label;
+      
+      private function setLblVictoryPointsText() : void
+      {
+         if (lblVictoryPoints)
+         {
+            lblVictoryPoints.visible = combatLog != null && combatLog.victoryPointsEarned > 0;
+            lblVictoryPoints.text = combatLog == null ? "" :
+               Localizer.string('Notifications', 'label.victoryPoints');
+         }
+      }
+      
+      [SkinPart(required="true")]
       public var lblPlayers:Label;
       
       
@@ -456,6 +469,19 @@ package components.notifications.parts
          if (valPoints)
          {
             valPoints.text = combatLog == null ? "" : combatLog.pointsEarned.toString();
+         }
+      }
+      
+      [SkinPart(required="true")]
+      public var valVictoryPoints:Label;
+      
+      
+      private function setValVictoryPointsText() : void
+      {
+         if (valVictoryPoints)
+         {
+            valVictoryPoints.visible = combatLog != null && combatLog.victoryPointsEarned > 0;
+            valVictoryPoints.text = combatLog == null ? "" : combatLog.victoryPointsEarned.toString();
          }
       }
       
@@ -719,12 +745,14 @@ package components.notifications.parts
             setValXpText();
             setLblPlayersText();
             setLblPointsText();
+            setLblVictoryPointsText();
             setAllianceTableInfo();
             setValDmgDealtPlayerText();
             setValDmgDealtAllianceText();
             setValDmgTakenPlayerText();
             setValDmgTakenAllianceText();
             setValPointsText();
+            setValVictoryPointsText();
             setLblStatsText();
             setWreckage();
             txtLogUrl.text = combatLogUrl;
