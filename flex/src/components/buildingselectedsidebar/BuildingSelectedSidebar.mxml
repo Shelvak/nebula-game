@@ -150,7 +150,7 @@
          
          public function refreshUpgradeState(e: Event = null): void
          {
-            if (_selectedModel != null && _selectedModel.upgradePart != null)
+            if (_selectedModel != null && _selectedModel.upgradePart != null && ML.latestPlanet != null)
             {
                var planet:MSSObject = ML.latestPlanet.ssObject;
                canBeUpgraded = _selectedModel.upgradePart.enoughResourcesForNextLevel(planet);
