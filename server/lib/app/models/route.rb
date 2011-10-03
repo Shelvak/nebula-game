@@ -47,8 +47,22 @@ class Route < ActiveRecord::Base
   end
 
   # Returns routes where Route#player_id do not belong to given player ids.
-  scope :not_of, proc {
-    |player_ids| where("id NOT IN (?)", [player_ids].flatten)
+  scope :not_of, proc { |player_ids|
+    where("id NOT IN (?)", [player_ids].flatten)
+  }
+  # Returns routes which are currently in solar system.
+  scope :currently_in_solar_system, proc { |solar_system_id|
+    where(
+      :current_id => solar_system_id,
+      :current_type => Location::SOLAR_SYSTEM
+    )
+  }
+  # Returns routes which are currently in solar system object.
+  scope :currently_in_ss_object, proc { |ss_object_id|
+    where(
+      :current_id => ss_object_id,
+      :current_type => Location::SS_OBJECT
+    )
   }
 
   include Parts::Object
@@ -172,10 +186,12 @@ class Route < ActiveRecord::Base
   end
 
   # Returns non friendly routes for solar system.
-  def self.non_friendly_for_galaxy(solar_system_id, friendly_ids)
-    where(
-      :current_id => solar_system_id,
-      :current_type => Location::SOLAR_SYSTEM
-    ).not_of(friendly_ids)
+  def self.non_friendly_for_solar_system(solar_system_id, friendly_ids)
+    currently_in_solar_system(solar_system_id).not_of(friendly_ids)
+  end
+
+  # Returns non friendly routes for solar system object.
+  def self.non_friendly_for_ss_object(ss_object_id, friendly_ids)
+    currently_in_ss_object(ss_object_id).not_of(friendly_ids)
   end
 end

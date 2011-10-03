@@ -61,7 +61,7 @@ class SolarSystemsController < GenericController
       },
       :players => Player.minimal_from_objects(units),
       :non_friendly_routes => Route.non_friendly_for_solar_system(
-        solar_system, player.friendly_ids
+        solar_system.id, player.friendly_ids
       ).map { |r| r.as_json(:mode => :enemy) },
       :route_hops => route_hops.map(&:as_json),
       :wreckages => Wreckage.in_zone(solar_system).all.map(&:as_json),

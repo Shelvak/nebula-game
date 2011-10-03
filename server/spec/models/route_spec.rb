@@ -52,6 +52,91 @@ describe Route do
     end
   end
 
+  describe ".currently_in_solar_system" do
+    let(:player) { Factory.create(:player) }
+    let(:solar_system) { Factory.create(:solar_system) }
+    let(:other_solar_system) { Factory.create(:solar_system) }
+
+    it "should return route which currently is in that solar system" do
+      route = Factory.create(:route, :player => player,
+        :current => SolarSystemPoint.new(solar_system.id, 0, 0).client_location
+      )
+      Route.currently_in_solar_system(solar_system.id).should include(route)
+    end
+
+    it "should not return route which is in different solar system" do
+      route = Factory.create(:route, :player => player,
+        :current => SolarSystemPoint.new(other_solar_system.id, 0, 0).
+          client_location
+      )
+      Route.currently_in_solar_system(solar_system.id).should_not include(route)
+    end
+
+    describe "when not in required solar system" do
+      it "should not return route if it started in required solar system" do
+        route = Factory.create(:route, :player => player,
+          :source => SolarSystemPoint.new(solar_system.id, 0, 0).
+            client_location,
+          :current => SolarSystemPoint.new(other_solar_system.id, 0, 0).
+            client_location
+        )
+        Route.currently_in_solar_system(solar_system.id).
+          should_not include(route)
+      end
+
+      it "should not return route if it ends in required solar system" do
+        route = Factory.create(:route, :player => player,
+          :target => SolarSystemPoint.new(solar_system.id, 0, 0).
+            client_location,
+          :current => SolarSystemPoint.new(other_solar_system.id, 0, 0).
+            client_location
+        )
+        Route.currently_in_solar_system(solar_system.id).
+          should_not include(route)
+      end
+    end
+  end
+  
+  describe ".currently_in_ss_object" do
+    let(:player) { Factory.create(:player) }
+    let(:ss_object) { Factory.create(:planet) }
+    let(:other_ss_object) { Factory.create(:planet) }
+
+    it "should return route which currently is in that ss object" do
+      route = Factory.create(:route, :player => player,
+        :current => ss_object.client_location
+      )
+      Route.currently_in_ss_object(ss_object.id).should include(route)
+    end
+
+    it "should not return route which is in different ss object" do
+      route = Factory.create(:route, :player => player,
+        :current => other_ss_object.client_location
+      )
+      Route.currently_in_ss_object(ss_object.id).should_not include(route)
+    end
+
+    describe "when not in required ss object" do
+      it "should not return route if it started in required ss object" do
+        route = Factory.create(:route, :player => player,
+          :source => ss_object.client_location,
+          :current => other_ss_object.client_location
+        )
+        Route.currently_in_ss_object(ss_object.id).
+          should_not include(route)
+      end
+
+      it "should not return route if it ends in required ss object" do
+        route = Factory.create(:route, :player => player,
+          :target => ss_object.client_location,
+          :current => other_ss_object.client_location
+        )
+        Route.currently_in_ss_object(ss_object.id).
+          should_not include(route)
+      end
+    end
+  end
+
   describe ".non_friendly_for_galaxy" do
     it "should chain .by_fow_entries and .not_of together" do
       mock = mock(Arel::Relation)
@@ -60,6 +145,28 @@ describe Route do
       mock.should_receive(:not_of).with(:friendly_ids).and_return(:result)
       Route.non_friendly_for_galaxy(:fow_entries, :friendly_ids).should ==
         :result
+    end
+  end
+
+  describe ".non_friendly_for_solar_system" do
+    it "should chain .currently_in_solar_system and .not_of together" do
+      mock = mock(Arel::Relation)
+      Route.should_receive(:currently_in_solar_system).with(:solar_system_id).
+        and_return(mock)
+      mock.should_receive(:not_of).with(:friendly_ids).and_return(:result)
+      Route.non_friendly_for_solar_system(:solar_system_id, :friendly_ids).
+        should == :result
+    end
+  end
+
+  describe ".non_friendly_for_ss_object" do
+    it "should chain .currently_in_ss_object and .not_of together" do
+      mock = mock(Arel::Relation)
+      Route.should_receive(:currently_in_ss_object).with(:ss_object_id).
+        and_return(mock)
+      mock.should_receive(:not_of).with(:friendly_ids).and_return(:result)
+      Route.non_friendly_for_ss_object(:ss_object_id, :friendly_ids).
+        should == :result
     end
   end
 

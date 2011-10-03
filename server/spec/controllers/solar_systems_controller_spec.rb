@@ -145,10 +145,24 @@ describe SolarSystemsController do
             {@unit.player_id => Player.minimal(@unit.player_id)})
       end
 
-      it "should include route hops" do
+      it "should include non-friendly routes" do
+        routes = [Factory.create(:route)]
+        Route.should_receive(:non_friendly_for_solar_system).with(
+          @solar_system.id, player.friendly_ids
+        ).and_return(routes)
         invoke @action, @params
         response_should_include(
-          :route_hops => RouteHop.find_all_for_player(player, @zone, [@unit])
+          :non_friendly_routes => routes.map { |r| r.as_json(:mode => :enemy) }
+        )
+      end
+
+      it "should include route hops" do
+        route_hops = [Factory.create(:route_hop)]
+        RouteHop.should_receive(:find_all_for_player).
+          with(player, @zone, [@unit]).and_return(route_hops)
+        invoke @action, @params
+        response_should_include(
+          :route_hops => route_hops.map(&:as_json)
         )
       end
     end
