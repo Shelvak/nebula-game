@@ -12,6 +12,8 @@
          
          import components.skins.DeleteButtonSkin;
          
+         import config.Config;
+         
          import controllers.constructionqueues.ConstructionQueuesCommand;
          import controllers.objects.ObjectClass;
          
@@ -19,6 +21,7 @@
          
          import models.building.Building;
          import models.constructionqueueentry.ConstructionQueueEntry;
+         import models.parts.BuildingUpgradable;
          import models.parts.Upgradable;
          import models.parts.UpgradableType;
          import models.parts.events.UpgradeEvent;
@@ -72,7 +75,7 @@
                         {
                            totalTime += queueEntry.count * Upgradable.calculateUpgradeTime(
                               UpgradableType.UNITS, ModelUtil.getModelSubclass(queueEntry.constructableType),
-                              {"level": 1}, constructor.constructorMod
+                              {"level": 1}, constructor.constructorMod + BuildingUpgradable.getConstructionMod(constructor.type, constructor.level)
                            );
                         }
                         else
