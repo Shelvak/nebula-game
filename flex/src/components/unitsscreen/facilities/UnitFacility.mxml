@@ -134,7 +134,7 @@
             purchasePending = true;
             EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
             new UnitsCommand(UnitsCommand.NEW,                
-               {type: StringUtil.firstToUpperCase(item),
+               {type: StringUtil.underscoreToCamelCase(item),
                   count: count,
                   constructorId: _facility.id}
             ).dispatch ();
@@ -235,7 +235,7 @@
                upgradeState = true
             else if (_facility.constructableType != null)
                upgradeState = false
-            else if (!checkIfCanBeBought(StringUtil.firstToUpperCase(shop.selectedItem)))
+            else if (!checkIfCanBeBought(StringUtil.firstToUpperCase(shop.selectedItem.type)))
                upgradeState = false
             else
                upgradeState = true;

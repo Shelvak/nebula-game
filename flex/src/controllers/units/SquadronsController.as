@@ -264,7 +264,7 @@ package controllers.units
          for (var unitType:String in cachedUnits)
          {
             var entry:UnitBuildingEntry = new UnitBuildingEntry(
-               "unit::" + StringUtil.firstToUpperCase(unitType),
+               "unit::" + StringUtil.underscoreToCamelCase(unitType),
                cachedUnits[unitType]
             );
             result.addItem(entry);

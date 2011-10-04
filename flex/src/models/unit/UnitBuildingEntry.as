@@ -20,7 +20,7 @@ package models.unit
       {
          super();
          _terrainType = terrainType;
-         _type = StringUtil.firstToUpperCase(type);
+         _type = StringUtil.underscoreToCamelCase(type);
          _count = count;
          this.level = level;
       };
@@ -34,7 +34,7 @@ package models.unit
        */
       public function set type(value:String) : void
       {
-         _type = StringUtil.firstToUpperCase(value);
+         _type = StringUtil.underscoreToCamelCase(value);
       }
       /**
        * @private

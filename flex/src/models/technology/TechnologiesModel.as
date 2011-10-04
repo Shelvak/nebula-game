@@ -73,7 +73,7 @@ package models.technology
          {
             if (mods[key][property] != null)
             {
-               var currentTech: Technology = getTechnologyByType(StringUtil.firstToUpperCase(key));
+               var currentTech: Technology = getTechnologyByType(StringUtil.underscoreToCamelCase(key));
                if (currentTech.level > 0)
                   value += StringUtil.evalFormula(mods[key][property], {'level': currentTech.level});
             }
@@ -101,7 +101,7 @@ package models.technology
       public function getTechnologyByType(tech_type: String): Technology
       {
          for each (var element: Technology in technologies)
-         if (element.type == StringUtil.firstToUpperCase(tech_type)) return element;
+         if (element.type == StringUtil.underscoreToCamelCase(tech_type)) return element;
          return null;
       }
       
