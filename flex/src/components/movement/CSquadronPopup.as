@@ -97,7 +97,7 @@ package components.movement
                removeGlobalEventHandlers();
             lstUnits.dataProvider = _squadron != null ? _squadron.units : null;
             visible = _squadron != null ? true : false;
-            showSourceLoc = _squadron != null && _squadron.route != null;
+            showSourceLoc = _squadron != null && _squadron.isFriendly && _squadron.route != null;
             showDestLoc = showSourceLoc;
             updateUnitsOrdersButtonsVisibility();
             updateUnitsManagementButtonLabel();
