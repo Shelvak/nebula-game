@@ -104,7 +104,9 @@ package controllers.units
          Objects.paramNotNull("squads", squads);
          Objects.paramNotNull("jumpsAtHash", jumpsAtHash);
          for each (var squad:MSquadron in squads) {
-            SquadronFactory.attachJumpsAt(squad.route, jumpsAtHash[squad.id]);
+            if (squad.isMoving && squad.isHostile) {
+               SquadronFactory.attachJumpsAt(squad.route, jumpsAtHash[squad.id]);
+            }
          }
       }
       
