@@ -19,7 +19,12 @@ package models.movement.events
        * 
        * @eventType routeChange
        */
-      public static const CHANGE:String = "routeChange";
+      public static const CHANGE:String = "change";
+      
+      /**
+       * Dispatched when <code>MRoute.jumpsAt</code> property changes.
+       */
+      public static const JUMPS_AT_CHANGE:String = "jumpsAtChange";
       
       
       /**

@@ -13,7 +13,7 @@ package models.movement.events
        * 
        * @eventType squadronMove
        */
-      public static const MOVE:String = "squadronMove";
+      public static const MOVE:String = "move";
       
       
       /**

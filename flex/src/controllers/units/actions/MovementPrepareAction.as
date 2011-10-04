@@ -36,8 +36,10 @@ package controllers.units.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         cmd.parameters.route.hops = cmd.parameters.routeHops;
-         SQUADS_CTRL.startMovement(cmd.parameters.route, cmd.parameters.unitIds);
+         var route:Object = cmd.parameters["route"];
+         var unitIds:Array = cmd.parameters["unitIds"];
+         route["hops"] = cmd.parameters["routeHops"];
+         SQUADS_CTRL.startMovement(route, unitIds);
       }
    }
 }

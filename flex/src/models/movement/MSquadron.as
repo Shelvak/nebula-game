@@ -10,14 +10,12 @@ package models.movement
    import models.location.ILocationUser;
    import models.location.Location;
    import models.location.LocationMinimal;
-   import models.location.LocationMinimalSolarSystem;
-   import models.location.LocationType;
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
    import models.movement.events.MSquadronEvent;
    import models.player.PlayerId;
    import models.player.PlayerMinimal;
-   import models.solarsystem.MSSObject;
+   import models.time.MTimeEventFixedMoment;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
    
@@ -33,18 +31,19 @@ package models.movement
    /**
     * Dispatched when a hop has been added to or removed from the route. Event is not dispatched when a move
     * occures between two different maps.
-    * 
-    * @eventType models.movement.events.MRouteEvent.CHANGE
     */
    [Event(name="change", type="models.movement.events.MRouteEvent")]
    
    /**
     * Dispatched when the squadron moves to a new location. Event is not dispatched when a move occures
     * between two different maps.
-    * 
-    * @eventType models.movement.events.MSquadronEvent.MOVE
     */
    [Event(name="move", type="models.movement.events.MSquadronEvent")]
+   
+   /**
+    * @see models.movement.events.MRouteEvent.JUMPS_AT_CHANGE
+    */
+   [Event(name="jumpsAtChange", type="models.movement.events.MRouteEvent")]
    
    
    /**
@@ -193,9 +192,22 @@ package models.movement
        * [Bindable]</i></p>
        */
       public function set route(value:MRoute) : void {
-         if (_route != value)
+         if (_route != value) {
+            if (_route != null) {
+               _route.addEventListener(MRouteEvent.JUMPS_AT_CHANGE, route_jumpsAtChangeHandler, false, 0, true);
+            }
             _route = value;
+            if (_route != null) {
+               _route.removeEventListener(MRouteEvent.JUMPS_AT_CHANGE, route_jumpsAtChangeHandler, false);
+            }
+            route_jumpsAtChangeHandler(null);
+         }
       }
+      
+      private function route_jumpsAtChangeHandler(event:MRouteEvent) : void {
+         dispatchSimpleEvent(MRouteEvent, MRouteEvent.JUMPS_AT_CHANGE);
+      }
+      
       /**
        * @private
        */
@@ -250,15 +262,20 @@ package models.movement
       public var currentHop:MHop = null;
       
       /**
-       * A hop that holds information about a jump to another map.
+       * @see models.movement.MRoute#jumpsAtEvent
        */
-      public var jumpHop:MHop;
+      public function set jumpsAtEvent(value:MTimeEventFixedMoment) : void {
+         route.jumpsAtEvent = value;
+      }
+      public function get jumpsAtEvent() : MTimeEventFixedMoment {
+         return route.jumpsAtEvent;
+      }
       
       /**
-       * Will this squad have to jump between maps?
+       * @see models.movement.MRoute#jumpPending
        */
       public function get jumpPending() : Boolean {
-         return jumpHop != null;
+         return route.jumpPending;
       }
       
       [Bindable(event="willNotChange")]
@@ -386,7 +403,6 @@ package models.movement
          if (lastHop && hop.index - lastHop.index != 1)
             throwHopOutOfOrderError(hop);
          hops.addItem(hop);
-         jumpHop = hop.jumpsAt != null ? hop : null;
          dispatchHopAddEvent(hop);
       }
       

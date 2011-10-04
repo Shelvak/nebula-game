@@ -45,15 +45,22 @@ package controllers.units.actions
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
          var params:Object = cmd.parameters;
+         var units:Array = params["units"];
+         var players:Object = params["players"];
+         var routeHops:Array = params["routeHops"];
+         var jumpsAt:String = params["jumpsAt"];
          // we have received next hop for hostile squad
-         if ((params.units as Array).length == 0)
-            SQUADS_CTRL.addHopToSquadron(BaseModel.createModel(MHop, params.routeHops[0]));
+         if (units.length == 0) {
+            SQUADS_CTRL.addHopToSquadron(BaseModel.createModel(MHop, routeHops[0]));
+         }
          // friendly squadron made a jump between maps or a squadron jumped into players visible area
-         else
+         else {
             SQUADS_CTRL.executeJump(
-               UnitFactory.fromObjects(params.units, params.players),
-               BaseModel.createCollection(ArrayCollection, MHop, params.routeHops)
+               UnitFactory.fromObjects(units, players),
+               BaseModel.createCollection(ArrayCollection, MHop, routeHops),
+               jumpsAt
             );
+         }
       }
    }
 }

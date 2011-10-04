@@ -145,6 +145,7 @@ package controllers.planets.actions
          }
          
          SQUADS_CTRL.createSquadronsForUnits(planet.units);
+         SQUADS_CTRL.attachJumpsAtToHostileSquads(planet.squadrons, params["nonFriendlyJumpsAt"]);
          planet.dispatchUnitRefreshEvent();
          if (f_createMapOnly)
             NAV_CTRL.recreateMap(planet);

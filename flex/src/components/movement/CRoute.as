@@ -102,7 +102,7 @@ package components.movement
       
       private var _hopsEndpoints:Vector.<CHopInfo>;
       
-      private function createHopEndpoint(newHop:MHop) : void {
+      private function createHopEndpoint() : void {
          var hopInfo:CHopInfo = new CHopInfo();
          hopInfo.squadOwner = squadron.owner;
          hopInfo.arrivesInLabelText = getLabel("arrivesIn");
@@ -136,10 +136,11 @@ package components.movement
             hopInfo.x = coords.x;
             hopInfo.y = coords.y;
          }
-         if (_hopsEndpoints.length > 0 && _squadM.jumpPending) {
-            hop = _squadM.jumpHop;
+         if (_hopsEndpoints.length > 0
+             && _squadM.jumpPending
+             && (_squadM.isFriendly || !_squadM.hasHopsRemaining)) {
             hopInfo = _hopsEndpoints[_hopsEndpoints.length - 1];
-            var loc:LocationMinimal = hop.location;
+            var loc:LocationMinimal = _squadM.currentHop.location;
             var locWrap:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(loc);
             var ss:SolarSystem = ModelLocator.getInstance().latestSolarSystem;
             if (loc.isGalaxy ||
@@ -149,8 +150,8 @@ package components.movement
             else {
                hopInfo.jumpsInLabelText = getLabel("landsIn");
             }
-            coords = _grid.getSectorRealCoordinates(hop.location);
-            hopInfo.jumpsInValueText = getEventInString(hop.jumpsAt.time);
+            coords = _grid.getSectorRealCoordinates(_squadM.currentHop.location);
+            hopInfo.jumpsInValueText = _squadM.jumpsAtEvent.occuresInString;
             hopInfo.jumpsInVisible = true;
             hopInfo.x = coords.x;
             hopInfo.y = coords.y;
@@ -159,9 +160,13 @@ package components.movement
       
       protected override function createChildren() : void {
          super.createChildren();
+         var hop:MHop = null;
          _hopsEndpoints = new Vector.<CHopInfo>();
-         for each (var hop:MHop in _squadM.hops) {
-            createHopEndpoint(hop);
+         for each (hop in _squadM.hops) {
+            createHopEndpoint();
+         }
+         if (_hopsEndpoints.length == 0 && _squadM.jumpPending) {
+            createHopEndpoint();
          }
          updateHopsEndpoints();
       }
@@ -198,18 +203,26 @@ package components.movement
       /* ############################ */
       
       private function addModelEventHandlers(squad:MSquadron) : void {
-         squad.addEventListener(MRouteEvent.CHANGE, model_routeChangeHandler);
+         squad.addEventListener(MRouteEvent.CHANGE, model_routeChangeHandler, false, 0, true);
+         squad.addEventListener(MRouteEvent.JUMPS_AT_CHANGE, model_jumpsAtChangeHandler, false, 0, true);
       }
       
       private function removeModelEventHandlers(squad:MSquadron) : void {
-         squad.removeEventListener(MRouteEvent.CHANGE, model_routeChangeHandler);
+         squad.removeEventListener(MRouteEvent.CHANGE, model_routeChangeHandler, false);
+         squad.removeEventListener(MRouteEvent.JUMPS_AT_CHANGE, model_jumpsAtChangeHandler, false);
       }
       
       private function model_routeChangeHandler(event:MRouteEvent) : void {
-         if (event.kind == MRouteEventChangeKind.HOP_ADD)
-            createHopEndpoint(event.hop);
-         else
+         if (event.kind == MRouteEventChangeKind.HOP_ADD) {
+            createHopEndpoint();
+         }
+         else {
             removeFirstHopEndpoint();
+         }
+         invalidateDisplayList();
+      }
+      
+      private function model_jumpsAtChangeHandler() : void {
          invalidateDisplayList();
       }
       
