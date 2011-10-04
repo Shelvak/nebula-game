@@ -20,7 +20,6 @@ package controllers.units
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
    import models.player.PlayerId;
-   import models.time.MTimeEventFixedMoment;
    import models.unit.MCUnitScreen;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
@@ -104,19 +103,8 @@ package controllers.units
       public function attachJumpsAtToHostileSquads(squads:IList, jumpsAtHash:Object) : void {
          Objects.paramNotNull("squads", squads);
          Objects.paramNotNull("jumpsAtHash", jumpsAtHash);
-         var squad:MSquadron = null;
-         var route:MRoute = null;
-         var jumpsAt:String = null;
-         for each (squad in squads) {
-            jumpsAt = jumpsAtHash[squad.id];
-            if (jumpsAt != null) {
-               route = new MRoute()
-               route.id = squad.id;
-               route.player = squad.player;
-               route.jumpsAtEvent = new MTimeEventFixedMoment();
-               route.jumpsAtEvent.occuresAt = DateUtil.parseServerDTF(jumpsAt);
-               squad.route = route;
-            }
+         for each (var squad:MSquadron in squads) {
+            SquadronFactory.attachJumpsAt(squad.route, jumpsAtHash[squad.id]);
          }
       }
       
@@ -430,10 +418,16 @@ package controllers.units
             squad = findSquad(unit.squadronId, unit.playerId, unit.location);
             
             // No squadron for the unit: create one
-            if (!squad) {
+            if (squad == null) {
                squad = SquadronFactory.fromUnit(unit);
-               if (squad.isMoving && squad.isFriendly)
-                  squad.route = ROUTES.find(squad.id);
+               if (squad.isMoving) {
+                  if (squad.isFriendly) {
+                     squad.route = ROUTES.find(squad.id);
+                  }
+                  else {
+                     SquadronFactory.createHostileRoute(squad, null);
+                  }
+               }
                SQUADS.addItem(squad);
             }
          }
