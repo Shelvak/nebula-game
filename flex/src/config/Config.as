@@ -159,7 +159,7 @@ package config
          for (var key: String in requirementStringList) {
             var parts: Array = key.split(".");
             
-            var unit:String = StringUtil.firstToUpperCase(parts[0]);
+            var unit:String = StringUtil.underscoreToCamelCase(parts[0]);
             var unitKey:String = parts[1];
             
             if (requirements[unit] == null) {
@@ -260,7 +260,7 @@ package config
             var upgradableType:String = StringUtil.firstToUpperCase(parts[0]);
             var type:String = parts[1];
             
-            if (requirements[StringUtil.firstToUpperCase(parts[3])] == null) 
+            if (requirements[parts[3]] == null) 
             {
                requirements[StringUtil.firstToUpperCase(parts[3])] = ModelUtil.getModelType(String(parts[0]).slice(0, String(parts[0]).length - 1), 
                   parts[1]);
@@ -370,7 +370,7 @@ package config
                continue;
             }
             
-            var name: String = StringUtil.firstToUpperCase(parts[0]);
+            var name: String = StringUtil.underscoreToCamelCase(parts[0]);
             
             // If there are no such technology in our data
             if (types.indexOf(name) == -1)
@@ -411,7 +411,7 @@ package config
       public static function getUnitProperty(type:String, prop:String) : *
       {
          return getValue
-         ("units." + StringUtil.firstToLowerCase(type) + "." + prop);
+         ("units." + StringUtil.underscoreToCamelCaseFirstLower(type) + "." + prop);
       }
       
       public static function getUnitArmorType(type: String): String
@@ -426,7 +426,7 @@ package config
       
       public static function getUnitProperties(type:String): Object
       {
-         return grabPropertiesFromData("^units\." + StringUtil.firstToLowerCase(type));
+         return grabPropertiesFromData("^units\." + StringUtil.underscoreToCamelCaseFirstLower(type));
       }
       
       public static function getUnitMaxLevel(type: String): int
@@ -468,7 +468,7 @@ package config
        */
       public static function getUnitRequirements(type: String):Object
       {
-         return getRequirements('units', type);
+         return getRequirements('units', StringUtil.underscoreToCamelCaseFirstLower(type));
       }
       
       public static function getUnitHp(type:String) : int
@@ -500,9 +500,9 @@ package config
             var parts: Array = key.split(".");
             if (parts[1] == 'armor' && data[key] == type)
             {
-               if ((getUnitKind(StringUtil.firstToUpperCase(parts[0])) == reach) || (reach == ReachKind.BOTH))
+               if ((getUnitKind(StringUtil.underscoreToCamelCase(parts[0])) == reach) || (reach == ReachKind.BOTH))
                {
-                  types.push(StringUtil.firstToUpperCase(parts[0]));
+                  types.push(StringUtil.underscoreToCamelCase(parts[0]));
                }
             }
          }
@@ -517,7 +517,7 @@ package config
          {
             var parts: Array = key.split(".");
             if (parts[1] == 'hp')
-               types.push(StringUtil.firstToUpperCase(parts[0]));
+               types.push(StringUtil.underscoreToCamelCase(parts[0]));
          }
          return types;
       }
@@ -649,7 +649,7 @@ package config
                {
                   if ((data[key][0] as String).split('/')[0] == constructableType)
                   {
-                     types.push(StringUtil.firstToUpperCase(parts[0]));
+                     types.push(StringUtil.underscoreToCamelCase(parts[0]));
                   }
                }
          }
@@ -665,7 +665,7 @@ package config
          {
             var parts: Array = key.split(".");
             if (parts[1] == 'hp')
-               types.push(StringUtil.firstToUpperCase(parts[0]));
+               types.push(StringUtil.underscoreToCamelCase(parts[0]));
          }
          return types;
       }
@@ -688,7 +688,7 @@ package config
          
          for each (var building: Object in resultData) {
             
-            var name: String = StringUtil.firstToUpperCase(building.building);
+            var name: String = StringUtil.underscoreToCamelCase(building.building);
             types.push(name);
          }
          return types;
@@ -922,7 +922,7 @@ package config
             {
                key = key.replace(namespacePattern, "");
                key = key.replace(/\.(.)+/i, "");
-               key = StringUtil.firstToUpperCase(key);
+               key = StringUtil.underscoreToCamelCase(key);
                if (!list.contains(key))
                {
                   list.addItem(key);

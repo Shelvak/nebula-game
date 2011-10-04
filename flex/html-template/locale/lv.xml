@@ -495,8 +495,10 @@
     <scientists value="Scientists" />
     <special value="Attributes" />
     <title.owner value="Ownership" />
+    <!-- TODO: translate this (changed) -->
     <!-- 0: date, 1: time (1 part) -->
-    <label.owner value="You are the owner of this planet from {0} ({1})." />
+    <label.owner value="You are the owner of this planet from:" />
+    <label.ownerDate value="{0} ({1})." />
     <label.battlegroundOwner> 
       <p>The longer you rule this planet, the less productive 
       will the NPC factories become.</p>

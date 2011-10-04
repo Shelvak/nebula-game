@@ -473,7 +473,7 @@ package utils.assets
        */
       public static function getTechnologyImageName(type:String) : String
       {
-         return TECHNOLOGIES_IMAGE_FOLDER + StringUtil.firstToUpperCase(type);
+         return TECHNOLOGIES_IMAGE_FOLDER + StringUtil.underscoreToCamelCase(type);
       }
       
       

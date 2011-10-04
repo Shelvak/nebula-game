@@ -106,7 +106,7 @@ package models.infoscreen
          {
             types[i] = new UnitBuildingInfoEntry(
                ModelUtil.getModelType(ObjectClass.BUILDING, types[i]),
-               Localizer.string('Buildings', StringUtil.firstToUpperCase(types[i]) + '.name'),
+               Localizer.string('Buildings', StringUtil.underscoreToCamelCase(types[i]) + '.name'),
                getDamagePerTick(lvl),
                damage,
                ArmorTypes.FORTIFIED,
@@ -122,10 +122,10 @@ package models.infoscreen
          {
             types[i] = new UnitBuildingInfoEntry(
                ModelUtil.getModelType(ObjectClass.UNIT, types[i]),
-               Localizer.string('Units', StringUtil.firstToUpperCase(types[i]) + '.name'),
+               Localizer.string('Units', StringUtil.underscoreToCamelCase(types[i]) + '.name'),
                getDamagePerTick(lvl),
                damage,
-               Config.getUnitArmorType(StringUtil.firstToUpperCase(types[i])), mod
+               Config.getUnitArmorType(StringUtil.underscoreToCamelCase(types[i])), mod
             );
          }
          return types;

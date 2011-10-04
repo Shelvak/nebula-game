@@ -135,26 +135,12 @@
             {
                return;
             }
-            var needsWalkAround: Boolean = !rowIsFree(to.coords[0], from.coords[1], to.coords[1]);
             
-            var yMark: int = to.coords[0]; 
+            // Coeficient to fix x coord of the points
+            var mark: int = to.coords[0] < from.coords[0]? -1: 1; 
             
-            if (needsWalkAround)
-            {
-               if (to.coords[0] <= from.coords[0])
-               {
-                  yMark += 1;
-               }
-               addPoint((from.coords[0] * 2)+1, from.coords[1] + 1);
-               addPoint((yMark * 2), from.coords[1] + 1);
-               addPoint((yMark * 2), to.coords[1]);
-               addPoint((to.coords[0] * 2), to.coords[1]);
-            }
-            else
-            {
-               addPoint((from.coords[0] * 2) + 1, (from.coords[1] + 1));
-               addPoint((yMark*2)+1, from.coords[1] + 1);
-            }
+            addPoint(from.coords[0] * 2 + mark, to.coords[1]);
+            addPoint(to.coords[0] * 2 + mark, to.coords[1]);
          }
          
          private function addPoint(x: int, y: int): void
@@ -238,7 +224,7 @@
          }
          
          private function drawHLine(top:Object, xFrom: Number, xTo: Number, 
-                                    to: Technology, tp: int = -1, xFromPos: int = -1, xToPos: int = -1): void
+                                                               to: Technology, tp: int = -1, xFromPos: int = -1, xToPos: int = -1): void
          {
             var hLine: TechHLine = new TechHLine();
             hLine.x = xFrom;
@@ -265,7 +251,7 @@
          }
          
          private function createVLine(left:Object, yFrom: int, yTo: int, to: Technology, 
-                                                               half: Boolean = false, start: Boolean = false, end: Boolean = false): void
+                                                                         half: Boolean = false, start: Boolean = false, end: Boolean = false): void
          {
             var distance: int = int(left);
             var coordFrom: int = Math.min(yFrom, yTo);
@@ -313,7 +299,7 @@
          }
          
          private function createHLine(top:Object, xFrom: int, xTo: int, to: Technology, 
-                                      startHalf: Boolean = false, endHalf: Boolean = false): void
+                                                  startHalf: Boolean = false, endHalf: Boolean = false): void
          {
             var distance: int = int(top);
             var coordFrom: int = 2* Math.min(xFrom, xTo) + (startHalf? 1 : 0);
@@ -404,33 +390,11 @@
             {
                //=================================
                //else need to reach other technology by folowing directions
-               createVLine(from.coords[0], from.coords[1], to.coords[1] - 1, to, true, true, false);
-               //check if target can be reached directly by y axis
-               var needsWalkAround: Boolean = !rowIsFree(to.coords[0], to.coords[1] - 1, to.coords[1]);
-               var yMark: int = to.coords[0]; 
-               
-               if (needsWalkAround)
-               {
-                  if (to.coords[0] <= from.coords[0])
-                  {
-                     yMark += 1;
-                  }
-                  //draw horizontal line to the destination element cell
-                  createHLine(to.coords[1] - 1, from.coords[0], yMark, to, true);
-                  //draw vertical line to the destination element cell
-                  createVLine(yMark, to.coords[1], to.coords[1], to);
-                  //draw horizontal fix to element
-//                  createHLine(to.coords[1], yMark, to.coords[0], to, false, true);
-//                  //finish connection by drawing small line inside targets cell
-//                  createVLine(to.coords[0], to.coords[1], to.coords[1], to, true, false, true);
-               }
-               else
-               {
-                  //draw horizontal line to the destination element x
-                  createHLine((from.coords[1] + 1), from.coords[0], yMark, to, true, true);
-                  //draw vertical line to the destination element
-                  createVLine(yMark, (from.coords[1] + 1), to.coords[1], to, true, false, true);
-               }
+               createVLine(from.coords[0], from.coords[1], to.coords[1], to, true, true, false);
+               //draw horizontal line to the destination element x
+               createHLine(to.coords[1], from.coords[0], to.coords[0], to, true, true);
+               //draw vertical line to the destination element
+               createVLine(to.coords[0], to.coords[1], to.coords[1], to, true, false, true);
             }
             
          }

@@ -17,7 +17,7 @@
          
          public function set type(value: String): void
          {
-            _type = StringUtil.firstToUpperCase(value);
+            _type = StringUtil.underscoreToCamelCase(value);
          }
          
          [Bindable]

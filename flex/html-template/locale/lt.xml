@@ -495,7 +495,8 @@
     <special value="Savybės" />
     <title.owner value="Valdymas" />
     <!-- 0: date, 1: time (1 part) -->
-    <label.owner value="Tu valdai šią planetą nuo {0} ({1})." />
+    <label.owner value="Tu valdai šią planetą nuo:" />
+    <label.ownerDate value="{0} ({1})." />
     <label.battlegroundOwner> 
       <p>Kuo ilgiau valdysi šią planetą tuo mažesnis bus ateivių fabrikų 
       produktyvumas</p>

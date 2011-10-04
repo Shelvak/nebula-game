@@ -54,9 +54,9 @@
 
       ]]>
    </fx:Script>
-   <s:Label text="{getText('label.owner', [
-            ownership == null?'':DateUtil.formatShortDate(ownership),
-            timePassed])}"/>
+   <s:Label text="{getText('label.owner')}"/>
+   <base:TimeLabel text="{getText('label.ownerDate', [ownership == null?''
+            :DateUtil.formatShortDate(ownership), timePassed])}"/>
    <s:Label text="{getText('label.battlegroundOwner')}"
             visible="{npc}" includeInLayout="{npc}"/>
    <base:layout>
