@@ -873,7 +873,7 @@ package models.planet
                return (unit.level > 0
                   && definesLocation(unit.location) 
                   && unit.kind == UnitKind.GROUND 
-                  && unit.owner == owner 
+                  && (unit.owner == owner || (owner == Owner.ENEMY && unit.owner == Owner.UNDEFINED))
                   && unit.hasGuns);
             }
             catch (err:Error)
