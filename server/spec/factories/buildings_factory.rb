@@ -186,3 +186,12 @@ Factory.define :b_defensive_portal, :parent => :building_built,
 
 Factory.define :b_market, :parent => :building_built,
 :class => Building::Market do |m|; end
+
+Factory.define :b_mobile_thunder, :parent => :building_built,
+:class => Building::MobileThunder do |m|; end
+
+Factory.define :b_mobile_screamer, :parent => :building_built,
+:class => Building::MobileScreamer do |m|; end
+
+Factory.define :b_mobile_vulcan, :parent => :building_built,
+:class => Building::MobileVulcan do |m|; end

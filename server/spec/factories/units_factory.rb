@@ -100,3 +100,12 @@ Factory.define :u_jumper, :parent => :unit_built,
 
 Factory.define :u_zeus, :parent => :unit_built,
 :class => Unit::Zeus do |m|; end
+
+Factory.define :u_mobile_vulcan, :parent => :unit_built,
+:class => Unit::MobileVulcan do |m|; end
+
+Factory.define :u_mobile_screamer, :parent => :unit_built,
+:class => Unit::MobileScreamer do |m|; end
+
+Factory.define :u_mobile_thunder, :parent => :unit_built,
+:class => Unit::MobileThunder do |m|; end

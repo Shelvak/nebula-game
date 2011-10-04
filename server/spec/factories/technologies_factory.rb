@@ -201,3 +201,12 @@ Factory.define :t_zeus, :parent => :technology,
 
 Factory.define :t_market, :parent => :technology,
 :class => Technology::Market do |m|; end
+
+Factory.define :t_mobile_vulcan, :parent => :technology,
+:class => Technology::MobileVulcan do |m|; end
+
+Factory.define :t_mobile_screamer, :parent => :technology,
+:class => Technology::MobileScreamer do |m|; end
+
+Factory.define :t_mobile_thunder, :parent => :technology,
+:class => Technology::MobileThunder do |m|; end

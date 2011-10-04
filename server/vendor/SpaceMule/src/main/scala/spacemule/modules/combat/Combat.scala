@@ -34,28 +34,37 @@ object Combat {
     val Tie = Value(2, "tie")
   }
 
-  def apply(location: Location, planetOwner: Option[Player],
-            players: Set[Option[Player]],
-            allianceNames: Combat.AllianceNames,
-            napRules: NapRules, troops: Set[Troop],
-            loadedTroops: Combat.LoadedTroops,
-            unloadedTroopIds: Set[Long],
-            buildings: Set[Building]) =
+  def apply(
+    location: Location,
+    planetOwner: Option[Player],
+    players: Set[Option[Player]],
+    allianceNames: Combat.AllianceNames,
+    napRules: NapRules, troops: Set[Troop],
+    loadedTroops: Combat.LoadedTroops,
+    unloadedTroopIds: Set[Long],
+    buildings: Set[Building],
+    calculateVictoryPoints: Boolean
+  ) =
     new Combat(location, planetOwner, players, allianceNames, napRules,
-               troops, loadedTroops, unloadedTroopIds, buildings)
+               troops, loadedTroops, unloadedTroopIds, buildings,
+               calculateVictoryPoints)
 }
 
 /**
  * Combat simulator.
  */
-class Combat(location: Location, planetOwner: Option[Player],
-             players: Set[Option[Player]],
-             allianceNames: Combat.AllianceNames,
-             napRules: Combat.NapRules,
-             troops: Set[Troop],
-             loadedTroops: Combat.LoadedTroops,
-             unloadedTroopIds: Set[Long],
-             buildings: Set[Building]) {
+class Combat(
+  location: Location,
+  planetOwner: Option[Player],
+  players: Set[Option[Player]],
+  allianceNames: Combat.AllianceNames,
+  napRules: Combat.NapRules,
+  troops: Set[Troop],
+  loadedTroops: Combat.LoadedTroops,
+  unloadedTroopIds: Set[Long],
+  buildings: Set[Building],
+  calculateVictoryPoints: Boolean
+) {
   // Units unloaded to ground, and those who are still kept in their
   // transporters.
   val (unloadedTroops, stillLoadedTroops) = {
@@ -103,7 +112,7 @@ class Combat(location: Location, planetOwner: Option[Player],
   // HP properties will be changed.
   alliances.toMap
 
-  val statistics = new Statistics(alliances)
+  val statistics = new Statistics(alliances, calculateVictoryPoints)
 
   // Launch the combat in the constructor.
   L.debug("Running combat simulation", () => run())

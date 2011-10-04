@@ -34,6 +34,7 @@ package models.notification.parts
             damageTakenAlliance = params.statistics.damageTakenAlliance;
             xpEarned = params.statistics.xpEarned;
             pointsEarned = params.statistics.pointsEarned;
+            victoryPointsEarned = params.statistics.victoryPointsEarned;
             metal = MathUtil.round(params.resources.metal, Config.getRoundingPrecision());
             energy = MathUtil.round(params.resources.energy, Config.getRoundingPrecision());
             zetium = MathUtil.round(params.resources.zetium, Config.getRoundingPrecision());
@@ -67,6 +68,8 @@ package models.notification.parts
       public var xpEarned: int;
       
       public var pointsEarned: int;
+      
+      public var victoryPointsEarned: int;
       
       public var metal: Number = 0;
       public var energy: Number = 0;

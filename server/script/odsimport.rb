@@ -55,8 +55,15 @@ MAIN_TITLE_ALIASES = [
   ["HV Charges", "high_velocity_charges"],
 ]
 
-def underscore(string)
-  string.downcase.gsub(' ', '_')
+def underscore(original)
+  string = original.dup.to_s
+  string.tr!(' ', '_')
+  string.gsub!(/::/, '/')
+  string.gsub!(/([A-Z]+)([A-Z][a-z])/,'\1_\2')
+  string.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
+  string.tr!("-", "_")
+  string.downcase!
+  string
 end
 
 def sf(a, b, b1, c, c1, c2, d, d1, level_mult, mult)
@@ -201,46 +208,58 @@ def read_unit_definition(row, sheet, sections)
     metal, energy, zetium, population, volume, storage,
     ss_hop_time, galaxy_hop_time = sheet[row]
 
-  section = tier == "Towers" ? "buildings" : "units"
-  sections[section] ||= {}
-
-  if match = name.match(/Gun(\d)/)
-    gun_index = match[1].to_i - 1
-    config_name = underscore(name.sub(/ Gun\d/, ''))
-
-    add_guns(sections, section, config_name, gun_index, dmg_per_gun,
-      gun_cooldown, gun_reach, gun_count, dmg_type, dmg_mod)
+  case tier
+  when "Towers"
+    ["buildings"]
+  when "MTow"
+    ["buildings", "units"]
   else
-    config_name = underscore(name)
+    ["units"]
+  end.each do |section|
+    sections[section] ||= {}
 
-    attrs = []
-    attrs.push [hp.to_i, "hp"]
-    attrs.push [initiative.to_i, "initiative"]
-    attrs.push [build_time.to_i * 60, "upgrade_time"]
-    attrs.push [xp_mod.to_f, "xp_modifier"]
-    attrs.push ["#{xp_needed.to_i} * (level-1)", "xp_needed"]
-    attrs.push [armor_type.downcase.to_sym, "armor"] unless armor_type == ""
-    attrs.push ["#{armor_mod.to_i} * (level-1)", "armor_mod"]
-    attrs.push [max_lvl.to_i, "max_level"] unless zero?(max_lvl)
-    attrs.push [metal.to_f, "metal.cost"]
-    attrs.push [energy.to_f, "energy.cost"]
-    attrs.push [zetium.to_f, "zetium.cost"]
-    attrs.push [population.to_i, "population"] unless zero?(population)
-    attrs.push [volume.to_i, "volume"] unless zero?(volume)
-    attrs.push [storage.to_i, "storage"] unless zero?(storage)
-    attrs.push [(ss_hop_time.to_f * 60).to_i, "move.solar_system.hop_time"] \
-      unless zero?(ss_hop_time)
-    attrs.push [(galaxy_hop_time.to_f * 60).to_i, "move.galaxy.hop_time"] \
-      unless zero?(galaxy_hop_time)
-    attrs.each do |value, name|
-      sections[section]["#{config_name}.#{name}"] = value
-    end
+    if match = name.match(/Gun(\d)/)
+      gun_index = match[1].to_i - 1
+      config_name = underscore(name.sub(/ Gun\d/, ''))
 
-    if dmg_type.strip == ""
-      sections[section]["#{config_name}.guns"] = []
-    else
-      add_guns(sections, section, config_name, 0, dmg_per_gun,
+      add_guns(sections, section, config_name, gun_index, dmg_per_gun,
         gun_cooldown, gun_reach, gun_count, dmg_type, dmg_mod)
+    else
+      config_name = underscore(name)
+
+      attrs = []
+      attrs.push [hp.to_i, "hp"]
+      attrs.push [initiative.to_i, "initiative"]
+      attrs.push [build_time.to_i * 60, "upgrade_time"]
+      attrs.push [xp_mod.to_f, "xp_modifier"]
+      attrs.push ["#{xp_needed.to_i} * (level-1)", "xp_needed"]
+      attrs.push [armor_type.downcase.to_sym, "armor"] unless armor_type == ""
+      attrs.push ["#{armor_mod.to_i} * (level-1)", "armor_mod"]
+      attrs.push [max_lvl.to_i, "max_level"] unless zero?(max_lvl)
+      attrs.push [metal.to_f, "metal.cost"]
+      attrs.push [energy.to_f, "energy.cost"]
+      attrs.push [zetium.to_f, "zetium.cost"]
+      attrs.push [population.to_i, "population"] unless zero?(population) ||
+        section == "buildings"
+      attrs.push [volume.to_i, "volume"] unless zero?(volume) ||
+        section == "buildings"
+      attrs.push [storage.to_i, "storage"] unless zero?(storage) ||
+        section == "buildings"
+      attrs.push [(ss_hop_time.to_f * 60).to_i, "move.solar_system.hop_time"] \
+        unless zero?(ss_hop_time)
+      attrs.push [(galaxy_hop_time.to_f * 60).to_i, "move.galaxy.hop_time"] \
+        unless zero?(galaxy_hop_time)
+      attrs.each do |value, attr_name|
+        sections[section]["#{config_name}.#{attr_name}"] = value
+      end
+
+      dmg_type = "" if tier == "MTow" && section == "units"
+      if dmg_type.strip == ""
+        sections[section]["#{config_name}.guns"] = []
+      else
+        add_guns(sections, section, config_name, 0, dmg_per_gun,
+          gun_cooldown, gun_reach, gun_count, dmg_type, dmg_mod)
+      end
     end
   end
 end

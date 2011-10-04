@@ -585,4 +585,83 @@ describe Combat do
         :planet_id => @location_container.location.id).first.should be_nil
     end
   end
+
+  describe "victory points" do
+    describe "when in battleground" do
+      [
+        [:planet, {:solar_system => Factory.create(:battleground)}],
+        [:solar_system, Factory.attributes_for(:battleground)],
+      ].each do |type, options|
+        describe type do
+          it "should calculate victory points for doing damage to other units" do
+            player1 = player2 = nil
+            assets = CombatDsl.new do
+              location(type, options)
+              player1 = player { units { rhyno } }.player
+              player2 = player { units { rhyno } }.player
+            end.run
+
+            [player1, player2].each do |player|
+              notification_id = assets.notification_ids[player.id]
+              notification = Notification.find(notification_id)
+              notification.params['statistics'][Combat::STATS_VPS_ATTR].
+                should > 0
+
+              player.victory_points.should == notification.params['statistics'][
+                Combat::STATS_VPS_ATTR
+              ]
+            end
+          end
+
+          it "should not calculate VPs for doing damage to NPC units" do
+            player = nil
+            assets = CombatDsl.new do
+              location(type, options)
+              player = player { units { rhyno } }.player
+              player(:npc => true) { units { rhyno } }
+            end.run
+
+            notification_id = assets.notification_ids[player.id]
+            notification = Notification.find(notification_id)
+            notification.params['statistics'][Combat::STATS_VPS_ATTR].
+              should == 0
+          end
+        end
+      end
+    end
+
+    describe "when not in battleground" do
+      [
+        [:planet, {:solar_system => Factory.create(:mini_battleground)},
+          " @ mini battleground"],
+        [:solar_system, Factory.attributes_for(:mini_battleground),
+          " @ mini battleground"],
+        [:planet, {:solar_system => Factory.create(:solar_system)},
+          " @ regular solar system"],
+        [:solar_system, Factory.attributes_for(:solar_system),
+          " @ regular solar system"],
+        [:galaxy, {}, ""],
+      ].each do |type, options, info|
+        describe "#{type}#{info}" do
+          it "should not calculate VPs for doing damage to other units" do
+            player1 = player2 = nil
+            assets = CombatDsl.new do
+              location(type, options)
+              player1 = player { units { rhyno } }.player
+              player2 = player { units { rhyno } }.player
+            end.run
+
+            [player1, player2].each do |player|
+              notification_id = assets.notification_ids[player.id]
+              notification = Notification.find(notification_id)
+              notification.params['statistics'][Combat::STATS_VPS_ATTR].
+                should == 0
+
+              player.victory_points.should == 0
+            end
+          end
+        end
+      end
+    end
+  end
 end

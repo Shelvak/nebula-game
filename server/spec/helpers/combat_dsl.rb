@@ -32,19 +32,19 @@ class CombatDsl
 
     def read_buildings; Set.new(@buildings); end
 
-    def initialize(type, &block)
+    def initialize(type, options, &block)
       @type = type
       @buildings = []
       case type
       when :planet
-        @location = Factory.create(:planet)
+        @location = Factory.create(:planet, options)
         @galaxy_id = @location.solar_system.galaxy_id
       when :solar_system
-        ss = Factory.create(:solar_system)
+        ss = Factory.create(:solar_system, options)
         @location = SolarSystemPoint.new(ss.id, 0, 0)
         @galaxy_id = @location.galaxy_id
       when :galaxy
-        galaxy = Factory.create(:galaxy)
+        galaxy = Factory.create(:galaxy, options)
         @location = GalaxyPoint.new(galaxy.id, 0, 0)
         @galaxy_id = @location.id
       else
@@ -220,8 +220,8 @@ class CombatDsl
     @alliances.map { |alliance| alliance.players }.flatten + @players
   end
 
-  def location(type, &block)
-    @location = LocationContainer.new(type, &block)
+  def location(type, options={}, &block)
+    @location = LocationContainer.new(type, options, &block)
   end
 
   def alliance(options={}, &block)

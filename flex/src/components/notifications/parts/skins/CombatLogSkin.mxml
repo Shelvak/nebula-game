@@ -239,6 +239,7 @@
             <s:Label id="lblDmgTakenAlliance" fontWeight="bold"/>
             <s:Label id="lblXp" fontWeight="bold"/>
             <s:Label id="lblPoints" fontWeight="bold"/>
+            <s:Label id="lblVictoryPoints" fontWeight="bold"/>
             <base:layout>
                <s:VerticalLayout/>
             </base:layout>
@@ -251,6 +252,7 @@
             <s:Label id="valDmgTakenAlliance" fontWeight="bold"/>
             <s:Label id="valXp" fontWeight="bold"/>
             <s:Label id="valPoints" fontWeight="bold"/>
+            <s:Label id="valVictoryPoints" fontWeight="bold"/>
             <base:layout>
                <s:VerticalLayout horizontalAlign="right"/>
             </base:layout>

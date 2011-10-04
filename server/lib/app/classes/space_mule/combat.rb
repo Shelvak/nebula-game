@@ -60,6 +60,8 @@ module SpaceMule::Combat
         buildings.map { |building| convert_building(sm_planet_owner, building) }
       ).to_scala
 
+      calculate_victory_points = calculate_victory_points(location)
+
       Combat.Runner.run(
         sm_location,
         sm_planet_owner,
@@ -69,7 +71,8 @@ module SpaceMule::Combat
         sm_troops,
         sm_loaded_units,
         unloaded_unit_ids.to_scala,
-        sm_buildings
+        sm_buildings,
+        calculate_victory_points
       )
     end
   end
@@ -90,6 +93,17 @@ module SpaceMule::Combat
     y = location_point.y.nil? ? None : Some(location_point.y)
 
     Location.new(location_point.id, kind, x, y)
+  end
+
+  # Only calculate victory points in main battleground planets and solar system
+  def self.calculate_victory_points(location)
+    if location.is_a?(SsObject::Planet)
+      location.solar_system.main_battleground?
+    elsif location.type == ::Location::SOLAR_SYSTEM
+      location.solar_system.main_battleground?
+    else
+      false
+    end
   end
 
   # Returns Ruby +Hash+ of {player_id => Scala +Player+} pairs.
