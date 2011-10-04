@@ -411,7 +411,7 @@ package config
       public static function getUnitProperty(type:String, prop:String) : *
       {
          return getValue
-         ("units." + StringUtil.firstToLowerCase(type) + "." + prop);
+         ("units." + StringUtil.underscoreToCamelCaseFirstLower(type) + "." + prop);
       }
       
       public static function getUnitArmorType(type: String): String
@@ -426,7 +426,7 @@ package config
       
       public static function getUnitProperties(type:String): Object
       {
-         return grabPropertiesFromData("^units\." + StringUtil.firstToLowerCase(type));
+         return grabPropertiesFromData("^units\." + StringUtil.underscoreToCamelCaseFirstLower(type));
       }
       
       public static function getUnitMaxLevel(type: String): int
@@ -468,7 +468,7 @@ package config
        */
       public static function getUnitRequirements(type: String):Object
       {
-         return getRequirements('units', type);
+         return getRequirements('units', StringUtil.underscoreToCamelCaseFirstLower(type));
       }
       
       public static function getUnitHp(type:String) : int
