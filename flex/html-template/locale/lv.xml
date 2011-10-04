@@ -1453,8 +1453,6 @@
     <label.changeSpeed value="Flight Time Control" />
     <label.flightTime value="Flight time: {0}" />
     <label.arrivesIn value="Arrives in: {0}" />
-    <label.jumpsIn value="Jumps in: {0}" />
-    <label.landsIn value="Lands in: {0}" />
     <label.arrivesAt value="Arrives at: {0}" />
     <label.owner value="Owner:" />
     <label.confirm value="Confirm"/>
@@ -1462,6 +1460,9 @@
     <label.reset value="Reset"/>
     <label.buyCreds value="Buy creds"/>
     <label.learnMore value="Learn more"/>
+    <label.hop.arrivesIn value="Arrives in:"/>
+    <label.hop.jumpsIn value="Jumps in:"/>
+    <label.hop.landsIn value="Lands in:"/>
     <message.combatCooldownInfo 
       value="Upon arrival there will be {0} cooldown before combat will ensue."/>
     <message.speedUpCost 

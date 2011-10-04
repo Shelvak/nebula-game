@@ -18,6 +18,7 @@ package controllers.galaxies.actions
    import models.MWreckage;
    import models.cooldown.MCooldownSpace;
    import models.factories.GalaxyFactory;
+   import models.factories.SquadronFactory;
    import models.factories.UnitFactory;
    import models.galaxy.Galaxy;
    import models.map.MapType;
@@ -88,7 +89,8 @@ package controllers.galaxies.actions
             BaseModel.createCollection(ArrayCollection, MWreckage, params["wreckages"]),
             BaseModel.createCollection(ArrayCollection, MCooldownSpace, params["cooldowns"]),
             UnitFactory.fromObjects(params["units"], params["players"]),
-            IList(BaseModel.createCollection(ArrayCollection, MHop, params["routeHops"])).toArray()
+            IList(BaseModel.createCollection(ArrayCollection, MHop, params["routeHops"])).toArray(),
+            params["nonFriendlyJumpsAt"]
          );
          var galaxy:Galaxy = ML.latestGalaxy;
          if (!startup) {
@@ -143,7 +145,8 @@ package controllers.galaxies.actions
                                    wreckages:IList,
                                    cooldowns:IList,
                                    units:IList,
-                                   hops:Array) : void {
+                                   hops:Array,
+                                   jumpsAtHash:Object) : void {
          ML.latestGalaxy = null;
          var galaxy:Galaxy = new Galaxy();
          galaxy.id = galaxyId;
@@ -157,6 +160,7 @@ package controllers.galaxies.actions
          galaxy.setFOWEntries(Vector.<Rectangle>(fowEntries), units);
          SQUADS_CTRL.createSquadronsForUnits(units);
          SQUADS_CTRL.addHopsToSquadrons(hops);
+         SQUADS_CTRL.attachJumpsAtToHostileSquads(galaxy.squadrons, jumpsAtHash);
          
          var cachedSS:SolarSystem = ML.latestSolarSystem;
          var ssInGalaxy:SolarSystem = cachedSS != null ?

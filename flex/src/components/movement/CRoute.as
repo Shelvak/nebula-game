@@ -12,7 +12,6 @@ package components.movement
    
    import models.ModelLocator;
    import models.OwnerColor;
-   import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.movement.MHop;
@@ -103,9 +102,10 @@ package components.movement
       
       private var _hopsEndpoints:Vector.<CHopInfo>;
       
-      private function createHopEndpoint(newHop:MHop) : void {
+      private function createHopEndpoint() : void {
          var hopInfo:CHopInfo = new CHopInfo();
          hopInfo.squadOwner = squadron.owner;
+         hopInfo.arrivesInLabelText = getLabel("arrivesIn");
          _hopsEndpoints.push(hopInfo);
          addElement(hopInfo);
       }
@@ -122,38 +122,37 @@ package components.movement
          var hopTime:String = "";
          var coords:Point = null;
          for each (hopInfo in _hopsEndpoints) {
-            hopInfo.text = "";
+            hopInfo.arrivesInValueText = null;
+            hopInfo.arrivesInVisible = false;
+            hopInfo.jumpsInValueText = null;
+            hopInfo.jumpsInVisible = false;
          }
          for (var idx:int = 0; idx < _squadM.hops.length; idx++)  {
             hop = MHop(_squadM.hops.getItemAt(idx));
-            hopInfo = _hopsEndpoints[idx];
-            hopTime = getLabel("arrivesIn", [getEventInString(hop.arrivesAt.time)]);
             coords = _grid.getSectorRealCoordinates(hop.location);
+            hopInfo = _hopsEndpoints[idx];
+            hopInfo.arrivesInValueText = getEventInString(hop.arrivesAt.time);
+            hopInfo.arrivesInVisible = true;
             hopInfo.x = coords.x;
             hopInfo.y = coords.y;
-            hopInfo.text = hopTime;
          }
-         if (_hopsEndpoints.length > 0 && _squadM.jumpPending) {
-            hop = _squadM.jumpHop;
+         if (_hopsEndpoints.length > 0
+             && _squadM.jumpPending
+             && (_squadM.isFriendly || !_squadM.hasHopsRemaining)) {
             hopInfo = _hopsEndpoints[_hopsEndpoints.length - 1];
-            hopTime = getEventInString(hop.jumpsAt.time);
-            var loc:LocationMinimal = hop.location;
+            var loc:LocationMinimal = _squadM.currentHop.location;
             var locWrap:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(loc);
             var ss:SolarSystem = ModelLocator.getInstance().latestSolarSystem;
             if (loc.isGalaxy ||
                 loc.isSolarSystem && ss.getSSObjectAt(locWrap.position, locWrap.angle).isJumpgate) {
-               hopTime = getLabel("jumpsIn", [hopTime]);
+               hopInfo.jumpsInLabelText = getLabel("jumpsIn");
             }
             else {
-               hopTime = getLabel("landsIn", [hopTime]);
+               hopInfo.jumpsInLabelText = getLabel("landsIn");
             }
-            if (hopInfo.text.length > 0) {
-               hopInfo.text += "\n" + hopTime
-            }
-            else {
-               hopInfo.text = hopTime;
-            }
-            coords = _grid.getSectorRealCoordinates(hop.location);
+            coords = _grid.getSectorRealCoordinates(_squadM.currentHop.location);
+            hopInfo.jumpsInValueText = _squadM.jumpsAtEvent.occuresInString;
+            hopInfo.jumpsInVisible = true;
             hopInfo.x = coords.x;
             hopInfo.y = coords.y;
          }
@@ -161,9 +160,13 @@ package components.movement
       
       protected override function createChildren() : void {
          super.createChildren();
+         var hop:MHop = null;
          _hopsEndpoints = new Vector.<CHopInfo>();
-         for each (var hop:MHop in _squadM.hops) {
-            createHopEndpoint(hop);
+         for each (hop in _squadM.hops) {
+            createHopEndpoint();
+         }
+         if (_hopsEndpoints.length == 0 && _squadM.jumpPending) {
+            createHopEndpoint();
          }
          updateHopsEndpoints();
       }
@@ -200,18 +203,26 @@ package components.movement
       /* ############################ */
       
       private function addModelEventHandlers(squad:MSquadron) : void {
-         squad.addEventListener(MRouteEvent.CHANGE, model_routeChangeHandler);
+         squad.addEventListener(MRouteEvent.CHANGE, model_routeChangeHandler, false, 0, true);
+         squad.addEventListener(MRouteEvent.JUMPS_AT_CHANGE, model_jumpsAtChangeHandler, false, 0, true);
       }
       
       private function removeModelEventHandlers(squad:MSquadron) : void {
-         squad.removeEventListener(MRouteEvent.CHANGE, model_routeChangeHandler);
+         squad.removeEventListener(MRouteEvent.CHANGE, model_routeChangeHandler, false);
+         squad.removeEventListener(MRouteEvent.JUMPS_AT_CHANGE, model_jumpsAtChangeHandler, false);
       }
       
       private function model_routeChangeHandler(event:MRouteEvent) : void {
-         if (event.kind == MRouteEventChangeKind.HOP_ADD)
-            createHopEndpoint(event.hop);
-         else
+         if (event.kind == MRouteEventChangeKind.HOP_ADD) {
+            createHopEndpoint();
+         }
+         else {
             removeFirstHopEndpoint();
+         }
+         invalidateDisplayList();
+      }
+      
+      private function model_jumpsAtChangeHandler() : void {
          invalidateDisplayList();
       }
       
@@ -243,8 +254,8 @@ package components.movement
          return DateUtil.secondsToHumanString(Math.max(0, (time - DateUtil.now) / 1000));
       }
       
-      private function getLabel(property:String, parameters:Array = null) : String {
-         return Localizer.string("Movement", "label." + property, parameters);
+      private function getLabel(property:String) : String {
+         return Localizer.string("Movement", "label.hop." + property);
       }
    }
 }

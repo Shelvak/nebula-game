@@ -101,7 +101,9 @@ package tests.galaxy
             ]),
             [  // hops
                makeHop(1, 3, 0, 3, new Date(2000, 1, 1))
-            ]
+            ],
+            // non-friendly routes
+            new Object()
          );
          
          assertThat( "galaxy created", galaxy, notNullValue() );
@@ -243,7 +245,8 @@ package tests.galaxy
             new ArrayCollection(),
             new ArrayCollection(),
             new ArrayCollection(),
-            new Array()
+            new Array(),
+            new Object()
          );
          
          assertThat( "cached solar system is the same", ML.latestSolarSystem, sameInstance (ss) );
@@ -311,7 +314,8 @@ package tests.galaxy
             new ArrayCollection(),
             new ArrayCollection(),
             new ArrayCollection(),
-            new Array()
+            new Array(),
+            new Object()
          );
          
          assertThat( "# of solar systems", galaxy.solarSystems, arrayWithSize (1) );
@@ -346,7 +350,8 @@ package tests.galaxy
             new ArrayCollection(),  // wreckages
             new ArrayCollection(),  // cooldowns
             new ArrayCollection(),  // units
-            new Array()             // hops
+            new Array(),            // hops
+            new Object()            // non-friendly routes
          );
       }
       
