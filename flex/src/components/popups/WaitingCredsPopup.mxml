@@ -19,14 +19,12 @@
          import models.player.events.PlayerEvent;
          
          import utils.UrlNavigate;
-         import utils.locale.Localizer; 
+         import utils.locale.Localizer;
          
-         public static function showPopup(creds: int, receivedHandler: Function = null,
-                                                      cancelHandler: Function = null): void
+         public static function showPopup(creds: int, receivedHandler: Function = null): void
          {
             var popup: WaitingCredsPopup = new WaitingCredsPopup();
             popup.credsToReach = creds;
-            popup.cancelButtonClickHandler = cancelHandler;
             popup.credsReceivedHandler = receivedHandler;
             popup.show();
             UrlNavigate.getInstance().showBuyCreds();
@@ -43,7 +41,11 @@
           * will not have any effect. May be <code>null</code>. Will be passed cancel button instance
           * as the only argument.
           */
-         public var cancelButtonClickHandler:Function; 
+         public function cancelButtonClickHandler(b: Button): void
+         {
+            removeListeners();
+            credsReceivedHandler = null;
+         }
          
          /**
           * You must set this before calling <code>show()</code> and changing this property later 
@@ -64,9 +66,13 @@
             }
          }
          
-         private function resetHandler(e: GlobalEvent): void
+         private function removeListeners(e: GlobalEvent = null): void
          {
-            EventBroker.unsubscribe(GlobalEvent.APP_RESET, resetHandler);
+            EventBroker.unsubscribe(GlobalEvent.APP_RESET, removeListeners);
+            if (ML.player != null)
+            {
+               ML.player.removeEventListener(PlayerEvent.CREDS_CHANGE, credsChangeHandler);
+            }
          }
          
          protected override function initializationComplete() : void
@@ -74,7 +80,7 @@
             super.initializationComplete();
             ML.player.addEventListener(PlayerEvent.CREDS_CHANGE, credsChangeHandler);
             addActionButton(btnCancel, cancelButtonClickHandler);
-            EventBroker.subscribe(GlobalEvent.APP_RESET, resetHandler);
+            EventBroker.subscribe(GlobalEvent.APP_RESET, removeListeners);
          }
       ]]>
    </fx:Script>
