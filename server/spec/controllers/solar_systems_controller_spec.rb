@@ -145,14 +145,14 @@ describe SolarSystemsController do
             {@unit.player_id => Player.minimal(@unit.player_id)})
       end
 
-      it "should include non-friendly routes" do
+      it "should include non-friendly route jumps_at" do
         routes = [Factory.create(:route)]
         Route.should_receive(:non_friendly_for_solar_system).with(
           @solar_system.id, player.friendly_ids
         ).and_return(routes)
         invoke @action, @params
         response_should_include(
-          :non_friendly_routes => routes.map { |r| r.as_json(:mode => :enemy) }
+          :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(routes)
         )
       end
 

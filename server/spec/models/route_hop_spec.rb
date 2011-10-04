@@ -137,12 +137,11 @@ describe RouteHop do
         "route_id" => model.route_id,
         "location" => model.location.as_json,
         "arrives_at" => model.arrives_at.as_json,
-        "jumps_at" => model.jumps_at.as_json,
         "index" => model.index
       }
     end
 
-    required_fields = %w{route_id location arrives_at jumps_at index}
+    required_fields = %w{route_id location arrives_at index}
     ommited_fields = RouteHop.columns.map(&:name) - required_fields
     it_behaves_like "as json", Factory.create(:route_hop), nil,
                     required_fields, ommited_fields
@@ -230,37 +229,65 @@ describe RouteHop do
       RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
     end
 
-    [
-      ["in zone", false, EventBroker::REASON_IN_ZONE],
-      ["between zones", true, EventBroker::REASON_BETWEEN_ZONES],
-    ].each do |desc, different, expected_reason|
-      it "should fire MovementEvent with #{desc} reason if #{desc}" do
-        FowSsEntry.stub!(:increase)
-        FowSsEntry.stub!(:decrease)
-
-        Zone.should_receive(:different?).with(
-          @start_location.client_location, @hop_target.client_location
-        ).and_return(different)
-        should_fire_event(
-          MovementEvent.new(@route, @start_location.client_location,
-            @hop, nil),
-          EventBroker::MOVEMENT, expected_reason
-        ) do
-          RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-        end
+    describe "when zones change" do
+      before(:each) do
+        @solar_system = Factory.create(:solar_system, :galaxy => @galaxy)
+        @hop.location = SolarSystemPoint.new(@solar_system.id, 0, 0)
+        @hop.save!
+        @second_hop = Factory.create(:route_hop,
+          :location => SolarSystemPoint.new(@solar_system.id, 1, 0),
+          :route => @route,
+          :arrives_at => @hop.arrives_at + 5.minutes,
+          :index => @hop.index + 1
+        )
       end
 
-      it "should #{different ? "" : "not "}call .handle_fow_change" do
-        Zone.stub!(:different?).and_return(different)
-
-        if different
-          RouteHop.should_receive(:handle_fow_change).with(
-            an_instance_of(MovementEvent))
-        else
-          RouteHop.should_not_receive(:handle_fow_change)
-        end
-
+      it "should call .handle_fow_change" do
+        RouteHop.should_receive(:handle_fow_change).with(
+          an_instance_of(MovementEvent))
         RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
+      end
+
+      it "should update Route#jumps_at to next zone #arrives_at" do
+        planet = Factory.create(:planet, :solar_system => @solar_system)
+        change_hop = Factory.create(:route_hop,
+          :location => planet.location_point,
+          :route => @route,
+          :arrives_at => @second_hop.arrives_at + 10.minutes,
+          :index => @second_hop.index + 1)
+        RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
+        @route.reload
+        @route.jumps_at.should be_within(SPEC_TIME_PRECISION).
+                                 of(change_hop.arrives_at)
+      end
+
+      it "should update clear jumps_at if there are no more zone changes" do
+        lambda do
+          RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
+          @route.reload
+        end.should change(@route, :jumps_at).to(nil)
+      end
+    end
+
+    describe "when zone do not change" do
+      it "should not call .handle_fow_change" do
+        RouteHop.should_not_receive(:handle_fow_change)
+        RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
+      end
+
+      it "should not update Route#jumps_at" do
+        # Create a hop so route would not be destroyed
+        Factory.create(:route_hop,
+          :location => @hop_target,
+          :route => @route,
+          :arrives_at => @hop.arrives_at + 5.minutes,
+          :index => @hop.index + 1
+        )
+
+        lambda do
+          RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
+          @route.reload
+        end.should_not change(@route, :jumps_at)
       end
     end
 

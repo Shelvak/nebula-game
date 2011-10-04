@@ -209,7 +209,7 @@ function authorizationFailed() {
 
 // Called when player successfully logs in into server.
 function loginSuccessful() {
-  _gaq.push(['_trackPageview', '/play/client/success']);
+  _gaq.push(['_trackPageview', '/play/game/success']);
 }
 
 // Get combat log URL for log with given ID.

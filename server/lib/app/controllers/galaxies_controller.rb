@@ -17,9 +17,8 @@ class GalaxiesController < GenericController
   # - units (Hash[]): Unit#as_json with :perspective
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom units belong.
-  # - non_friendly_routes (Route#as_json[]): Array of non-friendly
-  # (NAP and enemy) routes which are in visible areas of the galaxy. #as_json
-  # is called in :enemy mode.
+  # - non_friendly_jumps_at (Hash): Hash of non-friendly
+  # (NAP and enemy) Route#jumps_at in format of {Route#id => Route#jumps_at}.
   # - route_hops (RouteHop[])
   # - fow_entries (FowGalaxyEntry[]): Fog of War galaxy entries for player
   # - wreckages (Wreckage[]): Wreckage#as_json
@@ -42,9 +41,9 @@ class GalaxiesController < GenericController
       :units => units.map {
         |unit| unit.as_json(:perspective => resolver) },
       :players => Player.minimal_from_objects(units),
-      :non_friendly_routes => Route.non_friendly_for_galaxy(
-        fow_entries, player.friendly_ids
-      ).map { |r| r.as_json(:mode => :enemy) },
+      :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
+        Route.non_friendly_for_galaxy(fow_entries, player.friendly_ids)
+      ),
       :route_hops => route_hops.map(&:as_json),
       :fow_entries => fow_entries.map(&:as_json),
       :wreckages => Wreckage.by_fow_entries(fow_entries).map(&:as_json),

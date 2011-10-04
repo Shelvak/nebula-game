@@ -349,8 +349,8 @@ describe UnitsController do
   describe "units|movement_prepare" do
     before(:each) do
       @action = "units|movement_prepare"
-      @params = {'route' => :route, 'unit_ids' => :unit_ids,
-        'route_hops' => :route_hops}
+      @params = {'route' => {:route => 'fake'}, 'unit_ids' => [:unit_ids],
+        'route_hops' => [:route_hops]}
       @method = :push
     end
 

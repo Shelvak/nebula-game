@@ -19,7 +19,7 @@ class RouteHop < ActiveRecord::Base
   default_scope :order => "`index` ASC"
 
   # Selects route hops marked as next.
-  scope :next, {:conditions => {:next => true}}
+  scope :next, where(:next => true)
 
   # TODO: index me, spec
   scope :for, Proc.new { |player_ids|
@@ -69,7 +69,6 @@ class RouteHop < ActiveRecord::Base
       "route_id" => route_id,
       "location" => location.as_json,
       "arrives_at" => arrives_at.as_json,
-      "jumps_at" => jumps_at.as_json,
       "index" => index
     }
   end
@@ -96,7 +95,7 @@ class RouteHop < ActiveRecord::Base
 
         Unit.update_all(location.location_attrs, {:route_id => route.id})
 
-        next_hop = self.class.find_by_route_id_and_index(route.id, index + 1)
+        next_hop = route.hops.where(:index => index + 1).first
         if next_hop
           next_hop.next = true
           next_hop.save!
@@ -107,6 +106,21 @@ class RouteHop < ActiveRecord::Base
 
         event = MovementEvent.new(route, old_location, self, next_hop)
         zone_changed = Zone.different?(old_location, route.current)
+
+        if zone_changed
+          self.class.handle_fow_change(event)
+          # Update Route#jumps_at when zone changes.
+          route.jumps_at = route.hops.
+            where("location_type != ?", route.current.type).first.
+            try(:arrives_at)
+        end
+
+        # Destroy this route hop. This is important to do before firing the
+        # event, because otherwise this route hop would be included in zone
+        # hops, event though it was just executed.
+        destroy!
+
+        # Fire event.
         EventBroker.fire(
           event,
           EventBroker::MOVEMENT,
@@ -115,17 +129,16 @@ class RouteHop < ActiveRecord::Base
             : EventBroker::REASON_IN_ZONE
         )
 
-        self.class.handle_fow_change(event) if zone_changed
-
         # Saving/destroying route dispatches event that is transmitted to
         # Dispatcher. We need event to go in "movement, route" sequence, not
         # other way round
 
-        # Flag route as being completed.
-        route.completed = true
-        next_hop ? route.save! : route.destroy!
-
-        destroy!
+        if next_hop
+          route.save!
+        else
+          route.completed = true
+          route.destroy!
+        end
       end
     end
   end

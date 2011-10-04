@@ -10,7 +10,7 @@ Factory.define :route do |m|
   m.target do |r|
     GalaxyPoint.new(r.source.id, 0, 0).client_location
   end
-  m.first_hop { 1.minute.since }
+  m.jumps_at { 1.minute.since }
   m.arrives_at { 10.minutes.since }
   m.cached_units "Mule" => 10
 end

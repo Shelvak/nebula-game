@@ -109,6 +109,14 @@ class Route < ActiveRecord::Base
     RouteHop.hops_in_zone(id, zone)
   end
 
+  # Returns hash of {Route#id => Route#jumps_at} where #jumps_at is not nil.
+  def self.jumps_at_hash_from_collection(routes)
+    routes.inject({}) do |hash, route|
+      hash[route.id] = route.jumps_at unless route.jumps_at.nil?
+      hash
+    end
+  end
+
   # Return Hash for JSON serialization.
   #
   # If :mode is :normal, return all attributes.
@@ -125,7 +133,7 @@ class Route < ActiveRecord::Base
         :id => id,
         :player_id => player_id,
         :cached_units => cached_units,
-        :first_hop => first_hop,
+        :jumps_at => jumps_at,
         :arrives_at => arrives_at,
         :source => source.as_json(options),
         :current => current.as_json(options),
@@ -135,8 +143,8 @@ class Route < ActiveRecord::Base
       {
         :id => id,
         :player_id => player_id,
-        :first_hop => first_hop,
-        :current => current.as_json(options)
+        :jumps_at => jumps_at,
+        :current => current.as_json(options),
       }
     else
       raise ArgumentError.new("Unknown options[:mode] #{

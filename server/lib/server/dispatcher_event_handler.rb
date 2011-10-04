@@ -207,6 +207,7 @@ class DispatcherEventHandler
           # Nullify next hop if it leads to other zone - client doesn't want
           # to know about that.
           current_hop = movement_event.current_hop
+          jumps_at = nil
           next_hop = nil \
             if next_hop &&
             current_hop.location.type != next_hop.location.type
@@ -214,8 +215,8 @@ class DispatcherEventHandler
           case state_change
           when STATE_CHANGED_TO_VISIBLE
             units = movement_event.route.units
-            # Include current hop so client could position squadron.
-            route_hops = [current_hop, next_hop].compact
+            route_hops = [next_hop].compact
+            jumps_at = movement_event.route.jumps_at
           when STATE_UNCHANGED
             # Return if we have no units to show/hide and no route hops
             return unless next_hop
@@ -225,7 +226,7 @@ class DispatcherEventHandler
               state_change.inspect}")
           end
 
-          dispatch_movement(filter, player_id, units, route_hops)
+          dispatch_movement(filter, player_id, units, route_hops, jumps_at)
         end
       when EventBroker::REASON_BETWEEN_ZONES
         # Movement was between zones.
@@ -236,12 +237,13 @@ class DispatcherEventHandler
         current_player_ids.each do |player_id|
           if friendly_player_ids.include?(player_id)
             dispatch_movement(filter, player_id, units,
-              movement_event.route.hops_in_current_zone)
+              movement_event.route.hops_in_current_zone,
+              movement_event.route.jumps_at)
           else
             dispatch_movement(filter, player_id, units,
               # This movement could be last hop, so next hop would be nil.
-              # Include current hop so client could position squadron.
-              [movement_event.current_hop, movement_event.next_hop].compact)
+              [movement_event.next_hop].compact,
+              movement_event.route.jumps_at)
           end
         end
       else
@@ -404,8 +406,10 @@ class DispatcherEventHandler
         when CONTEXT_CHANGED
           [object.player.friendly_ids, nil]
         when CONTEXT_DESTROYED
-          player_ids, filter = resolve_location(object.current)
+          player_ids, _ = resolve_location(object.current)
           player_ids |= object.player.friendly_ids
+          # Don't use filter, because friendly destroy events should be
+          # dispatched without any filter.
           [player_ids, nil]
         else
           raise ArgumentError.new(
@@ -449,11 +453,11 @@ class DispatcherEventHandler
   end
 
   # Dispatches movement action to player
-  def dispatch_movement(filter, player_id, units, route_hops)
+  def dispatch_movement(filter, player_id, units, route_hops, jumps_at)
     @dispatcher.push_to_player(
       player_id,
       UnitsController::ACTION_MOVEMENT,
-      {'units' => units, 'route_hops' => route_hops},
+      {'units' => units, 'route_hops' => route_hops, 'jumps_at' => jumps_at},
       filter
     )
   end

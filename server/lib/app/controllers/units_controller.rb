@@ -202,9 +202,9 @@ class UnitsController < GenericController
   # If you're friendly - you will be supplied full routes and all the route
   # hops in the zone.
   #
-  # If you're not - Route will only have id and current location, see
-  # Route#as_json for more info. Additionally you will only get next route
-  # hop.
+  # If you're not - Route will only have #id, #player_id, #jumps_at and
+  # #current location, see Route#as_json for more info. Additionally you will
+  # only get next route hop.
   #
   # Invocation: by server
   #
@@ -220,7 +220,8 @@ class UnitsController < GenericController
   # - route_hops (RouteHop[]) - Route hops for current zone.
   #
   def action_movement_prepare
-    param_options :required => %w{route unit_ids route_hops}
+    param_options :required => {:route => Hash, :unit_ids => Array,
+                                :route_hops => Array}
     only_push!
 
     respond :route => params['route'], :unit_ids => params['unit_ids'],
@@ -248,6 +249,7 @@ class UnitsController < GenericController
   # Parameters:
   # - units
   # - route_hops
+  # - jumps_at
   #
   # Response:
   # - units (Hash[]): Unit#as_json with :perspective
@@ -256,9 +258,11 @@ class UnitsController < GenericController
   # - route_hops (RouteHop[]): Array of hop objects that should be visible
   # to you. If switching zones, always include hop to which you arrive in new
   # zone.
+  # - jumps_at (Time | nil): When this route will jump out of this zone.
   #
   def action_movement
-    param_options :required => {:units => Array, :route_hops => Array}
+    param_options :required => {:units => Array, :route_hops => Array,
+                                :jumps_at => [NilClass, Time]}
     only_push!
 
     resolver = StatusResolver.new(player)
@@ -267,7 +271,8 @@ class UnitsController < GenericController
       :units => params['units'].
         map { |unit| unit.as_json(:perspective => resolver) },
       :players => Player.minimal_from_objects(params['units']),
-      :route_hops => params['route_hops']
+      :route_hops => params['route_hops'],
+      :jumps_at => params['jumps_at']
   end
 
   # Deploy a deployable unit onto +SsObject+.

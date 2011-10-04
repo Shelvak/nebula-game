@@ -13,9 +13,8 @@ class SolarSystemsController < GenericController
   # - units (Hash[]): Unit#as_json with :perspective
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom units belong.
-  # - non_friendly_routes (Route#as_json[]): Array of non-friendly
-  # (NAP and enemy) routes which are in this solar system. #as_json
-  # is called in :enemy mode.
+  # - non_friendly_jumps_at (Hash): Hash of non-friendly
+  # (NAP and enemy) Route#jumps_at in format of {Route#id => Route#jumps_at}.
   # - route_hops (RouteHop[]): Array of hop objects. It will include all
   # of your route hops in this solar system and one route hop for every
   # enemy unit
@@ -60,9 +59,11 @@ class SolarSystemsController < GenericController
         |unit| unit.as_json(:perspective => resolver)
       },
       :players => Player.minimal_from_objects(units),
-      :non_friendly_routes => Route.non_friendly_for_solar_system(
-        solar_system.id, player.friendly_ids
-      ).map { |r| r.as_json(:mode => :enemy) },
+      :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
+        Route.non_friendly_for_solar_system(
+          solar_system.id, player.friendly_ids
+        )
+      ),
       :route_hops => route_hops.map(&:as_json),
       :wreckages => Wreckage.in_zone(solar_system).all.map(&:as_json),
       :cooldowns => Cooldown.in_zone(solar_system).all.map(&:as_json)
