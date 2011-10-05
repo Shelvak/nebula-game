@@ -106,15 +106,13 @@ package models.movement
        */
       public override function set id(value:int) : void {
          if (super.id != value) {
-            if (hasUnits)
-            {
+            if (hasUnits) {
                units.disableAutoUpdate();
                for each (var unit:Unit in units.toArray()) {
                   unit.squadronId = value;
                }
                units.enableAutoUpdate();
-               if(Unit(units.getItemAt(0)).location.isSSObject)
-               {
+               if(Unit(units.getItemAt(0)).location.isSSObject && ML.latestPlanet != null) {
                   ML.latestPlanet.dispatchUnitRefreshEvent();
                }
             }
@@ -490,7 +488,7 @@ package models.movement
             }
             units.enableAutoUpdate();
             // If units navigate from or to planet we need to refresh some getters
-            if ((loc.isSSObject || fromPlanet) && ML.latestPlanet) {
+            if ((loc.isSSObject || fromPlanet) && ML.latestPlanet != null) {
                ML.latestPlanet.dispatchUnitRefreshEvent();
             }
          }
