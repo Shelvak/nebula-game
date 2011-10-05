@@ -318,7 +318,9 @@ package controllers.units
             SquadronFactory.attachJumpsAt(squad.route, jumpsAt);
             squad.addAllHops(hops);
             // in case squad is still in another map, move it to correct one
-            squad.moveToNextHop(DateUtil.now);
+            if (squad.hasHopsRemaining) {
+               squad.moveToNextHop(DateUtil.now);
+            }
          }
          // or create new squadron
          else if (sampleUnit.location.isObserved ||
