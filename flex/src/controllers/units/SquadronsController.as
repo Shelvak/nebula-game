@@ -317,9 +317,9 @@ package controllers.units
             }
          }
          // or create new squadron
-         else if (sampleUnit.location.isObserved ||
-                  sampleUnit.owner == Owner.PLAYER ||
-                  sampleUnit.owner == Owner.ALLY) {
+         else if (sampleUnit.location.isObserved
+                  ||  sampleUnit.location.isGalaxy
+                  && (sampleUnit.owner == Owner.PLAYER || sampleUnit.owner == Owner.ALLY)) {
             UNITS.addAll(units);
             squad = SquadronFactory.fromUnit(sampleUnit);
             squad.addAllHops(hops);

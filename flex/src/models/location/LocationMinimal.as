@@ -99,8 +99,8 @@ package models.location
       }
       
       /**
-       * Indicates if this location is defined by one of cached maps and therefore is currently
-       * viewed by the player.
+       * Indicates if this location is defined (from player perspective) by one of cached maps and therefore
+       * is currently viewed by the player.
        */
       public function get isObserved() : Boolean {
          return ML.latestPlanet && !ML.latestPlanet.fake && ML.latestPlanet.definesLocation(this) ||
