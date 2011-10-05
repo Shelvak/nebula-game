@@ -583,6 +583,64 @@ package models.unit
          {
             routes.addItem(squad.route);
          }
+         if (squadronVisible)
+         {
+            if (filteredSquadronUnits.length > 0)
+            {
+               if (!Unit(filteredSquadronUnits.getItemAt(0)).location.isSSObject)
+               {
+                  if (currentKind == UnitKind.SQUADRON)
+                  {
+                     switchToFirstKind();
+                     filteredSquadronUnits = null;
+                     squadronVisible = false;
+                  }
+                  else
+                  {
+                     filteredSquadronUnits = null;
+                     squadronVisible = false;
+                  }
+               }
+            }
+            else
+            {
+               if (currentKind == UnitKind.SQUADRON)
+               {
+                  switchToFirstKind();
+                  filteredSquadronUnits = null;
+                  squadronVisible = false;
+               }
+               else
+               {
+                  filteredSquadronUnits = null;
+                  squadronVisible = false;
+               }
+            }
+         }
+         dispatchUnitsChangeEvent();
+      }
+      
+      private function switchToFirstKind(): void
+      {
+         if (hasMovingUnits)
+         {
+            currentKind = UnitKind.MOVING;
+            refreshScreen();
+         }
+         else if (hasSpaceUnits)
+         {
+            currentKind = UnitKind.SPACE;
+            refreshScreen();
+         }
+         else if (hasGroundUnits)
+         {
+            currentKind = UnitKind.GROUND;
+            refreshScreen();
+         }
+         else if (ML.latestPlanet != null)
+         {
+            NavigationController.getInstance().toPlanet(ML.latestPlanet.ssObject);
+         }
       }
       
       private function refreshRoutes(e: CollectionEvent = null): void
