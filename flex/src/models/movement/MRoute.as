@@ -7,6 +7,7 @@ package models.movement
    import models.Owner;
    import models.location.ILocationUser;
    import models.location.Location;
+   import models.movement.events.MRouteEvent;
    import models.player.PlayerMinimal;
    import models.time.MTimeEventFixedMoment;
    import models.unit.UnitBuildingEntry;
@@ -17,6 +18,11 @@ package models.movement
    import utils.Objects;
    import utils.datastructures.Collections;
    
+   
+   /**
+    * @see models.movement.event.MRouteEvent#JUMPS_AT_CHANGE
+    */
+   [Event(name="jumpsAtChange", type="models.movement.events.MRouteEvent")]
    
    /**
     * Should only be used to store additional information about squadrons belonging to either the
@@ -79,18 +85,35 @@ package models.movement
       }
       
       
-      [Bindable(event="willNotChange")]
+      [Bindable]
       /**
-       * Time (local) when this squadron will reach its destination. Never <code>null</code>.
+       * Time (local) when this squadron will reach its destination.
        */
-      public const arrivalEvent:MTimeEventFixedMoment = new MTimeEventFixedMoment();
+      public var arrivalEvent:MTimeEventFixedMoment = null;
       
       
-      [Bindable(event="willNotChange")]
+      private var _jumpsAtEvent:MTimeEventFixedMoment = null;
+      [Bindable(event="jumpsAtChange")]
       /**
-       * Time (local) when this squadron will do first hop.
+       * Time (local) when this squadron will do a jump to another map.
        */
-      public const firstHopEvent:MTimeEventFixedMoment = new MTimeEventFixedMoment();
+      public function set jumpsAtEvent(value:MTimeEventFixedMoment) : void {
+         if (_jumpsAtEvent != value) {
+            _jumpsAtEvent = value;
+            dispatchSimpleEvent(MRouteEvent, MRouteEvent.JUMPS_AT_CHANGE);
+         }
+      }
+      public function get jumpsAtEvent() : MTimeEventFixedMoment {
+         return _jumpsAtEvent;
+      }
+      
+      [Bindable(event="jumpsAtChange")]
+      /**
+       * Is this squadron going to jump to another map?
+       */
+      public function get jumpPending() : Boolean {
+         return _jumpsAtEvent != null;
+      }
       
       
       [Required(alias="source")]
@@ -170,13 +193,21 @@ package models.movement
       /* ################## */
       
       public function resetChangeFlags() : void {
-         arrivalEvent.resetChangeFlags();
-         firstHopEvent.resetChangeFlags();
+         if (arrivalEvent != null) {
+            arrivalEvent.resetChangeFlags();
+         }
+         if (_jumpsAtEvent != null) {
+            _jumpsAtEvent.resetChangeFlags();
+         }
       }
       
       public function update() : void {
-         arrivalEvent.update();
-         firstHopEvent.update();
+         if (arrivalEvent != null) {
+            arrivalEvent.update();
+         }
+         if (_jumpsAtEvent != null) {
+            _jumpsAtEvent.update();
+         }
       }
       
       
@@ -200,13 +231,17 @@ package models.movement
          if (sourceLocation.isSSObject)  sourceLocation.setDefaultCoordinates();
          if (currentLocation.isSSObject) currentLocation.setDefaultCoordinates();
          if (targetLocation.isSSObject)  currentLocation.setDefaultCoordinates();
-         arrivalEvent.occuresAt = DateUtil.parseServerDTF(Objects.notNull(
+         var arrivesAt:String = Objects.notNull(
             data["arrivesAt"],
             "[prop arrivesAt] is required by [class: MRoute] but was not present in source object. " +
             "The object was:\n" + ObjectUtil.toString(data)
-         ));
-         if (data["firstHop"] != null)
-            firstHopEvent.occuresAt = DateUtil.parseServerDTF(data["firstHop"]);
+         );
+         arrivalEvent = new MTimeEventFixedMoment();
+         arrivalEvent.occuresAt = DateUtil.parseServerDTF(arrivesAt);
+         if (data["jumpsAt"] != null) {
+            _jumpsAtEvent = new MTimeEventFixedMoment();
+            _jumpsAtEvent.occuresAt = DateUtil.parseServerDTF(data["jumpsAt"]);
+         }
       }
    }
 }

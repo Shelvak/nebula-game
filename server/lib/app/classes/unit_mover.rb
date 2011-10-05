@@ -123,9 +123,9 @@ class UnitMover
           (hop_times[hop.hop_type] * server_location.time_multiplier *
             speed_modifier).round
 
-        # Set previous hop as jump hop.
-        if last_hop && last_hop.location.type != hop.location.type
-          last_hop.jumps_at = hop.arrives_at
+        # Set Route#jumps_at if we switched zones.
+        if route.jumps_at.nil? && route.source.type != hop.location.type
+          route.jumps_at = hop.arrives_at
         end
 
         index += 1
@@ -135,7 +135,6 @@ class UnitMover
         hop
       end
 
-      route.first_hop = first_hop.arrives_at
       route.arrives_at = last_hop.arrives_at
 
       first_hop.next = true

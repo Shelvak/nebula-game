@@ -10,14 +10,12 @@ package models.movement
    import models.location.ILocationUser;
    import models.location.Location;
    import models.location.LocationMinimal;
-   import models.location.LocationMinimalSolarSystem;
-   import models.location.LocationType;
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
    import models.movement.events.MSquadronEvent;
    import models.player.PlayerId;
    import models.player.PlayerMinimal;
-   import models.solarsystem.MSSObject;
+   import models.time.MTimeEventFixedMoment;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
    
@@ -33,18 +31,19 @@ package models.movement
    /**
     * Dispatched when a hop has been added to or removed from the route. Event is not dispatched when a move
     * occures between two different maps.
-    * 
-    * @eventType models.movement.events.MRouteEvent.CHANGE
     */
    [Event(name="change", type="models.movement.events.MRouteEvent")]
    
    /**
     * Dispatched when the squadron moves to a new location. Event is not dispatched when a move occures
     * between two different maps.
-    * 
-    * @eventType models.movement.events.MSquadronEvent.MOVE
     */
    [Event(name="move", type="models.movement.events.MSquadronEvent")]
+   
+   /**
+    * @see models.movement.events.MRouteEvent.JUMPS_AT_CHANGE
+    */
+   [Event(name="jumpsAtChange", type="models.movement.events.MRouteEvent")]
    
    
    /**
@@ -107,15 +106,13 @@ package models.movement
        */
       public override function set id(value:int) : void {
          if (super.id != value) {
-            if (hasUnits)
-            {
+            if (hasUnits) {
                units.disableAutoUpdate();
                for each (var unit:Unit in units.toArray()) {
                   unit.squadronId = value;
                }
                units.enableAutoUpdate();
-               if(Unit(units.getItemAt(0)).location.isSSObject)
-               {
+               if(Unit(units.getItemAt(0)).location.isSSObject && ML.latestPlanet != null) {
                   ML.latestPlanet.dispatchUnitRefreshEvent();
                }
             }
@@ -193,9 +190,22 @@ package models.movement
        * [Bindable]</i></p>
        */
       public function set route(value:MRoute) : void {
-         if (_route != value)
+         if (_route != value) {
+            if (_route != null) {
+               _route.addEventListener(MRouteEvent.JUMPS_AT_CHANGE, route_jumpsAtChangeHandler, false, 0, true);
+            }
             _route = value;
+            if (_route != null) {
+               _route.removeEventListener(MRouteEvent.JUMPS_AT_CHANGE, route_jumpsAtChangeHandler, false);
+            }
+            route_jumpsAtChangeHandler(null);
+         }
       }
+      
+      private function route_jumpsAtChangeHandler(event:MRouteEvent) : void {
+         dispatchSimpleEvent(MRouteEvent, MRouteEvent.JUMPS_AT_CHANGE);
+      }
+      
       /**
        * @private
        */
@@ -250,15 +260,20 @@ package models.movement
       public var currentHop:MHop = null;
       
       /**
-       * A hop that holds information about a jump to another map.
+       * @see models.movement.MRoute#jumpsAtEvent
        */
-      public var jumpHop:MHop;
+      public function set jumpsAtEvent(value:MTimeEventFixedMoment) : void {
+         route.jumpsAtEvent = value;
+      }
+      public function get jumpsAtEvent() : MTimeEventFixedMoment {
+         return route.jumpsAtEvent;
+      }
       
       /**
-       * Will this squad have to jump between maps?
+       * @see models.movement.MRoute#jumpPending
        */
       public function get jumpPending() : Boolean {
-         return jumpHop != null;
+         return route.jumpPending;
       }
       
       [Bindable(event="willNotChange")]
@@ -329,16 +344,16 @@ package models.movement
        */
       client_internal function rebuildCachedUnits() : void {
          checkRoute();
-         var source:Array = new Array();
+         _route.cachedUnits = new ModelsCollection();
          for each (var unit:Unit in units) {
-            var entry:UnitBuildingEntry = route.findEntryByType(unit.type);
+            var entry:UnitBuildingEntry = _route.findEntryByType(unit.type);
             if (!entry) {
                entry = new UnitBuildingEntry(unit.type);
-               source.push(entry);
+               _route.cachedUnits.addItem(entry);
             }
             entry.count++;
          }
-         _route.cachedUnits = new ModelsCollection(source);
+         
       }
       
       /**
@@ -386,7 +401,6 @@ package models.movement
          if (lastHop && hop.index - lastHop.index != 1)
             throwHopOutOfOrderError(hop);
          hops.addItem(hop);
-         jumpHop = hop.jumpsAt != null ? hop : null;
          dispatchHopAddEvent(hop);
       }
       
@@ -474,7 +488,7 @@ package models.movement
             }
             units.enableAutoUpdate();
             // If units navigate from or to planet we need to refresh some getters
-            if ((loc.isSSObject || fromPlanet) && ML.latestPlanet) {
+            if ((loc.isSSObject || fromPlanet) && ML.latestPlanet != null) {
                ML.latestPlanet.dispatchUnitRefreshEvent();
             }
          }

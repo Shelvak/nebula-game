@@ -54,8 +54,6 @@ describe UnitMover do
         :position => 2, :angle => 0
       @p3 = Factory.create :planet, :solar_system => @ss2,
         :position => 3, :angle => 0, :player => @player
-
-      @jump_hop_indexes = [1, 4, 6]
     end
 
     before(:each) do
@@ -121,13 +119,6 @@ describe UnitMover do
       UnitMover.move(
         @player.id, @units.map(&:id), @source, @target
       ).should be_instance_of(Route)
-    end
-
-    it "should set first_hop date" do
-      route = UnitMover.move(
-        @player.id, @units.map(&:id), @source, @target
-      )
-      route.first_hop.should == route.hops.first.arrives_at
     end
 
     it "should pass source client location" do
@@ -215,27 +206,24 @@ describe UnitMover do
       end
     end
 
-    it "should set #jumps_at to nil if it's not a jump" do
-      route = UnitMover.move(@player.id, @unit_ids, @source, @target)
-      hops = route.hops
-      ((0...hops.size).to_a - @jump_hop_indexes).each do |index|
-        hops[index].jumps_at.should be_nil
-      end
-    end
-
-    it "should set #jumps_at to next hops #arrives_at if zones differ" do
-      route = UnitMover.move(@player.id, @unit_ids, @source, @target)
-      hops = route.hops
-      @jump_hop_indexes.each do |index|
-        hops[index].jumps_at.should == hops[index + 1].arrives_at
-      end
-    end
-
     it "should write RouteHop indexes in increasing order" do
       route = UnitMover.move(@player.id, @unit_ids, @source, @target)
       route.hops.should == route.hops.sort_by { |i| i.index }
     end
 
+    it "should store first zone jump time to Route#jumps_at" do
+      route = UnitMover.move(@player.id, @unit_ids, @source, @target)
+      route.jumps_at.should == route.hops[0].arrives_at
+    end
+
+    it "should set Route#jumps_at to nil if move is in-zone" do
+      source = GalaxyPoint.new(@galaxy.id, 0, 0)
+      target = GalaxyPoint.new(@galaxy.id, 10, 0)
+      @units.each { |unit| unit.location = source; unit.save! }
+      route = UnitMover.move(@player.id, @unit_ids, source, target)
+      route.jumps_at.should be_nil
+    end
+    
     it "should store Route#arrives_at from last RouteHop" do
       route = UnitMover.move(@player.id, @unit_ids, @source, @target)
       route.arrives_at.to_s(:db).should == \

@@ -171,6 +171,29 @@ describe Route do
     end
   end
 
+  describe ".jumps_at_hash_from_collection" do
+    it "should return hash" do
+      routes = [
+        Factory.create(:route, :jumps_at => 5.minutes.from_now),
+        Factory.create(:route, :jumps_at => 15.minutes.from_now),
+      ]
+      Route.jumps_at_hash_from_collection(routes).should equal_to_hash(
+        routes[0].id => routes[0].jumps_at,
+        routes[1].id => routes[1].jumps_at
+      )
+    end
+
+    it "should skip items where jumps_at is nil" do
+      routes = [
+        Factory.create(:route, :jumps_at => 5.minutes.from_now),
+        Factory.create(:route, :jumps_at => nil),
+      ]
+      Route.jumps_at_hash_from_collection(routes).should equal_to_hash(
+        routes[0].id => routes[0].jumps_at
+      )
+    end
+  end
+
   describe "#cached_units" do
     it "should be serializable" do
       route = Factory.create :route

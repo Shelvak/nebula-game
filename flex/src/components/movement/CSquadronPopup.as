@@ -97,7 +97,7 @@ package components.movement
                removeGlobalEventHandlers();
             lstUnits.dataProvider = _squadron != null ? _squadron.units : null;
             visible = _squadron != null ? true : false;
-            showSourceLoc = _squadron != null && _squadron.route != null;
+            showSourceLoc = _squadron != null && _squadron.isFriendly && _squadron.route != null;
             showDestLoc = showSourceLoc;
             updateUnitsOrdersButtonsVisibility();
             updateUnitsManagementButtonLabel();
@@ -155,10 +155,12 @@ package components.movement
       public var btnStop:Button;
       
       private function updateUnitsOrdersButtonsVisibility() : void {
-         if (btnMove != null)
+         if (btnMove != null) {
             btnMove.visible = _squadron != null && _squadron.owner == Owner.PLAYER;
-         if (btnStop != null)
+         }
+         if (btnStop != null) {
             btnStop.visible = _squadron != null && _squadron.owner == Owner.PLAYER && _squadron.isMoving;
+         }
       }
       
       [SkinPart(required="true")]
@@ -205,11 +207,19 @@ package components.movement
       
       private function updateSourceAndDestLabels() : void
       {
-         if (_squadron != null && _squadron.route != null) {
-            if (lblSourceLocTitle != null) lblSourceLocTitle.text = getString("label.location.source");
-            if (lblSourceLoc != null) lblSourceLoc.text = _squadron.route.sourceLocation.shortDescription;
-            if (lblDestLocTitle != null) lblDestLocTitle.text = getString("label.location.target");
-            if (lblDestLoc != null) lblDestLoc.text = _squadron.route.targetLocation.shortDescription;
+         if (_squadron != null && _squadron.isFriendly && _squadron.route != null) {
+            if (lblSourceLocTitle != null) {
+               lblSourceLocTitle.text = getString("label.location.source");
+            }
+            if (lblSourceLoc != null) {
+               lblSourceLoc.text = _squadron.route.sourceLocation.shortDescription;
+            }
+            if (lblDestLocTitle != null) {
+               lblDestLocTitle.text = getString("label.location.target");
+            }
+            if (lblDestLoc != null) {
+               lblDestLoc.text = _squadron.route.targetLocation.shortDescription;
+            }
          }
       }
       
@@ -220,9 +230,13 @@ package components.movement
       public var lblArrivesIn:Label;
       
       private function updateArrivesInLabel() : void {
-         if (lblArrivesIn != null && _squadron != null && _squadron.route != null)
+         if (lblArrivesIn != null
+             && _squadron != null
+             && _squadron.isFriendly
+             && _squadron.route != null) {
             lblArrivesIn.text = getString
                ("label.location.arrivesIn", [_squadron.route.arrivalEvent.occuresInString]);
+         }
       }
       
       [SkinPart(required="true")]
@@ -238,7 +252,9 @@ package components.movement
       public var btnOwner:PlayerProfileButton;
       
       private function updateOwnerButton() : void {
-         if (btnOwner != null && _squadron != null) btnOwner.player = _squadron.player;
+         if (btnOwner != null && _squadron != null) {
+            btnOwner.player = _squadron.player;
+         }
       }
       
       

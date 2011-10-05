@@ -153,10 +153,20 @@ package controllers.startup
          bindCommandsToActions();
          setupBaseModel();
          masterTrigger = new MasterUpdateTrigger();
-         if (StartupInfo.getInstance().mode == StartupMode.GAME)
+         connectAndAuthorize();
+      }
+      
+      
+      /**
+       * Connects and optionally performs player authorization in case the game is running in COMBAT mode.
+       */
+      public static function connectAndAuthorize() : void {
+         if (StartupInfo.getInstance().mode == StartupMode.GAME) {
             AuthorizationManager.getInstance().authorizeLoginAndProceed();
-         else
+         }
+         else {
             ConnectionManager.getInstance().connect();
+         }
       }
       
       

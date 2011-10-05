@@ -69,17 +69,17 @@ describe GalaxiesController do
       )
     end
 
-    it "should include non friendly routes" do
+    it "should include non friendly route jumps_at hash" do
       FowGalaxyEntry.stub!(:for).with(player).and_return([
         Factory.create(:fge_player, :galaxy => player.galaxy)
       ])
-      routes = [Factory.create(:route)]
+      routes = [Factory.create(:route, :jumps_at => 5.minutes.from_now)]
       Route.should_receive(:non_friendly_for_galaxy).with(
         FowGalaxyEntry.for(player), player.friendly_ids
       ).and_return(routes)
       push @action, @params
       response_should_include(
-        :non_friendly_routes => routes.map { |r| r.as_json(:mode => :enemy) }
+        :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(routes)
       )
     end
 

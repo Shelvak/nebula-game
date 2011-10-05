@@ -10,9 +10,8 @@ class PlanetsController < GenericController
   # - tiles (Array): planet tiles
   # - buildings (Building[]): planet buildings
   # - folliages (Array): list of 1x1 folliages (like flowers and trees)
-  # - non_friendly_routes (Route#as_json[]): Array of non-friendly
-  # (NAP and enemy) routes which are in this planet. #as_json
-  # is called in :enemy mode.
+  # - non_friendly_jumps_at (Hash): Hash of non-friendly
+  # (NAP and enemy) Route#jumps_at in format of {Route#id => Route#jumps_at}.
   # - units (Hash[]): Unit#as_json with :perspective
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom units belong.
@@ -42,9 +41,9 @@ class PlanetsController < GenericController
         :npc_units => (planet.can_view_npc_units?(player.id) \
           ? Unit.garrisoned_npc_in(planet) \
           : []).map(&:as_json),
-        :non_friendly_routes => Route.non_friendly_for_ss_object(
-          planet.id, player.friendly_ids
-        ).map { |r| r.as_json(:mode => :enemy) },
+        :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
+          Route.non_friendly_for_ss_object(planet.id, player.friendly_ids)
+        ),
         :units => planet.units.map {
           |unit| unit.as_json(:perspective => resolver)},
         :players => Player.minimal_from_objects(planet.units),

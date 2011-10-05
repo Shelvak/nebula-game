@@ -29,14 +29,6 @@ package models.movement
       
       [Required]
       /**
-       * Time when squadron will jump to another map. This will be set only for last
-       * hop in the current are (map).
-       */
-      public var jumpsAt:Date = null;
-      
-      
-      [Required]
-      /**
        * Index which defines the place this hop takes in a route.
        * <p><i><b>Metadata</b>: [Required]</i></p>
        * 
