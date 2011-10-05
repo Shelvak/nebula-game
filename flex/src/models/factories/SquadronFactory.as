@@ -41,9 +41,13 @@ package models.factories
          if (currentLocation != null) {
             route.currentLocation = currentLocation;
          }
-         else {            
+         else {
             route.currentLocation = squad.currentHop.location.toLocation();
          }
+         if (route.currentLocation.isSSObject) {
+            route.sourceLocation = route.currentLocation;
+         }
+         attachJumpsAt(route, jumpsAt);
          squad.route = route;
          squad.client_internal::rebuildCachedUnits();
          return route;

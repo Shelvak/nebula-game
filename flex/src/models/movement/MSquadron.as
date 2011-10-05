@@ -5,6 +5,7 @@ package models.movement
    import flash.errors.IllegalOperationError;
    
    import interfaces.ICleanable;
+   import interfaces.IUpdatable;
    
    import models.BaseModel;
    import models.ModelsCollection;
@@ -52,7 +53,7 @@ package models.movement
    /**
     * Squadrons that have <code>pending</code> set to <code>true</code> are not moved.
     */
-   public class MSquadron extends BaseModel implements ICleanable, ILocationUser
+   public class MSquadron extends BaseModel implements ICleanable, ILocationUser, IUpdatable
    {
       public function MSquadron() : void
       {
@@ -346,12 +347,16 @@ package models.movement
        * @throws IllegalOperationError if <code>route</code> has not been set
        */
       client_internal function rebuildCachedUnits() : void {
+         var type:String;
+         var entry:UnitBuildingEntry;
+         var unit:Unit;
          checkRoute();
          _route.cachedUnits = new ModelsCollection();
-         for each (var unit:Unit in units) {
-            var entry:UnitBuildingEntry = _route.findEntryByType(unit.type);
+         for each (unit in units) {
+            type = ModelUtil.getModelType(ObjectClass.UNIT, unit.type);
+            entry = _route.findEntryByType(type);
             if (!entry) {
-               entry = new UnitBuildingEntry(ModelUtil.getModelType(ObjectClass.UNIT, unit.type));
+               entry = new UnitBuildingEntry(type);
                _route.cachedUnits.addItem(entry);
             }
             entry.count++;
@@ -528,6 +533,23 @@ package models.movement
             currentHop.updateLocationName(id, name);
          for each (var hop:MHop in hops) {
             hop.updateLocationName(id, name);
+         }
+      }
+      
+      
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+      
+      public function update() : void {
+         if (isHostile && jumpsAtEvent != null) {
+            jumpsAtEvent.update();
+         }
+      }
+      
+      public function resetChangeFlags() : void {
+         if (isHostile && jumpsAtEvent != null) {
+            jumpsAtEvent.resetChangeFlags();
          }
       }
       

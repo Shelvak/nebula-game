@@ -57,5 +57,30 @@ package utils.locale
        * Lithuanian: everything else
        */
       public static const LT_ELSE:String = EN_ELSE;
+      
+      
+      /* ######################## */
+      /* ### LATVIAN: 4 forms ### */
+      /* ######################## */
+      
+      /**
+       * Latvian: is 0
+       */
+      public static const LV_ZERO:String = EN_ZERO;
+      
+      /**
+       * Latvian: is 1
+       */
+      public static const LV_ONE:String = EN_ONE;
+      
+      /**
+       * Latvian: ends in 1, not 11
+       */
+      public static const LV_FIRSTS:String = LT_FIRSTS;
+      
+      /**
+       * Latvian: everything else
+       */
+      public static const LV_ELSE:String = LT_ELSE;
    }
 }
