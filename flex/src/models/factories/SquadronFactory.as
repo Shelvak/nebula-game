@@ -32,6 +32,7 @@ package models.factories
          route.playerId = squad.playerId;
          route.player = squad.player;
          route.owner = squad.owner;
+         route.currentLocation = squad.currentHop.location.toLocation();
          squad.route = route;
          squad.client_internal::rebuildCachedUnits();
          return route;
