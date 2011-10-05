@@ -85,11 +85,11 @@ package models.movement
       }
       
       
-      [Bindable(event="willNotChange")]
+      [Bindable]
       /**
-       * Time (local) when this squadron will reach its destination. Never <code>null</code>.
+       * Time (local) when this squadron will reach its destination.
        */
-      public const arrivalEvent:MTimeEventFixedMoment = new MTimeEventFixedMoment();
+      public var arrivalEvent:MTimeEventFixedMoment = null;
       
       
       private var _jumpsAtEvent:MTimeEventFixedMoment = null;
@@ -193,15 +193,21 @@ package models.movement
       /* ################## */
       
       public function resetChangeFlags() : void {
-         arrivalEvent.resetChangeFlags();
-         if (_jumpsAtEvent != null)
+         if (arrivalEvent != null) {
+            arrivalEvent.resetChangeFlags();
+         }
+         if (_jumpsAtEvent != null) {
             _jumpsAtEvent.resetChangeFlags();
+         }
       }
       
       public function update() : void {
-         arrivalEvent.update();
-         if (_jumpsAtEvent != null)
+         if (arrivalEvent != null) {
+            arrivalEvent.update();
+         }
+         if (_jumpsAtEvent != null) {
             _jumpsAtEvent.update();
+         }
       }
       
       
@@ -225,11 +231,13 @@ package models.movement
          if (sourceLocation.isSSObject)  sourceLocation.setDefaultCoordinates();
          if (currentLocation.isSSObject) currentLocation.setDefaultCoordinates();
          if (targetLocation.isSSObject)  currentLocation.setDefaultCoordinates();
-         arrivalEvent.occuresAt = DateUtil.parseServerDTF(Objects.notNull(
+         var arrivesAt:String = Objects.notNull(
             data["arrivesAt"],
             "[prop arrivesAt] is required by [class: MRoute] but was not present in source object. " +
             "The object was:\n" + ObjectUtil.toString(data)
-         ));
+         );
+         arrivalEvent = new MTimeEventFixedMoment();
+         arrivalEvent.occuresAt = DateUtil.parseServerDTF(arrivesAt);
          if (data["jumpsAt"] != null) {
             _jumpsAtEvent = new MTimeEventFixedMoment();
             _jumpsAtEvent.occuresAt = DateUtil.parseServerDTF(data["jumpsAt"]);
