@@ -133,8 +133,14 @@ package controllers.units
          var squad:MSquadron = SQUADS.remove(id, true);
          if (squad)
          {
+            var fromPlanet: Boolean = squad.currentHop.location.isSSObject;
             Collections.cleanListOfICleanables(squad.units);
             squad.cleanup();
+            // If units navigate from planet we need to refresh some getters
+            if (ML.latestPlanet != null && fromPlanet) {
+               ML.latestPlanet.units.refresh();
+               ML.latestPlanet.dispatchUnitRefreshEvent();
+            }
          }
          if (removeRoute)
          {

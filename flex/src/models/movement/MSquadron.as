@@ -496,6 +496,7 @@ package models.movement
             units.enableAutoUpdate();
             // If units navigate from or to planet we need to refresh some getters
             if ((loc.isSSObject || fromPlanet) && ML.latestPlanet != null) {
+               ML.latestPlanet.units.refresh();
                ML.latestPlanet.dispatchUnitRefreshEvent();
             }
          }
