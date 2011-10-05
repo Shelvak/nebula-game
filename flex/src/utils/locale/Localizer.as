@@ -2,13 +2,10 @@ package utils.locale
 {
    import com.adobe.utils.StringUtil;
    
-   import controllers.GlobalFlags;
-   
    import mx.resources.IResourceBundle;
    import mx.resources.IResourceManager;
    import mx.resources.ResourceManager;
    import mx.utils.ObjectUtil;
-   import mx.utils.StringUtil;
    
    import utils.Objects;
    
@@ -211,24 +208,41 @@ package utils.locale
          switch (locale)
          {
             case Locale.EN:
-               return number == 0 ?
-                  [PluralForm.EN_ZERO, PluralForm.EN_ELSE] :
-                  (number == 1 ? 
-                     [PluralForm.EN_ONE] :
-                     [PluralForm.EN_ELSE]);
+               if (number == 0) {
+                  return [PluralForm.EN_ZERO, PluralForm.EN_ELSE];
+               }
+               if (number == 1) {
+                  return [PluralForm.EN_ONE];
+               }
+               return [PluralForm.EN_ELSE];
             
             case Locale.LT:
-               if (number == 0) 
+               if (number == 0) {
                   return [PluralForm.LT_ZERO, PluralForm.LT_TENS];
-               else if (number == 1) 
+               }
+               if (number == 1) { 
                   return [PluralForm.LT_ONE, PluralForm.LT_FIRSTS];
-               else if (number % 10 == 1 && number != 11)
+               }
+               if (number % 10 == 1 && number != 11) {
                   return [PluralForm.LT_FIRSTS, PluralForm.LT_ONE];
-               else
-                  return (number % 10 == 0 || 10 <= number % 100 && number % 100 <= 20) ?
-                     [PluralForm.LT_TENS] :
-                     [PluralForm.LT_ELSE];
+               }
+               if (number % 10 == 0 || 10 <= number % 100 && number % 100 <= 20) {
+                  return [PluralForm.LT_TENS];
+               }
+               return [PluralForm.LT_ELSE];
             
+            case Locale.LV:
+               if (number == 0) {
+                  return [PluralForm.LV_ZERO, PluralForm.LV_ELSE];
+               }
+               if (number == 1) {
+                  return [PluralForm.LV_ONE, PluralForm.LV_FIRSTS];
+               }
+               if (number % 10 == 1 && number != 11) {
+                  return [PluralForm.LV_FIRSTS]
+               }
+               return [PluralForm.LV_ELSE];
+               
             default:
                throw new ArgumentError("Unsupported locale: " + locale);
          }

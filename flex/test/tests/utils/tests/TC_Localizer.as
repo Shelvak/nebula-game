@@ -2,7 +2,6 @@ package tests.utils.tests
 {
    import ext.hamcrest.object.equals;
    
-   import mx.resources.IResourceBundle;
    import mx.resources.ResourceBundle;
    import mx.resources.ResourceManager;
    
@@ -176,11 +175,11 @@ package tests.utils.tests
       [Test]
       public function pluralize_should_respect_lithuanian_rules() : void
       {
-         function _pluralize(number:int) : String
-         {
+         function _pluralize(number:int) : String {
             return pluralize(
                "{0 zero[nėra šunų] one[šuo] 1sts[? šuo] tens[? šunų] many[? šunys]}",
-               [number], Locale.LT);
+               [number], Locale.LT
+            );
          }
          
          assertThat( "is 0:  0", _pluralize( 0), equals ("nėra šunų") );
@@ -193,8 +192,8 @@ package tests.utils.tests
          assertThat( "2nd form: ends in 0 or 10-20: 220", _pluralize(220), equals ("220 šunų") );
          assertThat( "2nd form: ends in 0 or 10-20:  30", _pluralize( 30), equals ( "30 šunų") );
          
-         assertThat( "3rd form: everything else", _pluralize( 8), equals ( "8 šunys") );
-         assertThat( "3rd form: everything else", _pluralize(25), equals ("25 šunys") );
+         assertThat( "3rd form: everything else:  8", _pluralize( 8), equals ( "8 šunys") );
+         assertThat( "3rd form: everything else: 25", _pluralize(25), equals ("25 šunys") );
       };
       
       
@@ -218,21 +217,51 @@ package tests.utils.tests
          assertThat( "2nd form: ends in 0 or 10-20: -220", _pluralize(-220), equals ("-220 šunų") );
          assertThat( "2nd form: ends in 0 or 10-20:  -30", _pluralize( -30), equals ( "-30 šunų") );
          
-         assertThat( "3rd form: everything else", _pluralize( -8), equals ( "-8 šunys") );
-         assertThat( "3rd form: everything else", _pluralize(-25), equals ("-25 šunys") );
+         assertThat( "3rd form: everything else:  -8", _pluralize( -8), equals ( "-8 šunys") );
+         assertThat( "3rd form: everything else: -25", _pluralize(-25), equals ("-25 šunys") );
       };
       
       
       [Test]
-      public function pluralize_should_follow_fallbacks() : void
-      {
-         function _pluralize(number:int) : String
-         {
+      public function pluralize_should_follow_lithuanian_fallbacks() : void {
+         function _pluralize(number:int) : String {
             return pluralize("{0 one[? šuo] tens[? šunų] many[? šunys]}", [number], Locale.LT);
          }
          
-         assertThat( "is 1:  1", _pluralize( 1), equals ("1 šuo") );
+         assertThat( "is 1: 1", _pluralize( 1), equals ("1 šuo") );
          assertThat( "ends in 1, not 11: 21", _pluralize(21), equals ("21 šuo") );
+      };
+      
+      
+      [Test]
+      public function pluralize_should_respect_latvian_rules() : void {
+         function _pluralize(number:int) : String {
+            return pluralize(
+               "{0 zero[? tanku] one[tanks] 1sts[? tanks] many[? tanki]}",
+               [number], Locale.LV
+            );
+         }
+         
+         assertThat( "is 0: 0", _pluralize(0), equals ("0 tanku") );
+         assertThat( "is 1: 1", _pluralize(1), equals ("tanks") );
+         
+         assertThat( "1st form: ends in 1, not 11:  21", _pluralize( 21), equals ( "21 tanks") );
+         assertThat( "1st form: ends in 1, not 11: 101", _pluralize(101), equals ("101 tanks") );
+         
+         assertThat( "2nd form: everything else:  2", _pluralize( 2), equals ( "2 tanki") );
+         assertThat( "2nd form: everything else: 11", _pluralize(11), equals ("11 tanki") );
+         assertThat( "2nd form: everything else: 30", _pluralize(30), equals ("30 tanki") );
+      }
+      
+      
+      [Test]
+      public function pluralize_should_follow_latvian_fallbacks() : void {
+         function _pluralize(number:int) : String {
+            return pluralize("{0 1sts[? tanks] many[? tanki]}", [number], Locale.LV);
+         }
+         
+         assertThat( "is 1", _pluralize(1), equals ("1 tanks") );
+         assertThat( "is 0", _pluralize(0), equals ("0 tanki") );
       };
       
       

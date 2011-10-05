@@ -159,7 +159,7 @@ package tests.galaxy
          assertThat( "squad 3 is moving", squad.isMoving, isTrue() );
          assertThat( "squad 3 has one hop", squad.hops, arrayWithSize (1) );
          assertThat( "next hop of squad 3", squad.nextHop.id, equals (1) );
-         assertThat( "squad 3 does not have route", squad.route, nullValue() );
+         assertThat( "squad 3 has route 3", squad.route.id, equals(3) );
          assertThat( "squad 3 has unit 6", find(squad.units, 6), notNullValue() );
          
          squad = findGalaxySquad(0, PID_PLAYER, makeGalaxyLoc(0, 0));
