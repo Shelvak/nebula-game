@@ -56,23 +56,21 @@ package models.notification.parts
       
       public function get labelText() : String
       {
+         var params: Array = [duration, DateUtil.formatShortDateTime(endsAt)];
          if (outcome == CombatOutcomeType.LOOSE)
          {
             if (owner)
             {
-               return Localizer.string("Notifications", "label.planetProtected.yours", 
-                  [duration, endsAt.toString()]);
+               return Localizer.string("Notifications", "label.planetProtected.yours", params);
             }
             else
             {
-               return Localizer.string("Notifications", "label.planetProtected.ally", 
-                  [duration, endsAt.toString()]);
+               return Localizer.string("Notifications", "label.planetProtected.ally", params);
             }
          }
          else
          {
-            return Localizer.string("Notifications", "label.planetProtected.enemies", 
-               [duration, endsAt.toString()]);
+            return Localizer.string("Notifications", "label.planetProtected.enemies", params);
          }
       }
    }
