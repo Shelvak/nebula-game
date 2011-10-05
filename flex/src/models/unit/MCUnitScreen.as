@@ -467,21 +467,24 @@ package models.unit
       
       public function cancel(): void
       {
-         transformedUnits.disableAutoUpdate();
-         for each(var unit: MCUnit in transformedUnits)
+         if (transformedUnits)
          {
-            if (unit.unit.flank != unit.flankModel.nr)
+            transformedUnits.disableAutoUpdate();
+            for each(var unit: MCUnit in transformedUnits)
             {
-               unit.flankModel = UnitsFlank(flanks.getItemAt(unit.unit.flank));
+               if (unit.unit.flank != unit.flankModel.nr)
+               {
+                  unit.flankModel = UnitsFlank(flanks.getItemAt(unit.unit.flank));
+               }
+               if (unit.unit.stance != unit.stance)
+               {
+                  unit.stance = unit.unit.stance;
+               }
             }
-            if (unit.unit.stance != unit.stance)
-            {
-               unit.stance = unit.unit.stance;
-            }
+            transformedUnits.enableAutoUpdate();
+            dispatchFormationChangeEvent();
+            deselectUnits();
          }
-         transformedUnits.enableAutoUpdate();
-         dispatchFormationChangeEvent();
-         deselectUnits();
       }
       
       public function confirmChanges(): void
