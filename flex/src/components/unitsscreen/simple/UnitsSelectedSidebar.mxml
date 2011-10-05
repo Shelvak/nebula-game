@@ -162,7 +162,8 @@
             <base:Panel width="100%" title="{getText('title.dismiss')}"
                         visible="{US.selection.length > 0 &amp;&amp; !US.hasChanges &amp;&amp;
                         US.target == null &amp;&amp; US.location is Location &amp;&amp; 
-                        Location(US.location).isSSObject}">
+                        Location(US.location).isSSObject 
+                        &amp;&amp; ML.latestPlanet.ssObject.ownerIsPlayer}">
                <s:Label text="{getText('message.dismiss')}" width="100%"
                         fontSize="12"/>
                <base:ImageAndLabel paddingLeft="12" paddingTop="6" type="{ResourceType.METAL}" 
