@@ -8,7 +8,6 @@ package controllers.connection
    import controllers.GlobalFlags;
    import controllers.combatlogs.CombatLogsCommand;
    import controllers.messages.ResponseMessagesTracker;
-   import controllers.players.AuthorizationManager;
    import controllers.players.PlayersCommand;
    import controllers.startup.StartupInfo;
    import controllers.startup.StartupManager;
@@ -200,7 +199,7 @@ package controllers.connection
       private function retryButton_clickHandler(button:Button) : void
       {
          StartupManager.resetApp();
-         AuthorizationManager.getInstance().authorizeLoginAndProceed();
+         StartupManager.connectAndAuthorize();
       }
       
       

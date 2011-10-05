@@ -17,6 +17,7 @@ package models.unit
    import models.ModelsCollection;
    import models.location.Location;
    import models.movement.MRoute;
+   import models.movement.MSquadron;
    
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
@@ -79,7 +80,8 @@ package models.unit
       public var owner: int;
       
       [Bindable]
-      public var routes: ListCollectionView;
+      public var routes: ArrayCollection = new ArrayCollection();
+      public var squads: ListCollectionView;
       
       [Bindable]
       public var groundVisible: Boolean = false;
@@ -158,28 +160,28 @@ package models.unit
          }
          
          
-         if (routes)
+         if (squads)
          {
-            routes.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshRoutesButton);
+            squads.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshRoutes);
          }
          if (location is Location && Location(location).isSSObject)
          {
-            routes = Collections.filter(ML.routes,
-               function(route:MRoute) : Boolean
+            squads = Collections.filter(ML.latestPlanet.squadrons,
+               function(squad:MSquadron) : Boolean
                {
-                  return route.currentLocation.equals(location) 
-                  && route.owner == owner;
+                  return squad.owner == owner;
                }
             );
          }
          else
          {
-            routes = null;
+            squads = null;
          }
-         if (routes)
+         if (squads)
          {
-            routes.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshRoutesButton);
+            squads.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshRoutes);
          }
+         refreshRoutes();
          
          
          
@@ -574,8 +576,18 @@ package models.unit
          refreshScreen();
       }
       
-      private function refreshRoutesButton(e: CollectionEvent): void
+      private function buildRoutesFromSquads(): void
       {
+         routes.removeAll();
+         for each (var squad: MSquadron in squads)
+         {
+            routes.addItem(squad.route);
+         }
+      }
+      
+      private function refreshRoutes(e: CollectionEvent = null): void
+      {
+         buildRoutesFromSquads();
          if (hasMovingUnits)
          {
             moveVisible = true;

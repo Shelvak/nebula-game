@@ -344,16 +344,16 @@ package models.movement
        */
       client_internal function rebuildCachedUnits() : void {
          checkRoute();
-         var source:Array = new Array();
+         _route.cachedUnits = new ModelsCollection();
          for each (var unit:Unit in units) {
-            var entry:UnitBuildingEntry = route.findEntryByType(unit.type);
+            var entry:UnitBuildingEntry = _route.findEntryByType(unit.type);
             if (!entry) {
                entry = new UnitBuildingEntry(unit.type);
-               source.push(entry);
+               _route.cachedUnits.addItem(entry);
             }
             entry.count++;
          }
-         _route.cachedUnits = new ModelsCollection(source);
+         
       }
       
       /**

@@ -57,8 +57,6 @@
    <s:Label text="{getText('label.owner')}"/>
    <base:TimeLabel text="{getText('label.ownerDate', [ownership == null?''
             :DateUtil.formatShortDate(ownership), timePassed])}"/>
-   <s:Label text="{getText('label.battlegroundOwner')}"
-            visible="{npc}" includeInLayout="{npc}"/>
    <base:layout>
       <s:VerticalLayout horizontalAlign="justify" paddingLeft="6"
          paddingRight="6" paddingTop="6" paddingBottom="6" />

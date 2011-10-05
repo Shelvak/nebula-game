@@ -3233,6 +3233,9 @@
     <label.units value="Flotes vienības" />
     <label.arrivesAt value="Ierodās:" />
     <label.leavesPlanetAt value="Atstāt planētu:" />
+    <!-- TODO: translate this -->
+    <label.unknown value="Unknown" />
+    <!-- /TODO: translate this -->
     <label.inTime value="(pēc {0})" />
     <label.close value="Aizvērt" />
     <label.playerFleets value="Jūsu flotes" />

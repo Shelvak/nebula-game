@@ -6,10 +6,13 @@
       <![CDATA[
          import models.location.Location;
          
+         import utils.locale.Localizer;
+         
          [Bindable]
          public var location:Location = null; 
       ]]>
    </fx:Script>
-   <s:BitmapImage id="locationImage" width="24" height="24" fillMode="scale" source="{location.bitmapData}"/>
-   <s:Label id="locationLabel" left="26" top="8" text="{location.longDescription}" styleName="squadronInfo"/>
+   <s:BitmapImage id="locationImage" width="24" height="24" fillMode="scale" visible="{location != null}" source="{location.bitmapData}"/>
+   <s:Label id="locationLabel" left="26" top="8" text="{location == null?Localizer.string('Squadrons', 'label.unknown')
+            :location.longDescription}" styleName="squadronInfo"/>
 </s:Group>

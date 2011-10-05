@@ -88,14 +88,13 @@
       ]]>
    </fx:Script>
    <base:Scroller top="0" left="0" right="0" bottom="0" stepMultiplier="3">
-      <s:Group left="0" right="0">
+      <base:AdvancedContainer left="0" right="0">
          <s:Label top="20" text="{getText('label.leavingSquadrons')}" fontWeight="bold"
-                  color="#eec500" fontSize="14" textAlign="center" left="6" right="6" 
+                  color="#eec500" fontSize="14" textAlign="center" 
                   visible="{US.currentKind == UnitKind.MOVING}"/>
-         <base:Warning top="20" left="6" right="6" text="{getText('label.notYours')}" 
+         <base:Warning top="20" text="{getText('label.notYours')}" 
                        visible="{(US.owner != Owner.PLAYER)}"/>
-         <base:AdvancedContainer left="0" right="0" 
-                                 visible="{US.owner == Owner.PLAYER 
+         <base:AdvancedContainer visible="{US.owner == Owner.PLAYER 
                                  &amp;&amp; US.currentKind != UnitKind.MOVING}">
             <base:Panel width="100%" title="{getText('label.select')}">
                <base:layout>
@@ -221,8 +220,11 @@
             </base:layout>
             
          </base:AdvancedContainer>
-         
-      </s:Group>
+         <base:layout>
+            <s:VerticalLayout horizontalAlign="justify" 
+                              paddingLeft="6" paddingRight="6"/>
+         </base:layout>
+      </base:AdvancedContainer>
    </base:Scroller>
    
 </base:BaseContainer>

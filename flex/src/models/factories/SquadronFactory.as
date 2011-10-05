@@ -7,6 +7,8 @@ package models.factories
    import models.time.MTimeEventFixedMoment;
    import models.unit.Unit;
    
+   import namespaces.client_internal;
+   
    import utils.DateUtil;
    import utils.Objects;
 
@@ -30,8 +32,9 @@ package models.factories
          route.playerId = squad.playerId;
          route.player = squad.player;
          route.owner = squad.owner;
-         attachJumpsAt(route, jumpsAt);
+         route.currentLocation = squad.currentHop.location.toLocation();
          squad.route = route;
+         squad.client_internal::rebuildCachedUnits();
          return route;
       }
       
