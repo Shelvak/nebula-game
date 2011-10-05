@@ -144,7 +144,7 @@ package controllers.planets.actions
             ML.latestSolarSystem = ss;
          }
          
-         SQUADS_CTRL.createSquadronsForUnits(planet.units);
+         SQUADS_CTRL.createSquadronsForUnits(planet.units, planet);
          SQUADS_CTRL.attachJumpsAtToHostileSquads(planet.squadrons, params["nonFriendlyJumpsAt"]);
          planet.dispatchUnitRefreshEvent();
          if (f_createMapOnly)

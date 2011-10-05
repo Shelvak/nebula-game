@@ -184,7 +184,7 @@ package tests.galaxy
          ML.units.addItem(makeUnit(1, PID_PLAYER, 1, 0, 0));
          ML.units.addItem(makeUnit(2, PID_ENEMY, 2, 0, 0));
          ML.units.addItem(makeUnit(3, PID_ALLY, 0, 0, 1));
-         squadsCtrl.createSquadronsForUnits(ML.units);
+         squadsCtrl.createSquadronsForUnits(ML.units, g);
          ML.latestGalaxy = g;
          
          createEmptyGalaxy();
@@ -211,7 +211,7 @@ package tests.galaxy
          var ss:SolarSystem = makeSS(1, 0, 0);
          ss.units.addItem(makeUnit(1));
          ss.units.addItem(makeUnit(2));
-         squadsCtrl.createSquadronsForUnits(ss.units);
+         squadsCtrl.createSquadronsForUnits(ss.units, ss);
          var g:Galaxy = new Galaxy();
          g.id = GALAXY_ID;
          g.battlegroundId = BATTLEGROUND_ID;
@@ -269,7 +269,7 @@ package tests.galaxy
          var planet:Planet = new Planet(ssObj);
          planet.units.addItem(makeUnit(1));
          planet.units.addItem(makeUnit(2));
-         squadsCtrl.createSquadronsForUnits(planet.units);
+         squadsCtrl.createSquadronsForUnits(planet.units, planet);
          var ss:SolarSystem = makeSS(1, 0, 0);
          ss.addObject(ssObj);
          var g:Galaxy = new Galaxy();

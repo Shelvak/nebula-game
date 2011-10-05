@@ -15,6 +15,7 @@ package controllers.units
    import models.factories.SquadronFactory;
    import models.location.Location;
    import models.location.LocationMinimal;
+   import models.map.MMap;
    import models.movement.MHop;
    import models.movement.MRoute;
    import models.movement.MSquadron;
@@ -411,7 +412,7 @@ package controllers.units
        * 
        * <p>Do not use for starting units movement. Use <code>createSquadron()</code> for that.</p>
        */
-      public function createSquadronsForUnits(units:IList) : void
+      public function createSquadronsForUnits(units:IList, map:MMap) : void
       {
          var squad:MSquadron;
          for each (var unit:Unit in units.toArray()) {
@@ -428,7 +429,9 @@ package controllers.units
                      squad.route = ROUTES.find(squad.id);
                   }
                   else {
-                     SquadronFactory.createHostileRoute(squad, null);
+                     SquadronFactory.createHostileRoute(
+                        squad, null, map.getLocation(unit.location.x, unit.location.y)
+                     );
                   }
                }
                SQUADS.addItem(squad);
