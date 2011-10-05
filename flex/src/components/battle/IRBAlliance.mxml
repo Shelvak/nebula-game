@@ -33,8 +33,14 @@
       <s:itemRenderer>
          <fx:Component>
             <s:ItemRenderer>
-               <s:Label text="{data.player}" color="{data.status==0?0x00ff00:(data.status==1?0x0000ff:
-                        (data.status==2?0xffffff:0xff0000))}"/>
+               <fx:Script>
+                  <![CDATA[
+                     import models.OwnerColor;
+                     import models.player.Player;
+                  ]]>
+               </fx:Script>
+               <s:Label text="{data.player}" color="{data.status==0?OwnerColor.PLAYER:(data.status==1?OwnerColor.ALLY:
+                        (data.status==2?OwnerColor.NAP:OwnerColor.ENEMY))}"/>
             </s:ItemRenderer>
          </fx:Component>
       </s:itemRenderer>

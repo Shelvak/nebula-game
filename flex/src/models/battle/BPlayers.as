@@ -31,6 +31,22 @@ package models.battle
          allianceArray.push(player == null?null:player[0]);
          addPlayers(alliance, name, myId);
          alliances[id] = allianceArray;
+         refreshPlayersStatus(name, myId);
+      }
+      
+      private function refreshPlayersStatus(allyName: String, myId: int): void
+      {
+         for each (var ally: Object in names)
+         {
+            if (ally.name == allyName)
+            {
+               for each (var player: Object in ally.players)
+               {
+                  player.status =  player?getPlayerStatus(myId, player.id):ENEMY;
+               }
+               return;
+            }
+         }
       }
       
       private function addPlayers(players: Array, name: String, myId: int): void
@@ -39,8 +55,7 @@ package models.battle
          
          for each (var player: Object in players)
          {
-            newPlayers.addItem({'player':player?player[1]:Localizer.string('Players','npc'), 
-               'status': player?getPlayerStatus(myId, player[0]):ENEMY});
+            newPlayers.addItem({'player':player?player[1]:Localizer.string('Players','npc'), 'id': player[0]});
          }
          for each (var ally: Object in names)
          {
