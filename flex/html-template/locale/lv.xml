@@ -1,5 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <locale>
+  <!-- 
+    This is locale file for Nebula 44 (Latvian translation).
+
+    Used pluralization rules:
+    Plural rule #3 (3 forms)
+
+    Families: Baltic (Latvian)
+    [zero] is 0: 0
+    [one] is 1: 1
+    [1sts] ends in 1, not 11: 1, 21, 31, 41, 51, 61, 71, 81, 91, 101, 121, 
+    131, 141, 151, 161, 171, 181, 191, 201, 221, 231, 241, 251, 261, 271, 
+    281, 291, …
+    [many] everything else: 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 
+    16, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 
+    36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 52, 53, 54, 55, …
+
+    [zero] falls back to [many] if not provided.
+    [one] falls back to [1sts] if not provided.
+
+    Example #1:
+    <Tanks 
+      value="Tev ir {0 zero[0 tanku] one[tanks] 1sts[? tanks] many[? tanki]}." 
+    />
+
+    When used in a sentence:
+    {0} == 0: Tev ir 0 tanku.
+    {0} == 1: Tev ir tanks.
+    {0} == 21: Tev ir 21 tanks.
+    {0} == 25: Tev ir 25 tanki.
+
+    Example #2 (with fallbacks):
+    <Tanks value="Tev ir {0 1sts[? tanks] many[? tanki]}." />
+
+    When used in a sentence:
+    {0} == 0: Tev ir 0 tanki.
+    {0} == 1: Tev ir 1 tanks.
+    {0} == 21: Tev ir 21 tanks.
+    {0} == 25: Tev ir 25 tanki.
+  -->
+
   <Objects>
     <!-- Self ground units -->
     
@@ -3116,7 +3156,7 @@
     <label.loading value="Ielādē..." />
     <label.noAlliances value="No alliances found" />
     <label.allyRatings value="Alianses reitings" />
-    <label.close value="Aizvērt
+    <label.close value="Aizvērt" />
     <rank value="#" />
     <player value="Spēlētājs" />
     <alliance value="Alianse" />
@@ -3174,7 +3214,7 @@
     <!-- {0}: additionalStorage.resource (1..3, joined as human string) -->
     <additionalStorage value="Papildus {0} ietilpība nepieciešama." />
     <toolTip.selectNone value="Neatzīmēt nevienu" />
-    <toolTip.selectAll value="Atzīmēt visus />
+    <toolTip.selectAll value="Atzīmēt visus" />
   </Resources>
 
   <SSObjects>
@@ -3830,8 +3870,8 @@
     <label.enoughIn value="Pietiks {0}" />
     <label.currentUnits value="Vienības" />
     <label.currentFacilities value="Spējas" />
-    <label.flankNr1 value="Pirmais" />
-    <label.flankNr2 value="Otrais" />
+    <label.flankNr0 value="Pirmais" />
+    <label.flankNr1 value="Otrais" />
     <tooltip.flank>
       <p>{0} flank</p>
       <p>Units in {0} flank has {1}% probability to be hit.</p>
