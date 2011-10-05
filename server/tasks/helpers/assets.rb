@@ -311,6 +311,10 @@ end
 
 # Processes given files for appropriate targets.
 class Processor
+  ImageIO = Java::javax.imageio.ImageIO
+  BufferedImage = java.awt.image.BufferedImage
+  JFile = Java::java.io.File
+
   # _base_ is an +AssetBase+ object.
   def initialize(base)
     @base = base
@@ -378,10 +382,21 @@ class Processor
 	  FileUtils.rm path if File.exists?(path)
     FileUtils.mv target_convert, path, :force => true
   end
-  
+
   # Ensure we have a format that png2swf understands
   def convert_for_png2swf(path)
-    convert(path, "-type TrueColorMatte -depth 8")
+    # Read input file.
+    source_bi = ImageIO.read(JFile.new(path))
+
+    # Copy it to ARGB image.
+    output_bi = BufferedImage.new(source_bi.width, source_bi.height,
+                                  BufferedImage::TYPE_INT_ARGB)
+    graphics = output_bi.create_graphics
+    graphics.draw_image(source_bi, 0, 0, nil)
+    graphics.dispose
+
+    # Write it to file.
+    ImageIO.write(output_bi, "png", JFile.new(path))
   end
 
   # Preprocess image before optimization
@@ -533,12 +548,11 @@ class Processor
       
       puts "#{base_name}/*.png (#{target}): combining to SWF (#{
         quality}% JPEG)."
-      
+
       pngs = Dir["#{base_dir}/*.png"].sort.map do |filename|
         convert_for_png2swf(filename)
-        
         # Win32 compatibility
-        "\"#{filename}\""
+        %Q{"#{filename}"}
       end.join(" ")
       cmd = png2swf(quality, "\"#{swf_name}\"", pngs)
       system(cmd)
