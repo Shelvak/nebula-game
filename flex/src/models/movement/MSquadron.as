@@ -1,5 +1,7 @@
 package models.movement
 {
+   import controllers.objects.ObjectClass;
+   
    import flash.errors.IllegalOperationError;
    
    import interfaces.ICleanable;
@@ -24,6 +26,7 @@ package models.movement
    
    import namespaces.client_internal;
    
+   import utils.ModelUtil;
    import utils.Objects;
    import utils.datastructures.Collections;
    
@@ -348,7 +351,7 @@ package models.movement
          for each (var unit:Unit in units) {
             var entry:UnitBuildingEntry = _route.findEntryByType(unit.type);
             if (!entry) {
-               entry = new UnitBuildingEntry(unit.type);
+               entry = new UnitBuildingEntry(ModelUtil.getModelType(ObjectClass.UNIT, unit.type));
                _route.cachedUnits.addItem(entry);
             }
             entry.count++;
