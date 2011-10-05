@@ -3,7 +3,9 @@ package controllers.objects.actions
    import controllers.objects.ObjectClass;
    import controllers.units.SquadronsController;
    
-   import globalevents.GObjectEvent;
+   import models.location.LocationType;
+   import models.map.MMap;
+   import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
    
@@ -27,9 +29,20 @@ package controllers.objects.actions
                unitsCreated.addItem(getCustomController(objectClass).objectCreated(objectSubclass, object, reason));
             }
             ML.units.enableAutoUpdate();
-            SquadronsController.getInstance().createSquadronsForUnits(unitsCreated);
-            if (ML.latestPlanet != null)
+            var unit:Unit = Unit(unitsCreated.getItemAt(0));
+            var map:MMap;
+            switch (unit.location.type) {
+               case LocationType.GALAXY: map = ML.latestGalaxy; break;
+               case LocationType.SOLAR_SYSTEM: map = ML.latestSolarSystem; break;
+               case LocationType.SS_OBJECT: map = ML.latestPlanet; break;
+               default: map = null;
+            }
+            if (map != null) {
+               SquadronsController.getInstance().createSquadronsForUnits(unitsCreated, map);
+            }
+            if (ML.latestPlanet != null) {
                ML.latestPlanet.dispatchUnitRefreshEvent();
+            }
          }
          else {
             for each (object in objects) {

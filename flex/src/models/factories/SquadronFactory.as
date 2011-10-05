@@ -1,6 +1,7 @@
 package models.factories
 {
    import models.BaseModel;
+   import models.location.Location;
    import models.location.LocationMinimal;
    import models.movement.MRoute;
    import models.movement.MSquadron;
@@ -24,15 +25,25 @@ package models.factories
        * </ul>
        * 
        * @param jumpsAt
+       * 
+       * @param currentLocation current location of a route. If not provided, method will try to create
+       * location using <code>squad.currentHop.location.toLocation()</code>
        */
-      public static function createHostileRoute(squad:MSquadron, jumpsAt:String) : MRoute {
+      public static function createHostileRoute(squad:MSquadron,
+                                                jumpsAt:String,
+                                                currentLocation:Location = null) : MRoute {
          Objects.paramNotNull("squad", squad);
          var route:MRoute = new MRoute();
          route.id = squad.id;
          route.playerId = squad.playerId;
          route.player = squad.player;
          route.owner = squad.owner;
-         route.currentLocation = squad.currentHop.location.toLocation();
+         if (currentLocation != null) {
+            route.currentLocation = currentLocation;
+         }
+         else {            
+            route.currentLocation = squad.currentHop.location.toLocation();
+         }
          squad.route = route;
          squad.client_internal::rebuildCachedUnits();
          return route;
