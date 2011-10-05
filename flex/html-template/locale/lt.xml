@@ -3230,6 +3230,7 @@
     <label.units value="Laivyno nariai" />
     <label.arrivesAt value="Atvyks:" />
     <label.leavesPlanetAt value="Iš planetos išvyksta:" />
+    <label.unknown value="Nežinoma" />
     <label.inTime value="(už {0})" />
     <label.close value="Uždaryti" />
     <label.playerFleets value="Tavo laivynai" />

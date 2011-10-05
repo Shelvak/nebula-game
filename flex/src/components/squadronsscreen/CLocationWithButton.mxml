@@ -17,5 +17,5 @@
    </s:layout>
    
    <location:CLocationOneLine location="{this.location}" width="100%"/>
-   <location:CLocationButton location="{this.location}"/>
+   <location:CLocationButton location="{this.location}" enabled="{this.location != null}"/>
 </s:Group>

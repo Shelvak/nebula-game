@@ -3222,6 +3222,7 @@
     <label.units value="Fleet units" />
     <label.arrivesAt value="Arrives at:" />
     <label.leavesPlanetAt value="Leaves planet at:" />
+    <label.unknown value="Unknown" />
     <label.inTime value="(in {0})" />
     <label.close value="Close" />
     <label.playerFleets value="Your fleets" />

@@ -101,7 +101,9 @@
             <squadscr:CLocationWithButton location="{model.targetLocation}"/>
             <s:Label paddingTop="9" text="{model.firstHopEvent.occuresAtString} ({model.firstHopEvent.occuresInString})"
                      visible="{_currentLocIsPlanet}" includeInLayout="{_currentLocIsPlanet}"/>
-            <s:Label paddingTop="9" text="{model.arrivalEvent.occuresAtString} ({model.arrivalEvent.occuresInString})"/>
+            <s:Label paddingTop="9" text="{model.arrivalEvent != null
+                     ? model.arrivalEvent.occuresAtString + ' (' + model.arrivalEvent.occuresInString + ')'
+                     : getString('label.unknown')}"/>
          </s:Group>
       </s:Group>
    </s:Group>
