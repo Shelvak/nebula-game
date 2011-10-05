@@ -3,7 +3,8 @@
   <!-- 
     This is locale file for Nebula 44 (Latvian translation).
 
-    Used pluralization rules:
+    ****** Pluralization rules ******
+
     Plural rule #3 (3 forms)
 
     Families: Baltic (Latvian)
@@ -38,275 +39,317 @@
     {0} == 1: Tev ir 1 tanks.
     {0} == 21: Tev ir 21 tanks.
     {0} == 25: Tev ir 25 tanki.
+
+    ****** Used nouns in <Objects> ******
+
+    <Trooper value="Kareivis" />
+    <Trooper-what value="{0 1sts[? kareivis] many[? kareivji]}" />
+    <Trooper-whos value="{0 1sts[? kareivis] many[? kareivji]}" />
+
+    <Trooper> is used when sentence sounds like this:
+    English: You are a Trooper.
+    Latvian: Tu esi kareivis.
+    Context: What it is.
+
+    <Trooper-what> is used when sentence sounds like this:
+    English: You have to build 27 troopers to attack this building.
+    Latvian: Tev ir vajadzīgi 27 kareivji, lai uzbruktu šai ēkai.
+    Context: What you have to build.
+
+    <Trooper-whos> is used when sentence sounds like this:
+    English: You need 1 trooper to attack this building.
+    Latvian: Tev ir vajadzīgs 1 kareivis, lai uzbruktu šai ēkai.
+    Context: What you need to attack.
+
+    ****** References ******
+
+    You can refer to previously defined locale string, by using
+    a reference. References are written in 2 forms:
+
+    1) With package: [reference:Objects/key_name]
+    2) Without package: [reference:key_name].
+
+    If it is used without package, it will try to find the key in same
+    package where this reference is defined.
+
+    If whole value is the same you can use ref="" shorthand:
+      <Trooper-what value="{0 1sts[? kareivis] many[? kareivji]}" />
+      <Trooper-whos ref="Trooper-what" />
+
+    instead of
+
+      <Trooper-what value="{0 1sts[? kareivis] many[? kareivji]}" />
+      <Trooper-whos value="[reference:Trooper-what]" />
+
   -->
 
   <Objects>
     <!-- Self ground units -->
     
     <Trooper value="Kareivis" />
-    <Trooper-what value="{0 one[viens kareivis] many[? kareivji]}" />
+    <Trooper-what value="{0 1sts[? kareivis] many[? kareivji]}" />
     <Trooper-whos ref="Trooper-what" />
 
     <Shocker value="Shocker" />
-    <Shocker-what value="{0 one[one shocker] many[? shockers]}" />
+    <Shocker-what value="{0 1sts[? shocker] many[? shockers]}" />
     <Shocker-whos ref="Shocker-what" />
 
     <Seeker value="Meklētājs" />
-    <Seeker-what value="{0 one[viens meklētājs] many[? meklētāji]}" />
+    <Seeker-what value="{0 1sts[? meklētājs] many[? meklētāji]}" />
     <Seeker-whos ref="Seeker-what" />
     
     <Scorpion value="Skorpions" />
-    <Scorpion-what value="{0 one[viens skorpions] many[? skorpioni]}" />
+    <Scorpion-what value="{0 1sts[? skorpions] many[? skorpioni]}" />
     <Scorpion-whos ref="Scorpion-what" />
     
     <Azure value="Azure" />
-    <Azure-what value="{0 one[one azure] many[? azures]}" />
+    <Azure-what value="{0 1sts[? azure] many[? azures]}" />
     <Azure-whos ref="Azure-what" />
         
     <Mantis value="Mantis" />
-    <Mantis-what value="{0 one[one mantis] many[? mantises]}" />
+    <Mantis-what value="{0 1sts[? mantis] many[? mantises]}" />
     <Mantis-whos ref="Mantis-what" />
         
     <Zeus value="Zeus" />
-    <Zeus-what value="{0 one[one zeus] many[? zeuses]}" />
+    <Zeus-what value="{0 1sts[? zeus] many[? zeuses]}" />
     <Zeus-whos ref="Zeus-what" />
         
     <MDH value="MDH" />
-    <MDH-what value="{0 one[one MDH] many[? MDH's]}" />
+    <MDH-what value="{0 1sts[? MDH] many[? MDH's]}" />
     <MDH-whos ref="MDH-what" />
 
     <!-- TODO  -->
     <MobileVulcan value="Vulcan-M" />
-    <MobileVulcan-what value="{0 one[one Vulcan-M] many[? Vulcan-M's]}" />
+    <MobileVulcan-what value="{0 1sts[? Vulcan-M] many[? Vulcan-M's]}" />
     <MobileVulcan-whos ref="MobileVulcan-what" />   
     
     <MobileScreamer value="Screamer-M" />
-    <MobileScreamer-what value="{0 one[one Screamer-M] many[? Screamer-M's]}" />
+    <MobileScreamer-what value="{0 1sts[? Screamer-M] many[? Screamer-M's]}" />
     <MobileScreamer-whos ref="MobileScreamer-what" />   
 
     <MobileThunder value="Thunder-M" />
-    <MobileThunder-what value="{0 one[one Thunder-M] many[? Thunder-M's]}" />
+    <MobileThunder-what value="{0 1sts[? Thunder-M] many[? Thunder-M's]}" />
     <MobileThunder-whos ref="MobileThunder-what" />   
     <!-- /TODO -->
    
     <!-- Self space units -->
     
     <Mule value="Mule" />
-    <Mule-what value="{0 one[one mule] many[? mules]}" />
+    <Mule-what value="{0 1sts[? mule] many[? mules]}" />
     <Mule-whos ref="Mule-what" />
     
     <Crow value="Crow" />
-    <Crow-what value="{0 one[one crow] many[? crows]}" />
+    <Crow-what value="{0 1sts[? crow] many[? crows]}" />
     <Crow-whos ref="Crow-what" />
     
     <Cyrix value="Cyrix" />
-    <Cyrix-what value="{0 one[one cyrix] many[? cyrixes]}" />
+    <Cyrix-what value="{0 1sts[? cyrix] many[? cyrixes]}" />
     <Cyrix-whos ref="Cyrix-what" />
     
     <Rhyno value="Rhyno" />
-    <Rhyno-what value="{0 one[one rhyno] many[? rhynos]}" />
+    <Rhyno-what value="{0 1sts[? rhyno] many[? rhynos]}" />
     <Rhyno-whos ref="Rhyno-what" />
     
     <Dart value="Dart" />
-    <Dart-what value="{0 one[one dart] many[? darts]}" />
+    <Dart-what value="{0 1sts[? dart] many[? darts]}" />
     <Dart-whos ref="Dart-what" />
     
     <Avenger value="Avenger" />
-    <Avenger-what value="{0 one[one avenger] many[? avengers]}" />
+    <Avenger-what value="{0 1sts[? avenger] many[? avengers]}" />
     <Avenger-whos ref="Avenger-what" />
     
     <Jumper value="Jumper" />
-    <Jumper-what value="{0 one[one jumper] many[? jumpers]}" />
+    <Jumper-what value="{0 1sts[? jumper] many[? jumpers]}" />
     <Jumper-whos ref="Jumper-what" />
     
     <!-- NPC ground units -->
         
     <Gnat value="Gnat" />
-    <Gnat-what value="{0 one[one gnat] many[? gnats]}" />
+    <Gnat-what value="{0 1sts[? gnat] many[? gnats]}" />
     <Gnat-whos ref="Gnat-what" />
 
     <Glancer value="Glancer" />
-    <Glancer-what value="{0 one[one glancer] many[? glancers]}" />
+    <Glancer-what value="{0 1sts[? glancer] many[? glancers]}" />
     <Glancer-whos ref="Glancer-what" />
  
     <Spudder value="Spudder" />
-    <Spudder-what value="{0 one[one spudder] many[? spudders]}" />
+    <Spudder-what value="{0 1sts[? spudder] many[? spudders]}" />
     <Spudder-whos ref="Spudder-what" />
 
     <Gnawer value="Gnawer" />
-    <Gnawer-what value="{0 one[one gnawer] many[? gnawers]}" />
+    <Gnawer-what value="{0 1sts[? gnawer] many[? gnawers]}" />
     <Gnawer-whos ref="Gnawer-what" />
 
     <!-- NPC space units -->
     
     <Dirac value="Dirac" />
-    <Dirac-what value="{0 one[one dirac] many[? diracs]}" />
+    <Dirac-what value="{0 1sts[? dirac] many[? diracs]}" />
     <Dirac-whos ref="Dirac-what" />
 
     <Thor value="Thor" />
-    <Thor-what value="{0 one[one thor] many[? thors]}" />
+    <Thor-what value="{0 1sts[? thor] many[? thors]}" />
     <Thor-whos ref="Thor-what" />
 
     <Demosis value="Demosis" />
-    <Demosis-what value="{0 one[one demosis] many[? demosis]}" />
+    <Demosis-what value="{0 1sts[? demosis] many[? demosis]}" />
     <Demosis-whos ref="Demosis-what" />
     
     <!-- Turrets -->
 
     <Vulcan value="Vulcan" />
-    <Vulcan-what value="{0 one[one vulcan] many[? vulcans]}" />
+    <Vulcan-what value="{0 1sts[? vulcan] many[? vulcans]}" />
     <Vulcan-whos ref="Vulcan-what" />
 
     <Screamer value="Screamer" />
-    <Screamer-what value="{0 one[one screamer] many[? screamers]}" />
+    <Screamer-what value="{0 1sts[? screamer] many[? screamers]}" />
     <Screamer-whos ref="Screamer-what" />
 
     <Thunder value="Thunder" />
-    <Thunder-what value="{0 one[one thunder] many[? thunders]}" />
+    <Thunder-what value="{0 1sts[? thunder] many[? thunders]}" />
     <Thunder-whos ref="Thunder-what" />
     
     <!-- Extractors -->
 
     <MetalExtractor value="MEX" />
-    <MetalExtractor-what value="{0 one[one MEX] many[? MEX's]}" />
+    <MetalExtractor-what value="{0 1sts[? MEX] many[? MEX's]}" />
     <MetalExtractor-whos ref="MetalExtractor-what" />
 
     <MetalExtractorT2 value="MEX T-2" />
-    <MetalExtractorT2-what value="{0 one[one MEX T-2] many[? MEX's T-2]}" />
+    <MetalExtractorT2-what value="{0 1sts[? MEX T-2] many[? MEX's T-2]}" />
     <MetalExtractorT2-whos ref="MetalExtractorT2-what" />
 
     <CollectorT1 value="Wind Panel" />
-    <CollectorT1-what value="{0 one[one wind panel] many[? wind panels]}" />
+    <CollectorT1-what value="{0 1sts[? wind panel] many[? wind panels]}" />
     <CollectorT1-whos ref="CollectorT1-what" />
 
     <CollectorT2 value="Collector" />
-    <CollectorT2-what value="{0 one[one collector] many[? collectors]}" />
+    <CollectorT2-what value="{0 1sts[? collector] many[? collectors]}" />
     <CollectorT2-whos ref="CollectorT2-what" />
 
     <CollectorT3 value="Thermal Hub" />
-    <CollectorT3-what value="{0 one[one thermal hub] many[? thermal hubs]}" />
+    <CollectorT3-what value="{0 1sts[? thermal hub] many[? thermal hubs]}" />
     <CollectorT3-whos ref="CollectorT3-what" />
 
     <ZetiumExtractor value="ZEX" />
-    <ZetiumExtractor-what value="{0 one[one ZEX] many[? ZEXes]}" />
+    <ZetiumExtractor-what value="{0 1sts[? ZEX] many[? ZEXes]}" />
     <ZetiumExtractor-whos ref="ZetiumExtractor-what" />
 
     <ZetiumExtractorT2 value="ZEX T-2" />
-    <ZetiumExtractorT2-what value="{0 one[one ZEX T-2] many[? ZEXes T-2]}" />
+    <ZetiumExtractorT2-what value="{0 1sts[? ZEX T-2] many[? ZEXes T-2]}" />
     <ZetiumExtractorT2-whos ref="ZetiumExtractorT2-what" />
     
     <!-- Storages -->
 
     <MetalStorage value="Metal Storage" />
-    <MetalStorage-what value="{0 one[one metal storage] many[? metal storages]}" />
+    <MetalStorage-what value="{0 1sts[? metal storage] many[? metal storages]}" />
     <MetalStorage-whos ref="MetalStorage-what" />
     
     <EnergyStorage value="Energy Batteries" />
-    <EnergyStorage-what value="{0 one[one energy battery] many[? energy batteries]}" />
+    <EnergyStorage-what value="{0 1sts[? energy battery] many[? energy batteries]}" />
     <EnergyStorage-whos ref="EnergyStorage-what" />
     
     <ZetiumStorage value="Zetium Storage" />
-    <ZetiumStorage-what value="{0 one[one zetium storage] many[? zetium storages]}" />
+    <ZetiumStorage-what value="{0 1sts[? zetium storage] many[? zetium storages]}" />
     <ZetiumStorage-whos ref="ZetiumStorage-what" />
     
     <!-- NPC buildings -->
 
     <NpcMetalExtractor value="Foundry" />
-    <NpcMetalExtractor-what value="{0 one[one foundry] many[? foundries]}" />
+    <NpcMetalExtractor-what value="{0 1sts[? foundry] many[? foundries]}" />
     <NpcMetalExtractor-whos ref="NpcMetalExtractor-what" />
         
     <NpcZetiumExtractor value="Zetium Lab" />
-    <NpcZetiumExtractor-what value="{0 one[one zetium lab] many[? zetium labs]}" />
+    <NpcZetiumExtractor-what value="{0 1sts[? zetium lab] many[? zetium labs]}" />
     <NpcZetiumExtractor-whos ref="NpcZetiumExtractor-what" />
       
     <NpcGeothermalPlant value="Heat Collector" />
-    <NpcGeothermalPlant-what value="{0 one[one heat collector] many[? heat collectors]}" />
+    <NpcGeothermalPlant-what value="{0 1sts[? heat collector] many[? heat collectors]}" />
     <NpcGeothermalPlant-whos ref="NpcGeothermalPlant-what" />
     
     <NpcSolarPlant value="Prism" />
-    <NpcSolarPlant-what value="{0 one[one prism] many[? prisms]}" />
+    <NpcSolarPlant-what value="{0 1sts[? prism] many[? prisms]}" />
     <NpcSolarPlant-whos ref="NpcSolarPlant-what" />
     
     <NpcCommunicationsHub value="CommHub" />
-    <NpcCommunicationsHub-what value="{0 one[one CommHub] many[? CommHubs]}" />
+    <NpcCommunicationsHub-what value="{0 1sts[? CommHub] many[? CommHubs]}" />
     <NpcCommunicationsHub-whos ref="NpcCommunicationsHub-what" />
     
     <NpcTemple value="Temple" />
-    <NpcTemple-what value="{0 one[one temple] many[? temples]}" />
+    <NpcTemple-what value="{0 1sts[? temple] many[? temples]}" />
     <NpcTemple-whos ref="NpcTemple-what" />
     
     <NpcExcavationSite value="Excavation Site" />
-    <NpcExcavationSite-what value="{0 one[one excavation site] many[? excavation sites]}" />
+    <NpcExcavationSite-what value="{0 1sts[? excavation site] many[? excavation sites]}" />
     <NpcExcavationSite-whos ref="NpcExcavationSite-what" />
     
     <NpcResearchCenter value="Lab" />
-    <NpcResearchCenter-what value="{0 one[one lab] many[? labs]}" />
+    <NpcResearchCenter-what value="{0 1sts[? lab] many[? labs]}" />
     <NpcResearchCenter-whos ref="NpcResearchCenter-what" />
     
     <NpcJumpgate value="Jumpgate" />
-    <NpcJumpgate-what value="{0 one[one jumpgate] many[? jumpgates]}" />
+    <NpcJumpgate-what value="{0 1sts[? jumpgate] many[? jumpgates]}" />
     <NpcJumpgate-whos ref="NpcJumpgate-what" />
     
     <NpcInfantryFactory value="Hatchery" />
-    <NpcInfantryFactory-what value="{0 one[one hatchery] many[? hatcheries]}" />
+    <NpcInfantryFactory-what value="{0 1sts[? hatchery] many[? hatcheries]}" />
     <NpcInfantryFactory-whos ref="NpcInfantryFactory-what" />
     
     <NpcTankFactory value="Heavy Arms Lab" />
-    <NpcTankFactory-what value="{0 one[one heavy arms lab] many[? heavy arms labs]}" />
+    <NpcTankFactory-what value="{0 1sts[? heavy arms lab] many[? heavy arms labs]}" />
     <NpcTankFactory-whos ref="NpcTankFactory-what" />
     
     <NpcSpaceFactory value="Spaceship Pod" />
-    <NpcSpaceFactory-what value="{0 one[one spaceship pod] many[? spaceship pods]}" />
+    <NpcSpaceFactory-what value="{0 1sts[? spaceship pod] many[? spaceship pods]}" />
     <NpcSpaceFactory-whos ref="NpcSpaceFactory-what" />
     
     <NpcHall value="Emitter" />
-    <NpcHall-what value="{0 one[one emitter] many[? emitters]}" />
+    <NpcHall-what value="{0 1sts[? emitter] many[? emitters]}" />
     <NpcHall-whos ref="NpcHall-what" />
     
     <!-- Building facilities -->
     
     <Mothership value="Mothership" />
-    <Mothership-what value="{0 one[one mothership] many[? motherships]}" />
+    <Mothership-what value="{0 1sts[? mothership] many[? motherships]}" />
     <Mothership-whos ref="Mothership-what" />
     
     <Headquarters value="Headquarters" />
-    <Headquarters-what value="{0 one[one headquarters] many[? headquarters]}" />
+    <Headquarters-what value="{0 1sts[? headquarters] many[? headquarters]}" />
     <Headquarters-whos ref="Headquarters-what" />
     
     <Crane value="Crane" />
-    <Crane-what value="{0 one[one crane] many[? cranes]}" />
+    <Crane-what value="{0 1sts[? crane] many[? cranes]}" />
     <Crane-whos ref="Crane-what" />
     
     <!-- Unit facilities -->
 
     <Barracks value="Barracks" />
-    <Barracks-what value="{0 one[one barracks] many[? barracks]}" />
+    <Barracks-what value="{0 1sts[? barracks] many[? barracks]}" />
     <Barracks-whos ref="Barracks-what" />
     
     <GroundFactory value="Ground Factory" />
-    <GroundFactory-what value="{0 one[one ground factory] many[? ground factories]}" />
+    <GroundFactory-what value="{0 1sts[? ground factory] many[? ground factories]}" />
     <GroundFactory-whos ref="GroundFactory-what" />
     
     <SpaceFactory value="Space Factory" />
-    <SpaceFactory-what value="{0 one[one space factory] many[? space factories]}" />
+    <SpaceFactory-what value="{0 1sts[? space factory] many[? space factories]}" />
     <SpaceFactory-whos ref="SpaceFactory-what" />
     
     <!-- Other buildings -->
     
     <Market value="Market" />
-    <Market-what value="{0 one[one market] many[? markets]}" />
+    <Market-what value="{0 1sts[? market] many[? markets]}" />
     <Market-whos ref="Market-what" />
 
     <Radar value="Radar" />
-    <Radar-what value="{0 one[one radar] many[? radars]}" />
+    <Radar-what value="{0 1sts[? radar] many[? radars]}" />
     <Radar-whos ref="Radar-what" />
     
     <DefensivePortal value="Summoner" />
-    <DefensivePortal-what value="{0 one[one summoner] many[? summoners]}" />
+    <DefensivePortal-what value="{0 1sts[? summoner] many[? summoners]}" />
     <DefensivePortal-whos ref="DefensivePortal-what" />
     
     <ResearchCenter value="Research Center" />
-    <ResearchCenter-what value="{0 one[one research center] many[? research center]}" />
+    <ResearchCenter-what value="{0 1sts[? research center] many[? research center]}" />
     <ResearchCenter-whos ref="ResearchCenter-what" />
     
     <Housing value="Living Pods" />
@@ -314,7 +357,7 @@
     <Housing-whos ref="Housing-what" />
     
     <HealingCenter value="MedTech" />
-    <HealingCenter-what value="{0 one[one MedTech] many[? MedTechs]}" />
+    <HealingCenter-what value="{0 1sts[? MedTech] many[? MedTechs]}" />
     <HealingCenter-whos ref="HealingCenter-what" />
 
     <!-- Technologies -->
@@ -346,37 +389,37 @@
     <!-- Other stuff -->
 
     <Unit value="Unit" />
-    <Unit-what value="{0 one[one unit] many[? units]}" />
+    <Unit-what value="{0 1sts[? unit] many[? units]}" />
     <Unit-whos ref="Unit-what" />
     
     <Building value="Building" />
-    <Building-what value="{0 one[one building] many[? buildings]}" />
+    <Building-what value="{0 1sts[? building] many[? buildings]}" />
     <Building-whos ref="Building-what" />
     
     <Technology value="Technology" />
-    <Technology-what value="{0 one[one technology] many[? technologies]}" />
+    <Technology-what value="{0 1sts[? technology] many[? technologies]}" />
     <Technology-whos ref="Technology-what" />
     
     <Planet value="Planet" />
-    <Planet-what value="{0 one[one planet] many[? planets]}" />
+    <Planet-what value="{0 1sts[? planet] many[? planets]}" />
     <Planet-whos ref="Planet-what" />
 
     <Point value="Point" />
-    <Point-what value="{0 one[one point] many[? points]}" />
+    <Point-what value="{0 1sts[? point] many[? points]}" />
     <Point-whos ref="Point-what" />
 
     <Object value="Object" />
-    <Object-what value="{0 one[one object] many[? objects]}" />
+    <Object-what value="{0 1sts[? object] many[? objects]}" />
     <Object-whos ref="Object-what" />
 
     <Is value="{0 one[is] many[are]}" />
 
     <Scientist value="Scientist" />
-    <Scientist-what value="{0 one[one Scientist] many[? Scientists]}" />
+    <Scientist-what value="{0 1sts[? Scientist] many[? Scientists]}" />
     <Scientist-whos ref="Scientist-what" />
 
     <Alliances value="Alliances" />
-    <Alliances-what value="{0 one[one Alliances] many[? Alliances]}" />
+    <Alliances-what value="{0 1sts[? Alliances] many[? Alliances]}" />
     <Alliances-whos ref="Alliances-what" />
 
   </Objects>
@@ -417,7 +460,7 @@
       {0 one[vienu kredītu] many[? kredītus]}.</p>
     </label.renameCost>
     <label.total>
-      <p>Total ({0 one[viens spēlētājs] many[? spēlētāji]})</p>
+      <p>Total ({0 1sts[? spēlētājs] many[? spēlētāji]})</p>
     </label.total>
     <label.inAlliance value="Aliansē" />
     <label.notInAlliance value="Nav aliansē" />
@@ -1718,7 +1761,7 @@
     
     <title.convertCreds value="Mainīt kredītus" />
     <message.convertCreds>
-      <p>Vai tiešām vēlaties mainīt kredītus no {0 one[viens VIP kredīts] many[? VIP kredīti]} 
+      <p>Vai tiešām vēlaties mainīt kredītus no {0 1sts[? VIP kredīts] many[? VIP kredīti]} 
       uz {1 one[vienu kredītu] many[? kredītiem]}?</p>
     </message.convertCreds>
     
@@ -3301,9 +3344,10 @@
     </buildCenters>
     <notEnoughScientists>
       <p>
-        Šai tehnoloģijai nepieciešams {0 one[zinātnieks] many[? zinātnieki]}. 
-        Tomēr tikai {1 one[viens zinātnieks] many[? zinātnieki]} no 
-        {2 one[viens zinātnieks] many[? zinātnieki]} ir pieejami. 
+        Šai tehnoloģijai nepieciešams {0 one[zinātnieks] 1sts[? zinātnieks] 
+        many[? zinātnieki]}. 
+        Tomēr tikai {1 1sts[? zinātnieks] many[? zinātnieki]} no 
+        {2 1sts[? zinātnieks] many[? zinātnieki]} ir pieejami. 
       </p>
     </notEnoughScientists>
     <notEnoughScientistsExploration>
