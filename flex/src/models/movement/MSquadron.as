@@ -5,6 +5,7 @@ package models.movement
    import flash.errors.IllegalOperationError;
    
    import interfaces.ICleanable;
+   import interfaces.IUpdatable;
    
    import models.BaseModel;
    import models.ModelsCollection;
@@ -52,7 +53,7 @@ package models.movement
    /**
     * Squadrons that have <code>pending</code> set to <code>true</code> are not moved.
     */
-   public class MSquadron extends BaseModel implements ICleanable, ILocationUser
+   public class MSquadron extends BaseModel implements ICleanable, ILocationUser, IUpdatable
    {
       public function MSquadron() : void
       {
@@ -533,6 +534,23 @@ package models.movement
             currentHop.updateLocationName(id, name);
          for each (var hop:MHop in hops) {
             hop.updateLocationName(id, name);
+         }
+      }
+      
+      
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+      
+      public function update() : void {
+         if (isHostile && jumpsAtEvent != null) {
+            jumpsAtEvent.update();
+         }
+      }
+      
+      public function resetChangeFlags() : void {
+         if (isHostile && jumpsAtEvent != null) {
+            jumpsAtEvent.resetChangeFlags();
          }
       }
       
