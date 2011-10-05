@@ -151,7 +151,7 @@ package controllers.units
       public function updateRoute(routeData:Object) : void
       {
          var routeId:int = routeData["id"]; 
-         if (routeId) {
+         if (routeId <= 0) {
             throwIllegalMovingSquadId(routeId);
          }
          
@@ -308,10 +308,10 @@ package controllers.units
          // either add hops to existing squadron
          var squad:MSquadron = findSquad(sampleUnit.squadronId);
          if (squad != null) {
+            SquadronFactory.attachJumpsAt(squad.route, jumpsAt);
             squad.addAllHops(hops);
             // in case squad is still in another map, move it to correct one
             squad.moveToNextHop(DateUtil.now);
-            SquadronFactory.attachJumpsAt(squad.route, jumpsAt);
          }
          // or create new squadron
          else if (sampleUnit.location.isObserved ||
@@ -322,6 +322,7 @@ package controllers.units
             squad.addAllHops(hops);
             if (squad.isFriendly) {
                squad.route = findRoute(squad.id);
+               SquadronFactory.attachJumpsAt(squad.route, jumpsAt);
             }
             else {
                SquadronFactory.createHostileRoute(squad, jumpsAt);

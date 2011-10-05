@@ -140,7 +140,9 @@ package components.movement
              && _squadM.jumpPending
              && (_squadM.isFriendly || !_squadM.hasHopsRemaining)) {
             hopInfo = _hopsEndpoints[_hopsEndpoints.length - 1];
-            var loc:LocationMinimal = _squadM.currentHop.location;
+            var loc:LocationMinimal = _squadM.hasHopsRemaining ?
+               _squadM.lastHop.location :
+               _squadM.currentHop.location;
             var locWrap:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(loc);
             var ss:SolarSystem = ModelLocator.getInstance().latestSolarSystem;
             if (loc.isGalaxy ||
@@ -150,7 +152,7 @@ package components.movement
             else {
                hopInfo.jumpsInLabelText = getLabel("landsIn");
             }
-            coords = _grid.getSectorRealCoordinates(_squadM.currentHop.location);
+            coords = _grid.getSectorRealCoordinates(loc);
             hopInfo.jumpsInValueText = _squadM.jumpsAtEvent.occuresInString;
             hopInfo.jumpsInVisible = true;
             hopInfo.x = coords.x;
