@@ -6,8 +6,11 @@ object SpaceMule extends Build {
     "dist", "Copies files from target to dist and appends libraries."
   )
   lazy val distTask =
-    dist <<= (name, scalaVersion, version, update, crossTarget).map {
-      case (projectName, scalaVersion, projectVersion, updateReport, out) =>
+    dist <<= (
+      name, scalaVersion, version, update, crossTarget,
+      packageBin in Compile
+    ).map {
+      case (projectName, scalaVersion, projectVersion, updateReport, out, _) =>
         val dist = (out / ".." / ".." / "dist").getAbsoluteFile
         // Clean up dist dir.
         IO.delete(dist)
