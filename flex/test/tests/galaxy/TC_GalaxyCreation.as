@@ -159,7 +159,7 @@ package tests.galaxy
          assertThat( "squad 3 is moving", squad.isMoving, isTrue() );
          assertThat( "squad 3 has one hop", squad.hops, arrayWithSize (1) );
          assertThat( "next hop of squad 3", squad.nextHop.id, equals (1) );
-         assertThat( "squad 3 does not have route", squad.route, nullValue() );
+         assertThat( "squad 3 has route 3", squad.route.id, equals(3) );
          assertThat( "squad 3 has unit 6", find(squad.units, 6), notNullValue() );
          
          squad = findGalaxySquad(0, PID_PLAYER, makeGalaxyLoc(0, 0));
@@ -184,7 +184,7 @@ package tests.galaxy
          ML.units.addItem(makeUnit(1, PID_PLAYER, 1, 0, 0));
          ML.units.addItem(makeUnit(2, PID_ENEMY, 2, 0, 0));
          ML.units.addItem(makeUnit(3, PID_ALLY, 0, 0, 1));
-         squadsCtrl.createSquadronsForUnits(ML.units);
+         squadsCtrl.createSquadronsForUnits(ML.units, g);
          ML.latestGalaxy = g;
          
          createEmptyGalaxy();
@@ -211,7 +211,7 @@ package tests.galaxy
          var ss:SolarSystem = makeSS(1, 0, 0);
          ss.units.addItem(makeUnit(1));
          ss.units.addItem(makeUnit(2));
-         squadsCtrl.createSquadronsForUnits(ss.units);
+         squadsCtrl.createSquadronsForUnits(ss.units, ss);
          var g:Galaxy = new Galaxy();
          g.id = GALAXY_ID;
          g.battlegroundId = BATTLEGROUND_ID;
@@ -269,7 +269,7 @@ package tests.galaxy
          var planet:Planet = new Planet(ssObj);
          planet.units.addItem(makeUnit(1));
          planet.units.addItem(makeUnit(2));
-         squadsCtrl.createSquadronsForUnits(planet.units);
+         squadsCtrl.createSquadronsForUnits(planet.units, planet);
          var ss:SolarSystem = makeSS(1, 0, 0);
          ss.addObject(ssObj);
          var g:Galaxy = new Galaxy();

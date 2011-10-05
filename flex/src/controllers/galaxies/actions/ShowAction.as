@@ -158,7 +158,7 @@ package controllers.galaxies.actions
          ML.units.addAll(units);
          ML.units.enableAutoUpdate();
          galaxy.setFOWEntries(Vector.<Rectangle>(fowEntries), units);
-         SQUADS_CTRL.createSquadronsForUnits(units);
+         SQUADS_CTRL.createSquadronsForUnits(units, galaxy);
          SQUADS_CTRL.addHopsToSquadrons(hops);
          SQUADS_CTRL.attachJumpsAtToHostileSquads(galaxy.squadrons, jumpsAtHash);
          

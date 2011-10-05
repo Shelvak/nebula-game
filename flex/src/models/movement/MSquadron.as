@@ -1,5 +1,7 @@
 package models.movement
 {
+   import controllers.objects.ObjectClass;
+   
    import flash.errors.IllegalOperationError;
    
    import interfaces.ICleanable;
@@ -24,6 +26,7 @@ package models.movement
    
    import namespaces.client_internal;
    
+   import utils.ModelUtil;
    import utils.Objects;
    import utils.datastructures.Collections;
    
@@ -343,12 +346,16 @@ package models.movement
        * @throws IllegalOperationError if <code>route</code> has not been set
        */
       client_internal function rebuildCachedUnits() : void {
+         var type:String;
+         var entry:UnitBuildingEntry;
+         var unit:Unit;
          checkRoute();
          _route.cachedUnits = new ModelsCollection();
-         for each (var unit:Unit in units) {
-            var entry:UnitBuildingEntry = _route.findEntryByType(unit.type);
+         for each (unit in units) {
+            type = ModelUtil.getModelType(ObjectClass.UNIT, unit.type);
+            entry = _route.findEntryByType(type);
             if (!entry) {
-               entry = new UnitBuildingEntry(unit.type);
+               entry = new UnitBuildingEntry(type);
                _route.cachedUnits.addItem(entry);
             }
             entry.count++;

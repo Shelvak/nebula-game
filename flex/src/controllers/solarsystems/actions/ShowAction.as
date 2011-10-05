@@ -96,7 +96,7 @@ package controllers.solarsystems.actions
          ML.units.disableAutoUpdate();
          ML.units.addAll(units);
          ML.units.enableAutoUpdate();
-         SQUADS_CTRL.createSquadronsForUnits(units);
+         SQUADS_CTRL.createSquadronsForUnits(units, ss);
          SQUADS_CTRL.addHopsToSquadrons(IList(BaseModel.createCollection(ArrayCollection, MHop, params["routeHops"])).toArray());
          SQUADS_CTRL.attachJumpsAtToHostileSquads(ss.squadrons, params["nonFriendlyJumpsAt"]);
          if (f_createMapOnly)

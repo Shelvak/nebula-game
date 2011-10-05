@@ -9,6 +9,7 @@ package utils.locale
    {
       public static const EN:String = "en";
       public static const LT:String = "lt";
+      public static const LV:String = "lv";
       
       
       /**
