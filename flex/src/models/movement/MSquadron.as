@@ -29,6 +29,7 @@ package models.movement
    
    import utils.ModelUtil;
    import utils.Objects;
+   import utils.StringUtil;
    import utils.datastructures.Collections;
    
    
@@ -353,7 +354,7 @@ package models.movement
          checkRoute();
          _route.cachedUnits = new ModelsCollection();
          for each (unit in units) {
-            type = ModelUtil.getModelType(ObjectClass.UNIT, unit.type);
+            type = ModelUtil.getModelType(ObjectClass.UNIT, unit.type, true);
             entry = _route.findEntryByType(type);
             if (!entry) {
                entry = new UnitBuildingEntry(type);
