@@ -12,12 +12,14 @@ package components.movement
    
    import models.ModelLocator;
    import models.OwnerColor;
+   import models.galaxy.Galaxy;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
+   import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
    
    import spark.components.Group;
@@ -46,7 +48,7 @@ package components.movement
       /**
        * Constructor.
        * 
-       * @param model model of a squadron travelling along the route
+       * @param squadC model of a squadron travelling along the route
        * @param grid reference to map grid (will be used for calculating positioning and sizing
        * component)
        */
@@ -119,7 +121,6 @@ package components.movement
       private function updateHopsEndpoints() : void {
          var hop:MHop = null;
          var hopInfo:CHopInfo = null;
-         var hopTime:String = "";
          var coords:Point = null;
          for each (hopInfo in _hopsEndpoints) {
             hopInfo.arrivesInValueText = null;
@@ -143,20 +144,35 @@ package components.movement
             var loc:LocationMinimal = _squadM.hasHopsRemaining ?
                _squadM.lastHop.location :
                _squadM.currentHop.location;
-            var locWrap:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(loc);
-            var ss:SolarSystem = ModelLocator.getInstance().latestSolarSystem;
-            if (loc.isGalaxy ||
-                loc.isSolarSystem && ss.getSSObjectAt(locWrap.position, locWrap.angle).isJumpgate) {
-               hopInfo.jumpsInLabelText = getLabel("jumpsIn");
+            var locWrap:LocationMinimalSolarSystem =
+               new LocationMinimalSolarSystem(loc);
+
+            var showJumpsAt:Boolean = false;
+            if (loc.isGalaxy) {
+               var galaxy:Galaxy = ModelLocator.getInstance().latestGalaxy;
+               showJumpsAt = galaxy.getSSAt(loc.x, loc.y) != null;
             }
-            else {
-               hopInfo.jumpsInLabelText = getLabel("landsIn");
+            else if (loc.isSolarSystem) {
+               var ss:SolarSystem = ModelLocator.getInstance().
+                  latestSolarSystem;
+               var sso:MSSObject = ss.
+                  getSSObjectAt(locWrap.position, locWrap.angle);
+               showJumpsAt = sso != null && (sso.isPlanet || sso.isJumpgate);
             }
-            coords = _grid.getSectorRealCoordinates(loc);
-            hopInfo.jumpsInValueText = _squadM.jumpsAtEvent.occuresInString;
-            hopInfo.jumpsInVisible = true;
-            hopInfo.x = coords.x;
-            hopInfo.y = coords.y;
+
+            hopInfo.jumpsInVisible = showJumpsAt;
+            if (showJumpsAt) {
+               hopInfo.jumpsInLabelText = getLabel(
+                  (
+                     loc.isSolarSystem &&
+                     ss.getSSObjectAt(locWrap.position, locWrap.angle).isPlanet
+                  ) ? "landsIn" : "jumpsIn"
+               );
+               coords = _grid.getSectorRealCoordinates(loc);
+               hopInfo.jumpsInValueText = _squadM.jumpsAtEvent.occuresInString;
+               hopInfo.x = coords.x;
+               hopInfo.y = coords.y;
+            }
          }
       }
       
