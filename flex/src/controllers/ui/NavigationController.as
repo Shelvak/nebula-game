@@ -100,112 +100,7 @@ package controllers.ui
       }
       
       
-      private var _screenProperties:Object = {
-         (String (MainAreaScreens.GALAXY)): new ScreenProperties(
-            MainAreaScreens.GALAXY, null, false, true, MapType.GALAXY, "latestGalaxy",
-            CMapGalaxy.screenShowHandler,
-            CMapGalaxy.screenHideHandler
-         ),
-         (String (MainAreaScreens.SOLAR_SYSTEM)): new ScreenProperties(
-            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem",
-            CMapSolarSystem.screenShowHandler,
-            CMapSolarSystem.screenHideHandler
-         ),
-         (String (MainAreaScreens.PLANET)): new ScreenProperties(
-            MainAreaScreens.PLANET, SidebarScreens.CONSTRUCTION, true, true, MapType.PLANET, "latestPlanet",
-            PlanetMap.screenShowHandler,
-            PlanetMap.screenHideHandler
-         ),
-         (String (MainAreaScreens.TECH_TREE)): new ScreenProperties(
-            MainAreaScreens.TECH_TREE, SidebarScreens.TECH_TREE_BASE
-         ),
-         (String (MainAreaScreens.STORAGE)): new ScreenProperties(
-            MainAreaScreens.STORAGE, null, false
-         ),
-         (String (MainAreaScreens.UNITS)): new ScreenProperties(
-            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         ),
-         (String (MainAreaScreens.LOAD_UNLOAD)): new ScreenProperties(
-            MainAreaScreens.LOAD_UNLOAD, SidebarScreens.LOAD_UNLOAD
-         ),
-         (String (MainAreaScreens.HEAL)): new ScreenProperties(
-            MainAreaScreens.HEAL, SidebarScreens.HEAL
-         ),
-         (String (MainAreaScreens.MARKET)): new ScreenProperties(
-            MainAreaScreens.MARKET, SidebarScreens.MARKET
-         ),
-         (String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.GROUND)): new ScreenProperties(
-            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         ),
-         (String (MainAreaScreens.UNITS+Owner.ALLY+UnitKind.GROUND)): new ScreenProperties(
-            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         ),
-         (String (MainAreaScreens.UNITS+Owner.ENEMY+UnitKind.GROUND)): new ScreenProperties(
-            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         ),
-         (String (MainAreaScreens.UNITS+Owner.NAP+UnitKind.GROUND)): new ScreenProperties(
-            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         ),
-         (String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.SPACE)): new ScreenProperties(
-            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         ),
-         (String (MainAreaScreens.UNITS+Owner.ALLY+UnitKind.SPACE)): new ScreenProperties(
-            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         ),
-         (String (MainAreaScreens.UNITS+Owner.ENEMY+UnitKind.SPACE)): new ScreenProperties(
-            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         ),
-         (String (MainAreaScreens.UNITS+Owner.NAP+UnitKind.SPACE)): new ScreenProperties(
-            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         ),
-         (String (MainAreaScreens.NOTIFICATIONS)): new ScreenProperties(
-            MainAreaScreens.NOTIFICATIONS, null, false, false, 0, null, function (): void
-            {
-               if (ExternalInterface.available)
-               {
-                  ExternalInterface.call("notificationsOpened");
-               }
-            }
-         ),
-         (String (MainAreaScreens.QUESTS)): new ScreenProperties(
-            MainAreaScreens.QUESTS, null, false
-         ),
-         (String (MainAreaScreens.SQUADRONS)): new ScreenProperties(
-            MainAreaScreens.SQUADRONS, null, false
-         ),
-         (String (MainAreaScreens.INFO)): new ScreenProperties(
-            MainAreaScreens.INFO, null, false
-         ),
-         (String (MainAreaScreens.FACILITIES)): new ScreenProperties(
-            MainAreaScreens.FACILITIES, null, false
-         ),
-         (String (MainAreaScreens.RATINGS)): new ScreenProperties(
-            MainAreaScreens.RATINGS, null, false
-         ),
-         (String (MainAreaScreens.PLAYER)): new ScreenProperties(
-            MainAreaScreens.PLAYER, null, false
-         ),
-         (String (MainAreaScreens.DEFENSIVE_PORTAL)): new ScreenProperties(
-            MainAreaScreens.DEFENSIVE_PORTAL, null, false
-         ),
-         (String (MainAreaScreens.VIP)): new ScreenProperties(
-            MainAreaScreens.VIP, null, false
-         ),
-         (String (MainAreaScreens.ALLY_RATINGS)): new ScreenProperties(
-            MainAreaScreens.ALLY_RATINGS, null, false
-         ),
-         (String(MainAreaScreens.ALLIANCE)): new ScreenProperties(
-            MainAreaScreens.ALLIANCE, null, false
-         ),
-         (String(MainAreaScreens.WELCOME)): new ScreenProperties(
-            MainAreaScreens.WELCOME, null, false
-         ),
-         (String (MainAreaScreens.CHAT)): new ScreenProperties(
-            MainAreaScreens.CHAT, null, false, false, 0, null,
-            MChat.getInstance().screenShowHandler,
-            MChat.getInstance().screenHideHandler
-         )
-      };
+      private var _screenProperties:Object = {};
       
       
       private var _currentScreenProps:ScreenProperties = null;
@@ -213,6 +108,113 @@ package controllers.ui
       
       public function NavigationController()
       {
+         // IntelliJ IDEA does not recognize dynamic key/value object definition
+         // so we're reverting to setting it by hand here.
+         _screenProperties[String (MainAreaScreens.GALAXY)] = new ScreenProperties(
+            MainAreaScreens.GALAXY, null, false, true, MapType.GALAXY, "latestGalaxy",
+            CMapGalaxy.screenShowHandler,
+            CMapGalaxy.screenHideHandler
+         )
+         _screenProperties[String (MainAreaScreens.SOLAR_SYSTEM)] = new ScreenProperties(
+            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem",
+            CMapSolarSystem.screenShowHandler,
+            CMapSolarSystem.screenHideHandler
+         )
+         _screenProperties[String (MainAreaScreens.PLANET)] = new ScreenProperties(
+            MainAreaScreens.PLANET, SidebarScreens.CONSTRUCTION, true, true, MapType.PLANET, "latestPlanet",
+            PlanetMap.screenShowHandler,
+            PlanetMap.screenHideHandler
+         )
+         _screenProperties[String (MainAreaScreens.TECH_TREE)] = new ScreenProperties(
+            MainAreaScreens.TECH_TREE, SidebarScreens.TECH_TREE_BASE
+         )
+         _screenProperties[String (MainAreaScreens.STORAGE)] = new ScreenProperties(
+            MainAreaScreens.STORAGE, null, false
+         )
+         _screenProperties[String (MainAreaScreens.UNITS)] = new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         )
+         _screenProperties[String (MainAreaScreens.LOAD_UNLOAD)] = new ScreenProperties(
+            MainAreaScreens.LOAD_UNLOAD, SidebarScreens.LOAD_UNLOAD
+         )
+         _screenProperties[String (MainAreaScreens.HEAL)] = new ScreenProperties(
+            MainAreaScreens.HEAL, SidebarScreens.HEAL
+         )
+         _screenProperties[String (MainAreaScreens.MARKET)] = new ScreenProperties(
+            MainAreaScreens.MARKET, SidebarScreens.MARKET
+         )
+         _screenProperties[String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.GROUND)] = new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         )
+         _screenProperties[String (MainAreaScreens.UNITS+Owner.ALLY+UnitKind.GROUND)] = new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         )
+         _screenProperties[String (MainAreaScreens.UNITS+Owner.ENEMY+UnitKind.GROUND)] = new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         )
+         _screenProperties[String (MainAreaScreens.UNITS+Owner.NAP+UnitKind.GROUND)] = new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         )
+         _screenProperties[String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.SPACE)] = new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         )
+         _screenProperties[String (MainAreaScreens.UNITS+Owner.ALLY+UnitKind.SPACE)] = new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         )
+         _screenProperties[String (MainAreaScreens.UNITS+Owner.ENEMY+UnitKind.SPACE)] = new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         )
+         _screenProperties[String (MainAreaScreens.UNITS+Owner.NAP+UnitKind.SPACE)] = new ScreenProperties(
+            MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
+         )
+         _screenProperties[String (MainAreaScreens.NOTIFICATIONS)] = new ScreenProperties(
+            MainAreaScreens.NOTIFICATIONS, null, false, false, 0, null, function (): void
+            {
+               if (ExternalInterface.available)
+               {
+                  ExternalInterface.call("notificationsOpened");
+               }
+            }
+         )
+         _screenProperties[String (MainAreaScreens.QUESTS)] = new ScreenProperties(
+            MainAreaScreens.QUESTS, null, false
+         )
+         _screenProperties[String (MainAreaScreens.SQUADRONS)] = new ScreenProperties(
+            MainAreaScreens.SQUADRONS, null, false
+         )
+         _screenProperties[String (MainAreaScreens.INFO)] = new ScreenProperties(
+            MainAreaScreens.INFO, null, false
+         )
+         _screenProperties[String (MainAreaScreens.FACILITIES)] = new ScreenProperties(
+            MainAreaScreens.FACILITIES, null, false
+         )
+         _screenProperties[String (MainAreaScreens.RATINGS)] = new ScreenProperties(
+            MainAreaScreens.RATINGS, null, false
+         )
+         _screenProperties[String (MainAreaScreens.PLAYER)] = new ScreenProperties(
+            MainAreaScreens.PLAYER, null, false
+         )
+         _screenProperties[String (MainAreaScreens.DEFENSIVE_PORTAL)] = new ScreenProperties(
+            MainAreaScreens.DEFENSIVE_PORTAL, null, false
+         )
+         _screenProperties[String (MainAreaScreens.VIP)] = new ScreenProperties(
+            MainAreaScreens.VIP, null, false
+         )
+         _screenProperties[String (MainAreaScreens.ALLY_RATINGS)] = new ScreenProperties(
+            MainAreaScreens.ALLY_RATINGS, null, false
+         )
+         _screenProperties[String(MainAreaScreens.ALLIANCE)] = new ScreenProperties(
+            MainAreaScreens.ALLIANCE, null, false
+         )
+         _screenProperties[String(MainAreaScreens.WELCOME)] = new ScreenProperties(
+            MainAreaScreens.WELCOME, null, false
+         )
+         _screenProperties[String (MainAreaScreens.CHAT)] = new ScreenProperties(
+            MainAreaScreens.CHAT, null, false, false, 0, null,
+            MChat.getInstance().screenShowHandler,
+            MChat.getInstance().screenHideHandler
+         )
+         
          EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
       

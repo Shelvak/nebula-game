@@ -33,21 +33,21 @@ package models.solarsystem
     * 
     * @eventType models.solarSystem.events.SolarSystemEvent.SHIELD_OWNER_CHANGE
     */
-   [Event(name="shieldOwnerChange", type="models.solarSystem.events.SolarSystemEvent")]
+   [Event(name="shieldOwnerChange", type="models.solarsystem.events.SolarSystemEvent")]
    
    /**
     * Dispatched when <code>shieldEndsAt</code> property changes.
     * 
     * @eventType models.solarSystem.events.SolarSystemEvent.SHIELD_ENDS_AT_CHANGE
     */
-   [Event(name="shieldEndsAtChange", type="models.solarSystem.events.SolarSystemEvent")]
+   [Event(name="shieldEndsAtChange", type="models.solarsystem.events.SolarSystemEvent")]
    
    /**
     * Dispatched when <code>shieldEndsIn</code> property changes.
     * 
     * @eventType models.solarSystem.events.SolarSystemEvent.SHIELD_ENDS_IN_CHANGE
     */
-   [Event(name="shieldEndsInChange", type="models.solarSystem.events.SolarSystemEvent")]
+   [Event(name="shieldEndsInChange", type="models.solarsystem.events.SolarSystemEvent")]
    
    [Bindable]
    public class SolarSystem extends MMapSpace implements IMStaticSpaceObject, IUpdatable
