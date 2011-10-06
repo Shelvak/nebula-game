@@ -269,7 +269,10 @@ package components.movement
       /* ############### */
       
       private function getEventInString(time:Number) : String {
-         return DateUtil.secondsToHumanString(Math.max(0, (time - DateUtil.now) / 1000));
+         return DateUtil.secondsToHumanString(
+            Math.max(0, (time - DateUtil.now) / 1000),
+            2
+         );
       }
       
       private function getLabel(property:String) : String {
