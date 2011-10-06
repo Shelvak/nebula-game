@@ -55,7 +55,11 @@ package models.battle
          
          for each (var player: Object in players)
          {
-            newPlayers.addItem({'player':player?player[1]:Localizer.string('Players','npc'), 'id': player[0]});
+            newPlayers.addItem(
+               player == null
+                  ? {'id': player[0], 'player': player[1]}
+                  : {'id': null, 'player': Localizer.string('Players', 'npc')}
+            )
          }
          for each (var ally: Object in names)
          {
