@@ -335,9 +335,9 @@ package models.movement
       }
       
       
-      /* ######################## */
-      /* ### ITERFACE METHODS ### */
-      /* ######################## */
+      /* ######################### */
+      /* ### INTERFACE METHODS ### */
+      /* ######################### */
       
       
       /**
@@ -355,7 +355,7 @@ package models.movement
          for each (unit in units) {
             type = ModelUtil.getModelType(ObjectClass.UNIT, unit.type);
             entry = _route.findEntryByType(type);
-            if (!entry) {
+            if (! entry) {
                entry = new UnitBuildingEntry(type);
                _route.cachedUnits.addItem(entry);
             }

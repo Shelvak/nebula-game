@@ -10,19 +10,6 @@ package models.tile
       public static const MUD:int = 2;
       public static const TWILIGHT:int = 3;
       
-      
-      /**
-       * A hash that maps terrain type integers to terrain type names.
-       */
-      private static const terrainNameMap:Object =
-         {
-            (String(GRASS)): "earth",
-            (String(DESERT)): "desert",
-            (String(MUD)): "mud",
-            (String(TWILIGHT)): "twilight"
-         };
-      
-      
       /**
        * Returns terrain name for a given type.
        * 
@@ -32,7 +19,14 @@ package models.tile
        */
       public static function getName(type:int) : String
       {
-         return terrainNameMap[type];
+         switch (type) {
+            case GRASS: return "earth";
+            case DESERT: return "desert";
+            case MUD: return "mud";
+            case TWILIGHT: return "twilight";
+            default:
+               throw new Error("Unknown terrain type constant " + type + "!");
+         }
       }
    }
 }
