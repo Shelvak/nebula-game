@@ -14,9 +14,7 @@ end
 namespace :db do
   desc "Establish connection to database. (rake dep)"
   task :connection => :environment do
-    ActiveRecord::Base.establish_connection(
-      DB_CONFIG[ENV['environment']]
-    )
+    ActiveRecord::Base.establish_connection(DB_CONFIG[App.env])
   end
 
   desc "Migrate the database through scripts in db/migrate. Target specific " +

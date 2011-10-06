@@ -32,6 +32,11 @@ class Quest < ActiveRecord::Base
     :serialize => lambda { |rewards| rewards.nil? ? nil : rewards.to_json },
     :unserialize => lambda { |json| json.nil? ? nil : Rewards.from_json(json) }
 
+  def to_s
+    "<Quest(#{id}, p #{parent_id.inspect}) ach: #{achievement?}, help: #{
+      help_url_id}>"
+  end
+
   def quest?; ! achievement?; end
 
   # Return +Quest+ as +Hash+.
