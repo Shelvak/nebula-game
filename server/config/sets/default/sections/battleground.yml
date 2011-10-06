@@ -15,5 +15,5 @@ planet.bonus:
   - [gnat, 3]
 
 # Battles which happen in battleground against other players give
-# VPs & creds to players.
+# VPs to players.
 battle.victory_points: (damage_dealt_to_space * 0.25 + damage_dealt_to_ground) * 0.006
