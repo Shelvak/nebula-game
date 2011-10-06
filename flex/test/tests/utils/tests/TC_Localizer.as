@@ -1,8 +1,9 @@
 package tests.utils.tests
 {
+   import controllers.startup.StartupInfo;
+   
    import ext.hamcrest.object.equals;
    
-   import mx.resources.IResourceBundle;
    import mx.resources.ResourceBundle;
    import mx.resources.ResourceManager;
    
@@ -34,6 +35,8 @@ package tests.utils.tests
          var bundle2: ResourceBundle = new ResourceBundle(Locale.EN, 'Test2');
          bundle2.content['ref.notString'] = 'not [reference:Test/ref.real]';
          Localizer.addBundle(bundle2);
+         
+         setCurrentLocale(Locale.EN);
       };
       
       [Test]
@@ -236,27 +239,6 @@ package tests.utils.tests
       };
       
       
-      private function addPluralizationBundle() : void
-      {
-         ResourceManager.getInstance().removeResourceBundlesForLocale(Locale.EN);
-         var bundle:ResourceBundle = new ResourceBundle(Locale.EN, "PluralizationTest");
-         with (bundle)
-         {
-            content["simple"] = "My name is {0}";
-            content["plural"] = "I have {0 one[? car] many[? cars]}";
-            content["both"] = "My name is {0} and I have {1 one[? car] many[? cars]}";
-            content["reference"] = "Hi! [reference:PluralizationTest/both]. {2}";
-         }
-         Localizer.addBundle(bundle);
-      }
-      
-      
-      private function string(property:String, params:Array = null) : String
-      {
-         return Localizer.string("PluralizationTest", property, params);
-      }
-      
-      
       [Test]
       public function string_should_replace_simple_as_well_as_pluralizable_parameters() : void
       {
@@ -290,5 +272,105 @@ package tests.utils.tests
             equals ("Hi! My name is Bob and I have 2 cars. Yahoo!")
          );
       };
+      
+      [Test]
+      public function resolveObjectNames() : void {
+         function what(amount:int) : String {
+            return Localizer.resolveObjectNames("[obj:"+ amount +":Shocker:what]");
+         };
+         function whos(amount:int) : String {
+            return Localizer.resolveObjectNames("[obj:"+ amount +":Shocker:whos]");
+         };
+         setCurrentLocale(Locale.LT);
+         addBundle(Locale.LT, "Objects", {
+            "Shocker-what": "{0 one[mechą] 1sts[? mechą] tens[? mechų] many[? mechus]}",
+            "Shocker-whos": "{0 one[mecho] 1sts[? mecho] tens[? mechų] many[? mechų]}"
+         });
+         
+         assertThat( "what:   1", what(  1), equals (    "mechą") );
+         assertThat( "what:  21", what( 21), equals ( "21 mechą") );
+         assertThat( "what: 101", what(101), equals ("101 mechą") );
+         assertThat( "what:  10", what( 10), equals ( "10 mechų") );
+         assertThat( "what:  11", what( 11), equals ( "11 mechų") );
+         assertThat( "what:  19", what( 19), equals ( "19 mechų") );
+         assertThat( "what:  29", what( 29), equals ("29 mechus") );
+         
+         assertThat( "whos:   1", whos(  1), equals (    "mecho") );
+         assertThat( "whos:  21", whos( 21), equals ( "21 mecho") );
+         assertThat( "whos: 101", whos(101), equals ("101 mecho") );
+         assertThat( "whos:  10", whos( 10), equals ( "10 mechų") );
+         assertThat( "whos:  11", whos( 11), equals ( "11 mechų") );
+         assertThat( "whos:  19", whos( 19), equals ( "19 mechų") );
+         assertThat( "whos:  29", whos( 29), equals ( "29 mechų") );
+      }
+      
+      [Test]
+      public function stringShouldAlsoResolveObjectNames() : void {
+         function string(property:String, params:Array = null) : String {
+            return Localizer.string("Test", property, params);
+         }
+         setCurrentLocale(Locale.LT);
+         addBundle(Locale.LT, "Objects", {
+            "Shocker-what": "{0 one[mechą] 1sts[mechą] tens[mechų] many[mechus]}",
+            "Shocker-whos": "{0 one[mecho] 1sts[mecho] tens[mechų] many[mechų]}",
+            "Azure-what": "{0 one[azurą] 1sts[azurą] tens[azurų] many[azurus]}",
+            "Azure-whos": "{0 one[azuro] 1sts[azuro] tens[azurų] many[azurų]}"
+         });
+         addBundle(Locale.LT, "Test", {
+            "amountAndObjNameWhat": "Pastatyk {0} [obj:{0}:{1}:what]",
+            "amountAndObjNameWhos": "Reikia {0} [obj:{0}:{1}:whos]"
+         });
+         
+         assertThat( "amount: 11, name: Shocker, what",
+            string("amountAndObjNameWhat", [11, "Shocker"]), equals ("Pastatyk 11 mechų")
+         );
+         assertThat( "amount: 50, name: Azure, what",
+            string("amountAndObjNameWhat", [50, "Azure"]), equals ("Pastatyk 50 azurų")
+         );
+         assertThat( "amount: 58, name: Shocker, what",
+            string("amountAndObjNameWhat", [58, "Shocker"]), equals ("Pastatyk 58 mechus")
+         );
+         assertThat( "amount: 1, name: Azure, what",
+            string("amountAndObjNameWhat", [1, "Azure"]), equals ("Pastatyk 1 azurą")
+         );
+         
+         assertThat( "amount: 11, name: Shocker, whos",
+            string("amountAndObjNameWhos", [11, "Shocker"]), equals ("Reikia 11 mechų")
+         );
+         assertThat( "amount: 51, name: Azure, whos",
+            string("amountAndObjNameWhos", [51, "Azure"]), equals ("Reikia 51 azuro")
+         );
+      }
+      
+      
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+         
+      private function addPluralizationBundle() : void {
+         ResourceManager.getInstance().removeResourceBundlesForLocale(Locale.EN);
+         addBundle(Locale.EN, "PluralizationTest", {
+            "simple": "My name is {0}",
+            "plural": "I have {0 one[? car] many[? cars]}",
+            "both": "My name is {0} and I have {1 one[? car] many[? cars]}",
+            "reference": "Hi! [reference:PluralizationTest/both]. {2}"
+         });
+      }
+      
+      private function string(property:String, params:Array = null) : String {
+         return Localizer.string("PluralizationTest", property, params);
+      }
+      
+      private function addBundle(locale:String, name:String, content:Object) : void {
+         var bundle:ResourceBundle = new ResourceBundle(locale, name);
+         for (var property:String in content) {
+            bundle.content[property] = content[property];
+         }
+         Localizer.addBundle(bundle);
+      }
+      
+      private function setCurrentLocale(locale:String) : void {
+         StartupInfo.getInstance().locale = locale;
+      }
    }
 }
