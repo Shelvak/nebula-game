@@ -9,7 +9,7 @@ package models.tile
       public static const DESERT:int = 1;
       public static const MUD:int = 2;
       public static const TWILIGHT:int = 3;
-      
+
       /**
        * Returns terrain name for a given type.
        * 
