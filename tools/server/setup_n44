@@ -561,7 +561,8 @@ if ARGV.include?("server") # {{{
 }
 
   puts "Adding server launcher to cron"
-  cron "@reboot   source $HOME/.profile && cd $HOME/nebula-server/current && ruby lib/daemon.rb start"
+  cron "* * *  * *   source $HOME/.profile && cd $HOME/nebula-server/current && ruby lib/daemon.rb start-silent"
+  cron "@hourly   source $HOME/.profile && cd $HOME/nebula-server/current && script/dump_galaxy.rb $HOME/web/current/www/public/galaxies/ 2 >/dev/null 2>&1"
 
   # Linking munin
   puts "Linking munin plugins"
