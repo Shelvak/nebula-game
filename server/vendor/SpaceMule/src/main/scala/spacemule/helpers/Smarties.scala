@@ -140,6 +140,11 @@ class SmartSequence[+T, +Repr](sequence: SeqLike[T, Repr]) {
    * by moding index by sequence size.
    */
   def wrapped(index: Int): T = sequence(index % sequence.size)
+
+  /**
+   * Returns this sequence shuffled. Returns new collection.
+   */
+  def shuffled = sequence.sortWith { case (_, _) => Random.nextBoolean() }
 }
 
 class SmartRange(range: Range) {

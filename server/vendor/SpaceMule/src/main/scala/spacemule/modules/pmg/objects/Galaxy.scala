@@ -57,22 +57,21 @@ class Galaxy(val id: Int, val ruleset: String) {
   /**
    * Quarters for random zone finder.
    */
-  private val Quarters = Coords(1, 1) :: Coords(1, -1) :: Coords(-1, 1) ::
-    Coords(-1, -1) :: Nil
+  private val Quarters = IndexedSeq(
+    Coords(1, 1), Coords(1, -1), Coords(-1, 1), Coords(-1, -1)
+  )
 
   /**
    * Find random zone trying to start from galaxy center.
    */
   private def randomZone(): Zone = {
-    var zoneAdded = false
-
     val zone = new Zone(0, 0, zoneDiameter)
     var slot = 1
     while (true) {
       // Shamelessly stolen from Mykolas, I don't really have much idea on what
       // is going on here.
-      Quarters.foreach { quarter =>
-        // find logical corrdinates in the first quarter
+      Quarters.shuffled.foreach { quarter =>
+        // find logical coordinates in the first quarter
         val diag = ((math.sqrt(1 + 8 * slot) - 1) / 2).ceil
         val x = (diag / 2 * (1 + diag) - slot).toInt
         val y = (x - diag).toInt
