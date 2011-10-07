@@ -1423,6 +1423,7 @@
     <label.alliances value="Alliance ratings" />
     <label.alliance value="Alliance" />
     <label.forum value="Forum" />
+    <tooltip.version value="Game version" />
     <panelWidth value="85" />
   </MainMenu>
 
@@ -4293,5 +4294,4 @@
     <status.authorization value="Authorizing..."/>
     <status.login value="Logging into the server..."/>
   </Authorization>
-
 </locale>

@@ -162,15 +162,40 @@ namespace :build do
         }
         compiler_flags.push "debug" if ENV['debug'] || ENV['DEBUG']
 
-        mxmlc(
-          "#{src_dir}/SpaceGame.mxml",
-          bin_swf,
-          :libraries => Dir["#{lib_dir}/*.swc"],
-          :keep_metadata => %w{Required Optional ArrayElementType SkipProperty},
-          :flags => %w{-static-link-runtime-shared-libraries},
-          # Each one is translated into -compiler.item_name
-          :compiler_flags => compiler_flags
-        )
+        build = Time.now.strftime("%m%d-%H%M")
+        version_file = "#{src_dir}/application/Version.as"
+        old_version = nil
+        begin
+          File.modify(version_file) do |contents|
+            old_version = contents.match(/VERSION: String = "(.*?)"/)
+            if old_version.nil?
+              puts "Cannot find old version in #{version_file}!"
+              exit
+            end
+            old_version = old_version[1]
+            contents.sub(
+              %Q{VERSION: String = "#{old_version}"},
+              %Q{VERSION: String = "#{build}"} 
+            )
+          end
+
+          mxmlc(
+            "#{src_dir}/SpaceGame.mxml",
+            bin_swf,
+            :libraries => Dir["#{lib_dir}/*.swc"],
+            :keep_metadata => %w{Required Optional ArrayElementType SkipProperty},
+            :flags => %w{-static-link-runtime-shared-libraries},
+            # Each one is translated into -compiler.item_name
+            :compiler_flags => compiler_flags
+          )
+        ensure
+          File.modify(version_file) do |contents|
+            contents.sub(
+              %Q{VERSION: String = "#{build}"}, 
+              %Q{VERSION: String = "#{old_version}"}
+            )
+          end
+        end
       end
     end
   end

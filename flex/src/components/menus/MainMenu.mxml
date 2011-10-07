@@ -5,16 +5,7 @@
                     xmlns:fx="http://ns.adobe.com/mxml/2009"
                     height="{btnStart.height}" width="{btnStart.width}"
                     mouseEnabled="false">
-   
-   <fx:Metadata>
-      /**
-      * Dispatched when player clicks logout button.
-      * 
-      * @eventType controllers.player.PlayerCommand.LOGIN
-      */
-      [Event(name="logout", type="controllers.player.PlayerCommand")]
-   </fx:Metadata>
-   
+
    <fx:Script>
       <![CDATA[
          import components.alliance.AllianceScreenM;
@@ -73,13 +64,16 @@
    </fx:Script>
    
    <!--- Styled container for menu buttons. -->
-   <s:SkinnableContainer left="0" bottom="{btnStart.height - 30}" id="menuItems" enabled="false"
+   <s:SkinnableContainer left="0" bottom="{btnStart.height - 30}" id="menuItems"
+                         enabled="false"
                          skinClass="components.menus.skins.MainMenuItemsSkin"
                          click="toggleStartButton(event)">
       <base:AdvancedContainer top="0" bottom="20">
          <!--- Button for viewing vip screen. -->
          <s:Group width="100%">
-            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:BitmapImage left="0" top="0"
+               source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"
+            />
             <s:Button id="btnVip" click="NAV_CTRL.showVip()" 
                       left="22" right="0" top="5" bottom="5"
                       label="{Localizer.string('MainMenu', 'label.vip')}"
@@ -87,7 +81,9 @@
          </s:Group>
          <!--- Button for viewing alliance screen. -->
          <s:Group width="100%">
-            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:BitmapImage left="0" top="0"
+               source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"
+            />
             <s:Button id="btnAlliance" click="AllianceScreenM.getInstance().showScreen(ML.player.allianceId)"
                       left="22" right="0" top="5" bottom="5" label="{Localizer.string('MainMenu', 'label.alliance')}"/>
          </s:Group>
@@ -140,7 +136,9 @@
       </base:AdvancedContainer>
       <base:AdvancedContainer top="0" bottom="20">
          <!-- TOP -->
-         <s:BitmapImage id="topLeft" left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_top_left')}"/>
+         <s:BitmapImage id="topLeft" left="0" top="0"
+            source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_top_left')}"
+         />
          <s:BitmapImage id="topRight" right="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_top_right')}"/>
          <s:BitmapImage id="topRepeat" fillMode="repeat" left="{topLeft.width}" top="0" right="{topRight.width}" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_top_center_repeat')}"/>
          <!-- BOTTOM -->
@@ -294,6 +292,7 @@
    </s:SkinnableContainer>
    
    <!--- Toggle button that shows and hides menu. -->
-   <s:ToggleButton id="btnStart" bottom="0" click="showHideMenu()" skinClass="components.skins.StartButtonSkin"/>
+   <s:ToggleButton id="btnStart" bottom="0" click="showHideMenu()"
+                   skinClass="components.skins.StartButtonSkin"/>
    
 </base:BaseContainer>

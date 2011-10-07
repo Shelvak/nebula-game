@@ -1427,6 +1427,7 @@
     <label.alliances value="Sąjungų reitingai" />
     <label.alliance value="Sąjunga" />
     <label.forum value="Forumas" />
+    <tooltip.version value="Žaidimo versija" />
     <panelWidth value="95" />
   </MainMenu>
 
