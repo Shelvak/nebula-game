@@ -63,6 +63,9 @@ class SsObject::Planet < SsObject
     metal metal_generation_rate metal_usage_rate metal_storage
     energy energy_generation_rate energy_usage_rate energy_storage
     zetium zetium_generation_rate zetium_usage_rate zetium_storage
+    metal_rate_boost_ends_at metal_storage_boost_ends_at
+    energy_rate_boost_ends_at energy_storage_boost_ends_at
+    zetium_rate_boost_ends_at zetium_storage_boost_ends_at
     last_resources_update
   }
 
@@ -72,9 +75,6 @@ class SsObject::Planet < SsObject
   # Attributes which are included when :owner => true is passed to
   # #as_json
   OWNER_ATTRIBUTES = %w{
-    metal_rate_boost_ends_at metal_storage_boost_ends_at
-    energy_rate_boost_ends_at energy_storage_boost_ends_at
-    zetium_rate_boost_ends_at zetium_storage_boost_ends_at
     exploration_x exploration_y exploration_ends_at 
     can_destroy_building_at
     next_raid_at owner_changed

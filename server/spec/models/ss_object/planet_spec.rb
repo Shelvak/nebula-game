@@ -1315,6 +1315,9 @@ describe SsObject::Planet do
         metal metal_generation_rate metal_usage_rate metal_storage
         energy energy_generation_rate energy_usage_rate energy_storage
         zetium zetium_generation_rate zetium_usage_rate zetium_storage
+        metal_rate_boost_ends_at metal_storage_boost_ends_at
+        energy_rate_boost_ends_at energy_storage_boost_ends_at
+        zetium_rate_boost_ends_at zetium_storage_boost_ends_at
         last_resources_update
         next_raid_at
         },
