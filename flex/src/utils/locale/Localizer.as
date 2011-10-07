@@ -8,6 +8,7 @@ package utils.locale
    import mx.utils.ObjectUtil;
    
    import utils.Objects;
+   import utils.StringUtil;
    
    
    public class Localizer
@@ -99,7 +100,9 @@ package utils.locale
       /* ### Object names resolving ### */
       /* ############################## */
       
-      private static const OBJECT_REGEXP:RegExp = /\[obj:\d+:\w+:\w+\]/;
+      private static const OBJECT_REGEXP:RegExp = /\[obj:\d+:\w+(:\w+(:dc)?|::dc)?\]/;
+      private static const WORD_SEP_REGEXP:RegExp = / +/;
+      private static const INTEGER_REGEXP:RegExp = /^\d+$/;
       
       /**
        * Resolves names of objects in a string. Resolves each sequence of the form:
@@ -132,12 +135,26 @@ package utils.locale
          var parts:Array = formKey.split(":");
          var amount:int = int(parts[1]);
          var type:String = parts[2];
-         var form:String = parts.length == 4 ? parts[3] : null;
+         var form:String = parts.length > 3 ? parts[3] : null;
+         var downcase:Boolean = parts.length > 4;
          var property:String = type;
-         if (form != null) {
+         if (form != null && form.length > 0) {
             property += "-" + form;
          }
-         return string("Objects", property, [amount]);
+         var resolvedName:String = string("Objects", property, [amount]);
+         if (downcase) {
+            // make the first letter of a word lowercase
+            var words:Array = resolvedName.split(WORD_SEP_REGEXP);
+            if (words.length == 1) {
+               resolvedName = utils.StringUtil.firstToLowerCase(words[0]);
+            }
+            else {
+               var wordIdx:int = !INTEGER_REGEXP.test(words[0]) ? 0 : 1;
+               words[wordIdx] = utils.StringUtil.firstToLowerCase(words[wordIdx]);
+               resolvedName = words.join(" ");
+            }
+         }
+         return resolvedName;
       }
       
       

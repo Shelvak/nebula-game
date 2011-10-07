@@ -275,17 +275,26 @@ package tests.utils.tests
       
       [Test]
       public function resolveObjectNames() : void {
+         function none(amount:int) : String {
+            return Localizer.resolveObjectNames("[obj:" + amount + ":Shocker]");
+         };
          function what(amount:int) : String {
-            return Localizer.resolveObjectNames("[obj:"+ amount +":Shocker:what]");
+            return Localizer.resolveObjectNames("[obj:" + amount + ":Shocker:what]");
          };
          function whos(amount:int) : String {
-            return Localizer.resolveObjectNames("[obj:"+ amount +":Shocker:whos]");
+            return Localizer.resolveObjectNames("[obj:" + amount + ":Shocker:whos]");
          };
          setCurrentLocale(Locale.LT);
          addBundle(Locale.LT, "Objects", {
+            "Shocker":      "{0 one[mechas] 1sts[? mechas] tens[? mechų] many[? mechai]}",
             "Shocker-what": "{0 one[mechą] 1sts[? mechą] tens[? mechų] many[? mechus]}",
             "Shocker-whos": "{0 one[mecho] 1sts[? mecho] tens[? mechų] many[? mechų]}"
          });
+         
+         assertThat( "none:  1", none( 1), equals(   "mechas") );
+         assertThat( "none: 21", none(21), equals("21 mechas") );
+         assertThat( "none: 12", none(12), equals( "12 mechų") );
+         assertThat( "none: 37", none(37), equals("37 mechai") );
          
          assertThat( "what:   1", what(  1), equals (    "mechą") );
          assertThat( "what:  21", what( 21), equals ( "21 mechą") );
@@ -302,6 +311,40 @@ package tests.utils.tests
          assertThat( "whos:  11", whos( 11), equals ( "11 mechų") );
          assertThat( "whos:  19", whos( 19), equals ( "19 mechų") );
          assertThat( "whos:  29", whos( 29), equals ( "29 mechų") );
+      }
+      
+      [Test]
+      public function resolveObjectNamesSupportsDowncasing() : void {
+         setCurrentLocale(Locale.LT);
+         function what(amount:int, downcase:Boolean) : String {
+            var resolvableSequence:String = "[obj:" + amount + ":Shocker:what" + (downcase ? ":dc]" : "]");
+            return Localizer.resolveObjectNames(resolvableSequence);
+         };
+         function none(amount:int, downcase:Boolean) : String {
+            var resolvableSequence:String = "[obj:" + amount + ":Shocker" + (downcase ? "::dc]" : "]");
+            return Localizer.resolveObjectNames(resolvableSequence);
+         }
+         function nonePlain(downcase:Boolean) : String {
+            return Localizer.resolveObjectNames("[obj:0:Jumper" + (downcase ? "::dc]" : "]"));
+         }
+         addBundle(Locale.LT, "Objects", {
+            "Jumper":       "Šoklys",
+            "Shocker":      "{0 one[Mechas] 1sts[? Mechas] tens[? Mechų] many[? Mechai]}",
+            "Shocker-what": "{0 one[Mechą] 1sts[? Mechą] tens[? Mechų] many[? Mechus]}"
+         });
+         
+         assertThat( "U_case, none, plain:", nonePlain(false), equals ("Šoklys") );
+         assertThat( "d_case, none, plain:", nonePlain( true), equals ("šoklys") );
+         
+         assertThat( "U_case, none:  1", none( 1, false), equals (   "Mechas") );
+         assertThat( "d_case, none:  1", none( 1,  true), equals (   "mechas") );
+         assertThat( "U_case, none: 10", none(10, false), equals ( "10 Mechų") );
+         assertThat( "d_case, none: 38", none(38,  true), equals ("38 mechai") );
+         
+         assertThat( "U_case, what:  1", what( 1, false), equals (    "Mechą") );
+         assertThat( "d_case, what:  1", what( 1,  true), equals (    "mechą") );
+         assertThat( "U_case, what: 22", what(22, false), equals ("22 Mechus") );
+         assertThat( "d_case, what: 22", what(22,  true), equals ("22 mechus") );
       }
       
       [Test]
