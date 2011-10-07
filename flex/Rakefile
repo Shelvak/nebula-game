@@ -204,6 +204,7 @@ namespace :build do
       info "Processing index.html"
       index_html = "#{dist_dir}/index.html"
       FileUtils.mv("#{dist_dir}/index.template.html", index_html)
+      FileUtils.mv("#{dist_dir}/htaccess.template", "#{dist_dir}/.htaccess")
       File.modify(index_html) do |content|
         {
           "${swf}" => swf_name,
