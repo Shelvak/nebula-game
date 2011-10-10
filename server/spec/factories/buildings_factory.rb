@@ -50,6 +50,8 @@ Factory.define :b_constructor_test, :parent => :b_trait_mock,
 :class => Building::ConstructorTest do |m|
   opts_active.factory m
   m.level 1
+  m.constructable { |r| Factory.create(:unit, opts_upgrading +
+    {:player => r.planet.player}) }
 end
 
 Factory.define :b_constructor_with_constructable, :parent => :b_trait_mock,
