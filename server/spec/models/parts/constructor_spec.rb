@@ -437,7 +437,7 @@ describe Building::ConstructorTest do
   describe "#on_construction_finished!" do
     describe "when #build_in_2nd_flank is true" do
       it "should set set constructable flank to 1 if it is a Unit" do
-        unit = Factory.create(:unit, :flank => 0, :level => 0)
+        unit = Factory.create(:unit, opts_upgrading + {:flank => 0})
         model = Factory.create(:b_constructor_test, opts_working + {
           :constructable => unit, :build_in_2nd_flank => true
         })
@@ -448,7 +448,7 @@ describe Building::ConstructorTest do
       end
 
       it "should not fail if it's a building" do
-        building = Factory.create(:building)
+        building = Factory.create(:building, opts_upgrading)
         model = Factory.create(:b_constructor_test, opts_working + {
           :constructable => building, :planet => building.planet, :x => 10,
           :build_in_2nd_flank => true
@@ -456,7 +456,16 @@ describe Building::ConstructorTest do
         model.send(:on_construction_finished!)
       end
     end
-    
+
+    it "should call constructable#on_upgrade_finished!" do
+      unit = Factory.create(:unit, :flank => 0, :level => 0)
+      model = Factory.create(:b_constructor_test, opts_working + {
+        :constructable => unit
+      })
+      model.constructable.should_receive(:on_upgrade_finished!)
+      model.send(:on_construction_finished!)
+    end
+
     describe "when queue is empty" do
       it "should change state to active" do
         model = Factory.create(:b_constructor_test, opts_working)
@@ -509,7 +518,7 @@ describe Building::ConstructorTest do
       it "should change constructable" do
         lambda do
           @constructor.send(:on_construction_finished!)
-        end.should change(@constructor, :constructable).from(nil).to(
+        end.should change(@constructor, :constructable).to(
           an_instance_of(Building::TestBuilding)
         )
       end
@@ -544,8 +553,7 @@ describe Building::ConstructorTest do
       before(:each) do
         @constructor = Factory.create(:b_constructor_test,
           opts_working + {:x => 0, :y => 0})
-        set_resources(@constructor.planet,
-          0, 0, 0)
+        set_resources(@constructor.planet, 0, 0, 0)
         @type = "Building::TestBuilding"
         @params = {:x => 20, :y => 25,
           :planet_id => @constructor.planet_id}
@@ -581,13 +589,11 @@ describe Building::ConstructorTest do
       end
     end
 
-    describe "when queue element failed to construct due to " +
-    "validation error" do
+    describe "when queue element failed to construct due to validation error" do
        before(:each) do
         @constructor = Factory.create(:b_constructor_test,
           opts_working + {:x => 0, :y => 0})
-        set_resources(@constructor.planet,
-          10000, 10000, 10000)
+        set_resources(@constructor.planet, 10000, 10000, 10000)
         @type = "Building::TestBuilding"
         @params = {:x => 20, :y => 25,
           :planet_id => @constructor.planet_id}
@@ -600,10 +606,9 @@ describe Building::ConstructorTest do
       end
 
       it "should not raise error" do
-        lambda do
-          @constructor.send(:on_construction_finished!)
-          @constructor.send(:on_construction_finished!)
-        end.should_not raise_error
+        @constructor.send(:on_construction_finished!)
+        @constructor.reload
+        @constructor.send(:on_construction_finished!)
       end
     end
   end

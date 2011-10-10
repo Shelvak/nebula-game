@@ -251,6 +251,15 @@ module Parts
 
       def points_attribute; self.class.points_attribute; end
 
+      def register_upgrade_finished_callback?
+        @_register_upgrade_finished_callback.nil? \
+          ? true : @_register_upgrade_finished_callback
+      end
+
+      def register_upgrade_finished_callback=(value)
+        @_register_upgrade_finished_callback = value
+      end
+
       private
       # Calculates pause remainder when #pause is called.
       #
@@ -343,7 +352,8 @@ module Parts
       end
       
       def on_upgrade_just_resumed_after_save
-        CallbackManager.register_or_update(self)
+        CallbackManager.register_or_update(self) \
+          if register_upgrade_finished_callback?
       end
 
       ### just paused ###

@@ -346,21 +346,30 @@ shared_examples_for "upgradable" do
     @model.pause_remainder.should be_within(SPEC_TIME_PRECISION).of(5.minutes)
   end
 
-  it "should register to CallbackManager on #resume!" do
-    @model.pause_remainder = 100
-    CallbackManager.should_receive(:register_or_update).with(@model)
-    @model.resume!
-  end
+  describe "#resume" do
+    it "should register to CallbackManager" do
+      @model.pause_remainder = 100
+      CallbackManager.should_receive(:register_or_update).with(@model)
+      @model.resume!
+    end
 
-  it "should set upgrade_ends_at on #resume" do
-    remainder = 5.minutes
-    @model.pause_remainder = remainder
-    @model.resume
-    @model.upgrade_ends_at.drop_usec.should == remainder.since.drop_usec
-  end
+    it "should not register to CallbackManager if told to" do
+      @model.pause_remainder = 100
+      @model.register_upgrade_finished_callback = false
+      CallbackManager.should_not_receive(:register_or_update).with(@model)
+      @model.resume!
+    end
 
-  it "should clear pause_remainder on #resume" do
-    @model.pause_remainder = 1
-    lambda { @model.resume }.should change(@model, :pause_remainder).to(nil)
+    it "should set upgrade_ends_at" do
+      remainder = 5.minutes
+      @model.pause_remainder = remainder
+      @model.resume
+      @model.upgrade_ends_at.drop_usec.should == remainder.since.drop_usec
+    end
+
+    it "should clear pause_remainder" do
+      @model.pause_remainder = 1
+      lambda { @model.resume }.should change(@model, :pause_remainder).to(nil)
+    end
   end
 end

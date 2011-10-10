@@ -194,11 +194,11 @@ module Parts::Constructor
       not_enough_resources = []
 
       begin
-        if build_in_2nd_flank? && constructable_type.starts_with?("Unit")
-          constructable = self.constructable
-          constructable.flank = 1
-          constructable.save!
-        end
+        constructable = self.constructable
+        constructable.flank = 1 if build_in_2nd_flank? &&
+          constructable.is_a?(Unit)
+        # Call #on_upgrade_finished! because we have no callback registered.
+        constructable.send(:on_upgrade_finished!)
 
         queue_entry = ConstructionQueue.shift(id)
 
@@ -239,6 +239,9 @@ module Parts::Constructor
         model.level = 0
         model.construction_mod = self.constructor_mod +
           self.level_constructor_mod
+        # Don't register upgrade finished callback, because we will call it
+        # for the model when we get #on_construction_finished! called.
+        model.register_upgrade_finished_callback = false
         model.upgrade!
         EventBroker.fire(model, EventBroker::CREATED)
 
