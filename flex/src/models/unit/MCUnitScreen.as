@@ -637,7 +637,7 @@ package models.unit
             currentKind = UnitKind.GROUND;
             refreshScreen();
          }
-         else if (ML.latestPlanet != null)
+         else if (ML.latestPlanet != null && ML.latestPlanet.ssObject != null)
          {
             NavigationController.getInstance().toPlanet(ML.latestPlanet.ssObject);
          }

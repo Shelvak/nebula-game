@@ -1024,7 +1024,8 @@
                                                NumberUtil.toShortString(_selectedModel.nextMetalRate * 3600, PRECISION))+ ' / ' +
                                                Localizer.string('General', 'hour.short')}"
                                                lblColor="{_selectedModel.nextMetalRate &lt; 0?0xff0000:0x00ff00}"
-                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel
+                                               &amp;&amp; _selectedModel.managable}"
                                                toolTip="{getString('toolTip.afterUpgrade')}"/>
                            <s:layout>
                               <s:HorizontalLayout/>
@@ -1050,7 +1051,8 @@
                                                3600, PRECISION))+ ' / ' +
                                                Localizer.string('General', 'hour.short')}"
                                                lblColor="{_selectedModel.nextEnergyRate &lt; 0?0xff0000:0x00ff00}"
-                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel
+                                               &amp;&amp; _selectedModel.managable}"
                                                toolTip="{getString('toolTip.afterUpgrade')}"/>
                            <s:layout>
                               <s:HorizontalLayout/>
@@ -1074,7 +1076,8 @@
                                                NumberUtil.toShortString(_selectedModel.nextZetiumRate * 3600, PRECISION))+ ' / ' +
                                                Localizer.string('General', 'hour.short')}"
                                                lblColor="{_selectedModel.nextZetiumRate &lt; 0?0xff0000:0x00ff00}"
-                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel
+                                               &amp;&amp; _selectedModel.managable}"
                                                toolTip="{getString('toolTip.afterUpgrade')}"/>
                            <s:layout>
                               <s:HorizontalLayout/>
@@ -1135,7 +1138,8 @@
                                                NumberUtil.toShortString(_selectedModel.nextMetalStorage* 
                                                ML.resourcesMods.getStorageMod(ResourceType.METAL)* 
                                                ML.latestPlanet.ssObject.metal.boost.getStorageBoost(), PRECISION)}"
-                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel
+                                               &amp;&amp; _selectedModel.managable}"
                                                toolTip="{getString('toolTip.afterUpgrade')}"/>
                            <s:layout>
                               <s:HorizontalLayout/>
@@ -1152,7 +1156,8 @@
                                                NumberUtil.toShortString(_selectedModel.nextEnergyStorage* 
                                                ML.resourcesMods.getStorageMod(ResourceType.ENERGY)* 
                                                ML.latestPlanet.ssObject.energy.boost.getStorageBoost(), PRECISION)}"
-                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel
+                                               &amp;&amp; _selectedModel.managable}"
                                                toolTip="{getString('toolTip.afterUpgrade')}"/>
                            <s:layout>
                               <s:HorizontalLayout/>
@@ -1169,7 +1174,8 @@
                                                NumberUtil.toShortString(_selectedModel.nextZetiumStorage* 
                                                ML.resourcesMods.getStorageMod(ResourceType.ZETIUM)* 
                                                ML.latestPlanet.ssObject.zetium.boost.getStorageBoost(), PRECISION)}"
-                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel
+                                               &amp;&amp; _selectedModel.managable}"
                                                toolTip="{getString('toolTip.afterUpgrade')}"/>
                            <s:layout>
                               <s:HorizontalLayout/>
@@ -1184,7 +1190,8 @@
                                                toolTip="{Localizer.string('Resources', ResourceType.POPULATION)}"/>
                            <base:NextValueComp textToDisplay="{Building.getPopulation(_selectedModel.type, 
                                                _selectedModel.upgradePart.level + 1)}"
-                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                               visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel
+                                               &amp;&amp; _selectedModel.managable}"
                                                toolTip="{getString('toolTip.afterUpgrade')}"/>
                            <s:layout>
                               <s:HorizontalLayout/>
@@ -1205,7 +1212,8 @@
                                          textToDisplay="{_selectedModel.scientists}"
                                          toolTip="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
                      <base:NextValueComp textToDisplay="{_selectedModel.nextScientists}"
-                                         visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                         visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel
+                                         &amp;&amp; _selectedModel.managable}"
                                          toolTip="{getString('toolTip.afterUpgrade')}"/>
                      <base:layout>
                         <s:HorizontalLayout/>
@@ -1219,7 +1227,8 @@
                      <s:Label text="{Localizer.string('Buildings', 'property.radar.strength') + ': ' + 
                               _selectedModel.radarStrength.toString()}" paddingLeft="6"/>
                      <base:NextValueComp textToDisplay="{_selectedModel.nextRadarStrength.toString()}"
-                                         visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel}"
+                                         visible="{_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel
+                                         &amp;&amp; _selectedModel.managable}"
                                          toolTip="{getString('toolTip.afterUpgrade')}"/>
                      <base:layout>
                         <s:HorizontalLayout verticalAlign="middle"/>

@@ -139,11 +139,11 @@
             <s:Label styleName="locationHeader"
                      text="{Localizer.string('Location', 'header.owner')}:"/>
             <s:Button skinClass="components.skins.LinkButtonSkin"
-                      enabled="{_location.player != null}"
-                      label="{_location.player == null?
+                      enabled="{_location.player != null &amp;&amp; _location.player.id != 0}"
+                      label="{_location.player == null || _location.player.id == 0?
                       Localizer.string('Players', 'npc')
                       :_location.player.name}"
-                      click="if (_location.player == null)
+                      click="if (_location.player == null || _location.player.id == 0)
                       {
                       }
                       else

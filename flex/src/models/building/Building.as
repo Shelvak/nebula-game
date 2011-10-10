@@ -742,6 +742,7 @@ package models.building
       {
          return "[class: " + className +
                 ", id: " + id +
+                ", level: " + level +
                 ", type: " + type + 
                 ", x: " + x +
                 ", xEnd: " + xEnd +
