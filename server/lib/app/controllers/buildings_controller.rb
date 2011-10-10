@@ -211,6 +211,23 @@ class BuildingsController < GenericController
     building = find_building
     building.cancel!
   end
+
+  # Sets constructor building in second flank.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the constructor.
+  # - enabled (Boolean):
+  #
+  def action_set_build_in_2nd_flank
+    param_options :required => {:id => Fixnum,
+                                :enabled => [TrueClass, FalseClass]}
+
+    building = find_building
+    building.build_in_2nd_flank = params['enabled']
+    building.save!
+  end
   
   private
   def find_building

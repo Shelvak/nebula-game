@@ -80,7 +80,8 @@ class Building < ActiveRecord::Base
   # #flags is currently tiny int, so it can store 8 flags.
   flag_attributes(
     "overdriven"                => 0b00000001,
-    "without_points"            => 0b00000010
+    "without_points"            => 0b00000010,
+    "build_in_2nd_flank"        => 0b00000100
   )
 
   def to_s

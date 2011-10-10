@@ -341,4 +341,24 @@ describe BuildingsController do
       invoke @action, @params
     end
   end
+
+  describe "buildings|set_build_in_2nd_flank" do
+    before(:each) do
+      @planet = Factory.create(:planet, :player => player)
+      @building = Factory.create(:building, :planet => @planet)
+
+      @action = "buildings|set_build_in_2nd_flank"
+      @params = {'id' => @building.id, 'enabled' => true}
+    end
+
+    it_behaves_like "finding building"
+
+    it "should set flag on building" do
+      lambda do
+        invoke @action, @params
+        @building.reload
+      end.should change(@building, :build_in_2nd_flank).
+        to(@params['enabled'])
+    end
+  end
 end
