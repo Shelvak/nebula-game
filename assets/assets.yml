@@ -820,6 +820,9 @@ assets:
         daily_bonus_up.png:  Dailybonus_up.png
         daily_bonus_over.png:  Dailybonus_over.png
         daily_bonus_blink.png:  Dailybonus_up2.png
+        switch_flank_1.png: Flankswitch_1.png
+        switch_flank_2.png: Flankswitch_2.png
+        switch_flank_0.png: Flankswitch_0.png
 
       "level_parts":
         level_empty.png: Level_00.png
