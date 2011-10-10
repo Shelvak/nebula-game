@@ -35,7 +35,7 @@ describe Building::ConstructorTest do
 
   describe "#as_json" do
     it_behaves_like "as json", Factory.create(:b_constructor_test), nil,
-                    %w{construction_queue_entries}, []
+                    %w{construction_queue_entries build_in_2nd_flank}, []
   end
 
   describe "#construction_queue_entries" do

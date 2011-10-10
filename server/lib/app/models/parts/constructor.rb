@@ -101,6 +101,7 @@ module Parts::Constructor
       super do |hash|
         hash["construction_queue_entries"] = construction_queue_entries.map(
           &:as_json)
+        hash["build_in_2nd_flank"] = build_in_2nd_flank
       end
     end
 
