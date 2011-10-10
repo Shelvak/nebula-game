@@ -343,6 +343,7 @@ package controllers.startup
          bindPair(BuildingsCommand.CANCEL_CONSTRUCTOR, new controllers.buildings.actions.CancelConstructorAction());
          bindPair(BuildingsCommand.CANCEL_UPGRADE, new controllers.buildings.actions.CancelUpgradeAction());
          bindPair(BuildingsCommand.MOVE, new controllers.buildings.actions.MoveAction());
+         bindPair(BuildingsCommand.SET_BUILD_IN_2ND_FLANK, new controllers.buildings.actions.SetBuildIn2ndFlankAction());
       }
       private static function bindTechnologiesCommands() : void
       {

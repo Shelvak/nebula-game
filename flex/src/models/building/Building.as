@@ -523,6 +523,9 @@ package models.building
       [Required]
       public var energyMod: int = 0;
       
+      [Optional]
+      public var buildIn2ndFlank: Boolean = false;
+      
       /**
        * 
        * @param constructableType

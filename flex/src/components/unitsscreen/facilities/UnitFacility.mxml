@@ -15,14 +15,15 @@
    
    <fx:Script>
       <![CDATA[
-         import components.unitsscreen.UnitScreenAnimationDurations;
          import com.developmentarc.core.utils.EventBroker;
          
          import components.skins.ListNonScrollableSkin;
          import components.skins.PreviousButtonSkin;
+         import components.unitsscreen.UnitScreenAnimationDurations;
          
          import config.Config;
          
+         import controllers.buildings.BuildingsCommand;
          import controllers.constructionqueues.ConstructionQueuesCommand;
          import controllers.units.UnitsCommand;
          
@@ -421,6 +422,16 @@
             }
          }
          
+         protected function togglebutton1_clickHandler(event:Event):void
+         {
+            new BuildingsCommand(BuildingsCommand.SET_BUILD_IN_2ND_FLANK,
+               {
+                  'model': _facility,
+                  'enable': !_facility.buildIn2ndFlank
+               }
+            ).dispatch();
+         }
+         
       ]]>
    </fx:Script>  
    <fx:Declarations>
@@ -494,7 +505,10 @@
          
          <s:Group id="facilityGroup">
             <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'top_left')}"/>
-            <s:Group width="{imageSize}" height="{imageSize}" left="4" top="4">
+            <s:ToggleButton skinClass="components.skins.ChangeDefaultFlankButtonSkin" left="4" top="4" 
+                            selected="{_facility.buildIn2ndFlank}"
+                            click="togglebutton1_clickHandler(event)"/>
+            <s:Group width="{imageSize}" height="{imageSize}" left="24" top="4">
                <components:CenteredBitmapImage 
                   source="{IMG.getImage(AssetNames.getConceptBuildingImageName(_facility.type))}" 
                   width="100%" height="100%"/>
