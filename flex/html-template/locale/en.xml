@@ -3761,6 +3761,20 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
     
+    <tooltip.buildInFlankCommon>
+      <p>Click to change.</p>
+    </tooltip.buildInFlankCommon>
+    
+    <tooltip.buildInFlank1>
+      <p>Your units will appear in first flank.</p>
+      <p>[reference:tooltip.buildInFlankCommon]</p>
+    </tooltip.buildInFlank1>
+    
+    <tooltip.buildInFlank2>
+      <p>Your units will appear in second flank.</p>
+      <p>[reference:tooltip.buildInFlankCommon]</p>
+    </tooltip.buildInFlank2>
+    
     <tooltip.populationCommon>
       <p>{0} population left</p>
     </tooltip.populationCommon>

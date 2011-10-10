@@ -3855,6 +3855,22 @@
     <property.move.solarSystem.hopTime value="Viens lēciens saules sistēmā" />
     <property.move.galaxy.hopTime value="Viens lēciens galaktikā" />
     <property.population value="Iedzīvotāji" />
+    
+    <!-- TODO: translate this -->
+    <tooltip.buildInFlankCommon>
+      <p>Click to change.</p>
+    </tooltip.buildInFlankCommon>
+    
+    <tooltip.buildInFlank1>
+      <p>Your units will appear in first flank.</p>
+      <p>[reference:tooltip.buildInFlankCommon]</p>
+    </tooltip.buildInFlank1>
+    
+    <tooltip.buildInFlank2>
+      <p>Your units will appear in second flank.</p>
+      <p>[reference:tooltip.buildInFlankCommon]</p>
+    </tooltip.buildInFlank2>
+    <!-- /TODO: translate this -->
 
     <stance.defensive value="Aizsardzības pozīcija ({0}% uzbrukums, {1}% aizsardzība)" />
     <stance.neutral value="Neitrāla pozīcija" />

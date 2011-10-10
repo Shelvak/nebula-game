@@ -3704,6 +3704,20 @@
     <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
     <property.population value="Populiacija" />
     
+    <tooltip.buildInFlankCommon>
+      <p>Paspausk, kad pakeistum.</p>
+    </tooltip.buildInFlankCommon>
+    
+    <tooltip.buildInFlank1>
+      <p>Tavo kariai atsiras pirmam flange.</p>
+      <p>[reference:tooltip.buildInFlankCommon]</p>
+    </tooltip.buildInFlank1>
+    
+    <tooltip.buildInFlank2>
+      <p>Tavo kariai atsiras antram flange.</p>
+      <p>[reference:tooltip.buildInFlankCommon]</p>
+    </tooltip.buildInFlank2>
+    
     <tooltip.populationCommon>
       <p>{0 one[? laisvas gyventojas] tens[? laisvų gyventojų] 
       many[? laisvi gyventojai]}</p>

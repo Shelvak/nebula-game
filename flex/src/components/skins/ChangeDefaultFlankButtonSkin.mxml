@@ -16,17 +16,19 @@
    <base:states>
       <s:State name="up" stateGroups="deselectedStates, upStates" />
       <s:State name="over" stateGroups="overStates, deselectedStates" />
-      <s:State name="down" stateGroups="downStates, deselectedStates" />
+      <s:State name="down" stateGroups="downStates" />
       <s:State name="disabled" stateGroups="disabledStates, deselectedStates" />
       <s:State name="upAndSelected" stateGroups="selectedStates, upStates" />
       <s:State name="overAndSelected" stateGroups="selectedStates, overStates" />
-      <s:State name="downAndSelected" stateGroups="selectedStates, downStates" />
+      <s:State name="downAndSelected" stateGroups="downStates" />
       <s:State name="disabledAndSelected" stateGroups="disabledStates, selectedStates" />
    </base:states>
    
-   <s:BitmapImage id="bmpStarGrey" includeIn="deselectedStates"
-                  source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 'star_grey')}"/>
-   <s:BitmapImage id="bmpStarYellow" includeIn="selectedStates"
-                  source="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 'star_yellow')}"/>
+   <s:BitmapImage includeIn="deselectedStates"
+                  source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'switch_flank_1')}"/>
+   <s:BitmapImage includeIn="selectedStates"
+                  source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'switch_flank_2')}"/>
+   <s:BitmapImage includeIn="downStates"
+                  source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'switch_flank_0')}"/>
    
 </base:BaseSkin>

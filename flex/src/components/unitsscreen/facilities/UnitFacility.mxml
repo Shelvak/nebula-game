@@ -503,12 +503,15 @@
          
          
          
-         <s:Group id="facilityGroup">
+         <s:ToggleButton skinClass="components.skins.ChangeDefaultFlankButtonSkin" 
+                         selected="{_facility.buildIn2ndFlank}" id="btnFlank"
+                         click="togglebutton1_clickHandler(event)"
+                         toolTip="{Localizer.string('Units', 'tooltip.'+(_facility.buildIn2ndFlank
+                         ? 'buildInFlank2'
+                         : 'buildInFlank1'))}"/>
+         <s:Group id="facilityGroup" left="{btnFlank.width}">
             <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'top_left')}"/>
-            <s:ToggleButton skinClass="components.skins.ChangeDefaultFlankButtonSkin" left="4" top="4" 
-                            selected="{_facility.buildIn2ndFlank}"
-                            click="togglebutton1_clickHandler(event)"/>
-            <s:Group width="{imageSize}" height="{imageSize}" left="24" top="4">
+            <s:Group width="{imageSize}" height="{imageSize}" left="4" top="4">
                <components:CenteredBitmapImage 
                   source="{IMG.getImage(AssetNames.getConceptBuildingImageName(_facility.type))}" 
                   width="100%" height="100%"/>
@@ -519,7 +522,7 @@
          
          
          
-         <s:Group right="{topRight.width}" height="100%" left="{facilityGroup.width}">
+         <s:Group right="{topRight.width}" height="100%" left="{facilityGroup.width + btnFlank.width}">
             <!-- content rect background -->
             <s:BitmapImage top="0" bottom="0" width="100%" fillMode="repeat"
                            source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'top_center')}"/>
