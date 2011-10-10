@@ -58,7 +58,7 @@
             {
                if (constructor.constructableType == null)
                   return;
-
+               
                var constructable: * = ModelUtil.getModelClass(
                   constructor.constructableType) == ObjectClass.UNIT
                   ? ML.latestPlanet.getUnitById(constructor.constructableId)
@@ -140,11 +140,17 @@
                {id: _queryElementModel.id,
                   count: isUnit?_queryElementModel.count :1}
             ).dispatch ();
-            // Got bug report from someone, that object was not found. So i add null check.
-            var obj: PlanetObject =  ML.latestPlanet.getObject(_queryElementModel.params.x, _queryElementModel.params.y);
-            if (obj)
+            if (!isUnit)
             {
-               ML.latestPlanet.removeObject(obj);
+               var obj: PlanetObject =  ML.latestPlanet.getObject(_queryElementModel.params.x, _queryElementModel.params.y);
+               if (obj is Building && Building(obj).level == 0)
+               {
+                  ML.latestPlanet.removeObject(obj);
+               }
+               else
+               {
+                  throw new Error('Ghost building ' + obj + ' was not found in planet with id: ' + ML.latestPlanet.id);
+               }
             }
          }
          
