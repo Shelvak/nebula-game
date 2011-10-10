@@ -458,7 +458,7 @@ describe Building::ConstructorTest do
     end
 
     it "should call constructable#on_upgrade_finished!" do
-      unit = Factory.create(:unit, :flank => 0, :level => 0)
+      unit = Factory.create(:unit, opts_upgrading + {:flank => 0})
       model = Factory.create(:b_constructor_test, opts_working + {
         :constructable => unit
       })
@@ -555,8 +555,7 @@ describe Building::ConstructorTest do
           opts_working + {:x => 0, :y => 0})
         set_resources(@constructor.planet, 0, 0, 0)
         @type = "Building::TestBuilding"
-        @params = {:x => 20, :y => 25,
-          :planet_id => @constructor.planet_id}
+        @params = {:x => 20, :y => 25, :planet_id => @constructor.planet_id}
         Factory.create(:construction_queue_entry,
           :constructor => @constructor,
           :constructable_type => @type, :position => 0, :params => @params)
@@ -595,8 +594,7 @@ describe Building::ConstructorTest do
           opts_working + {:x => 0, :y => 0})
         set_resources(@constructor.planet, 10000, 10000, 10000)
         @type = "Building::TestBuilding"
-        @params = {:x => 20, :y => 25,
-          :planet_id => @constructor.planet_id}
+        @params = {:x => 20, :y => 25, :planet_id => @constructor.planet_id}
         Factory.create(:construction_queue_entry,
           :constructor => @constructor,
           :constructable_type => @type, :position => 0, :params => @params)
@@ -607,7 +605,6 @@ describe Building::ConstructorTest do
 
       it "should not raise error" do
         @constructor.send(:on_construction_finished!)
-        @constructor.reload
         @constructor.send(:on_construction_finished!)
       end
     end

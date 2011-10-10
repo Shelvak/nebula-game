@@ -3709,12 +3709,12 @@
     </tooltip.buildInFlankCommon>
     
     <tooltip.buildInFlank1>
-      <p>Tavo kariai atsiras pirmam flange.</p>
+      <p>Tavo kariai atsiras pirmame flange.</p>
       <p>[reference:tooltip.buildInFlankCommon]</p>
     </tooltip.buildInFlank1>
     
     <tooltip.buildInFlank2>
-      <p>Tavo kariai atsiras antram flange.</p>
+      <p>Tavo kariai atsiras antrame flange.</p>
       <p>[reference:tooltip.buildInFlankCommon]</p>
     </tooltip.buildInFlank2>
     

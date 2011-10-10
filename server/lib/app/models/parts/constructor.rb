@@ -131,7 +131,7 @@ module Parts::Constructor
       constructable.cancel!
       CallbackManager.unregister(self,
           CallbackManager::EVENT_CONSTRUCTION_FINISHED)
-      on_construction_finished!
+      on_construction_finished!(false)
     end
 
     # Construct and upgrade building.
@@ -189,22 +189,25 @@ module Parts::Constructor
       true
     end
 
-    def on_construction_finished!
+    def on_construction_finished!(finish_constructable=true)
       # Store aggregated queue errors.
       not_enough_resources = []
 
-      begin
+      # We might not need to finish constructable if it was cancelled.
+      if finish_constructable
+        # Force-reload because self.constructable(true) freaks out.
         constructable = self.constructable
         constructable.flank = 1 if build_in_2nd_flank? &&
           constructable.is_a?(Unit)
         # Call #on_upgrade_finished! because we have no callback registered.
         constructable.send(:on_upgrade_finished!)
+      end
 
+      begin
         queue_entry = ConstructionQueue.shift(id)
 
         if queue_entry
-          construct_model!(queue_entry.constructable_type,
-            queue_entry.params)
+          construct_model!(queue_entry.constructable_type, queue_entry.params)
         else
           construct_model!(nil, nil)
         end
