@@ -101,6 +101,7 @@ module Parts::Constructor
       super do |hash|
         hash["construction_queue_entries"] = construction_queue_entries.map(
           &:as_json)
+        hash["build_in_2nd_flank"] = build_in_2nd_flank
       end
     end
 
@@ -193,6 +194,12 @@ module Parts::Constructor
       not_enough_resources = []
 
       begin
+        if build_in_2nd_flank? && constructable_type.starts_with?("Unit")
+          constructable = self.constructable
+          constructable.flank = 1
+          constructable.save!
+        end
+
         queue_entry = ConstructionQueue.shift(id)
 
         if queue_entry

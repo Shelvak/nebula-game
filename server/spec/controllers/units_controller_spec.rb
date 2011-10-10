@@ -367,12 +367,13 @@ describe UnitsController do
           Factory.create!(:u_dart),
           Factory.create!(:u_dart),
         ],
-        'route_hops' => [:route_hops]
+        'route_hops' => [:route_hops],
+        'jumps_at' => 5.minutes.from_now
       }
       @method = :push
     end
 
-    @required_params = %w{units route_hops}
+    @required_params = %w{units route_hops jumps_at}
     it_behaves_like "with param options"
     it_behaves_like "only push"
 
@@ -395,6 +396,11 @@ describe UnitsController do
     it "should respond with route_hops" do
       push @action, @params
       response_should_include(:route_hops => @params['route_hops'])
+    end
+
+    it "should respond with jumps_at" do
+      push @action, @params
+      response_should_include(:jumps_at => @params['jumps_at'])
     end
   end
 

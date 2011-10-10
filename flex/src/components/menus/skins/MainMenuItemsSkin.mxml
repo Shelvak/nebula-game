@@ -11,21 +11,24 @@
    
    <fx:Script>
       <![CDATA[
-         import controllers.ui.NavigationController;
-         
-         import models.ModelLocator;
-         
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         
-         
-         private static function get ML() : ModelLocator {
-            return ModelLocator.getInstance();
-         }
-         
-         private function getImage(name:String) : BitmapData {
-            return ImagePreloader.getInstance().getImage(AssetNames.START_MENU_FOLDER + name);
-         }
+      import application.Version;
+
+      import controllers.ui.NavigationController;
+
+      import models.ModelLocator;
+
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
+
+
+      private static function get ML() : ModelLocator {
+         return ModelLocator.getInstance();
+      }
+
+      private function getImage(name:String) : BitmapData {
+         return ImagePreloader.getInstance().getImage(AssetNames.START_MENU_FOLDER + name);
+      }
       ]]>
    </fx:Script>
    
@@ -67,27 +70,49 @@
    
    <!--- Background of the component. -->
    <s:Group id="background" x="0" y="0" height="100%" width="100%"
-            alpha.disabled="0" y.disabled="{width}" height.disabled="0" width.disabled="0">     
+            alpha.disabled="0" y.disabled="{width}" height.disabled="0"
+            width.disabled="0">
       <!-- TOP -->
-      <s:BitmapImage id="topLeft" left="0" top="0" source="{getImage('top_left')}"/>
-      <s:BitmapImage id="topRight" right="0" top="0" source="{getImage('top_right')}"/>
-      <s:BitmapImage id="topRepeat" fillMode="repeat" left="{topLeft.width}" top="0" right="{topRight.width}" source="{getImage('top_repeat')}"/>
+      <s:BitmapImage id="topLeft" left="0" top="0"
+                     source="{getImage('top_left')}"/>
+      <s:BitmapImage id="topRight" right="0" top="0"
+                     source="{getImage('top_right')}"/>
+      <s:BitmapImage id="topRepeat" fillMode="repeat"
+                     left="{topLeft.width}" top="0" right="{topRight.width}"
+                     source="{getImage('top_repeat')}"/>
+      <!-- Build number -->
+      <s:Label top="21" right="36" text="v. {Version.VERSION}"
+               toolTip="{Localizer.string('MainMenu', 'tooltip.version')}"
+               fontSize="10" color="#404040" />
       
       <!-- BOTTOM -->
-      <s:BitmapImage id="bottomLeft" left="0" bottom="0" source="{getImage('bottom_left')}"/>
-      <s:BitmapImage id="bottomRight" right="0" bottom="0" source="{getImage('bottom_right')}"/>
-      <s:BitmapImage id="bottomRepeat" fillMode="repeat" left="{bottomLeft.width}" bottom="0" right="{bottomRight.width}" source="{getImage('bottom_repeat')}"/>
+      <s:BitmapImage id="bottomLeft" left="0" bottom="0"
+                     source="{getImage('bottom_left')}"/>
+      <s:BitmapImage id="bottomRight" right="0" bottom="0"
+                     source="{getImage('bottom_right')}"/>
+      <s:BitmapImage id="bottomRepeat" fillMode="repeat"
+                     left="{bottomLeft.width}" bottom="0"
+                     right="{bottomRight.width}"
+                     source="{getImage('bottom_repeat')}"/>
       
       <!-- CENTER -->
-      <s:BitmapImage id="centerLeft" left="0" top="{topLeft.height}" bottom="{bottomLeft.height}" fillMode="repeat" source="{getImage('center_left')}"/>
-      <s:BitmapImage id="centerRight" right="0" top="{topRight.height}" bottom="{bottomRight.height}" fillMode="repeat" source="{getImage('center_right')}"/> 
-      <s:Rect left="{centerLeft.width}" right="{centerRight.width}" top="{topRepeat.height}" bottom="{bottomRepeat.height}">
+      <s:BitmapImage id="centerLeft" left="0" top="{topLeft.height}"
+                     bottom="{bottomLeft.height}" fillMode="repeat"
+                     source="{getImage('center_left')}"/>
+      <s:BitmapImage id="centerRight" right="0" top="{topRight.height}"
+                     bottom="{bottomRight.height}" fillMode="repeat"
+                     source="{getImage('center_right')}"/>
+      <s:Rect left="{centerLeft.width}" right="{centerRight.width}"
+              top="{topRepeat.height}" bottom="{bottomRepeat.height}">
          <s:fill>
             <s:SolidColor color="#0f0f0f"/>
          </s:fill>
       </s:Rect>    
-      <s:BitmapImage id="topCenter" horizontalCenter="0" top="{(topRepeat.height/2) - 3}" source="{getImage('top_center')}"/>         
-      <s:Button label="{ML.player.name}" top="{(topCenter.height + (topRepeat.height/2))}" 
+      <s:BitmapImage id="topCenter" horizontalCenter="0"
+                     top="{(topRepeat.height/2) - 3}"
+                     source="{getImage('top_center')}"/>
+      <s:Button label="{ML.player.name}"
+                top="{(topCenter.height + (topRepeat.height/2))}"
                 fontSize="18" maxWidth="300" 
                 click="NavigationController.getInstance().showPlayer(ML.player.id)"
                 skinClass="components.skins.LinkButtonSkin"
@@ -95,7 +120,9 @@
    </s:Group>
    
    <!--- Here children will be placed and layed out. -->
-   <s:Group id="contentGroup" left="10" right="10" top="{topCenter.height + topRepeat.height}" bottom="{bottomRepeat.height}" minWidth="0" minHeight="0">
+   <s:Group id="contentGroup" left="10" right="10"
+            top="{topCenter.height + topRepeat.height}"
+            bottom="{bottomRepeat.height}" minWidth="0" minHeight="0">
       <s:layout>
          <s:HorizontalLayout gap="10"/>
       </s:layout>

@@ -1,12 +1,12 @@
 package models.movement
 {
    import controllers.objects.ObjectClass;
-   
+
    import flash.errors.IllegalOperationError;
-   
+
    import interfaces.ICleanable;
    import interfaces.IUpdatable;
-   
+
    import models.BaseModel;
    import models.ModelsCollection;
    import models.Owner;
@@ -21,18 +21,16 @@ package models.movement
    import models.time.MTimeEventFixedMoment;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
-   
+
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
-   
+
    import namespaces.client_internal;
-   
+
    import utils.ModelUtil;
    import utils.Objects;
-   import utils.StringUtil;
    import utils.datastructures.Collections;
-   
-   
+
    /**
     * Dispatched when a hop has been added to or removed from the route. Event is not dispatched when a move
     * occures between two different maps.
@@ -336,9 +334,9 @@ package models.movement
       }
       
       
-      /* ######################## */
-      /* ### ITERFACE METHODS ### */
-      /* ######################## */
+      /* ######################### */
+      /* ### INTERFACE METHODS ### */
+      /* ######################### */
       
       
       /**
@@ -356,7 +354,7 @@ package models.movement
          for each (unit in units) {
             type = ModelUtil.getModelType(ObjectClass.UNIT, unit.type, true);
             entry = _route.findEntryByType(type);
-            if (!entry) {
+            if (! entry) {
                entry = new UnitBuildingEntry(type);
                _route.cachedUnits.addItem(entry);
             }
@@ -439,8 +437,6 @@ package models.movement
        * last hop. If all the hops are in the future, the method will do nothing.</p>
        * 
        * @param time current time if you want squadron to jump to the closest past time to the given time
-       * 
-       * @param current hop of the squadron after the operation
        * 
        * @throws IllegalOperationError if there are no hops
        */

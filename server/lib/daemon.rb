@@ -14,11 +14,15 @@ def server_pid
   server_process_line.split[1]
 end
 
+def start
+  `#{File.expand_path(File.dirname(__FILE__) + '/daemon/runner.sh')
+     } "#{SERVER_NAME}"`
+end
+
 case ARGV[0]
 when "start"
   unless running?
-    `#{File.expand_path(File.dirname(__FILE__) + '/daemon/runner.sh')
-       } "#{SERVER_NAME}"`
+    start
   else
     puts "Server is already running."
   end
@@ -39,7 +43,9 @@ when "hup"
   end
 when "status"
   puts running? ? "ok" : "error"
+when "start-silent"
+  start unless running?
 else
   puts "Unknown argument: #{ARGV[0]}"
-  puts "Usage: lib/daemon.rb start|stop|hup|status"
+  puts "Usage: lib/daemon.rb start|stop|hup|status|start-silent"
 end

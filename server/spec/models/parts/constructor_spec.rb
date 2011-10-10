@@ -35,7 +35,7 @@ describe Building::ConstructorTest do
 
   describe "#as_json" do
     it_behaves_like "as json", Factory.create(:b_constructor_test), nil,
-                    %w{construction_queue_entries}, []
+                    %w{construction_queue_entries build_in_2nd_flank}, []
   end
 
   describe "#construction_queue_entries" do
@@ -435,6 +435,28 @@ describe Building::ConstructorTest do
   end
 
   describe "#on_construction_finished!" do
+    describe "when #build_in_2nd_flank is true" do
+      it "should set set constructable flank to 1 if it is a Unit" do
+        unit = Factory.create(:unit, :flank => 0, :level => 0)
+        model = Factory.create(:b_constructor_test, opts_working + {
+          :constructable => unit, :build_in_2nd_flank => true
+        })
+        lambda do
+          model.send(:on_construction_finished!)
+          unit.reload
+        end.should change(unit, :flank).to(1)
+      end
+
+      it "should not fail if it's a building" do
+        building = Factory.create(:building)
+        model = Factory.create(:b_constructor_test, opts_working + {
+          :constructable => building, :planet => building.planet, :x => 10,
+          :build_in_2nd_flank => true
+        })
+        model.send(:on_construction_finished!)
+      end
+    end
+    
     describe "when queue is empty" do
       it "should change state to active" do
         model = Factory.create(:b_constructor_test, opts_working)

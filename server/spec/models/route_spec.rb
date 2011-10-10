@@ -302,7 +302,7 @@ describe Route do
         :id => model.id,
         :player_id => model.player_id,
         :cached_units => model.cached_units,
-        :first_hop => model.first_hop,
+        :jumps_at => model.jumps_at,
         :arrives_at => model.arrives_at,
         :source => model.source.as_json,
         :current => model.current.as_json,
@@ -316,7 +316,7 @@ describe Route do
         :id => model.id,
         :player_id => model.player_id,
         :current => model.current.as_json,
-        :first_hop => model.first_hop,
+        :jumps_at => model.jumps_at,
       }
     end
   end

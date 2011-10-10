@@ -197,6 +197,17 @@ key_buffer    = 16M
 !includedir /etc/mysql/conf.d/
 }
 
+SRVRUNNER = %Q{#!/bin/bash
+HOME=/home/spacegame
+PATH=/bin/:/usr/bin:/usr/local/bin
+source /etc/profile
+source $HOME/.profile
+
+cd $HOME/nebula-server/current/
+
+eval "$@"
+}
+
 # }}}
 
 # DSL {{{
@@ -545,7 +556,9 @@ if ARGV.include?("server") # {{{
     rvm("install jruby")
   end
 
-  as(USER) { rvm_str("rvmrc trust #{HOME}/nebula-server/current/") }
+  Dir.mkdir("#{HOME}/bin", nil, UCH)
+  File.write("#{HOME}/bin/srvrunner", SRVRUNNER, 0755, UCH)
+  File.ensure("#{HOME}/.rvmrc", %Q{rvm_trust_rvmrcs_flag=1\n}, nil, UCH)
   as(USER) { "ln -sf #{HOME}/nebula-server/shared/log #{LOGS}/server" }
 
   logrotate %Q{
@@ -561,7 +574,8 @@ if ARGV.include?("server") # {{{
 }
 
   puts "Adding server launcher to cron"
-  cron "@reboot   source $HOME/.profile && cd $HOME/nebula-server/current && ruby lib/daemon.rb start"
+  cron "* * *  * *   $HOME/bin/srvrunner lib/daemon.rb start-silent"
+  cron "@hourly   $HOME/bin/srvrunner script/dump_galaxy.rb $HOME/web/current/www/public/galaxies/ >/dev/null 2>&1"
 
   # Linking munin
   puts "Linking munin plugins"
@@ -572,11 +586,26 @@ if ARGV.include?("server") # {{{
     "#{HOME}/nebula-server/current/script/munin-plugins/counters " +
     "/etc/munin/plugins/nebula44_time ")
   run("ln -sf " +
-    "#{HOME}/nebula-server/current/script/munin-plugins/logged_in " +
+    "#{HOME}/nebula-server/current/script/munin-plugins/logged_in.rb " +
     "/etc/munin/plugins/nebula44_logged_in ")
   run("ln -sf " +
     "#{HOME}/nebula-server/current/script/munin-plugins/memory " +
     "/etc/munin/plugins/nebula44_mem ")
+
+  # Market plugins
+  resources = %w{metal energy zetium creds}
+  %w{rates counts}.each do |kind|
+    resources.each do |r1|
+      resources.each do |r2|
+        unless r1 == r2
+          run("ln -sf " +
+            "#{HOME}/nebula-server/current/script/munin-plugins/market_.rb " +
+            "/etc/munin/plugins/nebula44_market_#{kind}_#{r1}_#{r2}")
+        end
+      end
+    end
+  end
+
   run("/etc/init.d/munin-node restart")
 
   dbuser, pass = create_mysql("game")

@@ -1,6 +1,8 @@
 package utils
 {
-   import com.adobe.ac.logging.GlobalExceptionHandlerAction;
+import application.Version;
+
+import com.adobe.ac.logging.GlobalExceptionHandlerAction;
    
    import controllers.startup.StartupManager;
    
@@ -17,7 +19,8 @@ package utils
          if (error is Error && !crashed) {
             crashed = true;
             var ML:ModelLocator = ModelLocator.getInstance();
-            var message:String = 'Client error!\n\n';
+            var message:String = 'Client error! Version ' + Version.VERSION +
+               '\n\n';
             message += "Exception data:\n";
             message += 'Error id: ' + error.errorID + '\n';
             message += 'Stacktrace:\n' + error.getStackTrace() + '\n\n';

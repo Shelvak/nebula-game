@@ -1427,6 +1427,7 @@
     <label.alliances value="Sąjungų reitingai" />
     <label.alliance value="Sąjunga" />
     <label.forum value="Forumas" />
+    <tooltip.version value="Žaidimo versija" />
     <panelWidth value="95" />
   </MainMenu>
 
@@ -3307,7 +3308,7 @@
     <property.mod.energy.store value="Energijos talpos priedas" />
     <property.mod.armor value="Šarvų priedas" />
     <property.mod.damage value="Žalos priedas" />
-    <property.mod.movementTimeDecrease value="Jūdėjimo trukmės sumažinimas" />
+    <property.mod.movementTimeDecrease value="Judėjimo trukmės sumažinimas" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
 
     <UnitTech>

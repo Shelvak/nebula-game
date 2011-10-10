@@ -30,6 +30,10 @@ class QuestProgress < ActiveRecord::Base
   # Quest has been completed and the reward was taken.
   STATUS_REWARD_TAKEN = 2
 
+  def started?; status == STATUS_STARTED; end
+  def completed?; status == STATUS_COMPLETED; end
+  def reward_taken?; status == STATUS_REWARD_TAKEN; end
+
   # {
   #   :id => Fixnum
   #   :quest_id => Fixnum,

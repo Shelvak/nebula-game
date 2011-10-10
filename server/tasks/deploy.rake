@@ -270,7 +270,7 @@ namespace :deploy do
     task :locales, [:env] do |task, args|
       env = DeployHelpers.get_env(args[:env])
       DeployHelpers.check_git_branch!(env)
-      `cd #{PROJECT_ROOT}/flex && ant copy-locales`
+      `cd #{PROJECT_ROOT}/flex && rake build:copy:locales`
 
       DEPLOY_CONFIG[:servers][env][:client].each do |server|
         DeployHelpers.info env, "Deploying locales to #{server}" do

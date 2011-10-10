@@ -1,0 +1,13 @@
+# Control caching.
+ExpiresActive On
+
+<FilesMatch "^(index\.html|checksums)">
+  ExpiresDefault "access"
+  Header set "Cache-Control" "no-cache"
+</FilesMatch>
+
+# game-hash.js, SpaceGame-hash.swf, bundle-hash.swf. locale-hash.xml
+<FilesMatch "^(game-[a-f0-9]+\.js|SpaceGame-[a-f0-9]+\.swf|[a-zA-Z]+-[a-f0-9]+\.(swf|xml))$">
+  ExpiresDefault "access plus 1 year"
+</FilesMatch>
+

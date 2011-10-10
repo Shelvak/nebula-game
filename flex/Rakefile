@@ -49,26 +49,19 @@ namespace :build do
 
     add_args = Proc.new do |name, flag, block|
       if options[name] && options[name].size > 0
-        args.push flag unless flag.nil?
-        options[name].each do |item|
-          item = block.nil? ? item : block.call(item)
-          args.push item
+        if flag.nil?
+          options[name].each do |item|
+            item = block.nil? ? item : block.call(item)
+            args.push item
+          end
+        else
+          args.push("#{flag}+=" +
+            options[name].map { |item| block.nil? ? item : block.call(item) }.
+              join(",")
+          )
         end
       end
     end
-
-    # Add flex libraries to library path.
-    fw = "#{FLEX_HOME}/frameworks"
-    options[:libraries] = %W{
-      #{fw}/libs/*.swc
-      #{fw}/libs/player/*.swc
-      #{fw}/libs/player/#{FLASH_VERSION.split(".")[0..1].join(".")}/*.swc
-      #{fw}/locale/en_US/*.swc
-    }.map { |glob| Dir[glob] }.flatten + (options[:libraries] || [])
-    # Add metadata required for binding.
-    options[:keep_metadata] = %w{
-      Bindable Managed ChangeEvent NonCommittingChangeEvent Transient
-    } + (options[:keep_metadata] || [])
 
     # Construct args array.
     add_args.call :libraries, "-compiler.library-path",
@@ -136,7 +129,7 @@ namespace :build do
       end
     end
     
-    desc "Compile SpaceGame into SWF file"
+    desc "Compile SpaceGame into SWF file. Pass debug=1 for debug build."
     task :swf do
       [output_dir, bin_dir, dist_dir].each do |dir|
         info "Creating #{dir}."
@@ -144,36 +137,65 @@ namespace :build do
       end
 
       info "Compiling SpaceGame..." do
-        mxmlc(
-          "#{src_dir}/SpaceGame.mxml",
-          bin_swf,
-          :libraries => Dir["#{lib_dir}/*.swc"],
-          :keep_metadata => %w{Required Optional ArrayElementType SkipProperty},
-          :flags => %w{-static-link-runtime-shared-libraries},
-          # Each one is translated into -compiler.item_name
-          :compiler_flags => %w{as3 strict incremental optimize
-            verbose-stacktraces
-            headless-server report-invalid-styles-as-warnings
-            show-actionscript-warnings show-binding-warnings
-            show-invalid-css-property-warnings show-unused-type-selector-warnings
-            warn-array-tostring-changes warn-assignment-within-conditional
-            warn-bad-array-cast warn-bad-bool-assignment warn-bad-date-cast
-            warn-bad-es3-type-method warn-bad-es3-type-prop
-            warn-bad-nan-comparison
-            warn-bad-null-assignment warn-bad-null-comparison
-            warn-bad-undefined-comparison warn-boolean-constructor-with-no-args
-            warn-changes-in-resolve warn-class-is-sealed
-            warn-const-not-initialized
-            warn-constructor-returns-value warn-deprecated-event-handler-error
-            warn-deprecated-function-error warn-deprecated-property-error
-            warn-duplicate-argument-names warn-duplicate-variable-def
-            warn-instance-of-changes warn-internal-error warn-level-not-supported
-            warn-missing-namespace-decl warn-negative-uint-literal
-            warn-no-type-decl
-            warn-number-from-string-changes warn-slow-text-field-addition
-            warn-unlikely-function-value
-          }
-        )
+        compiler_flags = %w{
+          as3 strict incremental optimize
+          verbose-stacktraces
+          headless-server report-invalid-styles-as-warnings
+          show-actionscript-warnings show-binding-warnings
+          show-invalid-css-property-warnings show-unused-type-selector-warnings
+          warn-array-tostring-changes warn-assignment-within-conditional
+          warn-bad-array-cast warn-bad-bool-assignment warn-bad-date-cast
+          warn-bad-es3-type-method warn-bad-es3-type-prop
+          warn-bad-nan-comparison
+          warn-bad-null-assignment warn-bad-null-comparison
+          warn-bad-undefined-comparison warn-boolean-constructor-with-no-args
+          warn-changes-in-resolve warn-class-is-sealed
+          warn-const-not-initialized
+          warn-constructor-returns-value warn-deprecated-event-handler-error
+          warn-deprecated-function-error warn-deprecated-property-error
+          warn-duplicate-argument-names warn-duplicate-variable-def
+          warn-instance-of-changes warn-internal-error warn-level-not-supported
+          warn-missing-namespace-decl warn-negative-uint-literal
+          warn-no-type-decl
+          warn-number-from-string-changes warn-slow-text-field-addition
+          warn-unlikely-function-value
+        }
+        compiler_flags.push "debug" if ENV['debug'] || ENV['DEBUG']
+
+        build = Time.now.strftime("%m%d-%H%M")
+        version_file = "#{src_dir}/application/Version.as"
+        old_version = nil
+        begin
+          File.modify(version_file) do |contents|
+            old_version = contents.match(/VERSION: String = "(.*?)"/)
+            if old_version.nil?
+              puts "Cannot find old version in #{version_file}!"
+              exit
+            end
+            old_version = old_version[1]
+            contents.sub(
+              %Q{VERSION: String = "#{old_version}"},
+              %Q{VERSION: String = "#{build}"} 
+            )
+          end
+
+          mxmlc(
+            "#{src_dir}/SpaceGame.mxml",
+            bin_swf,
+            :libraries => Dir["#{lib_dir}/*.swc"],
+            :keep_metadata => %w{Required Optional ArrayElementType SkipProperty},
+            :flags => %w{-static-link-runtime-shared-libraries},
+            # Each one is translated into -compiler.item_name
+            :compiler_flags => compiler_flags
+          )
+        ensure
+          File.modify(version_file) do |contents|
+            contents.sub(
+              %Q{VERSION: String = "#{build}"}, 
+              %Q{VERSION: String = "#{old_version}"}
+            )
+          end
+        end
       end
     end
   end
@@ -207,6 +229,7 @@ namespace :build do
       info "Processing index.html"
       index_html = "#{dist_dir}/index.html"
       FileUtils.mv("#{dist_dir}/index.template.html", index_html)
+      FileUtils.mv("#{dist_dir}/htaccess.template", "#{dist_dir}/.htaccess")
       File.modify(index_html) do |content|
         {
           "${swf}" => swf_name,

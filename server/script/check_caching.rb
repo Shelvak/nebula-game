@@ -7,18 +7,28 @@ end
 
 require 'set'
 require 'net/http'
+require 'pp'
 STDOUT.sync = true
 base = ARGV[0]
 
+def error(headers)
+  puts
+  puts "Headers:"
+  pp headers.to_hash
+  puts "---"
+  puts
+end
+
 Net::HTTP.start(base, 80) do |http|
-  %w{index.html assets/checksums locale/checksums}.each do |f|
+  %w{index.html assets/checksums?1234234 locale/checksums?2345345}.each do |f|
     url = "#{base}/#{f}"
     STDOUT.write "#{url} ... "
-    response = http.head("/#{f}")
-    if response["Cache-Control"] == "no-cache"
+    headers = http.head("/#{f}")
+    if headers["Cache-Control"] == "no-cache"
       puts "uncached. OK."
     else
       puts "Cached! FAIL!"
+      error(headers)
     end
   end
 
@@ -41,7 +51,7 @@ Net::HTTP.start(base, 80) do |http|
 
   time_str = "max-age=31536000"
   cached_files.each do |f|
-    STDOUT.write "#{f} ... "
+    STDOUT.write "#{base}/#{f} ... "
     headers = http.head("/#{f}")
     cc = headers["Cache-Control"]
     if cc
@@ -49,9 +59,11 @@ Net::HTTP.start(base, 80) do |http|
         puts "cached. OK."
       else
         puts "cached, but wrong time. Expected #{time_str}, but was #{cc}."
+        error(headers)
       end
     else
       puts "Uncached. FAIL!"
+      error(headers)
     end
   end
 end

@@ -1510,6 +1510,9 @@
     <label.alliances value="Alianses vērtējums" />
     <label.alliance value="Alianse" />
     <label.forum value="Forums" />
+    <!-- TODO -->
+    <tooltip.version value="Game version" />
+    <!-- /TODO -->
     <panelWidth value="85" />
   </MainMenu>
 
