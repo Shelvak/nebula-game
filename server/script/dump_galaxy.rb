@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-if ARGV.size < 2
-  puts "Usage: #{$0} target_dir galaxy_id_1 [galaxy_id_2 ...]"
+if ARGV.size < 1
+  puts "Usage: #{$0} target_dir"
   exit
 end
 
@@ -77,7 +77,7 @@ Legend:
 end
 
 dir = ARGV.shift
-Galaxy.find(ARGV).each do |galaxy|
+Galaxy.all.each do |galaxy|
   puts "Entering galaxy #{galaxy.id}."
 
   x_range =
