@@ -87,7 +87,7 @@
                   <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.selectedVolume', 
                            [LS.volume])}"/>
                   <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.freeStorage', 
-                           [LS.transporter.storage - LS.transporter.stored])}"/>
+                           [LS.transporter.storage - LS.transporter.stored + (LS.target is Unit ? -LS.volume : LS.volume )])}"/>
                   <s:Group width="100%" visible="{!(!(LS.volume + LS.transporter.stored > 
                            LS.transporter.storage) || LS.location is Unit)}">
                      <s:Label styleName="unsatisfied" horizontalCenter="0" 

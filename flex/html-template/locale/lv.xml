@@ -3857,6 +3857,10 @@
     <property.population value="Iedzīvotāji" />
     
     <!-- TODO: translate this -->
+    <tooltip.freeStorage>
+      <p>This ship has {0} units of storage available.</p>
+    </tooltip.freeStorage>
+    
     <tooltip.buildInFlankCommon>
       <p>Click to change.</p>
     </tooltip.buildInFlankCommon>

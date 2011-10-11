@@ -537,7 +537,6 @@ package components.notifications.parts
                   if (combatLog.alliancePlayers[key].classification == i)
                   {
                      var alliance: Object = combatLog.alliancePlayers[key];
-                     var tempAllianceComp: CombatLogAlliance;
                      if (key.charAt(0) == '-')
                      {
                         if (noAlly == null)
@@ -545,14 +544,13 @@ package components.notifications.parts
                            noAlly = new CombatLogAlliance();
                            allianceTable.addElement(noAlly);
                         }
-                        tempAllianceComp = noAlly;
                         noAlly.alliance = Localizer.string('Players', 'noAlliance');
-                        tempAllianceComp.headerColor = STATUS_COLORS[CLASSIFICATION_NAP];
-                        tempAllianceComp.addPlayers(alliance.players, STATUS_COLORS[alliance.classification]);
+                        noAlly.headerColor = STATUS_COLORS[CLASSIFICATION_NAP];
+                        noAlly.addPlayers(alliance.players, STATUS_COLORS[alliance.classification]);
                      }
                      else
                      {
-                        tempAllianceComp = new CombatLogAlliance();
+                        var tempAllianceComp: CombatLogAlliance = new CombatLogAlliance();
                         tempAllianceComp.alliance = alliance.name;
                         tempAllianceComp.headerColor = STATUS_COLORS[alliance.classification];
                         tempAllianceComp.addPlayers(alliance.players, STATUS_COLORS[CLASSIFICATION_NAP]);

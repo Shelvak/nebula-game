@@ -3704,6 +3704,10 @@
     <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
     <property.population value="Populiacija" />
     
+    <tooltip.freeStorage>
+      <p>Šiame laive dar liko {0} vietos.</p>
+    </tooltip.freeStorage>
+    
     <tooltip.buildInFlankCommon>
       <p>Paspausk, kad pakeistum.</p>
     </tooltip.buildInFlankCommon>

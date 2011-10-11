@@ -3761,6 +3761,10 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
     
+    <tooltip.freeStorage>
+      <p>This ship has {0} units of storage available.</p>
+    </tooltip.freeStorage>
+    
     <tooltip.buildInFlankCommon>
       <p>Click to change.</p>
     </tooltip.buildInFlankCommon>
