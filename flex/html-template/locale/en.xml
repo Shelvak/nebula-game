@@ -1791,26 +1791,29 @@
     <of value="of" />
     
     <!-- HAVE_UPGRADED_TO
-    0: "Subclass or class to upgrade (with count), 
-    1: level to upgrade to -->
-    <objectiveText.HaveUpgradedTo value="Have {0}{1 one[] many[ of level ?]}" />
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
+    <objectiveText.HaveUpgradedTo value="Have [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
     <objectiveText.HaveUpgradedToTech 
-    value="{1 one[Research] many[Upgrade]} {0} technology{1 one[] many[ to level ?]}" />
+    value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}] technology{2 one[] many[ to level ?]}" />
     <objectiveText.HaveUpgradedToTechClass 
-    value="{1 one[Research] many[Upgrade]} {0}{1 one[] many[ to level ?]}" />
+    value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}" />
 
     <!-- UPGRADE_TO
-    0: "Subclass or class to upgrade (with count), 
-    1: level to upgrade to -->
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
     <objectiveText.UpgradeTo 
-    value="{1 one[Build] many[Upgrade]} {0}{1 one[] many[ to level ?]}" />
+    value="{2 one[Build] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}" />
 
     <!-- DESTROY
-    0: "Subclass or class to destroy (with count), 
-    1: level of objects to destroy -->
-    <objectiveText.Destroy value="Destroy {0}{1 one[] many[ of level ?]}" />
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level of objects to destroy -->
+    <objectiveText.Destroy value="Destroy [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
     <objectiveText.DestroyNpcBuilding 
-    value="Destroy {0}{1 one[] many[ of level ?]}" />
+    value="Destroy [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
     
     <!-- ANNEX_PLANET
     0: count of planets to occupy -->

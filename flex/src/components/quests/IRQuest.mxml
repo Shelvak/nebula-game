@@ -33,7 +33,7 @@
                   <s:layout>
                      <s:HorizontalLayout paddingTop="6"/>
                   </s:layout>
-                  <s:Label text="{getString('label.objectives')}" fontWeight="bold" fontSize="15" width="90"/>
+                  <s:Label text="{getString('label.objectives')}" fontWeight="bold" fontSize="15" width="95"/>
                   <s:Group id="grpObjectives" width="100%">
                      <s:DataGroup dataProvider="{quest.objectives}">
                         <s:itemRenderer>
@@ -55,7 +55,7 @@
                
                <s:Group>
                   <s:Label text="{getString('label.rewards')}" fontWeight="bold" paddingTop="6"
-                           fontSize="14" width="90"/>
+                           fontSize="14" width="95"/>
                   <base:AdvancedContainer id="grpRewards" width="100%">
                      <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{quest.rewards.metal}"
                                          visible="{quest.rewards.metal != 0}"

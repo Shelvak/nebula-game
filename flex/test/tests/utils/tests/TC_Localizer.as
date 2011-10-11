@@ -267,27 +267,6 @@ package tests.utils.tests
          assertThat( "is 0", _pluralize(0), equals ("0 tanki") );
       };
       
-      
-      private function addPluralizationBundle() : void
-      {
-         ResourceManager.getInstance().removeResourceBundlesForLocale(Locale.EN);
-         var bundle:ResourceBundle = new ResourceBundle(Locale.EN, "PluralizationTest");
-         with (bundle)
-         {
-            content["simple"] = "My name is {0}";
-            content["plural"] = "I have {0 one[? car] many[? cars]}";
-            content["both"] = "My name is {0} and I have {1 one[? car] many[? cars]}";
-            content["reference"] = "Hi! [reference:PluralizationTest/both]. {2}";
-         }
-         Localizer.addBundle(bundle);
-      }
-      
-      
-      private function string(property:String, params:Array = null) : String
-      {
-         return Localizer.string("PluralizationTest", property, params);
-      }
-      
       [Test]
       public function string_should_replace_simple_as_well_as_pluralizable_parameters() : void
       {

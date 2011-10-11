@@ -1194,6 +1194,9 @@
         {0 one[kredītu] many[? kredītus]}</span>.</p>
       ]]>
     </label.boostCost>
+    <!-- TODO: translation not full: rate[here should be translation for
+    "extraction rate"] and later there are words "by" and "for" which are also not 
+    translated. The end in english looks like ".. by 25% for 7d" -->
     <!-- {0}: metal/energy/zetium
          {1}: rate/storage
          {2}: int
@@ -1201,7 +1204,7 @@
     <label.boostInactive>
       <![CDATA[
       <p>Jūs varat palielināt šīs planētas <span fontWeight="bold">
-        {0} {1 rate[extraction rate] glabātuvi[storage]}</span> 
+        {0} {1 rate[extraction rate] storage[glabātuvi]}</span> 
       by <span fontWeight="bold">{2}%</span> for 
       <span fontWeight="bold">{3}</span>.</p> 
       ]]>
@@ -1210,6 +1213,7 @@
       <p>Jūsu glabātuve {0} {1 rate[extraction rate] storage[storage]} palielināta 
       par {2}%</p> 
     </label.boostActive1>
+    <!-- /TODO: translation not full -->
     <label.boostActive2> 
       <p>Jūs varat palielināt šo laiku par {0}.</p>
     </label.boostActive2>
@@ -1937,27 +1941,32 @@
     <ofLevel value="of level {0}" />
     <of value="of" />
     
+    <!-- TODO: translate this -->
     <!-- HAVE_UPGRADED_TO
-    0: "Subclass or class to upgrade (with count), 
-    1: level to upgrade to -->
-    <objectiveText.HaveUpgradedTo value="Have {0}{1 one[] many[ of level ?]}" />
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
+    <objectiveText.HaveUpgradedTo value="Have [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
     <objectiveText.HaveUpgradedToTech 
-    value="{1 one[Research] many[Upgrade]} {0} technology{1 one[] many[ to level ?]}" />
+    value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}] technology{2 one[] many[ to level ?]}" />
     <objectiveText.HaveUpgradedToTechClass 
-    value="{1 one[Research] many[Upgrade]} {0}{1 one[] many[ to level ?]}" />
+    value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}" />
 
     <!-- UPGRADE_TO
-    0: "Subclass or class to upgrade (with count), 
-    1: level to upgrade to -->
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
     <objectiveText.UpgradeTo 
-    value="{1 one[Build] many[Upgrade]} {0}{1 one[] many[ to level ?]}" />
+    value="{2 one[Build] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}" />
 
     <!-- DESTROY
-    0: "Subclass or class to destroy (with count), 
-    1: level of objects to destroy -->
-    <objectiveText.Destroy value="Destroy {0}{1 one[] many[ of level ?]}" />
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level of objects to destroy -->
+    <objectiveText.Destroy value="Destroy [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
     <objectiveText.DestroyNpcBuilding 
-    value="Destroy {0}{1 one[] many[ of level ?]}" />
+    value="Destroy [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
+    <!-- /TODO: translate this -->
     
     <!-- ANNEX_PLANET
     0: count of planets to occupy -->
@@ -2068,7 +2077,9 @@
     <label.rewards value="Apbalvojumi:" />
     <label.objectives value="Mērķis:" />
     <label.close value="Aizvērt" />
+    <!-- TODO: does not fit -->
     <label.claimReward value="Saņemt apbalvojums!" />
+    <!-- /TODO: does not fit -->
     <label.claimLater value="Saņemt vēlāk" />
     <label.tutorial value="Apmācība" />
     <!-- TODO translate this -->

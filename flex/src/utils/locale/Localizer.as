@@ -66,20 +66,18 @@ package utils.locale
                resultString = resolveObjectNames(resultString);
             }
             catch (err:Error) {
-               throwPassFailedError("Objects name resolving", err.message, bundle, property, parameters);
+               throwPassFailedError("Objects name resolving", err.message, bundle, property, resultString, parameters);
             }
             // pluralization pass is the last one
             try {
-               return mx.utils.StringUtil.substitute(pluralize(resultString, parameters), parameters);
+               resultString = pluralize(resultString, parameters);
+               resultString = mx.utils.StringUtil.substitute(resultString, parameters);
             }
             catch (err:Error) {
-               throwPassFailedError("Pluralization", err.message, bundle, property, parameters);
+               throwPassFailedError("Pluralization", err.message, bundle, property, resultString, parameters);
             }
-            return null;   // unreachable
          }
-         else {
-            return resultString;
-         }
+         return resultString;
       }
       
       
@@ -316,11 +314,13 @@ package utils.locale
                                                    errorMessage:String,
                                                    bundle:String,
                                                    property:String,
+                                                   propertyValue:String,
                                                    parameters:Array) : void {
          throw new Error(
             passName + " pass has failed with message: " + errorMessage + "\n" +
             "Bundle: " + bundle + "\n" +
             "Property: " + property + "\n" +
+            "Property value: " + propertyValue + "\n" +
             "Parameters: " + ObjectUtil.toString(parameters)
          );
       }
