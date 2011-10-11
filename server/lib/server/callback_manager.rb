@@ -152,7 +152,7 @@ class CallbackManager
       get_row = lambda do
         LOGGER.suppress(:debug) do
           conn.select_one(
-            "SELECT class, ruleset, object_id, event FROM callbacks
+            "SELECT class, ruleset, object_id, event, ends_at FROM callbacks
               #{sql} LIMIT 1"
           )
         end

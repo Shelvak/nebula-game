@@ -416,6 +416,39 @@ describe Building::ConstructorTest do
         @constructor.constructable.upgrade_ends_at
       )
     end
+
+    describe "when finishing constructable" do
+      it "should unregister from callback manager" do
+        @constructor.stub!(:on_construction_finished!)
+        @constructor.accelerate_construction!(
+          Creds::ACCELERATE_INSTANT_COMPLETE, 10
+        )
+        @constructor.should_not have_callback(
+          CallbackManager::EVENT_CONSTRUCTION_FINISHED
+        )
+      end
+
+      it "should call #on_construction_finished!" do
+        @constructor.should_receive(:on_construction_finished!).with(false)
+        @constructor.accelerate_construction!(
+          Creds::ACCELERATE_INSTANT_COMPLETE, 10
+        )
+      end
+
+      it "should call #before_finishing_constructable" do
+        @constructor.should_receive(:before_finishing_constructable).
+          with(@constructor.constructable)
+        @constructor.accelerate_construction!(
+          Creds::ACCELERATE_INSTANT_COMPLETE, 10
+        )
+      end
+
+      it "should not fail" do
+        @constructor.accelerate_construction!(
+          Creds::ACCELERATE_INSTANT_COMPLETE, 10
+        )
+      end
+    end
   end
 
   describe ".on_callback" do
@@ -435,30 +468,17 @@ describe Building::ConstructorTest do
   end
 
   describe "#on_construction_finished!" do
-    describe "when #build_in_2nd_flank is true" do
-      it "should set set constructable flank to 1 if it is a Unit" do
-        unit = Factory.create(:unit, opts_upgrading + {:flank => 0})
-        model = Factory.create(:b_constructor_test, opts_working + {
-          :constructable => unit, :build_in_2nd_flank => true
-        })
-        lambda do
-          model.send(:on_construction_finished!)
-          unit.reload
-        end.should change(unit, :flank).to(1)
-      end
-
-      it "should not fail if it's a building" do
-        building = Factory.create(:building, opts_upgrading)
-        model = Factory.create(:b_constructor_test, opts_working + {
-          :constructable => building, :planet => building.planet, :x => 10,
-          :build_in_2nd_flank => true
-        })
-        model.send(:on_construction_finished!)
-      end
+    it "should call #before_finishing_constructable" do
+      unit = Factory.create(:unit, opts_upgrading + {:flank => 0})
+      model = Factory.create(:b_constructor_test, opts_working + {
+        :constructable => unit
+      })
+      model.should_receive(:before_finishing_constructable).with(unit)
+      model.send(:on_construction_finished!)
     end
 
     it "should call constructable#on_upgrade_finished!" do
-      unit = Factory.create(:unit, :flank => 0, :level => 0)
+      unit = Factory.create(:unit, opts_upgrading + {:flank => 0})
       model = Factory.create(:b_constructor_test, opts_working + {
         :constructable => unit
       })
@@ -555,8 +575,7 @@ describe Building::ConstructorTest do
           opts_working + {:x => 0, :y => 0})
         set_resources(@constructor.planet, 0, 0, 0)
         @type = "Building::TestBuilding"
-        @params = {:x => 20, :y => 25,
-          :planet_id => @constructor.planet_id}
+        @params = {:x => 20, :y => 25, :planet_id => @constructor.planet_id}
         Factory.create(:construction_queue_entry,
           :constructor => @constructor,
           :constructable_type => @type, :position => 0, :params => @params)
@@ -595,8 +614,7 @@ describe Building::ConstructorTest do
           opts_working + {:x => 0, :y => 0})
         set_resources(@constructor.planet, 10000, 10000, 10000)
         @type = "Building::TestBuilding"
-        @params = {:x => 20, :y => 25,
-          :planet_id => @constructor.planet_id}
+        @params = {:x => 20, :y => 25, :planet_id => @constructor.planet_id}
         Factory.create(:construction_queue_entry,
           :constructor => @constructor,
           :constructable_type => @type, :position => 0, :params => @params)
@@ -607,7 +625,6 @@ describe Building::ConstructorTest do
 
       it "should not raise error" do
         @constructor.send(:on_construction_finished!)
-        @constructor.reload
         @constructor.send(:on_construction_finished!)
       end
     end
@@ -690,6 +707,29 @@ describe Building::ConstructorTest do
       it "should not do it if clearing construction" do
         CallbackManager.should_not_receive(:register)
         @model.send(:construct_model!, nil, nil)
+      end
+    end
+  end
+
+  describe "#before_finishing_constructable" do
+    describe "when #build_in_2nd_flank is true" do
+      it "should set set constructable flank to 1 if it is a Unit" do
+        unit = Factory.create(:unit, opts_upgrading + {:flank => 0})
+        model = Factory.create(:b_constructor_test, opts_working + {
+          :constructable => unit, :build_in_2nd_flank => true
+        })
+        lambda do
+          model.send(:before_finishing_constructable, unit)
+        end.should change(unit, :flank).to(1)
+      end
+
+      it "should not fail if it's a building" do
+        building = Factory.create(:building, opts_upgrading)
+        model = Factory.create(:b_constructor_test, opts_working + {
+          :constructable => building, :planet => building.planet, :x => 10,
+          :build_in_2nd_flank => true
+        })
+        model.send(:before_finishing_constructable, building)
       end
     end
   end
