@@ -374,7 +374,11 @@
          
          private function refreshBuiltPart(e: GlobalEvent): void
          {
-            constructableBuiltPart = Upgradable(constructable.upgradePart).upgradeProgress;
+            //if server did not sent updated message or client did not yet received it avoid NPE
+            if (constructable != null)
+            {
+               constructableBuiltPart = Upgradable(constructable.upgradePart).upgradeProgress;
+            }
          }
          
          [Bindable]
