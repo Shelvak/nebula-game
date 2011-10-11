@@ -179,12 +179,24 @@ module Parts::Constructor
         "Cannot accelerate if not working!"
       ) unless working?
 
+      # #accelerate! might complete the constructable, so make sure its flank
+      # is set. This is a hack and I know it. :( - arturaz
       constructable = self.constructable
+      before_finishing_constructable(constructable)
       upgrade_ends_at = constructable.upgrade_ends_at
       seconds_reduced = constructable.accelerate!(time, cost)
-      CallbackManager.update(self,
-        CallbackManager::EVENT_CONSTRUCTION_FINISHED,
-        upgrade_ends_at - seconds_reduced)
+      if constructable.upgrading?
+        CallbackManager.update(self,
+          CallbackManager::EVENT_CONSTRUCTION_FINISHED,
+          upgrade_ends_at - seconds_reduced
+        )
+      else
+        CallbackManager.unregister(
+          self, CallbackManager::EVENT_CONSTRUCTION_FINISHED
+        )
+        # Acceleration finishes constructable so we don't have to.
+        on_construction_finished!(false)
+      end
 
       true
     end
@@ -195,10 +207,8 @@ module Parts::Constructor
 
       # We might not need to finish constructable if it was cancelled.
       if finish_constructable
-        # Force-reload because self.constructable(true) freaks out.
         constructable = self.constructable
-        constructable.flank = 1 if build_in_2nd_flank? &&
-          constructable.is_a?(Unit)
+        before_finishing_constructable(constructable)
         # Call #on_upgrade_finished! because we have no callback registered.
         constructable.send(:on_upgrade_finished!)
       end
@@ -278,6 +288,15 @@ module Parts::Constructor
       end
 
       params
+    end
+
+    private
+
+    def before_finishing_constructable(constructable)
+      constructable.flank = 1 if build_in_2nd_flank? &&
+        constructable.is_a?(Unit)
+
+      constructable
     end
 	end
 end
