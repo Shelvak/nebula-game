@@ -8,6 +8,7 @@ package utils.locale
    import mx.utils.ObjectUtil;
    
    import utils.Objects;
+   import utils.StringUtil;
    
    
    public class Localizer
@@ -18,7 +19,7 @@ package utils.locale
       }
       
       
-      private static const REFERENCE_REGEXP: RegExp = /\[reference:((\w+)\/)?(.+?)\]/;
+      private static const REFERENCE_REGEXP:RegExp = /\[reference:((\w+)\/)?(.+?)\]/;
       
       private static var currentBundle: String;
       
@@ -32,7 +33,6 @@ package utils.locale
       
       public static function string(bundle: String, property: String, parameters: Array = null): String
       {
-         
          // using workaround for wrong implementation of IResourceManager
          // see http://bugs.adobe.com/jira/browse/SDK-17041
          var resultString: String;
@@ -49,40 +49,35 @@ package utils.locale
             throw new Error('Resource ' + property + ' for bundle ' + bundle + ' not found!');
          }
          var matches:Array = resultString.match(REFERENCE_REGEXP);
-         while (matches != null)
-         {
+         while (matches != null) {
             currentBundle = bundle;
-            try
-            {
+            try {
                resultString = resultString.replace(REFERENCE_REGEXP, refReplace);
             }
-            catch (e: Error)
-            {
+            catch (e: Error) {
                throw new ArgumentError('Localizer failed to replace reference' + resultString + e.toString());
             }
             matches = resultString.match(REFERENCE_REGEXP);
          }
          
-         if (parameters != null)
-         {
+         if (parameters != null) {
+            // objects name resolving pass
+            try {
+               resultString = resolveObjectNames(resultString);
+            }
+            catch (err:Error) {
+               throwPassFailedError("Objects name resolving", err.message, bundle, property, parameters);
+            }
             // pluralization pass is the last one
-            try
-            {
+            try {
                return mx.utils.StringUtil.substitute(pluralize(resultString, parameters), parameters);
             }
-            catch (err:Error)
-            {
-               throw new Error(
-                  "Pluralization pass has failed with message: " + err.message + "\n" +
-                  "Bundle: " + bundle + "\n" +
-                  "Property: " + property + "\n" +
-                  "Parameters: " + ObjectUtil.toString(parameters)
-               );
+            catch (err:Error) {
+               throwPassFailedError("Pluralization", err.message, bundle, property, parameters);
             }
             return null;   // unreachable
          }
-         else
-         {
+         else {
             return resultString;
          }
       }
@@ -98,6 +93,68 @@ package utils.locale
       {
          RM.addResourceBundle(bundle);
          RM.update();
+      }
+      
+      
+      /* ############################## */
+      /* ### Object names resolving ### */
+      /* ############################## */
+      
+      private static const OBJECT_REGEXP:RegExp = /\[obj:\d+:\w+(:\w+(:dc)?|::dc)?\]/;
+      private static const WORD_SEP_REGEXP:RegExp = / +/;
+      private static const INTEGER_REGEXP:RegExp = /^\d+$/;
+      
+      /**
+       * Resolves names of objects in a string. Resolves each sequence of the form:
+       * <code>[obj:{amount}:{name}(:{form})]</code> (parantheses indicate optional parts). Here:
+       * <ul>
+       *    <li><code>{amount}</code> - number of objects (to determine correct form)</li>
+       *    <li><code>{name}</code> - name of an object (must match locale entries)</li>
+       *    <li><code>{form}</code> - optional form (string) of the name like <code>what</code> or
+       *        <code>whos</code> (must match locale entries)</li>
+       * </ul>
+       * 
+       * @param str a string that may or may not contain resolvable sequences
+       * 
+       * @return copy of <code>str</code> with all object names resolved
+       */
+      public static function resolveObjectNames(str:String) : String {
+         Objects.paramNotNull("str", str);
+         var matchResult:Object = null;
+         while ((matchResult = OBJECT_REGEXP.exec(str)) != null) {
+            var match:String = matchResult[0];
+            var replacement:String = resolveObjectName(match);
+            str = str.replace(match, replacement);
+         }
+         return str;
+      }
+      
+      private static function resolveObjectName(formKey:String) : String {
+         Objects.paramNotNull("formKey", formKey);
+         formKey = formKey.substring(1, formKey.length - 1);
+         var parts:Array = formKey.split(":");
+         var amount:int = int(parts[1]);
+         var type:String = parts[2];
+         var form:String = parts.length > 3 ? parts[3] : null;
+         var downcase:Boolean = parts.length > 4;
+         var property:String = type;
+         if (form != null && form.length > 0) {
+            property += "-" + form;
+         }
+         var resolvedName:String = string("Objects", property, [amount]);
+         if (downcase) {
+            // make the first letter of a word lowercase
+            var words:Array = resolvedName.split(WORD_SEP_REGEXP);
+            if (words.length == 1) {
+               resolvedName = utils.StringUtil.firstToLowerCase(words[0]);
+            }
+            else {
+               var wordIdx:int = !INTEGER_REGEXP.test(words[0]) ? 0 : 1;
+               words[wordIdx] = utils.StringUtil.firstToLowerCase(words[wordIdx]);
+               resolvedName = words.join(" ");
+            }
+         }
+         return resolvedName;
       }
       
       
@@ -248,6 +305,24 @@ package utils.locale
          }
          
          return null;   // unreachable
+      }
+      
+      
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+      
+      private static function throwPassFailedError(passName:String,
+                                                   errorMessage:String,
+                                                   bundle:String,
+                                                   property:String,
+                                                   parameters:Array) : void {
+         throw new Error(
+            passName + " pass has failed with message: " + errorMessage + "\n" +
+            "Bundle: " + bundle + "\n" +
+            "Property: " + property + "\n" +
+            "Parameters: " + ObjectUtil.toString(parameters)
+         );
       }
    }
 }
