@@ -10,6 +10,11 @@ class PlanetObserversChangeEvent
     @non_observer_ids = non_observer_ids
   end
 
+  def to_s
+    "<PlanetObserversChangeEvent planet_id=#{@planet_id.inspect
+      } non_observer_ids=#{@non_observer_ids.inspect}>"
+  end
+
   def eql?(other)
     case other
     when self.class
