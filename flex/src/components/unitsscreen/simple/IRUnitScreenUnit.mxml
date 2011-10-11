@@ -334,6 +334,9 @@
          <unitsscreen:StarsContainer starCount="{model.unit.upgradePart.level-1}" horizontalCenter="0" top="62"/>
          <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
                   text="{model.unit.hp+'\n'+'/'+'\n'+Config.getUnitHp(model.unit.type)}" verticalAlign="middle"
+                  toolTip="{model.unit.storage > 0 
+                  ? Localizer.string('Units', 'tooltip.freeStorage', [model.unit.storage - model.unit.stored])
+                  : ''}"
                   backgroundColor="#0f0f0f" backgroundAlpha="0.7"/>
          
       </s:Group>
