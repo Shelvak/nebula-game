@@ -202,7 +202,7 @@ package controllers.startup
          _inMemoryLog = new InMemoryTarget();   
          _inMemoryLog.includeCategory = true;
          _inMemoryLog.includeLevel = true;
-         _inMemoryLog.maxEntries = 100;
+         _inMemoryLog.maxEntries = 1000;
          _inMemoryLog.level = LogEventLevel.ALL;
          Log.addTarget(_inMemoryLog);
       }
