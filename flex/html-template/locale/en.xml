@@ -1828,6 +1828,14 @@
       </p>
     </crash>
 
+    <title.log value="Debug log" />
+    <message.log.general>
+      <p>This is an in-game log of your actions. Paste this to a file and 
+      attach it to your forum post describing your problems and it will help
+      us to solve it.</p>
+    </message.log.general>
+    <label.log.close value="Close" />
+
     <title.clientCrash value="Waaaargh!" />
     <message.clientCrash.general>
       <p>[reference:crash]</p>

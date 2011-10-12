@@ -108,6 +108,7 @@ function missingParam(name) {
 // Returns game options for the Flash Client.
 //
 // If it returns null, client should stop initialization.
+//noinspection JSUnusedGlobalSymbols
 function getGameOptions() { // {{{
   // Let's show us some combat!
   //
@@ -255,7 +256,6 @@ $(document).ready(function() {
   swfobject.embedSWF(assetsUrl + swfName, "flashContent", 
       "100%", "100%", minVersion, assetsUrl + "playerProductInstall.swf", 
       flashvars, params, attributes);
-  swfobject.createCSS("#flashContent", "display:block;text-align:left;"); 
-
+  swfobject.createCSS("#flashContent", "display:block;text-align:left;");
 });
 // }}}

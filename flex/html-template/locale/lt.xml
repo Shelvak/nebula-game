@@ -1826,6 +1826,14 @@
       atsparus! (bent jau kol kas). Na nieko, nesijaudink, visuomet gali 
       paleisti žaidimą iš naujo ir viskas turėtų (greičiausiai) būti gerai.</p>
     </crash>
+    
+    <title.log value="Derinimo žurnalas" />
+    <message.log.general>
+      <p>Tai yra žaidime atliktų Tavo veiksmų žurnalas. Nukopijuok jį į tekstinį 
+      failą ir pridėk prie savo pranešimo forume, kur apibudinai Tau iškilusias 
+      bėdas ir tai padės mums jas išspręsti.</p>
+    </message.log.general>
+    <label.log.close value="Uždaryti" />
 
     <title.clientCrash value="Aaaaaaaaaa!" />
     <message.clientCrash.general>
