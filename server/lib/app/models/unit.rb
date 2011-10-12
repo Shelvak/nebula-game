@@ -307,6 +307,48 @@ class Unit < ActiveRecord::Base
       end
     end
 
+    # Returns all unit positions and counts in given scope, structured in such
+    # hash:
+    #
+    # {
+    #   player_id (Fixnum) => {
+    #     ClientLocation#as_json => {
+    #       type (String) => count (Fixnum)
+    #     },
+    #     ...
+    #   },
+    #   ...
+    # }
+    #
+    def positions(scope)
+      location_fields =
+        "`location_id`, `location_type`, `location_x`, `location_y`"
+
+      lp_cache = {}
+
+      scope.
+        select(
+          "`player_id`, #{location_fields}, `type`, COUNT(*) as `count`").
+        group("#{location_fields}, `type`").
+        c_select_all.
+        inject({}) do |units, row|
+          player_id = row['player_id'].to_i
+          lp_cache_item = [
+            row['location_id'], row['location_type'],
+            row['location_x'], row['location_y']
+          ]
+
+          lp_cache[lp_cache_item] ||= LocationPoint.new(*lp_cache_item).
+            to_client_location.as_json
+          client_location = lp_cache[lp_cache_item]
+
+          units[player_id] ||= {}
+          units[player_id][client_location] ||= {}
+          units[player_id][client_location][row['type']] = row['count'].to_i
+          units
+        end
+    end
+
     # Selects units for movement.
     #
     # Used in UnitMover#move
@@ -316,24 +358,10 @@ class Unit < ActiveRecord::Base
     # Types are underscored and counts are Fixnum.
     #
     def units_for_moving(unit_ids, player_id, location)
-      units = {}
-
-      connection.select_all(
-        %{SELECT `type`, COUNT(*) as count
-        FROM `#{table_name}`
-        WHERE #{sanitize_sql_hash_for_conditions(
-          location.location_attrs.merge(
-            :player_id => player_id,
-            :id => unit_ids
-          )
-        )}
-        GROUP BY `type`
-        }
-      ).each do |row|
-        units[row['type']] = row['count'].to_i
-      end
-
-      units
+      positions(
+        where(location.location_attrs).
+          where(:player_id => player_id, :id => unit_ids)
+      ).first[1].first[1]
     end
 
     # Updates all units matching by _conditions_ to given +LocationPoint+.

@@ -693,6 +693,43 @@ describe Unit do
     end
   end
 
+  describe ".positions" do
+    it "should return structured hash" do
+      units = [
+        Factory.create!(:u_trooper),
+        Factory.create!(:u_shocker),
+      ]
+
+      Unit.positions(Unit.where(:id => units.map(&:id))).should == {
+        units[0].player_id => {
+          units[0].location.to_client_location.as_json => {
+            "Trooper" => 1
+          }
+        },
+        units[1].player_id => {
+          units[1].location.to_client_location.as_json => {
+            "Shocker" => 1
+          }
+        }
+      }
+    end
+
+    it "should not include items which do not go into scope" do
+      units = [
+        Factory.create!(:u_trooper),
+        Factory.create!(:u_shocker),
+      ]
+
+      Unit.positions(Unit.where(:id => units[1].id)).should == {
+        units[1].player_id => {
+          units[1].location.to_client_location.as_json => {
+            "Shocker" => 1
+          }
+        }
+      }
+    end
+  end
+
   describe ".units_for_moving" do
     before(:all) do
       @planet = Factory.create :planet_with_player
