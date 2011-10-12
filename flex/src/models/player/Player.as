@@ -597,6 +597,7 @@ package models.player
       private function dispatchPopulationCapChangeEvent() : void
       {
          dispatchPlayerEvent(PlayerEvent.POPULATION_CAP_CHANGE);
+         dispatchPopulationChangeEvent();
       }
       
       private function dispatchPopulationChangeEvent() : void
