@@ -287,8 +287,7 @@ package models.planet
        */
       public override function set id(value:int) : void
       {
-         if (_ssObject.id != value)
-         {
+         if (_ssObject != null && _ssObject.id != value) {
             _ssObject.id = value;
             // this will dispatch all necessary events
             super.id = value;
@@ -299,7 +298,7 @@ package models.planet
        */
       public override function get id() : int
       {
-         return _ssObject.id;
+         return _ssObject != null ? _ssObject.id : 0;
       }
       
       
