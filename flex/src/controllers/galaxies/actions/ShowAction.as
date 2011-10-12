@@ -18,7 +18,6 @@ package controllers.galaxies.actions
    import models.MWreckage;
    import models.cooldown.MCooldownSpace;
    import models.factories.GalaxyFactory;
-   import models.factories.SquadronFactory;
    import models.factories.UnitFactory;
    import models.galaxy.Galaxy;
    import models.map.MapType;
@@ -26,11 +25,12 @@ package controllers.galaxies.actions
    import models.planet.Planet;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
-   
-   
+   import mx.collections.ListCollectionView;
+
+
    /**
     * Downloads list of solar systems for a galaxy and shows galaxy map.
     * 
@@ -72,12 +72,14 @@ package controllers.galaxies.actions
       }
       
       
-      override public function applyClientAction(cmd:CommunicationCommand) : void {
+      override public function applyClientAction(cmd:CommunicationCommand) :
+            void {
          GF.lockApplication = true;
          super.applyClientAction(cmd);
       }
       
-      public override function applyServerAction(cmd:CommunicationCommand) : void {
+      public override function applyServerAction(cmd:CommunicationCommand) :
+            void {
          var params:Object = cmd.parameters;
          var startup:Boolean = ML.latestGalaxy == null;
          ML.player.galaxyId = params["galaxyId"];
@@ -86,10 +88,16 @@ package controllers.galaxies.actions
             params["battlegroundId"],
             GalaxyFactory.createFowEntries(params["fowEntries"]),
             GalaxyFactory.createSolarSystems(params["solarSystems"]),
-            BaseModel.createCollection(ArrayCollection, MWreckage, params["wreckages"]),
-            BaseModel.createCollection(ArrayCollection, MCooldownSpace, params["cooldowns"]),
+            BaseModel.createCollection(
+               ArrayCollection, MWreckage, params["wreckages"]
+            ),
+            BaseModel.createCollection(
+               ArrayCollection, MCooldownSpace, params["cooldowns"]
+            ),
             UnitFactory.fromObjects(params["units"], params["players"]),
-            IList(BaseModel.createCollection(ArrayCollection, MHop, params["routeHops"])).toArray(),
+            IList(BaseModel.createCollection(
+               ArrayCollection, MHop, params["routeHops"])
+            ).toArray(),
             params["nonFriendlyJumpsAt"]
          );
          var galaxy:Galaxy = ML.latestGalaxy;
@@ -113,14 +121,19 @@ package controllers.galaxies.actions
             }
          }
          else {
+            // If you are playing the game for the first time or only have
+            // one planet and don't have any units in galaxy - then open first
+            // player planet.
             var deepOpen:Boolean =
-               ML.player.firstTime ||
-               ML.player.planetsCountAll == 1 && !galaxy.hasMoreThanOneObject && !galaxy.hasUnits;
+               ML.player.firstTime || ML.player.planetsCountAll == 1 &&
+               ! galaxy.hasMoreThanOneObject && ! galaxy.hasUnits;
             if (deepOpen) {
                NAV_CTRL.toGalaxy(galaxy,
                   function() : void {
                      new GlobalEvent(GlobalEvent.APP_READY);
-                     NAV_CTRL.toPlanet(MSSObject(ML.player.planets.getItemAt(0)),
+
+                     NAV_CTRL.toPlanet(
+                        MSSObject(ML.player.planets.getItemAt(0)),
                         function() : void {
                            if (ML.player.firstTime)
                               NAV_CTRL.showWelcomeScreen();
@@ -130,8 +143,20 @@ package controllers.galaxies.actions
                );
             }
             else {
-               NAV_CTRL.toGalaxy(galaxy);
-               new GlobalEvent(GlobalEvent.APP_READY);
+               NAV_CTRL.toGalaxy(galaxy,
+                  function() : void {
+                     new GlobalEvent(GlobalEvent.APP_READY);
+
+                     var solarSystems: ListCollectionView =
+                        galaxy.solarSystemsWithPlayer;
+                     if (solarSystems.length != 0) {
+                        var ss: SolarSystem = SolarSystem(
+                           solarSystems.getItemAt(0)
+                        );
+                        galaxy.moveTo(ss.currentLocation);
+                     }
+                  }
+               );
             }
          }
          
