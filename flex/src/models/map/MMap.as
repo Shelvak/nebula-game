@@ -119,12 +119,13 @@ package models.map
             _squadrons = null;
          }
          if (_units != null) {
-            var unitIds:Array = _squadrons.toArray().map(
+            var unitIds:Array = _units.toArray().map(
                function(unit:Unit, index:int, array:Array) : int {
                   return unit.id
                }
             );
-            logger.debug("Cleaning up units {0} of map {1}", unitIds.join(", "), this);
+            logger.debug("Cleaning up units {0} of map {1}",
+               unitIds.join(", "), this);
             ML.units.disableAutoUpdate();
             _units.disableAutoUpdate();
             Collections.cleanListOfICleanables(_units);
