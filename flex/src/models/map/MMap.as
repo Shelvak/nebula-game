@@ -110,7 +110,11 @@ package models.map
                   return squad.id
                }
             );
-            logger.debug("Cleaning up squadrons {0} of map {1}", squadIds.join(", "), this);
+            // TODO: fix this!
+            logger.debug("Cleaning up squadrons {0} of map NPE",
+               squadIds.join(", "));
+//            logger.debug("Cleaning up squadrons {0} of map {1}",
+//               squadIds.join(", "), this);
             _squadrons.disableAutoUpdate();
             Collections.cleanListOfICleanables(_squadrons);
             _squadrons.enableAutoUpdate();
@@ -124,8 +128,11 @@ package models.map
                   return unit.id
                }
             );
-            logger.debug("Cleaning up units {0} of map {1}",
-               unitIds.join(", "), this);
+            // TODO: fix this!
+            logger.debug("Cleaning up units {0} of map NPE",
+               unitIds.join(", "));
+//            logger.debug("Cleaning up units {0} of map {1}",
+//               unitIds.join(", "), this);
             ML.units.disableAutoUpdate();
             _units.disableAutoUpdate();
             Collections.cleanListOfICleanables(_units);
