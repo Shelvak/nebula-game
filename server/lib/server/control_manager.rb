@@ -147,6 +147,18 @@ class ControlManager
     false
   end
 
+  def player_referral_points_reached(player)
+    only_in_production("points_collected invoked for #{player}") do
+      response = post_to_web(player.galaxy.callback_url,
+        "remove_player_from_galaxy",
+        'player_id' => player.id,
+        'web_user_id' => player.web_user_id
+      )
+
+      check_response(response)
+    end
+  end
+
   def player_destroyed(player)
     only_in_production("player_destroyed invoked for #{player}") do
       response = post_to_web(player.galaxy.callback_url, 

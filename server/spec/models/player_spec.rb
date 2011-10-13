@@ -73,6 +73,80 @@ describe Player do
       end.should change(player, :alliance_vps).by(100)
     end
   end
+
+  describe "referral points" do
+    let(:player) do
+      Factory.create(
+        :player, :war_points => Cfg.player_referral_points_needed - 1
+      )
+    end
+
+    shared_examples_for "not invoking remote" do
+      it "should not call ControlManager" do
+        ControlManager.instance.
+          should_not_receive(:player_referral_points_reached)
+        player.save!
+      end
+
+      it "should not change #referral_submitted" do
+        lambda do
+          player.save!
+        end.should_not change(player, :referral_submitted)
+      end
+    end
+
+    describe "when enough points is collected" do
+      before(:each) do
+        player.economy_points += 1
+      end
+
+      it "should call ControlManager" do
+        ControlManager.instance.
+          should_receive(:player_referral_points_reached).with(player)
+        player.save!
+      end
+
+      it "should set #referral_submitted" do
+        lambda do
+          player.save!
+        end.should change(player, :referral_submitted).from(false).to(true)
+      end
+
+      describe "if referral was already submitted" do
+        before(:each) do
+          player.referral_submitted = true
+        end
+        
+        it_should_behave_like "not invoking remote"
+      end
+
+      describe "if ControlManager fails" do
+        before(:each) do
+          ControlManager.instance.stub(:player_referral_points_reached).
+            and_raise(ControlManager::Error)
+        end
+
+        it "should not set #referral_submitted" do
+          lambda do
+            player.save!
+          end.should_not change(player, :referral_submitted)
+        end
+
+        it "should log warning" do
+          LOGGER.should_receive(:warn).with(an_instance_of(String))
+          player.save!
+        end
+      end
+    end
+
+    describe "when not enough points is collected" do
+      before(:each) do
+        player.economy_points -= 1
+      end
+
+      it_should_behave_like "not invoking remote"
+    end
+  end
   
   describe "#daily_bonus_available?" do
     it "should return true if #daily_bonus_at is nil" do

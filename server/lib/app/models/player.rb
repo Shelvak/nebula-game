@@ -49,6 +49,12 @@ class Player < ActiveRecord::Base
   include Parts::Notifier
   include Parts::PlayerVip
 
+  flag_attributes(
+    :first_time           => 0b00000001,
+    :vip_free             => 0b00000010,
+    :referral_submitted   => 0b00000100
+  )
+
   # Given +Array+ with +Player+ ids returns a +Hash+ where players are
   # grouped by alliance ids. Players who are not in alliance get negative
   # alliance ids, starting from -1.
@@ -253,10 +259,19 @@ class Player < ActiveRecord::Base
     )
   end
 
-  # Make sure we don't get below 0 points.
+  # Make sure we don't get below 0 points, 
   before_save do
     POINT_ATTRIBUTES.each do |attr|
       send(:"#{attr}=", 0) if send(attr) < 0
+    end
+
+    if ! referral_submitted? && points >= Cfg.player_referral_points_needed
+      begin
+        ControlManager.instance.player_referral_points_reached(self)
+        self.referral_submitted = true
+      rescue ControlManager::Error => e
+        LOGGER.warn("Player referral points callback failed!\n#{e.to_log_str}")
+      end
     end
 
     if ! alliance_id.nil? && victory_points_changed?
