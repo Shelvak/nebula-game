@@ -137,6 +137,7 @@ class SsObject::Planet < SsObject
       terrain, solar_system_id, 
       player ? player.as_json(:mode => :minimal) : nil)
   end
+  alias :to_client_location :client_location
 
   def landable?; true; end
 
