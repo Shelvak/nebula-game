@@ -363,6 +363,101 @@ package utils
       }
       
       /**
+       * Checks if <code>paramValue</code> is greater than (or equal to, if <code>allowLow</code> is
+       * <code>true</code>) <code>low</code>.
+       * 
+       * @return <code>paramValue</code>
+       */
+      public static function paramGreaterThanNumber(paramName:String,
+                                                    low:Number,
+                                                    paramValue:Number,
+                                                    allowLow:Boolean = false) : Number {
+         var errorMessage:String = null; 
+         if (allowLow) {
+            if (paramValue < low) {
+               errorMessage = "[param " + paramName + "] must be greater than or equal to " + low
+                  + " but was equal to " + paramValue;
+            }
+         }
+         else {
+            if (paramValue <= low) {
+               errorMessage = "[param " + paramName + "] must be greater than " + low
+                  + " but was equal to " + paramValue;
+            }
+         }
+         if (errorMessage != null) {
+            throw new ArgumentError(errorMessage);
+         }
+         return paramValue;
+      }
+      
+      /**
+       * Checks if <code>paramValue</code> is less than (or equal to, if <code>allowHigh</code> is
+       * <code>true</code>) <code>high</code>.
+       * 
+       * @return <code>paramValue</code>
+       */
+      public static function paramLessThanNumber(paramName:String,
+                                                 high:Number,
+                                                 paramValue:Number,
+                                                 allowHigh:Boolean = false) : Number {
+         var errorMessage:String = null; 
+         if (allowHigh) {
+            if (paramValue > high) {
+               errorMessage = "[param " + paramName + "] must be less than or equal to " + high
+                  + " but was equal to " + paramValue;
+            }
+         }
+         else {
+            if (paramValue >= high) {
+               errorMessage = "[param " + paramName + "] must be less than " + high
+                  + " but was equal to " + paramValue;
+            }
+         }
+         if (errorMessage != null) {
+            throw new ArgumentError(errorMessage);
+         }
+         return paramValue;
+      }
+      
+      /**
+       * Checks if <code>paramValue</code> is greater than (or equal to, if <code>allowLow</code> is
+       * <code>true</code>) <code>low</code> and less than (or equal to, if <code>allowHigh</code> is
+       * <code>true</code>) <code>high</code>.
+       * 
+       * @return <code>paramValue</code>
+       */
+      public static function paramInRangeNumbers(paramName:String,
+                                                 low:Number,
+                                                 high:Number,
+                                                 paramValue:Number,
+                                                 allowLow:Boolean = false,
+                                                 allowHight:Boolean = false) : Number {
+         if (low >= high) {
+            throw new ArgumentError(
+               "paramInRangeNumbers(): [param low] must be less than [param high] but\n"
+               + "   [param low] was equal to" + low + "\n"
+               + "   [param hight] was equal to " + high
+            );
+         }
+         paramGreaterThanNumber(paramName, low, paramValue, allowLow);
+         paramLessThanNumber(paramName, high, paramValue, allowHight);
+         return paramValue;
+      }
+      
+      /**
+       * Checks if <code>paramValue</code> is a positive number (or equal to <code>0</code>, if
+       * <code>allowZero</code> is <code>true</code>).
+       *  
+       * @return <code>paramValue</code>
+       */
+      public static function paramPositiveNumber(paramName:String,
+                                                 paramValue:Number,
+                                                 allowZero:Boolean = true) : * {
+         return paramGreaterThanNumber(paramName, 0, paramValue, allowZero);
+      }
+      
+      /**
        * Checks if the given <code>value</code> is of given <code>type</code>. If so, returns
        * <code>value</code> otherwise throws an error with a given <code>errorMessage</code>.
        * 
