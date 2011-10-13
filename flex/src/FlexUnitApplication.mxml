@@ -25,6 +25,7 @@
          import tests.utils.TS_Utils;
          import tests.utils.components.TS_Components;
          import tests.utils.datastructures.TS_DataStructures;
+         import tests.viewport.TS_Viewport;
          
          import utils.DateUtil;
          
@@ -49,6 +50,7 @@
                TS_Foliage,
                TS_Announcement,
                TS_Galaxy,
+               TS_Viewport,
                CommunicationsTestSuite,
                ModelsTestSuite,
                UtilsTestSuite
@@ -59,7 +61,7 @@
          public function currentRunTestSuites():Array
          {
             var testsToRun:Array = [
-               TS_Galaxy
+               TS_Viewport
             ];
             return testsToRun;
          }
@@ -72,8 +74,8 @@
             
             core = new FlexUnitCore();
             core.addListener(new UIListener(runner));
-//            core.run(currentRunTestSuites());
-            core.run(allTestSuites());
+            core.run(currentRunTestSuites());
+//            core.run(allTestSuites());
          }
       ]]>
    </fx:Script>

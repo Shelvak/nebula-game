@@ -196,7 +196,7 @@ package components.base.viewport
          
          // finally, move the content back to it's original point
          // Reason for callLater(): moveContentBy() which manipulates horizontalScrollPosition and
-         // verticalScrollPosition does not work because new values are effetively canceled by
+         // verticalScrollPosition does not work because new values are effectively canceled by
          // Flex when they are set, content's size (and probably other properties) has not been
          // recalculated after new scale value has been applied. content.validateNow() does not help
          // either
