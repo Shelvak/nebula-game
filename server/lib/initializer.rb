@@ -48,6 +48,14 @@ class App
   end
 end
 
+class Exception
+  def to_log_str
+    "Exception: %s (%s)\n\nBacktrace:\n%s" % [
+      message, self.class.to_s, self.backtrace.try(:join, "\n") || "No backtrace"
+    ]
+  end
+end
+
 if RUBY_VERSION.to_f < 1.9
   $KCODE = 'u'
 
