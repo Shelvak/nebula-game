@@ -312,8 +312,9 @@ class Unit < ActiveRecord::Base
     #
     # {
     #   player_id (Fixnum) => {
-    #     ClientLocation#as_json => {
-    #       type (String) => count (Fixnum)
+    #     "#{location_id},#{location_type}" => {
+    #       "location" => ClientLocation#as_json,
+    #       "cached_units" => {type (String) => count (Fixnum)}
     #     },
     #     ...
     #   },
@@ -324,8 +325,6 @@ class Unit < ActiveRecord::Base
       location_fields =
         "`location_id`, `location_type`, `location_x`, `location_y`"
 
-      lp_cache = {}
-
       scope.
         select(
           "`player_id`, #{location_fields}, `type`, COUNT(*) as `count`").
@@ -333,18 +332,16 @@ class Unit < ActiveRecord::Base
         c_select_all.
         inject({}) do |units, row|
           player_id = row['player_id'].to_i
-          lp_cache_item = [
-            row['location_id'], row['location_type'],
-            row['location_x'], row['location_y']
-          ]
-
-          lp_cache[lp_cache_item] ||= LocationPoint.new(*lp_cache_item).
-            to_client_location.as_json
-          client_location = lp_cache[lp_cache_item]
-
+          key = "#{row['location_id']},#{row['location_type']}"
           units[player_id] ||= {}
-          units[player_id][client_location] ||= {}
-          units[player_id][client_location][row['type']] = row['count'].to_i
+          units[player_id][key] ||= {
+            "location" => LocationPoint.new(
+              row['location_id'], row['location_type'],
+              row['location_x'], row['location_y']
+            ).to_client_location.as_json,
+            "cached_units" => {}
+          }
+          units[player_id][key]["cached_units"][row['type']] = row['count'].to_i
           units
         end
     end
@@ -361,7 +358,7 @@ class Unit < ActiveRecord::Base
       positions(
         where(location.location_attrs).
           where(:player_id => player_id, :id => unit_ids)
-      ).first[1].first[1]
+      ).first[1].first[1]["cached_units"]
     end
 
     # Updates all units matching by _conditions_ to given +LocationPoint+.

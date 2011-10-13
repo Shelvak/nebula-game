@@ -694,6 +694,10 @@ describe Unit do
   end
 
   describe ".positions" do
+    key = lambda do |location|
+      "#{location.id},#{location.type}"
+    end
+
     it "should return structured hash" do
       player1 = Factory.create(:player)
       player2 = Factory.create(:player)
@@ -714,16 +718,24 @@ describe Unit do
 
       Unit.positions(Unit.where(:id => units.map(&:id))).should == {
         player1.id => {
-          location1.to_client_location.as_json => {
-            "Trooper" => 2, "Shocker" => 1
+          key.call(location1.location_point) => {
+            "location" => location1.to_client_location.as_json,
+            "cached_units" => {"Trooper" => 2, "Shocker" => 1}
           },
-          location2.to_client_location.as_json => {"Shocker" => 1}
+          key.call(location2.location_point) => {
+            "location" => location2.to_client_location.as_json,
+            "cached_units" => {"Shocker" => 1}
+          }
         },
         player2.id => {
-          location1.to_client_location.as_json => {
-            "Trooper" => 1, "Shocker" => 1
+          key.call(location1.location_point) => {
+            "location" => location1.to_client_location.as_json,
+            "cached_units" => {"Trooper" => 1, "Shocker" => 1}
           },
-          location2.to_client_location.as_json => {"Trooper" => 1}
+          key.call(location2.location_point) => {
+            "location" => location2.to_client_location.as_json,
+            "cached_units" => {"Trooper" => 1}
+          }
         }
       }
     end
@@ -736,8 +748,9 @@ describe Unit do
 
       Unit.positions(Unit.where(:id => units[1].id)).should == {
         units[1].player_id => {
-          units[1].location.to_client_location.as_json => {
-            "Shocker" => 1
+          key.call(units[1].location) => {
+            "location" => units[1].location.to_client_location.as_json,
+            "cached_units" => {"Shocker" => 1}
           }
         }
       }
