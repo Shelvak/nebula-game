@@ -183,12 +183,13 @@ module Parts::Constructor
       # is set. This is a hack and I know it. :( - arturaz
       constructable = self.constructable
       before_finishing_constructable(constructable)
-      upgrade_ends_at = constructable.upgrade_ends_at
-      seconds_reduced = constructable.accelerate!(time, cost)
+      # Don't register upgrade finished callback if partially accelerating.
+      constructable.register_upgrade_finished_callback = false
+      constructable.accelerate!(time, cost)
       if constructable.upgrading?
         CallbackManager.update(self,
           CallbackManager::EVENT_CONSTRUCTION_FINISHED,
-          upgrade_ends_at - seconds_reduced
+          constructable.upgrade_ends_at
         )
       else
         CallbackManager.unregister(

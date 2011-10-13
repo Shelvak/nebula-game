@@ -417,6 +417,15 @@ describe Building::ConstructorTest do
       )
     end
 
+    it "should not have on upgrade finished registered on constructable" do
+      # reload to clear constructable#register_upgrade_finished_callback
+      @constructor.reload
+      @constructor.accelerate_construction!(10, 10)
+      @constructor.constructable.should_not have_callback(
+        CallbackManager::EVENT_UPGRADE_FINISHED
+      )
+    end
+
     describe "when finishing constructable" do
       it "should unregister from callback manager" do
         @constructor.stub!(:on_construction_finished!)
