@@ -23,4 +23,4 @@ echo "#### STARTING DAEMON ####" >> "$logfile"
 echo >> "$logfile"
 date >> "$logfile"
 echo >> "$logfile"
-nohup jruby $opts "$rundir/main.rb" >> "$logfile" 2>/dev/null &
+nohup jruby $opts "$rundir/main.rb" >> "$logfile" 2>&1 &
