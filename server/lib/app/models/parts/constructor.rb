@@ -208,9 +208,20 @@ module Parts::Constructor
       # We might not need to finish constructable if it was cancelled.
       if finish_constructable
         constructable = self.constructable
-        before_finishing_constructable(constructable)
-        # Call #on_upgrade_finished! because we have no callback registered.
-        constructable.send(:on_upgrade_finished!)
+
+        # Temp. workaround to prevent constructors getting stuck - still need
+        # to understand what is wrong with it.
+        begin
+          before_finishing_constructable(constructable)
+          # Call #on_upgrade_finished! because we have no callback registered.
+          constructable.send(:on_upgrade_finished!)
+        rescue Exception => e
+          if App.in_production?
+            LOGGER.error("FAIL @ constructor #{self.inspect}:\n#{e.to_log_str}")
+          else
+            raise e
+          end
+        end
       end
 
       begin
