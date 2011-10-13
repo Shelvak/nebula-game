@@ -329,7 +329,7 @@ class Unit < ActiveRecord::Base
       scope.
         select(
           "`player_id`, #{location_fields}, `type`, COUNT(*) as `count`").
-        group("#{location_fields}, `type`").
+        group("#{location_fields}, `type`, `player_id`").
         c_select_all.
         inject({}) do |units, row|
           player_id = row['player_id'].to_i

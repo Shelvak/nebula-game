@@ -695,21 +695,35 @@ describe Unit do
 
   describe ".positions" do
     it "should return structured hash" do
+      player1 = Factory.create(:player)
+      player2 = Factory.create(:player)
+
+      location1 = Factory.create(:planet)
+      location2 = Factory.create(:planet)
+
       units = [
-        Factory.create!(:u_trooper),
-        Factory.create!(:u_shocker),
+        Factory.create!(:u_trooper, :player => player1, :location => location1),
+        Factory.create!(:u_trooper, :player => player1, :location => location1),
+        Factory.create!(:u_shocker, :player => player1, :location => location1),
+        Factory.create!(:u_shocker, :player => player1, :location => location2),
+
+        Factory.create!(:u_trooper, :player => player2, :location => location1),
+        Factory.create!(:u_shocker, :player => player2, :location => location1),
+        Factory.create!(:u_trooper, :player => player2, :location => location2),
       ]
 
       Unit.positions(Unit.where(:id => units.map(&:id))).should == {
-        units[0].player_id => {
-          units[0].location.to_client_location.as_json => {
-            "Trooper" => 1
-          }
+        player1.id => {
+          location1.to_client_location.as_json => {
+            "Trooper" => 2, "Shocker" => 1
+          },
+          location2.to_client_location.as_json => {"Shocker" => 1}
         },
-        units[1].player_id => {
-          units[1].location.to_client_location.as_json => {
-            "Shocker" => 1
-          }
+        player2.id => {
+          location1.to_client_location.as_json => {
+            "Trooper" => 1, "Shocker" => 1
+          },
+          location2.to_client_location.as_json => {"Trooper" => 1}
         }
       }
     end
