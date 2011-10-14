@@ -332,7 +332,9 @@ class Unit < ActiveRecord::Base
         c_select_all.
         inject({}) do |units, row|
           player_id = row['player_id'].to_i
-          key = "#{row['location_id']},#{row['location_type']}"
+          key = "#{row['location_id']},#{row['location_type']},#{
+            row['location_x']},#{row['location_y']}"
+          
           units[player_id] ||= {}
           units[player_id][key] ||= {
             "location" => LocationPoint.new(
