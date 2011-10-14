@@ -240,7 +240,7 @@ package components.movement
          invalidateDisplayList();
       }
       
-      private function model_jumpsAtChangeHandler() : void {
+      private function model_jumpsAtChangeHandler(e: MRouteEvent) : void {
          invalidateDisplayList();
       }
       

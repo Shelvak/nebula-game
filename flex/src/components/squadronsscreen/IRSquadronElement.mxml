@@ -8,6 +8,7 @@
    <fx:Script>
       <![CDATA[
          import controllers.routes.RoutesCommand;
+         import controllers.ui.NavigationController;
          
          import models.ModelLocator;
          import models.Owner;
@@ -124,7 +125,12 @@
                <s:layout><s:HorizontalLayout gap="5" horizontalAlign="right"/></s:layout>
                <s:Button id="btnManage" label="{getString('label.manage')}" click="btnManage_clickHandler(event)"/>
                <s:Button id="btnStop" label="{getString('label.stop')}" click="btnStop_clickHandler(event)"
-                         enabled="{model.owner == Owner.PLAYER}"/>
+                         visible="{model.owner == Owner.PLAYER}"
+                         includeInLayout="{model.owner == Owner.PLAYER}"/>
+               <s:Button id="btnOpen" label="{model.player.name}" skinClass="components.skins.LinkButtonSkin"
+                         click="NavigationController.getInstance().showPlayer(model.player.id)"
+                         visible="{model.owner != Owner.PLAYER}"
+                         includeInLayout="{model.owner != Owner.PLAYER}"/>
             </s:Group>
          </s:Group>
       </s:Group>
