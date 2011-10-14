@@ -1487,14 +1487,54 @@
     <description.short.galaxy value="Galaktika" />
     <description.short.solarSystem value="Saules sistēma {0}" />
     <description.short.planet value="Planēta {0}" />
-    <description.long.galaxy value="Sektors {0}:{1} galaktikā" />
-    <description.long.solarSystem value="Sektors {1}:{2} saules sistēmā {0}" />
+
+    <description.long.galaxy>
+      <![CDATA[
+      <p>
+        Sektors <span fontWeight="bold">{0}:{1}</span> galaktikā
+      </p>
+      ]]>
+    </description.long.galaxy>
+    <description.long.solarSystem>
+      <![CDATA[
+      <p>
+        Sektors <span fontWeight="bold">{1}:{2}</span> saules sistēmā 
+        <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+    </description.long.solarSystem>
     <!-- TODO -->
-    <description.long.pulsar value="Sector {1}:{2} in Pulsar {0}"/>
-    <description.long.battleground value="Sector {0}:{1} in battleground"/>
+    <description.long.pulsar>
+      <![CDATA[
+      <p>
+         Sector <span fontWeight="bold">{1}:{2}</span> in Pulsar 
+         <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+    </description.long.pulsar>
+    <description.long.battleground>
+      <![CDATA[
+      <p>
+        Sector <span fontWeight="bold">{0}:{1}</span> in battleground
+      </p>
+      ]]>
+    </description.long.battleground>
     <!-- /TODO -->
-    <description.long.planet value="Planēta {0} saules sistēmā {1}" />
-    <description.long.planetInBattleground value="Planēta {0} kaujas laukā"/>
+    <description.long.planet>
+      <![CDATA[
+      <p>
+        Planēta <span fontWeight="bold">{0}</span> saules sistēmā 
+        <span fontWeight="bold">{1}</span>
+      </p>
+      ]]>
+    </description.long.planet>
+    <description.long.planetInBattleground>
+      <![CDATA[
+      <p>
+        Planēta <span fontWeight="bold">{0}</span> kaujas laukā
+      </p>
+      ]]>
+    </description.long.planetInBattleground>
 
     <message.locationNotAvailable>
       <p>Jūs vairs nevarat apskatīties šo atrašanās vietu</p>
