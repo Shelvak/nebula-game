@@ -4218,7 +4218,7 @@
   
   <Authorization>
     <status.authorization value="Autorizuojama..."/>
-    <status.login value="Jungiamasi į serverį..."/>
+    <status.login value="Jungiamasi prie serverio..."/>
   </Authorization>
 
 </locale>
