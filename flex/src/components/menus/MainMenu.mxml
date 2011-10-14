@@ -123,12 +123,23 @@
                       skinClass="components.skins.CreditButtonSkin"/>
          </s:Group>
          <s:Group height="14"/>
-         <!--- Button for logging out from the game. -->
          <s:Group width="100%">
             <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
             <s:Button id="btnForum" click="UrlNavigate.getInstance().showUrl('forum/')" 
                       left="22" right="0" top="5" bottom="5"
                       label="{Localizer.string('MainMenu', 'label.forum')}"/>
+         </s:Group>
+         <s:Group width="100%">
+            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:Button id="btnWiki" click="UrlNavigate.getInstance().showWikiUrl('')" 
+                      left="22" right="0" top="5" bottom="5"
+                      label="{Localizer.string('MainMenu', 'label.wiki')}"/>
+         </s:Group>
+         <s:Group width="100%">
+            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:Button id="btnInviteFriend" click="UrlNavigate.getInstance().showInviteFriendUrl()" 
+                      left="22" right="0" top="5" bottom="5"
+                      label="{Localizer.string('MainMenu', 'label.inviteFriend')}"/>
          </s:Group>
          <base:layout>
             <s:VerticalLayout gap="1" paddingTop="6" verticalAlign="middle"/>
