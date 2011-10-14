@@ -1,12 +1,12 @@
 package models.movement
 {
    import controllers.objects.ObjectClass;
-
+   
    import flash.errors.IllegalOperationError;
-
+   
    import interfaces.ICleanable;
    import interfaces.IUpdatable;
-
+   
    import models.BaseModel;
    import models.ModelsCollection;
    import models.Owner;
@@ -21,12 +21,14 @@ package models.movement
    import models.time.MTimeEventFixedMoment;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
-
+   
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
-
+   import mx.logging.ILogger;
+   import mx.logging.Log;
+   
    import namespaces.client_internal;
-
+   
    import utils.ModelUtil;
    import utils.Objects;
    import utils.datastructures.Collections;
@@ -54,6 +56,11 @@ package models.movement
     */
    public class MSquadron extends BaseModel implements ICleanable, ILocationUser, IUpdatable
    {
+      private function get logger() : ILogger {
+         return Log.getLogger("MOVEMENT");
+      }
+      
+      
       public function MSquadron() : void
       {
          super();
@@ -469,24 +476,42 @@ package models.movement
          // jump between maps: don't need dispatching any events
          if (endHop.location.type != startHop.location.type ||
              endHop.location.id   != startHop.location.id) {
+            logger.debug(
+               "Moving squad {0} between areas:\n" +
+               "-- startHop: {1}" +
+               "-- endHop: {2}",
+               this, startHop, endHop
+            );
             while (hop != endHop) {
                hop = MHop(hops.removeItemAt(0));
+               logger.debug("removed hop: {0}", hop);
             }
+            
             currentHop = hop;
          }
          // jump in the same map
          else {
+            logger.debug("Moving squad {0} in the same area", this);
             while (hop != endHop) {
                hop = MHop(hops.removeItemAt(0));
                dispatchHopRemoveEvent(hop);
+               logger.debug("removed hop: {0}", hop);
             }
             currentHop = hop;
             dispatchMoveEvent(startHop.location, endHop.location);
+            logger.debug("dispatched move event");
          }
          
          if (hasUnits) {
             var loc:Location = currentHop.location.toLocation();
             var fromPlanet: Boolean = Unit(units.getItemAt(0)).location.isSSObject;
+            // for debugging
+            var unitIds:Array = units.toArray().map(
+               function(unit:Unit, index:int, array:Array) : int {
+                  return unit.id;
+               }
+            );
+            logger.debug("changing location of units {0} to {1}", unitIds.join(", "), loc);
             units.disableAutoUpdate();
             for each (var unit:Unit in units.toArray()) {
                unit.location = loc;
@@ -574,8 +599,13 @@ package models.movement
       }
       
       public override function toString() : String {
-         return "[class: " + className + ", id: " + id + ", owner: " + owner + ", currentHop: " + currentHop +
-            ", playerId: " + playerId + ", player: " + player + "]";
+         return "[class: " + className
+            + ", id: " + id 
+            + ", owner: " + owner 
+            + ", currentHop: " + currentHop
+            + ", jumpsAt: " + jumpsAtEvent
+            + ", playerId: " + playerId 
+            + ", player: " + player + "]";
       }
       
       

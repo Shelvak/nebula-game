@@ -40,6 +40,7 @@ server/Gemfile.lock
 server/config/database.yml
 # Temp output files
 server/script/odsimport/*.txt
+server/run/stopped_normally
 
 # SpaceMule ignores
 server/vendor/SpaceMule/target/

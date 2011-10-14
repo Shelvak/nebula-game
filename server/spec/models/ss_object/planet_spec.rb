@@ -1812,22 +1812,34 @@ describe SsObject::Planet do
         @unit = Factory.create(:unit, :location => @planet)
       end
 
-      it "should fire changed on planet if observer ids changed" do
-        should_fire_event(@planet, EventBroker::CHANGED) do
-          SsObject::Planet.changing_viewable(@unit.location) do
-            @unit.delete
+      describe "if observer ids changed" do
+        it "should fire changed on planet" do
+          should_fire_event(@planet, EventBroker::CHANGED) do
+            SsObject::Planet.changing_viewable(@unit.location) do
+              @unit.delete
+            end
           end
         end
-      end
 
-      it "should fire changed on first location that is planet" do
-        should_fire_event(@planet, EventBroker::CHANGED) do
-          SsObject::Planet.changing_viewable([
-              GalaxyPoint.new(1, 0, 0),
-              @planet.location_point,
-              Factory.create(:planet).location_point
-          ]) do
-            @unit.delete
+        it "should fire created with PlanetObserversChangeEvent" do
+          event = PlanetObserversChangeEvent.
+            new(@planet.id, [@unit.player_id])
+          should_fire_event(event, EventBroker::CREATED) do
+            SsObject::Planet.changing_viewable(@unit.location) do
+              @unit.delete
+            end
+          end
+        end
+
+        it "should fire changed on first location that is planet" do
+          should_fire_event(@planet, EventBroker::CHANGED) do
+            SsObject::Planet.changing_viewable([
+                GalaxyPoint.new(1, 0, 0),
+                @planet.location_point,
+                Factory.create(:planet).location_point
+            ]) do
+              @unit.delete
+            end
           end
         end
       end

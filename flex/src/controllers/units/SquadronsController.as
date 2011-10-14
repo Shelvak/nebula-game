@@ -29,6 +29,8 @@ package controllers.units
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
+   import mx.logging.ILogger;
+   import mx.logging.Log;
    import mx.utils.ObjectUtil;
    
    import utils.DateUtil;
@@ -63,6 +65,9 @@ package controllers.units
       private var ROUTES:ModelsCollection = ML.routes;
       private var UNITS:ModelsCollection = ML.units;
       
+      private function get logger() : ILogger {
+         return Log.getLogger("MOVEMENT");
+      }
       
       public function SquadronsController()
       {
@@ -76,8 +81,9 @@ package controllers.units
        */
       public function addHopToSquadron(hop:MHop) : void {
          var squad:MSquadron = findSquad(hop.routeId);
-         if (squad != null)
+         if (squad != null) {
             squad.addHop(hop);
+         }
       }
       
       
@@ -130,10 +136,18 @@ package controllers.units
          {
             throw new ArgumentError("Illegal moving squadron id: " + id);
          }
+         logger.debug("Will try to destroy squad {0}", id);
          var squad:MSquadron = SQUADS.remove(id, true);
          if (squad)
          {
+            logger.debug("Destroying squadron {0}", squad);
             var fromPlanet: Boolean = squad.currentHop.location.isSSObject;
+            var unitIds:Array = squad.units.toArray().map(
+               function(unit:Unit, index:int, array:Array) : int {
+                  return unit.id;
+               }
+            );
+            logger.debug("   removing units {0}", unitIds);
             Collections.cleanListOfICleanables(squad.units);
             squad.cleanup();
             // If units navigate from planet we need to refresh some getters
@@ -144,7 +158,10 @@ package controllers.units
          }
          if (removeRoute)
          {
-            ROUTES.remove(id, true);
+            var removedRoute:MRoute = ROUTES.remove(id, true);
+            if (removedRoute != null) {
+               logger.debug("   removed route {0}", removedRoute);
+            }
          }
       }
       

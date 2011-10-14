@@ -626,6 +626,7 @@ package models
          dispatchIdChangeEvent();
          dispatchPropertyUpdateEvent(prop_name::id, value);
       }
+      
       /**
        * @private 
        */

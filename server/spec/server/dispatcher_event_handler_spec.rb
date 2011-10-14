@@ -51,6 +51,23 @@ describe DispatcherEventHandler do
     it "should handle created objects" do
       test_object_receive(TestObject.new, EventBroker::CREATED)
     end
+
+    it "should handle created PlanetObserversChangeEvent's" do
+      event = PlanetObserversChangeEvent.new(10, [1,2,3,4])
+      filter = DispatcherPushFilter.
+        new(DispatcherPushFilter::SS_OBJECT, event.planet_id)
+
+      event.non_observer_ids.each do |player_id|
+        @dispatcher.should_receive(:push_to_player).with(
+          player_id,
+          PlanetsController::ACTION_UNSET_CURRENT,
+          {},
+          filter
+        )
+      end
+
+      @handler.fire([event], EventBroker::CREATED, nil)
+    end
   end
   
   describe "changed" do

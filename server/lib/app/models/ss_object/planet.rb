@@ -137,6 +137,7 @@ class SsObject::Planet < SsObject
       terrain, solar_system_id, 
       player ? player.as_json(:mode => :minimal) : nil)
   end
+  alias :to_client_location :client_location
 
   def landable?; true; end
 
@@ -195,11 +196,11 @@ class SsObject::Planet < SsObject
   def ensure_positive_energy_rate!
     changes = Reducer::EnergyUsersReducer.reduce(
       # Reject buildings which do not use energy
-      Building.scoped_by_planet_id(id).all.reject do |building|
+      Building.scoped_by_planet_id(id).all.reject { |building|
         # Checking for inactive? because constructors does not use energy
         # for their operation.
         building.energy_usage_rate <= 0 or building.inactive?
-      end,
+      },
       - energy_rate
     )
 
@@ -532,9 +533,18 @@ class SsObject::Planet < SsObject
             result = yield
             new_observers = object.observer_player_ids
 
-            # If observers changed, dispatch changed on the planet.
-            EventBroker.fire(object, EventBroker::CHANGED) \
-              if old_observers != new_observers
+            if old_observers != new_observers
+              # If observers changed, dispatch changed on the planet.
+              EventBroker.fire(object, EventBroker::CHANGED)
+              # And if some players were viewing the planet, but they can't
+              # anymore, dispatch event to unset their session planet ids.
+              EventBroker.fire(
+                PlanetObserversChangeEvent.
+                  new(object.id, old_observers - new_observers),
+                EventBroker::CREATED
+              )
+            end
+
 
             # Exit the method
             return result
