@@ -13,6 +13,7 @@ package controllers.units
    import models.Owner;
    import models.factories.PlayerFactory;
    import models.factories.SquadronFactory;
+   import models.factories.UnitFactory;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.map.MMap;
@@ -193,7 +194,7 @@ package controllers.units
          SquadronFactory.attachJumpsAt(route, routeData["jumpsAt"]);
          route.currentLocation = BaseModel.createModel(Location, routeData["current"]);
          route.cachedUnits.removeAll();
-         route.cachedUnits.addAll(createCachedUnits(routeData.cachedUnits));
+         route.cachedUnits.addAll(UnitFactory.createCachedUnits(routeData.cachedUnits));
       }
       
       
@@ -217,7 +218,7 @@ package controllers.units
          }
          squadToStop.id = 0;
          squadToStop.route = null;
-         var squadStationary:MSquadron = findSquad(0, squadToStop.playerId, squadToStop.currentHop.location);
+         var squadStationary:MSquadron = findSquad(0, squadToStop.player.id, squadToStop.currentHop.location);
          if (squadStationary != null)
          {
             squadStationary.units.refresh();
@@ -232,7 +233,6 @@ package controllers.units
             {
                owner = squadToStop.owner;
                player = squadToStop.player;
-               playerId = squadToStop.playerId;
                currentHop = squadToStop.currentHop;
             }
             
@@ -280,8 +280,8 @@ package controllers.units
          for each (var routeData:Object in routes)
          {
             var route:MRoute = createRoute
-               (routeData, routeData["playerId"] == ML.player.id ? Owner.PLAYER : Owner.ALLY);
-            route.player = players[route.playerId];
+               (routeData, routeData["player"]["id"] == ML.player.id ? Owner.PLAYER : Owner.ALLY);
+            route.player = players[route.player.id];
          }
       }
       
@@ -295,31 +295,12 @@ package controllers.units
       public function createRoute(data:Object, owner:int = Owner.UNDEFINED) : MRoute
       {
          var route:MRoute = BaseModel.createModel(MRoute, data);
-         route.cachedUnits.addAll(createCachedUnits(data["cachedUnits"]));
+         route.cachedUnits.addAll(UnitFactory.createCachedUnits(data["cachedUnits"]));
          if (owner != Owner.UNDEFINED)
             route.owner = owner;
          ROUTES.addItem(route);
          return route;
       }
-      
-      
-      /**
-       * Creates a list of <code>UnitBuildingEntry</code> from the given cached units generic object. 
-       */
-      private function createCachedUnits(cachedUnits:Object) : ArrayCollection
-      {
-         var result:ArrayCollection = new ArrayCollection();
-         for (var unitType:String in cachedUnits)
-         {
-            var entry:UnitBuildingEntry = new UnitBuildingEntry(
-               "unit::" + StringUtil.underscoreToCamelCase(unitType),
-               cachedUnits[unitType]
-            );
-            result.addItem(entry);
-         }
-         return result;
-      }
-      
       
       /**
        * Call this when any units have made a jump between maps (new batch of hops is received form 
@@ -400,7 +381,6 @@ package controllers.units
             units.enableAutoUpdate();
             if (squad.isFriendly) {
                squad.route = createRoute(route);
-               squad.route.playerId = squad.playerId;
                squad.route.player = squad.player;
             }
             else {
@@ -419,7 +399,7 @@ package controllers.units
          }
          // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
          else if (route["target"] !== undefined) {
-            var owner:int = route["playerId"] == ML.player.id ? Owner.PLAYER : Owner.ALLY;
+            var owner:int = route["player"]["id"] == ML.player.id ? Owner.PLAYER : Owner.ALLY;
             createRoute(route, owner);
             if (owner == Owner.PLAYER && ORDERS_CTRL.issuingOrders) {
                ORDERS_CTRL.orderComplete();

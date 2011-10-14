@@ -8,18 +8,23 @@
                                 seperatorVisible="true"
                                 initialize="this_initializeHandler(event)"
                                 creationComplete="this_creationCompleteHandler(event)"
-                                title="{getString('title.squadrons')}"
-                                emptyLabelText="{getString('title.noSquadrons')}"
-                                scroller="{contentScroller}"
-                                emptyLabelVisible="false">
+                                title="{screenTitle}"
+                                emptyLabelText="{
+                                currentList == _routes 
+                                ? getString('title.noSquadrons')
+                                : getString('title.noUnits')}"
+                                headerContent="{_controlButtons}"
+                                scroller="{currentScroller}"
+                                emptyLabelVisible="{currentList == null 
+                                || currentList.length == 0}">
    <fx:Declarations>
       
       <s:Group id="squadsContent" height="100%" width="100%">
          <!--- Scroller for scrolling the content of the list -->
-         <base:Scroller id="contentScroller" stepMultiplier="10" left="0" right="0" top="0" bottom="0"
+         <base:Scroller id="squadScroller" stepMultiplier="10" left="0" right="0" top="0" bottom="0"
                         skinClass="components.base.screen.ListScreenScrollerSkin">
             <s:Group width="100%">
-               <s:DataGroup id="_list" itemRenderer="components.squadronsscreen.IRSquadronElement"
+               <s:DataGroup itemRenderer="components.squadronsscreen.IRSquadronElement"
                             dataProvider="{_routes}" width="100%">
                   <s:layout>
                      <s:VerticalLayout horizontalAlign="justify" gap="5"/>
@@ -28,7 +33,25 @@
             </s:Group>
          </base:Scroller>
       </s:Group>
+      <s:Group id="unitsContent" height="100%" width="100%">
+         <!--- Scroller for scrolling the content of the list -->
+         <base:Scroller id="unitScroller" stepMultiplier="10" left="0" right="0" top="0" bottom="0"
+                        skinClass="components.base.screen.ListScreenScrollerSkin">
+            <s:Group width="100%">
+               <s:DataGroup itemRenderer="components.squadronsscreen.IRPositionedUnits"
+                            dataProvider="{currentList == OU.allyUnits
+                            ? OU.allyUnits
+                            : OU.playerUnits}" width="100%">
+                  <s:layout>
+                     <s:VerticalLayout horizontalAlign="justify" gap="5"/>
+                  </s:layout>
+               </s:DataGroup>
+            </s:Group>
+         </base:Scroller>
+      </s:Group>
       <s:Group id="_controlButtons">
+         <s:ToggleButton id="btnPlayerUnits" label="{getString('label.playerUnits')}"/>
+         <s:ToggleButton id="btnAllianceUnits" label="{getString('label.allianceUnits')}"/>
          <s:ToggleButton id="btnPlayerRoutes" label="{getString('label.playerFleets')}"/>
          <s:ToggleButton id="btnAllianceRoutes" label="{getString('label.allianceFleets')}"/>
       </s:Group>
@@ -55,6 +78,20 @@
          import utils.datastructures.Collections;
          import utils.locale.Localizer;
          
+         [Bindable]
+         private var screenTitle: String;
+         
+         [Bindable]
+         private var currentScroller: Scroller;
+         
+         [Bindable]
+         private var currentList: ListCollectionView;
+         
+         private function get OU(): OverviewUnits
+         {
+            return OverviewUnits.getInstance();
+         }
+         
          private function getString(property:String, parameters:Array = null) : String {
             return Localizer.string("Squadrons", property, parameters);
          }
@@ -65,26 +102,71 @@
          private function this_initializeHandler(event:FlexEvent):void {
             _filterButtons.registerButton(btnPlayerRoutes);
             _filterButtons.registerButton(btnAllianceRoutes);
+            _filterButtons.registerButton(btnPlayerUnits);
+            _filterButtons.registerButton(btnAllianceUnits);
             
             _filterButtons.addEventListener(
                ToggleButtonsGroupEvent.SELECTION_CHANGE, 
                filterButtons_selectionChangeHandler, false, 0, true
             );
-            _filterButtons.select(btnPlayerRoutes);
+            _filterButtons.select(btnPlayerUnits);
             EventBroker.subscribe(GlobalEvent.APP_READY, globalEvent_appReadyHandler);
          }
          
          protected function this_creationCompleteHandler(event:FlexEvent):void
          {
-            headerContent = _controlButtons;
-            mainAreraContent = squadsContent;
+            mainAreaContent = unitsContent;
          }
          
          private function filterButtons_selectionChangeHandler(event:ToggleButtonsGroupEvent) : void {
             if (event.selectedButton == btnPlayerRoutes)
+            {
+               screenTitle = getString('title.squadrons');
+               if (mainAreaContent != squadsContent)
+               {
+                  mainAreaContent = squadsContent;
+               }
                applySquadFilterFunction(ff_playerRoutes);
-            else
+               if (currentScroller != squadScroller)
+               {
+                  currentScroller = squadScroller;
+               }
+               currentList = _routes;
+            }
+            else if (event.selectedButton == btnAllianceRoutes)
+            {
+               screenTitle = getString('title.squadrons');
+               if (mainAreaContent != squadsContent)
+               {
+                  mainAreaContent = squadsContent;
+               }
                applySquadFilterFunction(ff_allianceRoutes);
+               if (currentScroller != squadScroller)
+               {
+                  currentScroller = squadScroller;
+               }
+               currentList = _routes;
+            }
+            else
+            {
+               screenTitle = getString('title.units');
+               if (mainAreaContent != unitsContent)
+               {
+                  mainAreaContent = unitsContent;
+               }
+               if (currentScroller != unitScroller)
+               {
+                  currentScroller = unitScroller;
+               }
+               if (event.selectedButton == btnPlayerUnits)
+               {
+                  currentList = OU.playerUnits;
+               }
+               else
+               {
+                  currentList = OU.allyUnits;
+               }
+            }
          }
          
          private function applySquadFilterFunction(ff:Function) : void {

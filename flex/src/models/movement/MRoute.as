@@ -37,19 +37,6 @@ package models.movement
       [Required]
       [Bindable]
       /**
-       * Id of a player this route belongs to.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Required]<br/>
-       * [Bindable]</i></p>
-       * 
-       * @default 0
-       */
-      public var playerId:int = 0;
-      
-      [Optional]
-      [Bindable]
-      /**
        * Player who owns this route.
        * 
        * <p><i><b>Metadata</b>:<br/>

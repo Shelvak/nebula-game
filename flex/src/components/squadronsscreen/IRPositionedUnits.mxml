@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                xmlns:mx="library://ns.adobe.com/flex/mx"
+                xmlns:squadscr="components.squadronsscreen.*"
+                autoDrawBackground="false" width="100%" xmlns:location="components.location.*">
+   <fx:Script>
+      <![CDATA[
+         import controllers.routes.RoutesCommand;
+         import controllers.ui.NavigationController;
+         
+         import models.ModelLocator;
+         import models.Owner;
+         import models.unit.MCUnitScreen;
+         import models.unit.MPositionedUnits;
+         import models.unit.Unit;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.datastructures.Collections;
+         import utils.locale.Localizer;
+         
+         
+         private function getImage(name:String) : BitmapData {
+            return ImagePreloader.getInstance().getImage
+               (AssetNames.MOVEMENT_IMAGES_FOLDER + "routeir_" + name);
+         }
+         
+         private function getString(property:String, parameters:Array = null) : String {
+            return Localizer.string("Squadrons", property, parameters);
+         }
+         
+         private function get ML() : ModelLocator {
+            return ModelLocator.getInstance();
+         }
+         
+         [Bindable]
+         private var _currentLocIsPlanet:Boolean = false;         
+         
+         [Bindable(event="dataChange")]
+         private function get model() : MPositionedUnits {
+            return MPositionedUnits(data);
+         }
+         
+      ]]>
+   </fx:Script>
+   <s:layout><s:VerticalLayout gap="0" horizontalAlign="justify"/></s:layout>
+   <s:Group>
+      <s:Rect width="100%" height="30">
+         <s:fill>
+            <s:SolidColor color="#2e2e2e"/>
+         </s:fill>
+      </s:Rect>
+      <squadscr:CLocationWithButton location="{model.location}" verticalCenter="0"
+                                 left="10"/>
+   </s:Group>
+   <s:Group>
+      <s:Group height="100%">
+            <s:layout><s:HorizontalLayout gap="0"/></s:layout>
+            <s:BitmapImage source="{getImage('info_left')}"/>
+            <s:BitmapImage source="{getImage('info_center')}" fillMode="repeat" width="150"/>
+            <s:BitmapImage source="{getImage('info_right')}"/>
+      </s:Group>
+     
+      <s:Group height="100%" width="100%">
+         <s:Group left="0" right="0" top="0" bottom="0">
+            <s:layout><s:HorizontalLayout gap="0"/></s:layout>
+            <s:BitmapImage source="{getImage('units')}" fillMode="repeat" width="100%"/>
+            <s:Group minWidth="65">
+               <s:Group left="0" right="0" top="0" bottom="0">
+                  <s:layout><s:HorizontalLayout gap="0"/></s:layout>
+                  <s:BitmapImage source="{getImage('btn_left')}"/>
+                  <s:BitmapImage source="{getImage('btn_center')}" width="100%"/>
+                  <s:BitmapImage source="{getImage('btn_right')}"/>
+               </s:Group>
+               <!-- open button -->
+               <s:Group left="17" right="5" bottom="5">
+                  <s:layout><s:HorizontalLayout gap="5" horizontalAlign="right"/></s:layout>
+                  <s:Button id="btnOpen" label="{model.player.name}" skinClass="components.skins.LinkButtonSkin"
+                            click="NavigationController.getInstance().showPlayer(model.player.id)"/>
+               </s:Group>
+            </s:Group>
+         </s:Group>
+         <!-- units -->
+         <s:List id="lstUnits" left="15" top="20" right="20" borderVisible="false" contentBackgroundAlpha="0"
+                 dataProvider="{model.cachedUnits}" itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+            <s:layout><s:HorizontalLayout/></s:layout>
+         </s:List>
+      </s:Group>
+   </s:Group>
+   
+</s:ItemRenderer>

@@ -60,10 +60,13 @@ package components.base.screen
          }
       }
       
-      public function set mainAreraContent(value: UIComponent): void
+      private var _mainAreaContent: UIComponent;
+      
+      public function set mainAreaContent(value: UIComponent): void
       {
          mainContent.removeAllElements();
-         mainContent.addElement(value); 
+         mainContent.addElement(value);
+         _mainAreaContent = value;
          emptyLabel = new Label();
          emptyLabel.text = _emptyLabelText;
          emptyLabel.visible = _emptyLabelVisible;
@@ -72,6 +75,11 @@ package components.base.screen
          emptyLabel.setStyle('fontWeight', FontWeight.BOLD);
          emptyLabel.setStyle('color', 0x1c1c1c);
          mainContent.addElement(emptyLabel);
+      }
+      
+      public function get mainAreaContent(): UIComponent
+      {
+         return _mainAreaContent;
       }
       
       public function set seperatorVisible(value: Boolean): void

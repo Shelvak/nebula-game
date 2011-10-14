@@ -5,6 +5,11 @@ package models.factories
    import models.player.PlayerId;
    import models.player.PlayerMinimal;
    import models.unit.Unit;
+   import models.unit.UnitBuildingEntry;
+   
+   import mx.collections.ArrayCollection;
+   
+   import utils.StringUtil;
    
    
    /**
@@ -49,6 +54,23 @@ package models.factories
          if (errors.length > 0)
             throw new Error(errors.join("\n"));
          return new ModelsCollection(source);
+      }
+      
+      /**
+       * Creates a list of <code>UnitBuildingEntry</code> from the given cached units generic object. 
+       */
+      public static function createCachedUnits(cachedUnits:Object) : ArrayCollection
+      {
+         var result:ArrayCollection = new ArrayCollection();
+         for (var unitType:String in cachedUnits)
+         {
+            var entry:UnitBuildingEntry = new UnitBuildingEntry(
+               "unit::" + StringUtil.underscoreToCamelCase(unitType),
+               cachedUnits[unitType]
+            );
+            result.addItem(entry);
+         }
+         return result;
       }
    }
 }

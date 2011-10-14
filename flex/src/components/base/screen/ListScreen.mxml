@@ -8,7 +8,7 @@
                                 initialize="this_initializeHandler(event)"
                                 seperatorVisible="{headerFromListSeparatorVisible}"
                                 scroller="{contentScroller}"
-                                mainAreraContent="{mContent}"
+                                mainAreaContent="{mContent}"
                                 emptyLabelVisible="{_dataProviderEmpty}">
    
    <fx:Script>

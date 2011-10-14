@@ -69,7 +69,7 @@ package models.movement
                if (isMoving)
                   return id == unit.squadronId;
                else if (!unit.isMoving && currentHop != null)
-                  return unit.location.equals(currentHop.location) && unit.playerId == playerId;
+                  return unit.location.equals(currentHop.location) && unit.playerId == player.id;
                return false;
             }
          );
@@ -96,7 +96,7 @@ package models.movement
       }
       
       protected override function get collectionsFilterProperties() : Object {
-         return {"units": ["id", "currentHop", "playerId"]};
+         return {"units": ["id", "currentHop", "player"]};
       }
       
       
@@ -130,43 +130,15 @@ package models.movement
          }
       }
       
-      private var _playerId:int = PlayerId.NO_PLAYER;
-      [Required]
-      [Bindable]
-      /**
-       * Setting <code>playerId</code> of a squadron will also set <code>palyerId</code> on all units
-       * in this squadron.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Required]<br/>
-       * [Bindable]</i></p>
-       */
-      public function set playerId(value:int) : void {
-         if (_playerId != value) {
-            units.disableAutoUpdate();
-            for each (var unit:Unit in units.toArray()) {
-               unit.playerId = value;
-            }
-            units.enableAutoUpdate();
-            _playerId = value;
-         }
-      }
-      /**
-       * @private
-       */
-      public function get playerId() : int {
-         return _playerId;
-      }
-      
       private var _player:PlayerMinimal = null;
-      [Optional]
+      [Required]
       [Bindable]
       /**
        * Setting <code>player</code> of a squadron will also set <code>player</code> on all units
        * in this squadron.
        * 
        * <p><i><b>Metadata</b>:<br/>
-       * [Optional]<br/>
+       * [Required]<br/>
        * [Bindable]</i></p>
        */
       public function set player(value:PlayerMinimal) : void {
@@ -174,6 +146,7 @@ package models.movement
             units.disableAutoUpdate();
             for each (var unit:Unit in units.toArray()) {
                unit.player = value;
+               unit.playerId = value.id;
             }
             units.enableAutoUpdate();
             _player = value;
@@ -604,7 +577,6 @@ package models.movement
             + ", owner: " + owner 
             + ", currentHop: " + currentHop
             + ", jumpsAt: " + jumpsAtEvent
-            + ", playerId: " + playerId 
             + ", player: " + player + "]";
       }
       

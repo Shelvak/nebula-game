@@ -39,14 +39,21 @@ package components.base.screen
       
       public function set scroller(value: Scroller): void
       {
-         closeBtn.scroller = value;
-         _scroller = value;
-         paddingGroup = new Group();
-         paddingGroup.height = bottomPadding;
-         paddingGroup.y = _scroller.viewport.contentHeight;
-         dontReposition = true;
-         Group(_scroller.viewport).addEventListener(FlexEvent.UPDATE_COMPLETE, repositionPaddingGroup);
-         Group(_scroller.viewport).addElement(paddingGroup);
+         if (value != null)
+         {
+            if (_scroller != null && _scroller.viewport != null)
+            {
+               Group(_scroller.viewport).removeEventListener(FlexEvent.UPDATE_COMPLETE, repositionPaddingGroup);
+            }
+            closeBtn.scroller = value;
+            _scroller = value;
+            paddingGroup = new Group();
+            paddingGroup.height = bottomPadding;
+            paddingGroup.y = _scroller.viewport.contentHeight;
+            dontReposition = true;
+            Group(_scroller.viewport).addEventListener(FlexEvent.UPDATE_COMPLETE, repositionPaddingGroup);
+            Group(_scroller.viewport).addElement(paddingGroup);
+         }
       }
       
       private var dontReposition: Boolean = false;
