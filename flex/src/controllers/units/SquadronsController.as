@@ -180,8 +180,8 @@ package controllers.units
          }
          
          var route:MRoute = findRoute(routeId);
+         var squad:MSquadron = findSquad(routeId);
          if (route == null) {
-            var squad:MSquadron = findSquad(routeId);
             if (squad == null) {
                throw new ArgumentError(
                   "Unable to update route and squadron: route with id " + routeId + " could not be found." +
@@ -190,7 +190,24 @@ package controllers.units
             }
             route = squad.route;
          }
-         SquadronFactory.attachJumpsAt(route, routeData["jumpsAt"]);
+         // sometimes server sends objects|updated with route before than client
+         // runs another periodic update. So if ships are jumping, the jump will be delayed
+         // and they will remain in the wrong map therefore screwing things up a little
+         var jumpsAtString:String = routeData["jumpsAt"];
+         var jumpsAt:Date = jumpsAtString != null ? DateUtil.parseServerDTF(jumpsAtString) : null;
+         if (squad != null
+            && !squad.hasHopsRemaining
+            && squad.jumpPending
+            // Not using squad.jumpsAtEvent.hasOccured here to allow slight errors.
+            // The size of the error is worth to consider since client and server clocks are not
+            // in perfect sync. I think a situation might occure - although *very rarely* - when
+            // old jumpsAt and the new jumpsAt differ more than 200 ms but they actually define
+            // the same jump. In such case ships will be removed a bit too early but players
+            // might not even notice that as we have 500 ms errors anyway due to duration of effects
+            && (jumpsAt == null || (squad.jumpsAtEvent.occuresAt.time - jumpsAt.time) < -200)) {
+            destroySquadron(squad.id, false);
+         }
+         SquadronFactory.attachJumpsAt(route, jumpsAtString);
          route.currentLocation = BaseModel.createModel(Location, routeData["current"]);
          route.cachedUnits.removeAll();
          route.cachedUnits.addAll(createCachedUnits(routeData.cachedUnits));
@@ -336,7 +353,7 @@ package controllers.units
             squad.addAllHops(hops);
             // in case squad is still in another map, move it to correct one
             if (squad.hasHopsRemaining) {
-               squad.moveToNextHop(DateUtil.now);
+               squad.moveToNextHop(DateUtil.now + MOVE_EFFECT_DURATION);
             }
          }
          // or create new squadron
@@ -503,10 +520,7 @@ package controllers.units
                if (squad.hasHopsRemaining) {
                   squad.moveToNextHop(currentTime + MOVE_EFFECT_DURATION);
                   var loc:LocationMinimal = squad.currentHop.location;
-                  if (squad.isHostile && !loc.isObserved) {
-                     destroySquadron(squadId, false);
-                  }
-                  else if (squad.isFriendly && !loc.isGalaxy && !loc.isObserved) {
+                  if (!loc.isObserved && (squad.isHostile || squad.isFriendly && !loc.isGalaxy)) {
                      destroySquadron(squadId, false);
                   }
                }
