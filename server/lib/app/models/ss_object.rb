@@ -58,7 +58,9 @@ class SsObject < ActiveRecord::Base
 
   # See Location#client_location
   def client_location
-    raise NotImplementedError.new("I should never be called!")
+    raise NotImplementedError.new(
+      "I should never be called on #{self.inspect}!"
+    )
   end
 
   # See Location#route_attrs
