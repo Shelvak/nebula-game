@@ -91,7 +91,7 @@
          }
          
          
-         protected override function get title() : String {
+         protected override function get screenTitle() : String {
             return getString("label.title");
          }
          

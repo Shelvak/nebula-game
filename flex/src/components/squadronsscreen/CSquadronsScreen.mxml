@@ -1,24 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<screen:ListScreen xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                   xmlns:s="library://ns.adobe.com/flex/spark" 
-                   xmlns:mx="library://ns.adobe.com/flex/mx" 
-                   xmlns:base="components.base.*"
-                   xmlns:screen="components.base.screen.*"
-                   xmlns:screens="components.screens.*"
-                   headerFromListSeparatorVisible="true"
-                   initialize="this_initializeHandler(event)"
-                   layoutGap="5">
+<screen:ArtworkedClosableScreen xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                                xmlns:s="library://ns.adobe.com/flex/spark" 
+                                xmlns:mx="library://ns.adobe.com/flex/mx" 
+                                xmlns:base="components.base.*"
+                                xmlns:screen="components.base.screen.*"
+                                xmlns:screens="components.screens.*"
+                                seperatorVisible="true"
+                                initialize="this_initializeHandler(event)"
+                                creationComplete="this_creationCompleteHandler(event)"
+                                title="{getString('title.squadrons')}"
+                                emptyLabelText="{getString('title.noSquadrons')}"
+                                scroller="{contentScroller}"
+                                emptyLabelVisible="false">
    <fx:Declarations>
-      <s:DataGroup id="_list" itemRenderer="components.squadronsscreen.IRSquadronElement"/>
+      
+      <s:Group id="squadsContent" height="100%" width="100%">
+         <!--- Scroller for scrolling the content of the list -->
+         <base:Scroller id="contentScroller" stepMultiplier="10" left="0" right="0" top="0" bottom="0"
+                        skinClass="components.base.screen.ListScreenScrollerSkin">
+            <s:Group width="100%">
+               <s:DataGroup id="_list" itemRenderer="components.squadronsscreen.IRSquadronElement"
+                            dataProvider="{_routes}" width="100%">
+                  <s:layout>
+                     <s:VerticalLayout horizontalAlign="justify" gap="5"/>
+                  </s:layout>
+               </s:DataGroup>
+            </s:Group>
+         </base:Scroller>
+      </s:Group>
       <s:Group id="_controlButtons">
          <s:ToggleButton id="btnPlayerRoutes" label="{getString('label.playerFleets')}"/>
          <s:ToggleButton id="btnAllianceRoutes" label="{getString('label.allianceFleets')}"/>
       </s:Group>
-      <screens:ScreenCloseButton id="_btnClose" click="btnCloseScreen_clickHandler(event)"
-                                 label="{getString('label.close')}"/>
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
+         import com.developmentarc.core.utils.EventBroker;
+         
          import controllers.ui.NavigationController;
          
          import globalevents.GlobalEvent;
@@ -27,9 +45,7 @@
          import models.Owner;
          import models.movement.MRoute;
          
-         import mx.collections.IList;
          import mx.collections.ListCollectionView;
-         import mx.core.IVisualElement;
          import mx.events.FlexEvent;
          
          import spark.components.Group;
@@ -39,11 +55,9 @@
          import utils.datastructures.Collections;
          import utils.locale.Localizer;
          
-         
          private function getString(property:String, parameters:Array = null) : String {
             return Localizer.string("Squadrons", property, parameters);
          }
-         
          
          private const _filterButtons:ToggleButtonsGroup = new ToggleButtonsGroup();
          private const _routes:ListCollectionView = new ListCollectionView(ModelLocator.getInstance().routes);
@@ -51,25 +65,29 @@
          private function this_initializeHandler(event:FlexEvent):void {
             _filterButtons.registerButton(btnPlayerRoutes);
             _filterButtons.registerButton(btnAllianceRoutes);
+            
             _filterButtons.addEventListener(
                ToggleButtonsGroupEvent.SELECTION_CHANGE, 
                filterButtons_selectionChangeHandler, false, 0, true
             );
             _filterButtons.select(btnPlayerRoutes);
+            EventBroker.subscribe(GlobalEvent.APP_READY, globalEvent_appReadyHandler);
+         }
+         
+         protected function this_creationCompleteHandler(event:FlexEvent):void
+         {
+            headerContent = _controlButtons;
+            mainAreraContent = squadsContent;
          }
          
          private function filterButtons_selectionChangeHandler(event:ToggleButtonsGroupEvent) : void {
             if (event.selectedButton == btnPlayerRoutes)
-               applyFilterFunction(ff_playerRoutes);
+               applySquadFilterFunction(ff_playerRoutes);
             else
-               applyFilterFunction(ff_allianceRoutes);
+               applySquadFilterFunction(ff_allianceRoutes);
          }
          
-         private function btnCloseScreen_clickHandler(event:MouseEvent) : void {
-            NavigationController.getInstance().showPreviousScreen();
-         }
-         
-         private function applyFilterFunction(ff:Function) : void {
+         private function applySquadFilterFunction(ff:Function) : void {
             Collections.applyFilter(_routes, ff);
          }
          
@@ -81,36 +99,9 @@
             return route.owner == Owner.ALLY;
          }
          
-         
-         protected override function get title() : String {
-            return getString("title.squadrons");
-         }
-         
-         protected override function get emptyListMessage() : String {
-            return getString("title.noSquadrons");
-         }
-         
-         protected override function get dataProvider() : IList {
-            return _routes;
-         }
-         
-         protected override function get dataContainer() : IVisualElement {
-            return _list;
-         }
-         
-         protected override function get controlButtons() : Group {
-            return _controlButtons;
-         }
-         
-         protected override function get closeButton() : Group {
-            return _btnClose;
-         }
-         
-         
-         protected override function globalEvent_appReadyHandler(event:GlobalEvent) : void {
-            super.globalEvent_appReadyHandler(event);
+         protected function globalEvent_appReadyHandler(event:GlobalEvent) : void {
             _filterButtons.select(btnPlayerRoutes);
          }
       ]]>
    </fx:Script>
-</screen:ListScreen>
+</screen:ArtworkedClosableScreen>
