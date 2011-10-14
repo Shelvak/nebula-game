@@ -695,7 +695,7 @@ describe Unit do
 
   describe ".positions" do
     key = lambda do |location|
-      "#{location.id},#{location.type}"
+      "#{location.id},#{location.type},#{location.x},#{location.y}"
     end
 
     it "should return structured hash" do
