@@ -14,14 +14,21 @@
          import controllers.alliances.AlliancesCommand;
          import controllers.players.PlayersCommand;
          import controllers.ui.NavigationController;
+         import controllers.units.UnitsCommand;
          
+         import models.ModelLocator;
+         import models.Owner;
          import models.credit.VipLevelsData;
+         import models.movement.MRoute;
+         
+         import mx.collections.ListCollectionView;
          
          import spark.components.Button;
          
          import utils.StringUtil;
          import utils.UrlNavigate;
          import utils.assets.AssetNames;
+         import utils.datastructures.Collections;
          import utils.locale.Localizer;
          
          
@@ -53,12 +60,17 @@
             }
          }
          
+         [Bindable]
+         private var allyRoutes: ListCollectionView = Collections.filter(ModelLocator.getInstance().routes,
+            function (item: MRoute): Boolean
+            {
+               return item.owner == Owner.ALLY;
+            });
          
-         private function getBtnSquadronsLabel(squadrons:int) : String
+         private function getBtnUnitsLabel(allSquads:int, allySquads: int) : String
          {
-            return squadrons > 0 ?
-               Localizer.string("MainMenu", "label.squadrons", [squadrons]) :
-               Localizer.string("MainMenu", "label.noSquadrons");
+            return Localizer.string("MainMenu", "label.units", 
+               [allSquads - allySquads, allySquads])
          }
       ]]>
    </fx:Script>
@@ -96,9 +108,11 @@
          <!--- Button for viewing squadrons screen. -->
          <s:Group width="100%">
             <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-            <s:Button id="btnSquadrons" click="NAV_CTRL.showSquadrons()" left="22" right="0" top="5" bottom="5"
-                      enabled="{ML.routes.length > 0}"
-                      label="{getBtnSquadronsLabel(ML.routes.length)}"/>
+            <s:Button id="btnUnits" click="GlobalFlags.getInstance().lockApplication = true;
+                      new UnitsCommand(UnitsCommand.POSITIONS).dispatch()" left="22" right="0" top="5" bottom="5"
+                      enabled="true"
+                      label="{getBtnUnitsLabel(ML.routes.length, allyRoutes.length)}"
+                      toolTip="{Localizer.string('MainMenu', 'tooltip.units')}"/>
          </s:Group>
          <!--- Button for viewing ratings screen. -->
          <s:Group width="100%">

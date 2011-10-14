@@ -300,7 +300,7 @@ describe Route do
       model = Factory.create :route
       model.as_json(nil).should == {
         :id => model.id,
-        :player_id => model.player_id,
+        :player => Player.minimal(model.player_id),
         :cached_units => model.cached_units,
         :jumps_at => model.jumps_at,
         :arrives_at => model.arrives_at,
@@ -314,7 +314,7 @@ describe Route do
       model = Factory.create :route
       model.as_json(:mode => :enemy).should == {
         :id => model.id,
-        :player_id => model.player_id,
+        :player => Player.minimal(model.player_id),
         :current => model.current.as_json,
         :jumps_at => model.jumps_at,
       }

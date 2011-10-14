@@ -1421,8 +1421,10 @@
   <MainMenu>
     <label.vip value="VIP" />
     <label.quests value="Užduotys" />
-    <label.squadrons value="Laivynai ({0})" />
-    <label.noSquadrons value="Laivynų nėra" />
+    <!-- 0- Player flying squadrons count
+         1- Alliance flying squadrons count -->
+    <label.units value="Kariai ({0}/{1})" />
+    <tooltip.units value="Tavo judantys laivynai / Sąjungos judantys laivynai" />
     <label.ratings value="Reitingai" />
     <label.alliances value="Sąjungų reitingai" />
     <label.alliance value="Sąjunga" />
@@ -3233,7 +3235,9 @@
 
   <Squadrons>
     <title.squadrons value="Laivynai" />
+    <title.units value="Kariai" />
     <title.noSquadrons value="Judančių laivynų neaptikta." />
+    <title.noUnits value="Karių neaptikta." />
     <label.currentLocation value="Dabartinė pozicija:" />
     <label.sourceLocation value="Skrenda iš:" />
     <label.targetLocation value="Skrenda į:" />
@@ -3245,6 +3249,8 @@
     <label.close value="Uždaryti" />
     <label.playerFleets value="Tavo laivynai" />
     <label.allianceFleets value="Sąjungininkų laivynai" />
+    <label.playerUnits value="Tavo kariai" />
+    <label.allianceUnits value="Sąjungininkų kariai" />
     <label.stop value="Sustabdyti" />
     <label.manage value="Tvarkyti" />
   </Squadrons>
