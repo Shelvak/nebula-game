@@ -19,6 +19,16 @@ class ControlManager
   #
   ACTION_REOPEN_LOGS = 'reopen_logs'
 
+  # Applies hotfix. Only accepts this action if connected from localhost.
+  #
+  # Parameters:
+  # - hotfix (String): code to be evaluated
+  #
+  # Response:
+  # - success (Boolean)
+  # - error (String): Error - if any.
+  ACTION_APPLY_HOTFIX = 'apply_hotfix'
+
   # Create a new galaxy.
   #
   # Parameters:
@@ -244,6 +254,8 @@ class ControlManager
     case message['action']
     when ACTION_REOPEN_LOGS
       action_reopen_logs(io)
+    when ACTION_APPLY_HOTFIX
+      action_apply_hotfix(io, message)
     when ACTION_CREATE_GALAXY
       action_create_galaxy(io, message)
     when ACTION_DESTROY_GALAXY
@@ -273,6 +285,41 @@ class ControlManager
     io.send_message :success => true
   end
 
+  def action_apply_hotfix(io, message)
+    port, ip = Socket.unpack_sockaddr_in(io.get_peername)
+    unless ip == '127.0.0.1'
+      LOGGER.fatal(%Q{Somebody tried to apply hotfix not from localhost!
+
+Connection made from #{ip}:#{port}
+
+Message was:
+#{message.inspect}"})
+      io.send_message('success' => false, 'error' => "Please go away.")
+      return
+    end
+
+    message.ensure_options! :required => {
+      'hotfix' => String
+    }
+
+    LOGGER.fatal(%Q{Applying hotfix!
+
+==== HOTFIX CODE ====
+
+#{message['hotfix']}
+
+==== HOTFIX CODE ====
+"})
+
+    begin
+      eval message['hotfix']
+      io.send_message('success' => true)
+    rescue Exception => e
+      LOGGER.fatal("Applying hotfix failed!\n\n#{e.to_log_str}")
+      io.send_message('success' => false, 'error' => e.to_log_str)
+    end
+  end
+
   def action_create_galaxy(io, message)
     message.ensure_options! :required => {
       'ruleset' => String, 'callback_url' => String
@@ -295,6 +342,7 @@ class ControlManager
     io.send_message :success => false
     raise e
   end
+
 
   def action_create_player(io, message)
     message.ensure_options! :required => {
