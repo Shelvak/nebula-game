@@ -1,6 +1,9 @@
 require 'net/http'
 require 'uri'
 
+# Used to evaluate hotfixes in right binding.
+CM_ROOT_BINDING = binding
+
 # Monolithic class for controlling server.
 class ControlManager
   class Error < RuntimeError; end
@@ -298,9 +301,7 @@ Message was:
       return
     end
 
-    message.ensure_options! :required => {
-      'hotfix' => String
-    }
+    message.ensure_options! :required => {'hotfix' => String}
 
     LOGGER.fatal(%Q{Applying hotfix!
 
@@ -309,10 +310,10 @@ Message was:
 #{message['hotfix']}
 
 ==== HOTFIX CODE ====
-"})
+})
 
     begin
-      eval message['hotfix']
+      eval message['hotfix'], CM_ROOT_BINDING
       io.send_message('success' => true)
     rescue Exception => e
       LOGGER.fatal("Applying hotfix failed!\n\n#{e.to_log_str}")

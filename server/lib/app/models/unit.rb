@@ -357,10 +357,15 @@ class Unit < ActiveRecord::Base
     # Types are underscored and counts are Fixnum.
     #
     def units_for_moving(unit_ids, player_id, location)
-      positions(
-        where(location.location_attrs).
-          where(:player_id => player_id, :id => unit_ids)
-      ).first[1].first[1]["cached_units"]
+      where(location.location_attrs).
+        where(:player_id => player_id, :id => unit_ids).
+        select("`type`, COUNT(*) as `count`").
+        group("`type`").
+        c_select_all.
+        inject({}) do |units, row|
+          units[row['type']] = row['count'].to_i
+          units
+        end
     end
 
     # Updates all units matching by _conditions_ to given +LocationPoint+.
