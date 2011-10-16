@@ -451,7 +451,7 @@ package models.movement
              endHop.location.id   != startHop.location.id) {
             logger.debug(
                "Moving squad {0} between areas:\n" +
-               "-- startHop: {1}" +
+               "-- startHop: {1}\n" +
                "-- endHop: {2}",
                this, startHop, endHop
             );
