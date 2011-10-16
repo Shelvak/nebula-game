@@ -1417,8 +1417,10 @@
   <MainMenu>
     <label.vip value="Vip" />
     <label.quests value="Quests" />
-    <label.squadrons value="Fleets ({0})" />
-    <label.noSquadrons value="No fleets" />
+    <!-- 0- Player flying squadrons count
+         1- Alliance flying squadrons count -->
+    <label.units value="Units ({0}/{1})" />
+    <tooltip.units value="Your moving fleets / Alliances moving fleets" />
     <label.ratings value="Ratings" />
     <label.alliances value="Alliance ratings" />
     <label.alliance value="Alliance" />
@@ -3227,7 +3229,9 @@
 
   <Squadrons>
     <title.squadrons value="Fleets" />
+    <title.units value="Units" />
     <title.noSquadrons value="No moving fleets detected." />
+    <title.noUnits value="No units detected." />
     <label.currentLocation value="Current location:" />
     <label.sourceLocation value="Flying from:" />
     <label.targetLocation value="Traveling to:" />
@@ -3239,6 +3243,8 @@
     <label.close value="Close" />
     <label.playerFleets value="Your fleets" />
     <label.allianceFleets value="Alliance fleets" />
+    <label.playerUnits value="Your units" />
+    <label.allianceUnits value="Alliance units" />
     <label.stop value="Stop" />
     <label.manage value="Manage" />
   </Squadrons>

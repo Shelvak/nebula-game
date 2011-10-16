@@ -1504,8 +1504,12 @@
   <MainMenu>
     <label.vip value="Vip" />
     <label.quests value="Uzdevumi" />
-    <label.squadrons value="Flotes ({0})" />
-    <label.noSquadrons value="Nav flotes" />
+    <!-- TODO -->
+    <!-- 0- Player flying squadrons count
+         1- Alliance flying squadrons count -->
+    <label.units value="Units ({0}/{1})" />
+    <tooltip.units value="Your moving fleets / Alliances moving fleets" />
+    <!-- /TODO -->
     <label.ratings value="Vērtējums" />
     <label.alliances value="Alianses vērtējums" />
     <label.alliance value="Alianse" />
@@ -3324,6 +3328,10 @@
 
   <Squadrons>
     <title.squadrons value="Flotes" />
+    <!-- TODO -->
+    <title.units value="Units" />
+    <title.noUnits value="No units detected." />
+    <!-- /TODO -->
     <title.noSquadrons value="Nav atrastas flotes, kas pārvietotos." />
     <label.currentLocation value="Pašreizējā vieta:" />
     <label.sourceLocation value="Atlido no:" />
@@ -3338,6 +3346,10 @@
     <label.close value="Aizvērt" />
     <label.playerFleets value="Jūsu flotes" />
     <label.allianceFleets value="Alianses flotes" />
+    <!-- TODO -->
+    <label.playerUnits value="Your units" />
+    <label.allianceUnits value="Alliance units" />
+    <!-- /TODO -->
     <label.stop value="Apturēt" />
     <label.manage value="Pārvaldīt" />
   </Squadrons>

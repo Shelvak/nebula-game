@@ -58,9 +58,9 @@ package controllers.players.actions
          // update squadrons and routes
          for each (var squad:MSquadron in ML.squadrons)
          {
-            if (statusChanged(statuses, squad.playerId))
+            if (statusChanged(statuses, squad.player.id))
             {
-               squad.owner = getStatus(statuses, squad.playerId);
+               squad.owner = getStatus(statuses, squad.player.id);
                if (squad.isHostile)
                {
                   squad.removeAllHopsButNext();
