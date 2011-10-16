@@ -299,7 +299,14 @@
     <PowderedZetium-whos value="zetiumo pjaustiklių" />
     <HeavyFlight value="Gama varikliai" />
     <HeavyFlight-whos value="gama variklių" />
-    
+    <MetalStorage value="Skysčių kondensacija" />
+    <MetalStorage-whos value="Skysčių kondensacijos" />
+    <EnergyStorage ref="Talpesnės baterijos" />
+    <EnergyStorage-whos ref="Talpesnių baterijų" />
+    <ZetiumStorage ref="Suspaustas zetiumas" />
+    <ZetiumStorage-whos ref="Suspausto zetiumo" />
+    <ShipStorage ref="Išoriniai dokai" />
+    <ShipStorage-whos ref="Išorinių dokų" />
     
     <!-- Kita -->
     
@@ -1883,15 +1890,15 @@
     2: level to upgrade to -->
     <objectiveText.HaveUpgradedTo>
       <p>Turėk {2 one[] 1sts[?-o lygio] tens[?-o lygio] many[?-o lygio]} 
-      [obj:{0}:{1}:what]</p>
+      [obj:{0}:{1}:what:dc]</p>
     </objectiveText.HaveUpgradedTo>
     <objectiveText.HaveUpgradedToTech>
       <p>{2 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
-      [obj:1:{1}:whos] technologiją{2 one[] many[ iki ? lygio]}</p>
+      [obj:1:{1}:whos:dc] technologiją{2 one[] many[ iki ? lygio]}</p>
     </objectiveText.HaveUpgradedToTech>
     <objectiveText.HaveUpgradedToTechClass>
       <p>{2 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
-      [obj:{0}:{1}:what]{2 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
+      [obj:{0}:{1}:what:dc]{2 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
     </objectiveText.HaveUpgradedToTechClass>
 
     <!-- UPGRADE_TO
@@ -1900,7 +1907,8 @@
     2: level to upgrade to -->
     <objectiveText.UpgradeTo>
       <p>{2 one[Pastatyk] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
-      [obj:{0}:{1}:what]{2 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
+      [obj:{0}:{1}:what:dc]{2 one[] 1sts[ iki ? lygio] tens[ iki ? lygio]
+      many[ iki ? lygio]}</p>
     </objectiveText.UpgradeTo>
 
     <!-- DESTROY
@@ -1909,11 +1917,11 @@
     2: level of objects to destroy -->
     <objectiveText.Destroy>
       <p>Sunaikink {2 one[] 1sts[?-o lygio ] tens[?-o lygio ] many[?-o lygio ]}
-      [obj:{0}:{1}:what]</p>
+      [obj:{0}:{1}:what:dc]</p>
     </objectiveText.Destroy>
     <objectiveText.DestroyNpcBuilding>
       <p>Sugriauk {2 one[] 1sts[?-o lygio ] tens[?-o lygio ] many[?-o lygio ]}
-      [obj:{0}:{1}:what]</p>
+      [obj:{0}:{1}:what:dc]</p>
     </objectiveText.DestroyNpcBuilding>
     
     <!-- ANNEX_PLANET

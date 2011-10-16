@@ -227,6 +227,10 @@
     <SuperconductorTechnology value="Superconductor Technology" />
     <PowderedZetium value="Zetium Cutters" />
     <HeavyFlight value="Gamma Thrusters" />
+    <MetalStorage value="Liquid condensation" />
+    <EnergyStorage ref="Extended batteries" />
+    <ZetiumStorage ref="Compressed zetium" />
+    <ShipStorage ref="External cargo decks" />
     
     <!-- Other stuff -->
 
