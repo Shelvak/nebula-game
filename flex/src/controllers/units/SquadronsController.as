@@ -24,7 +24,6 @@ package controllers.units
    import models.player.PlayerId;
    import models.unit.MCUnitScreen;
    import models.unit.Unit;
-   import models.unit.UnitBuildingEntry;
    import models.unit.UnitKind;
    
    import mx.collections.ArrayCollection;
@@ -37,7 +36,6 @@ package controllers.units
    import utils.DateUtil;
    import utils.Objects;
    import utils.SingletonFactory;
-   import utils.StringUtil;
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
    
@@ -129,9 +127,10 @@ package controllers.units
        * <code>removeRoute</code> is <code>true</code>)
        * 
        * @param id id of moving squadron. If a squadron with given id could not be found, nothing happens
-       * @param removeRoute if <code>false</code>, corresponding route will not be removed
+       * 
+       * @return <code>true</code> if squad has been destroyed or <code>false</code> otherwise
        */
-      public function destroySquadron(id:int, removeRoute:Boolean = true) : void
+      public function destroySquadron(id:int) : Boolean
       {
          if (id <= 0)
          {
@@ -139,7 +138,7 @@ package controllers.units
          }
          logger.debug("Will try to destroy squad {0}", id);
          var squad:MSquadron = SQUADS.remove(id, true);
-         if (squad)
+         if (squad != null)
          {
             logger.debug("Destroying squadron {0}", squad);
             var fromPlanet: Boolean = squad.currentHop.location.isSSObject;
@@ -157,13 +156,7 @@ package controllers.units
                ML.latestPlanet.dispatchUnitRefreshEvent();
             }
          }
-         if (removeRoute)
-         {
-            var removedRoute:MRoute = ROUTES.remove(id, true);
-            if (removedRoute != null) {
-               logger.debug("   removed route {0}", removedRoute);
-            }
-         }
+         return squad != null;
       }
       
       
@@ -191,27 +184,32 @@ package controllers.units
             }
             route = squad.route;
          }
-         // sometimes server sends objects|updated with route before than client
+         // sometimes server sends objects|updated with route before client
          // runs another periodic update. So if ships are jumping, the jump will be delayed
          // and they will remain in the wrong map therefore screwing things up a little
          var jumpsAtString:String = routeData["jumpsAt"];
          var jumpsAt:Date = jumpsAtString != null ? DateUtil.parseServerDTF(jumpsAtString) : null;
          if (squad != null
-            && !squad.hasHopsRemaining
-            && squad.jumpPending
-            // Not using squad.jumpsAtEvent.hasOccured here to allow slight errors.
-            // The size of the error is worth to consider since client and server clocks are not
-            // in perfect sync. I think a situation might occure - although *very rarely* - when
-            // old jumpsAt and the new jumpsAt differ more than 200 ms but they actually define
-            // the same jump. In such case ships will be removed a bit too early but players
-            // might not even notice that as we have 500 ms errors anyway due to duration of effects
-            && (jumpsAt == null || (squad.jumpsAtEvent.occuresAt.time - jumpsAt.time) < -200)) {
-            destroySquadron(squad.id, false);
+               && !squad.hasHopsRemaining
+               && squad.jumpPending
+               // Not using squad.jumpsAtEvent.hasOccured here to allow slight errors.
+               // The size of the error is worth to consider since client and server clocks are not
+               // in perfect sync. I think a situation might occure - although *very rarely* - when
+               // old jumpsAt and the new jumpsAt differ more than 200 ms but they actually define
+               // the same jump. In such case ships will be removed a bit too early but players
+               // might not even notice that as we have 500 ms errors anyway due to duration of effects
+               && (jumpsAt == null || (squad.jumpsAtEvent.occuresAt.time - jumpsAt.time) < -200)) {
+            logger.debug(
+               "Received new jumpsAt {0} form server for squad {1} before the old " +
+               "jumpsAt {2} was cleared. Forcing the jump (removing squad) before update.",
+               jumpsAt, squad, squad.jumpsAtEvent.occuresAt
+            );
+            destroySquadron(squad.id);
          }
          SquadronFactory.attachJumpsAt(route, jumpsAtString);
          route.currentLocation = BaseModel.createModel(Location, routeData["current"]);
          route.cachedUnits.removeAll();
-         route.cachedUnits.addAll(UnitFactory.createCachedUnits(routeData.cachedUnits));
+         route.cachedUnits.addAll(UnitFactory.createCachedUnits(routeData["cachedUnits"]));
       }
       
       
@@ -221,17 +219,38 @@ package controllers.units
        */
       public function stopSquadron(id:int, atLastHop:Boolean) : void
       {
-         if (id <= 0)
+         function refreshUnitsInUnitScreenModel() : void {
+            if (ML.latestPlanet != null) {
+               // TODO: Find out why some filters don't refresh if you dont call 
+               // refresh function on the list
+               var US:MCUnitScreen = MCUnitScreen.getInstance();
+               if (US.units != null) {
+                  US.units.refresh();
+                  US.refreshScreen();
+               }
+            }
+         }
+         
+         if (id <= 0) {
             throwIllegalMovingSquadId(id);
+         }
          ROUTES.remove(id, true);
          var squadToStop:MSquadron = SQUADS.remove(id, true);
-         if (squadToStop == null)
-         {
+         if (squadToStop == null) {
             return;
          }
-         if (atLastHop)
-         {
+         if (atLastHop) {
             squadToStop.moveToLastHop();
+            // This behaviour (destruction of squad) relies on the fact that the server
+            // will send units|movement *before* objects|destroyed with a route. Because it does that
+            // this squad is already in the map that it needs to be and jumpsAt is null when squad
+            // needs to be stopped in that map. If it needs to be stopped just in another map in an
+            // immediate sector after jump, squad has to be destroyed because that map is not cached.
+            if (squadToStop.jumpPending && squadToStop.jumpsAtEvent.hasOccured) {
+               squadToStop.cleanup();
+               refreshUnitsInUnitScreenModel();
+               return;
+            }
          }
          squadToStop.id = 0;
          squadToStop.route = null;
@@ -256,19 +275,8 @@ package controllers.units
             SQUADS.addItem(squadStationary);
             squadToStop.cleanup();
          }
-         else
-         {
-            if (ML.latestPlanet != null)
-            {
-               // TODO: Find out why some filters don't refresh if you dont call 
-               // refresh function on the list
-               var US: MCUnitScreen = MCUnitScreen.getInstance();
-               if (US.units != null)
-               {
-                  US.units.refresh();
-                  US.refreshScreen();
-               }
-            }
+         else {
+            refreshUnitsInUnitScreenModel();
          }
       }
       
@@ -327,20 +335,15 @@ package controllers.units
          Objects.paramNotNull("units", units);
          Objects.paramNotNull("hops", hops);
          var sampleUnit:Unit = Unit(units.getItemAt(0));
-         // either add hops to existing squadron
+         // OK. We do this the simple way: if we got squad already, we wipe it out and we will recreate it.
+         // Because update is too difficult and I always get it wrong.
          var squad:MSquadron = findSquad(sampleUnit.squadronId);
          if (squad != null) {
-            SquadronFactory.attachJumpsAt(squad.route, jumpsAt);
-            squad.addAllHops(hops);
-            // in case squad is still in another map, move it to correct one
-            if (squad.hasHopsRemaining) {
-               squad.moveToNextHop(DateUtil.now + MOVE_EFFECT_DURATION);
-            }
+            destroySquadron(squad.id);
          }
-         // or create new squadron
-         else if (sampleUnit.location.isObserved
-                  ||  sampleUnit.location.isGalaxy
-                  && (sampleUnit.owner == Owner.PLAYER || sampleUnit.owner == Owner.ALLY)) {
+         if (sampleUnit.location.isObserved
+               ||  sampleUnit.location.isGalaxy
+               && (sampleUnit.owner == Owner.PLAYER || sampleUnit.owner == Owner.ALLY)) {
             UNITS.addAll(units);
             squad = SquadronFactory.fromUnit(sampleUnit);
             squad.addAllHops(hops);
@@ -494,18 +497,19 @@ package controllers.units
       
       private function global_timedUpdateHandler(event:GlobalEvent) : void {
          var currentTime:Number = DateUtil.now;
+         var squadId:int;
          for each (var squad:MSquadron in SQUADS.toArray()) {
             if (squad.isMoving && !squad.pending) {
-               var squadId:int = squad.id;
+               squadId = squad.id;
                if (squad.hasHopsRemaining) {
                   squad.moveToNextHop(currentTime + MOVE_EFFECT_DURATION);
                   var loc:LocationMinimal = squad.currentHop.location;
                   if (!loc.isObserved && (squad.isHostile || squad.isFriendly && !loc.isGalaxy)) {
-                     destroySquadron(squadId, false);
+                     destroySquadron(squadId);
                   }
                }
                else if (squad.jumpPending && squad.jumpsAtEvent.hasOccured) {
-                  destroySquadron(squadId, false);
+                  destroySquadron(squadId);
                }
             }
          }
