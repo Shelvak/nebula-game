@@ -1425,7 +1425,7 @@
     <label.alliances value="Alliance ratings" />
     <label.alliance value="Alliance" />
     <label.wiki value="Wiki"/>
-    <label.inviteFriend value="Invite"/>
+    <label.inviteFriend value="Invites"/>
     <label.forum value="Forum" />
     <tooltip.version value="Game version" />
     <panelWidth value="85" />

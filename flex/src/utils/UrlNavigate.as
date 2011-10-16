@@ -40,7 +40,7 @@ package utils
       }
       
       public function showInviteFriendUrl() : void {
-         // TODO: implement showInviteFriendUrl()
+         showUrl('invite-referral');
       }
       
       public function showBuyCreds(): void

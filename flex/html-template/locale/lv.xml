@@ -1516,7 +1516,7 @@
     <label.forum value="Forums" />
     <!-- TODO -->
     <label.wiki value="Wiki"/>
-    <label.inviteFriend value="Invite"/>
+    <label.inviteFriend value="Invites"/>
     <tooltip.version value="Game version" />
     <!-- /TODO -->
     <panelWidth value="85" />
