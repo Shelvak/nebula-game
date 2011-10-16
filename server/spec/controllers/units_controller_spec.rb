@@ -889,6 +889,16 @@ describe UnitsController do
       response[:positions].should be_blank
     end
 
+    it "should not include positions for units whose level == 0" do
+      @units.each do |unit|
+        unit.level = 0
+        unit.save!
+      end
+
+      invoke @action, @params
+      response[:positions].should be_blank
+    end
+
     it "should include players for those units" do
       invoke @action, @params
       response_should_include(
