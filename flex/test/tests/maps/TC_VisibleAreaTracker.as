@@ -1,4 +1,4 @@
-package tests.viewport
+package tests.maps
 {
    import components.base.viewport.IVisibleAreaTrackerClient;
    import components.base.viewport.VisibleAreaTracker;

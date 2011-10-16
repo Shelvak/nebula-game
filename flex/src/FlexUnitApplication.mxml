@@ -17,6 +17,7 @@
          import tests.controllers.ui.TS_UIControllers;
          import tests.foliage.TS_Foliage;
          import tests.galaxy.TS_Galaxy;
+         import tests.maps.TS_Maps;
          import tests.models.TS_Models;
          import tests.movement.TS_Movement;
          import tests.notifications.TS_Notifications;
@@ -25,7 +26,6 @@
          import tests.utils.TS_Utils;
          import tests.utils.components.TS_Components;
          import tests.utils.datastructures.TS_DataStructures;
-         import tests.viewport.TS_Viewport;
          
          import utils.DateUtil;
          
@@ -50,7 +50,7 @@
                TS_Foliage,
                TS_Announcement,
                TS_Galaxy,
-               TS_Viewport,
+               TS_Maps,
                CommunicationsTestSuite,
                ModelsTestSuite,
                UtilsTestSuite
@@ -61,7 +61,7 @@
          public function currentRunTestSuites():Array
          {
             var testsToRun:Array = [
-               TS_Viewport
+               TS_Maps
             ];
             return testsToRun;
          }
