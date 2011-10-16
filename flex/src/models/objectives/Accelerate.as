@@ -1,7 +1,5 @@
 package models.objectives
 {
-   import utils.ObjectFormType;
-   import utils.ObjectStringsResolver;
    import utils.locale.Localizer;
 
    public class Accelerate extends ObjectivePart

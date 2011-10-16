@@ -1,6 +1,5 @@
 package models.objectives
 {
-   import utils.ObjectStringsResolver;
    import utils.locale.Localizer;
 
    public class BecomeVip extends ObjectivePart

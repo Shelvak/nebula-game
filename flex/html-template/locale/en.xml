@@ -1,342 +1,260 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <locale>
   <Objects>
+    <!-- p8d stands for pluralized -->
+
     <!-- Self ground units -->
     
     <Trooper value="Trooper" />
-    <Trooper-what value="{0 one[one trooper] many[? troopers]}" />
-    <Trooper-whos ref="Trooper-what" />
+    <Trooper-p8d value="{0 one[Trooper] many[Troopers]}" />
 
     <Shocker value="Shocker" />
-    <Shocker-what value="{0 one[one shocker] many[? shockers]}" />
-    <Shocker-whos ref="Shocker-what" />
+    <Shocker-p8d value="{0 one[Shocker] many[Shockers]}" />
 
     <Seeker value="Seeker" />
-    <Seeker-what value="{0 one[one seeker] many[? seekers]}" />
-    <Seeker-whos ref="Seeker-what" />
+    <Seeker-p8d value="{0 one[Seeker] many[Seekers]}" />
     
     <Scorpion value="Scorpion" />
-    <Scorpion-what value="{0 one[one scorpion] many[? scorpions]}" />
-    <Scorpion-whos ref="Scorpion-what" />
+    <Scorpion-p8d value="{0 one[Scorpion] many[Scorpions]}" />
     
     <Azure value="Azure" />
-    <Azure-what value="{0 one[one azure] many[? azures]}" />
-    <Azure-whos ref="Azure-what" />
+    <Azure-p8d value="{0 one[Azure] many[Azures]}" />
         
     <Mantis value="Mantis" />
-    <Mantis-what value="{0 one[one mantis] many[? mantises]}" />
-    <Mantis-whos ref="Mantis-what" />
+    <Mantis-p8d value="{0 one[Mantis] many[Mantises]}" />
         
     <Zeus value="Zeus" />
-    <Zeus-what value="{0 one[one zeus] many[? zeuses]}" />
-    <Zeus-whos ref="Zeus-what" />
+    <Zeus-p8d value="{0 one[Zeus] many[Zeuses]}" />
         
     <MDH value="MDH" />
-    <MDH-what value="{0 one[one MDH] many[? MDH's]}" />
-    <MDH-whos ref="MDH-what" />
+    <MDH-p8d value="{0 one[MDH] many[MDH's]}" />
 
     <MobileVulcan value="Vulcan-M" />
-    <MobileVulcan-what value="{0 one[one Vulcan-M] many[? Vulcan-M's]}" />
-    <MobileVulcan-whos ref="MobileVulcan-what" />   
+    <MobileVulcan-p8d value="{0 one[Vulcan-M] many[Vulcan-M's]}" />
     
     <MobileScreamer value="Screamer-M" />
-    <MobileScreamer-what value="{0 one[one Screamer-M] many[? Screamer-M's]}" />
-    <MobileScreamer-whos ref="MobileScreamer-what" />   
+    <MobileScreamer-p8d value="{0 one[Screamer-M] many[Screamer-M's]}" />
 
     <MobileThunder value="Thunder-M" />
-    <MobileThunder-what value="{0 one[one Thunder-M] many[? Thunder-M's]}" />
-    <MobileThunder-whos ref="MobileThunder-what" />   
+    <MobileThunder-p8d value="{0 one[Thunder-M] many[Thunder-M's]}" />
 
     <!-- Self space units -->
     
     <Mule value="Mule" />
-    <Mule-what value="{0 one[one mule] many[? mules]}" />
-    <Mule-whos ref="Mule-what" />
+    <Mule-p8d value="{0 one[Mule] many[Mules]}" />
     
     <Crow value="Crow" />
-    <Crow-what value="{0 one[one crow] many[? crows]}" />
-    <Crow-whos ref="Crow-what" />
+    <Crow-p8d value="{0 one[Crow] many[Crows]}" />
     
     <Cyrix value="Cyrix" />
-    <Cyrix-what value="{0 one[one cyrix] many[? cyrixes]}" />
-    <Cyrix-whos ref="Cyrix-what" />
+    <Cyrix-p8d value="{0 one[Cyrix] many[Cyrixes]}" />
     
     <Rhyno value="Rhyno" />
-    <Rhyno-what value="{0 one[one rhyno] many[? rhynos]}" />
-    <Rhyno-whos ref="Rhyno-what" />
+    <Rhyno-p8d value="{0 one[Rhyno] many[Rhynos]}" />
     
     <Dart value="Dart" />
-    <Dart-what value="{0 one[one dart] many[? darts]}" />
-    <Dart-whos ref="Dart-what" />
+    <Dart-p8d value="{0 one[Dart] many[Darts]}" />
     
     <Avenger value="Avenger" />
-    <Avenger-what value="{0 one[one avenger] many[? avengers]}" />
-    <Avenger-whos ref="Avenger-what" />
+    <Avenger-p8d value="{0 one[Avenger] many[Avengers]}" />
     
     <Jumper value="Jumper" />
-    <Jumper-what value="{0 one[one jumper] many[? jumpers]}" />
-    <Jumper-whos ref="Jumper-what" />
+    <Jumper-p8d value="{0 one[Jumper] many[Jumpers]}" />
     
     <!-- NPC ground units -->
         
     <Gnat value="Gnat" />
-    <Gnat-what value="{0 one[one gnat] many[? gnats]}" />
-    <Gnat-whos ref="Gnat-what" />
+    <Gnat-p8d value="{0 one[Gnat] many[Gnats]}" />
 
     <Glancer value="Glancer" />
-    <Glancer-what value="{0 one[one glancer] many[? glancers]}" />
-    <Glancer-whos ref="Glancer-what" />
+    <Glancer-p8d value="{0 one[Glancer] many[Glancers]}" />
  
     <Spudder value="Spudder" />
-    <Spudder-what value="{0 one[one spudder] many[? spudders]}" />
-    <Spudder-whos ref="Spudder-what" />
+    <Spudder-p8d value="{0 one[Spudder] many[Spudders]}" />
 
     <Gnawer value="Gnawer" />
-    <Gnawer-what value="{0 one[one gnawer] many[? gnawers]}" />
-    <Gnawer-whos ref="Gnawer-what" />
+    <Gnawer-p8d value="{0 one[Gnawer] many[Gnawers]}" />
 
     <!-- NPC space units -->
     
     <Dirac value="Dirac" />
-    <Dirac-what value="{0 one[one dirac] many[? diracs]}" />
-    <Dirac-whos ref="Dirac-what" />
+    <Dirac-p8d value="{0 one[Dirac] many[Diracs]}" />
 
     <Thor value="Thor" />
-    <Thor-what value="{0 one[one thor] many[? thors]}" />
-    <Thor-whos ref="Thor-what" />
+    <Thor-p8d value="{0 one[Thor] many[Thors]}" />
 
     <Demosis value="Demosis" />
-    <Demosis-what value="{0 one[one demosis] many[? demosis]}" />
-    <Demosis-whos ref="Demosis-what" />
+    <Demosis-p8d value="{0 one[Demosis] many[Demosis]}" />
     
     <!-- Turrets -->
 
     <Vulcan value="Vulcan" />
-    <Vulcan-what value="{0 one[one vulcan] many[? vulcans]}" />
-    <Vulcan-whos ref="Vulcan-what" />
+    <Vulcan-p8d value="{0 one[vulcan] many[vulcans]}" />
 
     <Screamer value="Screamer" />
-    <Screamer-what value="{0 one[one screamer] many[? screamers]}" />
-    <Screamer-whos ref="Screamer-what" />
+    <Screamer-p8d value="{0 one[Screamer] many[Screamers]}" />
 
     <Thunder value="Thunder" />
-    <Thunder-what value="{0 one[one thunder] many[? thunders]}" />
-    <Thunder-whos ref="Thunder-what" />
+    <Thunder-p8d value="{0 one[Thunder] many[Thunders]}" />
     
     <!-- Extractors -->
 
     <MetalExtractor value="MEX" />
-    <MetalExtractor-what value="{0 one[one MEX] many[? MEX's]}" />
-    <MetalExtractor-whos ref="MetalExtractor-what" />
+    <MetalExtractor-p8d value="{0 one[MEX] many[MEX's]}" />
 
     <MetalExtractorT2 value="MEX T-2" />
-    <MetalExtractorT2-what value="{0 one[one MEX T-2] many[? MEX's T-2]}" />
-    <MetalExtractorT2-whos ref="MetalExtractorT2-what" />
+    <MetalExtractorT2-p8d value="{0 one[MEX T-2] many[MEX's T-2]}" />
 
     <CollectorT1 value="Wind Panel" />
-    <CollectorT1-what value="{0 one[one wind panel] many[? wind panels]}" />
-    <CollectorT1-whos ref="CollectorT1-what" />
+    <CollectorT1-p8d value="{0 one[Wind Panel] many[Wind Panels]}" />
 
     <CollectorT2 value="Collector" />
-    <CollectorT2-what value="{0 one[one collector] many[? collectors]}" />
-    <CollectorT2-whos ref="CollectorT2-what" />
+    <CollectorT2-p8d value="{0 one[Collector] many[Collectors]}" />
 
     <CollectorT3 value="Thermal Hub" />
-    <CollectorT3-what value="{0 one[one thermal hub] many[? thermal hubs]}" />
-    <CollectorT3-whos ref="CollectorT3-what" />
+    <CollectorT3-p8d value="{0 one[Thermal Hub] many[Thermal Hubs]}" />
 
     <ZetiumExtractor value="ZEX" />
-    <ZetiumExtractor-what value="{0 one[one ZEX] many[? ZEXes]}" />
-    <ZetiumExtractor-whos ref="ZetiumExtractor-what" />
+    <ZetiumExtractor-p8d value="{0 one[ZEX] many[ZEXes]}" />
 
     <ZetiumExtractorT2 value="ZEX T-2" />
-    <ZetiumExtractorT2-what value="{0 one[one ZEX T-2] many[? ZEXes T-2]}" />
-    <ZetiumExtractorT2-whos ref="ZetiumExtractorT2-what" />
+    <ZetiumExtractorT2-p8d value="{0 one[ZEX T-2] many[ZEXes T-2]}" />
     
     <!-- Storages -->
 
     <MetalStorage value="Metal Storage" />
-    <MetalStorage-what value="{0 one[one metal storage] many[? metal storages]}" />
-    <MetalStorage-whos ref="MetalStorage-what" />
+    <MetalStorage-p8d value="{0 one[Metal Storage] many[Metal Storages]}" />
     
     <EnergyStorage value="Energy Batteries" />
-    <EnergyStorage-what value="{0 one[one energy battery] many[? energy batteries]}" />
-    <EnergyStorage-whos ref="EnergyStorage-what" />
+    <EnergyStorage-p8d value="{0 one[Energy Battery] many[Energy Batteries]}" />
     
     <ZetiumStorage value="Zetium Storage" />
-    <ZetiumStorage-what value="{0 one[one zetium storage] many[? zetium storages]}" />
-    <ZetiumStorage-whos ref="ZetiumStorage-what" />
+    <ZetiumStorage-p8d value="{0 one[Zetium Storage] many[Zetium Storages]}" />
     
     <!-- NPC buildings -->
 
     <NpcMetalExtractor value="Foundry" />
-    <NpcMetalExtractor-what value="{0 one[one foundry] many[? foundries]}" />
-    <NpcMetalExtractor-whos ref="NpcMetalExtractor-what" />
+    <NpcMetalExtractor-p8d value="{0 one[Foundry] many[Foundries]}" />
         
     <NpcZetiumExtractor value="Zetium Lab" />
-    <NpcZetiumExtractor-what value="{0 one[one zetium lab] many[? zetium labs]}" />
-    <NpcZetiumExtractor-whos ref="NpcZetiumExtractor-what" />
+    <NpcZetiumExtractor-p8d value="{0 one[Zetium Lab] many[Zetium Labs]}" />
       
     <NpcGeothermalPlant value="Heat Collector" />
-    <NpcGeothermalPlant-what value="{0 one[one heat collector] many[? heat collectors]}" />
-    <NpcGeothermalPlant-whos ref="NpcGeothermalPlant-what" />
+    <NpcGeothermalPlant-p8d value="{0 one[Heat Collector] many[Heat Collectors]}" />
     
     <NpcSolarPlant value="Prism" />
-    <NpcSolarPlant-what value="{0 one[one prism] many[? prisms]}" />
-    <NpcSolarPlant-whos ref="NpcSolarPlant-what" />
+    <NpcSolarPlant-p8d value="{0 one[Prism] many[Prisms]}" />
     
     <NpcCommunicationsHub value="CommHub" />
-    <NpcCommunicationsHub-what value="{0 one[one CommHub] many[? CommHubs]}" />
-    <NpcCommunicationsHub-whos ref="NpcCommunicationsHub-what" />
+    <NpcCommunicationsHub-p8d value="{0 one[CommHub] many[CommHubs]}" />
     
     <NpcTemple value="Temple" />
-    <NpcTemple-what value="{0 one[one temple] many[? temples]}" />
-    <NpcTemple-whos ref="NpcTemple-what" />
+    <NpcTemple-p8d value="{0 one[Temple] many[Temples]}" />
     
     <NpcExcavationSite value="Excavation Site" />
-    <NpcExcavationSite-what value="{0 one[one excavation site] many[? excavation sites]}" />
-    <NpcExcavationSite-whos ref="NpcExcavationSite-what" />
+    <NpcExcavationSite-p8d value="{0 one[Excavation Site] many[Excavation Sites]}" />
     
     <NpcResearchCenter value="Lab" />
-    <NpcResearchCenter-what value="{0 one[one lab] many[? labs]}" />
-    <NpcResearchCenter-whos ref="NpcResearchCenter-what" />
+    <NpcResearchCenter-p8d value="{0 one[Lab] many[Labs]}" />
     
     <NpcJumpgate value="Jumpgate" />
-    <NpcJumpgate-what value="{0 one[one jumpgate] many[? jumpgates]}" />
-    <NpcJumpgate-whos ref="NpcJumpgate-what" />
+    <NpcJumpgate-p8d value="{0 one[Jumpgate] many[Jumpgates]}" />
     
     <NpcInfantryFactory value="Hatchery" />
-    <NpcInfantryFactory-what value="{0 one[one hatchery] many[? hatcheries]}" />
-    <NpcInfantryFactory-whos ref="NpcInfantryFactory-what" />
+    <NpcInfantryFactory-p8d value="{0 one[Hatchery] many[Hatcheries]}" />
     
     <NpcTankFactory value="Heavy Arms Lab" />
-    <NpcTankFactory-what value="{0 one[one heavy arms lab] many[? heavy arms labs]}" />
-    <NpcTankFactory-whos ref="NpcTankFactory-what" />
+    <NpcTankFactory-p8d value="{0 one[Heavy Arms Lab] many[Heavy Arms Labs]}" />
     
     <NpcSpaceFactory value="Spaceship Pod" />
-    <NpcSpaceFactory-what value="{0 one[one spaceship pod] many[? spaceship pods]}" />
-    <NpcSpaceFactory-whos ref="NpcSpaceFactory-what" />
+    <NpcSpaceFactory-p8d value="{0 one[Spaceship Pod] many[Spaceship Pods]}" />
     
     <NpcHall value="Emitter" />
-    <NpcHall-what value="{0 one[one emitter] many[? emitters]}" />
-    <NpcHall-whos ref="NpcHall-what" />
+    <NpcHall-p8d value="{0 one[Emitter] many[Emitters]}" />
     
     <!-- Building facilities -->
     
     <Mothership value="Mothership" />
-    <Mothership-what value="{0 one[one mothership] many[? motherships]}" />
-    <Mothership-whos ref="Mothership-what" />
+    <Mothership-p8d value="{0 one[Mothership] many[Motherships]}" />
     
     <Headquarters value="Headquarters" />
-    <Headquarters-what value="{0 one[one headquarters] many[? headquarters]}" />
-    <Headquarters-whos ref="Headquarters-what" />
+    <Headquarters-p8d value="{0 one[Headquarters] many[Headquarters]}" />
     
     <Crane value="Crane" />
-    <Crane-what value="{0 one[one crane] many[? cranes]}" />
-    <Crane-whos ref="Crane-what" />
+    <Crane-p8d value="{0 one[Crane] many[Cranes]}" />
     
     <!-- Unit facilities -->
 
     <Barracks value="Barracks" />
-    <Barracks-what value="{0 one[one barracks] many[? barracks]}" />
-    <Barracks-whos ref="Barracks-what" />
+    <Barracks-p8d value="{0 one[Barracks] many[Barracks]}" />
     
     <GroundFactory value="Ground Factory" />
-    <GroundFactory-what value="{0 one[one ground factory] many[? ground factories]}" />
-    <GroundFactory-whos ref="GroundFactory-what" />
+    <GroundFactory-p8d value="{0 one[Ground Factory] many[Ground Factories]}" />
     
     <SpaceFactory value="Space Factory" />
-    <SpaceFactory-what value="{0 one[one space factory] many[? space factories]}" />
-    <SpaceFactory-whos ref="SpaceFactory-what" />
+    <SpaceFactory-p8d value="{0 one[Space Factory] many[Space Factories]}" />
     
     <!-- Other buildings -->
     
     <Market value="Market" />
-    <Market-what value="{0 one[one market] many[? markets]}" />
-    <Market-whos ref="Market-what" />
+    <Market-p8d value="{0 one[Market] many[Markets]}" />
 
     <Radar value="Radar" />
-    <Radar-what value="{0 one[one radar] many[? radars]}" />
-    <Radar-whos ref="Radar-what" />
+    <Radar-p8d value="{0 one[Radar] many[Radars]}" />
     
     <DefensivePortal value="Summoner" />
-    <DefensivePortal-what value="{0 one[one summoner] many[? summoners]}" />
-    <DefensivePortal-whos ref="DefensivePortal-what" />
+    <DefensivePortal-p8d value="{0 one[Summoner] many[Summoners]}" />
     
     <ResearchCenter value="Research Center" />
-    <ResearchCenter-what value="{0 one[one research center] many[? research center]}" />
-    <ResearchCenter-whos ref="ResearchCenter-what" />
+    <ResearchCenter-p8d value="{0 one[Research Center] many[Research Centers]}" />
     
     <Housing value="Living Pods" />
-    <Housing-what value="{0 one[living pods] many[? living pods]}" />
-    <Housing-whos ref="Housing-what" />
+    <Housing-p8d value="{0 one[Living Pods] many[Living Pods]}" />
     
     <HealingCenter value="MedTech" />
-    <HealingCenter-what value="{0 one[one MedTech] many[? MedTechs]}" />
-    <HealingCenter-whos ref="HealingCenter-what" />
+    <HealingCenter-p8d value="{0 one[MedTech] many[MedTechs]}" />
 
     <!-- Technologies -->
 
     <ZetiumExtraction value="Zetium Extraction" />
-    <ZetiumExtraction-whos value="Zetium Extraction" />
     <MetabolicChargers value="Metabolic Chargers" />
-    <MetabolicChargers-whos value="Metabolic Chargers" />
     <HighVelocityCharges value="High Velocity Ammo" />
-    <HighVelocityCharges-whos value="High Velocity Ammo" />
     <ShipsArmor value="Reinforced Plates" />
-    <ShipsArmor-whos value="Reinforced Plates" />
     <ShipsDamage value="Energized Plasma" />
-    <ShipsDamage-whos value="Energized Plasma" />
     <TanksDamage value="Zetium Shells" />
-    <TanksDamage-whos value="Zetium Shells" />
     <TanksArmor value="Energized Armor" />
-    <TanksArmor-whos value="Energized Armor" />
     <FieryMelters value="Pressurized Melting" />
-    <FieryMelters-whos value="Pressurized Melting" />
     <SuperconductorTechnology value="Superconductor Technology" />
-    <SuperconductorTechnology-whos value="Superconductor Technology" />
     <PowderedZetium value="Zetium Cutters" />
-    <PowderedZetium-whos value="Zetium Cutters" />
     <HeavyFlight value="Gamma Thrusters" />
-    <HeavyFlight-whos value="Gamma Thrusters" />
-    
     
     <!-- Other stuff -->
 
     <Unit value="Unit" />
-    <Unit-what value="{0 one[one unit] many[? units]}" />
-    <Unit-whos ref="Unit-what" />
+    <Unit-p8d value="{0 one[Unit] many[Units]}" />
     
     <Building value="Building" />
-    <Building-what value="{0 one[one building] many[? buildings]}" />
-    <Building-whos ref="Building-what" />
+    <Building-p8d value="{0 one[Building] many[Buildings]}" />
     
     <Technology value="Technology" />
-    <Technology-what value="{0 one[one technology] many[? technologies]}" />
-    <Technology-whos ref="Technology-what" />
+    <Technology-p8d value="{0 one[Technology] many[Technologies]}" />
     
     <Planet value="Planet" />
-    <Planet-what value="{0 one[one planet] many[? planets]}" />
-    <Planet-whos ref="Planet-what" />
+    <Planet-p8d value="{0 one[Planet] many[Planets]}" />
 
     <Point value="Point" />
-    <Point-what value="{0 one[one point] many[? points]}" />
-    <Point-whos ref="Point-what" />
+    <Point-p8d value="{0 one[Point] many[Points]}" />
 
     <Object value="Object" />
-    <Object-what value="{0 one[one object] many[? objects]}" />
-    <Object-whos ref="Object-what" />
+    <Object-p8d value="{0 one[Object] many[Objects]}" />
 
     <Is value="{0 one[is] many[are]}" />
 
     <Scientist value="Scientist" />
-    <Scientist-what value="{0 one[one Scientist] many[? Scientists]}" />
-    <Scientist-whos ref="Scientist-what" />
+    <Scientist-p8d value="{0 one[Scientist] many[Scientists]}" />
 
     <Alliances value="Alliances" />
-    <Alliances-what value="{0 one[one Alliances] many[? Alliances]}" />
-    <Alliances-whos ref="Alliances-what" />
-
+    <Alliances-p8d value="{0 one[Alliance] many[Alliances]}" />
   </Objects>
   
   <Alliances>
@@ -1883,26 +1801,29 @@
     <of value="of" />
     
     <!-- HAVE_UPGRADED_TO
-    0: "Subclass or class to upgrade (with count), 
-    1: level to upgrade to -->
-    <objectiveText.HaveUpgradedTo value="Have {0}{1 one[] many[ of level ?]}" />
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
+    <objectiveText.HaveUpgradedTo value="Have [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
     <objectiveText.HaveUpgradedToTech 
-    value="{1 one[Research] many[Upgrade]} {0} technology{1 one[] many[ to level ?]}" />
+    value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}] technology{2 one[] many[ to level ?]}" />
     <objectiveText.HaveUpgradedToTechClass 
-    value="{1 one[Research] many[Upgrade]} {0}{1 one[] many[ to level ?]}" />
+    value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}" />
 
     <!-- UPGRADE_TO
-    0: "Subclass or class to upgrade (with count), 
-    1: level to upgrade to -->
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
     <objectiveText.UpgradeTo 
-    value="{1 one[Build] many[Upgrade]} {0}{1 one[] many[ to level ?]}" />
+    value="{2 one[Build] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}" />
 
     <!-- DESTROY
-    0: "Subclass or class to destroy (with count), 
-    1: level of objects to destroy -->
-    <objectiveText.Destroy value="Destroy {0}{1 one[] many[ of level ?]}" />
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level of objects to destroy -->
+    <objectiveText.Destroy value="Destroy [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
     <objectiveText.DestroyNpcBuilding 
-    value="Destroy {0}{1 one[] many[ of level ?]}" />
+    value="Destroy [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
     
     <!-- ANNEX_PLANET
     0: count of planets to occupy -->
@@ -3498,7 +3419,7 @@
     <FieryMelters.name ref="Objects/FieryMelters" />
     <FieryMelters.about>
       <p>
-        Using high pressure in MetalExtractors allows 
+        Using high pressure in metal extractors allows
         getting higher metal extraction and storage efficiency. Although this 
         technology is a bit pricey it may be worth investing to if your metal 
         needs are growing.

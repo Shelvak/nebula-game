@@ -1878,34 +1878,43 @@
     <of value="" />
     
     <!-- HAVE_UPGRADED_TO
-    0: "Subclass or class to upgrade (with count), 
-    1: level to upgrade to -->
-    <objectiveText.HaveUpgradedTo 
-    value="Turėk {1 one[] 1sts[?-o lygio] tens[?-o lygio] many[?-o lygio]} {0}" />
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
+    <objectiveText.HaveUpgradedTo>
+      <p>Turėk {2 one[] 1sts[?-o lygio] tens[?-o lygio] many[?-o lygio]} 
+      [obj:{0}:{1}:what]</p>
+    </objectiveText.HaveUpgradedTo>
     <objectiveText.HaveUpgradedToTech>
-      <p>{1 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
-      {0} technologiją{1 one[] many[ iki ? lygio]}</p>
+      <p>{2 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
+      [obj:1:{1}:whos] technologiją{2 one[] many[ iki ? lygio]}</p>
     </objectiveText.HaveUpgradedToTech>
     <objectiveText.HaveUpgradedToTechClass>
-    <p>{1 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
-    {0}{1 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
+      <p>{2 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
+      [obj:{0}:{1}:what]{2 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
     </objectiveText.HaveUpgradedToTechClass>
 
     <!-- UPGRADE_TO
-    0: "Subclass or class to upgrade (with count), 
-    1: level to upgrade to -->
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
     <objectiveText.UpgradeTo>
-    <p>{1 one[Pastatyk] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
-    {0}{1 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
+      <p>{2 one[Pastatyk] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
+      [obj:{0}:{1}:what]{2 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
     </objectiveText.UpgradeTo>
 
     <!-- DESTROY
-    0: "Subclass or class to destroy (with count), 
-    1: level of objects to destroy -->
-    <objectiveText.Destroy 
-    value="Sunaikink {1 one[] 1sts[?-o lygio ] tens[?-o lygio ] many[?-o lygio ]}{0}" />
-    <objectiveText.DestroyNpcBuilding 
-    value="Sugriauk {1 one[] 1sts[?-o lygio ] tens[?-o lygio ] many[?-o lygio ]}{0}" />    
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level of objects to destroy -->
+    <objectiveText.Destroy>
+      <p>Sunaikink {2 one[] 1sts[?-o lygio ] tens[?-o lygio ] many[?-o lygio ]}
+      [obj:{0}:{1}:what]</p>
+    </objectiveText.Destroy>
+    <objectiveText.DestroyNpcBuilding>
+      <p>Sugriauk {2 one[] 1sts[?-o lygio ] tens[?-o lygio ] many[?-o lygio ]}
+      [obj:{0}:{1}:what]</p>
+    </objectiveText.DestroyNpcBuilding>
     
     <!-- ANNEX_PLANET
     0: count of planets to occupy -->
