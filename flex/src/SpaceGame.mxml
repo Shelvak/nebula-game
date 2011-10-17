@@ -45,8 +45,6 @@
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
          
-         import components.screens.MainScreen;
-         
          import controllers.GlobalFlags;
          import controllers.messages.MessagesProcessor;
          import controllers.messages.ResponseMessagesTracker;
@@ -60,6 +58,7 @@
          
          import mx.events.FlexEvent;
          
+         import utils.DateUtil;
          import utils.profiler.Profiler;
          
          [Bindable]
@@ -146,9 +145,9 @@
           * any of messages sent to the server earlier has time out, that is if response message has
           * not been received in time.</p>
           */
-         private function mainTimer_timerHandler(event:TimerEvent):void
-            //         private function this_enterFrameHandler(event:Event):void
+         private function mainTimer_timerHandler(event:TimerEvent) : void
          {
+            DateUtil.now = new Date().time;
             EventBroker.broadcast(_timedUpdateEvent);
             _messagesProcessor.process();
             _respMsgTracker.checkWaitingMessages();
