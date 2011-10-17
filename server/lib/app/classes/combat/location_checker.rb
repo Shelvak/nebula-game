@@ -83,11 +83,11 @@ class Combat::LocationChecker
           # OR
           # Check if any of the alliances do not have naps between them.
           conflicts = alliances.keys.size > alliance_ids.size ||
-            ! alliance_ids.detect do |alliance_id|
+            ! alliance_ids.detect { |alliance_id|
               (
                 Set.new(nap_rules[alliance_id]) ^ alliance_ids
               ) != Set[alliance_id]
-            end.nil?
+            }.nil?
 
           status = conflicts \
             ? Combat::CheckReport::COMBAT \

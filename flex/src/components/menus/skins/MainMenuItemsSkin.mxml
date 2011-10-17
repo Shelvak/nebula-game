@@ -11,24 +11,36 @@
    
    <fx:Script>
       <![CDATA[
-      import application.Version;
-
-      import controllers.ui.NavigationController;
-
-      import models.ModelLocator;
-
-      import utils.assets.AssetNames;
-      import utils.assets.ImagePreloader;
-      import utils.locale.Localizer;
-
-
-      private static function get ML() : ModelLocator {
-         return ModelLocator.getInstance();
-      }
-
-      private function getImage(name:String) : BitmapData {
-         return ImagePreloader.getInstance().getImage(AssetNames.START_MENU_FOLDER + name);
-      }
+         import application.Version;
+         
+         import components.popups.DebugLogPopup;
+         
+         import controllers.startup.StartupManager;
+         import controllers.ui.NavigationController;
+         
+         import models.ModelLocator;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         
+         
+         private static function get ML() : ModelLocator {
+            return ModelLocator.getInstance();
+         }
+         
+         private function getImage(name:String) : BitmapData {
+            return ImagePreloader.getInstance().getImage(AssetNames.START_MENU_FOLDER + name);
+         }
+         
+         protected function label1_clickHandler(event:MouseEvent):void
+         {
+            if (event.ctrlKey)
+            {
+               DebugLogPopup.showLog(ML.debugLog);
+            }
+         }
+         
       ]]>
    </fx:Script>
    
@@ -83,7 +95,8 @@
       <!-- Build number -->
       <s:Label top="21" right="36" text="v. {Version.VERSION}"
                toolTip="{Localizer.string('MainMenu', 'tooltip.version')}"
-               fontSize="10" color="#404040" />
+               fontSize="10" color="#404040"
+               click="label1_clickHandler(event)"/>
       
       <!-- BOTTOM -->
       <s:BitmapImage id="bottomLeft" left="0" bottom="0"
@@ -124,7 +137,7 @@
             top="{topCenter.height + topRepeat.height}"
             bottom="{bottomRepeat.height}" minWidth="0" minHeight="0">
       <s:layout>
-         <s:HorizontalLayout gap="10"/>
+         <s:HorizontalLayout gap="10" verticalAlign="contentJustify"/>
       </s:layout>
    </s:Group>
    

@@ -152,7 +152,7 @@ class CallbackManager
       get_row = lambda do
         LOGGER.suppress(:debug) do
           conn.select_one(
-            "SELECT class, ruleset, object_id, event FROM callbacks
+            "SELECT class, ruleset, object_id, event, ends_at FROM callbacks
               #{sql} LIMIT 1"
           )
         end
@@ -182,8 +182,8 @@ class CallbackManager
         rescue Exception => error
           if App.in_production?
             LOGGER.error(
-              "Error in callback manager!\n%s\n\nBacktrace:\n%s" % [
-                error.to_s, error.backtrace.join("\n")
+              "Error in callback manager!\nRow: %s\n%s" % [
+                row.inspect, error.to_log_str
               ]
             )
             mark_row_as_failed.call

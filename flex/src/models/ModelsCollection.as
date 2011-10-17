@@ -219,7 +219,7 @@ package models
       
       
       /**
-       * Suffles this collection.
+       * Shuffles this collection.
        */
       public function shuffle(random:Rndm = null) : void
       {
@@ -236,7 +236,6 @@ package models
             setItemAt(tmp, randomNumber);
          }
       }
-      
       
       /* ############### */
       /* ### HELPERS ### */

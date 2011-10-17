@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<popups:BasePopup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                  xmlns:s="library://ns.adobe.com/flex/spark" 
+                  xmlns:mx="library://ns.adobe.com/flex/mx"
+                  xmlns:popups="components.popups.*"
+                  title="{getString('title.log')}"
+                  width="640" height="480">
+   
+   
+   <fx:Script>
+      <![CDATA[
+         import components.skins.CrashTextAreaSkin;
+         
+         import utils.locale.Localizer;
+         
+         public static function showLog(msg: String): void
+         {
+            var ppup: DebugLogPopup = new DebugLogPopup();
+            ppup.logMsg = msg;
+            ppup.show();
+         }
+         
+         public function get messageText(): String
+         {
+            return msgArea.text;
+         }
+         
+         [Bindable]
+         public var logMsg: String;
+         
+         private function getString(property:String) : String
+         {
+            return Localizer.string("Popups", property);
+         }
+         
+         
+         private function btnCopy_clickHandler(event:MouseEvent):void
+         {
+            lblCopiedToClipboard.visible = true;
+            System.setClipboard(messageText);
+         }
+         
+         private function btnClose_clickHandler(event:MouseEvent):void
+         {
+            this.close();
+         }
+      ]]>
+   </fx:Script>
+   
+   
+   <popups:layout>
+      <s:VerticalLayout horizontalAlign="justify" gap="10"
+                        paddingLeft="10" paddingTop="10" paddingRight="10" paddingBottom="10"/>
+   </popups:layout>
+   
+   <s:Label id="msgGeneral" width="100%" text="{getString('message.log.general')}"/>
+   
+   <s:Group  minWidth="0" minHeight="0" >
+      <s:layout> 
+         <s:HorizontalLayout horizontalAlign="right" verticalAlign="middle"/>
+      </s:layout>
+      <s:Group width="100%" minWidth="0" minHeight="0">
+         <s:Label id="lblCopiedToClipboard" visible="false" fontWeight="bold" 
+                  horizontalCenter="0" text="{Localizer.string(
+                  'General', 'message.copyToClipboardSuccessful')}"/>
+      </s:Group>
+      <s:Button id="btnCopy" click="btnCopy_clickHandler(event)"
+                label="{getString('label.clientCrash.copy')}"/>
+      <s:Button id="btnClose" click="btnClose_clickHandler(event)"
+                label="{getString('label.log.close')}"/>
+   </s:Group>
+   <s:TextArea id="msgArea" text="{logMsg}" height="100%" editable="false"
+               skinClass="components.skins.CrashTextAreaSkin"/>
+</popups:BasePopup>

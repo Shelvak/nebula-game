@@ -354,6 +354,8 @@ module Parts
       def on_upgrade_just_resumed_after_save
         CallbackManager.register_or_update(self) \
           if register_upgrade_finished_callback?
+
+        true
       end
 
       ### just paused ###
@@ -373,7 +375,7 @@ module Parts
       end
 
       def on_upgrade_finished
-        raise ArgumentError.new("Cannot finish because #{self
+        raise ArgumentError.new("Cannot finish because #{self.inspect
           } is not upgrading!") unless upgrading?
 
         self.pause_remainder = nil

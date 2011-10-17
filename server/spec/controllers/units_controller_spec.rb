@@ -845,4 +845,65 @@ describe UnitsController do
       invoke @action, @params
     end
   end
+
+  describe "units|positions" do
+    before(:each) do
+      @action = "units|positions"
+      @params = {}
+      
+      alliance = Factory.create(:alliance, :owner => player)
+      player.alliance = alliance
+      player.save!
+      ally = Factory.create(:player, :alliance => alliance)
+
+      @units = [
+        Factory.create!(:u_trooper, :player => player),
+        Factory.create!(:u_shocker, :player => ally),
+      ]
+    end
+
+    it "should include positions for friendly units" do
+      invoke @action, @params
+      response_should_include(
+        :positions => Unit.positions(Unit.where(:id => @units.map(&:id)))
+      )
+    end
+
+    it "should not include moving units" do
+      @units.each do |unit|
+        unit.route = Factory.create(:route, :player => player)
+        unit.save!
+      end
+      
+      invoke @action, @params
+      response[:positions].should be_blank
+    end
+
+    it "should not include positions for loaded units" do
+      @units.each(&:destroy)
+      
+      mule = Factory.create(:u_mule, :player => player,
+                            :route => Factory.create(:route))
+      Factory.create(:u_trooper, :player => player, :location => mule)
+      invoke @action, @params
+      response[:positions].should be_blank
+    end
+
+    it "should not include positions for units whose level == 0" do
+      @units.each do |unit|
+        unit.level = 0
+        unit.save!
+      end
+
+      invoke @action, @params
+      response[:positions].should be_blank
+    end
+
+    it "should include players for those units" do
+      invoke @action, @params
+      response_should_include(
+        :players => Player.minimal_from_objects(@units)
+      )
+    end
+  end
 end

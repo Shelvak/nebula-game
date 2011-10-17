@@ -39,6 +39,10 @@ package utils
          navigateToURL(new URLRequest(wikiUrlRoot + path));
       }
       
+      public function showInviteFriendUrl() : void {
+         showUrl('invite-referral');
+      }
+      
       public function showBuyCreds(): void
       {
          showUrl('buy-creds');

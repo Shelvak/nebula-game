@@ -55,6 +55,22 @@ class PlanetsController < GenericController
     end
   end
 
+  ACTION_UNSET_CURRENT = 'planets|unset_current'
+  # Unsets currently viewed planet and planets solar system IDs.
+  #
+  # Invocation: by server
+  #
+  # Parameters: None
+  #
+  # Response: None
+  #
+  def action_unset_current
+    only_push!
+
+    self.current_planet_ss_id = nil
+    self.current_planet_id = nil
+  end
+
   ACTION_PLAYER_INDEX = 'planets|player_index'
   # Sends a list of planets player currently owns.
   #

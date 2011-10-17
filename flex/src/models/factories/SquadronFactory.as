@@ -35,7 +35,6 @@ package models.factories
          Objects.paramNotNull("squad", squad);
          var route:MRoute = new MRoute();
          route.id = squad.id;
-         route.playerId = squad.playerId;
          route.player = squad.player;
          route.owner = squad.owner;
          if (currentLocation != null) {
@@ -83,7 +82,6 @@ package models.factories
          var squad:MSquadron = new MSquadron();
          squad.id = unit.squadronId;
          squad.owner = unit.owner;
-         squad.playerId = unit.playerId;
          squad.player = unit.player;
          squad.createCurrentHop(unit.location);
          return squad;

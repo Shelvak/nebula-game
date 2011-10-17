@@ -120,9 +120,7 @@
       <s:Group id="contentGroup" left="24" right="1" top="13" bottom="15">
          <base:Scroller id="scrollCont" top="0" bottom="0" left="0" right="0" 
                         horizontalScrollPolicy="off" 
-                        verticalScrollPolicy="{hostComponent.flankModel.flankUnits.length == 0
-                        ?ScrollPolicy.OFF
-                        :ScrollPolicy.AUTO}">
+                        verticalScrollPolicy="on">
                <s:DataGroup id="unitsList" dataProvider="{hostComponent.flankModel.flankUnits}" 
                                   left="0" right="0"
                                   itemRenderer="components.unitsscreen.units.UnitComp">    

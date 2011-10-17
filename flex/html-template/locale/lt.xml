@@ -1421,12 +1421,16 @@
   <MainMenu>
     <label.vip value="VIP" />
     <label.quests value="Užduotys" />
-    <label.squadrons value="Laivynai ({0})" />
-    <label.noSquadrons value="Laivynų nėra" />
+    <!-- 0- Player flying squadrons count
+         1- Alliance flying squadrons count -->
+    <label.units value="Kariai ({0}/{1})" />
+    <tooltip.units value="Tavo judantys laivynai / Sąjungos judantys laivynai" />
     <label.ratings value="Reitingai" />
     <label.alliances value="Sąjungų reitingai" />
     <label.alliance value="Sąjunga" />
     <label.forum value="Forumas" />
+    <label.wiki value="Wiki"/>
+    <label.inviteFriend value="Pakvietimai"/>
     <tooltip.version value="Žaidimo versija" />
     <panelWidth value="95" />
   </MainMenu>
@@ -1826,6 +1830,14 @@
       atsparus! (bent jau kol kas). Na nieko, nesijaudink, visuomet gali 
       paleisti žaidimą iš naujo ir viskas turėtų (greičiausiai) būti gerai.</p>
     </crash>
+    
+    <title.log value="Derinimo žurnalas" />
+    <message.log.general>
+      <p>Tai yra žaidime atliktų Tavo veiksmų žurnalas. Nukopijuok jį į tekstinį 
+      failą ir pridėk prie savo pranešimo forume, kur apibudinai Tau iškilusias 
+      bėdas ir tai padės mums jas išspręsti.</p>
+    </message.log.general>
+    <label.log.close value="Uždaryti" />
 
     <title.clientCrash value="Aaaaaaaaaa!" />
     <message.clientCrash.general>
@@ -3225,7 +3237,9 @@
 
   <Squadrons>
     <title.squadrons value="Laivynai" />
+    <title.units value="Kariai" />
     <title.noSquadrons value="Judančių laivynų neaptikta." />
+    <title.noUnits value="Karių neaptikta." />
     <label.currentLocation value="Dabartinė pozicija:" />
     <label.sourceLocation value="Skrenda iš:" />
     <label.targetLocation value="Skrenda į:" />
@@ -3237,6 +3251,8 @@
     <label.close value="Uždaryti" />
     <label.playerFleets value="Tavo laivynai" />
     <label.allianceFleets value="Sąjungininkų laivynai" />
+    <label.playerUnits value="Tavo kariai" />
+    <label.allianceUnits value="Sąjungininkų kariai" />
     <label.stop value="Sustabdyti" />
     <label.manage value="Tvarkyti" />
   </Squadrons>
@@ -3703,6 +3719,24 @@
     <property.move.solarSystem.hopTime value="Šuolio laikas saulės sistemoje" />
     <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
     <property.population value="Populiacija" />
+    
+    <tooltip.freeStorage>
+      <p>Šiame laive dar liko {0} vietos.</p>
+    </tooltip.freeStorage>
+    
+    <tooltip.buildInFlankCommon>
+      <p>Paspausk, kad pakeistum.</p>
+    </tooltip.buildInFlankCommon>
+    
+    <tooltip.buildInFlank1>
+      <p>Tavo kariai atsiras pirmame flange.</p>
+      <p>[reference:tooltip.buildInFlankCommon]</p>
+    </tooltip.buildInFlank1>
+    
+    <tooltip.buildInFlank2>
+      <p>Tavo kariai atsiras antrame flange.</p>
+      <p>[reference:tooltip.buildInFlankCommon]</p>
+    </tooltip.buildInFlank2>
     
     <tooltip.populationCommon>
       <p>{0 one[? laisvas gyventojas] tens[? laisvų gyventojų] 
@@ -4192,7 +4226,7 @@
   
   <Authorization>
     <status.authorization value="Autorizuojama..."/>
-    <status.login value="Jungiamasi į serverį..."/>
+    <status.login value="Jungiamasi prie serverio..."/>
   </Authorization>
 
 </locale>

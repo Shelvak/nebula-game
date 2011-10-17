@@ -154,45 +154,5 @@ package utils
          _formatter.formatString = Localizer.string("Formatters", "date." + formatStringKey);
          return _formatter.format(date);
       }
-      
-      
-//      /**
-//       * Adds <code>date1</code> and <code>date2</code> and returns new <code>Date</code> object.
-//       * 
-//       * @param date1 <b>Not null.</b>
-//       * @param date2 <b>Not null.</b>
-//       */
-//      public static function add(date1:Date, date2:Date) : Date
-//      {
-//         ClassUtil.checkIfParamNotNull("date1", date1);
-//         ClassUtil.checkIfParamNotNull("date2", date2);
-//         return new Date(date1.time + date2.time);
-//      }
-//      
-//      
-//      /**
-//       * Substracts <code>date2</code> from <code>date1</code> and returns new <code>Date</code> object.
-//       * 
-//       * @param date1 <b>Not null.</b>
-//       * @param date2 <b>Not null.</b>
-//       */
-//      public static function substract(date1:Date, date2:Date) : Date
-//      {
-//         ClassUtil.checkIfParamNotNull("date1", date1);
-//         ClassUtil.checkIfParamNotNull("date2", date2);
-//         return new Date(date1.time - date2.time);
-//      }
-//      
-//      
-//      /**
-//       * Converts given date to number of seconds.
-//       * 
-//       * @param date <b>Not null.</b>
-//       */      
-//      public static function toSeconds(date:Date) : Number
-//      {
-//         ClassUtil.checkIfParamNotNull("date", date);
-//         return Math.floor(date.time / 1000);
-//      }
    }
 }

@@ -21,6 +21,10 @@ player.inactivity_check.points: 15000
 # How recent should last player login be if he doesn't have enough points?
 player.inactivity_check.last_login_in: <%= 3.days %> / speed
 
+# How much points do you need to trigger referral callback?
+# This one is also defined in web configuration.
+player.referral.points_needed: 150000
+
 # All positions are relative to zone and not overridable in other sets!
 #
 # If you add any position types here, don't forget to add them to SpaceMules

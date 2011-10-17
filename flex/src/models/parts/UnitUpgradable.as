@@ -1,6 +1,9 @@
 package models.parts
 {
+   import controllers.objects.ObjectClass;
+   
    import models.ModelLocator;
+   import models.building.Building;
    import models.unit.Unit;
    
    
@@ -18,6 +21,15 @@ package models.parts
       public override function forceUpgradeCompleted(level:int=0) : void
       {
 		  //unit is always constructed to level 1, other levels are reached through units|updated
+         if (ML.latestPlanet != null)
+         {
+            var unit: Unit = Unit(parent);
+            var constructor: Building = ML.latestPlanet.getBuildingByConstructable(unit.id, ObjectClass.UNIT);
+            if (constructor != null)
+            {
+               unit.flank = constructor.buildIn2ndFlank?1:0;
+            }
+         }
          super.forceUpgradeCompleted(1);
       }
       

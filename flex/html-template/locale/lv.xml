@@ -1504,13 +1504,19 @@
   <MainMenu>
     <label.vip value="Vip" />
     <label.quests value="Uzdevumi" />
-    <label.squadrons value="Flotes ({0})" />
-    <label.noSquadrons value="Nav flotes" />
+    <!-- TODO -->
+    <!-- 0- Player flying squadrons count
+         1- Alliance flying squadrons count -->
+    <label.units value="Units ({0}/{1})" />
+    <tooltip.units value="Your moving fleets / Alliances moving fleets" />
+    <!-- /TODO -->
     <label.ratings value="Vērtējums" />
     <label.alliances value="Alianses vērtējums" />
     <label.alliance value="Alianse" />
     <label.forum value="Forums" />
     <!-- TODO -->
+    <label.wiki value="Wiki"/>
+    <label.inviteFriend value="Invites"/>
     <tooltip.version value="Game version" />
     <!-- /TODO -->
     <panelWidth value="85" />
@@ -1920,6 +1926,16 @@
         will be fine (probably). 
       </p>
     </crash>
+
+    <!-- TODO -->
+    <title.log value="Debug log" />
+    <message.log.general>
+      <p>This is an in-game log of your actions. Paste this to a file and 
+      attach it to your forum post describing your problems and it will help
+      us to solve it.</p>
+    </message.log.general>
+    <label.log.close value="Close" />
+    <!-- /TODO -->
 
     <title.clientCrash value="Waaaargh!" />
     <message.clientCrash.general>
@@ -3312,6 +3328,10 @@
 
   <Squadrons>
     <title.squadrons value="Flotes" />
+    <!-- TODO -->
+    <title.units value="Units" />
+    <title.noUnits value="No units detected." />
+    <!-- /TODO -->
     <title.noSquadrons value="Nav atrastas flotes, kas pārvietotos." />
     <label.currentLocation value="Pašreizējā vieta:" />
     <label.sourceLocation value="Atlido no:" />
@@ -3326,6 +3346,10 @@
     <label.close value="Aizvērt" />
     <label.playerFleets value="Jūsu flotes" />
     <label.allianceFleets value="Alianses flotes" />
+    <!-- TODO -->
+    <label.playerUnits value="Your units" />
+    <label.allianceUnits value="Alliance units" />
+    <!-- /TODO -->
     <label.stop value="Apturēt" />
     <label.manage value="Pārvaldīt" />
   </Squadrons>
@@ -3855,6 +3879,26 @@
     <property.move.solarSystem.hopTime value="Viens lēciens saules sistēmā" />
     <property.move.galaxy.hopTime value="Viens lēciens galaktikā" />
     <property.population value="Iedzīvotāji" />
+    
+    <!-- TODO: translate this -->
+    <tooltip.freeStorage>
+      <p>This ship has {0} units of storage available.</p>
+    </tooltip.freeStorage>
+    
+    <tooltip.buildInFlankCommon>
+      <p>Click to change.</p>
+    </tooltip.buildInFlankCommon>
+    
+    <tooltip.buildInFlank1>
+      <p>Your units will appear in first flank.</p>
+      <p>[reference:tooltip.buildInFlankCommon]</p>
+    </tooltip.buildInFlank1>
+    
+    <tooltip.buildInFlank2>
+      <p>Your units will appear in second flank.</p>
+      <p>[reference:tooltip.buildInFlankCommon]</p>
+    </tooltip.buildInFlank2>
+    <!-- /TODO: translate this -->
 
     <stance.defensive value="Aizsardzības pozīcija ({0}% uzbrukums, {1}% aizsardzība)" />
     <stance.neutral value="Neitrāla pozīcija" />

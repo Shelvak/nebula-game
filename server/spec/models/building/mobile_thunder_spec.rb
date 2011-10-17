@@ -3,4 +3,5 @@ require File.expand_path(
 )
 
 describe Building::MobileThunder do
+  it_behaves_like "with army points", Factory.create(:b_mobile_thunder)
 end

@@ -178,6 +178,27 @@ describe PlanetsController do
     end
   end
 
+  describe "planets|unset_current" do
+    before(:each) do
+      @action = "planets|unset_current"
+      @params = {}
+      @controller.current_planet_id = 10
+      @controller.current_planet_ss_id = 100
+    end
+
+    it_should_behave_like "only push"
+
+    it "should unset current planet id" do
+      push @action, @params
+      @controller.current_planet_id.should be_nil
+    end
+
+    it "should unset current planet ss id" do
+      push @action, @params
+      @controller.current_planet_ss_id.should be_nil
+    end
+  end
+
   describe "planets|player_index" do
     before(:each) do
       @action = "planets|player_index"

@@ -97,12 +97,18 @@ class GenericController
     @dispatcher.storage[@client_id]
   end
 
+  SESSION_KEY_CURRENT_PLANET_ID = :current_planet_id
+
   # Solar system ID which is currently viewed by client.
   def current_ss_id; session[:current_ss_id]; end
   def current_ss_id=(value); session[:current_ss_id] = value; end
   # SsObject ID which is currently viewed by client.
-  def current_planet_id; session[:current_planet_id]; end
-  def current_planet_id=(value); session[:current_planet_id] = value; end
+  def current_planet_id
+    session[SESSION_KEY_CURRENT_PLANET_ID]
+  end
+  def current_planet_id=(value)
+    session[SESSION_KEY_CURRENT_PLANET_ID] = value
+  end
   # Solar System ID of planet which is currently viewed by client.
   def current_planet_ss_id; session[:current_planet_ss_id]; end
   def current_planet_ss_id=(value); session[:current_planet_ss_id] = value; end

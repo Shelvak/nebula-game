@@ -1417,11 +1417,15 @@
   <MainMenu>
     <label.vip value="Vip" />
     <label.quests value="Quests" />
-    <label.squadrons value="Fleets ({0})" />
-    <label.noSquadrons value="No fleets" />
+    <!-- 0- Player flying squadrons count
+         1- Alliance flying squadrons count -->
+    <label.units value="Units ({0}/{1})" />
+    <tooltip.units value="Your moving fleets / Alliances moving fleets" />
     <label.ratings value="Ratings" />
     <label.alliances value="Alliance ratings" />
     <label.alliance value="Alliance" />
+    <label.wiki value="Wiki"/>
+    <label.inviteFriend value="Invites"/>
     <label.forum value="Forum" />
     <tooltip.version value="Game version" />
     <panelWidth value="85" />
@@ -1827,6 +1831,14 @@
         will be fine (probably). 
       </p>
     </crash>
+
+    <title.log value="Debug log" />
+    <message.log.general>
+      <p>This is an in-game log of your actions. Paste this to a file and 
+      attach it to your forum post describing your problems and it will help
+      us to solve it.</p>
+    </message.log.general>
+    <label.log.close value="Close" />
 
     <title.clientCrash value="Waaaargh!" />
     <message.clientCrash.general>
@@ -3217,7 +3229,9 @@
 
   <Squadrons>
     <title.squadrons value="Fleets" />
+    <title.units value="Units" />
     <title.noSquadrons value="No moving fleets detected." />
+    <title.noUnits value="No units detected." />
     <label.currentLocation value="Current location:" />
     <label.sourceLocation value="Flying from:" />
     <label.targetLocation value="Traveling to:" />
@@ -3229,6 +3243,8 @@
     <label.close value="Close" />
     <label.playerFleets value="Your fleets" />
     <label.allianceFleets value="Alliance fleets" />
+    <label.playerUnits value="Your units" />
+    <label.allianceUnits value="Alliance units" />
     <label.stop value="Stop" />
     <label.manage value="Manage" />
   </Squadrons>
@@ -3760,6 +3776,24 @@
     <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
+    
+    <tooltip.freeStorage>
+      <p>This ship has {0} units of storage available.</p>
+    </tooltip.freeStorage>
+    
+    <tooltip.buildInFlankCommon>
+      <p>Click to change.</p>
+    </tooltip.buildInFlankCommon>
+    
+    <tooltip.buildInFlank1>
+      <p>Your units will appear in first flank.</p>
+      <p>[reference:tooltip.buildInFlankCommon]</p>
+    </tooltip.buildInFlank1>
+    
+    <tooltip.buildInFlank2>
+      <p>Your units will appear in second flank.</p>
+      <p>[reference:tooltip.buildInFlankCommon]</p>
+    </tooltip.buildInFlank2>
     
     <tooltip.populationCommon>
       <p>{0} population left</p>

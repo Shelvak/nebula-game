@@ -485,6 +485,33 @@ class UnitsController < GenericController
     Unit.dismiss_units(planet, params['unit_ids'])
   end
 
+  # Returns non moving not loaded friendly unit positions grouped by counts.
+  #
+  # Invocation: by client
+  #
+  # Parameters: None
+  #
+  # Response:
+  # - positions (Unit#positions): unit positions for friendly units.
+  # - players (Player#minimal_from_objects): minimal players hash
+  #
+  def action_positions
+    positions = {}
+    #Unit.positions(
+    #  Unit.where(
+    #    "location_type != ? AND route_id IS NULL AND level > 0",
+    #    Location::UNIT
+    #  ).where(:player_id => player.friendly_ids)
+    #)
+    players = Player.minimal_from_objects(positions) do |player_id, data|
+      player_id
+    end
+
+    respond \
+      :positions => positions,
+      :players => players
+  end
+
   private
   def resolve_location
     source = Location.find_by_attrs(params['source'].symbolize_keys)

@@ -202,7 +202,7 @@ package controllers.startup
          _inMemoryLog = new InMemoryTarget();   
          _inMemoryLog.includeCategory = true;
          _inMemoryLog.includeLevel = true;
-         _inMemoryLog.maxEntries = 100;
+         _inMemoryLog.maxEntries = 1000;
          _inMemoryLog.level = LogEventLevel.ALL;
          Log.addTarget(_inMemoryLog);
       }
@@ -322,6 +322,7 @@ package controllers.startup
          bindPair(UnitsCommand.MOVEMENT, new MovementAction());
          bindPair(UnitsCommand.MOVEMENT_PREPARE, new MovementPrepareAction());
          bindPair(UnitsCommand.MOVE_META, new MoveMetaAction());
+         bindPair(UnitsCommand.POSITIONS, new PositionsAction());
       }
       private static function bindObjectsCommands() : void
       {

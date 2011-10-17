@@ -131,7 +131,7 @@ module Parts::Constructor
       constructable.cancel!
       CallbackManager.unregister(self,
           CallbackManager::EVENT_CONSTRUCTION_FINISHED)
-      on_construction_finished!
+      on_construction_finished!(false)
     end
 
     # Construct and upgrade building.
@@ -179,32 +179,57 @@ module Parts::Constructor
         "Cannot accelerate if not working!"
       ) unless working?
 
+      # #accelerate! might complete the constructable, so make sure its flank
+      # is set. This is a hack and I know it. :( - arturaz
       constructable = self.constructable
-      upgrade_ends_at = constructable.upgrade_ends_at
-      seconds_reduced = constructable.accelerate!(time, cost)
-      CallbackManager.update(self,
-        CallbackManager::EVENT_CONSTRUCTION_FINISHED,
-        upgrade_ends_at - seconds_reduced)
+      before_finishing_constructable(constructable)
+      # Don't register upgrade finished callback if partially accelerating.
+      constructable.register_upgrade_finished_callback = false
+      constructable.accelerate!(time, cost)
+      if constructable.upgrading?
+        CallbackManager.update(self,
+          CallbackManager::EVENT_CONSTRUCTION_FINISHED,
+          constructable.upgrade_ends_at
+        )
+      else
+        CallbackManager.unregister(
+          self, CallbackManager::EVENT_CONSTRUCTION_FINISHED
+        )
+        # Acceleration finishes constructable so we don't have to.
+        on_construction_finished!(false)
+      end
 
       true
     end
 
-    def on_construction_finished!
+    def on_construction_finished!(finish_constructable=true)
       # Store aggregated queue errors.
       not_enough_resources = []
 
-      begin
+      # We might not need to finish constructable if it was cancelled.
+      if finish_constructable
         constructable = self.constructable
-        constructable.flank = 1 if build_in_2nd_flank? &&
-          constructable.is_a?(Unit)
-        # Call #on_upgrade_finished! because we have no callback registered.
-        constructable.send(:on_upgrade_finished!)
 
+        # Temp. workaround to prevent constructors getting stuck - still need
+        # to understand what is wrong with it.
+        begin
+          before_finishing_constructable(constructable)
+          # Call #on_upgrade_finished! because we have no callback registered.
+          constructable.send(:on_upgrade_finished!)
+        rescue Exception => e
+          if App.in_production?
+            LOGGER.error("FAIL @ constructor #{self.inspect}:\n#{e.to_log_str}")
+          else
+            raise e
+          end
+        end
+      end
+
+      begin
         queue_entry = ConstructionQueue.shift(id)
 
         if queue_entry
-          construct_model!(queue_entry.constructable_type,
-            queue_entry.params)
+          construct_model!(queue_entry.constructable_type, queue_entry.params)
         else
           construct_model!(nil, nil)
         end
@@ -275,6 +300,15 @@ module Parts::Constructor
       end
 
       params
+    end
+
+    private
+
+    def before_finishing_constructable(constructable)
+      constructable.flank = 1 if build_in_2nd_flank? &&
+        constructable.is_a?(Unit)
+
+      constructable
     end
 	end
 end

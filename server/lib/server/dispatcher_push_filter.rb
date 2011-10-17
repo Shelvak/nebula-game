@@ -1,6 +1,6 @@
 # Filter used for deciding if messages should be pushed to client or not.
 #
-# They should not be pushed to client if it would useless, e.g. player is
+# They should not be pushed to client if it would be useless, e.g. player is
 # not looking into that map and doesn't know about pushed object.
 #
 class DispatcherPushFilter
