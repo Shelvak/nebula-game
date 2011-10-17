@@ -504,8 +504,8 @@ package models.unit
                unit.unit.stance = unit.stance;
             }
          }
-         transformedUnits.enableAutoUpdate();
          ML.units.enableAutoUpdate();
+         transformedUnits.enableAutoUpdate();
          dispatchFormationChangeEvent();
          GlobalFlags.getInstance().lockApplication = false;
       }

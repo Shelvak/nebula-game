@@ -72,6 +72,7 @@ package controllers.players.actions
             }
          }
          
+         ML.units.disableAutoUpdate();
          // update units
          for each (var unit:Unit in ML.units)
          {
@@ -80,6 +81,7 @@ package controllers.players.actions
                unit.owner = getStatus(statuses, unit.playerId);
             }
          }
+         ML.units.enableAutoUpdate();
       }
       
       
