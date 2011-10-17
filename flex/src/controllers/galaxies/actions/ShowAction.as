@@ -10,17 +10,15 @@ package controllers.galaxies.actions
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    
-   import flash.geom.Rectangle;
-   
    import globalevents.GlobalEvent;
    
    import models.BaseModel;
    import models.MWreckage;
    import models.cooldown.MCooldownSpace;
    import models.factories.GalaxyFactory;
-   import models.factories.SquadronFactory;
    import models.factories.UnitFactory;
    import models.galaxy.Galaxy;
+   import models.map.MapArea;
    import models.map.MapType;
    import models.movement.MHop;
    import models.planet.Planet;
@@ -157,7 +155,7 @@ package controllers.galaxies.actions
          ML.units.disableAutoUpdate();
          ML.units.addAll(units);
          ML.units.enableAutoUpdate();
-         galaxy.setFOWEntries(Vector.<Rectangle>(fowEntries), units);
+         galaxy.setFOWEntries(Vector.<MapArea>(fowEntries), units);
          SQUADS_CTRL.createSquadronsForUnits(units, galaxy);
          SQUADS_CTRL.addHopsToSquadrons(hops);
          SQUADS_CTRL.attachJumpsAtToHostileSquads(galaxy.squadrons, jumpsAtHash);

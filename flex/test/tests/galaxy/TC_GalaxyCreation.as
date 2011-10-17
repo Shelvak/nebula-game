@@ -7,8 +7,6 @@ package tests.galaxy
    
    import ext.hamcrest.object.equals;
    
-   import flash.geom.Rectangle;
-   
    import models.MWreckage;
    import models.ModelLocator;
    import models.Owner;
@@ -16,6 +14,7 @@ package tests.galaxy
    import models.galaxy.Galaxy;
    import models.location.LocationMinimal;
    import models.location.LocationType;
+   import models.map.MapArea;
    import models.movement.MHop;
    import models.movement.MRoute;
    import models.movement.MSquadron;
@@ -78,7 +77,7 @@ package tests.galaxy
             GALAXY_ID,
             BATTLEGROUND_ID,
             [  // fow entries
-               makeFow(-5, -5, 11, 11)
+               new MapArea(-5, 5, -5, 5)
             ],
             new ArrayCollection([  // solar systems
                makeSS(1, 0, 0),
@@ -111,8 +110,8 @@ package tests.galaxy
          assertThat( "battleground id", galaxy.battlegroundId, equals (BATTLEGROUND_ID) );
          
          assertThat( "galaxy bounds created", galaxy.bounds, notNullValue() );
-         assertThat( "galaxy width", galaxy.bounds.width, equals (16) );
-         assertThat( "galaxy height", galaxy.bounds.height, equals (16) );
+         assertThat( "galaxy width", galaxy.bounds.width, equals (15) );
+         assertThat( "galaxy height", galaxy.bounds.height, equals (15) );
          
          assertThat( "# of static objects", galaxy.objects, arrayWithSize (5) );
          
@@ -370,10 +369,6 @@ package tests.galaxy
                   (id == 0 ? squad.playerId == playerId && squad.currentHop.location.equals(loc) : true)
             }
          );
-      }
-      
-      private function makeFow(x:int, y:int, width:int, height:int) : Rectangle {
-         return new Rectangle(x, y, width, height);
       }
       
       private function makeSS(id:int, x:int, y:int, kind:int = SSKind.NORMAL) : SolarSystem {
