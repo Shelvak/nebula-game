@@ -5,6 +5,7 @@ package models.unit
    import components.unitsscreen.events.LoadUnloadEvent;
    import components.unitsscreen.events.UnitsScreenEvent;
    
+   import controllers.GlobalFlags;
    import controllers.Messenger;
    import controllers.units.UnitsCommand;
    
@@ -271,6 +272,7 @@ package models.unit
          var _selectionIds: Array = selectionIds;
          if (_selectionIds.length > 0)
          {
+            GlobalFlags.getInstance().lockApplication = true;
             if (target is Unit)
             {
                new UnitsCommand(
@@ -292,6 +294,7 @@ package models.unit
          }
          if (metalSelectedVal > 0 || energySelectedVal > 0 || zetiumSelectedVal > 0)
          {
+            GlobalFlags.getInstance().lockApplication = true;
             if (target is Unit)
             {
                new UnitsCommand(

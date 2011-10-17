@@ -11,7 +11,9 @@ upgradable.speed_up:
   - [<%= 12.hours %> / speed, 750]
   - [<%= 1.day %> / speed, 1000]
   - [<%= 2.days %> / speed, 1500]
-  - [<%= Creds::ACCELERATE_INSTANT_COMPLETE %>, 2000]
+  - [<%= 4.days %> / speed, 4000]
+  - [<%= 6.days %> / speed, 8000]
+  - [<%= 8.days %> / speed, 10000]
 
 # How much does it cost to remove a foliage.
 foliage.remove: 1000.0 * width * height / 9

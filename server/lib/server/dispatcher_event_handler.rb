@@ -40,6 +40,18 @@ class DispatcherEventHandler
           filter
         )
       end
+    elsif object.is_a?(PlanetObserversChangeEvent)
+      filter = DispatcherPushFilter.
+        new(DispatcherPushFilter::SS_OBJECT, object.planet_id)
+      
+      object.non_observer_ids.each do |player_id|
+        @dispatcher.push_to_player(
+          player_id,
+          PlanetsController::ACTION_UNSET_CURRENT,
+          {},
+          filter
+        )
+      end
     else
       raise ArgumentError.new("Don't know how to handle created for #{
         objects.inspect}!")

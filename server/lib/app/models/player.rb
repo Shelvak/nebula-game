@@ -37,7 +37,7 @@ class Player < ActiveRecord::Base
   has_many :market_offers, :through => :planets
   # FK with NO ACTION, because we need to dispatch changed events in code
   # for alliance members.
-  has_one :owned_alliance, :dependent => :destroy, 
+  has_one :owned_alliance, :dependent => :destroy,
     :class_name => "Alliance", :foreign_key => :owner_id
   # FK :dependent => :delete_all, beware this only includes unit entries
   # because buildings do not technically belong to a player, but instead to
@@ -49,6 +49,12 @@ class Player < ActiveRecord::Base
   include Parts::Notifier
   include Parts::PlayerVip
 
+  flag_attributes(
+    :first_time           => 0b00000001,
+    :vip_free             => 0b00000010,
+    :referral_submitted   => 0b00000100
+  )
+
   # Given +Array+ with +Player+ ids returns a +Hash+ where players are
   # grouped by alliance ids. Players who are not in alliance get negative
   # alliance ids, starting from -1.
@@ -57,7 +63,7 @@ class Player < ActiveRecord::Base
     # Support for only-npc action.
     players = player_ids == [nil] \
       ? [] : Player.find(player_ids).hash_by(&:id)
-    
+
     grouped = {}
     player_ids.map do |player_id|
       player = player_id.nil? ? nil : players[player_id]
@@ -78,14 +84,12 @@ class Player < ActiveRecord::Base
   # Returns minimal representation of +Player+ with _id_.
   #
   # Either _nil_ if _id_ is nil or:
-  # 
+  #
   # {"id" => Fixnum, "name" => String}
   #
   def self.minimal(id)
     if id
-      name = connection.select_one(
-        "SELECT name FROM `#{table_name}` WHERE id=#{id.to_i}"
-      )['name']
+      name = select("name").where(:id => id).c_select_one['name']
       {"id" => id, "name" => name}
     else
       nil
@@ -93,21 +97,21 @@ class Player < ActiveRecord::Base
   end
 
   # Return Hash of {player_id => Player#minimal} pairs from given _objects_.
-  def self.minimal_from_objects(objects)
-    objects.map(&:player_id).uniq.map_to_hash do |player_id|
-      minimal(player_id)
-    end
+  def self.minimal_from_objects(objects, map_method=:player_id, &map_block)
+    map_block ||= map_method
+
+    objects.map(&map_block).uniq.map_to_hash { |player_id| minimal(player_id) }
   end
-  
+
   # Is daily bonus available for this player?
   def daily_bonus_available?
     ! first_time? && (daily_bonus_at.nil? || daily_bonus_at <= Time.now)
   end
-  
-  # Set next daily bonus expiration. 
-  # 
-  # If it was nil, set it to CONFIG['daily_bonus.cooldown'] from now. 
-  # 
+
+  # Set next daily bonus expiration.
+  #
+  # If it was nil, set it to CONFIG['daily_bonus.cooldown'] from now.
+  #
   # If it was not nil, set it to closest future date to now by adding
   # CONFIG['daily_bonus.cooldown'] intervals to previous daily bonus date.
   def set_next_daily_bonus
@@ -118,7 +122,7 @@ class Player < ActiveRecord::Base
     end
     self.daily_bonus_at
   end
-  
+
   def set_next_daily_bonus!
     set_next_daily_bonus
     save!
@@ -193,7 +197,7 @@ class Player < ActiveRecord::Base
     (condition.nil? ? self : condition).
       select(RATING_ATTRIBUTES_SQL + ", a.name AS a_name, a.id AS a_id").
       where(:galaxy_id => galaxy_id).
-      joins("LEFT JOIN #{Alliance.table_name} AS a 
+      joins("LEFT JOIN #{Alliance.table_name} AS a
         ON `#{p}`.alliance_id=a.id").
       order("id").
       c_select_all.
@@ -207,12 +211,12 @@ class Player < ActiveRecord::Base
         row
       end
   end
-  
+
   # Number that represents maximum population for player.
   def population_max
     [Cfg.player_max_population, population_cap].min
   end
-  
+
   # Returns value (0..1] for combat mods. If player is overpopulated this
   # value will be < 1, else it will be 1.0.
   def overpopulation_mod
@@ -220,8 +224,8 @@ class Player < ActiveRecord::Base
   end
 
   def population_free; population_max - population; end
-  
-  def overpopulated?; 
+
+  def overpopulated?;
     population >= population_max
   end
 
@@ -253,10 +257,19 @@ class Player < ActiveRecord::Base
     )
   end
 
-  # Make sure we don't get below 0 points.
+  # Make sure we don't get below 0 points, 
   before_save do
     POINT_ATTRIBUTES.each do |attr|
       send(:"#{attr}=", 0) if send(attr) < 0
+    end
+
+    if ! referral_submitted? && points >= Cfg.player_referral_points_needed
+      begin
+        ControlManager.instance.player_referral_points_reached(self)
+        self.referral_submitted = true
+      rescue ControlManager::Error => e
+        LOGGER.warn("Player referral points callback failed!\n#{e.to_log_str}")
+      end
     end
 
     if ! alliance_id.nil? && victory_points_changed?
@@ -284,8 +297,8 @@ class Player < ActiveRecord::Base
       klass.progress(self)
     end
   end
-  
-  # Upon +Player+ destroy all shielded solar systems should become dead 
+
+  # Upon +Player+ destroy all shielded solar systems should become dead
   # stars.
   before_destroy do
     solar_system_ids = planets.map(&:solar_system_id).uniq
@@ -294,7 +307,7 @@ class Player < ActiveRecord::Base
   end
 
   attr_accessor :invoked_from_control_manager
-  
+
   # Destroy player in WEB unless this destroy was invoked from control
   # manager.
   after_destroy :unless => :invoked_from_control_manager do
@@ -307,7 +320,7 @@ class Player < ActiveRecord::Base
 
   # Update player in dispatcher if it is connected so alliance ids and other
   # things would be intact.
-  # 
+  #
   # Also give vicotry points to alliance if player earned them.
   #
   # This is why DataMapper is great - it keeps one object in memory for one

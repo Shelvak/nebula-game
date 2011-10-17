@@ -24,6 +24,8 @@ package controllers.units
       
       public static const DISMISS: String = "units|dismiss";
       
+      public static const POSITIONS: String = "units|positions";
+      
       
       /**
        * @see controllers.units.actions.MoveAction

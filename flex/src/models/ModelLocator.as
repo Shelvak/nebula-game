@@ -1,7 +1,10 @@
 package models
 {
+   import application.Version;
+   
    import controllers.battle.BattleController;
    import controllers.screens.MainAreaScreens;
+   import controllers.startup.StartupManager;
    import controllers.ui.NavigationController;
    
    import flash.events.EventDispatcher;
@@ -49,6 +52,21 @@ package models
       public static function getInstance() : ModelLocator
       {
          return SingletonFactory.getSingletonInstance(ModelLocator);
+      }
+      
+      public function get debugLog(): String
+      {
+         var message:String = 'Debug log! Version ' + Version.VERSION +
+            '\n\n';
+         message += 'Log (last ' + StartupManager.inMemoryLog.maxEntries + ' entries):\n';
+         message += StartupManager.inMemoryLog.getContent("\n") + "\n\n";
+         message += 'Player:\n' + player + '\n\n';
+         message += "Active map type:\n" + activeMapType + "\n\n";
+         message += "Current galaxy:\n" + latestGalaxy + "\n\n";
+         message += "Solar systems in current galaxy:\n" + latestGalaxy.solarSystems.toArray().join("\n") + "\n\n";
+         message += "Current solar system:\n" + latestSolarSystem + "\n\n";
+         message += "Current planet:\n" + latestPlanet + "\n\n";
+         return message;
       }
       
       

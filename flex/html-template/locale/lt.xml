@@ -1406,12 +1406,51 @@
     <description.short.galaxy value="Galaktika" />
     <description.short.solarSystem value="Saulės sistema {0}" />
     <description.short.planet value="Planeta {0}" />
-    <description.long.galaxy value="Galaktikos sektorius {0}:{1}" />
-    <description.long.solarSystem value="Saulės sistemos {0} sektorius {1}:{2}" />
-    <description.long.pulsar value="Pulsaro {0} sektorius {1}:{2}"/>
-    <description.long.battleground value="Arenos sektorius {0}:{1}"/>
-    <description.long.planet value="Saulės sistemos {1} planeta {0}" />
-    <description.long.planetInBattleground value="Arenos planeta {0}" />
+    <description.long.galaxy>
+      <![CDATA[
+      <p>
+        Galaktikos sektorius <span fontWeight="bold">{0}:{1}</span>
+      </p>
+      ]]>
+      </description.long.galaxy>
+      <description.long.solarSystem>
+      <![CDATA[
+      <p>
+        Saulės sistemos <span fontWeight="bold">{0}</span> sektorius 
+        <span fontWeight="bold">{1}:{2}</span>
+      </p>
+      ]]>
+      </description.long.solarSystem>
+      <description.long.pulsar>
+      <![CDATA[
+      <p>
+        Pulsaro <span fontWeight="bold">{0}</span> sektorius 
+        <span fontWeight="bold">{1}:{2}</span>
+      </p>
+      ]]>
+      </description.long.pulsar>
+      <description.long.battleground>
+      <![CDATA[
+      <p>
+        Arenos sektorius <span fontWeight="bold">{0}:{1}</span>
+      </p>
+      ]]>
+      </description.long.battleground>
+      <description.long.planet>
+      <![CDATA[
+      <p>
+        Saulės sistemos <span fontWeight="bold">{1}</span> planeta 
+        <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+      </description.long.planet>
+      <description.long.planetInBattleground>
+      <![CDATA[
+      <p>
+        Arenos planeta <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+      </description.long.planetInBattleground>
 
     <message.locationNotAvailable>
       <p>Tu nebegali peržiūrėti šios vietos</p>
@@ -1421,12 +1460,16 @@
   <MainMenu>
     <label.vip value="VIP" />
     <label.quests value="Užduotys" />
-    <label.squadrons value="Laivynai ({0})" />
-    <label.noSquadrons value="Laivynų nėra" />
+    <!-- 0- Player flying squadrons count
+         1- Alliance flying squadrons count -->
+    <label.units value="Kariai ({0}/{1})" />
+    <tooltip.units value="Tavo judantys laivynai / Sąjungos judantys laivynai" />
     <label.ratings value="Reitingai" />
     <label.alliances value="Sąjungų reitingai" />
     <label.alliance value="Sąjunga" />
     <label.forum value="Forumas" />
+    <label.wiki value="Wiki"/>
+    <label.inviteFriend value="Pakvietimai"/>
     <tooltip.version value="Žaidimo versija" />
     <panelWidth value="95" />
   </MainMenu>
@@ -1826,6 +1869,14 @@
       atsparus! (bent jau kol kas). Na nieko, nesijaudink, visuomet gali 
       paleisti žaidimą iš naujo ir viskas turėtų (greičiausiai) būti gerai.</p>
     </crash>
+    
+    <title.log value="Derinimo žurnalas" />
+    <message.log.general>
+      <p>Tai yra žaidime atliktų Tavo veiksmų žurnalas. Nukopijuok jį į tekstinį 
+      failą ir pridėk prie savo pranešimo forume, kur apibudinai Tau iškilusias 
+      bėdas ir tai padės mums jas išspręsti.</p>
+    </message.log.general>
+    <label.log.close value="Uždaryti" />
 
     <title.clientCrash value="Aaaaaaaaaa!" />
     <message.clientCrash.general>
@@ -3234,7 +3285,9 @@
 
   <Squadrons>
     <title.squadrons value="Laivynai" />
+    <title.units value="Kariai" />
     <title.noSquadrons value="Judančių laivynų neaptikta." />
+    <title.noUnits value="Karių neaptikta." />
     <label.currentLocation value="Dabartinė pozicija:" />
     <label.sourceLocation value="Skrenda iš:" />
     <label.targetLocation value="Skrenda į:" />
@@ -3246,6 +3299,8 @@
     <label.close value="Uždaryti" />
     <label.playerFleets value="Tavo laivynai" />
     <label.allianceFleets value="Sąjungininkų laivynai" />
+    <label.playerUnits value="Tavo kariai" />
+    <label.allianceUnits value="Sąjungininkų kariai" />
     <label.stop value="Sustabdyti" />
     <label.manage value="Tvarkyti" />
   </Squadrons>
@@ -4219,7 +4274,7 @@
   
   <Authorization>
     <status.authorization value="Autorizuojama..."/>
-    <status.login value="Jungiamasi į serverį..."/>
+    <status.login value="Jungiamasi prie serverio..."/>
   </Authorization>
 
 </locale>

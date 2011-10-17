@@ -1320,12 +1320,51 @@
     <description.short.galaxy value="Galaxy" />
     <description.short.solarSystem value="Solar System {0}" />
     <description.short.planet value="Planet {0}" />
-    <description.long.galaxy value="Sector {0}:{1} in Galaxy" />
-    <description.long.solarSystem value="Sector {1}:{2} in Solar System {0}" />
-    <description.long.pulsar value="Sector {1}:{2} in Pulsar {0}"/>
-    <description.long.battleground value="Sector {0}:{1} in battleground"/>
-    <description.long.planet value="Planet {0} in Solar System {1}" />
-    <description.long.planetInBattleground value="Planet {0} in Battleground"/>
+    <description.long.galaxy>
+      <![CDATA[
+      <p>
+        Sector <span fontWeight="bold">{0}:{1}</span> in Galaxy
+      </p>
+      ]]>
+    </description.long.galaxy>
+    <description.long.solarSystem>
+      <![CDATA[
+      <p>
+        Sector <span fontWeight="bold">{1}:{2}</span> in Solar System 
+        <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+    </description.long.solarSystem>
+    <description.long.pulsar>
+      <![CDATA[
+      <p>
+         Sector <span fontWeight="bold">{1}:{2}</span> in Pulsar 
+         <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+    </description.long.pulsar>
+    <description.long.battleground>
+      <![CDATA[
+      <p>
+        Sector <span fontWeight="bold">{0}:{1}</span> in battleground
+      </p>
+      ]]>
+    </description.long.battleground>
+    <description.long.planet>
+      <![CDATA[
+      <p>
+        Planet <span fontWeight="bold">{0}</span> in Solar System 
+        <span fontWeight="bold">{1}</span>
+      </p>
+      ]]>
+    </description.long.planet>
+    <description.long.planetInBattleground>
+      <![CDATA[
+      <p>
+        Planet <span fontWeight="bold">{0}</span> in Battleground
+      </p>
+      ]]>
+    </description.long.planetInBattleground>
 
     <message.locationNotAvailable>
       <p>You can no longer view this location</p>
@@ -1335,11 +1374,15 @@
   <MainMenu>
     <label.vip value="Vip" />
     <label.quests value="Quests" />
-    <label.squadrons value="Fleets ({0})" />
-    <label.noSquadrons value="No fleets" />
+    <!-- 0- Player flying squadrons count
+         1- Alliance flying squadrons count -->
+    <label.units value="Units ({0}/{1})" />
+    <tooltip.units value="Your moving fleets / Alliances moving fleets" />
     <label.ratings value="Ratings" />
     <label.alliances value="Alliance ratings" />
     <label.alliance value="Alliance" />
+    <label.wiki value="Wiki"/>
+    <label.inviteFriend value="Invites"/>
     <label.forum value="Forum" />
     <tooltip.version value="Game version" />
     <panelWidth value="85" />
@@ -1745,6 +1788,14 @@
         will be fine (probably). 
       </p>
     </crash>
+
+    <title.log value="Debug log" />
+    <message.log.general>
+      <p>This is an in-game log of your actions. Paste this to a file and 
+      attach it to your forum post describing your problems and it will help
+      us to solve it.</p>
+    </message.log.general>
+    <label.log.close value="Close" />
 
     <title.clientCrash value="Waaaargh!" />
     <message.clientCrash.general>
@@ -3138,7 +3189,9 @@
 
   <Squadrons>
     <title.squadrons value="Fleets" />
+    <title.units value="Units" />
     <title.noSquadrons value="No moving fleets detected." />
+    <title.noUnits value="No units detected." />
     <label.currentLocation value="Current location:" />
     <label.sourceLocation value="Flying from:" />
     <label.targetLocation value="Traveling to:" />
@@ -3150,6 +3203,8 @@
     <label.close value="Close" />
     <label.playerFleets value="Your fleets" />
     <label.allianceFleets value="Alliance fleets" />
+    <label.playerUnits value="Your units" />
+    <label.allianceUnits value="Alliance units" />
     <label.stop value="Stop" />
     <label.manage value="Manage" />
   </Squadrons>

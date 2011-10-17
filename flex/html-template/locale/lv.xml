@@ -1463,14 +1463,54 @@
     <description.short.galaxy value="Galaktika" />
     <description.short.solarSystem value="Saules sistēma {0}" />
     <description.short.planet value="Planēta {0}" />
-    <description.long.galaxy value="Sektors {0}:{1} galaktikā" />
-    <description.long.solarSystem value="Sektors {1}:{2} saules sistēmā {0}" />
+
+    <description.long.galaxy>
+      <![CDATA[
+      <p>
+        Sektors <span fontWeight="bold">{0}:{1}</span> galaktikā
+      </p>
+      ]]>
+    </description.long.galaxy>
+    <description.long.solarSystem>
+      <![CDATA[
+      <p>
+        Sektors <span fontWeight="bold">{1}:{2}</span> saules sistēmā 
+        <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+    </description.long.solarSystem>
     <!-- TODO -->
-    <description.long.pulsar value="Sector {1}:{2} in Pulsar {0}"/>
-    <description.long.battleground value="Sector {0}:{1} in battleground"/>
+    <description.long.pulsar>
+      <![CDATA[
+      <p>
+         Sector <span fontWeight="bold">{1}:{2}</span> in Pulsar 
+         <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+    </description.long.pulsar>
+    <description.long.battleground>
+      <![CDATA[
+      <p>
+        Sector <span fontWeight="bold">{0}:{1}</span> in battleground
+      </p>
+      ]]>
+    </description.long.battleground>
     <!-- /TODO -->
-    <description.long.planet value="Planēta {0} saules sistēmā {1}" />
-    <description.long.planetInBattleground value="Planēta {0} kaujas laukā"/>
+    <description.long.planet>
+      <![CDATA[
+      <p>
+        Planēta <span fontWeight="bold">{0}</span> saules sistēmā 
+        <span fontWeight="bold">{1}</span>
+      </p>
+      ]]>
+    </description.long.planet>
+    <description.long.planetInBattleground>
+      <![CDATA[
+      <p>
+        Planēta <span fontWeight="bold">{0}</span> kaujas laukā
+      </p>
+      ]]>
+    </description.long.planetInBattleground>
 
     <message.locationNotAvailable>
       <p>Jūs vairs nevarat apskatīties šo atrašanās vietu</p>
@@ -1480,13 +1520,19 @@
   <MainMenu>
     <label.vip value="Vip" />
     <label.quests value="Uzdevumi" />
-    <label.squadrons value="Flotes ({0})" />
-    <label.noSquadrons value="Nav flotes" />
+    <!-- TODO -->
+    <!-- 0- Player flying squadrons count
+         1- Alliance flying squadrons count -->
+    <label.units value="Units ({0}/{1})" />
+    <tooltip.units value="Your moving fleets / Alliances moving fleets" />
+    <!-- /TODO -->
     <label.ratings value="Vērtējums" />
     <label.alliances value="Alianses vērtējums" />
     <label.alliance value="Alianse" />
     <label.forum value="Forums" />
     <!-- TODO -->
+    <label.wiki value="Wiki"/>
+    <label.inviteFriend value="Invites"/>
     <tooltip.version value="Game version" />
     <!-- /TODO -->
     <panelWidth value="85" />
@@ -1896,6 +1942,16 @@
         will be fine (probably). 
       </p>
     </crash>
+
+    <!-- TODO -->
+    <title.log value="Debug log" />
+    <message.log.general>
+      <p>This is an in-game log of your actions. Paste this to a file and 
+      attach it to your forum post describing your problems and it will help
+      us to solve it.</p>
+    </message.log.general>
+    <label.log.close value="Close" />
+    <!-- /TODO -->
 
     <title.clientCrash value="Waaaargh!" />
     <message.clientCrash.general>
@@ -3295,6 +3351,10 @@
 
   <Squadrons>
     <title.squadrons value="Flotes" />
+    <!-- TODO -->
+    <title.units value="Units" />
+    <title.noUnits value="No units detected." />
+    <!-- /TODO -->
     <title.noSquadrons value="Nav atrastas flotes, kas pārvietotos." />
     <label.currentLocation value="Pašreizējā vieta:" />
     <label.sourceLocation value="Atlido no:" />
@@ -3309,6 +3369,10 @@
     <label.close value="Aizvērt" />
     <label.playerFleets value="Jūsu flotes" />
     <label.allianceFleets value="Alianses flotes" />
+    <!-- TODO -->
+    <label.playerUnits value="Your units" />
+    <label.allianceUnits value="Alliance units" />
+    <!-- /TODO -->
     <label.stop value="Apturēt" />
     <label.manage value="Pārvaldīt" />
   </Squadrons>

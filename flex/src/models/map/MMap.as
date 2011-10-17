@@ -16,6 +16,8 @@ package models.map
    import mx.collections.ListCollectionView;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
+   import mx.logging.ILogger;
+   import mx.logging.Log;
    
    import utils.Objects;
    import utils.datastructures.Collections;
@@ -72,6 +74,10 @@ package models.map
    
    public class MMap extends BaseModel implements ICleanable
    {
+      private function get logger() : ILogger {
+         return Log.getLogger("MAP");
+      }
+      
       public function MMap() {
          super();
          _squadrons = Collections.filter(ML.squadrons,
@@ -99,6 +105,12 @@ package models.map
        */
       public function cleanup() : void {
          if (_squadrons != null) {
+            var squadIds:Array = _squadrons.toArray().map(
+               function(squad:MSquadron, index:int, array:Array) : int {
+                  return squad.id
+               }
+            );
+            logger.debug("Cleaning up squadrons {0} of map {1}", squadIds.join(", "), this);
             _squadrons.disableAutoUpdate();
             Collections.cleanListOfICleanables(_squadrons);
             _squadrons.enableAutoUpdate();
@@ -107,6 +119,12 @@ package models.map
             _squadrons = null;
          }
          if (_units != null) {
+            var unitIds:Array = _units.toArray().map(
+               function(unit:Unit, index:int, array:Array) : int {
+                  return unit.id
+               }
+            );
+            logger.debug("Cleaning up units {0} of map {1}", unitIds.join(", "), this);
             ML.units.disableAutoUpdate();
             _units.disableAutoUpdate();
             Collections.cleanListOfICleanables(_units);

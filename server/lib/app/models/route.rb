@@ -131,7 +131,7 @@ class Route < ActiveRecord::Base
     when :normal
       {
         :id => id,
-        :player_id => player_id,
+        :player => Player.minimal(player_id),
         :cached_units => cached_units,
         :jumps_at => jumps_at,
         :arrives_at => arrives_at,
@@ -142,7 +142,7 @@ class Route < ActiveRecord::Base
     when :enemy
       {
         :id => id,
-        :player_id => player_id,
+        :player => Player.minimal(player_id),
         :jumps_at => jumps_at,
         :current => current.as_json(options),
       }

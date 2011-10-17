@@ -367,7 +367,7 @@ package tests.galaxy
          return Collections.findFirst(galaxy.squadrons,
             function(squad:MSquadron) : Boolean {
                return squad.id == id &&
-                  (id == 0 ? squad.playerId == playerId && squad.currentHop.location.equals(loc) : true)
+                  (id == 0 ? squad.player.id == playerId && squad.currentHop.location.equals(loc) : true)
             }
          );
       }

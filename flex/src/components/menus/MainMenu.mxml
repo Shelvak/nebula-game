@@ -14,14 +14,21 @@
          import controllers.alliances.AlliancesCommand;
          import controllers.players.PlayersCommand;
          import controllers.ui.NavigationController;
+         import controllers.units.UnitsCommand;
          
+         import models.ModelLocator;
+         import models.Owner;
          import models.credit.VipLevelsData;
+         import models.movement.MRoute;
+         
+         import mx.collections.ListCollectionView;
          
          import spark.components.Button;
          
          import utils.StringUtil;
          import utils.UrlNavigate;
          import utils.assets.AssetNames;
+         import utils.datastructures.Collections;
          import utils.locale.Localizer;
          
          
@@ -53,12 +60,21 @@
             }
          }
          
+         [Bindable]
+         private var allyRoutes: ListCollectionView = Collections.filter(ModelLocator.getInstance().routes,
+            function (item: MRoute): Boolean
+            {
+               return item.owner == Owner.ALLY;
+            });
          
-         private function getBtnSquadronsLabel(squadrons:int) : String
+         private function getBtnUnitsLabel(allSquads:int, allySquads: int) : String
          {
-            return squadrons > 0 ?
-               Localizer.string("MainMenu", "label.squadrons", [squadrons]) :
-               Localizer.string("MainMenu", "label.noSquadrons");
+            return Localizer.string("MainMenu", "label.units", 
+               [allSquads - allySquads, allySquads])
+         }
+         
+         private function getImage(name:String) : BitmapData {
+            return IMG.getImage(AssetNames.START_MENU_FOLDER + name);
          }
       ]]>
    </fx:Script>
@@ -68,12 +84,10 @@
                          enabled="false"
                          skinClass="components.menus.skins.MainMenuItemsSkin"
                          click="toggleStartButton(event)">
-      <base:AdvancedContainer top="0" bottom="20">
+      <base:AdvancedContainer>
          <!--- Button for viewing vip screen. -->
          <s:Group width="100%">
-            <s:BitmapImage left="0" top="0"
-               source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"
-            />
+            <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
             <s:Button id="btnVip" click="NAV_CTRL.showVip()" 
                       left="22" right="0" top="5" bottom="5"
                       label="{Localizer.string('MainMenu', 'label.vip')}"
@@ -81,74 +95,101 @@
          </s:Group>
          <!--- Button for viewing alliance screen. -->
          <s:Group width="100%">
-            <s:BitmapImage left="0" top="0"
-               source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"
-            />
+            <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
             <s:Button id="btnAlliance" click="AllianceScreenM.getInstance().showScreen(ML.player.allianceId)"
                       left="22" right="0" top="5" bottom="5" label="{Localizer.string('MainMenu', 'label.alliance')}"/>
          </s:Group>
          <!--- Button for viewing quest screen. -->
          <s:Group width="100%">
-            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
             <s:Button id="btnQuests" click="NAV_CTRL.showQuests()" left="22" right="0" top="5" bottom="5"
                       label="{Localizer.string('MainMenu', 'label.quests')}"/>
          </s:Group>
          <!--- Button for viewing squadrons screen. -->
          <s:Group width="100%">
-            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
-            <s:Button id="btnSquadrons" click="NAV_CTRL.showSquadrons()" left="22" right="0" top="5" bottom="5"
-                      enabled="{ML.routes.length > 0}"
-                      label="{getBtnSquadronsLabel(ML.routes.length)}"/>
+            <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
+            <s:Button id="btnUnits" click="GlobalFlags.getInstance().lockApplication = true;
+                      new UnitsCommand(UnitsCommand.POSITIONS).dispatch()" left="22" right="0" top="5" bottom="5"
+                      enabled="true"
+                      label="{getBtnUnitsLabel(ML.routes.length, allyRoutes.length)}"
+                      toolTip="{Localizer.string('MainMenu', 'tooltip.units')}"/>
          </s:Group>
          <!--- Button for viewing ratings screen. -->
          <s:Group width="100%">
-            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
             <s:Button id="btnRatings" click="GlobalFlags.getInstance().lockApplication = true;
                       new PlayersCommand(PlayersCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
                                                                              label="{Localizer.string('MainMenu', 'label.ratings')}"/>
          </s:Group>
          <!--- Button for viewing alliance ratings screen. -->
          <s:Group width="100%">
-            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
             <s:Button id="btnAllyRatings" click="GlobalFlags.getInstance().lockApplication = true;
                       new AlliancesCommand(AlliancesCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
                                                                                  label="{Localizer.string('MainMenu', 'label.alliances')}"/>
          </s:Group>
          <!--- Button for buying creds -->
          <s:Group width="100%">
-            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
             <s:Button id="btnBuyCreds" click="UrlNavigate.getInstance().showBuyCreds()" 
                       left="22" right="0" top="5" bottom="5"
                       label="{Localizer.string('Credits', 'label.buy')}"
                       skinClass="components.skins.CreditButtonSkin"/>
          </s:Group>
          <s:Group height="14"/>
-         <!--- Button for logging out from the game. -->
          <s:Group width="100%">
-            <s:BitmapImage left="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER + 'holder')}"/>
+            <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
             <s:Button id="btnForum" click="UrlNavigate.getInstance().showUrl('forum/')" 
                       left="22" right="0" top="5" bottom="5"
                       label="{Localizer.string('MainMenu', 'label.forum')}"/>
          </s:Group>
+         <s:Group width="100%">
+            <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
+            <s:Button id="btnWiki" click="UrlNavigate.getInstance().showWikiUrl('')" 
+                      left="22" right="0" top="5" bottom="5"
+                      label="{Localizer.string('MainMenu', 'label.wiki')}"/>
+         </s:Group>
+         <s:Group width="100%">
+            <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
+            <s:Button id="btnInviteFriend" click="UrlNavigate.getInstance().showInviteFriendUrl()" 
+                      left="22" right="0" top="5" bottom="5"
+                      label="{Localizer.string('MainMenu', 'label.inviteFriend')}"/>
+         </s:Group>
          <base:layout>
-            <s:VerticalLayout gap="1" paddingTop="6" verticalAlign="middle"/>
+            <s:VerticalLayout gap="1" paddingTop="6" paddingBottom="10" verticalAlign="middle"/>
          </base:layout>
       </base:AdvancedContainer>
-      <base:AdvancedContainer top="0" bottom="20">
-         <!-- TOP -->
-         <s:BitmapImage id="topLeft" left="0" top="0"
-            source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_top_left')}"
-         />
-         <s:BitmapImage id="topRight" right="0" top="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_top_right')}"/>
-         <s:BitmapImage id="topRepeat" fillMode="repeat" left="{topLeft.width}" top="0" right="{topRight.width}" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_top_center_repeat')}"/>
-         <!-- BOTTOM -->
-         <s:BitmapImage id="bottomLeft" left="0" bottom="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_bottom_left')}"/>
-         <s:BitmapImage id="bottomRight" right="0" bottom="0" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_bottom_right')}"/>
-         <s:BitmapImage id="bottomRepeat" fillMode="repeat" left="{bottomLeft.width}" bottom="0" right="{bottomRight.width}" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_bottom_center_repeat')}"/>
+      <base:AdvancedContainer>
          
-         <!-- CENTER -->
-         <s:BitmapImage id="centerLeft" left="0" top="{topLeft.height}" bottom="{bottomLeft.height}" fillMode="repeat" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_center_left')}"/>
-         <s:BitmapImage id="centerRight" right="0" top="{topRight.height}" bottom="{bottomRight.height}" fillMode="repeat" source="{IMG.getImage(AssetNames.START_MENU_FOLDER+'sm_center_right')}"/> 
+         <!-- background artwork -->
+         <s:Group left="0" right="0" top="0" bottom="0">
+            <s:layout>
+               <s:VerticalLayout horizontalAlign="justify" gap="0"/>
+            </s:layout>
+            <!-- top -->
+            <s:Group>
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="top" gap="0"/>
+               </s:layout>
+               <s:BitmapImage id="topLeft" source="{getImage('sm_top_left')}"/>
+               <s:BitmapImage id="topRepeat" fillMode="repeat" width="100%" source="{getImage('sm_top_center_repeat')}"/>
+               <s:BitmapImage id="topRight" source="{getImage('sm_top_right')}"/>
+            </s:Group>
+            <!-- center -->
+            <s:Group height="100%">
+               <s:BitmapImage id="centerLeft" left="0" top="0" bottom="0" fillMode="repeat" source="{getImage('sm_center_left')}"/>
+               <s:BitmapImage id="centerRight" right="0" top="0" bottom="0" fillMode="repeat" source="{getImage('sm_center_right')}"/>
+            </s:Group>
+            <!-- bottom -->
+            <s:Group>
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="bottom" gap="0"/>
+               </s:layout>
+               <s:BitmapImage id="bottomLeft" source="{getImage('sm_bottom_left')}"/>
+               <s:BitmapImage id="bottomRepeat" fillMode="repeat" width="100%" source="{getImage('sm_bottom_center_repeat')}"/>
+               <s:BitmapImage id="bottomRight" source="{getImage('sm_bottom_right')}"/>
+            </s:Group>
+         </s:Group>
          
          <base:AdvancedContainer left="5" right="{centerRight.width/2}"
                                  top="{topRepeat.height/2}" bottom="{bottomRepeat.height}">

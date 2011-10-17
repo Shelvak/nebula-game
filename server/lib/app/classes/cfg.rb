@@ -91,6 +91,10 @@ class Cfg; class << self
   def player_initial_population; CONFIG['galaxy.player.population']; end
   def player_max_population; CONFIG['galaxy.player.population.max']; end
 
+  def player_referral_points_needed
+    CONFIG['galaxy.player.referral.points_needed']
+  end
+
   def galaxy_convoy_units_definition
     CONFIG["galaxy.convoy.units"]
   end

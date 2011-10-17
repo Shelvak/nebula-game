@@ -693,6 +693,70 @@ describe Unit do
     end
   end
 
+  describe ".positions" do
+    key = lambda do |location|
+      "#{location.id},#{location.type},#{location.x},#{location.y}"
+    end
+
+    it "should return structured hash" do
+      player1 = Factory.create(:player)
+      player2 = Factory.create(:player)
+
+      location1 = Factory.create(:planet)
+      location2 = Factory.create(:planet)
+
+      units = [
+        Factory.create!(:u_trooper, :player => player1, :location => location1),
+        Factory.create!(:u_trooper, :player => player1, :location => location1),
+        Factory.create!(:u_shocker, :player => player1, :location => location1),
+        Factory.create!(:u_shocker, :player => player1, :location => location2),
+
+        Factory.create!(:u_trooper, :player => player2, :location => location1),
+        Factory.create!(:u_shocker, :player => player2, :location => location1),
+        Factory.create!(:u_trooper, :player => player2, :location => location2),
+      ]
+
+      Unit.positions(Unit.where(:id => units.map(&:id))).should == {
+        player1.id => {
+          key.call(location1.location_point) => {
+            "location" => location1.to_client_location.as_json,
+            "cached_units" => {"Trooper" => 2, "Shocker" => 1}
+          },
+          key.call(location2.location_point) => {
+            "location" => location2.to_client_location.as_json,
+            "cached_units" => {"Shocker" => 1}
+          }
+        },
+        player2.id => {
+          key.call(location1.location_point) => {
+            "location" => location1.to_client_location.as_json,
+            "cached_units" => {"Trooper" => 1, "Shocker" => 1}
+          },
+          key.call(location2.location_point) => {
+            "location" => location2.to_client_location.as_json,
+            "cached_units" => {"Trooper" => 1}
+          }
+        }
+      }
+    end
+
+    it "should not include items which do not go into scope" do
+      units = [
+        Factory.create!(:u_trooper),
+        Factory.create!(:u_shocker),
+      ]
+
+      Unit.positions(Unit.where(:id => units[1].id)).should == {
+        units[1].player_id => {
+          key.call(units[1].location) => {
+            "location" => units[1].location.to_client_location.as_json,
+            "cached_units" => {"Shocker" => 1}
+          }
+        }
+      }
+    end
+  end
+
   describe ".units_for_moving" do
     before(:all) do
       @planet = Factory.create :planet_with_player
