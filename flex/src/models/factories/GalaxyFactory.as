@@ -1,6 +1,6 @@
 package models.factories
 {
-   import flash.geom.Rectangle;
+   import models.map.MapArea;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
@@ -15,12 +15,7 @@ package models.factories
          var fowEntries:Array = new Array();
          for each (var item:Object in data) {
             fowEntries.push(
-               new Rectangle(
-                  item.x,
-                  item.y,
-                  item.xEnd - item.x + 1,
-                  item.yEnd - item.y + 1
-               )
+               new MapArea(item["x"], item["xEnd"], item["y"], item["yEnd"])
             );
          }
          return fowEntries;

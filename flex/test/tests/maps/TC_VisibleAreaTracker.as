@@ -22,6 +22,7 @@ package tests.maps
       private var client:MockClient;
       private var hiddenArea:Rectangle;
       
+      
       /* ########################## */
       /* ### SET UP / TEAR DOWN ### */
       /* ########################## */

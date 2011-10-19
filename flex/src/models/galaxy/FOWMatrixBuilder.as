@@ -1,9 +1,9 @@
 package models.galaxy
 {
    import flash.geom.Point;
-   import flash.geom.Rectangle;
    
    import models.location.LocationMinimal;
+   import models.map.MapArea;
    import models.solarsystem.SolarSystem;
    import models.unit.Unit;
    
@@ -11,18 +11,19 @@ package models.galaxy
 
    internal class FOWMatrixBuilder
    {
-      private var _fowEntries:Vector.<Rectangle>,
+      private static const INVISIBLE_BORDER_SIZE:int = 2;
+      
+      private var _fowEntries:Vector.<MapArea>,
                   _solarSystems:IList,
                   _units:IList,
                   _matrix:Vector.<Vector.<Boolean>>,
-                  _left:int,
-                  _right:int,
-                  _top:int,
-                  _bottom:int;
+                  _xMin:int,
+                  _xMax:int,
+                  _yMax:int,
+                  _yMin:int;
       
       
-      public function FOWMatrixBuilder(fowEntries:Vector.<Rectangle>, solarSystems:IList, units:IList)
-      {
+      public function FOWMatrixBuilder(fowEntries:Vector.<MapArea>, solarSystems:IList, units:IList) {
          _fowEntries = fowEntries;
          _solarSystems = solarSystems;
          _units = units;
@@ -30,8 +31,7 @@ package models.galaxy
       }
       
       
-      private function build() : void
-      {
+      private function build() : void {
          findBounds();
          initializeMatrix();
          setVisibleTiles();
@@ -43,43 +43,38 @@ package models.galaxy
        */
       private function findBounds() : void
       {
-         _left = _top = int.MAX_VALUE;
-         _right = _bottom = int.MIN_VALUE;
-         for each (var entry:Rectangle in _fowEntries)
-         {
-            if (entry.left   < _left)   _left   = entry.left;
-            if (entry.top    < _top)    _top    = entry.top;
-            if (entry.right  > _right)  _right  = entry.right;
-            if (entry.bottom > _bottom) _bottom = entry.bottom;
+         _xMin = _yMin = int.MAX_VALUE;
+         _xMax = _yMax = int.MIN_VALUE;
+         for each (var entry:MapArea in _fowEntries) {
+            if (entry.xMin < _xMin) _xMin = entry.xMin;
+            if (entry.xMax > _xMax) _xMax = entry.xMax;
+            if (entry.yMin < _yMin) _yMin = entry.yMin;
+            if (entry.yMax > _yMax) _yMax = entry.yMax;
          }
-         for each (var ss:SolarSystem in _solarSystems.toArray())
-         {
+         for each (var ss:SolarSystem in _solarSystems.toArray()) {
             updateBounds(ss.currentLocation);
          }
-         for each (var unit:Unit in _units.toArray())
-         {
+         for each (var unit:Unit in _units.toArray()) {
             updateBounds(unit.location);
          }
          
          // support for empty galaxy map here
-         if (_fowEntries.length == 0 && _solarSystems.length == 0 && _units.length == 0)
-         {
-            _left = _top = _right = _bottom = 0;
+         if (_fowEntries.length == 0 && _solarSystems.length == 0 && _units.length == 0) {
+            _xMin = _yMax = _xMax = _yMin = 0;
          }
          
          // additional rows and columns as edges of the FOW matrix and map to avoid checking map
          // boundaries in the components.maps.space.FOWRenderer
-         _left -= 2; _top -= 2;
-         _right += 3; _bottom += 3;
+         _xMin -= INVISIBLE_BORDER_SIZE; _xMax += INVISIBLE_BORDER_SIZE; 
+         _yMin -= INVISIBLE_BORDER_SIZE; _yMax += INVISIBLE_BORDER_SIZE;
       }
       
       
-      private function updateBounds(loc:LocationMinimal) : void
-      {
-         if (loc.x < _left)   _left   = loc.x;
-         if (loc.y < _top)    _top    = loc.y;
-         if (loc.x > _right)  _right  = loc.x;
-         if (loc.y > _bottom) _bottom = loc.y;
+      private function updateBounds(loc:LocationMinimal) : void {
+         if (loc.x < _xMin) _xMin = loc.x;
+         if (loc.x > _xMax) _xMax = loc.x;
+         if (loc.y < _yMin) _yMin = loc.y;
+         if (loc.y > _yMax) _yMax = loc.y;
       }
       
       
@@ -88,10 +83,9 @@ package models.galaxy
        */
       private function initializeMatrix() : void
       {
-         var bounds:Rectangle = getBounds();
+         var bounds:MapArea = getBounds();
          _matrix = new Vector.<Vector.<Boolean>>(bounds.width, true);
-         for (var x:int = 0; x < bounds.width; x++)
-         {
+         for (var x:int = 0; x < bounds.width; x++) {
             _matrix[x] = new Vector.<Boolean>(bounds.height, true);
          }
       }
@@ -100,15 +94,11 @@ package models.galaxy
       /**
        * O(_fowEntries.length)
        */
-      private function setVisibleTiles() : void
-      {
+      private function setVisibleTiles() : void {
          var offset:Point = getCoordsOffset();
-         for each (var entry:Rectangle in _fowEntries)
-         {
-            for (var x:int = entry.left + offset.x; x < entry.right + offset.x; x++)
-            {
-               for (var y:int = entry.top + offset.y; y < entry.bottom + offset.y; y++)
-               {
+         for each (var entry:MapArea in _fowEntries) {
+            for (var x:int = entry.xMin + offset.x; x <= entry.xMax + offset.x; x++) {
+               for (var y:int = entry.yMin + offset.y; y <= entry.yMax + offset.y; y++) {
                   _matrix[x][y] = true;
                }
             }
@@ -117,41 +107,42 @@ package models.galaxy
       
       
       private var _offset:Point;
-      public function getCoordsOffset() : Point
-      {
-         if (!_offset)
-         {
-            _offset = new Point(-_left, -_top);
+      public function getCoordsOffset() : Point {
+         if (!_offset) {
+            _offset = new Point(-_xMin, -_yMin);
          }
          return _offset;
       }
       
       
-      private var _bounds:Rectangle;
-      public function getBounds() : Rectangle
-      {
-         if (!_bounds)
-         {
-            _bounds = new Rectangle(_left, _top, _right - _left, _bottom - _top);
+      private var _bounds:MapArea;
+      public function getBounds() : MapArea {
+         if (_bounds == null) {
+            _bounds = new MapArea(_xMin, _xMax, _yMin, _yMax);
          }
          return _bounds;
       }
       
+      private var _visibleBounds:MapArea;
+      public function getVisibleBounds() : MapArea {
+         if (_visibleBounds == null) {
+            _visibleBounds = new MapArea(
+               _xMin + INVISIBLE_BORDER_SIZE, _xMax - INVISIBLE_BORDER_SIZE,
+               _yMin + INVISIBLE_BORDER_SIZE, _yMax - INVISIBLE_BORDER_SIZE
+            );
+         }
+         return _visibleBounds;
+      }
       
-      public function getMatrix() : Vector.<Vector.<Boolean>>
-      {
+      public function getMatrix() : Vector.<Vector.<Boolean>> {
          return _matrix;
       }
       
-      
-      public function get matrixHasVisibleTiles() : Boolean
-      {
+      public function get matrixHasVisibleTiles() : Boolean {
          return _matrix.some(
-            function(row:Vector.<Boolean>, index:*, matrix:*) : Boolean
-            {
+            function(row:Vector.<Boolean>, index:*, matrix:*) : Boolean {
                return row.some(
-                  function(tile:Boolean, index:*, row:*) : Boolean
-                  {
+                  function(tile:Boolean, index:*, row:*) : Boolean {
                      return tile;
                   }
                );

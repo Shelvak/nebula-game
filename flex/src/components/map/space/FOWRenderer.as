@@ -9,6 +9,7 @@ package components.map.space
    import models.galaxy.Galaxy;
    import models.location.LocationMinimal;
    import models.location.LocationType;
+   import models.map.MapArea;
    
    import utils.MathUtil;
    import utils.assets.AssetNames;
@@ -73,15 +74,15 @@ package components.map.space
       private function buildBordersList() : void
       {
          _borders = new Vector.<BorderElement>();
-         var bounds:Rectangle = _galaxy.bounds;
+         var bounds:MapArea = _galaxy.bounds;
          var matrix:Vector.<Vector.<Boolean>> = _galaxy.fowMatrix;
          // since models.galaxy.FOWMatrixBuilder added two additional rows and columns in the
          // edges of the matrix, we work with the inner rectangle. Without those additional columns
          // and rows we would have to run boundary checks in each iteration
-         for (var x:int = bounds.left + 1; x < bounds.right - 1; x++)
+         for (var x:int = bounds.xMin + 1; x <= bounds.xMax - 1; x++)
          {
             var xx:int = x + _galaxy.offset.x;
-            for (var y:int = bounds.top + 1; y < bounds.bottom - 1; y++)
+            for (var y:int = bounds.yMin + 1; y <= bounds.yMax - 1; y++)
             {
                var yy:int = y + _galaxy.offset.y;
                if (!matrix[xx][yy] && (matrix[xx - 1][yy] || matrix[xx + 1][yy] ||

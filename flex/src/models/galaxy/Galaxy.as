@@ -1,13 +1,13 @@
 package models.galaxy
 {
    import flash.geom.Point;
-   import flash.geom.Rectangle;
    
    import models.galaxy.events.GalaxyEvent;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.map.MMapSpace;
+   import models.map.MapArea;
    import models.map.MapType;
    import models.solarsystem.SolarSystem;
    
@@ -156,8 +156,13 @@ package models.galaxy
       }
       
       [Bindable(event="resize")]
-      public function get bounds() : Rectangle {
+      public function get bounds() : MapArea {
          return _fowMatrixBuilder.getBounds();
+      }
+      
+      [Bindable(event="resize")]
+      public function get visibleBounds() : MapArea {
+         return _fowMatrixBuilder.getVisibleBounds();
       }
       
       [Bindable(event="resize")]
@@ -174,7 +179,7 @@ package models.galaxy
          return _fowMatrixBuilder.getMatrix();
       }
       
-      public function setFOWEntries(fowEntries:Vector.<Rectangle>, units:IList) : void {
+      public function setFOWEntries(fowEntries:Vector.<MapArea>, units:IList) : void {
          _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries, naturalObjects, units);
          dispatchResizeEvent();
       }
