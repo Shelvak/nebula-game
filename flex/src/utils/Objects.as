@@ -1,5 +1,6 @@
 package utils
 {
+   import flash.errors.IllegalOperationError;
    import flash.utils.Dictionary;
    import flash.utils.getDefinitionByName;
    import flash.utils.getQualifiedClassName;
@@ -499,6 +500,29 @@ package utils
             }
          );
          return strings.join(sep);
+      }
+      
+      /* ######################## */
+      /* ### FAIL-FAST ERRORS ### */
+      /* ######################## */
+      
+      /**
+       * @throws flash.errors.IllegalOperationError
+       */
+      public static function throwAbstractMethodErrror(customMessage:String = null) : void {
+         throwAbstractMemberAccessError("Method is abstract", customMessage);
+      }
+      
+      /**
+       * @throws flash.errors.IllegalOperationError
+       */
+      public static function throwAbstractPropertyError(customMessage:String = null) : void {
+         throwAbstractMemberAccessError("Property is abstract", customMessage);
+      }
+      
+      private static function throwAbstractMemberAccessError(defaultMessage:String,
+                                                             customMessage:String) : void {
+         throw new IllegalOperationError(customMessage != null ? customMessage : defaultMessage);
       }
       
       

@@ -1,5 +1,7 @@
 package utils
 {
+	import mx.utils.StringUtil;
+	
 	import utils.bkde.as3.parsers.CompiledObject;
 	import utils.bkde.as3.parsers.MathParser;
 	
@@ -240,6 +242,14 @@ package utils
 			
 			return transfValue; 
 		}
+      
+      /**
+       * @copy mx.utils.StringUtil#substitute()
+       * @see mx.utils.StringUtil#substitute()
+       */
+      public static function substitute(str:String, ...parameters) : String {
+         return mx.utils.StringUtil.substitute(str, parameters);
+      }
       
       /**
        *Used to get checksum object from file downloaded by startup 

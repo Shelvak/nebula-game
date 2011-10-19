@@ -3,6 +3,7 @@ package components.base.viewport
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
+   import utils.GeomUtils;
    import utils.Objects;
 
    /**
@@ -19,15 +20,6 @@ package components.base.viewport
       
       public function VisibleAreaTracker(client:IVisibleAreaTrackerClient) {
          _client = Objects.paramNotNull("client", client);
-      }
-      
-      /**
-       * <code>Rectangle</code> defining currently visible area of the content of a viewport. If no area is
-       * visible, <code>width</code> or <code>height</code> property (or both) of the returned
-       * <code>Rectangle</code> is equal to <code>0</code>.
-       */
-      public function get visibleArea() : Rectangle {
-         return _clippedArea.rectangle;
       }
       
       /**
@@ -61,7 +53,11 @@ package components.base.viewport
          _contentScale = assertScaleParam("contentScale", contentScale);
          _clippedArea = new ClippedArea(_viewportSize, _contentRect, _contentScale);
          if (!_clippedArea.voidArea) {
-            _client.areaShown(_clippedArea.rectangle);
+            _client.visibleAreaChange(
+               _clippedArea.rectangle,
+               new Vector.<Rectangle>(),
+               Vector.<Rectangle>([_clippedArea.rectangle])
+            );
          }
       }
       
@@ -109,20 +105,27 @@ package components.base.viewport
          }
          _clippedArea = newArea;
          if (oldArea.voidArea && !newArea.voidArea) {
-            _client.areaShown(newArea.rectangle);
+            _client.visibleAreaChange(
+               _clippedArea.rectangle,
+               new Vector.<Rectangle>(),
+               Vector.<Rectangle>([newArea.rectangle])
+            );
          }
          else if (!oldArea.voidArea && newArea.voidArea) {
-            _client.areaHidden(oldArea.rectangle);
+            _client.visibleAreaChange(
+               _clippedArea.rectangle,
+               Vector.<Rectangle>([oldArea.rectangle]),
+               new Vector.<Rectangle>()
+            );
          }
          else {
             var oldRect:AreaRectangle = oldArea.rectangle;
             var newRect:AreaRectangle = newArea.rectangle;
-            for each (var hiddenArea:AreaRectangle in oldRect.substract(newRect)) {
-               _client.areaHidden(hiddenArea);
-            }
-            for each (var shownArea:AreaRectangle in newRect.substract(oldRect)) {
-               _client.areaShown(shownArea);
-            }
+            _client.visibleAreaChange(
+               _clippedArea.rectangle,
+               oldRect.substract(newRect),
+               newRect.substract(oldRect)
+            );
          }
       }
       
@@ -145,6 +148,7 @@ package components.base.viewport
 import flash.geom.Point;
 import flash.geom.Rectangle;
 
+import utils.GeomUtils;
 import utils.Objects;
 
 
@@ -158,97 +162,15 @@ class AreaRectangle extends Rectangle
       return width <= 0 || height <= 0;
    }
    
-   public function substract(rect:Rectangle) : Vector.<AreaRectangle> {
-      Objects.paramNotNull("rect", rect);
-      var intersection:Rectangle = this.intersection(rect);
-      var sections:Vector.<AreaRectangle> = new Vector.<AreaRectangle>();
-      
-      // if no intersection, the result of operation is the subject area (this) itself
-      if (intersection.width == 0 || intersection.height == 0) {
-         sections.push(this);
-         return sections;
-      }
-      
-      // left
-      //  --------------
-      // |###|      |   |
-      // |###|      |   |
-      // |#P#|------|   |
-      // |#U#| INTR |   |
-      // |#S#| SECT |   |
-      // |#H#|------|   |
-      // |###|      |   |
-      // |###|      |   |
-      //  --------------
-      if (this.x != intersection.x) {
+   public function substract(toSubstract:Rectangle) : Vector.<Rectangle> {
+      Objects.paramNotNull("rect", toSubstract);
+      var sections:Vector.<Rectangle> = new Vector.<Rectangle>();
+      for each (var section:Rectangle in GeomUtils.substract(this, toSubstract)) {
          sections.push(new AreaRectangle(
-            this.x,
-            this.y,
-            intersection.x - this.x,
-            this.height
+            section.x, section.y,
+            section.width, section.height
          ));
       }
-      
-      // right
-      //  --------------
-      // |   |      |###|
-      // |   |      |###|
-      // |   |------|#P#|
-      // |   | INTR |#U#|
-      // |   | SECT |#S#|
-      // |   |------|#H#|
-      // |   |      |###|
-      // |   |      |###|
-      //  --------------
-      if (this.right != intersection.right) {
-         sections.push(new AreaRectangle(
-            intersection.right,
-            this.y,
-            this.right - intersection.right,
-            this.height
-         ));
-      }
-      
-      // top
-      //  --------------
-      // |   |#PUSH#|   |
-      // |   |######|   |
-      // |   |------|   |
-      // |   | INTR |   |
-      // |   | SECT |   |
-      // |   |------|   |
-      // |   |      |   |
-      // |   |      |   |
-      //  --------------
-      if (this.y != intersection.y) {
-         sections.push(new AreaRectangle(
-            intersection.x,
-            this.y,
-            intersection.width,
-            intersection.y - this.y
-         ));
-      }
-      
-      // bottom
-      //  --------------
-      // |   |      |   |
-      // |   |      |   |
-      // |   |------|   |
-      // |   | INTR |   |
-      // |   | SECT |   |
-      // |   |------|   |
-      // |   |#PUSH#|   |
-      // |   |######|   |
-      //  --------------
-      if (this.bottom != intersection.bottom) {
-         sections.push(new AreaRectangle(
-            intersection.x,
-            intersection.bottom,
-            intersection.width,
-            this.bottom - intersection.bottom
-         ));
-      }
-      
       return sections;
    }
 }

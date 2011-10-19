@@ -8,16 +8,18 @@ package tests.maps
    import flash.geom.Rectangle;
    
    import org.hamcrest.assertThat;
+   import org.hamcrest.collection.arrayWithSize;
+   import org.hamcrest.collection.emptyArray;
    import org.hamcrest.collection.hasItem;
    import org.hamcrest.collection.hasItems;
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.isTrue;
+   import org.hamcrest.object.notNullValue;
 
    public class TC_VisibleAreaTracker
    {
       private var tracker:VisibleAreaTracker;
       private var client:MockClient;
-      private var shownArea:Rectangle;
       private var hiddenArea:Rectangle;
       
       /* ########################## */
@@ -33,7 +35,6 @@ package tests.maps
       public function tearDown() : void {
          client = null;
          tracker = null;
-         shownArea = null;
          hiddenArea = null;
       }
       
@@ -45,19 +46,42 @@ package tests.maps
       [Test]
       public function initialization() : void {
          contentInitialized(-10, -10, 200, 200, 1);
-         assertThat( "client.areaHidden not called", client.areaHiddenCalls, equals (0) );
-         assertThat( "client.areaShown should have been called once", client.areaShownCalls, equals (1) );
-         assertThat( "area parameter passed to client.areaShown", client.areaShownParams.length, equals (1) );
-         assertInitialAreaPositionAndSize("content larger than viewport when not scaled", 10, 10, 100, 100);
+         assertThat( "client.visibleAreaChange called once", client.visibleAreaChangeCalls, equals (1) );
+         var params:VisibleAreaChangeParams = client.visibleAreaChangeParams;
+         assertThat(
+            "visibleArea parameter passed to client.visibleAreaChange",
+            params.visibleArea, notNullValue()
+         );
+         assertThat(
+            "areasHidden parameter passed to client.visibleAreaChange",
+            params.areasHidden, notNullValue()
+         );
+         assertThat(
+            "areasShown parameter passed to client.visibleAreaChange",
+            params.areasShown, notNullValue()
+         );
+         assertInitialAreaPositionAndSize(
+            "content larger than viewport when not scaled",
+            10, 10, 100, 100
+         );
          
          contentInitialized(10, 10, 80, 80, 1);
-         assertInitialAreaPositionAndSize("content smaller than viewport when not scaled", 0, 0, 80, 80);
+         assertInitialAreaPositionAndSize(
+            "content smaller than viewport when not scaled",
+            0, 0, 80, 80
+         );
          
          contentInitialized(-10, -10, 400, 400, 0.5);
-         assertInitialAreaPositionAndSize("content larger than viewport, when scaled", 20, 20, 200, 200);
+         assertInitialAreaPositionAndSize(
+            "content larger than viewport, when scaled",
+            20, 20, 200, 200
+         );
          
          contentInitialized(10, 10, 400, 400, 0.1);
-         assertInitialAreaPositionAndSize("content smaller than viewport, when scaled", 0, 0, 400, 400);
+         assertInitialAreaPositionAndSize(
+            "content smaller than viewport, when scaled",
+            0, 0, 400, 400
+         );
          
          contentInitialized(10, 10, 100, 100, 1.0);
          assertInitialAreaPositionAndSize(
@@ -85,12 +109,8 @@ package tests.maps
          
          contentInitialized(200, 200, 100, 100, 1);
          assertThat(
-            "client.areaShown not called if content is not visible",
-            client.areaShownCalls, equals (0)
-         );
-         assertThat(
-            "client.areaHidden not called if content is not visible",
-            client.areaHiddenCalls, equals (0)
+            "client.visibleAreaChange not called if content is not visible",
+            client.visibleAreaChangeCalls, equals (0)
          );
       }
       
@@ -99,8 +119,16 @@ package tests.maps
                                                         y:int,
                                                         width:int,
                                                         height:int) : void {
-         shownArea = client.areaShownParams[0];
-         assertAreaPositionAndSize(message, x, y, width, height);
+         var shownArea:Rectangle = client.visibleAreaChangeParams.areasShown[0];
+         var visibleArea:Rectangle = client.visibleAreaChangeParams.visibleArea;
+         assertThat( message + "; shownArea.x", shownArea.x, equals (x) );
+         assertThat( message + "; shownArea.y", shownArea.y, equals (y) );
+         assertThat( message + "; shownArea.width", shownArea.width, equals (width) );
+         assertThat( message + "; shownArea.height", shownArea.height, equals (height) );
+         assertThat(
+            message + "; visibleArea is the same as shownArea",
+            shownArea.equals(visibleArea), isTrue()
+         );
       }
       
       // -----
@@ -108,56 +136,75 @@ package tests.maps
       [Test]
       public function contentPositionUpdate_wholeContentInsideViewport() : void {
          var initialVisibleArea:Rectangle = new Rectangle(200, 200, 100, 100);
+         var shownArea:Rectangle;
          
-         assertOneAxisAlignedShift("full horizontal shift right", -50, -200,
-            new Rectangle(50, 200, 100, 100), initialVisibleArea
+         shownArea = new Rectangle(50, 200, 100, 100);
+         assertOneAxisAlignedShift( "full horizontal shift right", -50, -200,
+            shownArea, shownArea, initialVisibleArea
          );
+         
+         shownArea = new Rectangle(350, 200, 100, 100);
          assertOneAxisAlignedShift( "full horizontal shift left", -350, -200,
-            new Rectangle(350, 200, 100, 100), initialVisibleArea
-         );
-         assertOneAxisAlignedShift( "half horizontal shift right", -150, -200,
-            new Rectangle(150, 200, 50, 100), new Rectangle(250, 200, 50, 100)
-         );
-         assertOneAxisAlignedShift( "half horizontal shift left", -250, -200,
-            new Rectangle(300, 200, 50, 100), new Rectangle(200, 200, 50, 100)
+            shownArea, shownArea, initialVisibleArea
          );
          
+         assertOneAxisAlignedShift( "half horizontal shift right", -150, -200,
+            new Rectangle(150, 200, 100, 100),
+            new Rectangle(150, 200,  50, 100),
+            new Rectangle(250, 200,  50, 100)
+         );
+         
+         assertOneAxisAlignedShift( "half horizontal shift left", -250, -200,
+            new Rectangle(250, 200, 100, 100),
+            new Rectangle(300, 200,  50, 100),
+            new Rectangle(200, 200,  50, 100)
+         );
+         
+         shownArea = new Rectangle(200, 50, 100, 100);
          assertOneAxisAlignedShift( "full vertical shift down", -200, -50,
-            new Rectangle(200, 50, 100, 100), initialVisibleArea
+            shownArea, shownArea, initialVisibleArea
          );
+         
+         shownArea = new Rectangle(200, 350, 100, 100);
          assertOneAxisAlignedShift( "full vertical shift up", -200, -350,
-            new Rectangle(200, 350, 100, 100), initialVisibleArea
+            shownArea, shownArea, initialVisibleArea
          );
+         
          assertOneAxisAlignedShift( "half vertical shift down", -200, -150,
-            new Rectangle(200, 150, 100, 50), new Rectangle(200, 250, 100, 50)
+            new Rectangle(200, 150, 100, 100),
+            new Rectangle(200, 150, 100,  50),
+            new Rectangle(200, 250, 100,  50)
          );
+         
          assertOneAxisAlignedShift( "half vertical shift up", -200, -250,
-            new Rectangle(200, 300, 100, 50), new Rectangle(200, 200, 100, 50)
+            new Rectangle(200, 250, 100, 100),
+            new Rectangle(200, 300, 100,  50),
+            new Rectangle(200, 200, 100,  50)
          );
       }
       
       [Test]
       public function contentPositionUpdate_halfContentInsideViewport() : void {
          var initialVisibleArea:Rectangle = new Rectangle(200, 200, 100, 100);
+         var shownArea:Rectangle;
          
-         assertOneAxisAlignedShift( "shift right", 50, -200,
-            new Rectangle(0, 200, 50, 100), initialVisibleArea
-         );
-         assertOneAxisAlignedShift( "shift left", -450, -200,
-            new Rectangle(450, 200, 50, 100), initialVisibleArea
-         );
+         shownArea = new Rectangle(0, 200, 50, 100);
+         assertOneAxisAlignedShift( "shift right", 50, -200, shownArea, shownArea, initialVisibleArea);
          
-         assertOneAxisAlignedShift( "shift down", -200, 50,
-            new Rectangle(200, 0, 100, 50), initialVisibleArea
-         );
-         assertOneAxisAlignedShift( "shift up", -200, -450,
-            new Rectangle(200, 450, 100, 50), initialVisibleArea
-         );
+         shownArea = new Rectangle(450, 200, 50, 100);
+         assertOneAxisAlignedShift( "shift left", -450, -200, shownArea, shownArea, initialVisibleArea);
+         
+         shownArea = new Rectangle(200, 0, 100, 50);
+         assertOneAxisAlignedShift( "shift down", -200, 50, shownArea, shownArea, initialVisibleArea);
+         
+         shownArea = new Rectangle(200, 450, 100, 50);
+         assertOneAxisAlignedShift( "shift up", -200, -450, shownArea, shownArea, initialVisibleArea);
       }
       
       private function assertOneAxisAlignedShift(message:String,
                                                  newContentX:int,
                                                  newContentY:int,
+                                                 visibleAreaExpected:Rectangle,
                                                  shownAreaExpected:Rectangle,
                                                  hiddenAreaExpected:Rectangle) : void {
          contentInitialized(-200, -200, 500, 500, 1);
@@ -167,10 +214,22 @@ package tests.maps
          tracker.updateComplete();
          message += " (newContentX = " + newContentX + ", newContentY = " + newContentY + "): ";
          
-         assertThat( message + "client.areaShown called once", client.areaShownCalls, equals (1) );
-         assertThat( message + "shownArea", shownAreaExpected.equals(client.areaShownParams[0]), isTrue() );
-         assertThat( message + "client.areaHidden called once", client.areaHiddenCalls, equals (1) );
-         assertThat( message + "hiddenArea", hiddenAreaExpected.equals(client.areaHiddenParams[0]), isTrue() );
+         assertThat(
+            message + "client.visibleAreaChange called once",
+            client.visibleAreaChangeCalls, equals (1)
+         );
+         var params:VisibleAreaChangeParams = client.visibleAreaChangeParams;
+         assertThat( "visible area changed", visibleAreaExpected.equals(params.visibleArea), isTrue() );
+         assertThat( "one area shown", params.areasShown, arrayWithSize (1) );
+         assertThat(
+            message + "shown area",
+            shownAreaExpected.equals(params.areasShown[0]), isTrue()
+         );
+         assertThat( "one area hidden", params.areasHidden, arrayWithSize (1) );
+         assertThat(
+            message + "hidden area",
+            hiddenAreaExpected.equals(params.areasHidden[0]), isTrue()
+         );
       }
       
       // -----
@@ -182,16 +241,21 @@ package tests.maps
          tracker.updateViewportSize(150, 150);
          tracker.updateComplete();
          
-         assertThat( "client.areaShown called twice", client.areaShownCalls, equals (2) );
-         assertThat( "client.areaHidden not called", client.areaHiddenCalls, equals (0) );
+         var params:VisibleAreaChangeParams = client.visibleAreaChangeParams;
+         assertThat(
+            "visible area changed",
+            new Rectangle(100, 100, 150, 150).equals(params.visibleArea), isTrue()
+         );
+         assertThat( "no areas hidden", params.areasHidden, emptyArray() );
+         assertThat( "two areas shown", params.areasShown, arrayWithSize (2) );
          assertThat( "client.shownArea (vertical)",
-            client.areaShownParams, hasItem (hasProperties ({
+            params.areasShown, hasItem (hasProperties ({
                "x": 200, "width": 50,
                "y": 100, "height": 150
             }))
          );
          assertThat( "client.shownArea (horizontal)",
-            client.areaShownParams, hasItem (hasProperties ({
+            params.areasShown, hasItem (hasProperties ({
                "x": 100, "width": 100,
                "y": 200, "height": 50
             }))
@@ -205,16 +269,21 @@ package tests.maps
          tracker.updateViewportSize(50, 50);
          tracker.updateComplete();
          
-         assertThat( "client.areaShown not called", client.areaShownCalls, equals (0) );
-         assertThat( "client.areaHidden called twice", client.areaHiddenCalls, equals (2) );
+         var params:VisibleAreaChangeParams = client.visibleAreaChangeParams;
+         assertThat(
+            "visible area changed",
+            new Rectangle(100, 100, 50, 50).equals(params.visibleArea), isTrue()
+         );
+         assertThat( "no areas shown", params.areasShown, emptyArray() );
+         assertThat( "two areas hidden", params.areasHidden, arrayWithSize (2) );
          assertThat( "client.hiddenArea (vertical)",
-            client.areaHiddenParams, hasItem (hasProperties ({
+            params.areasHidden, hasItem (hasProperties ({
                "x": 150, "width": 50,
                "y": 100, "height": 100
             }))
          );
          assertThat( "client.hiddenArea (horizontal)",
-            client.areaHiddenParams, hasItem (hasProperties ({
+            params.areasHidden, hasItem (hasProperties ({
                "x": 100, "width": 50,
                "y": 150, "height": 50
             }))
@@ -230,28 +299,33 @@ package tests.maps
          tracker.updateContentScale(0.8);
          tracker.updateComplete();
          
-         assertThat( "client.areaShown called twice", client.areaShownCalls, equals (2) );
-         assertThat( "client.areaHidden called twice", client.areaHiddenCalls, equals (2) );
+         var params:VisibleAreaChangeParams = client.visibleAreaChangeParams;
+         assertThat(
+            "visible area changed",
+            new Rectangle(125, 125, 125, 125).equals(params.visibleArea), isTrue()
+         );
+         assertThat( "two areas hidden", params.areasHidden, arrayWithSize (2) );
+         assertThat( "two areas shown", params.areasHidden, arrayWithSize (2) );
          assertThat( "client.hiddenArea (vertical)",
-            client.areaHiddenParams, hasItem( hasProperties ({
+            params.areasHidden, hasItem( hasProperties ({
                "x": 100, "width": 25,
                "y": 100, "height": 100
             }))
          );
          assertThat( "client.hiddenArea (horizontal)",
-            client.areaHiddenParams, hasItems( hasProperties ({
+            params.areasHidden, hasItems( hasProperties ({
                "x": 125, "width": 75,
                "y": 100, "height": 25
             }))
          );
          assertThat( "client.shownArea (vertical)",
-            client.areaShownParams, hasItem( hasProperties ({
+            params.areasShown, hasItem( hasProperties ({
                "x": 200, "width": 50,
                "y": 125, "height": 125
             }))
          );
          assertThat( "client.shownArea (horizontal)",
-            client.areaShownParams, hasItem( hasProperties ({
+            params.areasShown, hasItem( hasProperties ({
                "x": 125, "width": 75,
                "y": 200, "height": 50
             }))
@@ -265,10 +339,12 @@ package tests.maps
          tracker.updateContentScale(0.8);
          tracker.updateComplete();
          
-         assertThat( "client.areaShown called once", client.areaShownCalls, equals (1) );
-         assertThat( "client.areaHidden not called", client.areaHiddenCalls, equals (0) );
-         var expectedShownArea:Rectangle = new Rectangle(125, 125, 75, 75);
-         assertThat( "client.shownArea", expectedShownArea.equals(client.areaShownParams[0]), isTrue() );
+         var params:VisibleAreaChangeParams = client.visibleAreaChangeParams;
+         assertThat( "no areas hidden", params.areasHidden, emptyArray() );
+         assertThat( "one area shown", params.areasShown, arrayWithSize (1) );
+         var shownArea:Rectangle = new Rectangle(125, 125, 75, 75);
+         assertThat( "shownArea", shownArea.equals(params.areasShown[0]), isTrue() );
+         assertThat( "visibleArea same as shownArea", shownArea.equals(params.visibleArea), isTrue() );
       }
       
       // -----
@@ -281,28 +357,33 @@ package tests.maps
          tracker.updateContentPosition(-75, -75);
          tracker.updateComplete();
          
-         assertThat( "client.areaShown called 4 times", client.areaShownCalls, equals (4) );
-         assertThat( "client.areaHidden not called", client.areaHiddenCalls, equals (0) );
+         var params:VisibleAreaChangeParams = client.visibleAreaChangeParams;
+         assertThat(
+            "visible area changed",
+            new Rectangle(150, 150, 200, 200).equals(params.visibleArea), isTrue()
+         );
+         assertThat( "no areas hidden", params.areasHidden, emptyArray() );
+         assertThat( "4 areas shown", params.areasShown, arrayWithSize (4) );
          assertThat( "client.shownArea (vertical, left)",
-            client.areaShownParams, hasItem (hasProperties ({
+            params.areasShown, hasItem (hasProperties ({
                "x": 150, "width": 50,
                "y": 150, "height": 200
             }))
          );
          assertThat( "client.shownArea (vertical, right)",
-            client.areaShownParams, hasItem (hasProperties ({
+            params.areasShown, hasItem (hasProperties ({
                "x": 300, "width": 50,
                "y": 150, "height": 200
             }))
          );
          assertThat( "client.shownArea (horizontal, top)",
-            client.areaShownParams, hasItem( hasProperties ({
+            params.areasShown, hasItem( hasProperties ({
                "x": 200, "width": 100,
                "y": 150, "height": 50
             }))
          );
          assertThat( "client.shownArea (horizontal, top)",
-            client.areaShownParams, hasItem( hasProperties ({
+            params.areasShown, hasItem( hasProperties ({
                "x": 200, "width": 100,
                "y": 300, "height": 50
             }))
@@ -331,17 +412,6 @@ package tests.maps
          );
       }
       
-      private function assertAreaPositionAndSize(message:String,
-                                                 x:int,
-                                                 y:int,
-                                                 width:int,
-                                                 height:int) : void {
-         assertThat( message + "; area.x", shownArea.x, equals (x) );
-         assertThat( message + "; area.y", shownArea.y, equals (y) );
-         assertThat( message + "; area.width", shownArea.width, equals (width) );
-         assertThat( message + "; area.height", shownArea.height, equals (height) );         
-      }
-      
       private function createTracker() : VisibleAreaTracker {
          this.client = new MockClient();
          this.tracker = new VisibleAreaTracker(this.client);
@@ -358,26 +428,41 @@ import flash.geom.Rectangle;
 
 class MockClient implements IVisibleAreaTrackerClient
 {
-   public var areaHiddenParams:Vector.<Rectangle> = new Vector.<Rectangle>();
-   public var areaHiddenCalls:int = 0;
+   public var visibleAreaChangeCalls:int;
+   public var visibleAreaChangeParams:VisibleAreaChangeParams;
    
-   public function areaHidden(area:Rectangle) : void {
-      areaHiddenCalls++;
-      areaHiddenParams.push(area);
+   public function MockClient() {
+      clear();
    }
    
-   public var areaShownParams:Vector.<Rectangle> = new Vector.<Rectangle>();
-   public var areaShownCalls:int = 0;
-   
-   public function areaShown(area:Rectangle) : void {
-      areaShownCalls++;
-      areaShownParams.push(area);
+   public function visibleAreaChange(visibleArea:Rectangle,
+                                     areasHidden:Vector.<Rectangle>,
+                                     areasShown:Vector.<Rectangle>) : void {
+      visibleAreaChangeCalls++;
+      visibleAreaChangeParams = new VisibleAreaChangeParams(
+         visibleArea,
+         areasHidden,
+         areasShown
+      );
    }
    
    public function clear() : void {
-      areaHiddenCalls = 0;
-      areaHiddenParams.splice(0, areaHiddenParams.length);
-      areaShownCalls = 0;
-      areaShownParams.splice(0, areaShownParams.length);
+      visibleAreaChangeCalls = 0;
+      visibleAreaChangeParams = null;
+   }
+}
+
+class VisibleAreaChangeParams
+{
+   public var visibleArea:Rectangle;
+   public var areasHidden:Vector.<Rectangle>;
+   public var areasShown:Vector.<Rectangle>;
+   
+   public function VisibleAreaChangeParams(visibleArea:Rectangle,
+                                           areasHidden:Vector.<Rectangle>,
+                                           areasShown:Vector.<Rectangle>) {
+      this.visibleArea = visibleArea;
+      this.areasHidden = areasHidden;
+      this.areasShown = areasShown;
    }
 }

@@ -8,37 +8,29 @@ package components.base.viewport
    public interface IVisibleAreaTrackerClient
    {
       /**
-       * Called when some area of a content of a viewport has become <b>visible</b>.
+       * Called whenever visible area of a content of a viewport changes.
        * 
-       * @param area <code>Rectangle</code> defining the area.
+       * @param newVisibleArea new visible area after the change. If no area is visible,
+       *                       this will be instance of <code>Rectangle</code> which has either
+       *                       <code>width</code> or <code>height</code> properties equal to 0
        * <ul><b>
-       *    <li>Not null.</li>
+       *    <li>not null</li>
        * </b></ul>
-       * Here:
-       * <ul>
-       *    <li><code>area.x</code> - X coordinate (pixel) of the area in content coordinate space;</li>
-       *    <li><code>area.y</code> - Y coordinate (pixel) of the area in content coordinate space;</li>
-       *    <li><code>area.width</code> - width (in pixels) of the area</li>
-       *    <li><code>area.height</code> - height (in pixels) of the area</li>
-       * </ul>
-       */
-      function areaShown(area:Rectangle) : void;
-      
-      /**
-       * Called when come area of a content of a viewport has become <b>invisible</b>.
        * 
-       * @param area <code>Rectangle</code> defining the area.
+       * @param areasHidden array of areas that became invisible after change. Has at most 4 elements and
+       *                    may not have any elements.
        * <ul><b>
-       *    <li>Not null.</li>
+       *    <li>not null</li>
        * </b></ul>
-       * Here:
-       * <ul>
-       *    <li><code>area.x</code> - X coordinate (pixel) of the area in content coordinate space;</li>
-       *    <li><code>area.y</code> - Y coordinate (pixel) of the area in content coordinate space;</li>
-       *    <li><code>area.width</code> - width (in pixels) of the area</li>
-       *    <li><code>area.height</code> - height (in pixels) of the area</li>
-       * </ul>
+       * 
+       * @param areasShown array of hidden areas after change. Has at most 4 elements and
+       *                   may not have any elements.
+       * <ul><b>
+       *    <li>not null</li>
+       * </b></ul>
        */
-      function areaHidden(area:Rectangle) : void;
+      function visibleAreaChange(visibleArea:Rectangle,
+                                 areasHidden:Vector.<Rectangle>,
+                                 areasShown:Vector.<Rectangle>) : void;
    }
 }
