@@ -9,6 +9,7 @@ package components.map.space
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
    import models.location.LocationType;
+   import models.map.MapArea;
    
    import utils.Objects;
    
@@ -22,6 +23,7 @@ package components.map.space
       private var _locWrapper:LocationMinimalGalaxy = new LocationMinimalGalaxy();
       private var _map:CMapGalaxy;
       private var _galaxy:Galaxy;
+      private var _coordsTransform:GalaxyMapCoordsTransform;
       
       
       public function GridGalaxy(map:CMapGalaxy)
@@ -29,6 +31,7 @@ package components.map.space
          super(map);
          _map = map;
          _galaxy = map.getGalaxy();
+         _coordsTransform = new GalaxyMapCoordsTransform(_galaxy);
       }
       
       
@@ -37,12 +40,11 @@ package components.map.space
        *  
        * @copy Grid#getSectorRealCoordinates()
        */
-      public override function getSectorRealCoordinates(location:LocationMinimal) : Point
-      {
+      public override function getSectorRealCoordinates(location:LocationMinimal) : Point {
          Objects.paramNotNull("location", location);
          return new Point(
-            (location.x + _galaxy.offset.x + 0.5) * SECTOR_WIDTH,
-            (_galaxy.bounds.height - (location.y + _galaxy.offset.y) - 0.5) * SECTOR_HEIGHT
+            _coordsTransform.logicalToReal_X(location.x, location.y),
+            _coordsTransform.logicalToReal_Y(location.x, location.y)
          );
       }
       
@@ -58,10 +60,9 @@ package components.map.space
          _locWrapper.location = new LocationMinimal();
          _locWrapper.type = LocationType.GALAXY;
          _locWrapper.id = _galaxy.id;
-         _locWrapper.x = Math.round(coordinates.x / SECTOR_WIDTH - _galaxy.offset.x - 0.5);
-         _locWrapper.y = Math.round(_galaxy.bounds.height - 0.5 - coordinates.y / SECTOR_HEIGHT - _galaxy.offset.y);
-         if (_galaxy.locationIsVisible(_locWrapper.location))
-         {
+         _locWrapper.x = _coordsTransform.realToLogical_X(coordinates.x, coordinates.y);
+         _locWrapper.y = _coordsTransform.realToLogical_Y(coordinates.x, coordinates.y);
+         if (_galaxy.locationIsVisible(_locWrapper.location)) {
             return _locWrapper.location;
          }
          return null;
@@ -77,10 +78,9 @@ package components.map.space
       internal override function getAllSectors() : ModelsCollection
       {
          var sectors:Array = new Array();
-         for (var x:int = _galaxy.bounds.left + 2; x < _galaxy.bounds.right - 2; x++)
-         {
-            for (var y:int = _galaxy.bounds.top + 2; y < _galaxy.bounds.bottom - 2; y++)
-            {
+         var bounds:MapArea = _galaxy.bounds;
+         for (var x:int = bounds.xMin + 2; x <= bounds.xMax - 2; x++) {
+            for (var y:int = bounds.yMin + 2; y <= bounds.yMax - 2; y++) {
                _locWrapper.location = new LocationMinimal();
                _locWrapper.type = LocationType.GALAXY;
                _locWrapper.id = _galaxy.id;

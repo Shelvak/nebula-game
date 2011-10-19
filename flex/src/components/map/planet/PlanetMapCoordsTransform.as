@@ -1,12 +1,12 @@
 package components.map.planet
 {
-   import components.map.IMapCoordsTransform;
+   import components.map.BaseMapCoordsTransform;
    
    import flash.geom.Point;
    
    import models.tile.Tile;
    
-   public class PlanetMapCoordsTransform implements IMapCoordsTransform
+   public class PlanetMapCoordsTransform extends BaseMapCoordsTransform
    {
       /**
        * @param logicalWidth logical width of a planet map
@@ -15,11 +15,10 @@ package components.map.planet
        */
       public function PlanetMapCoordsTransform(logicalWidth:int = 0,
                                                logicalHeight:int = 0,
-                                               borderSize:int = 0)
-      {
+                                               borderSize:int = 0) {
          super();
-         _logicalWidth  = logicalWidth;
-         _logicalHeight = logicalHeight;
+         this.logicalWidth  = logicalWidth;
+         this.logicalHeight = logicalHeight;
          _borderSize = borderSize;
       }
       
@@ -45,34 +44,12 @@ package components.map.planet
       }
       
       
-      private var _logicalWidth:int = 0;
-      public function set logicalWidth(value:int) : void
-      {
-         _logicalWidth = value;
-      }
-      public function get logicalWidth():int
-      {
-         return _logicalWidth;
-      }
-      
-      
       /**
        * Logical width of a planet map including borders.
        */
       public function get logicalWidthWithBorders() : int
       {
-         return _logicalWidth + _borderSize * 2;
-      }
-      
-      
-      private var _logicalHeight:int = 0;
-      public function set logicalHeight(value:int) : void
-      {
-         _logicalHeight = value;
-      }
-      public function get logicalHeight() : int
-      {
-         return _logicalHeight;
+         return logicalWidth + _borderSize * 2;
       }
       
       
@@ -81,17 +58,17 @@ package components.map.planet
        */
       public function get logicalHeightWithBorders() : int
       {
-         return _logicalHeight + _borderSize * 2;
+         return logicalHeight + _borderSize * 2;
       }
       
       
-      public function get realWidth() : Number
+      public override function get realWidth() : Number
       {
          return getRealSideLength(Tile.IMAGE_WIDTH) + extraWidthPixels;;
       }
       
       
-      public function get realHeight() : Number
+      public override function get realHeight() : Number
       {
          return getRealSideLength(Tile.IMAGE_HEIGHT);
       }
@@ -106,21 +83,12 @@ package components.map.planet
       }
       
       
-      public function logicalToReal(logical:Point) : Point
-      {
-         return new Point(
-            logicalToReal_X(logical.x, logical.y),
-            logicalToReal_Y(logical.x, logical.y)
-         );
-      }
-      
-      
       /**
        * <p>Returns X coordinate of top-left corner of a tile at the given logical coordinates.</p>
        * 
        * @inheritDoc
        */
-      public function logicalToReal_X(logicalX:int, logicalY:int) : Number
+      public override function logicalToReal_X(logicalX:int, logicalY:int) : Number
       {
          logicalX += _borderSize;
          logicalY += _borderSize;
@@ -133,7 +101,7 @@ package components.map.planet
        * 
        * @inheritDoc
        */
-      public function logicalToReal_Y(logicalX:int, logicalY:int) : Number
+      public override function logicalToReal_Y(logicalX:int, logicalY:int) : Number
       {
          logicalX += _borderSize;
          logicalY += _borderSize;
@@ -166,16 +134,7 @@ package components.map.planet
       }
       
       
-      public function realToLogical(real:Point) : Point
-      {
-         return new Point(
-            realToLogical_X(real.x, real.y),
-            realToLogical_Y(real.x, real.y)
-         );
-      }
-      
-      
-      public function realToLogical_X(realX:Number, realY:Number) : int
+      public override function realToLogical_X(realX:Number, realY:Number) : int
       {
          realX = recalculateRealX(realX);
          realY = recalculateRealY(realY);
@@ -183,7 +142,7 @@ package components.map.planet
       }
       
       
-      public function realToLogical_Y(realX:Number, realY:Number) : int
+      public override function realToLogical_Y(realX:Number, realY:Number) : int
       {
          realX = recalculateRealX(realX);
          realY = recalculateRealY(realY);
