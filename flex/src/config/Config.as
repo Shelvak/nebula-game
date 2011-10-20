@@ -444,7 +444,7 @@ package config
          return getUnitProperty(type, "xpNeeded");
       }
       
-      public static function getUnitStorage(type: String): int
+      public static function getUnitStorage(type: String): String
       {
          return getUnitProperty(type, "storage");
       }

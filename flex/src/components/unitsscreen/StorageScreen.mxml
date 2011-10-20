@@ -156,7 +156,8 @@
             var possibleStore: int = (wreckage == null
                ? transporter[resource]
                : Math.min(transporter[resource] + wreckage[resource], 
-                  Resource.calculateNewResources(transporter[resource], transporter.storage - transporter.stored - 
+                  Resource.calculateNewResources(transporter[resource], 
+                     transporter.transporterStorage - transporter.stored - 
                      getOtherSelected(resource), resource)));
             return Math.max(0, possibleStore);
          }
@@ -250,10 +251,11 @@
                <s:Label styleName="locationHeader"
                         text="{Localizer.string('Location', 'header.storage')}"/>
                <base:DoubleProgressBar text="{Localizer.string('Location', 'label.storage',
-                                       [transporter.stored + getOtherSelected(), transporter.storage])}"
+                                       [transporter.stored + getOtherSelected(), 
+                                       ML.technologies.getUnitStorage(transporter.type, transporter.level)])}"
                                        currentStock="{transporter.stored}"
                                        addStock="{getOtherSelected()}"
-                                       maxStock="{transporter.storage}" 
+                                       maxStock="{ML.technologies.getUnitStorage(transporter.type, transporter.level)}" 
                                        specialHeight="20" width="200"/>
             </s:Group>
          </screen:controls>

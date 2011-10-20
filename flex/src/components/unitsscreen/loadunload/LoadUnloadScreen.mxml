@@ -30,15 +30,15 @@
             <s:Label styleName="locationHeader" id="lblStorage"
                      text="{Localizer.string('Location', 'header.storage')}" verticalCenter="0"/>
             <base:DoubleProgressBar text="{Localizer.string('Location', 'label.storage',
-                                    LS.target is Unit
-                                    ? [LS.transporter.stored + LS.volume, LS.transporter.storage]
-                                    : [LS.transporter.stored - LS.volume, LS.transporter.storage])}"
-                                    full="{LS.target is Unit
-                                    ? LS.transporter.stored + LS.volume > LS.transporter.storage
-                                    : LS.transporter.stored - LS.volume > LS.transporter.storage}"
+                                    [LS.transporter.stored + (LS.target is Unit 
+                                    ? LS.volume : -LS.volume), 
+                                    ML.technologies.getUnitStorage(LS.transporter.type, LS.transporter.level)])}"
+                                    full="{LS.transporter.stored + (LS.target is Unit 
+                                    ? LS.volume : -LS.volume) > 
+                                    ML.technologies.getUnitStorage(LS.transporter.type, LS.transporter.level)}"
                                     currentStock="{LS.transporter.stored}"
                                     addStock="{LS.target is Unit ? LS.volume : -LS.volume}"
-                                    maxStock="{LS.transporter.storage}" 
+                                    maxStock="{ML.technologies.getUnitStorage(LS.transporter.type, LS.transporter.level)}" 
                                     specialHeight="20" left="0" right="0" width="200"/>
          </s:Group>
       </unitsscreen:rightControls>

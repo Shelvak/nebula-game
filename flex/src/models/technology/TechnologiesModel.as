@@ -2,6 +2,8 @@ package models.technology
 {
    import config.Config;
    
+   import controllers.objects.ObjectClass;
+   
    import globalevents.GTechnologiesEvent;
    
    import models.BaseModel;
@@ -79,6 +81,22 @@ package models.technology
             }
          }
          return value;
+      }
+      
+      [Bindable (event="technologyChanged")]
+      /**
+       * 
+       * @param type - unit type
+       * @param level - unit level
+       * @return how much storage can this unit store
+       * 
+       */      
+      public function getUnitStorage(type: String, level: int): int
+      {
+         return Math.round(Math.round(StringUtil.evalFormula(Config.getUnitStorage(type), 
+            {'level': level})) * ((100 +
+         getTechnologiesPropertyMod('unit.storage', 
+            ObjectClass.UNIT + '/' + StringUtil.camelCaseToUnderscore(type))) / 100));
       }
       
       private static function getCoordsAsString(x:int, y:int): String

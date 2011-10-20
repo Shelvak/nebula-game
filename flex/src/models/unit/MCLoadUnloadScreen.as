@@ -123,7 +123,7 @@ package models.unit
             Resource.getResourceVolume(1, ResourceType.METAL),
             Resource.getResourceVolume(1, ResourceType.ENERGY),
             Resource.getResourceVolume(1, ResourceType.ZETIUM));
-         return (transporter.storage - transporter.stored < minVol);
+         return (transporter.transporterStorage - transporter.stored < minVol);
       }
       
       [Bindable (event="selectedResourcesChange")]
@@ -141,7 +141,7 @@ package models.unit
                (Math.min(transporter[resource], Resource(ML.latestPlanet.ssObject[resource]).maxStock - 
                   Resource(ML.latestPlanet.ssObject[resource]).currentStock))
                :(Math.min(
-                  Resource.getResourcesForVolume(transporter.storage - transporter.stored - 
+                  Resource.getResourcesForVolume(transporter.transporterStorage - transporter.stored - 
                      getOtherSelected(resource) - unitsSelectedVolume, resource),
                   Resource(ML.latestPlanet.ssObject[resource]).currentStock)));
          rebuildWarning();
@@ -441,7 +441,8 @@ package models.unit
       
       public function refreshVolume(e: UnitEvent = null): void
       {
-         selectionClass.freeStorage = (target is Unit?transporter.storage - transporter.stored - volume:-1);
+         selectionClass.freeStorage = (target is Unit
+            ? transporter.transporterStorage - transporter.stored - volume : -1);
          dispatchVolumeChangeEvent();
       }
       /**
