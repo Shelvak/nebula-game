@@ -3,8 +3,6 @@ package models.objectives
    import models.BaseModel;
    import models.quest.events.QuestEvent;
    
-   import utils.ObjectStringsResolver;
-   
    public class QuestObjective extends Objective
    {
       public function QuestObjective(_type: String)

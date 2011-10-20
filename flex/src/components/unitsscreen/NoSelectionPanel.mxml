@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+            xmlns:s="library://ns.adobe.com/flex/spark" 
+            xmlns:mx="library://ns.adobe.com/flex/mx" 
+            xmlns:base="components.base.*"
+            title="{getText('label.noSelection')}"
+            width="100%">
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         import utils.locale.Localizer;
+         
+         private function getText(prop: String): String
+         {
+            return Localizer.string('Units', prop);
+         }
+      ]]>
+   </fx:Script>
+   <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'arrow_select_units')}"/>
+   <s:Group width="100%">
+      <s:Label text="{getText('label.selectUnits')}" 
+               fontSize="20" fontWeight="bold" 
+               color="#ffd200" left="0" right="0" textAlign="center"/>
+   </s:Group>
+   <base:layout>
+      <s:HorizontalLayout verticalAlign="middle"/>
+   </base:layout>
+</base:Panel>

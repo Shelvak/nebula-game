@@ -2,7 +2,6 @@ package models.objectives
 {
    import flash.display.BitmapData;
    
-   import utils.ObjectStringsResolver;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    import utils.locale.Localizer;

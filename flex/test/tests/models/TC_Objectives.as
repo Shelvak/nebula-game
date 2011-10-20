@@ -44,17 +44,15 @@ package tests.models
          
          var bundle: ResourceBundle = new ResourceBundle(Locale.EN, 'Objects');
          bundle.content['Trooper'] = 'Trooper';
-         bundle.content['Trooper-what'] = '{0 one[one trooper] many[? troopers]}';
-         bundle.content['Trooper-whos'] = '{0 one[one trooper] many[? troopers]}';
+         bundle.content['Trooper-p8d'] = '{0 one[one trooper] many[? troopers]}';
          bundle.content['Seeker'] = 'Seeker';
-         bundle.content['Seeker-what'] = '{0 one[one seeker] many[? seekers]}';
-         bundle.content['Seeker-whos'] = '{0 one[one seeker] many[? seekers]}';
+         bundle.content['Seeker-p8d'] = '{0 one[one seeker] many[? seekers]}';
          
          
          
          var bundle2: ResourceBundle = new ResourceBundle(Locale.EN, 'Objectives');
-         bundle2.content['objectiveText.HaveUpgradedTo'] = 'Have {0}{1 one[] many[ of level ?]}';
-         bundle2.content['objectiveText.UpgradeTo'] = '{1 one[Build] many[Upgrade]} {0}{1 one[] many[ to level ?]}';
+         bundle2.content['objectiveText.HaveUpgradedTo'] = 'Have [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}';
+         bundle2.content['objectiveText.UpgradeTo'] = '{2 one[Build] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}';
          Localizer.addBundle(bundle);
          Localizer.addBundle(bundle2);
       }
