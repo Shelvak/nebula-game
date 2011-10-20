@@ -10,7 +10,6 @@
          import components.ratings.RatingsWidths;
          
          import models.infoscreen.MInfoRow;
-         import models.player.MRatingPlayer;
          [Bindable]
          private var model: MInfoRow;
          public override function set data(value:Object):void
