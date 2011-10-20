@@ -10,6 +10,7 @@ package controllers.players.actions
    import models.ratings.MCRatingsScreen;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
    
@@ -34,21 +35,18 @@ package controllers.players.actions
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
          var RS: MCRatingsScreen = MCRatingsScreen.getInstance();
-         RS.ratings = RatingsPlayerFactory.fromObjects(cmd.parameters.ratings);
-         RS.ratings.sort = new Sort();
-         RS.ratings.sort.fields = [new SortField('victoryPoints', true, true, true), 
+         RS.source = RatingsPlayerFactory.fromObjects(cmd.parameters.ratings);
+         RS.sortList([new SortField('victoryPoints', true, true, true), 
             new SortField('points', true, true, true),
             new SortField('planetsCount', true, true, true),
-            new SortField('name')];
-         RS.ratings.refresh();
-         
+            new SortField('name')]);
+         RS.ratings = new ListCollectionView(RS.source);
          var i: int = 0;
-         for each (var player: MRatingPlayer in RS.ratings)
+         for each (var player: MRatingPlayer in RS.source)
          {
             i++;
             player.rank = i;
          }
-         
          NavigationController.getInstance().showRatings(playerName);
          playerName = null;
          GlobalFlags.getInstance().lockApplication = false;
