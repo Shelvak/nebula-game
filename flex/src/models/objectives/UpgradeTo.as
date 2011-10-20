@@ -1,6 +1,7 @@
 package models.objectives
 {
    import utils.ModelUtil;
+   import utils.StringUtil;
    import utils.locale.Localizer;
    
    
@@ -19,7 +20,7 @@ package models.objectives
          var result: String = Localizer.string('Objectives', 'objectiveText.'+objective.type, 
             [
                objective.count, 
-               (classOnly ? objective.key : ModelUtil.getModelSubclass(objective.key)), 
+               (classOnly ? objective.key : StringUtil.replaceClassSeperator(objective.key)), 
                objective.level
             ]);
          if (result == null || result == '')

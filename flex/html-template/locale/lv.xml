@@ -661,7 +661,7 @@
     
     <!-- NPC buildings -->
 
-    <NpcMetalExtractor.name ref="Objects/NpcMetalExtractor" />
+    <NpcMetalExtractor.name ref="Objects/Building_NpcMetalExtractor" />
     <NpcMetalExtractor.about>
       <p>
         These alien technology driven foundries have been abandoned long time 
@@ -670,7 +670,7 @@
       </p>
     </NpcMetalExtractor.about>
 
-    <NpcZetiumExtractor.name ref="Objects/NpcZetiumExtractor" />
+    <NpcZetiumExtractor.name ref="Objects/Building_NpcZetiumExtractor" />
     <NpcZetiumExtractor.about>
       <p>
         These buildings were used for extracting and storing zetium. They are 
@@ -679,7 +679,7 @@
       </p>
     </NpcZetiumExtractor.about>
 
-    <NpcGeothermalPlant.name ref="Objects/NpcGeothermalPlant" />
+    <NpcGeothermalPlant.name ref="Objects/Building_NpcGeothermalPlant" />
     <NpcGeothermalPlant.about>
       <p>
         Built ages ago these buildings were probably meant as collectors for 
@@ -688,7 +688,7 @@
       </p>
     </NpcGeothermalPlant.about>
 
-    <NpcSolarPlant.name ref="Objects/NpcSolarPlant" />
+    <NpcSolarPlant.name ref="Objects/Building_NpcSolarPlant" />
     <NpcSolarPlant.about>
       <p>
         Solar power is converted in these buildings. Our scans indicate strong 
@@ -696,7 +696,7 @@
       </p>
     </NpcSolarPlant.about>
 
-    <NpcCommunicationsHub.name ref="Objects/NpcCommunicationsHub" />
+    <NpcCommunicationsHub.name ref="Objects/Building_NpcCommunicationsHub" />
     <NpcCommunicationsHub.about>
       <p>
         These structures look like some kind of communication device. Perhaps 
@@ -704,7 +704,7 @@
       </p>
     </NpcCommunicationsHub.about>
 
-    <NpcTemple.name ref="Objects/NpcTemple" />
+    <NpcTemple.name ref="Objects/Building_NpcTemple" />
     <NpcTemple.about>
       <p>
         Whilst extremely advanced Precursors were also a deeply religious race. 
@@ -713,7 +713,7 @@
       </p>
     </NpcTemple.about>
 
-    <NpcExcavationSite.name ref="Objects/NpcExcavationSite" />
+    <NpcExcavationSite.name ref="Objects/Building_NpcExcavationSite" />
     <NpcExcavationSite.about>
       <p>
         It seems like a dig site. Although nobody knows what they were 
@@ -721,7 +721,7 @@
       </p>
     </NpcExcavationSite.about>
 
-    <NpcResearchCenter.name ref="Objects/NpcResearchCenter" />
+    <NpcResearchCenter.name ref="Objects/Building_NpcResearchCenter" />
     <NpcResearchCenter.about>
       <p>
         It seems that this is a Precursor research laboratory. No one knows 
@@ -729,7 +729,7 @@
       </p>
     </NpcResearchCenter.about>
 
-    <NpcJumpgate.name ref="Objects/NpcJumpgate" />
+    <NpcJumpgate.name ref="Objects/Building_NpcJumpgate" />
     <NpcJumpgate.about>
       <p>
         These jumpgates were used to warp forces between planets crossing solar 
@@ -741,7 +741,7 @@
 
 
 
-    <Mothership.name ref="Objects/Mothership" />
+    <Mothership.name ref="Objects/Building_Mothership" />
     <Mothership.about>
       <p>
         The Mothership is the core ship for humans who inhabit this planet. 
@@ -764,7 +764,7 @@
       <p>Each upgrade level increases metal extraction rate.</p>
     </MEX.common>
 
-    <MetalExtractor.name ref="Objects/MetalExtractor" />
+    <MetalExtractor.name ref="Objects/Building_MetalExtractor" />
     <MetalExtractor.tooltip value="Extracts metal" />
     <MetalExtractor.about>
       <p>
@@ -776,7 +776,7 @@
       <p>[reference:MEX.common]</p>
     </MetalExtractor.about>
 
-    <MetalExtractorT2.name ref="Objects/MetalExtractorT2" />
+    <MetalExtractorT2.name ref="Objects/Building_MetalExtractorT2" />
     <MetalExtractorT2.tooltip value="Extracts metal" />
     <MetalExtractorT2.common>
       <p>Better, faster and more expensive version of 
@@ -788,7 +788,7 @@
       <p>[reference:MEX.common]</p>
     </MetalExtractorT2.about>
 
-    <MetalStorage.name ref="Objects/MetalStorage" />
+    <MetalStorage.name ref="Objects/Building_MetalStorage" />
     <MetalStorage.tooltip value="Stores metal" />
     <MetalStorage.about>
       <p>
@@ -800,7 +800,7 @@
       <p>Each upgrade level increases storage.</p>
     </MetalStorage.about>
 
-    <CollectorT1.name ref="Objects/CollectorT1" />
+    <CollectorT1.name ref="Objects/Building_CollectorT1" />
     <CollectorT1.tooltip value="Generates energy" />
     <CollectorT1.common>
       <p>
@@ -814,7 +814,7 @@
       <p>Katrs līmenis uzlabo enerģijas atdevi.</p>
     </CollectorT1.about>
 
-    <CollectorT2.name ref="Objects/CollectorT2" />
+    <CollectorT2.name ref="Objects/Building_CollectorT2" />
     <CollectorT2.tooltip value="Generates energy" />
     <CollectorT2.common>
       <p>
@@ -823,7 +823,7 @@
         [reference:NpcSolarPlant.name]s their massive panels generate a 
         formidable amount of energy. Although their advanced designs allow 
         upgrading them beyond the limits of their former versions they cost a 
-        lot more than simple [reference:Objects/CollectorT2]. 
+        lot more than simple [reference:Objects/Building_CollectorT2]. 
       </p>
     </CollectorT2.common>
     <CollectorT2.about>
@@ -831,7 +831,7 @@
       <p>Each upgrade level increases energy output.</p>
     </CollectorT2.about>
 
-    <CollectorT3.name ref="Objects/CollectorT3" />
+    <CollectorT3.name ref="Objects/Building_CollectorT3" />
     <CollectorT3.tooltip value="Generates energy" />
     <CollectorT3.common>
       <p>
@@ -846,7 +846,7 @@
       <p>Katrs līmenis uzlabo enerģijas atdevi.</p>
     </CollectorT3.about>
 
-    <EnergyStorage.name ref="Objects/EnergyStorage" />
+    <EnergyStorage.name ref="Objects/Building_EnergyStorage" />
     <EnergyStorage.tooltip value="Stores energy" />
     <EnergyStorage.about>
       <p>
@@ -857,7 +857,7 @@
       <p>Katrs līmenis palielina enerģijas krātuvi.</p>
     </EnergyStorage.about>
 
-    <Barracks.name ref="Objects/Barracks" />
+    <Barracks.name ref="Objects/Building_Barracks" />
     <Barracks.tooltip value="Kājnieku trennēšana" />
     <Barracks.about>
       <p>
@@ -867,7 +867,7 @@
       </p>
     </Barracks.about>
 
-    <ResearchCenter.name ref="Objects/ResearchCenter" />
+    <ResearchCenter.name ref="Objects/Building_ResearchCenter" />
     <ResearchCenter.tooltip value="Tehnoloģiju izpēte" />
     <ResearchCenter.about>
       <p>
@@ -891,14 +891,14 @@
       <p>Katrs līmenis uzlabo zetium pārstrādes daudzumu.</p>
     </ZetiumExtractor.common>
 
-    <ZetiumExtractor.name ref="Objects/ZetiumExtractor" />
+    <ZetiumExtractor.name ref="Objects/Building_ZetiumExtractor" />
     <ZetiumExtractor.tooltip value="Extracts zetium" />
     <ZetiumExtractor.about>
       <p>[reference:Technologies/Zetium.common]</p>
       <p>[reference:ZetiumExtractor.common]</p>
     </ZetiumExtractor.about>
 
-    <ZetiumExtractorT2.name ref="Objects/ZetiumExtractorT2" />
+    <ZetiumExtractorT2.name ref="Objects/Building_ZetiumExtractorT2" />
     <ZetiumExtractorT2.tooltip value="Extracts zetium" />
     <ZetiumExtractorT2.common>
       <p>
@@ -912,7 +912,7 @@
       <p>[reference:ZetiumExtractor.common]</p>
     </ZetiumExtractorT2.about>
 
-    <ZetiumStorage.name ref="Objects/ZetiumStorage" />
+    <ZetiumStorage.name ref="Objects/Building_ZetiumStorage" />
     <ZetiumStorage.tooltip value="Stores zetium" />
     <ZetiumStorage.about>
       <p>
@@ -925,7 +925,7 @@
       <p>Katrs līmenis palielina uzglabāšanas ietilpību.</p>
     </ZetiumStorage.about>
 
-    <Crane.name ref="Objects/Crane" />
+    <Crane.name ref="Objects/Building_Crane" />
     <Crane.tooltip value="Constructs buildings" />
     <Crane.about>
       <p>
@@ -936,7 +936,7 @@
       </p>
     </Crane.about>
     
-    <Market.name ref="Objects/Market" />
+    <Market.name ref="Objects/Building_Market" />
     <Market.tooltip value="Atļauj tirgoties spēlētāju starpā" />
     <Market.common>
       <p>Tirgus dod iespēju tirgoties ar citiem spēlētājiem šajā galaktikā. 
@@ -949,7 +949,7 @@
       <p>Katrs līmenis samazina piedāvājuma nodokļu likmi.</p>
     </Market.about>
 
-    <Radar.name ref="Objects/Radar" />
+    <Radar.name ref="Objects/Building_Radar" />
     <Radar.tooltip value="Palielināt redzamību galaktikā" />
     <Radar.common>
       <p>
@@ -965,7 +965,7 @@
       <p>Katrs līmenis palielina redzesloku.</p>
     </Radar.about>
 
-    <Housing.name ref="Objects/Housing" />
+    <Housing.name ref="Objects/Building_Housing" />
     <Housing.tooltip value="Palielināt iedzīvotāju skaitu" />
     <Housing.about>
       <p>Šīs dzīvojamās ēkas nepieciešamas priekš kājniekiem un 
@@ -978,7 +978,7 @@
 <!--    <ResourceTransporter.tooltip value="Transports resources between planets" />-->
 <!--    <ResourceTransporter.about value="Teleport resources with this one" />-->
 
-    <Headquarters.name ref="Objects/Headquarters" />
+    <Headquarters.name ref="Objects/Building_Headquarters" />
     <Headquarters.about>
       <p>
         Deployed from Mobile Deployable Headquarters it is the first outpost in 
@@ -992,7 +992,7 @@
     <DeployedFromMobile value="Deployed from mobile version." />
     <!-- /TODO -->
 
-    <Vulcan.name ref="Objects/Vulcan" />
+    <Vulcan.name ref="Objects/Building_Vulcan" />
     <Vulcan.tooltip value="Aizsardzība pret kājniekiem" />
     <Vulcan.about>
       <p>
@@ -1003,14 +1003,14 @@
       <p>Var uzbrukt tikai zemes vienībām.</p>
     </Vulcan.about>
 
-    <MobileVulcan.name ref="Objects/MobileVulcan" />
+    <MobileVulcan.name ref="Objects/Building_MobileVulcan" />
     <MobileVulcan.tooltip ref="Vulcan.tooltip" />
     <MobileVulcan.about>
       <p>[reference:Vulcan.about]</p>
       <p>[reference:DeployedFromMobile]</p>
     </MobileVulcan.about>
 
-    <Screamer.name ref="Objects/Screamer" />
+    <Screamer.name ref="Objects/Building_Screamer" />
     <Screamer.tooltip value="Aizsardzība pret tankiem" />
     <Screamer.about>
       <p>
@@ -1020,14 +1020,14 @@
       <p>Var uzbrukt tikai zemes vienībām.</p>
     </Screamer.about>
 
-    <MobileScreamer.name ref="Objects/MobileScreamer" />
+    <MobileScreamer.name ref="Objects/Building_MobileScreamer" />
     <MobileScreamer.tooltip ref="Screamer.tooltip" />
     <MobileScreamer.about>
       <p>[reference:Screamer.about]</p>
       <p>[reference:DeployedFromMobile]</p>
     </MobileScreamer.about>
 
-    <Thunder.name ref="Objects/Thunder" />
+    <Thunder.name ref="Objects/Building_Thunder" />
     <Thunder.tooltip value="Aizsardzība pret gaisa vienībām" />
     <Thunder.about>
       <p>
@@ -1038,14 +1038,14 @@
       <p>Var uzbrukt tikai gaisa kuģiem.</p>
     </Thunder.about>
 
-    <MobileThunder.name ref="Objects/MobileThunder" />
+    <MobileThunder.name ref="Objects/Building_MobileThunder" />
     <MobileThunder.tooltip ref="Thunder.tooltip" />
     <MobileThunder.about>
       <p>[reference:Thunder.about]</p>
       <p>[reference:DeployedFromMobile]</p>
     </MobileThunder.about>
 
-    <GroundFactory.name ref="Objects/GroundFactory" />
+    <GroundFactory.name ref="Objects/Building_GroundFactory" />
     <GroundFactory.tooltip value="Būvēt tankus" />
     <GroundFactory.about>
       <p>
@@ -1054,7 +1054,7 @@
       </p>
     </GroundFactory.about>
 
-    <SpaceFactory.name ref="Objects/SpaceFactory" />
+    <SpaceFactory.name ref="Objects/Building_SpaceFactory" />
     <SpaceFactory.tooltip value="Būvēt gaisa kuģus" />
     <SpaceFactory.about>
       <p>
@@ -1064,7 +1064,7 @@
       </p>
     </SpaceFactory.about>
 
-    <HealingCenter.name ref="Objects/HealingCenter" />
+    <HealingCenter.name ref="Objects/Building_HealingCenter" />
     <HealingCenter.tooltip value="Salabot vienības" />
     <HealingCenter.common>
       <p>
@@ -1078,7 +1078,7 @@
       <p>Katrs līmenis samazina ārstēšanas izmaksas un laika aizkavi.</p>
     </HealingCenter.about>
 
-    <DefensivePortal.name ref="Objects/DefensivePortal" />
+    <DefensivePortal.name ref="Objects/Building_DefensivePortal" />
     <DefensivePortal.tooltip value="Summons ground units for defense" />
     <DefensivePortal.common>
       <p>Kad aktivizēts šis portāls, jūs varat nosūtīt kareivjus uz citām planētām, 
@@ -1100,7 +1100,7 @@
       </p>
     </GivesUnits>
 
-    <NpcInfantryFactory.name ref="Objects/NpcInfantryFactory" />
+    <NpcInfantryFactory.name ref="Objects/Building_NpcInfantryFactory" />
     <NpcInfantryFactory.about>
       <p>
         This ancient factory produces light units out of solar energy and 
@@ -1109,13 +1109,13 @@
       <p>[reference:GivesUnits]</p>
     </NpcInfantryFactory.about>
 
-    <NpcTankFactory.name ref="Objects/NpcTankFactory" />
+    <NpcTankFactory.name ref="Objects/Building_NpcTankFactory" />
     <NpcTankFactory.about>
       <p>Spēcīgas un smagi bruņotas mašīnas, tiek būvētas šajā laboratorijā.</p>
       <p>[reference:GivesUnits]</p>
     </NpcTankFactory.about>
 
-    <NpcSpaceFactory.name ref="Objects/NpcSpaceFactory" />
+    <NpcSpaceFactory.name ref="Objects/Building_NpcSpaceFactory" />
     <NpcSpaceFactory.about>
       <p>
         Šīs pazemes iekārtas būvē kosmosa kuģus, kurus var izmantot aizsardzībā 
@@ -1124,7 +1124,7 @@
       <p>[reference:GivesUnits]</p>
     </NpcSpaceFactory.about>
 
-    <NpcHall.name ref="Objects/NpcHall" />
+    <NpcHall.name ref="Objects/Building_NpcHall" />
     <NpcHall.about>
       <p>
         Šī ēka dod jums un jūsu aliansei uzvaras punktus. 
@@ -3476,7 +3476,7 @@
       </p>
     </Zetium.common>
 
-    <ZetiumExtraction.name ref="Objects/ZetiumExtraction" />
+    <ZetiumExtraction.name ref="Objects/Technology_ZetiumExtraction" />
     <ZetiumExtraction.about>
       <p>Allows building Zetium Extractors and Storages.</p>
       <p>[reference:Zetium.common]</p>
@@ -3522,7 +3522,7 @@
       </p>
     </InfantryUpgradeTech>
 
-    <MetabolicChargers.name ref="Objects/MetabolicChargers" />
+    <MetabolicChargers.name ref="Objects/Technology_MetabolicChargers" />
     <MetabolicChargers.about>
       <p>
         Pēdējie atklājumi bruņu tehnoloģijās ļauj ievietot zetium shards 
@@ -3534,7 +3534,7 @@
       </p>
     </MetabolicChargers.about>
 
-    <HighVelocityCharges.name ref="Objects/HighVelocityCharges" />
+    <HighVelocityCharges.name ref="Objects/Technology_HighVelocityCharges" />
     <HighVelocityCharges.about>
       <p>
         Pēdējie atklājumi zetium tehnoloģijā ļauj uzlabot karavīru munīciju
@@ -3560,7 +3560,7 @@
       </p>
     </ShipUpgradeTech>
 
-    <ShipsArmor.name ref="Objects/ShipsArmor" />
+    <ShipsArmor.name ref="Objects/Technology_ShipsArmor" />
     <ShipsArmor.about>
       <p>
         Šī tehnoloģija atļauj izmantot zetium reinforced armor plates, kas 
@@ -3572,7 +3572,7 @@
       </p>
     </ShipsArmor.about>
 
-    <ShipsDamage.name ref="Objects/ShipsDamage" />
+    <ShipsDamage.name ref="Objects/Technology_ShipsDamage" />
     <ShipsDamage.about>
       <p>
         Introducing zetium into plasma particle stream greatly improves their 
@@ -3592,7 +3592,7 @@
       </p>
     </TankUpgradeTech>
 
-    <TanksDamage.name ref="Objects/TanksDamage" />
+    <TanksDamage.name ref="Objects/Technology_TanksDamage" />
     <TanksDamage.about>
       <p>
         Ieviešot nestabilo zetium tanku korpusos, tas uzlabo 
@@ -3605,7 +3605,7 @@
       </p>
     </TanksDamage.about>
 
-    <TanksArmor.name ref="Objects/TanksArmor" />
+    <TanksArmor.name ref="Objects/Technology_TanksArmor" />
     <TanksArmor.about>
       <p>
         Šie vairoga ģenerātori rada uz bruņām punktus, kas samazina 
@@ -3641,7 +3641,7 @@
       <p>[reference:Buildings/MetalExtractorT2.common]</p>
     </MetalExtractorT2.about>
 
-    <FieryMelters.name ref="Objects/FieryMelters" />
+    <FieryMelters.name ref="Objects/Technology_FieryMelters" />
     <FieryMelters.about>
       <p>
         Izmantojot augstu spiedienu MetalExtractors, dod iespēju 
@@ -3664,7 +3664,7 @@
       <p>[reference:Buildings/CollectorT3.common]</p>
     </CollectorT3.about>
 
-    <SuperconductorTechnology.name ref="Objects/SuperconductorTechnology" />
+    <SuperconductorTechnology.name ref="Objects/Technology_SuperconductorTechnology" />
     <SuperconductorTechnology.about>
       <p>
         Izmantojot ar zetium pārklātus vadus, zinātnieki ir spējīgi palielināt 
@@ -3681,7 +3681,7 @@
       <p>[reference:Buildings/ZetiumExtractorT2.common]</p>
     </ZetiumExtractorT2.about>
 
-    <PowderedZetium.name ref="Objects/PowderedZetium" />
+    <PowderedZetium.name ref="Objects/Technology_PowderedZetium" />
     <PowderedZetium.about>
       <p>
         Šie asie zetium cirtņi tiek izmantoti, lai iegūtu agstākas kvalitātes 
@@ -3722,7 +3722,7 @@
       <p>[reference:Buildings/SpaceFactory.about]</p>
     </SpaceFactory.about>
 
-    <HeavyFlight.name ref="Objects/HeavyFlight" />
+    <HeavyFlight.name ref="Objects/Technology_HeavyFlight" />
     <HeavyFlight.about>
       <p>Izmantojot gamma daļiņas smago dzinēju iekšējajos procesos
       ļauj tiem sasniegt lielāku ātrumu, tādejādi ievērojami samazinot laiku,
@@ -3730,8 +3730,8 @@
       <p>Šai tehnoloģijia nepieciešami UX-20 dzinēji, kas atrodās tikai 
       lielākajos gaisa kuģos. Par cik viņi ir ļoti lēni,
       tad šī tehnoloģija ir ļoti noderīga tiem.</p>
-      <p>Saīsina lidojuma laiku [reference:Objects/Mule] un
-      [reference:Objects/Rhyno] klases gaisa kuģiem.</p>
+      <p>Saīsina lidojuma laiku [reference:Objects/Unit_Mule] un
+      [reference:Objects/Unit_Rhyno] klases gaisa kuģiem.</p>
     </HeavyFlight.about>
     
     <UnitUpgrade>
@@ -3880,7 +3880,7 @@
       <p>[reference:Buildings/HealingCenter.common]</p>
     </HealingCenter.about>
 
-    <Alliances.name ref="Objects/Alliances" />
+    <Alliances.name ref="Objects/Technology_Alliances" />
     <Alliances.about>
       <p>Apvienojiet spēkus ar saviem kaimiņiem. Aizsargājiet viens otru.
       Saskaņojiet savus uzbrukumus. Palīdziet viens otram izpildīt uzdevumus. Viss ir
@@ -3888,9 +3888,9 @@
       <p>Ļauj izveidot aliansi.</p>
     </Alliances.about>
 
-    <DefensivePortal.name ref="Objects/DefensivePortal" />
+    <DefensivePortal.name ref="Objects/Technology_DefensivePortal" />
     <DefensivePortal.about>
-      <p>Ļauj uzbūvēt [reference:Objects/DefensivePortal].</p>
+      <p>Ļauj uzbūvēt [reference:Objects/Building_DefensivePortal].</p>
       <p>[reference:Buildings/DefensivePortal.common]</p>
     </DefensivePortal.about>
   </Technologies>
@@ -4117,7 +4117,7 @@
     <kind.nap  value="Nap units" />
     <kind.ally value="Alianses vienības" />
 
-    <Gnat.name ref="Objects/Gnat" />
+    <Gnat.name ref="Objects/Unit_Gnat" />
     <Gnat.about>
       <p>
         Svešzemju zemes karaspēka vājākie karavīri. Viņi ir ļoti vāji un 
@@ -4127,7 +4127,7 @@
       </p>
     </Gnat.about>
 
-    <Glancer.name ref="Objects/Glancer" />
+    <Glancer.name ref="Objects/Unit_Glancer" />
     <Glancer.about>
       <p>
         Viegli ievainojami, bet nāvējoši karavīriem. Viņu snaipera šautenes izurbjās 
@@ -4137,7 +4137,7 @@
       </p>
     </Glancer.about>
 
-    <Spudder.name ref="Objects/Spudder" />
+    <Spudder.name ref="Objects/Unit_Spudder" />
     <Spudder.about>
       <p>
         Pussmagie humonoīdu roboti. Bruņoti ar paštēmējošo plazmas daļiņu ieroci,tie ir 
@@ -4146,7 +4146,7 @@
       </p>
     </Spudder.about>
 
-    <Gnawer.name ref="Objects/Gnawer" />
+    <Gnawer.name ref="Objects/Unit_Gnawer" />
     <Gnawer.about>
       <p>
         Sargi vissvētākajiem artifaktiem svešzemju ēkās.Viņi ir neželīgas 
@@ -4156,7 +4156,7 @@
       </p>
     </Gnawer.about>
 
-    <Dirac.name ref="Objects/Dirac" />
+    <Dirac.name ref="Objects/Unit_Dirac" />
     <Dirac.about>
       <p>
         Šie straujie gaisa kuģi tika būvēti priekš ātriem uzbrukumiem triecien flotēs. 
@@ -4166,7 +4166,7 @@
       </p>
     </Dirac.about>
 
-    <Thor.name ref="Objects/Thor" />
+    <Thor.name ref="Objects/Unit_Thor" />
     <Thor.about>
       <p>
         Šie ļoti aizsargātie, bet vājie gaisa kuģi tika izmantoti, kā frontes līnijas 
@@ -4177,7 +4177,7 @@
       noderīgi, lai no gaisa spridzinātu ienaidnieka karaspēku uz zemes.</p>
     </Thor.about>
 
-    <Demosis.name ref="Objects/Demosis" />
+    <Demosis.name ref="Objects/Unit_Demosis" />
     <Demosis.about>
       <p>
         Šie gigantiskie kuģi klejo apkārt pa Nebula 44. Reiz tie tika būvēti 
@@ -4191,7 +4191,7 @@
       </p>
     </Demosis.about>
 
-    <Trooper.name ref="Objects/Trooper" />
+    <Trooper.name ref="Objects/Unit_Trooper" />
     <Trooper.about>
       <p>
         Armijas patkaravīri, kas ir bruņoti ar automātiskajiem ierročiem. Viņu bezbailīgums 
@@ -4201,7 +4201,7 @@
       </p>
     </Trooper.about>
 
-    <Shocker.name ref="Objects/Shocker" />
+    <Shocker.name ref="Objects/Unit_Shocker" />
     <Shocker.about>
       <p>
         Highly armored field warriors with the capabilities to withstand enemy 
@@ -4211,7 +4211,7 @@
       </p>
     </Shocker.about>
 
-    <Seeker.name ref="Objects/Seeker" />
+    <Seeker.name ref="Objects/Unit_Seeker" />
     <Seeker.about>
       <p>
         Bruņoti ar [reference:InfoScreen/gun.sniper_rifle], tie ir letāli 
@@ -4229,7 +4229,7 @@
     <Saboteur.name value="Saboteur" />
     <Saboteur.about value="Is likely to ruin things" />
 
-    <Scorpion.name ref="Objects/Scorpion" />
+    <Scorpion.name ref="Objects/Unit_Scorpion" />
     <Scorpion.about>
       <p>
         Scorpion klases tanki ir pamata kara mašīnas zemes karaspēkā. Viņi ir aprīkoti 
@@ -4239,7 +4239,7 @@
       </p>
     </Scorpion.about>
 
-    <Azure.name ref="Objects/Azure" />
+    <Azure.name ref="Objects/Unit_Azure" />
     <Azure.about>
       <p>
         Azure hovertanks ir labākais veids, kā cīnīties pret ienaidnieka tankiem. Katrā 
@@ -4250,14 +4250,14 @@
       </p>
     </Azure.about>
 
-    <Zeus.name ref="Objects/Zeus" />
+    <Zeus.name ref="Objects/Unit_Zeus" />
     <Zeus.about>
       <p>Šie masveida tanki nostiprinās zemē un savus lādiņus šauj kosmosā. 
       Tanki ir paredzēti tikai, lai notriektu ienaidnieka kosmosakuģus
       un tādēļ tie nespēj uzbrukt karaspēkam, kas pārvietojās pa zemi.</p>
     </Zeus.about>
 
-    <Mdh.name ref="Objects/MDH" />
+    <Mdh.name ref="Objects/Unit_MDH" />
     <Mdh.common>
       <p>
         Mobile Deployable Headquarters (MDH) ir pirmā galvenā bāze 
@@ -4276,7 +4276,7 @@
       </p>
     </Mdh.about>
 
-    <Mule.name ref="Objects/Mule" />
+    <Mule.name ref="Objects/Unit_Mule" />
     <Mule.about>
       <p>
         Lēnas un smagi bruņotas transporta vienības. To masīvais korpuss pasargā 
@@ -4285,7 +4285,7 @@
       </p>
     </Mule.about>
 
-    <Crow.name ref="Objects/Crow" />
+    <Crow.name ref="Objects/Unit_Crow" />
     <Crow.about>
       <p>
         Viegli, ātri un daudzpusēji standarta kaujas kosmosa kuģi. Perfekti ātrām 
@@ -4293,7 +4293,7 @@
       </p>
     </Crow.about>
 
-    <Cyrix.name ref="Objects/Cyrix" />
+    <Cyrix.name ref="Objects/Unit_Cyrix" />
     <Cyrix.about>
       <p>
         Cyrix klases kaujaskuģi ir standarta kuģi, ko izmanto flotē. 
@@ -4304,7 +4304,7 @@
       </p>
     </Cyrix.about>
 
-    <Rhyno.name ref="Objects/Rhyno" />
+    <Rhyno.name ref="Objects/Unit_Rhyno" />
     <Rhyno.about>
       <p>
         Rhyno kaujas kreiseris ir lieliskākais flotes pārstāvis. Ar savu milzīgo 
@@ -4314,7 +4314,7 @@
       </p>
     </Rhyno.about>
 
-    <Dart.name ref="Objects/Dart" />
+    <Dart.name ref="Objects/Unit_Dart" />
     <Dart.about>
       <p>
         Dart klases kuģi ir īpaši būvēti, lai cīnītos pret 
@@ -4327,7 +4327,7 @@
       </p>
     </Dart.about>
 
-    <Avenger.name ref="Objects/Avenger" />
+    <Avenger.name ref="Objects/Unit_Avenger" />
     <Avenger.about>
       <p>
         Avengers ir nāvējoši smagi bruņotiem kuģiem. Bruņu caururbjošās
@@ -4341,7 +4341,7 @@
       </p>
     </Avenger.about>
 
-    <Jumper.name ref="Objects/Jumper" />
+    <Jumper.name ref="Objects/Unit_Jumper" />
     <Jumper.about>
       <p>
         Jumpers ir zibens ātri satelīti, kas
@@ -4357,19 +4357,19 @@
       deployed. Cannot be undeployed after deploying.</p>
     </MobileTurret>
 
-    <MobileVulcan.name ref="Objects/MobileVulcan" />
+    <MobileVulcan.name ref="Objects/Unit_MobileVulcan" />
     <MobileVulcan.about>
       <p>Mobile version of Vulcan defensive tower. [reference:MobileTurret]</p>
       <p>[reference:Buildings/Vulcan.about]</p>
     </MobileVulcan.about>
 
-    <MobileScreamer.name ref="Objects/MobileScreamer" />
+    <MobileScreamer.name ref="Objects/Unit_MobileScreamer" />
     <MobileScreamer.about>
       <p>Mobile version of Screamer defensive tower. [reference:MobileTurret]</p>
       <p>[reference:Buildings/Screamer.about]</p>
     </MobileScreamer.about>
 
-    <MobileThunder.name ref="Objects/MobileThunder" />
+    <MobileThunder.name ref="Objects/Unit_MobileThunder" />
     <MobileThunder.about>
       <p>Mobile version of Thunder defensive tower. [reference:MobileTurret]</p>
       <p>[reference:Buildings/Thunder.about]</p>

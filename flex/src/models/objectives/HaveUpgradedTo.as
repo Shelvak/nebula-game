@@ -3,6 +3,7 @@ package models.objectives
    import controllers.objects.ObjectClass;
    
    import utils.ModelUtil;
+   import utils.StringUtil;
    import utils.locale.Localizer;
    
    
@@ -24,7 +25,7 @@ package models.objectives
                : (classOnly ? 'TechClass' : 'Tech')),
             [
                objective.count, 
-               (classOnly ? objective.key : ModelUtil.getModelSubclass(objective.key)), 
+               (classOnly ? objective.key : StringUtil.replaceClassSeperator(objective.key)), 
                objective.level
             ]);
          if (result == null || result == '')
