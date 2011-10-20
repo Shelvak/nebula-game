@@ -33,11 +33,6 @@ module Parts::Transportation
     # How much storage does this +Unit+ take.
     def volume; self.class.volume; end
 
-    # How much storage does this +Unit+ unload per tick in combat.
-    def unload_per_tick(level=nil)
-      self.class.unload_per_tick(level || self.level)
-    end
-
     # Loads given _units_ into this +Unit+. Raises error if any of the
     # models does not have #volume or we are out of storage in this +Unit+.
     #
@@ -168,7 +163,8 @@ module Parts::Transportation
       # Update unit location before dispatching it to client
       units.each { |unit| unit.location = location }
 
-      EventBroker.fire([self] + units, EventBroker::CHANGED)
+      EventBroker.fire([self] + units, EventBroker::CHANGED,
+        EventBroker::REASON_TRANSPORTATION)
     end
   end
 
@@ -181,11 +177,6 @@ module Parts::Transportation
 
     # How much storage does this +Unit+ take.
     def volume; property('volume'); end
-
-    # How much storage does this +Unit+ unload per tick in combat.
-    def unload_per_tick(level)
-      evalproperty('unload_per_tick', nil, 'level' => level)
-    end
 
     # Calculates total volume of _units_.
     def calculate_volume(units)
