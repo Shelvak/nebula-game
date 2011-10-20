@@ -313,12 +313,16 @@
     <Technology_HeavyFlight-whos value="gama variklių" />
     <Technology_MetalStorage value="Skysčių suspaudimas" />
     <Technology_MetalStorage-whos value="Skysčių suspaudimo" />
-    <Technology_EnergyStorage ref="Talpesnės baterijos" />
-    <Technology_EnergyStorage-whos ref="Talpesnių baterijų" />
-    <Technology_ZetiumStorage ref="Zetiumo kasetės" />
-    <Technology_ZetiumStorage-whos ref="Zetiumo kasečių" />
-    <Technology_ShipStorage ref="Išoriniai dokai" />
-    <Technology_ShipStorage-whos ref="Išorinių dokų" />
+    <Technology_EnergyStorage value="Talpesnės baterijos" />
+    <Technology_EnergyStorage-whos value="Talpesnių baterijų" />
+    <Technology_ZetiumStorage value="Zetiumo kasetės" />
+    <Technology_ZetiumStorage-whos value="Zetiumo kasečių" />
+    <Technology_ShipStorage value="Išoriniai dokai" />
+    <Technology_ShipStorage-whos value="Išorinių dokų" />
+    <Technology_DefensivePortal ref="Building_DefensivePortal" />
+    <Technology_DefensivePortal-whos value="Building_DefensivePortal-whos" />
+    <Technology_Alliances value="Sąjungos" />
+    <Technology_Alliances-whos value="Sąjungų" />
     
     <!-- Kita -->
     

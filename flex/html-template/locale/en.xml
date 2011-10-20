@@ -236,10 +236,12 @@
     <Technology_SuperconductorTechnology value="Superconductor Technology" />
     <Technology_PowderedZetium value="Zetium Cutters" />
     <Technology_HeavyFlight value="Gamma Thrusters" />
-    <Technology_MetalStorage value="Liquid compression" />
-    <Technology_EnergyStorage ref="Extended batteries" />
-    <Technology_ZetiumStorage ref="Zetium cartridges" />
-    <Technology_ShipStorage ref="External cargo decks" />
+    <Technology_MetalStorage value="Liquid Compression" />
+    <Technology_EnergyStorage value="Extended Batteries" />
+    <Technology_ZetiumStorage value="Zetium Cartridges" />
+    <Technology_ShipStorage value="External Cargo Decks" />
+    <Technology_DefensivePortal ref="Building_DefensivePortal" />
+    <Technology_Alliances value="Alliances" />
     
     <!-- Other stuff -->
 
@@ -3505,7 +3507,7 @@
       <p>Each level increases energy generation rate and storage.</p>
     </SuperconductorTechnology.about>
 
-    <ZetiumExtractorT2.name ref="Buildings/Technology_ZetiumExtractorT2.name" />
+    <ZetiumExtractorT2.name ref="Buildings/ZetiumExtractorT2.name" />
     <ZetiumExtractorT2.about>
       <p>Allows building [reference:Buildings/ZetiumExtractorT2.name].</p>
       <p>[reference:Buildings/ZetiumExtractorT2.common]</p>
