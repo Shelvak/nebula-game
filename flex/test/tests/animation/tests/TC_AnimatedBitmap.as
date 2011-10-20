@@ -362,46 +362,46 @@ package tests.animation.tests
          bmp.setFrames(Data.framesData);
          bmp.addAnimations(Data.animations);
          
-         addTimerStart();
+         startTimer();
          
          // start playing "duck" animation
-         addCall(bmp.playAnimationImmediately, ["duck"]);
+         call(bmp.playAnimationImmediately, ["duck"]);
          addDefaultFrameCheck(); addAnimationCheck("duck");
          
          // check a few frames
-         addWait(); addFrameCheck(0);
-         addWait(); addFrameCheck(1);
+         wait(); addFrameCheck(0);
+         wait(); addFrameCheck(1);
          
          // should still be "duck" animation
          addAnimationCheck("duck");
          
          // switch to another animation
-         addCall(bmp.playAnimationImmediately, ["run"]);
+         call(bmp.playAnimationImmediately, ["run"]);
          addAnimationCheck("run");
          // previously shown frame should still be visible
          addFrameCheck(1);
          
          // check a few frames
-         addWait(); addFrameCheck(0);
-         addWait(); addFrameCheck(1);
-         addWait(); addFrameCheck(0);
-         addWait(); addFrameCheck(2);
-         addWait(); addFrameCheck(0);
+         wait(); addFrameCheck(0);
+         wait(); addFrameCheck(1);
+         wait(); addFrameCheck(0);
+         wait(); addFrameCheck(2);
+         wait(); addFrameCheck(0);
          
          // should still be "run" animation
          addAnimationCheck("run");
          
          // switch to another animation again
-         addCall(bmp.playAnimationImmediately, ["fly"]);
+         call(bmp.playAnimationImmediately, ["fly"]);
          addAnimationCheck("fly");
          // previously shown frame should still be visible
          addFrameCheck(0);
          
          // and check a few frames
-         addWait(); addFrameCheck(2);
-         addWait(); addFrameCheck(1);
-         addWait(); addFrameCheck(3);
-         addWait(); addFrameCheck(0);
+         wait(); addFrameCheck(2);
+         wait(); addFrameCheck(1);
+         wait(); addFrameCheck(3);
+         wait(); addFrameCheck(0);
          
          runner.run();
       };
@@ -424,46 +424,46 @@ package tests.animation.tests
          
          bmp.addAnimations(Data.animations);
          
-         addTimerStart();
+         startTimer();
          
          // start animation
-         addCall(bmp.playAnimationImmediately, ["fly"]);
+         call(bmp.playAnimationImmediately, ["fly"]);
          addDefaultFrameCheck();
          
          // check a few frames
-         addWait(); addFrameCheck(2);
-         addWait(); addFrameCheck(1);
-         addWait(); addFrameCheck(3);
-         addWait(); addFrameCheck(0);
+         wait(); addFrameCheck(2);
+         wait(); addFrameCheck(1);
+         wait(); addFrameCheck(3);
+         wait(); addFrameCheck(0);
          
          // stop animation
-         addCall(bmp.stopAnimationsImmediately);
+         call(bmp.stopAnimationsImmediately);
          
          // previously shown frame should be visible and [prop currentAnimation] should not be set
          addFrameCheck(0); addAnimationCheck(null);
          
-         addWait();
-         addWait();
+         wait();
+         wait();
          
          // the same frame should be still there and [prop currentAnimation] should not be set
          addFrameCheck(0); addAnimationCheck(null);
          
          // another animation
-         addCall(bmp.playAnimationImmediately, ["run"]);
+         call(bmp.playAnimationImmediately, ["run"]);
          addFrameCheck(0);
          
          // check few frames and stop
-         addWait(); addFrameCheck(0);
-         addWait(); addFrameCheck(1);
-         addWait(); addFrameCheck(0);
-         addWait(); addFrameCheck(2);
-         addCall(bmp.stopAnimationsImmediately);
+         wait(); addFrameCheck(0);
+         wait(); addFrameCheck(1);
+         wait(); addFrameCheck(0);
+         wait(); addFrameCheck(2);
+         call(bmp.stopAnimationsImmediately);
          
          // and check if animation has stopped (previously shown frame should be visible)
          addFrameCheck(2);
          addAnimationCheck(null);
-         addWait();
-         addWait();
+         wait();
+         wait();
          addFrameCheck(2);
          addAnimationCheck(null);
          
@@ -494,72 +494,72 @@ package tests.animation.tests
          // should not accept keys that don't have corresponding sequences
          assertThat( function():void{ bmp.playAnimation("none") }, throws (ArgumentError) );
          
-         addTimerStart();
+         startTimer();
          
          /**
           * lets play whole animation
           */
-         addCall(bmp.playAnimation, ["duck"]);
-         addWait();
-         addWait();
+         call(bmp.playAnimation, ["duck"]);
+         wait();
+         wait();
          
          // we should have reached last animation frame
-         addWait(); addAnimationCheck("duck"); addFrameCheck(2);
+         wait(); addAnimationCheck("duck"); addFrameCheck(2);
          // now we should still see the last frame but animation should have been reset
-         addWait(); addAnimationCheck(null); addFrameCheck(2);
+         wait(); addAnimationCheck(null); addFrameCheck(2);
          
          /**
           * now check if animations are stacked and each of them is played at least once
           */
-         addCall(bmp.playAnimation, ["run"]);
+         call(bmp.playAnimation, ["run"]);
          
          // play until loop middle
-         addWait(); addFrameCheck(0);
-         addWait(); addFrameCheck(1);
-         addWait(); addFrameCheck(0);
+         wait(); addFrameCheck(0);
+         wait(); addFrameCheck(1);
+         wait(); addFrameCheck(0);
          
          // now tell to play another animation
-         addCall(bmp.playAnimation, ["duck"]);
+         call(bmp.playAnimation, ["duck"]);
          
          // it should not be played at once and we should still be seeing "run"
          // however, this animation should not be looped
          addAnimationCheck("run");
-         addWait(); addFrameCheck(2); addAnimationCheck("run");
-         addWait(); addFrameCheck(2); addAnimationCheck("run");
+         wait(); addFrameCheck(2); addAnimationCheck("run");
+         wait(); addFrameCheck(2); addAnimationCheck("run");
          
          // now "duck" animation should be played but previously shown frame should be visible
-         addWait(); addAnimationCheck("duck"); addFrameCheck(2);
+         wait(); addAnimationCheck("duck"); addFrameCheck(2);
          
          // check a couple of frames of that animation
-         addWait(); addFrameCheck(0); addAnimationCheck("duck");
-         addWait(); addFrameCheck(1); addAnimationCheck("duck");
+         wait(); addFrameCheck(0); addAnimationCheck("duck");
+         wait(); addFrameCheck(1); addAnimationCheck("duck");
          
          // finally two more animations to stack
-         addCall(bmp.playAnimation, ["fly"]);
-         addCall(bmp.playAnimation, ["run"]);
+         call(bmp.playAnimation, ["fly"]);
+         call(bmp.playAnimation, ["run"]);
          addAnimationCheck("duck");
          
          // should have reached "duck" animation last frame
-         addWait(); addFrameCheck(2); addAnimationCheck("duck");
+         wait(); addFrameCheck(2); addAnimationCheck("duck");
          
          // now bitmap should have been switched to "fly" animation
          // but the last frame of "duck" should be still visible
-         addWait(); addFrameCheck(2); addAnimationCheck("fly");
+         wait(); addFrameCheck(2); addAnimationCheck("fly");
          
          // play "fly" animation until the end
-         addWait(); addWait(); addWait(); addWait(); addWait(); addWait();
-         addWait(); addAnimationCheck("fly"); addFrameCheck(2);
+         wait(); wait(); wait(); wait(); wait(); wait();
+         wait(); addAnimationCheck("fly"); addFrameCheck(2);
          
          // now it should have switched to "run" but previously shown frame should be visible
-         addWait(); addAnimationCheck("run"); addFrameCheck(2);
+         wait(); addAnimationCheck("run"); addFrameCheck(2);
          
          // and play a few frames with loop
-         addWait(); addFrameCheck(0);
-         addWait(); addFrameCheck(1);
-         addWait(); addFrameCheck(0); addAnimationCheck("run");
-         addWait(); addFrameCheck(2);
-         addWait(); addFrameCheck(0);
-         addWait(); addFrameCheck(2); addAnimationCheck("run");
+         wait(); addFrameCheck(0);
+         wait(); addFrameCheck(1);
+         wait(); addFrameCheck(0); addAnimationCheck("run");
+         wait(); addFrameCheck(2);
+         wait(); addFrameCheck(0);
+         wait(); addFrameCheck(2); addAnimationCheck("run");
          
          runner.run();
       };
@@ -582,51 +582,51 @@ package tests.animation.tests
          
          bmp.addAnimations(Data.animations);
          
-         addTimerStart();
+         startTimer();
          
          /**
           * Test if [method stopAnimation()] works when only one current animation is present.
           */
          
-         addCall(bmp.playAnimation, ["fly"]);
-         addWait(); addWait(); addAnimationCheck("fly");
+         call(bmp.playAnimation, ["fly"]);
+         wait(); wait(); addAnimationCheck("fly");
          
          // now invoke [method stopAnimations()]
-         addCall(bmp.stopAnimations);
+         call(bmp.stopAnimations);
          
          // we should still see "fly animation"
          addAnimationCheck("fly"); addFrameCheck(1);
-         addWait(); addWait(); addWait();
+         wait(); wait(); wait();
          
          // should not have entered loop
-         addWait(); addAnimationCheck("fly"); addFrameCheck(1);
+         wait(); addAnimationCheck("fly"); addFrameCheck(1);
          // last "fly" animation frame
-         addWait(); addAnimationCheck("fly"); addFrameCheck(2);
+         wait(); addAnimationCheck("fly"); addFrameCheck(2);
          // should have stopped here but previous frame should still be visible
-         addWait(); addAnimationCheck(null); addFrameCheck(2);
+         wait(); addAnimationCheck(null); addFrameCheck(2);
          
          /**
           * Now test if [method stopAnimations()] works when there are pending animations in stack.
           */
-         addWait(); addCall(bmp.playAnimation, ["run"]);
-         addWait(); addCall(bmp.playAnimation, ["fly"]);
-         addWait(); addCall(bmp.playAnimation, ["duck"]);
+         wait(); call(bmp.playAnimation, ["run"]);
+         wait(); call(bmp.playAnimation, ["fly"]);
+         wait(); call(bmp.playAnimation, ["duck"]);
          
          // ensure we are in the right frame and animation
-         addWait(); addAnimationCheck("run"); addFrameCheck(0);
+         wait(); addAnimationCheck("run"); addFrameCheck(0);
          
          // now stop animations
-         addCall(bmp.stopAnimations);
+         call(bmp.stopAnimations);
          
          // we should see current animation playing up until the end
-         addWait();
-         addWait(); addAnimationCheck("run"); addFrameCheck(2);
+         wait();
+         wait(); addAnimationCheck("run"); addFrameCheck(2);
          
          // and now complete stop but the last frame should still be visible
-         addWait(); addAnimationCheck(null); addFrameCheck(2);
+         wait(); addAnimationCheck(null); addFrameCheck(2);
          
          // wait a few frames and check if other animations have not been started
-         addWait(); addWait(); addAnimationCheck(null); addFrameCheck(2);
+         wait(); wait(); addAnimationCheck(null); addFrameCheck(2);
          
          runner.run();
       };
@@ -653,16 +653,16 @@ package tests.animation.tests
          // "run":  new Sequence([0, 1], [0, 2], [2]);
          // "fly":  new Sequence([2, 1, 3], [0, 3], [1, 2]);
          
-         addTimerStart();
+         startTimer();
          
          /**
           * ANIMATION_COMPLETE should not be dispatched when stopAnimationsImmediately() is invoked
           * ALL_ANIMATIONS_COMPLETE should also have not been dispatched
           */
-         addCall(bmp.playAnimation, ["run"]);
-         addDelay(20);
-         addCall(bmp.stopAnimationsImmediately);
-         addDelay(30);
+         call(bmp.playAnimation, ["run"]);
+         delayFor(20);
+         call(bmp.stopAnimationsImmediately);
+         delayFor(30);
          addNoAnimationCompleteCheck();
          addNoAllAnimationsCompleteCheck();
          
@@ -670,10 +670,10 @@ package tests.animation.tests
           * ANIMATION_COMPLETE sould be dispatched after stop() has been invoked on a running
           * ALL_ANIMATIONS_COMPLETE should have been dispatched
           */
-         addCall(bmp.playAnimation, ["fly"]);
-         addDelay(20);
-         addCall(bmp.stopAnimations);
-         addDelay(70);
+         call(bmp.playAnimation, ["fly"]);
+         delayFor(20);
+         call(bmp.stopAnimations);
+         delayFor(70);
          addAnimationCompleteCheck();
          addAllAnimationsCompleteCheck();
          
@@ -682,16 +682,16 @@ package tests.animation.tests
           * ANIMATION_COMPLETE should be dispatched for each pending animation
           * ALL_ANIMATIONS_COMPLETE should be dispached only after all animations have been played
           */
-         addCall(bmp.playAnimation, ["fly"]);
-         addCall(bmp.playAnimation, ["run"]);
-         addCall(bmp.playAnimation, ["duck"])
-         addDelay(90);
+         call(bmp.playAnimation, ["fly"]);
+         call(bmp.playAnimation, ["run"]);
+         call(bmp.playAnimation, ["duck"])
+         delayFor(90);
          addAnimationCompleteCheck();
          addNoAllAnimationsCompleteCheck();
-         addDelay(50);
+         delayFor(50);
          addAnimationCompleteCheck();
          addNoAllAnimationsCompleteCheck();
-         addDelay(30);
+         delayFor(30);
          addAnimationCompleteCheck();
          addAllAnimationsCompleteCheck();
          
@@ -709,13 +709,13 @@ package tests.animation.tests
       
       private function addAnimationCheck(name:String) : void
       {
-         addCall(checkAnimation, [name]);
+         call(checkAnimation, [name]);
       }
       
       
       private function addFrameCheck(frameNumber:int) : void
       {
-         addCall(checkFrameByNumber, [frameNumber]);
+         call(checkFrameByNumber, [frameNumber]);
       }
       
       
@@ -773,7 +773,7 @@ package tests.animation.tests
       }
       private function addAllAnimationsCompleteCheck() : void
       {
-         addCall(checkIfAllAnimationsCompleteDispatched);
+         call(checkIfAllAnimationsCompleteDispatched);
       }
       
       
@@ -783,7 +783,7 @@ package tests.animation.tests
       }
       private function addNoAllAnimationsCompleteCheck() : void
       {
-         addCall(checkIfAllAnimationsCompleteNotDispatched);
+         call(checkIfAllAnimationsCompleteNotDispatched);
       }
       
       
@@ -794,7 +794,7 @@ package tests.animation.tests
       }
       private function addAnimationCompleteCheck() : void
       {
-         addCall(checkIfAnimationCompleteDispatched);
+         call(checkIfAnimationCompleteDispatched);
       }
       
       
@@ -804,7 +804,7 @@ package tests.animation.tests
       }
       private function addNoAnimationCompleteCheck() : void
       {
-         addCall(checkIfAnimationCompleteNotDispatched);
+         call(checkIfAnimationCompleteNotDispatched);
       }
    }
 }

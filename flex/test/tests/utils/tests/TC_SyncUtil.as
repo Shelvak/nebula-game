@@ -37,8 +37,8 @@ package tests.utils.tests
       public function callAfter() : void
       {
          var functionCalled:Boolean = false;
-         addDelay(100);
-         addCall(function() : void { assertThat( functionCalled, equalTo (true) ); });
+         delayFor(100);
+         call(function() : void { assertThat( functionCalled, equalTo (true) ); });
          SyncUtil.callLater(function() : void { functionCalled = true; }, 50);
          runner.run();
       };
@@ -49,10 +49,10 @@ package tests.utils.tests
       {
          var functionACalled:Boolean = false;
          var functionBCalled:Boolean = false;
-         addDelay(100);
-         addCall(function() : void { assertThat( functionACalled, equalTo (true) ); });
-         addDelay(100);
-         addCall(function() : void { assertThat( functionBCalled, equalTo (true) ); });
+         delayFor(100);
+         call(function() : void { assertThat( functionACalled, equalTo (true) ); });
+         delayFor(100);
+         call(function() : void { assertThat( functionBCalled, equalTo (true) ); });
          SyncUtil.callLater(function() : void { functionACalled = true; },  50);
          SyncUtil.callLater(function() : void { functionBCalled = true; }, 150);
          runner.run();

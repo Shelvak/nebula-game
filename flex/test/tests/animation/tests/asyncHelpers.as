@@ -14,13 +14,13 @@ private function timerWaiter() : SequenceWaiter
 }
 
 
-private function addWait() : void
+private function wait() : void
 {
    runner.addStep(new SequenceWaiter(timer, TimerEvent.TIMER, 15));
 }
 
 
-private function addTimerStart() : void
+private function startTimer() : void
 {
-   addCall(timer.start);
+   call(timer.start);
 }

@@ -212,10 +212,10 @@ package tests.animation.tests
             "currentFrame": AnimatedBitmap.DEFAULT_FRAME_NUMBER
          }));
          
-         addTimerStart();
-         addWait(); addFrameCheck(0);
-         addWait(); addFrameCheck(1);
-         addWait(); addFrameCheck(2);
+         startTimer();
+         wait(); addFrameCheck(0);
+         wait(); addFrameCheck(1);
+         wait(); addFrameCheck(2);
          addPlayerStopCheck(2);
          
          runner.run();
@@ -234,24 +234,24 @@ package tests.animation.tests
             "currentFrame": AnimatedBitmap.DEFAULT_FRAME_NUMBER
          }));
          
-         addTimerStart();
+         startTimer();
          
-         addWait(); addFrameCheck(0);
-         addWait(); addFrameCheck(1);
+         wait(); addFrameCheck(0);
+         wait(); addFrameCheck(1);
          
          // entering loop part
-         addWait(); addFrameCheck(0);
-         addWait(); addFrameCheck(2);
+         wait(); addFrameCheck(0);
+         wait(); addFrameCheck(2);
          
          // to the beginning of the loop
-         addWait(); addFrameCheck(0);
+         wait(); addFrameCheck(0);
          
          // tell player to stop, but not immediately: rest of the sequence must be played
-         addCall(player.stop);
+         call(player.stop);
          
          // we should have 2 frames left
-         addWait(); addFrameCheck(2);
-         addWait(); addFrameCheck(2);
+         wait(); addFrameCheck(2);
+         wait(); addFrameCheck(2);
          addPlayerStopCheck(2);
          
          runner.run();
@@ -264,22 +264,22 @@ package tests.animation.tests
          // seqLong = new Sequence([2, 1, 3], [0, 3], [1, 2]);
          player.play(Data.seqAllParts);
          
-         addWait(); addFrameCheck(2);
-         addWait();
+         wait(); addFrameCheck(2);
+         wait();
          
          // Tell player to stop (frame 1 is shown and player is currently working with start frames)
-         addCall(player.stop);
-         addWait();
+         call(player.stop);
+         wait();
          
          // frame 0 is shown and player is currently working with loop part
-         addWait(); addFrameCheck(0);
+         wait(); addFrameCheck(0);
          
          // should have reached the end of loop frames
-         addWait(); addFrameCheck(3);
+         wait(); addFrameCheck(3);
          
          // new loop should have not been started and player should now show frame 1 and should
          // be working with finish frames
-         addWait(); addFrameCheck(1);
+         wait(); addFrameCheck(1);
          
          // in at most 20 milliseconds SEQUENCE_COMPLETE should be dispatched and player should be reset
          addPlayerStopCheck(2);
@@ -293,19 +293,19 @@ package tests.animation.tests
          player.play(Data.seqLoopFinish);
          
          // we start from loop part at once
-         addWait(); addFrameCheck(1);
-         addWait(); addFrameCheck(2)
+         wait(); addFrameCheck(1);
+         wait(); addFrameCheck(2)
          
          // back to loop start again
-         addWait(); addFrameCheck(1);
+         wait(); addFrameCheck(1);
          
          // adding stop call
-         addCall(player.stop);
+         call(player.stop);
          
          // we should still see all three frames playing before complete stop
-         addWait(); addFrameCheck(2);
-         addWait(); addFrameCheck(3);
-         addWait(); addFrameCheck(1);
+         wait(); addFrameCheck(2);
+         wait(); addFrameCheck(3);
+         wait(); addFrameCheck(1);
          addPlayerStopCheck(1);
       };
       
@@ -317,13 +317,13 @@ package tests.animation.tests
          player.play(Data.seqThree);
          
          // we start form frame 2 in finish part
-         addWait(); addFrameCheck(2);
+         wait(); addFrameCheck(2);
          
          // add stop call
-         addCall(player.stop);
+         call(player.stop);
          
          // we should see the last frame when player stops
-         addWait(); addFrameCheck(1);
+         wait(); addFrameCheck(1);
          addPlayerStopCheck(1);
       };
       
@@ -350,17 +350,17 @@ package tests.animation.tests
             function(event:SequencePlayerEvent) : void { sequenceCompleteDispatched = true; }
          );
          
-         addTimerStart();
-         addWait();
-         addWait();
+         startTimer();
+         wait();
+         wait();
          
          // now player should be reset
-         addCall(player.stopImmediatelly);
-         addCall(checkPlayerStop);
+         call(player.stopImmediatelly);
+         call(checkPlayerStop);
          
          // wait for SEQUENCE_COMPLETE event just in case
          runner.addStep(new SequenceDelay(20));
-         addCall(function() : void {
+         call(function() : void {
             // SEQUENCE_COMPLETE event should not have been dispatched
             assertThat ( sequenceCompleteDispatched, equalTo (false) );
          });
@@ -421,14 +421,14 @@ package tests.animation.tests
                playerStopTimeoutHandler
             )
          );
-         addCall(checkPlayerStop);
+         call(checkPlayerStop);
          addFrameCheck(stopFrameNumber);
       }
       
       
       private function addFrameCheck(frameNumber:int) : void
       {
-         addCall(checkFrame, [frameNumber]);
+         call(checkFrame, [frameNumber]);
       }
    }
 }
