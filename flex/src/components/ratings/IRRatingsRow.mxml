@@ -85,7 +85,7 @@
       <base:layout>
          <s:HorizontalLayout gap="1" verticalAlign="middle"/>
       </base:layout>
-      <s:Label text="{player.rank}" width="{RatingsWidths.rank}" textAlign="center"/>
+      <s:Label text="{player.nr}" width="{RatingsWidths.rank}" textAlign="center"/>
       <base:AdvancedContainer width="{RatingsWidths.player -
                               (getImaginaryLevel(player.rank) > 0?47:0)}"
                               toolTip="{Localizer.string('Ratings', player.online

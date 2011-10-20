@@ -8,6 +8,8 @@ package models.ratings
    import models.ratings.events.RatingsEvent;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.ListCollectionView;
+   import mx.collections.Sort;
    
    import utils.SingletonFactory;
    
@@ -18,8 +20,27 @@ package models.ratings
          return SingletonFactory.getSingletonInstance(MCRatingsScreen);
       }
       
+      public var source: ArrayCollection;
+      
       [Bindable]
-      public var ratings: ArrayCollection;
+      public var ratings: ListCollectionView;
+      
+      private function refreshNumbers(): void
+      {         
+         for (var i: int = 1; i <= source.length; i++)
+         {
+            var model: MRatingPlayer = MRatingPlayer(source.getItemAt(i-1));
+            model.nr = i;
+         }
+      }
+      
+      public function sortList(sortFields: Array): void
+      {
+         source.sort = new Sort();
+         source.sort.fields = sortFields;
+         source.refresh();
+         refreshNumbers();
+      }
       
       public var filterName: String;
       

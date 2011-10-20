@@ -77,9 +77,11 @@
                   <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.selectedVolume', 
                            [LS.volume])}"/>
                   <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.freeStorage', 
-                           [LS.transporter.storage - LS.transporter.stored + (LS.target is Unit ? -LS.volume : LS.volume )])}"/>
+                           [ML.technologies.getUnitStorage(LS.transporter.type, LS.transporter.level) 
+                           - LS.transporter.stored + (LS.target is Unit ? -LS.volume : LS.volume )])}"/>
                   <s:Group width="100%" visible="{!(!(LS.volume + LS.transporter.stored > 
-                           LS.transporter.storage) || LS.location is Unit)}">
+                           ML.technologies.getUnitStorage(LS.transporter.type, LS.transporter.level)) 
+                           || LS.location is Unit)}">
                      <s:Label styleName="unsatisfied" horizontalCenter="0" 
                               text="{Localizer.string ('Units', 'label.noStorage')}" fontSize="16"/>
                   </s:Group>
@@ -90,8 +92,8 @@
                                enabled="{(LS.volume > 0) &amp;&amp;
                                (
                                (LS.target is Unit &amp;&amp; 
-                               ((LS.transporter.stored + LS.volume) &lt;= LS.transporter.storage)
-                               
+                               ((LS.transporter.stored + LS.volume) &lt;= 
+                               ML.technologies.getUnitStorage(LS.transporter.type, LS.transporter.level))
                                )
                                || 
                                (!(LS.target is Unit))

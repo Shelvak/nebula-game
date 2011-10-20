@@ -139,16 +139,15 @@ package models.unit
          return volumeTotal;
       }
       
-      [Bindable (event="willNotChange")]
-      public function get storage(): int
-      {
-         return Config.getUnitStorage(type);
-      }
-      
       [Bindable(event="willNotChange")]
       public function get volume(): int
       {
          return Config.getUnitVolume(type);
+      }
+      
+      public function get transporterStorage(): int
+      {
+         return ML.technologies.getUnitStorage(type, level);
       }
       
       [Bindable (event="storedAmountChange")]

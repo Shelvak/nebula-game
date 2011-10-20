@@ -1417,12 +1417,51 @@
     <description.short.galaxy value="Galaktika" />
     <description.short.solarSystem value="Saulės sistema {0}" />
     <description.short.planet value="Planeta {0}" />
-    <description.long.galaxy value="Galaktikos sektorius {0}:{1}" />
-    <description.long.solarSystem value="Saulės sistemos {0} sektorius {1}:{2}" />
-    <description.long.pulsar value="Pulsaro {0} sektorius {1}:{2}"/>
-    <description.long.battleground value="Arenos sektorius {0}:{1}"/>
-    <description.long.planet value="Saulės sistemos {1} planeta {0}" />
-    <description.long.planetInBattleground value="Arenos planeta {0}" />
+    <description.long.galaxy>
+      <![CDATA[
+      <p>
+        Galaktikos sektorius <span fontWeight="bold">{0}:{1}</span>
+      </p>
+      ]]>
+      </description.long.galaxy>
+      <description.long.solarSystem>
+      <![CDATA[
+      <p>
+        Saulės sistemos <span fontWeight="bold">{0}</span> sektorius 
+        <span fontWeight="bold">{1}:{2}</span>
+      </p>
+      ]]>
+      </description.long.solarSystem>
+      <description.long.pulsar>
+      <![CDATA[
+      <p>
+        Pulsaro <span fontWeight="bold">{0}</span> sektorius 
+        <span fontWeight="bold">{1}:{2}</span>
+      </p>
+      ]]>
+      </description.long.pulsar>
+      <description.long.battleground>
+      <![CDATA[
+      <p>
+        Arenos sektorius <span fontWeight="bold">{0}:{1}</span>
+      </p>
+      ]]>
+      </description.long.battleground>
+      <description.long.planet>
+      <![CDATA[
+      <p>
+        Saulės sistemos <span fontWeight="bold">{1}</span> planeta 
+        <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+      </description.long.planet>
+      <description.long.planetInBattleground>
+      <![CDATA[
+      <p>
+        Arenos planeta <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+      </description.long.planetInBattleground>
 
     <message.locationNotAvailable>
       <p>Tu nebegali peržiūrėti šios vietos</p>

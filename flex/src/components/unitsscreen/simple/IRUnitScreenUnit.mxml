@@ -286,7 +286,7 @@
             </base:layout>
             <!-- LOAD -->
             <s:Group visible="{!(
-                     (model.unit.storage == 0)
+                     (ML.technologies.getUnitStorage(model.unit.type, model.unit.level) == 0)
                      || (!model.unit.location.isSSObject)
                      || (!ML.latestPlanet)
                      || (model.unit.owner != Owner.PLAYER)
@@ -305,7 +305,7 @@
             <!-- UNLOAD -->
             <s:Group visible="{!(!model.unit.location.isSSObject
                      || (model.unit.owner != Owner.PLAYER)
-                     || (model.unit.storage == 0)
+                     || (ML.technologies.getUnitStorage(model.unit.type, model.unit.level) == 0)
                      || (!ML.latestPlanet))}"
                      toolTip="{model.unit.stored == 0? Localizer.string('Units', 'tooltip.nothingToUnload')
                      : Localizer.string('Units', 'label.unload')}">
@@ -315,7 +315,7 @@
             </s:Group>
             <!-- SHOW -->
             <s:Group visible="{!(model.unit.location.isSSObject || 
-                     model.unit.storage == 0
+                     ML.technologies.getUnitStorage(model.unit.type, model.unit.level) == 0
                      || model.unit.owner != Owner.PLAYER)}"
                      toolTip="{Localizer.string('Units', 'label.show')}">
                <s:Button click="showStorage()" 
@@ -334,8 +334,10 @@
          <unitsscreen:StarsContainer starCount="{model.unit.upgradePart.level-1}" horizontalCenter="0" top="62"/>
          <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
                   text="{model.unit.hp+'\n'+'/'+'\n'+Config.getUnitHp(model.unit.type)}" verticalAlign="middle"
-                  toolTip="{model.unit.storage > 0 
-                  ? Localizer.string('Units', 'tooltip.freeStorage', [model.unit.storage - model.unit.stored])
+                  toolTip="{ML.technologies.getUnitStorage(model.unit.type, model.unit.level) > 0 
+                  ? Localizer.string('Units', 'tooltip.freeStorage', [
+                  ML.technologies.getUnitStorage(model.unit.type, model.unit.level) - 
+                  model.unit.stored])
                   : ''}"
                   backgroundColor="#0f0f0f" backgroundAlpha="0.7"/>
          
@@ -344,8 +346,10 @@
                               &amp;&amp; !expanded}" 
                               bottom="17" right="24" 
                               text="{Localizer.string('Units', 'stored.short', 
-                              [Unit.getStoredResourcesPercent(model.unit.storage, model.unit.metal, 
-                              model.unit.energy, model.unit.zetium), Unit.getStoredUnitsPercent(model.unit.storage,
+                              [Unit.getStoredResourcesPercent(
+                              ML.technologies.getUnitStorage(model.unit.type, model.unit.level), model.unit.metal, 
+                              model.unit.energy, model.unit.zetium), Unit.getStoredUnitsPercent(
+                              ML.technologies.getUnitStorage(model.unit.type, model.unit.level),
                               model.unit.stored, model.unit.metal, model.unit.energy, model.unit.zetium)])}"
                               defaultFontSize="10"/>
       <s:Group right="0" width="24" bottom="0" top="0">

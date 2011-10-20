@@ -153,9 +153,7 @@
          
          protected function header_ratingsSortHandler(event:HeaderEvent):void
          {
-            RS.ratings.sort = new Sort();
-            RS.ratings.sort.fields = sortFields[event.key];
-            RS.ratings.refresh();
+            RS.sortList(sortFields[event.key]);
          }
          
       ]]>
