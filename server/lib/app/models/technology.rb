@@ -126,8 +126,13 @@ class Technology < ActiveRecord::Base
   end
 
   # Array of [name, property] pairs for all technology mods.
-  MODS = %w{damage armor metal.generate metal.store energy.generate
-  energy.store zetium.generate zetium.store movement_time_decrease
+  MODS = %w{
+    damage armor
+    metal.generate metal.store
+    energy.generate energy.store
+    zetium.generate zetium.store
+    movement_time_decrease
+    storage
   }.map { |property| [property.gsub(".", "_"), "mod.#{property}"] }
   
   MODS.each do |name, property|

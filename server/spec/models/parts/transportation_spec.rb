@@ -40,6 +40,20 @@ describe Parts::Transportation do
       @unit.storage.should == CONFIG['units.with_storage.storage']
     end
 
+    it "should apply technology mods and round them if applied" do
+      with_config_values(
+        'units.with_storage.storage' => "100.33 * level",
+        'technologies.ship_storage.applies_to' => ['unit/with_storage'],
+        'technologies.ship_storage.mod.storage' => '13.33 * level'
+      ) do
+        technology = Factory.create!(:t_ship_storage, :level => 3,
+                                     :player => @unit.player)
+        @unit.level = 2
+        @unit.storage.should ==
+          ((100.33 * @unit.level).round * (1 + 0.1333 * technology.level)).round
+      end
+    end
+
     it "should return 0 if not specified" do
       with_config_values 'units.with_storage.storage' => nil do
         @unit.storage.should == 0
