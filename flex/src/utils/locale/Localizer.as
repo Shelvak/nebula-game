@@ -46,7 +46,8 @@ package utils.locale
          } 
          else
          {
-            throw new Error('Resource ' + property + ' for bundle ' + bundle + ' not found!');
+            throw new Error('Resource ' + property + ' for bundle ' + bundle + 
+               ' not found!');
          }
          var matches:Array = resultString.match(REFERENCE_REGEXP);
          while (matches != null) {
@@ -55,7 +56,9 @@ package utils.locale
                resultString = resultString.replace(REFERENCE_REGEXP, refReplace);
             }
             catch (e: Error) {
-               throw new ArgumentError('Localizer failed to replace reference' + resultString + e.toString());
+               throw new ArgumentError(
+                  'Localizer failed to replace reference ' + resultString + 
+                  e.toString());
             }
             matches = resultString.match(REFERENCE_REGEXP);
          }
