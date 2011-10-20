@@ -78,17 +78,19 @@ package components.base.viewport
       /* ### INITIALIZATION ### */
       /* ###################### */
       
-      
       private var _contentScrollAnimator:Animate;
       private var _underlayScrollAnimator:Animate;
       
       
       /**
-       * Constructor.
+       * @param visibleAreaTracker optional tracker that will be notified of viewport size,
+       *                           content position and size changes so that visible area of
+       *                           the content in this viewport could be tracked
        */
-      public function Viewport()
+      public function Viewport(visibleAreaTracker:VisibleAreaTracker = null)
       {
          super();
+         _visibleAreaTracker = visibleAreaTracker;
          _contentScrollAnimator = new Animate();
          _contentScrollAnimator.duration = MOVE_EFFECT_DURATION;
          addSelfEventHandlers();
@@ -102,6 +104,7 @@ package components.base.viewport
          if (f_cleanupCalled)
             return;
          
+         _visibleAreaTracker = null;
          removeSelfEventHandlers();
          removeGlobalEventHandlers();
          if (_contentScrollAnimator)
@@ -137,6 +140,63 @@ package components.base.viewport
          f_cleanupCalled;
       }
       
+      /* ############################ */
+      /* ### VISIBLE AREA TRACKER ### */
+      /* ############################ */
+      
+      private var f_initializeVisibleAreaTracker:Boolean = false;
+      private var _visibleAreaTracker:VisibleAreaTracker;
+      protected function get visibleAreaTracker() : VisibleAreaTracker {
+         return _visibleAreaTracker;
+      }
+      
+      private function callContentInitialized() : void {
+         f_initializeVisibleAreaTracker = false;
+         if (_visibleAreaTracker != null && _content != null) {
+            var contentPosition:Point = contentPosition_VCS();
+            _visibleAreaTracker.contentInitialized(
+               getExplicitOrMeasuredWidth(),
+               getExplicitOrMeasuredHeight(),
+               contentPosition.x,
+               contentPosition.y,
+               contentScaledWidth,
+               contentScaledHeight,
+               _content.scaleX
+            );
+         }
+      }
+      
+      private function callUpdateContentPosition() : void {
+         if (_visibleAreaTracker != null && _content != null) {
+            var contentPosition:Point = contentPosition_VCS();
+            _visibleAreaTracker.updateContentPosition(
+               contentPosition.x,
+               contentPosition.y
+            );
+         }
+      }
+      
+      private function callUpdateContentScale() : void {
+         if (_visibleAreaTracker != null && _content != null) {
+            _visibleAreaTracker.updateContentScale(_content.scaleX);
+         }
+      }
+      
+      private function callUpdateViewportSize() : void {
+         if (_visibleAreaTracker != null && _content != null) {
+            _visibleAreaTracker.updateViewportSize(
+               getExplicitOrMeasuredWidth(),
+               getExplicitOrMeasuredHeight()
+            );
+         }
+      }
+      
+      private function callUpdateComplete() : void {
+         if (_visibleAreaTracker != null && _content != null) {
+            _visibleAreaTracker.updateComplete();
+         }
+      }
+            
       
       /* ################ */
       /* ### CHILDREN ### */
@@ -495,6 +555,7 @@ package components.base.viewport
             }
             if (_content)
             {
+               f_initializeVisibleAreaTracker = true;
                installContent(_content);
             }
             dispatchEvent(event);
@@ -782,14 +843,19 @@ package components.base.viewport
          );
       }
       
-      
       /**
        * Coordinates of the point of the content visible in the center of the viewport in
-       * <strong>Content Coordinate Space</strong>
+       * <b>content coordinate space</b>
        */
-      protected function centerPointViewport_CCS() : Point
-      {
+      protected function centerPointViewport_CCS() : Point {
          return viewportToContent(new Point(width / 2, height / 2));
+      }
+      
+      /**
+       * Coordinates of the top-left corner of the content in <b>viewport coordinate space</b>. 
+       */
+      private function contentPosition_VCS() : Point {
+         return contentToViewport(new Point(0, 0));
       }
       
       
@@ -856,6 +922,7 @@ package components.base.viewport
          addEventListener(MouseEvent.CLICK, this_clickHandler, true);
          addEventListener(ResizeEvent.RESIZE, this_resizeHandler);
          addEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
+         addEventListener(FlexEvent.UPDATE_COMPLETE, this_updateCompleteHandler);
       }
       
       
@@ -868,12 +935,25 @@ package components.base.viewport
          removeEventListener(MouseEvent.CLICK, this_clickHandler, true);
          removeEventListener(ResizeEvent.RESIZE, this_resizeHandler);
          removeEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
+         removeEventListener(FlexEvent.UPDATE_COMPLETE, this_updateCompleteHandler);
       }
       
+      private function this_updateCompleteHandler(event:FlexEvent) : void {
+         if (f_initializeVisibleAreaTracker) {
+            callContentInitialized();
+         }
+         else {
+            callUpdateContentPosition();
+            callUpdateViewportSize();
+            callUpdateContentScale();
+            callUpdateComplete();
+         }
+      }
       
       protected function this_creationCompleteHandler(event:FlexEvent) : void
       {
          centerContent();
+         callContentInitialized();
       }
       
       

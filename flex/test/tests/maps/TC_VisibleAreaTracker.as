@@ -1,6 +1,5 @@
 package tests.maps
 {
-   import components.base.viewport.IVisibleAreaTrackerClient;
    import components.base.viewport.VisibleAreaTracker;
    
    import ext.hamcrest.object.equals;
@@ -19,7 +18,7 @@ package tests.maps
    public class TC_VisibleAreaTracker
    {
       private var tracker:VisibleAreaTracker;
-      private var client:MockClient;
+      private var client:VisibleAreaTrackerClientMock;
       private var hiddenArea:Rectangle;
       
       
@@ -130,6 +129,16 @@ package tests.maps
             message + "; visibleArea is the same as shownArea",
             shownArea.equals(visibleArea), isTrue()
          );
+      }
+      
+      // -----
+      
+      [Test]
+      public function visibleAreaChangeNotCalledIfNothingChanges() : void {
+         contentInitialized(-10, -10, 200, 200, 1);
+         client.clear();
+         tracker.updateComplete();
+         assertThat( "visibleAreaChange() not called", client.visibleAreaChangeCalls, equals (0) );
       }
       
       // -----
@@ -414,56 +423,9 @@ package tests.maps
       }
       
       private function createTracker() : VisibleAreaTracker {
-         this.client = new MockClient();
-         this.tracker = new VisibleAreaTracker(this.client);
-         return this.tracker;
+         client = new VisibleAreaTrackerClientMock();
+         tracker = new VisibleAreaTracker(client);
+         return tracker;
       }
-   }
-}
-
-
-import components.base.viewport.IVisibleAreaTrackerClient;
-
-import flash.geom.Rectangle;
-
-
-class MockClient implements IVisibleAreaTrackerClient
-{
-   public var visibleAreaChangeCalls:int;
-   public var visibleAreaChangeParams:VisibleAreaChangeParams;
-   
-   public function MockClient() {
-      clear();
-   }
-   
-   public function visibleAreaChange(visibleArea:Rectangle,
-                                     areasHidden:Vector.<Rectangle>,
-                                     areasShown:Vector.<Rectangle>) : void {
-      visibleAreaChangeCalls++;
-      visibleAreaChangeParams = new VisibleAreaChangeParams(
-         visibleArea,
-         areasHidden,
-         areasShown
-      );
-   }
-   
-   public function clear() : void {
-      visibleAreaChangeCalls = 0;
-      visibleAreaChangeParams = null;
-   }
-}
-
-class VisibleAreaChangeParams
-{
-   public var visibleArea:Rectangle;
-   public var areasHidden:Vector.<Rectangle>;
-   public var areasShown:Vector.<Rectangle>;
-   
-   public function VisibleAreaChangeParams(visibleArea:Rectangle,
-                                           areasHidden:Vector.<Rectangle>,
-                                           areasShown:Vector.<Rectangle>) {
-      this.visibleArea = visibleArea;
-      this.areasHidden = areasHidden;
-      this.areasShown = areasShown;
    }
 }
