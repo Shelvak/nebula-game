@@ -236,9 +236,9 @@
     <Technology_SuperconductorTechnology value="Superconductor Technology" />
     <Technology_PowderedZetium value="Zetium Cutters" />
     <Technology_HeavyFlight value="Gamma Thrusters" />
-    <Technology_MetalStorage value="Liquid condensation" />
+    <Technology_MetalStorage value="Liquid compression" />
     <Technology_EnergyStorage ref="Extended batteries" />
-    <Technology_ZetiumStorage ref="Compressed zetium" />
+    <Technology_ZetiumStorage ref="Zetium cartridges" />
     <Technology_ShipStorage ref="External cargo decks" />
     
     <!-- Other stuff -->
@@ -3684,6 +3684,46 @@
       <p>Allows building [reference:Objects/DefensivePortal].</p>
       <p>[reference:Buildings/DefensivePortal.common]</p>
     </DefensivePortal.about>
+
+    <MetalStorage.name ref="Objects/Technology_MetalStorage" />
+    <MetalStorage.about>
+      <p>
+        This technology increases resistance to pressure and temperature of
+        our [obj:2:Building_MetalStorage::dc]. By using higher degree
+        of compression applied we can store even more metal to same buildings.
+      </p>
+    </MetalStorage.about>
+
+    <EnergyStorage.name ref="Objects/Technology_EnergyStorage" />
+    <EnergyStorage.about>
+      <p>
+        Don't have enough space for additional storages and you still have
+        excess energy that you are wasting? Invest to this technology now!
+      </p>
+      <p>
+        With this technology we will be able to store more energy in existing
+        buildings and will save our precious land for other constructions.
+      </p>
+    </EnergyStorage.about>
+
+    <ZetiumStorage.name ref="Objects/Technology_ZetiumStorage" />
+    <ZetiumStorage.about>
+      <p>
+        This revolutionary way of storing zetium allows us to store even more
+        of it to same existing storages. Research this technology to increase
+        usefulness of our [obj:2:Building_ZetiumStorage::dc].
+      </p>
+    </ZetiumStorage.about>
+
+    <ShipStorage.name ref="Objects/Technology_ShipStorage" />
+    <ShipStorage.about>
+      <p>
+        Newly designed attachable cargo decks can be fitted to any cargo ship
+        to extend its available storage. This allows them to transport more
+        resources or units and is very convenient for those gathering or assault
+        missions.
+      </p>
+    </ShipStorage.about>
   </Technologies>
 
   <Units>

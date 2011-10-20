@@ -311,12 +311,12 @@
     <Technology_PowderedZetium-whos value="zetiumo pjaustiklių" />
     <Technology_HeavyFlight value="Gama varikliai" />
     <Technology_HeavyFlight-whos value="gama variklių" />
-    <Technology_MetalStorage value="Skysčių kondensacija" />
-    <Technology_MetalStorage-whos value="Skysčių kondensacijos" />
+    <Technology_MetalStorage value="Skysčių suspaudimas" />
+    <Technology_MetalStorage-whos value="Skysčių suspaudimo" />
     <Technology_EnergyStorage ref="Talpesnės baterijos" />
     <Technology_EnergyStorage-whos ref="Talpesnių baterijų" />
-    <Technology_ZetiumStorage ref="Suspaustas zetiumas" />
-    <Technology_ZetiumStorage-whos ref="Suspausto zetiumo" />
+    <Technology_ZetiumStorage ref="Zetiumo kasetės" />
+    <Technology_ZetiumStorage-whos ref="Zetiumo kasečių" />
     <Technology_ShipStorage ref="Išoriniai dokai" />
     <Technology_ShipStorage-whos ref="Išorinių dokų" />
     
@@ -3709,14 +3709,46 @@
       <p>Leidžia statyti portalą.</p>
       <p>[reference:Buildings/DefensivePortal.common]</p>
     </DefensivePortal.about>
-    
+
     <MetalStorage.name ref="Objects/Technology_MetalStorage" />
     <MetalStorage.about>
       <p>
-        Planetose baigiasi vieta, o talpyklos jau patobulintos iki aukščiausio
-        lygio? Ne bėda! Ši
+        Ši technologija padidina mūsų [obj:2:Building_MetalStorage:whos:dc]
+        atsparumą slėgiui ir temperatūrai, tad į ęsamus pastatus, pasitelkę
+        aukštesnį suspaudimo laipsnį, galime sutalpinti dar daugiau metalo.
       </p>
     </MetalStorage.about>
+    
+    <EnergyStorage.name ref="Objects/Technology_EnergyStorage" />
+    <EnergyStorage.about>
+      <p>
+        Trūksta vietos energijai, o planetoje nebėra kur statyti papildomų 
+        talpyklų? Investuok į šią technologiją!
+      </p>
+      <p>
+        Išradus talpesnes baterijas, mes planetose galėsime saugoti daugiau 
+        energijos, taip taupydami vietą.
+      </p>
+    </EnergyStorage.about>
+    
+    <ZetiumStorage.name ref="Objects/Technology_ZetiumStorage" />
+    <ZetiumStorage.about>
+      <p>
+        Į pagalbą pasitelkus šį naują zetiumo laikymo būdą mes į tas pačias
+        talpyklas galėsime sutalpinti daugiau zetiumo, taip palikdami brangią
+        planetos žemę svarbesniems pastatams.
+      </p>
+    </ZetiumStorage.about>
+
+    <ShipStorage.name ref="Objects/Technology_ShipStorage" />
+    <ShipStorage.about>
+      <p>
+        Prie krovininių laivų primontuojami [obj:1:Technology_ShipStorage:dc]
+        išplėčia laivo krovininius skyrius ir leidžia jiems pergabenti daugiau
+        resursų ar karių, kas yra ypač pravartu renkant resursus ar šturmuojant
+        planetą.
+      </p>
+    </ShipStorage.about>
   </Technologies>
 
   <Units>
