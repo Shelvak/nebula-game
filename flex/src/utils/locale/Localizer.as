@@ -63,21 +63,28 @@ package utils.locale
             matches = resultString.match(REFERENCE_REGEXP);
          }
          
+         // objects name resolving pass
+         try {
+            resultString = resolveObjectNames(resultString);
+         }
+         catch (err:Error) {
+            throwPassFailedError(
+               "Objects name resolving",
+               err.message, bundle, property, resultString, parameters
+            );
+         }
+            
          if (parameters != null) {
-            // objects name resolving pass
-            try {
-               resultString = resolveObjectNames(resultString);
-            }
-            catch (err:Error) {
-               throwPassFailedError("Objects name resolving", err.message, bundle, property, resultString, parameters);
-            }
             // pluralization pass is the last one
             try {
                resultString = pluralize(resultString, parameters);
                resultString = mx.utils.StringUtil.substitute(resultString, parameters);
             }
             catch (err:Error) {
-               throwPassFailedError("Pluralization", err.message, bundle, property, resultString, parameters);
+               throwPassFailedError(
+                  "Pluralization",
+                  err.message, bundle, property, resultString, parameters
+               );
             }
          }
          return resultString;
@@ -146,14 +153,11 @@ package utils.locale
          if (downcase) {
             // make the first letter of a word lowercase
             var words:Array = resolvedName.split(WORD_SEP_REGEXP);
-            if (words.length == 1) {
-               resolvedName = utils.StringUtil.firstToLowerCase(words[0]);
+            var wordsLower:Array = new Array();
+            for each (var word:String in words) {
+               wordsLower.push(utils.StringUtil.firstToLowerCase(word));
             }
-            else {
-               var wordIdx:int = !INTEGER_REGEXP.test(words[0]) ? 0 : 1;
-               words[wordIdx] = utils.StringUtil.firstToLowerCase(words[wordIdx]);
-               resolvedName = words.join(" ");
-            }
+            resolvedName = wordsLower.join(" ");
          }
          return resolvedName;
       }

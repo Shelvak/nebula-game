@@ -356,13 +356,13 @@ package tests.utils.tests
             return Localizer.resolveObjectNames("[obj:0:Jumper" + (downcase ? "::dc]" : "]"));
          }
          addBundle(Locale.LT, "Objects", {
-            "Jumper":       "Šoklys",
+            "Jumper":       "Didelis Šoklys",
             "Shocker":      "{0 one[Mechas] 1sts[? Mechas] tens[? Mechų] many[? Mechai]}",
             "Shocker-what": "{0 one[Mechą] 1sts[? Mechą] tens[? Mechų] many[? Mechus]}"
          });
          
-         assertThat( "U_case, none, plain:", nonePlain(false), equals ("Šoklys") );
-         assertThat( "d_case, none, plain:", nonePlain( true), equals ("šoklys") );
+         assertThat( "U_case, none, plain:", nonePlain(false), equals ("Didelis Šoklys") );
+         assertThat( "d_case, none, plain:", nonePlain( true), equals ("didelis šoklys") );
          
          assertThat( "U_case, none:  1", none( 1, false), equals (   "Mechas") );
          assertThat( "d_case, none:  1", none( 1,  true), equals (   "mechas") );
@@ -376,40 +376,64 @@ package tests.utils.tests
       }
       
       [Test]
+      public function objectNamesResolvingPassDoesNotRequireParameters() : void {
+         setCurrentLocale(Locale.EN);
+         addBundle(Locale.EN, "Test", {
+            "test": "Increases [obj:0:Building_MetalStorage::dc]."
+         });
+         addBundle(Locale.EN, "Objects", {
+            "Building_MetalStorage": "Metal Storage"
+         });
+         assertThat(
+            Localizer.string("Test", "test"),
+            equals ("Increases metal storage.")
+         );
+      }
+      
+      [Test]
       public function stringShouldAlsoResolveObjectNames() : void {
          function string(property:String, params:Array = null) : String {
             return Localizer.string("Test", property, params);
          }
          setCurrentLocale(Locale.LT);
          addBundle(Locale.LT, "Objects", {
-            "Shocker-what": "{0 one[mechą] 1sts[mechą] tens[mechų] many[mechus]}",
-            "Shocker-whos": "{0 one[mecho] 1sts[mecho] tens[mechų] many[mechų]}",
-            "Azure-what": "{0 one[azurą] 1sts[azurą] tens[azurų] many[azurus]}",
-            "Azure-whos": "{0 one[azuro] 1sts[azuro] tens[azurų] many[azurų]}"
+            "Shocker": "Mechas",
+            "Shocker-what": "{0 one[Mechą] 1sts[Mechą] tens[Mechų] many[Mechus]}",
+            "Shocker-whos": "{0 one[Mecho] 1sts[Mecho] tens[Mechų] many[Mechų]}",
+            "Azure-what": "{0 one[Azurą] 1sts[Azurą] tens[Azurų] many[Azurus]}",
+            "Azure-whos": "{0 one[Azuro] 1sts[Azuro] tens[Azurų] many[Azurų]}"
          });
          addBundle(Locale.LT, "Test", {
             "amountAndObjNameWhat": "Pastatyk {0} [obj:{0}:{1}:what]",
-            "amountAndObjNameWhos": "Reikia {0} [obj:{0}:{1}:whos]"
+            "amountAndObjNameWhatDC": "Pastatyk {0} [obj:{0}:{1}:what:dc]",
+            "amountAndObjNameWhos": "Reikia {0} [obj:{0}:{1}:whos]",
+            "amountAndObjNameDC": "{0} [obj:{0}:{1}::dc]"
          });
          
          assertThat( "amount: 11, name: Shocker, what",
-            string("amountAndObjNameWhat", [11, "Shocker"]), equals ("Pastatyk 11 mechų")
+            string("amountAndObjNameWhat", [11, "Shocker"]), equals ("Pastatyk 11 Mechų")
+         );
+         assertThat( "amount: 50, name: Shocker, what, DC",
+            string("amountAndObjNameWhatDC", [11, "Shocker"]), equals ("Pastatyk 11 mechų")
          );
          assertThat( "amount: 50, name: Azure, what",
-            string("amountAndObjNameWhat", [50, "Azure"]), equals ("Pastatyk 50 azurų")
+            string("amountAndObjNameWhat", [50, "Azure"]), equals ("Pastatyk 50 Azurų")
          );
          assertThat( "amount: 58, name: Shocker, what",
-            string("amountAndObjNameWhat", [58, "Shocker"]), equals ("Pastatyk 58 mechus")
+            string("amountAndObjNameWhat", [58, "Shocker"]), equals ("Pastatyk 58 Mechus")
          );
          assertThat( "amount: 1, name: Azure, what",
-            string("amountAndObjNameWhat", [1, "Azure"]), equals ("Pastatyk 1 azurą")
+            string("amountAndObjNameWhat", [1, "Azure"]), equals ("Pastatyk 1 Azurą")
          );
          
          assertThat( "amount: 11, name: Shocker, whos",
-            string("amountAndObjNameWhos", [11, "Shocker"]), equals ("Reikia 11 mechų")
+            string("amountAndObjNameWhos", [11, "Shocker"]), equals ("Reikia 11 Mechų")
          );
          assertThat( "amount: 51, name: Azure, whos",
-            string("amountAndObjNameWhos", [51, "Azure"]), equals ("Reikia 51 azuro")
+            string("amountAndObjNameWhos", [51, "Azure"]), equals ("Reikia 51 Azuro")
+         );
+         assertThat( "amount: 10, name: Shocker, DC",
+            string("amountAndObjNameDC", [10, "Shocker"]), equals ("10 mechas")
          );
       }
       
