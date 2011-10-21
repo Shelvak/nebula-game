@@ -145,222 +145,222 @@
     <!-- Self ground units -->
 
     <Unit_Trooper value="Trooper" />
-    <Unit_Trooper-p8d value="{0 one[Trooper] many[Troopers]}" />
+    <Unit_Trooper-p8d value="{0 one[Trooper] many[? Troopers]}" />
 
     <Unit_Shocker value="Shocker" />
-    <Unit_Shocker-p8d value="{0 one[Shocker] many[Shockers]}" />
+    <Unit_Shocker-p8d value="{0 one[Shocker] many[? Shockers]}" />
 
     <Unit_Seeker value="Seeker" />
-    <Unit_Seeker-p8d value="{0 one[Seeker] many[Seekers]}" />
+    <Unit_Seeker-p8d value="{0 one[Seeker] many[? Seekers]}" />
 
     <Unit_Scorpion value="Scorpion" />
-    <Unit_Scorpion-p8d value="{0 one[Scorpion] many[Scorpions]}" />
+    <Unit_Scorpion-p8d value="{0 one[Scorpion] many[? Scorpions]}" />
 
     <Unit_Azure value="Azure" />
-    <Unit_Azure-p8d value="{0 one[Azure] many[Azures]}" />
+    <Unit_Azure-p8d value="{0 one[Azure] many[? Azures]}" />
 
     <Unit_Mantis value="Mantis" />
-    <Unit_Mantis-p8d value="{0 one[Mantis] many[Mantises]}" />
+    <Unit_Mantis-p8d value="{0 one[Mantis] many[? Mantises]}" />
 
     <Unit_Zeus value="Zeus" />
-    <Unit_Zeus-p8d value="{0 one[Zeus] many[Zeuses]}" />
+    <Unit_Zeus-p8d value="{0 one[Zeus] many[? Zeuses]}" />
 
     <Unit_MDH value="MDH" />
-    <Unit_MDH-p8d value="{0 one[MDH] many[MDH's]}" />
+    <Unit_MDH-p8d value="{0 one[MDH] many[? MDH's]}" />
 
     <Unit_MobileVulcan value="Vulcan-M" />
-    <Unit_MobileVulcan-p8d value="{0 one[Vulcan-M] many[Vulcan-M's]}" />
+    <Unit_MobileVulcan-p8d value="{0 one[Vulcan-M] many[? Vulcan-M's]}" />
 
     <Unit_MobileScreamer value="Screamer-M" />
-    <Unit_MobileScreamer-p8d value="{0 one[Screamer-M] many[Screamer-M's]}" />
+    <Unit_MobileScreamer-p8d value="{0 one[Screamer-M] many[? Screamer-M's]}" />
 
     <Unit_MobileThunder value="Thunder-M" />
-    <Unit_MobileThunder-p8d value="{0 one[Thunder-M] many[Thunder-M's]}" />
+    <Unit_MobileThunder-p8d value="{0 one[Thunder-M] many[? Thunder-M's]}" />
 
     <!-- Self space units -->
 
     <Unit_Mule value="Mule" />
-    <Unit_Mule-p8d value="{0 one[Mule] many[Mules]}" />
+    <Unit_Mule-p8d value="{0 one[Mule] many[? Mules]}" />
 
     <Unit_Crow value="Crow" />
-    <Unit_Crow-p8d value="{0 one[Crow] many[Crows]}" />
+    <Unit_Crow-p8d value="{0 one[Crow] many[? Crows]}" />
 
     <Unit_Cyrix value="Cyrix" />
-    <Unit_Cyrix-p8d value="{0 one[Cyrix] many[Cyrixes]}" />
+    <Unit_Cyrix-p8d value="{0 one[Cyrix] many[? Cyrixes]}" />
 
     <Unit_Rhyno value="Rhyno" />
-    <Unit_Rhyno-p8d value="{0 one[Rhyno] many[Rhynos]}" />
+    <Unit_Rhyno-p8d value="{0 one[Rhyno] many[? Rhynos]}" />
 
     <Unit_Dart value="Dart" />
-    <Unit_Dart-p8d value="{0 one[Dart] many[Darts]}" />
+    <Unit_Dart-p8d value="{0 one[Dart] many[? Darts]}" />
 
     <Unit_Avenger value="Avenger" />
-    <Unit_Avenger-p8d value="{0 one[Avenger] many[Avengers]}" />
+    <Unit_Avenger-p8d value="{0 one[Avenger] many[? Avengers]}" />
 
     <Unit_Jumper value="Jumper" />
-    <Unit_Jumper-p8d value="{0 one[Jumper] many[Jumpers]}" />
+    <Unit_Jumper-p8d value="{0 one[Jumper] many[? Jumpers]}" />
 
     <!-- NPC ground units -->
 
     <Unit_Gnat value="Gnat" />
-    <Unit_Gnat-p8d value="{0 one[Gnat] many[Gnats]}" />
+    <Unit_Gnat-p8d value="{0 one[Gnat] many[? Gnats]}" />
 
     <Unit_Glancer value="Glancer" />
-    <Unit_Glancer-p8d value="{0 one[Glancer] many[Glancers]}" />
+    <Unit_Glancer-p8d value="{0 one[Glancer] many[? Glancers]}" />
 
     <Unit_Spudder value="Spudder" />
-    <Unit_Spudder-p8d value="{0 one[Spudder] many[Spudders]}" />
+    <Unit_Spudder-p8d value="{0 one[Spudder] many[? Spudders]}" />
 
     <Unit_Gnawer value="Gnawer" />
-    <Unit_Gnawer-p8d value="{0 one[Gnawer] many[Gnawers]}" />
+    <Unit_Gnawer-p8d value="{0 one[Gnawer] many[? Gnawers]}" />
 
     <!-- NPC space units -->
 
     <Unit_Dirac value="Dirac" />
-    <Unit_Dirac-p8d value="{0 one[Dirac] many[Diracs]}" />
+    <Unit_Dirac-p8d value="{0 one[Dirac] many[? Diracs]}" />
 
     <Unit_Thor value="Thor" />
-    <Unit_Thor-p8d value="{0 one[Thor] many[Thors]}" />
+    <Unit_Thor-p8d value="{0 one[Thor] many[? Thors]}" />
 
     <Unit_Demosis value="Demosis" />
-    <Unit_Demosis-p8d value="{0 one[Demosis] many[Demosis]}" />
+    <Unit_Demosis-p8d value="{0 one[Demosis] many[? Demosis]}" />
 
     <!-- Turrets -->
 
     <Building_Vulcan value="Vulcan" />
-    <Building_Vulcan-p8d value="{0 one[vulcan] many[vulcans]}" />
+    <Building_Vulcan-p8d value="{0 one[vulcan] many[? vulcans]}" />
 
     <Building_Screamer value="Screamer" />
-    <Building_Screamer-p8d value="{0 one[Screamer] many[Screamers]}" />
+    <Building_Screamer-p8d value="{0 one[Screamer] many[? Screamers]}" />
 
     <Building_Thunder value="Thunder" />
-    <Building_Thunder-p8d value="{0 one[Thunder] many[Thunders]}" />
+    <Building_Thunder-p8d value="{0 one[Thunder] many[? Thunders]}" />
 
     <Building_MobileVulcan value="Vulcan-M" />
-    <Building_MobileVulcan-p8d value="{0 one[Vulcan-M] many[Vulcan-M's]}" />
+    <Building_MobileVulcan-p8d value="{0 one[Vulcan-M] many[? Vulcan-M's]}" />
 
     <Building_MobileScreamer value="Screamer-M" />
-    <Building_MobileScreamer-p8d value="{0 one[Screamer-M] many[Screamer-M's]}" />
+    <Building_MobileScreamer-p8d value="{0 one[Screamer-M] many[? Screamer-M's]}" />
 
     <Building_MobileThunder value="Thunder-M" />
-    <Building_MobileThunder-p8d value="{0 one[Thunder-M] many[Thunder-M's]}" />
+    <Building_MobileThunder-p8d value="{0 one[Thunder-M] many[? Thunder-M's]}" />
 
     <!-- Extractors -->
 
     <Building_MetalExtractor value="MEX" />
-    <Building_MetalExtractor-p8d value="{0 one[MEX] many[MEX's]}" />
+    <Building_MetalExtractor-p8d value="{0 one[MEX] many[? MEX's]}" />
 
     <Building_MetalExtractorT2 value="MEX T-2" />
-    <Building_MetalExtractorT2-p8d value="{0 one[MEX T-2] many[MEX's T-2]}" />
+    <Building_MetalExtractorT2-p8d value="{0 one[MEX T-2] many[? MEX's T-2]}" />
 
     <Building_CollectorT1 value="Wind Panel" />
-    <Building_CollectorT1-p8d value="{0 one[Wind Panel] many[Wind Panels]}" />
+    <Building_CollectorT1-p8d value="{0 one[Wind Panel] many[? Wind Panels]}" />
 
     <Building_CollectorT2 value="Collector" />
-    <Building_CollectorT2-p8d value="{0 one[Collector] many[Collectors]}" />
+    <Building_CollectorT2-p8d value="{0 one[Collector] many[? Collectors]}" />
 
     <Building_CollectorT3 value="Thermal Hub" />
-    <Building_CollectorT3-p8d value="{0 one[Thermal Hub] many[Thermal Hubs]}" />
+    <Building_CollectorT3-p8d value="{0 one[Thermal Hub] many[? Thermal Hubs]}" />
 
     <Building_ZetiumExtractor value="ZEX" />
-    <Building_ZetiumExtractor-p8d value="{0 one[ZEX] many[ZEXes]}" />
+    <Building_ZetiumExtractor-p8d value="{0 one[ZEX] many[? ZEXes]}" />
 
     <Building_ZetiumExtractorT2 value="ZEX T-2" />
-    <Building_ZetiumExtractorT2-p8d value="{0 one[ZEX T-2] many[ZEXes T-2]}" />
+    <Building_ZetiumExtractorT2-p8d value="{0 one[ZEX T-2] many[? ZEXes T-2]}" />
 
     <!-- Storages -->
 
     <Building_MetalStorage value="Metal Storage" />
-    <Building_MetalStorage-p8d value="{0 one[Metal Storage] many[Metal Storages]}" />
+    <Building_MetalStorage-p8d value="{0 one[Metal Storage] many[? Metal Storages]}" />
 
     <Building_EnergyStorage value="Energy Batteries" />
-    <Building_EnergyStorage-p8d value="{0 one[Energy Battery] many[Energy Batteries]}" />
+    <Building_EnergyStorage-p8d value="{0 one[Energy Battery] many[? Energy Batteries]}" />
 
     <Building_ZetiumStorage value="Zetium Storage" />
-    <Building_ZetiumStorage-p8d value="{0 one[Zetium Storage] many[Zetium Storages]}" />
+    <Building_ZetiumStorage-p8d value="{0 one[Zetium Storage] many[? Zetium Storages]}" />
 
     <!-- NPC buildings -->
 
     <Building_NpcMetalExtractor value="Foundry" />
-    <Building_NpcMetalExtractor-p8d value="{0 one[Foundry] many[Foundries]}" />
+    <Building_NpcMetalExtractor-p8d value="{0 one[Foundry] many[? Foundries]}" />
 
     <Building_NpcZetiumExtractor value="Zetium Lab" />
-    <Building_NpcZetiumExtractor-p8d value="{0 one[Zetium Lab] many[Zetium Labs]}" />
+    <Building_NpcZetiumExtractor-p8d value="{0 one[Zetium Lab] many[? Zetium Labs]}" />
 
     <Building_NpcGeothermalPlant value="Heat Collector" />
-    <Building_NpcGeothermalPlant-p8d value="{0 one[Heat Collector] many[Heat Collectors]}" />
+    <Building_NpcGeothermalPlant-p8d value="{0 one[Heat Collector] many[? Heat Collectors]}" />
 
     <Building_NpcSolarPlant value="Prism" />
-    <Building_NpcSolarPlant-p8d value="{0 one[Prism] many[Prisms]}" />
+    <Building_NpcSolarPlant-p8d value="{0 one[Prism] many[? Prisms]}" />
 
     <Building_NpcCommunicationsHub value="CommHub" />
-    <Building_NpcCommunicationsHub-p8d value="{0 one[CommHub] many[CommHubs]}" />
+    <Building_NpcCommunicationsHub-p8d value="{0 one[CommHub] many[? CommHubs]}" />
 
     <Building_NpcTemple value="Temple" />
-    <Building_NpcTemple-p8d value="{0 one[Temple] many[Temples]}" />
+    <Building_NpcTemple-p8d value="{0 one[Temple] many[? Temples]}" />
 
     <Building_NpcExcavationSite value="Excavation Site" />
-    <Building_NpcExcavationSite-p8d value="{0 one[Excavation Site] many[Excavation Sites]}" />
+    <Building_NpcExcavationSite-p8d value="{0 one[Excavation Site] many[? Excavation Sites]}" />
 
     <Building_NpcResearchCenter value="Lab" />
-    <Building_NpcResearchCenter-p8d value="{0 one[Lab] many[Labs]}" />
+    <Building_NpcResearchCenter-p8d value="{0 one[Lab] many[? Labs]}" />
 
     <Building_NpcJumpgate value="Jumpgate" />
-    <Building_NpcJumpgate-p8d value="{0 one[Jumpgate] many[Jumpgates]}" />
+    <Building_NpcJumpgate-p8d value="{0 one[Jumpgate] many[? Jumpgates]}" />
 
     <Building_NpcInfantryFactory value="Hatchery" />
-    <Building_NpcInfantryFactory-p8d value="{0 one[Hatchery] many[Hatcheries]}" />
+    <Building_NpcInfantryFactory-p8d value="{0 one[Hatchery] many[? Hatcheries]}" />
 
     <Building_NpcTankFactory value="Heavy Arms Lab" />
-    <Building_NpcTankFactory-p8d value="{0 one[Heavy Arms Lab] many[Heavy Arms Labs]}" />
+    <Building_NpcTankFactory-p8d value="{0 one[Heavy Arms Lab] many[? Heavy Arms Labs]}" />
 
     <Building_NpcSpaceFactory value="Spaceship Pod" />
-    <Building_NpcSpaceFactory-p8d value="{0 one[Spaceship Pod] many[Spaceship Pods]}" />
+    <Building_NpcSpaceFactory-p8d value="{0 one[Spaceship Pod] many[? Spaceship Pods]}" />
 
     <Building_NpcHall value="Emitter" />
-    <Building_NpcHall-p8d value="{0 one[Emitter] many[Emitters]}" />
+    <Building_NpcHall-p8d value="{0 one[Emitter] many[? Emitters]}" />
 
     <!-- Building facilities -->
 
     <Building_Mothership value="Mothership" />
-    <Building_Mothership-p8d value="{0 one[Mothership] many[Motherships]}" />
+    <Building_Mothership-p8d value="{0 one[Mothership] many[? Motherships]}" />
 
     <Building_Headquarters value="Headquarters" />
-    <Building_Headquarters-p8d value="{0 one[Headquarters] many[Headquarters]}" />
+    <Building_Headquarters-p8d value="{0 one[Headquarters] many[? Headquarters]}" />
 
     <Building_Crane value="Crane" />
-    <Building_Crane-p8d value="{0 one[Crane] many[Cranes]}" />
+    <Building_Crane-p8d value="{0 one[Crane] many[? Cranes]}" />
 
     <!-- Unit facilities -->
 
     <Building_Barracks value="Barracks" />
-    <Building_Barracks-p8d value="{0 one[Barracks] many[Barracks]}" />
+    <Building_Barracks-p8d value="{0 one[Barracks] many[? Barracks]}" />
 
     <Building_GroundFactory value="Ground Factory" />
-    <Building_GroundFactory-p8d value="{0 one[Ground Factory] many[Ground Factories]}" />
+    <Building_GroundFactory-p8d value="{0 one[Ground Factory] many[? Ground Factories]}" />
 
     <Building_SpaceFactory value="Space Factory" />
-    <Building_SpaceFactory-p8d value="{0 one[Space Factory] many[Space Factories]}" />
+    <Building_SpaceFactory-p8d value="{0 one[Space Factory] many[? Space Factories]}" />
 
     <!-- Other buildings -->
 
     <Building_Market value="Market" />
-    <Building_Market-p8d value="{0 one[Market] many[Markets]}" />
+    <Building_Market-p8d value="{0 one[Market] many[? Markets]}" />
 
     <Building_Radar value="Radar" />
-    <Building_Radar-p8d value="{0 one[Radar] many[Radars]}" />
+    <Building_Radar-p8d value="{0 one[Radar] many[? Radars]}" />
 
     <Building_DefensivePortal value="Summoner" />
-    <Building_DefensivePortal-p8d value="{0 one[Summoner] many[Summoners]}" />
+    <Building_DefensivePortal-p8d value="{0 one[Summoner] many[? Summoners]}" />
 
     <Building_ResearchCenter value="Research Center" />
-    <Building_ResearchCenter-p8d value="{0 one[Research Center] many[Research Centers]}" />
+    <Building_ResearchCenter-p8d value="{0 one[Research Center] many[? Research Centers]}" />
 
     <Building_Housing value="Living Pods" />
-    <Building_Housing-p8d value="{0 one[Living Pods] many[Living Pods]}" />
+    <Building_Housing-p8d value="{0 one[Living Pods] many[? Living Pods]}" />
 
     <Building_HealingCenter value="MedTech" />
-    <Building_HealingCenter-p8d value="{0 one[MedTech] many[MedTechs]}" />
+    <Building_HealingCenter-p8d value="{0 one[MedTech] many[? MedTechs]}" />
 
     <!-- Technologies -->
 
@@ -383,30 +383,30 @@
     <!-- Other stuff -->
 
     <Unit value="Unit" />
-    <Unit-p8d value="{0 one[Unit] many[Units]}" />
+    <Unit-p8d value="{0 one[Unit] many[? Units]}" />
 
     <Building value="Building" />
-    <Building-p8d value="{0 one[Building] many[Buildings]}" />
+    <Building-p8d value="{0 one[Building] many[? Buildings]}" />
 
     <Technology value="Technology" />
-    <Technology-p8d value="{0 one[Technology] many[Technologies]}" />
+    <Technology-p8d value="{0 one[Technology] many[? Technologies]}" />
 
     <Planet value="Planet" />
-    <Planet-p8d value="{0 one[Planet] many[Planets]}" />
+    <Planet-p8d value="{0 one[Planet] many[? Planets]}" />
 
     <Point value="Point" />
-    <Point-p8d value="{0 one[Point] many[Points]}" />
+    <Point-p8d value="{0 one[Point] many[? Points]}" />
 
     <Object value="Object" />
-    <Object-p8d value="{0 one[Object] many[Objects]}" />
+    <Object-p8d value="{0 one[Object] many[? Objects]}" />
 
     <Is value="{0 one[is] many[are]}" />
 
     <Scientist value="Scientist" />
-    <Scientist-p8d value="{0 one[Scientist] many[Scientists]}" />
+    <Scientist-p8d value="{0 one[Scientist] many[? Scientists]}" />
 
     <Alliances value="Alliances" />
-    <Alliances-p8d value="{0 one[Alliance] many[Alliances]}" />
+    <Alliances-p8d value="{0 one[Alliance] many[? Alliances]}" />
   </Objects>
   
   <Alliances>
