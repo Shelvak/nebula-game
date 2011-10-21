@@ -234,8 +234,10 @@
          
          <base:AdvancedContainer>
             <s:Label id="lblDmgDealtPlayer" fontWeight="bold"/>
+            <s:Label id="lblDmgDealtAlly" fontWeight="bold"/>
             <s:Label id="lblDmgDealtAlliance" fontWeight="bold"/>
             <s:Label id="lblDmgTakenPlayer" fontWeight="bold"/>
+            <s:Label id="lblDmgTakenAlly" fontWeight="bold"/>
             <s:Label id="lblDmgTakenAlliance" fontWeight="bold"/>
             <s:Label id="lblXp" fontWeight="bold"/>
             <s:Label id="lblPoints" fontWeight="bold"/>
@@ -247,8 +249,10 @@
          
          <base:AdvancedContainer>
             <s:Label id="valDmgDealtPlayer" fontWeight="bold"/>
+            <s:Label id="valDmgDealtAlly" fontWeight="bold"/>
             <s:Label id="valDmgDealtAlliance" fontWeight="bold"/>
             <s:Label id="valDmgTakenPlayer" fontWeight="bold"/>
+            <s:Label id="valDmgTakenAlly" fontWeight="bold"/>
             <s:Label id="valDmgTakenAlliance" fontWeight="bold"/>
             <s:Label id="valXp" fontWeight="bold"/>
             <s:Label id="valPoints" fontWeight="bold"/>

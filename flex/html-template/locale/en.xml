@@ -1542,8 +1542,10 @@
     <label.enemies value="Enemies" />
     <label.leveled value="Leveled Up" />
     <label.dmgDealtPlayer value="Damage dealt by you" />
+    <label.dmgDealtAlly value="Damage dealt by allies" />
     <label.dmgDealtAlliance value="Damage dealt by alliance" />
     <label.dmgTakenPlayer value="Damage taken by you" />
+    <label.dmgTakenAlly value="Damage taken by allies" />
     <label.dmgTakenAlliance value="Damage taken by alliance" />
     <label.xp value="XP earned" />
     <label.points value="War points earned" />

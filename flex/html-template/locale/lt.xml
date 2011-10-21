@@ -1547,8 +1547,10 @@
     <label.leveled value="Patobulėję kariai" />
     <label.stats value="Mūšio statistika" />
     <label.dmgDealtPlayer value="Tavo padaryta žala" />
+    <label.dmgDealtAlly value="Sąjungininkų padaryta žala" />
     <label.dmgDealtAlliance value="Sąjungos padaryta žala" />
     <label.dmgTakenPlayer value="Tavo gauta žala" />
+    <label.dmgTakenAlly value="Sąjungininkų gauta žala" />
     <label.dmgTakenAlliance value="Sąjungos gauta žala" />
     <label.xp value="Gauta patirties" />
     <label.points value="Gauta karo taškų" />

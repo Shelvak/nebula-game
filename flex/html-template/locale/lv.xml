@@ -1636,6 +1636,10 @@
     <label.enemies value="Ienaidnieki" />
     <label.leveled value="Iegūts līmenis" />
     <label.dmgDealtPlayer value="Jūsu izdarītie bojājumi" />
+    <!-- TODO -->
+    <label.dmgDealtAlly value="Damage dealt by allies" />
+    <label.dmgTakenAlly value="Damage taken by allies" />
+    <!-- TODO -->
     <label.dmgDealtAlliance value="Alianses izdarītie bojājumi" />
     <label.dmgTakenPlayer value="Jums nodarītie bojājumi" />
     <label.dmgTakenAlliance value="Aliansei nodarītie bojājumi" />
