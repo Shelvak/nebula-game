@@ -135,12 +135,8 @@
             {
                return;
             }
-            
-            // Coeficient to fix x coord of the points
-            var mark: int = to.coords[0] < from.coords[0]? -1: 1; 
-            
-            addPoint(from.coords[0] * 2 + mark, to.coords[1]);
-            addPoint(to.coords[0] * 2 + mark, to.coords[1]);
+            addPoint(from.coords[0] * 2 + 1, to.coords[1]);
+            addPoint(to.coords[0] * 2 + 1, to.coords[1]);
          }
          
          private function addPoint(x: int, y: int): void

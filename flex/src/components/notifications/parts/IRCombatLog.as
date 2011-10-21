@@ -316,6 +316,21 @@ package components.notifications.parts
       }
       
       [SkinPart(required="true")]
+      public var lblDmgDealtAlly:Label;
+      
+      
+      private function setLblDmgDealtAllyText() : void
+      {
+         if (lblDmgDealtAlly)
+         {
+            lblDmgDealtAlly.text = combatLog == null ? "" :
+               Localizer.string('Notifications', 'label.dmgDealtAlly');
+            lblDmgDealtAlly.visible = (combatLog == null) ||
+               (combatLog.damageDealtAlliance != combatLog.damageDealtPlayer);
+         }
+      }
+      
+      [SkinPart(required="true")]
       public var lblDmgTakenPlayer:Label;
       
       
@@ -339,6 +354,21 @@ package components.notifications.parts
             lblDmgTakenAlliance.text = combatLog == null ? "" :
                Localizer.string('Notifications', 'label.dmgTakenAlliance');
             lblDmgTakenAlliance.visible = (combatLog == null) ||
+               (combatLog.damageTakenAlliance != combatLog.damageTakenPlayer);
+         }
+      }
+      
+      [SkinPart(required="true")]
+      public var lblDmgTakenAlly:Label;
+      
+      
+      private function setLblDmgTakenAllyText() : void
+      {
+         if (lblDmgTakenAlly)
+         {
+            lblDmgTakenAlly.text = combatLog == null ? "" :
+               Localizer.string('Notifications', 'label.dmgTakenAlly');
+            lblDmgTakenAlly.visible = (combatLog == null) ||
                (combatLog.damageTakenAlliance != combatLog.damageTakenPlayer);
          }
       }
@@ -407,6 +437,21 @@ package components.notifications.parts
          }
       }
       
+      [SkinPart(required="true")]
+      public var valDmgDealtAlly:Label;
+      
+      
+      private function setValDmgDealtAllyText() : void
+      {
+         if (valDmgDealtAlly)
+         {
+            valDmgDealtAlly.text = combatLog == null ? "" : 
+               (combatLog.damageDealtAlliance - combatLog.damageDealtPlayer).toString();
+            valDmgDealtAlly.visible = (combatLog == null) ||
+               (combatLog.damageDealtAlliance != combatLog.damageDealtPlayer);
+         }
+      }
+      
       
       [SkinPart(required="true")]
       public var valDmgDealtAlliance:Label;
@@ -431,6 +476,21 @@ package components.notifications.parts
          if (valDmgTakenPlayer)
          {
             valDmgTakenPlayer.text = combatLog == null ? "" : combatLog.damageTakenPlayer.toString();
+         }
+      }
+      
+      [SkinPart(required="true")]
+      public var valDmgTakenAlly:Label;
+      
+      
+      private function setValDmgTakenAllyText() : void
+      {
+         if (valDmgTakenAlly)
+         {
+            valDmgTakenAlly.text = combatLog == null ? "" : 
+               (combatLog.damageTakenAlliance - combatLog.damageTakenPlayer).toString();
+            valDmgTakenAlly.visible = (combatLog == null) ||
+               (combatLog.damageTakenAlliance != combatLog.damageTakenPlayer);
          }
       }
       
@@ -736,8 +796,10 @@ package components.notifications.parts
             setLocationModel();
             setBtnShowLogInfo();
             setLblDmgDealtPlayerText();
+            setLblDmgDealtAllyText();
             setLblDmgDealtAllianceText();
             setLblDmgTakenPlayerText();
+            setLblDmgTakenAllyText();
             setLblDmgTakenAllianceText();
             setLblXpText();
             setValXpText();
@@ -746,8 +808,10 @@ package components.notifications.parts
             setLblVictoryPointsText();
             setAllianceTableInfo();
             setValDmgDealtPlayerText();
+            setValDmgDealtAllyText();
             setValDmgDealtAllianceText();
             setValDmgTakenPlayerText();
+            setValDmgTakenAllyText();
             setValDmgTakenAllianceText();
             setValPointsText();
             setValVictoryPointsText();
