@@ -182,7 +182,7 @@
          }
          
          protected function globalEvent_appReadyHandler(event:GlobalEvent) : void {
-            _filterButtons.select(btnPlayerRoutes);
+            _filterButtons.select(btnPlayerUnits);
          }
       ]]>
    </fx:Script>

@@ -339,6 +339,10 @@ package controllers.ui
                   UnitKind.SPACE, Owner.ENEMY);
                resetActiveButton(button);
                break;
+            case MainAreaScreens.NOTIFICATIONS:
+               showNonMapScreen(_screenProperties[button.name]);
+               resetActiveButton(button);
+               break;
             default:
                resetToNonMapScreen(_screenProperties[button.name]);
          }
@@ -558,7 +562,7 @@ package controllers.ui
       
       public function showNotifications() :void
       {
-         resetToNonMapScreen(_screenProperties[MainAreaScreens.NOTIFICATIONS]);
+         showNonMapScreen(_screenProperties[MainAreaScreens.NOTIFICATIONS]);
       }
       
       public function showVip() :void
@@ -649,7 +653,7 @@ package controllers.ui
       
       public function showQuests() :void
       {
-         resetToNonMapScreen(_screenProperties[MainAreaScreens.QUESTS]);
+         showNonMapScreen(_screenProperties[MainAreaScreens.QUESTS]);
          createdScreens[MainAreaScreens.QUESTS] = true;
          ML.quests.applyCompletedFilter(false);
          if (ML.quests.selectedQuest == null)
