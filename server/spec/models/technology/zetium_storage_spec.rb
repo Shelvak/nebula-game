@@ -3,4 +3,6 @@ require File.expand_path(
 )
 
 describe Technology::ZetiumStorage do
+  it_behaves_like "resource increasing technology",
+                  Factory.create!(:t_zetium_storage)
 end

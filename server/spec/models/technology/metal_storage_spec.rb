@@ -3,4 +3,6 @@ require File.expand_path(
 )
 
 describe Technology::MetalStorage do
+  it_behaves_like "resource increasing technology",
+                  Factory.create!(:t_metal_storage)
 end

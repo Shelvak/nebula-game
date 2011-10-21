@@ -61,4 +61,5 @@ nbproject
 .idea
 *.iml
 .rakeTasks
+out/*
 
