@@ -520,10 +520,6 @@
     <!-- 0: date, 1: time (1 part) -->
     <label.owner value="Tu valdai šią planetą nuo:" />
     <label.ownerDate value="{0} ({1})." />
-    <label.battlegroundOwner> 
-      <p>Kuo ilgiau valdysi šią planetą tuo mažesnis bus ateivių fabrikų 
-      produktyvumas</p>
-    </label.battlegroundOwner>     
     <label.activateOverdrive> 
       <p>Įjunk šiam pastatui perkrovos rėžimą, kad jis išgautų 
       {0 1sts[? kartą] tens[? kartų] many[? kartus]} daugiau resursų bei
@@ -1094,7 +1090,6 @@
     </label.selectedConvert>
     <label.convert value="Iškeisti" />
     <label.accelerate value="Paspartinti" />
-    <label.vip value="VIP" />
     <label.whouldFinish value="Tobulinimas baigtusi už" />
     <label.selectAccelerate value="Pasirink paspartinimą" />
     <label.credsSum value="Iš viso kredų" />
@@ -1573,7 +1568,6 @@
     <label.close value="Uždaryti" />
     <label.players value="Žaidėjai" />
     <label.noNotifications value="Pranešimų nėra" />
-    <label.claimReward value="Pasiimk atlygį!" />
     <label.questCompleted value="Užduotis „{0}“ buvo atlikta." />
     <label.readAll value="Perskaityti visus" />
     <label.resourcesGained value="Gauta resursų" />
@@ -3788,7 +3782,7 @@
     <ShipStorage.name ref="Objects/Technology_ShipStorage" />
     <ShipStorage.about>
       <p>
-        Prie krovininių laivų primontuojami [obj:1:Technology_ShipStorage:dc]
+        Prie krovininių laivų primontuojami [obj:1:Technology_ShipStorage::dc]
         išplėčia laivo krovininius skyrius ir leidžia jiems pergabenti daugiau
         resursų ar karių, kas yra ypač pravartu renkant resursus ar šturmuojant
         planetą.

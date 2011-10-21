@@ -263,8 +263,6 @@
     <Object value="Object" />
     <Object-p8d value="{0 one[Object] many[? Objects]}" />
 
-    <Is value="{0 one[is] many[are]}" />
-
     <Scientist value="Scientist" />
     <Scientist-p8d value="{0 one[Scientist] many[? Scientists]}" />
 
@@ -429,10 +427,6 @@
     <!-- 0: date, 1: time (1 part) -->
     <label.owner value="You are the owner of this planet from:" />
     <label.ownerDate value="{0} ({1})." />
-    <label.battlegroundOwner> 
-      <p>The longer you rule this planet, the less productive 
-      will the NPC factories become.</p>
-    </label.battlegroundOwner>
     <label.activateOverdrive> 
       <p>Overdrive this building to make it extract {0} times more resources
       while using {1} times more energy.</p>
@@ -3350,6 +3344,9 @@
     <Spaceport.about value="Fly to the sky" />
     -->
 
+    <ArmorTech value="Researching this technology increases armor" />
+    <WeaponsTech value="Researching this technology increases damage" />
+
     <InfantryUpgradeTech>
       <p>
         for ground soldiers built in [reference:Buildings/Barracks.name] like 
@@ -3363,10 +3360,7 @@
         Recent developments in armor technology allows embedding zetium shards 
         into warrior armor thus making it more resistant to enemy hits. 
       </p>
-      <p>
-        Researching this technology increases armor 
-        [reference:InfantryUpgradeTech] 
-      </p>
+      <p>[reference:ArmorTech] [reference:InfantryUpgradeTech]</p>
     </MetabolicChargers.about>
 
     <HighVelocityCharges.name ref="Objects/Technology_HighVelocityCharges" />
@@ -3377,10 +3371,7 @@
         rockets reach greater velocity and bigger impact speed meaning more 
         damage to enemy. 
       </p>
-      <p>
-        Researching this technology increases damage 
-        [reference:InfantryUpgradeTech] 
-      </p>
+      <p>[reference:WeaponsTech] [reference:InfantryUpgradeTech]</p>
     </HighVelocityCharges.about>
 
     <ShipUpgradeTech>
@@ -3401,9 +3392,7 @@
         able to withstand more damage and keep ships alive in the battlefield 
         for longer. 
       </p>
-      <p>
-        Researching this technology increases armor [reference:ShipUpgradeTech] 
-      </p>
+      <p>[reference:ArmorTech] [reference:ShipUpgradeTech]</p>
     </ShipsArmor.about>
 
     <ShipsDamage.name ref="Objects/Technology_ShipsDamage" />
@@ -3413,10 +3402,7 @@
         power. Ionized zetium crystals expel intense heat that is enough to 
         wade even through thickest armor. 
       </p>
-      <p>
-        Researching this technology increases damage 
-        [reference:ShipUpgradeTech] 
-      </p>
+      <p>[reference:WeaponsTech] [reference:ShipUpgradeTech]</p>
     </ShipsDamage.about>
 
     <TankUpgradeTech>
@@ -3426,19 +3412,6 @@
       </p>
     </TankUpgradeTech>
 
-    <TanksDamage.name ref="Objects/Technology_TanksDamage" />
-    <TanksDamage.about>
-      <p>
-        Introducing highly unstable zetium into tank shells greatly improves 
-        their firepower and ensures that enemy units do not leave the 
-        battlefield alive. 
-      </p>
-      <p>
-        Researching this technology increases damage 
-        [reference:TankUpgradeTech] 
-      </p>
-    </TanksDamage.about>
-
     <TanksArmor.name ref="Objects/Technology_TanksArmor" />
     <TanksArmor.about>
       <p>
@@ -3446,19 +3419,18 @@
         incoming projectiles before impact. By minimizing their velocity they 
         reduce damage dealt to hull of the tank. 
       </p>
-      <p>
-        Researching this technology increases armor [reference:TankUpgradeTech] 
-      </p>
+      <p>[reference:ArmorTech] [reference:TankUpgradeTech]</p>
     </TanksArmor.about>
 
-   <!--
-    <ResourceTransporter.name ref="Objects/ResourceTransporter" />
-    <ResourceTransporter.about>
+    <TanksDamage.name ref="Objects/Technology_TanksDamage" />
+    <TanksDamage.about>
       <p>
-        This technology helps you to transport resources through hyperspace 
-        chanels 
+        Introducing highly unstable zetium into tank shells greatly improves
+        their firepower and ensures that enemy units do not leave the
+        battlefield alive.
       </p>
-    </ResourceTransporter.about> -->
+      <p>[reference:WeaponsTech] [reference:TankUpgradeTech]</p>
+    </TanksDamage.about>
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
@@ -4091,10 +4063,10 @@
     <!--
     <Spy.name ref="Objects/Spy" />
     <Spy.about value="Explore your enemies" />
-     -->
 
     <Saboteur.name value="Saboteur" />
     <Saboteur.about value="Is likely to ruin things" />
+     -->
 
     <Scorpion.name ref="Objects/Unit_Scorpion" />
     <Scorpion.about>

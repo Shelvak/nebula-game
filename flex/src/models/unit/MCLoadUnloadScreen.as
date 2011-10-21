@@ -8,7 +8,9 @@ package models.unit
    import controllers.GlobalFlags;
    import controllers.Messenger;
    import controllers.units.UnitsCommand;
-   
+
+   import flash.events.Event;
+
    import flash.events.EventDispatcher;
    import flash.events.MouseEvent;
    
@@ -188,14 +190,15 @@ package models.unit
             i++;
             tempStorageString += Localizer.string('Resources', 'additionalStorage.resource', [res]);
          }
-         tempStorageString = missingStorages.length == 0?'':Localizer.string('Units', 'label.planetFull', [tempStorageString, 
-            (missingStorages.length == 1?'is':'are')]);
+         tempStorageString = missingStorages.length == 0
+            ? ''
+            : Localizer.string('Units', 'label.planetFull', [
+               tempStorageString, (missingStorages.length == 1 ? 'is' : 'are')
+            ]);
          if (missingStorageString != tempStorageString)
          {
             missingStorageString = tempStorageString;
          }
-         
-         
       }
       
       [Bindable (event="selectedResourcesChange")]

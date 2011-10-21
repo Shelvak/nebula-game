@@ -402,8 +402,6 @@
     <Object value="Object" />
     <Object-p8d value="{0 one[Object] many[? Objects]}" />
 
-    <Is value="{0 one[is] many[are]}" />
-
     <Scientist value="Scientist" />
     <Scientist-p8d value="{0 one[Scientist] many[? Scientists]}" />
 
@@ -1939,10 +1937,13 @@
       <p>Spiediet '{0}', lai atjaunotu saikni.</p>
     </message.disconnect.otherLogin>
 
-    <title.disconnect.notFound value="Resource missing!" />
-    <message.disconnect.notFound>
-      <p>A resource has not been found!  Spiediet '{0}', lai atjaunotu saikni.</p>
-    </message.disconnect.notFound>
+    <!-- TODO -->
+    <title.disconnect.playerErased value="Bye bye!" />
+    <message.disconnect.playerErased>
+      <p>Your account has been erased. We'll miss you.</p>
+      <p>Don't bother pressing '{0}'. It won't work.</p>
+    </message.disconnect.playerErased>
+    <!-- /TODO -->
 
     <title.disconnect.jsonError value="Sakaru kļūda" />
     <message.disconnect.jsonError>
@@ -3521,6 +3522,9 @@
     <Spaceport.about value="Fly to the sky" />
     -->
 
+    <ArmorTech value='Attīstot šo tehnoloģiju palielinās aizsardzība' />
+    <WeaponsTech value='Attīstot šo tehnoloģiju palielinās uzbrukums' />
+
     <InfantryUpgradeTech>
       <p>
         for ground soldiers built in [reference:Buildings/Barracks.name] like 
@@ -3534,10 +3538,7 @@
         Pēdējie atklājumi bruņu tehnoloģijās ļauj ievietot zetium shards 
         karavīru bruņās, kas padara tos daudz izturīgākus pret ienaidnieka uzbrukumiem. 
       </p>
-      <p>
-        Attīstot šo tehnoloģiju palielinās aizsardzība 
-        [reference:InfantryUpgradeTech] 
-      </p>
+      <p>[reference:ArmorTech] [reference:InfantryUpgradeTech]</p>
     </MetabolicChargers.about>
 
     <HighVelocityCharges.name ref="Objects/Technology_HighVelocityCharges" />
@@ -3548,10 +3549,7 @@
         raķetes attīsta ļoti lielu ātrumu, tādejādi nodrošinot efektīvākus 
         zaudējumus ienaidniekam. 
       </p>
-      <p>
-        Attīstot šo tehnoloģiju palielinās uzbrukums 
-        [reference:InfantryUpgradeTech] 
-      </p>
+      <p>[reference:WeaponsTech] [reference:InfantryUpgradeTech]</p>
     </HighVelocityCharges.about>
 
     <!-- TODO: Add mention that it does not improve mule class ships too. -->
@@ -3573,9 +3571,7 @@
         nodrošina lielāku izturību un tādejādi karalaukā var noturēties  
         ilgāku laiku. 
       </p>
-      <p>
-        Attīstot šo tehnoloģiju palielinās aizsardzība [reference:ShipUpgradeTech] 
-      </p>
+      <p>[reference:ArmorTech] [reference:ShipUpgradeTech]</p>
     </ShipsArmor.about>
 
     <ShipsDamage.name ref="Objects/Technology_ShipsDamage" />
@@ -3585,10 +3581,7 @@
         power. Ionized zetium crystals expel intense heat that is enough to 
         wade even through thickest armor. 
       </p>
-      <p>
-        Attīstot šo tehnoloģiju palielinās uzbrukums 
-        [reference:ShipUpgradeTech] 
-      </p>
+      <p>[reference:WeaponsTech] [reference:ShipUpgradeTech]</p>
     </ShipsDamage.about>
 
     <TankUpgradeTech>
@@ -3598,19 +3591,6 @@
       </p>
     </TankUpgradeTech>
 
-    <TanksDamage.name ref="Objects/Technology_TanksDamage" />
-    <TanksDamage.about>
-      <p>
-        Ieviešot nestabilo zetium tanku korpusos, tas uzlabo 
-        to šāvienu spēku, nodrošinoties, ka neviens ienaidnieks neatstās 
-        karalauku dzīvs. 
-      </p>
-      <p>
-        Attīstot šo tehnoloģiju palielinās uzbrukums 
-        [reference:TankUpgradeTech] 
-      </p>
-    </TanksDamage.about>
-
     <TanksArmor.name ref="Objects/Technology_TanksArmor" />
     <TanksArmor.about>
       <p>
@@ -3618,19 +3598,18 @@
         uzbrūkošo lādiņu ātrumu. Tādejādi samazinot 
         postījuma spēku tanka korpusam. 
       </p>
-      <p>
-        Attīstot šo tehnoloģiju, palielinās aizsarddzība [reference:TankUpgradeTech] 
-      </p>
+      <p>[reference:ArmorTech] [reference:TankUpgradeTech]</p>
     </TanksArmor.about>
 
-   <!--
-    <ResourceTransporter.name ref="Objects/ResourceTransporter" />
-    <ResourceTransporter.about>
+    <TanksDamage.name ref="Objects/Technology_TanksDamage" />
+    <TanksDamage.about>
       <p>
-        This technology helps you to transport resources through hyperspace 
-        chanels 
+        Ieviešot nestabilo zetium tanku korpusos, tas uzlabo
+        to šāvienu spēku, nodrošinoties, ka neviens ienaidnieks neatstās
+        karalauku dzīvs.
       </p>
-    </ResourceTransporter.about> -->
+      <p>[reference:WeaponsTech] [reference:TankUpgradeTech]</p>
+    </TanksDamage.about>
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
@@ -4272,10 +4251,10 @@
     <!--
     <Spy.name ref="Objects/Spy" />
     <Spy.about value="Explore your enemies" />
-     -->
 
     <Saboteur.name value="Saboteur" />
     <Saboteur.about value="Is likely to ruin things" />
+     -->
 
     <Scorpion.name ref="Objects/Unit_Scorpion" />
     <Scorpion.about>
