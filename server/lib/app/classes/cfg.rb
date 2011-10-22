@@ -152,6 +152,11 @@ class Cfg; class << self
       'width' => width, 'height' => height).round
   end
 
+  # Cost to unlearn a technology.
+  def technology_destroy_cost
+    CONFIG['creds.technology.destroy']
+  end
+
   ### units.yml ###
 
   def move_speed_modifier_range

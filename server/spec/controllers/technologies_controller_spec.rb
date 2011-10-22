@@ -200,4 +200,27 @@ describe TechnologiesController do
       response_should_include(:technology => @technology.as_json)
     end
   end
+
+  describe "technologies|unlearn" do
+    before(:each) do
+      @technology = Factory.create(:technology, :player => player)
+
+      @action = "technologies|unlearn"
+      @params = {'id' => @technology.id}
+    end
+
+    it "should fail if technology does not belong to player" do
+      technology = Factory.create(:technology)
+      lambda do
+        invoke @action, @params.merge('id' => technology.id)
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should call #unlearn! on technology" do
+      player.stub_chain(:technologies, :find).with(@technology.id).
+        and_return(@technology)
+      @technology.should_receive(:unlearn!)
+      invoke @action, @params
+    end
+  end
 end

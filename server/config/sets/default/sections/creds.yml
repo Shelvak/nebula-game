@@ -27,6 +27,9 @@ building.move: 200
 # Cost to destroy building if cooldown is on.
 building.destroy: 300
 
+# Cost to unlearn a technology.
+technology.destroy: 5000
+
 # Cost to change alliance data.
 alliance.change: 1000
 

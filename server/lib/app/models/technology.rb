@@ -63,8 +63,23 @@ class Technology < ActiveRecord::Base
     super(level, scientists)
   end
 
-  # We never destroy technologies so this does not have any meaning.
-  def points_on_destroy; 0; end
+  # Destroys this technology. Requires creds.
+  def unlearn!
+    player = self.player
+    creds_required = Cfg.technology_destroy_cost
+    raise GameLogicError.new(
+      "Not enough creds to destroy #{self}. Required #{creds_required}, but #{
+      player} only had #{player.creds}."
+    ) if player.creds < creds_required
+
+    player.creds -= creds_required
+
+    transaction do
+      # #destroy! invokes player#save! too
+      destroy!
+      CredStats.unlearn_technology(player, creds_required)
+    end
+  end
 
   # Overrides Parts::Upgradable::InstanceMethods#calculate_upgrade_time with
   # Technology calculation logic.
