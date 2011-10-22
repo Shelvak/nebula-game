@@ -228,6 +228,7 @@
     <Technology_ZetiumExtraction value="Zetium Extraction" />
     <Technology_MetabolicChargers value="Metabolic Chargers" />
     <Technology_HighVelocityCharges value="High Velocity Ammo" />
+    <Technology_SpaceFactory value="Space Factory" />
     <Technology_ShipsArmor value="Reinforced Plates" />
     <Technology_ShipsDamage value="Energized Plasma" />
     <Technology_TanksDamage value="Zetium Shells" />
@@ -3704,7 +3705,7 @@
     <MetalStorage.about>
       <p>
         This technology increases resistance to pressure and temperature of
-        our [obj:2:Building_MetalStorage::dc]. By using higher degree
+        our metal storages. By using higher degree
         of compression applied we can store even more metal to same buildings.
       </p>
     </MetalStorage.about>

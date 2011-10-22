@@ -295,6 +295,8 @@
     <Technology_MetabolicChargers-whos value="sustiprintų šarvų" />
     <Technology_HighVelocityCharges value="Greituminiai šoviniai" />
     <Technology_HighVelocityCharges-whos value="greituminių šovinių" />
+    <Technology_SpaceFactory value="Laivų gamykla" />
+    <Technology_SpaceFactory-whos value="Laivų gamyklos" />
     <Technology_ShipsArmor value="Keliasluoksnės plokštės" />
     <Technology_ShipsArmor-whos value="keliasluoksnių plokščių" />
     <Technology_ShipsDamage value="Energizuota plazma" />
@@ -3752,7 +3754,7 @@
     <MetalStorage.name ref="Objects/Technology_MetalStorage" />
     <MetalStorage.about>
       <p>
-        Ši technologija padidina mūsų [obj:2:Building_MetalStorage:whos:dc]
+        Ši technologija padidina mūsų metalo talpyklų
         atsparumą slėgiui ir temperatūrai, tad į ęsamus pastatus, pasitelkę
         aukštesnį suspaudimo laipsnį, galime sutalpinti dar daugiau metalo.
       </p>
