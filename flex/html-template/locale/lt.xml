@@ -295,8 +295,10 @@
     <Technology_MetabolicChargers-whos value="sustiprintų šarvų" />
     <Technology_HighVelocityCharges value="Greituminiai šoviniai" />
     <Technology_HighVelocityCharges-whos value="greituminių šovinių" />
-    <Technology_SpaceFactory value="Laivų gamykla" />
+    <Technology_Market value="Turgus" />
+    <Technology_Market-whos value="Turgaus" />
     <Technology_SpaceFactory-whos value="Laivų gamyklos" />
+    <Technology_SpaceFactory value="Laivų gamykla" />
     <Technology_ShipsArmor value="Keliasluoksnės plokštės" />
     <Technology_ShipsArmor-whos value="keliasluoksnių plokščių" />
     <Technology_ShipsDamage value="Energizuota plazma" />
