@@ -16,11 +16,38 @@ describe PlayersController do
         @test_player = Factory.create(:player)
 
         @action = "players|login"
-        @params = {'server_player_id' => @test_player.id, 'web_player_id' => 3}
+        @params = {'server_player_id' => @test_player.id, 'web_player_id' => 3,
+          'version' => Cfg.required_client_version}
       end
 
-      @required_params = %w{server_player_id web_player_id}
+      @required_params = %w{server_player_id web_player_id version}
       it_behaves_like "with param options"
+
+      describe "client too old" do
+        before(:each) do
+          ClientVersion.should_receive(:ok?).with(@params['version']).
+            and_return(false)
+        end
+
+        it "should respond with failure" do
+          invoke @action, @params
+          response_should_include(
+            :success => false
+          )
+        end
+
+        it "should respond with required client version" do
+          invoke @action, @params
+          response_should_include(
+            :required_version => Cfg.required_client_version
+          )
+        end
+        
+        it "should disconnect on invalid login" do
+          @controller.should_receive(:disconnect)
+          invoke @action, @params
+        end
+      end
 
       describe "successfully authorized by web" do
         before(:each) do

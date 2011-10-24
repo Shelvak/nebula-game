@@ -1,5 +1,7 @@
 package controllers.players.actions
 {
+   import application.Version;
+
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.GlobalFlags;
@@ -35,15 +37,23 @@ package controllers.players.actions
       public override function applyClientAction(cmd:CommunicationCommand) : void {
          sendMessage(new ClientRMO({
             "webPlayerId": SI.webPlayerId,
-            "serverPlayerId": SI.serverPlayerId
+            "serverPlayerId": SI.serverPlayerId,
+            "version": Version.VERSION
          }));
       }
       
       public override function applyServerAction(cmd:CommunicationCommand) : void {
          if (cmd.parameters["success"])
             AM.loginSuccessful();
-         else
-            cancel(null);
+         else {
+            if (cmd.parameters["required_version"]) {
+               GF.lockApplication = false;
+               AM.versionTooOld(cmd.parameters["required_version"]);
+            }
+            else {
+               cancel(null);
+            }
+         }
       }
       
       public override function cancel(rmo:ClientRMO) : void {

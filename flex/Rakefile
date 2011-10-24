@@ -163,7 +163,7 @@ namespace :build do
         }
         compiler_flags.push "debug" if ENV['debug'] || ENV['DEBUG']
 
-        build = Time.now.strftime("%m%d-%H%M")
+        build = Time.now.strftime("%Y-%m%d-%H%M")
         version_file = "#{src_dir}/application/Version.as"
         old_version = nil
         begin
