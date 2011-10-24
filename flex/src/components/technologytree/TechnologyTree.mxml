@@ -49,6 +49,7 @@
          {
             EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
             treeCompsList = [];
+            drawedGroupElements = [];
             treeContainer.removeAllElements();
             findPoints();
             for each (var tech: Technology in ML.technologies.technologies)
