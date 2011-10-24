@@ -130,10 +130,13 @@ if $SPEC_INITIALIZED.nil?
     end
   end
 
-  # Disable logging. Who looks at it anyway?
-  LOGGER.level = GameLogger::LEVEL_FATAL
-
   RSpec.configure do |config|
+    def start_transaction
+      conn = ActiveRecord::Base.connection
+      conn.begin_db_transaction
+      conn.increment_open_transactions
+    end
+
     def break_transaction
       conn = ActiveRecord::Base.connection
       unless conn.open_transactions == 0
@@ -144,9 +147,7 @@ if $SPEC_INITIALIZED.nil?
 
     config.before(:each) do
       App.server_state = App::SERVER_STATE_INITIALIZING
-      conn = ActiveRecord::Base.connection
-      conn.begin_db_transaction
-      conn.increment_open_transactions
+      start_transaction
     end
 
     config.after(:each) do

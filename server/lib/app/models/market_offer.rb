@@ -6,6 +6,11 @@
 # Some of the attributes:
 # - to_rate (Float): how much of _to_kind_ resource you want for 1 of 
 # _from_kind_ resource.
+# - cancellation_shift (Float): how much should we shift MarketRate for this
+# resource pair when cancelling this offer.
+# - cancellation_amount (Fixnum): _from_amount_ when this offer was created.
+# - cancellation_total_amount (Fixnum): amount of _from_kind_ resource at the time
+# of this offers creation (without the amount of this offer).
 #
 class MarketOffer < ActiveRecord::Base
   belongs_to :galaxy
@@ -54,12 +59,22 @@ class MarketOffer < ActiveRecord::Base
     true
   end
 
-  after_create do
-    MarketRate.add(galaxy_id, from_kind, to_kind, from_amount, to_rate)
+  before_create do
+    model = MarketRate.get(galaxy_id, from_kind, to_kind)
+    old_rate = model.to_rate
+    self.cancellation_amount = from_amount
+    self.cancellation_total_amount = model.from_amount
+    model = MarketRate.add(galaxy_id, from_kind, to_kind, from_amount, to_rate)
+    self.cancellation_shift = (model.to_rate - old_rate) * -1
+
+    true
   end
 
   after_destroy do
-    MarketRate.subtract(galaxy_id, from_kind, to_kind, from_amount)
+    MarketRate.subtract(
+      galaxy_id, from_kind, to_kind, from_amount, cancellation_shift,
+      cancellation_amount, cancellation_total_amount
+    )
   end
 
   # Is this offer created by system?
@@ -147,7 +162,7 @@ class MarketOffer < ActiveRecord::Base
       end
       percentage_bought = amount.to_f / original_amount
 
-      MarketRate.subtract(galaxy_id, from_kind, to_kind, amount)
+      MarketRate.subtract_amount(galaxy_id, from_kind, to_kind, amount)
 
       # Create notification if:
       # * It's not a system notification
@@ -208,6 +223,7 @@ class MarketOffer < ActiveRecord::Base
         ? nil : {"id" => player_id, "name" => player_name}
       
       # JRuby compatibility
+      row["to_rate"] = row["to_rate"].to_f if row['to_rate'].is_a?(String)
       row["created_at"] = Time.parse(row['created_at']) \
         if row['created_at'].is_a?(String)
       
