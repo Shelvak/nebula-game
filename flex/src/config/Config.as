@@ -952,6 +952,11 @@ package config
          return getCredsProperty('upgradable.speedUp');
       }
       
+      public static function getTechnologyUnlearnCost(): int
+      {
+         return getCredsProperty('technology.destroy');
+      }
+      
       public static function getMoveCredits(): int
       {
          return getCredsProperty('building.move');

@@ -1,11 +1,9 @@
 package controllers.technologies.actions
-	
 {
 	
 	import controllers.CommunicationAction;
 	import controllers.CommunicationCommand;
-	
-	import globalevents.GTechnologiesEvent;
+	import controllers.GlobalFlags;
 	
 	import models.factories.TechnologyFactory;
 	import models.technology.Technology;
@@ -27,15 +25,17 @@ package controllers.technologies.actions
          technology.copyProperties(temp);
          technology.upgradePart.startUpgrade();
          temp.cleanup();
-			new GTechnologiesEvent(GTechnologiesEvent.UPDATE_APPROVED);
 		}
       
       public override function cancel(rmo:ClientRMO):void
       {
          super.cancel(rmo);
-         new GTechnologiesEvent(GTechnologiesEvent.UPDATE_APPROVED);
+         GlobalFlags.getInstance().lockApplication = false;
       }
-		
-		
+      
+      public override function result(rmo:ClientRMO):void
+      {
+         GlobalFlags.getInstance().lockApplication = false;
+      }
 	}
 }

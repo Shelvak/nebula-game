@@ -1096,6 +1096,15 @@
        <p><span fontWeight="bold">{0} creds</span></p>
       ]]>
     </label.destructPrice>
+    <label.unlearnPrice>
+      <![CDATA[
+       <p>
+         To unlearn this technology you need to pay
+       </p>
+       <p />
+       <p><span fontWeight="bold">{0} creds</span></p>
+      ]]>
+    </label.unlearnPrice>
     <label.notEnough>
      <p>
       Not enough creds.<br/>You need {0} more
@@ -3265,6 +3274,15 @@
 
     <upgradeCost value="Upgrade cost" />
     <forceOvertime value="Force overtime" />
+
+    <title.unlearn value="Unlearn" />
+    <warning.unlearn>      
+      <![CDATA[
+      <p><span fontWeight="bold">Warning!</span> It will cost you {0} creds to 
+      unlearn this technology and you won't get any resources back.</p>
+      ]]>
+    </warning.unlearn>
+    <label.unlearn value="Unlearn" />
 
     <isGroup>
       <p>If you research this technology you won't be able to research:</p>

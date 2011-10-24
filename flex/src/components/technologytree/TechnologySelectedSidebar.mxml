@@ -14,6 +14,7 @@
          import com.developmentarc.core.utils.EventBroker;
          
          import components.credits.AccelerateSelector;
+         import components.credits.ConfirmCredsLabel;
          import components.popups.ActionConfirmationPopup;
          import components.popups.WaitingCredsPopup;
          import components.skins.GreenButtonSkin;
@@ -29,6 +30,10 @@
          import controllers.screens.SidebarScreens;
          import controllers.technologies.TechnologiesCommand;
          import controllers.ui.NavigationController;
+         
+         import flash.utils.getTimer;
+         
+         import flashx.textLayout.elements.TextFlow;
          
          import globalevents.GResourcesEvent;
          import globalevents.GTechnologiesEvent;
@@ -47,6 +52,8 @@
          import models.unit.Unit;
          
          import mx.events.FlexEvent;
+         
+         import spark.utils.TextFlowUtil;
          
          import utils.DateUtil;
          import utils.ModelUtil;
@@ -121,9 +128,6 @@
          [Bindable]
          private var canBeUpgraded: Boolean = false;
          
-         [Bindable]
-         private var upgradePending: Boolean = false;
-         
          /**
           * how many seconds are left to fulfill resources needs for technology
           **/
@@ -195,17 +199,45 @@
             refreshUpgradeState();
          }
          
-         private function removePending(e: GTechnologiesEvent): void
+         private function getTextFlow(value: String): TextFlow
          {
-            upgradePending = false;
-            EventBroker.unsubscribe(GTechnologiesEvent.UPGRADE_APPROVED, removePending);
+            return TextFlowUtil.importFromString(value);
+         }
+         
+         protected function unlearn(event:MouseEvent):void
+         {
+            var confirmPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            var confirmLabel: ConfirmCredsLabel = new ConfirmCredsLabel();
+            confirmLabel.popUp = confirmPopUp;
+            var destCreds: int = Config.getTechnologyUnlearnCost();
+            confirmLabel.credsRequired = destCreds;
+            confirmLabel.textFlow = getTextFlow(
+               Localizer.string('Credits', 'label.unlearnPrice', [destCreds]));
+            confirmLabel.refreshPopup();
+            confirmPopUp.addElement(confirmLabel);
+            confirmPopUp.confirmButtonClickHandler = function (button: Button = null): void
+            {
+               function doDestruct(): void
+               {
+                  GlobalFlags.getInstance().lockApplication = true;
+                  new TechnologiesCommand(TechnologiesCommand.UNLEARN, 
+                     {'id': _selectedModel.id}).dispatch();
+               }
+               if (confirmLabel.hasEnoughCredits())
+               {
+                  doDestruct();
+               }
+               else
+               {
+                  WaitingCredsPopup.showPopup(destCreds, doDestruct);
+               }
+            };
+            confirmPopUp.show();
          }
          
          protected function upgradeButton_clickHandler(event:MouseEvent):void
          {
-            upgradePending = true;
-            pausePending = false;
-            EventBroker.subscribe(GTechnologiesEvent.UPGRADE_APPROVED, removePending);
+            GlobalFlags.getInstance().lockApplication = true;
             if (_selectedModel.upgradePart.level == 0)
             {
                new TechnologiesCommand(
@@ -286,19 +318,9 @@
             invalidateDisplayList();
          }
          
-         [Bindable]
-         private var pausePending: Boolean = false;
-         
-         protected function removePausePending(e: Event): void
-         {
-            pausePending = false;
-            EventBroker.unsubscribe(GTechnologiesEvent.PAUSE_APPROVED, removePausePending);
-         }
-         
          protected function pause_clickHandler(event:MouseEvent):void
          {
-            pausePending = true;
-            EventBroker.subscribe(GTechnologiesEvent.PAUSE_APPROVED, removePausePending);
+            GlobalFlags.getInstance().lockApplication = true;
             if (pauseButton.selected)
             {
                scientistsSelector.value = _selectedModel.scientists;
@@ -334,18 +356,9 @@
             refreshPriceOrientatedProperties();
          }
          
-         [Bindable]
-         private var updatePending: Boolean = false;
-         
-         private function removeUpdatePending(e: Event = null): void
-         {
-            updatePending = false;
-         }
-         
          protected function button1_clickHandler(event:MouseEvent):void
          {
-            updatePending = true;
-            EventBroker.subscribe(GTechnologiesEvent.UPDATE_APPROVED, removeUpdatePending);
+            GlobalFlags.getInstance().lockApplication = true;
             new TechnologiesCommand(
                TechnologiesCommand.UPDATE,
                {id: _selectedModel.id,
@@ -480,7 +493,7 @@
                      <s:Group width="100%" visible="{!((_selectedModel.scientists == scientistsSelector.value) || 
                               (_selectedModel.upgradePart.upgradeEndsAt == null))}">
                         <s:Button label="{Localizer.string('Technologies','update')}" click="button1_clickHandler(event)" 
-                                  right="6" enabled="{!updatePending}"/>
+                                  right="6"/>
                         
                      </s:Group> 
                      <s:Label text="{Localizer.string('Technologies','finishedIn', 
@@ -509,11 +522,10 @@
                                         _selectedModel.upgradePart.timeToFinishString])}"/> 
                         <s:ToggleButton id="pauseButton" skinClass="components.skins.PauseButtonSkin" right="0" 
                                         click="pause_clickHandler(event)"
-                                        enabled="{(
+                                        enabled="{
                                         (_selectedModel.upgradePart.timeToFinish > 10) || 
                                         (_selectedModel.pauseRemainder != 0 &amp;&amp; 
-                                        ML.player.scientists >= _selectedModel.minScientists))
-                                        &amp;&amp; !pausePending}" 
+                                        ML.player.scientists >= _selectedModel.minScientists)}" 
                                         creationComplete="pauseButton_creationCompleteHandler(event)"/>
                      </s:Group>
                      <s:Group visible="{_selectedModel.pauseRemainder == 0}">
@@ -587,12 +599,12 @@
                               ML.player.scientistsTotal])}" 
                               id="notEnoughSciLbl" 
                               visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
-                              (upgradePending) || (!_selectedModel.isValid)
+                              (!_selectedModel.isValid)
                               || (ML.player.warPoints &lt; _selectedModel.warPoints))}" 
                               styleName="unsatisfied"/>
                      <s:Label text="{Localizer.string('Technologies','buildCenters')}" 
                               visible="{!(!(_selectedModel.minScientists > ML.player.scientists) || 
-                              (upgradePending) || (!_selectedModel.isValid)
+                              (!_selectedModel.isValid)
                               || (ML.player.warPoints &lt; _selectedModel.warPoints))}" 
                               styleName="unsatisfied"/>
                      <base:AdvancedContainer visible="{!(notEnoughSciLbl.visible || (!_selectedModel.isValid) || 
@@ -615,7 +627,7 @@
                      </base:AdvancedContainer>
                      <s:Group>
                         <s:Button enabled="{!(!_selectedModel.isValid || !canBeUpgraded || 
-                                  (_selectedModel.minScientists > ML.player.scientists) || upgradePending
+                                  (_selectedModel.minScientists > ML.player.scientists)
                                   || (ML.player.warPoints &lt; _selectedModel.warPoints))}" 
                                   label="{Localizer.string('Technologies','upgrade')}" 
                                   click="upgradeButton_clickHandler(event)" horizontalCenter="0"
@@ -625,6 +637,28 @@
                         <s:VerticalLayout paddingLeft="6" paddingRight="6" horizontalAlign="justify"/>
                      </base:layout>
                   </base:AdvancedContainer>
+               </base:Panel>
+               
+               <!-- UNLEARN PANEL -->
+               <base:Panel title="{Localizer.string('Technologies', 'title.unlearn')}" 
+                           visible="{(_selectedModel.upgradePart.upgradeEndsAt == null) 
+                           &amp;&amp; (_selectedModel.pauseRemainder == 0)
+                           &amp;&amp; Technology.technologyIsInGroup(_selectedModel.type)
+                           &amp;&amp; (_selectedModel.upgradePart.level > 0)}">
+                  <base:layout>
+                     <s:VerticalLayout paddingLeft="6" paddingRight="6"
+                                       paddingTop="6" paddingBottom="3"
+                                       horizontalAlign="justify"/>
+                  </base:layout>
+                  <s:RichText textFlow="{getTextFlow(Localizer.string(
+                              'Technologies','warning.unlearn', 
+                              [Config.getTechnologyUnlearnCost()]))}"
+                              styleName="unsatisfied"/>
+                  <s:Group>
+                     <s:Button skinClass="components.skins.CreditButtonSkin"
+                               label="{Localizer.string('Technologies', 'label.unlearn')}"
+                               click="unlearn(event)" right="6"/>
+                  </s:Group>
                </base:Panel>
                <base:layout>
                   <s:VerticalLayout horizontalAlign="justify"/>

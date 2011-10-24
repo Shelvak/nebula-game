@@ -1243,6 +1243,17 @@
        <p><span fontWeight="bold">{0} kredīti</span></p>
       ]]>
     </label.destructPrice>
+    <!-- TODO -->
+    <label.unlearnPrice>
+      <![CDATA[
+       <p>
+         To unlearn this technology you need to pay
+       </p>
+       <p />
+       <p><span fontWeight="bold">{0} creds</span></p>
+      ]]>
+    </label.unlearnPrice>
+    <!-- /TODO -->
     <label.notEnough>
      <p>
       Nepietiek kredītu.<br/>Jums nepieciešami vēl {0}
@@ -3443,6 +3454,17 @@
 
     <upgradeCost value="Uzlabojums maksā" />
     <forceOvertime value="Spēka virsstundas" />
+
+    <!-- TODO -->
+    <title.unlearn value="Unlearn" />
+    <warning.unlearn>      
+      <![CDATA[
+      <p><span fontWeight="bold">Warning!</span> It will cost you {0} creds to 
+      unlearn this technology and you won't get any resources back.</p>
+      ]]>
+    </warning.unlearn>
+    <label.unlearn value="Unlearn" />
+    <!-- /TODO -->
 
     <isGroup>
       <p>Ja attīstīsies šo tehnoloģiju, jums nebūs iespējams attīstīt:</p>
