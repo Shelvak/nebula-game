@@ -46,9 +46,9 @@ package controllers.players.actions
          if (cmd.parameters["success"])
             AM.loginSuccessful();
          else {
-            if (cmd.parameters["required_version"]) {
+            if (cmd.parameters["requiredVersion"]) {
                GF.lockApplication = false;
-               AM.versionTooOld(cmd.parameters["required_version"]);
+               AM.versionTooOld(cmd.parameters["requiredVersion"]);
             }
             else {
                cancel(null);
