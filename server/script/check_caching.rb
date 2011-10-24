@@ -20,7 +20,9 @@ def error(headers)
 end
 
 Net::HTTP.start(base, 80) do |http|
-  %w{index.html assets/checksums?1234234 locale/checksums?2345345}.each do |f|
+  %w{
+    index.html assets/checksums?1234234 locale/checksums?2345345 VERSION
+  }.each do |f|
     url = "#{base}/#{f}"
     STDOUT.write "#{url} ... "
     headers = http.head("/#{f}")

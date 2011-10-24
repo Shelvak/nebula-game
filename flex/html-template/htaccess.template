@@ -1,7 +1,7 @@
 # Control caching.
 ExpiresActive On
 
-<FilesMatch "^(index\.html|checksums)">
+<FilesMatch "^(index\.html|checksums|VERSION)">
   ExpiresDefault "access"
   Header set "Cache-Control" "no-cache"
 </FilesMatch>
