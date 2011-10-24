@@ -1189,6 +1189,14 @@
         >{0 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
       ]]>
     </label.destructPrice>
+    <label.unlearnPrice>
+      <![CDATA[
+       <p>Šios technologijos pamiršimas tau kainuos</p>
+       <p />
+       <p><span fontWeight="bold"
+        >{0 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
+      ]]>
+    </label.unlearnPrice>
     <label.notEnough>
      <p>Nepakanka kredų.<br/>Tau dar reikia 
        {0 one[vieno kredo] 1sts[? kredo] tens[? kredų] many[? kredų]}.</p>
@@ -3361,6 +3369,16 @@
 
     <upgradeCost value="Tobulinimo kaina" />
     <forceOvertime value="Dirbti viršvalandžius" />
+
+    <title.unlearn value="Pamiršti" />
+    <warning.unlearn>      
+      <![CDATA[
+      <p><span fontWeight="bold">Dėmesio!</span> Šios technologijos pamiršimas 
+      tau kainuos {0 one[? kredą] tens[? kredų] many[? kredus]} ir tu neatgausi 
+      resursų išleistų technologijos tobulinimui.</p>
+      ]]>
+    </warning.unlearn>
+    <label.unlearn value="Pamiršti" />
 
     <isGroup>
       <p>Jeigu išrasi šią technologiją, negalėsi išrasti:</p>

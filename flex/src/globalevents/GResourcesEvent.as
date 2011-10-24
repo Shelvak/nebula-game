@@ -2,8 +2,6 @@ package globalevents
 {
    public class GResourcesEvent extends GlobalEvent
    {
-      public static const UPDATE: String = "update_resources";
-      
       public static const RESOURCES_CHANGE: String = "resourcesAmmountChanged";
       
       public static const WRECKAGES_UPDATED: String = "wreckagesUpdated";

@@ -143,6 +143,23 @@ package models.technology
          return Localizer.string('Technologies', type + ".name");
       }
       
+      public static function technologyIsInGroup(type: String): Boolean
+      {
+         if (type == null)
+         {
+            return false;
+         }
+         var requirements: Object = Config.getTechnologyRequirements(type);
+         for (var requirement: String in requirements)
+         {    
+            if (requirements[requirement].invert)        
+            {
+               return true;
+            }
+         }
+         return false;
+      }
+      
       [Bindable(event="selectedTechnologyChanged")]
       public function get requirementsText():String{
          var tempText: String = '';
