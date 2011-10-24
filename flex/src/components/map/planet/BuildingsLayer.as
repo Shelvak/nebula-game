@@ -667,7 +667,8 @@ package components.map.planet
          var buildingC:MapBuilding = MapBuilding(object);
          if (!buildingC.getBuilding().isGhost)
          {
-            new GBuildingEvent(GBuildingEvent.OPEN, Building(buildingC.model));
+            MCBuildingSelectedSidebar.getInstance().openBuilding(
+               Building(buildingC.model));
          }
       }
    }

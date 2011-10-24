@@ -5,6 +5,7 @@ package controllers.technologies.actions
    import controllers.CommunicationCommand;
    
    import models.building.Building;
+   import models.building.MCBuildingSelectedSidebar;
    import models.factories.TechnologyFactory;
    import models.technology.Technology;
    
@@ -30,7 +31,8 @@ package controllers.technologies.actions
                technology.upgradePart.startUpgrade();
             temp.cleanup();
          }
-         ML.constructable = Building.getConstructableBuildings();
+         MCBuildingSelectedSidebar.getInstance().constructable = 
+            Building.getConstructableBuildings();
          ML.resourcesMods.recalculateMods();
       }
       
