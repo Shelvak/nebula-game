@@ -39,14 +39,6 @@ package globalevents
       
       
       /**
-       * Dispatched when a building must be opened.
-       * 
-       * @eventType openBuilding
-       */
-      public static const OPEN:String = "openBuilding";
-      
-      
-      /**
        * Dispatched when process of moving a building to another place is initiated by a user.
        * This is dispatched by the <code>BuildingsSidebar</code> (or its subpart). It is received by
        * <code>BuildingsLayer</code>. Following parameters must be provided:

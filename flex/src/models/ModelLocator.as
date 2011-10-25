@@ -212,14 +212,6 @@ package models
       
       
       /**
-       * List of buildings player is alowed to construct.
-       * 
-       * @default null 
-       */      
-      public var constructable:ArrayCollection = null;
-      
-      
-      /**
        * Collection of notifications.
        * 
        * @default empty collection

@@ -25,7 +25,6 @@
          import controllers.planets.PlanetsCommand;
          import controllers.screens.MainAreaScreens;
          import controllers.screens.SidebarScreens;
-         import controllers.ui.NavigationController;
          import controllers.units.UnitsCommand;
          
          import globalevents.GBuildingEvent;
@@ -39,7 +38,6 @@
          import models.Owner;
          import models.building.Building;
          import models.building.BuildingBonuses;
-         import models.building.BuildingType;
          import models.building.MCBuildingSelectedSidebar;
          import models.building.events.BuildingEvent;
          import models.constructionqueueentry.ConstructionQueueEntry;
@@ -50,7 +48,6 @@
          import models.resource.Resource;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
-         import models.unit.Unit;
          import models.unit.UnitKind;
          
          import mx.collections.ListCollectionView;
@@ -478,7 +475,6 @@
             EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
             SD.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, handleSidebarChange);
             MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, handleScreenChange);
-            EventBroker.subscribe(GBuildingEvent.OPEN, openHandler);
             EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshFacilities);
             EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, prepare);
             EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
@@ -504,75 +500,6 @@
                         position: newPosition}
                   ).dispatch ();
                }
-            }
-         }
-         
-         protected function openHandler(e: GBuildingEvent): void
-         {
-            if (e.building.upgradePart.upgradeEndsAt != null || ML.latestPlanet.ssObject.owner != Owner.PLAYER)
-            {
-               return;
-            }
-            var NC: NavigationController = NavigationController.getInstance();
-            if (e.building.type == BuildingType.RESEARCH_CENTER)
-            {
-               NC.showTechnologies();
-               return;
-            }
-            if (e.building.type == BuildingType.MARKET)
-            {
-               NC.showMarket(e.building);
-               return;
-            }
-            if (e.building.type == BuildingType.DEFENSIVE_PORTAL &&
-                e.building.state == Building.ACTIVE)
-            {
-               NC.showDefensivePortal(ML.latestPlanet.id);
-               return;
-            }
-            if (e.building.type == BuildingType.HEALING_CENTER)
-            {
-               NC.showHealing(e.building, ML.latestPlanet.getActiveHealableUnits());
-               return;
-            }
-            else if (e.building.npc)
-            {
-               if (ML.latestPlanet.getAgressiveGroundUnits().length != 0)
-               {
-                  NC.showUnits(ML.latestPlanet.getAgressiveGroundUnits(), 
-                     ML.latestPlanet.toLocation(), e.building);
-               }
-               return;
-            }
-            else if (e.building.isConstructor(ObjectClass.UNIT))
-            {
-               NC.showFacilities(e.building.id);
-               return;
-            }
-            else if (
-               e.building.upgradePart.upgradeEndsAt == null && 
-               e.building.state != Building.WORKING &&
-               (
-                  e.building.metalRate < 0 || 
-                  e.building.energyRate < 0 || 
-                  e.building.zetiumRate < 0
-               )
-            )
-            {
-               if (!e.building.pending)
-               {
-                  if (e.building.state == Building.ACTIVE)
-                  {
-                     new BuildingsCommand(
-                        BuildingsCommand.DEACTIVATE, e.building).dispatch ();
-                  }
-                  else if (e.building.state == Building.INACTIVE)
-                  {
-                     new BuildingsCommand(
-                        BuildingsCommand.ACTIVATE, e.building).dispatch ();
-                  }
-               }
-               return;
             }
          }
          
@@ -684,6 +611,10 @@
          {
             return Localizer.string('BuildingSidebar', prop, args);
          }
+         
+         [Bindable]
+         private var BS: MCBuildingSelectedSidebar = 
+            MCBuildingSelectedSidebar.getInstance();
 
       ]]>
    </fx:Script>
@@ -733,7 +664,6 @@
                         width="100%" id="queueGroup">
                   <elements:BuildingProgressElement id="progressElement"
                                                     width="100%"
-                                                    cancelable="true"
                                                     constructableModel="{selectedConstructionModel}"/>
                   <s:List id="queueList" dataProvider="{selectedFacility.constructionQueueEntries}"
                           useVirtualLayout="false"
@@ -776,7 +706,7 @@
             <elements:BuildingList  left="0" right="0" top="0" bottom="0" borderVisible="false"
                                     contentBackgroundAlpha="0" rollOverColor="#4f4f4f"
                                     selectionColor="#2f2f2f"
-                                    id="constructable" constructableTypes="{ML.constructable}"
+                                    id="constructable" constructableTypes="{BS.constructable}"
                                     creationComplete="constructable_creationCompleteHandler(event)"/>
          </base:Panel>
          

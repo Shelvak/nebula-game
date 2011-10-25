@@ -8,6 +8,7 @@ package models.factories
    import models.unit.UnitBuildingEntry;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    
    import utils.StringUtil;
    
@@ -71,6 +72,31 @@ package models.factories
             result.addItem(entry);
          }
          return result;
+      }
+      
+      
+      
+      /**
+       * 
+       * @param source - list of Unit models
+       * @return cached units
+       * 
+       */      
+      public static function buildCachedUnitsFromUnits(source: IList): ArrayCollection
+      {
+         var types: Object = {};
+         for each (var unit: Unit in source)
+         {
+            if (types[unit.type] == null)
+            {
+               types[unit.type] = 1;
+            }
+            else
+            {
+               types[unit.type] += 1;
+            }
+         }
+         return createCachedUnits(types);
       }
    }
 }

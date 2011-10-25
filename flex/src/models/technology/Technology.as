@@ -11,6 +11,7 @@ package models.technology
    import models.BaseModel;
    import models.ModelLocator;
    import models.building.Building;
+   import models.building.MCBuildingSelectedSidebar;
    import models.parts.IUpgradableModel;
    import models.parts.Requirement;
    import models.parts.TechnologyUpgradable;
@@ -266,7 +267,8 @@ package models.technology
       
       private function handleLevelChange(e: UpgradeEvent): void
       {
-         ModelLocator.getInstance().constructable = Building.getConstructableBuildings();
+         MCBuildingSelectedSidebar.getInstance().constructable = 
+            Building.getConstructableBuildings();
          new GTechnologiesEvent(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED);
       }
       
