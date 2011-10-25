@@ -32,6 +32,7 @@ package models.building
          return NavigationController.getInstance();
       }     
       
+      [Bindable]
       /**
        * List of buildings player is alowed to construct.
        * 
