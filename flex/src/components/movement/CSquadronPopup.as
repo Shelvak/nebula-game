@@ -371,13 +371,19 @@ package components.movement
       private function addSquadronEventHandlers(squad:MSquadron) : void {
          squad.addEventListener(BaseModelEvent.PENDING_CHANGE, squadron_pendingChangeHandler,
             false, 0, true);
-         squad.removeEventListener(CollectionEvent.COLLECTION_CHANGE, squadron_unitsChange);
+         if (squad.units != null)
+         {
+            squad.units.addEventListener(CollectionEvent.COLLECTION_CHANGE, squadron_unitsChange);
+         }
       }
       
       private function removeSquadronEventHandlers(squad:MSquadron) : void {
          squad.removeEventListener(BaseModelEvent.PENDING_CHANGE, squadron_pendingChangeHandler,
             false);
-         squad.removeEventListener(CollectionEvent.COLLECTION_CHANGE, squadron_unitsChange);
+         if (squad.units != null)
+         {
+            squad.units.removeEventListener(CollectionEvent.COLLECTION_CHANGE, squadron_unitsChange);
+         }
       }
       
       private function squadron_pendingChangeHandler(event:BaseModelEvent) : void {
