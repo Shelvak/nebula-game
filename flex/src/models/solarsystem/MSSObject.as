@@ -573,7 +573,8 @@ package models.solarsystem
        */
       public function inviteOwnerToAlliance() : void {
          if (canInviteOwnerToAlliance)
-            new AlliancesCommand(AlliancesCommand.INVITE, new InviteActionParams(id)).dispatch();
+            new AlliancesCommand(AlliancesCommand.INVITE, 
+               new InviteActionParams(player.id)).dispatch();
       }
       
       

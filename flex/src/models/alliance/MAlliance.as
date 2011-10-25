@@ -4,7 +4,7 @@ package models.alliance
    import models.player.MRatingPlayer;
    
    import mx.collections.ArrayCollection;
-
+   
    public class MAlliance
    {
       [Bindable]
@@ -17,6 +17,8 @@ package models.alliance
       public var newDescription: String;
       [Bindable]
       public var players: ArrayCollection;
+      [Bindable]
+      public var invPlayers: ArrayCollection;
       
       [Bindable]
       public var totalWarPoints: int = 0;
@@ -56,6 +58,10 @@ package models.alliance
          ownerId = data.ownerId;
          id = data.id;
          players = RatingsPlayerFactory.fromObjects(data.players);
+         if (data.invitablePlayers != null)
+         {
+            invPlayers = RatingsPlayerFactory.fromObjects(data.invitablePlayers);
+         }
          totalAllianceVps = data.victoryPoints;
       }
    }
