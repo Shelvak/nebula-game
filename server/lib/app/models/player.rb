@@ -103,6 +103,12 @@ class Player < ActiveRecord::Base
     objects.map(&map_block).uniq.map_to_hash { |player_id| minimal(player_id) }
   end
 
+  # Returns +Hash+ of {id => name} pairs.
+  def self.names_for(player_ids)
+    names = select("name").where(:id => player_ids).c_select_values
+    Hash[player_ids.zip(names)]
+  end
+
   # Is daily bonus available for this player?
   def daily_bonus_available?
     ! first_time? && (daily_bonus_at.nil? || daily_bonus_at <= Time.now)

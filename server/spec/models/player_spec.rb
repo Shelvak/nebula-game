@@ -51,6 +51,13 @@ describe Player do
       Player.ratings(@alliance.galaxy_id,
         Player.where(:id => id))[0]["id"].should == id
     end
+    end
+
+  describe ".names_for" do
+    it "should return hash" do
+      player = Factory.create(:player)
+      Player.names_for([player.id]).should == {player.id => player.name}
+    end
   end
   
   describe "#victory_points" do
