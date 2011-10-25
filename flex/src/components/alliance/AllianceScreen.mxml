@@ -86,7 +86,7 @@
             NavigationController.getInstance().creationCompleteFunction(MainAreaScreens.ALLIANCE, this);
             
             tabDescription.width =
-            tabManagement.width = Math.max(tabDescription.width, tabManagement.width);
+               tabManagement.width = Math.max(tabDescription.width, tabManagement.width);
          }
          
          [Bindable]
@@ -185,8 +185,8 @@
                <s:VerticalLayout horizontalAlign="contentJustify" paddingBottom="90"/>
             </base:layout>
             <s:Group width="100%" clipAndEnableScrolling="true">
-   <!-- Alliance logo -->
-   <s:BitmapImage source="{getImage('logo')}" horizontalCenter="0" top="-35"/>
+               <!-- Alliance logo -->
+               <s:BitmapImage source="{getImage('logo')}" horizontalCenter="0" top="-35"/>
             </s:Group>
             <!-- Description -->
             <base:Panel title="{model.alliance.name}" skinClass="components.skins.LargePanelSkin"
@@ -298,8 +298,8 @@
                                   skinClass="components.skins.CreditButtonSkin"
                                   click="renameAlliance(event)" 
                                   label="{ML.player.creds &lt; Config.getEditAllianceCredits() ?
-                                             Localizer.string('Credits', 'label.buy') :
-                                             getString('label.rename')}"/>
+                                  Localizer.string('Credits', 'label.buy') :
+                                  getString('label.rename')}"/>
                      </s:Group>
                      <s:Label text="{getString('label.renameCost', [Config.getEditAllianceCredits()])}" fontSize="14"/>
                   </s:Group>
@@ -313,6 +313,42 @@
                                click="model.leave_clickHandler(event)"/>
                   </s:Group>
                   
+                  <base:AdvancedContainer width="100%" 
+                                          visible="{model.alliance.invPlayers 
+                                          != null}">
+                     <base:layout>
+                        <s:VerticalLayout gap="10" paddingTop="3"
+                                          horizontalAlign="center"/>
+                     </base:layout>
+                     <base:Heading text="{getString('label.invitablePlayers')}"
+                                   width="100%"/>
+                     
+                     <base:Warning maxWidth="450"
+                              text="{getString('label.explanationInvite')}"
+                              paddingTop="6" paddingBottom="6"/>
+                     
+                     <s:Label fontSize="18" visible="{
+                              model.alliance.invPlayers.length == 0}"
+                              text="{getString('label.nothingToInvite')}"
+                              textAlign="center"
+                              width="100%"/>
+                              
+                     <s:Group visible="{model.alliance.invPlayers.length > 0}">
+                        <s:layout>
+                           <s:VerticalLayout gap="0" horizontalAlign="contentJustify"/>
+                        </s:layout>
+                        <alliance:MembersRatingsHeader avpVisible="false" 
+                           listSort="model.header_inviteSortHandler(event)"/>
+                        <s:DataGroup 
+                           dataProvider="{model.alliance.invPlayers}"
+                           itemRenderer="components.alliance.IRInvitableRatingsRow">
+                           <s:layout>
+                              <s:VerticalLayout gap="0"/>
+                           </s:layout>
+                        </s:DataGroup>
+                     </s:Group>
+                  </base:AdvancedContainer>
+                  
                </base:AdvancedContainer>
                
             </base:Panel>
@@ -321,7 +357,7 @@
             <base:Panel title="{getString('title.section.newAlliance')}"
                         skinClass="components.skins.LargePanelSkin"
                         visible="{model.alliance == null &amp;&amp; allianceTech.upgradePart.level > 0 &amp;&amp;
-                                  ML.player.allianceId == 0 &amp;&amp; leftTime == 0}">
+                        ML.player.allianceId == 0 &amp;&amp; leftTime == 0}">
                <base:layout>
                   <s:VerticalLayout gap="5" horizontalAlign="justify"/>
                </base:layout>
@@ -340,7 +376,7 @@
                </s:Group>
             </base:Panel>
             
-         
+            
          </base:AdvancedContainer>
          
          <base:AdvancedContainer top="300" width="100%">
@@ -363,7 +399,7 @@
          
       </s:Group>
    </base:Scroller>
-
+   
    <screens:ScreenCloseButton scroller="{contentScroller}" depth="3"
                               label="{getString('label.close')}" right="0" bottom="0"
                               click="NavigationController.getInstance().showPreviousScreen()"/>

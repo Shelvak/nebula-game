@@ -258,6 +258,13 @@ package components.alliance
          _alliance.players.refresh();
       }
       
+      public function header_inviteSortHandler(event:HeaderEvent):void
+      {
+         _alliance.invPlayers.sort = new Sort();
+         _alliance.invPlayers.sort.fields = sortFields[event.key];
+         _alliance.invPlayers.refresh();
+      }
+      
       public function refresh_clickHandler(event:MouseEvent):void
       {
          new AlliancesCommand(AlliancesCommand.SHOW, {'id': alliance.id}).dispatch();

@@ -317,6 +317,17 @@
     <message.playerInvited value="Player has been invited to alliance" />
     <message.joinSuccess value="You have successfully joined alliance" />
     <message.joinFail value="You can't join this alliance because it is already full" />
+    <tooltip.allianceFull>
+      <p>Your alliance is full.</p>
+      <p>Upgrade alliance technology to invite more players.</p>
+    </tooltip.allianceFull>
+    <label.invitablePlayers value="Invite to alliance" />
+    <label.invite value="Invite" />
+    <label.nothingToInvite value="No players to invite" />
+    <label.explanationInvite>
+      <p>You can only invite players whose planets you can see (except for 
+      planets in battleground).</p>
+    </label.explanationInvite>
   </Alliances>
 
   <BattleMap>

@@ -454,6 +454,19 @@
     <message.playerInvited value="Spēlētājs ir ielūgts aliansē" />
     <message.joinSuccess value="Jūs esat veiksmīgi pievienojies aliansē" />
     <message.joinFail value="Jūs nevarat pievienoties šai aliansei, jo tajā vairs nav brīvu vietu" />
+    <!-- TODO -->
+    <tooltip.allianceFull>
+      <p>Your alliance is full.</p>
+      <p>Upgrade alliance technology to invite more players.</p>
+    </tooltip.allianceFull>
+    <label.invitablePlayers value="Invite to alliance" />
+    <label.invite value="Invite" />
+    <label.nothingToInvite value="No players to invite" />
+    <label.explanationInvite>
+      <p>You can only invite players whose planets you can see (except for 
+      planets in battleground).</p>
+    </label.explanationInvite>
+    <!-- /TODO -->
   </Alliances>
 
   <BattleMap>

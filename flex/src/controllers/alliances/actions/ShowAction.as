@@ -53,6 +53,17 @@ package controllers.alliances.actions
             new SortField('name')];
          ally.players.refresh();
          
+         if (ally.invPlayers)
+         {
+            ally.invPlayers.sort = new Sort();
+            ally.invPlayers.sort.fields = [new SortField('allianceVps', true, true, true),
+               new SortField('victoryPoints', true, true, true),
+               new SortField('points', true, true, true),
+               new SortField('planetsCount', true, true, true),
+               new SortField('name')];
+            ally.invPlayers.refresh();
+         }
+         
          var i: int = 0;
          for each (player in ally.players)
          {

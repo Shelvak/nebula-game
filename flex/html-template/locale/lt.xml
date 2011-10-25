@@ -411,6 +411,17 @@
     <message.playerInvited value="Žaidėjas buvo pakviestas į sąjungą" />
     <message.joinSuccess value="Tu sėkmingai įstojai į sąjungą" />
     <message.joinFail value="Tu negali įstoti į šią sąjungą, nes ji yra pilna" />
+    <tooltip.allianceFull>
+      <p>Tavo sąjunga pilna.</p>
+      <p>Tobulink sąjungos technologija jei nori pakviesti daugiau žaidėjų.</p>
+    </tooltip.allianceFull>
+    <label.invitablePlayers value="Pakviesk į sąjungą" />
+    <label.invite value="Pakviesti" />
+    <label.nothingToInvite value="Nėra žaidėjų kuriuos galėtum pakviesti" />
+    <label.explanationInvite>
+      <p>Gali pakviesti tik tuos žaidėjus, kurių planetas matai (išskyrus 
+      arenoje esančias planetas).</p>
+    </label.explanationInvite>
   </Alliances>
 
   <BattleMap>    
