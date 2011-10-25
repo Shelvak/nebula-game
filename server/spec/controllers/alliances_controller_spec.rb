@@ -105,38 +105,23 @@ describe AlliancesController do
       player.alliance = @alliance
       player.save!
       @invitee = Factory.create(:player, :galaxy => player.galaxy)
-      @ss = Factory.create(:solar_system, :galaxy => player.galaxy)
-      @planet = Factory.create(:planet, :player => @invitee,
-        :solar_system => @ss)
-      @fse = Factory.create(:fse_player, :player => player,
-        :solar_system => @ss)
+      Alliance.stub(:visible_enemy_player_ids).with(@alliance.id).
+        and_return([@invitee.id])
 
       @action = "alliances|invite"
-      @params = {'planet_id' => @planet.id}
+      @params = {'player_id' => @invitee.id}
     end
 
-    @required_params = %w{planet_id}
+    @required_params = %w{player_id}
     it_behaves_like "with param options"
     it_behaves_like "only by owner"
 
     it "should fail if player does not see that planet" do
-      @fse.destroy
+      Alliance.stub(:visible_enemy_player_ids).with(@alliance.id).
+        and_return([])
 
       lambda do
         invoke @action, @params
-      end.should raise_error(GameLogicError)
-    end
-
-    it "should fail if it is a battleground planet" do
-      bg = Factory.create(:battleground, :galaxy => player.galaxy)
-      bg_planet = Factory.create(:planet, :solar_system => bg,
-        :player => @invitee)
-
-      wh = Factory.create(:wormhole, :galaxy => bg.galaxy)
-      Factory.create(:fse_player, :player => player, :solar_system => wh)
-
-      lambda do
-        invoke @action, @params.merge('planet_id' => bg_planet.id)
       end.should raise_error(GameLogicError)
     end
 
@@ -392,6 +377,29 @@ describe AlliancesController do
       @alliance.stub!(:player_ratings).and_return(:ratings)
       invoke @action, @params
       response_should_include(:players => @alliance.player_ratings)
+    end
+
+    describe "when owner" do
+      before(:each) do
+        @alliance.owner = player
+        @alliance.save!
+      end
+
+      it "should include invitable players" do
+        Alliance.stub!(:find).with(@alliance.id).and_return(@alliance)
+        @alliance.stub!(:invitable_ratings).and_return(:ratings)
+        invoke @action, @params
+        response_should_include(
+          :invitable_players => @alliance.invitable_ratings
+        )
+      end
+    end
+
+    describe "when not owner" do
+      it "should not include invitable players" do
+        invoke @action, @params
+        response[:invitable_players].should be_nil
+      end
     end
   end
 
