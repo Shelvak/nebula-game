@@ -180,7 +180,7 @@ namespace :build do
             )
           end
           
-          File.open(bin_version, "w") { |f| f.write(build) }
+          File.open(bin_version, "w") { |f| f.write(build + "\n") }
 
           mxmlc(
             "#{src_dir}/SpaceGame.mxml",
