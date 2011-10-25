@@ -323,7 +323,7 @@
                      <base:Heading text="{getString('label.invitablePlayers')}"
                                    width="100%"/>
                      
-                     <base:Warning maxWidth="600"
+                     <base:Warning maxWidth="450"
                               text="{getString('label.explanationInvite')}"
                               paddingTop="6" paddingBottom="6"/>
                      
