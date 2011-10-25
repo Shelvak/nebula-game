@@ -139,6 +139,14 @@ class Alliance < ActiveRecord::Base
     Player.ratings(galaxy_id, Player.where(:alliance_id => id))
   end
 
+  # Player#ratings for players that can be invited to this alliance.
+  def invitable_ratings
+    Player.ratings(
+      galaxy_id,
+      Player.where(:id => self.class.visible_enemy_player_ids(id))
+    )
+  end
+
   # Returns +Player+ ids who are members of this +Alliance+.
   def member_ids
     self.class.player_ids_for([id])

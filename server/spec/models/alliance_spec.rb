@@ -41,6 +41,19 @@ describe Alliance do
     end
   end
 
+  describe "#invitable_ratings" do
+    it "should call Player.ratings" do
+      alliance = Factory.create(:alliance)
+      Alliance.should_receive(:visible_enemy_player_ids).with(alliance.id).
+        and_return(:player_ids)
+      Player.should_receive(:ratings).with(
+        alliance.galaxy_id,
+        Player.where(:id => :player_ids)
+      ).and_return(:ratings)
+      alliance.invitable_ratings.should == :ratings
+    end
+  end
+
   describe "#name" do
     before(:each) do
       @min = CONFIG['alliances.validation.name.length.min']
