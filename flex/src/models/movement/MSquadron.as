@@ -10,6 +10,7 @@ package models.movement
    import models.BaseModel;
    import models.ModelsCollection;
    import models.Owner;
+   import models.factories.UnitFactory;
    import models.location.ILocationUser;
    import models.location.Location;
    import models.location.LocationMinimal;
@@ -21,6 +22,7 @@ package models.movement
    import models.time.MTimeEventFixedMoment;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
+   import models.unit.UnitsFlank;
    
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
@@ -326,21 +328,7 @@ package models.movement
        * @throws IllegalOperationError if <code>route</code> has not been set
        */
       client_internal function rebuildCachedUnits() : void {
-         var type:String;
-         var entry:UnitBuildingEntry;
-         var unit:Unit;
-         checkRoute();
-         _route.cachedUnits = new ModelsCollection();
-         for each (unit in units) {
-            type = ModelUtil.getModelType(ObjectClass.UNIT, unit.type, true);
-            entry = _route.findEntryByType(type);
-            if (! entry) {
-               entry = new UnitBuildingEntry(type);
-               _route.cachedUnits.addItem(entry);
-            }
-            entry.count++;
-         }
-         
+         _route.cachedUnits = UnitFactory.buildCachedUnitsFromUnits(units);
       }
       
       /**

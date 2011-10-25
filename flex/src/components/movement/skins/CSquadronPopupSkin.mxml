@@ -95,7 +95,12 @@
       
       <!-- units list -->
       <s:List id="lstUnits" left="35" top="30" right="25" height="156" useVirtualLayout="true"
-              skinClass="components.movement.skins.CSquadronUnitsListSkin"/>
+              skinClass="components.movement.skins.CSquadronUnitsListSkin"
+              visible="{lstUnits.dataProvider.length &lt; 11}"/>
+      <!-- units list -->
+      <s:List id="lstCachedUnits" left="35" top="30" right="25" height="156"
+              skinClass="components.movement.skins.CSquadronCachedUnitsListSkin"
+              visible="{lstUnits.dataProvider.length > 10}"/>
       
       <!-- squadron management buttons -->
       <s:Group left="210" right="16" top="193" mouseEnabled="false">
