@@ -148,9 +148,7 @@
    </fx:Script>
    <screens:GradientBackground gradientWidth="{(width - 400) / 2}" />
    
-   <!-- Alliance logo and tabs -->
-   <s:BitmapImage source="{getImage('logo')}" horizontalCenter="0" top="0"/>
-   <s:Group top="0" horizontalCenter="0">
+   <s:Group top="0" horizontalCenter="0" depth="2">
       <s:layout>
          <s:HorizontalLayout gap="-45"/>
       </s:layout>
@@ -173,17 +171,23 @@
                       click="model.selectManagementTab()"/>
    </s:Group>
    
-   <base:Scroller id="contentScroller" top="230" bottom="10" width="100%" horizontalScrollPolicy="off"
-                  stepMultiplier="15">
+   <base:Scroller id="contentScroller" top="35" bottom="10" width="100%" horizontalScrollPolicy="off"
+                  stepMultiplier="15" depth="1">
       
       <s:Group left="0" right="0">
          
-         <base:AdvancedContainer horizontalCenter="0" minWidth="{pnlPlayers.width}">
+         <base:AdvancedContainer horizontalCenter="{
+                                 contentScroller.verticalScrollBar.visible
+                                 ? 8 : 0}" 
+                                 minWidth="{pnlPlayers.width}">
             
             <base:layout>
                <s:VerticalLayout horizontalAlign="contentJustify" paddingBottom="90"/>
             </base:layout>
-            
+            <s:Group width="100%" clipAndEnableScrolling="true">
+   <!-- Alliance logo -->
+   <s:BitmapImage source="{getImage('logo')}" horizontalCenter="0" top="-35"/>
+            </s:Group>
             <!-- Description -->
             <base:Panel title="{model.alliance.name}" skinClass="components.skins.LargePanelSkin"
                         visible="{model.descriptionPanelVisible}">
@@ -339,7 +343,7 @@
          
          </base:AdvancedContainer>
          
-         <base:AdvancedContainer top="100" width="100%">
+         <base:AdvancedContainer top="300" width="100%">
             
             <base:layout>
                <s:VerticalLayout horizontalAlign="center"/>
@@ -360,7 +364,7 @@
       </s:Group>
    </base:Scroller>
 
-   <screens:ScreenCloseButton scroller="{contentScroller}"
+   <screens:ScreenCloseButton scroller="{contentScroller}" depth="3"
                               label="{getString('label.close')}" right="0" bottom="0"
                               click="NavigationController.getInstance().showPreviousScreen()"/>
 </s:Group>
