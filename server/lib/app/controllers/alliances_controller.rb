@@ -172,7 +172,7 @@ class AlliancesController < GenericController
   # invite to alliance.
   #
   def action_show
-    param_options :required => %w{id}
+    param_options :required => {:id => Fixnum}
 
     alliance = Alliance.find(params['id'])
     response = {
