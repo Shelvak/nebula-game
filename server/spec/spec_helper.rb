@@ -145,6 +145,10 @@ if $SPEC_INITIALIZED.nil?
       end
     end
 
+    def restore_logging
+      LOGGER.level = GameLogger::LEVEL_DEBUG
+    end
+
     config.before(:each) do
       App.server_state = App::SERVER_STATE_INITIALIZING
       start_transaction
