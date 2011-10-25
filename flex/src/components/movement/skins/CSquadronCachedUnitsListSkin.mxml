@@ -19,8 +19,8 @@
       <s:DataGroup id="dataGroup" itemRenderer="components.unit.IRUnitBuildingEntrySmall"
                    left="6" right="6">
          <s:layout>
-            <s:TileLayout orientation="rows" requestedColumnCount="6" requestedRowCount="1"
-                          verticalGap="0" horizontalGap="12" />
+            <s:TileLayout orientation="rows" requestedColumnCount="7" requestedRowCount="1"
+                          verticalGap="0" horizontalGap="10" />
          </s:layout>
       </s:DataGroup>
    </base:Scroller>
