@@ -39,12 +39,11 @@ group :development_setup do
   gem "net-sftp", "~>2.0"
   gem "net-scp", "~>1.0"
   gem "xml-simple", "~>1.0"
-  gem "ruby-debug", "~>0.10.5.rc1"
-  gem "mocha"
 end
 
 # Only setuped, but not required (in test env).
 group :test_setup do
   gem "rspec", "~>2.0"
   gem "factory_girl", "~>2.0"
+  gem "mocha"
 end

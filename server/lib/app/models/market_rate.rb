@@ -38,14 +38,34 @@ class MarketRate < ActiveRecord::Base
       model
     end
 
-    # Subtract _from_amount_ for resource pair from galaxy with ID _galaxy_id_.
-    def subtract(galaxy_id, from_kind, to_kind, from_amount)
-      model = get(galaxy_id, from_kind, to_kind)
-      raise ArgumentError.new("Cannot subtract more than we have from #{model
-        }! Wanted to subtract #{from_amount}"
-      ) if from_amount > model.from_amount
+    # Subtract _from_amount_ for resource pair from galaxy with ID _galaxy_id_
+    # and set new average rate.
+    #
+    # - cancellation_shift (Float) - amount you need to shift average market
+    # rate when cancelling.
+    # - cancellation_amount (Fixnum) - #from_amount when you created the offer.
+    # - cancellation_total_amount (Fixnum) - total amount of resource of
+    # #from_kind in market, when offer was created.
+    #
+    def subtract(galaxy_id, from_kind, to_kind, from_amount,
+        cancellation_shift, cancellation_amount, cancellation_total_amount)
+      model = subtracted_model(galaxy_id, from_kind, to_kind, from_amount)
 
-      model.from_amount -= from_amount
+      # To prevent division by zero or negative numbers.
+      market_amount_left = model.from_amount < 1 ? 1 : model.from_amount
+      model.to_rate += cancellation_shift *
+        # How much of your offer has left.
+        (from_amount.to_f / cancellation_amount) *
+        # How much market has shifted.
+        (cancellation_total_amount.to_f / market_amount_left)
+      model.save!
+
+      model
+    end
+
+    # Subtract _from_amount_ for resource pair from galaxy with ID _galaxy_id_.
+    def subtract_amount(galaxy_id, from_kind, to_kind, from_amount)
+      model = subtracted_model(galaxy_id, from_kind, to_kind, from_amount)
       model.save!
 
       model
@@ -54,6 +74,17 @@ class MarketRate < ActiveRecord::Base
     # Return average rate for resource pair for galaxy with ID _galaxy_id_.
     def average(galaxy_id, from_kind, to_kind)
       get(galaxy_id, from_kind, to_kind).to_rate
+    end
+
+    protected
+    def subtracted_model(galaxy_id, from_kind, to_kind, from_amount)
+      model = get(galaxy_id, from_kind, to_kind)
+      raise ArgumentError.new("Cannot subtract more than we have from #{model
+        }! Wanted to subtract #{from_amount}"
+      ) if from_amount > model.from_amount
+
+      model.from_amount -= from_amount
+      model
     end
   end
 end

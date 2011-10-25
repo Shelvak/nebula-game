@@ -65,6 +65,10 @@ class Technology < ActiveRecord::Base
 
   # Destroys this technology. Requires creds.
   def unlearn!
+    raise GameLogicError.new(
+      "Cannot unlearn technology which is not finished!"
+    ) unless finished?
+
     player = self.player
     creds_required = Cfg.technology_destroy_cost
     raise GameLogicError.new(

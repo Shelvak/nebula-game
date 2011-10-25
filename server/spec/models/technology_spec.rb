@@ -473,6 +473,20 @@ describe Technology do
       Factory.create(:technology, :level => 4, :player => player)
     end
 
+    it "should fail if technology is still upgrading" do
+      opts_upgrading.apply technology
+      lambda do
+        technology.unlearn!
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if technology is paused" do
+      opts_paused.apply technology
+      lambda do
+        technology.unlearn!
+      end.should raise_error(GameLogicError)
+    end
+
     it "should fail if player does not have enough creds" do
       player.creds -= 1
       player.save!

@@ -4,8 +4,12 @@ RSpec::Matchers.define :have_cooldown do |time|
     if cooldown.nil?
       false
     else
-      time = (time - SPEC_TIME_PRECISION)..(time + SPEC_TIME_PRECISION)
-      time.cover?(cooldown.ends_at)
+      if time.nil?
+        true
+      else
+        time = (time - SPEC_TIME_PRECISION)..(time + SPEC_TIME_PRECISION)
+        time.cover?(cooldown.ends_at)
+      end
     end
   end
 

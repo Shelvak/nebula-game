@@ -30,9 +30,9 @@ RSpec::Matchers.define :be_saved do
 
   def equals(val1, val2)
     if val1.is_a?(Time) && val2.is_a?(Time)
-      (val1 - val2).abs.should <= SPEC_TIME_PRECISION
+      (val1 - val2).abs <= SPEC_TIME_PRECISION
     elsif val1.is_a?(Float) && val2.is_a?(Float)
-      (val1 - val2).abs.should <= SPEC_FLOAT_PRECISION
+      (val1 - val2).abs <= SPEC_FLOAT_PRECISION
     else
       val1 == val2
     end

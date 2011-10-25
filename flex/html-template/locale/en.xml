@@ -228,6 +228,7 @@
     <Technology_ZetiumExtraction value="Zetium Extraction" />
     <Technology_MetabolicChargers value="Metabolic Chargers" />
     <Technology_HighVelocityCharges value="High Velocity Ammo" />
+    <Technology_Market value="Market" />
     <Technology_SpaceFactory value="Space Factory" />
     <Technology_ShipsArmor value="Reinforced Plates" />
     <Technology_ShipsDamage value="Energized Plasma" />

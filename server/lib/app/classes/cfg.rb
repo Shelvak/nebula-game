@@ -4,6 +4,8 @@ class Cfg; class << self
 
   def control_token; CONFIG['control']['token']; end
 
+  def required_client_version; CONFIG['client']['required_version']; end
+
   ### buildings.yml ###
 
   def buildings_overdrive_output_multiplier

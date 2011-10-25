@@ -60,14 +60,41 @@ describe MarketOffer do
   end
 
   describe "creation" do
+    let(:galaxy) { Factory.create(:galaxy) }
+    let(:from_kind) { MarketOffer::KIND_METAL }
+    let(:to_kind) { MarketOffer::KIND_ZETIUM }
+    let(:offer) do
+      offer = Factory.build(:market_offer, :galaxy => galaxy,
+        :from_kind => from_kind, :to_kind => to_kind)
+      offer.to_rate = MarketRate.average(galaxy.id, from_kind, to_kind) *
+        (1.0 + Cfg.market_rate_offset)
+      offer
+    end
+
     it "should add to galaxy market rate" do
-      galaxy = Factory.create(:galaxy)
-      offer = Factory.build(:market_offer, :galaxy => galaxy)
-      offer.to_rate = MarketRate.
-        average(galaxy.id, offer.from_kind, offer.to_kind)
       MarketRate.should_receive(:add).with(offer.galaxy_id, offer.from_kind,
-        offer.to_kind, offer.from_amount, offer.to_rate)
+        offer.to_kind, offer.from_amount, offer.to_rate).
+        and_return(Factory.create(:market_rate))
       offer.save!
+    end
+
+    it "should set #cancellation_shift" do
+      old_rate = MarketRate.average(galaxy.id, from_kind, to_kind)
+      offer.save!
+      new_rate = MarketRate.average(galaxy.id, from_kind, to_kind)
+      offer.cancellation_shift.should be_within(SPEC_FLOAT_PRECISION).
+        of((new_rate - old_rate) * -1)
+    end
+
+    it "should set #cancellation_amount" do
+      offer.save!
+      offer.cancellation_amount.should == offer.from_amount
+    end
+
+    it "should set #cancellation_total_amount" do
+      total_amount = MarketRate.get(galaxy.id, from_kind, to_kind).from_amount
+      offer.save!
+      offer.cancellation_total_amount.should == total_amount
     end
   end
 
@@ -75,7 +102,9 @@ describe MarketOffer do
     it "should subtract from MarketRate" do
       offer = Factory.create(:market_offer)
       MarketRate.should_receive(:subtract).with(
-        offer.galaxy_id, offer.from_kind, offer.to_kind, offer.from_amount
+        offer.galaxy_id, offer.from_kind, offer.to_kind, offer.from_amount,
+        offer.cancellation_shift, offer.cancellation_amount,
+        offer.cancellation_total_amount
       )
       offer.destroy!
     end
@@ -413,7 +442,7 @@ describe MarketOffer do
 
       it "should subtract amount bought from MarketRate" do
         amount = @offer.from_amount / 2
-        MarketRate.should_receive(:subtract).with(
+        MarketRate.should_receive(:subtract_amount).with(
           @offer.galaxy_id, @offer.from_kind, @offer.to_kind, amount
         )
         @offer.buy!(@buyer_planet, amount)
