@@ -879,6 +879,8 @@ assets:
         energy_large.png:                300x300_energy.png
         zetium_large.png:                300x300_zetium.png
         creds_large.png:                 300x300_creds.png
+        heading_line.png:                Line.png
+        heading_line_end.png:            Line_end.png
 
       "info_screen":
         line.png: Info_name.png
