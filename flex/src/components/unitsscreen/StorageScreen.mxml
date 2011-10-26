@@ -236,6 +236,20 @@
             }
          }
          
+         private function selectAll(): void
+         {
+            metalSelector.setValue(metalSelector.maxAmmount);
+            energySelector.setValue(energySelector.maxAmmount);
+            zetiumSelector.setValue(zetiumSelector.maxAmmount); 
+         }
+         
+         private function selectNone(): void
+         {
+            metalSelector.setValue(0);
+            energySelector.setValue(0);
+            zetiumSelector.setValue(0); 
+         }
+           
       ]]>
    </fx:Script>
    
@@ -327,6 +341,14 @@
                      <s:layout>
                         <s:HorizontalLayout verticalAlign="middle"/>
                      </s:layout>
+                  </s:Group>
+                  <s:Group width="80%">
+                     <s:Group right="50" width="150">
+                        <s:Button label="{getString('label.all')}" 
+                                  click="selectAll()" right="0"/>
+                        <s:Button label="{getString('label.none')}" 
+                                  click="selectNone()" left="0"/>
+                     </s:Group>
                   </s:Group>
                   <unitsscreen:layout>
                      <s:VerticalLayout horizontalAlign="center"/>
