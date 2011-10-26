@@ -6,10 +6,8 @@ package components.map
    import components.base.viewport.ViewportZoomable;
    
    import controllers.navigation.MCMainArea;
-   import controllers.navigation.Navigation;
    
    import flash.display.BitmapData;
-   import flash.display.DisplayObject;
    import flash.errors.IllegalOperationError;
    import flash.geom.Point;
    import flash.geom.Rectangle;
@@ -233,16 +231,6 @@ package components.map
       
       
       /**
-       * Returns component which will be used as source for minimap snapshot. Method in
-       * <code>CMap</code> returns map container itself.
-       */
-      public function getSnapshotComponent() : DisplayObject
-      {
-         return this;
-      }
-      
-      
-      /**
        * When this method is invoked the map should select given model if that model is of correct
        * type. In <code>CMap</code> this method is empty. Second call to this method should open
        * the object
@@ -421,105 +409,5 @@ package components.map
       {
          throw new IllegalOperationError("This property is of write-once type: it can be set only once");
       }
-      
-      
-      /* ############################### */
-      /* ### CURSOR MANAGEMENT LOGIC ### */
-      /* ############################### */
-      
-      
-//      private function setCursorProperty() : void
-//      {
-//         cursor = Cursors.getInstance().MAP_DEFAULT;
-//      }
-//      override public function setCursor() : void
-//      {
-//         if (cursorSet)
-//         {
-//            return;
-//         }
-//         cursorId = GameCursorManager.getInstance().setCursor(
-//            cursor, GameCursorPriority.MAP_DEFAULT,
-//            CURSOR_OFFSET_X, CURSOR_OFFSET_Y
-//         );
-//      }
-//      
-//      override protected function setCursor_handler(e:MouseEvent) : void
-//      {
-//         if (e.target == background || e.target == this)
-//         {
-//            removeGripCursor();
-//            setCursor();
-//         }
-//      }
-//      override protected function removeCursor_handler(e:MouseEvent) : void
-//      {
-//         if (e.target == background || e.target == this)
-//         {
-//            removeGripCursor();
-//            removeCursor();
-//         }
-//      }
-//      
-//      
-//      /**
-//       * Id of grip cursor. 
-//       */
-//      protected var gripCursorId:int = GameCursorManager.NO_CURSOR_ID;
-//      /**
-//       * Indicates if map gas grip cursor set.
-//       * 
-//       * @default false  
-//       */
-//      public function get gripCursorSet() : Boolean
-//      {
-//         return gripCursorId != GameCursorManager.NO_CURSOR_ID;
-//      }
-//      /**
-//       * Sets Cursors.MAP_GRIP cursor when primary mouse button is down.
-//       */
-//      protected function setGripCursor_handler(e:MouseEvent) : void
-//      {
-//         if (e.target == background || e.target == this)
-//         {
-//            setGripCursor();
-//         }
-//      }
-//      /**
-//       * Sets Cursors.MAP_GRIP cursor.
-//       */
-//      public function setGripCursor() : void
-//      {
-//         if(gripCursorSet)
-//         {
-//            return;
-//         }
-//         gripCursorId = GameCursorManager.getInstance().setCursor(
-//            Cursors.getInstance().MAP_GRIP,
-//            GameCursorPriority.MAP_GRIP,
-//            CURSOR_OFFSET_X, CURSOR_OFFSET_Y
-//         );
-//      }
-//      /**
-//       * Removes Cursors.MAP_GRIP cursor when primary mouse button is up again.
-//       */
-//      protected function removeGripCursor_handler (e:MouseEvent) : void
-//      {
-//         if (e.target == background || e.target == this)
-//         {
-//            removeGripCursor();
-//         }
-//      }
-//      /**
-//       * Removes Cursors.MAP_GRIP cursor. 
-//       */
-//      public function removeGripCursor() : void
-//      {
-//         if (gripCursorSet)
-//         {
-//            GameCursorManager.getInstance().removeCursor(gripCursorId);
-//            gripCursorId = GameCursorManager.NO_CURSOR_ID;
-//         }
-//      }
    }
 }
