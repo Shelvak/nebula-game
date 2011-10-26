@@ -201,15 +201,17 @@ package models.galaxy
       }
       
       /**
-       * Looks for a solar system, pulsar or wormhole at given coordinates and returns it
-       * if successful.
+       * Returns solar system at the given coordinates or null if there is no solar system there.
        */
       public function getSSAt(x:int, y:int) : SolarSystem {
-         return Collections.findFirst(naturalObjects,
-            function (ss:SolarSystem) : Boolean {
-               return ss.x == x && ss.y == y;
-            }
-         );
+         return SolarSystem(getNaturalObjectAt(x, y));
+      }
+      
+      /**
+       * Returns all static object at the given coordinates.
+       */
+      public function getStaticObjectsAt(x:int, y:int) : Array {
+         return getAllStaticObjectsAt(x, y);
       }
       
       [Bindable(event="willNotChange")]
@@ -233,8 +235,7 @@ package models.galaxy
        * Basicly does the same as <code>definesLocation()</code> but takes fog of war into account.
        */
       public function locationIsVisible(location:LocationMinimal) : Boolean {
-         if (definesLocation(location)) {
-            var fowMatrix:Vector.<Vector.<Boolean>> = _fowMatrixBuilder.getMatrix(); 
+         if (definesLocation(location)) { 
             var x:int = location.x + offset.x;
             var y:int = location.y + offset.y;
             if (x >= 0 && x < bounds.width && y >= 0 && y < bounds.height)

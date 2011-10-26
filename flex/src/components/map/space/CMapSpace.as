@@ -14,15 +14,14 @@ package components.map.space
    import controllers.units.OrdersController;
    import controllers.units.events.OrdersControllerEvent;
    
-   import flash.display.DisplayObject;
    import flash.errors.IllegalOperationError;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
    import models.BaseModel;
-   import models.IMStaticSpaceObject;
-   import models.MStaticSpaceObjectsAggregator;
+   import models.map.IMStaticSpaceObject;
+   import models.map.MStaticSpaceObjectsAggregator;
    import models.MWreckage;
    import models.location.LocationMinimal;
    import models.map.MMap;
@@ -45,14 +44,12 @@ package components.map.space
    
    public class CMapSpace extends CMap
    {
-      private function get ORDERS_CTRL() : OrdersController
-      {
+      private function get ORDERS_CTRL() : OrdersController {
          return OrdersController.getInstance();
       }
       
       
-      private function get TMP_UPDATE_TRG() : IUpdateTriggerTemporary
-      {
+      private function get TMP_UPDATE_TRG() : IUpdateTriggerTemporary {
          return TemporaryUpdateTrigger.getInstance();
       }
       
@@ -161,12 +158,6 @@ package components.map.space
       
       
       /**
-       * A container which will hold all other containers that must appear in the minimap.
-       */
-      private var _snapshotObjectsContainer:Group;
-      
-      
-      /**
        * Objects in the background. Will not receive any events.
        */
       private var _backgroundObjectsCont:Group;
@@ -200,28 +191,17 @@ package components.map.space
       private var popupsCont:Group;
       
       
-      protected override function createObjects() : void
-      {
+      protected override function createObjects() : void {
          super.createObjects();
-         function createContainer() : Group
-         {
+         
+         function createContainer() : Group {
             var container:Group = new Group();
             container.mouseEnabled = false;
-            _snapshotObjectsContainer.addElement(container);
+            addElement(container);
             return container;
          };
          
-         _snapshotObjectsContainer = new Group();
-         _snapshotObjectsContainer.mouseEnabled = false;
-         addElement(_snapshotObjectsContainer);
-         
          grid = createGrid();
-         addElement(grid);
-         
-         popupsCont = new Group();
-         popupsCont.mouseEnabled = false;
-         addElement(popupsCont);
-         createPopupObjects(popupsCont);
          
          _backgroundObjectsCont = createContainer();
          _backgroundObjectsCont.mouseChildren = false;
@@ -235,6 +215,11 @@ package components.map.space
          
          squadronObjectsCont = createContainer();
          squadronsController = new SquadronsController(this);
+         
+         addElement(grid);
+         
+         popupsCont = createContainer();
+         createPopupObjects(popupsCont);
          
          invalidateObjectsPosition();
       }
@@ -256,16 +241,14 @@ package components.map.space
       }
       
       
-      private function createStaticObjects(objectsContainer:Group) : void
-      {
-         for each (var object:IMStaticSpaceObject in MMapSpace(model).objects)
-         {
+      protected function createStaticObjects(objectsContainer:Group) : void {
+         for each (var object:IMStaticSpaceObject in MMapSpace(model).objects) {
             createOrUpdateStaticObject(object);
          }
       }
       
       
-      private function createOrUpdateStaticObject(object:IMStaticSpaceObject) : void
+      protected function createOrUpdateStaticObject(object:IMStaticSpaceObject) : void
       {
          var aggregatorIdx:int = getAggregatorComponentIndex(object.currentLocation);
          var aggregatorModel:MStaticSpaceObjectsAggregator;
@@ -291,7 +274,7 @@ package components.map.space
       }
       
       
-      private function destroyOrUpdateStaticObject(object:IMStaticSpaceObject) : void
+      protected function destroyOrUpdateStaticObject(object:IMStaticSpaceObject) : void
       {
          var aggregatorIdx:int = getAggregatorComponentIndex(object.currentLocation);
          var aggregatorComponent:CStaticSpaceObjectsAggregator =
@@ -323,8 +306,6 @@ package components.map.space
       protected override function updateDisplayList(uw:Number, uh:Number) : void
       {
          super.updateDisplayList(uw, uh);
-         _snapshotObjectsContainer.width = uw;
-         _snapshotObjectsContainer.height = uh;
          grid.width = uw;
          grid.height = uh;
          popupsCont.width = uw;
@@ -530,14 +511,11 @@ package components.map.space
          vLayout.gap = 5;
          sectorPopups = new Group();
          sectorPopups.width = 222;
-         with (sectorPopups)
-         {
-            mouseEnabled = false;
-            layout = vLayout;
-            addElement(targetLocationPopup);
-            addElement(speedControlPopup);
-            addElement(staticObjectsPopup);
-         }
+         sectorPopups.mouseEnabled = false;
+         sectorPopups.layout = vLayout;
+         sectorPopups.addElement(targetLocationPopup);
+         sectorPopups.addElement(speedControlPopup);
+         sectorPopups.addElement(staticObjectsPopup);
          objectsContainer.addElement(sectorPopups);
          
          // Not really a popup but makes most sense to out this code here
@@ -708,12 +686,6 @@ package components.map.space
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */
-      
-      
-      public override function getSnapshotComponent() : DisplayObject
-      {
-         return _snapshotObjectsContainer;
-      }
       
       
       /**

@@ -1,4 +1,4 @@
-package components.map.space
+package models.galaxy
 {
    import models.map.IMStaticSpaceObject;
 

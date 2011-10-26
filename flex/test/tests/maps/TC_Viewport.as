@@ -64,7 +64,7 @@ package tests.maps
       }
       
       [Test(async, ui)]
-      public function moveContentInstantly() : void {
+      public function moveContentInstantlyRight() : void {
          initViewportWithContent(100, 100, 300, 300, 1);
          call(function() : void {
             trackerClient.clear();
@@ -73,7 +73,7 @@ package tests.maps
          waitForViewportUpdate();
          makeAssertions(function() : void {
             var params:VisibleAreaChangeParams = trackerClient.visibleAreaChangeParams;
-            assertVisibleAreaChangeCalledOnce()
+            assertVisibleAreaChangeCalledOnce();
             assertThat(
                "visible area",
                params.visibleArea, definesArea (50, 100, 100, 100)
@@ -89,6 +89,34 @@ package tests.maps
          });
          runSequence();
       }
+      
+      [Test(async, ui)]
+      public function moveContentInstantlyLeft() : void {
+         initViewportWithContent(100, 100, 300, 300, 1);
+         call(function() : void {
+            trackerClient.clear();
+            viewport.moveContentBy(new Point(-50, 0));
+         });
+         waitForViewportUpdate();
+         makeAssertions(function() : void {
+            var params:VisibleAreaChangeParams = trackerClient.visibleAreaChangeParams;
+            assertVisibleAreaChangeCalledOnce();
+            assertThat(
+               "visible area",
+               params.visibleArea, definesArea (150, 100, 100, 100)
+            );
+            assertThat(
+               "one area hidden",
+               params.areasHidden, array (definesArea (100, 100, 50, 100))
+            );
+            assertThat(
+               "one area shown",
+               params.areasShown, array (definesArea (200, 100, 50, 100))
+            );
+         });
+         runSequence();
+      }
+      
       
       [Test(async, ui)]
       public function resizeViewportOnce() : void {

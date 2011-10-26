@@ -8,11 +8,11 @@ package models.solarsystem
    
    import interfaces.IUpdatable;
    
-   import models.IMStaticSpaceObject;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
+   import models.map.IMStaticSpaceObject;
    import models.map.MMapSpace;
    import models.map.MapType;
    import models.solarsystem.events.SolarSystemEvent;
@@ -436,11 +436,7 @@ package models.solarsystem
       }
       
       public function getSSObjectAt(position:int, angle:int) : MSSObject {
-         return Collections.findFirst(naturalObjects,
-            function(ssObject:MSSObject) : Boolean {
-               return ssObject.position == position && ssObject.angle == angle;
-            }
-         );
+         return MSSObject(getNaturalObjectAt(position, angle));
       }
       
       

@@ -2,7 +2,6 @@ package models.galaxy
 {
    import components.base.viewport.IVisibleAreaTrackerClient;
    import components.map.space.GalaxyMapCoordsTransform;
-   import components.map.space.IVisibleGalaxyAreaClient;
    
    import flash.geom.Rectangle;
    
@@ -65,11 +64,24 @@ package models.galaxy
          else {
             _visibleArea = null
          }
-         for each (var hiddenAreaReal:Rectangle in hiddenAreas) {
-            forEachSector(realToLogicalArea(hiddenAreaReal), callSectorHidden);
+         if (_visibleArea == null && _visibleAreaOld == null ||
+             _visibleArea != null && _visibleAreaOld != null
+               && _visibleArea.equals(_visibleAreaOld)) {
+            return;
          }
-         for each (var shownAreaReal:Rectangle in shownAreas) {
-            forEachSector(realToLogicalArea(shownAreaReal), callSectorShown);
+         else if (_visibleAreaOld != null && _visibleArea == null) {
+            forEachSector(_visibleAreaOld, callSectorHidden);
+         }
+         else if (_visibleArea != null && _visibleAreaOld == null) {
+            forEachSector(_visibleArea, callSectorShown);
+         }
+         else {
+            for each (var hiddenArea:MapArea in _visibleAreaOld.substract(_visibleArea)) {
+               forEachSector(hiddenArea, callSectorHidden);
+            }
+            for each (var shownArea:MapArea in _visibleArea.substract(_visibleAreaOld)) {
+               forEachSector(shownArea, callSectorShown);
+            }
          }
       }
       
@@ -132,52 +144,3 @@ package models.galaxy
       }
    }
 }
-
-
-//import flash.geom.Point;
-//import flash.utils.Dictionary;
-//
-//
-//class SectorHash
-//{
-//   private const _hash:Dictionary = new Dictionary();
-//   
-//   public function SectorHash() {
-//   }
-//   
-//   public function add(sector:Point) : void {
-//      if (!has(sector)) {
-//         _hash[computeHashCode(sector)] = sector;
-//      }
-//   }
-//   
-//   public function remove(sector:Point) : void {
-//      if (has(sector)) {
-//         delete _hash[computeHashCode(sector)];
-//      }
-//   }
-//   
-//   public function has(sector:Point) : Boolean {
-//      return _hash[computeHashCode(sector)] != null;
-//   }
-//   
-//   public function getAll() : Vector.<Point> {
-//      var sectors:Vector.<Point> = new Vector.<Point>();
-//      for each (var sector:Point in _hash) {
-//         sectors.push(sector);
-//      }
-//      return sectors;
-//   }
-//   
-//   public function clone() : SectorHash {
-//      var sectorHash:SectorHash = new SectorHash();
-//      for each (var sector:Point in _hash) {
-//         sectorHash.add(sector);
-//      }
-//      return sectorHash;
-//   }
-//   
-//   private function computeHashCode(sector:Point) : int {
-//      return sector.x * 100000 + sector.y;
-//   }
-//}

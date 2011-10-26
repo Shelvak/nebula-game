@@ -1,7 +1,7 @@
 package tests.maps
 {
    import components.map.space.GalaxyMapCoordsTransform;
-   import components.map.space.IVisibleGalaxyAreaClient;
+   import models.galaxy.IVisibleGalaxyAreaClient;
    
    import ext.hamcrest.object.equals;
    
@@ -356,6 +356,39 @@ package tests.maps
       }
       
       [Test]
+      public function hideLastPixelOfSectorColumnOnRight() : void {
+         init(new MapArea(0, 1, -1, 0));
+         var initialVisibleArea:Rectangle = new Rectangle(
+            2 * SECTOR_W,     2 * SECTOR_H,
+            1 * SECTOR_W + 1, 2 * SECTOR_H
+         );
+         area.visibleAreaChange(
+            initialVisibleArea,
+            areaVector(),
+            areaVector([initialVisibleArea])
+         );
+         client.clear();
+         
+         area.visibleAreaChange(
+            new Rectangle(
+               2 * SECTOR_W, 2 * SECTOR_H,
+               1 * SECTOR_W, 2 * SECTOR_H
+            ),
+            areaVector([new Rectangle(
+               3 * SECTOR_W, 2 * SECTOR_H,
+               1,            2 * SECTOR_H
+            )]),
+            areaVector()
+         );
+         assertThat( "visible area changed", area.visibleArea, equals (new MapArea(0, 0, -1, 0)) );
+         assertThat( "no shown sectors", client.sectorShownCalls, equals (0) );
+         assertThat( "hidden sectors", client.sectorHiddenParams, hasItems(
+            definesPoint (1, -1),
+            definesPoint (1,  0)
+         ));
+      }
+      
+      [Test]
       public function hideLastPixelOfSectorColumnAtBottom() : void {
          init(new MapArea(0, 1, -1, 0));
          var initialVisibleArea:Rectangle = new Rectangle(
@@ -385,6 +418,42 @@ package tests.maps
          assertThat( "hidden sectors", client.sectorHiddenParams, hasItems(
             definesPoint (0, -1),
             definesPoint (1, -1)
+         ));
+      }
+      
+      // -----
+      
+      [Test]
+      public function hideSomeOfSectorInOneDimenstionAndAllOfSectorInAnother() : void {
+         init(new MapArea(0, 1, -1, 0));
+         var initialVisibleArea:Rectangle = new Rectangle(
+            2 * SECTOR_W, 2 * SECTOR_H,
+            2 * SECTOR_W, 2 * SECTOR_H
+         );
+         area.visibleAreaChange(
+            initialVisibleArea,
+            areaVector(),
+            areaVector([initialVisibleArea])
+         );
+         client.clear();
+         
+         area.visibleAreaChange(
+            new Rectangle(
+               2.5 * SECTOR_W, 3 * SECTOR_H,
+               1.5 * SECTOR_W, 1 * SECTOR_H
+            ),
+            areaVector([new Rectangle(
+               2   * SECTOR_W, 2 * SECTOR_H,
+               0.5 * SECTOR_W, 1 * SECTOR_H
+            )]),
+            areaVector()
+         );
+         assertThat( "visible area changed", area.visibleArea, equals (new MapArea(0, 1, -1, -1)) );
+         assertThat( "no shown sectors", client.sectorShownCalls, equals (0) );
+         assertThat( "2 sectors hidden", client.sectorHiddenCalls, equals (2) );
+         assertThat( "hidden sectors", client.sectorHiddenParams, hasItems(
+            definesPoint (0, 0),
+            definesPoint (1, 0)
          ));
       }
       
@@ -488,7 +557,7 @@ package tests.maps
 }
 
 
-import components.map.space.IVisibleGalaxyAreaClient;
+import models.galaxy.IVisibleGalaxyAreaClient;
 
 import flash.geom.Point;
 
