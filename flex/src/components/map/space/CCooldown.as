@@ -5,45 +5,35 @@ package components.map.space
    
    import config.Config;
    
-   import flash.events.Event;
-   
    import models.cooldown.MCooldownSpace;
-
+   
+   
    public class CCooldown extends CStaticSpaceObject
    {
-      public function CCooldown()
-      {
+      public function CCooldown() {
          super();
-         addEventListener(Event.REMOVED_FROM_STAGE, this_removedFromStageHandler, false, 0, true);
       }
       
-      
       private var _image:AnimatedBitmap;
-      protected override function createChildren() : void
-      {
+      protected override function createChildren() : void {
          super.createChildren();
          
          _image = AnimatedBitmap.createInstance(
-            MCooldownSpace(staticObject).framesData,
+            new MCooldownSpace().framesData,
             Config.getAssetValue("images.ui.maps.space.staticObject.cooldownIndicator.actions"),
             AnimationTimer.forUi
          );
-         _image.verticalCenter =
+         _image.verticalCenter = 0;
          _image.horizontalCenter = 0;
-         _image.playAnimation("spin");
          addElement(_image);
       }
       
+      protected override function activate() : void {
+         _image.playAnimation("spin");
+      }
       
-      private function this_removedFromStageHandler(event:Event) : void
-      {
-         if (_image != null)
-         {
-            _image.stopAnimationsImmediately();
-            _image.cleanup();
-            removeElement(_image);
-            _image = null;
-         }
+      protected override function passivate() : void {         
+         _image.stopAnimations();
       }
    }
 }

@@ -2,19 +2,17 @@ package components.map.space
 {
    import components.gameobjects.solarsystem.SSObjectImage;
    
-   import models.IMStaticSpaceObject;
+   import models.map.IMStaticSpaceObject;
    import models.solarsystem.MSSObject;
    
    import mx.events.PropertyChangeEvent;
    
    import spark.components.Label;
-   import spark.primitives.BitmapImage;
 
    
    public class CSSObject extends CStaticSpaceObject
    {
-      public function CSSObject()
-      {
+      public function CSSObject() {
          super();
       }
       
@@ -23,14 +21,10 @@ package components.map.space
       /* ### PROPERTIES ### */
       /* ################## */
       
-      
       private var _staticObjectOld:MSSObject;
-      public override function set staticObject(value:IMStaticSpaceObject) : void
-      {
-         if (super.staticObject != value)
-         {
-            if (!_staticObjectOld)
-            {
+      public override function set staticObject(value:IMStaticSpaceObject) : void {
+         if (super.staticObject != value) {
+            if (_staticObjectOld == null) {
                _staticObjectOld = MSSObject(value);
             }
             super.staticObject = value;
@@ -39,36 +33,41 @@ package components.map.space
          }
       }
       
+      private var f_staticObjectChanged:Boolean = true;
+      private var f_ssObjectNameChanged:Boolean = true;
       
-      private var f_staticObjectChanged:Boolean = true,
-                  f_ssObjectNameChanged:Boolean = true;
-      
-      
-      
-      protected override function commitProperties() : void
-      {
+      protected override function commitProperties() : void {
          super.commitProperties();
          
-         if (f_staticObjectChanged)
-         {
-            if (_staticObjectOld)
-            {
-               removeSSObjectEventHandlers(_staticObjectOld);
+         var ssObject:MSSObject = MSSObject(staticObject);
+         if (f_staticObjectChanged) {
+            if (_staticObjectOld != null) {
+               MSSObject(_staticObjectOld).removeEventListener(
+                  PropertyChangeEvent.PROPERTY_CHANGE,
+                  ssObject_propertyChangeHandler, false
+               );
+               _staticObjectOld = null;
             }
-            if (staticObject)
-            {
-               addSSObjectEventHandlers(MSSObject(staticObject));
+            if (ssObject != null) {
+               ssObject.addEventListener(
+                  PropertyChangeEvent.PROPERTY_CHANGE,
+                  ssObject_propertyChangeHandler, false, 0, true
+               );
+               imgImage.transformX = width / 2;
+               imgImage.transformY = height / 2;
+               imgImage.width = width;
+               imgImage.height = height;
+               imgImage.model = ssObject;
+               imgImage.rotation = ssObject.angle + 180
             }
          }
-         if (f_staticObjectChanged || f_ssObjectNameChanged)
-         {
-            if (staticObject)
-            {
-               lblName.text = MSSObject(staticObject).name;
+         if (f_staticObjectChanged || f_ssObjectNameChanged) {
+            if (ssObject != null) {
+               lblName.text = ssObject.name;
             }
          }
          
-         f_ssObjectNameChanged =
+         f_ssObjectNameChanged = false;
          f_staticObjectChanged = false;
       }
       
@@ -77,38 +76,20 @@ package components.map.space
       /* ### CHILDREN ### */
       /* ################ */
       
-      
       private var imgImage:SSObjectImage;
       private var lblName:Label;
       
-      
-      protected override function createChildren() : void
-      {
+      protected override function createChildren() : void {
          super.createChildren();
          
-         var ssObject:MSSObject = MSSObject(staticObject);
-         
          imgImage = new SSObjectImage();
-         with (imgImage)
-         {
-            model            = ssObject;
-            transformX       = this.width / 2;
-            transformY       = this.height / 2;
-            width            = this.width;
-            height           = this.height;
-            verticalCenter   = 0;
-            horizontalCenter = 0;
-            rotation         = ssObject.angle + 180
-         }
+         imgImage.verticalCenter = 0;
+         imgImage.horizontalCenter = 0;
          addElement(imgImage);
          
          lblName = new Label();
-         with (lblName)
-         {
-            horizontalCenter = 0;
-            bottom           = -16;
-            text             = ssObject.name;
-         }
+         lblName.horizontalCenter = 0;
+         lblName.bottom = -16;
          addElement(lblName);
       }
       
@@ -117,23 +98,7 @@ package components.map.space
       /* ### MODEL EVENT HANDLERS ### */
       /* ############################ */
       
-      
-      private function addSSObjectEventHandlers(ssObject:MSSObject) : void
-      {
-         ssObject.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ssObject_propertyChangeHandler,
-                                   false, 0, true);
-      }
-      
-      
-      private function removeSSObjectEventHandlers(ssObject:MSSObject) : void
-      {
-         ssObject.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ssObject_propertyChangeHandler,
-                                      false);
-      }
-      
-      
-      private function ssObject_propertyChangeHandler(event:PropertyChangeEvent) : void
-      {
+      private function ssObject_propertyChangeHandler(event:PropertyChangeEvent) : void {
          f_ssObjectNameChanged = true;
          invalidateProperties();
       }

@@ -2,9 +2,9 @@ package components.map.space
 {
    import flash.filters.GlowFilter;
    
-   import models.IMStaticSpaceObject;
-   import models.MStaticSpaceObjectsAggregator;
    import models.location.LocationMinimal;
+   import models.map.IMStaticSpaceObject;
+   import models.map.MStaticSpaceObjectsAggregator;
    
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
@@ -20,8 +20,7 @@ package components.map.space
       /**
        * Returns model provoded in the constructor of this class.
        */
-      public function get staticObjectsAggregator() : MStaticSpaceObjectsAggregator
-      {
+      public function get staticObjectsAggregator() : MStaticSpaceObjectsAggregator {
          return _staticObjectsAggregator;
       }
       
@@ -30,51 +29,59 @@ package components.map.space
       
       
       public function CStaticSpaceObjectsAggregator(staticObjectsAggregator:MStaticSpaceObjectsAggregator,
-                                                    customComponentClasses:StaticObjectComponentClasses)
-      {
+                                                    customComponentClasses:StaticObjectComponentClasses) {
          super();
          mouseChildren = false;
          _customComponentClasses = Objects.paramNotNull("customComponentClasses", customComponentClasses);
          _staticObjectsAggregator = Objects.paramNotNull("staticObjectsAggregator", staticObjectsAggregator);
-         width  = _staticObjectsAggregator.componentWidth;
-         height = _staticObjectsAggregator.componentHeight;
          _staticObjectsAggregator.addEventListener(CollectionEvent.COLLECTION_CHANGE,
                                                    aggregator_collectionChangeHandler);
+         setSize();
       }
       
+      private function setSize() : void {
+         width  = _staticObjectsAggregator.componentWidth;
+         height = _staticObjectsAggregator.componentHeight;
+      }
       
       /* ################ */
       /* ### CHILDREN ### */
       /* ################ */
       
       
+      private const _components:ComponentsHash = new ComponentsHash();
       private var _selectionFilter:GlowFilter;
       
       
-      protected override function createChildren() : void
-      {
+      protected override function createChildren() : void {
          super.createChildren();
+         
          _selectionFilter = new GlowFilter(0xD8D800, 1.0, 24, 24);
          filters = [];
+         
+         for each (var objectType:int in _customComponentClasses.getAllObjectTypes()) {
+            var component:ICStaticSpaceObject =
+               new (_customComponentClasses.getMapObjectClass(objectType))();
+            component.verticalCenter = 0;
+            component.horizontalCenter = 0;
+            component.visible = false;
+            addElement(component);
+            _components.add(objectType, component);
+         }
       }
       
-      
-      private function recreateCustomComponents() : void
-      {
-         removeAllElements();
-         
-         for each (var model:IMStaticSpaceObject in _staticObjectsAggregator)
-         {
-            var component:ICStaticSpaceObject =
-               new (_customComponentClasses.getMapObjectClass(model.objectType))();
-            component.staticObject = model;
-            component.verticalCenter =
-            component.horizontalCenter = 0;
-            addElement(component);
+      private function resetComponentModels() : void {
+         var component:ICStaticSpaceObject
+         for (var idx:int = 0; idx < numElements; idx++) {
+            component = ICStaticSpaceObject(getElementAt(idx));
+            component.staticObject = null;
+            component.visible = false;
          }
-         
-         width  = _staticObjectsAggregator.componentWidth;
-         height = _staticObjectsAggregator.componentHeight;
+         for each (var model:IMStaticSpaceObject in _staticObjectsAggregator) {
+            component = _components.get(model.objectType);
+            component.staticObject = model;
+            component.visible = true;
+         }
       }
       
       
@@ -82,9 +89,7 @@ package components.map.space
       /* ### INTERFACE METHODS ### */
       /* ######################### */
       
-      
-      public function navigateTo() : void
-      {
+      public function navigateTo() : void {
          _staticObjectsAggregator.navigateTo();
       }
       
@@ -93,67 +98,51 @@ package components.map.space
       /* ### PROPERTIES ### */
       /* ################## */
       
-      
-      public function get model() : MStaticSpaceObjectsAggregator
-      {
+      public function get model() : MStaticSpaceObjectsAggregator {
          return _staticObjectsAggregator;
       }
       
-      
-      public function get currentLocation() : LocationMinimal
-      {
+      public function get currentLocation() : LocationMinimal {
          return _staticObjectsAggregator.currentLocation;
       }
       
-      
-      public function get isNavigable() : Boolean
-      {
+      public function get isNavigable() : Boolean {
          return _staticObjectsAggregator.isNavigable;
       }
       
-      
       private var _selected:Boolean = false;
-      public function set selected(value:Boolean) : void
-      {
-         if (_selected != value)
-         {
+      public function set selected(value:Boolean) : void {
+         if (_selected != value) {
             _selected = value;
             f_selectedChanged = true;
             invalidateProperties();
          }
       }
-      public function get selected() : Boolean
-      {
+      public function get selected() : Boolean {
          return _selected;
       }
       
-      
       private var f_selectedChanged:Boolean = true;
       
-      
-      protected override function commitProperties() : void
-      {
+      protected override function commitProperties() : void {
          super.commitProperties();
          
-         if (f_selectedChanged)
-         {
+         if (f_selectedChanged) {
             var filters:Array = this.filters;
-            if (_selected)
-            {
+            if (_selected) {
                filters.push(_selectionFilter);
             }
-            else
-            {
+            else {
                filters.splice(0, filters.length);
             }
             this.filters = filters;
          }
-         if (f_staticObjectsAggregatorChanged)
-         {
-            recreateCustomComponents();
+         
+         if (f_staticObjectsAggregatorChanged) {
+            resetComponentModels();
          }
          
-         f_selectedChanged =
+         f_selectedChanged = false;
          f_staticObjectsAggregatorChanged = false;
       }
       
@@ -165,17 +154,32 @@ package components.map.space
       
       private var f_staticObjectsAggregatorChanged:Boolean = true;
       
-      
-      private function aggregator_collectionChangeHandler(event:CollectionEvent) : void
-      {
-         switch (event.kind)
-         {
-            case CollectionEventKind.ADD:
-            case CollectionEventKind.REMOVE:
-               f_staticObjectsAggregatorChanged = true;
-               invalidateProperties();
-               break;
-         }
+      private function aggregator_collectionChangeHandler(event:CollectionEvent) : void {
+         setSize();
+         f_staticObjectsAggregatorChanged = true;
+         invalidateProperties();
       }
+   }
+}
+
+
+import components.map.space.ICStaticSpaceObject;
+
+import flash.utils.Dictionary;
+
+
+class ComponentsHash
+{
+   private const _hash:Dictionary = new Dictionary();
+   
+   public function ComponentsHash() {
+   }
+   
+   public function add(type:int, component:ICStaticSpaceObject) : void {
+      _hash[type] = component;
+   }
+   
+   public function get(type:int) : ICStaticSpaceObject {
+      return _hash[type];
    }
 }
