@@ -155,12 +155,12 @@ package components.base.viewport
          if (_visibleAreaTracker != null && _content != null) {
             var contentPosition:Point = contentPosition_VCS();
             _visibleAreaTracker.contentInitialized(
-               getExplicitOrMeasuredWidth(),
-               getExplicitOrMeasuredHeight(),
+               getLayoutBoundsWidth(),
+               getLayoutBoundsHeight(),
                contentPosition.x,
                contentPosition.y,
-               contentScaledWidth,
-               contentScaledHeight,
+               _content.width,
+               _content.height,
                _content.scaleX
             );
          }
@@ -185,8 +185,8 @@ package components.base.viewport
       private function callUpdateViewportSize() : void {
          if (_visibleAreaTracker != null && _content != null) {
             _visibleAreaTracker.updateViewportSize(
-               getExplicitOrMeasuredWidth(),
-               getExplicitOrMeasuredHeight()
+               getLayoutBoundsWidth(),
+               getLayoutBoundsHeight()
             );
          }
       }
