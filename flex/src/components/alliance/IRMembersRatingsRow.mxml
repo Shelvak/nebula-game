@@ -93,7 +93,8 @@
       <s:Group width="{RatingsWidths.action}" 
                visible="{player.allianceOwnerId == ML.player.id 
                &amp;&amp; ML.player.id != player.id}">
-         <s:Button label="{Localizer.string('Alliances', 'label.kick')}" width="60" horizontalCenter="0"
+         <s:Button label="{Localizer.string('Alliances', 'label.kick')}" 
+                   maxWidth="{RatingsWidths.action - 10}" horizontalCenter="0"
                    click="button1_clickHandler(event)"/>
       </s:Group>
    </s:Group>
