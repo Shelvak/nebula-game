@@ -317,11 +317,11 @@ package controllers.units
        * 
        * @return route model which has been created.
        */
-      public function createRoute(data:Object, owner:int = Owner.UNDEFINED) : MRoute
+      public function createRoute(data:Object, owner:int = Owner.NPC) : MRoute
       {
          var route:MRoute = BaseModel.createModel(MRoute, data);
          route.cachedUnits.addAll(UnitFactory.createCachedUnits(data["cachedUnits"]));
-         if (owner != Owner.UNDEFINED)
+         if (owner != Owner.NPC)
             route.owner = owner;
          ROUTES.addItem(route);
          return route;

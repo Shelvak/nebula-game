@@ -773,7 +773,7 @@ package models.planet
             {
                return unit.level > 0 && unit.kind == UnitKind.GROUND
                && (owner == -1 || owner == unit.owner
-                  || (owner == Owner.ENEMY && unit.owner == Owner.UNDEFINED));
+                  || (owner == Owner.ENEMY && unit.owner == Owner.NPC));
             }
          ) != null;
       }
@@ -788,7 +788,7 @@ package models.planet
                return unit.level > 0 && unit.kind == UnitKind.SPACE
                && (owner == -1
                   || owner == unit.owner
-                  || (owner == Owner.ENEMY && unit.owner == Owner.UNDEFINED));
+                  || (owner == Owner.ENEMY && unit.owner == Owner.NPC));
             }
          ) != null;
       }
@@ -801,7 +801,7 @@ package models.planet
             function(unit:Unit) : Boolean
             {
                return unit.level > 0 && (unit.owner == owner
-                  || (owner == Owner.ENEMY && unit.owner == Owner.UNDEFINED)) 
+                  || (owner == Owner.ENEMY && unit.owner == Owner.NPC)) 
                && unit.isMoving &&
                (unit.kind == kind || kind == null);
             }
@@ -843,7 +843,7 @@ package models.planet
             try
             {
                return (unit.level > 0) && definesLocation(unit.location)
-               && (owner == Owner.ENEMY?(unit.owner == owner || unit.owner == Owner.UNDEFINED):unit.owner == owner) 
+               && (owner == Owner.ENEMY?(unit.owner == owner || unit.owner == Owner.NPC):unit.owner == owner) 
                && (unit.kind == kind || kind == null)
                && (kind != null || !unit.isMoving);
             }
@@ -872,7 +872,7 @@ package models.planet
                return (unit.level > 0
                   && definesLocation(unit.location) 
                   && unit.kind == UnitKind.GROUND 
-                  && (unit.owner == owner || (owner == Owner.ENEMY && unit.owner == Owner.UNDEFINED))
+                  && (unit.owner == owner || (owner == Owner.ENEMY && unit.owner == Owner.NPC))
                   && unit.hasGuns);
             }
             catch (err:Error)

@@ -407,7 +407,7 @@ package tests.galaxy
             case PID_ALLY: playerName = "jho"; break;
          }
          unit.player = makePlayer(playerId, playerName);
-         unit.owner = Owner.UNDEFINED;
+         unit.owner = Owner.NPC;
          switch (playerId) {
             case PID_PLAYER: unit.owner = Owner.PLAYER; break;
             case PID_ENEMY: unit.owner = Owner.ENEMY; break;

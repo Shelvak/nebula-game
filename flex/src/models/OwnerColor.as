@@ -22,11 +22,11 @@ package models
       {
          switch (owner)
          {
-            case Owner.PLAYER:    return PLAYER;
-            case Owner.ALLY:      return ALLY;
-            case Owner.NAP:       return NAP;
-            case Owner.ENEMY:     return ENEMY;
-            case Owner.UNDEFINED: return UNDEFINED;
+            case Owner.PLAYER: return PLAYER;
+            case Owner.ALLY:   return ALLY;
+            case Owner.NAP:    return NAP;
+            case Owner.ENEMY:  return ENEMY;
+            default:           return UNDEFINED;
          }
          return 0;
       }

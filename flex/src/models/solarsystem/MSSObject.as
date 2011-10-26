@@ -15,7 +15,7 @@ package models.solarsystem
    import interfaces.ICleanable;
    
    import models.BaseModel;
-   import models.IMStaticSpaceObject;
+   import models.map.IMStaticSpaceObject;
    import models.Owner;
    import models.cooldown.MCooldown;
    import models.location.Location;
@@ -460,7 +460,7 @@ package models.solarsystem
       /* ############# */
       
       prop_name static const owner:String = "owner";
-      private var _owner:int = Owner.UNDEFINED;
+      private var _owner:int = Owner.NPC;
       [Optional(alias="status")]
       [Bindable(event="ownerChange")]
       /**
@@ -528,7 +528,7 @@ package models.solarsystem
        * @default false 
        */
       public function get isOwned() : Boolean {
-         return _owner != Owner.UNDEFINED;
+         return _owner != Owner.NPC;
       }
       
       

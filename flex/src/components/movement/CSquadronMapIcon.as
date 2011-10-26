@@ -181,7 +181,7 @@ package components.movement
                      _levelAnim += "White";
                      img += "nap";
                      break;
-                  case Owner.UNDEFINED:   // NPC units
+                  case Owner.NPC:   // NPC units
                      _levelAnim += "Yellow";
                      img += "npc";
                      break;
