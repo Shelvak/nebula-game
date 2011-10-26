@@ -572,6 +572,7 @@ package models.unit
       {
          squadronVisible = true;
          filteredSquadronUnits = list;
+         sortByHp(filteredSquadronUnits);
          currentKind = UnitKind.SQUADRON;
          refreshScreen();
       }
