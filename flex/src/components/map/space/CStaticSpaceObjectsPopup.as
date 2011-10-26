@@ -2,8 +2,8 @@ package components.map.space
 {
    import components.map.space.skins.CStaticSpaceObjectsPopupSkin;
    
-   import models.IMStaticSpaceObject;
-   import models.MStaticSpaceObjectsAggregator;
+   import models.map.IMStaticSpaceObject;
+   import models.map.MStaticSpaceObjectsAggregator;
    import models.map.MMapSpace;
    
    import mx.events.CollectionEvent;

@@ -1,6 +1,7 @@
-package models
+package models.map
 {
    import models.location.LocationMinimal;
+   import models.IBaseModel;
    
    
    public interface IMStaticMapObject extends IBaseModel

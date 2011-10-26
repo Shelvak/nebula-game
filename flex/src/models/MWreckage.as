@@ -7,6 +7,7 @@ package models
    import models.map.MMapSpace;
    
    import utils.assets.AssetNames;
+   import models.map.IMStaticSpaceObject;
    
    
    public class MWreckage extends BaseModel implements IMStaticSpaceObject

@@ -13,7 +13,7 @@
          import components.base.viewport.Viewport;
          import components.skins.MapObjectsListSkin;
          
-         import models.MStaticSpaceObjectsAggregator;
+         import models.map.MStaticSpaceObjectsAggregator;
          
          import mx.events.FlexEvent;
          

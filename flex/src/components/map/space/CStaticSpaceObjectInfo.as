@@ -2,7 +2,7 @@ package components.map.space
 {
    import components.base.Panel;
    
-   import models.IMStaticSpaceObject;
+   import models.map.IMStaticSpaceObject;
    
    
    public class CStaticSpaceObjectInfo extends Panel

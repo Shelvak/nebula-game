@@ -1,6 +1,6 @@
 package components.map.space
 {
-   import models.IMStaticSpaceObject;
+   import models.map.IMStaticSpaceObject;
    import models.location.LocationMinimal;
    
    import mx.core.IVisualElement;

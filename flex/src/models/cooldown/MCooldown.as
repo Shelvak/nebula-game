@@ -3,7 +3,7 @@ package models.cooldown
    import interfaces.IUpdatable;
    
    import models.BaseModel;
-   import models.IMStaticMapObject;
+   import models.map.IMStaticMapObject;
    import models.cooldown.events.MCooldownEvent;
    import models.location.LocationMinimal;
    

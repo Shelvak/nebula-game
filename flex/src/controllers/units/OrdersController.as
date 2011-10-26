@@ -16,7 +16,7 @@ package controllers.units
    
    import globalevents.GlobalEvent;
    
-   import models.IMStaticSpaceObject;
+   import models.map.IMStaticSpaceObject;
    import models.ModelLocator;
    import models.events.BaseModelEvent;
    import models.location.LocationMinimal;

@@ -14,7 +14,7 @@ package components.map.space
    
    import interfaces.ICleanable;
    
-   import models.IMStaticSpaceObject;
+   import models.map.IMStaticSpaceObject;
    import models.ModelsCollection;
    import models.location.LocationMinimal;
    import models.map.MMapSpace;

@@ -2,7 +2,7 @@ package models.cooldown
 {
    import flash.display.BitmapData;
    
-   import models.IMStaticSpaceObject;
+   import models.map.IMStaticSpaceObject;
    import models.map.MMapSpace;
    
    import utils.assets.AssetNames;

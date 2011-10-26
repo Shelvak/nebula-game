@@ -4,7 +4,7 @@ package tests.spacemap
    
    import flash.errors.IllegalOperationError;
    
-   import models.MStaticSpaceObjectsAggregator;
+   import models.map.MStaticSpaceObjectsAggregator;
    import models.MWreckage;
    import models.ModelLocator;
    import models.galaxy.Galaxy;

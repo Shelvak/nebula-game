@@ -1,6 +1,6 @@
 package components.map.space
 {
-   import models.IMStaticSpaceObject;
+   import models.map.IMStaticSpaceObject;
 
    /**
     * Defines interface for galaxy map that uses <code>VisibleGalaxyArea</code> to track visible sectors
