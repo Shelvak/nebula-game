@@ -2,7 +2,6 @@ package components.alliance
 {
    import components.alliance.events.AllianceScreenMEvent;
    import components.popups.ErrorPopup;
-   import models.events.HeaderEvent;
    
    import config.Config;
    
@@ -16,8 +15,11 @@ package components.alliance
    
    import models.ModelLocator;
    import models.alliance.MAlliance;
+   import models.events.HeaderEvent;
+   import models.player.MRatingPlayer;
    import models.player.events.PlayerEvent;
    
+   import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    import mx.collections.SortField;
    
@@ -256,6 +258,7 @@ package components.alliance
          _alliance.players.sort = new Sort();
          _alliance.players.sort.fields = sortFields[event.key];
          _alliance.players.refresh();
+         MRatingPlayer.refreshRanks(_alliance.players);
       }
       
       public function header_inviteSortHandler(event:HeaderEvent):void
@@ -263,6 +266,7 @@ package components.alliance
          _alliance.invPlayers.sort = new Sort();
          _alliance.invPlayers.sort.fields = sortFields[event.key];
          _alliance.invPlayers.refresh();
+         MRatingPlayer.refreshRanks(_alliance.invPlayers);
       }
       
       public function refresh_clickHandler(event:MouseEvent):void

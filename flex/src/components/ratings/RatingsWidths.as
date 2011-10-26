@@ -15,6 +15,6 @@ package components.ratings
       public static const victoryPoints: int = 80;
       public static const allianceVictoryPoints: int = 80;
       public static const points: int = 80;
-      public static const action: int = 90;
+      public static const action: int = 110;
    }
 }

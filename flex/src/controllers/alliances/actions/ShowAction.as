@@ -61,16 +61,18 @@ package controllers.alliances.actions
                new SortField('points', true, true, true),
                new SortField('planetsCount', true, true, true),
                new SortField('name')];
-            ally.invPlayers.refresh();
+            ally.invPlayers.refresh();  
+            
+            MRatingPlayer.refreshRanks(ally.invPlayers);
          }
          
-         var i: int = 0;
-         for each (player in ally.players)
-         {
-            i++;
-            player.rank = i;
-         }
-         AllianceScreenM.getInstance().alliance = ally;
+         MRatingPlayer.refreshRanks(ally.players);
+         ASM.alliance = ally;
+      }
+      
+      private function get ASM(): AllianceScreenM
+      {
+         return AllianceScreenM.getInstance();
       }
       
       public override function result(rmo:ClientRMO):void
