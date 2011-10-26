@@ -68,7 +68,7 @@ package components.map.space
       public function repositionSquadrons(location:LocationMinimal, owner:int = Owner.UNDEFINED) : void {
          var squads:ArrayCollection = getSquadsInLocation(location);
          for each (var ownerType:int in [Owner.PLAYER, Owner.ALLY, Owner.NAP, Owner.ENEMY]) {
-            if (goesToSameSection(ownerType, owner)) {
+            if (owner == Owner.UNDEFINED || goesToSameSection(ownerType, owner)) {
                squads.filterFunction = function(squadC:CSquadronMapIcon) : Boolean {
                   return goesToSameSection(squadC.squadronOwner, ownerType);
                };
@@ -104,7 +104,7 @@ package components.map.space
        */      
       private function getSlotCoords(loc:LocationMinimal, owner:int, slot:int) : Point {
          // NPC units align together with enemy units
-         if (owner == Owner.UNDEFINED)
+         if (owner == Owner.NPC)
             owner = Owner.ENEMY;
          var obj:IVisualElement = _grid.getStaticObjectInSector(loc);
          return obj ?
@@ -145,7 +145,7 @@ package components.map.space
          var coords:Point = new Point(sectorCoords.x, sectorCoords.y);
          coords.y -= 2 * h + 1.5 * GAP;
          coords.y += owner * (h + GAP);
-         coords.x = obj ? obj.getLayoutBoundsX() + obj.getLayoutBoundsWidth() : sectorCoords.x;
+         coords.x = obj ? obj.x + obj.width : sectorCoords.x;
          coords.x += slot * (w + GAP);
          return coords;
       }
@@ -168,7 +168,7 @@ package components.map.space
       }
       
       private function goesToEnemySection(owner:int) : Boolean {
-         return owner == Owner.UNDEFINED || owner == Owner.ENEMY;
+         return owner == Owner.NPC || owner == Owner.ENEMY;
       }
       
       private function goesToSameSection(owner0:int, owner1:int) : Boolean {
