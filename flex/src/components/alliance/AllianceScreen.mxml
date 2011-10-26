@@ -304,14 +304,7 @@
                      <s:Label text="{getString('label.renameCost', [Config.getEditAllianceCredits()])}" fontSize="14"/>
                   </s:Group>
                   
-                  <s:Group>
-                     <s:layout>
-                        <s:HorizontalLayout verticalAlign="middle"/>
-                     </s:layout>
-                     <s:Label text="{getString('label.leaveAlliance')}" fontSize="16"/>
-                     <s:Button label="{getString('label.leave')}"
-                               click="model.leave_clickHandler(event)"/>
-                  </s:Group>
+                  <alliance:CLeaveAlly/>
                   
                   <base:AdvancedContainer width="100%" 
                                           visible="{model.alliance.invPlayers 
