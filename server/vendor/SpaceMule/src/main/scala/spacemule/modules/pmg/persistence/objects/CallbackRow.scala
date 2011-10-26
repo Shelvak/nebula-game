@@ -61,6 +61,8 @@ case class CallbackRow(
   event: Option[CallbackRow.Events.Event] = None,
   time: Option[Calendar] = None
 ) extends Row {
+  val companion = CallbackRow
+
   val valuesSeq = List(
     row match {
       case galaxy: GalaxyRow => "Galaxy"

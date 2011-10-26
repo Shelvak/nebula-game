@@ -9,6 +9,18 @@ package spacemule.persistence
  */
 
 trait Row {
+  val companion: RowObject
   val valuesSeq: Seq[Any]
-  lazy val values: String = valuesSeq.map { _.toString }.mkString("\t")
+
+  lazy val values: String = {
+    if (companion.columnsSeq.size != valuesSeq.size)
+      throw new IllegalArgumentException(
+        ("columns sequence size (%d) must be equal to values " +
+            "sequence size (%d) for %s!").format(
+          companion.columnsSeq.size, valuesSeq.size, toString
+        )
+      )
+    
+    valuesSeq.map { _.toString }.mkString("\t")
+  }
 }
