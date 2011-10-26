@@ -23,8 +23,7 @@ package components.gameobjects.solarsystem
       /**
        * Constructor.
        */
-      public function SSObjectImage()
-      {
+      public function SSObjectImage() {
          super();
          setStyle("skinClass", SSObjectImageSkin);
       }
@@ -34,14 +33,10 @@ package components.gameobjects.solarsystem
       /* ### PROPERTIES ### */
       /* ################## */
       
-      
       private var _oldModel:MSSObject = null;
-      public override function set model(v:BaseModel) : void
-      {
-         if (model != v)
-         {
-            if (!_oldModel)
-            {
+      public override function set model(v:BaseModel) : void {
+         if (model != v) {
+            if (_oldModel == null) {
                _oldModel = getSSObject();
             }
             super.model = v;
@@ -55,27 +50,21 @@ package components.gameobjects.solarsystem
       /**
        * Type getter for <code>model</code> property.
        */
-      public function getSSObject() : MSSObject
-      {
+      public function getSSObject() : MSSObject {
          return MSSObject(model);
       }
       
-      
       private var fModelChanged:Boolean = false;
-      protected override function commitProperties() : void
-      {
+      protected override function commitProperties() : void {
          super.commitProperties();
          
-         if (fModelChanged)
-         {
-            if (_oldModel)
-            {
+         if (fModelChanged) {
+            if (_oldModel != null) {
                removeSSObjectEventHandlers(_oldModel);
                _oldModel = null;
             }
             image.source = null;
-            if (model)
-            {
+            if (model != null) {
                addSSObjectEventHandlers(getSSObject());
                image.source = getSSObject().imageData;
             }

@@ -32,26 +32,6 @@ package models.map
          );
       }
       
-      /**
-       * Computes union of all given rectangular map areas.
-       *  
-       * @param areas | <b>not null</b>
-       * 
-       * @return product of union operation or <code>null</code> if there were no items
-       * in <code>areas</code> array
-       */
-      public static function union(areas:Vector.<MapArea>) : MapArea {
-         Objects.paramNotNull("areas", areas);
-         if (areas.length == 0) {
-            return null;
-         }
-         var unionProduct:MapArea = areas[0];
-         for each (var area:MapArea in areas) {
-            unionProduct = unionProduct.union(area);
-         }
-         return unionProduct;
-      }
-      
       
       /* ###################### */
       /* ### STATIC HELPERS ### */

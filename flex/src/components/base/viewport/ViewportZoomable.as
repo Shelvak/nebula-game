@@ -26,8 +26,8 @@ package components.base.viewport
       /* ###################### */
       
       
-      public function ViewportZoomable() {
-         super();
+      public function ViewportZoomable(visibleAreaTracker:VisibleAreaTracker = null) {
+         super(visibleAreaTracker);
          setStyle("skinClass", ViewportSkin);
       }
       

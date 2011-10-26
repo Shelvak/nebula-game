@@ -155,8 +155,7 @@ package components.movement
             else if (loc.isSolarSystem) {
                var ss:SolarSystem = ModelLocator.getInstance().
                   latestSolarSystem;
-               var sso:MSSObject = ss.
-                  getSSObjectAt(locWrap.position, locWrap.angle);
+               var sso:MSSObject = ss.getSSObjectAt(locWrap.position, locWrap.angle);
                showJumpsAt = sso != null && (sso.isPlanet || sso.isJumpgate);
             }
 
