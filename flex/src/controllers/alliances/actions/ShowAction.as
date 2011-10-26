@@ -46,21 +46,24 @@ package controllers.alliances.actions
             player.allianceOwnerId = ally.ownerId;
          }
          ally.players.sort = new Sort();
-         ally.players.sort.fields = [new SortField('allianceVps', true, true, true),
+         ally.players.sort.fields = [
+            new SortField('allianceVps', true, true, true),
             new SortField('victoryPoints', true, true, true),
             new SortField('points', true, true, true),
             new SortField('planetsCount', true, true, true),
-            new SortField('name')];
+            new SortField('name')
+         ];
          ally.players.refresh();
          
          if (ally.invPlayers)
          {
             ally.invPlayers.sort = new Sort();
-            ally.invPlayers.sort.fields = [new SortField('allianceVps', true, true, true),
+            ally.invPlayers.sort.fields = [
                new SortField('victoryPoints', true, true, true),
                new SortField('points', true, true, true),
                new SortField('planetsCount', true, true, true),
-               new SortField('name')];
+               new SortField('name')
+            ];
             ally.invPlayers.refresh();  
             
             MRatingPlayer.refreshRanks(ally.invPlayers);
