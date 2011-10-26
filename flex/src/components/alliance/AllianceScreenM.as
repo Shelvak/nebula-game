@@ -87,6 +87,20 @@ package components.alliance
             'points':[pointsField, allianceVpsField, victoryPtsField, planetsCountField, nameField]
          }
       
+      private static const inviteSortFields: Object = 
+         {
+            'rank':[rankField],
+            'name':[nameField],
+            'alliance':[allianceField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'planetsCount':[planetsCountField, victoryPtsField, pointsField, nameField],
+            'economyPoints':[economyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'armyPoints':[armyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'warPoints':[warPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'victoryPoints':[victoryPtsField, pointsField, planetsCountField, nameField],
+            'points':[pointsField, victoryPtsField, planetsCountField, nameField]
+         }
+         
       public static function getInstance() : AllianceScreenM {
          return SingletonFactory.getSingletonInstance(AllianceScreenM);
       }
@@ -264,7 +278,7 @@ package components.alliance
       public function header_inviteSortHandler(event:HeaderEvent):void
       {
          _alliance.invPlayers.sort = new Sort();
-         _alliance.invPlayers.sort.fields = sortFields[event.key];
+         _alliance.invPlayers.sort.fields = inviteSortFields[event.key];
          _alliance.invPlayers.refresh();
          MRatingPlayer.refreshRanks(_alliance.invPlayers);
       }

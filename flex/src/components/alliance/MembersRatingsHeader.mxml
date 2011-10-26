@@ -88,6 +88,17 @@
             <s:SolidColorStroke color="0xffffff" weight="1"/>
          </s:stroke>
       </s:Line>
+      <s:Label width="{RatingsWidths.playerAlliance}" 
+               text="{Localizer.string('Ratings', 'alliance')}" textAlign="center"
+               rollOver="label_rollOverHandler(event)" 
+               rollOut="label_rollOutHandler(event)"
+               visible="{!avpVisible}"
+               click="label_clickHandler(event, 'alliance')"/>
+      <s:Line yFrom="0" yTo="24">
+         <s:stroke>
+            <s:SolidColorStroke color="0xffffff" weight="1"/>
+         </s:stroke>
+      </s:Line>
       <s:Label width="{RatingsWidths.planetsCount}" 
                text="{Localizer.string('Ratings', 'planetsCount')}" textAlign="center"
                rollOver="label_rollOverHandler(event)" 
