@@ -586,7 +586,7 @@ package components.map.space
       /* ############################### */
       
       
-      private var _selectedStaticObject:CStaticSpaceObjectsAggregator;
+      protected var selectedStaticObject:CStaticSpaceObjectsAggregator;
       
       
       protected override function selectModel(model:BaseModel) : void
@@ -622,8 +622,8 @@ package components.map.space
          var position:Point = grid.getSectorRealCoordinates(staticObject.currentLocation);
          sectorPopups.move(position.x, position.y);
          VerticalLayout(sectorPopups.layout).paddingTop = OBJECT_POPUP_YSHIFT;
-         _selectedStaticObject = staticObject;
-         _selectedStaticObject.selected = true;
+         selectedStaticObject = staticObject;
+         selectedStaticObject.selected = true;
          if (center)
          {
             viewport.moveContentTo(new Point(staticObject.x, staticObject.y), true);
@@ -647,13 +647,13 @@ package components.map.space
       
       public override function deselectSelectedObject() : void
       {
-         if (_selectedStaticObject)
+         if (selectedStaticObject)
          {
             staticObjectsPopup.model = null;
             staticObjectsPopup.visible = false;
             staticObjectsPopup.includeInLayout = false;
-            _selectedStaticObject.selected = false;
-            _selectedStaticObject = null;
+            selectedStaticObject.selected = false;
+            selectedStaticObject = null;
             VerticalLayout(sectorPopups.layout).paddingTop = 0;
          }
       }
@@ -661,14 +661,9 @@ package components.map.space
       
       protected override function zoomObjectImpl(object:*, operationCompleteHandler:Function = null) : void
       {
-         if (object is IMStaticSpaceObject)
-         {
-            var model:IMStaticSpaceObject = object;
-            var component:CStaticSpaceObjectsAggregator = CStaticSpaceObjectsAggregator(
-               _staticObjectsCont.getElementAt(getAggregatorComponentIndex(model.currentLocation))
-            );
-            viewport.zoomArea(
-               new Rectangle(component.x, component.y, component.width, component.height),
+         if (object is IMStaticSpaceObject) {
+            viewport.zoomPoint(
+               grid.getSectorRealCoordinates(IMStaticSpaceObject(object).currentLocation),
                true, operationCompleteHandler
             );
          }

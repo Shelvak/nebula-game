@@ -6,6 +6,7 @@ package components.map.space
    import models.BaseModel;
    import models.ModelLocator;
    import models.galaxy.Galaxy;
+   import models.galaxy.IVisibleGalaxyAreaClient;
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.map.IMStaticSpaceObject;
@@ -17,7 +18,6 @@ package components.map.space
    import spark.components.Group;
    
    import utils.locale.Localizer;
-   import models.galaxy.IVisibleGalaxyAreaClient;
    
    
    public class CMapGalaxy extends CMapSpace implements IVisibleGalaxyAreaClient
@@ -108,6 +108,10 @@ package components.map.space
       public function sectorHidden(x:int, y:int) : void {
          var sector:SectorsHashItem = _staticObjectsHash.remove(getTmpSector(x, y));
          if (sector.hasObject) {
+            if (selectedStaticObject == sector.object) {
+               f_retainSelectedLocation = true;
+               deselectSelectedObject();
+            }
             _staticObjectsPool.returnObject(sector.object);
          }
       }
@@ -125,6 +129,11 @@ package components.map.space
             aggrModel.addAll(modelsInSector);
             grid.positionStaticObjectInSector(aggrModel.currentLocation);
             squadronsController.repositionAllSquadronsIn(aggrModel.currentLocation);
+            var model:IMStaticSpaceObject = IMStaticSpaceObject(aggrModel.getItemAt(0)); 
+            if (_selectedLocation != null
+                && _selectedLocation.equals(model.currentLocation)) {
+               selectModel(BaseModel(model));
+            }
          }
       }
       
@@ -192,6 +201,9 @@ package components.map.space
                var aggrModel:MStaticSpaceObjectsAggregator = aggrComponent.model;
                aggrModel.removeItemAt(aggrModel.getItemIndex(object));
                if (aggrModel.length == 0) {
+                  if (object.currentLocation.equals(_selectedLocation)) {
+                     deselectSelectedObject();
+                  }
                   _staticObjectsPool.returnObject(aggrComponent);
                   squadronsController.repositionAllSquadronsIn(object.currentLocation);
                }
@@ -227,12 +239,43 @@ package components.map.space
       /* ### SOLAR SYSTEM SELECTION ### */
       /* ############################## */
       
+      private var f_retainSelectedLocation:Boolean = false;
+      private var _selectedLocation:LocationMinimal = null;
+      
       protected override function selectModel(model:BaseModel) : void {
-         // TODO: implement
+         if (model is IMStaticSpaceObject) {
+            deselectSelectedObject();
+            _selectedLocation = IMStaticSpaceObject(model).currentLocation;
+            var sectorObjects:SectorsHashItem = _staticObjectsHash.getItem(getTmpSector(
+               _selectedLocation.x,
+               _selectedLocation.y
+            ));
+            if (sectorObjects != null) {
+               selectComponent(sectorObjects.object, false, true);
+            }
+            else {
+               viewport.zoomPoint(grid.getSectorRealCoordinates(_selectedLocation), true);
+            }
+         }
       }
       
-      protected override function zoomObjectImpl(object:*, operationCompleteHandler:Function = null) : void {
-         // TODO: implement
+      public override function selectComponent(component:Object,
+                                               center:Boolean = false,
+                                               openOnSecondCall:Boolean = false) : void {
+         super.selectComponent(component, center, openOnSecondCall);
+         if (selectedStaticObject != null) {
+            _selectedLocation = selectedStaticObject.currentLocation;
+         }
+      }
+      
+      public override function deselectSelectedObject() : void {
+         if (_selectedLocation != null) {
+            if (!f_retainSelectedLocation) {
+               _selectedLocation = null;
+            }
+            super.deselectSelectedObject();
+         }
+         f_retainSelectedLocation = false;
       }
    }
 }
