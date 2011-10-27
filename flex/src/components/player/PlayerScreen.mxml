@@ -89,8 +89,9 @@
                          source="{UrlNavigate.getInstance().urlRoot + 
                          'user/avatar/' + player.name}"/>
                <base:AdvancedContainer left="215" right="0" top="20">
-                  <s:Group width="100%" toolTip="{Localizer.string('Ratings', player.online
-                           ?'online':'offline')}">
+                  <s:Group width="100%" 
+                           toolTipCreate="player.createStatusTooltip(event)"
+                           toolTip=" ">
                      <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
                                     AssetNames.getIconImageName(player.online?'online':'offline'))}"/>
                      <s:Label text="{player.name}" fontSize="24" color="#eec500" width="100%"/>
