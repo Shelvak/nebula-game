@@ -31,9 +31,6 @@
          [Bindable]
          private var _constructableModel: *;
          
-         [Bindable]
-         public var cancelable: Boolean = false;
-         
          public function set constructableModel(value: *): void
          {
             if (_constructableModel != null && _constructableModel.upgradePart != null)
@@ -146,7 +143,7 @@
                ?AssetNames.getBuildingImageName(_constructableModel.type)
                :AssetNames.getUnitImageName(_constructableModel.type))}" 
                width="100%" height="{imageHeight}" verticalCenter="0"/>
-            <s:Group visible="{hovered &amp;&amp; cancelable}" top="1" right="1" 
+            <s:Group visible="{hovered}" top="1" right="1" 
                      width="{btnDelete.width + 2}">
                <ui:DarkRoundedBackground top="0" bottom="0" left="0" right="0"/>
                <s:Button skinClass="components.skins.DeleteButtonSkin"

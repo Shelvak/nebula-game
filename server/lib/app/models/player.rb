@@ -46,6 +46,8 @@ class Player < ActiveRecord::Base
 
   def self.notify_on_create?; false; end
   def self.notify_on_destroy?; false; end
+  # This must be array of strings.
+  def self.ignore_update_notify_for; %w{last_seen}; end
   include Parts::Notifier
   include Parts::PlayerVip
 
@@ -101,6 +103,12 @@ class Player < ActiveRecord::Base
     map_block ||= map_method
 
     objects.map(&map_block).uniq.map_to_hash { |player_id| minimal(player_id) }
+  end
+
+  # Returns +Hash+ of {id => name} pairs.
+  def self.names_for(player_ids)
+    names = select("name").where(:id => player_ids).c_select_values
+    Hash[player_ids.zip(names)]
   end
 
   # Is daily bonus available for this player?
@@ -188,14 +196,16 @@ class Player < ActiveRecord::Base
   #     "economy_points" => Fixnum,
   #     "army_points" => Fixnum,
   #     "alliance" => {"id" => Fixnum, "name" => String} | nil,
-  #     "online" => Boolean,
+  #     "last_seen" => true (currently online) | Time | nil (never logged in),
   #   }
   # ]
   #
   def self.ratings(galaxy_id, condition=nil)
     p = table_name
     (condition.nil? ? self : condition).
-      select(RATING_ATTRIBUTES_SQL + ", a.name AS a_name, a.id AS a_id").
+      select(
+        RATING_ATTRIBUTES_SQL + ", a.name AS a_name, a.id AS a_id, last_seen"
+      ).
       where(:galaxy_id => galaxy_id).
       joins("LEFT JOIN #{Alliance.table_name} AS a
         ON `#{p}`.alliance_id=a.id").
@@ -207,7 +217,9 @@ class Player < ActiveRecord::Base
         row['alliance'] = alliance_id \
           ? {'id' => alliance_id, 'name' => alliance_name} \
           : nil
-        row["online"] = Dispatcher.instance.connected?(row["id"])
+        row['last_seen'] = true if Dispatcher.instance.connected?(row['id'])
+        row['last_seen'] = Time.parse(row['last_seen']) \
+          if row['last_seen'].is_a?(String)
         row
       end
   end
@@ -328,9 +340,11 @@ class Player < ActiveRecord::Base
   after_save do
     dispatcher = Dispatcher.instance
     dispatcher.update_player(self) if dispatcher.connected?(id)
-    hub = Chat::Pool.instance.hub_for(self)
-    hub.on_alliance_change(self) if alliance_id_changed?
-    hub.on_language_change(self) if language_changed?
+    if alliance_id_changed? || language_changed?
+      hub = Chat::Pool.instance.hub_for(self)
+      hub.on_alliance_change(self) if alliance_id_changed?
+      hub.on_language_change(self) if language_changed?
+    end
 
     if victory_points_changed? && ! alliance.nil?
       old, new = victory_points_change

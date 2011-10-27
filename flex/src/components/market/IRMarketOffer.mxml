@@ -16,7 +16,6 @@
          import globalevents.GMarketEvent;
          
          import models.market.MarketOffer;
-         import models.player.MRatingPlayer;
          
          import utils.DateUtil;
          import utils.MathUtil;

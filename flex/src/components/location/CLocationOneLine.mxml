@@ -4,15 +4,25 @@
          xmlns:mx="library://ns.adobe.com/flex/mx">
    <fx:Script>
       <![CDATA[
+         import flashx.textLayout.elements.TextFlow;
+         
          import models.location.Location;
+         
+         import spark.utils.TextFlowUtil;
          
          import utils.locale.Localizer;
          
          [Bindable]
          public var location:Location = null; 
+         
+         private function getTextFlow(from: String): TextFlow
+         {
+            return TextFlowUtil.importFromString(from);
+         }
       ]]>
    </fx:Script>
    <s:BitmapImage id="locationImage" width="24" height="24" fillMode="scale" visible="{location != null}" source="{location.bitmapData}"/>
-   <s:Label id="locationLabel" left="26" top="8" text="{location == null?Localizer.string('Squadrons', 'label.unknown')
-            :location.longDescription}" styleName="squadronInfo"/>
+   <s:RichText id="locationLabel" left="26" top="8" textFlow="{getTextFlow(location == null
+               ? Localizer.string('Squadrons', 'label.unknown')
+               : location.longDescription)}" fontSize="13" color="#ffffff"/>
 </s:Group>

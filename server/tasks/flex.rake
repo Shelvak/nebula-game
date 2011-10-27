@@ -21,78 +21,15 @@ BATTLEFIELD_BUNDLES = [
   "ImagesUiBundle",
   "ImagesTileBundle"
 ]
-# Locale reference regular expression.
-LOCALE_REF_RE = /\[reference:((\w+)\/)?(.+?)\]/
 
 namespace :flex do
   namespace :locales do
     desc "Checks locales for validity"
     task :check do
-      require 'xmlsimple'
-      errors = {}
-
-      check_locale_value = lambda do |fname, contents, current_bundle, value|
-        value.scan(LOCALE_REF_RE) do |unused, bundle, name|
-          bundle = current_bundle if bundle.nil?
-
-          if ! contents[bundle][0].has_key?(name)
-            ref_name = bundle.nil? ? name : "#{bundle}/#{name}"
-
-            errors[fname] ||= Set.new
-            errors[fname].add ref_name
-          end
-        end
-      end
-
-      Dir[File.join(FLEX_LOCALE_DIR, "*.xml")].each do |fpath|
-        fname = File.basename(fpath)
-        puts "Checking #{fname}"
-        contents = XmlSimple.xml_in(fpath)
-        contents.each do |bundle_name, bundle_contents|
-          if bundle_contents.size > 1
-            errors.push "More than one bundle with name #{bundle_name} found!"
-          end
-          
-          bundle_contents[0].each do |key, values|
-            value = values[0]
-
-            check_locale_value.call(
-              fname, contents, bundle_name,
-              value.is_a?(String) \
-                ? value \
-                : values[0].has_key?('value') \
-                  ? values[0]['value'] \
-                  : values[0].has_key?('ref') \
-                    ? "[reference:#{values[0]['ref']}]" \
-                    : values[0]['p'].join("\n")
-            )
-          end
-        end
-      end
-      
-      def grep_lines(content, needle)
-        index = 0
-        content.split("\n").map do |line|
-          index += 1
-          line.include?(needle) ? index : nil
-        end.compact
-      end
-
-      if errors.size > 0
-        puts "Following errors detected:"
-        errors.each do |fname, set|
-          contents = File.read(File.join(FLEX_LOCALE_DIR, fname))
-          puts "  In #{fname}:"
-          set.each do |refname|
-            lines = grep_lines(contents, refname)
-            
-            puts "    * #{refname} is broken @ lines #{lines.join(", ")}."
-          end
-        end
-        exit
-      else
-        puts "Locales are ok."
-      end
+      require File.join(File.dirname(__FILE__), 'helpers', 'locales.rb')
+      checker = LocaleChecker.new(FLEX_LOCALE_DIR)
+      checker.check
+      checker.report
     end
   end
 

@@ -244,9 +244,13 @@ module Parts
       # Return number of points which should be removed when this upgradable
       # is destroyed.
       def points_on_destroy
-        raise NotImplementedError.new(
-          "You should override me to provide points calculation logic on destruction!"
-        )
+        (1..level).inject(0) do |sum, level|
+          sum + Resources.total_volume(
+            self.metal_cost(level),
+            self.energy_cost(level),
+            self.zetium_cost(level)
+          )
+        end
       end
 
       def points_attribute; self.class.points_attribute; end

@@ -18,10 +18,13 @@ package components.movement
    
    import models.Owner;
    import models.events.BaseModelEvent;
+   import models.factories.UnitFactory;
    import models.movement.MSquadron;
    import models.unit.Unit;
    
    import mx.collections.ListCollectionView;
+   import mx.events.CollectionEvent;
+   import mx.events.CollectionEventKind;
    
    import spark.components.Button;
    import spark.components.Label;
@@ -81,8 +84,8 @@ package components.movement
       }
       
       private var f_squadronChanged:Boolean = true,
-                  f_underMouseChanged:Boolean = true,
-                  f_squadronPendingChanged:Boolean = true;
+         f_underMouseChanged:Boolean = true,
+         f_squadronPendingChanged:Boolean = true;
       
       protected override function commitProperties() : void{
          super.commitProperties();
@@ -96,6 +99,8 @@ package components.movement
             else
                removeGlobalEventHandlers();
             lstUnits.dataProvider = _squadron != null ? _squadron.units : null;
+            lstCachedUnits.dataProvider = _squadron != null 
+               ? UnitFactory.buildCachedUnitsFromUnits(_squadron.units) : null;
             visible = _squadron != null ? true : false;
             showSourceLoc = _squadron != null && _squadron.isFriendly && _squadron.route != null;
             showDestLoc = showSourceLoc;
@@ -171,6 +176,12 @@ package components.movement
       
       [SkinPart(required="true")]
       /**
+       * List of units in a squadron.
+       */
+      public var lstCachedUnits:List;
+      
+      [SkinPart(required="true")]
+      /**
        * When clicked, navigates to squadrons source (departure) location.
        */
       public var btnOpenSourceLoc:Button;
@@ -231,9 +242,9 @@ package components.movement
       
       private function updateArrivesInLabel() : void {
          if (lblArrivesIn != null
-             && _squadron != null
-             && _squadron.isFriendly
-             && _squadron.route != null) {
+            && _squadron != null
+            && _squadron.isFriendly
+            && _squadron.route != null) {
             lblArrivesIn.text = getString
                ("label.location.arrivesIn", [_squadron.route.arrivalEvent.occuresInString]);
          }
@@ -343,7 +354,7 @@ package components.movement
       private function btnOpenSourceLoc_clickHandler(event:MouseEvent) : void {
          _squadron.route.sourceLocation.navigateTo();
       }
-            
+      
       private function btnOpenDestLoc_clickHandler(event:MouseEvent) : void {
          _squadron.route.targetLocation.navigateTo();
       }
@@ -359,17 +370,35 @@ package components.movement
       
       private function addSquadronEventHandlers(squad:MSquadron) : void {
          squad.addEventListener(BaseModelEvent.PENDING_CHANGE, squadron_pendingChangeHandler,
-                                false, 0, true);
+            false, 0, true);
+         if (squad.units != null)
+         {
+            squad.units.addEventListener(CollectionEvent.COLLECTION_CHANGE, squadron_unitsChange);
+         }
       }
       
       private function removeSquadronEventHandlers(squad:MSquadron) : void {
          squad.removeEventListener(BaseModelEvent.PENDING_CHANGE, squadron_pendingChangeHandler,
-                                   false);
+            false);
+         if (squad.units != null)
+         {
+            squad.units.removeEventListener(CollectionEvent.COLLECTION_CHANGE, squadron_unitsChange);
+         }
       }
       
       private function squadron_pendingChangeHandler(event:BaseModelEvent) : void {
          f_squadronPendingChanged = true;
          invalidateProperties();
+      }
+      
+      private function squadron_unitsChange(event:CollectionEvent) : void {
+         if (event.kind == CollectionEventKind.ADD ||
+            event.kind == CollectionEventKind.REMOVE ||
+            event.kind == CollectionEventKind.RESET)
+         {
+            lstCachedUnits.dataProvider = _squadron != null 
+               ? UnitFactory.buildCachedUnitsFromUnits(_squadron.units) : null;
+         }
       }
       
       

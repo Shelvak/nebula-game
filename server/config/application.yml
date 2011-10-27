@@ -6,6 +6,8 @@
 # Game server listening port.
 game:
   port: 55345
+client:
+  required_version: 2011-1024-1808
 # Control server listening port.
 control:
   port: 55100

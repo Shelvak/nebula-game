@@ -352,6 +352,7 @@ package controllers.startup
          bindPair(TechnologiesCommand.NEW, new controllers.technologies.actions.NewAction());
          bindPair(TechnologiesCommand.UPGRADE, new controllers.technologies.actions.UpgradeAction());
          bindPair(TechnologiesCommand.UPDATE, new controllers.technologies.actions.UpdateAction());
+         bindPair(TechnologiesCommand.UNLEARN, new controllers.technologies.actions.UnlearnAction());
          bindPair(TechnologiesCommand.PAUSE, new controllers.technologies.actions.PauseAction());
          bindPair(TechnologiesCommand.RESUME, new controllers.technologies.actions.ResumeAction());
          bindPair(TechnologiesCommand.ACCELERATE_UPGRADE, new controllers.technologies.actions.AccelerateAction());

@@ -320,12 +320,6 @@
          
          private var NC: NavigationController = NavigationController.getInstance();
          
-         protected function attack_clickHandler(event:MouseEvent):void
-         {
-            NC.showUnits(ML.latestPlanet.getAgressiveGroundUnits(), 
-               ML.latestPlanet.toLocation(), _selectedModel);
-         }
-         
          private function refreshConstructor(e: Event = null): void
          {
             GlobalEvent.unsubscribe_TIMED_UPDATE(refreshBuiltPart);
@@ -635,6 +629,11 @@
             }
          }
          
+         private function openCurrent(): void
+         {
+            bSidebar.openBuilding(_selectedModel);
+         }
+         
       ]]>
    </fx:Script>
    <s:Group id="sidebarContainer" left="0" right="0" bottom="0" top="0">
@@ -645,7 +644,7 @@
                <base:layout>
                   <s:VerticalLayout horizontalAlign="justify"/>
                </base:layout>
-               <base:Panel visible="{ML.latestPlanet.ssObject.owner != Owner.PLAYER}"
+               <base:Panel visible="{!ML.latestPlanet.ssObject.ownerIsPlayer}"
                            title="{_selectedModel.name}">
                   <base:Warning paddingTop="6" 
                                 text="{Localizer.string('BuildingSidebar', 'notYourPlanet')}"/>
@@ -660,7 +659,7 @@
                      <s:VerticalLayout horizontalAlign="justify" paddingLeft="10" paddingRight="10"/>
                   </base:layout>
                </base:Panel>
-               <base:AdvancedContainer visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
+               <base:AdvancedContainer visible="{ML.latestPlanet.ssObject.ownerIsPlayer}">
                   <base:Panel id="contentPanel"
                               title="{_selectedModel.isGhost?
                               constructor.name:
@@ -723,44 +722,21 @@
                                         right="6"/>
                            </s:Group>
                            
-                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeInProgress ||
-                                    (_selectedModel.type != BuildingType.HEALING_CENTER))}">
+                           <!-- OPEN BUILDING -->
+                           <s:Group visible="{!_selectedModel.upgradePart.upgradeInProgress
+                                    &amp;&amp; _selectedModel.openable}">
                               <s:Button label="{getString('open')}"
-                                        click="NC.showHealing(_selectedModel, ML.latestPlanet.getActiveHealableUnits())"
+                                        click="openCurrent()"
                                         right="6"/>
                            </s:Group>
-                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeInProgress ||
-                                    (!_selectedModel.isConstructor(ObjectClass.UNIT)) )}">
-                              <s:Button label="{getString('open')}"
-                                        click="NC.showFacilities(_selectedModel.id)"
-                                        right="6"/>
-                           </s:Group>
-                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeInProgress ||
-                                    _selectedModel.type != BuildingType.RESEARCH_CENTER)}">
-                              <s:Button label="{getString('open')}"
-                                        click="NC.showTechnologies()"
-                                        right="6"/>
-                           </s:Group>
-                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeInProgress ||
-                                    _selectedModel.type != BuildingType.DEFENSIVE_PORTAL)}">
-                              <s:Button label="{getString('open')}"
-                                        click="NC.showDefensivePortal(ML.latestPlanet.id)"
-                                        right="6"/>
-                           </s:Group>
-                           <s:Group visible="{!(_selectedModel.upgradePart.upgradeInProgress ||
-                                    _selectedModel.type != BuildingType.MARKET)}">
-                              <s:Button label="{getString('open')}"
-                                        click="NC.showMarket(_selectedModel)"
-                                        right="6"/>
-                           </s:Group>
-                           
                            
                            <base:AdvancedContainer visible="{_selectedModel.npc}">
                               <s:Label text="{getString('noUnits')}" 
-                                       visible="{ML.latestPlanet.getAgressiveGroundUnits().length == 0}"
+                                       visible="{!ML.latestPlanet.hasAgressiveGroundUnits()}"
                                        styleName="unsatisfied" fontSize="16"/>
-                              <s:Button enabled="{ML.latestPlanet.getAgressiveGroundUnits().length != 0}" 
-                                        horizontalCenter="0" click="attack_clickHandler(event)"
+                              <s:Button enabled="{ML.latestPlanet.hasAgressiveGroundUnits()}" 
+                                        horizontalCenter="0" 
+                                        click="openCurrent()"
                                         skinClass="components.skins.RedButtonSkin"
                                         label="{getString('attack')}"/>
                               <base:layout>
@@ -779,7 +755,8 @@
                            <s:Label textAlign="left" text="{getString('label.nextBonus')}"/>
                            <base:TimeLabel text="{bonusTime}" textAlign="right"/>
                            <s:layout>
-                              <s:VerticalLayout horizontalAlign="justify" paddingLeft="10" paddingRight="10"/>
+                              <s:VerticalLayout horizontalAlign="justify" 
+                                                paddingLeft="10" paddingRight="10"/>
                            </s:layout>
                         </s:Group>
                         
@@ -792,56 +769,54 @@
                   <base:Panel title="{getString('panelTitle.cancelProgress')}"
                               visible="{_selectedModel.upgradePart.upgradeEndsAt != null}">
                      <base:AdvancedContainer left="0" right="0">
-                        <s:Group width="100%" visible="{_selectedModel.upgradePart.level > 0}">
-                           <s:Label text="{getString('label.cancelUpgrade')}"
-                                    left="0" right="0" paddingBottom="6" />
-                        </s:Group>
-                        <s:Group width="100%" visible="{_selectedModel.upgradePart.level == 0}">
-                           <s:Label text="{getString('label.cancelConstructor')}"
-                                    left="0" right="0" paddingBottom="6" />
-                        </s:Group>
-                        <base:ImageAndLabel type="{ResourceType.METAL}" paddingLeft="6" 
-                                            visible="{Resource.getModelCancelRevenueString(
-                                            _selectedModel, ResourceType.METAL, builtPart) != null}"
-                                            textToDisplay="{Resource.getModelCancelRevenueString(
-                                            _selectedModel, ResourceType.METAL, builtPart)}"/>
-                        <base:ImageAndLabel type="{ResourceType.ENERGY}" paddingLeft="6" 
-                                            visible="{Resource.getModelCancelRevenueString(
-                                            _selectedModel, ResourceType.ENERGY, builtPart) != null}"
-                                            textToDisplay="{Resource.getModelCancelRevenueString(
-                                            _selectedModel, ResourceType.ENERGY, builtPart)}"/>
-                        <base:ImageAndLabel type="{ResourceType.ZETIUM}" paddingLeft="6"
-                                            visible="{Resource.getModelCancelRevenueString(
-                                            _selectedModel, ResourceType.ZETIUM, builtPart) != null}"
-                                            textToDisplay="{Resource.getModelCancelRevenueString(
-                                            _selectedModel, ResourceType.ZETIUM, builtPart)}"/>
-                        <base:Warning showSign="false" text="{getString('warning.deployCancel')}" 
-                                      visible="{_selectedModel.upgradePart.level == 0 &amp;&amp;  
-                                      ML.latestPlanet.getBuildingByConstructable(_selectedModel.id,
-                                      ObjectClass.BUILDING) == null}" width="100%"
-                                                                      paddingTop="6" paddingBottom="6"/>
-                        <s:Group width="100%">
+                        <s:Label visible="{_selectedModel.upgradePart.level > 0}"
+                                 text="{getString('label.cancelUpgrade')}"
+                                 left="0" right="0" paddingBottom="6" />
+                        <s:Label visible="{_selectedModel.upgradePart.level == 0}"
+                                 text="{getString('label.cancelConstructor')}"
+                                 left="0" right="0" paddingBottom="6"/>
+                        <buildingselectedsidebar:RevenueLabel 
+                           type="{ResourceType.METAL}" 
+                           revenueText="{Resource.getModelCancelRevenueString(
+                           _selectedModel, ResourceType.METAL, builtPart)}"/>
+                        <buildingselectedsidebar:RevenueLabel 
+                           type="{ResourceType.ENERGY}" 
+                           revenueText="{Resource.getModelCancelRevenueString(
+                           _selectedModel, ResourceType.ENERGY, builtPart)}"/>
+                        <buildingselectedsidebar:RevenueLabel 
+                           type="{ResourceType.ZETIUM}" 
+                           revenueText="{Resource.getModelCancelRevenueString(
+                           _selectedModel, ResourceType.ZETIUM, builtPart)}"/>
+                        <base:Warning showSign="false" 
+                                      text="{getString('warning.deployCancel')}" 
+                                      visible="{_selectedModel.upgradePart.level == 0 
+                                      &amp;&amp;  
+                                      ML.latestPlanet.getBuildingByConstructable(
+                                      _selectedModel.id, ObjectClass.BUILDING) == null}" 
+                                      paddingTop="6" paddingBottom="6"/>
+                        <s:Group>
                            <s:Button right="6" label="{getString('label.cancel')}"
                                      click="cancelUpgrade()"/>
                         </s:Group>
                         <base:layout>
-                           <s:VerticalLayout paddingLeft="6" paddingTop="6" paddingRight="6" paddingBottom="6"/>
+                           <s:VerticalLayout paddingLeft="6" paddingTop="6" 
+                                             paddingRight="6" paddingBottom="6"
+                                             horizontalAlign="justify"/>
                         </base:layout>
                      </base:AdvancedContainer>
                   </base:Panel>
                   
                   <base:Panel title="{getString('panelTitle.scientists')}"
-                              visible="{_selectedModel.type == BuildingType.RESEARCH_CENTER &amp;&amp;
-                              _selectedModel.upgradePart.isUpgrading}">
-                     <s:Label text="{getString('message.scientistsNotAvailable')}" lineBreak="toFit"
-                              left="6" right="6"/>
+                              visible="{_selectedModel.type == BuildingType.RESEARCH_CENTER 
+                              &amp;&amp; _selectedModel.upgradePart.isUpgrading}">
+                     <s:Label text="{getString('message.scientistsNotAvailable')}" 
+                              lineBreak="toFit" left="6" right="6"/>
                   </base:Panel>
                   
                   <base:Panel title="{getString('queueInfo')}" 
                               visible="{_selectedModel.isGhost
                               || _selectedModel.constructableType != null}">
                      <buildingsidebar:BuildingProgressElement id="progressElement"
-                                                              cancelable="true"
                                                               constructableModel="{constructable}"/>
                      <s:List id="queueList" 
                              dataProvider="{constructor.constructionQueueEntries}"

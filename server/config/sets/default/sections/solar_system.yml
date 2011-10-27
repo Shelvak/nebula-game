@@ -82,9 +82,9 @@ spawn.regular.units:
 spawn.regular.strategy: outer_circle
 
 # Time range for spawning.
-spawn.battleground.delay: [<%= 30.minutes %> / speed, <%= 2.hours %> / speed]
+spawn.battleground.delay: [<%= 24.hours %> / speed, <%= 48.hours %> / speed]
 # Maximum number of spots occupied by NPC units in SS.
-spawn.battleground.max_spots: 6
+spawn.battleground.max_spots: 3
 # - [count_from, count_to, type, flank]
 #
 # count numbers are inclusive.

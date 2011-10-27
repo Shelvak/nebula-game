@@ -30,12 +30,7 @@ package controllers.alliances.actions
             new SortField('name')];
          ML.allyRatings.refresh();
          
-         var i: int = 0;
-         for each (var ally:MRatingPlayer in ML.allyRatings)
-         {
-            i++;
-            ally.rank = i;
-         }
+         MRatingPlayer.refreshRanks(ML.allyRatings);
          NavigationController.getInstance().showAllyRatings();
          GlobalFlags.getInstance().lockApplication = false;
       }

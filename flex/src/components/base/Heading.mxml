@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+   <fx:Script>
+      <![CDATA[
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         
+         [Bindable]
+         public var text: String;
+         
+         private function getImg(part: String): BitmapData
+         {
+            return ImagePreloader.getInstance().getImage(
+               AssetNames.UI_IMAGES_FOLDER + 'heading_' + part);
+         }
+      ]]>
+   </fx:Script>
+   <s:BitmapImage source="{getImg('line_end')}" rotation="180"/>
+   <s:BitmapImage source="{getImg('line')}" width="100%"/>
+   <s:Label text="{text}" fontSize="24" color="#eec500" fontWeight="bold"
+            paddingLeft="10" paddingRight="10"/>
+   <s:BitmapImage source="{getImg('line')}" width="100%"/>
+   <s:BitmapImage source="{getImg('line_end')}"/>
+   <s:layout>
+      <s:HorizontalLayout gap="0" verticalAlign="middle"/>
+   </s:layout>
+</s:Group>

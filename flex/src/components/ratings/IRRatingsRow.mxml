@@ -2,7 +2,9 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                 xmlns:s="library://ns.adobe.com/flex/spark" 
                 xmlns:mx="library://ns.adobe.com/flex/mx"
-                autoDrawBackground="false" xmlns:base="components.base.*" xmlns:unitsscreen="components.unitsscreen.*">
+                autoDrawBackground="false" 
+                xmlns:base="components.base.*" 
+                xmlns:unitsscreen="components.unitsscreen.*">
    <fx:Script>
       <![CDATA[
          import components.alliance.AllianceScreenM;
@@ -85,11 +87,11 @@
       <base:layout>
          <s:HorizontalLayout gap="1" verticalAlign="middle"/>
       </base:layout>
-      <s:Label text="{player.rank}" width="{RatingsWidths.rank}" textAlign="center"/>
+      <s:Label text="{player.nr}" width="{RatingsWidths.rank}" textAlign="center"/>
       <base:AdvancedContainer width="{RatingsWidths.player -
                               (getImaginaryLevel(player.rank) > 0?47:0)}"
-                              toolTip="{Localizer.string('Ratings', player.online
-                              ?'online':'offline')}">
+                              toolTipCreate="player.createStatusTooltip(event)"
+                              toolTip=" ">
          <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
                         AssetNames.getIconImageName(player.online?'online':'offline'))}"/>
          <s:Button label="{player.name}" width="100%" skinClass="components.skins.LinkButtonSkin"

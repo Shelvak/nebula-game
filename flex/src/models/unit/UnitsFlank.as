@@ -77,6 +77,7 @@ package models.unit
          if (selectionMode != UNDEFINED_SELECTION && model != lastUnit)
          {
             executeShiftSelection(model);
+            US.dispatchSelectionChangeEvent();
             return true;
          }
          else

@@ -5,9 +5,12 @@ package models.unit
    import components.unitsscreen.events.LoadUnloadEvent;
    import components.unitsscreen.events.UnitsScreenEvent;
    
+   import controllers.GlobalFlags;
    import controllers.Messenger;
    import controllers.units.UnitsCommand;
-   
+
+   import flash.events.Event;
+
    import flash.events.EventDispatcher;
    import flash.events.MouseEvent;
    
@@ -122,7 +125,7 @@ package models.unit
             Resource.getResourceVolume(1, ResourceType.METAL),
             Resource.getResourceVolume(1, ResourceType.ENERGY),
             Resource.getResourceVolume(1, ResourceType.ZETIUM));
-         return (transporter.storage - transporter.stored < minVol);
+         return (transporter.transporterStorage - transporter.stored < minVol);
       }
       
       [Bindable (event="selectedResourcesChange")]
@@ -140,7 +143,7 @@ package models.unit
                (Math.min(transporter[resource], Resource(ML.latestPlanet.ssObject[resource]).maxStock - 
                   Resource(ML.latestPlanet.ssObject[resource]).currentStock))
                :(Math.min(
-                  Resource.getResourcesForVolume(transporter.storage - transporter.stored - 
+                  Resource.getResourcesForVolume(transporter.transporterStorage - transporter.stored - 
                      getOtherSelected(resource) - unitsSelectedVolume, resource),
                   Resource(ML.latestPlanet.ssObject[resource]).currentStock)));
          rebuildWarning();
@@ -187,14 +190,15 @@ package models.unit
             i++;
             tempStorageString += Localizer.string('Resources', 'additionalStorage.resource', [res]);
          }
-         tempStorageString = missingStorages.length == 0?'':Localizer.string('Units', 'label.planetFull', [tempStorageString, 
-            (missingStorages.length == 1?'is':'are')]);
+         tempStorageString = missingStorages.length == 0
+            ? ''
+            : Localizer.string('Units', 'label.planetFull', [
+               tempStorageString, (missingStorages.length == 1 ? 'is' : 'are')
+            ]);
          if (missingStorageString != tempStorageString)
          {
             missingStorageString = tempStorageString;
          }
-         
-         
       }
       
       [Bindable (event="selectedResourcesChange")]
@@ -271,6 +275,7 @@ package models.unit
          var _selectionIds: Array = selectionIds;
          if (_selectionIds.length > 0)
          {
+            GlobalFlags.getInstance().lockApplication = true;
             if (target is Unit)
             {
                new UnitsCommand(
@@ -292,6 +297,7 @@ package models.unit
          }
          if (metalSelectedVal > 0 || energySelectedVal > 0 || zetiumSelectedVal > 0)
          {
+            GlobalFlags.getInstance().lockApplication = true;
             if (target is Unit)
             {
                new UnitsCommand(
@@ -438,7 +444,8 @@ package models.unit
       
       public function refreshVolume(e: UnitEvent = null): void
       {
-         selectionClass.freeStorage = (target is Unit?transporter.storage - transporter.stored - volume:-1);
+         selectionClass.freeStorage = (target is Unit
+            ? transporter.transporterStorage - transporter.stored - volume : -1);
          dispatchVolumeChangeEvent();
       }
       /**

@@ -9,6 +9,7 @@ package models.factories
    
    import mx.collections.ArrayCollection;
    
+   import utils.DateUtil;
    import utils.locale.Localizer;
    
    
@@ -36,6 +37,17 @@ package models.factories
             player.sciencePoints +
             player.armyPoints +
             player.economyPoints;
+         if (data.lastSeen != null)
+         {
+            if (data.lastSeen is String)
+            {
+               player.offlineSince = DateUtil.parseServerDTF(data.lastSeen);
+            }
+            else if (data.lastSeen)
+            {
+               player.online = true;
+            }
+         }
          return player;
       }
       

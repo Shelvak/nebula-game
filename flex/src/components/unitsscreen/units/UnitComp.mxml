@@ -186,7 +186,7 @@
                <s:VerticalLayout/>
             </base:layout>
             <s:Button id="load" click="show_inside(true)" visible="{!(
-                      (model.unit.storage == 0)
+                      (ML.technologies.getUnitStorage(model.unit.type, model.unit.level) == 0)
                       || (!model.unit.location.isSSObject)
                       || (!ML.latestPlanet)
                       || (model.unit.owner != Owner.PLAYER)

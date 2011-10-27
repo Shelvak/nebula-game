@@ -42,28 +42,26 @@ class AlliancesController < GenericController
   # Invocation: by client
   #
   # Parameters:
-  # - planet_id (Fixnum): ID of a visible planet
+  # - player_id (Fixnum): ID of a player with visible planet.
   #
   # Response: None
   #
   def action_invite
-    param_options :required => %w{planet_id}
+    param_options :required => {:player_id => Fixnum}
 
     alliance = get_owned_alliance
-    
-    planet = SsObject::Planet.find(params['planet_id'])
+
+    visible_player_ids = Alliance.visible_enemy_player_ids(alliance.id)
     raise GameLogicError.new(
-      "Cannot invite if you do not see that planet!"
-    ) unless Location.visible?(player, planet)
-    raise GameLogicError.new(
-      "Cannot invite if planet is a battleground planet!"
-    ) if planet.solar_system_id == Galaxy.battleground_id(player.galaxy_id)
+      "Cannot invite if you do not see that player!"
+    ) unless visible_player_ids.include?(params['player_id'])
     
     raise GameLogicError.new(
       "Cannot invite because alliance has max players!"
     ) if alliance.full?
 
-    Notification.create_for_alliance_invite(alliance, planet.player)
+    player = Player.find(params['player_id'])
+    Notification.create_for_alliance_invite(alliance, player)
   end
 
   # Joins an alliance. Needs an notification ID to join. Destroys
@@ -169,16 +167,26 @@ class AlliancesController < GenericController
   # - owner_id (Fixnum): ID of the alliance owner.
   # - players (Hash[]): Alliance#player_ratings
   # - victory_points (Fixnum): number of alliance victory points
+  # Only if alliance owner:
+  # - invitable_players (Hash[]]): Player#ratings with players that you can
+  # invite to alliance.
   #
   def action_show
-    param_options :required => %w{id}
+    param_options :required => {:id => Fixnum}
 
     alliance = Alliance.find(params['id'])
-    respond :name => alliance.name,
+    response = {
+      :name => alliance.name,
       :description => alliance.description,
       :owner_id => alliance.owner_id,
       :players => alliance.player_ratings,
-      :victory_points => alliance.victory_points
+      :victory_points => alliance.victory_points,
+    }
+    if alliance.owner_id == player.id
+      response[:invitable_players] = alliance.invitable_ratings
+    end
+
+    respond response
   end
 
   # Edits an alliance.

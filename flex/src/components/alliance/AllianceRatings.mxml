@@ -102,6 +102,7 @@
             ML.allyRatings.sort = new Sort();
             ML.allyRatings.sort.fields = sortFields[event.key];
             ML.allyRatings.refresh();
+            MRatingPlayer.refreshRanks(ML.allyRatings);
          }
          
       ]]>

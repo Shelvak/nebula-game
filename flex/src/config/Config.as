@@ -444,7 +444,7 @@ package config
          return getUnitProperty(type, "xpNeeded");
       }
       
-      public static function getUnitStorage(type: String): int
+      public static function getUnitStorage(type: String): String
       {
          return getUnitProperty(type, "storage");
       }
@@ -950,6 +950,11 @@ package config
       public static function getAccelerateInfo(): Array
       {
          return getCredsProperty('upgradable.speedUp');
+      }
+      
+      public static function getTechnologyUnlearnCost(): int
+      {
+         return getCredsProperty('technology.destroy');
       }
       
       public static function getMoveCredits(): int

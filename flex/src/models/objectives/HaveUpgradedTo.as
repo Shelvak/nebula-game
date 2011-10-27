@@ -3,8 +3,7 @@ package models.objectives
    import controllers.objects.ObjectClass;
    
    import utils.ModelUtil;
-   import utils.ObjectFormType;
-   import utils.ObjectStringsResolver;
+   import utils.StringUtil;
    import utils.locale.Localizer;
    
    
@@ -24,12 +23,11 @@ package models.objectives
          var result: String = Localizer.string('Objectives', 'objectiveText.'+objective.type+
             (klass != ObjectClass.TECHNOLOGY ? '' 
                : (classOnly ? 'TechClass' : 'Tech')),
-            [ObjectStringsResolver.getString(classOnly ? objective.key
-               : ModelUtil.getModelSubclass(objective.key), 
-               (klass == ObjectClass.TECHNOLOGY && !classOnly
-                  ?ObjectFormType.WHOS
-                  :ObjectFormType.WHAT),
-               objective.count), objective.level]);
+            [
+               objective.count, 
+               (classOnly ? objective.key : StringUtil.replaceClassSeperator(objective.key)), 
+               objective.level
+            ]);
          if (result == null || result == '')
          {
             throw new Error('Objective '+ objective.type + ' text was not resolved');

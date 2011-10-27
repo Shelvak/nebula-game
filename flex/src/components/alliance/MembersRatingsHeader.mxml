@@ -8,11 +8,11 @@
    <fx:Script>
       <![CDATA[
          import components.ratings.RatingsWidths;
-         import models.events.HeaderEvent;
          
          import flash.text.engine.FontWeight;
          
          import models.ModelLocator;
+         import models.events.HeaderEvent;
          
          import utils.locale.Localizer;
          
@@ -54,6 +54,9 @@
          [Bindable]
          private var ML: ModelLocator = ModelLocator.getInstance();
          
+         [Bindable]
+         public var avpVisible: Boolean = true;
+         
       ]]>
    </fx:Script>
    <s:Rect left="0" right="0" top="0" bottom="0">
@@ -64,7 +67,7 @@
          </s:LinearGradient>
       </s:fill>
    </s:Rect>
-   <s:Group>
+   <base:AdvancedContainer>
       <s:Label width="{RatingsWidths.rank}" 
                text="{Localizer.string('Ratings', 'rank')}" textAlign="center"
                rollOver="label_rollOverHandler(event)" 
@@ -80,6 +83,17 @@
                rollOver="label_rollOverHandler(event)" 
                rollOut="label_rollOutHandler(event)"
                click="label_clickHandler(event, 'name')"/>
+      <s:Line yFrom="0" yTo="24">
+         <s:stroke>
+            <s:SolidColorStroke color="0xffffff" weight="1"/>
+         </s:stroke>
+      </s:Line>
+      <s:Label width="{RatingsWidths.playerAlliance}" 
+               text="{Localizer.string('Ratings', 'alliance')}" textAlign="center"
+               rollOver="label_rollOverHandler(event)" 
+               rollOut="label_rollOutHandler(event)"
+               visible="{!avpVisible}"
+               click="label_clickHandler(event, 'alliance')"/>
       <s:Line yFrom="0" yTo="24">
          <s:stroke>
             <s:SolidColorStroke color="0xffffff" weight="1"/>
@@ -158,8 +172,10 @@
                rollOut="label_rollOutHandler(event)"
                click="label_clickHandler(event, 'allianceVps')"
                toolTip="{Localizer.string('Ratings', 
-               'allianceVictoryPoints.long')}"/>
-      <s:Line yFrom="0" yTo="24">
+               'allianceVictoryPoints.long')}"
+               visible="{avpVisible}"/>
+      <s:Line yFrom="0" yTo="24"
+              visible="{avpVisible}">
          <s:stroke>
             <s:SolidColorStroke color="0xffffff" weight="1"/>
          </s:stroke>
@@ -178,8 +194,8 @@
       <s:Label width="{RatingsWidths.action}" 
                text="{Localizer.string('Alliances', 'label.action')}" textAlign="center"
                paddingLeft="10" paddingRight="10"/>
-      <s:layout>
+      <base:layout>
          <s:HorizontalLayout gap="0" verticalAlign="middle" paddingTop="3" paddingBottom="3"/>
-      </s:layout>
-   </s:Group>
+      </base:layout>
+   </base:AdvancedContainer>
 </s:Group>

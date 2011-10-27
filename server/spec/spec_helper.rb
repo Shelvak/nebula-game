@@ -130,10 +130,13 @@ if $SPEC_INITIALIZED.nil?
     end
   end
 
-  # Disable logging. Who looks at it anyway?
-  LOGGER.level = GameLogger::LEVEL_FATAL
-
   RSpec.configure do |config|
+    def start_transaction
+      conn = ActiveRecord::Base.connection
+      conn.begin_db_transaction
+      conn.increment_open_transactions
+    end
+
     def break_transaction
       conn = ActiveRecord::Base.connection
       unless conn.open_transactions == 0
@@ -142,11 +145,13 @@ if $SPEC_INITIALIZED.nil?
       end
     end
 
+    def restore_logging
+      LOGGER.level = GameLogger::LEVEL_DEBUG
+    end
+
     config.before(:each) do
       App.server_state = App::SERVER_STATE_INITIALIZING
-      conn = ActiveRecord::Base.connection
-      conn.begin_db_transaction
-      conn.increment_open_transactions
+      start_transaction
     end
 
     config.after(:each) do
@@ -175,7 +180,7 @@ if $SPEC_INITIALIZED.nil?
   # Create but stub out all unnecessary validation methods
   def Factory.create!(*args)
     model = Factory.build(*args)
-    model.stub!(:validate_technologies).and_return(true)
+    def model.validate_technologies; true; end
     model.save!
 
     model

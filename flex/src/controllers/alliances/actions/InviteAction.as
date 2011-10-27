@@ -31,7 +31,7 @@ package controllers.alliances.actions
       {
          GlobalFlags.getInstance().lockApplication = true;
          var params:InviteActionParams = InviteActionParams(cmd.parameters);
-         sendMessage(new ClientRMO({"planetId": params.planetId}));
+         sendMessage(new ClientRMO({"playerId": params.playerId}));
       }
       
       public override function cancel(rmo:ClientRMO):void

@@ -65,10 +65,10 @@ class TechnologiesController < GenericController
   # Pauses upgrading technology
   #
   # Params:
-  #   id: Fixnum, id of technology to upgrade
+  # - id (Fixnum): id of technology to upgrade
   #
   def action_pause
-    param_options :required => %w{id}
+    param_options :required => {:id => Fixnum}
 
     technology = player.technologies.find(params['id'])
     technology.pause!
@@ -79,11 +79,11 @@ class TechnologiesController < GenericController
   # Resumes paused technology
   #
   # Params:
-  #   id: Fixnum, id of technology to upgrade
-  #   scientists: Fixnum, how many scientists should we assign
+  # - id (Fixnum): id of technology to upgrade
+  # - scientists (Fixnum): how many scientists should we assign
   #
   def action_resume
-    param_options :required => %w{id scientists}
+    param_options :required => {:id => Fixnum, :scientists => Fixnum}
 
     technology = player.technologies.find(params['id'])
     technology.scientists = params['scientists']
@@ -99,7 +99,7 @@ class TechnologiesController < GenericController
   # - index (Fixnum): Index of CONFIG["creds.upgradable.speed_up"] entry.
   #
   def action_accelerate
-    param_options :required => %w{id index}
+    param_options :required => {:id => Fixnum, :index => Fixnum}
 
     technology = player.technologies.find(params['id'])
     Creds.accelerate!(technology, params['index'])
@@ -108,5 +108,19 @@ class TechnologiesController < GenericController
   rescue ArgumentError => e
     # In case client provides invalid index.
     raise GameLogicError.new(e.message)
+  end
+
+  # Unlearns technology. Requires creds.
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the technology that will be unlearned.
+  #
+  # Response: None
+  #
+  def action_unlearn
+    param_options :required => {:id => Fixnum}
+
+    technology = player.technologies.find(params['id'])
+    technology.unlearn!
   end
 end

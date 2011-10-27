@@ -3,6 +3,33 @@ require File.expand_path(
 )
 
 describe Combat::Annexer do
+  shared_examples_for "taking planet" do
+    it "should not create protection cooldown" do
+      Combat::Annexer.annex!(@planet, @check_report, @outcomes)
+      @planet.should_not have_cooldown
+    end
+
+    it "should not created protection notification" do
+      Notification.should_not_receive(:create_for_planet_protected)
+      Combat::Annexer.annex!(@planet, @check_report, @outcomes)
+    end
+
+    it "should take ownership of the planet" do
+      lambda do
+        Combat::Annexer.annex!(@planet, @check_report, @outcomes)
+        @planet.reload
+      end.should change(@planet, :player).to(nil)
+    end
+
+    it "should create planet annexed notifications" do
+      @alliances.values.flatten.compact.each do |player|
+        Notification.should_receive(:create_for_planet_annexed).
+          with(player.id, @planet, @outcomes[player.id])
+      end
+      Combat::Annexer.annex!(@planet, @check_report, @outcomes)
+    end
+  end
+
   describe ".annex!" do
     before(:all) do
       @alliances = {
@@ -99,6 +126,16 @@ describe Combat::Annexer do
             end
             Combat::Annexer.annex!(@planet, @check_report, @outcomes)
           end
+
+          describe "when in battleground solar system" do
+            before(:each) do
+              ss = @planet.solar_system
+              ss.kind = SolarSystem::KIND_BATTLEGROUND
+              ss.save!
+            end
+
+            it_should_behave_like "taking planet"
+          end
         end
         
         describe "when it's not the last planet" do
@@ -107,20 +144,7 @@ describe Combat::Annexer do
             @owner.save!
           end
 
-          it "should take ownership of the planet" do
-            lambda do
-              Combat::Annexer.annex!(@planet, @check_report, @outcomes)
-              @planet.reload
-            end.should change(@planet, :player).to(nil)
-          end
-          
-          it "should create planet annexed notifications" do
-            @alliances.values.flatten.compact.each do |player|
-              Notification.should_receive(:create_for_planet_annexed).
-                with(player.id, @planet, @outcomes[player.id])
-            end
-            Combat::Annexer.annex!(@planet, @check_report, @outcomes)
-          end
+          it_should_behave_like "taking planet"
         end
       end
     end

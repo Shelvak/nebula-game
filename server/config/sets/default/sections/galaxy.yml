@@ -19,7 +19,7 @@ player.inactivity_check: <%= 1.week %> / speed
 # How much points must player have to be considered active?
 player.inactivity_check.points: 15000
 # How recent should last player login be if he doesn't have enough points?
-player.inactivity_check.last_login_in: <%= 3.days %> / speed
+player.inactivity_check.last_seen_in: <%= 3.days %> / speed
 
 # How much points do you need to trigger referral callback?
 # This one is also defined in web configuration.

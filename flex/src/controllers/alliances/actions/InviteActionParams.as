@@ -4,7 +4,7 @@ package controllers.alliances.actions
     * Aggregates parameters of <code>controllers.alliance.actions.InviteAction</code> client command.
     * 
     * @see #InviteActionParams()
-    * @see #planetId
+    * @see #playerId
     * @see InviteAction
     */
    public class InviteActionParams
@@ -14,16 +14,16 @@ package controllers.alliances.actions
        * 
        * @see #planetId
        */
-      public function InviteActionParams(planetId:int)
+      public function InviteActionParams(playerId:int)
       {
          super();
-         this.planetId = planetId;
+         this.playerId = playerId;
       }
       
       
       /**
-       * ID of a visible planet player wants to invite its owner of. <b>Required.</b>
+       * ID of a player to invite. <b>Required.</b>
        */
-      public var planetId:int;
+      public var playerId:int;
    }
 }

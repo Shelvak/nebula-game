@@ -52,6 +52,17 @@ package utils
 			
 			return value.charAt().toLowerCase() + value.substring(1);
 		}
+      
+      /**
+       * Replaces '::' to '_' 
+       * @param value source
+       * @return replaced string
+       * 
+       */      
+      public static function replaceClassSeperator(value: String): String
+      {
+         return value.replace('::', '_');
+      }
 		
 		private static function filterFormula(formula: String, params: Object=null): String
 		{
