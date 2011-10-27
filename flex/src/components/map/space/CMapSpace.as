@@ -20,12 +20,12 @@ package components.map.space
    import flash.geom.Rectangle;
    
    import models.BaseModel;
-   import models.map.IMStaticSpaceObject;
-   import models.map.MStaticSpaceObjectsAggregator;
    import models.MWreckage;
    import models.location.LocationMinimal;
+   import models.map.IMStaticSpaceObject;
    import models.map.MMap;
    import models.map.MMapSpace;
+   import models.map.MStaticSpaceObjectsAggregator;
    import models.map.events.MMapEvent;
    
    import mx.collections.ArrayCollection;
@@ -591,13 +591,15 @@ package components.map.space
       
       protected override function selectModel(model:BaseModel) : void
       {
-         if (model is IMStaticSpaceObject)
-         {
-            selectComponent(
-               _staticObjectsCont.getElementAt
-                  (getAggregatorComponentIndex(IMStaticSpaceObject(model).currentLocation)),
-               true, true
-            );
+         if (model is IMStaticSpaceObject) {
+            var object:IMStaticSpaceObject = IMStaticSpaceObject(model);
+            if (getModel().definesLocation(object.currentLocation)) {
+               selectComponent(
+                  _staticObjectsCont.getElementAt(
+                     getAggregatorComponentIndex(object.currentLocation)
+                  ), true, true
+               );
+            }
          }
       }
       

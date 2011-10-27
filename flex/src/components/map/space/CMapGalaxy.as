@@ -245,6 +245,9 @@ package components.map.space
       protected override function selectModel(model:BaseModel) : void {
          if (model is IMStaticSpaceObject) {
             var object:IMStaticSpaceObject = IMStaticSpaceObject(model);
+            if (!getGalaxy().definesLocation(object.currentLocation)) {
+               return;
+            }
             if (_selectedLocation == null || !_selectedLocation.equals(object.currentLocation)) {
                deselectSelectedObject();
                _selectedLocation = object.currentLocation;
