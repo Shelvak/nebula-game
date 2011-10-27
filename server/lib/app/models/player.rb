@@ -194,14 +194,16 @@ class Player < ActiveRecord::Base
   #     "economy_points" => Fixnum,
   #     "army_points" => Fixnum,
   #     "alliance" => {"id" => Fixnum, "name" => String} | nil,
-  #     "online" => Boolean,
+  #     "last_login" => true (currently online) | Time | nil (never logged in),
   #   }
   # ]
   #
   def self.ratings(galaxy_id, condition=nil)
     p = table_name
     (condition.nil? ? self : condition).
-      select(RATING_ATTRIBUTES_SQL + ", a.name AS a_name, a.id AS a_id").
+      select(
+        RATING_ATTRIBUTES_SQL + ", a.name AS a_name, a.id AS a_id, last_login"
+      ).
       where(:galaxy_id => galaxy_id).
       joins("LEFT JOIN #{Alliance.table_name} AS a
         ON `#{p}`.alliance_id=a.id").
@@ -213,7 +215,9 @@ class Player < ActiveRecord::Base
         row['alliance'] = alliance_id \
           ? {'id' => alliance_id, 'name' => alliance_name} \
           : nil
-        row["online"] = Dispatcher.instance.connected?(row["id"])
+        row['last_login'] = true if Dispatcher.instance.connected?(row['id'])
+        row['last_login'] = Time.parse(row['last_login']) \
+          if row['last_login'].is_a?(String)
         row
       end
   end
