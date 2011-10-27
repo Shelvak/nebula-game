@@ -456,10 +456,20 @@ Message was:
   end
 
   def post_to_web(callback_url, path, params={})
-    Net::HTTP.post_form(
-      web_uri_for(callback_url, path),
+    uri = web_uri_for(callback_url, path)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.open_timeout = 2
+    http.read_timeout = 5
+
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request.set_form_data(
       params.merge('secret_key' => CONFIG['control']['token'])
     )
+
+    response = http.request(request)
+    response
+  rescue Timeout::Error
+    raise Error.new("Timeout hit while posting to web: #{callback_url}")
   end
 
   def web_uri_for(callback_url, path)
