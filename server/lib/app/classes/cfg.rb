@@ -93,6 +93,11 @@ class Cfg; class << self
   def player_initial_population; CONFIG['galaxy.player.population']; end
   def player_max_population; CONFIG['galaxy.player.population.max']; end
 
+  # Time in seconds that has passed to still count player as active.
+  def player_last_seen_in
+    CONFIG.evalproperty('galaxy.player.inactivity_check.last_seen_in')
+  end
+
   def player_referral_points_needed
     CONFIG['galaxy.player.referral.points_needed']
   end

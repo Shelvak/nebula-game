@@ -339,9 +339,7 @@ describe SolarSystem do
       " in for a certain period of time" do
         before(:each) do
           @player.economy_points = 0
-          @player.last_login = (CONFIG.evalproperty(
-            'galaxy.player.inactivity_check.last_login_in') + 10.minutes
-          ).ago
+          @player.last_seen = (Cfg.player_last_seen_in + 10.minutes).ago
           @player.save!
         end
 
@@ -352,8 +350,8 @@ describe SolarSystem do
             CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
         end
 
-        it "should not fail if last_login is nil" do
-          @player.last_login = nil
+        it "should not fail if last_seen is nil" do
+          @player.last_seen = nil
           @player.save!
           SolarSystem.on_callback(@ss.id,
             CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
@@ -371,8 +369,7 @@ describe SolarSystem do
       it "should not erase SS if player has enough points" do
         @player.economy_points = CONFIG[
           'galaxy.player.inactivity_check.points']
-        @player.last_login = (CONFIG.evalproperty(
-          'galaxy.player.inactivity_check.last_login_in') + 1.day).ago
+        @player.last_seen = (Cfg.player_last_seen_in + 1.day).ago
         @player.save!
 
         SolarSystem.on_callback(@ss.id,
@@ -384,8 +381,7 @@ describe SolarSystem do
 
       it "should not erase SS if player has logged in recently" do
         @player.economy_points = 0
-        @player.last_login = (CONFIG.evalproperty(
-          'galaxy.player.inactivity_check.last_login_in') - 10.minutes).ago
+        @player.last_seen = (Cfg.player_last_seen_in - 10.minutes).ago
         @player.save!
 
         SolarSystem.on_callback(@ss.id,

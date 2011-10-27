@@ -451,7 +451,7 @@ Message was:
   # Returns how much players were logged in in last _time_ seconds.
   def get_player_count_in(time)
     Player.connection.select_value(
-      "SELECT COUNT(*) FROM `#{Player.table_name}` WHERE last_login >= '#{
+      "SELECT COUNT(*) FROM `#{Player.table_name}` WHERE last_seen >= '#{
       (Time.now - time).to_s(:db)}'")
   end
 

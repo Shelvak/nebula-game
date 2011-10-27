@@ -5,22 +5,22 @@ require File.expand_path(
 describe Player do
   describe ".ratings" do
     before(:all) do
-      ally = Factory.create(:player_for_ratings, :last_login => 10.minutes.ago)
+      ally = Factory.create(:player_for_ratings, :last_seen => 10.minutes.ago)
       @alliance = Factory.create(:alliance, :owner => ally,
         :galaxy => ally.galaxy)
       ally.alliance = @alliance
       ally.save!
 
       no_ally = Factory.create(:player_for_ratings,
-        :galaxy => ally.galaxy, :last_login => 5.minutes.ago)
+        :galaxy => ally.galaxy, :last_seen => 5.minutes.ago)
       not_logged_in = Factory.create(:player_for_ratings,
-        :galaxy => ally.galaxy, :last_login => nil)
+        :galaxy => ally.galaxy, :last_seen => nil)
 
       @players = [ally, no_ally, not_logged_in]
       @result = Player.ratings(@alliance.galaxy_id)
     end
 
-    (%w{id name victory_points alliance_vps planets_count last_login} +
+    (%w{id name victory_points alliance_vps planets_count last_seen} +
         Player::POINT_ATTRIBUTES).each do |attr|
       it "should include #{attr}" do
         @result.each_with_index do |row, index|
@@ -29,15 +29,15 @@ describe Player do
       end
     end
 
-    it "should set last_login to nil if currently online" do
+    it "should set last_seen to true if currently online" do
       dispatcher = mock(Dispatcher)
       Dispatcher.stub!(:instance).and_return(dispatcher)
       dispatcher.stub!(:connected?).with(@players[0].id).and_return(true)
       dispatcher.stub!(:connected?).with(@players[1].id).and_return(false)
       dispatcher.stub!(:connected?).with(@players[2].id).and_return(false)
       result = Player.ratings(@alliance.galaxy_id)
-      result.map { |row| row["last_login"] }.
-        should == [true, @players[1].last_login, @players[2].last_login]
+      result.map { |row| row["last_seen"] }.
+        should == [true, @players[1].last_seen, @players[2].last_seen]
     end
 
     it "should include alliance if player is in alliance" do

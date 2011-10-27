@@ -219,10 +219,9 @@ class SolarSystem < ActiveRecord::Base
     return if player_ids.size > 1
 
     player = Player.find(player_ids[0])
-    if player.last_login.nil? || ! (
+    if player.last_seen.nil? || ! (
         player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
-        player.last_login >= CONFIG.evalproperty(
-        'galaxy.player.inactivity_check.last_login_in').ago)
+        player.last_seen >= Cfg.player_last_seen_in.ago)
       # This player is inactive. Destroy him.
       player.destroy!
       
