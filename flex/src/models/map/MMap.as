@@ -327,22 +327,32 @@ package models.map
       /* ### UI COMMANDS ### */
       /* ################### */
       
-      public function zoomObject(object:*, operationCompleteHandler:Function = null) : void {
-         dispatchUiCommand(MMapEvent.UICMD_ZOOM_OBJECT, object, operationCompleteHandler);
+      public function zoomObject(object:*, instant:Boolean = false, operationCompleteHandler:Function = null) : void {
+         dispatchUiCommand(
+            MMapEvent.UICMD_ZOOM_OBJECT,
+            object, instant, operationCompleteHandler
+         );
       }
       
-      public function selectObject(object:*, operationCompleteHandler:Function = null) : void{
-         dispatchUiCommand(MMapEvent.UICMD_SELECT_OBJECT, object, operationCompleteHandler);
+      public function selectObject(object:*, instant:Boolean = false, operationCompleteHandler:Function = null) : void{
+         dispatchUiCommand(
+            MMapEvent.UICMD_SELECT_OBJECT,
+            object, instant, operationCompleteHandler
+         );
       }
       
-      public function moveTo(location:LocationMinimal, operationCompleteHandler:Function = null) : void {
-         dispatchUiCommand(MMapEvent.UICMD_MOVE_TO, location, operationCompleteHandler);
+      public function moveTo(location:LocationMinimal, instant:Boolean = false, operationCompleteHandler:Function = null) : void {
+         dispatchUiCommand(
+            MMapEvent.UICMD_MOVE_TO,
+            location, instant, operationCompleteHandler
+         );
       }
       
-      protected function dispatchUiCommand(type:String, object:*, operationCompleteHandler:Function) : void {
+      protected function dispatchUiCommand(type:String, object:*, instant:Boolean, operationCompleteHandler:Function) : void {
          if (hasEventListener(type)) {
             var event:MMapEvent = new MMapEvent(type);
             event.object = object;
+            event.instant = instant;
             event.operationCompleteHandler = operationCompleteHandler;
             dispatchEvent(event);
          }

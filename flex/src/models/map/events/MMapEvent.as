@@ -84,6 +84,13 @@ package models.map.events
        */
       public var object:*;
       
+      /**
+       * Should <code>UICMD_*</code> command be executed instantly (without animations if any)?
+       * 
+       * @default false
+       */
+      public var instant:Boolean = false;
+      
       
       /**
        * Relevant only for <code>UICMD_*</code> events. Optional. Must not have any arguments.

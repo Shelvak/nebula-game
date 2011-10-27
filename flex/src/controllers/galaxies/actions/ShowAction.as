@@ -24,7 +24,7 @@ package controllers.galaxies.actions
    import models.planet.Planet;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SolarSystem;
-
+   
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
@@ -152,7 +152,7 @@ package controllers.galaxies.actions
                         var ss: SolarSystem = SolarSystem(
                            solarSystems.getItemAt(0)
                         );
-                        galaxy.moveTo(ss.currentLocation);
+                        galaxy.moveTo(ss.currentLocation, true);
                      }
                   }
                );
