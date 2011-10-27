@@ -30,13 +30,13 @@ package models.factories
          if (data["metadata"] != null)
             ss.metadata = BaseModel.createModel(SSMetadata, data.metadata);
          for each (var object:Object in data.ssObjects) {
-            ss.objects.addItem(SSObjectFactory.fromObject(object));
+            ss.addObject(SSObjectFactory.fromObject(object));
          }
          for each (var wreckage:Object in data.wreckages) {
-            ss.objects.addItem(BaseModel.createModel(MWreckage, wreckage));
+            ss.addObject(BaseModel.createModel(MWreckage, wreckage));
          }
          for each (var cooldown:Object in data.cooldowns) {
-            ss.objects.addItem(CooldownFactory.MCooldownSpace_fromObject(cooldown));
+            ss.addObject(CooldownFactory.MCooldownSpace_fromObject(cooldown));
          }
          
          return ss;
