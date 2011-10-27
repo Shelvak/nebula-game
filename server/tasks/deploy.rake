@@ -256,15 +256,18 @@ class DeployHelpers; class << self
   end
 
   def install_gems(ssh)
-    exec_server(ssh, "rake gems:install:deploy", false)
+    response = exec_server(ssh, "rake gems:install:deploy", false)
+    puts response
   end
 
   def migrate_db(ssh)
-    exec_server(ssh, "rake db:migrate NO_TEST=1")
+    response = exec_server(ssh, "rake db:migrate NO_TEST=1")
+    puts response
   end
 
   def load_quests(ssh)
-    exec_server(ssh, "rake quests:load")
+    response = exec_server(ssh, "rake quests:load")
+    puts response
   end
 end; end
 
