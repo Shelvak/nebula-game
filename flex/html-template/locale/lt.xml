@@ -3228,8 +3228,16 @@
       <p>Pergalės taškai, kuriuos sąjungai uždirbo jos žaidėjai.</p>
     </allianceVictoryPoints.long>
     <armyPoints value="Kariuomenės taškai" />
-    <online value="prisijungęs" />
-    <offline value="atsijungęs" />
+    <online value="Prisijungęs" />
+    <offlineCommon value="Atsijungęs" />
+    <offline>
+      <p>[reference:offlineCommon]</p>
+      <p>Žaidėjas dar nebuvo prisijungęs.</p>
+    </offline>
+    <offlineSince>
+      <p>[reference:offlineCommon]</p>
+      <p>Paskutinį kartą matytas prieš {0} ({1}).</p>
+    </offlineSince>
     <label.search value="Paieška" />
     <label.pointsToWin value="Pergalės taškų laimėti žaidimui: {0}" />
     <label.filterOnline value="Rodyti tik prisijungusius žaidėjus" />

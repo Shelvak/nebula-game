@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<s:Group 
+   xmlns:fx="http://ns.adobe.com/mxml/2009"    
+   xmlns:mx="library://ns.adobe.com/flex/mx"    
+   xmlns:base="components.base.*"  
+   xmlns:s="library://ns.adobe.com/flex/spark"
+   implements="mx.core.IToolTip" 
+   alpha=".9">
+   <fx:Script>
+      <![CDATA[
+         import utils.locale.Localizer;
+         //  Implement required methods of the IToolTip interface; these 
+         //  methods are not used in this example, though.
+         [Bindable]
+         public var statusText: String = null;
+
+         private var _text:String;
+         
+         public function get text():String { 
+            return _text; 
+         } 
+         public function set text(value:String):void {
+         } 
+      ]]>
+   </fx:Script>
+   <s:Rect width="100%" height="100%" radiusX="5" radiusY="5">
+      <s:fill>
+         <s:SolidColor color="#000000"/>
+      </s:fill>
+   </s:Rect>
+   <s:Label fontSize="14" fontWeight="bold" color="#eec500" text="{statusText}"
+            paddingBottom="6" paddingLeft="6" paddingRight="6" paddingTop="6"/>
+</s:Group>

@@ -3304,8 +3304,18 @@
       <p>Uzvaras punkti, ko nopelna alianse no tās dalībniekiem.</p>
     </allianceVictoryPoints.long>
     <armyPoints value="Armijas punkti" />
-    <online value="pieslēdzies" />
-    <offline value="atslēdzies" />
+    <online value="Pieslēdzies" />
+    <offlineCommon value="Atslēdzies" />
+    <!-- TODO -->
+    <offline>
+      <p>[reference:offlineCommon]</p>
+      <p>Player has never logged in.</p>
+    </offline>
+    <offlineSince>
+      <p>[reference:offlineCommon]</p>
+      <p>Last seen online {0} ago ({1}).</p>
+    </offlineSince>
+    <!-- /TODO -->
     <label.search value="Meklēt" />
     <label.pointsToWin value="Uzvaras punkti līdz uzvarai: {0}" />
     <label.filterOnline value="Parādīt tikai pieslēgušos spēlētājus" />

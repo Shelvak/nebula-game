@@ -2,7 +2,8 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                 xmlns:s="library://ns.adobe.com/flex/spark" 
                 xmlns:mx="library://ns.adobe.com/flex/mx"
-                autoDrawBackground="false" xmlns:base="components.base.*">
+                autoDrawBackground="false" 
+                xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
          import components.popups.ErrorPopup;
@@ -54,7 +55,8 @@
       </s:layout>
       <s:Label text="{player.rank}" width="{RatingsWidths.rank}" textAlign="center"/>
       <base:AdvancedContainer width="{RatingsWidths.player}"
-                              toolTip="{Localizer.string('Ratings', player.online?'online':'offline')}">
+                              toolTipCreate="player.createStatusTooltip(event)"
+                              toolTip=" ">
          <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
                         AssetNames.getIconImageName(player.online?'online':'offline'))}"/>
          <s:Button label="{player.name}" width="100%" skinClass="components.skins.LinkButtonSkin"

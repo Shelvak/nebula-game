@@ -15,6 +15,9 @@
          import models.ModelLocator;
          import models.player.MRatingPlayer;
          
+         import mx.events.ToolTipEvent;
+         
+         import utils.DateUtil;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
@@ -65,7 +68,8 @@
       </s:layout>
       <s:Label text="{player.rank}" width="{RatingsWidths.rank}" textAlign="center"/>
       <base:AdvancedContainer width="{RatingsWidths.player}"
-                              toolTip="{Localizer.string('Ratings', player.online?'online':'offline')}">
+                              toolTipCreate="player.createStatusTooltip(event)"
+                              toolTip=" ">
          <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
                         AssetNames.getIconImageName(player.online?'online':'offline'))}"/>
          <s:Button label="{player.name}" width="100%" skinClass="components.skins.LinkButtonSkin"

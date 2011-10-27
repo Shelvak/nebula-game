@@ -3129,8 +3129,16 @@
       <p>Victory points earned for alliance by its players.</p>
     </allianceVictoryPoints.long>
     <armyPoints value="Army points" />
-    <online value="online" />
-    <offline value="offline" />
+    <online value="Online" />
+    <offlineCommon value="Offline" />
+    <offline>
+      <p>[reference:offlineCommon]</p>
+      <p>Player has never logged in.</p>
+    </offline>
+    <offlineSince>
+      <p>[reference:offlineCommon]</p>
+      <p>Last seen online {0} ago ({1}).</p>
+    </offlineSince>
     <label.search value="Search" />
     <label.pointsToWin value="Victory points to win: {0}" />
     <label.filterOnline value="Show only online players" />
