@@ -106,6 +106,10 @@ import flash.utils.Dictionary;
 import models.map.IMStaticSpaceObject;
 import models.map.MMapSpace;
 
+import mx.logging.ILogger;
+
+import mx.logging.Log;
+
 class SectorObjects
 {
    public function SectorObjects() {
@@ -126,12 +130,19 @@ class StaticObjectsHash
    
    public function StaticObjectsHash() {
    }
-   
+
+   public static function getLogger() : ILogger {
+      return Log.getLogger("models.map.MMapSpace");
+   }
+
    public function put(object:IMStaticSpaceObject) : void {
-      var hashCode:int = computeHashCode(
+      var hashCode:String = computeHashCode(
          object.currentLocation.x,
          object.currentLocation.y
       );
+      getLogger().debug("Putting " + object.toString() +
+        " to StaticObjectsHash (hashcode: " + hashCode + ").");
+
       var objects:SectorObjects = _hash[hashCode];
       if (objects == null) {
          objects = new SectorObjects();
@@ -147,14 +158,20 @@ class StaticObjectsHash
          case MMapSpace.STATIC_OBJECT_WRECKAGE:
             objects.wreckage = object;
             break;
+         default:
+            throw new ArgumentError("Unknown object type " + object.objectType
+               + "!")
       }
    }
    
    public function removeObject(object:IMStaticSpaceObject) : void {
-      var hashCode:int = computeHashCode(
+      var hashCode:String = computeHashCode(
          object.currentLocation.x,
          object.currentLocation.y
       );
+      getLogger().debug("Removing " + object.toString() +
+        " from StaticObjectsHash (hashcode: " + hashCode + ").");
+
       var objects:SectorObjects = _hash[hashCode];
       switch (object.objectType) {
          case MMapSpace.STATIC_OBJECT_NATURAL:
@@ -166,8 +183,14 @@ class StaticObjectsHash
          case MMapSpace.STATIC_OBJECT_WRECKAGE:
             objects.wreckage = null;
             break;
+         default:
+            throw new ArgumentError("Unknown object type " + object.objectType
+               + "!")
       }
+      
       if (!objects.hasObjects) {
+         getLogger().debug("No objects found for hashcode: " + hashCode +
+            ", deleting from hash.");
          delete _hash[hashCode];
       }
    }
@@ -180,7 +203,7 @@ class StaticObjectsHash
       return _hash[computeHashCode(x, y)] != null;
    }
    
-   private function computeHashCode(x:int, y:int) : int {
-      return 100000 * x + y;
+   private function computeHashCode(x:int, y:int) : String {
+      return x + "," + y;
    }
 }

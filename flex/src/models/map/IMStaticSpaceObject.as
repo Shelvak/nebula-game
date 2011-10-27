@@ -16,5 +16,7 @@ package models.map
        * Height of the object visual representation in pixels.
        */
       function get componentHeight() : int;
+      
+      function toString() : String;
    }
 }
