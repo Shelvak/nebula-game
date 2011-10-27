@@ -28,8 +28,12 @@ module Parts::Notifier
 
   # Notify +EventBroker+ if the model has changed.
   def notify_broker_update
+    ignored_updates = (
+      self.class.try_method(:ignore_update_notify_for) || []
+    )
+
     EventBroker.fire(self, EventBroker::CHANGED,
-      EventBroker::REASON_UPDATED)
+      EventBroker::REASON_UPDATED) unless (changed - ignored_updates).blank?
     true
   end
 

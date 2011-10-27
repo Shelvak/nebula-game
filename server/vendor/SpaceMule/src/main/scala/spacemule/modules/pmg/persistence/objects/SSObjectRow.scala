@@ -22,6 +22,7 @@ object SSObjectRow extends RowObject {
 
 case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
                   ssObject: SSObject) extends Row {
+  val companion = SSObjectRow
   val id = TableIds.ssObject.next
   val width = ssObject match {
     case planet: Planet => planet.area.width
@@ -63,9 +64,9 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
   ) ++ (ssObject match {
     case asteroid: Asteroid =>
       List(
-        0, asteroid.metalRate, 0,
-        0, asteroid.energyRate, 0,
-        0, asteroid.zetiumRate, 0,
+        0, asteroid.metalRate, 0, 0,
+        0, asteroid.energyRate, 0, 0,
+        0, asteroid.zetiumRate, 0, 0,
         DB.loadInFileNull, DB.loadInFileNull
       )
     case homeworld: Homeworld =>
@@ -104,9 +105,9 @@ case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
       )
     case _ =>
       List(
-        0, 0, 0,
-        0, 0, 0,
-        0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
         DB.loadInFileNull, DB.loadInFileNull
       )
   })

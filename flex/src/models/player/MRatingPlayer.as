@@ -1,6 +1,8 @@
 package models.player
 {
    import models.BaseModel;
+   
+   import mx.collections.ArrayCollection;
 
    [Bindable]
    /**
@@ -20,11 +22,22 @@ package models.player
   */
    public class MRatingPlayer extends BaseModel
    {
+      
+      public static function refreshRanks(list: ArrayCollection): void
+      {
+         var i: int = 0;
+         for each (var player: MRatingPlayer in list)
+         {
+            i++;
+            player.rank = i;
+         }  
+      }
       /**
        * total points 
        */      
       public var points: int;
       public var rank: int;
+      public var nr: int;
       public var allianceOwnerId: int;
       [Optional]
       public var allianceId: int;

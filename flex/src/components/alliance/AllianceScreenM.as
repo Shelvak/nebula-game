@@ -2,7 +2,6 @@ package components.alliance
 {
    import components.alliance.events.AllianceScreenMEvent;
    import components.popups.ErrorPopup;
-   import models.events.HeaderEvent;
    
    import config.Config;
    
@@ -16,8 +15,11 @@ package components.alliance
    
    import models.ModelLocator;
    import models.alliance.MAlliance;
+   import models.events.HeaderEvent;
+   import models.player.MRatingPlayer;
    import models.player.events.PlayerEvent;
    
+   import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    import mx.collections.SortField;
    
@@ -85,6 +87,20 @@ package components.alliance
             'points':[pointsField, allianceVpsField, victoryPtsField, planetsCountField, nameField]
          }
       
+      private static const inviteSortFields: Object = 
+         {
+            'rank':[rankField],
+            'name':[nameField],
+            'alliance':[allianceField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'planetsCount':[planetsCountField, victoryPtsField, pointsField, nameField],
+            'economyPoints':[economyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'armyPoints':[armyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'warPoints':[warPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
+            'victoryPoints':[victoryPtsField, pointsField, planetsCountField, nameField],
+            'points':[pointsField, victoryPtsField, planetsCountField, nameField]
+         }
+         
       public static function getInstance() : AllianceScreenM {
          return SingletonFactory.getSingletonInstance(AllianceScreenM);
       }
@@ -256,6 +272,15 @@ package components.alliance
          _alliance.players.sort = new Sort();
          _alliance.players.sort.fields = sortFields[event.key];
          _alliance.players.refresh();
+         MRatingPlayer.refreshRanks(_alliance.players);
+      }
+      
+      public function header_inviteSortHandler(event:HeaderEvent):void
+      {
+         _alliance.invPlayers.sort = new Sort();
+         _alliance.invPlayers.sort.fields = inviteSortFields[event.key];
+         _alliance.invPlayers.refresh();
+         MRatingPlayer.refreshRanks(_alliance.invPlayers);
       }
       
       public function refresh_clickHandler(event:MouseEvent):void

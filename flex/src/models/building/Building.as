@@ -10,6 +10,8 @@ package models.building
    
    import config.Config;
    
+   import controllers.objects.ObjectClass;
+   
    import flash.display.BitmapData;
    
    import models.ModelsCollection;
@@ -128,6 +130,21 @@ package models.building
          return Math.round(StringUtil.evalFormula(
             Config.getBuildingProperty(buildingType, 'population'), 
             {'level': buildingLevel}));
+      }
+      
+      private static function openableType(type: String): Boolean
+      {
+         return [BuildingType.HEALING_CENTER,
+            BuildingType.RESEARCH_CENTER,
+            BuildingType.DEFENSIVE_PORTAL,
+            BuildingType.MARKET,
+         ].indexOf(type) != -1;
+      }
+      
+      [Bindable (event="typeChange")]
+      public function get openable(): Boolean
+      {
+         return openableType(type) || isConstructor(ObjectClass.UNIT);
       }
       
       [Bindable (event="typeChange")]
@@ -543,7 +560,10 @@ package models.building
          return Config.getBuildingMaxQueue(type);
       }
       
-      
+      public function get usesResource(): Boolean
+      {
+         return metalRate < 0 || energyRate < 0 || zetiumRate < 0;
+      }
       
       [Bindable (event="levelChange")]
       public function get metalRate(): Number

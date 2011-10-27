@@ -463,4 +463,64 @@ describe Technology do
       lambda { @model.save! }.should_not raise_error
     end
   end
+
+  describe "#unlearn!" do
+    let(:player) do
+      Factory.create(:player, :creds => Cfg.technology_destroy_cost,
+                     :science_points => 100000)
+    end
+    let(:technology) do
+      Factory.create(:technology, :level => 4, :player => player)
+    end
+
+    it "should fail if technology is still upgrading" do
+      opts_upgrading.apply technology
+      lambda do
+        technology.unlearn!
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if technology is paused" do
+      opts_paused.apply technology
+      lambda do
+        technology.unlearn!
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if player does not have enough creds" do
+      player.creds -= 1
+      player.save!
+      lambda do
+        technology.unlearn!
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should deduct creds from player" do
+      lambda do
+        technology.unlearn!
+        player.reload
+      end.should change(player, :creds).by(- Cfg.technology_destroy_cost)
+    end
+
+    it "should record it to cred stats" do
+      CredStats.should_receive(:unlearn_technology).
+        with(player, Cfg.technology_destroy_cost)
+      technology.unlearn!
+    end
+
+    it "should decrease player science points" do
+      lambda do
+        technology.unlearn!
+        player.reload
+      end.should change(player, :science_points).
+        by(- technology.points_on_destroy)
+    end
+
+    it "should destroy technology" do
+      lambda do
+        technology.unlearn!
+        technology.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
 end

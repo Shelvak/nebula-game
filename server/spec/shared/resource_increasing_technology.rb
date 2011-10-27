@@ -1,11 +1,11 @@
-shared_examples_for "resource increasing technology" do
+shared_examples_for "resource increasing technology" do |model|
   before(:each) do
     @time = 5.seconds.ago.drop_usec
 
-    @p1 = Factory.create :planet, :player => @model.player
+    @p1 = Factory.create :planet, :player => model.player
     @p1.last_resources_update = @time
     @p1.save!
-    @p2 = Factory.create :planet, :player => @model.player
+    @p2 = Factory.create :planet, :player => model.player
     @p2.last_resources_update = @time
     @p2.save!
     @p3 = Factory.create :planet
@@ -21,10 +21,10 @@ shared_examples_for "resource increasing technology" do
       ].each do |type, config_name|
         it "should round #{resource}#{type}" do
           with_config_values(
-            "technologies.#{@model.class.to_s.demodulize.underscore
+            "technologies.#{model.class.to_s.demodulize.underscore
               }.mod.#{resource}.#{config_name}" => "3.56 * level"
           ) do
-            @model.class.resource_modifiers(1)[
+            model.class.resource_modifiers(1)[
               :"#{resource}#{type}"
             ].should == 4
           end
@@ -35,11 +35,11 @@ shared_examples_for "resource increasing technology" do
 
   it "should fetch all the resource entries belonging to player " +
   "on upgrade" do
-    opts_upgrading.apply(@model)
-    @model.send(:on_upgrade_finished)
+    opts_upgrading.apply(model)
+    model.send(:on_upgrade_finished)
     time = SsObject.connection.select_value(
       "SELECT last_resources_update FROM `#{SsObject.table_name}` p " +
-      "WHERE p.player_id=#{@model.player_id} LIMIT 1"
+      "WHERE p.player_id=#{model.player_id} LIMIT 1"
     )
     # JRuby compatibility
     time = Time.parse(time) unless time.is_a?(Time)

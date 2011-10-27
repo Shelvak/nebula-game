@@ -25,7 +25,7 @@ class GenericController
       "1st argument should be Player instance instead of #{player.inspect}"
     ) unless player.is_a?(Player)
 
-    player.last_login = Time.now
+    player.last_seen = Time.now
     player.save!
     
     @dispatcher.change_player(@client_id, player)

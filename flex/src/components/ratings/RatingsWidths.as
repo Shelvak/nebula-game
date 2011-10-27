@@ -15,6 +15,10 @@ package components.ratings
       public static const victoryPoints: int = 80;
       public static const allianceVictoryPoints: int = 80;
       public static const points: int = 80;
-      public static const action: int = 90;
+      public static const action: int = 110;
+      
+      public static const totalWidth: int = rank + player + planetsCount +
+         economyPoints + sciencePoints + armyPoints + warPoints + victoryPoints +
+         allianceVictoryPoints + points + action;
    }
 }

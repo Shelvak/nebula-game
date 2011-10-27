@@ -17,6 +17,17 @@ var locales = { // {{{
     return "Server was unable to authorize you. " +
       "Perhaps your web page session has expired?\n\n" +
       "Please try to relogin to our main web page.";
+  },
+  versionTooOld: function(locale, requiredVersion, currentVersion) {
+    if (locale == "lt") return "Per sena žaidimo versija!\n\n" +
+       "Serveris reikalauja bent jau \"" + requiredVersion + "\" versijos, " +
+       "tačiau pas tave yra versija \"" + currentVersion + "\".\n\n" +
+       "Žaidimas bus perkrautas tam kad jį atnaujintį."
+    if (locale == "lv") return "LOCALE: fixme";
+    return "Game version too old!\n\n" +
+       "Server requires at least version \"" + requiredVersion + "\" but you " +
+       "only have version \"" + currentVersion + "\".\n\n" +
+       "Game will be reloaded to upgrade its version."
   }
 } // }}}
 
@@ -206,6 +217,12 @@ function authorizationSuccessful() {
 function authorizationFailed() {
   window.alert(locales.failedAuth(locale));
   window.location = "http://" + webHost;
+}
+
+// Called when client version is too old.
+function versionTooOld(requiredVersion, currentVersion) {
+  window.alert(locales.versionTooOld(locale, requiredVersion, currentVersion));
+  window.location.reload();
 }
 
 // Called when player successfully logs in into server.

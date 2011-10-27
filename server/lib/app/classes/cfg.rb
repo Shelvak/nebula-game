@@ -4,6 +4,8 @@ class Cfg; class << self
 
   def control_token; CONFIG['control']['token']; end
 
+  def required_client_version; CONFIG['client']['required_version']; end
+
   ### buildings.yml ###
 
   def buildings_overdrive_output_multiplier
@@ -91,6 +93,11 @@ class Cfg; class << self
   def player_initial_population; CONFIG['galaxy.player.population']; end
   def player_max_population; CONFIG['galaxy.player.population.max']; end
 
+  # Time in seconds that has passed to still count player as active.
+  def player_last_seen_in
+    CONFIG.evalproperty('galaxy.player.inactivity_check.last_seen_in')
+  end
+
   def player_referral_points_needed
     CONFIG['galaxy.player.referral.points_needed']
   end
@@ -150,6 +157,11 @@ class Cfg; class << self
   def exploration_finish_cost(width, height)
     CONFIG.evalproperty("creds.exploration.finish",
       'width' => width, 'height' => height).round
+  end
+
+  # Cost to unlearn a technology.
+  def technology_destroy_cost
+    CONFIG['creds.technology.destroy']
   end
 
   ### units.yml ###

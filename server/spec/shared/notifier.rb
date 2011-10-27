@@ -33,6 +33,18 @@ shared_examples_for "notifier" do |options|
         model.save!
       end
     end
+
+    it "should not notify on update if only ignored fields changed" do
+      model = create_model(options)
+      ignored_fields = model.class.try_method(:ignore_update_notify_for)
+      unless ignored_fields.nil?
+        should_not_fire_event(model, EventBroker::CHANGED,
+            EventBroker::REASON_UPDATED) do
+          model.stub(:changed).and_return(ignored_fields.map(&:to_s))
+          model.save!
+        end
+      end
+    end
   else
     it "should not notify on update if it's not wanted" do\
       model = create_model(options)

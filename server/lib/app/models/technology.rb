@@ -63,8 +63,27 @@ class Technology < ActiveRecord::Base
     super(level, scientists)
   end
 
-  # We never destroy technologies so this does not have any meaning.
-  def points_on_destroy; 0; end
+  # Destroys this technology. Requires creds.
+  def unlearn!
+    raise GameLogicError.new(
+      "Cannot unlearn technology which is not finished!"
+    ) unless finished?
+
+    player = self.player
+    creds_required = Cfg.technology_destroy_cost
+    raise GameLogicError.new(
+      "Not enough creds to destroy #{self}. Required #{creds_required}, but #{
+      player} only had #{player.creds}."
+    ) if player.creds < creds_required
+
+    player.creds -= creds_required
+
+    transaction do
+      # #destroy! invokes player#save! too
+      destroy!
+      CredStats.unlearn_technology(player, creds_required)
+    end
+  end
 
   # Overrides Parts::Upgradable::InstanceMethods#calculate_upgrade_time with
   # Technology calculation logic.
@@ -126,8 +145,13 @@ class Technology < ActiveRecord::Base
   end
 
   # Array of [name, property] pairs for all technology mods.
-  MODS = %w{damage armor metal.generate metal.store energy.generate
-  energy.store zetium.generate zetium.store movement_time_decrease
+  MODS = %w{
+    damage armor
+    metal.generate metal.store
+    energy.generate energy.store
+    zetium.generate zetium.store
+    movement_time_decrease
+    storage
   }.map { |property| [property.gsub(".", "_"), "mod.#{property}"] }
   
   MODS.each do |name, property|

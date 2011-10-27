@@ -11,6 +11,7 @@ package models.technology
    import models.BaseModel;
    import models.ModelLocator;
    import models.building.Building;
+   import models.building.MCBuildingSelectedSidebar;
    import models.parts.IUpgradableModel;
    import models.parts.Requirement;
    import models.parts.TechnologyUpgradable;
@@ -143,6 +144,23 @@ package models.technology
          return Localizer.string('Technologies', type + ".name");
       }
       
+      public static function technologyIsInGroup(type: String): Boolean
+      {
+         if (type == null)
+         {
+            return false;
+         }
+         var requirements: Object = Config.getTechnologyRequirements(type);
+         for (var requirement: String in requirements)
+         {    
+            if (requirements[requirement].invert)        
+            {
+               return true;
+            }
+         }
+         return false;
+      }
+      
       [Bindable(event="selectedTechnologyChanged")]
       public function get requirementsText():String{
          var tempText: String = '';
@@ -249,7 +267,8 @@ package models.technology
       
       private function handleLevelChange(e: UpgradeEvent): void
       {
-         ModelLocator.getInstance().constructable = Building.getConstructableBuildings();
+         MCBuildingSelectedSidebar.getInstance().constructable = 
+            Building.getConstructableBuildings();
          new GTechnologiesEvent(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED);
       }
       

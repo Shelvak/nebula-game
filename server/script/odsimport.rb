@@ -37,6 +37,7 @@ MAIN_TITLE_PROPS = [
   [/time decrease$/, ".mod.movement_time_decrease"],
   [/armor mod$/, ".mod.armor"],
   [/damage mod$/, ".mod.damage"],
+  [/storage mod$/, ".mod.storage"],
   [/M gen mod$/, ".mod.metal.generate"],
   [/M store mod$/, ".mod.metal.store"],
   [/E gen mod$/, ".mod.energy.generate"],
@@ -243,8 +244,10 @@ def read_unit_definition(row, sheet, sections)
         section == "buildings"
       attrs.push [volume.to_i, "volume"] unless zero?(volume) ||
         section == "buildings"
-      attrs.push [storage.to_i, "storage"] unless zero?(storage) ||
-        section == "buildings"
+      attrs.push [
+        "#{storage} + #{storage} * #{STORAGE_GAINED_PER_UNIT_LVL} * (level-1)",
+        "storage"
+      ] unless zero?(storage) || section == "buildings"
       attrs.push [(ss_hop_time.to_f * 60).to_i, "move.solar_system.hop_time"] \
         unless zero?(ss_hop_time)
       attrs.push [(galaxy_hop_time.to_f * 60).to_i, "move.galaxy.hop_time"] \
@@ -263,6 +266,15 @@ def read_unit_definition(row, sheet, sections)
     end
   end
 end
+
+# Read variables sheet
+sheet = read_txt(File.dirname(__FILE__) + '/odsimport/variables.txt')
+sections["units"] ||= {}
+sections["units"]["transportation.volume.metal"] = sheet[11][1].to_f
+sections["units"]["transportation.volume.energy"] = sheet[12][1].to_f
+sections["units"]["transportation.volume.zetium"] = sheet[13][1].to_f
+sections["units"]["galaxy_ss_hop_ratio"] = sheet[19][1].to_f
+STORAGE_GAINED_PER_UNIT_LVL = sheet[27][1].to_f
 
 sheet = read_txt(File.dirname(__FILE__) + '/odsimport/units.txt')
 mode = :unknown
@@ -294,14 +306,6 @@ until mode == :finished
 
   row += 1
 end
-
-# Read variables sheet
-sheet = read_txt(File.dirname(__FILE__) + '/odsimport/variables.txt')
-sections["units"] ||= {}
-sections["units"]["transportation.volume.metal"] = sheet[11][1].to_f
-sections["units"]["transportation.volume.energy"] = sheet[12][1].to_f
-sections["units"]["transportation.volume.zetium"] = sheet[13][1].to_f
-sections["units"]["galaxy_ss_hop_ratio"] = sheet[19][1].to_f
 
 IGNORED_KEYS = [
   /^buildings\.(.+?)\.(armor|armor_mod|xp_needed)$/,

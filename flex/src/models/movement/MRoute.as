@@ -12,6 +12,7 @@ package models.movement
    import models.time.MTimeEventFixedMoment;
    import models.unit.UnitBuildingEntry;
    
+   import mx.collections.ArrayCollection;
    import mx.utils.ObjectUtil;
    
    import utils.DateUtil;
@@ -155,7 +156,7 @@ package models.movement
        * 
        * @default empty collection
        */
-      public var cachedUnits:ModelsCollection = new ModelsCollection();
+      public var cachedUnits: ArrayCollection = new ArrayCollection();
       
       
       /**

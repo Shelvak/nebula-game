@@ -24,6 +24,7 @@ namespace :build do
   output_dir = "#{basedir}/target"
   bin_dir = "#{output_dir}/bin"
   bin_swf = "#{bin_dir}/#{swf_name}.swf"
+  bin_version = "#{bin_dir}/VERSION"
   test_report_dir = "#{output_dir}/report"
   dist_dir = "#{output_dir}/dist"
   dist_locale_dir = "#{dist_dir}/locale"
@@ -162,7 +163,7 @@ namespace :build do
         }
         compiler_flags.push "debug" if ENV['debug'] || ENV['DEBUG']
 
-        build = Time.now.strftime("%m%d-%H%M")
+        build = Time.now.strftime("%Y-%m%d-%H%M")
         version_file = "#{src_dir}/application/Version.as"
         old_version = nil
         begin
@@ -178,6 +179,8 @@ namespace :build do
               %Q{VERSION: String = "#{build}"} 
             )
           end
+          
+          File.open(bin_version, "w") { |f| f.write(build + "\n") }
 
           mxmlc(
             "#{src_dir}/SpaceGame.mxml",
@@ -209,6 +212,7 @@ namespace :build do
 
       info "Copying SWF"
       FileUtils.cp bin_swf, dist_dir
+      FileUtils.cp bin_version, dist_dir
 
       info "Copying html-template"
       Dir["#{html_template_dir}/*"].each do |path|

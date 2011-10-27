@@ -5,7 +5,7 @@
                     xmlns:base="components.base.*"
                     width="100%" height="100%"
                     addedToStage="basecontainer1_addedToStageHandler(event)"
-                    removedFromStage="basecontainer1_removedFromStageHandler(event)">
+                    removedFromStage="basecontainer1_removedFromStageHandler(event)" xmlns:unitsscreen="components.unitsscreen.*">
    
    <fx:Script>
       <![CDATA[
@@ -142,17 +142,7 @@
                </base:layout>
             </base:Panel>
             
-            <base:Panel width="100%" title="{Localizer.string ('Units', 'label.noSelection')}"
-                        visible="{HS.price == null}">
-               <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'arrow_select_units')}"/>
-               <s:Group width="100%">
-                  <s:Label text="{Localizer.string('Units', 'label.selectUnits')}" fontSize="20" fontWeight="bold" 
-                           color="#ffd200" horizontalCenter="0"/>
-               </s:Group>
-               <base:layout>
-                  <s:HorizontalLayout verticalAlign="middle"/>
-               </base:layout>
-            </base:Panel>
+            <unitsscreen:NoSelectionPanel visible="{HS.price == null}"/>
             
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.healing')}"
                         visible="{HS.price != null}">

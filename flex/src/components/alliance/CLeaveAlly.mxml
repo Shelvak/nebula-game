@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark" 
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+   <fx:Script>
+      <![CDATA[
+         import utils.locale.Localizer;
+         private function get model() : AllianceScreenM {
+            return AllianceScreenM.getInstance();
+         }         
+         private function getString(property:String, parameters:Array = null) : String
+         {
+            return Localizer.string("Alliances", property, parameters);
+         }
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:HorizontalLayout verticalAlign="middle"/>
+   </s:layout>
+   <s:Label text="{getString('label.leaveAlliance')}" fontSize="16"/>
+   <s:Button label="{getString('label.leave')}"
+             click="model.leave_clickHandler(event)"/>
+</s:Group>

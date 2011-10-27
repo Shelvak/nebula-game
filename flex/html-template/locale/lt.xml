@@ -3,303 +3,330 @@
   <Objects>
     <!-- Savi žemės unitai -->
     
-    <Trooper value="Desantininkas" />
-    <Trooper-what value="{0 one[desantininką] 1sts[? desantininką] tens[? desantininkų] many[? desantininkus]}" />
-    <Trooper-whos value="{0 one[desantininko] 1sts[? desantininko] tens[? desantininkų] many[? desantininkų]}" />
+    <Unit_Trooper value="Desantininkas" />
+    <Unit_Trooper-what value="{0 one[desantininką] 1sts[? desantininką] tens[? desantininkų] many[? desantininkus]}" />
+    <Unit_Trooper-whos value="{0 one[desantininko] 1sts[? desantininko] tens[? desantininkų] many[? desantininkų]}" />
 
-    <Shocker value="Mechas" />
-    <Shocker-what value="{0 one[mechą] 1sts[? mechą] tens[? mechų] many[? mechus]}" />
-    <Shocker-whos value="{0 one[mecho] 1sts[? mecho] tens[? mechų] many[? mechų]}" />
+    <Unit_Shocker value="Mechas" />
+    <Unit_Shocker-what value="{0 one[mechą] 1sts[? mechą] tens[? mechų] many[? mechus]}" />
+    <Unit_Shocker-whos value="{0 one[mecho] 1sts[? mecho] tens[? mechų] many[? mechų]}" />
 
-    <Seeker value="Sėlintojas" />
-    <Seeker-what value="{0 one[sėlintoją] 1sts[? sėlintoją] tens[? sėlintojų] many[? sėlintojus]}" />
-    <Seeker-whos value="{0 one[sėlintojo] 1sts[? sėlintojo] tens[? sėlintojų] many[? sėlintojų]}" />
+    <Unit_Seeker value="Sėlintojas" />
+    <Unit_Seeker-what value="{0 one[sėlintoją] 1sts[? sėlintoją] tens[? sėlintojų] many[? sėlintojus]}" />
+    <Unit_Seeker-whos value="{0 one[sėlintojo] 1sts[? sėlintojo] tens[? sėlintojų] many[? sėlintojų]}" />
     
-    <Scorpion value="Skorpionas" />
-    <Scorpion-what value="{0 one[skorpioną] 1sts[? skorpioną] tens[? skorpionų] many[? skorpionus]}" />
-    <Scorpion-whos value="{0 one[skorpiono] 1sts[? skorpiono] tens[? skorpionų] many[? skorpionų]}" />
+    <Unit_Scorpion value="Skorpionas" />
+    <Unit_Scorpion-what value="{0 one[skorpioną] 1sts[? skorpioną] tens[? skorpionų] many[? skorpionus]}" />
+    <Unit_Scorpion-whos value="{0 one[skorpiono] 1sts[? skorpiono] tens[? skorpionų] many[? skorpionų]}" />
     
-    <Azure value="Azuras" />
-    <Azure-what value="{0 one[azurą] 1sts[? azurą] tens[? azurų] many[? azurus]}" />
-    <Azure-whos value="{0 one[azuro] 1sts[? azuro] tens[? azurų] many[? azurų]}" />
+    <Unit_Azure value="Azuras" />
+    <Unit_Azure-what value="{0 one[azurą] 1sts[? azurą] tens[? azurų] many[? azurus]}" />
+    <Unit_Azure-whos value="{0 one[azuro] 1sts[? azuro] tens[? azurų] many[? azurų]}" />
         
-    <Mantis value="Maldininkas" />
-    <Mantis-what value="{0 one[maldininką] 1sts[? maldininką] tens[? maldininkų] many[? maldininkus]}" />
-    <Mantis-whos value="{0 one[maldininko] 1sts[? maldininko] tens[? maldininkų] many[? maldininkų]}" />
+    <Unit_Mantis value="Maldininkas" />
+    <Unit_Mantis-what value="{0 one[maldininką] 1sts[? maldininką] tens[? maldininkų] many[? maldininkus]}" />
+    <Unit_Mantis-whos value="{0 one[maldininko] 1sts[? maldininko] tens[? maldininkų] many[? maldininkų]}" />
         
-    <Zeus value="Dzeusas" />
-    <Zeus-what value="{0 one[dzeusą] 1sts[? dzeusą] tens[? dzeusų] many[? dzeusus]}" />
-    <Zeus-whos value="{0 one[dzeuso] 1sts[? dzeuso] tens[? dzeusų] many[? dzeusų]}" />
+    <Unit_Zeus value="Dzeusas" />
+    <Unit_Zeus-what value="{0 one[dzeusą] 1sts[? dzeusą] tens[? dzeusų] many[? dzeusus]}" />
+    <Unit_Zeus-whos value="{0 one[dzeuso] 1sts[? dzeuso] tens[? dzeusų] many[? dzeusų]}" />
         
-    <MDH value="Mobilus štabas" />
-    <MDH-what value="{0 one[mobilų štabą] 1sts[? mobilų štabą] tens[? mobilių štabų] many[? mobilius štabus]}" />
-    <MDH-whos value="{0 one[mobilaus štabo] 1sts[? mobilaus štabo] tens[? mobilių štabų] many[? mobilių štabų]}" />
+    <Unit_MDH value="Mobilus štabas" />
+    <Unit_MDH-what value="{0 one[mobilų štabą] 1sts[? mobilų štabą] tens[? mobilių štabų] many[? mobilius štabus]}" />
+    <Unit_MDH-whos value="{0 one[mobilaus štabo] 1sts[? mobilaus štabo] tens[? mobilių štabų] many[? mobilių štabų]}" />
 
-    <MobileVulcan value="Vulkanas-M" />
-    <MobileVulcan-what value="{0 one[vulkaną-M] 1sts[? vulkaną-M] tens[? vulkanų-M] many[? vulkanus-M]}" />
-    <MobileVulcan-whos value="{0 one[vulkano-M] 1sts[? vulkano-M] tens[? vulkanų-M] many[? vulkanų-M]}" />
+    <Unit_MobileVulcan value="Vulkanas-M" />
+    <Unit_MobileVulcan-what value="{0 one[vulkaną-M] 1sts[? vulkaną-M] tens[? vulkanų-M] many[? vulkanus-M]}" />
+    <Unit_MobileVulcan-whos value="{0 one[vulkano-M] 1sts[? vulkano-M] tens[? vulkanų-M] many[? vulkanų-M]}" />
     
-    <MobileScreamer value="Rėksnys-M" />
-    <MobileScreamer-what value="{0 one[rėksnį-M] 1sts[? rėksnį-M] tens[? rėksnių-M] many[? rėksnius-M]}" />
-    <MobileScreamer-whos value="{0 one[rėksnio-M] 1sts[? rėksnio-M] tens[? rėksnių-M] many[? rėksnių-M]}" />
+    <Unit_MobileScreamer value="Rėksnys-M" />
+    <Unit_MobileScreamer-what value="{0 one[rėksnį-M] 1sts[? rėksnį-M] tens[? rėksnių-M] many[? rėksnius-M]}" />
+    <Unit_MobileScreamer-whos value="{0 one[rėksnio-M] 1sts[? rėksnio-M] tens[? rėksnių-M] many[? rėksnių-M]}" />
 
-    <MobileThunder value="Griausmas-M" />
-    <MobileThunder-what value="{0 one[griausmą-M] 1sts[? griausmą-M] tens[? griausmų-M] many[? griausmus-M]}" />
-    <MobileThunder-whos value="{0 one[griausmo-M] 1sts[? griausmo-M] tens[? griausmų-M] many[? griausmų-M]}" />
+    <Unit_MobileThunder value="Griausmas-M" />
+    <Unit_MobileThunder-what value="{0 one[griausmą-M] 1sts[? griausmą-M] tens[? griausmų-M] many[? griausmus-M]}" />
+    <Unit_MobileThunder-whos value="{0 one[griausmo-M] 1sts[? griausmo-M] tens[? griausmų-M] many[? griausmų-M]}" />
 
     <!-- Savi kosmoso unitai -->
     
-    <Mule value="Mulas" />
-    <Mule-what value="{0 one[mulo klasės laivą] 1sts[? mulo klasės laivą] tens[? mulo klasės laivų] many[? mulo klasės laivus]}" />
-    <Mule-whos value="{0 one[mulo klasės laivo] 1sts[? mulo klasės laivo] tens[? mulo klasės laivų] many[? mulo klasės laivų]}" />
+    <Unit_Mule value="Mulas" />
+    <Unit_Mule-what value="{0 one[mulo klasės laivą] 1sts[? mulo klasės laivą] tens[? mulo klasės laivų] many[? mulo klasės laivus]}" />
+    <Unit_Mule-whos value="{0 one[mulo klasės laivo] 1sts[? mulo klasės laivo] tens[? mulo klasės laivų] many[? mulo klasės laivų]}" />
     
-    <Crow value="Varnas" />
-    <Crow-what value="{0 one[varno klasės laivą] 1sts[? varno klasės laivą] tens[? varno klasės laivų] many[? varno klasės laivus]}" />
-    <Crow-whos value="{0 one[varno klasės laivo] 1sts[? varno klasės laivo] tens[? varno klasės laivų] many[? varno klasės laivų]}" />
+    <Unit_Crow value="Varnas" />
+    <Unit_Crow-what value="{0 one[varno klasės laivą] 1sts[? varno klasės laivą] tens[? varno klasės laivų] many[? varno klasės laivus]}" />
+    <Unit_Crow-whos value="{0 one[varno klasės laivo] 1sts[? varno klasės laivo] tens[? varno klasės laivų] many[? varno klasės laivų]}" />
     
-    <Cyrix value="Cyriksas" />
-    <Cyrix-what value="{0 one[cyrikso klasės laivą] 1sts[? cyrikso klasės laivą] tens[? cyrikso klasės laivų] many[? cyrikso klasės laivus]}" />
-    <Cyrix-whos value="{0 one[cyrikso klasės laivo] 1sts[? cyrikso klasės laivo] tens[? cyrikso klasės laivų] many[? cyrikso klasės laivų]}" />
+    <Unit_Cyrix value="Cyriksas" />
+    <Unit_Cyrix-what value="{0 one[cyrikso klasės laivą] 1sts[? cyrikso klasės laivą] tens[? cyrikso klasės laivų] many[? cyrikso klasės laivus]}" />
+    <Unit_Cyrix-whos value="{0 one[cyrikso klasės laivo] 1sts[? cyrikso klasės laivo] tens[? cyrikso klasės laivų] many[? cyrikso klasės laivų]}" />
     
-    <Rhyno value="Raganosis" />
-    <Rhyno-what value="{0 one[raganosio klasės laivą] 1sts[? raganosio klasės laivą] tens[? raganosio klasės laivų] many[? raganosio klasės laivus]}" />
-    <Rhyno-whos value="{0 one[raganosio klasės laivo] 1sts[? raganosio klasės laivo] tens[? raganosio klasės laivų] many[? raganosio klasės laivų]}" />
+    <Unit_Rhyno value="Raganosis" />
+    <Unit_Rhyno-what value="{0 one[raganosio klasės laivą] 1sts[? raganosio klasės laivą] tens[? raganosio klasės laivų] many[? raganosio klasės laivus]}" />
+    <Unit_Rhyno-whos value="{0 one[raganosio klasės laivo] 1sts[? raganosio klasės laivo] tens[? raganosio klasės laivų] many[? raganosio klasės laivų]}" />
     
-    <Dart value="Strėlė" />
-    <Dart-what value="{0 one[strėlės klasės laivą] 1sts[? strėlės klasės laivą] tens[? strėlės klasės laivų] many[? strėlės klasės laivus]}" />
-    <Dart-whos value="{0 one[strėlės klasės laivo] 1sts[? strėlės klasės laivo] tens[? strėlės klasės laivų] many[? strėlės klasės laivų]}" />
+    <Unit_Dart value="Strėlė" />
+    <Unit_Dart-what value="{0 one[strėlės klasės laivą] 1sts[? strėlės klasės laivą] tens[? strėlės klasės laivų] many[? strėlės klasės laivus]}" />
+    <Unit_Dart-whos value="{0 one[strėlės klasės laivo] 1sts[? strėlės klasės laivo] tens[? strėlės klasės laivų] many[? strėlės klasės laivų]}" />
     
-    <Avenger value="Keršytojas" />
-    <Avenger-what value="{0 one[keršytojo klasės laivą] 1sts[? keršytojo klasės laivą] tens[? keršytojo klasės laivų] many[? keršytojo klasės laivus]}" />
-    <Avenger-whos value="{0 one[keršytojo klasės laivo] 1sts[? keršytojo klasės laivo] tens[? keršytojo klasės laivų] many[? keršytojo klasės laivų]}" />
+    <Unit_Avenger value="Keršytojas" />
+    <Unit_Avenger-what value="{0 one[keršytojo klasės laivą] 1sts[? keršytojo klasės laivą] tens[? keršytojo klasės laivų] many[? keršytojo klasės laivus]}" />
+    <Unit_Avenger-whos value="{0 one[keršytojo klasės laivo] 1sts[? keršytojo klasės laivo] tens[? keršytojo klasės laivų] many[? keršytojo klasės laivų]}" />
     
-    <Jumper value="Šoklys" />
-    <Jumper-what value="{0 one[šoklio klasės laivą] 1sts[? šoklio klasės laivą] tens[? šoklio klasės laivų] many[? šoklio klasės laivus]}" />
-    <Jumper-whos value="{0 one[šoklio klasės laivo] 1sts[? šoklio klasės laivo] tens[? šoklio klasės laivų] many[? šoklio klasės laivų]}" />
+    <Unit_Jumper value="Šoklys" />
+    <Unit_Jumper-what value="{0 one[šoklio klasės laivą] 1sts[? šoklio klasės laivą] tens[? šoklio klasės laivų] many[? šoklio klasės laivus]}" />
+    <Unit_Jumper-whos value="{0 one[šoklio klasės laivo] 1sts[? šoklio klasės laivo] tens[? šoklio klasės laivų] many[? šoklio klasės laivų]}" />
     
     <!-- NPC žemės unitai -->
         
-    <Gnat value="Gnatas" />
-    <Gnat-what value="{0 one[gnatą] 1sts[? gnatą] tens[? gnatų] many[? gnatus]}" />
-    <Gnat-whos value="{0 one[gnato] 1sts[? gnato] tens[? gnatų] many[? gnatų]}" />
+    <Unit_Gnat value="Gnatas" />
+    <Unit_Gnat-what value="{0 one[gnatą] 1sts[? gnatą] tens[? gnatų] many[? gnatus]}" />
+    <Unit_Gnat-whos value="{0 one[gnato] 1sts[? gnato] tens[? gnatų] many[? gnatų]}" />
 
-    <Glancer value="Žvilgčiotojas" />
-    <Glancer-what value="{0 one[žvilgčiotoją] 1sts[? žvilgčiotoją] tens[? žvilgčiotojų] many[? žvilgčiotojus]}" />
-    <Glancer-whos value="{0 one[žvilgčiotojo] 1sts[? žvilgčiotojo] tens[? žvilgčiotojų] many[? žvilgčiotojų]}" />
+    <Unit_Glancer value="Žvilgčiotojas" />
+    <Unit_Glancer-what value="{0 one[žvilgčiotoją] 1sts[? žvilgčiotoją] tens[? žvilgčiotojų] many[? žvilgčiotojus]}" />
+    <Unit_Glancer-whos value="{0 one[žvilgčiotojo] 1sts[? žvilgčiotojo] tens[? žvilgčiotojų] many[? žvilgčiotojų]}" />
  
-    <Spudder value="Spuderis" />
-    <Spudder-what value="{0 one[spuderį] 1sts[? spuderį] tens[? spuderių] many[? spuderius]}" />
-    <Spudder-whos value="{0 one[spuderio] 1sts[? spuderio] tens[? spuderių] many[? spuderių]}" />
+    <Unit_Spudder value="Spuderis" />
+    <Unit_Spudder-what value="{0 one[spuderį] 1sts[? spuderį] tens[? spuderių] many[? spuderius]}" />
+    <Unit_Spudder-whos value="{0 one[spuderio] 1sts[? spuderio] tens[? spuderių] many[? spuderių]}" />
 
-    <Gnawer value="Kankintojas" />
-    <Gnawer-what value="{0 one[kankintoją] 1sts[? kankintoją] tens[? kankintojų] many[? kankintojus]}" />
-    <Gnawer-whos value="{0 one[kankintojo] 1sts[? kankintojo] tens[? kankintojų] many[? kankintojų]}" />
+    <Unit_Gnawer value="Kankintojas" />
+    <Unit_Gnawer-what value="{0 one[kankintoją] 1sts[? kankintoją] tens[? kankintojų] many[? kankintojus]}" />
+    <Unit_Gnawer-whos value="{0 one[kankintojo] 1sts[? kankintojo] tens[? kankintojų] many[? kankintojų]}" />
 
     <!-- NPC kosmoso unitai -->
     
-    <Dirac value="Dirakas" />
-    <Dirac-what value="{0 one[dirako klasės laivą] 1sts[? dirako klasės laivą] tens[? dirako klasės laivų] many[? dirako klasės laivus]}" />
-    <Dirac-whos value="{0 one[dirako klasės laivo] 1sts[? dirako klasės laivo] tens[? dirako klasės laivų] many[? dirako klasės laivų]}" />
+    <Unit_Dirac value="Dirakas" />
+    <Unit_Dirac-what value="{0 one[dirako klasės laivą] 1sts[? dirako klasės laivą] tens[? dirako klasės laivų] many[? dirako klasės laivus]}" />
+    <Unit_Dirac-whos value="{0 one[dirako klasės laivo] 1sts[? dirako klasės laivo] tens[? dirako klasės laivų] many[? dirako klasės laivų]}" />
 
-    <Thor value="Toras" />
-    <Thor-what value="{0 one[toro klasės laivą] 1sts[? toro klasės laivą] tens[? toro klasės laivų] many[? toro klasės laivus]}" />
-    <Thor-whos value="{0 one[toro klasės laivo] 1sts[? toro klasės laivo] tens[? toro klasės laivų] many[? toro klasės laivų]}" />
+    <Unit_Thor value="Toras" />
+    <Unit_Thor-what value="{0 one[toro klasės laivą] 1sts[? toro klasės laivą] tens[? toro klasės laivų] many[? toro klasės laivus]}" />
+    <Unit_Thor-whos value="{0 one[toro klasės laivo] 1sts[? toro klasės laivo] tens[? toro klasės laivų] many[? toro klasės laivų]}" />
 
-    <Demosis value="Demozis" />
-    <Demosis-what value="{0 one[demozio klasės laivą] 1sts[? demozio klasės laivą] tens[? demozio klasės laivų] many[? demozio klasės laivus]}" />
-    <Demosis-whos value="{0 one[demozio klasės laivo] 1sts[? demozio klasės laivo] tens[? demozio klasės laivų] many[? demozio klasės laivų]}" />
+    <Unit_Demosis value="Demozis" />
+    <Unit_Demosis-what value="{0 one[demozio klasės laivą] 1sts[? demozio klasės laivą] tens[? demozio klasės laivų] many[? demozio klasės laivus]}" />
+    <Unit_Demosis-whos value="{0 one[demozio klasės laivo] 1sts[? demozio klasės laivo] tens[? demozio klasės laivų] many[? demozio klasės laivų]}" />
     
     <!-- Bokšteliai -->
 
-    <Vulcan value="Vulkanas" />
-    <Vulcan-what value="{0 one[vulkaną] 1sts[? vulkaną] tens[? vulkanų] many[? vulkanus]}" />
-    <Vulcan-whos value="{0 one[vulkano] 1sts[? vulkano] tens[? vulkanų] many[? vulkanų]}" />
+    <Building_Vulcan value="Vulkanas" />
+    <Building_Vulcan-what value="{0 one[vulkaną] 1sts[? vulkaną] tens[? vulkanų] many[? vulkanus]}" />
+    <Building_Vulcan-whos value="{0 one[vulkano] 1sts[? vulkano] tens[? vulkanų] many[? vulkanų]}" />
 
-    <Screamer value="Rėksnys" />
-    <Screamer-what value="{0 one[rėksnį] 1sts[? rėksnį] tens[? rėksnių] many[? rėksnius]}" />
-    <Screamer-whos value="{0 one[rėksnio] 1sts[? rėksnio] tens[? rėksnių] many[? rėksnių]}" />
+    <Building_Screamer value="Rėksnys" />
+    <Building_Screamer-what value="{0 one[rėksnį] 1sts[? rėksnį] tens[? rėksnių] many[? rėksnius]}" />
+    <Building_Screamer-whos value="{0 one[rėksnio] 1sts[? rėksnio] tens[? rėksnių] many[? rėksnių]}" />
 
-    <Thunder value="Griausmas" />
-    <Thunder-what value="{0 one[griausmą] 1sts[? griausmą] tens[? griausmų] many[? griausmus]}" />
-    <Thunder-whos value="{0 one[griausmo] 1sts[? griausmo] tens[? griausmų] many[? griausmų]}" />
+    <Building_Thunder value="Griausmas" />
+    <Building_Thunder-what value="{0 one[griausmą] 1sts[? griausmą] tens[? griausmų] many[? griausmus]}" />
+    <Building_Thunder-whos value="{0 one[griausmo] 1sts[? griausmo] tens[? griausmų] many[? griausmų]}" />
+
+    <Building_MobileVulcan value="Vulkanas-M" />
+    <Building_MobileVulcan-what value="{0 one[vulkaną-M] 1sts[? vulkaną-M] tens[? vulkanų-M] many[? vulkanus-M]}" />
+    <Building_MobileVulcan-whos value="{0 one[vulkano-M] 1sts[? vulkano-M] tens[? vulkanų-M] many[? vulkanų-M]}" />
     
+    <Building_MobileScreamer value="Rėksnys-M" />
+    <Building_MobileScreamer-what value="{0 one[rėksnį-M] 1sts[? rėksnį-M] tens[? rėksnių-M] many[? rėksnius-M]}" />
+    <Building_MobileScreamer-whos value="{0 one[rėksnio-M] 1sts[? rėksnio-M] tens[? rėksnių-M] many[? rėksnių-M]}" />
+
+    <Building_MobileThunder value="Griausmas-M" />
+    <Building_MobileThunder-what value="{0 one[griausmą-M] 1sts[? griausmą-M] tens[? griausmų-M] many[? griausmus-M]}" />
+    <Building_MobileThunder-whos value="{0 one[griausmo-M] 1sts[? griausmo-M] tens[? griausmų-M] many[? griausmų-M]}" />
+  
     <!-- Kasyklos -->
 
-    <MetalExtractor value="MEX" />
-    <MetalExtractor-what value="{0 one[MEX-ą] 1sts[? MEX-ą] tens[? MEX-ų] many[? MEX-us]}" />
-    <MetalExtractor-whos value="{0 one[MEX-o] 1sts[? MEX-o] tens[? MEX-ų] many[? MEX-ų]}" />
+    <Building_MetalExtractor value="MEX" />
+    <Building_MetalExtractor-what value="{0 one[MEX-ą] 1sts[? MEX-ą] tens[? MEX-ų] many[? MEX-us]}" />
+    <Building_MetalExtractor-whos value="{0 one[MEX-o] 1sts[? MEX-o] tens[? MEX-ų] many[? MEX-ų]}" />
 
-    <MetalExtractorT2 value="MEX T-2" />
-    <MetalExtractorT2-what value="{0 one[MEX-ą T-2] 1sts[? MEX-ą T-2] tens[? MEX-ų T-2] many[? MEX-us T-2]}" />
-    <MetalExtractorT2-whos value="{0 one[MEX-o T-2] 1sts[? MEX-o T-2] tens[? MEX-ų T-2] many[? MEX-ų T-2]}" />
+    <Building_MetalExtractorT2 value="MEX T-2" />
+    <Building_MetalExtractorT2-what value="{0 one[MEX-ą T-2] 1sts[? MEX-ą T-2] tens[? MEX-ų T-2] many[? MEX-us T-2]}" />
+    <Building_MetalExtractorT2-whos value="{0 one[MEX-o T-2] 1sts[? MEX-o T-2] tens[? MEX-ų T-2] many[? MEX-ų T-2]}" />
 
-    <CollectorT1 value="Vėjo jėgainė" />
-    <CollectorT1-what value="{0 one[vėjo jėgainę] 1sts[? vėjo jėgainę] tens[? vėjo jėgainių] many[? vėjo jėgaines]}" />
-    <CollectorT1-whos value="{0 one[vėjo jėgainės] 1sts[? vėjo jėgainės] tens[? vėjo jėgainių] many[? vėjo jėgainių]}" />
+    <Building_CollectorT1 value="Vėjo jėgainė" />
+    <Building_CollectorT1-what value="{0 one[vėjo jėgainę] 1sts[? vėjo jėgainę] tens[? vėjo jėgainių] many[? vėjo jėgaines]}" />
+    <Building_CollectorT1-whos value="{0 one[vėjo jėgainės] 1sts[? vėjo jėgainės] tens[? vėjo jėgainių] many[? vėjo jėgainių]}" />
 
-    <CollectorT2 value="Kolektorius" />
-    <CollectorT2-what value="{0 one[kolektorių] 1sts[? kolektorių] tens[? kolektorių] many[? kolektorius]}" />
-    <CollectorT2-whos value="{0 one[kolektoriaus] 1sts[? kolektoriaus] tens[? kolektorių] many[? kolektorių]}" />
+    <Building_CollectorT2 value="Kolektorius" />
+    <Building_CollectorT2-what value="{0 one[kolektorių] 1sts[? kolektorių] tens[? kolektorių] many[? kolektorius]}" />
+    <Building_CollectorT2-whos value="{0 one[kolektoriaus] 1sts[? kolektoriaus] tens[? kolektorių] many[? kolektorių]}" />
 
-    <CollectorT3 value="Geocentras" />
-    <CollectorT3-what value="{0 one[geocentrą] 1sts[? geocentrą] tens[? geocentrų] many[? geocentrus]}" />
-    <CollectorT3-whos value="{0 one[geocentro] 1sts[? geocentro] tens[? geocentrų] many[? geocentrų]}" />
+    <Building_CollectorT3 value="Geocentras" />
+    <Building_CollectorT3-what value="{0 one[geocentrą] 1sts[? geocentrą] tens[? geocentrų] many[? geocentrus]}" />
+    <Building_CollectorT3-whos value="{0 one[geocentro] 1sts[? geocentro] tens[? geocentrų] many[? geocentrų]}" />
 
-    <ZetiumExtractor value="ZEX" />
-    <ZetiumExtractor-what value="{0 one[ZEX-ą] 1sts[? ZEX-ą] tens[? ZEX-ų] many[? ZEX-us]}" />
-    <ZetiumExtractor-whos value="{0 one[ZEX-o] 1sts[? ZEX-o] tens[? ZEX-ų] many[? ZEX-ų]}" />
+    <Building_ZetiumExtractor value="ZEX" />
+    <Building_ZetiumExtractor-what value="{0 one[ZEX-ą] 1sts[? ZEX-ą] tens[? ZEX-ų] many[? ZEX-us]}" />
+    <Building_ZetiumExtractor-whos value="{0 one[ZEX-o] 1sts[? ZEX-o] tens[? ZEX-ų] many[? ZEX-ų]}" />
 
-    <ZetiumExtractorT2 value="ZEX T-2" />
-    <ZetiumExtractorT2-what value="{0 one[ZEX-ą T-2] 1sts[? ZEX-ą T-2] tens[? ZEX-ų T-2] many[? ZEX-us T-2]}" />
-    <ZetiumExtractorT2-whos value="{0 one[ZEX-o T-2] 1sts[? ZEX-o T-2] tens[? ZEX-ų T-2] many[? ZEX-ų T-2]}" />
+    <Building_ZetiumExtractorT2 value="ZEX T-2" />
+    <Building_ZetiumExtractorT2-what value="{0 one[ZEX-ą T-2] 1sts[? ZEX-ą T-2] tens[? ZEX-ų T-2] many[? ZEX-us T-2]}" />
+    <Building_ZetiumExtractorT2-whos value="{0 one[ZEX-o T-2] 1sts[? ZEX-o T-2] tens[? ZEX-ų T-2] many[? ZEX-ų T-2]}" />
     
     <!-- Talpyklos -->
 
-    <MetalStorage value="Metalo talpykla" />
-    <MetalStorage-what value="{0 one[metalo talpyklą] 1sts[? metalo talpyklą] tens[? metalo talpyklų] many[? metalo talpyklas]}" />
-    <MetalStorage-whos value="{0 one[metalo talpyklos] 1sts[? metalo talpyklos] tens[? metalo talpyklų] many[? metalo talpyklų]}" />
+    <Building_MetalStorage value="Metalo talpykla" />
+    <Building_MetalStorage-what value="{0 one[metalo talpyklą] 1sts[? metalo talpyklą] tens[? metalo talpyklų] many[? metalo talpyklas]}" />
+    <Building_MetalStorage-whos value="{0 one[metalo talpyklos] 1sts[? metalo talpyklos] tens[? metalo talpyklų] many[? metalo talpyklų]}" />
     
-    <EnergyStorage value="Energijos talpykla" />
-    <EnergyStorage-what value="{0 one[energijos talpyklą] 1sts[? energijos talpyklą] tens[? energijos talpyklų] many[? energijos talpyklas]}" />
-    <EnergyStorage-whos value="{0 one[energijos talpyklos] 1sts[? energijos talpyklos] tens[? energijos talpyklų] many[? energijos talpyklų]}" />
+    <Building_EnergyStorage value="Energijos talpykla" />
+    <Building_EnergyStorage-what value="{0 one[energijos talpyklą] 1sts[? energijos talpyklą] tens[? energijos talpyklų] many[? energijos talpyklas]}" />
+    <Building_EnergyStorage-whos value="{0 one[energijos talpyklos] 1sts[? energijos talpyklos] tens[? energijos talpyklų] many[? energijos talpyklų]}" />
     
-    <ZetiumStorage value="Zetiumo talpykla" />
-    <ZetiumStorage-what value="{0 one[zetiumo talpyklą] 1sts[? zetiumo talpyklą] tens[? zetiumo talpyklų] many[? zetiumo talpyklas]}" />
-    <ZetiumStorage-whos value="{0 one[zetiumo talpyklos] 1sts[? zetiumo talpyklos] tens[? zetiumo talpyklų] many[? zetiumo talpyklų]}" />
+    <Building_ZetiumStorage value="Zetiumo talpykla" />
+    <Building_ZetiumStorage-what value="{0 one[zetiumo talpyklą] 1sts[? zetiumo talpyklą] tens[? zetiumo talpyklų] many[? zetiumo talpyklas]}" />
+    <Building_ZetiumStorage-whos value="{0 one[zetiumo talpyklos] 1sts[? zetiumo talpyklos] tens[? zetiumo talpyklų] many[? zetiumo talpyklų]}" />
     
     <!-- NPC pastatai -->
     
-    <NpcMetalExtractor value="Liejykla" />
-    <NpcMetalExtractor-what value="{0 one[liejyklą] 1sts[? liejyklą] tens[? liejyklų] many[? liejyklas]}" />
-    <NpcMetalExtractor-whos value="{0 one[liejyklos] 1sts[? liejyklos] tens[? liejyklų] many[? liejyklų]}" />
+    <Building_NpcMetalExtractor value="Liejykla" />
+    <Building_NpcMetalExtractor-what value="{0 one[liejyklą] 1sts[? liejyklą] tens[? liejyklų] many[? liejyklas]}" />
+    <Building_NpcMetalExtractor-whos value="{0 one[liejyklos] 1sts[? liejyklos] tens[? liejyklų] many[? liejyklų]}" />
         
-    <NpcZetiumExtractor value="Z-Laboratorija" />
-    <NpcZetiumExtractor-what value="{0 one[Z-Laboratoriją] 1sts[? Z-Laboratoriją] tens[? Z-Laboratorijų] many[? Z-Laboratorijas]}" />
-    <NpcZetiumExtractor-whos value="{0 one[Z-Laboratorijos] 1sts[? Z-Laboratorijos] tens[? Z-Laboratorijų] many[? Z-Laboratorijų]}" />
+    <Building_NpcZetiumExtractor value="Z-Laboratorija" />
+    <Building_NpcZetiumExtractor-what value="{0 one[Z-Laboratoriją] 1sts[? Z-Laboratoriją] tens[? Z-Laboratorijų] many[? Z-Laboratorijas]}" />
+    <Building_NpcZetiumExtractor-whos value="{0 one[Z-Laboratorijos] 1sts[? Z-Laboratorijos] tens[? Z-Laboratorijų] many[? Z-Laboratorijų]}" />
       
-    <NpcGeothermalPlant value="Šilumos Rinktuvas" />
-    <NpcGeothermalPlant-what value="{0 one[šilumos rinktuvą] 1sts[? šilumos rinktuvą] tens[? šilumos rinktuvų] many[? šilumos rinktuvus]}" />
-    <NpcGeothermalPlant-whos value="{0 one[šilumos rinktuvo] 1sts[? šilumos rinktuvo] tens[? šilumos rinktuvų] many[? šilumos rinktuvų]}" />
+    <Building_NpcGeothermalPlant value="Šilumos Rinktuvas" />
+    <Building_NpcGeothermalPlant-what value="{0 one[šilumos rinktuvą] 1sts[? šilumos rinktuvą] tens[? šilumos rinktuvų] many[? šilumos rinktuvus]}" />
+    <Building_NpcGeothermalPlant-whos value="{0 one[šilumos rinktuvo] 1sts[? šilumos rinktuvo] tens[? šilumos rinktuvų] many[? šilumos rinktuvų]}" />
     
-    <NpcSolarPlant value="Prizmė" />
-    <NpcSolarPlant-what value="{0 one[prizmę] 1sts[? prizmę] tens[? prizmių] many[? prizmes]}" />
-    <NpcSolarPlant-whos value="{0 one[prizmės] 1sts[? prizmės] tens[? prizmių] many[? prizmių]}" />
+    <Building_NpcSolarPlant value="Prizmė" />
+    <Building_NpcSolarPlant-what value="{0 one[prizmę] 1sts[? prizmę] tens[? prizmių] many[? prizmes]}" />
+    <Building_NpcSolarPlant-whos value="{0 one[prizmės] 1sts[? prizmės] tens[? prizmių] many[? prizmių]}" />
     
-    <NpcCommunicationsHub value="Komunikatorius" />
-    <NpcCommunicationsHub-what value="{0 one[komunikatorių] 1sts[? komunikatorių] tens[? komunikatorių] many[? komunikatorius]}" />
-    <NpcCommunicationsHub-whos value="{0 one[komunikatoriaus] 1sts[? komunikatoriaus] tens[? komunikatorių] many[? komunikatorių]}" />
+    <Building_NpcCommunicationsHub value="Komunikatorius" />
+    <Building_NpcCommunicationsHub-what value="{0 one[komunikatorių] 1sts[? komunikatorių] tens[? komunikatorių] many[? komunikatorius]}" />
+    <Building_NpcCommunicationsHub-whos value="{0 one[komunikatoriaus] 1sts[? komunikatoriaus] tens[? komunikatorių] many[? komunikatorių]}" />
     
-    <NpcTemple value="Šventykla" />
-    <NpcTemple-what value="{0 one[šventyklą] 1sts[? šventyklą] tens[? šventyklų] many[? šventyklas]}" />
-    <NpcTemple-whos value="{0 one[šventyklos] 1sts[? šventyklos] tens[? šventyklų] many[? šventyklų]}" />
+    <Building_NpcTemple value="Šventykla" />
+    <Building_NpcTemple-what value="{0 one[šventyklą] 1sts[? šventyklą] tens[? šventyklų] many[? šventyklas]}" />
+    <Building_NpcTemple-whos value="{0 one[šventyklos] 1sts[? šventyklos] tens[? šventyklų] many[? šventyklų]}" />
     
-    <NpcExcavationSite value="Kasinėjimų vieta" />
-    <NpcExcavationSite-what value="{0 one[kasinėjimų vietą] 1sts[? kasinėjimų vietą] tens[? kasinėjimų vietų] many[? kasinėjimų vietas]}" />
-    <NpcExcavationSite-whos value="{0 one[kasinėjimų vietos] 1sts[? kasinėjimų vietos] tens[? kasinėjimų vietų] many[? kasinėjimų vietų]}" />
+    <Building_NpcExcavationSite value="Kasinėjimų vieta" />
+    <Building_NpcExcavationSite-what value="{0 one[kasinėjimų vietą] 1sts[? kasinėjimų vietą] tens[? kasinėjimų vietų] many[? kasinėjimų vietas]}" />
+    <Building_NpcExcavationSite-whos value="{0 one[kasinėjimų vietos] 1sts[? kasinėjimų vietos] tens[? kasinėjimų vietų] many[? kasinėjimų vietų]}" />
     
-    <NpcResearchCenter value="Laboratorija" />
-    <NpcResearchCenter-what value="{0 one[laboratoriją] 1sts[? laboratoriją] tens[? laboratorijų] many[? laboratorijas]}" />
-    <NpcResearchCenter-whos value="{0 one[laboratorijos] 1sts[? laboratorijos] tens[? laboratorijų] many[? laboratorijų]}" />
+    <Building_NpcResearchCenter value="Laboratorija" />
+    <Building_NpcResearchCenter-what value="{0 one[laboratoriją] 1sts[? laboratoriją] tens[? laboratorijų] many[? laboratorijas]}" />
+    <Building_NpcResearchCenter-whos value="{0 one[laboratorijos] 1sts[? laboratorijos] tens[? laboratorijų] many[? laboratorijų]}" />
     
-    <NpcJumpgate value="Šuolio vartai" />
-    <NpcJumpgate-what value="{0 one[šuolio vartus] 1sts[? šuolio vartus] tens[? šuolio vartų] many[? šuolio vartus]}" />
-    <NpcJumpgate-whos value="{0 one[šuolio vartų] 1sts[? šuolio vartų] tens[? šuolio vartų] many[? šuolio vartų]}" />
+    <Building_NpcJumpgate value="Šuolio vartai" />
+    <Building_NpcJumpgate-what value="{0 one[šuolio vartus] 1sts[? šuolio vartus] tens[? šuolio vartų] many[? šuolio vartus]}" />
+    <Building_NpcJumpgate-whos value="{0 one[šuolio vartų] 1sts[? šuolio vartų] tens[? šuolio vartų] many[? šuolio vartų]}" />
     
-    <NpcInfantryFactory value="Perykla" />
-    <NpcInfantryFactory-what value="{0 one[peryklą] 1sts[? peryklą] tens[? peryklų] many[? peryklas]}" />
-    <NpcInfantryFactory-whos value="{0 one[peryklos] 1sts[? peryklos] tens[? peryklų] many[? peryklų]}" />
+    <Building_NpcInfantryFactory value="Perykla" />
+    <Building_NpcInfantryFactory-what value="{0 one[peryklą] 1sts[? peryklą] tens[? peryklų] many[? peryklas]}" />
+    <Building_NpcInfantryFactory-whos value="{0 one[peryklos] 1sts[? peryklos] tens[? peryklų] many[? peryklų]}" />
     
-    <NpcTankFactory value="Ateivių fabrikas" />
-    <NpcTankFactory-what value="{0 one[ateivių fabriką] 1sts[? ateivių fabriką] tens[? ateivių fabrikų] many[? ateivių fabrikus]}" />
-    <NpcTankFactory-whos value="{0 one[ateivių fabriko] 1sts[? ateivių fabriko] tens[? ateivių fabrikų] many[? ateivių fabrikų]}" />
+    <Building_NpcTankFactory value="Ateivių fabrikas" />
+    <Building_NpcTankFactory-what value="{0 one[ateivių fabriką] 1sts[? ateivių fabriką] tens[? ateivių fabrikų] many[? ateivių fabrikus]}" />
+    <Building_NpcTankFactory-whos value="{0 one[ateivių fabriko] 1sts[? ateivių fabriko] tens[? ateivių fabrikų] many[? ateivių fabrikų]}" />
     
-    <NpcSpaceFactory value="Laivų dirbtuvės" />
-    <NpcSpaceFactory-what value="{0 one[laivų dirbtuves] 1sts[? laivų dirbtuves] tens[? laivų dirbtuvių] many[? laivų dirbtuves]}" />
-    <NpcSpaceFactory-whos value="{0 one[laivų dirbtuvės] 1sts[? laivų dirbtuvės] tens[? laivų dirbtuvių] many[? laivų dirbtuvių]}" />
+    <Building_NpcSpaceFactory value="Laivų dirbtuvės" />
+    <Building_NpcSpaceFactory-what value="{0 one[laivų dirbtuves] 1sts[? laivų dirbtuves] tens[? laivų dirbtuvių] many[? laivų dirbtuves]}" />
+    <Building_NpcSpaceFactory-whos value="{0 one[laivų dirbtuvės] 1sts[? laivų dirbtuvės] tens[? laivų dirbtuvių] many[? laivų dirbtuvių]}" />
     
-    <NpcHall value="Siųstuvas" />
-    <NpcHall-what value="{0 one[siųstuvą] 1sts[? siųstuvą] tens[? siųstuvų] many[? siųstuvus]}" />
-    <NpcHall-whos value="{0 one[siųstuvo] 1sts[? siųstuvo] tens[? siųstuvų] many[? siųstuvų]}" />
+    <Building_NpcHall value="Siųstuvas" />
+    <Building_NpcHall-what value="{0 one[siųstuvą] 1sts[? siųstuvą] tens[? siųstuvų] many[? siųstuvus]}" />
+    <Building_NpcHall-whos value="{0 one[siųstuvo] 1sts[? siųstuvo] tens[? siųstuvų] many[? siųstuvų]}" />
     
     <!-- Statymo pastatai -->
     
-    <Mothership value="Motininis laivas" />
-    <Mothership-what value="{0 one[motininį laivą] 1sts[? motininį laivą] tens[? motininių laivų] many[? motininius laivus]}" />
-    <Mothership-whos value="{0 one[motininio laivo] 1sts[? motininio laivo] tens[? motininių laivų] many[? motininių laivų]}" />
+    <Building_Mothership value="Motininis laivas" />
+    <Building_Mothership-what value="{0 one[motininį laivą] 1sts[? motininį laivą] tens[? motininių laivų] many[? motininius laivus]}" />
+    <Building_Mothership-whos value="{0 one[motininio laivo] 1sts[? motininio laivo] tens[? motininių laivų] many[? motininių laivų]}" />
     
-    <Headquarters value="Štabas" />
-    <Headquarters-what value="{0 one[štabą] 1sts[? štabą] tens[? štabų] many[? štabus]}" />
-    <Headquarters-whos value="{0 one[štabo] 1sts[? štabo] tens[? štabų] many[? štabų]}" />
+    <Building_Headquarters value="Štabas" />
+    <Building_Headquarters-what value="{0 one[štabą] 1sts[? štabą] tens[? štabų] many[? štabus]}" />
+    <Building_Headquarters-whos value="{0 one[štabo] 1sts[? štabo] tens[? štabų] many[? štabų]}" />
     
-    <Crane value="Kranas" />
-    <Crane-what value="{0 one[kraną] 1sts[? kraną] tens[? kranų] many[? kranus]}" />
-    <Crane-whos value="{0 one[krano] 1sts[? krano] tens[? kranų] many[? kranų]}" />
+    <Building_Crane value="Kranas" />
+    <Building_Crane-what value="{0 one[kraną] 1sts[? kraną] tens[? kranų] many[? kranus]}" />
+    <Building_Crane-whos value="{0 one[krano] 1sts[? krano] tens[? kranų] many[? kranų]}" />
     
     <!-- Kareivių gaminimo pastatai -->
 
-    <Barracks value="Kareivinės" />
-    <Barracks-what value="{0 one[kareivines] 1sts[? kareivines] tens[? kareivinių] many[? kareivines]}" />
-    <Barracks-whos value="{0 one[kareivinės] 1sts[? kareivinės] tens[? kareivinių] many[? kareivinių]}" />
+    <Building_Barracks value="Kareivinės" />
+    <Building_Barracks-what value="{0 one[kareivines] 1sts[? kareivines] tens[? kareivinių] many[? kareivines]}" />
+    <Building_Barracks-whos value="{0 one[kareivinės] 1sts[? kareivinės] tens[? kareivinių] many[? kareivinių]}" />
     
-    <GroundFactory value="Tankų gamykla" />
-    <GroundFactory-what value="{0 one[tankų gamyklą] 1sts[? tankų gamyklą] tens[? tankų gamyklų] many[? tankų gamyklas]}" />
-    <GroundFactory-whos value="{0 one[tankų gamyklos] 1sts[? tankų gamyklos] tens[? tankų gamyklų] many[? tankų gamyklų]}" />
+    <Building_GroundFactory value="Tankų gamykla" />
+    <Building_GroundFactory-what value="{0 one[tankų gamyklą] 1sts[? tankų gamyklą] tens[? tankų gamyklų] many[? tankų gamyklas]}" />
+    <Building_GroundFactory-whos value="{0 one[tankų gamyklos] 1sts[? tankų gamyklos] tens[? tankų gamyklų] many[? tankų gamyklų]}" />
     
-    <SpaceFactory value="Laivų gamykla" />
-    <SpaceFactory-what value="{0 one[laivų gamyklą] 1sts[? laivų gamyklą] tens[? laivų gamyklų] many[? laivų gamyklas]}" />
-    <SpaceFactory-whos value="{0 one[laivų gamyklos] 1sts[? laivų gamyklos] tens[? laivų gamyklų] many[? laivų gamyklų]}" />
+    <Building_SpaceFactory value="Laivų gamykla" />
+    <Building_SpaceFactory-what value="{0 one[laivų gamyklą] 1sts[? laivų gamyklą] tens[? laivų gamyklų] many[? laivų gamyklas]}" />
+    <Building_SpaceFactory-whos value="{0 one[laivų gamyklos] 1sts[? laivų gamyklos] tens[? laivų gamyklų] many[? laivų gamyklų]}" />
     
     <!-- Kiti pastatai -->
     
-    <Market value="Turgus" />
-    <Market-what value="{0 one[turgų] 1sts[? turgų] tens[? turgų] many[? turgus]}" />
-    <Market-whos value="{0 one[turgaus] 1sts[? turgaus] tens[? turgų] many[? turgų]}" />
+    <Building_Market value="Turgus" />
+    <Building_Market-what value="{0 one[turgų] 1sts[? turgų] tens[? turgų] many[? turgus]}" />
+    <Building_Market-whos value="{0 one[turgaus] 1sts[? turgaus] tens[? turgų] many[? turgų]}" />
 
-    <Radar value="Radaras" />
-    <Radar-what value="{0 one[radarą] 1sts[? radarą] tens[? radarų] many[? radarus]}" />
-    <Radar-whos value="{0 one[radaro] 1sts[? radaro] tens[? radarų] many[? radarų]}" />
+    <Building_Radar value="Radaras" />
+    <Building_Radar-what value="{0 one[radarą] 1sts[? radarą] tens[? radarų] many[? radarus]}" />
+    <Building_Radar-whos value="{0 one[radaro] 1sts[? radaro] tens[? radarų] many[? radarų]}" />
     
-    <DefensivePortal value="Portalas" />
-    <DefensivePortal-what value="{0 one[portalą] 1sts[? portalą] tens[? portalų] many[? portalus]}" />
-    <DefensivePortal-whos value="{0 one[portalo] 1sts[? portalo] tens[? portalų] many[? portalų]}" />
+    <Building_DefensivePortal value="Portalas" />
+    <Building_DefensivePortal-what value="{0 one[portalą] 1sts[? portalą] tens[? portalų] many[? portalus]}" />
+    <Building_DefensivePortal-whos value="{0 one[portalo] 1sts[? portalo] tens[? portalų] many[? portalų]}" />
     
-    <ResearchCenter value="Tyrimų centras" />
-    <ResearchCenter-what value="{0 one[tyrimų centrą] 1sts[? tyrimų centrą] tens[? tyrimų centrų] many[? tyrimų centrus]}" />
-    <ResearchCenter-whos value="{0 one[tyrimų centro] 1sts[? tyrimų centro] tens[? tyrimų centrų] many[? tyrimų centrų]}" />
+    <Building_ResearchCenter value="Tyrimų centras" />
+    <Building_ResearchCenter-what value="{0 one[tyrimų centrą] 1sts[? tyrimų centrą] tens[? tyrimų centrų] many[? tyrimų centrus]}" />
+    <Building_ResearchCenter-whos value="{0 one[tyrimų centro] 1sts[? tyrimų centro] tens[? tyrimų centrų] many[? tyrimų centrų]}" />
     
-    <Housing value="Gyv. bokštai" />
-    <Housing-what value="{0 one[gyv. bokštą] 1sts[? gyv. bokštą] tens[? gyv. bokštų] many[? gyv. bokštus]}" />
-    <Housing-whos value="{0 one[gyv. bokšto] 1sts[? gyv. bokšto] tens[? gyv. bokštų] many[? gyv. bokštų]}" />
+    <Building_Housing value="Gyv. bokštai" />
+    <Building_Housing-what value="{0 one[gyv. bokštą] 1sts[? gyv. bokštą] tens[? gyv. bokštų] many[? gyv. bokštus]}" />
+    <Building_Housing-whos value="{0 one[gyv. bokšto] 1sts[? gyv. bokšto] tens[? gyv. bokštų] many[? gyv. bokštų]}" />
     
-    <HealingCenter value="Techninė ligoninė" />
-    <HealingCenter-what value="{0 one[techninę ligoninę] 1sts[? techninę ligoninę] tens[? techninių ligoninių] many[? technines ligonines]}" />
-    <HealingCenter-whos value="{0 one[techninės ligoninės] 1sts[? techninės ligoninės] tens[? techninių ligoninių] many[? techninių ligoninių]}" />
+    <Building_HealingCenter value="Techninė ligoninė" />
+    <Building_HealingCenter-what value="{0 one[techninę ligoninę] 1sts[? techninę ligoninę] tens[? techninių ligoninių] many[? technines ligonines]}" />
+    <Building_HealingCenter-whos value="{0 one[techninės ligoninės] 1sts[? techninės ligoninės] tens[? techninių ligoninių] many[? techninių ligoninių]}" />
 
     <!-- Technologijos -->
 
-    <ZetiumExtraction value="Zetiumo gavyba" />
-    <ZetiumExtraction-whos value="zetiumo gavybos" />
-    <MetabolicChargers value="Sustiprinti šarvai" />
-    <MetabolicChargers-whos value="sustiprintų šarvų" />
-    <HighVelocityCharges value="Greituminiai šoviniai" />
-    <HighVelocityCharges-whos value="greituminių šovinių" />
-    <ShipsArmor value="Keliasluoksnės plokštės" />
-    <ShipsArmor-whos value="keliasluoksnių plokščių" />
-    <ShipsDamage value="Energizuota plazma" />
-    <ShipsDamage-whos value="energizuotos plazmos" />
-    <TanksDamage value="Zetiumo sviediniai" />
-    <TanksDamage-whos value="zetiumo sviedinių" />
-    <TanksArmor value="Magnetiniai šarvai" />
-    <TanksArmor-whos value="magnetinių šarvų" />
-    <FieryMelters value="Aukšto spaudimo lydymas" />
-    <FieryMelters-whos value="aukšto spaudimo lydymo" />
-    <SuperconductorTechnology value="Superlaidininkai" />
-    <SuperconductorTechnology-whos value="superlaidininkų" />
-    <PowderedZetium value="Zetiumo pjaustikliai" />
-    <PowderedZetium-whos value="zetiumo pjaustiklių" />
-    <HeavyFlight value="Gama varikliai" />
-    <HeavyFlight-whos value="gama variklių" />
-    
+    <Technology_ZetiumExtraction value="Zetiumo gavyba" />
+    <Technology_ZetiumExtraction-whos value="zetiumo gavybos" />
+    <Technology_MetabolicChargers value="Sustiprinti šarvai" />
+    <Technology_MetabolicChargers-whos value="sustiprintų šarvų" />
+    <Technology_HighVelocityCharges value="Greituminiai šoviniai" />
+    <Technology_HighVelocityCharges-whos value="greituminių šovinių" />
+    <Technology_Market value="Turgus" />
+    <Technology_Market-whos value="Turgaus" />
+    <Technology_SpaceFactory-whos value="Laivų gamyklos" />
+    <Technology_SpaceFactory value="Laivų gamykla" />
+    <Technology_ShipsArmor value="Keliasluoksnės plokštės" />
+    <Technology_ShipsArmor-whos value="keliasluoksnių plokščių" />
+    <Technology_ShipsDamage value="Energizuota plazma" />
+    <Technology_ShipsDamage-whos value="energizuotos plazmos" />
+    <Technology_TanksDamage value="Zetiumo sviediniai" />
+    <Technology_TanksDamage-whos value="zetiumo sviedinių" />
+    <Technology_TanksArmor value="Magnetiniai šarvai" />
+    <Technology_TanksArmor-whos value="magnetinių šarvų" />
+    <Technology_FieryMelters value="Aukšto spaudimo lydymas" />
+    <Technology_FieryMelters-whos value="aukšto spaudimo lydymo" />
+    <Technology_SuperconductorTechnology value="Superlaidininkai" />
+    <Technology_SuperconductorTechnology-whos value="superlaidininkų" />
+    <Technology_PowderedZetium value="Zetiumo pjaustikliai" />
+    <Technology_PowderedZetium-whos value="zetiumo pjaustiklių" />
+    <Technology_HeavyFlight value="Gama varikliai" />
+    <Technology_HeavyFlight-whos value="gama variklių" />
+    <Technology_MetalStorage value="Skysčių suspaudimas" />
+    <Technology_MetalStorage-whos value="Skysčių suspaudimo" />
+    <Technology_EnergyStorage value="Talpesnės baterijos" />
+    <Technology_EnergyStorage-whos value="Talpesnių baterijų" />
+    <Technology_ZetiumStorage value="Zetiumo kasetės" />
+    <Technology_ZetiumStorage-whos value="Zetiumo kasečių" />
+    <Technology_ShipStorage value="Išoriniai dokai" />
+    <Technology_ShipStorage-whos value="Išorinių dokų" />
+    <Technology_DefensivePortal ref="Building_DefensivePortal" />
+    <Technology_DefensivePortal-whos value="Building_DefensivePortal-whos" />
+    <Technology_Alliances value="Sąjungos" />
+    <Technology_Alliances-whos value="Sąjungų" />
     
     <!-- Kita -->
     
@@ -384,6 +411,17 @@
     <message.playerInvited value="Žaidėjas buvo pakviestas į sąjungą" />
     <message.joinSuccess value="Tu sėkmingai įstojai į sąjungą" />
     <message.joinFail value="Tu negali įstoti į šią sąjungą, nes ji yra pilna" />
+    <tooltip.allianceFull>
+      <p>Tavo sąjunga pilna.</p>
+      <p>Tobulink sąjungos technologija jei nori pakviesti daugiau žaidėjų.</p>
+    </tooltip.allianceFull>
+    <label.invitablePlayers value="Pakviesk į sąjungą" />
+    <label.invite value="Pakviesti" />
+    <label.nothingToInvite value="Nėra žaidėjų kuriuos galėtum pakviesti" />
+    <label.explanationInvite>
+      <p>Gali pakviesti tik tuos žaidėjus, kurių planetas matai (išskyrus 
+      arenoje esančias planetas).</p>
+    </label.explanationInvite>
   </Alliances>
 
   <BattleMap>    
@@ -497,10 +535,6 @@
     <!-- 0: date, 1: time (1 part) -->
     <label.owner value="Tu valdai šią planetą nuo:" />
     <label.ownerDate value="{0} ({1})." />
-    <label.battlegroundOwner> 
-      <p>Kuo ilgiau valdysi šią planetą tuo mažesnis bus ateivių fabrikų 
-      produktyvumas</p>
-    </label.battlegroundOwner>     
     <label.activateOverdrive> 
       <p>Įjunk šiam pastatui perkrovos rėžimą, kad jis išgautų 
       {0 1sts[? kartą] tens[? kartų] many[? kartus]} daugiau resursų bei
@@ -596,7 +630,7 @@
 
     <!-- NPC pastatai -->
 
-    <NpcMetalExtractor.name ref="Objects/NpcMetalExtractor" />
+    <NpcMetalExtractor.name ref="Objects/Building_NpcMetalExtractor" />
     <NpcMetalExtractor.about>
       <p>
         Šios ateiviškų technologijų valdomos liejyklos seniai dūla apleistos
@@ -606,7 +640,7 @@
       </p>
     </NpcMetalExtractor.about>
 
-    <NpcZetiumExtractor.name ref="Objects/NpcZetiumExtractor" />
+    <NpcZetiumExtractor.name ref="Objects/Building_NpcZetiumExtractor" />
     <NpcZetiumExtractor.about>
       <p>
         Šie pastatai buvo naudojami zetiumo gavybai, talpinimui ir tyrinėjimui.
@@ -617,7 +651,7 @@
       sargai. Būk atsargus.</p>
     </NpcZetiumExtractor.about>
 
-    <NpcGeothermalPlant.name ref="Objects/NpcGeothermalPlant" />
+    <NpcGeothermalPlant.name ref="Objects/Building_NpcGeothermalPlant" />
     <NpcGeothermalPlant.about>
       <p>
         Pastatyti amžių glūdumoje, šie pastatai buvo skirti rinkti iš po žemių
@@ -626,7 +660,7 @@
       </p>
     </NpcGeothermalPlant.about>
 
-    <NpcSolarPlant.name ref="Objects/NpcSolarPlant" />
+    <NpcSolarPlant.name ref="Objects/Building_NpcSolarPlant" />
     <NpcSolarPlant.about>
       <p>
         Šiuose pastatuose renkama saulės energija. Mūsų skaneriai rodo stiprų
@@ -635,7 +669,7 @@
       </p>
     </NpcSolarPlant.about>
 
-    <NpcCommunicationsHub.name ref="Objects/NpcCommunicationsHub" />
+    <NpcCommunicationsHub.name ref="Objects/Building_NpcCommunicationsHub" />
     <NpcCommunicationsHub.about>
       <p>
         Šie pastatai panašūs į komunikacijos įrenginius. Galbūt jie buvo 
@@ -643,7 +677,7 @@
       </p>
     </NpcCommunicationsHub.about>
 
-    <NpcTemple.name ref="Objects/NpcTemple" />
+    <NpcTemple.name ref="Objects/Building_NpcTemple" />
     <NpcTemple.about>
       <p>
         Pirmtakai buvo nepaprastai išsivysčiusi rasė, tačiau tai netrukdė jiems
@@ -653,21 +687,21 @@
       ar tai tiesa, tačiau ji yra ypatingai saugoma.</p>
     </NpcTemple.about>
 
-    <NpcExcavationSite.name ref="Objects/NpcExcavationSite" />
+    <NpcExcavationSite.name ref="Objects/Building_NpcExcavationSite" />
     <NpcExcavationSite.about>
       <p>Šį įduba panašėja į kasinėjimų ir tyrimų vietą. Ir nors jau niekas
       nebesužinos ko pirmtakai čia ieškojo, ši vieta vis dar saugoma aršiai
       nusiteikusių karių.</p>
     </NpcExcavationSite.about>
 
-    <NpcResearchCenter.name ref="Objects/NpcResearchCenter" />
+    <NpcResearchCenter.name ref="Objects/Building_NpcResearchCenter" />
     <NpcResearchCenter.about>
       <p>Šis mistiškas pastatas panašus į pirmtakų tyrimų laboratoriją. Niekas
       nežino kokie tyrimai buvo joje vykdomi, tačiau kad ir kas tai būtų, tai 
       buvo labai svarbu, nes šį pastatą saugo krūva robotų.</p>
     </NpcResearchCenter.about>
 
-    <NpcJumpgate.name ref="Objects/NpcJumpgate" />
+    <NpcJumpgate.name ref="Objects/Building_NpcJumpgate" />
     <NpcJumpgate.about>
       <p>Šie vartai buvo naudojami perkelti karius ir netgi kosminius laivus 
       milžiniškais atstumais akimirksniu. Jie galėdavo perskrosti tarpus tarp
@@ -679,12 +713,12 @@
 
     <!-- Žaidėjo pastatai -->
 
-    <Mothership.name ref="Objects/Mothership" />
+    <Mothership.name ref="Objects/Building_Mothership" />
     <Mothership.about>
-      <p>[reference:Objects/Mothership] - tai pagrindinis laivas žmonėms, 
+      <p>[reference:Objects/Building_Mothership] - tai pagrindinis laivas žmonėms,
       kurie gyvena šioje planetoje. Jie atkeliavo čia šiuo laivu ir jis tapo 
       jiems pirmąja saugia užuoveja šioje laukinėje planetoje.</p>
-      <p>[reference:Objects/Mothership] turi integruotą metalo išgavėją, 
+      <p>[reference:Objects/Building_Mothership] turi integruotą metalo išgavėją,
       saulės baterijas generuoti energijai ir talpyklas šiems resursams saugoti.
       To pilnai užtenka, kad patenkinti bazines planetos resursų reikmes.</p>
     </Mothership.about>
@@ -700,23 +734,23 @@
       <p>Kiekvienas patobulinimo lygis pakelia metalo išgavimo greitį.</p>
     </MEX.common>
 
-    <MetalExtractor.name ref="Objects/MetalExtractor" />
+    <MetalExtractor.name ref="Objects/Building_MetalExtractor" />
     <MetalExtractor.tooltip value="Kasa metalą" />
     <MetalExtractor.about>
       <p>
         Statomos ant rūdos kalnų šios kasyklos yra naudojamos išgauti metalą
         iš purvo ir akmenų. Metalo kasyklos 
-        ([reference:Objects/MetalExtractor]) - tai pastatai, kurie kasdami
+        ([reference:Objects/Building_MetalExtractor]) - tai pastatai, kurie kasdami
         kalnus duoda pastovias metalo įplaukas.
       </p>
       <p>[reference:MEX.common]</p>
     </MetalExtractor.about>
 
-    <MetalExtractorT2.name ref="Objects/MetalExtractorT2" />
+    <MetalExtractorT2.name ref="Objects/Building_MetalExtractorT2" />
     <MetalExtractorT2.tooltip ref="MetalExtractor.tooltip" />
     <MetalExtractorT2.common>
-      <p>Geresnė, greitesnė ir brangesnė 
-      [reference:Objects/MetalExtractor] versija.</p>
+      <p>Geresnė, greitesnė ir brangesnė [obj:1:Building_MetalExtractor:whos]
+      versija.</p>
     </MetalExtractorT2.common>
 
     <MetalExtractorT2.about>
@@ -724,7 +758,7 @@
       <p>[reference:MEX.common]</p>
     </MetalExtractorT2.about>
 
-    <MetalStorage.name ref="Objects/MetalStorage" />
+    <MetalStorage.name ref="Objects/Building_MetalStorage" />
     <MetalStorage.tooltip value="Saugo metalą" />
     <MetalStorage.about>
       <p>
@@ -736,7 +770,7 @@
       <p>Kiekvienas patobulinimo lygis padidina saugomo metalo kiekį.</p>
     </MetalStorage.about>
 
-    <CollectorT1.name ref="Objects/CollectorT1" />
+    <CollectorT1.name ref="Objects/Building_CollectorT1" />
     <CollectorT1.tooltip value="Gamina energiją" />
     <CollectorT1.common>
       <p>
@@ -751,7 +785,7 @@
       <p>Kiekvienas patobulinimo lygis didina išgaunamos energijos kiekį.</p>
     </CollectorT1.about>
 
-    <CollectorT2.name ref="Objects/CollectorT2" />
+    <CollectorT2.name ref="Objects/Building_CollectorT2" />
     <CollectorT2.tooltip ref="CollectorT1.tooltip" />
     <CollectorT2.common>
       <p>
@@ -766,7 +800,7 @@
       <p>Kiekvienas patobulinimo lygis didina energijos išgavimo greitį.</p>
     </CollectorT2.about>
 
-    <CollectorT3.name ref="Objects/CollectorT3" />
+    <CollectorT3.name ref="Objects/Building_CollectorT3" />
     <CollectorT3.tooltip ref="CollectorT1.tooltip" />
     <CollectorT3.common>
       <p>
@@ -780,7 +814,7 @@
       <p>Kiekvienas patobulinimo lygis didina energijos išgavimo greitį.</p>
     </CollectorT3.about>
 
-    <EnergyStorage.name ref="Objects/EnergyStorage" />
+    <EnergyStorage.name ref="Objects/Building_EnergyStorage" />
     <EnergyStorage.tooltip value="Talpina energiją" />
     <EnergyStorage.about>
       <p>
@@ -791,7 +825,7 @@
       <p>Kiekvienas patobulinimo lygis didina energijos talpą.</p>
     </EnergyStorage.about>
 
-    <Barracks.name ref="Objects/Barracks" />
+    <Barracks.name ref="Objects/Building_Barracks" />
     <Barracks.tooltip value="Apmoko kareivius" />
     <Barracks.about>
       <p>
@@ -802,7 +836,7 @@
       </p>
     </Barracks.about>
 
-    <ResearchCenter.name ref="Objects/ResearchCenter" />
+    <ResearchCenter.name ref="Objects/Building_ResearchCenter" />
     <ResearchCenter.tooltip value="Išranda technologijas" />
     <ResearchCenter.about>
       <p>
@@ -825,14 +859,14 @@
       <p>Kiekvienas patobulinimo lygis didina zetiumo išgavimo greitį.</p>
     </ZetiumExtractor.common>
 
-    <ZetiumExtractor.name ref="Objects/ZetiumExtractor" />
+    <ZetiumExtractor.name ref="Objects/Building_ZetiumExtractor" />
     <ZetiumExtractor.tooltip value="Kasa zetiumą" />
     <ZetiumExtractor.about>
       <p>[reference:Technologies/Zetium.common]</p>
       <p>[reference:ZetiumExtractor.common]</p>
     </ZetiumExtractor.about>
 
-    <ZetiumExtractorT2.name ref="Objects/ZetiumExtractorT2" />
+    <ZetiumExtractorT2.name ref="Objects/Building_ZetiumExtractorT2" />
     <ZetiumExtractorT2.tooltip ref="ZetiumExtractor.tooltip" />
     <ZetiumExtractorT2.common>
       <p>
@@ -846,7 +880,7 @@
       <p>[reference:ZetiumExtractor.common]</p>
     </ZetiumExtractorT2.about>
 
-    <ZetiumStorage.name ref="Objects/ZetiumStorage" />
+    <ZetiumStorage.name ref="Objects/Building_ZetiumStorage" />
     <ZetiumStorage.tooltip value="Talpina zetiumą" />
     <ZetiumStorage.about>
       <p>
@@ -859,7 +893,7 @@
       <p>Kiekvienas patobulinimo lygis didina zetiumo talpą.</p>
     </ZetiumStorage.about>
 
-    <Crane.name ref="Objects/Crane" />
+    <Crane.name ref="Objects/Building_Crane" />
     <Crane.tooltip value="Stato pastatus" />
     <Crane.about>
       <p>
@@ -870,7 +904,7 @@
       </p>
     </Crane.about>
     
-    <Market.name ref="Objects/Market" />
+    <Market.name ref="Objects/Building_Market" />
     <Market.tooltip value="Leidžia prekiauti su kitais žaidėjais" />
     <Market.common>
       <p>Turgus leidžia tau prekiauti su kitais šios galaktikos žaidėjais.
@@ -883,7 +917,7 @@
       <p>Kiekvienas patobulinimo lygis sumažina įkėlimo mokestį.</p>
     </Market.about>
 
-    <Radar.name ref="Objects/Radar" />
+    <Radar.name ref="Objects/Building_Radar" />
     <Radar.tooltip value="Atskleidžia galaktikos zoną" />
     <Radar.common>
       <p>
@@ -899,7 +933,7 @@
       <p>Kiekvienas patobulinimo lygis padidina matomumo zoną.</p>
     </Radar.about>
 
-    <Housing.name ref="Objects/Housing" />
+    <Housing.name ref="Objects/Building_Housing" />
     <Housing.tooltip value="Didina maksimalų gyventojų kiekį" />
     <Housing.about>
       <p>Šiuose bokštuose gyvena mūsų kariai ir tankų, bei laivų įgulos. Jeigu 
@@ -907,15 +941,7 @@
       armijos, statyk arba tobulink šiuos bokštus.</p>
     </Housing.about>
 
-    
-    <!--
-    <ResourceTransporter.name ref="Objects/ResourceTransporter" /> 
-    <ResourceTransporter1 value="TODO: Resource transporter" />
-    <ResourceTransporter.tooltip value="Transports resources between planets" />
-    <ResourceTransporter.about value="Teleport resources with this one" />
-    -->
-
-    <Headquarters.name ref="Objects/Headquarters" />
+    <Headquarters.name ref="Objects/Building_Headquarters" />
     <Headquarters.about>
       <p>
         Šis pastatas transformuojasi ir pasistato iš Mobilaus Štabo. Tai 
@@ -927,7 +953,7 @@
       <p>Štabas stato kitus pastatus.</p>
     </Headquarters.about>
 
-    <Vulcan.name ref="Objects/Vulcan" />
+    <Vulcan.name ref="Objects/Building_Vulcan" />
     <Vulcan.tooltip value="Gynybinis bokštelis prieš nešarvuotus karius" />
     <Vulcan.about>
       <p>
@@ -940,14 +966,14 @@
 
     <DeployedFromMobile value="Išskleistas iš mobilios versijos." />
 
-    <MobileVulcan.name ref="Objects/MobileVulcan" />
+    <MobileVulcan.name ref="Objects/Building_MobileVulcan" />
     <MobileVulcan.tooltip ref="Vulcan.tooltip" />
     <MobileVulcan.about>
       <p>[reference:Vulcan.about]</p>
       <p>[reference:DeployedFromMobile]</p>
     </MobileVulcan.about>
 
-    <Screamer.name ref="Objects/Screamer" />
+    <Screamer.name ref="Objects/Building_Screamer" />
     <Screamer.tooltip value="Gynybinis bokštelis prieš šarvuotus karius" />
     <Screamer.about>
       <p>
@@ -958,14 +984,14 @@
       <p>Šaudo tik į žemės karius.</p>
     </Screamer.about>
 
-    <MobileScreamer.name ref="Objects/MobileScreamer" />
+    <MobileScreamer.name ref="Objects/Building_MobileScreamer" />
     <MobileScreamer.tooltip ref="Screamer.tooltip" />
     <MobileScreamer.about>
       <p>[reference:Screamer.about]</p>
       <p>[reference:DeployedFromMobile]</p>
     </MobileScreamer.about>
 
-    <Thunder.name ref="Objects/Thunder" />
+    <Thunder.name ref="Objects/Building_Thunder" />
     <Thunder.tooltip value="Gynybinis bokštelis prieš kosmoso flotiles" />
     <Thunder.about>
       <p>
@@ -976,14 +1002,14 @@
       <p>Šaudo tik į kosminius laivus.</p>
     </Thunder.about>
 
-    <MobileThunder.name ref="Objects/MobileThunder" />
+    <MobileThunder.name ref="Objects/Building_MobileThunder" />
     <MobileThunder.tooltip ref="Thunder.tooltip" />
     <MobileThunder.about>
       <p>[reference:Thunder.about]</p>
       <p>[reference:DeployedFromMobile]</p>
     </MobileThunder.about>
 
-    <GroundFactory.name ref="Objects/GroundFactory" />
+    <GroundFactory.name ref="Objects/Building_GroundFactory" />
     <GroundFactory.tooltip value="Stato tankus" />
     <GroundFactory.about>
       <p>Tai pastatas, leidžiantis statyti tankus ir kitus aukšto lygio žemės
@@ -991,7 +1017,7 @@
       mobilųjį štabą, kuris leidžia kolonizuoti kitas planetas.</p>
     </GroundFactory.about>
 
-    <SpaceFactory.name ref="Objects/SpaceFactory" />
+    <SpaceFactory.name ref="Objects/Building_SpaceFactory" />
     <SpaceFactory.tooltip value="Stato kosminius laivus" />
     <SpaceFactory.about>
       <p>
@@ -1001,11 +1027,11 @@
       </p>
     </SpaceFactory.about>
 
-    <HealingCenter.name ref="Objects/HealingCenter" />
+    <HealingCenter.name ref="Objects/Building_HealingCenter" />
     <HealingCenter.tooltip value="Gydo bei taiso karius, tankus ir laivus" />
     <HealingCenter.common>
       <p>
-        [reference:Objects/HealingCenter] - tai medicininių pastatų ir 
+        [reference:Objects/Building_HealingCenter] - tai medicininių pastatų ir
         techninių servisų kompleksas, kuris leidžia tau pagydyti ar pataisyti 
         bet kokį karinį vienetą, kurį tu ar tavo sąjungininkai valdote.
       </p>
@@ -1015,7 +1041,7 @@
       <p>Kiekvienas patobulinimo lygis mažina gydymo kainą ir laiką.</p>
     </HealingCenter.about>
 
-    <DefensivePortal.name ref="Objects/DefensivePortal" />
+    <DefensivePortal.name ref="Objects/Building_DefensivePortal" />
     <DefensivePortal.tooltip value="Teleportuoja žemės karius į gynybą" />
     <DefensivePortal.common>
       <p>Kai šis portalas yra aktyvus, kitos planetos užpuolimo atveju 
@@ -1037,7 +1063,7 @@
       <p>Šis pastatas kas tam tikrą laiką duoda planetos sąvininkui karių.</p>
     </GivesUnits>
 
-    <NpcInfantryFactory.name ref="Objects/NpcInfantryFactory" />
+    <NpcInfantryFactory.name ref="Objects/Building_NpcInfantryFactory" />
     <NpcInfantryFactory.about>
       <p>Ši senovinė gamykla gamina mažus robotus iš saulės energijos ir 
       susintezuoto silikono. Sklinda gandai, jog jie auginami organiniu būdu,
@@ -1045,21 +1071,21 @@
       <p>[reference:GivesUnits]</p>
     </NpcInfantryFactory.about>
 
-    <NpcTankFactory.name ref="Objects/NpcTankFactory" />
+    <NpcTankFactory.name ref="Objects/Building_NpcTankFactory" />
     <NpcTankFactory.about>
       <p>Šiame ateiviškame fabrike gaminami galingi ir puikiai ginkluoti 
       robotai.</p>
       <p>[reference:GivesUnits]</p>
     </NpcTankFactory.about>
 
-    <NpcSpaceFactory.name ref="Objects/NpcSpaceFactory" />
+    <NpcSpaceFactory.name ref="Objects/Building_NpcSpaceFactory" />
     <NpcSpaceFactory.about>
       <p>Ši gamykla, esanti po žeme, gamina galingus ateivių laivus, kurie
       gali būti panaudoti tiek gynybai, tiek puolimui.</p>
       <p>[reference:GivesUnits]</p>
     </NpcSpaceFactory.about>
 
-    <NpcHall.name ref="Objects/NpcHall" />
+    <NpcHall.name ref="Objects/Building_NpcHall" />
     <NpcHall.about>
       <p>Valdyk planetas, kurios turi siųstuvus, ir šie tau rinks pergalės
       taškus tau ir tavo sąjungai. Surink pakankamai pergalės taškų ir tapk
@@ -1079,7 +1105,6 @@
     </label.selectedConvert>
     <label.convert value="Iškeisti" />
     <label.accelerate value="Paspartinti" />
-    <label.vip value="VIP" />
     <label.whouldFinish value="Tobulinimas baigtusi už" />
     <label.selectAccelerate value="Pasirink paspartinimą" />
     <label.credsSum value="Iš viso kredų" />
@@ -1177,6 +1202,14 @@
         >{0 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
       ]]>
     </label.destructPrice>
+    <label.unlearnPrice>
+      <![CDATA[
+       <p>Šios technologijos pamiršimas tau kainuos</p>
+       <p />
+       <p><span fontWeight="bold"
+        >{0 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
+      ]]>
+    </label.unlearnPrice>
     <label.notEnough>
      <p>Nepakanka kredų.<br/>Tau dar reikia 
        {0 one[vieno kredo] 1sts[? kredo] tens[? kredų] many[? kredų]}.</p>
@@ -1406,12 +1439,51 @@
     <description.short.galaxy value="Galaktika" />
     <description.short.solarSystem value="Saulės sistema {0}" />
     <description.short.planet value="Planeta {0}" />
-    <description.long.galaxy value="Galaktikos sektorius {0}:{1}" />
-    <description.long.solarSystem value="Saulės sistemos {0} sektorius {1}:{2}" />
-    <description.long.pulsar value="Pulsaro {0} sektorius {1}:{2}"/>
-    <description.long.battleground value="Arenos sektorius {0}:{1}"/>
-    <description.long.planet value="Saulės sistemos {1} planeta {0}" />
-    <description.long.planetInBattleground value="Arenos planeta {0}" />
+    <description.long.galaxy>
+      <![CDATA[
+      <p>
+        Galaktikos sektorius <span fontWeight="bold">{0}:{1}</span>
+      </p>
+      ]]>
+      </description.long.galaxy>
+      <description.long.solarSystem>
+      <![CDATA[
+      <p>
+        Saulės sistemos <span fontWeight="bold">{0}</span> sektorius 
+        <span fontWeight="bold">{1}:{2}</span>
+      </p>
+      ]]>
+      </description.long.solarSystem>
+      <description.long.pulsar>
+      <![CDATA[
+      <p>
+        Pulsaro <span fontWeight="bold">{0}</span> sektorius 
+        <span fontWeight="bold">{1}:{2}</span>
+      </p>
+      ]]>
+      </description.long.pulsar>
+      <description.long.battleground>
+      <![CDATA[
+      <p>
+        Arenos sektorius <span fontWeight="bold">{0}:{1}</span>
+      </p>
+      ]]>
+      </description.long.battleground>
+      <description.long.planet>
+      <![CDATA[
+      <p>
+        Saulės sistemos <span fontWeight="bold">{1}</span> planeta 
+        <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+      </description.long.planet>
+      <description.long.planetInBattleground>
+      <![CDATA[
+      <p>
+        Arenos planeta <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+      </description.long.planetInBattleground>
 
     <message.locationNotAvailable>
       <p>Tu nebegali peržiūrėti šios vietos</p>
@@ -1508,8 +1580,10 @@
     <label.leveled value="Patobulėję kariai" />
     <label.stats value="Mūšio statistika" />
     <label.dmgDealtPlayer value="Tavo padaryta žala" />
+    <label.dmgDealtAlly value="Sąjungininkų padaryta žala" />
     <label.dmgDealtAlliance value="Sąjungos padaryta žala" />
     <label.dmgTakenPlayer value="Tavo gauta žala" />
+    <label.dmgTakenAlly value="Sąjungininkų gauta žala" />
     <label.dmgTakenAlliance value="Sąjungos gauta žala" />
     <label.xp value="Gauta patirties" />
     <label.points value="Gauta karo taškų" />
@@ -1517,7 +1591,6 @@
     <label.close value="Uždaryti" />
     <label.players value="Žaidėjai" />
     <label.noNotifications value="Pranešimų nėra" />
-    <label.claimReward value="Pasiimk atlygį!" />
     <label.questCompleted value="Užduotis „{0}“ buvo atlikta." />
     <label.readAll value="Perskaityti visus" />
     <label.resourcesGained value="Gauta resursų" />
@@ -1880,34 +1953,44 @@
     <of value="" />
     
     <!-- HAVE_UPGRADED_TO
-    0: "Subclass or class to upgrade (with count), 
-    1: level to upgrade to -->
-    <objectiveText.HaveUpgradedTo 
-    value="Turėk {1 one[] 1sts[?-o lygio] tens[?-o lygio] many[?-o lygio]} {0}" />
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
+    <objectiveText.HaveUpgradedTo>
+      <p>Turėk {2 one[] 1sts[?-o lygio] tens[?-o lygio] many[?-o lygio]} 
+      [obj:{0}:{1}:what:dc]</p>
+    </objectiveText.HaveUpgradedTo>
     <objectiveText.HaveUpgradedToTech>
-      <p>{1 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
-      {0} technologiją{1 one[] many[ iki ? lygio]}</p>
+      <p>{2 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
+      [obj:1:{1}:whos:dc] technologiją{2 one[] many[ iki ? lygio]}</p>
     </objectiveText.HaveUpgradedToTech>
     <objectiveText.HaveUpgradedToTechClass>
-    <p>{1 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
-    {0}{1 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
+      <p>{2 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
+      [obj:{0}:{1}:what:dc]{2 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
     </objectiveText.HaveUpgradedToTechClass>
 
     <!-- UPGRADE_TO
-    0: "Subclass or class to upgrade (with count), 
-    1: level to upgrade to -->
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
     <objectiveText.UpgradeTo>
-    <p>{1 one[Pastatyk] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
-    {0}{1 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
+      <p>{2 one[Pastatyk] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
+      [obj:{0}:{1}:what:dc]{2 one[] 1sts[ iki ? lygio] tens[ iki ? lygio]
+      many[ iki ? lygio]}</p>
     </objectiveText.UpgradeTo>
 
     <!-- DESTROY
-    0: "Subclass or class to destroy (with count), 
-    1: level of objects to destroy -->
-    <objectiveText.Destroy 
-    value="Sunaikink {1 one[] 1sts[?-o lygio ] tens[?-o lygio ] many[?-o lygio ]}{0}" />
-    <objectiveText.DestroyNpcBuilding 
-    value="Sugriauk {1 one[] 1sts[?-o lygio ] tens[?-o lygio ] many[?-o lygio ]}{0}" />    
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level of objects to destroy -->
+    <objectiveText.Destroy>
+      <p>Sunaikink {2 one[] 1sts[?-o lygio ] tens[?-o lygio ] many[?-o lygio ]}
+      [obj:{0}:{1}:what:dc]</p>
+    </objectiveText.Destroy>
+    <objectiveText.DestroyNpcBuilding>
+      <p>Sugriauk {2 one[] 1sts[?-o lygio ] tens[?-o lygio ] many[?-o lygio ]}
+      [obj:{0}:{1}:what:dc]</p>
+    </objectiveText.DestroyNpcBuilding>
     
     <!-- ANNEX_PLANET
     0: count of planets to occupy -->
@@ -3300,6 +3383,16 @@
     <upgradeCost value="Tobulinimo kaina" />
     <forceOvertime value="Dirbti viršvalandžius" />
 
+    <title.unlearn value="Pamiršti" />
+    <warning.unlearn>      
+      <![CDATA[
+      <p><span fontWeight="bold">Dėmesio!</span> Šios technologijos pamiršimas 
+      tau kainuos {0 one[? kredą] tens[? kredų] many[? kredus]} ir tu neatgausi 
+      resursų išleistų technologijos tobulinimui.</p>
+      ]]>
+    </warning.unlearn>
+    <label.unlearn value="Pamiršti" />
+
     <isGroup>
       <p>Jeigu išrasi šią technologiją, negalėsi išrasti:</p>
     </isGroup>
@@ -3325,6 +3418,7 @@
     <property.mod.armor value="Šarvų priedas" />
     <property.mod.damage value="Žalos priedas" />
     <property.mod.movementTimeDecrease value="Judėjimo trukmės sumažinimas" />
+    <property.mod.storage value="Talpumo priedas" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
 
     <UnitTech>
@@ -3341,7 +3435,7 @@
       </p>
     </Zetium.common>
 
-    <ZetiumExtraction.name ref="Objects/ZetiumExtraction" />
+    <ZetiumExtraction.name ref="Objects/Technology_ZetiumExtraction" />
     <ZetiumExtraction.about>
       <p>Įgalina statyti zetiumo kasyklas ir talpyklas.</p>
       <p>[reference:Zetium.common]</p>
@@ -3393,14 +3487,14 @@
       ar sėlintojas.</p>
     </InfantryUpgradeTech>
 
-    <MetabolicChargers.name ref="Objects/MetabolicChargers" />
+    <MetabolicChargers.name ref="Objects/Technology_MetabolicChargers" />
     <MetabolicChargers.about>
       <p>Neseniai padaryti atradimai leidžia įterpti zetiumo plokšteles į karių
       šarvus, taip padarant juos atsparesniais.</p>
       <p>[reference:ArmorTech] [reference:InfantryUpgradeTech]</p>
     </MetabolicChargers.about>
 
-    <HighVelocityCharges.name ref="Objects/HighVelocityCharges" />
+    <HighVelocityCharges.name ref="Objects/Technology_HighVelocityCharges" />
     <HighVelocityCharges.about>
       <p>Ši technologija papildo pėstininkų amuniciją zetiumu, taip suteikiant
       jiems daugiau galios. Šoviniai ir raketos greičiau skrenda ir stipriau
@@ -3414,7 +3508,7 @@
       <p>Ji NEPAGERINA raganosio ir mulo klasės laivų.</p>
     </ShipUpgradeTech>
 
-    <ShipsArmor.name ref="Objects/ShipsArmor" />
+    <ShipsArmor.name ref="Objects/Technology_ShipsArmor" />
     <ShipsArmor.about>
       <p>Ši technologija leidžia panaudojus zetiumą gaminti tvirtus ir lengvus
       išorinius laivų šarvus, kurie gali būti sluoksniuojami, taip padidinant
@@ -3422,7 +3516,7 @@
       <p>[reference:ArmorTech] [reference:ShipUpgradeTech]</p>
     </ShipsArmor.about>
 
-    <ShipsDamage.name ref="Objects/ShipsDamage" />
+    <ShipsDamage.name ref="Objects/Technology_ShipsDamage" />
     <ShipsDamage.about>
       <p>Įpurškiant zetiumą į generuojamą plazmos srautą išgaunama daug 
       karštesnė ir galingesnė plazma, kuri sugeba ištirpdyti net labiausiai
@@ -3435,7 +3529,7 @@
       azuras.</p>
     </TankUpgradeTech>
 
-    <TanksDamage.name ref="Objects/TanksDamage" />
+    <TanksDamage.name ref="Objects/Technology_TanksDamage" />
     <TanksDamage.about>
       <p>Pridedant nestabilaus zetiumo į tankų sviedinius ir raketas gaunamas
       jų galios padidėjimas užtikrina, jog priešo kareiviai nebepasitrauks 
@@ -3443,23 +3537,13 @@
       <p>[reference:WeaponsTech] [reference:TankUpgradeTech]</p>
     </TanksDamage.about>
 
-    <TanksArmor.name ref="Objects/TanksArmor" />
+    <TanksArmor.name ref="Objects/Technology_TanksArmor" />
     <TanksArmor.about>
       <p>Skydo generatoriai įtaisyti tankų šarvuose generuoja jėgą, kuri
       sumažina atskrendančių šovinių ir sviedinių greitį, taip sumažindami
       žalą padaromą tankui.</p>
       <p>[reference:ArmorTech] [reference:TankUpgradeTech]</p>
     </TanksArmor.about>
-   
-    <!--
-    <ResourceTransporter.name ref="Objects/ResourceTransporter" />
-    <ResourceTransporter1 value="Resource transporter" />
-    <ResourceTransporter.about>
-      <p>
-        This technology helps you to transport resources through hyperspace 
-        chanels 
-      </p>
-    </ResourceTransporter.about>-->
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
@@ -3476,7 +3560,7 @@
       <p>[reference:Buildings/MetalExtractorT2.common]</p>
     </MetalExtractorT2.about>
 
-    <FieryMelters.name ref="Objects/FieryMelters" />
+    <FieryMelters.name ref="Objects/Technology_FieryMelters" />
     <FieryMelters.about>
       <p>Panaudojant aukštą spaudimą metalo kasyklose, galima didesnė
       metalo išgavimo sparta bei laikymo efektyvumas. Nors ši technologija 
@@ -3497,7 +3581,8 @@
       <p>[reference:Buildings/CollectorT3.common]</p>
     </CollectorT3.about>
 
-    <SuperconductorTechnology.name ref="Objects/SuperconductorTechnology" />
+    <SuperconductorTechnology.name
+      ref="Objects/Technology_SuperconductorTechnology" />
     <SuperconductorTechnology.about>
       <p>Panaudodami zetiumą laiduose, mūsų mokslininkai sugebėjo pagerinti
       jų laidumą elektrai ir panaudoti turimą energiją efektyviau. Į šią 
@@ -3512,7 +3597,7 @@
       <p>[reference:Buildings/ZetiumExtractorT2.common]</p>
     </ZetiumExtractorT2.about>
 
-    <PowderedZetium.name ref="Objects/PowderedZetium" />
+    <PowderedZetium.name ref="Objects/Technology_PowderedZetium" />
     <PowderedZetium.about>
       <p>Šie aštresni zetiumo pjaustikliai išgauna geresnės kokybės zetiumo
       dulkes, kurios tada gali būti apdorotos ir perdirbtos į pramoninį zetiumą.
@@ -3552,7 +3637,7 @@
       <p>[reference:Buildings/SpaceFactory.about]</p>
     </SpaceFactory.about>
 
-    <HeavyFlight.name ref="Objects/HeavyFlight" />
+    <HeavyFlight.name ref="Objects/Technology_HeavyFlight" />
     <HeavyFlight.about>
       <p>Panaudojant gama daleles mūsų sunkiųjų variklių procesuose mes galime
       pasiekti didesnius greičius ir sumažinti skrydžio laiką.</p>
@@ -3683,7 +3768,7 @@
       <p>[reference:Buildings/HealingCenter.common]</p>
     </HealingCenter.about>
 
-    <Alliances.name ref="Objects/Alliances" />
+    <Alliances.name ref="Objects/Technology_Alliances" />
     <Alliances.about>
       <p>Susijunk su kaimynais, ginkite vieni kitus, koordinuokite atakas bei
       padėkite vieni kitiems vykdyti užduotis. Viskas įmanoma, kai esi ne 
@@ -3691,11 +3776,51 @@
       <p>Leidžia įkurti savo sąjungą.</p>
     </Alliances.about>
 
-    <DefensivePortal.name ref="Objects/DefensivePortal" />
+    <DefensivePortal.name ref="Objects/Technology_DefensivePortal" />
     <DefensivePortal.about>
       <p>Leidžia statyti portalą.</p>
       <p>[reference:Buildings/DefensivePortal.common]</p>
     </DefensivePortal.about>
+
+    <MetalStorage.name ref="Objects/Technology_MetalStorage" />
+    <MetalStorage.about>
+      <p>
+        Ši technologija padidina mūsų metalo talpyklų
+        atsparumą slėgiui ir temperatūrai, tad į ęsamus pastatus, pasitelkę
+        aukštesnį suspaudimo laipsnį, galime sutalpinti dar daugiau metalo.
+      </p>
+    </MetalStorage.about>
+    
+    <EnergyStorage.name ref="Objects/Technology_EnergyStorage" />
+    <EnergyStorage.about>
+      <p>
+        Trūksta vietos energijai, o planetoje nebėra kur statyti papildomų 
+        talpyklų? Investuok į šią technologiją!
+      </p>
+      <p>
+        Išradus talpesnes baterijas, mes planetose galėsime saugoti daugiau 
+        energijos, taip taupydami vietą.
+      </p>
+    </EnergyStorage.about>
+    
+    <ZetiumStorage.name ref="Objects/Technology_ZetiumStorage" />
+    <ZetiumStorage.about>
+      <p>
+        Į pagalbą pasitelkus šį naują zetiumo laikymo būdą mes į tas pačias
+        talpyklas galėsime sutalpinti daugiau zetiumo, taip palikdami brangią
+        planetos žemę svarbesniems pastatams.
+      </p>
+    </ZetiumStorage.about>
+
+    <ShipStorage.name ref="Objects/Technology_ShipStorage" />
+    <ShipStorage.about>
+      <p>
+        Prie krovininių laivų primontuojami [obj:1:Technology_ShipStorage::dc]
+        išplėčia laivo krovininius skyrius ir leidžia jiems pergabenti daugiau
+        resursų ar karių, kas yra ypač pravartu renkant resursus ar šturmuojant
+        planetą.
+      </p>
+    </ShipStorage.about>
   </Technologies>
 
   <Units>
@@ -3912,14 +4037,14 @@
     <kind.nap  value="NS kariai" />
     <kind.ally value="Sąjungos kariai" />
 
-    <Gnat.name ref="Objects/Gnat" />
+    <Gnat.name ref="Objects/Unit_Gnat" />
     <Gnat.about>
       <p>Silpniausias karys iš ateivių žemės armijos. Jie yra gana silpi ir
       lengvai sužeidžiami, bei jų lazeriai nepadaro didelės žalos, tačiau jie 
       linkę burtis į dideles grupes, kiekybe kompensuodami savo silpnumą.</p>
     </Gnat.about>
 
-    <Glancer.name ref="Objects/Glancer" />
+    <Glancer.name ref="Objects/Unit_Glancer" />
     <Glancer.about>
       <p>Labai pažeidžiami, tačiau kartu ir labai mirtini pėstininkams. Jų 
       snaiperių šautuvai kiaurai skrodžia lengvučius šarvus, tad šiais ateiviais
@@ -3927,14 +4052,14 @@
       mat jie mėgsta slėptis už kitų karių.</p>
     </Glancer.about>
 
-    <Spudder.name ref="Objects/Spudder" />
+    <Spudder.name ref="Objects/Unit_Spudder" />
     <Spudder.about>
       <p>Pusiau šarvuoti humanoidiniai robotai, ginkluoti plazmos sviediniais.
       Jie iššauna keletą šių kamuoliukų vienu kartu, todėl yra puikūs kariai 
       prieš daug silpnų priešų.</p>
     </Spudder.about>
 
-    <Gnawer.name ref="Objects/Gnawer" />
+    <Gnawer.name ref="Objects/Unit_Gnawer" />
     <Gnawer.about>
       <p>Tai švenčiausių ateivių artefaktų sergėtojai, nuožmios žudymo mašinos,
       kurių tikslas yra sunaikinti bet ką, kas peržengia jų saugomos teritorijos
@@ -3942,14 +4067,14 @@
       kariais.</p>
     </Gnawer.about>
 
-    <Dirac.name ref="Objects/Dirac" />
+    <Dirac.name ref="Objects/Unit_Dirac" />
     <Dirac.about>
       <p>Šie greiti laivai buvo statomi kaip priešakinių puolamųjų linijų 
       šturmuotojai. Tačiau šiandien jie tūno įvairiose vietose, mažomis 
       grupelėmis ir tiesiog ginasi nuo bet ko, kas priartėja prie jų.</p>
     </Dirac.about>
 
-    <Thor.name ref="Objects/Thor" />
+    <Thor.name ref="Objects/Unit_Thor" />
     <Thor.about>
       <p>Šie smarkiai šarvuoti, bet pakankamai silpnai ginkluoti, laivai 
       senovėje buvo naudojami kaip priekinės linijos gynybiniai laivai. Dabar 
@@ -3960,7 +4085,7 @@
       priešo antžemines pajėgas.</p>
     </Thor.about>
 
-    <Demosis.name ref="Objects/Demosis" />
+    <Demosis.name ref="Objects/Unit_Demosis" />
     <Demosis.about>
       <p>Šie gigantiški ir didingi kosminiai laivai buvo labai senai pastatyti 
       kūrėjų, kurių jau nebėra. Jie ramiai laukia kosmose, tykodami 
@@ -3970,7 +4095,7 @@
       šiems laivams milžinams.</p>
     </Demosis.about>
 
-    <Trooper.name ref="Objects/Trooper" />
+    <Trooper.name ref="Objects/Unit_Trooper" />
     <Trooper.about>
       <p>Tai pagrindiniai kareiviai visose galaktikos armijose, ypač 
       stiprūs didelėmis grupėmis. Ginkluoti kulkosvaidžiais, jie be 
@@ -3978,7 +4103,7 @@
       nėra ilgas, jie žino, kad jų aukos atneš didžią pergalę.</p>
     </Trooper.about>
 
-    <Shocker.name ref="Objects/Shocker" />
+    <Shocker.name ref="Objects/Unit_Shocker" />
     <Shocker.about>
       <p>Stipriai šarvuoti pėstininkai, gebantys atlaikyti net ir stipriausią 
       priešo ugnį karo lauke. Jų raketsvaidžiai gali pramušti net ir 
@@ -3986,7 +4111,7 @@
       nėra labai efektyvus prieš paprastus pėstininkus.</p>
     </Shocker.about>
 
-    <Seeker.name ref="Objects/Seeker" />
+    <Seeker.name ref="Objects/Unit_Seeker" />
     <Seeker.about>
       <p>Ginkluoti snaiperiniu šautuvu, sėlintojai yra tikri mažiau šarvuotų
       priešų žudikai. Nors sėlintojai ir yra puikūs snaiperiai, tačiau 
@@ -3994,13 +4119,15 @@
       priešakinėse linijose.</p>
     </Seeker.about>
 
+    <!--
     <Spy.name value="Spy" />
     <Spy.about value="Explore your enemies" />
 
     <Saboteur.name value="Saboteur" />
     <Saboteur.about value="Is likely to ruin things" />
+    -->
 
-    <Scorpion.name ref="Objects/Scorpion" />
+    <Scorpion.name ref="Objects/Unit_Scorpion" />
     <Scorpion.about>
       <p>Skorpiono tankai yra pagrindinė smogiamoji jėga tankų mūšiuose. Jie 
       suduoda smarkų smūgį su savo pyro klasės pabūklu ir yra ypač tvirti.
@@ -4008,7 +4135,7 @@
       daug priešo gyvybių prieš atiduodant savają.</p>
     </Scorpion.about>
 
-    <Azure.name ref="Objects/Azure" />
+    <Azure.name ref="Objects/Unit_Azure" />
     <Azure.about>
       <p>Azuro skraidantys tankai yra geriausias ginklas prieš 
       priešo tankus. Jų dvigubi raketų leistuvai abiejose pusėse ir kovinės
@@ -4017,14 +4144,14 @@
       todėl mūšio lauke turi būti saugomi stipriau šarvuotų pajėgų.</p>
     </Azure.about>
     
-    <Zeus.name ref="Objects/Zeus" />
+    <Zeus.name ref="Objects/Unit_Zeus" />
     <Zeus.about>
       <p>Šie masyvūs tankai įsitvirtina į žemę ir spjaudo savo šovinius į 
       planetos orbitą. Jie buvo sukurti kovoti su priešo kosminiais laivais,
       todėl negali taikytis į žemės karius.</p>
     </Zeus.about>
 
-    <Mdh.name ref="Objects/MDH" />
+    <Mdh.name ref="Objects/Unit_MDH" />
     <Mdh.common>
       <p>Mobilusis štabas naudojamas kaip pirminė vadavietė ir operacijų 
       centras, įkuriant naujas kolonijas. Šios masyvios mašinos geba būti ne 
@@ -4040,21 +4167,21 @@
       sugadintas.</p>
     </Mdh.about>
 
-    <Mule.name ref="Objects/Mule" />
+    <Mule.name ref="Objects/Unit_Mule" />
     <Mule.about>
       <p>Lėtas ir stipriai šarvuotas krovininis laivas, galintis saugiai 
       nugabeti bet kokį krovinį ar išlaipinti karių desantą vidury mūšio 
       lauko bet kuriame galaktikos kampelyje.</p>
     </Mule.about>
 
-    <Crow.name ref="Objects/Crow" />
+    <Crow.name ref="Objects/Unit_Crow" />
     <Crow.about>
       <p>Lengvas, greitas ir universalus karinis erdvėlaivis. Puikiai 
       pritaikytas atlikti pavienes kovines misijas ir naikinti nesaugomus 
       priešo krovininius laivus.</p>
     </Crow.about>
 
-    <Cyrix.name ref="Objects/Cyrix" />
+    <Cyrix.name ref="Objects/Unit_Cyrix" />
     <Cyrix.about>
       <p>Cyrikso klasės kreiseriai yra standartiniai ir dažniausiai sutinkami 
       koviniai laivai visoje galaktikoje. Jų patikimi šarvai ir galingi 
@@ -4064,7 +4191,7 @@
       strėlės ar keršytojai.</p>
     </Cyrix.about>
 
-    <Rhyno.name ref="Objects/Rhyno" />
+    <Rhyno.name ref="Objects/Unit_Rhyno" />
     <Rhyno.about>
       <p>Raganosio klasės sunkieji kreiseriai yra bet kurio laivyno pažiba. 
       Su jų įspūdingu gynybiniu arsenalu ir storais, lyg raganosio oda, šarvais 
@@ -4073,7 +4200,7 @@
       galingų laivų neigiama pusė.</p>
     </Rhyno.about>
 
-    <Dart.name ref="Objects/Dart" />
+    <Dart.name ref="Objects/Unit_Dart" />
     <Dart.about>
       <p>Strėlės klasės laivai buvo kuriami kovoti su varno ir keršytojo 
       klasės laivais - jie greiti ir vikrūs, be to, apsiginklavę iki dantų. 
@@ -4082,7 +4209,7 @@
       greitose atakose turint didelę persvarą prieš priešininką.</p>
     </Dart.about>
 
-    <Avenger.name ref="Objects/Avenger" />
+    <Avenger.name ref="Objects/Unit_Avenger" />
     <Avenger.about>
       <p>Keršytojas - tai mirtinas ginklas kovojant su stipriai šarvuotais 
       laivais. Jų raketiniai šoviniai lengvai pramuša šarvą ir sprogsta 
@@ -4093,7 +4220,7 @@
       lengvai pažeidžiami dėl savo plonų šarvų.</p>
     </Avenger.about>
 
-    <Jumper.name ref="Objects/Jumper" />
+    <Jumper.name ref="Objects/Unit_Jumper" />
     <Jumper.about>
       <p>Šokliai - tai žaibiški satelitai, kurie pagrinde naudojami žvalgybai
       priešo planetose. Jų dizainas suteikia jiems milžinišką greitį, tačiau 
@@ -4105,19 +4232,19 @@
       Po išskleidimo nebesuskleidžiamas.</p>
     </MobileTurret>
 
-    <MobileVulcan.name ref="Objects/MobileVulcan" />
+    <MobileVulcan.name ref="Objects/Unit_MobileVulcan" />
     <MobileVulcan.about>
       <p>Mobili vulkano gynybinio bokštelio versija. [reference:MobileTurret]</p>
       <p>[reference:Buildings/Vulcan.about]</p>
     </MobileVulcan.about>
 
-    <MobileScreamer.name ref="Objects/MobileScreamer" />
+    <MobileScreamer.name ref="Objects/Unit_MobileScreamer" />
     <MobileScreamer.about>
       <p>Mobili rėksnio gynybinio bokštelio versija. [reference:MobileTurret]</p>
       <p>[reference:Buildings/Screamer.about]</p>
     </MobileScreamer.about>
 
-    <MobileThunder.name ref="Objects/MobileThunder" />
+    <MobileThunder.name ref="Objects/Unit_MobileThunder" />
     <MobileThunder.about>
       <p>Mobili griausmo gynybinio bokštelio versija. [reference:MobileTurret]</p>
       <p>[reference:Buildings/Thunder.about]</p>

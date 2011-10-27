@@ -316,17 +316,7 @@ class Building < ActiveRecord::Base
   end
 
   def points_on_destroy
-    if without_points?
-      0
-    else
-      (1..level).inject(0) do |sum, level|
-        sum + Resources.total_volume(
-          self.metal_cost(level),
-          self.energy_cost(level),
-          self.zetium_cost(level)
-        )
-      end
-    end
+    without_points? ? 0 : super()
   end
 
   protected

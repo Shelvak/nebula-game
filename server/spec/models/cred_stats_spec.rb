@@ -95,4 +95,12 @@ describe CredStats do
       stats.save!
     end
   end
+
+  describe ".unlearn_technology" do
+    it "should work" do
+      stats = CredStats.unlearn_technology(Factory.create(:player), 140)
+      stats.action.should == CredStats::ACTION_UNLEARN_TECHNOLOGY
+      stats.save!
+    end
+  end
 end

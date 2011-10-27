@@ -49,6 +49,7 @@ DEPLOY_CONFIG = {
         "run",
         File.join("script", "announce.rb"),
         File.join("script", "apply_hotfix.rb"),
+        File.join("script", "dump_galaxy.rb"),
         File.join("script", "log_analyzer.rb"),
         File.join("script", "munin-plugins"),
         File.join("script", "fixes"),
@@ -255,15 +256,18 @@ class DeployHelpers; class << self
   end
 
   def install_gems(ssh)
-    exec_server(ssh, "rake gems:install:deploy", false)
+    response = exec_server(ssh, "rake gems:install:deploy", false)
+    puts response
   end
 
   def migrate_db(ssh)
-    exec_server(ssh, "rake db:migrate NO_TEST=1")
+    response = exec_server(ssh, "rake db:migrate NO_TEST=1")
+    puts response
   end
 
   def load_quests(ssh)
-    exec_server(ssh, "rake quests:load")
+    response = exec_server(ssh, "rake quests:load")
+    puts response
   end
 end; end
 

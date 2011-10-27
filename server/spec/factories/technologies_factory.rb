@@ -210,3 +210,15 @@ Factory.define :t_mobile_screamer, :parent => :technology,
 
 Factory.define :t_mobile_thunder, :parent => :technology,
 :class => Technology::MobileThunder do |m|; end
+
+Factory.define :t_metal_storage, :parent => :technology,
+:class => Technology::MetalStorage do |m|; end
+
+Factory.define :t_energy_storage, :parent => :technology,
+:class => Technology::EnergyStorage do |m|; end
+
+Factory.define :t_zetium_storage, :parent => :technology,
+:class => Technology::ZetiumStorage do |m|; end
+
+Factory.define :t_ship_storage, :parent => :technology,
+:class => Technology::ShipStorage do |m|; end

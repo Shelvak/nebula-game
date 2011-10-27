@@ -1,342 +1,275 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <locale>
   <Objects>
+    <!-- p8d stands for pluralized -->
+
     <!-- Self ground units -->
     
-    <Trooper value="Trooper" />
-    <Trooper-what value="{0 one[one trooper] many[? troopers]}" />
-    <Trooper-whos ref="Trooper-what" />
+    <Unit_Trooper value="Trooper" />
+    <Unit_Trooper-p8d value="{0 one[Trooper] many[? Troopers]}" />
 
-    <Shocker value="Shocker" />
-    <Shocker-what value="{0 one[one shocker] many[? shockers]}" />
-    <Shocker-whos ref="Shocker-what" />
+    <Unit_Shocker value="Shocker" />
+    <Unit_Shocker-p8d value="{0 one[Shocker] many[? Shockers]}" />
 
-    <Seeker value="Seeker" />
-    <Seeker-what value="{0 one[one seeker] many[? seekers]}" />
-    <Seeker-whos ref="Seeker-what" />
+    <Unit_Seeker value="Seeker" />
+    <Unit_Seeker-p8d value="{0 one[Seeker] many[? Seekers]}" />
     
-    <Scorpion value="Scorpion" />
-    <Scorpion-what value="{0 one[one scorpion] many[? scorpions]}" />
-    <Scorpion-whos ref="Scorpion-what" />
+    <Unit_Scorpion value="Scorpion" />
+    <Unit_Scorpion-p8d value="{0 one[Scorpion] many[? Scorpions]}" />
     
-    <Azure value="Azure" />
-    <Azure-what value="{0 one[one azure] many[? azures]}" />
-    <Azure-whos ref="Azure-what" />
+    <Unit_Azure value="Azure" />
+    <Unit_Azure-p8d value="{0 one[Azure] many[? Azures]}" />
         
-    <Mantis value="Mantis" />
-    <Mantis-what value="{0 one[one mantis] many[? mantises]}" />
-    <Mantis-whos ref="Mantis-what" />
+    <Unit_Mantis value="Mantis" />
+    <Unit_Mantis-p8d value="{0 one[Mantis] many[? Mantises]}" />
         
-    <Zeus value="Zeus" />
-    <Zeus-what value="{0 one[one zeus] many[? zeuses]}" />
-    <Zeus-whos ref="Zeus-what" />
+    <Unit_Zeus value="Zeus" />
+    <Unit_Zeus-p8d value="{0 one[Zeus] many[? Zeuses]}" />
         
-    <MDH value="MDH" />
-    <MDH-what value="{0 one[one MDH] many[? MDH's]}" />
-    <MDH-whos ref="MDH-what" />
+    <Unit_MDH value="MDH" />
+    <Unit_MDH-p8d value="{0 one[MDH] many[? MDH's]}" />
 
-    <MobileVulcan value="Vulcan-M" />
-    <MobileVulcan-what value="{0 one[one Vulcan-M] many[? Vulcan-M's]}" />
-    <MobileVulcan-whos ref="MobileVulcan-what" />   
+    <Unit_MobileVulcan value="Vulcan-M" />
+    <Unit_MobileVulcan-p8d value="{0 one[Vulcan-M] many[? Vulcan-M's]}" />
     
-    <MobileScreamer value="Screamer-M" />
-    <MobileScreamer-what value="{0 one[one Screamer-M] many[? Screamer-M's]}" />
-    <MobileScreamer-whos ref="MobileScreamer-what" />   
+    <Unit_MobileScreamer value="Screamer-M" />
+    <Unit_MobileScreamer-p8d value="{0 one[Screamer-M] many[? Screamer-M's]}" />
 
-    <MobileThunder value="Thunder-M" />
-    <MobileThunder-what value="{0 one[one Thunder-M] many[? Thunder-M's]}" />
-    <MobileThunder-whos ref="MobileThunder-what" />   
+    <Unit_MobileThunder value="Thunder-M" />
+    <Unit_MobileThunder-p8d value="{0 one[Thunder-M] many[? Thunder-M's]}" />
 
     <!-- Self space units -->
     
-    <Mule value="Mule" />
-    <Mule-what value="{0 one[one mule] many[? mules]}" />
-    <Mule-whos ref="Mule-what" />
+    <Unit_Mule value="Mule" />
+    <Unit_Mule-p8d value="{0 one[Mule] many[? Mules]}" />
     
-    <Crow value="Crow" />
-    <Crow-what value="{0 one[one crow] many[? crows]}" />
-    <Crow-whos ref="Crow-what" />
+    <Unit_Crow value="Crow" />
+    <Unit_Crow-p8d value="{0 one[Crow] many[? Crows]}" />
     
-    <Cyrix value="Cyrix" />
-    <Cyrix-what value="{0 one[one cyrix] many[? cyrixes]}" />
-    <Cyrix-whos ref="Cyrix-what" />
+    <Unit_Cyrix value="Cyrix" />
+    <Unit_Cyrix-p8d value="{0 one[Cyrix] many[? Cyrixes]}" />
     
-    <Rhyno value="Rhyno" />
-    <Rhyno-what value="{0 one[one rhyno] many[? rhynos]}" />
-    <Rhyno-whos ref="Rhyno-what" />
+    <Unit_Rhyno value="Rhyno" />
+    <Unit_Rhyno-p8d value="{0 one[Rhyno] many[? Rhynos]}" />
     
-    <Dart value="Dart" />
-    <Dart-what value="{0 one[one dart] many[? darts]}" />
-    <Dart-whos ref="Dart-what" />
+    <Unit_Dart value="Dart" />
+    <Unit_Dart-p8d value="{0 one[Dart] many[? Darts]}" />
     
-    <Avenger value="Avenger" />
-    <Avenger-what value="{0 one[one avenger] many[? avengers]}" />
-    <Avenger-whos ref="Avenger-what" />
+    <Unit_Avenger value="Avenger" />
+    <Unit_Avenger-p8d value="{0 one[Avenger] many[? Avengers]}" />
     
-    <Jumper value="Jumper" />
-    <Jumper-what value="{0 one[one jumper] many[? jumpers]}" />
-    <Jumper-whos ref="Jumper-what" />
+    <Unit_Jumper value="Jumper" />
+    <Unit_Jumper-p8d value="{0 one[Jumper] many[? Jumpers]}" />
     
     <!-- NPC ground units -->
         
-    <Gnat value="Gnat" />
-    <Gnat-what value="{0 one[one gnat] many[? gnats]}" />
-    <Gnat-whos ref="Gnat-what" />
+    <Unit_Gnat value="Gnat" />
+    <Unit_Gnat-p8d value="{0 one[Gnat] many[? Gnats]}" />
 
-    <Glancer value="Glancer" />
-    <Glancer-what value="{0 one[one glancer] many[? glancers]}" />
-    <Glancer-whos ref="Glancer-what" />
+    <Unit_Glancer value="Glancer" />
+    <Unit_Glancer-p8d value="{0 one[Glancer] many[? Glancers]}" />
  
-    <Spudder value="Spudder" />
-    <Spudder-what value="{0 one[one spudder] many[? spudders]}" />
-    <Spudder-whos ref="Spudder-what" />
+    <Unit_Spudder value="Spudder" />
+    <Unit_Spudder-p8d value="{0 one[Spudder] many[? Spudders]}" />
 
-    <Gnawer value="Gnawer" />
-    <Gnawer-what value="{0 one[one gnawer] many[? gnawers]}" />
-    <Gnawer-whos ref="Gnawer-what" />
+    <Unit_Gnawer value="Gnawer" />
+    <Unit_Gnawer-p8d value="{0 one[Gnawer] many[? Gnawers]}" />
 
     <!-- NPC space units -->
     
-    <Dirac value="Dirac" />
-    <Dirac-what value="{0 one[one dirac] many[? diracs]}" />
-    <Dirac-whos ref="Dirac-what" />
+    <Unit_Dirac value="Dirac" />
+    <Unit_Dirac-p8d value="{0 one[Dirac] many[? Diracs]}" />
 
-    <Thor value="Thor" />
-    <Thor-what value="{0 one[one thor] many[? thors]}" />
-    <Thor-whos ref="Thor-what" />
+    <Unit_Thor value="Thor" />
+    <Unit_Thor-p8d value="{0 one[Thor] many[? Thors]}" />
 
-    <Demosis value="Demosis" />
-    <Demosis-what value="{0 one[one demosis] many[? demosis]}" />
-    <Demosis-whos ref="Demosis-what" />
+    <Unit_Demosis value="Demosis" />
+    <Unit_Demosis-p8d value="{0 one[Demosis] many[? Demosis]}" />
     
     <!-- Turrets -->
 
-    <Vulcan value="Vulcan" />
-    <Vulcan-what value="{0 one[one vulcan] many[? vulcans]}" />
-    <Vulcan-whos ref="Vulcan-what" />
+    <Building_Vulcan value="Vulcan" />
+    <Building_Vulcan-p8d value="{0 one[vulcan] many[? vulcans]}" />
 
-    <Screamer value="Screamer" />
-    <Screamer-what value="{0 one[one screamer] many[? screamers]}" />
-    <Screamer-whos ref="Screamer-what" />
+    <Building_Screamer value="Screamer" />
+    <Building_Screamer-p8d value="{0 one[Screamer] many[? Screamers]}" />
 
-    <Thunder value="Thunder" />
-    <Thunder-what value="{0 one[one thunder] many[? thunders]}" />
-    <Thunder-whos ref="Thunder-what" />
+    <Building_Thunder value="Thunder" />
+    <Building_Thunder-p8d value="{0 one[Thunder] many[? Thunders]}" />
+
+    <Building_MobileVulcan value="Vulcan-M" />
+    <Building_MobileVulcan-p8d value="{0 one[Vulcan-M] many[? Vulcan-M's]}" />
+    
+    <Building_MobileScreamer value="Screamer-M" />
+    <Building_MobileScreamer-p8d value="{0 one[Screamer-M] many[? Screamer-M's]}" />
+
+    <Building_MobileThunder value="Thunder-M" />
+    <Building_MobileThunder-p8d value="{0 one[Thunder-M] many[? Thunder-M's]}" />
     
     <!-- Extractors -->
 
-    <MetalExtractor value="MEX" />
-    <MetalExtractor-what value="{0 one[one MEX] many[? MEX's]}" />
-    <MetalExtractor-whos ref="MetalExtractor-what" />
+    <Building_MetalExtractor value="MEX" />
+    <Building_MetalExtractor-p8d value="{0 one[MEX] many[? MEX's]}" />
 
-    <MetalExtractorT2 value="MEX T-2" />
-    <MetalExtractorT2-what value="{0 one[one MEX T-2] many[? MEX's T-2]}" />
-    <MetalExtractorT2-whos ref="MetalExtractorT2-what" />
+    <Building_MetalExtractorT2 value="MEX T-2" />
+    <Building_MetalExtractorT2-p8d value="{0 one[MEX T-2] many[? MEX's T-2]}" />
 
-    <CollectorT1 value="Wind Panel" />
-    <CollectorT1-what value="{0 one[one wind panel] many[? wind panels]}" />
-    <CollectorT1-whos ref="CollectorT1-what" />
+    <Building_CollectorT1 value="Wind Panel" />
+    <Building_CollectorT1-p8d value="{0 one[Wind Panel] many[? Wind Panels]}" />
 
-    <CollectorT2 value="Collector" />
-    <CollectorT2-what value="{0 one[one collector] many[? collectors]}" />
-    <CollectorT2-whos ref="CollectorT2-what" />
+    <Building_CollectorT2 value="Collector" />
+    <Building_CollectorT2-p8d value="{0 one[Collector] many[? Collectors]}" />
 
-    <CollectorT3 value="Thermal Hub" />
-    <CollectorT3-what value="{0 one[one thermal hub] many[? thermal hubs]}" />
-    <CollectorT3-whos ref="CollectorT3-what" />
+    <Building_CollectorT3 value="Thermal Hub" />
+    <Building_CollectorT3-p8d value="{0 one[Thermal Hub] many[? Thermal Hubs]}" />
 
-    <ZetiumExtractor value="ZEX" />
-    <ZetiumExtractor-what value="{0 one[one ZEX] many[? ZEXes]}" />
-    <ZetiumExtractor-whos ref="ZetiumExtractor-what" />
+    <Building_ZetiumExtractor value="ZEX" />
+    <Building_ZetiumExtractor-p8d value="{0 one[ZEX] many[? ZEXes]}" />
 
-    <ZetiumExtractorT2 value="ZEX T-2" />
-    <ZetiumExtractorT2-what value="{0 one[one ZEX T-2] many[? ZEXes T-2]}" />
-    <ZetiumExtractorT2-whos ref="ZetiumExtractorT2-what" />
+    <Building_ZetiumExtractorT2 value="ZEX T-2" />
+    <Building_ZetiumExtractorT2-p8d value="{0 one[ZEX T-2] many[? ZEXes T-2]}" />
     
     <!-- Storages -->
 
-    <MetalStorage value="Metal Storage" />
-    <MetalStorage-what value="{0 one[one metal storage] many[? metal storages]}" />
-    <MetalStorage-whos ref="MetalStorage-what" />
+    <Building_MetalStorage value="Metal Storage" />
+    <Building_MetalStorage-p8d value="{0 one[Metal Storage] many[? Metal Storages]}" />
     
-    <EnergyStorage value="Energy Batteries" />
-    <EnergyStorage-what value="{0 one[one energy battery] many[? energy batteries]}" />
-    <EnergyStorage-whos ref="EnergyStorage-what" />
+    <Building_EnergyStorage value="Energy Batteries" />
+    <Building_EnergyStorage-p8d value="{0 one[Energy Battery] many[? Energy Batteries]}" />
     
-    <ZetiumStorage value="Zetium Storage" />
-    <ZetiumStorage-what value="{0 one[one zetium storage] many[? zetium storages]}" />
-    <ZetiumStorage-whos ref="ZetiumStorage-what" />
+    <Building_ZetiumStorage value="Zetium Storage" />
+    <Building_ZetiumStorage-p8d value="{0 one[Zetium Storage] many[? Zetium Storages]}" />
     
     <!-- NPC buildings -->
 
-    <NpcMetalExtractor value="Foundry" />
-    <NpcMetalExtractor-what value="{0 one[one foundry] many[? foundries]}" />
-    <NpcMetalExtractor-whos ref="NpcMetalExtractor-what" />
+    <Building_NpcMetalExtractor value="Foundry" />
+    <Building_NpcMetalExtractor-p8d value="{0 one[Foundry] many[? Foundries]}" />
         
-    <NpcZetiumExtractor value="Zetium Lab" />
-    <NpcZetiumExtractor-what value="{0 one[one zetium lab] many[? zetium labs]}" />
-    <NpcZetiumExtractor-whos ref="NpcZetiumExtractor-what" />
+    <Building_NpcZetiumExtractor value="Zetium Lab" />
+    <Building_NpcZetiumExtractor-p8d value="{0 one[Zetium Lab] many[? Zetium Labs]}" />
       
-    <NpcGeothermalPlant value="Heat Collector" />
-    <NpcGeothermalPlant-what value="{0 one[one heat collector] many[? heat collectors]}" />
-    <NpcGeothermalPlant-whos ref="NpcGeothermalPlant-what" />
+    <Building_NpcGeothermalPlant value="Heat Collector" />
+    <Building_NpcGeothermalPlant-p8d value="{0 one[Heat Collector] many[? Heat Collectors]}" />
     
-    <NpcSolarPlant value="Prism" />
-    <NpcSolarPlant-what value="{0 one[one prism] many[? prisms]}" />
-    <NpcSolarPlant-whos ref="NpcSolarPlant-what" />
+    <Building_NpcSolarPlant value="Prism" />
+    <Building_NpcSolarPlant-p8d value="{0 one[Prism] many[? Prisms]}" />
     
-    <NpcCommunicationsHub value="CommHub" />
-    <NpcCommunicationsHub-what value="{0 one[one CommHub] many[? CommHubs]}" />
-    <NpcCommunicationsHub-whos ref="NpcCommunicationsHub-what" />
+    <Building_NpcCommunicationsHub value="CommHub" />
+    <Building_NpcCommunicationsHub-p8d value="{0 one[CommHub] many[? CommHubs]}" />
     
-    <NpcTemple value="Temple" />
-    <NpcTemple-what value="{0 one[one temple] many[? temples]}" />
-    <NpcTemple-whos ref="NpcTemple-what" />
+    <Building_NpcTemple value="Temple" />
+    <Building_NpcTemple-p8d value="{0 one[Temple] many[? Temples]}" />
     
-    <NpcExcavationSite value="Excavation Site" />
-    <NpcExcavationSite-what value="{0 one[one excavation site] many[? excavation sites]}" />
-    <NpcExcavationSite-whos ref="NpcExcavationSite-what" />
+    <Building_NpcExcavationSite value="Excavation Site" />
+    <Building_NpcExcavationSite-p8d value="{0 one[Excavation Site] many[? Excavation Sites]}" />
     
-    <NpcResearchCenter value="Lab" />
-    <NpcResearchCenter-what value="{0 one[one lab] many[? labs]}" />
-    <NpcResearchCenter-whos ref="NpcResearchCenter-what" />
+    <Building_NpcResearchCenter value="Lab" />
+    <Building_NpcResearchCenter-p8d value="{0 one[Lab] many[? Labs]}" />
     
-    <NpcJumpgate value="Jumpgate" />
-    <NpcJumpgate-what value="{0 one[one jumpgate] many[? jumpgates]}" />
-    <NpcJumpgate-whos ref="NpcJumpgate-what" />
+    <Building_NpcJumpgate value="Jumpgate" />
+    <Building_NpcJumpgate-p8d value="{0 one[Jumpgate] many[? Jumpgates]}" />
     
-    <NpcInfantryFactory value="Hatchery" />
-    <NpcInfantryFactory-what value="{0 one[one hatchery] many[? hatcheries]}" />
-    <NpcInfantryFactory-whos ref="NpcInfantryFactory-what" />
+    <Building_NpcInfantryFactory value="Hatchery" />
+    <Building_NpcInfantryFactory-p8d value="{0 one[Hatchery] many[? Hatcheries]}" />
     
-    <NpcTankFactory value="Heavy Arms Lab" />
-    <NpcTankFactory-what value="{0 one[one heavy arms lab] many[? heavy arms labs]}" />
-    <NpcTankFactory-whos ref="NpcTankFactory-what" />
+    <Building_NpcTankFactory value="Heavy Arms Lab" />
+    <Building_NpcTankFactory-p8d value="{0 one[Heavy Arms Lab] many[? Heavy Arms Labs]}" />
     
-    <NpcSpaceFactory value="Spaceship Pod" />
-    <NpcSpaceFactory-what value="{0 one[one spaceship pod] many[? spaceship pods]}" />
-    <NpcSpaceFactory-whos ref="NpcSpaceFactory-what" />
+    <Building_NpcSpaceFactory value="Spaceship Pod" />
+    <Building_NpcSpaceFactory-p8d value="{0 one[Spaceship Pod] many[? Spaceship Pods]}" />
     
-    <NpcHall value="Emitter" />
-    <NpcHall-what value="{0 one[one emitter] many[? emitters]}" />
-    <NpcHall-whos ref="NpcHall-what" />
+    <Building_NpcHall value="Emitter" />
+    <Building_NpcHall-p8d value="{0 one[Emitter] many[? Emitters]}" />
     
     <!-- Building facilities -->
     
-    <Mothership value="Mothership" />
-    <Mothership-what value="{0 one[one mothership] many[? motherships]}" />
-    <Mothership-whos ref="Mothership-what" />
+    <Building_Mothership value="Mothership" />
+    <Building_Mothership-p8d value="{0 one[Mothership] many[? Motherships]}" />
     
-    <Headquarters value="Headquarters" />
-    <Headquarters-what value="{0 one[one headquarters] many[? headquarters]}" />
-    <Headquarters-whos ref="Headquarters-what" />
+    <Building_Headquarters value="Headquarters" />
+    <Building_Headquarters-p8d value="{0 one[Headquarters] many[? Headquarters]}" />
     
-    <Crane value="Crane" />
-    <Crane-what value="{0 one[one crane] many[? cranes]}" />
-    <Crane-whos ref="Crane-what" />
+    <Building_Crane value="Crane" />
+    <Building_Crane-p8d value="{0 one[Crane] many[? Cranes]}" />
     
     <!-- Unit facilities -->
 
-    <Barracks value="Barracks" />
-    <Barracks-what value="{0 one[one barracks] many[? barracks]}" />
-    <Barracks-whos ref="Barracks-what" />
+    <Building_Barracks value="Barracks" />
+    <Building_Barracks-p8d value="{0 one[Barracks] many[? Barracks]}" />
     
-    <GroundFactory value="Ground Factory" />
-    <GroundFactory-what value="{0 one[one ground factory] many[? ground factories]}" />
-    <GroundFactory-whos ref="GroundFactory-what" />
+    <Building_GroundFactory value="Ground Factory" />
+    <Building_GroundFactory-p8d value="{0 one[Ground Factory] many[? Ground Factories]}" />
     
-    <SpaceFactory value="Space Factory" />
-    <SpaceFactory-what value="{0 one[one space factory] many[? space factories]}" />
-    <SpaceFactory-whos ref="SpaceFactory-what" />
+    <Building_SpaceFactory value="Space Factory" />
+    <Building_SpaceFactory-p8d value="{0 one[Space Factory] many[? Space Factories]}" />
     
     <!-- Other buildings -->
     
-    <Market value="Market" />
-    <Market-what value="{0 one[one market] many[? markets]}" />
-    <Market-whos ref="Market-what" />
+    <Building_Market value="Market" />
+    <Building_Market-p8d value="{0 one[Market] many[? Markets]}" />
 
-    <Radar value="Radar" />
-    <Radar-what value="{0 one[one radar] many[? radars]}" />
-    <Radar-whos ref="Radar-what" />
+    <Building_Radar value="Radar" />
+    <Building_Radar-p8d value="{0 one[Radar] many[? Radars]}" />
     
-    <DefensivePortal value="Summoner" />
-    <DefensivePortal-what value="{0 one[one summoner] many[? summoners]}" />
-    <DefensivePortal-whos ref="DefensivePortal-what" />
+    <Building_DefensivePortal value="Summoner" />
+    <Building_DefensivePortal-p8d value="{0 one[Summoner] many[? Summoners]}" />
     
-    <ResearchCenter value="Research Center" />
-    <ResearchCenter-what value="{0 one[one research center] many[? research center]}" />
-    <ResearchCenter-whos ref="ResearchCenter-what" />
+    <Building_ResearchCenter value="Research Center" />
+    <Building_ResearchCenter-p8d value="{0 one[Research Center] many[? Research Centers]}" />
     
-    <Housing value="Living Pods" />
-    <Housing-what value="{0 one[living pods] many[? living pods]}" />
-    <Housing-whos ref="Housing-what" />
+    <Building_Housing value="Living Pods" />
+    <Building_Housing-p8d value="{0 one[Living Pods] many[? Living Pods]}" />
     
-    <HealingCenter value="MedTech" />
-    <HealingCenter-what value="{0 one[one MedTech] many[? MedTechs]}" />
-    <HealingCenter-whos ref="HealingCenter-what" />
+    <Building_HealingCenter value="MedTech" />
+    <Building_HealingCenter-p8d value="{0 one[MedTech] many[? MedTechs]}" />
 
     <!-- Technologies -->
 
-    <ZetiumExtraction value="Zetium Extraction" />
-    <ZetiumExtraction-whos value="Zetium Extraction" />
-    <MetabolicChargers value="Metabolic Chargers" />
-    <MetabolicChargers-whos value="Metabolic Chargers" />
-    <HighVelocityCharges value="High Velocity Ammo" />
-    <HighVelocityCharges-whos value="High Velocity Ammo" />
-    <ShipsArmor value="Reinforced Plates" />
-    <ShipsArmor-whos value="Reinforced Plates" />
-    <ShipsDamage value="Energized Plasma" />
-    <ShipsDamage-whos value="Energized Plasma" />
-    <TanksDamage value="Zetium Shells" />
-    <TanksDamage-whos value="Zetium Shells" />
-    <TanksArmor value="Energized Armor" />
-    <TanksArmor-whos value="Energized Armor" />
-    <FieryMelters value="Pressurized Melting" />
-    <FieryMelters-whos value="Pressurized Melting" />
-    <SuperconductorTechnology value="Superconductor Technology" />
-    <SuperconductorTechnology-whos value="Superconductor Technology" />
-    <PowderedZetium value="Zetium Cutters" />
-    <PowderedZetium-whos value="Zetium Cutters" />
-    <HeavyFlight value="Gamma Thrusters" />
-    <HeavyFlight-whos value="Gamma Thrusters" />
-    
+    <Technology_ZetiumExtraction value="Zetium Extraction" />
+    <Technology_MetabolicChargers value="Metabolic Chargers" />
+    <Technology_HighVelocityCharges value="High Velocity Ammo" />
+    <Technology_Market value="Market" />
+    <Technology_SpaceFactory value="Space Factory" />
+    <Technology_ShipsArmor value="Reinforced Plates" />
+    <Technology_ShipsDamage value="Energized Plasma" />
+    <Technology_TanksDamage value="Zetium Shells" />
+    <Technology_TanksArmor value="Energized Armor" />
+    <Technology_FieryMelters value="Pressurized Melting" />
+    <Technology_SuperconductorTechnology value="Superconductor Technology" />
+    <Technology_PowderedZetium value="Zetium Cutters" />
+    <Technology_HeavyFlight value="Gamma Thrusters" />
+    <Technology_MetalStorage value="Liquid Compression" />
+    <Technology_EnergyStorage value="Extended Batteries" />
+    <Technology_ZetiumStorage value="Zetium Cartridges" />
+    <Technology_ShipStorage value="External Cargo Decks" />
+    <Technology_DefensivePortal ref="Building_DefensivePortal" />
+    <Technology_Alliances value="Alliances" />
     
     <!-- Other stuff -->
 
     <Unit value="Unit" />
-    <Unit-what value="{0 one[one unit] many[? units]}" />
-    <Unit-whos ref="Unit-what" />
+    <Unit-p8d value="{0 one[Unit] many[? Units]}" />
     
     <Building value="Building" />
-    <Building-what value="{0 one[one building] many[? buildings]}" />
-    <Building-whos ref="Building-what" />
+    <Building-p8d value="{0 one[Building] many[? Buildings]}" />
     
     <Technology value="Technology" />
-    <Technology-what value="{0 one[one technology] many[? technologies]}" />
-    <Technology-whos ref="Technology-what" />
+    <Technology-p8d value="{0 one[Technology] many[? Technologies]}" />
     
     <Planet value="Planet" />
-    <Planet-what value="{0 one[one planet] many[? planets]}" />
-    <Planet-whos ref="Planet-what" />
+    <Planet-p8d value="{0 one[Planet] many[? Planets]}" />
 
     <Point value="Point" />
-    <Point-what value="{0 one[one point] many[? points]}" />
-    <Point-whos ref="Point-what" />
+    <Point-p8d value="{0 one[Point] many[? Points]}" />
 
     <Object value="Object" />
-    <Object-what value="{0 one[one object] many[? objects]}" />
-    <Object-whos ref="Object-what" />
-
-    <Is value="{0 one[is] many[are]}" />
+    <Object-p8d value="{0 one[Object] many[? Objects]}" />
 
     <Scientist value="Scientist" />
-    <Scientist-what value="{0 one[one Scientist] many[? Scientists]}" />
-    <Scientist-whos ref="Scientist-what" />
+    <Scientist-p8d value="{0 one[Scientist] many[? Scientists]}" />
 
     <Alliances value="Alliances" />
-    <Alliances-what value="{0 one[one Alliances] many[? Alliances]}" />
-    <Alliances-whos ref="Alliances-what" />
-
+    <Alliances-p8d value="{0 one[Alliance] many[? Alliances]}" />
   </Objects>
   
   <Alliances>
@@ -384,6 +317,17 @@
     <message.playerInvited value="Player has been invited to alliance" />
     <message.joinSuccess value="You have successfully joined alliance" />
     <message.joinFail value="You can't join this alliance because it is already full" />
+    <tooltip.allianceFull>
+      <p>Your alliance is full.</p>
+      <p>Upgrade alliance technology to invite more players.</p>
+    </tooltip.allianceFull>
+    <label.invitablePlayers value="Invite to alliance" />
+    <label.invite value="Invite" />
+    <label.nothingToInvite value="No players to invite" />
+    <label.explanationInvite>
+      <p>You can only invite players whose planets you can see (except for 
+      planets in battleground).</p>
+    </label.explanationInvite>
   </Alliances>
 
   <BattleMap>
@@ -496,10 +440,6 @@
     <!-- 0: date, 1: time (1 part) -->
     <label.owner value="You are the owner of this planet from:" />
     <label.ownerDate value="{0} ({1})." />
-    <label.battlegroundOwner> 
-      <p>The longer you rule this planet, the less productive 
-      will the NPC factories become.</p>
-    </label.battlegroundOwner>
     <label.activateOverdrive> 
       <p>Overdrive this building to make it extract {0} times more resources
       while using {1} times more energy.</p>
@@ -593,7 +533,7 @@
     
     <!-- NPC buildings -->
 
-    <NpcMetalExtractor.name ref="Objects/NpcMetalExtractor" />
+    <NpcMetalExtractor.name ref="Objects/Building_NpcMetalExtractor" />
     <NpcMetalExtractor.about>
       <p>
         These alien technology driven foundries have been abandoned long time 
@@ -602,7 +542,7 @@
       </p>
     </NpcMetalExtractor.about>
 
-    <NpcZetiumExtractor.name ref="Objects/NpcZetiumExtractor" />
+    <NpcZetiumExtractor.name ref="Objects/Building_NpcZetiumExtractor" />
     <NpcZetiumExtractor.about>
       <p>
         These buildings were used for extracting and storing zetium. They are 
@@ -611,7 +551,7 @@
       </p>
     </NpcZetiumExtractor.about>
 
-    <NpcGeothermalPlant.name ref="Objects/NpcGeothermalPlant" />
+    <NpcGeothermalPlant.name ref="Objects/Building_NpcGeothermalPlant" />
     <NpcGeothermalPlant.about>
       <p>
         Built ages ago these buildings were probably meant as collectors for 
@@ -620,7 +560,7 @@
       </p>
     </NpcGeothermalPlant.about>
 
-    <NpcSolarPlant.name ref="Objects/NpcSolarPlant" />
+    <NpcSolarPlant.name ref="Objects/Building_NpcSolarPlant" />
     <NpcSolarPlant.about>
       <p>
         Solar power is converted in these buildings. Our scans indicate strong 
@@ -628,7 +568,7 @@
       </p>
     </NpcSolarPlant.about>
 
-    <NpcCommunicationsHub.name ref="Objects/NpcCommunicationsHub" />
+    <NpcCommunicationsHub.name ref="Objects/Building_NpcCommunicationsHub" />
     <NpcCommunicationsHub.about>
       <p>
         These structures look like some kind of communication device. Perhaps 
@@ -636,7 +576,7 @@
       </p>
     </NpcCommunicationsHub.about>
 
-    <NpcTemple.name ref="Objects/NpcTemple" />
+    <NpcTemple.name ref="Objects/Building_NpcTemple" />
     <NpcTemple.about>
       <p>
         Whilst extremely advanced Precursors were also a deeply religious race. 
@@ -645,7 +585,7 @@
       </p>
     </NpcTemple.about>
 
-    <NpcExcavationSite.name ref="Objects/NpcExcavationSite" />
+    <NpcExcavationSite.name ref="Objects/Building_NpcExcavationSite" />
     <NpcExcavationSite.about>
       <p>
         It seems like a dig site. Although nobody knows what they were 
@@ -653,7 +593,7 @@
       </p>
     </NpcExcavationSite.about>
 
-    <NpcResearchCenter.name ref="Objects/NpcResearchCenter" />
+    <NpcResearchCenter.name ref="Objects/Building_NpcResearchCenter" />
     <NpcResearchCenter.about>
       <p>
         It seems that this is a Precursor research laboratory. No one knows 
@@ -661,7 +601,7 @@
       </p>
     </NpcResearchCenter.about>
 
-    <NpcJumpgate.name ref="Objects/NpcJumpgate" />
+    <NpcJumpgate.name ref="Objects/Building_NpcJumpgate" />
     <NpcJumpgate.about>
       <p>
         These jumpgates were used to warp forces between planets crossing solar 
@@ -673,7 +613,7 @@
 
 
 
-    <Mothership.name ref="Objects/Mothership" />
+    <Mothership.name ref="Objects/Building_Mothership" />
     <Mothership.about>
       <p>
         The Mothership is the core ship for humans who inhabit this planet. 
@@ -696,7 +636,7 @@
       <p>Each upgrade level increases metal extraction rate.</p>
     </MEX.common>
 
-    <MetalExtractor.name ref="Objects/MetalExtractor" />
+    <MetalExtractor.name ref="Objects/Building_MetalExtractor" />
     <MetalExtractor.tooltip value="Extracts metal" />
     <MetalExtractor.about>
       <p>
@@ -708,7 +648,7 @@
       <p>[reference:MEX.common]</p>
     </MetalExtractor.about>
 
-    <MetalExtractorT2.name ref="Objects/MetalExtractorT2" />
+    <MetalExtractorT2.name ref="Objects/Building_MetalExtractorT2" />
     <MetalExtractorT2.tooltip value="Extracts metal" />
     <MetalExtractorT2.common>
       <p>Better, faster and more expensive version of 
@@ -720,7 +660,7 @@
       <p>[reference:MEX.common]</p>
     </MetalExtractorT2.about>
 
-    <MetalStorage.name ref="Objects/MetalStorage" />
+    <MetalStorage.name ref="Objects/Building_MetalStorage" />
     <MetalStorage.tooltip value="Stores metal" />
     <MetalStorage.about>
       <p>
@@ -732,7 +672,7 @@
       <p>Each upgrade level increases storage.</p>
     </MetalStorage.about>
 
-    <CollectorT1.name ref="Objects/CollectorT1" />
+    <CollectorT1.name ref="Objects/Building_CollectorT1" />
     <CollectorT1.tooltip value="Generates energy" />
     <CollectorT1.common>
       <p>
@@ -746,7 +686,7 @@
       <p>Each upgrade level increases energy output.</p>
     </CollectorT1.about>
 
-    <CollectorT2.name ref="Objects/CollectorT2" />
+    <CollectorT2.name ref="Objects/Building_CollectorT2" />
     <CollectorT2.tooltip value="Generates energy" />
     <CollectorT2.common>
       <p>
@@ -755,7 +695,7 @@
         [reference:NpcSolarPlant.name]s their massive panels generate a 
         formidable amount of energy. Although their advanced designs allow 
         upgrading them beyond the limits of their former versions they cost a 
-        lot more than simple [reference:Objects/CollectorT2]. 
+        lot more than simple [reference:Objects/Building_CollectorT2]. 
       </p>
     </CollectorT2.common>
     <CollectorT2.about>
@@ -763,7 +703,7 @@
       <p>Each upgrade level increases energy output.</p>
     </CollectorT2.about>
 
-    <CollectorT3.name ref="Objects/CollectorT3" />
+    <CollectorT3.name ref="Objects/Building_CollectorT3" />
     <CollectorT3.tooltip value="Generates energy" />
     <CollectorT3.common>
       <p>
@@ -778,7 +718,7 @@
       <p>Each upgrade level increases energy output.</p>
     </CollectorT3.about>
 
-    <EnergyStorage.name ref="Objects/EnergyStorage" />
+    <EnergyStorage.name ref="Objects/Building_EnergyStorage" />
     <EnergyStorage.tooltip value="Stores energy" />
     <EnergyStorage.about>
       <p>
@@ -789,7 +729,7 @@
       <p>Each upgrade level increases energy storage.</p>
     </EnergyStorage.about>
 
-    <Barracks.name ref="Objects/Barracks" />
+    <Barracks.name ref="Objects/Building_Barracks" />
     <Barracks.tooltip value="Trains troops" />
     <Barracks.about>
       <p>
@@ -799,7 +739,7 @@
       </p>
     </Barracks.about>
 
-    <ResearchCenter.name ref="Objects/ResearchCenter" />
+    <ResearchCenter.name ref="Objects/Building_ResearchCenter" />
     <ResearchCenter.tooltip value="Researches technologies" />
     <ResearchCenter.about>
       <p>
@@ -823,14 +763,14 @@
       <p>Each upgrade level increases zetium extraction rate.</p>
     </ZetiumExtractor.common>
 
-    <ZetiumExtractor.name ref="Objects/ZetiumExtractor" />
+    <ZetiumExtractor.name ref="Objects/Building_ZetiumExtractor" />
     <ZetiumExtractor.tooltip value="Extracts zetium" />
     <ZetiumExtractor.about>
       <p>[reference:Technologies/Zetium.common]</p>
       <p>[reference:ZetiumExtractor.common]</p>
     </ZetiumExtractor.about>
 
-    <ZetiumExtractorT2.name ref="Objects/ZetiumExtractorT2" />
+    <ZetiumExtractorT2.name ref="Objects/Building_ZetiumExtractorT2" />
     <ZetiumExtractorT2.tooltip value="Extracts zetium" />
     <ZetiumExtractorT2.common>
       <p>
@@ -844,7 +784,7 @@
       <p>[reference:ZetiumExtractor.common]</p>
     </ZetiumExtractorT2.about>
 
-    <ZetiumStorage.name ref="Objects/ZetiumStorage" />
+    <ZetiumStorage.name ref="Objects/Building_ZetiumStorage" />
     <ZetiumStorage.tooltip value="Stores zetium" />
     <ZetiumStorage.about>
       <p>
@@ -857,7 +797,7 @@
       <p>Each upgrade level increases storage.</p>
     </ZetiumStorage.about>
 
-    <Crane.name ref="Objects/Crane" />
+    <Crane.name ref="Objects/Building_Crane" />
     <Crane.tooltip value="Constructs buildings" />
     <Crane.about>
       <p>
@@ -868,7 +808,7 @@
       </p>
     </Crane.about>
     
-    <Market.name ref="Objects/Market" />
+    <Market.name ref="Objects/Building_Market" />
     <Market.tooltip value="Allows trading with other players" />
     <Market.common>
       <p>Market allows you to trade with other players in this galaxy. 
@@ -881,7 +821,7 @@
       <p>Each upgrade level decreases offer submission fee.</p>
     </Market.about>
 
-    <Radar.name ref="Objects/Radar" />
+    <Radar.name ref="Objects/Building_Radar" />
     <Radar.tooltip value="Increases visible galaxy area" />
     <Radar.common>
       <p>
@@ -897,7 +837,7 @@
       <p>Each upgrade level increases distance it can see.</p>
     </Radar.about>
 
-    <Housing.name ref="Objects/Housing" />
+    <Housing.name ref="Objects/Building_Housing" />
     <Housing.tooltip value="Increases population" />
     <Housing.about>
       <p>These living pods create living space needed for our troops and
@@ -910,7 +850,7 @@
 <!--    <ResourceTransporter.tooltip value="Transports resources between planets" />-->
 <!--    <ResourceTransporter.about value="Teleport resources with this one" />-->
 
-    <Headquarters.name ref="Objects/Headquarters" />
+    <Headquarters.name ref="Objects/Building_Headquarters" />
     <Headquarters.about>
       <p>
         Deployed from Mobile Deployable Headquarters it is the first outpost in 
@@ -920,7 +860,7 @@
       <p>Headquarters allow you to construct buildings.</p>
     </Headquarters.about>
 
-    <Vulcan.name ref="Objects/Vulcan" />
+    <Vulcan.name ref="Objects/Building_Vulcan" />
     <Vulcan.tooltip value="Defends against infantry" />
     <Vulcan.about>
       <p>
@@ -933,14 +873,14 @@
 
     <DeployedFromMobile value="Deployed from mobile version." />
 
-    <MobileVulcan.name ref="Objects/MobileVulcan" />
+    <MobileVulcan.name ref="Objects/Building_MobileVulcan" />
     <MobileVulcan.tooltip ref="Vulcan.tooltip" />
     <MobileVulcan.about>
       <p>[reference:Vulcan.about]</p>
       <p>[reference:DeployedFromMobile]</p>
     </MobileVulcan.about>
 
-    <Screamer.name ref="Objects/Screamer" />
+    <Screamer.name ref="Objects/Building_Screamer" />
     <Screamer.tooltip value="Defends against tanks" />
     <Screamer.about>
       <p>
@@ -950,14 +890,14 @@
       <p>Only capable of hitting ground units.</p>
     </Screamer.about>
 
-    <MobileScreamer.name ref="Objects/MobileScreamer" />
+    <MobileScreamer.name ref="Objects/Building_MobileScreamer" />
     <MobileScreamer.tooltip ref="Screamer.tooltip" />
     <MobileScreamer.about>
       <p>[reference:Screamer.about]</p>
       <p>[reference:DeployedFromMobile]</p>
     </MobileScreamer.about>
 
-    <Thunder.name ref="Objects/Thunder" />
+    <Thunder.name ref="Objects/Building_Thunder" />
     <Thunder.tooltip value="Defends against space units" />
     <Thunder.about>
       <p>
@@ -968,14 +908,14 @@
       <p>Only capable of hitting space units.</p>
     </Thunder.about>
 
-    <MobileThunder.name ref="Objects/MobileThunder" />
+    <MobileThunder.name ref="Objects/Building_MobileThunder" />
     <MobileThunder.tooltip ref="Thunder.tooltip" />
     <MobileThunder.about>
       <p>[reference:Thunder.about]</p>
       <p>[reference:DeployedFromMobile]</p>
     </MobileThunder.about>
 
-    <GroundFactory.name ref="Objects/GroundFactory" />
+    <GroundFactory.name ref="Objects/Building_GroundFactory" />
     <GroundFactory.tooltip value="Builds tanks" />
     <GroundFactory.about>
       <p>
@@ -984,7 +924,7 @@
       </p>
     </GroundFactory.about>
 
-    <SpaceFactory.name ref="Objects/SpaceFactory" />
+    <SpaceFactory.name ref="Objects/Building_SpaceFactory" />
     <SpaceFactory.tooltip value="Builds spaceships" />
     <SpaceFactory.about>
       <p>
@@ -994,7 +934,7 @@
       </p>
     </SpaceFactory.about>
 
-    <HealingCenter.name ref="Objects/HealingCenter" />
+    <HealingCenter.name ref="Objects/Building_HealingCenter" />
     <HealingCenter.tooltip value="Repairs units" />
     <HealingCenter.common>
       <p>
@@ -1008,7 +948,7 @@
       <p>Each level reduces healing cost and cooldown.</p>
     </HealingCenter.about>
 
-    <DefensivePortal.name ref="Objects/DefensivePortal" />
+    <DefensivePortal.name ref="Objects/Building_DefensivePortal" />
     <DefensivePortal.tooltip value="Summons ground units for defense" />
     <DefensivePortal.common>
       <p>When activated this portal allows you sending troops to other planets 
@@ -1030,7 +970,7 @@
       </p>
     </GivesUnits>
 
-    <NpcInfantryFactory.name ref="Objects/NpcInfantryFactory" />
+    <NpcInfantryFactory.name ref="Objects/Building_NpcInfantryFactory" />
     <NpcInfantryFactory.about>
       <p>
         This ancient factory produces light units out of solar energy and 
@@ -1039,13 +979,13 @@
       <p>[reference:GivesUnits]</p>
     </NpcInfantryFactory.about>
 
-    <NpcTankFactory.name ref="Objects/NpcTankFactory" />
+    <NpcTankFactory.name ref="Objects/Building_NpcTankFactory" />
     <NpcTankFactory.about>
       <p>Powerful and heavily armed machines are created in this laboratory.</p>
       <p>[reference:GivesUnits]</p>
     </NpcTankFactory.about>
 
-    <NpcSpaceFactory.name ref="Objects/NpcSpaceFactory" />
+    <NpcSpaceFactory.name ref="Objects/Building_NpcSpaceFactory" />
     <NpcSpaceFactory.about>
       <p>
         This underground facility constructs spacecraft which can be used for 
@@ -1054,7 +994,7 @@
       <p>[reference:GivesUnits]</p>
     </NpcSpaceFactory.about>
 
-    <NpcHall.name ref="Objects/NpcHall" />
+    <NpcHall.name ref="Objects/Building_NpcHall" />
     <NpcHall.about>
       <p>
         Holding this buildings brings you and your alliance victory points. 
@@ -1167,6 +1107,15 @@
        <p><span fontWeight="bold">{0} creds</span></p>
       ]]>
     </label.destructPrice>
+    <label.unlearnPrice>
+      <![CDATA[
+       <p>
+         To unlearn this technology you need to pay
+       </p>
+       <p />
+       <p><span fontWeight="bold">{0} creds</span></p>
+      ]]>
+    </label.unlearnPrice>
     <label.notEnough>
      <p>
       Not enough creds.<br/>You need {0} more
@@ -1402,12 +1351,51 @@
     <description.short.galaxy value="Galaxy" />
     <description.short.solarSystem value="Solar System {0}" />
     <description.short.planet value="Planet {0}" />
-    <description.long.galaxy value="Sector {0}:{1} in Galaxy" />
-    <description.long.solarSystem value="Sector {1}:{2} in Solar System {0}" />
-    <description.long.pulsar value="Sector {1}:{2} in Pulsar {0}"/>
-    <description.long.battleground value="Sector {0}:{1} in battleground"/>
-    <description.long.planet value="Planet {0} in Solar System {1}" />
-    <description.long.planetInBattleground value="Planet {0} in Battleground"/>
+    <description.long.galaxy>
+      <![CDATA[
+      <p>
+        Sector <span fontWeight="bold">{0}:{1}</span> in Galaxy
+      </p>
+      ]]>
+    </description.long.galaxy>
+    <description.long.solarSystem>
+      <![CDATA[
+      <p>
+        Sector <span fontWeight="bold">{1}:{2}</span> in Solar System 
+        <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+    </description.long.solarSystem>
+    <description.long.pulsar>
+      <![CDATA[
+      <p>
+         Sector <span fontWeight="bold">{1}:{2}</span> in Pulsar 
+         <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+    </description.long.pulsar>
+    <description.long.battleground>
+      <![CDATA[
+      <p>
+        Sector <span fontWeight="bold">{0}:{1}</span> in battleground
+      </p>
+      ]]>
+    </description.long.battleground>
+    <description.long.planet>
+      <![CDATA[
+      <p>
+        Planet <span fontWeight="bold">{0}</span> in Solar System 
+        <span fontWeight="bold">{1}</span>
+      </p>
+      ]]>
+    </description.long.planet>
+    <description.long.planetInBattleground>
+      <![CDATA[
+      <p>
+        Planet <span fontWeight="bold">{0}</span> in Battleground
+      </p>
+      ]]>
+    </description.long.planetInBattleground>
 
     <message.locationNotAvailable>
       <p>You can no longer view this location</p>
@@ -1503,8 +1491,10 @@
     <label.enemies value="Enemies" />
     <label.leveled value="Leveled Up" />
     <label.dmgDealtPlayer value="Damage dealt by you" />
+    <label.dmgDealtAlly value="Damage dealt by allies" />
     <label.dmgDealtAlliance value="Damage dealt by alliance" />
     <label.dmgTakenPlayer value="Damage taken by you" />
+    <label.dmgTakenAlly value="Damage taken by allies" />
     <label.dmgTakenAlliance value="Damage taken by alliance" />
     <label.xp value="XP earned" />
     <label.points value="War points earned" />
@@ -1885,26 +1875,29 @@
     <of value="of" />
     
     <!-- HAVE_UPGRADED_TO
-    0: "Subclass or class to upgrade (with count), 
-    1: level to upgrade to -->
-    <objectiveText.HaveUpgradedTo value="Have {0}{1 one[] many[ of level ?]}" />
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
+    <objectiveText.HaveUpgradedTo value="Have [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
     <objectiveText.HaveUpgradedToTech 
-    value="{1 one[Research] many[Upgrade]} {0} technology{1 one[] many[ to level ?]}" />
+    value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}] technology{2 one[] many[ to level ?]}" />
     <objectiveText.HaveUpgradedToTechClass 
-    value="{1 one[Research] many[Upgrade]} {0}{1 one[] many[ to level ?]}" />
+    value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}" />
 
     <!-- UPGRADE_TO
-    0: "Subclass or class to upgrade (with count), 
-    1: level to upgrade to -->
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
     <objectiveText.UpgradeTo 
-    value="{1 one[Build] many[Upgrade]} {0}{1 one[] many[ to level ?]}" />
+    value="{2 one[Build] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}" />
 
     <!-- DESTROY
-    0: "Subclass or class to destroy (with count), 
-    1: level of objects to destroy -->
-    <objectiveText.Destroy value="Destroy {0}{1 one[] many[ of level ?]}" />
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level of objects to destroy -->
+    <objectiveText.Destroy value="Destroy [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
     <objectiveText.DestroyNpcBuilding 
-    value="Destroy {0}{1 one[] many[ of level ?]}" />
+    value="Destroy [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
     
     <!-- ANNEX_PLANET
     0: count of planets to occupy -->
@@ -3293,6 +3286,15 @@
     <upgradeCost value="Upgrade cost" />
     <forceOvertime value="Force overtime" />
 
+    <title.unlearn value="Unlearn" />
+    <warning.unlearn>      
+      <![CDATA[
+      <p><span fontWeight="bold">Warning!</span> It will cost you {0} creds to 
+      unlearn this technology and you won't get any resources back.</p>
+      ]]>
+    </warning.unlearn>
+    <label.unlearn value="Unlearn" />
+
     <isGroup>
       <p>If you research this technology you won't be able to research:</p>
     </isGroup>
@@ -3318,6 +3320,7 @@
     <property.mod.armor value="Armor bonus" />
     <property.mod.damage value="Damage bonus" />
     <property.mod.movementTimeDecrease value="Movement time decrease" />
+    <property.mod.storage value="Storage bonus" />
     <property.maxPlayers value="Maximum number of players" />
 
     <UnitTech>
@@ -3333,7 +3336,7 @@
       </p>
     </Zetium.common>
 
-    <ZetiumExtraction.name ref="Objects/ZetiumExtraction" />
+    <ZetiumExtraction.name ref="Objects/Technology_ZetiumExtraction" />
     <ZetiumExtraction.about>
       <p>Allows building Zetium Extractors and Storages.</p>
       <p>[reference:Zetium.common]</p>
@@ -3372,6 +3375,9 @@
     <Spaceport.about value="Fly to the sky" />
     -->
 
+    <ArmorTech value="Researching this technology increases armor" />
+    <WeaponsTech value="Researching this technology increases damage" />
+
     <InfantryUpgradeTech>
       <p>
         for ground soldiers built in [reference:Buildings/Barracks.name] like 
@@ -3379,19 +3385,16 @@
       </p>
     </InfantryUpgradeTech>
 
-    <MetabolicChargers.name ref="Objects/MetabolicChargers" />
+    <MetabolicChargers.name ref="Objects/Technology_MetabolicChargers" />
     <MetabolicChargers.about>
       <p>
         Recent developments in armor technology allows embedding zetium shards 
         into warrior armor thus making it more resistant to enemy hits. 
       </p>
-      <p>
-        Researching this technology increases armor 
-        [reference:InfantryUpgradeTech] 
-      </p>
+      <p>[reference:ArmorTech] [reference:InfantryUpgradeTech]</p>
     </MetabolicChargers.about>
 
-    <HighVelocityCharges.name ref="Objects/HighVelocityCharges" />
+    <HighVelocityCharges.name ref="Objects/Technology_HighVelocityCharges" />
     <HighVelocityCharges.about>
       <p>
         Recent developments in zetium technology allowed infantry gun ammo to 
@@ -3399,10 +3402,7 @@
         rockets reach greater velocity and bigger impact speed meaning more 
         damage to enemy. 
       </p>
-      <p>
-        Researching this technology increases damage 
-        [reference:InfantryUpgradeTech] 
-      </p>
+      <p>[reference:WeaponsTech] [reference:InfantryUpgradeTech]</p>
     </HighVelocityCharges.about>
 
     <ShipUpgradeTech>
@@ -3416,29 +3416,24 @@
       </p>
     </ShipUpgradeTech>
 
-    <ShipsArmor.name ref="Objects/ShipsArmor" />
+    <ShipsArmor.name ref="Objects/Technology_ShipsArmor" />
     <ShipsArmor.about>
       <p>
         This technology allows usage of zetium reinforced armor plates that are 
         able to withstand more damage and keep ships alive in the battlefield 
         for longer. 
       </p>
-      <p>
-        Researching this technology increases armor [reference:ShipUpgradeTech] 
-      </p>
+      <p>[reference:ArmorTech] [reference:ShipUpgradeTech]</p>
     </ShipsArmor.about>
 
-    <ShipsDamage.name ref="Objects/ShipsDamage" />
+    <ShipsDamage.name ref="Objects/Technology_ShipsDamage" />
     <ShipsDamage.about>
       <p>
         Introducing zetium into plasma particle stream greatly improves their 
         power. Ionized zetium crystals expel intense heat that is enough to 
         wade even through thickest armor. 
       </p>
-      <p>
-        Researching this technology increases damage 
-        [reference:ShipUpgradeTech] 
-      </p>
+      <p>[reference:WeaponsTech] [reference:ShipUpgradeTech]</p>
     </ShipsDamage.about>
 
     <TankUpgradeTech>
@@ -3448,39 +3443,25 @@
       </p>
     </TankUpgradeTech>
 
-    <TanksDamage.name ref="Objects/TanksDamage" />
-    <TanksDamage.about>
-      <p>
-        Introducing highly unstable zetium into tank shells greatly improves 
-        their firepower and ensures that enemy units do not leave the 
-        battlefield alive. 
-      </p>
-      <p>
-        Researching this technology increases damage 
-        [reference:TankUpgradeTech] 
-      </p>
-    </TanksDamage.about>
-
-    <TanksArmor.name ref="Objects/TanksArmor" />
+    <TanksArmor.name ref="Objects/Technology_TanksArmor" />
     <TanksArmor.about>
       <p>
         These shield generators generate point located shields that slow down 
         incoming projectiles before impact. By minimizing their velocity they 
         reduce damage dealt to hull of the tank. 
       </p>
-      <p>
-        Researching this technology increases armor [reference:TankUpgradeTech] 
-      </p>
+      <p>[reference:ArmorTech] [reference:TankUpgradeTech]</p>
     </TanksArmor.about>
 
-   <!--
-    <ResourceTransporter.name ref="Objects/ResourceTransporter" />
-    <ResourceTransporter.about>
+    <TanksDamage.name ref="Objects/Technology_TanksDamage" />
+    <TanksDamage.about>
       <p>
-        This technology helps you to transport resources through hyperspace 
-        chanels 
+        Introducing highly unstable zetium into tank shells greatly improves
+        their firepower and ensures that enemy units do not leave the
+        battlefield alive.
       </p>
-    </ResourceTransporter.about> -->
+      <p>[reference:WeaponsTech] [reference:TankUpgradeTech]</p>
+    </TanksDamage.about>
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
@@ -3497,10 +3478,10 @@
       <p>[reference:Buildings/MetalExtractorT2.common]</p>
     </MetalExtractorT2.about>
 
-    <FieryMelters.name ref="Objects/FieryMelters" />
+    <FieryMelters.name ref="Objects/Technology_FieryMelters" />
     <FieryMelters.about>
       <p>
-        Using high pressure in MetalExtractors allows 
+        Using high pressure in metal extractors allows
         getting higher metal extraction and storage efficiency. Although this 
         technology is a bit pricey it may be worth investing to if your metal 
         needs are growing.
@@ -3520,7 +3501,7 @@
       <p>[reference:Buildings/CollectorT3.common]</p>
     </CollectorT3.about>
 
-    <SuperconductorTechnology.name ref="Objects/SuperconductorTechnology" />
+    <SuperconductorTechnology.name ref="Objects/Technology_SuperconductorTechnology" />
     <SuperconductorTechnology.about>
       <p>
         By using zetium coated wires our scientists are able to increase their 
@@ -3537,7 +3518,7 @@
       <p>[reference:Buildings/ZetiumExtractorT2.common]</p>
     </ZetiumExtractorT2.about>
 
-    <PowderedZetium.name ref="Objects/PowderedZetium" />
+    <PowderedZetium.name ref="Objects/Technology_PowderedZetium" />
     <PowderedZetium.about>
       <p>
         These sharpened zetium cutters are used to get better quality raw 
@@ -3578,7 +3559,7 @@
       <p>[reference:Buildings/SpaceFactory.about]</p>
     </SpaceFactory.about>
 
-    <HeavyFlight.name ref="Objects/HeavyFlight" />
+    <HeavyFlight.name ref="Objects/Technology_HeavyFlight" />
     <HeavyFlight.about>
       <p>Employing gamma particles in our heavy engine inner processes
       allows us to reach higher velocities thus reducing time we need to
@@ -3586,8 +3567,8 @@
       <p>However this technology requires UX-20 engines which can only be
       found in our biggest ships. As it is they are also slowest, so
       this technology is very valuable for them.</p>
-      <p>Shortens flight times for [reference:Objects/Mule] and
-      [reference:Objects/Rhyno] class ships.</p>
+      <p>Shortens flight times for [reference:Objects/Unit_Mule] and
+      [reference:Objects/Unit_Rhyno] class ships.</p>
     </HeavyFlight.about>
     
     <UnitUpgrade>
@@ -3736,7 +3717,7 @@
       <p>[reference:Buildings/HealingCenter.common]</p>
     </HealingCenter.about>
 
-    <Alliances.name ref="Objects/Alliances" />
+    <Alliances.name ref="Objects/Technology_Alliances" />
     <Alliances.about>
       <p>Join forces with your neighbours. Protect each other.
       Coordinate your attacks. Help each other to complete quests. Anything is
@@ -3744,11 +3725,51 @@
       <p>Allows creating your own alliance.</p>
     </Alliances.about>
 
-    <DefensivePortal.name ref="Objects/DefensivePortal" />
+    <DefensivePortal.name ref="Objects/Technology_DefensivePortal" />
     <DefensivePortal.about>
-      <p>Allows building [reference:Objects/DefensivePortal].</p>
+      <p>Allows building [reference:Objects/Building_DefensivePortal].</p>
       <p>[reference:Buildings/DefensivePortal.common]</p>
     </DefensivePortal.about>
+
+    <MetalStorage.name ref="Objects/Technology_MetalStorage" />
+    <MetalStorage.about>
+      <p>
+        This technology increases resistance to pressure and temperature of
+        our metal storages. By using higher degree
+        of compression applied we can store even more metal to same buildings.
+      </p>
+    </MetalStorage.about>
+
+    <EnergyStorage.name ref="Objects/Technology_EnergyStorage" />
+    <EnergyStorage.about>
+      <p>
+        Don't have enough space for additional storages and you still have
+        excess energy that you are wasting? Invest to this technology now!
+      </p>
+      <p>
+        With this technology we will be able to store more energy in existing
+        buildings and will save our precious land for other constructions.
+      </p>
+    </EnergyStorage.about>
+
+    <ZetiumStorage.name ref="Objects/Technology_ZetiumStorage" />
+    <ZetiumStorage.about>
+      <p>
+        This revolutionary way of storing zetium allows us to store even more
+        of it to same existing storages. Research this technology to increase
+        usefulness of our [obj:2:Building_ZetiumStorage::dc].
+      </p>
+    </ZetiumStorage.about>
+
+    <ShipStorage.name ref="Objects/Technology_ShipStorage" />
+    <ShipStorage.about>
+      <p>
+        Newly designed attachable cargo decks can be fitted to any cargo ship
+        to extend its available storage. This allows them to transport more
+        resources or units and is very convenient for those gathering or assault
+        missions.
+      </p>
+    </ShipStorage.about>
   </Technologies>
 
   <Units>
@@ -3966,7 +3987,7 @@
     <kind.nap  value="Nap units" />
     <kind.ally value="Alliance units" />
 
-    <Gnat.name ref="Objects/Gnat" />
+    <Gnat.name ref="Objects/Unit_Gnat" />
     <Gnat.about>
       <p>
         Weakest unit from alien ground army. They are pretty weak and 
@@ -3976,7 +3997,7 @@
       </p>
     </Gnat.about>
 
-    <Glancer.name ref="Objects/Glancer" />
+    <Glancer.name ref="Objects/Unit_Glancer" />
     <Glancer.about>
       <p>
         Highly vulnerable but deadly to infantry. Their sniper rifles pierce 
@@ -3986,7 +4007,7 @@
       </p>
     </Glancer.about>
 
-    <Spudder.name ref="Objects/Spudder" />
+    <Spudder.name ref="Objects/Unit_Spudder" />
     <Spudder.about>
       <p>
         Semi-heavy humanoid robots. Armed with homing plasma particles they are 
@@ -3995,7 +4016,7 @@
       </p>
     </Spudder.about>
 
-    <Gnawer.name ref="Objects/Gnawer" />
+    <Gnawer.name ref="Objects/Unit_Gnawer" />
     <Gnawer.about>
       <p>
         Guardians of most sacred artifacts in alien buildings. They are fierce 
@@ -4005,7 +4026,7 @@
       </p>
     </Gnawer.about>
 
-    <Dirac.name ref="Objects/Dirac" />
+    <Dirac.name ref="Objects/Unit_Dirac" />
     <Dirac.about>
       <p>
         These fast vessels were built as quick attackers in assault fleets. 
@@ -4015,7 +4036,7 @@
       </p>
     </Dirac.about>
 
-    <Thor.name ref="Objects/Thor" />
+    <Thor.name ref="Objects/Unit_Thor" />
     <Thor.about>
       <p>
         These highly armored but fairly weak ships were used as a front line 
@@ -4026,7 +4047,7 @@
       useful in air to ground bombardment of your enemy ground forces.</p>
     </Thor.about>
 
-    <Demosis.name ref="Objects/Demosis" />
+    <Demosis.name ref="Objects/Unit_Demosis" />
     <Demosis.about>
       <p>
         These gigantic ships wander around in Nebula 44. Once built for great 
@@ -4040,7 +4061,7 @@
       </p>
     </Demosis.about>
 
-    <Trooper.name ref="Objects/Trooper" />
+    <Trooper.name ref="Objects/Unit_Trooper" />
     <Trooper.about>
       <p>
         Basic warriors of our armies armed with machine guns. They fearlessly 
@@ -4050,7 +4071,7 @@
       </p>
     </Trooper.about>
 
-    <Shocker.name ref="Objects/Shocker" />
+    <Shocker.name ref="Objects/Unit_Shocker" />
     <Shocker.about>
       <p>
         Highly armored field warriors with the capabilities to withstand enemy 
@@ -4060,7 +4081,7 @@
       </p>
     </Shocker.about>
 
-    <Seeker.name ref="Objects/Seeker" />
+    <Seeker.name ref="Objects/Unit_Seeker" />
     <Seeker.about>
       <p>
         Armed with [reference:InfoScreen/gun.sniper_rifle] they are lethal to 
@@ -4073,12 +4094,12 @@
     <!--
     <Spy.name ref="Objects/Spy" />
     <Spy.about value="Explore your enemies" />
-     -->
 
     <Saboteur.name value="Saboteur" />
     <Saboteur.about value="Is likely to ruin things" />
+     -->
 
-    <Scorpion.name ref="Objects/Scorpion" />
+    <Scorpion.name ref="Objects/Unit_Scorpion" />
     <Scorpion.about>
       <p>
         Scorpion class tanks are basic ground warfare vehicles. They pack a 
@@ -4088,7 +4109,7 @@
       </p>
     </Scorpion.about>
 
-    <Azure.name ref="Objects/Azure" />
+    <Azure.name ref="Objects/Unit_Azure" />
     <Azure.about>
       <p>
         Azure hovertanks are best way of countering enemy tanks. Their twin 
@@ -4099,14 +4120,14 @@
       </p>
     </Azure.about>
 
-    <Zeus.name ref="Objects/Zeus" />
+    <Zeus.name ref="Objects/Unit_Zeus" />
     <Zeus.about>
       <p>These massive tanks fortify themselves into the ground and shoot their
       projectiles into the space. They are designed to fight enemy spaceships
       and cannot target ground units.</p>
     </Zeus.about>
 
-    <Mdh.name ref="Objects/MDH" />
+    <Mdh.name ref="Objects/Unit_MDH" />
     <Mdh.common>
       <p>
         Mobile Deployable Headquarters (MDH) is used as first and primary base 
@@ -4125,7 +4146,7 @@
       </p>
     </Mdh.about>
 
-    <Mule.name ref="Objects/Mule" />
+    <Mule.name ref="Objects/Unit_Mule" />
     <Mule.about>
       <p>
         Slow and heavily armored transport unit. Its massive hull protects the 
@@ -4134,7 +4155,7 @@
       </p>
     </Mule.about>
 
-    <Crow.name ref="Objects/Crow" />
+    <Crow.name ref="Objects/Unit_Crow" />
     <Crow.about>
       <p>
         Light, fast and versatile basic combat spaceship. Perfect for quick 
@@ -4142,7 +4163,7 @@
       </p>
     </Crow.about>
 
-    <Cyrix.name ref="Objects/Cyrix" />
+    <Cyrix.name ref="Objects/Unit_Cyrix" />
     <Cyrix.about>
       <p>
         Cyrix class battleships are standard combat ships used in our fleets. 
@@ -4153,7 +4174,7 @@
       </p>
     </Cyrix.about>
 
-    <Rhyno.name ref="Objects/Rhyno" />
+    <Rhyno.name ref="Objects/Unit_Rhyno" />
     <Rhyno.about>
       <p>
         Rhyno battlecruisers are flagships of any fleet. With their huge 
@@ -4163,7 +4184,7 @@
       </p>
     </Rhyno.about>
 
-    <Dart.name ref="Objects/Dart" />
+    <Dart.name ref="Objects/Unit_Dart" />
     <Dart.about>
       <p>
         Dart class ships were built specifically to counter 
@@ -4177,7 +4198,7 @@
       </p>
     </Dart.about>
 
-    <Avenger.name ref="Objects/Avenger" />
+    <Avenger.name ref="Objects/Unit_Avenger" />
     <Avenger.about>
       <p>
         Avengers are deadly against heavily armored ships. Their armor piercing 
@@ -4192,7 +4213,7 @@
       </p>
     </Avenger.about>
 
-    <Jumper.name ref="Objects/Jumper" />
+    <Jumper.name ref="Objects/Unit_Jumper" />
     <Jumper.about>
       <p>
         Jumpers are lightning fast satellites that are
@@ -4207,19 +4228,19 @@
       deployed. Cannot be undeployed after deploying.</p>
     </MobileTurret>
 
-    <MobileVulcan.name ref="Objects/MobileVulcan" />
+    <MobileVulcan.name ref="Objects/Unit_MobileVulcan" />
     <MobileVulcan.about>
       <p>Mobile version of Vulcan defensive tower. [reference:MobileTurret]</p>
       <p>[reference:Buildings/Vulcan.about]</p>
     </MobileVulcan.about>
 
-    <MobileScreamer.name ref="Objects/MobileScreamer" />
+    <MobileScreamer.name ref="Objects/Unit_MobileScreamer" />
     <MobileScreamer.about>
       <p>Mobile version of Screamer defensive tower. [reference:MobileTurret]</p>
       <p>[reference:Buildings/Screamer.about]</p>
     </MobileScreamer.about>
 
-    <MobileThunder.name ref="Objects/MobileThunder" />
+    <MobileThunder.name ref="Objects/Unit_MobileThunder" />
     <MobileThunder.about>
       <p>Mobile version of Thunder defensive tower. [reference:MobileTurret]</p>
       <p>[reference:Buildings/Thunder.about]</p>

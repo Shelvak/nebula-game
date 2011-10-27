@@ -17,7 +17,8 @@ class Combat::Annexer
         # he is not NPC).
         if outcomes[planet.player_id] == Combat::OUTCOME_LOSE &&
             ! planet.player_id.nil?
-          if planet.player.planets_count == 1
+          if planet.player.planets_count == 1 &&
+              ! planet.solar_system.battleground?
             # Don't take players last planet.
             protect(planet, outcomes)
           else

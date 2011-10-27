@@ -21,6 +21,8 @@ class CredStats < ActiveRecord::Base
   ACTION_BUY_OFFER = 9
   # Pay market fee with creds.
   ACTION_MARKET_FEE = 10
+  # Unlearn technology
+  ACTION_UNLEARN_TECHNOLOGY = 11
 
   # Creates a new record which you can save later.
   def self.new_record(player, action, cost, attributes={})
@@ -110,5 +112,9 @@ class CredStats < ActiveRecord::Base
   
   def self.market_fee(player, cost)
     new_record(player, ACTION_MARKET_FEE, cost)
+  end
+
+  def self.unlearn_technology(player, cost)
+    new_record(player, ACTION_UNLEARN_TECHNOLOGY, cost)
   end
 end

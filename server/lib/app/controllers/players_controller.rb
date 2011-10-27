@@ -7,37 +7,46 @@ class PlayersController < GenericController
   #
   # Return message params:
   # - success (Boolean)
+  # - required_version (String): version required for connection if client
+  # is refused because of the old version.
   def action_login
     param_options :required => {
       :server_player_id => Fixnum,
-      :web_player_id => Fixnum
+      :web_player_id => Fixnum,
+      :version => String
     }
 
-    player = Player.find(params['server_player_id'])
-    if ControlManager.instance.
-        login_authorized?(player, params['web_player_id'])
-      login player
+    if ClientVersion.ok?(params['version'])
+      player = Player.find(params['server_player_id'])
+      if ControlManager.instance.
+          login_authorized?(player, params['web_player_id'])
+        login player
 
-      ["game|config", "players|show", "planets|player_index",
-        "technologies|index", "quests|index", "notifications|index",
-        RoutesController::ACTION_INDEX,
-        ChatController::ACTION_INDEX,
-        GalaxiesController::ACTION_SHOW
-      ].each { |action| push action }
+        ["game|config", "players|show", "planets|player_index",
+          "technologies|index", "quests|index", "notifications|index",
+          RoutesController::ACTION_INDEX,
+          ChatController::ACTION_INDEX,
+          GalaxiesController::ACTION_SHOW
+        ].each { |action| push action }
 
-      # Dispatch current announcement if we have one.
-      ends_at, announcement = AnnouncementsController.get
-      unless ends_at.nil?
-        push AnnouncementsController::ACTION_NEW,
-          {'ends_at' => ends_at, 'message' => announcement}
+        # Dispatch current announcement if we have one.
+        ends_at, announcement = AnnouncementsController.get
+        unless ends_at.nil?
+          push AnnouncementsController::ACTION_NEW,
+            {'ends_at' => ends_at, 'message' => announcement}
+        end
+
+        push DailyBonusController::ACTION_SHOW \
+          if player.daily_bonus_available?
+
+        respond :success => true
+      else
+        raise ActiveRecord::RecordNotFound
       end
-
-      push DailyBonusController::ACTION_SHOW \
-        if player.daily_bonus_available?
-
-      respond :success => true
     else
-      raise ActiveRecord::RecordNotFound
+      respond :success => false,
+              :required_version => Cfg.required_client_version
+      disconnect
     end
   rescue ActiveRecord::RecordNotFound
     respond :success => false

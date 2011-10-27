@@ -61,12 +61,37 @@ class Alliance < ActiveRecord::Base
 
   # Returns +Hash+ of {id => name} pairs.
   def self.names_for(alliance_ids)
-    names = connection.select_values(%Q{
-      SELECT name FROM `#{table_name}` WHERE #{
-        sanitize_sql_hash_for_conditions(:id => alliance_ids)
-      }
-    })
+    names = select("name").where(:id => alliance_ids).c_select_values
     Hash[alliance_ids.zip(names)]
+  end
+
+  # Returns non-ally players which own planets and we can see them for _player_.
+  def self.visible_enemy_player_ids(alliance_id)
+    ally_ids = player_ids_for(alliance_id)
+
+    solar_system_ids = FowSsEntry.
+      select("solar_system_id").
+      where(:alliance_id => alliance_id, :enemy_planets => true).
+      c_select_values
+    player_ids = SsObject::Planet.
+      select("DISTINCT(player_id)").
+      where("player_id IS NOT NULL").
+      where(:solar_system_id => solar_system_ids)
+    player_ids = player_ids.where("player_id NOT IN (?)", ally_ids) \
+      unless ally_ids.blank?
+    player_ids = player_ids.c_select_values
+    player_ids
+  end
+
+  # Returns visible non-napped alliance ids for alliance with ID _alliance_id_.
+  def self.visible_enemy_alliance_ids(alliance_id)
+    player_ids = visible_enemy_player_ids(alliance_id)
+    alliance_ids = Player.
+      select("DISTINCT(alliance_id)").
+      where("alliance_id IS NOT NULL").
+      where(:id => player_ids).
+      c_select_values
+    alliance_ids
   end
 
   RATING_SUMS = \
@@ -112,6 +137,14 @@ class Alliance < ActiveRecord::Base
   # Player#ratings for this alliance members.
   def player_ratings
     Player.ratings(galaxy_id, Player.where(:alliance_id => id))
+  end
+
+  # Player#ratings for players that can be invited to this alliance.
+  def invitable_ratings
+    Player.ratings(
+      galaxy_id,
+      Player.where(:id => self.class.visible_enemy_player_ids(id))
+    )
   end
 
   # Returns +Player+ ids who are members of this +Alliance+.

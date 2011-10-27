@@ -306,17 +306,6 @@ describe SpaceMule do
       Player.count.should == player_count
     end
 
-    it "should register callbacks for asteroids" do
-      @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-      SsObject::Asteroid.where(
-        :solar_system_id => @galaxy.solar_systems.map(&:id)
-      ).each do |asteroid|
-        asteroid.should have_callback(CallbackManager::EVENT_SPAWN,
-          CONFIG.evalproperty('ss_object.asteroid.wreckage.time.first').
-            from_now)
-      end
-    end
-
     describe "home solar system" do
       before(:all) do
         @ss = SsObject::Planet.where(:player_id => @player.id
@@ -431,6 +420,30 @@ describe SpaceMule do
       it "should register callback for spawn" do
         @solar_systems.each do |ss|
           ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+        end
+      end
+    end
+
+    describe "asteroids" do
+      before(:all) do
+        @asteroids = SsObject::Asteroid.where(
+          :solar_system_id => @galaxy.solar_systems.map(&:id)
+        )
+      end
+
+      it "should register callbacks for them" do
+        @asteroids.each do |asteroid|
+          asteroid.should have_callback(CallbackManager::EVENT_SPAWN,
+            CONFIG.evalproperty('ss_object.asteroid.wreckage.time.first').
+              from_now)
+        end
+      end
+
+      it "should have spawn resources properly set" do
+        @asteroids.each do |asteroid|
+          asteroid.should have_generation_rates(
+            'ss_object.asteroid', 'ss_object.rich_asteroid'
+          )
         end
       end
     end

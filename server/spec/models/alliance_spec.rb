@@ -41,6 +41,19 @@ describe Alliance do
     end
   end
 
+  describe "#invitable_ratings" do
+    it "should call Player.ratings" do
+      alliance = Factory.create(:alliance)
+      Alliance.should_receive(:visible_enemy_player_ids).with(alliance.id).
+        and_return(:player_ids)
+      Player.should_receive(:ratings).with(
+        alliance.galaxy_id,
+        Player.where(:id => :player_ids)
+      ).and_return(:ratings)
+      alliance.invitable_ratings.should == :ratings
+    end
+  end
+
   describe "#name" do
     before(:each) do
       @min = CONFIG['alliances.validation.name.length.min']
@@ -176,9 +189,78 @@ describe Alliance do
   describe ".names_for" do
     it "should return hash" do
       alliance = Factory.create(:alliance)
-      Alliance.names_for([alliance.id]).should == {
-        alliance.id => alliance.name
-      }
+      Alliance.names_for([alliance.id]).should == {alliance.id => alliance.name}
+    end
+  end
+
+  describe ".visible_enemy_player_ids" do
+    it "should include enemy player ids where they have planets" do
+      fse = Factory.create(:fse_alliance, :enemy_planets => true,
+                           :enemy_ships => false)
+      planet = Factory.create(:planet_with_player,
+                              :solar_system => fse.solar_system)
+      Alliance.visible_enemy_player_ids(fse.alliance_id).
+        should include(planet.player_id)
+    end
+
+    it "should not include enemy player ids where they have units" do
+      fse = Factory.create(:fse_alliance, :enemy_planets => false,
+                           :enemy_ships => true)
+      unit = Factory.create(:u_crow,
+        :location => SolarSystemPoint.new(fse.solar_system_id, 0, 0)
+      )
+      Alliance.visible_enemy_player_ids(fse.alliance_id).
+        should_not include(unit.player_id)
+    end
+
+    it "should not include allies even if they share same ss with enemy" do
+      fse = Factory.create(:fse_alliance, :enemy_planets => true,
+                           :enemy_ships => false)
+      Factory.create(:planet_with_player, :solar_system => fse.solar_system)
+      ally = Factory.create(:player, :alliance => fse.alliance)
+      Factory.create(:planet, :player => ally,
+                     :solar_system => fse.solar_system, :position => 1)
+      Alliance.visible_enemy_player_ids(fse.alliance_id).
+        should_not include(ally.id)
+    end
+
+    it "should return unique set" do
+      fse = Factory.create(:fse_alliance, :enemy_planets => true,
+                           :enemy_ships => false)
+      player = Factory.create(:player)
+      Factory.create(:planet, :player => player,
+                     :solar_system => fse.solar_system)
+      Factory.create(:planet, :player => player,
+                     :solar_system => fse.solar_system, :position => 1)
+      ids = Alliance.visible_enemy_player_ids(fse.alliance_id)
+      ids.should == ids.uniq
+    end
+  end
+
+  describe ".visible_enemy_alliance_ids" do
+    let(:alliance_id) { 10 }
+
+    it "should return unique set" do
+      alliance1 = Factory.create(:alliance)
+      alliance2 = Factory.create(:alliance)
+      players = [
+        Factory.create(:player, :alliance => alliance1),
+        Factory.create(:player, :alliance => alliance2),
+        Factory.create(:player, :alliance => alliance1)
+      ]
+
+      Alliance.should_receive(:visible_enemy_player_ids).with(alliance_id).
+        and_return(players.map(&:id))
+      Alliance.visible_enemy_alliance_ids(alliance_id).
+        should == [alliance1.id, alliance2.id]
+    end
+
+    it "should not include nils" do
+      players = [Factory.create(:player)]
+
+      Alliance.should_receive(:visible_enemy_player_ids).with(alliance_id).
+        and_return(players.map(&:id))
+      Alliance.visible_enemy_alliance_ids(alliance_id).should == []
     end
   end
 

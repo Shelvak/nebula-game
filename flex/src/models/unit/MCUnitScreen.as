@@ -504,8 +504,8 @@ package models.unit
                unit.unit.stance = unit.stance;
             }
          }
-         transformedUnits.enableAutoUpdate();
          ML.units.enableAutoUpdate();
+         transformedUnits.enableAutoUpdate();
          dispatchFormationChangeEvent();
          GlobalFlags.getInstance().lockApplication = false;
       }
@@ -572,6 +572,7 @@ package models.unit
       {
          squadronVisible = true;
          filteredSquadronUnits = list;
+         sortByHp(filteredSquadronUnits);
          currentKind = UnitKind.SQUADRON;
          refreshScreen();
       }

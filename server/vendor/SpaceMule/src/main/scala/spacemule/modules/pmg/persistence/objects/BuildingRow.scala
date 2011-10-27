@@ -15,6 +15,8 @@ object BuildingRow extends RowObject {
 }
 
 case class BuildingRow(planetRow: SSObjectRow, building: Building) extends Row {
+  val companion = BuildingRow
+
   val id = TableIds.building.next
 
   val valuesSeq = List(

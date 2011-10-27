@@ -28,15 +28,17 @@ module Parts::Transportation
     def transporter?; self.class.transporter?; end
 
     # Returns +Unit+ storage.
-    def storage; self.class.storage; end
+    def storage
+      storage = self.class.storage(level)
+      # Whoa, man, this is sooo suboptimal, hitting DB each time, but I'm still
+      # bit sick and have no better thoughs - arturaz, 2011-10-20
+      technologies = TechTracker.query_active(player.id, 'storage').all
+      storage_mods = TechModApplier.apply(technologies, 'storage')
+      (storage * (1 + (storage_mods[self.class.to_s] || 0))).round
+    end
 
     # How much storage does this +Unit+ take.
     def volume; self.class.volume; end
-
-    # How much storage does this +Unit+ unload per tick in combat.
-    def unload_per_tick(level=nil)
-      self.class.unload_per_tick(level || self.level)
-    end
 
     # Loads given _units_ into this +Unit+. Raises error if any of the
     # models does not have #volume or we are out of storage in this +Unit+.
@@ -168,24 +170,20 @@ module Parts::Transportation
       # Update unit location before dispatching it to client
       units.each { |unit| unit.location = location }
 
-      EventBroker.fire([self] + units, EventBroker::CHANGED)
+      EventBroker.fire([self] + units, EventBroker::CHANGED,
+        EventBroker::REASON_TRANSPORTATION)
     end
   end
 
   module ClassMethods
     # Is this +Unit+ is a transporter?
-    def transporter?; storage > 0; end
+    def transporter?; ! property('storage').nil?; end
 
     # Returns +Unit+ storage.
-    def storage; property('storage', 0); end
+    def storage(level); evalproperty('storage', 0, 'level' => level).round; end
 
     # How much storage does this +Unit+ take.
     def volume; property('volume'); end
-
-    # How much storage does this +Unit+ unload per tick in combat.
-    def unload_per_tick(level)
-      evalproperty('unload_per_tick', nil, 'level' => level)
-    end
 
     # Calculates total volume of _units_.
     def calculate_volume(units)

@@ -5,26 +5,39 @@ require File.expand_path(
 describe Player do
   describe ".ratings" do
     before(:all) do
-      ally = Factory.create(:player_for_ratings)
+      ally = Factory.create(:player_for_ratings, :last_seen => 10.minutes.ago)
       @alliance = Factory.create(:alliance, :owner => ally,
         :galaxy => ally.galaxy)
       ally.alliance = @alliance
       ally.save!
 
       no_ally = Factory.create(:player_for_ratings,
-        :galaxy => ally.galaxy)
+        :galaxy => ally.galaxy, :last_seen => 5.minutes.ago)
+      not_logged_in = Factory.create(:player_for_ratings,
+        :galaxy => ally.galaxy, :last_seen => nil)
 
-      @players = [ally, no_ally]
+      @players = [ally, no_ally, not_logged_in]
       @result = Player.ratings(@alliance.galaxy_id)
     end
 
-    (%w{id name victory_points alliance_vps planets_count} +
+    (%w{id name victory_points alliance_vps planets_count last_seen} +
         Player::POINT_ATTRIBUTES).each do |attr|
       it "should include #{attr}" do
         @result.each_with_index do |row, index|
           row[attr].should == @players[index].send(attr)
         end
       end
+    end
+
+    it "should set last_seen to true if currently online" do
+      dispatcher = mock(Dispatcher)
+      Dispatcher.stub!(:instance).and_return(dispatcher)
+      dispatcher.stub!(:connected?).with(@players[0].id).and_return(true)
+      dispatcher.stub!(:connected?).with(@players[1].id).and_return(false)
+      dispatcher.stub!(:connected?).with(@players[2].id).and_return(false)
+      result = Player.ratings(@alliance.galaxy_id)
+      result.map { |row| row["last_seen"] }.
+        should == [true, @players[1].last_seen, @players[2].last_seen]
     end
 
     it "should include alliance if player is in alliance" do
@@ -37,19 +50,17 @@ describe Player do
       @result[1]["alliance"].should be_nil
     end
 
-    it "should include online field" do
-      dispatcher = mock(Dispatcher)
-      Dispatcher.stub!(:instance).and_return(dispatcher)
-      dispatcher.stub!(:connected?).with(@players[0].id).and_return(true)
-      dispatcher.stub!(:connected?).with(@players[1].id).and_return(false)
-      result = Player.ratings(@alliance.galaxy_id)
-      result.map { |row| row["online"] }.should == [true, false]
-    end
-
     it "should use condition if supplied" do
       id = @players[0].id
       Player.ratings(@alliance.galaxy_id,
         Player.where(:id => id))[0]["id"].should == id
+    end
+  end
+
+  describe ".names_for" do
+    it "should return hash" do
+      player = Factory.create(:player)
+      Player.names_for([player.id]).should == {player.id => player.name}
     end
   end
   

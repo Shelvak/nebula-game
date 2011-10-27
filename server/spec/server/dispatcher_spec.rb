@@ -92,6 +92,14 @@ describe Dispatcher do
       end
     end
 
+    it "should update player#last_seen" do
+      lambda do
+        @dispatcher.unregister @io
+        @player.reload
+      end.should change(@player, :last_seen)
+      @player.last_seen.should be_within(SPEC_TIME_PRECISION).of(Time.now)
+    end
+
     it "should unregister player from chat" do
       hub = Chat::Hub.new(@dispatcher)
       Chat::Pool.instance.should_receive(:hub_for).with(@player).and_return(

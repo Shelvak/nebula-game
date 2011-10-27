@@ -1,5 +1,7 @@
 package controllers.players
 {
+   import application.Version;
+
    import controllers.connection.ConnectionManager;
    import controllers.navigation.MCTopLevel;
    import controllers.screens.Screens;
@@ -16,6 +18,7 @@ package controllers.players
    {
       private static const JSFN_LOGIN_SUCCESSFUL:String = "loginSuccessful";
       private static const JSFN_AUTHORIZE:String = "authorize";
+      private static const JSFN_VERSION_TOO_OLD:String = "versionTooOld";
       private static const JSFN_AUTHORIZATION_FAIL:String = "authorizationFailed";
       private static const ASFN_AUTHORIZATION_SUCCESS:String = "authorizationSuccessful";
       
@@ -75,6 +78,12 @@ package controllers.players
       private function initiateConnectionAndLogin() : void {
          statusText = getString("login");
          ConnectionManager.getInstance().connect();
+      }
+
+      public function versionTooOld(required: String) : void {
+         ExternalInterface.call(JSFN_VERSION_TOO_OLD, required,
+            Version.VERSION);
+         resetStatusVars();
       }
       
       public function loginFailed() : void {

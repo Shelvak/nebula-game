@@ -2,7 +2,6 @@ package models.objectives
 {
    import models.exploration.ExplorationStatus;
    
-   import utils.ObjectStringsResolver;
    import utils.locale.Localizer;
    
    

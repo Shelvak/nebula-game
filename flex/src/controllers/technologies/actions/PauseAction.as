@@ -11,8 +11,7 @@ package controllers.technologies.actions
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   
-   import globalevents.GTechnologiesEvent;
+   import controllers.GlobalFlags;
    
    import models.factories.TechnologyFactory;
    import models.technology.Technology;
@@ -27,13 +26,13 @@ package controllers.technologies.actions
    {	
       public override function result(rmo:ClientRMO):void
       {
-         new GTechnologiesEvent(GTechnologiesEvent.PAUSE_APPROVED);
+         GlobalFlags.getInstance().lockApplication = false;
       }
       
       public override function cancel(rmo:ClientRMO):void
       {
          super.cancel(rmo);
-         new GTechnologiesEvent(GTechnologiesEvent.PAUSE_APPROVED);
+         GlobalFlags.getInstance().lockApplication = false;
       }
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
