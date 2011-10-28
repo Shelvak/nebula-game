@@ -251,15 +251,15 @@ package components.map.space
             if (_selectedLocation == null || !_selectedLocation.equals(object.currentLocation)) {
                deselectSelectedObject();
                _selectedLocation = object.currentLocation;
+               viewport.moveContentTo(
+                  grid.getSectorRealCoordinates(_selectedLocation),
+                  true
+               );
             }
             var sectorObjects:SectorsHashItem = _staticObjectsHash.getItem(getTmpSector(
                _selectedLocation.x,
                _selectedLocation.y
             ));
-            viewport.moveContentTo(
-               grid.getSectorRealCoordinates(_selectedLocation),
-               true
-            );
             if (sectorObjects != null) {
                selectComponent(sectorObjects.object, false, true);
             }
