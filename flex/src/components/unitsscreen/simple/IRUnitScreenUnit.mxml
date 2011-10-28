@@ -334,7 +334,9 @@
          <unitsscreen:StarsContainer starCount="{model.unit.upgradePart.level-1}" horizontalCenter="0" top="62"/>
          <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
                   text="{model.unit.hp+'\n'+'/'+'\n'+Config.getUnitHp(model.unit.type)}" verticalAlign="middle"
-                  toolTip="{ML.technologies.getUnitStorage(model.unit.type, model.unit.level) > 0 
+                  toolTip="{(ML.technologies.getUnitStorage(
+                  model.unit.type, model.unit.level) > 0
+                  &amp;&amp; model.unit.owner == Owner.PLAYER)
                   ? Localizer.string('Units', 'tooltip.freeStorage', [
                   ML.technologies.getUnitStorage(model.unit.type, model.unit.level) - 
                   model.unit.stored])
