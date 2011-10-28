@@ -248,7 +248,8 @@ package controllers.units
             // this squad is already in the map that it needs to be and jumpsAt is null when squad
             // needs to be stopped in that map. If it needs to be stopped just in another map in an
             // immediate sector after jump, squad has to be destroyed because that map is not cached.
-            if (squadToStop.jumpPending && squadToStop.jumpsAtEvent.hasOccured) {
+//            if (squadToStop.jumpPending && squadToStop.jumpsAtEvent.hasOccured) {
+            if (squadToStop.jumpPending) {
                squadToStop.cleanup();
                refreshUnitsInUnitScreenModel();
                return;
