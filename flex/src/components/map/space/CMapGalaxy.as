@@ -256,7 +256,10 @@ package components.map.space
                _selectedLocation.x,
                _selectedLocation.y
             ));
-            viewport.zoomPoint(grid.getSectorRealCoordinates(_selectedLocation), true);
+            viewport.moveContentTo(
+               grid.getSectorRealCoordinates(_selectedLocation),
+               true
+            );
             if (sectorObjects != null) {
                selectComponent(sectorObjects.object, false, true);
             }
