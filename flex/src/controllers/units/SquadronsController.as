@@ -33,6 +33,8 @@ package controllers.units
    import mx.logging.Log;
    import mx.utils.ObjectUtil;
    
+   import namespaces.client_internal;
+   
    import utils.DateUtil;
    import utils.Objects;
    import utils.SingletonFactory;
@@ -406,9 +408,16 @@ package controllers.units
             else {
                SquadronFactory.createHostileRoute(squad, route["jumpsAt"]);
             }
-            if (squadExisting != null && !squadExisting.hasUnits) {
-               SQUADS.removeExact(squadExisting);
-               squadExisting.cleanup();
+            if (squadExisting != null) {
+               if (squadExisting.hasUnits) {
+                  if (squadExisting.route != null) {
+                     squadExisting.client_internal::rebuildCachedUnits();
+                  }
+               }
+               else {
+                  SQUADS.removeExact(squadExisting);
+                  squadExisting.cleanup();
+               }
             }
             SQUADS.addItem(squad);
             if (squad.owner == Owner.PLAYER && ORDERS_CTRL.issuingOrders) {
