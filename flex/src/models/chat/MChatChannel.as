@@ -79,7 +79,7 @@ package models.chat
       }
       
       /**
-       * Is this a public o private channel?
+       * Is this a public or private channel?
        */
       public function get isPublic() : Boolean {
          throw new IllegalOperationError("Property is abstract!");
@@ -247,7 +247,7 @@ package models.chat
          return isPublic;
       }
       
-      private var _generateJoinLeaveMsgs:Boolean = true;
+      private var _generateJoinLeaveMsgs:Boolean = false;
       [Bindable(event="generateJoinLeaveMsgsChange")]
       /**
        * Should member join / leave messages be generated?

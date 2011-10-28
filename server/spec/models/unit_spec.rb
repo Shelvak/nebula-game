@@ -618,6 +618,17 @@ describe Unit do
             %w{stored metal energy zetium}
         end
       end
+
+      describe "ally" do
+        player = Factory.create(:player, :alliance => Factory.create(:alliance))
+        ally = Factory.create(:player, :alliance => player.alliance)
+
+        it_behaves_like "as json",
+          Factory.create(:unit, :player => ally),
+          {:perspective => player},
+          %w{},
+          %w{xp stored metal energy zetium}
+      end
       
       describe "enemy" do
         enemy = Factory.create(:player)
