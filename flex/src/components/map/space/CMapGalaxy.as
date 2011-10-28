@@ -245,15 +245,21 @@ package components.map.space
       protected override function selectModel(model:BaseModel) : void {
          if (model is IMStaticSpaceObject) {
             var object:IMStaticSpaceObject = IMStaticSpaceObject(model);
+            if (!getGalaxy().definesLocation(object.currentLocation)) {
+               return;
+            }
             if (_selectedLocation == null || !_selectedLocation.equals(object.currentLocation)) {
                deselectSelectedObject();
                _selectedLocation = object.currentLocation;
+               viewport.moveContentTo(
+                  grid.getSectorRealCoordinates(_selectedLocation),
+                  true
+               );
             }
             var sectorObjects:SectorsHashItem = _staticObjectsHash.getItem(getTmpSector(
                _selectedLocation.x,
                _selectedLocation.y
             ));
-            viewport.zoomPoint(grid.getSectorRealCoordinates(_selectedLocation), true);
             if (sectorObjects != null) {
                selectComponent(sectorObjects.object, false, true);
             }

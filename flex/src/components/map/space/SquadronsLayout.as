@@ -65,13 +65,19 @@ package components.map.space
        * Repositions all squadrons in given location that belong to the given owner type or
        * all squadrons in that location if owner type has not been provided.
        */
-      public function repositionSquadrons(location:LocationMinimal, owner:int = Owner.UNDEFINED) : void {
+      public function repositionSquadrons(location:LocationMinimal,
+                                          owner:int = Owner.UNDEFINED) : void {
          var squads:ArrayCollection = getSquadsInLocation(location);
-         for each (var ownerType:int in [Owner.PLAYER, Owner.ALLY, Owner.NAP, Owner.ENEMY]) {
-            if (owner == Owner.UNDEFINED || goesToSameSection(ownerType, owner)) {
-               squads.filterFunction = function(squadC:CSquadronMapIcon) : Boolean {
-                  return goesToSameSection(squadC.squadronOwner, ownerType);
-               };
+         for each (var ownerType:int in [Owner.PLAYER, Owner.ALLY, Owner.NAP,
+                                         Owner.ENEMY]) {
+            if (
+                  owner == Owner.UNDEFINED ||
+                  goesToSameSection(ownerType, owner)
+            ) {
+               squads.filterFunction =
+                  function(squadC:CSquadronMapIcon) : Boolean {
+                     return goesToSameSection(squadC.squadronOwner, ownerType);
+                  };
                squads.sort = new Sort();
                squads.sort.compareFunction = cf_squadComponents;
                squads.refresh();

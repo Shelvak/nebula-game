@@ -2,119 +2,79 @@ package controllers.timedupdate
 {
    import models.ModelLocator;
    import models.cooldown.MCooldown;
+   import models.map.MMapSpace;
    
-   import utils.datastructures.iterators.IIterator;
-   import utils.datastructures.iterators.IIteratorFactory;
+   import mx.collections.ArrayCollection;
    
    
    public class CooldownsUpdateTrigger implements IUpdateTrigger
    {
-      private function get ML() : ModelLocator
-      {
+      private function get ML() : ModelLocator {
          return ModelLocator.getInstance();
       }
       
-      
-      public function CooldownsUpdateTrigger()
-      {
+      public function CooldownsUpdateTrigger() {
       }
       
-      
-      public function update() : void
-      {
+      public function update() : void {
          var cooldown:MCooldown;
-         
-         // cooldown in a planet
-         if (cooldownInPlanetAccessible)
-         {
+         if (cooldownInPlanetAccessible) {
             cooldown = ML.latestPlanet.ssObject.cooldown;
             cooldown.update();
-            if (cooldown.hasEnded)
-            {
+            if (cooldown.hasEnded) {
                ML.latestPlanet.ssObject.cooldown = null;
             }
          }
-         
-         // cooldown in solar system
-         if (cooldownsInSolarSystemAccessible)
-         {
-            updateListOfCooldowns(IIteratorFactory.getIterator(ML.latestSolarSystem.cooldowns));
+         if (cooldownsInSolarSystemAccessible) {
+            updateListOfCooldowns(ML.latestSolarSystem);
          }
-         
-         // cooldown in galaxy
-         if (cooldownsInGalaxyAccessible)
-         {
-            updateListOfCooldowns(IIteratorFactory.getIterator(ML.latestGalaxy.cooldowns));
+         if (cooldownsInGalaxyAccessible) {
+            updateListOfCooldowns(ML.latestGalaxy);
          }
       }
       
-      
-      private function updateListOfCooldowns(it:IIterator) : void
-      {
+      private function updateListOfCooldowns(map:MMapSpace) : void {
          var cooldown:MCooldown;
-         it.reset();
-         while (it.hasNext)
-         {
-            cooldown = it.next();
+         var remove:ArrayCollection = new ArrayCollection();
+         for each (cooldown in map.cooldowns) {
             cooldown.update();
-            if (cooldown.hasEnded)
-            {
-               it.remove();
+            if (cooldown.hasEnded) {
+               remove.addItem(cooldown);
             }
          }
+         map.removeAllObjects(remove);
       }
       
-      
-      public function resetChangeFlags() : void
-      {
+      public function resetChangeFlags() : void {
          var cooldown:MCooldown;
-         
-         // cooldown in a planet
-         if (cooldownInPlanetAccessible)
-         {
+         if (cooldownInPlanetAccessible) {
             ML.latestPlanet.ssObject.cooldown.resetChangeFlags();
          }
-         
-         // cooldown in solar system
-         if (cooldownsInSolarSystemAccessible)
-         {
-            resetChangeFlagsIn(IIteratorFactory.getIterator(ML.latestSolarSystem.cooldowns));
+         if (cooldownsInSolarSystemAccessible) {
+            resetChangeFlagsIn(ML.latestSolarSystem);
          }
-         
-         // cooldown in galaxy
-         if (cooldownsInGalaxyAccessible)
-         {
-            resetChangeFlagsIn(IIteratorFactory.getIterator(ML.latestGalaxy.cooldowns));
+         if (cooldownsInGalaxyAccessible) {
+            resetChangeFlagsIn(ML.latestGalaxy);
          }
       }
       
-      
-      private function resetChangeFlagsIn(it:IIterator) : void
-      {
-         it.reset();
-         while (it.hasNext)
-         {
-            MCooldown(it.next()).resetChangeFlags();
+      private function resetChangeFlagsIn(map:MMapSpace) : void {
+         for each (var cooldown:MCooldown in map.cooldowns) {
+            cooldown.resetChangeFlags();
          }
       }
       
-      
-      private function get cooldownInPlanetAccessible() : Boolean
-      {
+      private function get cooldownInPlanetAccessible() : Boolean {
          return ML.latestPlanet != null &&
                 ML.latestPlanet.ssObject != null &&
                 ML.latestPlanet.ssObject.cooldown != null
       }
       
-      
-      private function get cooldownsInSolarSystemAccessible() : Boolean
-      {
+      private function get cooldownsInSolarSystemAccessible() : Boolean {
          return ML.latestSolarSystem != null;
       }
       
-      
-      private function get cooldownsInGalaxyAccessible() : Boolean
-      {
+      private function get cooldownsInGalaxyAccessible() : Boolean {
          return ML.latestGalaxy != null;
       }
    }

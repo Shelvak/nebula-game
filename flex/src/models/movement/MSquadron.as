@@ -186,17 +186,17 @@ package models.movement
             route_jumpsAtChangeHandler(null);
          }
       }
-      
-      private function route_jumpsAtChangeHandler(event:MRouteEvent) : void {
-         dispatchSimpleEvent(MRouteEvent, MRouteEvent.JUMPS_AT_CHANGE);
-      }
-      
       /**
        * @private
        */
       public function get route() : MRoute {
          return _route;
       }
+      
+      private function route_jumpsAtChangeHandler(event:MRouteEvent) : void {
+         dispatchSimpleEvent(MRouteEvent, MRouteEvent.JUMPS_AT_CHANGE);
+      }
+      
       
       private var _owner:int = Owner.ENEMY;
       [Bindable]

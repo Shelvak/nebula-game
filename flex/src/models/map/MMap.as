@@ -277,6 +277,16 @@ package models.map
       }
       
       /**
+       * Removes all given objects from objects list.
+       */
+      public function removeAllObjects(list:IList, silent:Boolean = false) : void {
+         Objects.paramNotNull("list", list);
+         for (var idx:int; idx < list.length; idx++) {
+            removeObject(BaseModel(list.getItemAt(idx)), silent);
+         }
+      }
+      
+      /**
        * Creates and returns location in this map with given coordinates.
        */
       public function getLocation(x:int, y:int) : Location {
