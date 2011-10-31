@@ -51,13 +51,15 @@ describe PlayersController do
 
       describe "successfully authorized by web" do
         before(:each) do
-          ControlManager.instance.should_receive(:login_authorized?).with(
+          ControlManager.instance.stub(:login_authorized?).with(
             @test_player, @params['web_player_id']
           ).and_return(true)
         end
 
         it "should allow players to login if no_auth_login is set" do
           @test_player.no_auth_login = true
+          @test_player.save!
+          
           ControlManager.instance.should_not_receive(:login_authorized?)
           invoke @action, @params
           response_should_include :success => true
@@ -130,7 +132,7 @@ describe PlayersController do
 
       describe "not authorized by web" do
         before(:each) do
-          ControlManager.instance.should_receive(:login_authorized?).with(
+          ControlManager.instance.stub(:login_authorized?).with(
             @test_player, @params['web_player_id']
           ).and_return(false)
         end
