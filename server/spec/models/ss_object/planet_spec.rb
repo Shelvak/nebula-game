@@ -561,20 +561,40 @@ describe SsObject::Planet do
     end
 
     describe "radar" do
-      before(:each) do
-        @radar = Factory.create!(:b_radar, :planet => @planet)
+      describe "when active" do
+        before(:each) do
+          @radar = Factory.create!(:b_radar,
+                                   opts_active + {:planet => @planet})
+        end
+
+        it "should decrease vision for old player" do
+          Trait::Radar.should_receive(:decrease_vision).with(
+            @radar.radar_zone, @old)
+          @planet.save!
+        end
+
+        it "should increase vision for new player" do
+          Trait::Radar.should_receive(:increase_vision).with(
+            @radar.radar_zone, @new)
+          @planet.save!
+        end
       end
 
-      it "should decrease vision for old player" do
-        Trait::Radar.should_receive(:decrease_vision).with(
-          @radar.radar_zone, @old)
-        @planet.save!
-      end
+      describe "when inactive" do
+        before(:each) do
+          @radar = Factory.create!(:b_radar,
+                                   opts_inactive + {:planet => @planet})
+        end
 
-      it "should increase vision for new player" do
-        Trait::Radar.should_receive(:increase_vision).with(
-          @radar.radar_zone, @new)
-        @planet.save!
+        it "should not decrease vision for old player" do
+          Trait::Radar.should_not_receive(:decrease_vision)
+          @planet.save!
+        end
+
+        it "should not increase vision for new player" do
+          Trait::Radar.should_not_receive(:increase_vision)
+          @planet.save!
+        end
       end
     end
 
