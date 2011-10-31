@@ -54,7 +54,8 @@ class Player < ActiveRecord::Base
   flag_attributes(
     :first_time           => 0b00000001,
     :vip_free             => 0b00000010,
-    :referral_submitted   => 0b00000100
+    :referral_submitted   => 0b00000100,
+    :no_auth_login        => 0b00001000
   )
 
   # Given +Array+ with +Player+ ids returns a +Hash+ where players are

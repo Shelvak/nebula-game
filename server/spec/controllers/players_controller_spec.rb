@@ -56,9 +56,16 @@ describe PlayersController do
           ).and_return(true)
         end
 
-        it "should allow players to login" do
-          should_respond_with :success => true
+        it "should allow players to login if no_auth_login is set" do
+          @test_player.no_auth_login = true
+          ControlManager.instance.should_not_receive(:login_authorized?)
           invoke @action, @params
+          response_should_include :success => true
+        end
+
+        it "should allow players to login" do
+          invoke @action, @params
+          response_should_include :success => true
         end
 
         it "should push actions" do
