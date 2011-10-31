@@ -5,6 +5,8 @@
 
 # [time, cost]
 upgradable.speed_up:
+  - [<%= 10.minutes %> / speed, 50]
+  - [<%= 30.minutes %> / speed, 125]
   - [<%= 1.hour %> / speed, 200]
   - [<%= 2.hours %> / speed, 300]
   - [<%= 6.hours %> / speed, 500]
