@@ -27,9 +27,10 @@ system and planet.
                                  imageData="{IMG.getImage(AssetNames.SS_IMAGE_FOLDER + 'galaxy')}"
                                  label="{Localizer.string ('Navigator', 'label.currentGalaxy')}"/>
             <mnu:NavigatorButton id="btnCurrentSS" name="{MainAreaScreens.SOLAR_SYSTEM}" depth="1"
-                                 visible="{ML.latestSolarSystem != null}"
-                                 imageData="{ML.latestSolarSystem.imageData}"
-                                 label="{ML.latestSolarSystem.name}"/>
+               visible="{ML.latestSolarSystem != null}"
+               imageData="{ML.latestSolarSystem.imageData}"
+               label="{ML.latestSolarSystem.navigatorName}"
+               />
             <mnu:NavigatorButton id="btnCurrentPlanet" name="{MainAreaScreens.PLANET}" depth="0"
                                  visible="{ML.latestPlanet != null}"
                                  imageData="{ML.latestPlanet.ssObject.imageData}"
