@@ -56,9 +56,9 @@ describe PlayersController do
           ).and_return(true)
         end
 
-        it "should allow players to login if no_auth_login is set" do
-          @test_player.no_auth_login = true
-          @test_player.save!
+        it "should allow players to login to dev galaxy" do
+          @test_player.galaxy.dev = true
+          @test_player.galaxy.save!
           
           ControlManager.instance.should_not_receive(:login_authorized?)
           invoke @action, @params

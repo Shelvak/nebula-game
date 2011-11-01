@@ -6,6 +6,10 @@ class Cfg; class << self
 
   def required_client_version; CONFIG['client']['required_version']; end
 
+  def development_galaxy?(ruleset)
+    CONFIG['development', ruleset]
+  end
+
   ### buildings.yml ###
 
   def buildings_overdrive_output_multiplier

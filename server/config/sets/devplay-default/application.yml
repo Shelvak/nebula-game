@@ -2,6 +2,8 @@
 # Speed factor
 speed: 50
 
+development: true
+
 combat.cooldown.duration: 60
 combat.cooldown.planet.duration: 120
 combat.cooldown.after_jump.duration: 15

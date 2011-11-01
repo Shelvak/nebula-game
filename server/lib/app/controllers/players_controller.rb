@@ -18,7 +18,7 @@ class PlayersController < GenericController
 
     if ClientVersion.ok?(params['version'])
       player = Player.find(params['server_player_id'])
-      if player.no_auth_login? || ControlManager.instance.
+      if player.galaxy.dev? || ControlManager.instance.
           login_authorized?(player, params['web_player_id'])
         login player
 

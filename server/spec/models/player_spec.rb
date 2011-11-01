@@ -123,6 +123,25 @@ describe Player do
         end.should change(player, :referral_submitted).from(false).to(true)
       end
 
+      describe "if dev galaxy" do
+        before(:each) do
+          player.galaxy.dev = true
+          player.galaxy.save!
+        end
+
+        it "should not call ControlManager" do
+          ControlManager.instance.
+            should_not_receive(:player_referral_points_reached)
+          player.save!
+        end
+
+        it "should change #referral_submitted" do
+          lambda do
+            player.save!
+          end.should change(player, :referral_submitted).to(true)
+        end
+      end
+
       describe "if referral was already submitted" do
         before(:each) do
           player.referral_submitted = true
@@ -959,6 +978,13 @@ describe Player do
       player = Factory.create :player
       ControlManager.instance.should_not_receive(:player_destroyed)
       player.invoked_from_control_manager = true
+      player.destroy
+    end
+
+    it "should not call control manager if dev galaxy" do
+      player = Factory.create(:player,
+                              :galaxy => Factory.create(:galaxy, :dev => true))
+      ControlManager.instance.should_not_receive(:player_destroyed)
       player.destroy
     end
     

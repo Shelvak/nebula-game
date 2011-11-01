@@ -54,8 +54,7 @@ class Player < ActiveRecord::Base
   flag_attributes(
     :first_time           => 0b00000001,
     :vip_free             => 0b00000010,
-    :referral_submitted   => 0b00000100,
-    :no_auth_login        => 0b00001000
+    :referral_submitted   => 0b00000100
   )
 
   # Given +Array+ with +Player+ ids returns a +Hash+ where players are
@@ -153,12 +152,13 @@ class Player < ActiveRecord::Base
       end
     else
       json = attributes.only(*%w{id name scientists scientists_total xp
-        first_time economy_points army_points science_points war_points
+        economy_points army_points science_points war_points
         victory_points population population_cap planets_count
         alliance_id alliance_cooldown_ends_at
         free_creds vip_creds vip_level vip_until vip_creds_until}
       )
       json['creds'] = creds
+      json['first_time'] = first_time
       unless alliance_id.nil?
         is_owner = id == alliance.owner_id
         json['alliance_owner'] = is_owner
@@ -278,7 +278,8 @@ class Player < ActiveRecord::Base
 
     if ! referral_submitted? && points >= Cfg.player_referral_points_needed
       begin
-        ControlManager.instance.player_referral_points_reached(self)
+        ControlManager.instance.player_referral_points_reached(self) \
+          unless galaxy.dev?
         self.referral_submitted = true
       rescue ControlManager::Error => e
         LOGGER.warn("Player referral points callback failed!\n#{e.to_log_str}")
@@ -324,7 +325,8 @@ class Player < ActiveRecord::Base
   # Destroy player in WEB unless this destroy was invoked from control
   # manager.
   after_destroy :unless => :invoked_from_control_manager do
-    ControlManager.instance.player_destroyed(self)
+    ControlManager.instance.player_destroyed(self) unless galaxy.dev?
+    true
   end
   # Disconnect erased player from server.
   after_destroy do
