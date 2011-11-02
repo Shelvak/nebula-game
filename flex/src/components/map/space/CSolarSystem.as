@@ -49,13 +49,13 @@ package components.map.space
             if (super.staticObject != null) {
                SolarSystem(super.staticObject).removeEventListener(
                   SolarSystemEvent.SHIELD_OWNER_CHANGE,
-                  solarSystem_shieldOwnerChangeHandler
+                  solarSystem_shieldOwnerChangeHandler, false
                );
             }
             if (value != null) {
                SolarSystem(value).addEventListener(
                   SolarSystemEvent.SHIELD_OWNER_CHANGE,
-                  solarSystem_shieldOwnerChangeHandler
+                  solarSystem_shieldOwnerChangeHandler, false, 0, true
                );
             }
             super.staticObject = value;
@@ -71,7 +71,7 @@ package components.map.space
          super.commitProperties();
          
          var solarSystem:SolarSystem = SolarSystem(staticObject);
-         if (f_ssShieldChanged && solarSystem != null) {
+         if ((f_staticObjectChanged || f_ssShieldChanged) && solarSystem != null) {
             if (solarSystem.isShielded) {
                if (_bmpShield == null) {
                   _bmpShield = new BitmapImage();
