@@ -102,7 +102,7 @@ class LocationPoint
   end
 
   def to_s
-    "<LP t:#{@type}@#{@id},#{@x}:#{@y}>"
+    "<LP t:#{@type.inspect}@#{@id.inspect},#{@x.inspect}:#{@y.inspect}>"
   end
   
   def inspect

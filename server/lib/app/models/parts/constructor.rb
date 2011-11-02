@@ -130,7 +130,7 @@ module Parts::Constructor
       raise GameLogicError.new("Constructor isn't working!") unless working?
       constructable.cancel!
       CallbackManager.unregister(self,
-          CallbackManager::EVENT_CONSTRUCTION_FINISHED)
+        CallbackManager::EVENT_CONSTRUCTION_FINISHED)
       on_construction_finished!(false)
     end
 

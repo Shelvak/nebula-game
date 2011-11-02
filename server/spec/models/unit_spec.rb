@@ -135,6 +135,22 @@ describe Unit do
         Unit.give_units_raw(@units, @location, @player)
       end
     end
+
+    it "should check location if any of the units can fight" do
+      @units.each { |unit| unit.stub!(:can_fight?).and_return(false) }
+      @units[-2].stub!(:can_fight?).and_return(true)
+      Combat::LocationChecker.should_receive(:check_location).
+        with(@location.location_point)
+
+      Unit.give_units_raw(@units, @location, @player)
+    end
+
+    it "should not check location if none of the units can fight" do
+      @units.each { |unit| unit.stub!(:can_fight?).and_return(false) }
+      Combat::LocationChecker.should_not_receive(:check_location)
+
+      Unit.give_units_raw(@units, @location, @player)
+    end
     
     it "should return same units" do
       Unit.give_units_raw(@units, @location, @player).should == @units
@@ -1100,7 +1116,7 @@ describe Unit do
       it "should check for combat in it's location if it can fight'" do
         unit.stub!(:can_fight?).and_return(true)
         Combat::LocationChecker.should_receive(:check_location).
-          with(unit.location_point)
+          with(unit.location)
         unit.send(:on_upgrade_finished!)
       end
 

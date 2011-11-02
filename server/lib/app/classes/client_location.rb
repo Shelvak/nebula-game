@@ -58,7 +58,7 @@ class ClientLocation < LocationPoint
   end
 
   def to_s
-    "<CL t:#{@type}@#{@id},#{@x}:#{@y}>"
+    super.sub("<LP", "<CL")
   end
 
   def hash

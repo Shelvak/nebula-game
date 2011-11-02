@@ -217,7 +217,7 @@ class Unit < ActiveRecord::Base
       FowSsEntry.increase(location_id, player, 1)
     end
 
-    Combat::LocationChecker.check_location(location_point) if can_fight?
+    Combat::LocationChecker.check_location(location) if can_fight?
   end
 
   before_save :upgrade_through_xp
@@ -543,6 +543,10 @@ class Unit < ActiveRecord::Base
         end
 
         save_all_units(units, nil, EventBroker::CREATED)
+        # Use units[0].location because location can be planet and
+        # LocationChecker expects LocationPoint.
+        Combat::LocationChecker.check_location(units[0].location) \
+          unless units.find(&:can_fight?).nil?
         
         units
       end
