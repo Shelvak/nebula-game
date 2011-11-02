@@ -27,7 +27,7 @@ describe Alliance do
     end
 
     describe "dev galaxy" do
-      let(:galaxy) { Factory.create(:galaxy, :dev => true) }
+      let(:galaxy) { Factory.create(:galaxy, :ruleset => 'dev') }
       let(:alliance) { Factory.create(:alliance, :galaxy => galaxy) }
 
       it "should integrate upon create" do
@@ -371,7 +371,7 @@ describe Alliance do
     end
 
     it "should not call control manager if we're in a dev galaxy" do
-      @alliance.galaxy.dev = true
+      @alliance.galaxy.ruleset = 'dev'
       @alliance.galaxy.save!
       ControlManager.instance.should_not_receive(:player_joined_alliance)
       @alliance.accept(@player)
@@ -440,7 +440,7 @@ describe Alliance do
     end
 
     it "should not integrate with web if dev galaxy" do
-      @alliance.galaxy.dev = true
+      @alliance.galaxy.ruleset = 'dev'
       @alliance.galaxy.save!
 
       ControlManager.instance.should_not_receive(:player_left_alliance)

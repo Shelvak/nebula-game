@@ -496,13 +496,12 @@ class UnitsController < GenericController
   # - players (Player#minimal_from_objects): minimal players hash
   #
   def action_positions
-    positions = {}
-    #Unit.positions(
-    #  Unit.where(
-    #    "location_type != ? AND route_id IS NULL AND level > 0",
-    #    Location::UNIT
-    #  ).where(:player_id => player.friendly_ids)
-    #)
+    positions = Unit.positions(
+      Unit.where(
+        "location_type != ? AND route_id IS NULL AND level > 0",
+        Location::UNIT
+      ).where(:player_id => player.friendly_ids)
+    )
     players = Player.minimal_from_objects(positions) do |player_id, data|
       player_id
     end

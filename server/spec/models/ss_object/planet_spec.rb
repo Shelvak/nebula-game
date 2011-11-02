@@ -11,32 +11,15 @@ end
 
 describe SsObject::Planet do
   describe "#client_location" do
-    describe "with player" do
-      it "should return ClientLocation" do
-        position = 2
-        angle = 90
-        planet = Factory.create(:planet_with_player, :position => position,
-          :angle => angle)
-        planet.client_location.should == ClientLocation.new(planet.id,
-          Location::SS_OBJECT, position, angle, planet.name, nil, planet.terrain,
-          planet.solar_system_id,
-          planet.player.as_json(:mode => :minimal))
-      end
-    end
-    
-    describe "without player" do
-      it "should return ClientLocation" do
-        position = 2
-        angle = 90
-        planet = Factory.create(:planet, :position => position,
-          :angle => angle)
-        planet.client_location.should == ClientLocation.new(planet.id,
-          Location::SS_OBJECT, position, angle, planet.name, nil, planet.terrain,
-          planet.solar_system_id, nil)
-      end
+    it "should delegate to #location_point" do
+      planet = Factory.create(:planet)
+      mock = mock(LocationPoint)
+      planet.should_receive(:location_point).and_return(mock)
+      mock.should_receive(:client_location)
+      planet.client_location
     end
   end
-  
+
   describe "boosts" do
     describe "#boosted?" do
       it "should return false if nil" do

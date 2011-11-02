@@ -57,7 +57,7 @@ describe PlayersController do
         end
 
         it "should allow players to login to dev galaxy" do
-          @test_player.galaxy.dev = true
+          @test_player.galaxy.ruleset = 'dev'
           @test_player.galaxy.save!
           
           ControlManager.instance.should_not_receive(:login_authorized?)

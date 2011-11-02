@@ -125,7 +125,7 @@ describe Player do
 
       describe "if dev galaxy" do
         before(:each) do
-          player.galaxy.dev = true
+          player.galaxy.ruleset = 'dev'
           player.galaxy.save!
         end
 
@@ -983,7 +983,7 @@ describe Player do
 
     it "should not call control manager if dev galaxy" do
       player = Factory.create(:player,
-                              :galaxy => Factory.create(:galaxy, :dev => true))
+        :galaxy => Factory.create(:galaxy, :ruleset => 'dev'))
       ControlManager.instance.should_not_receive(:player_destroyed)
       player.destroy
     end

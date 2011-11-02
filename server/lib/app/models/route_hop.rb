@@ -91,7 +91,7 @@ class RouteHop < ActiveRecord::Base
 
     SsObject::Planet.changing_viewable([old_location, location]) do
       transaction do
-        route.current = location.to_client_location
+        route.current = location.client_location
 
         Unit.update_all(location.location_attrs, {:route_id => route.id})
 

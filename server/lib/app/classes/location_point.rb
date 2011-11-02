@@ -61,8 +61,29 @@ class LocationPoint
   end
 
   # Converts self to +ClientLocation+.
-  def to_client_location
-    object.client_location
+  def client_location
+    case @type
+    when Location::GALAXY
+      ClientLocation.new(@id, @type, @x, @y, nil, nil, nil, nil, nil)
+    when Location::SOLAR_SYSTEM
+      ClientLocation.new(@id, @type, @x, @y, nil,
+        SolarSystem.where(:id => @id).select("kind").c_select_value,
+        nil, nil, nil)
+    when Location::SS_OBJECT
+      row = SsObject.
+        select("name, terrain, solar_system_id, player_id, position, angle").
+        where(:id => @id).
+        c_select_one
+
+      ClientLocation.new(
+        @id, @type, row['position'], row['angle'],
+        row['name'], nil,
+        row['terrain'], row['solar_system_id'],
+        Player.minimal(row['player_id'])
+      )
+    else
+      raise NotImplementedError.new("Unknown type #{@type}!")
+    end
   end
 
   # See Location#location_attrs

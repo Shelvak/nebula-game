@@ -305,7 +305,7 @@ describe RouteHop do
           RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
           route.reload
         end.should change(route, :current).to(
-          @hop_target.to_client_location
+          @hop_target.client_location
         )
       end
 
@@ -329,7 +329,7 @@ describe RouteHop do
         RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
         SPEC_EVENT_HANDLER.events.find do |objects, event_name, reason|
           objects == [route] && event_name == EventBroker::DESTROYED
-        end[0][0].current.should == @hop_target.to_client_location
+        end[0][0].current.should == @hop_target.client_location
       end
 
       it "should destroy the route" do
@@ -370,7 +370,7 @@ describe RouteHop do
     it "should increase fow ss entry if entering ss" do
       current = SolarSystemPoint.new(@solar_system.id, 0, 0)
       route = Factory.create(:route,
-        :current => current.to_client_location,
+        :current => current.client_location,
         :cached_units => {"Mule" => 3, "Crow" => 5}
       )
       previous_location = GalaxyPoint.new(@solar_system.galaxy_id, 0, 0)
@@ -390,7 +390,7 @@ describe RouteHop do
           ).location
         @previous_location = SolarSystemPoint.new(@solar_system.id, 0, 0)
         @route = Factory.create(:route,
-          :current => @current.to_client_location,
+          :current => @current.client_location,
           :cached_units => {"Mule" => 3, "Crow" => 5}
         )
         @current_hop = Factory.create(:route_hop, :route => @route,
@@ -418,7 +418,7 @@ describe RouteHop do
         @previous_location = Factory.create(:planet,
           :solar_system => @solar_system).location
         @route = Factory.create(:route,
-          :current => @current.to_client_location,
+          :current => @current.client_location,
           :cached_units => {"Mule" => 3, "Crow" => 5}
         )
         @current_hop = Factory.create(:route_hop, :route => @route,
@@ -443,7 +443,7 @@ describe RouteHop do
     it "should decrease fow ss entry if leaving ss" do
       current = GalaxyPoint.new(@solar_system.galaxy_id, 0, 0)
       route = Factory.create(:route,
-        :current => current.to_client_location,
+        :current => current.client_location,
         :cached_units => {
           "Mule" => 3,
           "Crow" => 5

@@ -21,10 +21,4 @@ class GalaxyPoint < LocationPoint
   def to_s
     "<GP(#{@id}):#{@x},#{@y}>"
   end
-
-  # See Location#client_location
-  def client_location
-    ClientLocation.new(@id, Location::GALAXY, @x, @y, nil, nil, nil, nil, 
-      nil)
-  end
 end

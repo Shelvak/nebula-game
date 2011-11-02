@@ -57,6 +57,10 @@ class ClientLocation < LocationPoint
       @solar_system_id == other.solar_system_id
   end
 
+  def to_s
+    "<CL t:#{@type}@#{@id},#{@x}:#{@y}>"
+  end
+
   def hash
     super + @kind.hash * 7 + @terrain.hash * 7 + @solar_system_id.hash * 7
   end

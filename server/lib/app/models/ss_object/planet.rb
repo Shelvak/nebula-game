@@ -133,11 +133,8 @@ class SsObject::Planet < SsObject
   end
   
   def client_location
-    ClientLocation.new(id, Location::SS_OBJECT, position, angle, name, nil,
-      terrain, solar_system_id, 
-      player ? player.as_json(:mode => :minimal) : nil)
+    location_point.client_location
   end
-  alias :to_client_location :client_location
 
   def landable?; true; end
 

@@ -38,17 +38,6 @@ describe GalaxyPoint do
     end
   end
 
-  describe "#client_location" do
-    it "should return ClientLocation" do
-      id = 10
-      x = 0
-      y = 12
-      GalaxyPoint.new(id, x, y).client_location.should == \
-        ClientLocation.new(id, Location::GALAXY, x, y, nil, nil, nil, nil, 
-        nil)
-    end
-  end
-
   describe "#route_attrs" do
     it "should return Hash" do
       id = 10

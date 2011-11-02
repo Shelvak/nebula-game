@@ -73,10 +73,4 @@ class SolarSystemPoint < LocationPoint
   def to_s
     "<SP(#{@id}):#{position},#{angle}>"
   end
-
-  # See Location#client_location
-  def client_location
-    ClientLocation.new(@id, Location::SOLAR_SYSTEM, position, angle,
-      nil, solar_system.kind, nil, nil, nil)
-  end
 end

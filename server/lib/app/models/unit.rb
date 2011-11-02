@@ -339,7 +339,7 @@ class Unit < ActiveRecord::Base
             "location" => LocationPoint.new(
               row['location_id'], row['location_type'],
               row['location_x'], row['location_y']
-            ).to_client_location.as_json,
+            ).client_location.as_json,
             "cached_units" => {}
           }
           units[player_id][key]["cached_units"][row['type']] = row['count'].to_i

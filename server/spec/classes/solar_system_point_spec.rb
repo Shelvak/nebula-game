@@ -122,17 +122,4 @@ describe SolarSystemPoint do
       }
     end
   end
-
-  describe "#client_location" do
-    it "should return ClientLocation" do
-      ss = Factory.create(:solar_system)
-      id = ss.id
-      position = 1
-      angle = 90
-      SolarSystemPoint.new(
-        id, position, angle
-      ).client_location.should == ClientLocation.new(id,
-        Location::SOLAR_SYSTEM, position, angle, nil, ss.kind, nil, nil, nil)
-    end
-  end
 end
