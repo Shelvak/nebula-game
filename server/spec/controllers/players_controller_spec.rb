@@ -51,14 +51,23 @@ describe PlayersController do
 
       describe "successfully authorized by web" do
         before(:each) do
-          ControlManager.instance.should_receive(:login_authorized?).with(
+          ControlManager.instance.stub(:login_authorized?).with(
             @test_player, @params['web_player_id']
           ).and_return(true)
         end
 
-        it "should allow players to login" do
-          should_respond_with :success => true
+        it "should allow players to login to dev galaxy" do
+          @test_player.galaxy.dev = true
+          @test_player.galaxy.save!
+          
+          ControlManager.instance.should_not_receive(:login_authorized?)
           invoke @action, @params
+          response_should_include :success => true
+        end
+
+        it "should allow players to login" do
+          invoke @action, @params
+          response_should_include :success => true
         end
 
         it "should push actions" do
@@ -123,7 +132,7 @@ describe PlayersController do
 
       describe "not authorized by web" do
         before(:each) do
-          ControlManager.instance.should_receive(:login_authorized?).with(
+          ControlManager.instance.stub(:login_authorized?).with(
             @test_player, @params['web_player_id']
           ).and_return(false)
         end

@@ -290,13 +290,13 @@ class SsObject::Planet < SsObject
       ConstructionQueue.clear(building.id) \
         if building.constructor? and building.working?
 
-      if building.is_a?(Trait::Radar)
-        zone = building.radar_zone
-        Trait::Radar.decrease_vision(zone, old_player) if old_player
-        Trait::Radar.increase_vision(zone, new_player) if new_player
-      end
-      
       if building.active?
+        if building.is_a?(Trait::Radar)
+          zone = building.radar_zone
+          Trait::Radar.decrease_vision(zone, old_player) if old_player
+          Trait::Radar.increase_vision(zone, new_player) if new_player
+        end
+
         scientist_count += building.scientists \
           if building.respond_to?(:scientists)
 

@@ -2,5 +2,5 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_hel
 
 describe Technology::PowderedZetium do
   it_behaves_like "resource increasing technology",
-                  Factory.create(:t_powdered_zetium)
+                  Factory.create!(:t_powdered_zetium)
 end

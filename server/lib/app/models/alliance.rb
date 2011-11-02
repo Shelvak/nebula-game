@@ -26,11 +26,13 @@ class Alliance < ActiveRecord::Base
     :maximum => CONFIG['alliances.validation.description.length.max']
 
   after_create do
-    ControlManager.instance.alliance_created(self)
+    ControlManager.instance.alliance_created(self) unless galaxy.dev?
+    true
   end
 
   after_update do
-    ControlManager.instance.alliance_renamed(self) if name_changed?
+    ControlManager.instance.alliance_renamed(self) \
+      if name_changed? && ! galaxy.dev?
   end
 
   # Dispatch changed for all alliance members. Before destroy because after
@@ -49,7 +51,9 @@ class Alliance < ActiveRecord::Base
       EventBroker.fire(@cached_players, EventBroker::CHANGED)
     end      
 
-    ControlManager.instance.alliance_destroyed(self)
+    ControlManager.instance.alliance_destroyed(self) unless galaxy.dev?
+
+    true
   end
 
   # Returns +Array+ of +Player+ ids who are in _alliance_ids_.
@@ -182,7 +186,7 @@ class Alliance < ActiveRecord::Base
     # Dispatch that this player joined the alliance, unless he is owner
     # of that alliance.
     ControlManager.instance.player_joined_alliance(player, self) \
-      unless player.id == owner_id
+      unless player.id == owner_id || galaxy.dev?
     # Dispatch changed on owner because he has alliance_player_count
     EventBroker.fire(owner, EventBroker::CHANGED)
     # Dispatch changed for status changed event
@@ -207,7 +211,8 @@ class Alliance < ActiveRecord::Base
     FowSsEntry.throw_out_player(self, player)
     FowGalaxyEntry.throw_out_player(self, player)
 
-    ControlManager.instance.player_left_alliance(player, self)
+    ControlManager.instance.player_left_alliance(player, self) \
+      unless galaxy.dev?
 
     Combat::LocationChecker.check_player_locations(player)
     # Dispatch changed on owner because he has alliance_player_count

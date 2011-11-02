@@ -2,26 +2,50 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb
 
 describe Alliance do
   describe "web integration" do
-    it "should integrate upon create" do
-      alliance = Factory.build(:alliance)
-      ControlManager.instance.should_receive(:alliance_created).
-        with(alliance)
-      alliance.save!
+    describe "regular" do
+      let(:alliance) { Factory.create(:alliance) }
+
+      it "should integrate upon create" do
+        alliance = Factory.build(:alliance)
+        ControlManager.instance.should_receive(:alliance_created).
+          with(alliance)
+        alliance.save!
+      end
+
+      it "should integrate upon rename" do
+        alliance.name = "WOO WOO WOO"
+        ControlManager.instance.should_receive(:alliance_renamed).
+          with(alliance)
+        alliance.save!
+      end
+
+      it "should integrate upon destroy" do
+        ControlManager.instance.should_receive(:alliance_destroyed).
+          with(alliance)
+        alliance.destroy
+      end
     end
 
-    it "should integrate upon rename" do
-      alliance = Factory.create(:alliance)
-      alliance.name = "WOO WOO WOO"
-      ControlManager.instance.should_receive(:alliance_renamed).
-        with(alliance)
-      alliance.save!
-    end
+    describe "dev galaxy" do
+      let(:galaxy) { Factory.create(:galaxy, :dev => true) }
+      let(:alliance) { Factory.create(:alliance, :galaxy => galaxy) }
 
-    it "should integrate upon destroy" do
-      alliance = Factory.create(:alliance)
-      ControlManager.instance.should_receive(:alliance_destroyed).
-        with(alliance)
-      alliance.destroy
+      it "should integrate upon create" do
+        alliance = Factory.build(:alliance, :galaxy => galaxy)
+        ControlManager.instance.should_not_receive(:alliance_created)
+        alliance.save!
+      end
+
+      it "should integrate upon rename" do
+        alliance.name = "WOO WOO WOO"
+        ControlManager.instance.should_not_receive(:alliance_renamed)
+        alliance.save!
+      end
+
+      it "should integrate upon destroy" do
+        ControlManager.instance.should_not_receive(:alliance_destroyed)
+        alliance.destroy
+      end
     end
   end
 
@@ -346,6 +370,13 @@ describe Alliance do
       @alliance.accept(@alliance.owner)
     end
 
+    it "should not call control manager if we're in a dev galaxy" do
+      @alliance.galaxy.dev = true
+      @alliance.galaxy.save!
+      ControlManager.instance.should_not_receive(:player_joined_alliance)
+      @alliance.accept(@player)
+    end
+
     it "should dispatch changed for alliance owner" do
       should_fire_event(@alliance.owner, EventBroker::CHANGED) do
         @alliance.accept(@player)
@@ -405,6 +436,14 @@ describe Alliance do
     it "should integrate with web" do
       ControlManager.instance.should_receive(:player_left_alliance).
         with(@player, @alliance)
+      @alliance.throw_out(@player)
+    end
+
+    it "should not integrate with web if dev galaxy" do
+      @alliance.galaxy.dev = true
+      @alliance.galaxy.save!
+
+      ControlManager.instance.should_not_receive(:player_left_alliance)
       @alliance.throw_out(@player)
     end
 

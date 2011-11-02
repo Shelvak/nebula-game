@@ -10,8 +10,11 @@ c = ActiveRecord::Base.connection
 LOGGER.suppress(:debug) do
   c.transaction do
     puts "Deactivating radars."
-    rd = Building::Radar.all.map do |r|
-      $stdout.write "."
+    radars = Building::Radar.all
+    index = 1
+    rd = radars.map do |r|
+      $stdout.write "\r#{index}/#{radars.size}"
+      index += 1
       r.active? ? (r.deactivate!; r) : nil
     end.compact
     puts
@@ -87,9 +90,11 @@ LOGGER.suppress(:debug) do
     end
 
     puts "Activating radars..."
+    index = 1
     rd.each do |r|
       r.activate!
-      $stdout.write "."
+      $stdout.write "\r#{index}/#{radars.size}"
+      index += 1
     end
     puts
   end

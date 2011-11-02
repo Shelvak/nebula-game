@@ -10,6 +10,10 @@ class Galaxy < ActiveRecord::Base
   # FK :dependent => :delete_all
   has_many :market_rates
 
+  # Is this is a development galaxy? Callbacks to web will not be ensued in
+  # development galaxies.
+  def dev?; Cfg.development_galaxy?(ruleset); end
+
   # Returns ID of battleground solar system.
   def self.battleground_id(galaxy_id)
     SolarSystem.connection.select_value(

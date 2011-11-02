@@ -121,6 +121,30 @@ package models.solarsystem
             Localizer.string("Galaxy", "label.wormhole") :
             NameResolver.resolveSolarSystem(id);
       }
+
+      [Bindable(event="willNotChange")]
+      /**
+       * Name of this solar system used in navigator.
+       *
+       * <p>Metadata:<br/>
+       * [Bindable(event="willNotChange")]
+       * </p>
+       */
+      public function get navigatorName() : String
+      {
+         var name: String = "";
+         if (isMiniBattleground) {
+            name = Localizer.string("Galaxy", "label.pulsar", [id]);
+         }
+         else if (isWormhole || isGlobalBattleground) {
+            return Localizer.string("Galaxy", "label.wormhole");
+         }
+         else {
+            name = NameResolver.resolveSolarSystem(id);
+         }
+         
+         return name + " (" + x + ":" + y + ")";
+      }
       
       
       [Required]

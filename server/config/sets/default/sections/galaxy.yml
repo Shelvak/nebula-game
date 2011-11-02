@@ -49,7 +49,7 @@ mini_battlegrounds.positions:
   - [6, 5]
   - [7, 0]
   
-convoy.time: <%= 1.hour %> / speed
+convoy.time: <%= 4.hours %> / speed
 # Speed modifier for convoy ships.
 convoy.speed_modifier: 6
 # - [count_from, count_to, type, flank]
