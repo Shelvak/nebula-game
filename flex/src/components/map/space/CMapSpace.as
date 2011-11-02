@@ -17,7 +17,6 @@ package components.map.space
    import flash.errors.IllegalOperationError;
    import flash.events.MouseEvent;
    import flash.geom.Point;
-   import flash.geom.Rectangle;
    
    import models.BaseModel;
    import models.MWreckage;
@@ -253,23 +252,21 @@ package components.map.space
          var aggregatorIdx:int = getAggregatorComponentIndex(object.currentLocation);
          var aggregatorModel:MStaticSpaceObjectsAggregator;
          var aggregatorComponent:CStaticSpaceObjectsAggregator;
-         if (aggregatorIdx < 0)
-         {
+         if (aggregatorIdx < 0) {
             aggregatorModel = new MStaticSpaceObjectsAggregator();
             aggregatorModel.addItem(object);
             aggregatorComponent = new CStaticSpaceObjectsAggregator(aggregatorModel, customComponentClasses);
             _staticObjectsCont.addElement(aggregatorComponent);
             grid.positionStaticObjectInSector(object.currentLocation);
-            if (squadronsController)
-            {
-               squadronsController.repositionAllSquadronsIn(object.currentLocation);
-            }
          }
-         else
-         {
-            aggregatorComponent =
-               CStaticSpaceObjectsAggregator(_staticObjectsCont.getElementAt(aggregatorIdx));
+         else {
+            aggregatorComponent = CStaticSpaceObjectsAggregator(
+               _staticObjectsCont.getElementAt(aggregatorIdx)
+            );
             aggregatorComponent.model.addItem(object);
+         }
+         if (squadronsController != null){
+            squadronsController.repositionAllSquadronsIn(object.currentLocation);
          }
       }
       
@@ -280,9 +277,11 @@ package components.map.space
          var aggregatorComponent:CStaticSpaceObjectsAggregator =
             CStaticSpaceObjectsAggregator(_staticObjectsCont.getElementAt(aggregatorIdx));
          aggregatorComponent.model.removeItemAt(aggregatorComponent.model.getItemIndex(object));
-         if (aggregatorComponent.model.length == 0)
-         {
+         if (aggregatorComponent.model.length == 0) {
             _staticObjectsCont.removeElementAt(aggregatorIdx);
+         }
+         if (squadronsController != null){
+            squadronsController.repositionAllSquadronsIn(object.currentLocation);
          }
       }
       

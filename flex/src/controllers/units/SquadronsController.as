@@ -268,12 +268,9 @@ package controllers.units
             // Don't use squadToStop again: asynchronousity problems arise. See
             // components.map.space.SquadronsController#destroySquadron() for more explanation on this
             squadStationary = new MSquadron();
-            with (squadStationary)
-            {
-               owner = squadToStop.owner;
-               player = squadToStop.player;
-               currentHop = squadToStop.currentHop;
-            }
+            squadStationary.owner = squadToStop.owner;
+            squadStationary.player = squadToStop.player;
+            squadStationary.currentHop = squadToStop.currentHop;
             
             SQUADS.addItem(squadStationary);
             squadToStop.cleanup();
