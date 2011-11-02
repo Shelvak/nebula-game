@@ -239,9 +239,17 @@ package controllers.units
          ROUTES.remove(id, true);
          var squadToStop:MSquadron = SQUADS.remove(id, true);
          if (squadToStop == null) {
+            logger.warn(
+               "stopSquadron(): unable to find squad with id {0} (atLastHop: {1})",
+               id, atLastHop
+            );
             return;
          }
          if (atLastHop) {
+            logger.debug(
+               "stopSquadron(): stopping squad {0} at last hop",
+               squadToStop
+            );
             squadToStop.moveToLastHop();
             // This behaviour (destruction of squad) relies on the fact that the server
             // will send units|movement *before* objects|destroyed with a route. Because it does that
@@ -250,6 +258,10 @@ package controllers.units
             // immediate sector after jump, squad has to be destroyed because that map is not cached.
 //            if (squadToStop.jumpPending && squadToStop.jumpsAtEvent.hasOccured) {
             if (squadToStop.jumpPending) {
+               logger.debug(
+                  "stopSquadron(): the squad is waiting for a jump. "
+                  + "Cleaning up and returning."
+               );
                squadToStop.cleanup();
                refreshUnitsInUnitScreenModel();
                return;
