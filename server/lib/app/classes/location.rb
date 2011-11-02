@@ -6,8 +6,8 @@ module Location
   BUILDING = 4
 
   # Returns distinct player ids that have units in given +LocationPoint+.
-  # If the location is a +SsObject+, existence of shooting buildings is also
-  # checked.
+  # If the location is a +SsObject+, existence of shooting non-upgrading
+  # buildings is also checked.
   #
   def self.combat_player_ids(location_point)
     # Should have used Scala...
@@ -20,7 +20,8 @@ module Location
       planet = location_point.object
       # Add non NPC players to combat or NPC players if they have combat
       # buildings.
-      unless planet.player_id.nil? && planet.buildings.combat.size == 0
+      if ! planet.player_id.nil? || planet.buildings.combat.
+          where(:state => Building::STATE_ACTIVE).size != 0
         player_ids.push planet.player_id 
       end
     end

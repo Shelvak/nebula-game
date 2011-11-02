@@ -14,8 +14,8 @@ describe Location do
 
     it "should include players from units" do
       player = Factory.create(:player)
-      Factory.create(:unit, :location => @location, :player => player)
-      Factory.create(:unit, :location => @location, :player => player)
+      Factory.create(:unit_built, :location => @location, :player => player)
+      Factory.create(:unit_built, :location => @location, :player => player)
 
       Location.combat_player_ids(@location).should include(player.id)
     end
@@ -29,7 +29,7 @@ describe Location do
 
     it "should include nils" do
       player = Factory.create(:player)
-      Factory.create(:unit, :location => @location, :player => nil)
+      Factory.create(:unit_built, :location => @location, :player => nil)
 
       Location.combat_player_ids(@location).should include(nil)
     end
@@ -51,6 +51,11 @@ describe Location do
       it "should include it if planet has combat buildings" do
         Factory.create!(:b_thunder, opts_active + {:planet => @planet})
         Location.combat_player_ids(@location).should include(nil)
+      end
+
+      it "should not include it if planet has non-active combat buildings" do
+        Factory.create!(:b_thunder, opts_inactive + {:planet => @planet})
+        Location.combat_player_ids(@location).should_not include(nil)
       end
     end
   end

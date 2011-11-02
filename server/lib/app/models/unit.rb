@@ -291,18 +291,19 @@ class Unit < ActiveRecord::Base
       end
     end
 
-    # Return distinct player ids for given +Location+.
+    # Return distinct player ids which have completed units for given
+    # +Location+.
     def player_ids_in_location(location, exclude_non_combat=false)
-      LOGGER.block "Checking for player ids in #{location}",
-      :level => :debug do
+      LOGGER.block("Checking for player ids in #{location}",
+          :level => :debug) do
         # Do not compact here, because NPC units are also distinct player id
         # values.
-        query = where(location.location_attrs)
+        query = where(location.location_attrs).where("level > 0")
         query = query.where("type NOT IN (?)", non_combat_types) \
           if exclude_non_combat
 
-        query.select("DISTINCT(player_id)").
-          c_select_values.map { |id| id.nil? ? nil : id.to_i }
+        query.select("DISTINCT(player_id)").c_select_values.
+          map { |id| id.nil? ? nil : id.to_i }
       end
     end
 

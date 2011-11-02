@@ -677,14 +677,21 @@ describe Unit do
     end
 
     it "should return distinct ids from units" do
-      Factory.create(:unit, :location => @location, :player => @p1)
-      Factory.create(:unit, :location => @location, :player => @p2)
-      Factory.create(:unit, :location => @location, :player => @p1)
+      Factory.create(:unit_built, :location => @location, :player => @p1)
+      Factory.create(:unit_built, :location => @location, :player => @p2)
+      Factory.create(:unit_built, :location => @location, :player => @p1)
       Unit.player_ids_in_location(@location).should == [@p1.id, @p2.id]
     end
 
+    it "should not include units of level 0" do
+      Factory.create(:unit_built, :location => @location, :player => @p1,
+                     :level => 0)
+      Factory.create(:unit_built, :location => @location, :player => @p2)
+      Unit.player_ids_in_location(@location).should == [@p2.id]
+    end
+
     it "should also include nils" do
-      Factory.create(:unit, :location => @location, :player => nil)
+      Factory.create(:unit_built, :location => @location, :player => nil)
       Unit.player_ids_in_location(@location).should == [nil]
     end
 
