@@ -104,13 +104,17 @@ class PlayersController < GenericController
   # Parameters:
   # - first_time (Boolean): should the first time screen be shown next time
   # player logs in?
+  # - portal_without_allies (Boolean): should alliance units be used when
+  # attacked and sent to allies when they are attacked?
   #
   def action_edit
-    param_options :valid => %w{first_time}
+    param_options :valid => %w{first_time portal_without_allies}
 
     player = self.player
     player.first_time = params['first_time'] \
       unless params['first_time'].nil?
+    player.portal_without_allies = params['portal_without_allies'] \
+      unless params['portal_without_allies'].nil?
 
     player.save!
   end

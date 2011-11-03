@@ -165,6 +165,7 @@ class Player < ActiveRecord::Base
       )
       json['creds'] = creds
       json['first_time'] = first_time
+      json['portal_without_allies'] = portal_without_allies
       unless alliance_id.nil?
         is_owner = id == alliance.owner_id
         json['alliance_owner'] = is_owner
