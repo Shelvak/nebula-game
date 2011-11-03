@@ -58,8 +58,9 @@ class AlliancesClassifier(alliances: Alliances) {
   /**
    * View of the player of this alliance.
    */
-  private def view(alliances: Alliances, player: Player,
-                alliance: Alliance): AlliancesClassifier.Perspective = {
+  private def view(
+    alliances: Alliances, player: Player, alliance: Alliance
+  ): AlliancesClassifier.Perspective = {
     val classification =
       if (alliances.isFriend(Some(player), alliance.id))
         Classification.Friend

@@ -241,6 +241,29 @@ benchmark :db do
   end
 end
 
+# Establish connection before setting up autoloader, because some plugins depend
+# on working DB connection.
+unless rake?
+  ActiveRecord::Base.establish_connection(USED_DB_CONFIG)
+  ActiveRecord::Base.connection.execute "SET NAMES UTF8"
+
+  unless App.in_test?
+    migrator = ActiveRecord::Migrator.new(:up, DB_MIGRATIONS_DIR)
+    pending = migrator.pending_migrations
+    unless pending.blank?
+      puts "You still have pending migrations!"
+      puts
+      pending.each do |migration|
+        puts " * #{migration.name}"
+      end
+      puts
+      puts "Please run `rake db:migrate` before you proceed."
+      puts
+      exit 1
+    end
+  end
+end
+
 # Set up autoloader for troublesome classes.
 #
 # This fixes scenarios when there is Alliance and Combat::Alliance and
@@ -315,25 +338,4 @@ end
 LOGGER.debug "Initializer load times:"
 $load_times.each do |stage, time|
   LOGGER.debug "  %30s: %dms" % [stage, time * 1000]
-end
-
-unless rake?
-  ActiveRecord::Base.establish_connection(USED_DB_CONFIG)
-  ActiveRecord::Base.connection.execute "SET NAMES UTF8"
-
-  unless App.in_test?
-    migrator = ActiveRecord::Migrator.new(:up, DB_MIGRATIONS_DIR)
-    pending = migrator.pending_migrations
-    unless pending.blank?
-      puts "You still have pending migrations!"
-      puts
-      pending.each do |migration|
-        puts " * #{migration.name}"
-      end
-      puts
-      puts "Please run `rake db:migrate` before you proceed."
-      puts
-      exit 1
-    end
-  end
 end
