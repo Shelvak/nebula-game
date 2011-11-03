@@ -22,12 +22,15 @@ package components.map.space
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.events.EffectEvent;
+   import mx.logging.ILogger;
+   import mx.logging.Log;
    
    import spark.components.Group;
    import spark.effects.Fade;
    import spark.effects.Move;
    import spark.primitives.BitmapImage;
    
+   import utils.Objects;
    import utils.components.DisplayListUtil;
    import utils.datastructures.Collections;
    
@@ -38,15 +41,21 @@ package components.map.space
       public  static const MOVE_EFFECT_DURATION:int = 500;        // milliseconds
       
       
-      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
+      private function get ORDERS_CTRL() : OrdersController {
+         return OrdersController.getInstance();
+      }
+      
+      private function get logger() : ILogger {
+         return Log.getLogger(Objects.getClassName(this, true));
+      }
       
       
-      private var _mapM:MMap,
-                  _mapC:CMapSpace,
-                  _layout:SquadronsLayout,
-                  _grid:Grid,
-                  _squadronsContainer:Group,
-                  _routesContainer:Group;
+      private var _mapM:MMap;
+      private var _mapC:CMapSpace;
+      private var _layout:SquadronsLayout;
+      private var _grid:Grid;
+      private var _squadronsContainer:Group;
+      private var _routesContainer:Group;
       
       
       /* ###################### */
@@ -82,11 +91,7 @@ package components.map.space
             removeMapModelEventHandlers(_mapM);
             _mapM = null;
          }
-         if (ORDERS_CTRL != null)
-         {
-            removeOrdersCrontrollerEventHandlers();
-            ORDERS_CTRL = null;
-         }
+         removeOrdersCrontrollerEventHandlers();
       }
       
       
@@ -276,16 +281,23 @@ package components.map.space
       private var _selectedRouteC:CRoute;
       
       
-      private function selectSquadWithUnits(units:IList) : void
-      {
+      private function selectSquadWithUnits(units:IList) : void {
          var unit:Unit = Unit(units.getItemAt(0));
-         if (!_mapM.definesLocation(unit.location))
-         {
+         if (_mapM.squadrons == null) {
+            logger.warn(
+               "selectSquadWithUnits(): Map model {0} most likely has been "
+               + "cleaned up and _mapM.squadrons is null. Unable to select units:"
+               + "\n   {1}"
+               + "\nReturning",
+               _mapM, units.toArray().join("   \n")
+            );
+            return;
+         }
+         if (!_mapM.definesLocation(unit.location)) {
             return;
          }
          var squad:MSquadron = Collections.findFirst(_mapM.squadrons,
-            function(squad:MSquadron) : Boolean
-            {
+            function(squad:MSquadron) : Boolean {
                return Collections.findFirstEqualTo(squad.units, unit) != null;
             }
          );
