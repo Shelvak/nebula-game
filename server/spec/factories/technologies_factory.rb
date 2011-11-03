@@ -222,3 +222,6 @@ Factory.define :t_zetium_storage, :parent => :technology,
 
 Factory.define :t_ship_storage, :parent => :technology,
 :class => Technology::ShipStorage do |m|; end
+
+Factory.define :t_building_repair, :parent => :technology,
+:class => Technology::BuildingRepair do |m|; end
