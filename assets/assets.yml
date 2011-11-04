@@ -8,6 +8,7 @@ cannon cannon_air
 plasma_gun plasma_spike
 alien_cannon thor_ground
 zeus_cannon
+dart_laser
 } %>
 <% terrain_types = {
   0 => 'earth',
