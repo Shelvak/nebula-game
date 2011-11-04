@@ -60,15 +60,11 @@ package models.map
    
    /**
     * Dispatched when static objects has been added to the map.
-    * 
-    * @eventType models.map.events.MMapEvent.OBJECT_ADD
     */
    [Event(name="objectAdd", type="models.map.events.MMapEvent")]
    
    /**
     * Dispatched when static objects has been added to the map.
-    * 
-    * @eventType models.map.events.MMapEvent.OBJECT_REMOVE
     */
    [Event(name="objectRemove", type="models.map.events.MMapEvent")]
    
