@@ -34,7 +34,8 @@ package controllers.objects.actions
             {
                LS.oldProvider.refresh();
                LS.refreshScreen();
-            }               // TODO: Find out why some filters don't refresh if you dont call 
+            }
+            // TODO: Find out why some filters don't refresh if you dont call 
             // refresh function on the list
             var US: MCUnitScreen = MCUnitScreen.getInstance();
             if (US.units != null)

@@ -1,7 +1,5 @@
 package models.movement
 {
-   import controllers.objects.ObjectClass;
-   
    import flash.errors.IllegalOperationError;
    
    import interfaces.ICleanable;
@@ -17,12 +15,9 @@ package models.movement
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
    import models.movement.events.MSquadronEvent;
-   import models.player.PlayerId;
    import models.player.PlayerMinimal;
    import models.time.MTimeEventFixedMoment;
    import models.unit.Unit;
-   import models.unit.UnitBuildingEntry;
-   import models.unit.UnitsFlank;
    
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
@@ -31,7 +26,6 @@ package models.movement
    
    import namespaces.client_internal;
    
-   import utils.ModelUtil;
    import utils.Objects;
    import utils.datastructures.Collections;
 
@@ -327,7 +321,7 @@ package models.movement
        * 
        * @throws IllegalOperationError if <code>route</code> has not been set
        */
-      client_internal function rebuildCachedUnits() : void {
+      public function rebuildCachedUnits() : void {
          _route.cachedUnits = UnitFactory.buildCachedUnitsFromUnits(units);
       }
       

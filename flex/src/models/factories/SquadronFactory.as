@@ -48,7 +48,7 @@ package models.factories
          }
          attachJumpsAt(route, jumpsAt);
          squad.route = route;
-         squad.client_internal::rebuildCachedUnits();
+         squad.rebuildCachedUnits();
          return route;
       }
       
