@@ -125,7 +125,10 @@ package controllers.messages
             {
                rmo.model.pending = false;
             }
-            msgLog.logMessage(rmo.action, "Processing response message to {0}", rmo.id);
+            msgLog.logMessage(
+               rmo.action, "Processing response message to {0}. Failed: {1}",
+               rmo.id, sRMO.failed
+            );
             if (sRMO.failed)
                rmo.responder.cancel(rmo);
             else

@@ -140,8 +140,9 @@ class StaticObjectsHash
          object.currentLocation.x,
          object.currentLocation.y
       );
-      getLogger().debug("Putting " + object.toString() +
-        " to StaticObjectsHash (hashcode: " + hashCode + ").");
+      getLogger().debug(
+         "Putting " + object + " to StaticObjectsHash (hashcode: " + hashCode + ")"
+      );
 
       var objects:SectorObjects = _hash[hashCode];
       if (objects == null) {
@@ -159,8 +160,9 @@ class StaticObjectsHash
             objects.wreckage = object;
             break;
          default:
-            throw new ArgumentError("Unknown object type " + object.objectType
-               + "!")
+            throw new ArgumentError(
+               "Unknown object type " + object.objectType + "!"
+            );
       }
    }
    
@@ -169,8 +171,10 @@ class StaticObjectsHash
          object.currentLocation.x,
          object.currentLocation.y
       );
-      getLogger().debug("Removing " + object.toString() +
-        " from StaticObjectsHash (hashcode: " + hashCode + ").");
+      getLogger().debug(
+         "Removing " + object + " from StaticObjectsHash (hashcode: "
+         + hashCode + ")."
+      );
 
       var objects:SectorObjects = _hash[hashCode];
       switch (object.objectType) {
@@ -184,13 +188,15 @@ class StaticObjectsHash
             objects.wreckage = null;
             break;
          default:
-            throw new ArgumentError("Unknown object type " + object.objectType
-               + "!")
+            throw new ArgumentError(
+               "Unknown object type " + object.objectType + "!"
+            );
       }
       
       if (!objects.hasObjects) {
-         getLogger().debug("No objects found for hashcode: " + hashCode +
-            ", deleting from hash.");
+         getLogger().debug(
+            "No objects found for hashcode: " + hashCode + ", deleting from hash."
+         );
          delete _hash[hashCode];
       }
    }
