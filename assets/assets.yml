@@ -9,6 +9,7 @@ plasma_gun plasma_spike
 alien_cannon thor_ground
 zeus_cannon
 dart_laser
+boss_light boss_heavy
 } %>
 <% terrain_types = {
   0 => 'earth',
