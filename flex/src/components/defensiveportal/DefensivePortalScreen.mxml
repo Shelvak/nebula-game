@@ -194,6 +194,7 @@
                   'portalWithoutAllies': !ML.player.portalWithoutAllies
                }
             ).dispatch();
+            NavigationController.getInstance().showDefensivePortal(ML.latestPlanet.id);
          }
          
          [Bindable]
@@ -242,7 +243,7 @@
                            text="{Localizer.string('Units', 'title.defensivePool')}"/>
                   <s:Button top="13" left="295" skinClass="components.skins.InfoButtonSkin"
                             click="UrlNavigate.getInstance().showInfo('defensive-portal')"/>
-                  <base:AdvancedContainer left="40" right="40" top="40" bottom="75">
+                  <base:AdvancedContainer left="40" right="40" top="42" bottom="75">
                      <s:CheckBox label="{getString('dontIncludeAlliance')}"
                                  click="checkbox1_clickHandler(event)"
                                  selected="{ML.player.portalWithoutAllies}"
@@ -254,6 +255,11 @@
                               text="{getString('volume', 
                               [getVolume(playerUnits)])}"
                               visible="{!ML.player.portalWithoutAllies}"/>
+                     <s:Label textAlign="center" text="{getString('poolEmpty')}"
+                              visible="{playerUnits == null 
+                              || playerUnits.length == 0}"
+                              fontSize="36" fontWeight="bold"
+                              color="#1c1c1c"/>
                      <s:DataGroup dataProvider="{playerUnits}" 
                                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
                         <s:layout>
@@ -270,6 +276,11 @@
                               [getVolume(allyUnits)])}"
                               styleName="volumeNumber" 
                               visible="{!ML.player.portalWithoutAllies}"/>
+                     <s:Label textAlign="center" text="{getString('poolEmpty')}"
+                              visible="{allyUnits == null
+                              || allyUnits.length == 0}"
+                              fontSize="36" fontWeight="bold"
+                              color="#1c1c1c"/>
                      <s:DataGroup dataProvider="{allyUnits}"
                                   visible="{!ML.player.portalWithoutAllies}" 
                                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
@@ -316,6 +327,10 @@
                               [getVolume(yourPossibleUnits)])}"
                               visible="{!ML.player.portalWithoutAllies}"
                               styleName="volumeNumber"/>
+                     <s:Label textAlign="center" text="{getString('poolEmpty')}"
+                              visible="{yourPossibleUnits == null}"
+                              fontSize="36" fontWeight="bold"
+                              color="#1c1c1c"/>
                      <s:DataGroup dataProvider="{yourPossibleUnits}" 
                                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
                         <s:layout>
@@ -331,6 +346,10 @@
                               [getVolume(allyPossibleUnits)])}"
                               styleName="volumeNumber" 
                               visible="{!ML.player.portalWithoutAllies}"/>
+                     <s:Label textAlign="center" text="{getString('poolEmpty')}"
+                              visible="{allyPossibleUnits == null}"
+                              fontSize="36" fontWeight="bold"
+                              color="#1c1c1c"/>
                      <s:DataGroup dataProvider="{allyPossibleUnits}" 
                                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
                         <s:layout>

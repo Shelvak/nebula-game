@@ -3919,6 +3919,7 @@
       o sąjungininkų kariai nebus keliami į Tavo planetas.</p>
     </defensivePool.tooltip.dontIncludeAlliance>
     <defensivePool.volume value="Apimtis: {0}" />
+    <defensivePool.poolEmpty value="Rezervas tuščias" />
     <defensivePool.totalVolume value="Iš viso apimties:" />
     <defensivePool.teleportedVolume value="Teleportuota apimtis:" />
     <defensivePool.maxVolume value="Maksimali galia:" />
