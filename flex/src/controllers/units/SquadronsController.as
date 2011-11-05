@@ -260,6 +260,7 @@ package controllers.units
                   "stopSquadron(): the squad is waiting for a jump. "
                   + "Cleaning up and returning."
                );
+               Collections.cleanListOfICleanables(squadToStop.units);
                squadToStop.cleanup();
                refreshUnitsInUnitScreenModel();
                return;

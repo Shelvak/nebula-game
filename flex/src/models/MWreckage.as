@@ -115,7 +115,9 @@ package models
       
       public override function toString() : String
       {
-         return "[class: " + className + ", id: " + ", currentLocation: " + currentLocation + "]";
+         return "[class: " + className + 
+            ", id: " + id + 
+            ", currentLocation: " + currentLocation + "]";
       }
    }
 }

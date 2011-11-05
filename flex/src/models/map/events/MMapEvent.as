@@ -51,17 +51,17 @@ package models.map.events
       /**
        * @see MMap
        * 
-       * @eventType staticObjectAdd
+       * @eventType objectAdd
        */
-      public static const OBJECT_ADD:String = "staticObjectAdd";
+      public static const OBJECT_ADD:String = "objectAdd";
       
       
       /**
        * @see MMap
        * 
-       * @eventType staticObjectRemove
+       * @eventType objectRemove
        */
-      public static const OBJECT_REMOVE:String = "staticObjectRemove";
+      public static const OBJECT_REMOVE:String = "objectRemove";
       
       
       public function MMapEvent(type:String)
