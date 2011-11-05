@@ -611,6 +611,7 @@ assets:
         table_middle.png:             Portal_top_table_center.png
         table_bottom_own.png:         Portal_top_table_bottom.png
         table_bottom_ally.png:        Portal_bottom_table_bottom.png
+        table_top_full.png:           Portal_top_table_top2.png
 
       "ratings":
         search_header_left.png:       Ratings_search_left.png

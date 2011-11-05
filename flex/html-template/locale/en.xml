@@ -3861,13 +3861,14 @@
       built.</p>
     </title.emptyDefensivePool>
     <title.possiblePool value="When you are attacked you might get" />
-    <title.yourPool value="Your army pool" />
-    <title.allyPool value="Alliance army pool" />
-    <label.dontIncludeAlliance value="Don't communicate with alliance portals" />
-    <tooltip.dontIncludeAlliance>
+    <defensivePool.title.yourPool value="Your army pool" />
+    <defensivePool.title.allyPool value="Alliance army pool" />
+    <defensivePool.dontIncludeAlliance 
+      value="Don't communicate with alliance portals" />
+    <defensivePool.tooltip.dontIncludeAlliance>
       <p>If checked your units won't be teleported to alliance planets and 
       alliance units won't be teleported to your planets.</p>
-    </tooltip.dontIncludeAlliance>
+    </defensivePool.tooltip.dontIncludeAlliance>
     <defensivePool.volume value="Volume: {0}" />
     <defensivePool.totalVolume value="Total volume:" />
     <defensivePool.teleportedVolume value="Teleported volume:" />
