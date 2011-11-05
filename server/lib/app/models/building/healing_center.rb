@@ -1,36 +1,6 @@
 class Building::HealingCenter < Building
   include Parts::WithCooldown
-
-  # Returns [metal, energy, zetium] needed to heal _unit_.
-  def resources_for_healing(unit)
-    percentage_to_heal = unit.damaged_percentage
-    mod = cost_modifier
-    metal = (unit.metal_cost * percentage_to_heal * mod).round
-    energy = (unit.energy_cost * percentage_to_heal * mod).round
-    zetium = (unit.zetium_cost * percentage_to_heal * mod).round
-
-    [metal, energy, zetium]
-  end
-
-  def cost_modifier(level=nil)
-    self.class.cost_modifier(level || self.level)
-  end
-
-  def self.cost_modifier(level)
-    evalproperty('healing.cost.mod', nil, 'level' => level)
-  end
-
-  def healing_time(hp, level=nil)
-    self.class.healing_time(hp, level || self.level)
-  end
-
-  def self.healing_time(hp, level)
-    (hp * evalproperty('healing.time.mod', nil, 'level' => level)).ceil
-  end
-
-  def as_json(options=nil)
-    super(options).merge(:cooldown_ends_at => cooldown_ends_at)
-  end
+  include Parts::Healing
 
   def heal!(units)
     raise GameLogicError.new(
@@ -53,9 +23,8 @@ class Building::HealingCenter < Building
       energy += u_energy
       zetium += u_zetium
 
-      max_hp = unit.hit_points
-      damaged_hp += max_hp - unit.hp
-      unit.hp = max_hp
+      damaged_hp += unit.damaged_hp
+      unit.hp_percentage = 1
     end
 
     planet = self.planet
@@ -82,5 +51,9 @@ class Building::HealingCenter < Building
         EventBroker::REASON_OWNER_PROP_CHANGE)
       Objective::HealHp.progress(player, damaged_hp)
     end
+  end
+
+  def as_json(options=nil)
+    super(options).merge(:cooldown_ends_at => cooldown_ends_at)
   end
 end

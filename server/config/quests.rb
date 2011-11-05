@@ -432,56 +432,58 @@ QUESTS = QuestDefinition.define(:debug => false) do
 
       reward_unit Unit::Azure, :level => 6
     end.tap do |q2|
-      q2.define(55) do
-        destroy Building::Vulcan, :count => 2
-
-        reward_unit Unit::Trooper, :level => 5, :count => 3
-        reward_unit Unit::Seeker, :level => 5, :count => 3
-        reward_unit Unit::Shocker, :level => 7
-      end.define(56) do
-        destroy Building::Vulcan, :count => 6
-
-        reward_unit Unit::Trooper, :level => 5, :count => 4
-        reward_unit Unit::Seeker, :level => 5, :count => 4
-        reward_unit Unit::Shocker, :level => 7, :count => 2
-      end.define(57) do
-        destroy Building::Vulcan, :count => 10
-
-        reward_unit Unit::Trooper, :level => 5, :count => 5
-        reward_unit Unit::Seeker, :level => 5, :count => 5
-        reward_unit Unit::Shocker, :level => 7, :count => 3
-      end
-
-      q2.define(58) do
-        destroy Building::Screamer, :count => 2
-
-        reward_unit Unit::Scorpion, :level => 6
-        reward_unit Unit::Azure, :level => 6
-      end.define(59) do
-        destroy Building::Screamer, :count => 6
-
-        reward_unit Unit::Scorpion, :level => 6, :count => 2
-        reward_unit Unit::Azure, :level => 6, :count => 2
-      end.define(60) do
-        destroy Building::Screamer, :count => 10
-
-        reward_unit Unit::Scorpion, :level => 6, :count => 3
-        reward_unit Unit::Azure, :level => 6, :count => 3
-      end
-
-      q2.define(61) do
-        destroy Building::Thunder, :count => 2
-
-        reward_unit Unit::Cyrix, :count => 2, :level => 5
-      end.define(62) do
-        destroy Building::Thunder, :count => 6
-
-        reward_unit Unit::Cyrix, :count => 4, :level => 5
-      end.define(63) do
-        destroy Building::Thunder, :count => 10
-
-        reward_unit Unit::Cyrix, :count => 6, :level => 5
-      end
+      # Disabled for now, because building destruction quests are not
+      # implemented.
+      #q2.define(55) do
+      #  destroy Building::Vulcan, :count => 2
+      #
+      #  reward_unit Unit::Trooper, :level => 5, :count => 3
+      #  reward_unit Unit::Seeker, :level => 5, :count => 3
+      #  reward_unit Unit::Shocker, :level => 7
+      #end.define(56) do
+      #  destroy Building::Vulcan, :count => 6
+      #
+      #  reward_unit Unit::Trooper, :level => 5, :count => 4
+      #  reward_unit Unit::Seeker, :level => 5, :count => 4
+      #  reward_unit Unit::Shocker, :level => 7, :count => 2
+      #end.define(57) do
+      #  destroy Building::Vulcan, :count => 10
+      #
+      #  reward_unit Unit::Trooper, :level => 5, :count => 5
+      #  reward_unit Unit::Seeker, :level => 5, :count => 5
+      #  reward_unit Unit::Shocker, :level => 7, :count => 3
+      #end
+      #
+      #q2.define(58) do
+      #  destroy Building::Screamer, :count => 2
+      #
+      #  reward_unit Unit::Scorpion, :level => 6
+      #  reward_unit Unit::Azure, :level => 6
+      #end.define(59) do
+      #  destroy Building::Screamer, :count => 6
+      #
+      #  reward_unit Unit::Scorpion, :level => 6, :count => 2
+      #  reward_unit Unit::Azure, :level => 6, :count => 2
+      #end.define(60) do
+      #  destroy Building::Screamer, :count => 10
+      #
+      #  reward_unit Unit::Scorpion, :level => 6, :count => 3
+      #  reward_unit Unit::Azure, :level => 6, :count => 3
+      #end
+      #
+      #q2.define(61) do
+      #  destroy Building::Thunder, :count => 2
+      #
+      #  reward_unit Unit::Cyrix, :count => 2, :level => 5
+      #end.define(62) do
+      #  destroy Building::Thunder, :count => 6
+      #
+      #  reward_unit Unit::Cyrix, :count => 4, :level => 5
+      #end.define(63) do
+      #  destroy Building::Thunder, :count => 10
+      #
+      #  reward_unit Unit::Cyrix, :count => 6, :level => 5
+      #end
 
       # Disabled for now because of changes in planets annexing. Needs
       # to be separated into other objective.
@@ -585,5 +587,11 @@ QUESTS = QuestDefinition.define(:debug => false) do
     25000, 50000, 100000, 250000, 500000, 1000000, 2000000
   ].each_with_index do |count, index|
     achievement(10400 + index) { heal_hp count }
+  end
+
+  [
+    10000, 25000, 50000, 100000, 250000, 500000, 1000000
+  ].each_with_index do |count, index|
+    achievement(10420 + index) { repair_hp count }
   end
 end

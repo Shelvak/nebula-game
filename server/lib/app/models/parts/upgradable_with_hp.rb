@@ -26,6 +26,20 @@ module Parts
       end
 
       def hit_points; self.class.hit_points; end
+
+      def damaged_hp
+        hit_points - hp
+      end
+
+      # Returns floating point percentage of how much object HP is gone.
+      def damaged_percentage
+        1 - alive_percentage
+      end
+
+      # Returns floating point percentage of how much object HP is intact.
+      def alive_percentage
+        hp.to_f / hit_points
+      end
     end
   end
 end

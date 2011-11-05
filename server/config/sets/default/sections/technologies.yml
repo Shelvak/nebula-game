@@ -401,6 +401,8 @@ building_repair.scientists.min: 10
 # Technological requirements
 building_repair.war_points: 1
 building_repair.requirement.healing_center.level: 1
+building_repair.healing.time.mod: 3 - 0.25 * level
+building_repair.healing.cost.mod: 5 - 0.25 * level
 
 ### vulcan config ###
 

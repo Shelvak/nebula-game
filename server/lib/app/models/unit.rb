@@ -87,16 +87,6 @@ class Unit < ActiveRecord::Base
     ]
   end
 
-  # Returns floating point percentage of how much unit HP is gone.
-  def damaged_percentage
-    1 - alive_percentage
-  end
-
-  # Returns floating point percentage of how much unit HP is intact.
-  def alive_percentage
-    hp.to_f / hit_points
-  end
-
   # Return location attributes for units that will be inside this unit.
   #
   # See Location#location_attrs

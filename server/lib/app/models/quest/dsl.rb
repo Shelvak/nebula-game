@@ -335,7 +335,7 @@ class Quest::DSL
     ])
   end
 
-  # Heal N HP.
+  # Heal N HP of units.
   #
   # Usage: heal_hp 10
   #
@@ -343,6 +343,17 @@ class Quest::DSL
     @objectives.push([
       Objective::HealHp,
       {:key => Objective::HealHp::KEY, :count => count}
+    ])
+  end
+
+  # Repair N HP of buildings.
+  #
+  # Usage: repair_hp 10
+  #
+  def repair_hp(count)
+    @objectives.push([
+      Objective::RepairHp,
+      {:key => Objective::RepairHp::KEY, :count => count}
     ])
   end
 
