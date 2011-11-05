@@ -61,8 +61,8 @@ package controllers.players
       
       
       /**
-       * This is sent to the server only once when a player opens quests screen from the first time login
-       * screen.
+       * This is sent to the server once when a player opens quests screen from the first time login
+       * screen and when player changes portalWithoutAllies property.
        * 
        * @eventType players|edit
        */
