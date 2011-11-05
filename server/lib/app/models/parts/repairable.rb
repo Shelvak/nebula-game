@@ -12,6 +12,9 @@ module Parts::Repairable
   module InstanceMethods
     # Start repairs.
     def repair!
+      raise GameLogicError.new("#{self} must be active for repairs!") \
+        unless active?
+
       player = planet.player
       raise GameLogicError.new("NPCs cannot repair #{self}!") if player.nil?
 
@@ -48,6 +51,8 @@ module Parts::Repairable
         EventBroker.fire(planet, EventBroker::CHANGED,
           EventBroker::REASON_OWNER_PROP_CHANGE)
         Objective::RepairHp.progress(player, damaged_hp)
+        CallbackManager.register(self, CallbackManager::EVENT_COOLDOWN_EXPIRED,
+          cooldown_ends_at)
       end
     end
 

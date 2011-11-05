@@ -45,6 +45,9 @@ buildings.<%= base %>.hp: 1000
 <% end %>
 buildings.population_manager_part_test.population: 45 * level
 buildings.has_scientists_trait_mock.scientists: 10 * level
+buildings.repairable_test.metal.cost: 100 + 100 * (level - 1)
+buildings.repairable_test.energy.cost: 200 + 200 * (level - 1)
+buildings.repairable_test.zetium.cost: 300 + 300 * (level - 1)
 
 <% [
   %w{test_energy_user1 1},
