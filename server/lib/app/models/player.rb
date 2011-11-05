@@ -60,7 +60,8 @@ class Player < ActiveRecord::Base
     # units to ally planets or receive units from them.
     4 => :portal_without_allies,
     # No index there anyway.
-    :flag_query_mode => :bit_operator
+    :flag_query_mode => :bit_operator,
+    :check_for_column => false
   )
 
   # Given +Array+ with +Player+ ids returns a +Hash+ where players are
