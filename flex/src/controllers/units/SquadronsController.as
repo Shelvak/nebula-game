@@ -33,8 +33,6 @@ package controllers.units
    import mx.logging.Log;
    import mx.utils.ObjectUtil;
    
-   import namespaces.client_internal;
-   
    import utils.DateUtil;
    import utils.Objects;
    import utils.SingletonFactory;
@@ -239,9 +237,17 @@ package controllers.units
          ROUTES.remove(id, true);
          var squadToStop:MSquadron = SQUADS.remove(id, true);
          if (squadToStop == null) {
+            logger.warn(
+               "stopSquadron(): unable to find squad with id {0} (atLastHop: {1})",
+               id, atLastHop
+            );
             return;
          }
          if (atLastHop) {
+            logger.debug(
+               "stopSquadron(): stopping squad {0} at last hop",
+               squadToStop
+            );
             squadToStop.moveToLastHop();
             // This behaviour (destruction of squad) relies on the fact that the server
             // will send units|movement *before* objects|destroyed with a route. Because it does that
@@ -250,6 +256,10 @@ package controllers.units
             // immediate sector after jump, squad has to be destroyed because that map is not cached.
 //            if (squadToStop.jumpPending && squadToStop.jumpsAtEvent.hasOccured) {
             if (squadToStop.jumpPending) {
+               logger.debug(
+                  "stopSquadron(): the squad is waiting for a jump. "
+                  + "Cleaning up and returning."
+               );
                squadToStop.cleanup();
                refreshUnitsInUnitScreenModel();
                return;
@@ -409,7 +419,7 @@ package controllers.units
             if (squadExisting != null) {
                if (squadExisting.hasUnits) {
                   if (squadExisting.route != null) {
-                     squadExisting.client_internal::rebuildCachedUnits();
+                     squadExisting.rebuildCachedUnits();
                   }
                }
                else {
@@ -444,12 +454,13 @@ package controllers.units
        * 
        * <p>Do not use for starting units movement. Use <code>createSquadron()</code> for that.</p>
        */
-      public function createSquadronsForUnits(units:IList, map:MMap) : void
-      {
+      public function createSquadronsForUnits(units:IList, map:MMap) : void {
          var squad:MSquadron;
          for each (var unit:Unit in units.toArray()) {
-            if (unit.kind != UnitKind.SPACE || !unit.isMoving && (!unit.location || unit.location.isSSObject))
+            if (unit.kind != UnitKind.SPACE
+                  || !unit.isMoving && (!unit.location || unit.location.isSSObject)) {
                continue;
+            }
             
             squad = findSquad(unit.squadronId, unit.playerId, unit.location);
             
@@ -511,7 +522,8 @@ package controllers.units
                if (squad.hasHopsRemaining) {
                   squad.moveToNextHop(currentTime + MOVE_EFFECT_DURATION);
                   var loc:LocationMinimal = squad.currentHop.location;
-                  if (!loc.isObserved && (squad.isHostile || squad.isFriendly && !loc.isGalaxy)) {
+                  if (!loc.isObserved &&
+                        (squad.isHostile || squad.isFriendly && !loc.isGalaxy)) {
                      destroySquadron(squadId);
                   }
                }

@@ -185,7 +185,7 @@
                      'scientists': scientistsSelector.value,
                      'speedUp': speedUpBoost.selected});
                timeSeconds = timeSeconds > 1 ? timeSeconds : 1;
-               timeCost = getStringFromSeconds(timeSeconds);
+               timeCost = getStringFromSeconds(timeSeconds, 3);
             }
          }
          
@@ -366,9 +366,9 @@
             ).dispatch ();
          }
          
-         private function getStringFromSeconds(seconds: int): String
+         private function getStringFromSeconds(seconds: int, parts: int = 2): String
          {
-            return DateUtil.secondsToHumanString(seconds, 2);
+            return DateUtil.secondsToHumanString(seconds, parts);
          }
          
          private function hasUnlockingStuff(type: String): String

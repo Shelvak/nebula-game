@@ -80,8 +80,11 @@ package models.map
       public override function addItemAt(item:Object, index:int) : void {
          var newObject:IMStaticSpaceObject = IMStaticSpaceObject(item);
          if (length != 0 && !newObject.currentLocation.equals(currentLocation)) {
-            throw new IllegalOperationError("Can't add given object " + item + " to this list: other objects " +
-                                            "are not in the same location (" + currentLocation + ")");
+            throw new IllegalOperationError(
+               "Can't add given object " + item + " to this list: other objects "
+               + "are not in the same location:\n   "
+               + toArray().join("   \n")
+            );
          }
          var objectOfSameType:IMStaticSpaceObject = findObjectOfType(newObject.objectType);
          if (objectOfSameType != null) {

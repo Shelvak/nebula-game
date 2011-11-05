@@ -309,11 +309,10 @@ class SsObject::Planet < SsObject
     if old_player
       MarketOffer.
         where(:planet_id => id, :from_kind => MarketOffer::KIND_CREDS).
-        all.each \
-      do |market_offer|
-        old_player.creds += market_offer.from_amount
-        market_offer.destroy!
-      end
+        all.each do |market_offer|
+          old_player.creds += market_offer.from_amount
+          market_offer.destroy!
+        end
     end
     
     # Transfer any alive units that were not included in combat to new 

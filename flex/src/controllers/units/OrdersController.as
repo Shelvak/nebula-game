@@ -369,10 +369,8 @@ package controllers.units
        * Called by <code>controllers.units.actions.MoveAction</code> when response is received from
        * the server.
        */
-      public function orderComplete() : void
-      {
-         if (issuingOrders)
-         {
+      public function orderComplete() : void {
+         if (issuingOrders) {
             issuingOrders = false;
             _locTarget = null;
             removeUnitsListEventHandlers(units);
@@ -380,8 +378,7 @@ package controllers.units
             units.filterFunction = null;
             units = null;
             _unitIds = null;
-            if (_squad != null)
-            {
+            if (_squad != null) {
                _squad.removeEventListener(BaseModelEvent.PENDING_CHANGE, squad_pendingChangeHandler);
                _squad = null;
                squad_pendingChangeHandler();
@@ -396,8 +393,9 @@ package controllers.units
       /* ############################ */
       
       private function stage_keyUpHandler(event:KeyboardEvent) : void {
-         if (!event.isDefaultPrevented() && event.keyCode == Keyboard.ESCAPE)
+         if (!event.isDefaultPrevented() && event.keyCode == Keyboard.ESCAPE) {
             cancelOrder();
+         }
       }
       
       

@@ -19,7 +19,17 @@ package controllers.planets.actions
     # - id (Fixnum): planet id
     #
     # Response:
-    # - unit_counts (Array): Building::DefensivePortal#portal_unit_counts_for
+    # - unit_counts     
+    * # {
+    # :your => [[type, count], ...],
+    # :alliance => [[type, count], ...]
+    # }.
+    #
+    # E.g.:
+    # {
+    # :your => [["Trooper", 3], ["Shocker", 5], ... ],
+    # :alliance => []
+    # }
     # - teleport_volume (Fixnum): max volume of units that can be teleported
     # 
     * @author Jho

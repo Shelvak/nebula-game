@@ -63,7 +63,7 @@ package models
          message += 'Player:\n' + player + '\n\n';
          message += "Active map type:\n" + activeMapType + "\n\n";
          message += "Current galaxy:\n" + latestGalaxy + "\n\n";
-         message += "Solar systems in current galaxy:\n" + latestGalaxy.solarSystems.toArray().join("\n") + "\n\n";
+//         message += "Solar systems in current galaxy:\n" + latestGalaxy.solarSystems.toArray().join("\n") + "\n\n";
          message += "Current solar system:\n" + latestSolarSystem + "\n\n";
          message += "Current planet:\n" + latestPlanet + "\n\n";
          return message;

@@ -49,54 +49,64 @@
          
          private function findPossibleUnits(): void
          {
-            if (data != null && data.length > 0 && _maxVolume != 0)
+            if (data != null && _maxVolume != 0)
             {
                var volumeLeft: int = _maxVolume;
-               var tempObject: Object = {};
-               var finished: Boolean = false;
-               var tempList: ListCollectionView = buildUnitsFromArray(data);
-               while (!finished)
+               function findPossible(source: Array): ArrayCollection
                {
-                  var i: int = Math.round((Math.random() * (tempList.length - 1)));
-                  var possibleUnit: UnitBuildingEntry = 
-                     UnitBuildingEntry(tempList.getItemAt(i));
-                  if (possibleUnit.singleUnitVolume <= volumeLeft)
+                  if (source == null || source.length == 0)
                   {
-                     if (tempObject[possibleUnit.type] == null)
-                     {
-                        tempObject[possibleUnit.type] = 
-                           new UnitBuildingEntry(possibleUnit.type, 1);
-                     }
-                     else
-                     {
-                        UnitBuildingEntry(tempObject[possibleUnit.type]).count++; 
-                     }
-                     if (possibleUnit.count > 1)
-                     {
-                        possibleUnit.count--;
-                     }
-                     else
-                     {
-                        tempList.removeItemAt(i);
-                     }
-                     volumeLeft -= possibleUnit.singleUnitVolume;
+                     return null;
                   }
-                  else
+                  var tempObject: Object = {};
+                  var finished: Boolean = false;
+                  var tempList: ListCollectionView = buildUnitsFromArray(source);
+                  while (!finished)
                   {
-                     tempList.filterFunction = 
-                        function (item: UnitBuildingEntry): Boolean
+                     var i: int = Math.round((Math.random() * (tempList.length - 1)));
+                     var possibleUnit: UnitBuildingEntry = 
+                        UnitBuildingEntry(tempList.getItemAt(i));
+                     if (possibleUnit.singleUnitVolume <= volumeLeft)
+                     {
+                        if (tempObject[possibleUnit.type] == null)
                         {
-                           return item.singleUnitVolume <= volumeLeft;
-                        };
-                     tempList.refresh();
+                           tempObject[possibleUnit.type] = 
+                              new UnitBuildingEntry(possibleUnit.type, 1);
+                        }
+                        else
+                        {
+                           UnitBuildingEntry(tempObject[possibleUnit.type]).count++; 
+                        }
+                        if (possibleUnit.count > 1)
+                        {
+                           possibleUnit.count--;
+                        }
+                        else
+                        {
+                           tempList.removeItemAt(i);
+                        }
+                        volumeLeft -= possibleUnit.singleUnitVolume;
+                     }
+                     else
+                     {
+                        tempList.filterFunction = 
+                           function (item: UnitBuildingEntry): Boolean
+                           {
+                              return item.singleUnitVolume <= volumeLeft;
+                           };
+                        tempList.refresh();
+                     }
+                     finished = (tempList.length == 0);
                   }
-                  finished = (tempList.length == 0);
+                  return createCachedUnits(tempObject);
                }
-               possibleUnits = createCachedUnits(tempObject);
+               yourPossibleUnits = findPossible(data.your);
+               allyPossibleUnits = findPossible(data.alliance);
             }
             else
             {
-               possibleUnits = null;
+               yourPossibleUnits = null;
+               allyPossibleUnits = null;
             }
          }
          
@@ -125,22 +135,33 @@
          {
             return _maxVolume;
          }
-         private var data: Array;
-         [Bindable]
-         private var _allUnits: ArrayCollection = new ArrayCollection();
-         public function set allUnits(value: Array): void
+         private var data: Object;
+         public function set allUnits(value: Object): void
          {
             data = value;
-            _allUnits = buildUnitsFromArray(data);
+            if (data != null)
+            {
+               playerUnits = buildUnitsFromArray(data.your);
+               allyUnits = buildUnitsFromArray(data.alliance);
+            }
             findPossibleUnits();
          }
          
-         public function get allUnits(): Array
+         public function get allUnits(): Object
          {
             return data;
          }
+         
          [Bindable]
-         public var possibleUnits: ArrayCollection;
+         private var playerUnits: ArrayCollection = new ArrayCollection();
+         [Bindable]
+         private var allyUnits: ArrayCollection = new ArrayCollection();
+         
+         
+         [Bindable]
+         public var yourPossibleUnits: ArrayCollection;
+         [Bindable]
+         public var allyPossibleUnits: ArrayCollection;
          
          protected function group1_creationCompleteHandler(event:FlexEvent):void
          {
@@ -156,9 +177,9 @@
          }
          
          
-         private function getString(property:String, parameters:Array = null) : String
+         private function getString(property:String) : String
          {
-            return Localizer.string("Units", "defensivePool." + property, [getVolume(_allUnits)]);
+            return Localizer.string("Units", "defensivePool." + property);
          }
          
       ]]>
@@ -204,18 +225,35 @@
                            text="{Localizer.string('Units', 'title.defensivePool')}"/>
                   <s:Button top="13" left="295" skinClass="components.skins.InfoButtonSkin"
                             click="UrlNavigate.getInstance().showInfo('defensive-portal')"/>
-                  <s:DataGroup dataProvider="{_allUnits}" left="40" right="40" top="50" bottom="75" 
-                               itemRenderer="components.unit.IRUnitBuildingEntrySmall">
-                     <s:layout>
-                        <s:TileLayout requestedColumnCount="10"/>
-                     </s:layout>
-                  </s:DataGroup>
+                  <s:Group left="40" right="40" top="50" bottom="75">
+                     <!-- Player units -->
+                     <s:DataGroup dataProvider="{playerUnits}" 
+                                  itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+                        <s:layout>
+                           <s:TileLayout requestedColumnCount="10"/>
+                        </s:layout>
+                     </s:DataGroup>
+                     
+                     <!-- Alliance units -->
+                     <s:DataGroup dataProvider="{allyUnits}" 
+                                  itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+                        <s:layout>
+                           <s:TileLayout requestedColumnCount="10"/>
+                        </s:layout>
+                     </s:DataGroup>
+                     
+                  </s:Group>
                   <s:Group horizontalCenter="0" bottom="24">
                      <s:layout>
-                        <s:HorizontalLayout gap="6" horizontalAlign="center" verticalAlign="middle"/>
+                        <s:HorizontalLayout gap="6" 
+                                            horizontalAlign="center" 
+                                            verticalAlign="middle"/>
                      </s:layout>
-                     <s:Label styleName="volumeLabel" text="{getString('totalVolume')}"/>
-                     <s:Label styleName="volumeNumber" text="{getVolume(_allUnits)}"/>
+                     <s:Label styleName="volumeLabel" 
+                              text="{getString('totalVolume')}"/>
+                     <s:Label styleName="volumeNumber" 
+                              text="{getVolume(playerUnits) + 
+                              getVolume(allyUnits)}"/>
                   </s:Group>
                </s:Group>
                <s:Group minHeight="255">
@@ -229,30 +267,52 @@
                   </s:Group>
                   <s:Label left="40" top="15" styleName="panelTitle"
                            text="{Localizer.string('Units', 'title.possiblePool')}"/>
-                  <s:DataGroup dataProvider="{possibleUnits}" left="40" right="40" top="50" bottom="140" 
-                               itemRenderer="components.unit.IRUnitBuildingEntrySmall">
-                     <s:layout>
-                        <s:TileLayout requestedColumnCount="10"/>
-                     </s:layout>
-                  </s:DataGroup>
+                  <s:Group left="40" right="40" top="50" bottom="140">
+                     <!-- Player units -->
+                     <s:DataGroup dataProvider="{yourPossibleUnits}" 
+                                  itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+                        <s:layout>
+                           <s:TileLayout requestedColumnCount="10"/>
+                        </s:layout>
+                     </s:DataGroup>
+                     
+                     <!-- Alliance units -->
+                     <s:DataGroup dataProvider="{allyPossibleUnits}" 
+                                  itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+                        <s:layout>
+                           <s:TileLayout requestedColumnCount="10"/>
+                        </s:layout>
+                     </s:DataGroup>
+                     
+                  </s:Group>
                   <s:Group horizontalCenter="0" bottom="90">
                      <s:layout>
-                        <s:HorizontalLayout gap="6" horizontalAlign="center" verticalAlign="middle"/>
+                        <s:HorizontalLayout gap="6" 
+                                            horizontalAlign="center" 
+                                            verticalAlign="middle"/>
                      </s:layout>
-                     <s:Label styleName="volumeLabel" text="{getString('teleportedVolume')}"/>
-                     <s:Label styleName="volumeNumber" text="{getVolume(possibleUnits)}"/>
-                     <s:Label styleName="volumeLabel" text="{getString('maxVolume')}"/>
-                     <s:Label styleName="volumeNumber" text="{_maxVolume}"/>
+                     <s:Label styleName="volumeLabel" 
+                              text="{getString('teleportedVolume')}"/>
+                     <s:Label styleName="volumeNumber" 
+                              text="{getVolume(yourPossibleUnits) +
+                              getVolume(allyPossibleUnits)}"/>
+                     <s:Label styleName="volumeLabel" 
+                              text="{getString('maxVolume')}"/>
+                     <s:Label styleName="volumeNumber" 
+                              text="{_maxVolume}"/>
                   </s:Group>
-                  <s:Button label="{getString('pickUnits')}" click="findPossibleUnits()"
-                            skinClass="components.skins.YellowButtonSkin" bottom="7" horizontalCenter="0"/>
+                  <s:Button label="{getString('pickUnits')}" 
+                            click="findPossibleUnits()"
+                            skinClass="components.skins.YellowButtonSkin" 
+                            bottom="7" horizontalCenter="0"/>
                </s:Group>
             </s:Group>
             
          </s:Group>
       </base:Scroller>
    </s:Group>
-   <screens:ScreenCloseButton label="{Localizer.string('Players', 'label.close')}" bottom="0" right="0"
+   <screens:ScreenCloseButton label="{Localizer.string('Players', 'label.close')}" 
+                              bottom="0" right="0"
                               click="NavigationController.getInstance().showPreviousScreen()"
                               scroller="{scroll}"/>
 </s:Group>
