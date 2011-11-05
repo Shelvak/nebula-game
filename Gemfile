@@ -6,6 +6,7 @@ gem 'activesupport', '~>3.0.9', :require => 'active_support'
 gem 'activerecord', '~>3.0.9', :require => 'active_record'
 gem 'json', '>=1.4.6', :require => "json/ext"
 gem 'activerecord-jdbcmysql-adapter', '~>1.1'
+gem 'flag_shih_tzu'
 
 # Gems that are needed but should never be activated.
 group :installation do

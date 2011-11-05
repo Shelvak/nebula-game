@@ -220,7 +220,7 @@ class PlanetsController < GenericController
   # - id (Fixnum): planet id
   #
   # Response:
-  # - unit_counts (Array): Building::DefensivePortal#portal_unit_counts_for
+  # - unit_counts (Hash): Building::DefensivePortal#portal_unit_counts_for
   # - teleport_volume (Fixnum): max volume of units that can be teleported
   #
   def action_portal_units
