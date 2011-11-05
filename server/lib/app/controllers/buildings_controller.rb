@@ -118,7 +118,9 @@ class BuildingsController < GenericController
   # - objects|updated with +Player+. (if using creds)
   #
   def action_self_destruct
-    param_options :required => {:id => Fixnum, :with_creds => [TrueClass, FalseClass]}
+    param_options :required => {
+      :id => Fixnum, :with_creds => [TrueClass, FalseClass]
+    }
 
     building = find_building
     building.self_destruct!(params['with_creds'])
@@ -227,6 +229,19 @@ class BuildingsController < GenericController
     building = find_building
     building.build_in_2nd_flank = params['enabled']
     building.save!
+  end
+
+  # Starts repairs of the building.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the repaired building.
+  #
+  # Response: None
+  def action_repair
+    building = find_building
+    building.repair!
   end
   
   private
