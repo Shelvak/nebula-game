@@ -4,13 +4,13 @@ end
 
 namespace :quests do
   desc "Load quests from definition file"
-  task :load => :environment do
+  task :load => "db:connection" do
     load_quests_definition
     puts QUESTS.sync!
   end
   
   desc "Check if definition and database is intact."
-  task :check => :environment do
+  task :check => "db:connection" do
     load_quests_definition
     errors = QUESTS.check
     if errors.blank?
