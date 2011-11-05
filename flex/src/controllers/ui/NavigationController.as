@@ -630,7 +630,7 @@ package controllers.ui
          new PlanetsCommand(PlanetsCommand.PORTAL_UNITS, {'id': planetId}).dispatch();
       }
       
-      public function openDefensivePortal(units: Array, maxVolume: int): void
+      public function openDefensivePortal(units: Object, maxVolume: int): void
       {
          function setData(): void
          {
