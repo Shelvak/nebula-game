@@ -112,7 +112,8 @@ package utils
          {
             var stringParts: Array = timeString.split(' ');
             timeString = stringParts[0];
-            for (var i: int = 1; i<parts; i++)
+            var actualParts: int = Math.min(stringParts.length, parts);
+            for (var i: int = 1; i<actualParts; i++)
             {
                timeString += ' ' + stringParts[i];
             }
