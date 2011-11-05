@@ -249,7 +249,8 @@
                                  selected="{ML.player.portalWithoutAllies}"
                                  visible="{ML.player.hasAllianceTechnology}"/>
                      <!-- Player units -->
-                     <base:Heading3 text="{getString('title.yourPool')}"/>
+                     <base:Heading3 text="{getString('title.yourPool')}"
+                                    visible="{!ML.player.portalWithoutAllies}"/>
                      <s:Label textAlign="center" 
                               styleName="volumeNumber" 
                               text="{getString('volume', 
@@ -277,8 +278,9 @@
                               styleName="volumeNumber" 
                               visible="{!ML.player.portalWithoutAllies}"/>
                      <s:Label textAlign="center" text="{getString('poolEmpty')}"
-                              visible="{allyUnits == null
-                              || allyUnits.length == 0}"
+                              visible="{(allyUnits == null
+                              || allyUnits.length == 0)
+                              &amp;&amp; !ML.player.portalWithoutAllies}"
                               fontSize="36" fontWeight="bold"
                               color="#1c1c1c"/>
                      <s:DataGroup dataProvider="{allyUnits}"
@@ -347,7 +349,8 @@
                               styleName="volumeNumber" 
                               visible="{!ML.player.portalWithoutAllies}"/>
                      <s:Label textAlign="center" text="{getString('poolEmpty')}"
-                              visible="{allyPossibleUnits == null}"
+                              visible="{allyPossibleUnits == null
+                              &amp;&amp; !ML.player.portalWithoutAllies}"
                               fontSize="36" fontWeight="bold"
                               color="#1c1c1c"/>
                      <s:DataGroup dataProvider="{allyPossibleUnits}" 
