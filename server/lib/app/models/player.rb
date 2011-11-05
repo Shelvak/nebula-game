@@ -51,10 +51,17 @@ class Player < ActiveRecord::Base
   include Parts::Notifier
   include Parts::PlayerVip
 
-  flag_attributes(
-    :first_time           => 0b00000001,
-    :vip_free             => 0b00000010,
-    :referral_submitted   => 0b00000100
+  include FlagShihTzu
+  has_flags(
+    1 => :first_time,
+    2 => :vip_free,
+    3 => :referral_submitted,
+    # For defensive portals - skip ally planets when transfering. Don't send
+    # units to ally planets or receive units from them.
+    4 => :portal_without_allies,
+    # No index there anyway.
+    :flag_query_mode => :bit_operator,
+    :check_for_column => false
   )
 
   # Given +Array+ with +Player+ ids returns a +Hash+ where players are
@@ -159,6 +166,7 @@ class Player < ActiveRecord::Base
       )
       json['creds'] = creds
       json['first_time'] = first_time
+      json['portal_without_allies'] = portal_without_allies
       unless alliance_id.nil?
         is_owner = id == alliance.owner_id
         json['alliance_owner'] = is_owner

@@ -78,10 +78,13 @@ class Building < ActiveRecord::Base
   end
 
   # #flags is currently tiny int, so it can store 8 flags.
-  flag_attributes(
-    "overdriven"                => 0b00000001,
-    "without_points"            => 0b00000010,
-    "build_in_2nd_flank"        => 0b00000100
+  include FlagShihTzu
+  has_flags(
+    1 => :overdriven,
+    2 => :without_points,
+    # For constructors - build units in 2nd flank.
+    3 => :build_in_2nd_flank,
+    :check_for_column => false
   )
 
   def to_s

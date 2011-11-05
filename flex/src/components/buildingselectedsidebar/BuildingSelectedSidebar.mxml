@@ -275,7 +275,7 @@
             metalCost = resources.metal;
             energyCost = resources.energy;
             zetiumCost = resources.zetium;
-            timeCost = DateUtil.secondsToHumanString(_selectedModel.upgradePart.timeNeededForNextLevel());
+            timeCost = DateUtil.secondsToHumanString(_selectedModel.upgradePart.timeNeededForNextLevel(), 3);
          }
          
          private function removeUpgradePending(e: GBuildingEvent): void
@@ -714,9 +714,10 @@
                                     _selectedModel.zetiumRate &lt; 0
                                     )
                                     )}">
-                              <s:Button label="{_selectedModel.state == 1
-                                        ?getString('deactivate')
-                                        :getString('activate')}"
+                              <s:Button label="{_selectedModel.state == 
+                                        Building.ACTIVE
+                                        ? getString('deactivate')
+                                        : getString('activate')}"
                                         click="activate_clickHandler(event)" 
                                         enabled="{!_selectedModel.pending}"
                                         right="6"/>
@@ -724,7 +725,8 @@
                            
                            <!-- OPEN BUILDING -->
                            <s:Group visible="{!_selectedModel.upgradePart.upgradeInProgress
-                                    &amp;&amp; _selectedModel.openable}">
+                                    &amp;&amp; _selectedModel.openable
+                                    &amp;&amp; _selectedModel.state != Building.INACTIVE}">
                               <s:Button label="{getString('open')}"
                                         click="openCurrent()"
                                         right="6"/>

@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/arturaz/flag_shih_tzu.git
+  revision: 3bf3911928f086633d5862cf7b2464e0ba23bdaf
+  specs:
+    flag_shih_tzu (0.2.3)
+      activerecord (>= 2.3.0)
+
 GEM
   remote: http://rubygems.org/
   remote: http://gems.github.com/
@@ -88,6 +95,7 @@ DEPENDENCIES
   chronic (>= 0.6.2)
   eventmachine (>= 0.12.6)
   factory_girl (~> 2.0)
+  flag_shih_tzu!
   jruby-openssl
   json (>= 1.4.6)
   mail (>= 2.2)

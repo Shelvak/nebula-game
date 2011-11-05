@@ -1,6 +1,6 @@
 class Building::DefensivePortal < Building
   # Raised when no units can be teleported for defense. For internal usage.
-  class NoUnitsError < Exception; end
+  class NoUnitsError < StandardError; end
 
   # Array of [type, class] pairs for unit types that can be teleported via
   # portal.
@@ -33,26 +33,41 @@ class Building::DefensivePortal < Building
 
     # Returns defender unit counts for _planet_.
     #
-    # Returns Array of [type, count].
+    # Returns Hash:
+    # {
+    #   :your => [[type, count], ...],
+    #   :alliance => [[type, count], ...]
+    # }.
     #
     # E.g.:
-    # [ ["Trooper", 3], ["Shocker", 5], ... ]
+    # {
+    #   :your => [["Trooper", 3], ["Shocker", 5], ... ],
+    #   :alliance => []
+    # }
     #
     def portal_unit_counts_for(planet)
-      player_ids, planet_ids = get_ids_from_planet(planet)
-      total_unit_counts(player_ids, planet_ids)
+      player_id, ally_ids, planet_ids, ally_planet_ids =
+        get_ids_from_planet(planet)
+
+      {
+        :your => total_unit_counts([player_id], planet_ids),
+        :alliance => total_unit_counts(ally_ids, ally_planet_ids),
+      }
     rescue NoUnitsError
-      []
+      {:your => [], :alliance => []}
     end
 
     # Get defender units for _planet_.
     #
     # Returns array of units that will defend this planet.
     def portal_units_for(planet)
-      player_ids, planet_ids = get_ids_from_planet(planet)
+      player_id, ally_player_ids, planet_ids, ally_planet_ids =
+        get_ids_from_planet(planet)
       volume = teleported_volume_for(planet)
 
-      pick_units(player_ids, planet_ids, volume)
+      pick_units(
+        player_id, planet_ids, ally_player_ids, ally_planet_ids, volume
+      )
     rescue NoUnitsError
       []
     end
@@ -61,28 +76,38 @@ class Building::DefensivePortal < Building
     def teleported_volume_for(planet)
       where(
         :planet_id => planet.id, :state => Building::STATE_ACTIVE
-      ).map { |building| building.teleported_volume }.sum
+      ).map(&:teleported_volume).sum
     end
 
     protected
 
     # Picks random units from planets with _planet_ids_ for _total_volume_.
-    def pick_units(player_ids, planet_ids, total_volume)
-      Unit.find(pick_unit_ids(player_ids, planet_ids, total_volume).to_a)
+    def pick_units(player_id, planet_ids, ally_player_ids, ally_planet_ids,
+        total_volume)
+      Unit.find(
+        pick_unit_ids(
+          player_id, planet_ids, ally_player_ids, ally_planet_ids, total_volume
+        ).to_a
+      )
     end
 
     # Picks random units from planets with _planet_ids_ for _total_volume_.
     #
     # Returns Set of their ids.
-    def pick_unit_ids(player_ids, planet_ids, total_volume)
-      available = Unit.connection.select_all(%{
-        SELECT id, type FROM `#{Unit.table_name}`
-        WHERE #{condition(player_ids, planet_ids)}
-      }).map do |row|
+    def pick_unit_ids(player_id, planet_ids, ally_player_ids, ally_planet_ids,
+        total_volume)
+      relation = Unit.select("id, type")
+      block = lambda do |row|
         [row['id'], PORTAL_UNIT_VOLUMES[row['type']]]
       end
 
-      pick_unit_ids_from_list(available, total_volume)
+      available_yours = planet_ids.blank? \
+        ? [] : relation.where(condition([player_id], planet_ids)).map(&block)
+      available_ally = ally_player_ids.blank? || ally_planet_ids.blank? \
+        ? [] : relation.
+                 where(condition(ally_player_ids, ally_planet_ids)).map(&block)
+
+      pick_unit_ids_from_list(available_yours, available_ally, total_volume)
     end
 
     # Get numbers of units in defense.
@@ -97,11 +122,14 @@ class Building::DefensivePortal < Building
     # ]
     #
     def total_unit_counts(player_ids, planet_ids)
-      Unit.connection.select_all(%{
-        SELECT type, COUNT(*) as count FROM `#{Unit.table_name}`
-        WHERE #{condition(player_ids, planet_ids)}
-        GROUP BY type
-      }).map { |row| [row['type'], row['count']] }
+      return [] if player_ids.blank? || planet_ids.blank?
+
+      Unit.
+        select("type, COUNT(*) as count").
+        where(condition(player_ids, planet_ids)).
+        group("type").
+        c_select_all.
+        map { |row| [row['type'], row['count']] }
     end
 
     # Return condition for selecting defender units.
@@ -120,34 +148,51 @@ class Building::DefensivePortal < Building
       player = planet.player
       raise NoUnitsError if player.nil?
 
-      player_ids = player.friendly_ids
-      planet_ids = SsObject::Planet.connection.select_values(%{
-        SELECT id FROM `#{SsObject.table_name}`
-        WHERE #{sanitize_sql_for_conditions(
-          ["player_id IN (?) AND id != ?", player_ids, planet.id],
-          SsObject::Planet.table_name
-        )}
-      })
-      planet_ids.reject! do |planet_id|
+      ally_ids = player.portal_without_allies? \
+        ? [] \
+        : Player.
+            select("id").
+            not_portal_without_allies.
+            where(:alliance_id => player.alliance_id).
+            where("id != ?", player.id).
+            c_select_values
+      
+      relation = SsObject::Planet.select("id").where("id != ?", planet.id)
+      player_planet_ids = relation.where(:player_id => player.id).
+        c_select_values
+
+      ally_planet_ids = ally_ids.blank? \
+        ? [] : relation.where(:player_id => ally_ids).c_select_values
+
+      reject_block = lambda do |planet_id|
         Building::DefensivePortal.active.where(:planet_id => planet_id).
           count == 0
       end
-      raise NoUnitsError if planet_ids.blank?
 
-      [player_ids, planet_ids]
+      player_planet_ids.reject!(&reject_block)
+      ally_planet_ids.reject!(&reject_block)
+
+      raise NoUnitsError if player_planet_ids.blank? && ally_planet_ids.blank?
+
+      [player.id, ally_ids, player_planet_ids, ally_planet_ids]
     end
 
     # Pick unit ids from list of [id, volume] pairs.
-    def pick_unit_ids_from_list(available, volume_left)
+    def pick_unit_ids_from_list(available_yours, available_ally, volume_left)
       unit_ids = Set.new
-      while ! available.blank?
-        id, volume = available.random_element
-        if volume <= volume_left
-          unit_ids.add(id)
-          volume_left -= volume
-        else
-          # Filter units which will not fit.
-          available.accept! { |id, volume| volume <= volume_left }
+      # Duplicate to prevent messing around with original arrays.
+      [available_yours.dup, available_ally.dup].each do |available|
+        while ! available.blank?
+          index = rand(available.size)
+          id, volume = available[index]
+          if volume <= volume_left
+            available.delete_at(index)
+            unit_ids.add(id)
+            volume_left -= volume
+          else
+            # Filter units which will not fit.
+            available.accept! { |id, volume| volume <= volume_left }
+          end
         end
       end
 

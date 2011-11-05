@@ -4052,7 +4052,10 @@
     </tooltip.nothingToLoad>
     <!-- /TODO translate this -->
        
+    <!-- TODO changed to:
+    <title.defensivePool value="Defensive army pool" /> -->
     <title.defensivePool value="Jūsu armijas aizsardzības parks" />
+    <!-- /TODO -->
     <title.emptyDefensivePool>
       <p>Jūsu aizsardzības parks ir tukšs. Tas nozīmē, ka nav vienību, ko teleportēt 
       gadījumā, ja kāds uzbrūk jūsu planētai.</p>
@@ -4061,7 +4064,19 @@
       teleportētu vienības no planētas, uz kuras ir uzbūvēti
       aizsardzības portāli.</p>
     </title.emptyDefensivePool>
-    <title.possiblePool value="Kad jums uzbrūk, jūs variet iegūt" />
+    <title.possiblePool value="Kad jums uzbrūk, jūs variet iegūt" /> 
+    <!-- TODO -->   
+    <defensivePool.title.yourPool value="Your army pool" />
+    <defensivePool.title.allyPool value="Alliance army pool" />
+    <defensivePool.dontIncludeAlliance 
+      value="Don't communicate with alliance portals" />
+    <defensivePool.tooltip.dontIncludeAlliance>
+      <p>If checked your units won't be teleported to alliance planets and 
+      alliance units won't be teleported to your planets.</p>
+    </defensivePool.tooltip.dontIncludeAlliance>
+    <defensivePool.volume value="Volume: {0}" />
+    <defensivePool.poolEmpty value="Pool empty" />
+    <!-- /TODO -->
     <defensivePool.totalVolume value="Kopējais apjoms:" />
     <defensivePool.teleportedVolume value="Teleportētais apjoms:" />
     <defensivePool.maxVolume value="Maksimālā jauda:" />

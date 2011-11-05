@@ -8,8 +8,10 @@ class Technology < ActiveRecord::Base
   belongs_to :player
 
   # #flags is currently tiny int, so it can store 8 flags.
-  flag_attributes(
-    "speed_up"                  => 0b00000001
+  include FlagShihTzu
+  has_flags(
+    1 => :speed_up,
+    :check_for_column => false
   )
 
   def as_json(options=nil)

@@ -212,9 +212,10 @@ describe PlayersController do
         @action = "players|edit"
         @player = self.player
         @player.first_time = true
+        @player.portal_without_allies = true
         @player.save!
 
-        @params = {'first_time' => false}
+        @params = {'first_time' => false, 'portal_without_allies' => false}
       end
 
       it "should change first_time" do
@@ -222,6 +223,13 @@ describe PlayersController do
           invoke @action, @params
           @player.reload
         end.should change(@player, :first_time).from(true).to(false)
+      end
+
+      it "should change portal_without_allies" do
+        lambda do
+          invoke @action, @params
+          @player.reload
+        end.should change(@player, :portal_without_allies).from(true).to(false)
       end
     end
 

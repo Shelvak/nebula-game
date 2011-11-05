@@ -3908,7 +3908,7 @@
       <p>Nėra ką įkrauti</p>
     </tooltip.nothingToLoad>
     
-    <title.defensivePool value="Tavo gynybinis rezervas" />
+    <title.defensivePool value="Gynybinis rezervas" />
     <title.emptyDefensivePool>
       <p>Tavo gynybinis rezervas yra tuščias. Priešams užpuolus šią planetą
       į jos gynybą nebus atiteleportuoti jokie kariai.</p>
@@ -3917,6 +3917,16 @@
       atiteleportuoti kariai.</p>
     </title.emptyDefensivePool>
     <title.possiblePool value="Jeigu tave užpuls, tu gali gauti" />
+    <defensivePool.title.yourPool value="Tavo gynybinis rezervas" />
+    <defensivePool.title.allyPool value="Sąjungos gynybinis rezervas" />
+    <defensivePool.dontIncludeAlliance 
+      value="Nesusisiekti su sąjungos portalais" />
+    <defensivePool.tooltip.dontIncludeAlliance>
+      <p>Jei pažymėta, Tavo kariai nebus keliami į sąjungininkų planetas,
+      o sąjungininkų kariai nebus keliami į Tavo planetas.</p>
+    </defensivePool.tooltip.dontIncludeAlliance>
+    <defensivePool.volume value="Apimtis: {0}" />
+    <defensivePool.poolEmpty value="Rezervas tuščias" />
     <defensivePool.totalVolume value="Iš viso apimties:" />
     <defensivePool.teleportedVolume value="Teleportuota apimtis:" />
     <defensivePool.maxVolume value="Maksimali galia:" />
