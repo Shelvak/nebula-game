@@ -104,7 +104,7 @@
       <s:layout>
          <s:HorizontalLayout gap="10" verticalAlign="top"/>
       </s:layout>
-      <s:BitmapImage source="@Embed(source='/popup_bug.png')"/>
+      <s:BitmapImage source="@Embed(source='/embed/assets/popup_bug.png')"/>
       <s:Label id="msgGeneral" width="100%"
                visible="{!showDebugPlayerWarning}" includeInLayout="{!showDebugPlayerWarning}"/>
       <s:Label id="msgDebug" width="100%"

@@ -21,8 +21,8 @@
       </logging:GlobalExceptionHandler>
    </fx:Declarations>
    
-   <fx:Style source="skins.css"/>
-   <fx:Style source="style.css"/>
+   <fx:Style source="embed/skins.css"/>
+   <fx:Style source="embed/style.css"/>
    
    <base:SpinnerContainer busy="{GlobalFlags.getInstance().lockApplication}"
                           left="0" right="0" top="0" bottom="0">
