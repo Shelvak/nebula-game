@@ -19,7 +19,7 @@
    </base:states>
    
    <s:BitmapImage id="thumb"
-                  source="@Embed(source='/scrollbar_scroll_unselected.png')"
-                  source.down="@Embed(source='/scrollbar_scroll_selected.png')"/> 
+                  source="@Embed(source='/embed/assets/scrollbar_scroll_unselected.png')"
+                  source.down="@Embed(source='/embed/assets/scrollbar_scroll_selected.png')"/>
    
 </base:BaseSkin>

@@ -19,6 +19,6 @@
    </base:states>
    
    <s:BitmapImage id="arrow"
-                  source="@Embed(source='/scrollbar_bottom_button.png')"
-                  source.down="@Embed(source='/scrollbar_bottom_button_selected.png')"/>             
+                  source="@Embed(source='/embed/assets/scrollbar_bottom_button.png')"
+                  source.down="@Embed(source='/embed/assets/scrollbar_bottom_button_selected.png')"/>
 </base:BaseSkin>
