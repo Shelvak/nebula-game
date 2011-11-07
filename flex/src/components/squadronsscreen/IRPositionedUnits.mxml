@@ -55,14 +55,9 @@
                                  left="10"/>
    </s:Group>
    <s:Group>
-      <s:Group height="100%">
-            <s:layout><s:HorizontalLayout gap="0"/></s:layout>
-            <s:BitmapImage source="{getImage('info_left')}"/>
-            <s:BitmapImage source="{getImage('info_center')}" fillMode="repeat" width="150"/>
-            <s:BitmapImage source="{getImage('info_right')}"/>
-      </s:Group>
+      <s:BitmapImage source="{getImage('info_right')}" id="leftArt"/>
      
-      <s:Group height="100%" width="100%">
+      <s:Group height="100%" left="{leftArt.width}" right="0">
          <s:Group left="0" right="0" top="0" bottom="0">
             <s:layout><s:HorizontalLayout gap="0"/></s:layout>
             <s:BitmapImage source="{getImage('units')}" fillMode="repeat" width="100%"/>
@@ -76,6 +71,7 @@
                <!-- open button -->
                <s:Group left="17" right="5" bottom="5">
                   <s:layout><s:HorizontalLayout gap="5" horizontalAlign="right"/></s:layout>
+                  <s:Label text="{getString('label.owner')}"/>
                   <s:Button id="btnOpen" label="{model.player.name}" skinClass="components.skins.LinkButtonSkin"
                             click="NavigationController.getInstance().showPlayer(model.player.id)"/>
                </s:Group>

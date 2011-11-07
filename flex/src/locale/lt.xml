@@ -1433,6 +1433,7 @@
     <header.planet value="Planeta" />
     <header.building value="Pastatas" />
     <header.unit value="Laivas" />
+    <header.any value="Betkas" />
     <header.storage value="Talpa" />
     <header.owner value="Valdytojas" />
 
@@ -3346,6 +3347,7 @@
     <label.allianceUnits value="Sąjungininkų kariai" />
     <label.stop value="Sustabdyti" />
     <label.manage value="Tvarkyti" />
+    <label.owner value="Savininkas:" />
   </Squadrons>
 
   <Technologies>

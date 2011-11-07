@@ -34,8 +34,52 @@
          </base:Scroller>
       </s:Group>
       <s:Group id="unitsContent" height="100%" width="100%">
+         <base:AdvancedContainer id="grpFilters">
+            <s:DropDownList dataProvider="{OU.owners}"
+                    change="playerSelector_changeHandler(event)"
+                    id="playerSelector"
+                    requireSelection="true"
+                    visible="{currentList == OU.allyUnits}"
+                    labelFunction="playerNameFunction"
+                    creationComplete="playerSelector_creationCompleteHandler(event)"/>
+            <!-- PLAYER LOCATION FILTERS -->
+            <s:DropDownList dataProvider="{LOCATION_TYPES}"
+                    change="locationTypeSelector_changeHandler(event)"
+                    itemRenderer="components.location.IRLocationType"
+                    id="playerLocationTypesSelector"
+                    requireSelection="true"
+                    visible="{currentList == OU.playerUnits}"
+                    labelFunction="locationTypeFunction"/>
+            <s:DropDownList dataProvider="{OU.playerLocationObjects}"
+                    itemRenderer="components.location.IRLocationBasic"
+                    change="locationObjectsSelector_changeHandler(event)"
+                    id="playerLocationObjectsSelector"
+                    requireSelection="true"
+                    visible="{currentList == OU.playerUnits}"
+                    labelFunction="locationObjectFunction"/>
+            <!-- ALLY LOCATION FILTERS -->
+            <s:DropDownList dataProvider="{LOCATION_TYPES}"
+                    change="locationTypeSelector_changeHandler(event)"
+                    itemRenderer="components.location.IRLocationType"
+                    id="allyLocationTypesSelector"
+                    requireSelection="true"
+                    visible="{currentList == OU.allyUnits}"
+                    labelFunction="locationTypeFunction"/>
+            <s:DropDownList dataProvider="{OU.allyLocationObjects}"
+                    itemRenderer="components.location.IRLocationBasic"
+                    change="locationObjectsSelector_changeHandler(event)"
+                    id="allyLocationObjectsSelector"
+                    requireSelection="true"
+                    visible="{currentList == OU.allyUnits}"
+                    labelFunction="locationObjectFunction"/>
+            <base:layout>
+               <s:HorizontalLayout gap="5" paddingBottom="3" paddingTop="3"
+                       paddingLeft="6"/>
+            </base:layout>
+         </base:AdvancedContainer>
          <!--- Scroller for scrolling the content of the list -->
-         <base:Scroller id="unitScroller" stepMultiplier="10" left="0" right="0" top="0" bottom="0"
+         <base:Scroller id="unitScroller" stepMultiplier="10" left="0"
+                        right="0" top="30" bottom="0"
                         skinClass="components.base.screen.ListScreenScrollerSkin">
             <s:Group width="100%">
                <s:DataGroup itemRenderer="components.squadronsscreen.IRPositionedUnits"
@@ -58,132 +102,179 @@
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import controllers.ui.NavigationController;
-         
-         import globalevents.GlobalEvent;
-         
-         import models.ModelLocator;
-         import models.Owner;
-         import models.movement.MRoute;
-         
-         import mx.collections.ListCollectionView;
-         import mx.events.FlexEvent;
-         
-         import spark.components.Group;
-         
-         import utils.components.ToggleButtonsGroup;
-         import utils.components.events.ToggleButtonsGroupEvent;
-         import utils.datastructures.Collections;
-         import utils.locale.Localizer;
-         
-         [Bindable]
-         private var screenTitle: String;
-         
-         [Bindable]
-         private var currentScroller: Scroller;
-         
-         [Bindable]
-         private var currentList: ListCollectionView;
-         
-         private function get OU(): OverviewUnits
-         {
-            return OverviewUnits.getInstance();
-         }
-         
-         private function getString(property:String, parameters:Array = null) : String {
-            return Localizer.string("Squadrons", property, parameters);
-         }
-         
-         private const _filterButtons:ToggleButtonsGroup = new ToggleButtonsGroup();
-         private const _routes:ListCollectionView = new ListCollectionView(ModelLocator.getInstance().routes);
-         
-         private function this_initializeHandler(event:FlexEvent):void {
-            _filterButtons.registerButton(btnPlayerRoutes);
-            _filterButtons.registerButton(btnAllianceRoutes);
-            _filterButtons.registerButton(btnPlayerUnits);
-            _filterButtons.registerButton(btnAllianceUnits);
-            
-            _filterButtons.addEventListener(
-               ToggleButtonsGroupEvent.SELECTION_CHANGE, 
-               filterButtons_selectionChangeHandler, false, 0, true
-            );
-            _filterButtons.select(btnPlayerUnits);
-            EventBroker.subscribe(GlobalEvent.APP_READY, globalEvent_appReadyHandler);
-         }
-         
-         protected function this_creationCompleteHandler(event:FlexEvent):void
-         {
-            mainAreaContent = unitsContent;
-         }
-         
-         private function filterButtons_selectionChangeHandler(event:ToggleButtonsGroupEvent) : void {
-            if (event.selectedButton == btnPlayerRoutes)
-            {
-               screenTitle = getString('title.squadrons');
-               if (mainAreaContent != squadsContent)
-               {
-                  mainAreaContent = squadsContent;
-               }
-               applySquadFilterFunction(ff_playerRoutes);
-               if (currentScroller != squadScroller)
-               {
-                  currentScroller = squadScroller;
-               }
-               currentList = _routes;
+      import com.developmentarc.core.utils.EventBroker;
+
+      import controllers.ui.NavigationController;
+
+      import globalevents.GlobalEvent;
+
+      import models.ModelLocator;
+      import models.Owner;
+      import models.location.Location;
+      import models.location.LocationType;
+      import models.movement.MRoute;
+
+      import mx.collections.ArrayCollection;
+
+      import mx.collections.ListCollectionView;
+      import mx.events.FlexEvent;
+
+      import spark.components.Group;
+      import spark.events.IndexChangeEvent;
+
+      import utils.components.ToggleButtonsGroup;
+      import utils.components.events.ToggleButtonsGroupEvent;
+      import utils.datastructures.Collections;
+      import utils.locale.Localizer;
+
+      [Bindable]
+      private var screenTitle: String;
+
+      [Bindable]
+      private var currentScroller: Scroller;
+
+      [Bindable]
+      private var currentList: ListCollectionView;
+
+      private static const LOCATION_TYPES: ArrayCollection =
+              new ArrayCollection([LocationType.ANY,
+                 LocationType.GALAXY,
+                 LocationType.SOLAR_SYSTEM,
+                 LocationType.SS_OBJECT]);
+
+      private function get OU(): OverviewUnits {
+         return OverviewUnits.getInstance();
+      }
+
+      private function getString(property: String, parameters: Array = null): String {
+         return Localizer.string("Squadrons", property, parameters);
+      }
+
+      private const _filterButtons: ToggleButtonsGroup = new ToggleButtonsGroup();
+      private const _routes: ListCollectionView = new ListCollectionView(ModelLocator.getInstance().routes);
+
+      private function this_initializeHandler(event: FlexEvent): void {
+         _filterButtons.registerButton(btnPlayerRoutes);
+         _filterButtons.registerButton(btnAllianceRoutes);
+         _filterButtons.registerButton(btnPlayerUnits);
+         _filterButtons.registerButton(btnAllianceUnits);
+
+         _filterButtons.addEventListener(
+                 ToggleButtonsGroupEvent.SELECTION_CHANGE,
+                 filterButtons_selectionChangeHandler, false, 0, true
+         );
+         _filterButtons.select(btnPlayerUnits);
+         EventBroker.subscribe(GlobalEvent.APP_READY, globalEvent_appReadyHandler);
+      }
+
+      protected function this_creationCompleteHandler(event: FlexEvent): void {
+         mainAreaContent = unitsContent;
+      }
+
+      private function filterButtons_selectionChangeHandler(event: ToggleButtonsGroupEvent): void {
+         if (event.selectedButton == btnPlayerRoutes) {
+            screenTitle = getString('title.squadrons');
+            if (mainAreaContent != squadsContent) {
+               mainAreaContent = squadsContent;
             }
-            else if (event.selectedButton == btnAllianceRoutes)
-            {
-               screenTitle = getString('title.squadrons');
-               if (mainAreaContent != squadsContent)
-               {
-                  mainAreaContent = squadsContent;
-               }
-               applySquadFilterFunction(ff_allianceRoutes);
-               if (currentScroller != squadScroller)
-               {
-                  currentScroller = squadScroller;
-               }
-               currentList = _routes;
+            applySquadFilterFunction(ff_playerRoutes);
+            if (currentScroller != squadScroller) {
+               currentScroller = squadScroller;
             }
-            else
-            {
-               screenTitle = getString('title.units');
-               if (mainAreaContent != unitsContent)
-               {
-                  mainAreaContent = unitsContent;
-               }
-               if (currentScroller != unitScroller)
-               {
-                  currentScroller = unitScroller;
-               }
-               if (event.selectedButton == btnPlayerUnits)
-               {
-                  currentList = OU.playerUnits;
-               }
-               else
-               {
-                  currentList = OU.allyUnits;
-               }
+            currentList = _routes;
+         }
+         else if (event.selectedButton == btnAllianceRoutes) {
+            screenTitle = getString('title.squadrons');
+            if (mainAreaContent != squadsContent) {
+               mainAreaContent = squadsContent;
+            }
+            applySquadFilterFunction(ff_allianceRoutes);
+            if (currentScroller != squadScroller) {
+               currentScroller = squadScroller;
+            }
+            currentList = _routes;
+         }
+         else {
+            screenTitle = getString('title.units');
+            if (mainAreaContent != unitsContent) {
+               mainAreaContent = unitsContent;
+            }
+            if (currentScroller != unitScroller) {
+               currentScroller = unitScroller;
+            }
+            if (event.selectedButton == btnPlayerUnits) {
+               currentList = OU.playerUnits;
+            }
+            else {
+               currentList = OU.allyUnits;
             }
          }
-         
-         private function applySquadFilterFunction(ff:Function) : void {
-            Collections.applyFilter(_routes, ff);
+      }
+
+      private function applySquadFilterFunction(ff: Function): void {
+         Collections.applyFilter(_routes, ff);
+      }
+
+      private function ff_playerRoutes(route: MRoute): Boolean {
+         return route.owner == Owner.PLAYER;
+      }
+
+      private function ff_allianceRoutes(route: MRoute): Boolean {
+         return route.owner == Owner.ALLY;
+      }
+
+      protected function globalEvent_appReadyHandler(event: GlobalEvent): void {
+         _filterButtons.select(btnPlayerUnits);
+      }
+
+      private function locationTypeSelector_changeHandler(event: IndexChangeEvent): void {
+         refreshFilter();
+      }
+
+      private function playerSelector_changeHandler(event: IndexChangeEvent): void {
+         refreshFilter();
+      }
+
+      private function refreshFilter(): void {
+         if (currentList == OU.allyUnits) {
+            OU.filterAllyUnits(allyLocationTypesSelector.selectedItem,
+                    allyLocationObjectsSelector.selectedItem,
+                    playerSelector.selectedItem);
          }
-         
-         private function ff_playerRoutes(route:MRoute) : Boolean {
-            return route.owner == Owner.PLAYER;
+         else {
+            OU.filterPlayerUnits(playerLocationTypesSelector.selectedItem,
+                    playerLocationObjectsSelector.selectedItem);
          }
-         
-         private function ff_allianceRoutes(route:MRoute) : Boolean {
-            return route.owner == Owner.ALLY;
-         }
-         
-         protected function globalEvent_appReadyHandler(event:GlobalEvent) : void {
-            _filterButtons.select(btnPlayerUnits);
-         }
+      }
+
+      private function locationObjectsSelector_changeHandler(event: IndexChangeEvent): void {
+         refreshFilter();
+      }
+
+      private function playerNameFunction(item: Object): String {
+         return item == null ? Localizer.string('Location', 'header.any')
+                 : String(item);
+      }
+
+      private function locationTypeFunction(item: Object): String {
+         return Localizer.string('Location',
+                 item == LocationType.GALAXY ? 'description.short.galaxy'
+                         : (item == LocationType.SOLAR_SYSTEM ? 'header.solarSystem'
+                         : (item == LocationType.SS_OBJECT ? 'header.planet'
+                         : 'header.any')));
+      }
+
+      private function locationObjectFunction(item: Object): String {
+         return item == null ? Localizer.string('Location', 'header.any')
+                 : Location(item).shortDescription;
+      }
+
+      private function playerSelector_creationCompleteHandler(event: FlexEvent): void {
+         playerSelector.labelDisplay.setStyle('paddingLeft', 3);
+         playerSelector.labelDisplay.setStyle('paddingTop', 3);
+         playerSelector.labelDisplay.setStyle('paddingBottom', 3);
+         playerSelector.labelDisplay.setStyle('paddingRight', 3);
+      }
       ]]>
    </fx:Script>
 </screen:ArtworkedClosableScreen>

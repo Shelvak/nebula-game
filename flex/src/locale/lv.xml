@@ -1496,6 +1496,9 @@
     <header.planet value="Planēta" />
     <header.building value="Ēka" />
     <header.unit value="Vienība" />
+    <!-- TODO -->
+    <header.any value="Any" />
+    <!-- /TODO -->
     <header.storage value="Noliktava" />
     <header.owner value="Īpašnieks" />
 
@@ -3428,6 +3431,7 @@
     <!-- TODO -->
     <label.playerUnits value="Your units" />
     <label.allianceUnits value="Alliance units" />
+    <label.owner value="Owner:" />
     <!-- /TODO -->
     <label.stop value="Apturēt" />
     <label.manage value="Pārvaldīt" />
