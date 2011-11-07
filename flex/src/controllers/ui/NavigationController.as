@@ -658,7 +658,11 @@ package controllers.ui
          ML.quests.applyCompletedFilter(false);
          if (ML.quests.selectedQuest == null)
          {
-            ML.quests.select(Quest(ML.quests.getFirst()).id);
+            var quest: Quest = Quest(ML.quests.getFirst());
+            // We might not have any quests left.
+            if (quest != null) {
+               ML.quests.select(quest.id);
+            }
          }
          if (ML.player.firstTime)
          {

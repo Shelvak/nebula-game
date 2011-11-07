@@ -1405,6 +1405,7 @@
     <gun.plasma_spike value="Shock Rifle" />
     <gun.thor_ground value="Blizzard" />
     <gun.cannon_air value="Zeus class cannon" />
+    <gun.dart_laser value="Phaser" />
     <armorType value="Bruņu tips" />
     <damageInPercent value="Procentuāli" />
     <damage value="Bojājums" />
