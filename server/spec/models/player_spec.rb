@@ -690,7 +690,9 @@ describe Player do
         first_time economy_points army_points science_points war_points
         victory_points creds population population_cap planets_count
         alliance_id alliance_cooldown_ends_at
-        free_creds vip_level vip_creds vip_until vip_creds_until}
+        free_creds vip_level vip_creds vip_until vip_creds_until
+        portal_without_allies
+      }
       ommited_fields = fields - required_fields
       it_behaves_like "as json", Factory.create(:player), nil,
                       required_fields, ommited_fields

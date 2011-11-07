@@ -105,6 +105,19 @@ package models.player
       public var firstTime:Boolean = false;
       
       
+      [Optional]
+      /**
+       * Indicates if player blocks portals from communicating 
+       * with alliance at all.
+       * 
+       * <p><i><b>Metadata</b>:<br/>
+       * [Optional]</i></p>
+       * 
+       * @default false
+       */
+      public var portalWithoutAllies:Boolean = false;
+      
+      
       [SkipProperty]
       /**
        * Makes sense only for the player instance in <code>ModelLocator</code>.

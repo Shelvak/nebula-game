@@ -3852,7 +3852,7 @@
       <p>Nothing to load</p>
     </tooltip.nothingToLoad>
     
-    <title.defensivePool value="Your defensive army pool" />
+    <title.defensivePool value="Defensive army pool" />
     <title.emptyDefensivePool>
       <p>Your defensive pool is empty. That means no units will be teleported
       to your defense in case this planet is attacked.</p>
@@ -3862,6 +3862,16 @@
       built.</p>
     </title.emptyDefensivePool>
     <title.possiblePool value="When you are attacked you might get" />
+    <defensivePool.title.yourPool value="Your army pool" />
+    <defensivePool.title.allyPool value="Alliance army pool" />
+    <defensivePool.dontIncludeAlliance 
+      value="Don't communicate with alliance portals" />
+    <defensivePool.tooltip.dontIncludeAlliance>
+      <p>If checked your units won't be teleported to alliance planets and 
+      alliance units won't be teleported to your planets.</p>
+    </defensivePool.tooltip.dontIncludeAlliance>
+    <defensivePool.volume value="Volume: {0}" />
+    <defensivePool.poolEmpty value="Pool empty" />
     <defensivePool.totalVolume value="Total volume:" />
     <defensivePool.teleportedVolume value="Teleported volume:" />
     <defensivePool.maxVolume value="Max power:" />

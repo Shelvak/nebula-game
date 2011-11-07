@@ -9,14 +9,39 @@ shared_examples_for "checking visibility" do
   end
 end
 
+def uc_create_alliance(player)
+  if player.alliance.nil?
+    player.alliance = Factory.create(:alliance)
+    player.save!
+  end
+
+  ally = Factory.create(:player, :alliance => player.alliance)
+  [ally, player.alliance]
+end
+
+def uc_create_nap(player)
+  if player.alliance.nil?
+    player.alliance = Factory.create(:alliance)
+    player.save!
+  end
+
+  nap_alliance = Factory.create(:alliance)
+  Factory.create(:nap, :initiator => player.alliance,
+    :acceptor => nap_alliance)
+
+  nap = Factory.create(:player, :alliance => nap_alliance)
+
+  [nap, player.alliance, nap_alliance]
+end
+
 shared_examples_for "checking all planet owner variations" do |wanted_results|
   [
     ["ally", lambda do |player, planet|
-      ally, alliance = create_alliance(player)
+      ally, alliance = uc_create_alliance(player)
       planet.update_row! ["player_id=?", ally.id]
     end],
     ["nap", lambda do |player, planet|
-      nap, alliance, nap_alliance = create_nap(player)
+      nap, alliance, nap_alliance = uc_create_nap(player)
       planet.update_row! ["player_id=?", nap.id]
     end],
     ["enemy", lambda do |player, planet|
@@ -612,7 +637,7 @@ describe UnitsController do
     end
     
     it "should not fail if planet belongs to ally" do
-      ally, alliance = create_alliance(player)
+      ally, alliance = uc_create_alliance(player)
 
       @planet.update_row! ["player_id=?", ally.id]
 
@@ -622,7 +647,7 @@ describe UnitsController do
     end
 
     it "should not fail if planet belongs to nap" do
-      nap, alliance, nap_alliance = create_nap(player)
+      nap, alliance, nap_alliance = uc_create_nap(player)
 
       @planet.update_row! ["player_id=?", nap.id]
 
@@ -773,7 +798,7 @@ describe UnitsController do
     end
     
     it "should fail in alliance planet" do
-      ally, alliance = create_alliance(player)
+      ally, alliance = uc_create_alliance(player)
       @planet.player = ally; @planet.save!
       
       lambda do
@@ -782,7 +807,7 @@ describe UnitsController do
     end
 
     it "should fail in nap planet" do
-      nap, nap_alliance = create_nap(player)
+      nap, nap_alliance = uc_create_nap(player)
       @planet.player = nap; @planet.save!
 
       lambda do
