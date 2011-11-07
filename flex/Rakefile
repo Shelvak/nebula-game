@@ -17,8 +17,16 @@ namespace :build do
     "FLEX_HOME environment variable is not set!"
   )
   src_dir = "#{basedir}/src"
-  html_template_dir = "#{basedir}/html-template"
-  locale_dir = "#{html_template_dir}/locale"
+  html_extras_dir = "#{basedir}/html-extras"
+  html_files = %W{
+    #{src_dir}/index.template.html
+    #{src_dir}/game.js
+    #{src_dir}/jquery-1.6.4.min.js
+    #{src_dir}/swfobject-2.2.js
+    #{html_extras_dir}/favicon.ico
+    #{html_extras_dir}/playerProductInstall.swf
+  }
+  locale_dir = "#{src_dir}/locale"
   assets_dir = "#{src_dir}/assets"
   lib_dir = "#{basedir}/libs"
   output_dir = "#{basedir}/target"
@@ -215,7 +223,7 @@ namespace :build do
       FileUtils.cp bin_version, dist_dir
 
       info "Copying html-template"
-      Dir["#{html_template_dir}/*"].each do |path|
+      html_files.each do |path|
         FileUtils.cp path, dist_dir unless File.directory?(path)
       end
 
@@ -233,10 +241,10 @@ namespace :build do
       info "Processing index.html"
       index_html = "#{dist_dir}/index.html"
       FileUtils.mv("#{dist_dir}/index.template.html", index_html)
-      FileUtils.mv("#{dist_dir}/htaccess.template", "#{dist_dir}/.htaccess")
+      FileUtils.copy("#{html_extras_dir}/htaccess.template",
+                     "#{dist_dir}/.htaccess")
       File.modify(index_html) do |content|
         {
-          "${swf}" => swf_name,
           "${gamejs.checksum}" => checksums["game.js"],
           "${swf.checksum}" => checksums["#{swf_name}.swf"],
           "${flashVersion}" => FLASH_VERSION,
