@@ -199,7 +199,7 @@ class SolarSystem < ActiveRecord::Base
     when CallbackManager::EVENT_SPAWN
       solar_system = find(id)
       solar_system.spawn!
-      date = Cfg.solar_system_spawn_random_delay_date(solar_system.kind)
+      date = Cfg.solar_system_spawn_random_delay_date(solar_system)
       CallbackManager.register(solar_system, event, date)
       date
     else
