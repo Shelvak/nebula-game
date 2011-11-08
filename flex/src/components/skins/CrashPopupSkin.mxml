@@ -49,7 +49,7 @@
       
       <!-- layer 2: background -->
       <s:BitmapImage left="1" right="1" top="1" bottom="1" fillMode="repeat"
-                     source="@Embed(source='/main_background.png')"/>
+                     source="@Embed(source='/embed/assets/main_background.png')"/>
       
       <!-- layer 3: contents -->
       <s:Group left="1" right="1" top="1" bottom="1">
@@ -64,10 +64,10 @@
                <s:layout>
                   <s:HorizontalLayout gap="0"/>
                </s:layout>
-               <s:BitmapImage source="@Embed(source='/crash_title_left.png')"/>
-               <s:BitmapImage source="@Embed(source='/crash_title_center.png')"
+               <s:BitmapImage source="@Embed(source='/embed/assets/crash_title_left.png')"/>
+               <s:BitmapImage source="@Embed(source='/embed/assets/crash_title_center.png')"
                               fillMode="repeat" width="100%"/>
-               <s:BitmapImage source="@Embed(source='/crash_title_right.png')"/>
+               <s:BitmapImage source="@Embed(source='/embed/assets/crash_title_right.png')"/>
             </s:Group>
             <!-- layer 3: text -->
             <s:Label id="titleDisplay" maxDisplayedLines="1"

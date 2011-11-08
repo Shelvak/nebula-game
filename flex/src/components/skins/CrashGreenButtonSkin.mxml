@@ -23,10 +23,10 @@
    </base:states>
    
    <!-- layer 1: fill -->
-   <s:BitmapImage source="@Embed(source='/debugger_up.png')"
-                  source.down="@Embed(source='/debugger_down.png')"
-                  source.over="@Embed(source='/debugger_over.png')"
-                  source.disabled="@Embed(source='/debugger_disabled.png')"/>
+   <s:BitmapImage source="@Embed(source='/embed/assets/debugger_up.png')"
+                  source.down="@Embed(source='/embed/assets/debugger_down.png')"
+                  source.over="@Embed(source='/embed/assets/debugger_over.png')"
+                  source.disabled="@Embed(source='/embed/assets/debugger_disabled.png')"/>
    
    <!-- layer 2: text -->
    <!--- @copy spark.components.supportClasses.ButtonBase#labelDisplay -->
