@@ -1,39 +1,50 @@
 <?xml version="1.0"?>
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
     xmlns:s="library://ns.adobe.com/flex/spark"
-    xmlns:mx="library://ns.adobe.com/flex/mx">
-      <fx:Script>
-         <![CDATA[
-            import flashx.textLayout.elements.TextFlow;
+    xmlns:mx="library://ns.adobe.com/flex/mx"
+    minHeight="24">
+   <fx:Script><![CDATA[
+      import flashx.textLayout.elements.TextFlow;
 
             import models.location.Location;
+      import models.location.LocationType;
 
-            import spark.utils.TextFlowUtil;
+      import spark.utils.TextFlowUtil;
 
             import utils.locale.Localizer;
 
-            public override function set data(value: Object): void
-            {
-               super.data = value;
-               location = Location(value);
-            }
+      public override function set data(value: Object): void
+      {
+         super.data = value;
+         if (value is Location)
+         {
+            location = Location(value);
+         }
+         else
+         {
+            location = null;
+         }
+      }
 
-            [Bindable]
-            private var location:Location = null;
+      [Bindable]
+      private var location:Location = null;
 
-            private function getLocationDescription(from: Location): TextFlow
-            {
-               return TextFlowUtil.importFromString(
-                       from == null ? Localizer.string('Location', 'header.any')
-                               : from.shortDescription);
-            }
-         ]]>
-      </fx:Script>
-      <s:BitmapImage id="locationImage" width="24" height="24" fillMode="scale"
-                     visible="{location != null}" source="{location.bitmapData}"
-                     left="3" top="3" bottom="3"/>
-      <s:RichText id="locationLabel" left="29" top="11"
-                  right="3"
-                  textFlow="{getLocationDescription(location)}"
-                  fontSize="13" color="#ffffff"/>
+      private function getLocationDescription(from: Location): TextFlow
+      {
+         return TextFlowUtil.importFromString(
+            from == null ? Localizer.string('Location', 'header.any')
+                         : from.shortDescription);
+      }
+   ]]></fx:Script>
+   <s:BitmapImage id="locationImage" width="24" height="24" fillMode="scale"
+                  visible="{location != null}"
+                  includeInLayout="{location != null}"
+                  source="{location.bitmapData}"/>
+   <s:RichText id="locationLabel" paddingLeft="3"
+               textFlow="{getLocationDescription(location)}"
+               fontSize="13" color="#ffffff"/>
+   <s:layout>
+      <s:HorizontalLayout gap="2" paddingLeft="3" paddingRight="3"
+                          verticalAlign="middle"/>
+   </s:layout>
 </s:ItemRenderer>

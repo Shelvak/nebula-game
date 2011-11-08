@@ -37,41 +37,50 @@
          <base:AdvancedContainer id="grpFilters">
             <s:DropDownList dataProvider="{OU.owners}"
                     change="playerSelector_changeHandler(event)"
+                    itemRenderer="components.player.IRPlayerName"
                     id="playerSelector"
                     requireSelection="true"
                     visible="{currentList == OU.allyUnits}"
                     labelFunction="playerNameFunction"
-                    creationComplete="playerSelector_creationCompleteHandler(event)"/>
+                    minWidth="50"/>
             <!-- PLAYER LOCATION FILTERS -->
             <s:DropDownList dataProvider="{LOCATION_TYPES}"
-                    change="locationTypeSelector_changeHandler(event)"
+                    change="locationTypeSelector_changeHandler()"
                     itemRenderer="components.location.IRLocationType"
                     id="playerLocationTypesSelector"
                     requireSelection="true"
                     visible="{currentList == OU.playerUnits}"
-                    labelFunction="locationTypeFunction"/>
+                    labelFunction="locationTypeFunction"
+                    minWidth="50"/>
             <s:DropDownList dataProvider="{OU.playerLocationObjects}"
                     itemRenderer="components.location.IRLocationBasic"
                     change="locationObjectsSelector_changeHandler(event)"
                     id="playerLocationObjectsSelector"
                     requireSelection="true"
-                    visible="{currentList == OU.playerUnits}"
-                    labelFunction="locationObjectFunction"/>
+                    visible="{currentList == OU.playerUnits
+                    &amp;&amp; playerLocationTypesSelector.selectedItem
+                    != LocationType.GALAXY}"
+                    labelFunction="locationObjectFunction"
+                    minWidth="50"/>
             <!-- ALLY LOCATION FILTERS -->
             <s:DropDownList dataProvider="{LOCATION_TYPES}"
-                    change="locationTypeSelector_changeHandler(event)"
+                    change="locationTypeSelector_changeHandler()"
                     itemRenderer="components.location.IRLocationType"
                     id="allyLocationTypesSelector"
                     requireSelection="true"
                     visible="{currentList == OU.allyUnits}"
-                    labelFunction="locationTypeFunction"/>
+                    labelFunction="locationTypeFunction"
+                    minWidth="50"/>
             <s:DropDownList dataProvider="{OU.allyLocationObjects}"
                     itemRenderer="components.location.IRLocationBasic"
                     change="locationObjectsSelector_changeHandler(event)"
                     id="allyLocationObjectsSelector"
                     requireSelection="true"
-                    visible="{currentList == OU.allyUnits}"
-                    labelFunction="locationObjectFunction"/>
+                    visible="{currentList == OU.allyUnits
+                    &amp;&amp; allyLocationTypesSelector.selectedItem
+                    != LocationType.GALAXY}"
+                    labelFunction="locationObjectFunction"
+                    minWidth="50"/>
             <base:layout>
                <s:HorizontalLayout gap="5" paddingBottom="3" paddingTop="3"
                        paddingLeft="6"/>
@@ -104,6 +113,8 @@
       <![CDATA[
       import com.developmentarc.core.utils.EventBroker;
 
+      import components.unitsscreen.events.UnitsScreenEvent;
+
       import controllers.ui.NavigationController;
 
       import globalevents.GlobalEvent;
@@ -113,11 +124,13 @@
       import models.location.Location;
       import models.location.LocationType;
       import models.movement.MRoute;
+      import models.player.PlayerMinimal;
 
       import mx.collections.ArrayCollection;
 
       import mx.collections.ListCollectionView;
       import mx.events.FlexEvent;
+      import mx.utils.ObjectUtil;
 
       import spark.components.Group;
       import spark.events.IndexChangeEvent;
@@ -165,6 +178,7 @@
          );
          _filterButtons.select(btnPlayerUnits);
          EventBroker.subscribe(GlobalEvent.APP_READY, globalEvent_appReadyHandler);
+         OU.addEventListener(UnitsScreenEvent.OVERVIEW_OPENED, reset);
       }
 
       protected function this_creationCompleteHandler(event: FlexEvent): void {
@@ -227,8 +241,21 @@
          _filterButtons.select(btnPlayerUnits);
       }
 
-      private function locationTypeSelector_changeHandler(event: IndexChangeEvent): void {
+      private function refreshLocationObjects(allies: Boolean): void {
+         if (allies) {
+            allyLocationObjectsSelector.selectedItem = 'any';
+            OU.refreshAllyLocationObjects(allyLocationTypesSelector.selectedItem);
+         }
+         else {
+            playerLocationObjectsSelector.selectedItem = 'any';
+            OU.refreshPlayerLocationObjects(
+                    playerLocationTypesSelector.selectedItem);
+         }
          refreshFilter();
+      }
+
+      private function locationTypeSelector_changeHandler(): void {
+         refreshLocationObjects(currentList == OU.allyUnits);
       }
 
       private function playerSelector_changeHandler(event: IndexChangeEvent): void {
@@ -251,12 +278,12 @@
          refreshFilter();
       }
 
-      private function playerNameFunction(item: Object): String {
-         return item == null ? Localizer.string('Location', 'header.any')
-                 : String(item);
+      private function playerNameFunction(item: PlayerMinimal): String {
+         return item.name == '' ? Localizer.string('Location', 'header.any')
+                 : item.name;
       }
 
-      private function locationTypeFunction(item: Object): String {
+      private function locationTypeFunction(item: int): String {
          return Localizer.string('Location',
                  item == LocationType.GALAXY ? 'description.short.galaxy'
                          : (item == LocationType.SOLAR_SYSTEM ? 'header.solarSystem'
@@ -265,15 +292,18 @@
       }
 
       private function locationObjectFunction(item: Object): String {
-         return item == null ? Localizer.string('Location', 'header.any')
-                 : Location(item).shortDescription;
+         return item is Location ? Location(item).shortDescription
+                 : Localizer.string('Location', 'header.any');
       }
 
-      private function playerSelector_creationCompleteHandler(event: FlexEvent): void {
-         playerSelector.labelDisplay.setStyle('paddingLeft', 3);
-         playerSelector.labelDisplay.setStyle('paddingTop', 3);
-         playerSelector.labelDisplay.setStyle('paddingBottom', 3);
-         playerSelector.labelDisplay.setStyle('paddingRight', 3);
+      private function reset (event: UnitsScreenEvent): void {
+         _filterButtons.select(btnPlayerUnits);
+         currentList = OU.playerUnits;
+         playerLocationTypesSelector.selectedIndex = 0;
+         allyLocationTypesSelector.selectedIndex = 0;
+         playerLocationObjectsSelector.selectedIndex = 0;
+         allyLocationObjectsSelector.selectedIndex = 0;
+         playerSelector.selectedIndex = 0;
       }
       ]]>
    </fx:Script>
