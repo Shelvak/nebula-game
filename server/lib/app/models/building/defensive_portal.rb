@@ -148,7 +148,7 @@ class Building::DefensivePortal < Building
       player = planet.player
       raise NoUnitsError if player.nil?
 
-      ally_ids = player.portal_without_allies? \
+      ally_ids = player.portal_without_allies? || player.alliance_id.nil? \
         ? [] \
         : Player.
             select("id").
