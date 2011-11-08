@@ -1433,7 +1433,7 @@
     <header.planet value="Planeta" />
     <header.building value="Pastatas" />
     <header.unit value="Laivas" />
-    <header.any value="Betkas" />
+    <header.any value="Visi" />
     <header.storage value="Talpa" />
     <header.owner value="Valdytojas" />
 
