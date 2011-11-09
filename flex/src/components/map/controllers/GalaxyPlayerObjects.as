@@ -29,22 +29,22 @@ package components.map.controllers
          if (item is SolarSystem) {
             return new ClassFactory(IRSolarSystem);
          }
-         else if (item is LocationMinimal) {
+         else if (item is SectorWithShips) {
             return new ClassFactory(IRSectorWithShips);
          }
          throw new ArgumentError(
             "[param item] must be either of " + SolarSystem +
-            " or " + LocationMinimal + " type but was: " + item
+            " or " + SectorWithShips + " type but was: " + item
          );
       }
 
       private function compareFunction(a:*, b:*, fields:Array = null) : int {
          var locA:LocationMinimal;
          var locB:LocationMinimal;
-         if (a is SolarSystem && b is LocationMinimal) {
+         if (a is SolarSystem && b is SectorWithShips) {
             return -1;
          }
-         else if (a is LocationMinimal && b is SolarSystem) {
+         else if (a is SectorWithShips && b is SolarSystem) {
             return 1;
          }
          else if (a is SolarSystem) {
@@ -52,8 +52,8 @@ package components.map.controllers
             locB = SolarSystem(b).currentLocation;
          }
          else {
-            locA = a;
-            locB = b;
+            locA = SectorWithShips(a).location;
+            locB = SectorWithShips(b).location;
          }
          var compareValue:int = ObjectUtil.numericCompare(locA.x, locB.x);
          if (compareValue == 0) {
@@ -129,7 +129,7 @@ package components.map.controllers
       private function rebuild(): void {
          removeAll();
          addAllFromArray(getSolarSystems());
-         addAllFromArray(getLocationsWithShips());
+         addAllFromArray(getSectorsWithShips());
          refresh();
       }
 
@@ -140,19 +140,23 @@ package components.map.controllers
          return _galaxy.solarSystemsWithPlayer.toArray();
       }
 
-      private function getLocationsWithShips(): Array {
+      private function getSectorsWithShips(): Array {
          if (_galaxy.squadrons == null) {
             return new Array();
          }
          var loc: LocationMinimal;
-         var locationsWithShips: Object = new Object();
+         var sectorsWithShips: Object = new Object();
          for each (var squad: MSquadron in _galaxy.squadrons) {
             if (squad.owner == Owner.PLAYER) {
                loc = squad.currentHop.location;
-               locationsWithShips[loc.hashKey()] = loc;
+               if (sectorsWithShips[loc.hashKey()] === undefined) {
+                  sectorsWithShips[loc.hashKey()] = new SectorWithShips(
+                     loc, _galaxy.getSSAt(loc.x, loc.y)
+                  );
+               }
             }
          }
-         return ArrayUtil.fromObject(locationsWithShips);
+         return ArrayUtil.fromObject(sectorsWithShips);
       }
 
       private function addAllFromArray(items: Array): void {

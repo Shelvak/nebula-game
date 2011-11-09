@@ -1349,6 +1349,9 @@
     <label.shield>
       <![CDATA[This solar system is shielded for<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
+    <!-- TODO -->
+    <label.over value="Over"/>
+    <!-- /TODO -->
     <message.noRadar value="Jums vajadzīgs radars, lai izpētītu galaktiku" />
   </Galaxy>
 

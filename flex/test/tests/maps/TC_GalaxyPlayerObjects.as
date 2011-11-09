@@ -3,11 +3,13 @@ package tests.maps
    import components.map.controllers.GalaxyPlayerObjects;
    import components.map.controllers.IRSectorWithShips;
    import components.map.controllers.IRSolarSystem;
+   import components.map.controllers.SectorWithShips;
 
    import ext.hamcrest.collection.array;
    import ext.hamcrest.collection.hasItems;
    import ext.hamcrest.object.equals;
 
+   import models.MWreckage;
    import models.ModelLocator;
    import models.Owner;
    import models.galaxy.Galaxy;
@@ -66,9 +68,10 @@ package tests.maps
          addSSIconImage(SSMetadataType.NAP_PLANETS);
          addSSIconImage(SSMetadataType.ENEMY_SHIPS);
          addSSIconImage(SSMetadataType.ENEMY_PLANETS);
-         ML.player.galaxyId = GALAXY_ID;
          galaxy = new Galaxy();
          galaxy.id = GALAXY_ID;
+         ML.latestGalaxy = galaxy;
+         ML.player.galaxyId = GALAXY_ID;
       }
 
       private function addSSIconImage(ssMetadataType:String): void {
@@ -110,8 +113,8 @@ package tests.maps
          objects = new GalaxyPlayerObjects(galaxy);
          assertThat( "# of items", objects, arrayWithSize (2) );
          assertThat( "locations with ships", objects, hasItems(
-            equals (getGalaxyLocation(0, 0)),
-            equals (getGalaxyLocation(0, 1))
+            equals (getSectorWithShips(0, 0)),
+            equals (getSectorWithShips(0, 1))
          ));
       }
 
@@ -137,8 +140,8 @@ package tests.maps
          ML.squadrons.addItem(getPlayerSquadron(1, 0, 0));
          assertThat( "# of items", objects, arrayWithSize (1) );
          assertThat(
-            "contains location with squadron added",
-            objects,  hasItem (equals (getGalaxyLocation(0, 0)))
+            "contains sector with squadron added",
+            objects,  hasItem (equals (getSectorWithShips(0, 0)))
          );
 
          ML.squadrons.remove(1);
@@ -164,17 +167,17 @@ package tests.maps
             getHop(1, 0, 2, new Date(2000, 0, 6))
          ]));
          assertThat( objects, arrayWithSize(1) );
-         assertThat( objects, hasItem(equals(getGalaxyLocation(0, 0))) );
+         assertThat( objects, hasItem(equals(getSectorWithShips(0, 0))) );
 
          MSquadron(ML.squadrons.find(1)).moveToLastHop();
          assertThat("# of items", objects, arrayWithSize(1));
          assertThat(
-            "old location removed",
-            objects, not(hasItem(equals(getGalaxyLocation(0, 0))))
+            "old sector removed",
+            objects, not(hasItem(equals(getSectorWithShips(0, 0))))
          );
          assertThat(
-            "location squad has moved to is now in the list",
-            objects, hasItem(equals(getGalaxyLocation(0, 2)))
+            "sector squad has moved to is now in the list",
+            objects, hasItem(equals(getSectorWithShips(0, 2)))
          );
       }
 
@@ -189,6 +192,28 @@ package tests.maps
 
          MSquadron(ML.squadrons.find(1)).moveToLastHop();
          assertThat( "no items contained", objects, emptyArray() );
+      }
+
+      [Test]
+      public function sectorsGetObjectNameIfNaturalObjectIsInTheSector(): void {
+         galaxy.addAllObjects(new ArrayCollection([
+            getSolarSystem(1, 0, 0, false, false),
+            getWreckage(1, 0, 1)
+         ]));
+         ML.squadrons.addAll(new ArrayCollection([
+            getPlayerSquadron(1, 0, 0),
+            getPlayerSquadron(2, 0, 1)
+         ]));
+         objects = new GalaxyPlayerObjects(galaxy);
+         assertThat( "# of items", objects, arrayWithSize(2) );
+         assertThat(
+            "sector without natural object",
+            objects, hasItem(equals(getSectorWithShips(0, 1)))
+         );
+         assertThat(
+            "sector with natural object",
+            objects, hasItem(equals(getSectorWithShips(0, 0, galaxy.getSSAt(0, 0))))
+         );
       }
 
       [Test]
@@ -223,10 +248,10 @@ package tests.maps
          assertThat(
             "locations with ships are sorted by x, then y",
             objects, array(
-               equals (getGalaxyLocation(0, 0)),
-               equals (getGalaxyLocation(0, 1)),
-               equals (getGalaxyLocation(1, 0)),
-               equals (getGalaxyLocation(1, 1))
+               equals (getSectorWithShips(0, 0)),
+               equals (getSectorWithShips(0, 1)),
+               equals (getSectorWithShips(1, 0)),
+               equals (getSectorWithShips(1, 1))
             )
          );
       }
@@ -247,8 +272,8 @@ package tests.maps
             objects, array(
                equals (galaxy.getSSAt(0, 0)),
                equals (galaxy.getSSAt(1, 1)),
-               equals (getGalaxyLocation(0, 1)),
-               equals (getGalaxyLocation(1, 0))
+               equals (getSectorWithShips(0, 1)),
+               equals (getSectorWithShips(1, 0))
             )
          );
       }
@@ -264,9 +289,9 @@ package tests.maps
          );
 
          assertThat(
-            "returns factory o f IRSectorWithShips for LocationMinimal",
+            "returns factory o f IRSectorWithShips for SectorWithShips",
             GalaxyPlayerObjects
-               .itemRendererFunction(new LocationMinimal())
+               .itemRendererFunction(new SectorWithShips(new LocationMinimal()))
                .newInstance(),
             isA (IRSectorWithShips)
          );
@@ -276,11 +301,18 @@ package tests.maps
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
-      
-      private function getSolarSystem(id:int, x:int, y:int,
-                                      playerShips:Boolean,
-                                      enemyShips:Boolean) : SolarSystem {
-         var ss:SolarSystem = new SolarSystem();
+
+      private function getWreckage(id:int, x:int, y:int): MWreckage {
+         var wreck:MWreckage = new MWreckage();
+         wreck.id = id;
+         wreck.currentLocation = getGalaxyLocation(x, y);
+         return wreck;
+      }
+
+      private function getSolarSystem(id: int, x: int, y: int,
+                                      playerShips: Boolean,
+                                      enemyShips: Boolean): SolarSystem {
+         var ss: SolarSystem = new SolarSystem();
          ss.id = id;
          ss.x = x;
          ss.y = y;
@@ -289,20 +321,20 @@ package tests.maps
          ss.metadata.enemyShips = enemyShips;
          return ss;
       }
-      
-      private function getPlayerSquadron(id:int, x:int, y:int,
-                                         hops:Array = null) : MSquadron {
+
+      private function getPlayerSquadron(id: int, x: int, y: int,
+                                         hops: Array = null): MSquadron {
          return getSquadron(id, x, y, Owner.PLAYER, hops);
       }
-      
-      private function getEnemySquadron(id:int, x:int, y:int,
-                                        hops:Array = null) : MSquadron {
+
+      private function getEnemySquadron(id: int, x: int, y: int,
+                                        hops: Array = null): MSquadron {
          return getSquadron(id, x, y, Owner.ENEMY, hops);
       }
-      
-      private function getSquadron(id:int, x:int, y:int, owner:int,
-                                   hops:Array) : MSquadron {
-         var squad:MSquadron = new MSquadron();
+
+      private function getSquadron(id: int, x: int, y: int, owner: int,
+                                   hops: Array): MSquadron {
+         var squad: MSquadron = new MSquadron();
          squad.id = id;
          squad.owner = owner;
          squad.currentHop = new MHop();
@@ -310,17 +342,26 @@ package tests.maps
          squad.addAllHops(new ArrayCollection(hops));
          return squad;
       }
-      
-      private function getHop(index:int, x:int, y:int, arrivesAt:Date) : MHop {
-         var hop:MHop = new MHop();
+
+      private function getHop(index: int, x: int, y: int,
+                              arrivesAt: Date): MHop {
+         var hop: MHop = new MHop();
          hop.index = index;
          hop.arrivesAt = arrivesAt;
          hop.location = getGalaxyLocation(x, y);
          return hop;
       }
-      
-      private function getGalaxyLocation(x:int, y:int) : LocationMinimal {
-         var loc:LocationMinimal = new LocationMinimal();
+
+      private function getSectorWithShips
+         (x: int, y: int, solarSystem: SolarSystem = null): SectorWithShips {
+         return new SectorWithShips(
+            getGalaxyLocation(x, y),
+            solarSystem
+         );
+      }
+
+      private function getGalaxyLocation(x: int, y: int): LocationMinimal {
+         var loc: LocationMinimal = new LocationMinimal();
          loc.type = LocationType.GALAXY;
          loc.id = GALAXY_ID;
          loc.x = x;
