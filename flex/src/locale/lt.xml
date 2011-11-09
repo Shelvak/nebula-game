@@ -4134,15 +4134,15 @@
     <BossShip.name ref="Objects/Unit_BossShip" />
     <BossShip.about>
       <p>
-        Šis milžiniškas ervėlaivis, išniręs iš niekur, vadinamas miego
-        karalystės dievo vardu, tesia savo egzistencija tuščiame kosmoso
-        vaakume.
+        Šis milžiniškas erdvėlaivis, išniręs iš niekur, vadinamas miego
+        karalystės dievo vardu, tęsia savo egzistenciją tuščiame kosmoso
+        vakuume.
       </p>
       <p>
-        Ir nors jis ir ramiai snūduriuoja savo sapnuose, nedrįsk juos
+        Ir nors jis ir ramiai snūduriuoja savo sapnuose, nedrįsk jų
         sutrukdyti - tokie nesusipratėliai greitai pajaus šio laivo ginklų
-        galią ir jo nepalaužiamą atsparumą - jo šarvai tokie stori, jog net
-        visi laivynai vos įgali įlenkti jo apsaugą.
+        galią ir jo nepalaužiamą atsparumą - jo gynyba tokia stipri, jog net
+        ištisi laivynai vos teįgali įlenkti jo šarvų plokštes.
       </p>
       <p>
         Tačiau kad ir koks galingas šis laivas bebūtų - nuotykių ieškotojai
@@ -4151,7 +4151,7 @@
       </p>
       <p>
         Už šiam laivui padarytą žalą tu gauni pergalės taškus. Be to
-        žaidėjas, kuris į šį laivą pataikys paskutinį, nužudantį, šūvį,
+        žaidėjas, kuris į šį laivą pataikys paskutinį, lemiamą, šūvį,
         gaus kredų.
       </p>
     </BossShip.about>

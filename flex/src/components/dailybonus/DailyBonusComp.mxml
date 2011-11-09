@@ -136,9 +136,9 @@
          <s:Group>
             <s:Label text="{Localizer.string('Quests', 'label.choosePlanet')}" styleName="h3"/>
             <base:PlanetSelector id="planetSelector" minWidth="180" 
-                                 dataProvider="{ModelLocator.getInstance().player.planets}"
-                                 itemRenderer="components.gameobjects.planet.IRPlayerPlanet"
-                                 change="planetSelector_changeHandler(event)"/>
+               dataProvider="{ModelLocator.getInstance().player.planets}"
+               itemRenderer="components.gameobjects.planet.IRPlayerPlanet"
+               change="planetSelector_changeHandler(event)"/>
             <s:layout>
                <s:HorizontalLayout horizontalAlign="center"/>
             </s:layout>
