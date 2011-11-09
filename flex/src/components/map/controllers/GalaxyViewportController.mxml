@@ -47,7 +47,7 @@
 
       private function this_resizeHandler(event: ResizeEvent): void {
          if (playerObjects != null) {
-            playerObjects.maxHeight = this.height - 5;
+            playerObjects.maxHeight = this.height - 110;
             playerObjects.invalidateSize();
             invalidateSize();
          }
