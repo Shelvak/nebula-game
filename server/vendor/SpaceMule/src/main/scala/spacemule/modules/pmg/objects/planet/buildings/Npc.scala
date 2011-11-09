@@ -1,7 +1,7 @@
 package spacemule.modules.pmg.objects.planet.buildings
 
 import spacemule.modules.pmg.objects.planet.Building
-import spacemule.modules.pmg.objects.Unit
+import spacemule.modules.pmg.objects.Troop
 import spacemule.modules.pmg.classes.UnitChance
 import spacemule.modules.config.objects.Config
 
@@ -19,7 +19,7 @@ extends Building(name, x, y, level) {
 
   def createUnits(chances: Seq[UnitChance]) {
     UnitChance.foreachByChance(chances, importance) { case (name, flank) =>
-      units += Unit(name, flank)
+      units += Troop(name, flank)
     }
   }
 }

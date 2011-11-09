@@ -175,8 +175,8 @@ class SolarSystem < ActiveRecord::Base
   def spawn!
     npc_taken_points = self.npc_unit_locations
 
-    if npc_taken_points.size < Cfg.solar_system_spawn_max_spots(kind)
-      definition = Cfg.solar_system_spawn_units_definition(kind)
+    if npc_taken_points.size < Cfg.solar_system_spawn_max_spots(self)
+      definition = Cfg.solar_system_spawn_units_definition(self)
       strategy = SsSpawnStrategy.new(self, npc_taken_points)
       location = strategy.pick
       

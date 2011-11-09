@@ -43,11 +43,11 @@ object Combat {
     loadedTroops: Combat.LoadedTroops,
     unloadedTroopIds: Set[Long],
     buildings: Set[Building],
-    calculateVictoryPoints: Boolean
+    vpsForPlayerDamage: Boolean
   ) =
     new Combat(location, planetOwner, players, allianceNames, napRules,
                troops, loadedTroops, unloadedTroopIds, buildings,
-               calculateVictoryPoints)
+               vpsForPlayerDamage)
 }
 
 /**
@@ -63,7 +63,7 @@ class Combat(
   loadedTroops: Combat.LoadedTroops,
   unloadedTroopIds: Set[Long],
   buildings: Set[Building],
-  calculateVictoryPoints: Boolean
+  vpsForPlayerDamage: Boolean
 ) {
   // Units unloaded to ground, and those who are still kept in their
   // transporters.
@@ -112,7 +112,7 @@ class Combat(
   // HP properties will be changed.
   alliances.toMap
 
-  val statistics = new Statistics(alliances, calculateVictoryPoints)
+  val statistics = new Statistics(alliances, vpsForPlayerDamage)
 
   // Launch the combat in the constructor.
   L.debug("Running combat simulation", () => run())

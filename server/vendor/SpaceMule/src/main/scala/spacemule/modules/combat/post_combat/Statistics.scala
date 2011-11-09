@@ -46,7 +46,7 @@ object Statistics {
 
 class Statistics(
   alliances: Alliances,
-  calculateVictoryPoints: Boolean = false
+  vpsForPlayerDamage: Boolean = false
 ) {
   private val damageDealtPlayer = HashMap[Option[Player], Int]()
   private val damageTakenPlayer = HashMap[Option[Player], Int]()
@@ -82,12 +82,15 @@ class Statistics(
     pointsEarned(source.player) += Statistics.points(target, damage)
 
     // You do not get victory points for damage to NPC players.
-    if (calculateVictoryPoints && ! target.player.isEmpty) {
+    if (vpsForPlayerDamage && ! target.player.isEmpty) {
       val (groundDamage, spaceDamage) =
         if (target.isGround) (damage, 0) else (0, damage)
-      val points = Config.combatVictoryPoints(groundDamage, spaceDamage)
+      val points = Config.battlegroundCombatVps(groundDamage, spaceDamage)
       victoryPointsEarned(source.player) += points
     }
+
+    val points = target.vpsForReceivedDamage(damage)
+    victoryPointsEarned(source.player) += points
   }
 
   def byPlayer: Statistics.PlayerDataMap = players.map {

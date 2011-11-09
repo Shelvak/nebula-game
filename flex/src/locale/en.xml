@@ -525,6 +525,7 @@
     <property.fee value="Fee percentage" />
     <property.width value="Building width" />
     <property.height value="Building height" />
+    <property.vpsOnDamage value="VPs for 1 damage dealt" />
 
     <text.deactivated>
       <p>
@@ -3807,6 +3808,7 @@
     <property.move.solarSystem.hopTime value="One hop in SS" />
     <property.move.galaxy.hopTime value="One hop in Galaxy" />
     <property.population value="Population" />
+    <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
 
     <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
     <stance.neutral value="Neutral stance" />

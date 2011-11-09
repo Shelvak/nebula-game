@@ -164,4 +164,10 @@ trait Combatant extends Trackable {
 
   protected def trackedAttributes = Map("level" -> level, "hp" -> hp,
                                         "xp" -> xp)
+
+  /**
+   * Victory points given to attacker for damage dealt to this combatant.
+   */
+  def vpsForReceivedDamage(damage: Int) =
+    Config.vpsForReceivedDamage(this, damage)
 }

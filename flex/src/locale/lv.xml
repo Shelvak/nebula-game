@@ -668,6 +668,7 @@
     <!-- TODO -->
     <property.width value="Building width" />
     <property.height value="Building height" />
+    <property.vpsOnDamage value="VPs for 1 damage dealt" />
     <!-- /TODO -->
 
     <text.deactivated>
@@ -3998,6 +3999,7 @@
     <property.move.solarSystem.hopTime value="Viens lēciens saules sistēmā" />
     <property.move.galaxy.hopTime value="Viens lēciens galaktikā" />
     <property.population value="Iedzīvotāji" />
+    <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     
     <!-- TODO: translate this -->
     <tooltip.freeStorage>

@@ -622,6 +622,7 @@
     <property.fee value="Mokesčio procentas" />
     <property.width value="Pastato plotis" />
     <property.height value="Pastato ilgis" />
+    <property.vpsOnDamage value="PT už 1 žalos vienetą" />
 
     <text.deactivated>
       <p>
@@ -3859,6 +3860,7 @@
     <property.move.solarSystem.hopTime value="Šuolio laikas saulės sistemoje" />
     <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
     <property.population value="Populiacija" />
+    <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     
     <tooltip.freeStorage>
       <p>Šiame laive dar liko {0} vietos.</p>

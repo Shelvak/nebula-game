@@ -37,8 +37,8 @@ class SmartTraversableOnce[+T](traversable: TraversableOnce[T]) {
 }
 
 class SmartInt(int: Int) {
-  def times(block: () => Unit) = (0 until int).foreach { i => block() }
-  def times(block: Int => Unit) = (0 until int).foreach { i => block(i) }
+  def times(block: () => Any) = (0 until int).foreach { i => block() }
+  def times(block: Int => Any) = (0 until int).foreach { i => block(i) }
 
   def fromNow() = {
     val calendar = Calendar.getInstance

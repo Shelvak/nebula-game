@@ -11,17 +11,17 @@ class Troop(val id: Long,
             val stance: Stance.Type,
             protected var _xp: Int)
 extends Combatant with Ordered[Troop] {
-  val rubyName = "Unit::" + name
-  val kind = Kind(Config.unitKind(name))
-  val armor = Armor(Config.unitArmor(name))
-  val armorModifier = Config.unitArmorModifier(name, level)
-  val initiative = Config.unitInitiative(name)
+  val rubyName = "Troop::" + name
+  val kind = Kind(Config.troopKind(name))
+  val armor = Armor(Config.troopArmor(name))
+  val armorModifier = Config.troopArmorModifier(name, level)
+  val initiative = Config.troopInitiative(name)
 
-  def metalCost = Config.unitMetalCost(name)
-  def energyCost = Config.unitEnergyCost(name)
-  def zetiumCost = Config.unitZetiumCost(name)
+  def metalCost = Config.troopMetalCost(name)
+  def energyCost = Config.troopEnergyCost(name)
+  def zetiumCost = Config.troopZetiumCost(name)
 
-  val hitPoints = Config.unitHp(name)
+  val hitPoints = Config.troopHp(name)
 
   def compare(troop: Troop): Int = flank.compare(troop.flank)
 
