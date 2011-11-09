@@ -99,7 +99,7 @@ spawn.mini_battleground.units:
 spawn.mini_battleground.strategy: random
 
 # Time range for spawning.
-spawn.battleground.delay: [<%= 2.days %> / speed, <%= 4.days %> / speed]
+spawn.battleground.delay: [<%= 1.days %> / speed, <%= 3.days %> / speed]
 # Maximum number of spots occupied by NPC units in SS.
 spawn.battleground.max_spots: 1
 # - [count_from, count_to, type, flank]

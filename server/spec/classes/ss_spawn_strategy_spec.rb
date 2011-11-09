@@ -15,7 +15,7 @@ describe SsSpawnStrategy do
   describe "strategies" do
     describe "outer circle" do
       before(:each) do
-        Cfg.stub!(:solar_system_spawn_strategy).with(solar_system.kind).
+        Cfg.stub!(:solar_system_spawn_strategy).with(solar_system).
           and_return(SsSpawnStrategy::STRATEGY_OUTER_CIRCLE)
       end
 
@@ -56,7 +56,7 @@ describe SsSpawnStrategy do
 
     describe "random" do
       before(:each) do
-        Cfg.stub!(:solar_system_spawn_strategy).with(solar_system.kind).
+        Cfg.stub!(:solar_system_spawn_strategy).with(solar_system).
           and_return(SsSpawnStrategy::STRATEGY_RANDOM)
       end
       

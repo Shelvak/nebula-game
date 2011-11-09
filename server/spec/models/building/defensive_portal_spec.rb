@@ -263,13 +263,14 @@ describe Building::DefensivePortal do
       it "should call .pick_unit_ids_from_list with available unit ids" do
         volumes = Building::DefensivePortal::PORTAL_UNIT_VOLUMES
 
-        player = Factory.create(:player)
+        alliance = create_alliance
+        player = alliance.owner
         planet = Factory.create(:planet)
         u1 = Factory.create!(:u_trooper, :location => planet, :player => player)
         u2 = Factory.create!(:u_shocker, :location => planet, :player => player)
 
-        ally_player = Factory.create(:player)
-        ally_planet = Factory.create(:planet)
+        ally_player = Factory.create(:player, :alliance => alliance)
+        ally_planet = Factory.create(:planet, :player => ally_player)
         ally_u1 = Factory.create!(:u_gnat, :location => ally_planet,
                                   :player => ally_player)
         ally_u2 = Factory.create!(:u_glancer, :location => ally_planet,
