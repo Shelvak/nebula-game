@@ -40,6 +40,13 @@ class SmartInt(int: Int) {
   def times(block: () => Any) = (0 until int).foreach { i => block() }
   def times(block: Int => Any) = (0 until int).foreach { i => block(i) }
 
+  def seconds = int
+  def minutes = int * 60
+  def hours = int * 3600
+  def days = int * 3600 * 24
+  def weeks = int * 3600 * 24 * 7
+  def months = int * 3600 * 24 * 31
+
   def fromNow() = {
     val calendar = Calendar.getInstance
     calendar.add(Calendar.SECOND, int)

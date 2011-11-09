@@ -162,11 +162,7 @@ namespace :flex do
       Assets.store_hashes(BUNDLED_FILE_HASHES, current_hashes) \
         unless updated_bundles.blank?
       config_updated = update_config
-      if recompiled || config_updated
-        Rake::Task['flex:assets:copy'].invoke
-      else
-        puts "Nothing to build. Up to date."
-      end
+      puts "Nothing to build. Up to date." unless recompiled || config_updated
     end
 
     def compile(source)

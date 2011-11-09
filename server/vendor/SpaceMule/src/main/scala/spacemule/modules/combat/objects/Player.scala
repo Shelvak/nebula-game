@@ -3,7 +3,7 @@ package spacemule.modules.combat.objects
 object Player {
   object Technologies {
     /**
-     * Map of combatant full name (Building::Thunder, Troop::Trooper, etc.) to
+     * Map of combatant full name (Building::Thunder, Unit::Trooper, etc.) to
      * modifier.
      * 
      * Modifier example: 0.25 would mean 25% more damage.
