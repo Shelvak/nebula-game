@@ -186,8 +186,9 @@ class Cfg; class << self
     when SolarSystem::KIND_BATTLEGROUND
       solar_system.main_battleground? ? "battleground" : "mini_battleground"
     else
-      raise ArgumentError.new("Unknown solar system kind: #{
-        solar_system_kind.inspect}")
+      raise ArgumentError.new(
+        "Solar system #{solar_system} with unknown kind: #{solar_system.kind}"
+      )
     end
   end
 
