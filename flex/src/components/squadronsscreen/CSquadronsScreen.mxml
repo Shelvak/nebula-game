@@ -118,8 +118,11 @@
                             width="{internalUnitCont.width}" id="unitsList">
                   <s:layout>
                      <s:TileLayout columnWidth="{Math.floor(unitsList.width/
-                     (Math.ceil(unitsList.width/900)))}"
-                                   requestedColumnCount="{Math.ceil(unitsList.width/900)}"
+                     getColumnCount(unitsList.width, currentList == OU.allyUnits
+                            ? OU.allyUnits.length : OU.playerUnits.length))}"
+                                   requestedColumnCount="{getColumnCount(
+                                   unitsList.width, currentList == OU.allyUnits
+                            ? OU.allyUnits.length : OU.playerUnits.length)}"
                                    verticalGap="5"
                                    horizontalGap="0"/>
                   </s:layout>
@@ -173,6 +176,11 @@
 
       [Bindable]
       private var currentList: ListCollectionView;
+
+      private static function getColumnCount(listWidth: Number,  listLength: int): int
+      {
+         return Math.max(1, Math.min(Math.ceil(listWidth/900), listLength));
+      }
 
       private static const LOCATION_TYPES: ArrayCollection =
               new ArrayCollection([LocationType.ANY,
