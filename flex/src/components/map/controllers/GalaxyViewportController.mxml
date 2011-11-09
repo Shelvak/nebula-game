@@ -1,63 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                    xmlns:s="library://ns.adobe.com/flex/spark" 
-                    xmlns:mx="library://ns.adobe.com/flex/mx"
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
                     xmlns:base="components.base.*"
                     xmlns:ctrl="components.map.controllers.*"
-                    xmlns:minimap="components.map.controllers.minimap.*"
                     implements="components.map.controllers.IMapViewportController"
-                    initialize="this_initializeHandler(event)">
+                    initialize="this_initializeHandler(event)"
+                    resize="this_resizeHandler(event)">
    
    <fx:Script>
       <![CDATA[
-         import components.base.viewport.Viewport;
-         import components.skins.MapObjectsListSkin;
-         
-         import models.map.MStaticSpaceObjectsAggregator;
-         
-         import mx.events.FlexEvent;
-         
-         import utils.datastructures.Collections;
-         
-         
-         private var _viewport:Viewport;
-         public function setViewport(viewport:Viewport) : void
-         {
-            _viewport = viewport;
-            initializeControllers();
-         }
-         
-         
-         public function cleanup() : void
-         {
-            _viewport = null;
-            zoom.cleanup();
-         }
+      import components.base.viewport.Viewport;
+      import components.map.controllers.GalaxyPlayerObjects;
 
-         
-         private function this_initializeHandler(event:FlexEvent):void
-         {
-            initializeControllers();
+      import mx.events.FlexEvent;
+      import mx.events.ResizeEvent;
+
+
+      private var _viewport: Viewport;
+
+      public function setViewport(viewport: Viewport): void {
+         _viewport = viewport;
+         initializeControllers();
+      }
+
+      public function cleanup(): void {
+         _viewport = null;
+         if (playerObjects != null && playerObjects.dataProvider != null) {
+            GalaxyPlayerObjects(playerObjects.dataProvider).cleanup();
+            playerObjects.dataProvider = null;
          }
-         
-         
-         private function initializeControllers() : void
-         {
-            if (zoom)
-            {
-               zoom.setViewport(_viewport);
-            }
-            if (solarSystems)
-            {
-               solarSystems.dataProvider = ML.latestGalaxy.solarSystemsWithPlayer;
-            }
+         zoom.cleanup();
+      }
+
+      private function this_initializeHandler(event: FlexEvent): void {
+         initializeControllers();
+      }
+
+      private function initializeControllers(): void {
+         if (zoom != null) {
+            zoom.setViewport(_viewport);
          }
+         if (playerObjects != null) {
+            playerObjects.dataProvider =
+               new GalaxyPlayerObjects(ML.latestGalaxy);
+         }
+      }
+
+      private function this_resizeHandler(event: ResizeEvent): void {
+         if (playerObjects != null) {
+            playerObjects.maxHeight = this.height - 5;
+            playerObjects.invalidateSize();
+            invalidateSize();
+         }
+      }
       ]]>
    </fx:Script>
    
    <ctrl:ViewportZoomController id="zoom"/>
-   <ctrl:MapObjectsList id="solarSystems" right="2" bottom="2" height="40%"
-                        skinClass="components.skins.MapObjectsListSkin"
-                        itemRenderer="components.skins.itemrenderers.IRSolarSystem"/>
-   
+   <ctrl:MapObjectsList
+      right="2" bottom="2"
+      id="playerObjects"
+      skinClass="components.skins.MapObjectsListSkin"
+      itemRendererFunction="GalaxyPlayerObjects.itemRendererFunction">
+   </ctrl:MapObjectsList>
+
 </base:BaseContainer>
