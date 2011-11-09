@@ -51,7 +51,9 @@
    </s:PopUpAnchor>
    
    <!--- The anchor button used by the DropDownList. -->
-   <s:Button id="openButton" width="{labelDisplay.width}" top="0" bottom="0"
+   <s:Button id="openButton" minWidth="{hostComponent.minWidth}"
+             width="{Math.max(hostComponent.minWidth, labelDisplay.width)}"
+             top="0" bottom="0"
              skinClass="components.skins.DropDownListButtonSkin" />
    
    <!--- The prompt area of the DropDownList. -->
