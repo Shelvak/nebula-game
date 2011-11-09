@@ -94,6 +94,19 @@ describe Building::DefensivePortal do
         Building::DefensivePortal.send(:get_ids_from_planet, planet1)
       end.should raise_error(Building::DefensivePortal::NoUnitsError)
     end
+
+    # Bugfix
+    it "should not include enemy players/planets if you're not in alliance" do
+      planet1 = Factory.create(:planet_with_player)
+      planet2 = Factory.create(:planet_with_player)
+      Factory.create!(:b_defensive_portal, opts_active + {:planet => planet2})
+      planet3 = Factory.create(:planet_with_player)
+      Factory.create!(:b_defensive_portal, opts_active + {:planet => planet3})
+
+      lambda do
+        Building::DefensivePortal.send(:get_ids_from_planet, planet1)
+      end.should raise_error(Building::DefensivePortal::NoUnitsError)
+    end
     
     it "should not return planets which have no portals" do
       planet1 = Factory.create(:planet_with_player)
