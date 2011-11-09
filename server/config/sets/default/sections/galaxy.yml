@@ -13,7 +13,7 @@ player.shield_duration: <%= 2.weeks %> / speed
 # Free population given to player upon creation
 player.population: 60
 # Maximum population player can have.
-player.population.max: 1002500
+player.population.max: 2500
 # When should the inactivity check be scheduled for?
 player.inactivity_check: <%= 1.week %> / speed
 # How much points must player have to be considered active?
