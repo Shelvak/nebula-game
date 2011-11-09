@@ -1023,6 +1023,7 @@ assets:
         order_top_right.png:              Locator_top_right.png
         order_from_indicator.png:         Locator_from.png
         sector_indicator.tar.gz:          Locator_spinner.tar.gz
+        sector_with_ships.png:            Fleet.png
         squad_player.png:                 OwnShip_move.png
         squad_ally.png:                   AllianceShip2_move.png
         squad_nap.png:                    Whiteship_move.png

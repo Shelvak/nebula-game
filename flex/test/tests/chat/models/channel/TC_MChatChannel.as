@@ -72,6 +72,7 @@ package tests.chat.models.channel
       [Test]
       public function should_add_system_message_when_member_has_joined() : void
       {
+         channel.generateJoinLeaveMsgs = true;
          channel.memberJoin(member);
          
          assertThat( channel.members, arrayWithSize (1) );
@@ -94,6 +95,7 @@ package tests.chat.models.channel
       [Test]
       public function should_add_system_message_when_member_has_left() : void
       {
+         channel.generateJoinLeaveMsgs = true;
          channel.memberJoin(member);
          channel.memberLeave(member);
          

@@ -127,7 +127,7 @@ package controllers.messages
             }
             msgLog.logMessage(
                rmo.action, "Processing response message to {0}. Failed: {1}",
-               rmo.id, sRMO.failed
+               [rmo.id, sRMO.failed]
             );
             if (sRMO.failed)
                rmo.responder.cancel(rmo);

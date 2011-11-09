@@ -5,8 +5,8 @@ package components.map.controllers
    import models.BaseModel;
    
    import spark.components.List;
-   
-   
+
+
    public class MapObjectsList extends List
    {
       protected override function itemSelected(index:int, selected:Boolean) : void

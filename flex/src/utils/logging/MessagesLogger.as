@@ -28,13 +28,16 @@ package utils.logging
        * @param logMessage log message text
        * @param params parameters to substitute in <code>logMessage</code>
        */
-      public function logMessage(message:String, logMessage:String, ... params) : void {
-         if (shouldBeLogged(message))
+      public function logMessage(message:String, logMessage:String, params:Array) : void {
+         Objects.paramNotNull("message", message);
+         Objects.paramNotNull("logMessage", logMessage);
+         Objects.paramNotNull("params", params);
+         if (shouldBeLogged(message)) {
             log.info(logMessage, params);
+         }
       }
       
       private function shouldBeLogged(msg:String) : Boolean {
-         Objects.paramNotNull("msg", msg);
          for each (var keyword:String in _disabledLogKeywords) {
             if (msg.indexOf(keyword) != -1)
                return false;

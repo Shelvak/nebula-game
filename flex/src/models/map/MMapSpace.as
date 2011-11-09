@@ -2,11 +2,23 @@ package models.map
 {
    
    import models.BaseModel;
-   
+   import models.map.events.MMapEvent;
+   import models.movement.MSquadron;
+   import models.movement.events.MSquadronEvent;
+
    import mx.collections.ListCollectionView;
-   
+
+   import utils.Objects;
+
    import utils.datastructures.Collections;
-   
+
+
+   /**
+    * Dispatched when squadron moves to another hop inside the map.
+    *
+    * @eventType models.map.events.MMapEvent.SQUADRON_MOVE
+    */
+   [Event(name="squadronMove", type="models.map.events.MMapEvent")]
    
    public class MMapSpace extends MMap
    {
@@ -19,6 +31,55 @@ package models.map
          _naturalObjects = Collections.filter(objects, ff_naturalObjects);
          _wreckages = Collections.filter(objects, ff_wreckages);
          _cooldowns = Collections.filter(objects, ff_cooldowns);
+         addEventListener(
+            MMapEvent.SQUADRON_ENTER, this_squadronEnterHandler,
+            false, 0, true
+         );
+         addEventListener(
+            MMapEvent.SQUADRON_LEAVE, this_squadronLeaveHandler,
+            false, 0, true
+         );
+         for each (var squad:MSquadron in squadrons) {
+            addSquadronEventHandler(squad);
+         }
+      }
+
+
+      override public function cleanup(): void {
+         for each (var squad:MSquadron in squadrons) {
+            removeSquadronEventHandlers(squad);
+         }
+         super.cleanup();
+      }
+
+      private function this_squadronEnterHandler(event: MMapEvent): void {
+         addSquadronEventHandler(event.squadron);
+      }
+
+      private function this_squadronLeaveHandler(event: MMapEvent): void {
+         removeSquadronEventHandlers(event.squadron);
+      }
+
+      private function addSquadronEventHandler(squadron: MSquadron): void {
+         Objects.paramNotNull("squadron", squadron);
+         squadron.addEventListener(
+            MSquadronEvent.MOVE, squadron_moveHandler, false, 0, true
+         );
+      }
+
+      private function removeSquadronEventHandlers(squadron: MSquadron): void {
+         Objects.paramNotNull("squadron", squadron);
+         squadron.removeEventListener(
+            MSquadronEvent.MOVE, squadron_moveHandler, false
+         );
+      }
+
+      private function squadron_moveHandler(event: MSquadronEvent): void {
+         if (hasEventListener(MMapEvent.SQUADRON_MOVE)) {
+            var mapEvent:MMapEvent = new MMapEvent(MMapEvent.SQUADRON_MOVE);
+            mapEvent.squadron = event.squadron;
+            dispatchEvent(mapEvent);
+         }
       }
       
       private var _wreckages:ListCollectionView;
@@ -204,11 +265,7 @@ class StaticObjectsHash
    public function getObjects(x:int, y:int) : SectorObjects {
       return _hash[computeHashCode(x, y)];
    }
-   
-   public function hasObjects(x:int, y:int) : Boolean {
-      return _hash[computeHashCode(x, y)] != null;
-   }
-   
+
    private function computeHashCode(x:int, y:int) : String {
       return x + "," + y;
    }

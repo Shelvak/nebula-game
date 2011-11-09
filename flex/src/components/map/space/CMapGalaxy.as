@@ -1,25 +1,25 @@
 package components.map.space
 {
    import controllers.Messenger;
-   import controllers.ui.NavigationController;
-   
+
    import models.BaseModel;
    import models.ModelLocator;
    import models.galaxy.Galaxy;
    import models.galaxy.IVisibleGalaxyAreaClient;
    import models.location.LocationMinimal;
    import models.location.LocationType;
+   import models.map.IMStaticMapObject;
    import models.map.IMStaticSpaceObject;
    import models.map.MMapSpace;
    import models.map.MStaticSpaceObjectsAggregator;
-   
+
    import mx.collections.ArrayCollection;
-   
+
    import spark.components.Group;
-   
+
    import utils.locale.Localizer;
-   
-   
+
+
    public class CMapGalaxy extends CMapSpace implements IVisibleGalaxyAreaClient
    {
       /**
@@ -40,11 +40,7 @@ package components.map.space
       public static function screenHideHandler() : void {
          Messenger.hide();
       }
-      
-      private static function get NAV_CTRL() : NavigationController {
-         return NavigationController.getInstance();
-      }
-      
+
       public static const COMP_CLASSES:StaticObjectComponentClasses =
          new StaticObjectComponentClasses();
       COMP_CLASSES.addComponents(MMapSpace.STATIC_OBJECT_NATURAL, CSolarSystem, CSolarSystemInfo);
@@ -85,16 +81,19 @@ package components.map.space
       
       
       private var _fowRenderer:FOWRenderer;
-      private var _fowContainer:Group;
       override protected function createBackgroundObjects(objectsContainer:Group) : void {
          super.createBackgroundObjects(objectsContainer);
-         _fowContainer = new Group();
+         var _fowContainer: Group = new Group();
          _fowContainer.left = 0;
          _fowContainer.right = 0;
          _fowContainer.top = 0;
          _fowContainer.bottom = 0;
          objectsContainer.addElement(_fowContainer);
-         _fowRenderer = new FOWRenderer(Galaxy(model), GridGalaxy(grid), _fowContainer.graphics);
+         _fowRenderer = new FOWRenderer(
+            Galaxy(model),
+            GridGalaxy(grid),
+            _fowContainer.graphics
+         );
       }
       
       
@@ -121,7 +120,7 @@ package components.map.space
          var sector:SectorsHashItem = new SectorsHashItem(x, y);
          _staticObjectsHash.add(sector);
          var aggrComponent:CStaticSpaceObjectsAggregator;
-         var aggrModel:MStaticSpaceObjectsAggregator
+         var aggrModel:MStaticSpaceObjectsAggregator;
          if (modelsInSector.length > 0) {
             sector.object = _staticObjectsPool.borrowObject();
             aggrComponent = sector.object;
@@ -243,24 +242,28 @@ package components.map.space
       private var _selectedLocation:LocationMinimal = null;
       
       protected override function selectModel(model:BaseModel) : void {
-         if (model is IMStaticSpaceObject) {
-            var object:IMStaticSpaceObject = IMStaticSpaceObject(model);
-            if (!getGalaxy().definesLocation(object.currentLocation)) {
+         if (model is IMStaticSpaceObject || model is LocationMinimal) {
+            var loc: LocationMinimal =
+                   model is IMStaticMapObject
+                      ? IMStaticSpaceObject(model).currentLocation
+                      : LocationMinimal(model);
+            if (!getGalaxy().definesLocation(loc)) {
                return;
             }
-            if (_selectedLocation == null || !_selectedLocation.equals(object.currentLocation)) {
+            if (_selectedLocation == null || !_selectedLocation.equals(loc)) {
                deselectSelectedObject();
-               _selectedLocation = object.currentLocation;
+               _selectedLocation = loc;
                viewport.moveContentTo(
                   grid.getSectorRealCoordinates(_selectedLocation),
                   true
                );
             }
-            var sectorObjects:SectorsHashItem = _staticObjectsHash.getItem(getTmpSector(
-               _selectedLocation.x,
-               _selectedLocation.y
-            ));
-            if (sectorObjects != null) {
+            var sectorObjects: SectorsHashItem =
+               _staticObjectsHash.getItem(getTmpSector(
+                  _selectedLocation.x,
+                  _selectedLocation.y
+               ));
+            if (sectorObjects != null && sectorObjects.hasObject) {
                selectComponent(sectorObjects.object, false, true);
             }
          }
@@ -288,12 +291,19 @@ package components.map.space
 }
 
 
+import components.map.space.CMapGalaxy;
 import components.map.space.CStaticSpaceObjectsAggregator;
 
 import flash.errors.IllegalOperationError;
 import flash.utils.Dictionary;
 
+import models.map.MStaticSpaceObjectsAggregator;
+
+import spark.components.Group;
+
 import utils.Objects;
+import utils.pool.BasePoolableObjectFactory;
+import utils.pool.impl.StackObjectPool;
 
 
 class SectorsHashItem
@@ -376,13 +386,6 @@ class SectorsHash
 }
 
 
-import utils.pool.BasePoolableObjectFactory;
-import utils.pool.impl.StackObjectPool;
-import models.map.MStaticSpaceObjectsAggregator;
-import components.map.space.CMapGalaxy;
-import spark.components.Group;
-
-
 class SectorStaticObjectsFactory extends BasePoolableObjectFactory
 {
    private var _container:Group;
@@ -430,21 +433,7 @@ class SectorStaticObjectsPool
    public function borrowObject() : CStaticSpaceObjectsAggregator {
       return CStaticSpaceObjectsAggregator(_pool.borrowObject());
    }
-   
-   /**
-    * @see utils.pool.IObjectPool#numActive
-    */
-   public function get numActive() : int {
-      return _pool.numActive;
-   }
-   
-   /**
-    * @see utils.pool.IObjectPool#numIdle
-    */
-   public function get numIdle() : int {
-      return _pool.numIdle;
-   }
-   
+
    /**
     * @see utils.pool.IObjectPool#returnObject()
     */

@@ -7,5 +7,6 @@ package tests.maps
       public var tc_VisibleAreaTracker:TC_VisibleAreaTracker;
       public var tc_VisibleGalaxyArea:TC_VisibleGalaxyArea;
       public var tc_Viewport:TC_Viewport;
+      public var tc_GalaxyPlayerObjects:TC_GalaxyPlayerObjects;
    }
 }

@@ -1353,6 +1353,7 @@
     <header.planet value="Planet" />
     <header.building value="Building" />
     <header.unit value="Unit" />
+    <header.any value="Any" />
     <header.storage value="Storage" />
     <header.owner value="Owner" />
 
@@ -3257,6 +3258,11 @@
     <label.allianceUnits value="Alliance units" />
     <label.stop value="Stop" />
     <label.manage value="Manage" />
+    <label.owner value="Owner:" />
+    <filter.owner value="Owner:" />
+    <filter.locationType value="Location type:" />
+    <filter.locationObject value="Location:" />
+    <title.filters value="Filters" />
   </Squadrons>
 
   <Technologies>
