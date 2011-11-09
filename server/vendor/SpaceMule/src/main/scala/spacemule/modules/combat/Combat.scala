@@ -117,6 +117,8 @@ class Combat(
   // Launch the combat in the constructor.
   L.debug("Running combat simulation", () => run())
 
+  statistics.registerKilledBy(alliances.killedBy)
+
   /**
    * Map of player -> outcome pairs.
    */

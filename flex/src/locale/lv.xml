@@ -669,6 +669,7 @@
     <property.width value="Building width" />
     <property.height value="Building height" />
     <property.vpsOnDamage value="VPs for 1 damage dealt" />
+    <property.credsForKilling value="Creds for killing" />
     <!-- /TODO -->
 
     <text.deactivated>
@@ -1671,6 +1672,7 @@
     <label.points value="Kara punkti iegūti" />
     <!-- TODO: translate this -->
     <label.victoryPoints value="Victory points earned" />
+    <label.creds value="Creds earned" />
     <!-- /TODO -->
     <label.stats value="Kaujas statistika" />
     <label.close value="Aizvērt" />
@@ -4000,6 +4002,7 @@
     <property.move.galaxy.hopTime value="Viens lēciens galaktikā" />
     <property.population value="Iedzīvotāji" />
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
+    <property.credsForKilling ref="Buildings/property.credsForKilling" />
     
     <!-- TODO: translate this -->
     <tooltip.freeStorage>
@@ -4308,7 +4311,10 @@
         obtaining secrets hidden well within this ship is a key to galactic
         domination.
       </p>
-      <p>Dealing damage to this ship gains you victory points.</p>
+      <p>
+        Dealing damage to this ship gains you victory points. Also landing
+        last killing shot to this ship awards player who dealt it with creds.
+      </p>
     </BossShip.about>
     <!-- /TODO -->
 

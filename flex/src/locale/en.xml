@@ -526,6 +526,7 @@
     <property.width value="Building width" />
     <property.height value="Building height" />
     <property.vpsOnDamage value="VPs for 1 damage dealt" />
+    <property.credsForKilling value="Creds for killing" />
 
     <text.deactivated>
       <p>
@@ -1506,6 +1507,7 @@
     <label.xp value="XP earned" />
     <label.points value="War points earned" />
     <label.victoryPoints value="Victory points earned" />
+    <label.creds value="Creds earned" />
     <label.stats value="Combat statistics" />
     <label.close value="Close" />
     <label.players value="Players" />
@@ -3809,6 +3811,7 @@
     <property.move.galaxy.hopTime value="One hop in Galaxy" />
     <property.population value="Population" />
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
+    <property.credsForKilling ref="Buildings/property.credsForKilling" />
 
     <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
     <stance.neutral value="Neutral stance" />
@@ -4104,7 +4107,10 @@
         obtaining secrets hidden well within this ship is a key to galactic
         domination.
       </p>
-      <p>Dealing damage to this ship gains you victory points.</p>
+      <p>
+        Dealing damage to this ship gains you victory points. Also landing
+        last killing shot to this ship awards player who dealt it with creds.
+      </p>
     </BossShip.about>
 
     <Trooper.name ref="Objects/Unit_Trooper" />

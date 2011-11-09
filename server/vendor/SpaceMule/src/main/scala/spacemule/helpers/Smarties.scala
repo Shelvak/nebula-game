@@ -125,7 +125,7 @@ class SmartRectangle(rectangle: Rectangle) {
 }
 
 class SmartSequence[+T, +Repr](sequence: SeqLike[T, Repr]) {
-  def random:T = {
+  def random: T = {
     val size = sequence.size
     if (size == 0) {
       throw new IllegalStateException(

@@ -23,9 +23,11 @@ class Combat
   # your allies were wiped out from the battlefield).
   OUTCOME_TIE = 2
 
-  # Victory points attribute used in statistics
+  # Attributes used in statistics
+  
   STATS_WAR_PTS_ATTR = "points_earned"
   STATS_VPS_ATTR = "victory_points_earned"
+  STATS_CREDS_ATTR = "creds_earned"
 
   # Run combat in a +SsObject+ between +Player+ and NPC building.
   # Don't create cooldown.

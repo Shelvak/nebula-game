@@ -623,6 +623,7 @@
     <property.width value="Pastato plotis" />
     <property.height value="Pastato ilgis" />
     <property.vpsOnDamage value="PT už 1 žalos vienetą" />
+    <property.credsForKilling value="Kredų už nužudymą" />
 
     <text.deactivated>
       <p>
@@ -1596,6 +1597,7 @@
     <label.xp value="Gauta patirties" />
     <label.points value="Gauta karo taškų" />
     <label.victoryPoints value="Gauta pergalės taškų" />
+    <label.creds value="Gauta kredų" />
     <label.close value="Uždaryti" />
     <label.players value="Žaidėjai" />
     <label.noNotifications value="Pranešimų nėra" />
@@ -3861,6 +3863,7 @@
     <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
     <property.population value="Populiacija" />
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
+    <property.credsForKilling ref="Buildings/property.credsForKilling" />
     
     <tooltip.freeStorage>
       <p>Šiame laive dar liko {0} vietos.</p>
@@ -4140,7 +4143,11 @@
         ir komandorai iš visos galaktikos stengiasi jį suplėšyti į gabalus. Nes
         jie žino kokie turtai ir paslaptys laukia šio laivo viduje...
       </p>
-      <p>Už šiam laivui padarytą žalą tu gauni pergalės taškus.</p>
+      <p>
+        Už šiam laivui padarytą žalą tu gauni pergalės taškus. Be to
+        žaidėjas, kuris į šį laivą pataikys paskutinį, nužudantį, šūvį,
+        gaus kredų.
+      </p>
     </BossShip.about>
 
     <Trooper.name ref="Objects/Unit_Trooper" />

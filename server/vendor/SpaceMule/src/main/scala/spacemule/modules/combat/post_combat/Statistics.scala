@@ -1,11 +1,8 @@
 package spacemule.modules.combat.post_combat
 
 import scala.collection.mutable.HashMap
-import spacemule.modules.combat.objects.Alliances
-import spacemule.modules.combat.objects.Combatant
-import spacemule.modules.combat.objects.Player
-import spacemule.modules.combat.objects.Resources
 import spacemule.modules.config.objects.Config
+import spacemule.modules.combat.objects._
 
 object Statistics {
   case class PlayerData(
@@ -15,7 +12,8 @@ object Statistics {
     damageTakenAlliance: Int,
     xpEarned: Int,
     pointsEarned: Int,
-    victoryPointsEarned: Int
+    victoryPointsEarned: Int,
+    credsEarned: Int
   ) {
     lazy val toMap = Map(
       "damage_dealt_player" -> damageDealtPlayer,
@@ -24,7 +22,8 @@ object Statistics {
       "damage_taken_alliance" -> damageTakenAlliance,
       "xp_earned" -> xpEarned,
       "points_earned" -> pointsEarned,
-      "victory_points_earned" -> victoryPointsEarned
+      "victory_points_earned" -> victoryPointsEarned,
+      "creds_earned" -> credsEarned
     )
   }
 
@@ -55,6 +54,7 @@ class Statistics(
   private val xpEarned = HashMap[Option[Player], Int]()
   private val pointsEarned = HashMap[Option[Player], Int]()
   private val victoryPointsEarned = HashMap[Option[Player], Double]()
+  private val credsEarned = HashMap[Option[Player], Int]()
 
   private val players = alliances.players.map { case (player, allianceId) =>
     damageDealtAlliance(allianceId) = 0
@@ -65,6 +65,7 @@ class Statistics(
     xpEarned(player) = 0
     pointsEarned(player) = 0
     victoryPointsEarned(player) = 0
+    credsEarned(player) = 0
 
     (player, allianceId)
   }
@@ -93,6 +94,15 @@ class Statistics(
     victoryPointsEarned(source.player) += points
   }
 
+  /**
+   * Calculate creds earned for killing particular units.
+   */
+  def registerKilledBy(killedBy: KilledBy) {
+    killedBy.foreach { case (combatant, player) =>
+      credsEarned(player) += combatant.credsForKilling
+    }
+  }
+
   def byPlayer: Statistics.PlayerDataMap = players.map {
     case (player, allianceId) =>
       val playerData = Statistics.PlayerData(
@@ -102,7 +112,8 @@ class Statistics(
         damageTakenAlliance(allianceId),
         xpEarned(player),
         pointsEarned(player),
-        victoryPointsEarned(player).round.toInt
+        victoryPointsEarned(player).round.toInt,
+        credsEarned(player)
       )
 
       (player -> playerData)
@@ -126,7 +137,11 @@ class Statistics(
     %s
   * Victory points earned:
     %s
-""".format(damageDealtPlayer, damageTakenPlayer,
-           damageDealtAlliance, damageTakenAlliance,
-           xpEarned, pointsEarned, victoryPointsEarned)
+  * Creds earned:
+    %s
+""".format(
+    damageDealtPlayer, damageTakenPlayer,
+    damageDealtAlliance, damageTakenAlliance,
+    xpEarned, pointsEarned, victoryPointsEarned, credsEarned
+  )
 }

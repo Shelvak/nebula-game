@@ -251,6 +251,14 @@ object Config {
     multiplier * damage
   }
 
+  def credsForKilling(combatant: Combatant): Int = {
+    val key = "%s.creds_for_killing".format(resolveCombatantKey(combatant))
+    getOpt[Long](key) match {
+      case Some(v) => v.toInt
+      case None => 0
+    }
+  }
+
   // End of combat attributes
 
   def orbitCount = int("solar_system.orbit.count")
