@@ -3,7 +3,8 @@
                 xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:mx="library://ns.adobe.com/flex/mx"
                 xmlns:squadscr="components.squadronsscreen.*"
-                autoDrawBackground="false" width="100%" xmlns:location="components.location.*">
+                autoDrawBackground="false"
+                width="100%">
    <fx:Script>
       <![CDATA[
          import controllers.routes.RoutesCommand;

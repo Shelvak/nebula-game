@@ -3348,6 +3348,10 @@
     <label.stop value="Sustabdyti" />
     <label.manage value="Tvarkyti" />
     <label.owner value="Savininkas:" />
+    <filter.owner value="Savininkas:" />
+    <filter.locationType value="Vietovės tipas:" />
+    <filter.locationObject value="Vieta:" />
+    <title.filters value="Filtrai" />
   </Squadrons>
 
   <Technologies>

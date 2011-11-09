@@ -35,6 +35,13 @@
       </s:Group>
       <s:Group id="unitsContent" height="100%" width="100%">
          <base:AdvancedContainer id="grpFilters">
+            <s:Label text="{getString('title.filters')}"
+                     color="#eec500" fontWeight="bold"
+                     fontSize="16" paddingRight="6"/>
+            <!-- OWNER FILTER -->
+            <s:Label text="{getString('filter.owner')}"
+                    visible="{currentList == OU.allyUnits}"
+                    paddingLeft="6"/>
             <s:DropDownList dataProvider="{OU.owners}"
                     change="playerSelector_changeHandler(event)"
                     itemRenderer="components.player.IRPlayerName"
@@ -44,6 +51,9 @@
                     labelFunction="playerNameFunction"
                     minWidth="50"/>
             <!-- PLAYER LOCATION FILTERS -->
+            <s:Label text="{getString('filter.locationType')}"
+                    visible="{currentList == OU.playerUnits}"
+                     paddingLeft="6"/>
             <s:DropDownList dataProvider="{LOCATION_TYPES}"
                     change="locationTypeSelector_changeHandler()"
                     itemRenderer="components.location.IRLocationType"
@@ -52,6 +62,10 @@
                     visible="{currentList == OU.playerUnits}"
                     labelFunction="locationTypeFunction"
                     minWidth="50"/>
+            <s:Label text="{getString('filter.locationObject')}"
+                    visible="{currentList == OU.playerUnits
+                    &amp;&amp; playerLocationTypesSelector.selectedItem
+                    != LocationType.GALAXY}" paddingLeft="6"/>
             <s:DropDownList dataProvider="{OU.playerLocationObjects}"
                     itemRenderer="components.location.IRLocationBasic"
                     change="locationObjectsSelector_changeHandler(event)"
@@ -63,6 +77,9 @@
                     labelFunction="locationObjectFunction"
                     minWidth="50"/>
             <!-- ALLY LOCATION FILTERS -->
+            <s:Label text="{getString('filter.locationType')}"
+                     visible="{currentList == OU.allyUnits}"
+                     paddingLeft="6"/>
             <s:DropDownList dataProvider="{LOCATION_TYPES}"
                     change="locationTypeSelector_changeHandler()"
                     itemRenderer="components.location.IRLocationType"
@@ -71,6 +88,10 @@
                     visible="{currentList == OU.allyUnits}"
                     labelFunction="locationTypeFunction"
                     minWidth="50"/>
+            <s:Label text="{getString('filter.locationObject')}"
+                    visible="{currentList == OU.allyUnits
+                    &amp;&amp; allyLocationTypesSelector.selectedItem
+                    != LocationType.GALAXY}" paddingLeft="6"/>
             <s:DropDownList dataProvider="{OU.allyLocationObjects}"
                     itemRenderer="components.location.IRLocationBasic"
                     change="locationObjectsSelector_changeHandler(event)"
@@ -83,20 +104,24 @@
                     minWidth="50"/>
             <base:layout>
                <s:HorizontalLayout gap="5" paddingBottom="3" paddingTop="3"
-                       paddingLeft="6"/>
+                       paddingLeft="6" verticalAlign="middle"/>
             </base:layout>
          </base:AdvancedContainer>
          <!--- Scroller for scrolling the content of the list -->
-         <base:Scroller id="unitScroller" stepMultiplier="10" left="0"
-                        right="0" top="30" bottom="0"
+         <base:Scroller id="unitScroller" stepMultiplier="10" width="100%"
+                        top="30" bottom="0"
                         skinClass="components.base.screen.ListScreenScrollerSkin">
-            <s:Group width="100%">
+            <s:Group width="100%" id="internalUnitCont">
                <s:DataGroup itemRenderer="components.squadronsscreen.IRPositionedUnits"
                             dataProvider="{currentList == OU.allyUnits
-                            ? OU.allyUnits
-                            : OU.playerUnits}" width="100%">
+                            ? OU.allyUnits : OU.playerUnits}"
+                            width="{internalUnitCont.width}" id="unitsList">
                   <s:layout>
-                     <s:VerticalLayout horizontalAlign="justify" gap="5"/>
+                     <s:TileLayout columnWidth="{Math.floor(unitsList.width/
+                     (Math.ceil(unitsList.width/900)))}"
+                                   requestedColumnCount="{Math.ceil(unitsList.width/900)}"
+                                   verticalGap="5"
+                                   horizontalGap="0"/>
                   </s:layout>
                </s:DataGroup>
             </s:Group>
