@@ -212,8 +212,6 @@ def read_unit_definition(row, sheet, sections)
   case tier
   when "Towers"
     ["buildings"]
-  when "MTow"
-    ["buildings", "units"]
   else
     ["units"]
   end.each do |section|
