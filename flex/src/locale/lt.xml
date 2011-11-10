@@ -1295,7 +1295,7 @@
     <label.shield>
       <![CDATA[Ši saulės sistema yra apsaugota<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
-    <label.over value="Virš"/>
+    <label.over value="Laivai virš"/>
     <message.noRadar value="Tau reikia radaro, jog matytum galaktiką" />
   </Galaxy>
 

@@ -1203,7 +1203,7 @@
     <label.shield>
       <![CDATA[This solar system is shielded for<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
-    <label.over value="Over"/>
+    <label.over value="Fleet over"/>
     <message.noRadar value="You need a Radar to explore the galaxy" />
   </Galaxy>
 
