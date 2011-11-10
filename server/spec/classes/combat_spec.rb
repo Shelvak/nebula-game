@@ -663,5 +663,76 @@ describe Combat do
         end
       end
     end
+
+    it "should give victory points for units who give VPs on received damage" do
+      player1 = player2 = nil
+      assets = CombatDsl.new do
+        location(:solar_system)
+        player1 = player { units { rhyno } }.player
+        player2 = player { units { boss_ship } }.player
+      end.run
+
+      (nvps1, vps1), (nvps2, vps2) = [player1, player2].map do |player|
+        notification_id = assets.notification_ids[player.id]
+        notification = Notification.find(notification_id)
+
+        [
+          notification.params['statistics'][Combat::STATS_VPS_ATTR],
+          player.victory_points
+        ]
+      end
+      nvps1.should > 0
+      vps1.should > 0
+      nvps2.should == 0
+      vps2.should == 0
+    end
+  end
+
+  describe "creds for killing" do
+    it "should give them for killing the unit" do
+      player1 = player2 = nil
+      assets = CombatDsl.new do
+        location(:solar_system)
+        player1 = player { units { rhyno } }.player
+        player2 = player { units { boss_ship :hp => 0.001 } }.player
+      end.run
+
+      (ncreds1, creds1), (ncreds2, creds2) = [player1, player2].map do |player|
+        notification_id = assets.notification_ids[player.id]
+        notification = Notification.find(notification_id)
+
+        [
+          notification.params['statistics'][Combat::STATS_CREDS_ATTR],
+          player.creds
+        ]
+      end
+      ncreds1.should > 0
+      creds1.should > 0
+      ncreds2.should == 0
+      creds2.should == 0
+    end
+
+    it "should not give them for harming the unit" do
+      player1 = player2 = nil
+      assets = CombatDsl.new do
+        location(:solar_system)
+        player1 = player { units { rhyno } }.player
+        player2 = player { units { boss_ship } }.player
+      end.run
+
+      (ncreds1, creds1), (ncreds2, creds2) = [player1, player2].map do |player|
+        notification_id = assets.notification_ids[player.id]
+        notification = Notification.find(notification_id)
+
+        [
+          notification.params['statistics'][Combat::STATS_CREDS_ATTR],
+          player.creds
+        ]
+      end
+      ncreds1.should == 0
+      creds1.should == 0
+      ncreds2.should == 0
+      creds2.should == 0
+    end
   end
 end

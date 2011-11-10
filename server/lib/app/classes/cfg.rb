@@ -179,44 +179,45 @@ class Cfg; class << self
   def solar_system_orbit_count; CONFIG['solar_system.orbit.count']; end
 
   # Returns config key for spawn depending on _solar_system_kind_
-  def solar_system_spawn_key(solar_system_kind)
-    "solar_system.spawn." + case solar_system_kind
+  def solar_system_spawn_key(solar_system)
+    "solar_system.spawn." + case solar_system.kind
     when SolarSystem::KIND_NORMAL
       "regular"
     when SolarSystem::KIND_BATTLEGROUND
-      "battleground"
+      solar_system.main_battleground? ? "battleground" : "mini_battleground"
     else
-      raise ArgumentError.new("Unknown solar system kind: #{
-        solar_system_kind.inspect}")
+      raise ArgumentError.new(
+        "Solar system #{solar_system} with unknown kind: #{solar_system.kind}"
+      )
     end
   end
 
-  def solar_system_spawn_delay_range(solar_system_kind)
-    from, to = CONFIG[solar_system_spawn_key(solar_system_kind) + ".delay"]
+  def solar_system_spawn_delay_range(solar_system)
+    from, to = CONFIG[solar_system_spawn_key(solar_system) + ".delay"]
     from = CONFIG.safe_eval(from)
     to = CONFIG.safe_eval(to)
     from..to
   end
 
-  def solar_system_spawn_random_delay(solar_system_kind)
-    range = solar_system_spawn_delay_range(solar_system_kind)
+  def solar_system_spawn_random_delay(solar_system)
+    range = solar_system_spawn_delay_range(solar_system)
     rand(range.first, range.last + 1)
   end
 
-  def solar_system_spawn_random_delay_date(solar_system_kind)
-    solar_system_spawn_random_delay(solar_system_kind).seconds.from_now
+  def solar_system_spawn_random_delay_date(solar_system)
+    solar_system_spawn_random_delay(solar_system).seconds.from_now
   end
 
   # Returns maximum number of spots with NPC ships in solar system.
-  def solar_system_spawn_max_spots(solar_system_kind)
-    CONFIG[solar_system_spawn_key(solar_system_kind) + ".max_spots"]
+  def solar_system_spawn_max_spots(solar_system)
+    CONFIG[solar_system_spawn_key(solar_system) + ".max_spots"]
   end
 
-  def solar_system_spawn_units_definition(solar_system_kind)
-    CONFIG[solar_system_spawn_key(solar_system_kind) + ".units"]
+  def solar_system_spawn_units_definition(solar_system)
+    CONFIG[solar_system_spawn_key(solar_system) + ".units"]
   end
 
-  def solar_system_spawn_strategy(solar_system_kind)
-    CONFIG[solar_system_spawn_key(solar_system_kind) + ".strategy"]
+  def solar_system_spawn_strategy(solar_system)
+    CONFIG[solar_system_spawn_key(solar_system) + ".strategy"]
   end
 end; end

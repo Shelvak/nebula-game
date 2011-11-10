@@ -115,7 +115,7 @@ trait Combatant extends Trackable {
    */
   def technologiesDamageMod = player match {
     case Some(player) => player.technologies.damageModFor(this)
-    case None => 0
+    case None => 0.0
   }
 
   /**
@@ -123,7 +123,7 @@ trait Combatant extends Trackable {
    */
   def technologiesArmorMod = player match {
     case Some(player) => player.technologies.armorModFor(this)
-    case None => 0
+    case None => 0.0
   }
 
   /**
@@ -164,4 +164,15 @@ trait Combatant extends Trackable {
 
   protected def trackedAttributes = Map("level" -> level, "hp" -> hp,
                                         "xp" -> xp)
+
+  /**
+   * Victory points given to attacker for damage dealt to this combatant.
+   */
+  def vpsForReceivedDamage(damage: Int) =
+    Config.vpsForReceivedDamage(this, damage)
+
+  /**
+   * Creds given to killed for killing this combatant.
+   */
+  def credsForKilling = Config.credsForKilling(this)
 }

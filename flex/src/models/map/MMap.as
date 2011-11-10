@@ -60,15 +60,11 @@ package models.map
    
    /**
     * Dispatched when static objects has been added to the map.
-    * 
-    * @eventType models.map.events.MMapEvent.OBJECT_ADD
     */
    [Event(name="objectAdd", type="models.map.events.MMapEvent")]
    
    /**
     * Dispatched when static objects has been added to the map.
-    * 
-    * @eventType models.map.events.MMapEvent.OBJECT_REMOVE
     */
    [Event(name="objectRemove", type="models.map.events.MMapEvent")]
    
@@ -374,8 +370,10 @@ package models.map
       /* ########################################### */
       
       private function addSquadronsCollectionEventHandlers(squadrons:ListCollectionView) : void {
-         squadrons.addEventListener(CollectionEvent.COLLECTION_CHANGE, squadrons_collectionChangeHandler,
-                                    false, 0, true);
+         squadrons.addEventListener(
+            CollectionEvent.COLLECTION_CHANGE, squadrons_collectionChangeHandler,
+            false, int.MIN_VALUE, true
+         );
       }
       
       private function squadrons_collectionChangeHandler(event:CollectionEvent) : void {
@@ -393,19 +391,21 @@ package models.map
             }
          }
       }
-      
-      
+
+
       /* ######################################### */
       /* ### OBJECTS COLLECTION EVENT HANDLERS ### */
       /* ######################################### */
-      
-      
+
+
       private function addObjectsCollectionEventHandlers(objects:ListCollectionView) : void {
-         objects.addEventListener(CollectionEvent.COLLECTION_CHANGE, objects_collectionChangeHandler,
-                                  false, 0, true);
+         objects.addEventListener(
+            CollectionEvent.COLLECTION_CHANGE, objects_collectionChangeHandler,
+            false, int.MIN_VALUE, true
+         );
       }
-      
-      
+
+
       private function objects_collectionChangeHandler(event:CollectionEvent) : void {
          if (event.kind != CollectionEventKind.ADD &&
              event.kind != CollectionEventKind.REMOVE) {

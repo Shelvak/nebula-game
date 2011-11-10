@@ -82,13 +82,13 @@ spawn.regular.units:
 spawn.regular.strategy: outer_circle
 
 # Time range for spawning.
-spawn.battleground.delay: [<%= 24.hours %> / speed, <%= 48.hours %> / speed]
+spawn.mini_battleground.delay: [<%= 24.hours %> / speed, <%= 48.hours %> / speed]
 # Maximum number of spots occupied by NPC units in SS.
-spawn.battleground.max_spots: 3
+spawn.mini_battleground.max_spots: 3
 # - [count_from, count_to, type, flank]
 #
 # count numbers are inclusive.
-spawn.battleground.units:
+spawn.mini_battleground.units:
   - [5, 10, Dirac, 0]
   - [5, 20, Dirac, 1]
   - [5, 10, Thor, 0]
@@ -96,4 +96,17 @@ spawn.battleground.units:
   - [1, 8, Demosis, 0]
   - [0, 10, Demosis, 1]
 # Spawning strategy to use
-spawn.battleground.strategy: random
+spawn.mini_battleground.strategy: random
+
+# Time range for spawning.
+spawn.battleground.delay: [<%= 1.days %> / speed, <%= 3.days %> / speed]
+# Maximum number of spots occupied by NPC units in SS.
+spawn.battleground.max_spots: 1
+# - [count_from, count_to, type, flank]
+#
+# count numbers are inclusive.
+spawn.battleground.units:
+  - [1, 1, BossShip, 0]
+# Spawning strategy to use
+spawn.battleground.strategy: outer_circle
+

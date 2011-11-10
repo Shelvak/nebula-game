@@ -274,7 +274,7 @@ describe SolarSystem do
       it "should conform to the definition" do
         location = solar_system.spawn!
         check_spawned_units_by_random_definition(
-          Cfg.solar_system_spawn_units_definition(solar_system.kind),
+          Cfg.solar_system_spawn_units_definition(solar_system),
           solar_system.galaxy_id,
           location,
           nil
@@ -284,7 +284,7 @@ describe SolarSystem do
       it "should spawn and save units" do
         units = :units
         UnitBuilder.should_receive(:from_random_ranges).with(
-          Cfg.solar_system_spawn_units_definition(solar_system.kind),
+          Cfg.solar_system_spawn_units_definition(solar_system),
           solar_system.galaxy_id,
           an_instance_of(SolarSystemPoint),
           nil

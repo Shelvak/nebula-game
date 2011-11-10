@@ -89,12 +89,11 @@ class StatusResolver
     if @player.alliance_id
       rules = Nap.get_rules([@player.alliance_id])
       unless rules[@player.alliance_id].blank?
-        @nap_player_ids = ActiveRecord::Base.connection.select_values(
-          "SELECT id FROM `#{Player.table_name
-            }` WHERE `alliance_id` IN (#{
-              rules[@player.alliance_id].map(&:to_i).join(',')
-            })"
-        ).map(&:to_i)
+        @nap_player_ids = Player.
+          select('id').
+          where(:alliance_id => rules[@player.alliance_id].map(&:to_i)).
+          c_select_values.
+          map(&:to_i)
 
         return @nap_player_ids
       end

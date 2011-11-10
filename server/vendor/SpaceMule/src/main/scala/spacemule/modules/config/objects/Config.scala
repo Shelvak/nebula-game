@@ -3,7 +3,6 @@ package spacemule.modules.config.objects
 import java.math.BigDecimal
 import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
-import spacemule.modules.combat.objects.{Damage, Armor, Stance}
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.Area
 import spacemule.modules.pmg.classes.geom.area.AreaTileConfig
@@ -15,9 +14,11 @@ import spacemule.modules.pmg.objects.solar_systems._
 import spacemule.modules.pmg.objects.ss_objects.{RichAsteroid, Asteroid}
 import spacemule.modules.pmg.objects.planet._
 import spacemule.modules.pmg.objects.planet.buildings._
+import spacemule.modules.combat
 import spacemule.modules.pathfinder.{objects => pfo}
 import net.java.dev.eval.Expression
 import scala.collection.Map
+import spacemule.modules.combat.objects.{Combatant, Damage, Armor, Stance}
 
 object Config {
   /**
@@ -43,7 +44,7 @@ object Config {
     currentSet = set
     val result = block()
     currentSet = oldSet
-    return result
+    result
   }
 
   private def getOpt[T](key: String): Option[T] =
@@ -63,14 +64,18 @@ object Config {
   //////////////////////////////////////////////////////////////////////////////
   // Helper methods
   //////////////////////////////////////////////////////////////////////////////
-
+  
   private def int(key: String) = get[Any](key) match {
     case i: Int => i
     case l: Long => l.toInt
     case d: Double => d.toInt
-    case value => sys.error(
+    case value: AnyRef => sys.error(
       "Cannot convert %s of class %s to Int (key: %s)!".format(
         value.toString, value.getClass, key)
+      )
+    case value => sys.error(
+      "Cannot convert %s of AnyVal to Int (key: %s)!".format(
+        value.toString, key)
       )
   }
   private def string(key: String) = get[String](key)
@@ -78,9 +83,13 @@ object Config {
     case i: Int => i.toDouble
     case l: Long => l.toDouble
     case d: Double => d
-    case value => sys.error(
+    case value: AnyRef => sys.error(
       "Cannot convert %s of class %s to Double (key: %s)!".format(
         value.toString, value.getClass, key)
+      )
+    case value => sys.error(
+      "Cannot convert %s of AnyVal to Double (key: %s)!".format(
+        value.toString, key)
       )
   }
   private def seq[T](key: String) = get[Seq[T]](key)
@@ -98,13 +107,13 @@ object Config {
   def formulaEval(key: String,
                   vars: Map[String, BigDecimal]): BigDecimal = {
     val formula = get[Any](key).toString
-    return formulaEval(parseFormula(formula), vars)
+    formulaEval(parseFormula(formula), vars)
   }
 
   def formulaEval(key: String, vars: Map[String, BigDecimal],
                   default: BigDecimal): BigDecimal = {
     getOpt[Any](key) match {
-      case Some(value) => this.formula(value.toString(), vars)
+      case Some(value) => this.formula(value.toString, vars)
       case None => default
     }
   }
@@ -112,20 +121,22 @@ object Config {
   private def formulaEval(exp: Expression,
                           vars: Map[String, BigDecimal]): BigDecimal = {
     if (vars == null) {
-      return exp.eval()
+      exp.eval()
     }
     else {
       val javaMap = new java.util.HashMap[String, BigDecimal]()
       vars.foreach { case (key, value) =>
           javaMap.put(key, value)
       }
-      return exp.eval(javaMap)
+
+      exp.eval(javaMap)
     }
   }
 
   private def range(key: String): Range = {
     val rangeData = seq[Long](key)
-    return Range.inclusive(rangeData(0).toInt, rangeData(1).toInt)
+
+    Range.inclusive(rangeData(0).toInt, rangeData(1).toInt)
   }
   
   /**
@@ -136,15 +147,15 @@ object Config {
     val params = Map("speed" -> new BigDecimal(speed))
     val from = formula(rangeData(0), params).intValue
     val to = formula(rangeData(1), params).intValue
-    return Range.inclusive(from, to)
+
+    Range.inclusive(from, to)
   }
 
-  private def areaTileConfig(name: String): AreaTileConfig = {
-    return AreaTileConfig(
+  private def areaTileConfig(name: String): AreaTileConfig =
+    AreaTileConfig(
       range("planet.tiles.%s.isles".format(name)).random,
       range("planet.tiles.%s".format(name)).random
     )
-  }
 
   private def objectChances(name: String): Seq[ObjectChance] = {
     seq[Seq[Any]](name).map { chanceSeq =>
@@ -222,14 +233,31 @@ object Config {
   lazy val energyVolume = double("units.transportation.volume.energy")
   lazy val zetiumVolume = double("units.transportation.volume.zetium")
 
-  private lazy val combatVictoryPointsExpression = parseFormula(
+  private lazy val battlegroundCombatVpsExpression = parseFormula(
     get[String]("battleground.battle.victory_points")
   )
-  def combatVictoryPoints(groundDamage: Int, spaceDamage: Int): Double =
-    formulaEval(combatVictoryPointsExpression, Map(
+  def battlegroundCombatVps(groundDamage: Int, spaceDamage: Int): Double =
+    formulaEval(battlegroundCombatVpsExpression, Map(
       "damage_dealt_to_ground" -> groundDamage.toBigDecimal(),
       "damage_dealt_to_space" -> spaceDamage.toBigDecimal()
     )).doubleValue()
+
+  def vpsForReceivedDamage(combatant: Combatant, damage: Int): Double = {
+    val key = "%s.vps_on_damage".format(resolveCombatantKey(combatant))
+    val multiplier = getOpt[Double](key) match {
+      case Some(v) => v
+      case None => 0.0
+    }
+    multiplier * damage
+  }
+
+  def credsForKilling(combatant: Combatant): Int = {
+    val key = "%s.creds_for_killing".format(resolveCombatantKey(combatant))
+    getOpt[Long](key) match {
+      case Some(v) => v.toInt
+      case None => 0
+    }
+  }
 
   // End of combat attributes
 
@@ -373,8 +401,8 @@ object Config {
   private def buildingRate(kind: String)
                           (building: Building, resource: String) = {
     val name = building.name.underscore
-    val level = building.level.toBigDecimal
-    val default = 0.toBigDecimal
+    val level = building.level.toBigDecimal()
+    val default = 0.toBigDecimal()
     
     formulaEval(
       "buildings.%s.%s.%s".format(name, resource, kind), Map("level" -> level),
@@ -400,8 +428,8 @@ object Config {
 
   private def buildingStorage(building: Building, resource: String) = {
     val name = building.name.underscore
-    val level = building.level.toBigDecimal
-    val default = 0.toBigDecimal
+    val level = building.level.toBigDecimal()
+    val default = 0.toBigDecimal()
 
     formulaEval(
       "buildings.%s.%s.store".format(name, resource), Map("level" -> level),
@@ -437,6 +465,16 @@ object Config {
     gunDefinitionsCache(name)
   }
 
+  private def resolveCombatantKey(combatant: Combatant): String = {
+    val format: String = combatant match {
+      case b: combat.objects.Building => "buildings.%s"
+      case t: combat.objects.Troop => "units.%s"
+      case other =>
+        sys.error("Unknown combatant class: %s".format(other.getClass))
+    }
+    format.format(combatant.name.underscore)
+  }
+
   // End of combatant attributes
 
   // Building attributes
@@ -461,28 +499,28 @@ object Config {
 
   // End of building attributes
   
-  // Unit attributes
-  def unitGalaxySsHopTimeRatio = double("units.galaxy_ss_hop_ratio")
+  // Troop attributes
+  def troopGalaxySsHopTimeRatio = double("units.galaxy_ss_hop_ratio")
 
-  def unitKind(name: String) =
+  def troopKind(name: String) =
     string("units.%s.kind".format(name.underscore))
-  def unitArmor(name: String) =
+  def troopArmor(name: String) =
     string("units.%s.armor".format(name.underscore))
-  def unitArmorModifier(name: String, level: Int) =
+  def troopArmorModifier(name: String, level: Int) =
     formulaEval("units.%s.armor_mod".format(name.underscore),
                 Map("level" -> new BigDecimal(level))).doubleValue / 100
-  def unitInitiative(name: String) =
+  def troopInitiative(name: String) =
     int("units.%s.initiative".format(name.underscore))
-  def unitHp(unit: Unit): Int = unitHp(unit.name)
-  def unitHp(name: String) = int("units.%s.hp".format(name.underscore))
+  def troopHp(unit: Troop): Int = troopHp(unit.name)
+  def troopHp(name: String) = int("units.%s.hp".format(name.underscore))
 
-  def unitMetalCost(name: String) = 
+  def troopMetalCost(name: String) =
     cost("units.%s.metal.cost".format(name.underscore))
-  def unitEnergyCost(name: String) = 
+  def troopEnergyCost(name: String) =
     cost("units.%s.energy.cost".format(name.underscore))
-  def unitZetiumCost(name: String) = 
+  def troopZetiumCost(name: String) =
     cost("units.%s.zetium.cost".format(name.underscore))
-  def unitGunDefinitions(name: String) =
+  def troopGunDefinitions(name: String) =
     gunDefinitions("units.%s.guns".format(name.underscore))
 
   // End of unit attributes

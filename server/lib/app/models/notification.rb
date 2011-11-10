@@ -242,6 +242,8 @@ class Notification < ActiveRecord::Base
   #    :damage_taken_alliance => +Fixnum+,
   #    :xp_earned => +Fixnum+,
   #    :points_earned => +Fixnum+,
+  #    :victory_points_earned => +Fixnum+,
+  #    :creds_earned => +Fixnum+
   #  },
   #  :resources => {
   #    :metal => +Fixnum+,

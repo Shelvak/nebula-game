@@ -16,7 +16,7 @@
    </s:Rect>
    
    <s:BitmapImage top="0" bottom="0" left="0" right="0" fillMode="repeat"
-                  source="@Embed(source='/main_background.png')"/>
+                  source="@Embed(source='/embed/assets/main_background.png')"/>
    
    <!--- @copy spark.components.SkinnableContainer#contentGroup -->
    <s:Group id="contentGroup" left="0" right="0" top="0" bottom="0" minWidth="0" minHeight="0"/>

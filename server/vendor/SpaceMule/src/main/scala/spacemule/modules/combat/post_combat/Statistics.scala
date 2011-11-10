@@ -1,11 +1,8 @@
 package spacemule.modules.combat.post_combat
 
 import scala.collection.mutable.HashMap
-import spacemule.modules.combat.objects.Alliances
-import spacemule.modules.combat.objects.Combatant
-import spacemule.modules.combat.objects.Player
-import spacemule.modules.combat.objects.Resources
 import spacemule.modules.config.objects.Config
+import spacemule.modules.combat.objects._
 
 object Statistics {
   case class PlayerData(
@@ -15,7 +12,8 @@ object Statistics {
     damageTakenAlliance: Int,
     xpEarned: Int,
     pointsEarned: Int,
-    victoryPointsEarned: Int
+    victoryPointsEarned: Int,
+    credsEarned: Int
   ) {
     lazy val toMap = Map(
       "damage_dealt_player" -> damageDealtPlayer,
@@ -24,7 +22,8 @@ object Statistics {
       "damage_taken_alliance" -> damageTakenAlliance,
       "xp_earned" -> xpEarned,
       "points_earned" -> pointsEarned,
-      "victory_points_earned" -> victoryPointsEarned
+      "victory_points_earned" -> victoryPointsEarned,
+      "creds_earned" -> credsEarned
     )
   }
 
@@ -46,7 +45,7 @@ object Statistics {
 
 class Statistics(
   alliances: Alliances,
-  calculateVictoryPoints: Boolean = false
+  vpsForPlayerDamage: Boolean = false
 ) {
   private val damageDealtPlayer = HashMap[Option[Player], Int]()
   private val damageTakenPlayer = HashMap[Option[Player], Int]()
@@ -55,6 +54,7 @@ class Statistics(
   private val xpEarned = HashMap[Option[Player], Int]()
   private val pointsEarned = HashMap[Option[Player], Int]()
   private val victoryPointsEarned = HashMap[Option[Player], Double]()
+  private val credsEarned = HashMap[Option[Player], Int]()
 
   private val players = alliances.players.map { case (player, allianceId) =>
     damageDealtAlliance(allianceId) = 0
@@ -65,6 +65,7 @@ class Statistics(
     xpEarned(player) = 0
     pointsEarned(player) = 0
     victoryPointsEarned(player) = 0
+    credsEarned(player) = 0
 
     (player, allianceId)
   }
@@ -82,11 +83,23 @@ class Statistics(
     pointsEarned(source.player) += Statistics.points(target, damage)
 
     // You do not get victory points for damage to NPC players.
-    if (calculateVictoryPoints && ! target.player.isEmpty) {
+    if (vpsForPlayerDamage && ! target.player.isEmpty) {
       val (groundDamage, spaceDamage) =
         if (target.isGround) (damage, 0) else (0, damage)
-      val points = Config.combatVictoryPoints(groundDamage, spaceDamage)
+      val points = Config.battlegroundCombatVps(groundDamage, spaceDamage)
       victoryPointsEarned(source.player) += points
+    }
+
+    val points = target.vpsForReceivedDamage(damage)
+    victoryPointsEarned(source.player) += points
+  }
+
+  /**
+   * Calculate creds earned for killing particular units.
+   */
+  def registerKilledBy(killedBy: KilledBy) {
+    killedBy.foreach { case (combatant, player) =>
+      credsEarned(player) += combatant.credsForKilling
     }
   }
 
@@ -99,7 +112,8 @@ class Statistics(
         damageTakenAlliance(allianceId),
         xpEarned(player),
         pointsEarned(player),
-        victoryPointsEarned(player).round.toInt
+        victoryPointsEarned(player).round.toInt,
+        credsEarned(player)
       )
 
       (player -> playerData)
@@ -123,7 +137,11 @@ class Statistics(
     %s
   * Victory points earned:
     %s
-""".format(damageDealtPlayer, damageTakenPlayer,
-           damageDealtAlliance, damageTakenAlliance,
-           xpEarned, pointsEarned, victoryPointsEarned)
+  * Creds earned:
+    %s
+""".format(
+    damageDealtPlayer, damageTakenPlayer,
+    damageDealtAlliance, damageTakenAlliance,
+    xpEarned, pointsEarned, victoryPointsEarned, credsEarned
+  )
 }

@@ -4,7 +4,7 @@ import buildings._
 import spacemule.modules.config.objects.Config
 import collection.mutable.ListBuffer
 import spacemule.modules.pmg.classes.geom.Coords
-import spacemule.modules.pmg.objects.Unit
+import spacemule.modules.pmg.objects.Troop
 
 /**
  * Created by IntelliJ IDEA.
@@ -60,7 +60,7 @@ class Building(val name: String, val x: Int, val y: Int, val level: Int) {
   val xEnd = x + area.width - 1 // -1 because xEnd is inclusive.
   val yEnd = y + area.height - 1 // -1 because yEnd is inclusive.
   val importance = 0
-  val units = ListBuffer[Unit]()
+  val units = ListBuffer[Troop]()
 
   /**
    * Yields each coordinate that building is standing on.

@@ -27,7 +27,7 @@
          private function get shieldImage() : BitmapData {
             return IMG.getImage(AssetNames.SS_SHIELD_IMAGE_NAME);
          }
-         
+
          private function getSectorLabel(ss:SolarSystem) : String {
             return ss == null ? "" : LocationMinimal.getSectorLabel(ss.currentLocation);
          }

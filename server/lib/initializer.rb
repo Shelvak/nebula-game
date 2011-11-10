@@ -243,11 +243,11 @@ end
 
 # Establish connection before setting up autoloader, because some plugins depend
 # on working DB connection.
-begin
+unless rake?
   ActiveRecord::Base.establish_connection(USED_DB_CONFIG)
   ActiveRecord::Base.connection.execute "SET NAMES UTF8"
 
-  unless rake? || App.in_test?
+  unless App.in_test?
     migrator = ActiveRecord::Migrator.new(:up, DB_MIGRATIONS_DIR)
     pending = migrator.pending_migrations
     unless pending.blank?
@@ -262,9 +262,6 @@ begin
       exit 1
     end
   end
-rescue ActiveRecord::ActiveRecordError => e
-  puts "Error while establishing connection to DB:"
-  puts e.message
 end
 
 # Set up autoloader for troublesome classes.

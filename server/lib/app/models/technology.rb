@@ -10,7 +10,8 @@ class Technology < ActiveRecord::Base
   # #flags is currently tiny int, so it can store 8 flags.
   include FlagShihTzu
   has_flags(
-    1 => :speed_up
+    1 => :speed_up,
+    :check_for_column => false
   )
 
   def as_json(options=nil)

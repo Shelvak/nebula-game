@@ -3,18 +3,17 @@ package tests.animation.tests
    import animation.AnimatedBitmap;
    import animation.AnimationTimer;
    import animation.events.AnimatedBitmapEvent;
-   
+
    import flash.display.BitmapData;
    import flash.errors.IllegalOperationError;
-   
-   import org.fluint.sequence.SequenceRunner;
+
    import org.hamcrest.assertThat;
    import org.hamcrest.core.throws;
    import org.hamcrest.object.equalTo;
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.notNullValue;
-   
-   
+
+
    public class TC_AnimatedBitmap
    {
       // Reference declaration for class to test
@@ -27,7 +26,7 @@ package tests.animation.tests
       public function TC_AnimatedBitmap()
       {
          timer = new AnimationTimer(10);
-      };
+      }
       
       
       [Before]
@@ -36,7 +35,7 @@ package tests.animation.tests
          runner = new SequenceRunner(this);
          bmp = new AnimatedBitmap();
          bmp.setTimer(timer);
-      };
+      }
       
       
       [After]
@@ -46,7 +45,7 @@ package tests.animation.tests
          timer.stop();
          bmp.cleanup();
          bmp = null;
-      };
+      }
       
       
       [Test]
@@ -61,7 +60,7 @@ package tests.animation.tests
          
          // timer should be set now
          assertThat( bmp.timer, equalTo (timer) );
-      };
+      }
       
       
       [Test(description="checks if correctly reacts to illegal parameter values")]
@@ -84,7 +83,7 @@ package tests.animation.tests
          
          // overwriting existing sequence with the same name is illegal and should cause an error
          assertThat( function():void{ bmp.addAnimation("run", Data.seqTwo) }, throws (Error) );
-      };
+      }
       
       
       [Test(description="checks if addAnimation actually adds sequence objects")]
@@ -95,7 +94,7 @@ package tests.animation.tests
          
          bmp.addAnimation("two", Data.seqTwo);
          assertThat( bmp.getAnimation("two"), equalTo (Data.seqTwo) );
-      };
+      }
       
       
       [Test(description="checks if getAnimation works correctly with valid and invalid names")]
@@ -110,7 +109,7 @@ package tests.animation.tests
          // should not cause any errors
          bmp.addAnimation("one", Data.seqOne);
          bmp.getAnimation("one");
-      };
+      }
       
       
       [Test(description="checks animationsTotal property")]
@@ -126,7 +125,7 @@ package tests.animation.tests
          // And now two as we have not removed the one that we have added before
          bmp.addAnimation("two", Data.seqTwo);
          assertThat( bmp.animationsTotal, equalTo (2) );
-      };
+      }
       
       
       [Test]
@@ -172,7 +171,7 @@ package tests.animation.tests
          bmp.addAnimations(anims);
          assertThat( bmp.getAnimation("one"), equalTo (Data.seqOne) );
          assertThat( bmp.getAnimation("two"), equalTo (Data.seqTwo) );
-      };
+      }
       
       
       [Test(description="checks if framesData setter correctly reacts to illegal values and if properties are actually set")]
@@ -280,7 +279,7 @@ package tests.animation.tests
             "height": frameHeight
          }));
          assertThat( BitmapData(bmp.source).getPixel(0, 0), equalTo (framesData[0].getPixel(0, 0)) );
-      };
+      }
       
       
       [Test(description="checks if frames are changed correctly")]
@@ -306,7 +305,7 @@ package tests.animation.tests
          // should hold the second frame which has BLUE pixel in the top left corner
          bmp.showFrame(2);
          checkFrame(Data.frame2C);
-      };
+      }
       
       
       [Test(description="checks if calling this method switches the 0 (default) frame")]
@@ -328,7 +327,7 @@ package tests.animation.tests
          // now switch to default frame
          bmp.showDefaultFrame();
          checkDefaultFrame();
-      };
+      }
       
       
       [Test(description="checks if playAnimation() correctly reacts to wrong parameter values")]
@@ -348,7 +347,7 @@ package tests.animation.tests
          
          // should not accept keys that don't have corresponting sequence
          assertThat( function():void{ bmp.playAnimationImmediately("none") }, throws (ArgumentError) );
-      };
+      }
       
       
       [Test(async, timeout=1000)]
@@ -404,18 +403,24 @@ package tests.animation.tests
          wait(); addFrameCheck(0);
          
          runner.run();
-      };
+      }
       
       
       [Test(async, timeout=1000)]
       public function stopAnimationsImmediately() : void
       {
          bmp = new AnimatedBitmap();
-         
+
          // should not let you call this method if component has not been initialized
-         assertThat( function():void { bmp.stopAnimationsImmediately(); }, throws(IllegalOperationError) );
+         assertThat(
+            function():void{ bmp.stopAnimationsImmediately(); },
+            throws(IllegalOperationError)
+         );
          bmp.setFrames(Data.framesData);
-         assertThat( function():void { bmp.stopAnimationsImmediately(); }, throws(IllegalOperationError) );
+         assertThat(
+            function():void{ bmp.stopAnimationsImmediately(); },
+            throws(IllegalOperationError)
+         );
          bmp.setTimer(timer);
          
          // "duck": new Sequence([0], null, [1, 2]);
@@ -439,13 +444,15 @@ package tests.animation.tests
          // stop animation
          call(bmp.stopAnimationsImmediately);
          
-         // previously shown frame should be visible and [prop currentAnimation] should not be set
+         // previously shown frame should be visible and [prop currentAnimation]
+         // should not be set
          addFrameCheck(0); addAnimationCheck(null);
          
          wait();
          wait();
          
-         // the same frame should be still there and [prop currentAnimation] should not be set
+         // the same frame should be still there and [prop currentAnimation]
+         // should not be set
          addFrameCheck(0); addAnimationCheck(null);
          
          // another animation
@@ -459,7 +466,8 @@ package tests.animation.tests
          wait(); addFrameCheck(2);
          call(bmp.stopAnimationsImmediately);
          
-         // and check if animation has stopped (previously shown frame should be visible)
+         // and check if animation has stopped (previously shown frame
+         // should be visible)
          addFrameCheck(2);
          addAnimationCheck(null);
          wait();
@@ -468,7 +476,7 @@ package tests.animation.tests
          addAnimationCheck(null);
          
          runner.run();
-      };
+      }
       
       
       [Test(async, timeout=1000)]
@@ -562,7 +570,7 @@ package tests.animation.tests
          wait(); addFrameCheck(2); addAnimationCheck("run");
          
          runner.run();
-      };
+      }
       
       
       [Test(async, timeout=1000)]
@@ -629,9 +637,9 @@ package tests.animation.tests
          wait(); wait(); addAnimationCheck(null); addFrameCheck(2);
          
          runner.run();
-      };
-      
-      
+      }
+
+
       private var allAnimationsCompleteDispatched:Boolean = false;
       private var animationCompleteDispatched:Boolean = false;
       [Ignore("This async test sometimes passes and sometimes fails")]
@@ -684,7 +692,7 @@ package tests.animation.tests
           */
          call(bmp.playAnimation, ["fly"]);
          call(bmp.playAnimation, ["run"]);
-         call(bmp.playAnimation, ["duck"])
+         call(bmp.playAnimation, ["duck"]);
          delayFor(90);
          addAnimationCompleteCheck();
          addNoAllAnimationsCompleteCheck();

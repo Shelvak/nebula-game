@@ -21,7 +21,9 @@ package tests.announcement
    
    import org.hamcrest.assertThat;
    import org.hamcrest.date.dateEqual;
-   
+
+   import utils.DateUtil;
+
    import utils.SingletonFactory;
    import utils.assets.ImagePreloader;
    import utils.locale.Locale;
@@ -32,6 +34,7 @@ package tests.announcement
    {
       [BeforeClass]
       public static function setUpClass() : void {
+         DateUtil.timeDiff = 0;
          StartupInfo.getInstance().locale = Locale.EN;
          
          var bundleAnnouncements:IResourceBundle = new ResourceBundle(Locale.currentLocale, "Announcements");

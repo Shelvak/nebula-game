@@ -18,7 +18,7 @@
    </base:states>
    
    <s:BitmapImage top="0" bottom="0" id="line"
-                  source="@Embed(source='/scrollbar_line.png')"
+                  source="@Embed(source='/embed/assets/scrollbar_line.png')"
                   fillMode="repeat" horizontalCenter="0"/> 
    
 </base:BaseSkin>

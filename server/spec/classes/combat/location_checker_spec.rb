@@ -373,29 +373,30 @@ describe Combat::LocationChecker do
     end
 
     it "should return nap rules" do
-      alliance1 = Factory.create :alliance
-      alliance2 = Factory.create :alliance
-      alliance3 = Factory.create :alliance
+      alliance1 = create_alliance
+      alliance2 = create_alliance
+      alliance3 = create_alliance
       Factory.create :nap, :initiator => alliance1, :acceptor => alliance2,
         :status => Nap::STATUS_ESTABLISHED
       Factory.create :nap, :initiator => alliance2, :acceptor => alliance3,
-        :status => Nap::STATUS_ESTABLISHED
+        :status => Nap::STATUS_CANCELED
 
-      player1 = Factory.create :player, :alliance => alliance1
-      player2 = Factory.create :player, :alliance => alliance2
-      player3 = Factory.create :player, :alliance => alliance3
-      Factory.create(:unit,
-        :location => @route_hop.location, :player => player1
+      Factory.create(:unit_built,
+        :location => @route_hop.location, :player => alliance1.owner
       )
-      Factory.create(:unit,
-        :location => @route_hop.location, :player => player2
+      Factory.create(:unit_built,
+        :location => @route_hop.location, :player => alliance2.owner
       )
-      Factory.create(:unit,
-        :location => @route_hop.location, :player => player3
+      Factory.create(:unit_built,
+        :location => @route_hop.location, :player => alliance3.owner
       )
 
-      Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).nap_rules.should == \
-        Nap.get_rules([alliance1.id, alliance2.id, alliance3.id])
+      nap_rules = Combat::LocationChecker.
+        send(:check_for_enemies, @route_hop.location).nap_rules
+      nap_rules.should == Nap.get_rules(
+        [alliance1.id, alliance2.id, alliance3.id],
+        [Nap::STATUS_ESTABLISHED, Nap::STATUS_CANCELED]
+      )
     end
   end
 

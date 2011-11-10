@@ -23,7 +23,9 @@ package utils.assets
    import mx.logging.Log;
    import mx.modules.IModuleInfo;
    import mx.modules.ModuleManager;
-   
+
+   import namespaces.client_internal;
+
    import utils.EventUtils;
    import utils.Objects;
    import utils.PropertiesTransformer;
@@ -133,8 +135,23 @@ package utils.assets
       /* ### IMAGE GETTERS ### */
       /* ##################### */
       
-      private var _framesCache:Object = {};
-      
+      private var _framesCache:Object = new Object();
+
+      /**
+       * For use in tests to add images.
+       */
+      client_internal function addFrames
+         (name: String, frames: Vector.<BitmapData> = null): void {
+         Objects.paramNotNull("name", name);
+         _framesCache[name] = frames;
+      }
+
+      /**
+       * For use in tests to clear all images when they are not needed anymore.
+       */
+      client_internal function clearFrames(): void {
+         _framesCache = new Object();
+      }
       
       /**
        * Returns <code>Vector</code> that contains all images of animation for a given asset.

@@ -157,7 +157,6 @@ describe Unit do
     end
   end
   
-  
   describe ".dismiss_units" do
     before(:each) do
       @player = Factory.create(:player)
@@ -190,6 +189,15 @@ describe Unit do
 
     it "should check if all of these units belong to planet owner" do
       @units[0].player = Factory.create(:player)
+      @units[0].save!
+
+      lambda do
+        Unit.dismiss_units(@planet, @units.map(&:id))
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should check if all of these units are not upgrading" do
+      @units[0].upgrade_ends_at = 40.minutes.from_now
       @units[0].save!
 
       lambda do

@@ -9,6 +9,7 @@ plasma_gun plasma_spike
 alien_cannon thor_ground
 zeus_cannon
 dart_laser
+boss_light boss_heavy
 } %>
 <% terrain_types = {
   0 => 'earth',
@@ -607,10 +608,11 @@ assets:
         scont_button_right.png:     Load_button_right.png
 
       "defensive_portal_screen":
-        table_top.png:                Portal_top_table_top.png
-        table_middle.png:             Portal_top_table_center.png
-        table_bottom_own.png:         Portal_top_table_bottom.png
-        table_bottom_ally.png:        Portal_bottom_table_bottom.png
+        table_top_with_area.png:         Portal_top_table_top.png
+        table_middle.png:                Portal_top_table_center.png
+        table_bottom_without_button.png: Portal_top_table_bottom.png
+        table_bottom_with_button.png:    Portal_bottom_table_bottom.png
+        table_top_without_area.png:      Portal_top_table_top2.png
 
       "ratings":
         search_header_left.png:       Ratings_search_left.png
@@ -1021,6 +1023,7 @@ assets:
         order_top_right.png:              Locator_top_right.png
         order_from_indicator.png:         Locator_from.png
         sector_indicator.tar.gz:          Locator_spinner.tar.gz
+        sector_with_ships.png:            Fleet.png
         squad_player.png:                 OwnShip_move.png
         squad_ally.png:                   AllianceShip2_move.png
         squad_nap.png:                    Whiteship_move.png

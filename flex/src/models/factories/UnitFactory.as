@@ -14,7 +14,7 @@ package models.factories
    
    
    /**
-    * Lets easily create instaces of units. 
+    * Lets easily create instances of units.
     */
    public class UnitFactory
    {
@@ -43,7 +43,7 @@ package models.factories
          var errors:Array = [];
          for each (var unitData:Object in units) {
             var unit:Unit = fromObject(unitData);
-            // TODO: move assignement of unit.player to afterCreateModel() method like in Location? 
+            // TODO: move assignment of unit.player to afterCreateModel() method like in Location?
             if (unit.playerId == PlayerId.NO_PLAYER)
                unit.player = PlayerMinimal.NPC_PLAYER;
             else if (!players[unit.playerId])

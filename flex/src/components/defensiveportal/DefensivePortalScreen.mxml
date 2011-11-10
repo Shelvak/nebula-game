@@ -10,14 +10,20 @@
       <![CDATA[
          import components.skins.InfoButtonSkin;
          
+         import controllers.GlobalFlags;
          import controllers.objects.ObjectClass;
+         import controllers.players.PlayersCommand;
          import controllers.screens.MainAreaScreens;
          import controllers.ui.NavigationController;
          
+         import models.ModelLocator;
+         import models.player.Player;
          import models.unit.UnitBuildingEntry;
          
          import mx.collections.ArrayCollection;
          import mx.collections.ListCollectionView;
+         import mx.collections.Sort;
+         import mx.collections.SortField;
          import mx.events.FlexEvent;
          
          import utils.ModelUtil;
@@ -34,17 +40,25 @@
                newList.push(new UnitBuildingEntry(ModelUtil.getModelType(
                   ObjectClass.UNIT, unit[0]), unit[1]));
             }
-            return new ArrayCollection(newList);
+            var tempList: ArrayCollection = new ArrayCollection(newList);
+            tempList.sort = new Sort();
+            tempList.sort.fields = [new SortField('type')];
+            tempList.refresh();
+            return tempList;
          }
          
          private function createCachedUnits(source:Object) : ArrayCollection
          {
-            var result:Array = []
+            var result:Array = [];
             for each (var unit: UnitBuildingEntry in source)
             {
                result.push(unit);
             }
-            return new ArrayCollection(result);
+            var tempList: ArrayCollection = new ArrayCollection(result);
+            tempList.sort = new Sort();
+            tempList.sort.fields = [new SortField('type')];
+            tempList.refresh();
+            return tempList;
          }
          
          private function findPossibleUnits(): void
@@ -58,6 +72,7 @@
                   {
                      return null;
                   }
+                  var notEmpty: Boolean = false;
                   var tempObject: Object = {};
                   var finished: Boolean = false;
                   var tempList: ListCollectionView = buildUnitsFromArray(source);
@@ -72,6 +87,7 @@
                         {
                            tempObject[possibleUnit.type] = 
                               new UnitBuildingEntry(possibleUnit.type, 1);
+                           notEmpty = true;
                         }
                         else
                         {
@@ -98,7 +114,7 @@
                      }
                      finished = (tempList.length == 0);
                   }
-                  return createCachedUnits(tempObject);
+                  return notEmpty ? createCachedUnits(tempObject) : null;
                }
                yourPossibleUnits = findPossible(data.your);
                allyPossibleUnits = findPossible(data.alliance);
@@ -177,10 +193,24 @@
          }
          
          
-         private function getString(property:String) : String
+         private function getString(property:String, params: Array = null) : String
          {
-            return Localizer.string("Units", "defensivePool." + property);
+            return Localizer.string("Units", "defensivePool." + property, params);
          }
+         
+         protected function checkbox1_clickHandler(event:MouseEvent):void
+         {
+            GlobalFlags.getInstance().lockApplication = true;
+            new PlayersCommand(PlayersCommand.EDIT,
+               {
+                  'portalWithoutAllies': !ML.player.portalWithoutAllies
+               }
+            ).dispatch();
+            NavigationController.getInstance().showDefensivePortal(ML.latestPlanet.id);
+         }
+         
+         [Bindable]
+         private var ML: ModelLocator = ModelLocator.getInstance();
          
       ]]>
    </fx:Script>
@@ -217,32 +247,86 @@
                      <s:layout>
                         <s:VerticalLayout gap="0"/>
                      </s:layout>
-                     <s:BitmapImage source="{getImage('top')}"/>
+                     <s:BitmapImage source="{getImage(
+                        ML.player.belongsToAlliance
+                           ? 'top_with_area' : 'top_without_area'
+                     )}"/>
                      <s:BitmapImage source="{getImage('middle')}" height="100%"/>
-                     <s:BitmapImage source="{getImage('bottom_own')}"/>
+                     <s:BitmapImage source="{getImage('bottom_without_button')}"/>
                   </s:Group>
                   <s:Label left="40" top="15" styleName="panelTitle"
                            text="{Localizer.string('Units', 'title.defensivePool')}"/>
-                  <s:Button top="13" left="295" skinClass="components.skins.InfoButtonSkin"
-                            click="UrlNavigate.getInstance().showInfo('defensive-portal')"/>
-                  <s:Group left="40" right="40" top="50" bottom="75">
+                  <s:Button top="13" left="295"
+                     skinClass="components.skins.InfoButtonSkin"
+                     click="UrlNavigate.getInstance().showInfo('defensive-portal')"/>
+                  <base:AdvancedContainer left="40" right="40"
+                                          top="{ML.player.belongsToAlliance
+                                          ? 42 : 50}" bottom="75">
+                     <s:CheckBox label="{getString('dontIncludeAlliance')}"
+                                 click="checkbox1_clickHandler(event)"
+                                 selected="{ML.player.portalWithoutAllies}"
+                                 visible="{ML.player.belongsToAlliance}"/>
                      <!-- Player units -->
-                     <s:DataGroup dataProvider="{playerUnits}" 
+                     <base:Heading3 text="{getString('title.yourPool')}"
+                                    visible="{ML.player.belongsToAlliance
+                                    &amp;&amp; !ML.player.portalWithoutAllies}"/>
+                     <s:Label textAlign="center" 
+                              styleName="volumeNumber" 
+                              text="{getString('volume', 
+                              [getVolume(playerUnits)])}"
+                              visible="{ML.player.belongsToAlliance
+                                    &amp;&amp; !ML.player.portalWithoutAllies}"/>
+                     <s:Label textAlign="center" text="{getString('poolEmpty')}"
+                              visible="{playerUnits == null 
+                              || playerUnits.length == 0}"
+                              fontSize="36" fontWeight="bold"
+                              paddingTop="{(ML.player.portalWithoutAllies
+                              || !ML.player.belongsToAlliance)
+                              ? 15 : 0}"
+                              color="#1c1c1c"/>
+                     <s:DataGroup dataProvider="{playerUnits}"
+                                  visible="{playerUnits != null
+                                  &amp;&amp; playerUnits.length > 0}"
                                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
                         <s:layout>
                            <s:TileLayout requestedColumnCount="10"/>
                         </s:layout>
                      </s:DataGroup>
+                     
                      
                      <!-- Alliance units -->
-                     <s:DataGroup dataProvider="{allyUnits}" 
+                     <base:Heading3 text="{getString('title.allyPool')}"
+                                   visible="{ML.player.belongsToAlliance
+                                    &amp;&amp; !ML.player.portalWithoutAllies}"/>
+                     <s:Label textAlign="center" 
+                              text="{getString('volume', 
+                              [getVolume(allyUnits)])}"
+                              styleName="volumeNumber" 
+                              visible="{ML.player.belongsToAlliance
+                                    &amp;&amp; !ML.player.portalWithoutAllies}"/>
+                     <s:Label textAlign="center" text="{getString('poolEmpty')}"
+                              visible="{ML.player.belongsToAlliance
+                                    &amp;&amp; (allyUnits == null
+                              || allyUnits.length == 0)
+                              &amp;&amp; !ML.player.portalWithoutAllies}"
+                              fontSize="36" fontWeight="bold"
+                              color="#1c1c1c"/>
+                     <s:DataGroup dataProvider="{allyUnits}"
+                                  visible="{ML.player.belongsToAlliance
+                                    &amp;&amp; !ML.player.portalWithoutAllies
+                                    &amp;&amp; (allyUnits != null
+                                    || allyUnits.length > 0)}"
                                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
                         <s:layout>
                            <s:TileLayout requestedColumnCount="10"/>
                         </s:layout>
                      </s:DataGroup>
                      
-                  </s:Group>
+                     <base:layout>
+                        <s:VerticalLayout gap="10" horizontalAlign="justify"/>
+                     </base:layout>
+                  </base:AdvancedContainer>
+                  
                   <s:Group horizontalCenter="0" bottom="24">
                      <s:layout>
                         <s:HorizontalLayout gap="6" 
@@ -261,15 +345,32 @@
                      <s:layout>
                         <s:VerticalLayout gap="0"/>
                      </s:layout>
-                     <s:BitmapImage source="{getImage('top')}"/>
+                     <s:BitmapImage source="{getImage('top_without_area')}"/>
                      <s:BitmapImage source="{getImage('middle')}" height="100%"/>
-                     <s:BitmapImage source="{getImage('bottom_ally')}"/>
+                     <s:BitmapImage source="{getImage('bottom_with_button')}"/>
                   </s:Group>
                   <s:Label left="40" top="15" styleName="panelTitle"
                            text="{Localizer.string('Units', 'title.possiblePool')}"/>
-                  <s:Group left="40" right="40" top="50" bottom="140">
+                  <base:AdvancedContainer left="40" right="40" top="50" bottom="140">
                      <!-- Player units -->
-                     <s:DataGroup dataProvider="{yourPossibleUnits}" 
+                     <base:Heading3 text="{getString('title.yourPool')}"
+                                   visible="{ML.player.belongsToAlliance
+                                    &amp;&amp; !ML.player.portalWithoutAllies}"/>
+                     <s:Label textAlign="center" 
+                              text="{getString('volume', 
+                              [getVolume(yourPossibleUnits)])}"
+                              visible="{ML.player.belongsToAlliance
+                                    &amp;&amp; !ML.player.portalWithoutAllies}"
+                              styleName="volumeNumber"/>
+                     <s:Label textAlign="center" text="{getString('poolEmpty')}"
+                              visible="{yourPossibleUnits == null}"
+                              fontSize="36" fontWeight="bold"
+                              paddingTop="{(ML.player.portalWithoutAllies
+                              || !ML.player.belongsToAlliance)
+                              ? 20 : 0}"
+                              color="#1c1c1c"/>
+                     <s:DataGroup dataProvider="{yourPossibleUnits}"
+                                  visible="{yourPossibleUnits != null}"
                                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
                         <s:layout>
                            <s:TileLayout requestedColumnCount="10"/>
@@ -277,14 +378,36 @@
                      </s:DataGroup>
                      
                      <!-- Alliance units -->
-                     <s:DataGroup dataProvider="{allyPossibleUnits}" 
+                     <base:Heading3 text="{getString('title.allyPool')}"
+                                   visible="{ML.player.belongsToAlliance
+                                    &amp;&amp; !ML.player.portalWithoutAllies}"/>
+                     <s:Label textAlign="center" 
+                              text="{getString('volume', 
+                              [getVolume(allyPossibleUnits)])}"
+                              styleName="volumeNumber" 
+                              visible="{ML.player.belongsToAlliance
+                                    &amp;&amp; !ML.player.portalWithoutAllies}"/>
+                     <s:Label textAlign="center" text="{getString('poolEmpty')}"
+                              visible="{ML.player.belongsToAlliance
+                                    &amp;&amp; allyPossibleUnits == null
+                              &amp;&amp; !ML.player.portalWithoutAllies}"
+                              fontSize="36" fontWeight="bold"
+                              color="#1c1c1c"/>
+                     <s:DataGroup dataProvider="{allyPossibleUnits}"
+                                  visible="{ML.player.belongsToAlliance
+                                  &amp;&amp; allyPossibleUnits != null
+                                  &amp;&amp; !ML.player.portalWithoutAllies}"
                                   itemRenderer="components.unit.IRUnitBuildingEntrySmall">
                         <s:layout>
                            <s:TileLayout requestedColumnCount="10"/>
                         </s:layout>
                      </s:DataGroup>
                      
-                  </s:Group>
+                     <base:layout>
+                        <s:VerticalLayout gap="10" horizontalAlign="justify"/>
+                     </base:layout>
+                     
+                  </base:AdvancedContainer>
                   <s:Group horizontalCenter="0" bottom="90">
                      <s:layout>
                         <s:HorizontalLayout gap="6" 

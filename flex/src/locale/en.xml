@@ -85,6 +85,9 @@
 
     <Unit_Demosis value="Demosis" />
     <Unit_Demosis-p8d value="{0 one[Demosis] many[? Demosis]}" />
+
+    <Unit_BossShip value="Morpehus" />
+    <Unit_BossShip-p8d value="{0 one[Morpehus] many[? Morpehuses]}" />
     
     <!-- Turrets -->
 
@@ -522,6 +525,8 @@
     <property.fee value="Fee percentage" />
     <property.width value="Building width" />
     <property.height value="Building height" />
+    <property.vpsOnDamage value="VPs for 1 damage dealt" />
+    <property.credsForKilling value="Creds for killing" />
 
     <text.deactivated>
       <p>
@@ -1198,6 +1203,7 @@
     <label.shield>
       <![CDATA[This solar system is shielded for<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
+    <label.over value="Fleet over"/>
     <message.noRadar value="You need a Radar to explore the galaxy" />
   </Galaxy>
 
@@ -1254,6 +1260,9 @@
     <gun.plasma_spike value="Shock Rifle" />
     <gun.thor_ground value="Blizzard" />
     <gun.cannon_air value="Zeus class cannon" />
+    <gun.dart_laser value="Phase Cannon" />
+    <gun.boss_light value="Twin Phazers" />
+    <gun.boss_heavy value="Shock Shells" />
     <armorType value="Armor type" />
     <damageInPercent value="Percentage" />
     <damage value="Damage" />
@@ -1345,6 +1354,7 @@
     <header.planet value="Planet" />
     <header.building value="Building" />
     <header.unit value="Unit" />
+    <header.any value="Any" />
     <header.storage value="Storage" />
     <header.owner value="Owner" />
 
@@ -1499,6 +1509,7 @@
     <label.xp value="XP earned" />
     <label.points value="War points earned" />
     <label.victoryPoints value="Victory points earned" />
+    <label.creds value="Creds earned" />
     <label.stats value="Combat statistics" />
     <label.close value="Close" />
     <label.players value="Players" />
@@ -3248,6 +3259,11 @@
     <label.allianceUnits value="Alliance units" />
     <label.stop value="Stop" />
     <label.manage value="Manage" />
+    <label.owner value="Owner:" />
+    <filter.owner value="Owner:" />
+    <filter.locationType value="Location type:" />
+    <filter.locationObject value="Location:" />
+    <title.filters value="Filters" />
   </Squadrons>
 
   <Technologies>
@@ -3801,6 +3817,8 @@
     <property.move.solarSystem.hopTime value="One hop in SS" />
     <property.move.galaxy.hopTime value="One hop in Galaxy" />
     <property.population value="Population" />
+    <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
+    <property.credsForKilling ref="Buildings/property.credsForKilling" />
 
     <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
     <stance.neutral value="Neutral stance" />
@@ -3851,7 +3869,7 @@
       <p>Nothing to load</p>
     </tooltip.nothingToLoad>
     
-    <title.defensivePool value="Your defensive army pool" />
+    <title.defensivePool value="Defensive army pool" />
     <title.emptyDefensivePool>
       <p>Your defensive pool is empty. That means no units will be teleported
       to your defense in case this planet is attacked.</p>
@@ -3861,6 +3879,16 @@
       built.</p>
     </title.emptyDefensivePool>
     <title.possiblePool value="When you are attacked you might get" />
+    <defensivePool.title.yourPool value="Your army pool" />
+    <defensivePool.title.allyPool value="Alliance army pool" />
+    <defensivePool.dontIncludeAlliance 
+      value="Don't communicate with alliance portals" />
+    <defensivePool.tooltip.dontIncludeAlliance>
+      <p>If checked your units won't be teleported to alliance planets and 
+      alliance units won't be teleported to your planets.</p>
+    </defensivePool.tooltip.dontIncludeAlliance>
+    <defensivePool.volume value="Volume: {0}" />
+    <defensivePool.poolEmpty value="Pool empty" />
     <defensivePool.totalVolume value="Total volume:" />
     <defensivePool.teleportedVolume value="Teleported volume:" />
     <defensivePool.maxVolume value="Max power:" />
@@ -4068,6 +4096,29 @@
         to take down whole ships in a few shots. 
       </p>
     </Demosis.about>
+
+    <BossShip.name ref="Objects/Unit_BossShip" />
+    <BossShip.about>
+      <p>
+        Called after the god of sleep world this gigantic vessel appears from
+        nowhere just to continue its existence in vast vacuum of space.
+      </p>
+      <p>
+        However dare not to disturb its peace or you will face the full power
+        of its wrath. It is armed with plenty of weapons and its massive hulk
+        can withstand firepower of whole armadas without much damage.
+      </p>
+      <p>
+        But adventurers and comanders are still trying to bring it down.
+        Because even with ships threatening power facing them they know -
+        obtaining secrets hidden well within this ship is a key to galactic
+        domination.
+      </p>
+      <p>
+        Dealing damage to this ship gains you victory points. Also landing
+        last killing shot to this ship awards player who dealt it with creds.
+      </p>
+    </BossShip.about>
 
     <Trooper.name ref="Objects/Unit_Trooper" />
     <Trooper.about>

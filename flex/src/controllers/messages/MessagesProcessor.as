@@ -51,7 +51,7 @@ package controllers.messages
             if (rmo.isReply)
                RESP_MSG_TRACKER.removeRMO(rmo);
             else {
-               msgLog.logMessage(keyword, "Processing message {0}", rmo.id);
+               msgLog.logMessage(keyword, "Processing message {0}", [rmo.id]);
                new CommunicationCommand(rmo.action, rmo.parameters, true, false, rmo).dispatch();
             }
          }

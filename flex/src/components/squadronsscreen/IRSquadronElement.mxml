@@ -127,6 +127,8 @@
                <s:Button id="btnStop" label="{getString('label.stop')}" click="btnStop_clickHandler(event)"
                          visible="{model.owner == Owner.PLAYER}"
                          includeInLayout="{model.owner == Owner.PLAYER}"/>
+               <s:Label  text="{getString('label.owner')}"
+                         visible="{model.owner != Owner.PLAYER}"/>
                <s:Button id="btnOpen" label="{model.player.name}" skinClass="components.skins.LinkButtonSkin"
                          click="NavigationController.getInstance().showPlayer(model.player.id)"
                          visible="{model.owner != Owner.PLAYER}"

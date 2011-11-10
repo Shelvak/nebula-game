@@ -172,6 +172,10 @@ describe SpaceMule do
         ).should == 0
       end
 
+      it "should register callback for spawn" do
+         @ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+      end
+
       describe "battleground planets" do
         before(:all) do
           @models = @ss.planets.all

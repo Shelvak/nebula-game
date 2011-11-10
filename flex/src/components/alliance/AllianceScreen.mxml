@@ -313,7 +313,7 @@
                         <s:VerticalLayout gap="10" paddingTop="3"
                                           horizontalAlign="center"/>
                      </base:layout>
-                     <base:Heading text="{getString('label.invitablePlayers')}"
+                     <base:Heading1 text="{getString('label.invitablePlayers')}"
                                    width="100%"/>
                      
                      <base:Warning maxWidth="450"

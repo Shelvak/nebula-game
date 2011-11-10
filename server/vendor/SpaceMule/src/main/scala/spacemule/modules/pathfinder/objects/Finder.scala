@@ -73,7 +73,7 @@ object Finder {
           )
         },
         // Ensure ss->galaxy hop takes as long as galaxy->ss hop.
-        1.0 / Config.unitGalaxySsHopTimeRatio * 
+        1.0 / Config.troopGalaxySsHopTimeRatio *
           fromPoint.solarSystem.wormholeHopMultiplier
       )
       // Add the point in galaxy.

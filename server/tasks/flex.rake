@@ -1,11 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helpers/assets')
 
-FLEX_ASSET_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex', 'src',
-  'assets')
-FLEX_BIN_DEBUG_ASSET_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex',
-  'bin-debug', 'assets')
-FLEX_LOCALE_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex',
-  'html-template', 'locale')
+FLEX_ASSET_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex', 'src', 'assets')
+FLEX_LOCALE_DIR = File.join(Assets::PROJECT_BASE_DIR, 'flex', 'src', 'locale')
 FLEX_SOURCE_DIR = File.expand_path(
   File.join(Assets::PROJECT_BASE_DIR, 'flex', 'src')
 )
@@ -166,11 +162,7 @@ namespace :flex do
       Assets.store_hashes(BUNDLED_FILE_HASHES, current_hashes) \
         unless updated_bundles.blank?
       config_updated = update_config
-      if recompiled || config_updated
-        Rake::Task['flex:assets:copy'].invoke
-      else
-        puts "Nothing to build. Up to date."
-      end
+      puts "Nothing to build. Up to date." unless recompiled || config_updated
     end
 
     def compile(source)
@@ -223,17 +215,6 @@ namespace :flex do
 
         true
       end
-    end
-
-    desc "Copy built assets to bin-debug directory"
-    task :copy => "flex:assets:build" do
-      files = Dir[File.join(FLEX_ASSET_DIR, '*.swf')]
-      puts "Copying #{files.size} bundles to bin-debug."
-      
-      FileUtils.rm Dir[File.join(FLEX_BIN_DEBUG_ASSET_DIR, '*.swf')],
-        :force => true
-      FileUtils.mkdir_p FLEX_BIN_DEBUG_ASSET_DIR
-      FileUtils.cp files, FLEX_BIN_DEBUG_ASSET_DIR
     end
   end
 end

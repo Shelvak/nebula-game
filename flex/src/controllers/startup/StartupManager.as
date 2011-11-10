@@ -123,7 +123,8 @@ package controllers.startup
          if (startupInfo.mode == StartupMode.BATTLE) {
             ML.player.id = startupInfo.playerId;
          }
-         
+
+         // TODO
          // We need to find correct domain to allow staging.nebula44.lt
          // to access flash. Setting it to * for now. arturaz.
          Security.allowDomain("*");//startupInfo.webHost);

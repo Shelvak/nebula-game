@@ -87,7 +87,8 @@ class Building < ActiveRecord::Base
     1 => :overdriven,
     2 => :without_points,
     # For constructors - build units in 2nd flank.
-    3 => :build_in_2nd_flank
+    3 => :build_in_2nd_flank,
+    :check_for_column => false
   )
 
   def to_s
@@ -205,8 +206,8 @@ class Building < ActiveRecord::Base
   def x_end; x ? x + width - 1 : nil; end
   def y_end; y ? y + height - 1 : nil; end
 
-  def cancel!
-    super(proc { activate })
+  def cancel!(*args)
+    super(*args) { activate }
   end
 
   def upgrade
