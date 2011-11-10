@@ -204,7 +204,7 @@
                       labelFunction="{ResourceType.resourceLabelFunction}"
                       id="what"
                       horizontalCenter="0"
-                      width="152"
+                      minWidth="152"
                       change="what_selectedResourceChangeHandler(event)"
                       itemRenderer="components.base.IRResource"/>
    </s:Group>
@@ -234,7 +234,7 @@
       <s:Group>
          <s:DropDownList dataProvider="{availableResList}" 
                          id="forWhat"
-                         width="152"
+                         minWidth="152"
                          horizontalCenter="0"
                          labelFunction="{ResourceType.resourceLabelFunction}"
                          change="forWhat_selectedResourceChangeHandler(event)"
