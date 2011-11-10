@@ -1,16 +1,15 @@
 package utils.locale
 {
    import com.adobe.utils.StringUtil;
-   
+
    import mx.resources.IResourceBundle;
    import mx.resources.IResourceManager;
    import mx.resources.ResourceManager;
    import mx.utils.ObjectUtil;
-   
+
    import utils.Objects;
-   import utils.StringUtil;
-   
-   
+
+
    public class Localizer
    {
       private static function get RM() : IResourceManager
@@ -23,8 +22,11 @@ package utils.locale
       
       private static var currentBundle: String;
       
-      private static function refReplace(matchedString: String, unused: String, bundleName: String, 
-                                         propertyName: String, matchPosition: int, 
+      private static function refReplace(matchedString: String,
+                                         unused: String,
+                                         bundleName: String,
+                                         propertyName: String,
+                                         matchPosition: int,
                                          completeString: String): String
       {
          var bundle: String = bundleName ? bundleName : currentBundle;
@@ -91,12 +93,6 @@ package utils.locale
       }
       
       
-      public static function get localeChain(): Array
-      {
-         return RM.localeChain;
-      }
-      
-      
       public static function addBundle(bundle: IResourceBundle): void
       {
          RM.addResourceBundle(bundle);
@@ -108,9 +104,8 @@ package utils.locale
       /* ### Object names resolving ### */
       /* ############################## */
       
-      private static const OBJECT_REGEXP:RegExp = /\[obj:\d+:\w+(:\w+(:dc)?|::dc)?\]/;
-      private static const WORD_SEP_REGEXP:RegExp = / +/;
-      private static const INTEGER_REGEXP:RegExp = /^\d+$/;
+      private static const OBJECT_REGEXP:RegExp =
+                              /\[obj:\d+:\w+(:\w+(:dc)?|::dc)?\]/;
       
       /**
        * Resolves names of objects in a string. Resolves each sequence of the form:
@@ -151,13 +146,7 @@ package utils.locale
          }
          var resolvedName:String = string("Objects", property, [amount]);
          if (downcase) {
-            // make the first letter of a word lowercase
-            var words:Array = resolvedName.split(WORD_SEP_REGEXP);
-            var wordsLower:Array = new Array();
-            for each (var word:String in words) {
-               wordsLower.push(utils.StringUtil.firstToLowerCase(word));
-            }
-            resolvedName = wordsLower.join(" ");
+            resolvedName = resolvedName.toLocaleLowerCase();
          }
          return resolvedName;
       }
@@ -231,16 +220,18 @@ package utils.locale
                   var formData:String = formPatternResult[2];
                   if (formName == usableFormName)
                   {
-                     matchedParamRepl = com.adobe.utils.StringUtil.replace(
-                        formData, "?", parameter);
+                     matchedParamRepl = StringUtil.replace(
+                        formData, "?", parameter
+                     );
                      break;
                   }
                }
-               
+
                if (matchedParamRepl != null)
                {
-                  str = com.adobe.utils.StringUtil.replace(str, 
-                     matchedParamStr, matchedParamRepl);
+                  str = StringUtil.replace(
+                     str, matchedParamStr, matchedParamRepl
+                  );
                   formMatched = true;
                   break;
                }
