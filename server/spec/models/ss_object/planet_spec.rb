@@ -662,6 +662,15 @@ describe SsObject::Planet do
 
         it_behaves_like "not transfering attribute"
       end
+
+      describe "working building" do
+        before(:each) do
+          @housing.state = Building::STATE_WORKING
+          @housing.save!
+        end
+
+        it_behaves_like "transfering attribute"
+      end
     end
 
     describe "exploration" do
