@@ -32,43 +32,43 @@ object Alliances {
     val grouped = players.groupBy { player =>
       player match {
         // Actual player
-        case Some(player) => player.allianceId
+        case Some(p) => p.allianceId
         // NPC
         case None => None
       }
-    }.map { case (allianceId, players) => 
-        (allianceId.getOrElse(notAllied) -> players) }
+    }.map { case (allianceId, plrs) =>
+        (allianceId.getOrElse(notAllied) -> plrs) }
 
     // Players grouped by alliance ids, not allied players have been given
     // negative alliance ids.
     var notAlliedId = notAllied
     val expanded = (
-      (grouped - notAllied) ++ grouped.getOrElse(notAllied, Set.empty).map {
-        player =>
-        notAlliedId -= 1
-        (notAlliedId -> Set(player))
-      }
+      (grouped - notAllied) ++
+        grouped.getOrElse(notAllied, Set.empty[Option[Player]]).map { player =>
+          notAlliedId -= 1
+          (notAlliedId -> Set(player))
+        }
     )
 
     // Player -> alliance ID cache.
     val cache: Map[Option[Player], Long] = expanded.map {
-      case (allianceId, players) =>
-        players.map { player => (player -> allianceId) }
+      case (allianceId, plrs) =>
+        plrs.map { player => (player -> allianceId) }
     }.flatten.toMap
 
     // Create alliance id -> alliance map wth players and combatants.
-    val alliances = expanded.map { case (allianceId, players) =>
+    val alliances = expanded.map { case (allianceId, plrs) =>
         // Filter combatants that belong to this alliance.
         val allianceCombatants = combatants.filter { c =>
           cache(c.player) == allianceId
         }
         val allianceName = allianceNames.get(allianceId)
         (allianceId -> new Alliance(allianceId, allianceName,
-                                    players, allianceCombatants))
+                                    plrs, allianceCombatants))
     }
 
     val allianceIds = alliances.keySet
-    val enemies = alliances.map { case (allianceId, players) =>
+    val enemies = alliances.map { case (allianceId, plrs) =>
         (allianceId -> (
             allianceIds - allianceId -- 
               napRules.getOrElse(allianceId, Set.empty)
@@ -112,7 +112,7 @@ class Alliances(planetOwner: Option[Player],
   /**
    * Traverse initiatives. Yields combatants that should shoot in this sub-tick.
    */
-  def traverseInitiatives(block: (Long, Combatant) => Unit) = {
+  def traverseInitiatives(block: (Long, Combatant) => Unit) {
     // Sequence of alliance ids to shoot. Planet owner alliance always shoots 
     // first unless owner is NPC. This is also because we get None if we're
     // not fighting in the planet.
@@ -126,7 +126,7 @@ class Alliances(planetOwner: Option[Player],
       }
     }
 
-    def takeForInitiative(initiative: Int): Unit = {
+    def takeForInitiative(initiative: Int) {
       while (true) {
         var taken = false
         allianceSequence.foreach { allianceId =>
@@ -137,7 +137,7 @@ class Alliances(planetOwner: Option[Player],
             takenSet.foreach { combatant => block(allianceId, combatant) }
         }
 
-        if (! taken) return ()
+        if (! taken) return
       }
     }
 
@@ -191,7 +191,7 @@ class Alliances(planetOwner: Option[Player],
   /**
    * Returns seq of alive enemy alliances.
    */
-  def aliveEnemies(allianceId: Long) =
+  def aliveEnemies(allianceId: Long): Seq[Alliance] =
     enemies(allianceId).map { enemyAllianceId =>
       val enemyAlliance = alliancesMap(enemyAllianceId)
 
@@ -236,7 +236,7 @@ class Alliances(planetOwner: Option[Player],
   /**
    * Kills target and removes it from alive list.
    */
-  def kill(killer: Combatant, target: Combatant) = {
+  def kill(killer: Combatant, target: Combatant) {
     killedBy(target) = killer.player
     val allianceId = playerCache(target.player)
     alliancesMap(allianceId).kill(target)
@@ -249,11 +249,15 @@ class Alliances(planetOwner: Option[Player],
   /**
    * Reset all initative lists keeping only alive units.
    */
-  def reset() = L.debug("Reseting alliance initiative lists", () => {
-      alliancesMap.foreach { case (allianceId, alliance) => alliance.reset }
+  def reset() {
+    L.debug("Reseting alliance initiative lists", () => {
+      alliancesMap.foreach {
+        case (allianceId, alliance) => alliance.reset()
+      }
       // Recalculate initiative numbers.
       initiatives = calculateInitiatives
-  })
+    })
+  }
 
   /**
    * Returns JSON like map for alliances.

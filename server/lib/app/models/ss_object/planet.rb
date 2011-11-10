@@ -287,7 +287,9 @@ class SsObject::Planet < SsObject
       ConstructionQueue.clear(building.id) \
         if building.constructor? and building.working?
 
-      if building.active?
+      # Inactive buildings do not give radar visibility, scientists or
+      # population.
+      unless building.inactive?
         if building.is_a?(Trait::Radar)
           zone = building.radar_zone
           Trait::Radar.decrease_vision(zone, old_player) if old_player

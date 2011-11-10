@@ -34,16 +34,97 @@
          </base:Scroller>
       </s:Group>
       <s:Group id="unitsContent" height="100%" width="100%">
+         <base:AdvancedContainer id="grpFilters">
+            <s:Label text="{getString('title.filters')}"
+                     color="#eec500" fontWeight="bold"
+                     fontSize="16" paddingRight="6"/>
+            <!-- OWNER FILTER -->
+            <s:Label text="{getString('filter.owner')}"
+                    visible="{currentList == OU.allyUnits}"
+                    paddingLeft="6"/>
+            <s:DropDownList dataProvider="{OU.owners}"
+                    change="playerSelector_changeHandler(event)"
+                    itemRenderer="components.player.IRPlayerName"
+                    id="playerSelector"
+                    requireSelection="true"
+                    visible="{currentList == OU.allyUnits}"
+                    labelFunction="playerNameFunction"
+                    minWidth="50"/>
+            <!-- PLAYER LOCATION FILTERS -->
+            <s:Label text="{getString('filter.locationType')}"
+                    visible="{currentList == OU.playerUnits}"
+                     paddingLeft="6"/>
+            <s:DropDownList dataProvider="{LOCATION_TYPES}"
+                    change="locationTypeSelector_changeHandler()"
+                    itemRenderer="components.location.IRLocationType"
+                    id="playerLocationTypesSelector"
+                    requireSelection="true"
+                    visible="{currentList == OU.playerUnits}"
+                    labelFunction="locationTypeFunction"
+                    minWidth="50"/>
+            <s:Label text="{getString('filter.locationObject')}"
+                    visible="{currentList == OU.playerUnits
+                    &amp;&amp; playerLocationTypesSelector.selectedItem
+                    != LocationType.GALAXY}" paddingLeft="6"/>
+            <s:DropDownList dataProvider="{OU.playerLocationObjects}"
+                    itemRenderer="components.location.IRLocationBasic"
+                    change="locationObjectsSelector_changeHandler(event)"
+                    id="playerLocationObjectsSelector"
+                    requireSelection="true"
+                    visible="{currentList == OU.playerUnits
+                    &amp;&amp; playerLocationTypesSelector.selectedItem
+                    != LocationType.GALAXY}"
+                    labelFunction="locationObjectFunction"
+                    minWidth="50"/>
+            <!-- ALLY LOCATION FILTERS -->
+            <s:Label text="{getString('filter.locationType')}"
+                     visible="{currentList == OU.allyUnits}"
+                     paddingLeft="6"/>
+            <s:DropDownList dataProvider="{LOCATION_TYPES}"
+                    change="locationTypeSelector_changeHandler()"
+                    itemRenderer="components.location.IRLocationType"
+                    id="allyLocationTypesSelector"
+                    requireSelection="true"
+                    visible="{currentList == OU.allyUnits}"
+                    labelFunction="locationTypeFunction"
+                    minWidth="50"/>
+            <s:Label text="{getString('filter.locationObject')}"
+                    visible="{currentList == OU.allyUnits
+                    &amp;&amp; allyLocationTypesSelector.selectedItem
+                    != LocationType.GALAXY}" paddingLeft="6"/>
+            <s:DropDownList dataProvider="{OU.allyLocationObjects}"
+                    itemRenderer="components.location.IRLocationBasic"
+                    change="locationObjectsSelector_changeHandler(event)"
+                    id="allyLocationObjectsSelector"
+                    requireSelection="true"
+                    visible="{currentList == OU.allyUnits
+                    &amp;&amp; allyLocationTypesSelector.selectedItem
+                    != LocationType.GALAXY}"
+                    labelFunction="locationObjectFunction"
+                    minWidth="50"/>
+            <base:layout>
+               <s:HorizontalLayout gap="5" paddingBottom="3" paddingTop="3"
+                       paddingLeft="6" verticalAlign="middle"/>
+            </base:layout>
+         </base:AdvancedContainer>
          <!--- Scroller for scrolling the content of the list -->
-         <base:Scroller id="unitScroller" stepMultiplier="10" left="0" right="0" top="0" bottom="0"
+         <base:Scroller id="unitScroller" stepMultiplier="10" width="100%"
+                        top="30" bottom="0"
                         skinClass="components.base.screen.ListScreenScrollerSkin">
-            <s:Group width="100%">
+            <s:Group width="100%" id="internalUnitCont">
                <s:DataGroup itemRenderer="components.squadronsscreen.IRPositionedUnits"
                             dataProvider="{currentList == OU.allyUnits
-                            ? OU.allyUnits
-                            : OU.playerUnits}" width="100%">
+                            ? OU.allyUnits : OU.playerUnits}"
+                            width="{internalUnitCont.width}" id="unitsList">
                   <s:layout>
-                     <s:VerticalLayout horizontalAlign="justify" gap="5"/>
+                     <s:TileLayout columnWidth="{Math.floor(unitsList.width/
+                     getColumnCount(unitsList.width, currentList == OU.allyUnits
+                            ? OU.allyUnits.length : OU.playerUnits.length))}"
+                                   requestedColumnCount="{getColumnCount(
+                                   unitsList.width, currentList == OU.allyUnits
+                            ? OU.allyUnits.length : OU.playerUnits.length)}"
+                                   verticalGap="5"
+                                   horizontalGap="0"/>
                   </s:layout>
                </s:DataGroup>
             </s:Group>
@@ -58,132 +139,205 @@
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import controllers.ui.NavigationController;
-         
-         import globalevents.GlobalEvent;
-         
-         import models.ModelLocator;
-         import models.Owner;
-         import models.movement.MRoute;
-         
-         import mx.collections.ListCollectionView;
-         import mx.events.FlexEvent;
-         
-         import spark.components.Group;
-         
-         import utils.components.ToggleButtonsGroup;
-         import utils.components.events.ToggleButtonsGroupEvent;
-         import utils.datastructures.Collections;
-         import utils.locale.Localizer;
-         
-         [Bindable]
-         private var screenTitle: String;
-         
-         [Bindable]
-         private var currentScroller: Scroller;
-         
-         [Bindable]
-         private var currentList: ListCollectionView;
-         
-         private function get OU(): OverviewUnits
-         {
-            return OverviewUnits.getInstance();
-         }
-         
-         private function getString(property:String, parameters:Array = null) : String {
-            return Localizer.string("Squadrons", property, parameters);
-         }
-         
-         private const _filterButtons:ToggleButtonsGroup = new ToggleButtonsGroup();
-         private const _routes:ListCollectionView = new ListCollectionView(ModelLocator.getInstance().routes);
-         
-         private function this_initializeHandler(event:FlexEvent):void {
-            _filterButtons.registerButton(btnPlayerRoutes);
-            _filterButtons.registerButton(btnAllianceRoutes);
-            _filterButtons.registerButton(btnPlayerUnits);
-            _filterButtons.registerButton(btnAllianceUnits);
-            
-            _filterButtons.addEventListener(
-               ToggleButtonsGroupEvent.SELECTION_CHANGE, 
-               filterButtons_selectionChangeHandler, false, 0, true
-            );
-            _filterButtons.select(btnPlayerUnits);
-            EventBroker.subscribe(GlobalEvent.APP_READY, globalEvent_appReadyHandler);
-         }
-         
-         protected function this_creationCompleteHandler(event:FlexEvent):void
-         {
-            mainAreaContent = unitsContent;
-         }
-         
-         private function filterButtons_selectionChangeHandler(event:ToggleButtonsGroupEvent) : void {
-            if (event.selectedButton == btnPlayerRoutes)
-            {
-               screenTitle = getString('title.squadrons');
-               if (mainAreaContent != squadsContent)
-               {
-                  mainAreaContent = squadsContent;
-               }
-               applySquadFilterFunction(ff_playerRoutes);
-               if (currentScroller != squadScroller)
-               {
-                  currentScroller = squadScroller;
-               }
-               currentList = _routes;
+      import com.developmentarc.core.utils.EventBroker;
+
+      import components.unitsscreen.events.UnitsScreenEvent;
+
+      import controllers.ui.NavigationController;
+
+      import globalevents.GlobalEvent;
+
+      import models.ModelLocator;
+      import models.Owner;
+      import models.location.Location;
+      import models.location.LocationType;
+      import models.movement.MRoute;
+      import models.player.PlayerMinimal;
+
+      import mx.collections.ArrayCollection;
+
+      import mx.collections.ListCollectionView;
+      import mx.events.FlexEvent;
+      import mx.utils.ObjectUtil;
+
+      import spark.components.Group;
+      import spark.events.IndexChangeEvent;
+
+      import utils.components.ToggleButtonsGroup;
+      import utils.components.events.ToggleButtonsGroupEvent;
+      import utils.datastructures.Collections;
+      import utils.locale.Localizer;
+
+      [Bindable]
+      private var screenTitle: String;
+
+      [Bindable]
+      private var currentScroller: Scroller;
+
+      [Bindable]
+      private var currentList: ListCollectionView;
+
+      private static function getColumnCount(listWidth: Number,  listLength: int): int
+      {
+         return Math.max(1, Math.min(Math.ceil(listWidth/900), listLength));
+      }
+
+      private static const LOCATION_TYPES: ArrayCollection =
+              new ArrayCollection([LocationType.ANY,
+                 LocationType.GALAXY,
+                 LocationType.SOLAR_SYSTEM,
+                 LocationType.SS_OBJECT]);
+
+      private function get OU(): OverviewUnits {
+         return OverviewUnits.getInstance();
+      }
+
+      private function getString(property: String, parameters: Array = null): String {
+         return Localizer.string("Squadrons", property, parameters);
+      }
+
+      private const _filterButtons: ToggleButtonsGroup = new ToggleButtonsGroup();
+      private const _routes: ListCollectionView = new ListCollectionView(ModelLocator.getInstance().routes);
+
+      private function this_initializeHandler(event: FlexEvent): void {
+         _filterButtons.registerButton(btnPlayerRoutes);
+         _filterButtons.registerButton(btnAllianceRoutes);
+         _filterButtons.registerButton(btnPlayerUnits);
+         _filterButtons.registerButton(btnAllianceUnits);
+
+         _filterButtons.addEventListener(
+                 ToggleButtonsGroupEvent.SELECTION_CHANGE,
+                 filterButtons_selectionChangeHandler, false, 0, true
+         );
+         _filterButtons.select(btnPlayerUnits);
+         EventBroker.subscribe(GlobalEvent.APP_READY, globalEvent_appReadyHandler);
+         OU.addEventListener(UnitsScreenEvent.OVERVIEW_OPENED, reset);
+      }
+
+      protected function this_creationCompleteHandler(event: FlexEvent): void {
+         mainAreaContent = unitsContent;
+      }
+
+      private function filterButtons_selectionChangeHandler(event: ToggleButtonsGroupEvent): void {
+         if (event.selectedButton == btnPlayerRoutes) {
+            screenTitle = getString('title.squadrons');
+            if (mainAreaContent != squadsContent) {
+               mainAreaContent = squadsContent;
             }
-            else if (event.selectedButton == btnAllianceRoutes)
-            {
-               screenTitle = getString('title.squadrons');
-               if (mainAreaContent != squadsContent)
-               {
-                  mainAreaContent = squadsContent;
-               }
-               applySquadFilterFunction(ff_allianceRoutes);
-               if (currentScroller != squadScroller)
-               {
-                  currentScroller = squadScroller;
-               }
-               currentList = _routes;
+            applySquadFilterFunction(ff_playerRoutes);
+            if (currentScroller != squadScroller) {
+               currentScroller = squadScroller;
             }
-            else
-            {
-               screenTitle = getString('title.units');
-               if (mainAreaContent != unitsContent)
-               {
-                  mainAreaContent = unitsContent;
-               }
-               if (currentScroller != unitScroller)
-               {
-                  currentScroller = unitScroller;
-               }
-               if (event.selectedButton == btnPlayerUnits)
-               {
-                  currentList = OU.playerUnits;
-               }
-               else
-               {
-                  currentList = OU.allyUnits;
-               }
+            currentList = _routes;
+         }
+         else if (event.selectedButton == btnAllianceRoutes) {
+            screenTitle = getString('title.squadrons');
+            if (mainAreaContent != squadsContent) {
+               mainAreaContent = squadsContent;
+            }
+            applySquadFilterFunction(ff_allianceRoutes);
+            if (currentScroller != squadScroller) {
+               currentScroller = squadScroller;
+            }
+            currentList = _routes;
+         }
+         else {
+            screenTitle = getString('title.units');
+            if (mainAreaContent != unitsContent) {
+               mainAreaContent = unitsContent;
+            }
+            if (currentScroller != unitScroller) {
+               currentScroller = unitScroller;
+            }
+            if (event.selectedButton == btnPlayerUnits) {
+               currentList = OU.playerUnits;
+            }
+            else {
+               currentList = OU.allyUnits;
             }
          }
-         
-         private function applySquadFilterFunction(ff:Function) : void {
-            Collections.applyFilter(_routes, ff);
+      }
+
+      private function applySquadFilterFunction(ff: Function): void {
+         Collections.applyFilter(_routes, ff);
+      }
+
+      private function ff_playerRoutes(route: MRoute): Boolean {
+         return route.owner == Owner.PLAYER;
+      }
+
+      private function ff_allianceRoutes(route: MRoute): Boolean {
+         return route.owner == Owner.ALLY;
+      }
+
+      protected function globalEvent_appReadyHandler(event: GlobalEvent): void {
+         _filterButtons.select(btnPlayerUnits);
+      }
+
+      private function refreshLocationObjects(allies: Boolean): void {
+         if (allies) {
+            allyLocationObjectsSelector.selectedItem = 'any';
+            OU.refreshAllyLocationObjects(allyLocationTypesSelector.selectedItem);
          }
-         
-         private function ff_playerRoutes(route:MRoute) : Boolean {
-            return route.owner == Owner.PLAYER;
+         else {
+            playerLocationObjectsSelector.selectedItem = 'any';
+            OU.refreshPlayerLocationObjects(
+                    playerLocationTypesSelector.selectedItem);
          }
-         
-         private function ff_allianceRoutes(route:MRoute) : Boolean {
-            return route.owner == Owner.ALLY;
+         refreshFilter();
+      }
+
+      private function locationTypeSelector_changeHandler(): void {
+         refreshLocationObjects(currentList == OU.allyUnits);
+      }
+
+      private function playerSelector_changeHandler(event: IndexChangeEvent): void {
+         refreshFilter();
+      }
+
+      private function refreshFilter(): void {
+         if (currentList == OU.allyUnits) {
+            OU.filterAllyUnits(allyLocationTypesSelector.selectedItem,
+                    allyLocationObjectsSelector.selectedItem,
+                    playerSelector.selectedItem);
          }
-         
-         protected function globalEvent_appReadyHandler(event:GlobalEvent) : void {
-            _filterButtons.select(btnPlayerUnits);
+         else {
+            OU.filterPlayerUnits(playerLocationTypesSelector.selectedItem,
+                    playerLocationObjectsSelector.selectedItem);
          }
+      }
+
+      private function locationObjectsSelector_changeHandler(event: IndexChangeEvent): void {
+         refreshFilter();
+      }
+
+      private function playerNameFunction(item: PlayerMinimal): String {
+         return item.name == '' ? Localizer.string('Location', 'header.any')
+                 : item.name;
+      }
+
+      private function locationTypeFunction(item: int): String {
+         return Localizer.string('Location',
+                 item == LocationType.GALAXY ? 'description.short.galaxy'
+                         : (item == LocationType.SOLAR_SYSTEM ? 'header.solarSystem'
+                         : (item == LocationType.SS_OBJECT ? 'header.planet'
+                         : 'header.any')));
+      }
+
+      private function locationObjectFunction(item: Object): String {
+         return item is Location ? Location(item).shortDescription
+                 : Localizer.string('Location', 'header.any');
+      }
+
+      private function reset (event: UnitsScreenEvent): void {
+         _filterButtons.select(btnPlayerUnits);
+         currentList = OU.playerUnits;
+         playerLocationTypesSelector.selectedIndex = 0;
+         allyLocationTypesSelector.selectedIndex = 0;
+         playerLocationObjectsSelector.selectedIndex = 0;
+         allyLocationObjectsSelector.selectedIndex = 0;
+         playerSelector.selectedIndex = 0;
+      }
       ]]>
    </fx:Script>
 </screen:ArtworkedClosableScreen>

@@ -662,6 +662,15 @@ describe SsObject::Planet do
 
         it_behaves_like "not transfering attribute"
       end
+
+      describe "working building" do
+        before(:each) do
+          @housing.state = Building::STATE_WORKING
+          @housing.save!
+        end
+
+        it_behaves_like "transfering attribute"
+      end
     end
 
     describe "exploration" do
@@ -1189,7 +1198,7 @@ describe SsObject::Planet do
       @enemy = Factory.create :player
 
       @planet = Factory.create :planet, :player => @player
-      Factory.create :unit, :location_type => Location::SS_OBJECT,
+      Factory.create :unit_built, :location_type => Location::SS_OBJECT,
         :location_id => @planet.id, :player => @enemy_with_units
 
       @result = @planet.observer_player_ids
@@ -1207,7 +1216,7 @@ describe SsObject::Planet do
       @result.should include(@enemy_with_units.id)
     end
     
-    it "should include player with units alliance members too" do
+    it "should include player which belong to enemy alliance which has units" do
       @result.should include(@enemy_ally.id)
     end
 
@@ -1812,7 +1821,7 @@ describe SsObject::Planet do
     describe "location is planet" do
       before(:each) do
         @planet = Factory.create(:planet)
-        @unit = Factory.create(:unit, :location => @planet)
+        @unit = Factory.create(:unit_built, :location => @planet)
       end
 
       describe "if observer ids changed" do

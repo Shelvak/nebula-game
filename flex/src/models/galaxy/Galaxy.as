@@ -218,11 +218,11 @@ package models.galaxy
       /**
        * Returns <code>MapType.GALAXY</code>.
        * 
-       * @see models.map.Map#mapType
+       * @see models.map.MMap#mapType
        */
       override public function get mapType() : int {
          return MapType.GALAXY;
-      };
+      }
       
       /**
        * Galaxy locations are not bounded to visible map square.

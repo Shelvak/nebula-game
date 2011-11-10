@@ -25,12 +25,12 @@ trait SSObject {
   /**
    * Ground units.
    */
-  var units = ListBuffer[Unit]()
+  var units = ListBuffer[Troop]()
   
   /**
    * Units in orbit.
    */
-  var orbitUnits = ListBuffer[Unit]()
+  var orbitUnits = ListBuffer[Troop]()
 
   /**
    * Provide initialization code here.
@@ -44,10 +44,10 @@ trait SSObject {
     createUnits(entries, orbitUnits)
   
   private def createUnits(
-    entries: Iterable[UnitsEntry], target: ListBuffer[Unit]
+    entries: Iterable[UnitsEntry], target: ListBuffer[Troop]
   ): scala.Unit = {
     UnitsEntry.foreach(entries) { case (name, flank) =>
-      target += Unit(name, flank)
+      target += Troop(name, flank)
     }
   }
 }

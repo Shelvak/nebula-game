@@ -1,7 +1,7 @@
 package spacemule.modules.pmg.persistence.objects
 
 import spacemule.modules.pmg.persistence.TableIds
-import spacemule.modules.pmg.objects.{Location, Unit, Galaxy}
+import spacemule.modules.pmg.objects.{Location, Troop, Galaxy}
 import spacemule.modules.config.objects.Config
 import spacemule.persistence.DB
 
@@ -18,7 +18,7 @@ object UnitRow {
   "`location_id`, `location_type`, `location_x`, `location_y`, `flank`"
 }
 
-case class UnitRow(galaxyId: Int, location: Location, unit: Unit) {
+case class UnitRow(galaxyId: Int, location: Location, unit: Troop) {
   val id = TableIds.unit.next
 
   val values = "%d\t%d\t%s\t%d\t%d\t%d\t%s\t%s\t%d".format(

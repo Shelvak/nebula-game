@@ -12,15 +12,17 @@ package utils
       
       
       /**
-       * Extracts and returns model class name (a.k.a. object class, base model class) from the given full
-       * (Class::Subclass) or partial (Class) model type name. The string returned starts with a lowercase
-       * letter unless <code>firstUppercase</code> is <code>true</code>.
+       * Extracts and returns model class name (a.k.a. object class, base model
+       * class) from the given full (Class::Subclass) or partial (Class) model
+       * type name. The string returned starts with a lowercase letter unless
+       * <code>firstUppercase</code> is <code>true</code>.
        * 
        * @param full or partial model type name.
        *        <b>Not null. Not empty string.</b>
        */
-      public static function getModelClass(type:String, firstUppercase:Boolean = false) : String
-      {
+      public static function getModelClass(
+         type:String, firstUppercase:Boolean = false
+      ) : String {
          Objects.paramNotEquals("type", type, [null, ""]);
          var separatorIdx:int = type.indexOf(MODEL_SUBCLASS_SEPARATOR);
          if (separatorIdx < 0)

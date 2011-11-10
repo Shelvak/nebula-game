@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
-        xmlns:s="library://ns.adobe.com/flex/spark" 
-        xmlns:mx="library://ns.adobe.com/flex/mx" 
-        xmlns:skins="components.notifications.parts.skins.*" 
-        xmlns:base="components.base.*" 
-        xmlns:notifications="components.notifications.*"
-        xmlns:unitsscreen="components.unitsscreen.*"
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:skins="components.notifications.parts.skins.*"
+        xmlns:base="components.base.*"
         xmlns:parts="components.notifications.parts.*"
-        xmlns:location="components.location.*" xmlns:units="components.unitsscreen.units.*">
+        xmlns:location="components.location.*"
+        >
    
    <fx:Metadata>
       [HostComponent("components.notifications.parts.IRCombatLog")]
@@ -15,13 +13,9 @@
    
    <fx:Script>
       <![CDATA[
-         import models.resource.ResourceType;
-         
-         import mx.skins.halo.WindowBackground;
-         
-         import utils.locale.Localizer;
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
+      import models.resource.ResourceType;
+
+      import utils.locale.Localizer;
       ]]>
    </fx:Script>
    <base:AdvancedContainer id="mainCont" left="0" right="0" minWidth="0" minHeight="0">
@@ -242,6 +236,7 @@
             <s:Label id="lblXp" fontWeight="bold"/>
             <s:Label id="lblPoints" fontWeight="bold"/>
             <s:Label id="lblVictoryPoints" fontWeight="bold"/>
+            <s:Label id="lblCreds" fontWeight="bold"/>
             <base:layout>
                <s:VerticalLayout/>
             </base:layout>
@@ -257,6 +252,7 @@
             <s:Label id="valXp" fontWeight="bold"/>
             <s:Label id="valPoints" fontWeight="bold"/>
             <s:Label id="valVictoryPoints" fontWeight="bold"/>
+            <s:Label id="valCreds" fontWeight="bold"/>
             <base:layout>
                <s:VerticalLayout horizontalAlign="right"/>
             </base:layout>

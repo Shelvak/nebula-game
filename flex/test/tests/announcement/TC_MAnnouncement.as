@@ -25,17 +25,23 @@ package tests.announcement
    public class TC_MAnnouncement
    {
       private var announcement:MAnnouncement;
-      
+
+      [BeforeClass]
+      public static function setUpClass(): void {
+         DateUtil.timeDiff = 0;
+      }
+
       [Before]
       public function setUp() : void {
+         DateUtil.now = new Date().time;
          announcement = new MAnnouncement();
       }
-      
+
       [After]
       public function tearDown() : void {
          announcement = null;
       }
-      
+
       [Test]
       public function messageAndMessageTextFlowAndEventProps() : void {
          assertThat( "default value of message prop", announcement.message, nullValue() );

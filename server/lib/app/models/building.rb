@@ -202,8 +202,8 @@ class Building < ActiveRecord::Base
   def x_end; x ? x + width - 1 : nil; end
   def y_end; y ? y + height - 1 : nil; end
 
-  def cancel!
-    super(proc { activate })
+  def cancel!(*args)
+    super(*args) { activate }
   end
 
   def upgrade

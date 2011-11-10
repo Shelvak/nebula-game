@@ -16,6 +16,7 @@ package components.unitsscreen.events
       public static const SELECTION_CHANGE: String = 'selectionChange';
       public static const SET_STANCE: String = 'setStance';
       public static const DROP_UNITS: String = 'dropUnits';
+      public static const OVERVIEW_OPENED: String = 'overviewOpened';
       
       
       public var stance: int;

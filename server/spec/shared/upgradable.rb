@@ -54,6 +54,8 @@ shared_examples_for "upgradable" do
         (@model.upgrade_time(@model.level + 1) * (1 - @percentage)).
           from_now
       @model.save!
+      CallbackManager.register(@model, CallbackManager::EVENT_UPGRADE_FINISHED,
+        @model.upgrade_ends_at)
     end
     
     it "should fail if not upgrading" do
@@ -61,6 +63,25 @@ shared_examples_for "upgradable" do
       lambda do
         @model.cancel!
       end.should raise_error(GameLogicError)
+    end
+
+    describe "when it does not have upgrade finished callback" do
+      before(:each) do
+        CallbackManager.
+          unregister(@model, CallbackManager::EVENT_UPGRADE_FINISHED)
+      end
+
+      it "should fail" do
+        lambda do
+          @model.cancel!
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should not fail if by_constructor is passed true" do
+        lambda do
+          @model.cancel!(true)
+        end.should_not raise_error(GameLogicError)
+      end
     end
     
     Resources::TYPES.each do |resource|
@@ -81,9 +102,6 @@ shared_examples_for "upgradable" do
     
     it "should remove upgrade finished callback" do
       @model.save!
-      CallbackManager.register(@model, 
-        CallbackManager::EVENT_UPGRADE_FINISHED,
-        @model.upgrade_ends_at)
       @model.cancel!
       @model.should_not have_callback(CallbackManager::EVENT_UPGRADE_FINISHED)
     end

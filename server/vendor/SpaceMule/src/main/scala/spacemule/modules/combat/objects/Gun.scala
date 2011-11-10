@@ -22,7 +22,7 @@ object Gun {
    * Returns Seq of guns for this combatant.
    */
   def gunsFor(combatant: Combatant) = (combatant match {
-      case t: Troop => Config.unitGunDefinitions(t.name)
+      case t: Troop => Config.troopGunDefinitions(t.name)
       case b: Building => Config.buildingGunDefinitions(b.name)
   }).zipWithIndex.map { case (definition, index) =>
     Gun(combatant, definition, index)
