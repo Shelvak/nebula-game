@@ -116,7 +116,8 @@ package components.map.space
       }
       
       public function sectorShown(x:int, y:int) : void {
-         var modelsInSector:ArrayCollection = new ArrayCollection(getGalaxy().getStaticObjectsAt(x, y));
+         var modelsInSector:ArrayCollection =
+                new ArrayCollection(getGalaxy().getStaticObjectsAt(x, y));
          var sector:SectorsHashItem = new SectorsHashItem(x, y);
          _staticObjectsHash.add(sector);
          var aggrComponent:CStaticSpaceObjectsAggregator;
@@ -125,7 +126,19 @@ package components.map.space
             sector.object = _staticObjectsPool.borrowObject();
             aggrComponent = sector.object;
             aggrModel = aggrComponent.model;
-            aggrModel.addAll(modelsInSector);
+            try {
+               aggrModel.addAll(modelsInSector);
+            }
+            catch (err:Error) {
+               throw new Error(
+                  "Error while trying to add static objects "
+                     + modelsInSector.toArray().join(", ")
+                     + " at (" + x + "; " + y + ")"
+                     + " to borrowed CStaticSpaceObjectsAggregator "
+                     + aggrComponent + ". Original error message:"
+                     + "\n" + err.message
+               );
+            }
             grid.positionStaticObjectInSector(aggrModel.currentLocation);
             squadronsController.repositionAllSquadronsIn(aggrModel.currentLocation);
             var model:IMStaticSpaceObject = IMStaticSpaceObject(aggrModel.getItemAt(0)); 
