@@ -209,8 +209,15 @@ def read_unit_definition(row, sheet, sections)
     metal, energy, zetium, population, volume, storage,
     ss_hop_time, galaxy_hop_time = sheet[row]
 
+  metal = metal.to_f
+  energy = energy.to_f
+  zetium = zetium.to_f
+
   case tier
   when "Towers"
+    metal = "#{metal} * level"
+    energy = "#{energy} * level"
+    zetium = "#{zetium} * level"
     ["buildings"]
   else
     ["units"]
@@ -235,9 +242,9 @@ def read_unit_definition(row, sheet, sections)
       attrs.push [armor_type.downcase.to_sym, "armor"] unless armor_type == ""
       attrs.push ["#{armor_mod.to_i} * (level-1)", "armor_mod"]
       attrs.push [max_lvl.to_i, "max_level"] unless zero?(max_lvl)
-      attrs.push [metal.to_f, "metal.cost"]
-      attrs.push [energy.to_f, "energy.cost"]
-      attrs.push [zetium.to_f, "zetium.cost"]
+      attrs.push [metal, "metal.cost"]
+      attrs.push [energy, "energy.cost"]
+      attrs.push [zetium, "zetium.cost"]
       attrs.push [population.to_i, "population"] unless zero?(population) ||
         section == "buildings"
       attrs.push [volume.to_i, "volume"] unless zero?(volume) ||
@@ -306,7 +313,7 @@ until mode == :finished
 end
 
 IGNORED_KEYS = [
-  /^buildings\.(.+?)\.(armor|armor_mod|xp_needed)$/,
+  /^buildings\.(.+?)\.(armor|xp_needed)$/,
   /^technologies\.mdh\.mod\.(armor|damage)$/
 ]
 
