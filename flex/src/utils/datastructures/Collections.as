@@ -141,11 +141,14 @@ package utils.datastructures
        * id and returns its index. If no such item exists, returns <code>-1</code>.
        *
        * @param list | <b>not null</b>
-       * @param id | <b>&gt; 0</b>
+       * @param id | <b>&gt;= 0</b>
        */
       public static function findFirstIndexWithId(list: IList, id: int): int {
          Objects.paramNotNull("list", list);
-         Objects.paramPositiveNumber("id", id, false);
+         Objects.paramPositiveNumber("id", id, true);
+         if (id == 0) {
+            return -1;
+         }
          return findFirstIndex(
             list,
             function(item: Object): Boolean {
@@ -174,11 +177,11 @@ package utils.datastructures
        * id and returns it. If no such item exists, returns <code>null</code>.
        *
        * @param list | <b>not null</b>
-       * @param id | <b>&gt; 0</b>
+       * @param id | <b>&gt;= 0</b>
        */
       public static function findFirstWithId(list: IList, id: int): * {
          Objects.paramNotNull("list", list);
-         Objects.paramPositiveNumber("id", id, false);
+         Objects.paramPositiveNumber("id", id, true);
          var idx: int = findFirstIndexWithId(list, id);
          return idx >= 0 ? list.getItemAt(idx) : null;
       }
