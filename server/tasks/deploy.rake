@@ -22,8 +22,8 @@ DEPLOY_CONFIG = {
 
   :servers => {
     :stable => {
-      :client => ["static.nebula44.lt"],
-      :server => ["game.nebula44.lt"],
+      :client => ["morpheus.nebula44.lt"],
+      :server => ["morpheus.nebula44.lt"],
     },
     :beta => {
       :client => ["static-beta3.nebula44.com:2022"],

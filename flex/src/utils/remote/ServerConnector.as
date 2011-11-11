@@ -140,7 +140,7 @@ package utils.remote
          while (index != -1)
          {
             var msg:String = _buffer.substring(0, index);
-            msgLog.logMessage(msg, " ~->| Incoming message: {0}", msg);
+            msgLog.logMessage(msg, " ~->| Incoming message: {0}", [msg]);
             var rmo:ServerRMO = ServerRMO.parse(msg);
             DateUtil.updateTimeDiff(rmo.id, new Date());
             _unprocessedMessages.push(rmo);
@@ -218,7 +218,7 @@ package utils.remote
          if (_socket.connected)
          {
             var msg:String = rmo.toJSON();
-            msgLog.logMessage(msg, "<-~ | Outgoing message: {0}", msg);
+            msgLog.logMessage(msg, "<-~ | Outgoing message: {0}", [msg]);
             _socket.writeUTFBytes(msg + "\n");
             _socket.flush();
          }

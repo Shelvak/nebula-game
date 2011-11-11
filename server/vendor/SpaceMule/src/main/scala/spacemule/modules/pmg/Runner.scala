@@ -46,11 +46,16 @@ object Runner extends BenchmarkableMock {
               Some(Config.marketBotRandomResourceCooldown.fromNow())
             ).values
           }
-          Manager.readBattleground(
+          val battlegroundRow = Manager.readBattleground(
             galaxyRow.id,
             new Galaxy(galaxyRow.id, ruleset),
             battleground
           )
+          Manager.callbacks += CallbackRow(
+            battlegroundRow, ruleset,
+            Some(CallbackRow.Events.Spawn),
+            Some(0.seconds.fromNow)
+          ).values
         }
       }
       printBenchmarkResults()

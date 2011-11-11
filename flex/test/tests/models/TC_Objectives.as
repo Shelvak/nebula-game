@@ -43,10 +43,10 @@ package tests.models
          }
          
          var bundle: ResourceBundle = new ResourceBundle(Locale.EN, 'Objects');
-         bundle.content['Trooper'] = 'Trooper';
-         bundle.content['Trooper-p8d'] = '{0 one[one trooper] many[? troopers]}';
-         bundle.content['Seeker'] = 'Seeker';
-         bundle.content['Seeker-p8d'] = '{0 one[one seeker] many[? seekers]}';
+         bundle.content['unit_Trooper'] = 'Trooper';
+         bundle.content['unit_Trooper-p8d'] = '{0 one[one trooper] many[? troopers]}';
+         bundle.content['unit_Seeker'] = 'Seeker';
+         bundle.content['unit_Seeker-p8d'] = '{0 one[one seeker] many[? seekers]}';
          
          
          

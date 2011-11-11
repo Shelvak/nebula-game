@@ -109,6 +109,10 @@
     <Unit_Demosis-what value="{0 one[demozio klasės laivą] 1sts[? demozio klasės laivą] tens[? demozio klasės laivų] many[? demozio klasės laivus]}" />
     <Unit_Demosis-whos value="{0 one[demozio klasės laivo] 1sts[? demozio klasės laivo] tens[? demozio klasės laivų] many[? demozio klasės laivų]}" />
     
+    <Unit_BossShip value="Morfėjus" />
+    <Unit_BossShip-what value="{0 one[morfėjaus klasės laivą] 1sts[? morfėjaus klasės laivą] tens[? morfėjaus klasės laivų] many[? morfėjaus klasės laivus]}" />
+    <Unit_BossShip-whos value="{0 one[morfėjaus klasės laivo] 1sts[? morfėjaus klasės laivo] tens[? morfėjaus klasės laivų] many[? morfėjaus klasės laivų]}" />
+    
     <!-- Bokšteliai -->
 
     <Building_Vulcan value="Vulkanas" />
@@ -618,6 +622,8 @@
     <property.fee value="Mokesčio procentas" />
     <property.width value="Pastato plotis" />
     <property.height value="Pastato ilgis" />
+    <property.vpsOnDamage value="PT už 1 žalos vienetą" />
+    <property.credsForKilling value="Kredų už nužudymą" />
 
     <text.deactivated>
       <p>
@@ -1289,6 +1295,7 @@
     <label.shield>
       <![CDATA[Ši saulės sistema yra apsaugota<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
+    <label.over value="Laivai virš"/>
     <message.noRadar value="Tau reikia radaro, jog matytum galaktiką" />
   </Galaxy>
 
@@ -1343,6 +1350,9 @@
     <gun.plasma_spike value="Šoko patranka" />
     <gun.thor_ground value="Pūga" />
     <gun.cannon_air value="Dzeuso klasės patranka" />
+    <gun.dart_laser value="Fazinė patranka" />
+    <gun.boss_light value="Dvejinti fazeriai" />
+    <gun.boss_heavy value="Šoko sviediniai" />
     <armorType value="Šarvų tipas" />
     <damageInPercent value="Procentai" />
     <damage value="Žala" />
@@ -1589,6 +1599,7 @@
     <label.xp value="Gauta patirties" />
     <label.points value="Gauta karo taškų" />
     <label.victoryPoints value="Gauta pergalės taškų" />
+    <label.creds value="Gauta kredų" />
     <label.close value="Uždaryti" />
     <label.players value="Žaidėjai" />
     <label.noNotifications value="Pranešimų nėra" />
@@ -3858,6 +3869,8 @@
     <property.move.solarSystem.hopTime value="Šuolio laikas saulės sistemoje" />
     <property.move.galaxy.hopTime value="Šuolio laikas galaktikoje" />
     <property.population value="Populiacija" />
+    <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
+    <property.credsForKilling ref="Buildings/property.credsForKilling" />
     
     <tooltip.freeStorage>
       <p>Šiame laive dar liko {0} vietos.</p>
@@ -4118,6 +4131,31 @@
       pasikrauti, tad ryžtingas tavo laivyno smūgis gali smarkiai pakenkti
       šiems laivams milžinams.</p>
     </Demosis.about>
+
+    <BossShip.name ref="Objects/Unit_BossShip" />
+    <BossShip.about>
+      <p>
+        Šis milžiniškas erdvėlaivis, išniręs iš niekur, vadinamas miego
+        karalystės dievo vardu, tęsia savo egzistenciją tuščiame kosmoso
+        vakuume.
+      </p>
+      <p>
+        Ir nors jis ir ramiai snūduriuoja savo sapnuose, nedrįsk jų
+        sutrukdyti - tokie nesusipratėliai greitai pajaus šio laivo ginklų
+        galią ir jo nepalaužiamą atsparumą - jo gynyba tokia stipri, jog net
+        ištisi laivynai vos teįgali įlenkti jo šarvų plokštes.
+      </p>
+      <p>
+        Tačiau kad ir koks galingas šis laivas bebūtų - nuotykių ieškotojai
+        ir komandorai iš visos galaktikos stengiasi jį suplėšyti į gabalus. Nes
+        jie žino kokie turtai ir paslaptys laukia šio laivo viduje...
+      </p>
+      <p>
+        Už šiam laivui padarytą žalą tu gauni pergalės taškus. Be to
+        žaidėjas, kuris į šį laivą pataikys paskutinį, lemiamą, šūvį,
+        gaus kredų.
+      </p>
+    </BossShip.about>
 
     <Trooper.name ref="Objects/Unit_Trooper" />
     <Trooper.about>

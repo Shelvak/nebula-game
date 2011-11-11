@@ -106,6 +106,8 @@ describe PlanetsController do
       describe "without owner attributes" do
         before(:each) do
           @planet.player = Factory.create(:player)
+          Factory.create(:u_trooper, :location => @planet, :player => player,
+            :level => 1)
           invoke @action, @params
         end
 

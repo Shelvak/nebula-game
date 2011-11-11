@@ -109,3 +109,6 @@ Factory.define :u_mobile_screamer, :parent => :unit_built,
 
 Factory.define :u_mobile_thunder, :parent => :unit_built,
 :class => Unit::MobileThunder do |m|; end
+
+Factory.define :u_boss_ship, :parent => :unit_built,
+:class => Unit::BossShip do |m|; end

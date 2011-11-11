@@ -6,43 +6,44 @@ package components.notifications.parts
    import components.notifications.parts.skins.CombatLogAlliance;
    import components.notifications.parts.skins.CombatLogGrid;
    import components.notifications.parts.skins.CombatLogSkin;
-   
+
    import controllers.Messenger;
-   import controllers.startup.StartupInfo;
-   
+
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.external.ExternalInterface;
    import flash.net.URLRequest;
    import flash.net.navigateToURL;
    import flash.system.System;
-   
+
    import models.ModelLocator;
    import models.notification.parts.CombatLog;
    import models.notification.parts.CombatOutcomeType;
    import models.unit.UnitBuildingEntry;
-   
+
    import mx.collections.ArrayCollection;
-   
+
    import spark.components.Button;
    import spark.components.DataGroup;
    import spark.components.Group;
    import spark.components.Label;
    import spark.components.TextInput;
-   
+
    import utils.locale.Localizer;
-   
-   
+
    public class IRCombatLog extends IRNotificationPartBase
    {
-      private static const STATUS_COLORS: Array = ['0x00ff00', '0xff0000', '0xffffff'];
+      private static const STATUS_COLORS: Array = [
+         '0x00ff00', '0xff0000', '0xffffff'
+      ];
       
       private static const CLASSIFICATION_FRIEND: int = 0;
       private static const CLASSIFICATION_ENEMY: int = 1;
       private static const CLASSIFICATION_NAP: int = 2;
 
-      private static const STATUS_ORDER: Array = [CLASSIFICATION_FRIEND, CLASSIFICATION_NAP, CLASSIFICATION_ENEMY];
-      
+      private static const STATUS_ORDER: Array = [
+         CLASSIFICATION_FRIEND, CLASSIFICATION_NAP, CLASSIFICATION_ENEMY
+      ];
       
       private function get ML() : ModelLocator
       {
@@ -93,7 +94,8 @@ package components.notifications.parts
          if (allyAlive)
          {
             allyAlive.list = combatLog == null ? null : allianceAliveList;
-            hasAllyUnits = (allianceAliveList.length > 0) || (allianceDestroyedList.length > 0);
+            hasAllyUnits = (allianceAliveList.length > 0) ||
+               (allianceDestroyedList.length > 0);
             dispatchColumnsChangeEvent();
          }
       }
@@ -411,6 +413,19 @@ package components.notifications.parts
                Localizer.string('Notifications', 'label.victoryPoints');
          }
       }
+
+      [SkinPart(required="true")]
+      public var lblCreds:Label;
+
+      private function setLblCredsText() : void
+      {
+         if (lblCreds)
+         {
+            lblCreds.visible = combatLog != null && combatLog.credsEarned > 0;
+            lblCreds.text = combatLog == null ? "" :
+               Localizer.string('Notifications', 'label.creds');
+         }
+      }
       
       [SkinPart(required="true")]
       public var lblPlayers:Label;
@@ -540,8 +555,23 @@ package components.notifications.parts
       {
          if (valVictoryPoints)
          {
-            valVictoryPoints.visible = combatLog != null && combatLog.victoryPointsEarned > 0;
-            valVictoryPoints.text = combatLog == null ? "" : combatLog.victoryPointsEarned.toString();
+            valVictoryPoints.visible = combatLog != null &&
+               combatLog.victoryPointsEarned > 0;
+            valVictoryPoints.text = combatLog == null
+               ? "" : combatLog.victoryPointsEarned.toString();
+         }
+      }
+
+      [SkinPart(required="true")]
+      public var valCreds:Label;
+
+      private function setValCredsText() : void
+      {
+         if (valCreds)
+         {
+            valCreds.visible = combatLog != null && combatLog.credsEarned > 0;
+            valCreds.text = combatLog == null
+               ? "" : combatLog.credsEarned.toString();
          }
       }
       
@@ -806,6 +836,7 @@ package components.notifications.parts
             setLblPlayersText();
             setLblPointsText();
             setLblVictoryPointsText();
+            setLblCredsText();
             setAllianceTableInfo();
             setValDmgDealtPlayerText();
             setValDmgDealtAllyText();
@@ -815,6 +846,7 @@ package components.notifications.parts
             setValDmgTakenAllianceText();
             setValPointsText();
             setValVictoryPointsText();
+            setValCredsText();
             setLblStatsText();
             setWreckage();
             txtLogUrl.text = combatLogUrl;

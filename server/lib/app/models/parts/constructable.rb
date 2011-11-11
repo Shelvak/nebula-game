@@ -4,6 +4,7 @@ module Parts::Constructable
   def constructor_construction_mod
     @constructor_construction_mod  || 0
   end
+
   def constructor_construction_mod=(value)
     @constructor_construction_mod  = value
   end

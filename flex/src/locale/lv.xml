@@ -225,6 +225,9 @@
     <Unit_Demosis value="Demosis" />
     <Unit_Demosis-p8d value="{0 one[Demosis] many[? Demosis]}" />
 
+    <Unit_BossShip value="Morpehus" />
+    <Unit_BossShip-p8d value="{0 one[Morpehus] many[? Morpehuses]}" />
+
     <!-- Turrets -->
 
     <Building_Vulcan value="Vulcan" />
@@ -665,6 +668,8 @@
     <!-- TODO -->
     <property.width value="Building width" />
     <property.height value="Building height" />
+    <property.vpsOnDamage value="VPs for 1 damage dealt" />
+    <property.credsForKilling value="Creds for killing" />
     <!-- /TODO -->
 
     <text.deactivated>
@@ -1349,6 +1354,9 @@
     <label.shield>
       <![CDATA[This solar system is shielded for<br/><span fontWeight="bold">{0}</span>]]>
     </label.shield>
+    <!-- TODO -->
+    <label.over value="Fleet over"/>
+    <!-- /TODO -->
     <message.noRadar value="Jums vajadzīgs radars, lai izpētītu galaktiku" />
   </Galaxy>
 
@@ -1405,6 +1413,11 @@
     <gun.plasma_spike value="Shock Rifle" />
     <gun.thor_ground value="Blizzard" />
     <gun.cannon_air value="Zeus class cannon" />
+    <!-- TODO -->
+    <gun.dart_laser value="Phase Cannon" />
+    <gun.boss_light value="Twin Phazers" />
+    <gun.boss_heavy value="Shock Shells" />
+    <!-- /TODO -->
     <armorType value="Bruņu tips" />
     <damageInPercent value="Procentuāli" />
     <damage value="Bojājums" />
@@ -1665,6 +1678,7 @@
     <label.points value="Kara punkti iegūti" />
     <!-- TODO: translate this -->
     <label.victoryPoints value="Victory points earned" />
+    <label.creds value="Creds earned" />
     <!-- /TODO -->
     <label.stats value="Kaujas statistika" />
     <label.close value="Aizvērt" />
@@ -3998,6 +4012,8 @@
     <property.move.solarSystem.hopTime value="Viens lēciens saules sistēmā" />
     <property.move.galaxy.hopTime value="Viens lēciens galaktikā" />
     <property.population value="Iedzīvotāji" />
+    <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
+    <property.credsForKilling ref="Buildings/property.credsForKilling" />
     
     <!-- TODO: translate this -->
     <tooltip.freeStorage>
@@ -4287,6 +4303,31 @@
         spējīgi iznīcināt veselu gaisa kuģi. 
       </p>
     </Demosis.about>
+
+    <!-- TODO -->
+    <BossShip.name ref="Objects/Unit_BossShip" />
+    <BossShip.about>
+      <p>
+        Called after the god of sleep world this gigantic vessel appears from
+        nowhere just to continue its existence in vast vacuum of space.
+      </p>
+      <p>
+        However dare not to disturb its peace or you will face the full power
+        of its wrath. It is armed with plenty of weapons and its massive hulk
+        can withstand firepower of whole armadas without much damage.
+      </p>
+      <p>
+        But adventurers and comanders are still trying to bring it down.
+        Because even with ships threatening power facing them they know -
+        obtaining secrets hidden well within this ship is a key to galactic
+        domination.
+      </p>
+      <p>
+        Dealing damage to this ship gains you victory points. Also landing
+        last killing shot to this ship awards player who dealt it with creds.
+      </p>
+    </BossShip.about>
+    <!-- /TODO -->
 
     <Trooper.name ref="Objects/Unit_Trooper" />
     <Trooper.about>

@@ -9,6 +9,7 @@ plasma_gun plasma_spike
 alien_cannon thor_ground
 zeus_cannon
 dart_laser
+boss_light boss_heavy
 } %>
 <% terrain_types = {
   0 => 'earth',
@@ -1025,6 +1026,7 @@ assets:
         order_top_right.png:              Locator_top_right.png
         order_from_indicator.png:         Locator_from.png
         sector_indicator.tar.gz:          Locator_spinner.tar.gz
+        sector_with_ships.png:            Fleet.png
         squad_player.png:                 OwnShip_move.png
         squad_ally.png:                   AllianceShip2_move.png
         squad_nap.png:                    Whiteship_move.png

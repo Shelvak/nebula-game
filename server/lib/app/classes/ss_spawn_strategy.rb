@@ -13,7 +13,7 @@ class SsSpawnStrategy
   end
 
   def pick
-    strategy = Cfg.solar_system_spawn_strategy(@solar_system.kind)
+    strategy = Cfg.solar_system_spawn_strategy(@solar_system)
 
     case strategy
     when STRATEGY_OUTER_CIRCLE

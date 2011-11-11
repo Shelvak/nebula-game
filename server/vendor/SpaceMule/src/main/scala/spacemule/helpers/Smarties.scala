@@ -37,8 +37,15 @@ class SmartTraversableOnce[+T](traversable: TraversableOnce[T]) {
 }
 
 class SmartInt(int: Int) {
-  def times(block: () => Unit) = (0 until int).foreach { i => block() }
-  def times(block: Int => Unit) = (0 until int).foreach { i => block(i) }
+  def times(block: () => Any) = (0 until int).foreach { i => block() }
+  def times(block: Int => Any) = (0 until int).foreach { i => block(i) }
+
+  def seconds = int
+  def minutes = int * 60
+  def hours = int * 3600
+  def days = int * 3600 * 24
+  def weeks = int * 3600 * 24 * 7
+  def months = int * 3600 * 24 * 31
 
   def fromNow() = {
     val calendar = Calendar.getInstance
@@ -125,7 +132,7 @@ class SmartRectangle(rectangle: Rectangle) {
 }
 
 class SmartSequence[+T, +Repr](sequence: SeqLike[T, Repr]) {
-  def random:T = {
+  def random: T = {
     val size = sequence.size
     if (size == 0) {
       throw new IllegalStateException(

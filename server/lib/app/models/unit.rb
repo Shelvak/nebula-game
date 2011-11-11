@@ -559,7 +559,8 @@ class Unit < ActiveRecord::Base
         :id => unit_ids,
         :player_id => planet.player_id,
         :location_type => Location::SS_OBJECT,
-        :location_id => planet.id
+        :location_id => planet.id,
+        :upgrade_ends_at => nil
       ).all
       raise GameLogicError.new("Cannot fetch all requested units!") \
         if units.size != unit_ids.size

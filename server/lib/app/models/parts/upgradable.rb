@@ -106,9 +106,16 @@ module Parts
       # E.g. if 35% of building is built, it will only give back 65% of the
       # cost.
       #
-      def cancel!(before_save=nil)
+      # Fails to cancel if being upgraded by constructor and _by_constructor_
+      # is not true.
+      #
+      def cancel!(by_constructor=false)
         raise GameLogicError.
           new("Cannot cancel upgrading if not upgrading!") unless upgrading?
+        raise GameLogicError.new(
+          "Cannot cancel #{self} which is being upgraded by constructor!"
+        ) unless by_constructor || CallbackManager.
+          has?(self, CallbackManager::EVENT_UPGRADE_FINISHED)
         
         percentage_left = 
           (upgrade_ends_at - Time.now) / upgrade_time(level + 1)
@@ -126,7 +133,8 @@ module Parts
           if level == 0
             destroy!
           else
-            before_save.call unless before_save.nil?
+            # Invoked by Building#cancel!
+            yield if block_given?
             save!
           end
         end
