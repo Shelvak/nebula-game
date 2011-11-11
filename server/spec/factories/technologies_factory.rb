@@ -225,3 +225,9 @@ Factory.define :t_ship_storage, :parent => :technology,
 
 Factory.define :t_building_repair, :parent => :technology,
 :class => Technology::BuildingRepair do |m|; end
+
+Factory.define :t_turret_armor, :parent => :technology,
+:class => Technology::TurretArmor do |m|; end
+
+Factory.define :t_turret_damage, :parent => :technology,
+:class => Technology::TurretDamage do |m|; end

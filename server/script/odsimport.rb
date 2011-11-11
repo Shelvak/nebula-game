@@ -44,6 +44,8 @@ MAIN_TITLE_PROPS = [
   [/E store mod$/, ".mod.energy.store"],
   [/Z gen mod$/, ".mod.zetium.generate"],
   [/Z store mod$/, ".mod.zetium.store"],
+  [/healing time mod$/, ".healing.time.mod"],
+  [/healing cost mod$/, ".healing.cost.mod"],
 ]
 
 MAIN_TITLE_ALIASES = [
@@ -335,7 +337,13 @@ sections.each do |section, values|
           value = value.to_json.gsub(":", ": ").gsub(",", ", ")
         end
 
-        if key =~ /\.((solar_system|galaxy)\.hop_time|upgrade_time)$/
+        if key =~ /
+          \.(
+            (solar_system|galaxy)\.hop_time|
+            upgrade_time|
+            healing\.time\.mod
+          )
+        $/x
           value = "(#{value}) / speed"
         elsif key =~ /(generate|use)$/ && ! key.include?(".mod.")
           value = "(#{value}) * speed"
