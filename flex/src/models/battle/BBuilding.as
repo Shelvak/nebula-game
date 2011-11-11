@@ -11,7 +11,7 @@ package models.battle
    import models.IMBattleParticipant;
    import models.parts.BuildingUpgradable;
    import models.unit.UnitKind;
-   
+
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    
@@ -53,11 +53,15 @@ package models.battle
       {
          return BattleConfig.getBuildingBox(type);
       }
-      
+
+      public function get hitBox() : Rectangle
+      {
+         return BattleConfig.getBuildingHitBox(type);
+      }
       
       public function get targetPoint() : Point
       {
-         return BattleConfig.getBuildingTargetPoint(type);
+         return new Point(hitBox.x, hitBox.y);
       }
       
       

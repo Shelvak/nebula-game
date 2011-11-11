@@ -9,6 +9,7 @@ package components.battle
    import flash.events.Event;
    import flash.geom.Matrix;
    import flash.geom.Point;
+   import flash.geom.Point;
    import flash.geom.Rectangle;
    import flash.text.engine.FontWeight;
    
@@ -28,7 +29,9 @@ package components.battle
    import spark.components.Label;
    import spark.layouts.TileLayout;
    import spark.primitives.Rect;
-   
+
+   import utils.random.Rndm;
+
    public class BBattleParticipantComp extends Group
    {
       private static const HP_ROW_HEIGHT: int = 3;
@@ -563,6 +566,17 @@ package components.battle
       public function getAbsoluteTargetPoint() : Point
       {
          return thisTM.transformPoint(bmpTM.transformPoint(participantModel.targetPoint));
+      }
+
+      /**
+       * @return a bullet hit point dispersion
+       * (point to add to the hit box left top corner)
+       */
+      public function getDispersion(rnd: Rndm) : Point
+      {
+         return new Point((flippedHorizontally ? -1 : 1) *
+                 rnd.integer(0, participantModel.hitBox.width),
+                 rnd.integer(0, participantModel.hitBox.height));
       }
       
       public function showDefaultFrame(): void

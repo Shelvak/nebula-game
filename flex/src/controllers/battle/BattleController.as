@@ -57,8 +57,8 @@ package controllers.battle
    import utils.MathUtil;
    import utils.Objects;
    import utils.StringUtil;
-   
-   
+
+
    public class BattleController
    {
       private static var _battleController:BattleController;
@@ -843,9 +843,10 @@ package controllers.battle
              * arrival coordinates. This is a complex operation so handle with care!
              */
             var pointGun:Point    = attacker.getAbsoluteGunPosition(gunId);
-            var dispersion: Number = MathUtil.randomBetween(-gun.dispersion, gun.dispersion);
+            var dispersion: Point = target.getDispersion(_battle.rand);
             var pointTarget:Point = target.getAbsoluteTargetPoint();
-            pointTarget.y += dispersion;
+            pointTarget.y += dispersion.y;
+            pointTarget.x += dispersion.x;
             // angle between a horizontal axis and the vector which starts at pointGun and ends at pointTarget
             // in degrees
             var direction:Vector3D =  new Vector3D(pointTarget.x, pointTarget.y)
