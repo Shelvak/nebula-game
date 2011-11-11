@@ -47,11 +47,13 @@
    </fx:Script>
    <s:layout><s:VerticalLayout gap="0" horizontalAlign="justify"/></s:layout>
    <s:Group>
-      <s:Rect width="100%" height="30">
-         <s:fill>
-            <s:SolidColor color="#2e2e2e"/>
-         </s:fill>
-      </s:Rect>
+      <s:BitmapImage left="0" source="{ImagePreloader.getInstance().getImage(
+      AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'location_line_left')}" id="lnLeft"/>
+      <s:BitmapImage right="0" source="{ImagePreloader.getInstance().getImage(
+      AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'location_line_right')}" id="lnRight"/>
+      <s:BitmapImage left="{lnLeft.width}" right="{lnRight.width}" fillMode="repeat"
+                     source="{ImagePreloader.getInstance().getImage(
+      AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'location_line_center')}"/>
       <squadscr:CLocationWithButton location="{model.location}" verticalCenter="0"
                                  left="10"/>
    </s:Group>

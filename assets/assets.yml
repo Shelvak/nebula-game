@@ -980,7 +980,10 @@ assets:
         cont_middle_right.png:         Uss_window_center_right.png
         cont_bottom_left.png:          Uss_window_bottom_left.png
         cont_bottom_center.png:        Uss_window_bottom_center.png
-        cont_bottom_right.png:         Uss_window_bottom_right.png 
+        cont_bottom_right.png:         Uss_window_bottom_right.png
+        location_line_right.png:       Fleets_location_begin.png
+        location_line_center.png:      Fleets_location_center.png
+        location_line_left.png:        Fleets_location_end.png
 
       "notifications":
         location_background.jpg:     Window.jpg
