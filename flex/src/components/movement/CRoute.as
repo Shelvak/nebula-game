@@ -20,7 +20,7 @@ package components.movement
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import spark.components.Group;
    
@@ -153,7 +153,7 @@ package components.movement
                showJumpsAt = galaxy.getSSAt(loc.x, loc.y) != null;
             }
             else if (loc.isSolarSystem) {
-               var ss:SolarSystem = ModelLocator.getInstance().
+               var ss:MSolarSystem = ModelLocator.getInstance().
                   latestSolarSystem;
                var sso:MSSObject = ss.getSSObjectAt(locWrap.position, locWrap.angle);
                showJumpsAt = sso != null && (sso.isPlanet || sso.isJumpgate);

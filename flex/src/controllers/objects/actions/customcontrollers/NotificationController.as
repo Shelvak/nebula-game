@@ -10,8 +10,8 @@ package controllers.objects.actions.customcontrollers
    import models.notification.Notification;
    import models.notification.NotificationType;
    import models.notification.parts.NotEnoughResources;
-   import models.planet.Planet;
-   import models.planet.PlanetObject;
+   import models.planet.MPlanet;
+   import models.planet.MPlanetObject;
    
    
    public class NotificationController extends BaseObjectController
@@ -31,11 +31,11 @@ package controllers.objects.actions.customcontrollers
                ExternalInterface.call("setUnreadNotifications", ML.notifications.unreadNotifsTotal);
             ML.notificationAlerts.addItem(notification);
          }
-         var planet:Planet = ML.latestPlanet;
+         var planet:MPlanet = ML.latestPlanet;
          if (notification.event == NotificationType.NOT_ENOUGH_RESOURCES && planet != null &&
              planet.definesLocation(NotEnoughResources(notification.customPart).location)) {
             for each (var coords:Array in object.params.coordinates) {
-               var remove:PlanetObject = planet.getObject(coords[0], coords[1]);
+               var remove:MPlanetObject = planet.getObject(coords[0], coords[1]);
                planet.removeObject(remove);
             }
          }

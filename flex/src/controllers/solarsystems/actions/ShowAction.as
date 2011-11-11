@@ -10,7 +10,7 @@ package controllers.solarsystems.actions
    import models.factories.SolarSystemFactory;
    import models.factories.UnitFactory;
    import models.movement.MHop;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
@@ -77,7 +77,7 @@ package controllers.solarsystems.actions
          paramsSS["ssObjects"] = params["ssObjects"];
          paramsSS["wreckages"] = params["wreckages"];
          paramsSS["cooldowns"] = params["cooldowns"];         
-         var ss:SolarSystem = SolarSystemFactory.fromObject(paramsSS);
+         var ss:MSolarSystem = SolarSystemFactory.fromObject(paramsSS);
          
          // destroy latest a planet if its not in the given solar system
          if (ML.latestPlanet != null && (!ML.latestPlanet.inBattleground || !ss.isGlobalBattleground)) {

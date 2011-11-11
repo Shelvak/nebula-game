@@ -7,8 +7,8 @@ package models.factories
    import models.constructionqueueentry.ConstructionQueueEntry;
    import models.folliage.Folliage;
    import models.folliage.NonblockingFolliage;
-   import models.planet.Planet;
-   import models.planet.PlanetObject;
+   import models.planet.MPlanet;
+   import models.planet.MPlanetObject;
    import models.solarsystem.MSSObject;
    import models.tile.Tile;
    
@@ -27,16 +27,16 @@ package models.factories
       /**
        * Creates a planet form a given solar system objects with given tiles, buildings and folliages.
        * 
-       * @return instance of <code>Planet</code> with values of properties
+       * @return instance of <code>MPlanet</code> with values of properties
        * loaded from the data object.
        */	   
       public static function fromSSObject(ssObject:MSSObject,
                                           tiles:Array,
                                           buildings:Array,
-                                          folliages:Array) : Planet
+                                          folliages:Array) : MPlanet
       {
          
-         var planet:Planet = new Planet(ssObject);
+         var planet:MPlanet = new MPlanet(ssObject);
          var objects:ArrayCollection = new ArrayCollection();
          
          for each (var t:Object in tiles)
@@ -79,8 +79,8 @@ package models.factories
          for each (var genericFolliage:Object in folliages)
          {
             var folliage:NonblockingFolliage = FolliageFactory.nonblockingFromObject(genericFolliage);
-            var object:PlanetObject = Collections.findFirst(objects,
-               function(object:PlanetObject) : Boolean
+            var object:MPlanetObject = Collections.findFirst(objects,
+               function(object:MPlanetObject) : Boolean
                {
                   return object.fallsIntoArea(folliage.x, folliage.xEnd, folliage.y, folliage.yEnd);
                }
@@ -97,7 +97,7 @@ package models.factories
       }
       
       
-      private static function addFakeTile(planet:Planet, orig:Tile, incrX:Boolean, incrY:Boolean) : void
+      private static function addFakeTile(planet:MPlanet, orig:Tile, incrX:Boolean, incrY:Boolean) : void
       {
          var fake: Tile = orig.cloneFake();
          if (incrX) fake.x++;

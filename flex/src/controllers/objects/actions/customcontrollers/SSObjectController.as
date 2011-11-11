@@ -5,9 +5,9 @@ package controllers.objects.actions.customcontrollers
    import models.factories.SSObjectFactory;
    import models.location.ILocationUser;
    import models.map.MapType;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
@@ -30,7 +30,7 @@ package controllers.objects.actions.customcontrollers
          }
          
          // update planet in current solar system's objects list
-         var solarSystem:SolarSystem = ML.latestSolarSystem;
+         var solarSystem:MSolarSystem = ML.latestSolarSystem;
          if (solarSystem != null && !solarSystem.fake && solarSystem.id == planetNew.solarSystemId) {
             planetOld = findExistingPlanet(solarSystem.naturalObjects);
             planetOld.copyProperties(planetNew);
@@ -51,7 +51,7 @@ package controllers.objects.actions.customcontrollers
          }
          
          // update current planet
-         var planet:Planet = ML.latestPlanet;
+         var planet:MPlanet = ML.latestPlanet;
          var nameChanged:Boolean = planet != null && planet.ssObject.name != planetNew.name;
          if (planet != null && !planet.fake && planet.id == planetNew.id) {
             // the planet is not visible to the player anymore, so invalidate it

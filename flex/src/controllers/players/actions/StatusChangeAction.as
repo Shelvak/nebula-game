@@ -5,7 +5,7 @@ package controllers.players.actions
    
    import models.movement.MSquadron;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    import models.unit.Unit;
    
    import utils.datastructures.Collections;
@@ -45,7 +45,7 @@ package controllers.players.actions
          // update planets in latest solar system
          if (ML.latestSolarSystem != null)
          {
-            var ss:SolarSystem = ML.latestSolarSystem;
+            var ss:MSolarSystem = ML.latestSolarSystem;
             for each (var object:MSSObject in ss.naturalObjects)
             {
                if (object.isOwned && statusChanged(statuses, object.player.id))

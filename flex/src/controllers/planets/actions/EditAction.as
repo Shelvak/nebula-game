@@ -4,7 +4,7 @@ package controllers.planets.actions
    import controllers.CommunicationCommand;
    import controllers.Messenger;
    
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    
    import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;

@@ -17,11 +17,11 @@ package tests.models
    import models.location.LocationEvent;
    import models.location.LocationMinimal;
    import models.location.LocationType;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.player.PlayerMinimal;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSKind;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import namespaces.client_internal;
    
@@ -71,10 +71,10 @@ package tests.models
          ML.latestGalaxy = new Galaxy();
          ML.latestGalaxy.id = ML.player.galaxyId;
          ML.latestGalaxy.battlegroundId = 100;
-         ML.latestSolarSystem = new SolarSystem();
+         ML.latestSolarSystem = new MSolarSystem();
          ML.latestSolarSystem.id = 1;
          ML.latestGalaxy.addObject(ML.latestSolarSystem);
-         ML.latestPlanet = new Planet(new MSSObject());
+         ML.latestPlanet = new MPlanet(new MSSObject());
          ML.latestPlanet.id = 1;
          ML.latestPlanet.solarSystemId = 1;
          ML.player.reset();
@@ -179,7 +179,7 @@ package tests.models
       {
          loc.id = ML.latestGalaxy.battlegroundId;
          loc.type = LocationType.SOLAR_SYSTEM;
-         var wormhole:SolarSystem = new SolarSystem();
+         var wormhole:MSolarSystem = new MSolarSystem();
          wormhole.id = 2;
          wormhole.kind = SSKind.WORMHOLE;
          ML.latestGalaxy.addObject(wormhole);
@@ -337,7 +337,7 @@ package tests.models
          loc.id = 2;
          loc.solarSystemId = ML.latestGalaxy.battlegroundId;
          loc.type = LocationType.SS_OBJECT;
-         var wormhole:SolarSystem = new SolarSystem();
+         var wormhole:MSolarSystem = new MSolarSystem();
          wormhole.id = 2;
          wormhole.kind = SSKind.WORMHOLE;
          ML.latestGalaxy.addObject(wormhole);

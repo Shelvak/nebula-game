@@ -45,12 +45,12 @@ package controllers.ui
    import models.map.MMap;
    import models.map.MapType;
    import models.market.MCMarketScreen;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.player.MRatingPlayer;
    import models.quest.Quest;
    import models.ratings.MCRatingsScreen;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    import models.unit.MCLoadUnloadScreen;
    import models.unit.MCUnitScreen;
    import models.unit.MCUnitsBuild;
@@ -367,17 +367,17 @@ package controllers.ui
        */
       public function toSolarSystem(id:int, completeHandler:Function = null) : void {
          callAfterMapLoaded(completeHandler);
-         var ss:SolarSystem;
+         var ss:MSolarSystem;
          if (ML.latestGalaxy.isBattleground(id))
-            ss = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
+            ss = MSolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
          else {
             ss = Collections.findFirst(ML.latestGalaxy.wormholes,
-               function (wormhole:SolarSystem) : Boolean {
+               function (wormhole:MSolarSystem) : Boolean {
                   return wormhole.id == id;
                }
             );
             if (ss == null) {
-               ss = new SolarSystem();
+               ss = new MSolarSystem();
                ss.id = id;
             }
          }
@@ -413,7 +413,7 @@ package controllers.ui
             return;
          }
          callAfterMapLoaded(completeHandler);
-         if (new Planet(planet).cached)
+         if (new MPlanet(planet).cached)
             showPlanet();
          else
             new PlanetsCommand(
@@ -461,13 +461,13 @@ package controllers.ui
       }
       
       
-      public function showSolarSystem(newSolarSystem:SolarSystem = null) : void
+      public function showSolarSystem(newSolarSystem:MSolarSystem = null) : void
       {
          showMap(_screenProperties[MainAreaScreens.SOLAR_SYSTEM], newSolarSystem);
       }
       
       
-      public function showPlanet(newPlanet:Planet = null) : void
+      public function showPlanet(newPlanet:MPlanet = null) : void
       {
          showMap(_screenProperties[MainAreaScreens.PLANET], newPlanet);
       }

@@ -13,10 +13,10 @@ package models.planet
    public class ZIndexCalculator
    {
       private var currentZIndex:int;
-      private var map:Planet;
+      private var map:MPlanet;
       private var visitedFlags:Array;
       /**
-       * Creates instance of <code>ZIndexCalculator</code> and binds the given <code>Planet</code>
+       * Creates instance of <code>ZIndexCalculator</code> and binds the given <code>MPlanet</code>
        * to it. Does not recalculate <code>zIndex</code> values. You should call
        * <code>reacalculate()</code> each time you need to update <code>zIndex</code> values of
        * map objects.
@@ -26,7 +26,7 @@ package models.planet
        * 
        * @throws Error if <code>map</code> is <code>null</code>
        */
-      public function ZIndexCalculator(map:Planet)
+      public function ZIndexCalculator(map:MPlanet)
       {
          this.map = Objects.paramNotNull("map", map);
       }
@@ -95,7 +95,7 @@ package models.planet
             }
             
             // Walk in the upper part of the block, if we come accross an object wider than one tile
-            var object:PlanetObject = map.getObject(x, y);
+            var object:MPlanetObject = map.getObject(x, y);
             if (object && object.width > 1)
             {
                walkBlock(new BlockCoords(object.x, object.xEnd - 1, map.height - 1, object.yEnd + 1));
@@ -117,13 +117,13 @@ package models.planet
       }
       
       
-      private function setObjectZIndex(object:PlanetObject) : void
+      private function setObjectZIndex(object:MPlanetObject) : void
       {
          object.zIndex = currentZIndex++;
       }
       
       
-      private function visitArea(object:PlanetObject) : void
+      private function visitArea(object:MPlanetObject) : void
       {
          for (var x:int = object.x; x <= object.xEnd; x++)
          {

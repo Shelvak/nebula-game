@@ -4,7 +4,7 @@ package components.map.planet
    
    
    import models.folliage.NonblockingFolliage;
-   import models.planet.PlanetObject;
+   import models.planet.MPlanetObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;
    import components.map.planet.objects.PrimitivePlanetMapObject;
    
@@ -29,7 +29,7 @@ package components.map.planet
       }
       
       
-      protected override function addObjectImpl(object:PlanetObject):IPrimitivePlanetMapObject
+      protected override function addObjectImpl(object:MPlanetObject):IPrimitivePlanetMapObject
       {
          var component:PrimitivePlanetMapObject = super.addObjectImpl(object) as PrimitivePlanetMapObject;
          component.setTimer(AnimationTimer.forPlanet);

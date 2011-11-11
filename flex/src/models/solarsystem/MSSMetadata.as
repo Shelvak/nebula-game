@@ -4,11 +4,11 @@ package models.solarsystem
 
    [Bindable]
    /**
-    * Aggregates solar system metadata boolean variables. Varibles indicate
-    * if player, allies of the palyer or enemy players have ships or planets
+    * Aggregates solar system metadata boolean variables. Variables indicate
+    * if player, allies of the player or enemy players have ships or planets
     * in the solar system.
     */ 
-   public class SSMetadata extends BaseModel
+   public class MSSMetadata extends BaseModel
    {
       [Required]
       public var playerPlanets: Boolean = false;

@@ -18,147 +18,147 @@
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.skins.DeployButtonSkin;
-         
-         import controllers.ui.NavigationController;
-         import controllers.units.UnitsCommand;
-         
-         import globalevents.GSelectConstructableEvent;
-         import globalevents.GUnitEvent;
-         
-         import models.ModelLocator;
-         import models.Owner;
-         import models.building.Building;
-         import models.factories.BuildingFactory;
-         import models.location.LocationType;
-         import models.planet.Planet;
-         import models.unit.MCUnit;
-         import models.unit.Unit;
-         import models.unit.UnitKind;
-         
-         import mx.events.EffectEvent;
-         
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         import utils.datastructures.Collections;
-         import utils.locale.Localizer;
-         
-         private static const IMG:ImagePreloader = ImagePreloader.getInstance();
-         
-         [Bindable]
-         private var ML:ModelLocator = ModelLocator.getInstance();
-         
-         [Bindable]
-         public var model: MCUnit;
-         
-         
-         public override function set data(value:Object) : void
-         {
-            if (data != value)
-            {
-               super.data = value;
-               if (data)
-               {
-                  model = MCUnit(data);
-               }
+      import com.developmentarc.core.utils.EventBroker;
+
+      import components.skins.DeployButtonSkin;
+
+      import controllers.ui.NavigationController;
+      import controllers.units.UnitsCommand;
+
+      import globalevents.GSelectConstructableEvent;
+      import globalevents.GUnitEvent;
+
+      import models.ModelLocator;
+      import models.Owner;
+      import models.building.Building;
+      import models.factories.BuildingFactory;
+      import models.location.LocationType;
+      import models.planet.MPlanet;
+      import models.unit.MCUnit;
+      import models.unit.Unit;
+      import models.unit.UnitKind;
+
+      import mx.events.EffectEvent;
+
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.datastructures.Collections;
+      import utils.locale.Localizer;
+
+
+      private static const IMG: ImagePreloader = ImagePreloader.getInstance();
+
+      [Bindable]
+      private var ML: ModelLocator = ModelLocator.getInstance();
+
+      [Bindable]
+      public var model: MCUnit;
+
+
+      public override function set data(value: Object): void {
+         if (data != value) {
+            super.data = value;
+            if (data) {
+               model = MCUnit(data);
             }
          }
-         
-         protected function basecontainer1_rollOverHandler(event:MouseEvent):void
-         {
-            colapseLabel.stop();
-            expandLabel.play();
+      }
+
+      protected function basecontainer1_rollOverHandler(event: MouseEvent): void {
+         colapseLabel.stop();
+         expandLabel.play();
+      }
+
+
+      protected function basecontainer1_rollOutHandler(event: MouseEvent): void {
+         expandLabel.stop();
+         colapseLabel.play();
+      }
+
+
+      protected function info_clickHandler(event: MouseEvent): void {
+         NavigationController.getInstance().showInfo(model.unit);
+      }
+
+      protected function deploy_clickHandler(event: MouseEvent): void {
+         NavigationController.getInstance().toPlanet
+            (ModelLocator.getInstance().latestPlanet.ssObject);
+         var building: Building = BuildingFactory.createDefault
+                                     (model.unit.deploysTo);
+         building.cleanup();
+         building.unitDeployed = model.unit;
+         new GSelectConstructableEvent(building);
+      }
+
+      private var unitsLoading: Boolean;
+
+      private function show_inside(load: Boolean): void {
+         unitsLoading = load;
+         if (model.unit.stored > 0) {
+            EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
+            new UnitsCommand(UnitsCommand.SHOW, model.unit).dispatch();
          }
-         
-         
-         protected function basecontainer1_rollOutHandler(event:MouseEvent):void
-         {
-            expandLabel.stop();
-            colapseLabel.play();
+         else {
+            openUnit();
          }
-         
-         
-         protected function info_clickHandler(event:MouseEvent):void
-         {
-            NavigationController.getInstance().showInfo(model.unit);
+      }
+
+      private function openUnit(e: GUnitEvent = null): void {
+         var planet: MPlanet = ModelLocator.getInstance().latestPlanet;
+         if (e != null) {
+            EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
          }
-         
-         protected function deploy_clickHandler(event:MouseEvent):void
-         {
-            NavigationController.getInstance().toPlanet(ModelLocator.getInstance().latestPlanet.ssObject);
-            var building: Building = BuildingFactory.createDefault(model.unit.deploysTo);
-            building.cleanup();
-            building.unitDeployed = model.unit;
-            new GSelectConstructableEvent(building);
+         NavigationController.getInstance().enableActiveButton();
+         if (unitsLoading) {
+            NavigationController.getInstance().showLoadUnload(
+               planet.toLocation(),
+               model.unit,
+               Collections.filter(
+                  planet
+                     .units,
+                  function (_unit: Unit): Boolean {
+                     return (_unit.level > 0)
+                               && (_unit.volume > 0)
+                               && (_unit.owner == Owner.PLAYER)
+                               && _unit.location.type == LocationType.SS_OBJECT;
+                  }
+               )
+            );
          }
-         
-         private var unitsLoading: Boolean;
-         
-         private function show_inside(load: Boolean): void
-         {
-            unitsLoading = load;
-            if (model.unit.stored > 0)
-            {
-               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-               new UnitsCommand(UnitsCommand.SHOW, model.unit).dispatch();
-            }
-            else
-            {
-               openUnit();
-            }
+         else {
+            NavigationController.getInstance().showLoadUnload(
+               model.unit,
+               planet.toLocation(),
+               Collections.filter(
+                  ModelLocator.getInstance().units,
+                  function (_unit: Unit): Boolean {
+                     return (_unit.level > 0)
+                               && (_unit.location.type == LocationType.UNIT)
+                               && (model != null) && (model.unit != null)
+                               && (_unit.location.id == model.unit.id);
+                  }
+               )
+            );
          }
-         
-         private function openUnit(e: GUnitEvent = null): void
-         {
-            var planet:Planet = ModelLocator.getInstance().latestPlanet;
-            if (e != null)
-            {
-               EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-            }
-            NavigationController.getInstance().enableActiveButton();
-            if (unitsLoading)
-            {
-               NavigationController.getInstance().showLoadUnload(planet.toLocation(), model.unit, 
-                  Collections.filter(planet.units, 
-                     function (_unit: Unit): Boolean {
-                        return (_unit.level > 0) && (_unit.volume > 0) 
-                        && (_unit.owner == Owner.PLAYER)
-                        && _unit.location.type == LocationType.SS_OBJECT}));
-            }
-            else
-            {
-               NavigationController.getInstance().showLoadUnload(model.unit, planet.toLocation(),
-                  Collections.filter(ModelLocator.getInstance().units, 
-                     function (_unit: Unit): Boolean {
-                        return (_unit.level > 0) && (_unit.location.type == LocationType.UNIT) 
-                        && (model != null) && (model.unit != null)
-                        && (_unit.location.id == model.unit.id);}));
-            }
-         }
-         
-         [Bindable]
-         private var expanded: Boolean = false;
-         
-         
-         protected function expandLabel_effectStartHandler(event:EffectEvent):void
-         {
-            expanded = true;
-         }
-         
-         
-         protected function colapseLabel_effectEndHandler(event:EffectEvent):void
-         {
-            expanded = false;
-         }
-         
-         protected function itemrenderer1_mouseDownHandler(event:MouseEvent):void
-         {
-            model.selected = !model.selected;
-            model.flankModel.invertSelection(model, event.shiftKey);
-         }
-         
+      }
+
+      [Bindable]
+      private var expanded: Boolean = false;
+
+
+      protected function expandLabel_effectStartHandler(event: EffectEvent): void {
+         expanded = true;
+      }
+
+
+      protected function colapseLabel_effectEndHandler(event: EffectEvent): void {
+         expanded = false;
+      }
+
+      protected function itemrenderer1_mouseDownHandler(event: MouseEvent): void {
+         model.selected = !model.selected;
+         model.flankModel.invertSelection(model, event.shiftKey);
+      }
       ]]>
    </fx:Script>
    <s:Group id="contGroup" width="100" height="76">
@@ -201,10 +201,8 @@
                       || !model.unit.location.isSSObject
                       || (model.unit.owner != Owner.PLAYER)
                       || (!ML.latestPlanet)
-                      || (!(
-                      (ML.latestPlanet.ssObject.owner == Owner.PLAYER)
-                      ||
-                      (ML.latestPlanet.ssObject.owner == Owner.ALLY))))}"
+                      || (!((ML.latestPlanet.ssObject.owner == Owner.PLAYER)
+                      || (ML.latestPlanet.ssObject.owner == Owner.ALLY))))}"
                       toolTip="{Localizer.string('Units', 'label.unload')}"
                       skinClass="components.skins.UnloadButtonSkin"/>
          </base:AdvancedContainer>

@@ -9,7 +9,7 @@ package components.map.space
    import models.location.LocationType;
    import models.map.MMapSpace;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import mx.graphics.SolidColorStroke;
    
@@ -61,7 +61,7 @@ package components.map.space
       /* ###################### */
       
       
-      public function CMapSolarSystem(model:SolarSystem)
+      public function CMapSolarSystem(model:MSolarSystem)
       {
          super(model);
       }
@@ -171,9 +171,9 @@ package components.map.space
       /**
        * Typed gettor for <code>model</code> property.
        */
-      public function getSolarSystem() : SolarSystem
+      public function getSolarSystem() : MSolarSystem
       {
-         return SolarSystem(model);
+         return MSolarSystem(model);
       }
    }
 }

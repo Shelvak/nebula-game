@@ -2,8 +2,8 @@ package models.factories
 {
    import models.BaseModel;
    import models.MWreckage;
-   import models.solarsystem.SSMetadata;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSSMetadata;
+   import models.solarsystem.MSolarSystem;
    
    import mx.core.mx_internal;
    
@@ -21,14 +21,14 @@ package models.factories
        * @return instance of <code>SolarSystem</code> with values of properties
        * loaded from the data object.
        */
-      public static function fromObject(data:Object) : SolarSystem {
+      public static function fromObject(data:Object) : MSolarSystem {
          if (!data) {
             return null;
          }
          
-         var ss:SolarSystem = BaseModel.createModel(SolarSystem, data);
+         var ss:MSolarSystem = BaseModel.createModel(MSolarSystem, data);
          if (data["metadata"] != null)
-            ss.metadata = BaseModel.createModel(SSMetadata, data.metadata);
+            ss.metadata = BaseModel.createModel(MSSMetadata, data.metadata);
          for each (var object:Object in data.ssObjects) {
             ss.addObject(SSObjectFactory.fromObject(object));
          }

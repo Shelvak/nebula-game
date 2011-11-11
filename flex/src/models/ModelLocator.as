@@ -17,11 +17,11 @@ package models
    import models.map.MapType;
    import models.movement.SquadronsList;
    import models.notification.NotificationsCollection;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.player.Player;
    import models.quest.QuestsCollection;
    import models.resource.ResourcesMods;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    import models.technology.TechnologiesModel;
    import models.technology.Technology;
    import models.unit.UnitsList;
@@ -160,11 +160,11 @@ package models
       }
       
       
-      private var _latestSolarSystem:SolarSystem;
+      private var _latestSolarSystem:MSolarSystem;
       /**
        * A solar system that user is acting in at the time (or recently was). 
        */
-      public function set latestSolarSystem(value:SolarSystem) : void {
+      public function set latestSolarSystem(value:MSolarSystem) : void {
          if (_latestSolarSystem != value) {
             if (_latestSolarSystem) {
                NAV_CTRL.destroyOldMap(MainAreaScreens.SOLAR_SYSTEM);
@@ -177,19 +177,19 @@ package models
       /**
        * @private
        */
-      public function get latestSolarSystem() : SolarSystem {
+      public function get latestSolarSystem() : MSolarSystem {
          return _latestSolarSystem;
       }
       
       
       prop_name static const latestPlanet:String = "latestPlanet"; 
-      private var _latestPlanet:Planet = null;
+      private var _latestPlanet:MPlanet = null;
       /**
        * A solar system that user is acting in at the time (or recently was).
        * 
        * @default null
        */
-      public function set latestPlanet(value:Planet) : void {
+      public function set latestPlanet(value:MPlanet) : void {
          if (_latestPlanet != value) {
             if (_latestPlanet) {
                NAV_CTRL.destroyOldMap(MainAreaScreens.PLANET);
@@ -203,7 +203,7 @@ package models
       /**
        * @private
        */
-      public function get latestPlanet() : Planet {
+      public function get latestPlanet() : MPlanet {
          return _latestPlanet;
       }
       

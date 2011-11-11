@@ -6,7 +6,7 @@ package controllers.planets.actions
    
    import globalevents.GCreditEvent;
    
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    
    import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
@@ -17,7 +17,7 @@ package controllers.planets.actions
       
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
-         var planet:Planet = Planet(cmd.parameters.planet);
+         var planet:MPlanet = MPlanet(cmd.parameters.planet);
          sendMessage(new ClientRMO({
             "id": planet.id,
             "resource": cmd.parameters.resource,

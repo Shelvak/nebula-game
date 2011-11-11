@@ -5,7 +5,7 @@ package controllers.planets.actions
    import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
    
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    
    import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;

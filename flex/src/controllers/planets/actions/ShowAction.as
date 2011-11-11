@@ -11,9 +11,9 @@ package controllers.planets.actions
    import models.factories.PlanetFactory;
    import models.factories.SSObjectFactory;
    import models.factories.UnitFactory;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.solarsystem.SSKind;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import utils.remote.rmo.ClientRMO;
    
@@ -84,14 +84,14 @@ package controllers.planets.actions
          ML.units.addAll(UnitFactory.fromObjects(params["npcUnits"], new Object()));
          ML.units.enableAutoUpdate();
          paramsPlanet["cooldownEndsAt"] = params["cooldownEndsAt"];
-         var planet:Planet = PlanetFactory.fromSSObject(
+         var planet:MPlanet = PlanetFactory.fromSSObject(
             SSObjectFactory.fromObject(paramsPlanet),
             params["tiles"],
             params["buildings"],
             params["folliages"]
          );
          planet.initUpgradeProcess();
-         var ss:SolarSystem;
+         var ss:MSolarSystem;
          
          // special case for wormholes here since wormhole id and planet.solarSystemId never match
          if (planet.inBattleground)
@@ -105,9 +105,9 @@ package controllers.planets.actions
                   {
                      ML.latestSolarSystem.setFlag_destructionPending();
                   }
-                  ss = new SolarSystem();
+                  ss = new MSolarSystem();
                   ss.fake = true;
-                  var wormholeInGalaxy:SolarSystem = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
+                  var wormholeInGalaxy:MSolarSystem = MSolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
                   ss.id = wormholeInGalaxy.id;
                   ss.x  = wormholeInGalaxy.x;
                   ss.y  = wormholeInGalaxy.y;
@@ -132,10 +132,10 @@ package controllers.planets.actions
             {
                ML.latestSolarSystem.setFlag_destructionPending();
             }
-            ss = new SolarSystem();
+            ss = new MSolarSystem();
             ss.fake = true;
             ss.id = planet.solarSystemId;
-            var ssInGalaxy:SolarSystem = ML.latestGalaxy.getSSById(ss.id);
+            var ssInGalaxy:MSolarSystem = ML.latestGalaxy.getSSById(ss.id);
             if (ssInGalaxy == null)
                throw new Error("Can't find solar system with id " + ss.id + " in galaxy.");
             ss.x = ssInGalaxy.x;

@@ -4,8 +4,8 @@ package controllers.objects.actions.customcontrollers
    
    import models.BaseModel;
    import models.map.MapType;
-   import models.solarsystem.SSMetadata;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSSMetadata;
+   import models.solarsystem.MSolarSystem;
    
    
    public class SSMetadataController extends BaseObjectController
@@ -16,20 +16,20 @@ package controllers.objects.actions.customcontrollers
       
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
-         var ssMetadata:SSMetadata = BaseModel.createModel(SSMetadata, object);
-         var ss:SolarSystem = ML.latestGalaxy.getSSById(ssMetadata.id);
+         var ssMetadata:MSSMetadata = BaseModel.createModel(MSSMetadata, object);
+         var ss:MSolarSystem = ML.latestGalaxy.getSSById(ssMetadata.id);
          if (ss == null) {
             throw new Error("Unable to find solar system with id " + 
                ssMetadata.id + " to update its metadata!");
          }
-         var metadata:SSMetadata = ss.metadata;
+         var metadata:MSSMetadata = ss.metadata;
          metadata.copyProperties(ssMetadata);
          ML.latestGalaxy.refreshSolarSystemsWithPlayer();
       }
       
       public override function objectDestroyed(objectSubclass:String, objectId:int, reason:String) : void {
          var navCtrl:NavigationController = NavigationController.getInstance();
-         var ss:SolarSystem = ML.latestGalaxy.getSSById(objectId);
+         var ss:MSolarSystem = ML.latestGalaxy.getSSById(objectId);
          ML.latestGalaxy.removeObject(ss);
          if (ML.activeMapType != MapType.GALAXY) {
             navCtrl.toGalaxy();

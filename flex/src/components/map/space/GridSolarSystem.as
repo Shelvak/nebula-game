@@ -6,7 +6,7 @@ package components.map.space
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
@@ -19,7 +19,7 @@ package components.map.space
    {
       private var _locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
       private var _map:CMapSolarSystem;
-      private var _solarSystem:SolarSystem;
+      private var _solarSystem:MSolarSystem;
       private var _orbitsTotal:int;
       
       

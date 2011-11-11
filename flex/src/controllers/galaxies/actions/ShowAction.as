@@ -21,9 +21,9 @@ package controllers.galaxies.actions
    import models.map.MapArea;
    import models.map.MapType;
    import models.movement.MHop;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
@@ -149,7 +149,7 @@ package controllers.galaxies.actions
                      var solarSystems: ListCollectionView =
                         galaxy.solarSystemsWithPlayer;
                      if (solarSystems.length != 0) {
-                        var ss: SolarSystem = SolarSystem(
+                        var ss: MSolarSystem = MSolarSystem(
                            solarSystems.getItemAt(0)
                         );
                         galaxy.moveTo(ss.currentLocation, true);
@@ -186,11 +186,11 @@ package controllers.galaxies.actions
          SQUADS_CTRL.addHopsToSquadrons(hops);
          SQUADS_CTRL.attachJumpsAtToHostileSquads(galaxy.squadrons, jumpsAtHash);
          
-         var cachedSS:SolarSystem = ML.latestSolarSystem;
-         var ssInGalaxy:SolarSystem = cachedSS != null ?
+         var cachedSS:MSolarSystem = ML.latestSolarSystem;
+         var ssInGalaxy:MSolarSystem = cachedSS != null ?
             galaxy.getSSById(cachedSS.id) :
             null;
-         var cachedPlanet:Planet = ML.latestPlanet;
+         var cachedPlanet:MPlanet = ML.latestPlanet;
          if (cachedPlanet != null &&
              galaxy.getSSById(cachedPlanet.solarSystemId) == null) {
             ML.latestPlanet = null;

@@ -5,7 +5,7 @@ package tests.models
    import models.ModelLocator;
    import models.galaxy.Galaxy;
    import models.solarsystem.SSKind;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import org.hamcrest.assertThat;
    
@@ -23,7 +23,7 @@ package tests.models
       
       
       private var ML:ModelLocator;
-      private var ss:SolarSystem;
+      private var ss:MSolarSystem;
       
       
       [Before]
@@ -34,10 +34,10 @@ package tests.models
          ML.player.galaxyId = 1;
          ML.latestGalaxy = new Galaxy();
          ML.latestGalaxy.id = ML.player.galaxyId;
-         ML.latestSolarSystem = new SolarSystem();
+         ML.latestSolarSystem = new MSolarSystem();
          ML.latestSolarSystem.id = 1;
          ML.latestGalaxy.addObject(ML.latestSolarSystem);
-         ss = new SolarSystem();
+         ss = new MSolarSystem();
          ss.id = 1;
       };
       

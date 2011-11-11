@@ -2,11 +2,11 @@ package models.planet.events
 {
    import flash.events.Event;
    
-   import models.planet.Planet;
-   import models.planet.PlanetObject;
+   import models.planet.MPlanet;
+   import models.planet.MPlanetObject;
    
    
-   public class PlanetEvent extends Event
+   public class MPlanetEvent extends Event
    {
       /**
        * Dispatched when an object has been added to the planet.
@@ -25,7 +25,7 @@ package models.planet.events
       
       
       /**
-       * @see models.planet.Planet#buildingMove
+       * @see models.planet.MPlanet#buildingMove
        * 
        * @eventType buildingMove
        */
@@ -59,19 +59,19 @@ package models.planet.events
       /**
        * Typed alias for <code>target</code> property.
        */
-      public function get planet() : Planet
+      public function get planet() : MPlanet
       {
-         return target as Planet;
+         return target as MPlanet;
       }
       
       
-      private var _object:PlanetObject = null;
+      private var _object:MPlanetObject = null;
       /**
        * Used only for <code>OBJECT_ADD</code> and <code>OBJECT_REMOVE</code> events: holds instance
-       * of <code>PlanetObject</code> that has been either added to or removed from the planet this
+       * of <code>MPlanetObject</code> that has been either added to or removed from the planet this
        * event originated from.
        */
-      public function get object() : PlanetObject
+      public function get object() : MPlanetObject
       {
          return _object;
       }
@@ -80,7 +80,7 @@ package models.planet.events
       /**
        * Constructor. 
        */
-      public function PlanetEvent(type:String, object:PlanetObject = null)
+      public function MPlanetEvent(type:String, object:MPlanetObject = null)
       {
          super(type, false, false);
          _object = object;

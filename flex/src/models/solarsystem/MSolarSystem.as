@@ -15,7 +15,7 @@ package models.solarsystem
    import models.map.IMStaticSpaceObject;
    import models.map.MMapSpace;
    import models.map.MapType;
-   import models.solarsystem.events.SolarSystemEvent;
+   import models.solarsystem.events.MSolarSystemEvent;
    
    import mx.collections.ListCollectionView;
    
@@ -31,26 +31,26 @@ package models.solarsystem
    /**
     * Dispatched when <code>shieldOwnerId</code> property changes.
     * 
-    * @eventType models.solarSystem.events.SolarSystemEvent.SHIELD_OWNER_CHANGE
+    * @eventType models.solarSystem.events.MSolarSystemEvent.SHIELD_OWNER_CHANGE
     */
-   [Event(name="shieldOwnerChange", type="models.solarsystem.events.SolarSystemEvent")]
+   [Event(name="shieldOwnerChange", type="models.solarsystem.events.MSolarSystemEvent")]
    
    /**
     * Dispatched when <code>shieldEndsAt</code> property changes.
     * 
-    * @eventType models.solarSystem.events.SolarSystemEvent.SHIELD_ENDS_AT_CHANGE
+    * @eventType models.solarSystem.events.MSolarSystemEvent.SHIELD_ENDS_AT_CHANGE
     */
-   [Event(name="shieldEndsAtChange", type="models.solarsystem.events.SolarSystemEvent")]
+   [Event(name="shieldEndsAtChange", type="models.solarsystem.events.MSolarSystemEvent")]
    
    /**
     * Dispatched when <code>shieldEndsIn</code> property changes.
     * 
-    * @eventType models.solarSystem.events.SolarSystemEvent.SHIELD_ENDS_IN_CHANGE
+    * @eventType models.solarSystem.events.MSolarSystemEvent.SHIELD_ENDS_IN_CHANGE
     */
-   [Event(name="shieldEndsInChange", type="models.solarsystem.events.SolarSystemEvent")]
+   [Event(name="shieldEndsInChange", type="models.solarsystem.events.MSolarSystemEvent")]
    
    [Bindable]
-   public class SolarSystem extends MMapSpace implements IMStaticSpaceObject, IUpdatable
+   public class MSolarSystem extends MMapSpace implements IMStaticSpaceObject, IUpdatable
    {
       public static const IMAGE_WIDTH: Number = 64;
       public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
@@ -58,10 +58,12 @@ package models.solarsystem
       public static const COMPONENT_HEIGHT:int = COMPONENT_WIDTH;
       
       
-      private var NAV_CTRL:NavigationController = NavigationController.getInstance();
+      private function get NAV_CTRL(): NavigationController{
+         return NavigationController.getInstance();
+      }
       
       
-      public function SolarSystem() {
+      public function MSolarSystem() {
          super();
          _importantObjects = Collections.filter(naturalObjects, ff_importantObjects);
       }
@@ -177,7 +179,7 @@ package models.solarsystem
          if (isShielded)
          {
             change_flag::shieldEndsIn = true;
-            dispatchSimpleEvent(SolarSystemEvent, SolarSystemEvent.SHIELD_ENDS_IN_CHANGE);
+            dispatchSimpleEvent(MSolarSystemEvent, MSolarSystemEvent.SHIELD_ENDS_IN_CHANGE);
          }
       }
       
@@ -301,7 +303,7 @@ package models.solarsystem
          if (_shieldOwnerId != value)
          {
             _shieldOwnerId = value;
-            dispatchSimpleEvent(SolarSystemEvent, SolarSystemEvent.SHIELD_OWNER_CHANGE);
+            dispatchSimpleEvent(MSolarSystemEvent, MSolarSystemEvent.SHIELD_OWNER_CHANGE);
          }
       }
       /**
@@ -326,7 +328,7 @@ package models.solarsystem
          if (_shieldEndsAt != value)
          {
             _shieldEndsAt = value;
-            dispatchSimpleEvent(SolarSystemEvent, SolarSystemEvent.SHIELD_ENDS_AT_CHANGE);
+            dispatchSimpleEvent(MSolarSystemEvent, MSolarSystemEvent.SHIELD_ENDS_AT_CHANGE);
          }
       }
       /**
@@ -371,10 +373,6 @@ package models.solarsystem
        * </p>
        */
       public var kind:int = SSKind.NORMAL;
-      
-      public function get isRegular() : Boolean {
-         return kind == SSKind.NORMAL;
-      }
       
       /**
        * Indicates if this is a wormhole to a global battleground solar system (one in whole galaxy).
@@ -467,23 +465,23 @@ package models.solarsystem
       /**
        * Metadata of the solar system.
        * 
-       * @default default instance of <code>SSMetadata</code>.
+       * @default default instance of <code>MSSMetadata</code>.
        * 
-       * @see models.solarsystem.SSMetadata
+       * @see models.solarsystem.MSSMetadata
        */
-      public var metadata:SSMetadata = new SSMetadata();
+      public var metadata:MSSMetadata = new MSSMetadata();
       
       
       [Bindable(event="willNotChange")]
       /**
        * Returns <code>MapType.GALAXY</code>.
        * 
-       * @see models.map.Map#mapType
+       * @see models.map.MMap#mapType
        */
       override public function get mapType() : int
       {
          return MapType.SOLAR_SYSTEM;
-      };
+      }
       
       
       protected override function get definedLocationType() : int

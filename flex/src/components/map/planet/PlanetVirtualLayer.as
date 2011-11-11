@@ -6,8 +6,8 @@ package components.map.planet
    
    import interfaces.ICleanable;
    
-   import models.planet.Planet;
-   import models.planet.PlanetObject;
+   import models.planet.MPlanet;
+   import models.planet.MPlanetObject;
    import components.map.planet.objects.IInteractivePlanetMapObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;
    
@@ -59,7 +59,7 @@ package components.map.planet
       
       protected var objectsLayer:PlanetObjectsLayer = null;
       protected var map:PlanetMap = null;
-      protected var planet:Planet = null;
+      protected var planet:MPlanet = null;
       
       
       /**
@@ -77,7 +77,7 @@ package components.map.planet
        *        only the object type this virtual layer is responsible for.</li>
        * </ul>
        */
-      public function initialize(objectsLayer:PlanetObjectsLayer, map:PlanetMap, planet:Planet) : void
+      public function initialize(objectsLayer:PlanetObjectsLayer, map:PlanetMap, planet:MPlanet) : void
       {
          cleanup();
          this.map = map;
@@ -86,7 +86,7 @@ package components.map.planet
          addGlobalEventHandlers();
          addObjectsLayerEventHandlers(objectsLayer);
          addPlanetEventHandlers(planet);
-         for each (var object:PlanetObject in planet[objectsListName])
+         for each (var object:MPlanetObject in planet[objectsListName])
          {
             addObjectImpl(object);
          }
@@ -132,7 +132,7 @@ package components.map.planet
        */
       protected function removeAllObjects() : void
       {
-         for each (var object:PlanetObject in planet.objects)
+         for each (var object:MPlanetObject in planet.objects)
          {
             if (object is modelClass)
             {
@@ -193,7 +193,7 @@ package components.map.planet
        * Called by <code>PlanetObjectsLayer</code> when a new object
        * has been added to the planet.
        */
-      public function addObject(object:PlanetObject) : void
+      public function addObject(object:MPlanetObject) : void
       {
          if (object is modelClass)
          {
@@ -207,7 +207,7 @@ package components.map.planet
        * 
        * @return component created
        */
-      protected function addObjectImpl(object:PlanetObject) : IPrimitivePlanetMapObject
+      protected function addObjectImpl(object:MPlanetObject) : IPrimitivePlanetMapObject
       {
          var component:IPrimitivePlanetMapObject = new componentClass() as IPrimitivePlanetMapObject;
          component.initModel(object);
@@ -308,12 +308,12 @@ package components.map.planet
       }
       
       
-      protected function addPlanetEventHandlers(planet:Planet) : void
+      protected function addPlanetEventHandlers(planet:MPlanet) : void
       {
       }
       
       
-      protected function removePlanetEventHandlers(planet:Planet) : void
+      protected function removePlanetEventHandlers(planet:MPlanet) : void
       {
       }
    }

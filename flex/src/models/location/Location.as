@@ -9,7 +9,7 @@ package models.location
    import models.player.PlayerMinimal;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    import models.tile.TerrainType;
    
    import utils.NameResolver;
@@ -282,7 +282,7 @@ package models.location
                   }
                   else
                   {
-                     var solarSystem:SolarSystem = ML.latestGalaxy.getSSById(solarSystemId);
+                     var solarSystem:MSolarSystem = ML.latestGalaxy.getSSById(solarSystemId);
                      if (solarSystem == null)
                      {
                         if (ML.latestGalaxy.isWormhole(solarSystemId) || 

@@ -5,32 +5,31 @@
                     xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
-         import models.solarsystem.SSMetadataType;
-         import models.solarsystem.SolarSystem;
-         
-         import utils.locale.Localizer;
-         import utils.assets.AssetNames;
-         
-         
-         [Bindable]
-         /**
-          * Type of the status icon. User constants from <code>SSMetadataType</code>
-          * for correct values.
-          */
-         public var type: String = SSMetadataType.ALLIANCE_PLANETS;
-         
-         
-         [Bindable]
-         /**
-          * Idicates if text explaining icon meaning should be visible.
-          */
-         public var explanationVisible:Boolean = false;
-         
-         
-         private function getString(type:String) : String
-         {
-            return Localizer.string('Galaxy', 'label.' + type);
-         }
+      import models.solarsystem.SSMetadataType;
+      import models.solarsystem.MSolarSystem;
+
+      import utils.locale.Localizer;
+      import utils.assets.AssetNames;
+
+
+      [Bindable]
+      /**
+       * Type of the status icon. User constants from <code>SSMetadataType</code>
+       * for correct values.
+       */
+      public var type: String = SSMetadataType.ALLIANCE_PLANETS;
+
+
+      [Bindable]
+      /**
+       * Idicates if text explaining icon meaning should be visible.
+       */
+      public var explanationVisible: Boolean = false;
+
+
+      private function getString(type: String): String {
+         return Localizer.string('Galaxy', 'label.' + type);
+      }
       ]]>
    </fx:Script>
    <base:layout>

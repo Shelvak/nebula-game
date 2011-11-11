@@ -8,44 +8,49 @@
                     width="{barGroup.width}">
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import globalevents.GlobalEvent;
-         
-         import models.planet.Planet;
-         import models.resource.ResourceType;
-         
-         import mx.events.EffectEvent;
-         import mx.events.FlexEvent;
-         
-         import utils.DateUtil;
-         import utils.assets.AssetNames;
-         import utils.locale.Localizer;
-         private static const DURATION_TIME: int = 100;
-         
-         protected function shorten_effectEndHandler(event:EffectEvent):void
-         {
-            infoPanel.visible = false;
+      import com.developmentarc.core.utils.EventBroker;
+
+      import globalevents.GlobalEvent;
+
+      import models.planet.MPlanet;
+
+      import models.planet.MPlanet;
+
+      import models.planet.MPlanet;
+
+      import models.planet.MPlanet;
+
+      import models.planet.MPlanet;
+      import models.resource.ResourceType;
+
+      import mx.events.EffectEvent;
+      import mx.events.FlexEvent;
+
+      import utils.DateUtil;
+      import utils.assets.AssetNames;
+      import utils.locale.Localizer;
+
+
+      private static const DURATION_TIME: int = 100;
+
+      protected function shorten_effectEndHandler(event: EffectEvent): void {
+         infoPanel.visible = false;
+      }
+
+
+      protected function widen_effectStartHandler(event: EffectEvent): void {
+         infoPanel.visible = true;
+      }
+
+      [Bindable]
+      private var addPlanet: int = 1;
+
+      protected function shorten_effectStartHandler(event: EffectEvent): void {
+         if (nextGroup.x < background.width) {
+            switchTo.play([nextGroup], true);
+            addPlanet = 1;
          }
-         
-         
-         protected function widen_effectStartHandler(event:EffectEvent):void
-         {
-            infoPanel.visible = true;
-         }
-         
-         [Bindable]
-         private var addPlanet: int = 1;
-         
-         protected function shorten_effectStartHandler(event:EffectEvent):void
-         {
-            if (nextGroup.x < background.width)
-            {
-               switchTo.play([nextGroup], true);
-               addPlanet = 1;
-            }
-         }
-         
+      }
       ]]>
    </fx:Script>
    
@@ -84,10 +89,10 @@
             </s:Group>
             
             <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRUnitBuildingEntrySmall"
-                         dataProvider="{Planet.getRaiders(ML.player.planetsCount)}">
+                         dataProvider="{MPlanet.getRaiders(ML.player.planetsCount)}">
                <s:layout>
                   <s:TileLayout requestedRowCount="{Math.max(1, 
-                                Math.ceil(Number(Planet.getRaiders(ML.player.planetsCount).length)/4))}"/>
+                                Math.ceil(Number(MPlanet.getRaiders(ML.player.planetsCount).length)/4))}"/>
                </s:layout>
             </s:DataGroup>
          </s:Group>
@@ -117,10 +122,10 @@
             </s:Group>
             
             <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRUnitBuildingEntrySmall"
-                         dataProvider="{Planet.getRaiders(ML.player.planetsCount + addPlanet)}">
+                         dataProvider="{MPlanet.getRaiders(ML.player.planetsCount + addPlanet)}">
                <s:layout>
                   <s:TileLayout requestedColumnCount="4" requestedRowCount="{Math.max(1, 
-                                Math.ceil(Number(Planet.getRaiders(ML.player.planetsCount + addPlanet).length)/4))}"/>
+                                Math.ceil(Number(MPlanet.getRaiders(ML.player.planetsCount + addPlanet).length)/4))}"/>
                </s:layout>
             </s:DataGroup>
          </s:Group>
