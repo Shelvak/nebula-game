@@ -3451,6 +3451,8 @@
     <property.mod.movementTimeDecrease value="Judėjimo trukmės sumažinimas" />
     <property.mod.storage value="Talpumo priedas" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
+    <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
+    <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
 
     <UnitTech>
       <p>Pirmas šios technologijos lygis atrakiną šį karį/laivą. Kiti jos
@@ -3676,6 +3678,28 @@
 
     <MobileThunder.name ref="Units/MobileThunder.name" />
     <MobileThunder.about ref="Units/MobileThunder.about" />
+
+    <TurretUpgradeTech value="stacionariems ir mobiliems bokšteliams." />
+
+    <TurretArmor.name ref="Objects/Technology_TurretArmor" />
+    <TurretArmor.about>
+      <p>
+        Pasinaudojus pažanga nanotechnologijoje mes galime sustiprinti
+        ryšius tarp molekulių mūsų gynybinių bokštelių struktūroje, taip
+        padarydami juos atsparesnius žalai ir prailgindami jų gyvavimo trukmę.
+      </p>
+      <p>[reference:ArmorTech] [reference:TurretUpgradeTech]</p>
+    </TurretArmor.about>
+
+    <TurretDamage.name ref="Objects/Technology_TurretDamage" />
+    <TurretDamage.about>
+      <p>
+        Gynybinių bokštelių ginklų sistemos praturtintos dalelių greitintuvais
+        yra žymiai efektyvesnės nei jų pirmtakai. Įgreitintos dalelės greičiau
+        skrenda ir pataikiusios sukelia daugiau žalos.
+      </p>
+      <p>[reference:WeaponsTech] [reference:TurretUpgradeTech]</p>
+    </TurretDamage.about>
 
     <GroundFactory.name ref="Buildings/GroundFactory.name" />
     <GroundFactory.about>

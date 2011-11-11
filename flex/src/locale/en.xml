@@ -3349,6 +3349,8 @@
     <property.mod.movementTimeDecrease value="Movement time decrease" />
     <property.mod.storage value="Storage bonus" />
     <property.maxPlayers value="Maximum number of players" />
+    <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
+    <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
 
     <UnitTech>
       <p>First level of this technology unlocks described unit. Other levels
@@ -3605,7 +3607,7 @@
       <p>
         Advances in nanotechnology allows us to increase structural linking
         between basic molecules used in our defensive structures, thus
-        increasing their resistance to damage and ensuring turret longvetivity.
+        increasing their resistance to damage and ensuring turret longevity.
       </p>
       <p>[reference:ArmorTech] [reference:TurretUpgradeTech]</p>
     </TurretArmor.about>

@@ -3541,6 +3541,8 @@
     <property.mod.movementTimeDecrease value="Samazināts gājienu skaits" />
     <property.mod.storage value="TODO: Storage bonus" />
     <property.maxPlayers value="Maksimālais spēlētāju skaits" />
+    <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
+    <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
 
     <UnitTech>
       <p>Ar pirmo līmeni atbloķē šo iespēju. Nākošie līmeņi to uzlabo.</p>
@@ -3792,6 +3794,31 @@
 
     <MobileThunder.name ref="Units/MobileThunder.name" />
     <MobileThunder.about ref="Units/MobileThunder.about" />
+
+    <!-- TODO -->
+    <TurretUpgradeTech value="for turrets, both stationary and mobile." />
+
+    <TurretArmor.name ref="Objects/Technology_TurretArmor" />
+    <TurretArmor.about>
+      <p>
+        Advances in nanotechnology allows us to increase structural linking
+        between basic molecules used in our defensive structures, thus
+        increasing their resistance to damage and ensuring turret longevity.
+      </p>
+      <p>[reference:ArmorTech] [reference:TurretUpgradeTech]</p>
+    </TurretArmor.about>
+
+    <TurretDamage.name ref="Objects/Technology_TurretDamage" />
+    <TurretDamage.about>
+      <p>
+        These particle chargers give our turret weapon systems substantial
+        advantage over traditional projectiles. Supercharged projectiles travel
+        faster and deliver more damage on impact, thus reducing enemies to
+        shreds more quickly.
+      </p>
+      <p>[reference:WeaponsTech] [reference:TurretUpgradeTech]</p>
+    </TurretDamage.about>
+    <!-- /TODO -->
 
     <GroundFactory.name ref="Buildings/GroundFactory.name" />
     <GroundFactory.about>
