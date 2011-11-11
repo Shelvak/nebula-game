@@ -331,7 +331,13 @@
     <Technology_DefensivePortal-whos value="Building_DefensivePortal-whos" />
     <Technology_Alliances value="Sąjungos" />
     <Technology_Alliances-whos value="Sąjungų" />
-    
+    <Technology_BuildingRepair value="Taisymo robotai" />
+    <Technology_BuildingRepair-whos value="Taisymo robotų" />
+    <Technology_TurretArmor value="Struktūrinis surišimas" />
+    <Technology_TurretArmor-whos value="Struktūrinio surišimo" />
+    <Technology_TurretDamage value="Dalelių greitintuvai" />
+    <Technology_TurretDamage-whos value="Dalelių greitintuvų" />
+
     <!-- Kita -->
     
     <Technology value="Technologija" />
@@ -3447,9 +3453,18 @@
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
 
     <UnitTech>
-      <p>Pirmas šios technologijos lygis atrakiną šį karį/laivą. Kiti jos 
+      <p>Pirmas šios technologijos lygis atrakiną šį karį/laivą. Kiti jos
       lygiai jį tobulina.</p>
     </UnitTech>
+    <UnitUpgrade>
+      <p>Kiekvienas patobulinimo lygis didina šarvų atsparumą ir ginklų žalą.</p>
+    </UnitUpgrade>
+
+    <BuildingTech>
+      <p>Pirmas šios technologijos lygis atrakiną šį pastatą. Kiti jos
+      lygiai jį tobulina.</p>
+    </BuildingTech>
+    <BuildingUpgrade ref="UnitUpgrade" />
 
     <Zetium.common>
       <p>
@@ -3633,19 +3648,31 @@
     </PowderedZetium.about>
 
     <Vulcan.name ref="Buildings/Vulcan.name" />
-    <Vulcan.about ref="Buildings/Vulcan.about" />
+    <Vulcan.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Vulcan.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Vulcan.about>
 
     <MobileVulcan.name ref="Units/MobileVulcan.name" />
     <MobileVulcan.about ref="Units/MobileVulcan.about" />
 
     <Screamer.name ref="Buildings/Screamer.name" />
-    <Screamer.about ref="Buildings/Screamer.about" />
+    <Screamer.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Screamer.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Screamer.about>
 
     <MobileScreamer.name ref="Units/MobileScreamer.name" />
     <MobileScreamer.about ref="Units/MobileScreamer.about" />
 
     <Thunder.name ref="Buildings/Thunder.name" />
-    <Thunder.about ref="Buildings/Thunder.about" />
+    <Thunder.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Thunder.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Thunder.about>
 
     <MobileThunder.name ref="Units/MobileThunder.name" />
     <MobileThunder.about ref="Units/MobileThunder.about" />
@@ -3671,10 +3698,6 @@
       patys lėčiausi mūsų laivai, tad ši technologija yra labai pravarti.</p>
       <p>Sutrumpina skrydžio laiką mulo ir raganosio klasės laivams.</p>
     </HeavyFlight.about>
-    
-    <UnitUpgrade>
-      <p>Kiekvienas patobulinimo lygis didina šarvų atsparumą ir ginklų žalą.</p>
-    </UnitUpgrade>
 
     <Trooper.name ref="Units/Trooper.name" />
     <Trooper.about>
@@ -3792,6 +3815,21 @@
       <p>Leidžia statyti techninę ligoninę.</p>
       <p>[reference:Buildings/HealingCenter.common]</p>
     </HealingCenter.about>
+
+    <BuildingRepair.name ref="Objects/Technology_BuildingRepair" />
+    <BuildingRepair.about>
+      <p>
+        Pasitelkus į pagalbą šiuos mobilius robotus galima suremontuoti netgi
+        labai smarkiai pažeistus pastatus, kuriuos kitaip tektų tiesiog griauti
+        ir statyti iš naujo, todėl ši technologija ypatingai tinka smarkiai
+        patobulintiems pastatams. Tiesa, pastatų remontas užtrunka ir kol
+        pastatas yra remontuojamas, jis negali būti naudojamas.
+      </p>
+      <p>
+        Leidžia taisyti pažeistus pastatus. Šios technologijos tobulinimas
+        mažina taisymo kainą ir trukmę.
+      </p>
+    </BuildingRepair.about>
 
     <Alliances.name ref="Objects/Technology_Alliances" />
     <Alliances.about>

@@ -386,6 +386,9 @@
     <Technology_ShipStorage value="External Cargo Decks" />
     <Technology_DefensivePortal ref="Building_DefensivePortal" />
     <Technology_Alliances value="Alliances" />
+    <Technology_BuildingRepair value="Repair Drones" />
+    <Technology_TurretArmor value="Structural Linking" />
+    <Technology_TurretDamage value="Particle Chargers" />
 
     <!-- Other stuff -->
 
@@ -3542,6 +3545,19 @@
     <UnitTech>
       <p>Ar pirmo līmeni atbloķē šo iespēju. Nākošie līmeņi to uzlabo.</p>
     </UnitTech>
+    <UnitUpgrade>
+      <p>Katrs līmenis palielina uzbrukumu un aizsardzību.</p>
+    </UnitUpgrade>
+
+    <!-- TODO -->
+    <BuildingTech>
+      <p>First level of this technology unlocks described building. Other levels
+        upgrade it.</p>
+    </BuildingTech>
+    <BuildingUpgrade>
+      <p>Each level increases building armor and damage.</p>
+    </BuildingUpgrade>
+    <!-- /TODO -->
 
     <Zetium.common>
       <p>
@@ -3605,7 +3621,8 @@
     <MetabolicChargers.about>
       <p>
         Pēdējie atklājumi bruņu tehnoloģijās ļauj ievietot zetium shards 
-        karavīru bruņās, kas padara tos daudz izturīgākus pret ienaidnieka uzbrukumiem. 
+        karavīru bruņās, kas padara tos daudz izturīgākus pret ienaidnieka
+        uzbrukumiem.
       </p>
       <p>[reference:ArmorTech] [reference:InfantryUpgradeTech]</p>
     </MetabolicChargers.about>
@@ -3747,19 +3764,31 @@
     </PowderedZetium.about>
 
     <Vulcan.name ref="Buildings/Vulcan.name" />
-    <Vulcan.about ref="Buildings/Vulcan.about" />
+    <Vulcan.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Vulcan.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Vulcan.about>
 
     <MobileVulcan.name ref="Units/MobileVulcan.name" />
     <MobileVulcan.about ref="Units/MobileVulcan.about" />
 
     <Screamer.name ref="Buildings/Screamer.name" />
-    <Screamer.about ref="Buildings/Screamer.about" />
+    <Screamer.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Screamer.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Screamer.about>
 
     <MobileScreamer.name ref="Units/MobileScreamer.name" />
     <MobileScreamer.about ref="Units/MobileScreamer.about" />
 
     <Thunder.name ref="Buildings/Thunder.name" />
-    <Thunder.about ref="Buildings/Thunder.about" />
+    <Thunder.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Thunder.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Thunder.about>
 
     <MobileThunder.name ref="Units/MobileThunder.name" />
     <MobileThunder.about ref="Units/MobileThunder.about" />
@@ -3787,10 +3816,6 @@
       <p>Saīsina lidojuma laiku [reference:Objects/Unit_Mule] un
       [reference:Objects/Unit_Rhyno] klases gaisa kuģiem.</p>
     </HeavyFlight.about>
-    
-    <UnitUpgrade>
-      <p>Katrs līmenis palielina uzbrukumu un aizsardzību.</p>
-    </UnitUpgrade>
 
     <Trooper.name ref="Units/Trooper.name" />
     <Trooper.about>
@@ -3933,6 +3958,23 @@
       <p>Ļauj uzbūvēt [reference:Buildings/HealingCenter.name].</p>
       <p>[reference:Buildings/HealingCenter.common]</p>
     </HealingCenter.about>
+
+    <!-- TODO -->
+    <BuildingRepair.name ref="Objects/Technology_BuildingRepair" />
+    <BuildingRepair.about>
+      <p>
+        These mobile drones allow repairing even severely damaged buildings
+        without having to tear building down and build it from ground up which
+        makes them perfect for repairing heavily upgraded buildings. However
+        this process takes time and building will not be operational while it
+        is being repaired.
+      </p>
+      <p>
+        Allows repairing damaged buildings. Upgrading this technology reduces
+        repair cost and time.
+      </p>
+    </BuildingRepair.about>
+    <!-- /TODO -->
 
     <Alliances.name ref="Objects/Technology_Alliances" />
     <Alliances.about>
