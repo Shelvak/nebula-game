@@ -27,9 +27,9 @@ extends Combatant {
    */
   override def xp_=(value: Int) {}
 
-  def metalCost = Config.buildingMetalCost(name)
-  def energyCost = Config.buildingEnergyCost(name)
-  def zetiumCost = Config.buildingZetiumCost(name)
+  def metalCost = Config.metalCost(this)
+  def energyCost = Config.energyCost(this)
+  def zetiumCost = Config.zetiumCost(this)
 
   override def toString =
     "Building[%s/%d](id:%d, hp:%d/%d, lvl: %d, plr: %s)".format(
