@@ -26,7 +26,7 @@ package controllers.timedupdate
             }
          }
          if (cooldownsInSolarSystemAccessible) {
-            updateListOfCooldowns(ML.latestSolarSystem);
+            updateListOfCooldowns(ML.latestSSMap);
          }
          if (cooldownsInGalaxyAccessible) {
             updateListOfCooldowns(ML.latestGalaxy);
@@ -51,7 +51,7 @@ package controllers.timedupdate
             ML.latestPlanet.ssObject.cooldown.resetChangeFlags();
          }
          if (cooldownsInSolarSystemAccessible) {
-            resetChangeFlagsIn(ML.latestSolarSystem);
+            resetChangeFlagsIn(ML.latestSSMap);
          }
          if (cooldownsInGalaxyAccessible) {
             resetChangeFlagsIn(ML.latestGalaxy);
@@ -71,7 +71,7 @@ package controllers.timedupdate
       }
       
       private function get cooldownsInSolarSystemAccessible() : Boolean {
-         return ML.latestSolarSystem != null;
+         return ML.latestSSMap != null;
       }
       
       private function get cooldownsInGalaxyAccessible() : Boolean {

@@ -216,14 +216,14 @@ package tests.galaxy
          g.battlegroundId = BATTLEGROUND_ID;
          g.addObject(ss);
          ML.latestGalaxy = g;
-         ML.latestSolarSystem = ss;
+         ML.latestSSMap = ss;
          
          createEmptyGalaxy();
          
          assertThat( "old units removed", ML.units, emptyArray() );
          assertThat( "old squadrons removed", ML.squadrons, emptyArray() );
          assertThat( "old solar systems removed", galaxy.solarSystems, emptyArray() );
-         assertThat( "cached solar system destroyed", ML.latestSolarSystem, nullValue() );
+         assertThat( "cached solar system destroyed", ML.latestSSMap, nullValue() );
       }
       
       [Test]
@@ -234,7 +234,7 @@ package tests.galaxy
          g.battlegroundId = BATTLEGROUND_ID;
          g.addObject(ss);
          ML.latestGalaxy = g;
-         ML.latestSolarSystem = ss;
+         ML.latestSSMap = ss;
          
          showAction.createGalaxy(
             GALAXY_ID,
@@ -248,7 +248,7 @@ package tests.galaxy
             new Object()
          );
          
-         assertThat( "cached solar system is the same", ML.latestSolarSystem, sameInstance (ss) );
+         assertThat( "cached solar system is the same", ML.latestSSMap, sameInstance (ss) );
       }
       
       [Test]
@@ -276,7 +276,7 @@ package tests.galaxy
          g.battlegroundId = BATTLEGROUND_ID;
          g.addObject(makeSS(1, 0, 0));
          ML.latestGalaxy = g;
-         ML.latestSolarSystem = ss;
+         ML.latestSSMap = ss;
          ML.latestPlanet = planet;
          
          createEmptyGalaxy();
@@ -284,7 +284,7 @@ package tests.galaxy
          assertThat( "old units removed", ML.units, emptyArray() );
          assertThat( "old squadrons removed", ML.squadrons, emptyArray() );
          assertThat( "old solar systems removed", galaxy.solarSystems, emptyArray() );
-         assertThat( "cached solar system destroyed", ML.latestSolarSystem, nullValue() );
+         assertThat( "cached solar system destroyed", ML.latestSSMap, nullValue() );
          assertThat( "cached planet destroyed", ML.latestPlanet, nullValue() );
       }
       
@@ -302,7 +302,7 @@ package tests.galaxy
          g.battlegroundId = BATTLEGROUND_ID;
          g.addObject(makeSS(1, 0, 0));
          ML.latestGalaxy = g;
-         ML.latestSolarSystem = ss;
+         ML.latestSSMap = ss;
          ML.latestPlanet = planet;
          
          showAction.createGalaxy(
@@ -319,7 +319,7 @@ package tests.galaxy
          
          assertThat( "# of solar systems", galaxy.solarSystems, arrayWithSize (1) );
          assertThat( "solar system in galaxy created", galaxy.getSSById(1), notNullValue() );
-         assertThat( "cached solar system is the same", ML.latestSolarSystem, sameInstance (ss) );
+         assertThat( "cached solar system is the same", ML.latestSSMap, sameInstance (ss) );
          assertThat( "cached planet is the same", ML.latestPlanet, sameInstance (planet) );
       }
       

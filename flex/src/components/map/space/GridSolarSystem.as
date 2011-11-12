@@ -6,6 +6,7 @@ package components.map.space
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
+   import models.map.MMapSolarSystem;
    import models.solarsystem.MSolarSystem;
    
    import mx.collections.ArrayCollection;
@@ -19,7 +20,7 @@ package components.map.space
    {
       private var _locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
       private var _map:CMapSolarSystem;
-      private var _solarSystem:MSolarSystem;
+      private var _mapModel:MMapSolarSystem;
       private var _orbitsTotal:int;
       
       
@@ -28,19 +29,19 @@ package components.map.space
        */
       private var _sectorsCache:ArrayCollection = new ArrayCollection();
       private var f_sectorsCached:Boolean = false;
-      
-      
-      public function GridSolarSystem(map:CMapSolarSystem)
-      {
+
+
+      public function GridSolarSystem(map: CMapSolarSystem) {
          super(map);
          _map = map;
-         _solarSystem = map.getSolarSystem();
-         _orbitsTotal = _solarSystem.orbitsTotal;
-         
+         _mapModel = map.getMapModel();
+         _orbitsTotal = _mapModel.orbitsTotal;
+
          // Cache all sectors
-         for each (var location:LocationMinimal in getAllSectors())
-         {
-            _sectorsCache.addItem(new Sector(location, getSectorRealCoordinates(location)));
+         for each (var location: LocationMinimal in getAllSectors()) {
+            _sectorsCache.addItem(
+               new Sector(location, getSectorRealCoordinates(location))
+            );
          }
          f_sectorsCached = true;
       }
@@ -75,11 +76,14 @@ package components.map.space
          var bottom:Number = coordinates.y + _SECTOR_SEARCH_RADIUS;
          
          // Get all sectors in this area
-         var sectors:ListCollectionView = Collections.filter(_sectorsCache,
-            function(sector:Sector) : Boolean
-            {
-               var coords:Point = sector.coordinates;
-               return coords.x > left && coords.x < right && coords.y > top && coords.y < bottom;
+         var sectors: ListCollectionView = Collections.filter(
+            _sectorsCache,
+            function(sector: Sector): Boolean {
+               var coords: Point = sector.coordinates;
+               return coords.x > left
+                         && coords.x < right
+                         && coords.y > top
+                         && coords.y < bottom;
             }
          );
          
@@ -135,7 +139,7 @@ package components.map.space
                   {
                      _locWrapper.location = new LocationMinimal();
                      _locWrapper.type = LocationType.SOLAR_SYSTEM;
-                     _locWrapper.id = _solarSystem.id;
+                     _locWrapper.id = _mapModel.id;
                      _locWrapper.position = position;
                      _locWrapper.angle = quarter * 90 + quarterPoint * quarterPointStep;
                      sectors.push(_locWrapper.location);

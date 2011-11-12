@@ -34,9 +34,9 @@ package tests.models
          ML.player.galaxyId = 1;
          ML.latestGalaxy = new Galaxy();
          ML.latestGalaxy.id = ML.player.galaxyId;
-         ML.latestSolarSystem = new MSolarSystem();
-         ML.latestSolarSystem.id = 1;
-         ML.latestGalaxy.addObject(ML.latestSolarSystem);
+         ML.latestSSMap = new MSolarSystem();
+         ML.latestSSMap.id = 1;
+         ML.latestGalaxy.addObject(ML.latestSSMap);
          ss = new MSolarSystem();
          ss.id = 1;
       };
@@ -55,7 +55,7 @@ package tests.models
       [Test]
       public function should_not_be_cached_if_latestSolarSystem_is_null() : void
       {
-         ML.latestSolarSystem = null;
+         ML.latestSSMap = null;
          assertFalse();
       };
       
@@ -63,7 +63,7 @@ package tests.models
       [Test]
       public function should_not_be_cached_if_latestSolarSystem_is_fake() : void
       {
-         ML.latestSolarSystem.fake = true;
+         ML.latestSSMap.fake = true;
          assertFalse();
       };
       
@@ -71,8 +71,8 @@ package tests.models
       [Test]
       public function should_not_be_cached_if_ids_do_not_match_and_both_are_not_wormholes() : void
       {
-         ML.latestSolarSystem.id = 1;
-         ML.latestSolarSystem.kind = SSKind.NORMAL;
+         ML.latestSSMap.id = 1;
+         ML.latestSSMap.kind = SSKind.NORMAL;
          ss.id = 2;
          ss.kind = SSKind.NORMAL;
          assertFalse();
@@ -82,8 +82,8 @@ package tests.models
       [Test]
       public function should_be_cached_if_ids_match_and_latestSolarSystem_is_not_fake_and_instance_is_fake() : void
       {
-         ML.latestSolarSystem.id = 1;
-         ML.latestSolarSystem.fake = false;
+         ML.latestSSMap.id = 1;
+         ML.latestSSMap.fake = false;
          ss.id = 1;
          ss.fake = true;
          assertTrue();
@@ -101,8 +101,8 @@ package tests.models
       [Test]
       public function should_not_be_cached_if_ids_do_not_match_and_both_are_wormholes() : void
       {
-         ML.latestSolarSystem.id = 1;
-         ML.latestSolarSystem.kind = SSKind.WORMHOLE;
+         ML.latestSSMap.id = 1;
+         ML.latestSSMap.kind = SSKind.WORMHOLE;
          ss.id = 2;
          ss.kind = SSKind.WORMHOLE;
          ML.latestGalaxy.addObject(ss);
@@ -114,7 +114,7 @@ package tests.models
       public function should_be_cached_if_ids_do_not_match_and_instance_is_wormhole_and_latestSolarSystem_is_battleground() : void
       {
          ML.latestGalaxy.battlegroundId = 1;
-         ML.latestSolarSystem.id = 1;
+         ML.latestSSMap.id = 1;
          ss.id = 2;
          ss.kind = SSKind.WORMHOLE;
          ML.latestGalaxy.addObject(ss);

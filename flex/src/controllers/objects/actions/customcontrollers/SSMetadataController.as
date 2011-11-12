@@ -37,8 +37,8 @@ package controllers.objects.actions.customcontrollers
          if (ML.latestPlanet != null && ML.latestPlanet.solarSystemId == ss.id) {
             ML.latestPlanet = null;
          }
-         if (ML.latestSolarSystem != null && ML.latestSolarSystem.id == ss.id) {
-            ML.latestSolarSystem = null;
+         if (ML.latestSSMap != null && ML.latestSSMap.id == ss.id) {
+            ML.latestSSMap = null;
          }
       }
    }

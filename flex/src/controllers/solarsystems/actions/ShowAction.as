@@ -7,9 +7,13 @@ package controllers.solarsystems.actions
    import controllers.units.SquadronsController;
    
    import models.BaseModel;
+   import models.MWreckage;
+   import models.cooldown.MCooldown;
    import models.factories.SolarSystemFactory;
    import models.factories.UnitFactory;
+   import models.map.MMapSolarSystem;
    import models.movement.MHop;
+   import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
    
    import mx.collections.ArrayCollection;
@@ -27,8 +31,10 @@ package controllers.solarsystems.actions
     * <p>
     * Client <<-- Server
     * <ul>
-    *    <li><code>solarSystem</code> - a generic object that represents a solar system</li>
-    *    <li><code>ssObjects</code> - array of generic objects representing objects in the solar system</li>
+    *    <li><code>solarSystem</code> - a generic object that represents a
+    *        solar system</li>
+    *    <li><code>ssObjects</code> - array of generic objects representing
+    *        objects in the solar system</li>
     * </ul>
     * </p>
     * 
@@ -71,41 +77,43 @@ package controllers.solarsystems.actions
       
       override public function applyServerAction(cmd:CommunicationCommand) : void {
          var params:Object = cmd.parameters;
-         
-         // objects come as separate parameter so put it to the solar system
-         var paramsSS:Object = params["solarSystem"];
-         paramsSS["ssObjects"] = params["ssObjects"];
-         paramsSS["wreckages"] = params["wreckages"];
-         paramsSS["cooldowns"] = params["cooldowns"];         
-         var ss:MSolarSystem = SolarSystemFactory.fromObject(paramsSS);
-         
+
+         var ss:MSolarSystem = SolarSystemFactory.fromObject(params["solarSystem"]);
+         var ssMap:MMapSolarSystem = new MMapSolarSystem(ss);
+         createMapObjects(ssMap, MSSObject, params["ssObjects"]);
+         createMapObjects(ssMap, MWreckage, params["wreckages"]);
+         createMapObjects(ssMap, MCooldown, params["cooldowns"]);
+
          // destroy latest a planet if its not in the given solar system
-         if (ML.latestPlanet != null && (!ML.latestPlanet.inBattleground || !ss.isGlobalBattleground)) {
-            if ( !(ML.latestPlanet.inBattleground && ss.isGlobalBattleground ||
-                   ML.latestPlanet.solarSystemId == ss.id) ) {
+         if (ML.latestPlanet != null
+                && (!ML.latestPlanet.inBattleground
+                       || !ss.isGlobalBattleground)) {
+            if (!(ML.latestPlanet.inBattleground && ss.isGlobalBattleground
+                     || ML.latestPlanet.solarSystemId == ss.id)) {
                ML.latestPlanet.setFlag_destructionPending();
                ML.latestPlanet = null;
             }
          }
          // destroy old solar system
-         if (ML.latestSolarSystem != null) {
-            ML.latestSolarSystem.setFlag_destructionPending();
-            ML.latestSolarSystem = null;
+         if (ML.latestSSMap != null) {
+            ML.latestSSMap.setFlag_destructionPending();
+            ML.latestSSMap = null;
          }
          var units:ArrayCollection = UnitFactory.fromObjects(params["units"], params["players"]);
          ML.units.disableAutoUpdate();
          ML.units.addAll(units);
          ML.units.enableAutoUpdate();
-         SQUADS_CTRL.createSquadronsForUnits(units, ss);
+         SQUADS_CTRL.createSquadronsForUnits(units, ssMap);
          SQUADS_CTRL.addHopsToSquadrons(IList(BaseModel.createCollection(ArrayCollection, MHop, params["routeHops"])).toArray());
-         SQUADS_CTRL.attachJumpsAtToHostileSquads(ss.squadrons, params["nonFriendlyJumpsAt"]);
-         if (f_createMapOnly)
-            NAV_CTRL.recreateMap(ss);
-         else
-            NAV_CTRL.showSolarSystem(ss);
+         SQUADS_CTRL.attachJumpsAtToHostileSquads(ssMap.squadrons, params["nonFriendlyJumpsAt"]);
+         if (f_createMapOnly) {
+            NAV_CTRL.recreateMap(ssMap);
+         }
+         else {
+            NAV_CTRL.showSolarSystem(ssMap);
+         }
          resetFlags();
       }
-      
       
       public override function cancel(rmo:ClientRMO) : void {
          resetFlags();
@@ -115,6 +123,14 @@ package controllers.solarsystems.actions
       public override function result(rmo:ClientRMO) : void {
          resetFlags();
          super.result(rmo);
+      }
+
+      private function createMapObjects(ssMap:MMapSolarSystem,
+                                        objectClass:Class,
+                                        objects:Object): void {
+         ssMap.addAllObjects(
+            BaseModel.createCollection(ArrayCollection, objectClass, objects)
+         );
       }
    }
 }

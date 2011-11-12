@@ -9,7 +9,7 @@ package models.factories
    
    
    /**
-    * Lets easily create instaces of solar systems. 
+    * Lets easily create instances of solar systems.
     */
    public class SolarSystemFactory
    {
@@ -25,20 +25,10 @@ package models.factories
          if (!data) {
             return null;
          }
-         
          var ss:MSolarSystem = BaseModel.createModel(MSolarSystem, data);
-         if (data["metadata"] != null)
+         if (data["metadata"] != null) {
             ss.metadata = BaseModel.createModel(MSSMetadata, data.metadata);
-         for each (var object:Object in data.ssObjects) {
-            ss.addObject(SSObjectFactory.fromObject(object));
          }
-         for each (var wreckage:Object in data.wreckages) {
-            ss.addObject(BaseModel.createModel(MWreckage, wreckage));
-         }
-         for each (var cooldown:Object in data.cooldowns) {
-            ss.addObject(CooldownFactory.MCooldownSpace_fromObject(cooldown));
-         }
-         
          return ss;
       }
    }

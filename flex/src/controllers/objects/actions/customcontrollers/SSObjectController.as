@@ -4,6 +4,7 @@ package controllers.objects.actions.customcontrollers
    
    import models.factories.SSObjectFactory;
    import models.location.ILocationUser;
+   import models.map.MMapSolarSystem;
    import models.map.MapType;
    import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
@@ -30,9 +31,11 @@ package controllers.objects.actions.customcontrollers
          }
          
          // update planet in current solar system's objects list
-         var solarSystem:MSolarSystem = ML.latestSolarSystem;
-         if (solarSystem != null && !solarSystem.fake && solarSystem.id == planetNew.solarSystemId) {
-            planetOld = findExistingPlanet(solarSystem.naturalObjects);
+         var ssMap:MMapSolarSystem = ML.latestSSMap;
+         if (ssMap != null
+                && !ssMap.fake
+                && ssMap.id == planetNew.solarSystemId) {
+            planetOld = findExistingPlanet(ssMap.naturalObjects);
             planetOld.copyProperties(planetNew);
          }
          
@@ -40,14 +43,16 @@ package controllers.objects.actions.customcontrollers
          var planets:IList = ML.player.planets;
          planetOld = findExistingPlanet(planets);
          if (planetOld != null) {
-            // planet does not belong to the player anymore so remove it from the list
+            // planet does not belong to the player anymore so remove it
+            // from the list
             if (!planetNew.ownerIsPlayer) {
                planets.removeItemAt(planets.getItemIndex(planetOld));
                planetOld.cleanup();
             }
             // otherwise just update
-            else
+            else {
                planetOld.copyProperties(planetNew);
+            }
          }
          
          // update current planet
@@ -59,11 +64,12 @@ package controllers.objects.actions.customcontrollers
                ML.latestPlanet.setFlag_destructionPending();
                ML.latestPlanet = null;
                if (ML.activeMapType == MapType.PLANET)
-                  NavigationController.getInstance().toSolarSystem(solarSystem.id);
+                  NavigationController.getInstance().toSolarSystem(ssMap.id);
             }
             // otherwise just update SSObject inside it
-            else
+            else {
                planet.ssObject.copyProperties(planetNew);
+            }
          }
          
          // update all location models if name has changed

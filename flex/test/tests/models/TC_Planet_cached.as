@@ -34,8 +34,8 @@ package tests.models
          ML.player.galaxyId = 1;
          ML.latestGalaxy = new Galaxy();
          ML.latestGalaxy.id = ML.player.galaxyId;
-         ML.latestSolarSystem = new MSolarSystem();
-         ML.latestSolarSystem.id = 1;
+         ML.latestSSMap = new MSolarSystem();
+         ML.latestSSMap.id = 1;
          ML.latestPlanet = new MPlanet(new MSSObject());
          ML.latestPlanet.id = 1;
          ML.latestPlanet.solarSystemId = 1;

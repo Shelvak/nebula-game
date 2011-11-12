@@ -107,7 +107,7 @@ package models.location
          if (isBattleground || inBattleground)
             return Localizer.string("Galaxy", "label.wormhole");
          if (isMiniBattleground)
-            return Localizer.string("Galaxy", "label.pulsar", [id])
+            return Localizer.string("Galaxy", "label.pulsar", [id]);
          if (isSSObject && ML.latestGalaxy.isMiniBattleground(solarSystemId))
             return Localizer.string("Galaxy", "label.pulsar", [solarSystemId]);
          return NameResolver.resolveSolarSystem(solarSystemId == 0 ? id : solarSystemId);
@@ -165,7 +165,7 @@ package models.location
       public function get hasParent() : Boolean
       {
          return isSSObject;
-      };
+      }
       
       
       [Bindable(event="willNotChange")]
@@ -194,7 +194,7 @@ package models.location
                throwUnsupportedLocationTypeError();
          }
          return IMG.getImage(imageName);
-      };
+      }
       
       
       /* ########################################## */
@@ -262,7 +262,7 @@ package models.location
                NAV_CTRL.toSolarSystem(id, 
                   function() : void
                   {
-                     ML.latestSolarSystem.moveTo(thisLoc);
+                     ML.latestSSMap.moveTo(thisLoc);
                   }
                );
                break;
@@ -293,13 +293,16 @@ package models.location
                      }
                      if (solarSystem != null)
                      {
-                        if (ML.latestSolarSystem != null && !ML.latestSolarSystem.fake)
+                        if (ML.latestSSMap != null && !ML.latestSSMap.fake)
                         {
-                           if (ML.latestSolarSystem.id == solarSystemId ||
-                               ML.latestSolarSystem.isGlobalBattleground && (ML.latestGalaxy.isBattleground(solarSystemId) ||
-                                                                             ML.latestGalaxy.isWormhole(solarSystemId)))
+                           if (ML.latestSSMap.id == solarSystemId ||
+                               ML.latestSSMap.solarSystem.isGlobalBattleground
+                                  && (ML.latestGalaxy.isBattleground(solarSystemId)
+                                         || ML.latestGalaxy.isWormhole(solarSystemId)
+                                     )
+                              )
                            {
-                              planet = ML.latestSolarSystem.getSSObjectById(id);
+                              planet = ML.latestSSMap.getSSObjectById(id);
                               if (planet.viewable)
                               {
                                  NAV_CTRL.toPlanet(planet);
@@ -349,7 +352,7 @@ package models.location
       private function navigateToSolarSystem(ssId:int) : void {
          NAV_CTRL.toSolarSystem(ssId,
             function() : void {
-               ML.latestSolarSystem.moveTo(ML.latestSolarSystem.getSSObjectById(id).currentLocation);
+               ML.latestSSMap.moveTo(ML.latestSSMap.getSSObjectById(id).currentLocation);
             }
          );
       }

@@ -15,8 +15,13 @@ package models.map
    public class MMapPlanet extends MMap
    {
       public function MMapPlanet(planet:MPlanet) {
-         Objects.paramNotNull("planet", planet);
          super();
+         _planet = Objects.paramNotNull("planet", planet);
+      }
+
+      private var _planet:MPlanet;
+      public function get planet(): MPlanet {
+         return _planet;
       }
    }
 }

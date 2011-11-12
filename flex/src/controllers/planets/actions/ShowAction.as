@@ -11,6 +11,7 @@ package controllers.planets.actions
    import models.factories.PlanetFactory;
    import models.factories.SSObjectFactory;
    import models.factories.UnitFactory;
+   import models.map.MMapSolarSystem;
    import models.planet.MPlanet;
    import models.solarsystem.SSKind;
    import models.solarsystem.MSolarSystem;
@@ -92,45 +93,41 @@ package controllers.planets.actions
          );
          planet.initUpgradeProcess();
          var ss:MSolarSystem;
-         
+
          // special case for wormholes here since wormhole id and planet.solarSystemId never match
-         if (planet.inBattleground)
-         {
-            if (ML.latestGalaxy.hasWormholes)
-            {
-               if (ML.latestSolarSystem == null ||
-                  !ML.latestSolarSystem.isWormhole && !ML.latestSolarSystem.isGlobalBattleground)
-               {
-                  if (ML.latestSolarSystem != null)
-                  {
-                     ML.latestSolarSystem.setFlag_destructionPending();
+         if (planet.inBattleground) {
+            if (ML.latestGalaxy.hasWormholes) {
+               if (ML.latestSSMap == null
+                      || !ML.latestSSMap.solarSystem.isWormhole
+                            && !ML.latestSSMap.solarSystem.isGlobalBattleground) {
+                  if (ML.latestSSMap != null) {
+                     ML.latestSSMap.setFlag_destructionPending();
                   }
                   ss = new MSolarSystem();
                   ss.fake = true;
-                  var wormholeInGalaxy:MSolarSystem = MSolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
+                  var wormholeInGalaxy: MSolarSystem =
+                         MSolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
                   ss.id = wormholeInGalaxy.id;
-                  ss.x  = wormholeInGalaxy.x;
-                  ss.y  = wormholeInGalaxy.y;
+                  ss.x = wormholeInGalaxy.x;
+                  ss.y = wormholeInGalaxy.y;
                   ss.kind = SSKind.WORMHOLE;
-                  ML.latestSolarSystem = ss;
+                  ML.latestSSMap = new MMapSolarSystem(ss);
                }
             }
-            else
-            {
-               if (ML.latestSolarSystem != null)
-               {
-                  ML.latestSolarSystem.setFlag_destructionPending();
-                  ML.latestSolarSystem = null;
+            else {
+               if (ML.latestSSMap != null) {
+                  ML.latestSSMap.setFlag_destructionPending();
+                  ML.latestSSMap = null;
                }
             }
          }
          // If we jumped right to this planet not going through solar system
          // create a fake solar system in model locator with correct id
-         else if (ML.latestSolarSystem == null || ML.latestSolarSystem.id != planet.solarSystemId)
+         else if (ML.latestSSMap == null || ML.latestSSMap.id != planet.solarSystemId)
          {
-            if (ML.latestSolarSystem != null)
+            if (ML.latestSSMap != null)
             {
-               ML.latestSolarSystem.setFlag_destructionPending();
+               ML.latestSSMap.setFlag_destructionPending();
             }
             ss = new MSolarSystem();
             ss.fake = true;
@@ -141,7 +138,7 @@ package controllers.planets.actions
             ss.x = ssInGalaxy.x;
             ss.y = ssInGalaxy.y;
             ss.kind = ssInGalaxy.kind;
-            ML.latestSolarSystem = ss;
+            ML.latestSSMap = new MMapSolarSystem(ss);
          }
          
          SQUADS_CTRL.createSquadronsForUnits(planet.units, planet);
