@@ -34,7 +34,16 @@
          </base:Scroller>
       </s:Group>
       <s:Group id="unitsContent" height="100%" width="100%">
-         <base:AdvancedContainer id="grpFilters">
+         <s:Group id="filtersRow" width="100%">
+            <s:BitmapImage left="0" source="{ImagePreloader.getInstance().getImage(
+            AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'location_line_left')}" id="lnLeft"/>
+            <s:BitmapImage right="0" source="{ImagePreloader.getInstance().getImage(
+            AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'location_line_right')}" id="lnRight"/>
+            <s:BitmapImage left="{lnLeft.width}" right="{lnRight.width}" fillMode="repeat"
+                  source="{ImagePreloader.getInstance().getImage(
+                  AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'location_line_center')}"/>
+         </s:Group>
+         <base:AdvancedContainer id="grpFilters" top="3">
             <s:Label text="{getString('title.filters')}"
                      color="#eec500" fontWeight="bold"
                      fontSize="16" paddingRight="6"/>
@@ -109,7 +118,7 @@
          </base:AdvancedContainer>
          <!--- Scroller for scrolling the content of the list -->
          <base:Scroller id="unitScroller" stepMultiplier="10" width="100%"
-                        top="30" bottom="0"
+                        top="{filtersRow.height}" bottom="0"
                         skinClass="components.base.screen.ListScreenScrollerSkin">
             <s:Group width="100%" id="internalUnitCont">
                <s:DataGroup itemRenderer="components.squadronsscreen.IRPositionedUnits"
@@ -162,6 +171,10 @@
 
       import spark.components.Group;
       import spark.events.IndexChangeEvent;
+
+      import utils.assets.AssetNames;
+
+      import utils.assets.ImagePreloader;
 
       import utils.components.ToggleButtonsGroup;
       import utils.components.events.ToggleButtonsGroupEvent;

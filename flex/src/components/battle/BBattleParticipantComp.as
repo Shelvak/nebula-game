@@ -9,6 +9,7 @@ package components.battle
    import flash.events.Event;
    import flash.geom.Matrix;
    import flash.geom.Point;
+   import flash.geom.Point;
    import flash.geom.Rectangle;
    import flash.text.engine.FontWeight;
    
@@ -20,7 +21,9 @@ package components.battle
    import models.battle.BUnit;
    import models.battle.FireOrder;
    import models.battle.events.ParticipantEvent;
-   
+
+   import mx.collections.ArrayCollection;
+
    import mx.events.CollectionEvent;
    import mx.graphics.SolidColor;
    
@@ -28,7 +31,9 @@ package components.battle
    import spark.components.Label;
    import spark.layouts.TileLayout;
    import spark.primitives.Rect;
-   
+
+   import utils.random.Rndm;
+
    public class BBattleParticipantComp extends Group
    {
       private static const HP_ROW_HEIGHT: int = 3;
@@ -123,16 +128,26 @@ package components.battle
       private var _count: int = 0;
       
       private var _maxCount: int = 0;
+
+      public function get maxAttacking(): int
+      {
+         return Math.ceil(groupLength/3);
+      }
       
-      public var attacking: Boolean = false;
+      public var attacking: int = 0;
       
       private var attackOrdersList: Array = [];
       
-      public function finishAttack(): FireOrder
+      public function finishAttack(): Array
       {
          if (attackOrdersList.length > 0)
-            return attackOrdersList.pop();
+            return attackOrdersList;
          return null;
+      }
+
+      public function cleanPendingOrders(): void
+      {
+          attackOrdersList = [];
       }
       
       public function hasPendingAttacks(): Boolean
@@ -334,8 +349,8 @@ package components.battle
       private var hpGroup: Group = new Group();
       private var hpList: Array = [];
       
-      public var appearGroup: ModelsCollection = new ModelsCollection(); 
-      public var group: ModelsCollection = new ModelsCollection(); 
+      public var appearGroup: ArrayCollection = new ArrayCollection();
+      public var group: ArrayCollection = new ArrayCollection();
       
       public function get groupLength(): int
       {
@@ -563,6 +578,17 @@ package components.battle
       public function getAbsoluteTargetPoint() : Point
       {
          return thisTM.transformPoint(bmpTM.transformPoint(participantModel.targetPoint));
+      }
+
+      /**
+       * @return a bullet hit point dispersion
+       * (point to add to the hit box left top corner)
+       */
+      public function getDispersion(rnd: Rndm) : Point
+      {
+         return new Point((flippedHorizontally ? -1 : 1) *
+                 rnd.integer(0, participantModel.hitBox.width),
+                 rnd.integer(0, participantModel.hitBox.height));
       }
       
       public function showDefaultFrame(): void
