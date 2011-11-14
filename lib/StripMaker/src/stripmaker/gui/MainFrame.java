@@ -86,16 +86,6 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         navigation = new javax.swing.JTabbedPane();
-        jPanel3 = new javax.swing.JPanel();
-        battlefieldMode = new javax.swing.JRadioButton();
-        jLabel4 = new javax.swing.JLabel();
-        frameHeight = new javax.swing.JTextField();
-        buildingsMode = new javax.swing.JRadioButton();
-        jLabel1 = new javax.swing.JLabel();
-        buildingWidth = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        buildingHeight = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -105,6 +95,16 @@ public class MainFrame extends javax.swing.JFrame {
         dataProgress = new javax.swing.JProgressBar();
         statusLabel = new javax.swing.JLabel();
         loadDataButton = new javax.swing.JButton();
+        battlefieldMode = new javax.swing.JRadioButton();
+        jLabel4 = new javax.swing.JLabel();
+        frameHeight = new javax.swing.JTextField();
+        buildingsMode = new javax.swing.JRadioButton();
+        jLabel1 = new javax.swing.JLabel();
+        buildingWidth = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        buildingHeight = new javax.swing.JTextField();
+        jSeparator1 = new javax.swing.JSeparator();
         jPanel4 = new javax.swing.JPanel();
         boxCutter = new javax.swing.JPanel();
         boxLabel = new javax.swing.JLabel();
@@ -123,81 +123,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("StripMaker");
-
-        battlefieldMode.setFont(new java.awt.Font("DejaVu Sans", 1, 17));
-        battlefieldMode.setSelected(true);
-        battlefieldMode.setText("Battlefield");
-
-        jLabel4.setText("Frame height:");
-
-        frameHeight.setText("200");
-
-        buildingsMode.setFont(new java.awt.Font("DejaVu Sans", 1, 17));
-        buildingsMode.setText("Planet buildings");
-
-        jLabel1.setText("Width:");
-
-        buildingWidth.setText("2");
-
-        jLabel2.setText("Height:");
-
-        buildingHeight.setText("2");
-
-        jLabel3.setText("Width and height are in logical tiles.");
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(jLabel4)
-                        .addGap(18, 18, 18)
-                        .addComponent(frameHeight, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(buildingsMode)
-                        .addComponent(battlefieldMode)
-                        .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addGap(12, 12, 12)
-                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel3Layout.createSequentialGroup()
-                                    .addComponent(jLabel1)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(buildingWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(41, 41, 41)
-                                    .addComponent(jLabel2)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(buildingHeight, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE))
-                                .addComponent(jLabel3)))))
-                .addGap(376, 376, 376))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(battlefieldMode)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(frameHeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buildingsMode)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(buildingWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(buildingHeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addGap(18, 18, 18)
-                .addComponent(jLabel3)
-                .addContainerGap(161, Short.MAX_VALUE))
-        );
-
-        navigation.addTab("Select mode", jPanel3);
 
         jLabel5.setText("Data directory:");
 
@@ -222,11 +147,58 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        battlefieldMode.setFont(new java.awt.Font("DejaVu Sans", 1, 17)); // NOI18N
+        battlefieldMode.setSelected(true);
+        battlefieldMode.setText("Battlefield");
+
+        jLabel4.setText("Frame height:");
+
+        frameHeight.setText("200");
+
+        buildingsMode.setFont(new java.awt.Font("DejaVu Sans", 1, 17)); // NOI18N
+        buildingsMode.setText("Planet buildings");
+
+        jLabel1.setText("Width:");
+
+        buildingWidth.setText("2");
+
+        jLabel3.setText("Width and height are in logical tiles.");
+
+        jLabel2.setText("Height:");
+
+        buildingHeight.setText("2");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(frameHeight, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(buildingsMode)
+                        .addComponent(battlefieldMode)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGap(12, 12, 12)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(jLabel1)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(buildingWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(41, 41, 41)
+                                    .addComponent(jLabel2)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(buildingHeight, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE))
+                                .addComponent(jLabel3)))))
+                .addGap(308, 308, 308))
+            .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 699, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -251,6 +223,24 @@ public class MainFrame extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(battlefieldMode)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(frameHeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buildingsMode)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(buildingWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buildingHeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(sharpenSelector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
@@ -264,7 +254,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(statusLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(dataProgress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(192, Short.MAX_VALUE))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         navigation.addTab("Provide data", jPanel2);
@@ -295,7 +285,7 @@ public class MainFrame extends javax.swing.JFrame {
         );
         boxCutterLayout.setVerticalGroup(
             boxCutterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 253, Short.MAX_VALUE)
+            .addGap(0, 297, Short.MAX_VALUE)
         );
 
         boxLabel.setText("unknown");
@@ -310,7 +300,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        setTargetBoxButton.setForeground(new java.awt.Color(171, 175, 2));
+        setTargetBoxButton.setForeground(java.awt.Color.cyan);
         setTargetBoxButton.setText("Set target box");
         setTargetBoxButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -427,7 +417,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(saveButton)
@@ -446,7 +436,7 @@ public class MainFrame extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(navigation, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE)
+            .addComponent(navigation, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE)
         );
 
         pack();
@@ -520,11 +510,11 @@ public class MainFrame extends javax.swing.JFrame {
           switch (boxKind) {
             case BOX_KIND_MAIN:
               box = tempBox;
-              key = "box";
+              key = InfoManager.KEY_BOX;
               break;
             case BOX_KIND_TARGET:
               targetBox = tempBox;
-              key = "target_box";
+              key = InfoManager.KEY_TARGET_BOX;
               break;
             default:
               JOptionPane.showMessageDialog(this, "Unknown box kind " + boxKind);
@@ -539,7 +529,7 @@ public class MainFrame extends javax.swing.JFrame {
           
           guns.add(new Point(evt.getX(), evt.getY()));
           if (guns.size() == gunCount) {
-            replaceKey("gun_points",
+            replaceKey(InfoManager.KEY_GUN_POINTS,
               InfoManager.getGunPoints(guns));
             gunSpinner.setEnabled(true);
             state = STATE_NONE;
@@ -739,7 +729,7 @@ public class MainFrame extends javax.swing.JFrame {
           updateBoxLabel();
 
           statusLabel.setText("Data loaded.");
-          navigation.setSelectedIndex(2);
+          navigation.setSelectedIndex(1);
           clearCanvas();
         }
         catch (Exception e) {
@@ -761,20 +751,20 @@ public class MainFrame extends javax.swing.JFrame {
     Yaml yaml = new Yaml();
     Map metaMap = (Map) yaml.load(metadata);
 
-    if (metaMap.containsKey("box")) {
-      box = loadBox(metaMap, "box");
+    if (metaMap.containsKey(InfoManager.KEY_BOX)) {
+      box = loadBox(metaMap, InfoManager.KEY_BOX);
     }
 
-    if (metaMap.containsKey("target_box")) {
-      targetBox = loadBox(metaMap, "target_box");
+    if (metaMap.containsKey(InfoManager.KEY_TARGET_BOX)) {
+      targetBox = loadBox(metaMap, InfoManager.KEY_TARGET_BOX);
     }
-    else if (metaMap.containsKey("box")) {
+    else if (metaMap.containsKey(InfoManager.KEY_BOX)) {
       // Backwards compatibility.
-      targetBox = loadBox(metaMap, "box");
+      targetBox = loadBox(metaMap, InfoManager.KEY_BOX);
     }
 
-    if (metaMap.containsKey("gun_points")) {
-      List gunPoints = (List) metaMap.get("gun_points");
+    if (metaMap.containsKey(InfoManager.KEY_GUN_POINTS)) {
+      List gunPoints = (List) metaMap.get(InfoManager.KEY_GUN_POINTS);
       guns = new ArrayList<Point>(gunPoints.size());
       gunSpinner.setValue(gunPoints.size());
       for (Object gunObject: gunPoints) {
@@ -789,11 +779,11 @@ public class MainFrame extends javax.swing.JFrame {
   }
   
   private Rectangle loadBox(Map map, String key) {
-    Map boxMap = (Map) map.get("box");
-    List topLeft = (List) boxMap.get("top_left");
+    Map boxMap = (Map) map.get(key);
+    List topLeft = (List) boxMap.get(InfoManager.KEY_TOP_LEFT);
     int x = (Integer) topLeft.get(0);
     int y = (Integer) topLeft.get(1);
-    List bottomRight = (List) boxMap.get("bottom_right");
+    List bottomRight = (List) boxMap.get(InfoManager.KEY_BOTTOM_RIGHT);
     int width = (Integer) bottomRight.get(0) - x;
     int height = (Integer) bottomRight.get(1) - y;
     return new Rectangle(x, y, width, height);
@@ -854,9 +844,9 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton loadDataButton;
     private javax.swing.JTextArea metadataEdit;
     private javax.swing.JTabbedPane navigation;
