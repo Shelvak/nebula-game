@@ -22,7 +22,7 @@ package models.planet
    import models.location.LocationType;
    import models.map.MMap;
    import models.map.MapType;
-   import models.planet.events.PlanetEvent;
+   import models.planet.events.MPlanetEvent;
    import models.solarsystem.MSSObject;
    import models.tile.Tile;
    import models.tile.TileKind;
@@ -44,35 +44,35 @@ package models.planet
    /**
     * Dispatched when an object has been added to this planet.
     * 
-    * @eventType models.planet.events.PlanetEvent.OBJECT_ADD
+    * @eventType models.planet.events.MPlanetEvent.OBJECT_ADD
     */
-   [Event(name="objectAdd", type="models.planet.events.PlanetEvent")]
+   [Event(name="objectAdd", type="models.planet.events.MPlanetEvent")]
    
    
    /**
     * Dispatched when an object has been removed from this planet.
     * 
-    * @eventType models.planet.events.PlanetEvent.OBJECT_REMOVE
+    * @eventType models.planet.events.MPlanetEvent.OBJECT_REMOVE
     */
-   [Event(name="objectRemove", type="models.planet.events.PlanetEvent")]
+   [Event(name="objectRemove", type="models.planet.events.MPlanetEvent")]
    
    
    /**
     * Dispatched when building has been moved to another place. <code>object</code> property
     * is set to the building moved.
     * 
-    * @eventType models.planet.events.PlanetEvent.BUILDING_MOVE
+    * @eventType models.planet.events.MPlanetEvent.BUILDING_MOVE
     */
-   [Event(name="buildingMove", type="models.planet.events.PlanetEvent")]
+   [Event(name="buildingMove", type="models.planet.events.MPlanetEvent")]
    
    
-   [Event(name="unitUpgradeStarted", type="models.planet.events.PlanetEvent")]
-   [Event(name="unitRefreshNeeded", type="models.planet.events.PlanetEvent")]
-   [Event(name="buildingUpgraded", type="models.planet.events.PlanetEvent")]
+   [Event(name="unitUpgradeStarted", type="models.planet.events.MPlanetEvent")]
+   [Event(name="unitRefreshNeeded", type="models.planet.events.MPlanetEvent")]
+   [Event(name="buildingUpgraded", type="models.planet.events.MPlanetEvent")]
    
    
    [Bindable]
-   public class Planet extends MMap
+   public class MPlanet extends MMap
    {
       private var _zIndexCalculator:ZIndexCalculator = null;
       
@@ -89,7 +89,7 @@ package models.planet
       }
       
       
-      public function Planet(ssObject:MSSObject)
+      public function MPlanet(ssObject:MSSObject)
       {
          _ssObject = ssObject;
          super();
@@ -631,17 +631,17 @@ package models.planet
        * @param x X coordinate of a tile
        * @param y Y coordinate if a tile
        * 
-       * @return <code>PlanetObject</code> that stands on a tile with given coordiantes
+       * @return <code>MPlanetObject</code> that stands on a tile with given coordiantes
        * or <code>null</code> if there is no object there.
        */
-      public function getObject(x:int, y:int) : PlanetObject
+      public function getObject(x:int, y:int) : MPlanetObject
       {
          return objectsMatrix[x][y];
       }
       
       
       private var _blockingObjects:ListCollectionView;
-      private function filterFunction_blockingObjects(object:PlanetObject) : Boolean
+      private function filterFunction_blockingObjects(object:MPlanetObject) : Boolean
       {
          return object.isBlocking;
       }
@@ -655,7 +655,7 @@ package models.planet
       
       
       private var _buildings:ListCollectionView;
-      private function filterFunction_buildings(object:PlanetObject) : Boolean
+      private function filterFunction_buildings(object:MPlanetObject) : Boolean
       {
          return object is Building;
       }
@@ -669,7 +669,7 @@ package models.planet
       
       
       private var _folliages:ListCollectionView;
-      private function filterFunction_folliages(object:PlanetObject) : Boolean
+      private function filterFunction_folliages(object:MPlanetObject) : Boolean
       {
          return object is Folliage;
       }
@@ -683,7 +683,7 @@ package models.planet
       
       
       private var _blockingFolliages:ListCollectionView;
-      private function filterFunction_blockingFolliages(object:PlanetObject) : Boolean
+      private function filterFunction_blockingFolliages(object:MPlanetObject) : Boolean
       {
          return object is BlockingFolliage;
       }
@@ -697,7 +697,7 @@ package models.planet
       
       
       private var _nonblockingFolliages:ListCollectionView;
-      private function filterFunction_nonblockingFolliages(object:PlanetObject) : Boolean
+      private function filterFunction_nonblockingFolliages(object:MPlanetObject) : Boolean
       {
          return object is NonblockingFolliage;
       }
@@ -820,7 +820,7 @@ package models.planet
             }
             catch (err:Error)
             {
-               // NPE is thrown when cleanup() method has been called on the instance of a Planet and global
+               // NPE is thrown when cleanup() method has been called on the instance of a MPlanet and global
                // units list is modified. definesLocation() no longer works but the filter function is
                // called anyway.
             }
@@ -849,7 +849,7 @@ package models.planet
             }
             catch (err:Error)
             {
-               // NPE is thrown when cleanup() method has been called on the instance of a Planet and global
+               // NPE is thrown when cleanup() method has been called on the instance of a MPlanet and global
                // units list is modified. definesLocation() no longer works but the filter function is
                // called anyway.
             }
@@ -877,7 +877,7 @@ package models.planet
             }
             catch (err:Error)
             {
-               // NPE is thrown when cleanup() method has been called on the instance of a Planet and global
+               // NPE is thrown when cleanup() method has been called on the instance of a MPlanet and global
                // units list is modified. definesLocation() no longer works but the filter function is
                // called anyway.
             }
@@ -928,8 +928,8 @@ package models.planet
       
       
       /**
-       * Adds <code>PlanetObject</code> to the planet and dispatches
-       * <code>PlanetEvent.OBJECT_ADD</code> event.
+       * Adds <code>MPlanetObject</code> to the planet and dispatches
+       * <code>MPlanetEvent.OBJECT_ADD</code> event.
        * 
        * @param object An object that needs to be added
        * @param list List to which the given object must be added
@@ -938,7 +938,7 @@ package models.planet
        */
       public override function addObject(obj:BaseModel) : void
       {
-         var object:PlanetObject = PlanetObject(obj);
+         var object:MPlanetObject = MPlanetObject(obj);
          // Check if there are no objects in the same place
          var mapObjects:ArrayCollection = getObjectsInArea(object.x, object.xEnd, object.y, object.yEnd);
          if (mapObjects.length != 0)
@@ -961,7 +961,7 @@ package models.planet
        * Sets slots of <code>objectsMatrix</code> to given object where <code>x</code> varies in range
        * <code>[object.x; object.xEnd]</code> and <code>y</code> - <code>[object.y; object.yEnd]</code>.
        */
-      private function fillObjectsMatrix(object:PlanetObject) : void
+      private function fillObjectsMatrix(object:MPlanetObject) : void
       {
          for (var x:int = object.x; x <= object.xEnd; x++)
          {
@@ -974,10 +974,10 @@ package models.planet
       
       
       /**
-       * Adds all objects to this planet. <code>PlanetEvent.OBJECT_ADD</code> event is suppressed during
+       * Adds all objects to this planet. <code>MPlanetEvent.OBJECT_ADD</code> event is suppressed during
        * this operation.
        * 
-       * @param list list of <code>PlanetObject<code>s to add to this planet.
+       * @param list list of <code>MPlanetObject<code>s to add to this planet.
        * 
        * @see #addObject()
        */
@@ -996,14 +996,14 @@ package models.planet
       
       
       /**
-       * Removes <code>PlanetObject</code> from the planet and dispatches
-       * <code>PlanetEvent.OBJECT_REMOVE</code> event if the object has actually been removed.
+       * Removes <code>MPlanetObject</code> from the planet and dispatches
+       * <code>MPlanetEvent.OBJECT_REMOVE</code> event if the object has actually been removed.
        * 
        * @param object An object that needs to be removed
        * @param silent not used
        */
       public override function removeObject(obj:BaseModel, silent:Boolean = false) : * {
-         var object:PlanetObject = Objects.paramNotNull("obj", obj);
+         var object:MPlanetObject = Objects.paramNotNull("obj", obj);
          var x:int = object.x;
          var y:int = object.y;
          if (objectsMatrix[x][y] == object) {
@@ -1289,7 +1289,7 @@ package models.planet
       public function build(b:Building) : void
       {
          // Remove the ghost building if there is one
-         var ghost:PlanetObject = getObject(b.x, b.y);
+         var ghost:MPlanetObject = getObject(b.x, b.y);
          if (ghost && ghost is Building && Building(ghost).isGhost && Building(ghost).type == b.type)
          {
             removeObject(ghost);
@@ -1339,9 +1339,9 @@ package models.planet
          removeNonBlockingFolliagesUnder(b);
          fillObjectsMatrix(b);
          calculateZIndex();
-         if (hasEventListener(PlanetEvent.BUILDING_MOVE))
+         if (hasEventListener(MPlanetEvent.BUILDING_MOVE))
          {
-            dispatchEvent(new PlanetEvent(PlanetEvent.BUILDING_MOVE, b));
+            dispatchEvent(new MPlanetEvent(MPlanetEvent.BUILDING_MOVE, b));
          }
       }
       
@@ -1349,7 +1349,7 @@ package models.planet
       private function removeNonBlockingFolliagesUnder(b:Building) : void
       {
          var removeList:Array = [];
-         for each (var object:PlanetObject in getObjectsInArea(b.x, b.xEnd, b.y, b.yEnd))
+         for each (var object:MPlanetObject in getObjectsInArea(b.x, b.xEnd, b.y, b.yEnd))
          {
             if (!object.isBlocking)
             {
@@ -1383,7 +1383,7 @@ package models.planet
       private function checkBlockingObjectsUnder(b:Building) : void
       {
          var blockingObjects:Array = [];
-         for each (var object:PlanetObject in getObjectsInArea(b.x, b.xEnd, b.y, b.yEnd))
+         for each (var object:MPlanetObject in getObjectsInArea(b.x, b.xEnd, b.y, b.yEnd))
          {
             if (object.isBlocking && object !== b)
             {
@@ -1427,9 +1427,9 @@ package models.planet
       
       public function dispatchUnitCreateEvent() : void
       {
-         if (hasEventListener(PlanetEvent.UNIT_UPGRADE_STARTED))
+         if (hasEventListener(MPlanetEvent.UNIT_UPGRADE_STARTED))
          {
-            dispatchEvent(new PlanetEvent(PlanetEvent.UNIT_UPGRADE_STARTED));
+            dispatchEvent(new MPlanetEvent(MPlanetEvent.UNIT_UPGRADE_STARTED));
          }
       }
       
@@ -1438,37 +1438,37 @@ package models.planet
       {
          if (!f_cleanupStarted &&
             !f_cleanupComplete &&
-            hasEventListener(PlanetEvent.UNIT_REFRESH_NEEDED))
+            hasEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED))
          {
-            dispatchEvent(new PlanetEvent(PlanetEvent.UNIT_REFRESH_NEEDED));
+            dispatchEvent(new MPlanetEvent(MPlanetEvent.UNIT_REFRESH_NEEDED));
          }
       }
       
       
       public function dispatchBuildingUpgradedEvent() : void
       {
-         if (hasEventListener(PlanetEvent.BUILDING_UPGRADED))
+         if (hasEventListener(MPlanetEvent.BUILDING_UPGRADED))
          {
-            dispatchEvent(new PlanetEvent(PlanetEvent.BUILDING_UPGRADED));
+            dispatchEvent(new MPlanetEvent(MPlanetEvent.BUILDING_UPGRADED));
          }
       }
       
       
       private var _suppressObjectAddEvent:Boolean = false;
-      private function dispatchObjectAddEvent(object:PlanetObject) : void
+      private function dispatchObjectAddEvent(object:MPlanetObject) : void
       {
-         if (!_suppressObjectAddEvent && hasEventListener(PlanetEvent.OBJECT_ADD))
+         if (!_suppressObjectAddEvent && hasEventListener(MPlanetEvent.OBJECT_ADD))
          {
-            dispatchEvent(new PlanetEvent(PlanetEvent.OBJECT_ADD, object));
+            dispatchEvent(new MPlanetEvent(MPlanetEvent.OBJECT_ADD, object));
          }
       }
       
       
-      private function dispatchObjectRemoveEvent(object:PlanetObject) : void
+      private function dispatchObjectRemoveEvent(object:MPlanetObject) : void
       {
-         if (hasEventListener(PlanetEvent.OBJECT_REMOVE))
+         if (hasEventListener(MPlanetEvent.OBJECT_REMOVE))
          {
-            dispatchEvent(new PlanetEvent(PlanetEvent.OBJECT_REMOVE, object));
+            dispatchEvent(new MPlanetEvent(MPlanetEvent.OBJECT_REMOVE, object));
          }
       }
    }

@@ -243,14 +243,14 @@ package components.map.planet.objects
       /* ############################# */
       
       
-      protected function addModelEventListeners(model:PlanetObject) : void
+      protected function addModelEventListeners(model:MPlanetObject) : void
       {
          addModelZIndexChangeHandler(model);
          model.addEventListener(BaseModelEvent.PENDING_CHANGE, model_pendingChangeHandler);
       }
       
       
-      protected function removeModelEventListeners(model:PlanetObject) : void
+      protected function removeModelEventListeners(model:MPlanetObject) : void
       {
          removeModelZIndexChangeHandler(model);
          model.removeEventListener(BaseModelEvent.PENDING_CHANGE, model_pendingChangeHandler);

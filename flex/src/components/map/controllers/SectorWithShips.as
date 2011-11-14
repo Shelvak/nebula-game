@@ -3,7 +3,7 @@ package components.map.controllers
    import interfaces.IEqualsComparable;
 
    import models.location.LocationMinimal;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
 
    import utils.Objects;
 
@@ -15,7 +15,7 @@ package components.map.controllers
    public final class SectorWithShips implements IEqualsComparable
    {
       public function SectorWithShips(location: LocationMinimal,
-                                      solarSystem: SolarSystem = null) {
+                                      solarSystem: MSolarSystem = null) {
          _location = Objects.paramNotNull("location", location);
          _solarSystem = solarSystem;
       }
@@ -29,8 +29,8 @@ package components.map.controllers
          return LocationMinimal.getSectorLabel(_location);
       }
 
-      private var _solarSystem: SolarSystem;
-      public function get solarSystem(): SolarSystem {
+      private var _solarSystem: MSolarSystem;
+      public function get solarSystem(): MSolarSystem {
          return _solarSystem;
       }
 

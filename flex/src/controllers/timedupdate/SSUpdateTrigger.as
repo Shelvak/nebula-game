@@ -1,7 +1,7 @@
 package controllers.timedupdate
 {
    import models.ModelLocator;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import utils.DateUtil;
    import utils.datastructures.iterators.IIterator;
@@ -28,7 +28,7 @@ package controllers.timedupdate
             var it:IIterator = IIteratorFactory.getIterator(ML.latestGalaxy.solarSystems);
             while (it.hasNext)
             {
-               var ss:SolarSystem = SolarSystem(it.next());
+               var ss:MSolarSystem = MSolarSystem(it.next());
                // remove shield protection if it has expired
                if (ss.isShielded && ss.shieldEndsAt.time <= DateUtil.now)
                {
@@ -48,7 +48,7 @@ package controllers.timedupdate
             var it:IIterator = IIteratorFactory.getIterator(ML.latestGalaxy.solarSystems);
             while (it.hasNext)
             {
-               SolarSystem(it.next()).resetChangeFlags();
+               MSolarSystem(it.next()).resetChangeFlags();
             }
          }
       }

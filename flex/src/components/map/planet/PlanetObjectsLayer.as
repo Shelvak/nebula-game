@@ -13,9 +13,9 @@ package components.map.planet
    
    import interfaces.ICleanable;
    
-   import models.planet.Planet;
-   import models.planet.PlanetObject;
-   import models.planet.events.PlanetEvent;
+   import models.planet.MPlanet;
+   import models.planet.MPlanetObject;
+   import models.planet.events.MPlanetEvent;
    
    import mx.collections.ArrayCollection;
    import mx.core.IVisualElement;
@@ -37,7 +37,7 @@ package components.map.planet
       /**
        * Constructor. Register event listeners.
        */
-      public function PlanetObjectsLayer(map:PlanetMap, planet:Planet)
+      public function PlanetObjectsLayer(map:PlanetMap, planet:MPlanet)
       {
          super();
          this.map = map;
@@ -49,7 +49,7 @@ package components.map.planet
       
       
       private var map:PlanetMap = null;
-      private var planet:Planet = null;
+      private var planet:MPlanet = null;
       
       
       protected override function createChildren():void
@@ -209,7 +209,7 @@ package components.map.planet
       }
       
       
-      private function notifyVLsOfObjAdd(object:PlanetObject) : void
+      private function notifyVLsOfObjAdd(object:MPlanetObject) : void
       {
          forEachVL(
             function(layer:PlanetVirtualLayer) : void
@@ -551,18 +551,18 @@ package components.map.planet
       /**
        * This is called when an object from a planet has been removed.
        * 
-       * @param model instance of <code>PlanetObject</code> that has been
+       * @param model instance of <code>MPlanetObject</code> that has been
        * removed from the planet.
        * @param vlNotification if <code>true</code>, virtual layers will be
        * notified about this event, however, they will be passed component
        * instead of the model.
        */
-      public function removeObject(model:PlanetObject, vlNotification:Boolean = true) : void
+      public function removeObject(model:MPlanetObject, vlNotification:Boolean = true) : void
       {
          var object:IPrimitivePlanetMapObject = getObjectByModel(model);
          if (!object)
          {
-            throw new Error("Could not find component that represents given PlanetObject!");
+            throw new Error("Could not find component that represents given MPlanetObject!");
          }
          if (selectedObject && selectedObject.model.equals(model))
          {
@@ -645,7 +645,7 @@ package components.map.planet
        * @return instance of <code>PlanetMapObject<code> that represents the
        * given model or <code>null</code> if one can't be found.
        */
-      public function getObjectByModel(model:PlanetObject) : IPrimitivePlanetMapObject
+      public function getObjectByModel(model:MPlanetObject) : IPrimitivePlanetMapObject
       {
          for each (var object:IPrimitivePlanetMapObject in primitiveAndInteractiveObjects)
          {
@@ -715,7 +715,7 @@ package components.map.planet
          var distStart:int = 2;
          var distEnd:int = 2;
          
-         var model:PlanetObject = object.model;
+         var model:MPlanetObject = object.model;
          
          var xMinStart:int = model.x - distStart;  
          var xMinEnd:int = model.x - distEnd; 
@@ -760,7 +760,7 @@ package components.map.planet
        */
       public function positionObject(object:IPrimitivePlanetMapObject) : void
       {
-         var model:PlanetObject = object.model;
+         var model:MPlanetObject = object.model;
          object.x = map.coordsTransform.logicalToReal_X(model.x, model.yEnd);
          object.y = map.coordsTransform.logicalToReal_Y(model.xEnd, model.yEnd)
             - (object.height - model.realBasementHeight);
@@ -772,27 +772,27 @@ package components.map.planet
       /* ####################### */
       
       
-      private function addPlanetEventHandlers(planet:Planet) : void
+      private function addPlanetEventHandlers(planet:MPlanet) : void
       {
-         planet.addEventListener(PlanetEvent.OBJECT_ADD, planet_objectAddHandler, false, 0, true);
-         planet.addEventListener(PlanetEvent.OBJECT_REMOVE, planet_objectRemoveHandler, false, 0, true);
+         planet.addEventListener(MPlanetEvent.OBJECT_ADD, planet_objectAddHandler, false, 0, true);
+         planet.addEventListener(MPlanetEvent.OBJECT_REMOVE, planet_objectRemoveHandler, false, 0, true);
       }
       
       
-      private function removePlanetEventHandlers(p:Planet) : void
+      private function removePlanetEventHandlers(p:MPlanet) : void
       {
-         planet.removeEventListener(PlanetEvent.OBJECT_ADD, planet_objectAddHandler, false);
-         planet.removeEventListener(PlanetEvent.OBJECT_REMOVE, planet_objectRemoveHandler, false);
+         planet.removeEventListener(MPlanetEvent.OBJECT_ADD, planet_objectAddHandler, false);
+         planet.removeEventListener(MPlanetEvent.OBJECT_REMOVE, planet_objectRemoveHandler, false);
       }
       
       
-      private function planet_objectAddHandler(event:PlanetEvent) : void
+      private function planet_objectAddHandler(event:MPlanetEvent) : void
       {
          notifyVLsOfObjAdd(event.object);
       }
       
       
-      private function planet_objectRemoveHandler(event:PlanetEvent) : void
+      private function planet_objectRemoveHandler(event:MPlanetEvent) : void
       {
          removeObject(event.object);
       }

@@ -4,8 +4,8 @@ package components.map.space
    import components.gameobjects.solarsystem.SSShipsStatusIcons;
    
    import models.map.IMStaticSpaceObject;
-   import models.solarsystem.SolarSystem;
-   import models.solarsystem.events.SolarSystemEvent;
+   import models.solarsystem.MSolarSystem;
+   import models.solarsystem.events.MSolarSystemEvent;
    
    import mx.graphics.BitmapFillMode;
    
@@ -34,7 +34,7 @@ package components.map.space
       /* ### MODEL EVENT HANDLERS ### */
       /* ############################ */      
       
-      private function solarSystem_shieldOwnerChangeHandler(event:SolarSystemEvent) : void {
+      private function solarSystem_shieldOwnerChangeHandler(event:MSolarSystemEvent) : void {
          f_ssShieldChanged = true;
          invalidateProperties();
       }
@@ -47,14 +47,14 @@ package components.map.space
       public override function set staticObject(value:IMStaticSpaceObject) : void {
          if (super.staticObject != value) {
             if (super.staticObject != null) {
-               SolarSystem(super.staticObject).removeEventListener(
-                  SolarSystemEvent.SHIELD_OWNER_CHANGE,
+               MSolarSystem(super.staticObject).removeEventListener(
+                  MSolarSystemEvent.SHIELD_OWNER_CHANGE,
                   solarSystem_shieldOwnerChangeHandler, false
                );
             }
             if (value != null) {
-               SolarSystem(value).addEventListener(
-                  SolarSystemEvent.SHIELD_OWNER_CHANGE,
+               MSolarSystem(value).addEventListener(
+                  MSolarSystemEvent.SHIELD_OWNER_CHANGE,
                   solarSystem_shieldOwnerChangeHandler, false, 0, true
                );
             }
@@ -70,7 +70,7 @@ package components.map.space
       protected override function commitProperties() : void {
          super.commitProperties();
          
-         var solarSystem:SolarSystem = SolarSystem(staticObject);
+         var solarSystem:MSolarSystem = MSolarSystem(staticObject);
          if ((f_staticObjectChanged || f_ssShieldChanged) && solarSystem != null) {
             if (solarSystem.isShielded) {
                if (_bmpShield == null) {
@@ -78,8 +78,8 @@ package components.map.space
                   _bmpShield.fillMode = BitmapFillMode.SCALE;
                   _bmpShield.top = -5;
                   _bmpShield.horizontalCenter = 0;
-                  _bmpShield.width  = SolarSystem.IMAGE_WIDTH + 10;
-                  _bmpShield.height = SolarSystem.IMAGE_HEIGHT + 10;
+                  _bmpShield.width  = MSolarSystem.IMAGE_WIDTH + 10;
+                  _bmpShield.height = MSolarSystem.IMAGE_HEIGHT + 10;
                   _bmpShield.source = IMG.getImage(AssetNames.SS_SHIELD_IMAGE_NAME);
                   _imgGroup.addElementAt(_bmpShield, 1);
                }
@@ -122,8 +122,8 @@ package components.map.space
          _bmpImage = new BitmapImage();
          _bmpImage.smooth = true;
          _bmpImage.fillMode = BitmapFillMode.SCALE;
-         _bmpImage.width = SolarSystem.IMAGE_WIDTH;
-         _bmpImage.height = SolarSystem.IMAGE_HEIGHT;
+         _bmpImage.width = MSolarSystem.IMAGE_WIDTH;
+         _bmpImage.height = MSolarSystem.IMAGE_HEIGHT;
          _bmpImage.horizontalCenter = 0;
          _lblName = new Label();
          _lblName.setStyle("color", 0x9D9D9D);

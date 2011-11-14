@@ -7,7 +7,7 @@ package components.map.controllers
    import models.location.LocationMinimal;
    import models.map.events.MMapEvent;
    import models.movement.MSquadron;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
 
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
@@ -26,14 +26,14 @@ package components.map.controllers
    public class GalaxyPlayerObjects extends ArrayCollection implements ICleanable
    {
       public static function itemRendererFunction(item:Object): IFactory {
-         if (item is SolarSystem) {
+         if (item is MSolarSystem) {
             return new ClassFactory(IRSolarSystem);
          }
          else if (item is SectorWithShips) {
             return new ClassFactory(IRSectorWithShips);
          }
          throw new ArgumentError(
-            "[param item] must be either of " + SolarSystem +
+            "[param item] must be either of " + MSolarSystem +
             " or " + SectorWithShips + " type but was: " + item
          );
       }
@@ -41,15 +41,15 @@ package components.map.controllers
       private function compareFunction(a:*, b:*, fields:Array = null) : int {
          var locA:LocationMinimal;
          var locB:LocationMinimal;
-         if (a is SolarSystem && b is SectorWithShips) {
+         if (a is MSolarSystem && b is SectorWithShips) {
             return -1;
          }
-         else if (a is SectorWithShips && b is SolarSystem) {
+         else if (a is SectorWithShips && b is MSolarSystem) {
             return 1;
          }
-         else if (a is SolarSystem) {
-            locA = SolarSystem(a).currentLocation;
-            locB = SolarSystem(b).currentLocation;
+         else if (a is MSolarSystem) {
+            locA = MSolarSystem(a).currentLocation;
+            locB = MSolarSystem(b).currentLocation;
          }
          else {
             locA = SectorWithShips(a).location;

@@ -1,38 +1,37 @@
 package models
 {
    import application.Version;
-   
+
    import controllers.battle.BattleController;
    import controllers.screens.MainAreaScreens;
    import controllers.startup.StartupManager;
    import controllers.ui.NavigationController;
-   
+
    import flash.events.EventDispatcher;
-   
+
    import globalevents.GPlanetEvent;
-   
-   import models.building.Building;
+
    import models.folliage.BlockingFolliage;
    import models.galaxy.Galaxy;
+   import models.map.MMapSolarSystem;
    import models.map.MapType;
    import models.movement.SquadronsList;
    import models.notification.NotificationsCollection;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.player.Player;
    import models.quest.QuestsCollection;
    import models.resource.ResourcesMods;
-   import models.solarsystem.SolarSystem;
    import models.technology.TechnologiesModel;
-   import models.technology.Technology;
    import models.unit.UnitsList;
-   
+
    import mx.collections.ArrayCollection;
-   
+
    import namespaces.prop_name;
-   
+
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
-   
+
+
    /**
     * @eventType mx.events.PropertyChangeEvent.PROPERTY_CHANGE
     */
@@ -64,7 +63,7 @@ package models
          message += "Active map type:\n" + activeMapType + "\n\n";
          message += "Current galaxy:\n" + latestGalaxy + "\n\n";
 //         message += "Solar systems in current galaxy:\n" + latestGalaxy.solarSystems.toArray().join("\n") + "\n\n";
-         message += "Current solar system:\n" + latestSolarSystem + "\n\n";
+         message += "Current solar system:\n" + latestSSMap + "\n\n";
          message += "Current planet:\n" + latestPlanet + "\n\n";
          return message;
       }
@@ -100,7 +99,7 @@ package models
          battleController = null;
          activeMapType = MapType.GALAXY;
          latestPlanet = null;
-         latestSolarSystem = null;
+         latestSSMap = null;
          latestGalaxy = null;
       }
       
@@ -110,7 +109,7 @@ package models
        * 
        * items are models.Technology
        * 
-       * @see models.TechnologiesModel
+       * @see models.technology.TechnologiesModel
        */
       public var technologies:TechnologiesModel = new TechnologiesModel();
       
@@ -160,40 +159,40 @@ package models
       }
       
       
-      private var _latestSolarSystem:SolarSystem;
+      private var _latestSSMap:MMapSolarSystem;
       /**
        * A solar system that user is acting in at the time (or recently was). 
        */
-      public function set latestSolarSystem(value:SolarSystem) : void {
-         if (_latestSolarSystem != value) {
-            if (_latestSolarSystem) {
+      public function set latestSSMap(value: MMapSolarSystem) : void {
+         if (_latestSSMap != value) {
+            if (_latestSSMap) {
                NAV_CTRL.destroyOldMap(MainAreaScreens.SOLAR_SYSTEM);
-               _latestSolarSystem.setFlag_destructionPending();
-               _latestSolarSystem.cleanup();
+               _latestSSMap.setFlag_destructionPending();
+               _latestSSMap.cleanup();
             }
-            _latestSolarSystem = value;
+            _latestSSMap = value;
          }
       }
       /**
        * @private
        */
-      public function get latestSolarSystem() : SolarSystem {
-         return _latestSolarSystem;
+      public function get latestSSMap() : MMapSolarSystem {
+         return _latestSSMap;
       }
       
       
       prop_name static const latestPlanet:String = "latestPlanet"; 
-      private var _latestPlanet:Planet = null;
+      private var _latestPlanet:MPlanet = null;
       /**
        * A solar system that user is acting in at the time (or recently was).
        * 
        * @default null
        */
-      public function set latestPlanet(value:Planet) : void {
+      public function set latestPlanet(value:MPlanet) : void {
          if (_latestPlanet != value) {
             if (_latestPlanet) {
                NAV_CTRL.destroyOldMap(MainAreaScreens.PLANET);
-               _latestPlanet.setFlag_destructionPending()
+               _latestPlanet.setFlag_destructionPending();
                _latestPlanet.cleanup();
             }
             _latestPlanet = value;
@@ -203,7 +202,7 @@ package models
       /**
        * @private
        */
-      public function get latestPlanet() : Planet {
+      public function get latestPlanet() : MPlanet {
          return _latestPlanet;
       }
       

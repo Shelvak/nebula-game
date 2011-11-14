@@ -11,22 +11,22 @@
                destination="visible"/>
    <fx:Script>
       <![CDATA[
-         import models.solarsystem.SSMetadataType;
-         import models.solarsystem.SolarSystem;
-         
-         
-         [Bindable]
-         /**
-          * Reference to a solar system for which icon's must be dispalyed.
-          */
-         public var solarSystem:SolarSystem = null;
-         
-         
-         [Bindable]
-         /**
-          * @copy SSStatusIcon#explanationVisible
-          */
-         public var explanationVisible:Boolean = false;
+      import models.solarsystem.SSMetadataType;
+      import models.solarsystem.MSolarSystem;
+
+
+      [Bindable]
+      /**
+       * Reference to a solar system for which icon's must be dispalyed.
+       */
+      public var solarSystem: MSolarSystem = null;
+
+
+      [Bindable]
+      /**
+       * @copy SSStatusIcon#explanationVisible
+       */
+      public var explanationVisible: Boolean = false;
       ]]>
    </fx:Script>
    <base:layout><s:HorizontalLayout verticalAlign="middle" gap="2"/></base:layout>

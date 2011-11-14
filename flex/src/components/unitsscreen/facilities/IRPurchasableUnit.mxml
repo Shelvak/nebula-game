@@ -20,340 +20,342 @@
    
    <fx:Script>
       <![CDATA[
-         import components.unitsscreen.NoToolTip;
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.skins.BuildButtonSkin;
-         import components.skins.InfoButtonSkin;
-         
-         import config.Config;
-         
-         import controllers.ui.NavigationController;
-         import controllers.units.UnitsCommand;
-         
-         import globalevents.GObjectEvent;
-         import globalevents.GPlanetEvent;
-         import globalevents.GResourcesEvent;
-         import globalevents.GlobalEvent;
-         
-         import models.ModelLocator;
-         import models.building.Building;
-         import models.building.events.BuildingEvent;
-         import models.parts.Upgradable;
-         import models.parts.UpgradableType;
-         import models.planet.events.PlanetEvent;
-         import models.resource.Resource;
-         import models.resource.ResourceType;
-         import models.solarsystem.MSSObject;
-         import models.technology.events.TechnologyEvent;
-         import models.unit.Unit;
-         import models.unit.events.UnitEvent;
-         
-         import mx.events.FlexEvent;
-         import mx.events.ToolTipEvent;
-         
-         import spark.filters.ColorMatrixFilter;
-         
-         import utils.DateUtil;
-         import utils.StringUtil;
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         import utils.locale.Localizer;
-         
-         private static const FADE_TIME: int = 300;
-         
-         private static const NOT_VALID_FILTER: Array = [new ColorMatrixFilter([
-            0.2,0,0,0,0, //red
-            0,0.2,0,0,0, //green
-            0,0,0.2,0,0, //blue
-            0,0,0,1,0,])];
-         
-         
-         [Bindable]
-         private var lightsAlpha: Number = 0;
-         
-         [Bindable]
-         private var selectedMetalCost: Number = 0;
-         
-         [Bindable]
-         private var selectedEnergyCost: Number = 0;
-         
-         [Bindable]
-         private var selectedZetiumCost: Number = 0;
-         
-         private var populationCost: int = 0;
-         
-         [Bindable]
-         private var selectedTimeCost: String = null;
-         
-         [Bindable]
-         private var qSelectedMetalCost: String = null;
-         
-         [Bindable]
-         private var qSelectedEnergyCost: String = null;
-         
-         [Bindable]
-         private var qSelectedZetiumCost: String = null;
-         
-         [Bindable]
-         private var qSelectedTimeCost: String = null;
-         
-         [Bindable]
-         private var type: String;
-         
-         [Bindable]
-         private var facility: Building;
-         
-         private function addEventListeners(e: Event): void
-         {
-            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
-            ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
-            ML.latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
-            EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
-            EventBroker.subscribe(GlobalEvent.APP_RESET, removeEventListeners);
-            dispatchRefreshValidEvent();
-            var temp: String = type;
-            type = null;
-            type = temp;
+      import components.unitsscreen.NoToolTip;
+
+      import com.developmentarc.core.utils.EventBroker;
+
+      import components.skins.BuildButtonSkin;
+      import components.skins.InfoButtonSkin;
+
+      import config.Config;
+
+      import controllers.ui.NavigationController;
+      import controllers.units.UnitsCommand;
+
+      import globalevents.GObjectEvent;
+      import globalevents.GPlanetEvent;
+      import globalevents.GResourcesEvent;
+      import globalevents.GlobalEvent;
+
+      import models.ModelLocator;
+      import models.building.Building;
+      import models.building.events.BuildingEvent;
+      import models.parts.Upgradable;
+      import models.parts.UpgradableType;
+      import models.planet.events.MPlanetEvent;
+      import models.resource.Resource;
+      import models.resource.ResourceType;
+      import models.solarsystem.MSSObject;
+      import models.technology.events.TechnologyEvent;
+      import models.unit.Unit;
+      import models.unit.events.UnitEvent;
+
+      import mx.events.FlexEvent;
+      import mx.events.ToolTipEvent;
+
+      import spark.filters.ColorMatrixFilter;
+
+      import utils.DateUtil;
+      import utils.StringUtil;
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
+
+
+      private static const FADE_TIME: int = 300;
+
+      private static const NOT_VALID_FILTER: Array = [
+         new ColorMatrixFilter([0.2, 0, 0, 0, 0, //red
+                                0, 0.2, 0, 0, 0, //green
+                                0, 0, 0.2, 0, 0, //blue
+                                0, 0,   0, 1, 0])
+      ];
+
+
+      [Bindable]
+      private var lightsAlpha: Number = 0;
+
+      [Bindable]
+      private var selectedMetalCost: Number = 0;
+
+      [Bindable]
+      private var selectedEnergyCost: Number = 0;
+
+      [Bindable]
+      private var selectedZetiumCost: Number = 0;
+
+      private var populationCost: int = 0;
+
+      [Bindable]
+      private var selectedTimeCost: String = null;
+
+      [Bindable]
+      private var qSelectedMetalCost: String = null;
+
+      [Bindable]
+      private var qSelectedEnergyCost: String = null;
+
+      [Bindable]
+      private var qSelectedZetiumCost: String = null;
+
+      [Bindable]
+      private var qSelectedTimeCost: String = null;
+
+      [Bindable]
+      private var type: String;
+
+      [Bindable]
+      private var facility: Building;
+
+      private function addEventListeners(e: Event): void {
+         EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE,
+                               refreshUpgradeState);
+         ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED,
+                                          dispatchRefreshValidEvent);
+         ML.latestPlanet.addEventListener(MPlanetEvent.BUILDING_UPGRADED,
+                                          dispatchRefreshValidEvent);
+         EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE,
+                               dispatchRefreshValidEvent);
+         EventBroker.subscribe(GlobalEvent.APP_RESET, removeEventListeners);
+         dispatchRefreshValidEvent();
+         var temp: String = type;
+         type = null;
+         type = temp;
+      }
+
+      private function removeEventListeners(e: Event): void {
+         EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE,
+                                 refreshUpgradeState);
+         if (ML.technologies) {
+            ML.technologies.removeEventListener
+               (TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
          }
-         
-         private function removeEventListeners(e: Event): void
-         {
-            EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
-            if (ML.technologies)
-            {
-               ML.technologies.removeEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, dispatchRefreshValidEvent);
-            }
-            if (ML.latestPlanet)
-            {
-               ML.latestPlanet.removeEventListener(PlanetEvent.BUILDING_UPGRADED, dispatchRefreshValidEvent);
-            }
-            EventBroker.unsubscribe(GPlanetEvent.BUILDINGS_CHANGE, dispatchRefreshValidEvent);
-            EventBroker.unsubscribe(GlobalEvent.APP_RESET, removeEventListeners);
-            purchasePending = false;
+         if (ML.latestPlanet) {
+            ML.latestPlanet.removeEventListener(MPlanetEvent.BUILDING_UPGRADED,
+                                                dispatchRefreshValidEvent);
          }
-         
-         private static const imageSize: int = 132;
-         
-         
-         public override function set data(value:Object) : void
-         {
-            if (data != value)
-            {
-               super.data = value;
-               if (data)
-               {
-                  type = StringUtil.underscoreToCamelCase(data.type);
-                  facility = data.facility;
-                  selector.value = 1;
-                  recalculateCosts();
-                  refreshUpgradeState();
-                  dispatchRefreshValidEvent();
-                  var temp: String = type;
-                  type = null;
-                  type = temp;
-               }
-            }
-         }
-         
-         [Bindable]
-         private var canBeUpgraded: Boolean = false;
-         [Bindable]
-         private var enoughStorages: Boolean = false;
-         [Bindable]
-         private var enoughRates: Boolean = false;
-         [Bindable]
-         private var resLeft: String = '';
-         
-         private static function get ML(): ModelLocator
-         {
-            return ModelLocator.getInstance();
-         }
-         
-         private static function get IMG(): ImagePreloader
-         {
-            return ImagePreloader.getInstance();
-         }
-         
-         [Bindable]
-         private var purchasePending: Boolean = false;
-         
-         private function refreshUpgradeState(e: Event = null): void
-         {
-            if (ML.latestPlanet)
-            {
-               var planet:MSSObject = ML.latestPlanet.ssObject;
-               if (planet)
-               {
-                  canBeUpgraded = !((selectedMetalCost > planet.metal.currentStock) ||
-                     (selectedEnergyCost > planet.energy.currentStock) ||
-                     (selectedZetiumCost > planet.zetium.currentStock) ||
-                     (populationCost > ML.player.populationMax - ML.player.population));
-                  if (!canBeUpgraded)
-                  {
-                     enoughStorages = !(selectedMetalCost > planet.metal.maxStock ||
-                        selectedEnergyCost > planet.energy.maxStock ||
-                        selectedZetiumCost > planet.zetium.maxStock);
-                     enoughRates = !(selectedMetalCost > planet.metal.currentStock && planet.metal.rate <= 0
-                        || selectedEnergyCost > planet.energy.currentStock && planet.energy.rate <= 0
-                        || selectedZetiumCost > planet.zetium.currentStock && planet.zetium.rate <= 0
-                        || (Config.getUnitPopulation(type) > ML.player.populationMax - ML.player.population));
-                     resLeft = DateUtil.secondsToHumanString(Resource.getTimeToReachResources
-                        (planet.metal, planet.energy, planet.zetium, 
-                           selectedMetalCost, selectedEnergyCost, selectedZetiumCost));
-                  }
-               }
-            }
-         }
-         
-         [Bindable]
-         private var ammount: int;
-         
-         protected function info_clickHandler(event:MouseEvent):void
-         {
-            var temp: Unit = new Unit();
-            temp.type = type;
-            temp.upgradePart.level = 0;
-            NavigationController.getInstance().showInfo(temp);
-         }
-         
-         private function recalculateCosts(event: Event = null): void
-         {
-            function calcCost(resourceType:String) : Number
-            {
-               return Upgradable.calculateCost(UpgradableType.UNITS, type, resourceType, {"level": 1});
-            }
-            selectedMetalCost  = calcCost(ResourceType.METAL);
-            qSelectedMetalCost = (selectedMetalCost * selector.value).toString();
-            
-            selectedEnergyCost  = calcCost(ResourceType.ENERGY); 
-            qSelectedEnergyCost = (selectedEnergyCost * selector.value).toString();
-            
-            selectedZetiumCost  = calcCost(ResourceType.ZETIUM);
-            qSelectedZetiumCost = (selectedZetiumCost * selector.value).toString();
-            
-            populationCost = Config.getUnitPopulation(type);
-            
-            var timeCost:Number = Upgradable.calculateUpgradeTime(UpgradableType.UNITS, type,
-               {"level": 1}, facility.constructorMod + facility.leveledConstructionMod);
-            selectedTimeCost  = DateUtil.secondsToHumanString(timeCost);
-            qSelectedTimeCost = DateUtil.secondsToHumanString(Math.max(1, timeCost * selector.value));
-            refreshUpgradeState();
-         }
-         
-         private function removePurchacePending(e: Event): void
-         {
-            purchasePending = false;
-            EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
-            facility.removeEventListener(BuildingEvent.QUERY_CHANGE, removePurchacePending);
-         }
-         
-         protected function bButton_clickHandler(event:MouseEvent):void
-         {
-            purchasePending = true;
-            EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
-            facility.addEventListener(BuildingEvent.QUERY_CHANGE, removePurchacePending);
-            new UnitsCommand(UnitsCommand.NEW,                
-               {type: type,
-                  count: selector.value,
-                  constructorId: facility.id}
-            ).dispatch ();
-         }
-         
-         
-         protected function basecontainer1_mouseDownHandler(event:MouseEvent):void
-         {
-            facility.selectedCount = isValid?selector.value:-1;
-            recalculateCosts();
-         }
-         
-         private function changeHandler(e: Event = null): void
-         {
-            if (selector.value > selector.maximum)
-            {
-               selector.value = selector.maximum;
-            }
-            if (facility != null)
-            {
-               facility.selectedCount = selector.value;
+         EventBroker.unsubscribe(GPlanetEvent.BUILDINGS_CHANGE,
+                                 dispatchRefreshValidEvent);
+         EventBroker.unsubscribe(GlobalEvent.APP_RESET, removeEventListeners);
+         purchasePending = false;
+      }
+
+      private static const imageSize: int = 132;
+
+
+      public override function set data(value: Object): void {
+         if (data != value) {
+            super.data = value;
+            if (data) {
+               type = StringUtil.underscoreToCamelCase(data.type);
+               facility = data.facility;
+               selector.value = 1;
                recalculateCosts();
+               refreshUpgradeState();
+               dispatchRefreshValidEvent();
+               var temp: String = type;
+               type = null;
+               type = temp;
             }
          }
-         
-         
-         
-         protected function createCustomToolTip(event:ToolTipEvent):void
-         {
+      }
+
+      [Bindable]
+      private var canBeUpgraded: Boolean = false;
+      [Bindable]
+      private var enoughStorages: Boolean = false;
+      [Bindable]
+      private var enoughRates: Boolean = false;
+      [Bindable]
+      private var resLeft: String = '';
+
+      private static function get ML(): ModelLocator {
+         return ModelLocator.getInstance();
+      }
+
+      private static function get IMG(): ImagePreloader {
+         return ImagePreloader.getInstance();
+      }
+
+      [Bindable]
+      private var purchasePending: Boolean = false;
+
+      private function refreshUpgradeState(e: Event = null): void {
+         if (ML.latestPlanet) {
+            var planet: MSSObject = ML.latestPlanet.ssObject;
+            if (planet) {
+               canBeUpgraded =
+                  !((selectedMetalCost > planet.metal .currentStock)
+                       || (selectedEnergyCost > planet.energy.currentStock)
+                       || (selectedZetiumCost > planet.zetium .currentStock)
+                       || (populationCost >
+                              ML.player.populationMax - ML.player.population));
+               if (!canBeUpgraded) {
+                  enoughStorages =
+                     !(selectedMetalCost > planet.metal.maxStock
+                          || selectedEnergyCost > planet.energy.maxStock
+                          || selectedZetiumCost > planet.zetium.maxStock);
+                  enoughRates =
+                     !(selectedMetalCost > planet.metal.currentStock
+                          && planet.metal.rate <= 0
+                          || selectedEnergyCost > planet.energy.currentStock
+                                && planet.energy.rate <= 0
+                          || selectedZetiumCost > planet.zetium.currentStock
+                                && planet.zetium.rate <= 0
+                          || (Config.getUnitPopulation(type) >
+                                 ML.player.populationMax - ML.player.population));
+                  resLeft = DateUtil.secondsToHumanString(
+                     Resource.getTimeToReachResources(planet.metal,
+                                                      planet.energy,
+                                                      planet.zetium,
+                                                      selectedMetalCost,
+                                                      selectedEnergyCost,
+                                                      selectedZetiumCost)
+                  );
+               }
+            }
+         }
+      }
+
+      [Bindable]
+      private var ammount: int;
+
+      protected function info_clickHandler(event: MouseEvent): void {
+         var temp: Unit = new Unit();
+         temp.type = type;
+         temp.upgradePart.level = 0;
+         NavigationController.getInstance().showInfo(temp);
+      }
+
+      private function recalculateCosts(event: Event = null): void {
+         function calcCost(resourceType: String): Number {
+            return Upgradable.calculateCost(UpgradableType.UNITS, type,
+                                            resourceType, {"level": 1});
+         }
+
+         selectedMetalCost = calcCost(ResourceType.METAL);
+         qSelectedMetalCost = (selectedMetalCost * selector.value).toString();
+
+         selectedEnergyCost = calcCost(ResourceType.ENERGY);
+         qSelectedEnergyCost = (selectedEnergyCost * selector.value).toString();
+
+         selectedZetiumCost = calcCost(ResourceType.ZETIUM);
+         qSelectedZetiumCost = (selectedZetiumCost * selector.value).toString();
+
+         populationCost = Config.getUnitPopulation(type);
+
+         var timeCost: Number = Upgradable.calculateUpgradeTime(
+            UpgradableType.UNITS,
+            type,
+            {"level": 1},
+            facility.constructorMod + facility.leveledConstructionMod
+         );
+         selectedTimeCost = DateUtil.secondsToHumanString(timeCost);
+         qSelectedTimeCost = DateUtil.secondsToHumanString
+                                (Math.max(1, timeCost * selector.value));
+         refreshUpgradeState();
+      }
+
+      private function removePurchacePending(e: Event): void {
+         purchasePending = false;
+         EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED,
+                                 removePurchacePending);
+         facility.removeEventListener(BuildingEvent.QUERY_CHANGE,
+                                      removePurchacePending);
+      }
+
+      protected function bButton_clickHandler(event: MouseEvent): void {
+         purchasePending = true;
+         EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED,
+                               removePurchacePending);
+         facility.addEventListener(BuildingEvent.QUERY_CHANGE,
+                                   removePurchacePending);
+         new UnitsCommand(UnitsCommand.NEW,
+                          {type: type,
+                             count: selector.value,
+                             constructorId: facility.id}
+         ).dispatch();
+      }
+
+
+      protected function basecontainer1_mouseDownHandler(event: MouseEvent): void {
+         facility.selectedCount = isValid ? selector.value : -1;
+         recalculateCosts();
+      }
+
+      private function changeHandler(e: Event = null): void {
+         if (selector.value > selector.maximum) {
+            selector.value = selector.maximum;
+         }
+         if (facility != null) {
+            facility.selectedCount = selector.value;
             recalculateCosts();
-            if (isValid)
-            {
-               var ptt:PriceToolTip = new PriceToolTip();
-               ptt.qMetalCost = qSelectedMetalCost;
-               ptt.qEnergyCost = qSelectedEnergyCost;
-               ptt.qZetiumCost = qSelectedZetiumCost;
-               ptt.qPopulationCost = int(Config.getUnitPopulation(type) * selector.value).toString();
-               ptt.qTimeCost = qSelectedTimeCost;
-               ptt.metalCost = selectedMetalCost.toString();
-               ptt.energyCost = selectedEnergyCost.toString();
-               ptt.zetiumCost = selectedZetiumCost.toString();
-               ptt.populationCost = populationCost.toString();
-               ptt.timeCost = selectedTimeCost;
-               event.toolTip = ptt;
-            }
-            else
-            {
-               event.toolTip = new NoToolTip();
-            }
          }
-         
-         
-         protected function priceGroup_creationCompleteHandler(event:FlexEvent):void
-         {
-            recalculateCosts();
+      }
+
+
+      protected function createCustomToolTip(event: ToolTipEvent): void {
+         recalculateCosts();
+         if (isValid) {
+            var ptt: PriceToolTip = new PriceToolTip();
+            ptt.qMetalCost = qSelectedMetalCost;
+            ptt.qEnergyCost = qSelectedEnergyCost;
+            ptt.qZetiumCost = qSelectedZetiumCost;
+            ptt.qPopulationCost =
+               int(Config.getUnitPopulation(type) * selector.value).toString();
+            ptt.qTimeCost = qSelectedTimeCost;
+            ptt.metalCost = selectedMetalCost.toString();
+            ptt.energyCost = selectedEnergyCost.toString();
+            ptt.zetiumCost = selectedZetiumCost.toString();
+            ptt.populationCost = populationCost.toString();
+            ptt.timeCost = selectedTimeCost;
+            event.toolTip = ptt;
          }
-         
-         
-         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
-         {
-            // refresh internal components states after creation as they dont take values from getters
-            //lblValidation.addEventListener(FlexEvent.UPDATE_COMPLETE, dispatchRefreshValidEvent);
-            dispatchRefreshValidEvent();
+         else {
+            event.toolTip = new NoToolTip();
          }
-         
-         private function dispatchRefreshValidEvent(e: Event = null): void
-         {
-            if (e is FlexEvent)
-            {
-               lblValidation.removeEventListener(FlexEvent.UPDATE_COMPLETE, dispatchRefreshValidEvent);
-            }
-            dispatchEvent(new UnitEvent(UnitEvent.VALIDATION_CHANGED));
+      }
+
+
+      protected function priceGroup_creationCompleteHandler(event: FlexEvent): void {
+         recalculateCosts();
+      }
+
+
+      protected function basecontainer1_creationCompleteHandler(event: FlexEvent): void {
+         // refresh internal components states after creation as they dont take values from getters
+         //lblValidation.addEventListener(FlexEvent.UPDATE_COMPLETE, dispatchRefreshValidEvent);
+         dispatchRefreshValidEvent();
+      }
+
+      private function dispatchRefreshValidEvent(e: Event = null): void {
+         if (e is FlexEvent) {
+            lblValidation.removeEventListener(FlexEvent.UPDATE_COMPLETE,
+                                              dispatchRefreshValidEvent);
          }
-         
-         
-         protected function selector_creationCompleteHandler(event:FlexEvent):void
-         {
-            facility.addEventListener(BuildingEvent.QUERY_CHANGE, changeHandler);
-         }
-         
-         [Bindable (event="validationChanged")]
-         private function get isValid(): Boolean
-         {
-            return Unit.unitIsValid(type);
-         }
-         
-         [Bindable (event="validationChanged")]
-         private function get filter(): Array
-         {
-            return isValid?[]:NOT_VALID_FILTER;
-         }
-         
-         private function rolledOver(): void
-         {
-            lightsAlpha = lights.alpha; 
-            fadeOut.stop();
-            fadeIn.play();
-         }
-         
+         dispatchEvent(new UnitEvent(UnitEvent.VALIDATION_CHANGED));
+      }
+
+
+      protected function selector_creationCompleteHandler(event: FlexEvent): void {
+         facility.addEventListener(BuildingEvent.QUERY_CHANGE, changeHandler);
+      }
+
+      [Bindable (event="validationChanged")]
+      private function get isValid(): Boolean {
+         return Unit.unitIsValid(type);
+      }
+
+      [Bindable (event="validationChanged")]
+      private function get filter(): Array {
+         return isValid ? [] : NOT_VALID_FILTER;
+      }
+
+      private function rolledOver(): void {
+         lightsAlpha = lights.alpha;
+         fadeOut.stop();
+         fadeIn.play();
+      }
       ]]>
    </fx:Script>
    <base:SpinnerContainer busy="{purchasePending}" top="0" left="0" right="0" bottom="0"  timeoutEnabled="false">

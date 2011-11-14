@@ -298,6 +298,15 @@ package components.map.space
          }
          var squad:MSquadron = Collections.findFirst(_mapM.squadrons,
             function(squad:MSquadron) : Boolean {
+               if (squad.units == null) {
+                  logger.warn(
+                     "selectSquadWithUnits()=> Collections.findFirst(=> testFunction):"
+                     + "\n   Squad {0} has most likely been cleaned up and has no units."
+                     + "\n   Assuming the squad should not be selected.",
+                     squad
+                  );
+                  return false;
+               }
                return Collections.findFirstEqualTo(squad.units, unit) != null;
             }
          );

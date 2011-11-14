@@ -21,9 +21,9 @@ package controllers.galaxies.actions
    import models.map.MapArea;
    import models.map.MapType;
    import models.movement.MHop;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
@@ -108,14 +108,14 @@ package controllers.galaxies.actions
             NAV_CTRL.recreateMap(galaxy);
             if (ML.activeMapType == MapType.PLANET) {
                if (ML.latestPlanet == null) {
-                  if (ML.latestSolarSystem != null)
-                     NAV_CTRL.toSolarSystem(ML.latestSolarSystem.id);
+                  if (ML.latestSSMap != null)
+                     NAV_CTRL.toSolarSystem(ML.latestSSMap.id);
                   else
                      NAV_CTRL.toGalaxy();
                }
             }
             else if (ML.activeMapType == MapType.SOLAR_SYSTEM) {
-               if (ML.latestSolarSystem == null)
+               if (ML.latestSSMap == null)
                   NAV_CTRL.toGalaxy();
             }
          }
@@ -149,7 +149,7 @@ package controllers.galaxies.actions
                      var solarSystems: ListCollectionView =
                         galaxy.solarSystemsWithPlayer;
                      if (solarSystems.length != 0) {
-                        var ss: SolarSystem = SolarSystem(
+                        var ss: MSolarSystem = MSolarSystem(
                            solarSystems.getItemAt(0)
                         );
                         galaxy.moveTo(ss.currentLocation, true);
@@ -186,17 +186,19 @@ package controllers.galaxies.actions
          SQUADS_CTRL.addHopsToSquadrons(hops);
          SQUADS_CTRL.attachJumpsAtToHostileSquads(galaxy.squadrons, jumpsAtHash);
          
-         var cachedSS:SolarSystem = ML.latestSolarSystem;
-         var ssInGalaxy:SolarSystem = cachedSS != null ?
-            galaxy.getSSById(cachedSS.id) :
-            null;
-         var cachedPlanet:Planet = ML.latestPlanet;
+         var cachedSS:MSolarSystem = ML.latestSSMap != null
+                                        ? ML.latestSSMap.solarSystem
+                                        : null;
+         var ssInGalaxy:MSolarSystem = cachedSS != null
+                                          ? galaxy.getSSById(cachedSS.id)
+                                          : null;
+         var cachedPlanet:MPlanet = ML.latestPlanet;
          if (cachedPlanet != null &&
              galaxy.getSSById(cachedPlanet.solarSystemId) == null) {
             ML.latestPlanet = null;
          }
          if (ssInGalaxy == null)
-            ML.latestSolarSystem = null;
+            ML.latestSSMap = null;
          
          ML.latestGalaxy = galaxy;
       }
@@ -214,12 +216,12 @@ package controllers.galaxies.actions
       }
       
       private function reloadSolarSystemMap() : void {
-         if (ML.latestSolarSystem != null) {
-            ML.latestSolarSystem.fake = true;
+         if (ML.latestSSMap != null) {
+            ML.latestSSMap.fake = true;
             if (ML.activeMapType == MapType.SOLAR_SYSTEM) {
                new SolarSystemsCommand(
                   SolarSystemsCommand.SHOW,
-                  new controllers.solarsystems.actions.ShowActionParams(ML.latestSolarSystem.id, true)
+                  new controllers.solarsystems.actions.ShowActionParams(ML.latestSSMap.id, true)
                ).dispatch();
             }
          }

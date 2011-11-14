@@ -10,612 +10,613 @@
    
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.skins.GreenButtonSkin;
-         
-         import config.Config;
-         
-         import controllers.GlobalFlags;
-         import controllers.buildings.BuildingsCommand;
-         import controllers.constructionqueues.ConstructionQueuesCommand;
-         import controllers.navigation.MCMainArea;
-         import controllers.navigation.MCSidebar;
-         import controllers.objects.ObjectClass;
-         import controllers.planets.PlanetsCommand;
-         import controllers.screens.MainAreaScreens;
-         import controllers.screens.SidebarScreens;
-         import controllers.units.UnitsCommand;
-         
-         import globalevents.GBuildingEvent;
-         import globalevents.GBuildingMoveEvent;
-         import globalevents.GObjectEvent;
-         import globalevents.GPlanetEvent;
-         import globalevents.GResourcesEvent;
-         import globalevents.GSelectConstructableEvent;
-         import globalevents.GlobalEvent;
-         
-         import models.Owner;
-         import models.building.Building;
-         import models.building.BuildingBonuses;
-         import models.building.MCBuildingSelectedSidebar;
-         import models.building.events.BuildingEvent;
-         import models.constructionqueueentry.ConstructionQueueEntry;
-         import models.events.ScreensSwitchEvent;
-         import models.parts.Upgradable;
-         import models.parts.UpgradableType;
-         import models.planet.PlanetObject;
-         import models.resource.Resource;
-         import models.resource.ResourceType;
-         import models.solarsystem.MSSObject;
-         import models.unit.UnitKind;
-         
-         import mx.collections.ListCollectionView;
-         import mx.core.ScrollPolicy;
-         import mx.events.DragEvent;
-         import mx.events.FlexEvent;
-         import mx.managers.DragManager;
-         
-         import spark.components.Label;
-         
-         import utils.DateUtil;
-         import utils.datastructures.Collections;
-         import utils.locale.Localizer;
-         
-         
-         [Bindable]
-         private var waitingForApproval: Boolean = false;
-         
-         [Bindable]
-         private var _buildingFacilities: ListCollectionView = new ListCollectionView ();
-         
-         [Bindable]
-         public var armorText: String = null;
-         [Bindable]
-         public var energyText: String = null;
-         [Bindable]
-         public var constructionText: String = null;
-         
-         
-         private var armorIndex: int = 0;
-         private var energyIndex: int = 0;
-         private var constructionIndex: int = 0;
-         
-         [Bindable]
-         private var metalPrice: String;
-         [Bindable]
-         private var energyPrice: String;
-         [Bindable]
-         private var zetiumPrice: String;
-         
-         
-         [Bindable]
-         private var selectedBuilding: String = null;
-         
-         [Bindable]
-         private var selectedFacility: Building = null;
-         
-         [Bindable]
-         private var selectedConstructionModel: Building;
-         
-         private function prepare(e: Event = null):void{
-            selectedConstructionModel = null;
-            selectedBuilding = null;
-            armorBonus = 0;
-            energyBonus = 0;
-            constructionBonus = 0;
-            setFacilities();
-            setConstructables()
-         }
-         
-         private function handleDemoChange(e: DemoChangedEvent): void
-         {
-            selectedBuilding = e.building;
-            refreshPrice();
-            dispatchBuildTimeChangeEvent();
-            calculateResLeft()
-         }
-         
-         private static const CONSTRUCTORS: Array = Config.getConstructors(ObjectClass.BUILDING);
-         
-         private function setFacilities(): void
-         {
-            if (ML.latestPlanet != null)
-            {
-               _buildingFacilities = Collections.filter(ML.latestPlanet.objects,
-                  function (item: PlanetObject): Boolean
-                  {
-                     return (item is Building) 
-                     && (BuildingSidebar.CONSTRUCTORS.indexOf(Building(item).type) != -1) 
-                     && (Building(item).state != Building.INACTIVE) 
-                     && (Building(item).upgradePart)
-                     && (Building(item).upgradePart.level > 0) 
-                     && (Building(item).upgradePart.upgradeEndsAt == null);
-                  });
-               facilities.buildGaleryGrid(_buildingFacilities);
-               refreshFacilities();
-               refreshConstructableStates();
-            }
-         }
-         
-         private function refreshFacilities(e: GPlanetEvent = null): void
-         {
-            if (_buildingFacilities && facilities)
-            {
-               facilities.manualSelect();
-            }
-            checkTheDemoThing();
-         }
-         
-         private function removePending(e: GObjectEvent): void
-         {
-            EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePending);
-            waitingForApproval = false;
-            checkTheDemoThing();
-         }
-         
-         private function checkTheDemoThing(e: Event = null): void
-         {
-            if (ML.latestPlanet != null)
-            {
-               if (selectedFacility != null)
-               {
-                  var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
-                  constructable.toggleToDemo((selectedFacility.constructionQueueEntries.length + isConstructing) >= 
-                     (selectedFacility.maxQueryItems + 1));
-                  selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
-               }
-               else
-               {
-                  constructable.toggleToDemo(true);
-               }
-            }
-         }
-         
-         private function refreshBonusGroup(changed: String):void
-         {
-            if (this[changed + "Text"] != null)
-               this[changed + "BonusLabel"].visible = true
-            else
-               this[changed + "BonusLabel"].visible = false;
-         }		
-         
-         /**
-          * this is done when user selects building from constructable list
-          **/
-         private function changeConstructable(e: GSelectConstructableEvent):void{
-            if (e.building == null)
-            {
-               selectedBuilding = null;
-               deployInProgress = false;
-            }
-            else
-            {
-               selectedBuilding = e.building.type;
-               deployInProgress = e.building.unitDeployed != null;
-               cancelDisabled = deployInProgress;
-               calculateResLeft();
-            }
-            dispatchBuildTimeChangeEvent();
-            refreshPrice();
-         }
-         
-         [Bindable]
-         private var deployInProgress: Boolean = false;
-         
-         /**
-          * how many seconds are left to fulfill resources needs for building
-          **/
-         [Bindable]
-         private var resLeft: int = 0;
-         
-         [Bindable]
-         private var enoughStorage: Boolean = true;
-         
-         private function refreshPrice(): void
-         {
-            var metal: int = getMetalPrice();
-            var energy: int = getEnergyPrice();
-            var zetium: int = getZetiumPrice();
-            metalPrice = metal.toString();
-            energyPrice = energy.toString();
-            zetiumPrice = zetium.toString();
-         }
-         
-         /**
-          * thisone should be done when user presses mouse 
-          * on map to confirm building construction
-          * 
-          * @see NewAction.as
-          **/
-         private function dispatchBuildingComand(e: GBuildingEvent):void{	
-            EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePending);
-            if (e.building.unitDeployed == null)
-            {
-               new BuildingsCommand(
-                  BuildingsCommand.NEW,
-                  {
-                     planetId: ML.latestPlanet.id,
-                     x: e.building.x, y: e.building.y, 
-                     type: e.building.type,
-                     constructorId: selectedFacility.id}
-               ).dispatch ();
-               waitingForApproval = true;
-            }
-            else
-            {
-               new UnitsCommand(
-                  UnitsCommand.DEPLOY,
-                  {
-                     planetId: ML.latestPlanet.id,
-                     x: e.building.x, y: e.building.y,
-                     unitId: e.building.unitDeployed.id
-                  }
-               ).dispatch();
-               e.building.unitDeployed = null;
-            }
-            armorBonus = 0;
-            energyBonus = 0;
-            constructionBonus = 0;
-            selectedBuilding = null;
-            deployInProgress = false;
-            constructable.deselectBuilding();
-         }
-         
-         private function constructionMoveHandler(e: GBuildingEvent): void
-         {
-            selectedBuilding = e.building.type;
-            armorBonus = 0;
-            energyBonus = 0;
-            constructionBonus = 0;
-            constructable.moving = true;
-         }
-         
-         private function constructionCanceledHandler(e: GBuildingEvent): void
-         {
-            armorBonus = 0;
-            energyBonus = 0;
-            constructionBonus = 0;
-            selectedBuilding = null;
-            deployInProgress = false;
-            constructable.deselectBuilding();
-            constructable.moving = false;
-            if (e.type == GBuildingEvent.MOVE_CANCEL || e.type == GBuildingEvent.MOVE_CONFIRM)
-            {
-               MCBuildingSelectedSidebar.getInstance().selectedBuilding = e.building;
-               MCSidebar.getInstance().showScreen(SidebarScreens.BUILDING_SELECTED);
-            }
-         }
-         
-         [Bindable (event = "buildTimeChanged")]
-         public function get buildTime():String{
-            if (selectedBuilding != null)
-            {
-               return DateUtil.secondsToHumanString(Upgradable.calculateUpgradeTime(
-                  UpgradableType.BUILDINGS, selectedBuilding, {"level": 1},
-                  (deployInProgress ? 0 : selectedFacility.constructorMod) + constructionMod
-               ));
-            }
-            else
-               return '';
-         }
-         
-         
-         public function set armorBonus(armor: int):void{
-            if (armor > 0) 
-               armorText = "+" + armor + "%"
-            else if (armor < 0) 
-               armorText = armor + "%"
-            else armorText = null;	
-            refreshBonusGroup("armor");
-         }
-         
-         public function set energyBonus(energy: int):void{
-            if (energy > 0) 
-               energyText = "+" + energy + "%"
-            else if (energy < 0) 
-               energyText = energy + "%"
-            else energyText = null;	
-            refreshBonusGroup("energy");
-         }
-         
-         private var constructionMod: Number;
-         
-         public function set constructionBonus(construction: int):void{
-            if (construction > 0) 
-               constructionText = "+" + construction + "%"
-            else if (construction < 0) 
-               constructionText = construction + "%"
-            else constructionText = null;	
-            constructionMod = construction;
-            dispatchBuildTimeChangeEvent();
-            refreshBonusGroup("construction");
-         }
-         
-         private function dispatchBuildTimeChangeEvent(): void
-         {
-            dispatchEvent(new BuildingEvent(BuildingEvent.BUILD_TIME_CHANGED));
-         }
-         
-         private function setAllBonuses(e:GBuildingMoveEvent):void{
-            var bonuses: BuildingBonuses = BuildingBonuses.refreshBonuses(e.tilesUnder);
-            armorBonus = bonuses.armor;
-            energyBonus = bonuses.energyOutput;
-            constructionBonus = bonuses.constructionTime;
-         }
-         
-         private function cancelDrag(e: BuildingEvent): void
-         {
-            queueList.dropEnabled = false;
-            queueList.dragMoveEnabled = false;               
-            DragManager.acceptDragDrop(null);
-            queueList.layout.hideDropIndicator();
-            DragManager.showFeedback(DragManager.NONE);
-            queueList.drawFocus(false);
-         }
-         
-         /**
-          * function that is done when facility from building
-          * facilities list is selected
-          **/
-         protected function changeSelected(e: SelectFacilityEvent):void
-         {
-            selectedConstructionModel = null;
-            if (selectedFacility != null)
-            {
-               selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
-               selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE, checkTheDemoThing);
-            }
-            selectedFacility = e.facility;
-            if (selectedFacility != null)
-            {
-               selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
-               selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE, checkTheDemoThing);
-               selectedConstructionModel = ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
-               var isConstructing: int = selectedFacility.constructableType != null? 1: 0;
-            }
-            checkTheDemoThing();
-            dispatchBuildTimeChangeEvent();
-         }
-         
-         [Bindable (event ="buildingsStatesChange")]
-         private function getMetalPrice():int
-         {
-            if (deployInProgress || (constructable != null && constructable.moving))
-            {
-               return 0;
-            }
-            return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
-               ResourceType.METAL, {"level": 1});
-         }
-         
-         
-         [Bindable (event ="buildingsStatesChange")]
-         private function getEnergyPrice():int
-         {
-            if (deployInProgress || (constructable != null && constructable.moving))
-            {
-               return 0;
-            }
-            return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
-               ResourceType.ENERGY, {"level": 1});
-         }
-         
-         
-         [Bindable (event ="buildingsStatesChange")]
-         private function getZetiumPrice():int
-         {
-            if (deployInProgress || (constructable != null && constructable.moving))
-            {
-               return 0;
-            }
-            return Upgradable.calculateCost(UpgradableType.BUILDINGS, selectedBuilding,
-               ResourceType.ZETIUM, {"level": 1});
-         }
-         
-         private function handleScreenChange(e: ScreensSwitchEvent): void
-         {
-            if (MA.currentName != MainAreaScreens.PLANET)
-            {
-               if (selectedBuilding != null)
-               {
-                  new GSelectConstructableEvent(null);
-               }
-            }
-            else
-            {
-               prepare();
-            }
-         }
-         
-         private function setConstructables(): void
-         {
-            resetBonuses();
-            constructable.buildGalleryGrid();
-            checkTheDemoThing();
-            if (deployInProgress)
-            {
-               if (cancelDisabled)
-               {
-                  cancelDisabled = false;
-               }
-               else
-               {
-                  new GSelectConstructableEvent(null);
-               }
-            }
+      import com.developmentarc.core.utils.EventBroker;
+
+      import components.skins.GreenButtonSkin;
+
+      import config.Config;
+
+      import controllers.GlobalFlags;
+      import controllers.buildings.BuildingsCommand;
+      import controllers.constructionqueues.ConstructionQueuesCommand;
+      import controllers.navigation.MCMainArea;
+      import controllers.navigation.MCSidebar;
+      import controllers.objects.ObjectClass;
+      import controllers.planets.PlanetsCommand;
+      import controllers.screens.MainAreaScreens;
+      import controllers.screens.SidebarScreens;
+      import controllers.units.UnitsCommand;
+
+      import globalevents.GBuildingEvent;
+      import globalevents.GBuildingMoveEvent;
+      import globalevents.GObjectEvent;
+      import globalevents.GPlanetEvent;
+      import globalevents.GResourcesEvent;
+      import globalevents.GSelectConstructableEvent;
+      import globalevents.GlobalEvent;
+
+      import models.Owner;
+      import models.building.Building;
+      import models.building.BuildingBonuses;
+      import models.building.MCBuildingSelectedSidebar;
+      import models.building.events.BuildingEvent;
+      import models.constructionqueueentry.ConstructionQueueEntry;
+      import models.events.ScreensSwitchEvent;
+      import models.parts.Upgradable;
+      import models.parts.UpgradableType;
+      import models.planet.MPlanetObject;
+      import models.resource.Resource;
+      import models.resource.ResourceType;
+      import models.solarsystem.MSSObject;
+      import models.unit.UnitKind;
+
+      import mx.collections.ListCollectionView;
+      import mx.core.ScrollPolicy;
+      import mx.events.DragEvent;
+      import mx.events.FlexEvent;
+      import mx.managers.DragManager;
+
+      import spark.components.Label;
+
+      import utils.DateUtil;
+      import utils.datastructures.Collections;
+      import utils.locale.Localizer;
+
+
+      [Bindable]
+      private var waitingForApproval: Boolean = false;
+
+      [Bindable]
+      private var _buildingFacilities: ListCollectionView = new ListCollectionView();
+
+      [Bindable]
+      public var armorText: String = null;
+      [Bindable]
+      public var energyText: String = null;
+      [Bindable]
+      public var constructionText: String = null;
+
+
+      private var armorIndex: int = 0;
+      private var energyIndex: int = 0;
+      private var constructionIndex: int = 0;
+
+      [Bindable]
+      private var metalPrice: String;
+      [Bindable]
+      private var energyPrice: String;
+      [Bindable]
+      private var zetiumPrice: String;
+
+
+      [Bindable]
+      private var selectedBuilding: String = null;
+
+      [Bindable]
+      private var selectedFacility: Building = null;
+
+      [Bindable]
+      private var selectedConstructionModel: Building;
+
+      private function prepare(e: Event = null): void {
+         selectedConstructionModel = null;
+         selectedBuilding = null;
+         armorBonus = 0;
+         energyBonus = 0;
+         constructionBonus = 0;
+         setFacilities();
+         setConstructables()
+      }
+
+      private function handleDemoChange(e: DemoChangedEvent): void {
+         selectedBuilding = e.building;
+         refreshPrice();
+         dispatchBuildTimeChangeEvent();
+         calculateResLeft()
+      }
+
+      private static const CONSTRUCTORS: Array =
+                              Config.getConstructors(ObjectClass.BUILDING);
+
+      private function setFacilities(): void {
+         if (ML.latestPlanet != null) {
+            _buildingFacilities = Collections.filter(
+               ML.latestPlanet.objects,
+               function (item: MPlanetObject): Boolean {
+                  return (item is Building)
+                            && (BuildingSidebar.CONSTRUCTORS
+                                   .indexOf(Building(item).type) != -1)
+                            && (Building(item).state != Building.INACTIVE)
+                            && (Building(item).upgradePart)
+                            && (Building(item).upgradePart.level > 0)
+                            && (Building(item).upgradePart
+                                   .upgradeEndsAt == null);
+               });
+            facilities.buildGaleryGrid(_buildingFacilities);
+            refreshFacilities();
             refreshConstructableStates();
          }
-         
-         private function handleSidebarChange(e: ScreensSwitchEvent): void
-         {
-            if (SD.currentName == SidebarScreens.CONSTRUCTION)
-            {
-               setConstructables();
-            }
-         }         
-         
-         private function reset(e: GlobalEvent): void
-         {
-            EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePending);
-            waitingForApproval = false;
+      }
+
+      private function refreshFacilities(e: GPlanetEvent = null): void {
+         if (_buildingFacilities && facilities) {
+            facilities.manualSelect();
          }
-         
-         private var MA: MCMainArea = MCMainArea.getInstance();
-         private var SD: MCSidebar = MCSidebar.getInstance();
-         
-         protected function this_creationCompleteHandler(event:FlexEvent):void
-         {
-            EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_COMMIT, dispatchBuildingComand);
-            EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_CANCEL, constructionCanceledHandler);
-            EventBroker.subscribe(GBuildingEvent.MOVE_CANCEL, constructionCanceledHandler);
-            EventBroker.subscribe(GBuildingEvent.MOVE_CONFIRM, constructionCanceledHandler);
-            EventBroker.subscribe(GBuildingEvent.MOVE_INIT, constructionMoveHandler);
-            EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
-            EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
-            SD.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, handleSidebarChange);
-            MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, handleScreenChange);
-            EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, refreshFacilities);
-            EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, prepare);
-            EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
-            //NavigationController.getInstance().addEventListener("mapLoaded", setFacilities);
+         checkTheDemoThing();
+      }
+
+      private function removePending(e: GObjectEvent): void {
+         EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePending);
+         waitingForApproval = false;
+         checkTheDemoThing();
+      }
+
+      private function checkTheDemoThing(e: Event = null): void {
+         if (ML.latestPlanet != null) {
+            if (selectedFacility != null) {
+               var isConstructing: int =
+                      selectedFacility.constructableType != null ? 1 : 0;
+               constructable.toggleToDemo(
+                  (selectedFacility.constructionQueueEntries.length
+                      + isConstructing) >= (selectedFacility.maxQueryItems + 1)
+               );
+               selectedConstructionModel =
+                  ML.latestPlanet.getBuildingById(selectedFacility
+                                                     .constructableId);
+            }
+            else {
+               constructable.toggleToDemo(true);
+            }
+         }
+      }
+
+      private function refreshBonusGroup(changed: String): void {
+         if (this[changed + "Text"] != null) {
+            this[changed + "BonusLabel"].visible = true
+         }
+         else {
+            this[changed + "BonusLabel"].visible = false;
+         }
+      }
+
+      /**
+       * this is done when user selects building from constructable list
+       **/
+      private function changeConstructable(e: GSelectConstructableEvent): void {
+         if (e.building == null) {
+            selectedBuilding = null;
+            deployInProgress = false;
+         }
+         else {
+            selectedBuilding = e.building.type;
+            deployInProgress = e.building.unitDeployed != null;
+            cancelDisabled = deployInProgress;
+            calculateResLeft();
+         }
+         dispatchBuildTimeChangeEvent();
+         refreshPrice();
+      }
+
+      [Bindable]
+      private var deployInProgress: Boolean = false;
+
+      /**
+       * how many seconds are left to fulfill resources needs for building
+       **/
+      [Bindable]
+      private var resLeft: int = 0;
+
+      [Bindable]
+      private var enoughStorage: Boolean = true;
+
+      private function refreshPrice(): void {
+         var metal: int = getMetalPrice();
+         var energy: int = getEnergyPrice();
+         var zetium: int = getZetiumPrice();
+         metalPrice = metal.toString();
+         energyPrice = energy.toString();
+         zetiumPrice = zetium.toString();
+      }
+
+      /**
+       * thisone should be done when user presses mouse
+       * on map to confirm building construction
+       *
+       * @see NewAction.as
+       **/
+      private function dispatchBuildingComand(e: GBuildingEvent): void {
+         EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePending);
+         if (e.building.unitDeployed == null) {
+            new BuildingsCommand(
+               BuildingsCommand.NEW,
+               {
+                  planetId: ML.latestPlanet.id,
+                  x: e.building.x, y: e.building.y,
+                  type: e.building.type,
+                  constructorId: selectedFacility.id}
+            ).dispatch();
+            waitingForApproval = true;
+         }
+         else {
+            new UnitsCommand(
+               UnitsCommand.DEPLOY,
+               {
+                  planetId: ML.latestPlanet.id,
+                  x: e.building.x, y: e.building.y,
+                  unitId: e.building.unitDeployed.id
+               }
+            ).dispatch();
+            e.building.unitDeployed = null;
+         }
+         armorBonus = 0;
+         energyBonus = 0;
+         constructionBonus = 0;
+         selectedBuilding = null;
+         deployInProgress = false;
+         constructable.deselectBuilding();
+      }
+
+      private function constructionMoveHandler(e: GBuildingEvent): void {
+         selectedBuilding = e.building.type;
+         armorBonus = 0;
+         energyBonus = 0;
+         constructionBonus = 0;
+         constructable.moving = true;
+      }
+
+      private function constructionCanceledHandler(e: GBuildingEvent): void {
+         armorBonus = 0;
+         energyBonus = 0;
+         constructionBonus = 0;
+         selectedBuilding = null;
+         deployInProgress = false;
+         constructable.deselectBuilding();
+         constructable.moving = false;
+         if (e.type == GBuildingEvent.MOVE_CANCEL
+                || e.type == GBuildingEvent.MOVE_CONFIRM) {
+            MCBuildingSelectedSidebar.getInstance().selectedBuilding =
+               e.building;
+            MCSidebar.getInstance().showScreen
+               (SidebarScreens.BUILDING_SELECTED);
+         }
+      }
+
+      [Bindable (event = "buildTimeChanged")]
+      public function get buildTime(): String {
+         if (selectedBuilding != null) {
+            return DateUtil.secondsToHumanString(
+               Upgradable.calculateUpgradeTime(
+                  UpgradableType.BUILDINGS, selectedBuilding, {"level": 1},
+                  (deployInProgress ? 0 : selectedFacility.constructorMod)
+                     + constructionMod
+               )
+            );
+         }
+         else {
+            return '';
+         }
+      }
+
+
+      public function set armorBonus(armor: int): void {
+         if (armor > 0) {
+            armorText = "+" + armor + "%"
+         }
+         else if (armor < 0) {
+            armorText = armor + "%"
+         }
+         else {
+            armorText = null;
+         }
+         refreshBonusGroup("armor");
+      }
+
+      public function set energyBonus(energy: int): void {
+         if (energy > 0) {
+            energyText = "+" + energy + "%"
+         }
+         else if (energy < 0) {
+            energyText = energy + "%"
+         }
+         else {
+            energyText = null;
+         }
+         refreshBonusGroup("energy");
+      }
+
+      private var constructionMod: Number;
+
+      public function set constructionBonus(construction: int): void {
+         if (construction > 0) {
+            constructionText = "+" + construction + "%"
+         }
+         else if (construction < 0) {
+            constructionText = construction + "%"
+         }
+         else {
+            constructionText = null;
+         }
+         constructionMod = construction;
+         dispatchBuildTimeChangeEvent();
+         refreshBonusGroup("construction");
+      }
+
+      private function dispatchBuildTimeChangeEvent(): void {
+         dispatchEvent(new BuildingEvent(BuildingEvent.BUILD_TIME_CHANGED));
+      }
+
+      private function setAllBonuses(e: GBuildingMoveEvent): void {
+         var bonuses: BuildingBonuses =
+                BuildingBonuses.refreshBonuses(e.tilesUnder);
+         armorBonus = bonuses.armor;
+         energyBonus = bonuses.energyOutput;
+         constructionBonus = bonuses.constructionTime;
+      }
+
+      private function cancelDrag(e: BuildingEvent): void {
+         queueList.dropEnabled = false;
+         queueList.dragMoveEnabled = false;
+         DragManager.acceptDragDrop(null);
+         queueList.layout.hideDropIndicator();
+         DragManager.showFeedback(DragManager.NONE);
+         queueList.drawFocus(false);
+      }
+
+      /**
+       * function that is done when facility from building
+       * facilities list is selected
+       **/
+      protected function changeSelected(e: SelectFacilityEvent): void {
+         selectedConstructionModel = null;
+         if (selectedFacility != null) {
+            selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE,
+                                                 cancelDrag);
+            selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE,
+                                                 checkTheDemoThing);
+         }
+         selectedFacility = e.facility;
+         if (selectedFacility != null) {
+            selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE,
+                                              cancelDrag);
+            selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE,
+                                              checkTheDemoThing);
+            selectedConstructionModel =
+               ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
+         }
+         checkTheDemoThing();
+         dispatchBuildTimeChangeEvent();
+      }
+
+      [Bindable (event ="buildingsStatesChange")]
+      private function getMetalPrice(): int {
+         if (deployInProgress
+                || (constructable != null && constructable.moving)) {
+            return 0;
+         }
+         return Upgradable.calculateCost(UpgradableType.BUILDINGS,
+                                         selectedBuilding,
+                                         ResourceType.METAL, {"level": 1});
+      }
+
+
+      [Bindable (event ="buildingsStatesChange")]
+      private function getEnergyPrice(): int {
+         if (deployInProgress
+                || (constructable != null && constructable.moving)) {
+            return 0;
+         }
+         return Upgradable.calculateCost(UpgradableType.BUILDINGS,
+                                         selectedBuilding,
+                                         ResourceType.ENERGY, {"level": 1});
+      }
+
+
+      [Bindable (event ="buildingsStatesChange")]
+      private function getZetiumPrice(): int {
+         if (deployInProgress
+                || (constructable != null && constructable.moving)) {
+            return 0;
+         }
+         return Upgradable.calculateCost(UpgradableType.BUILDINGS,
+                                         selectedBuilding,
+                                         ResourceType.ZETIUM, {"level": 1});
+      }
+
+      private function handleScreenChange(e: ScreensSwitchEvent): void {
+         if (MA.currentName != MainAreaScreens.PLANET) {
+            if (selectedBuilding != null) {
+               new GSelectConstructableEvent(null);
+            }
+         }
+         else {
             prepare();
          }
-         
-         
-         protected function queueList_dragCompleteHandler(event:DragEvent):void
-         {
-            if (queueList.dragMoveEnabled)
-            {
-               var tempElement: ConstructionQueueEntry = (event.dragInitiator as List).selectedItems[0] as ConstructionQueueEntry;
-               if (selectedFacility.constructionQueueEntries.getItemIndex(tempElement) != 
-                  tempElement.position)
-               {
-                  var newPosition: int = tempElement.position> selectedFacility.constructionQueueEntries.getItemIndex(tempElement)? 
-                     selectedFacility.constructionQueueEntries.getItemIndex(tempElement): 
-                     selectedFacility.constructionQueueEntries.getItemIndex(tempElement) + 1;
-                  new ConstructionQueuesCommand(
-                     ConstructionQueuesCommand.MOVE,
-                     {id: tempElement.id,
-                        position: newPosition}
-                  ).dispatch ();
-               }
-            }
-         }
-         
-         private var cancelDisabled: Boolean = false;
-         
-         private function refreshConstructableStates(e: Event = null): void
-         {
-            if (deployInProgress)
-            {
-               resLeft = 0;
-               missingStorageString = '';
-               enoughStorage = true;
-               return;
-            }
-            if (selectedFacility != null)
-            {
-               constructable.refreshBuildingsStates(selectedFacility.constructableType != null, cancelDisabled);
-               dispatchBuildingStatesChangeEvent();
-               if (selectedBuilding != null)
-                  calculateResLeft()
-               else
-                  resLeft = 0;
-            }
-            else
-            {
-               constructable.refreshBuildingsStates(false, cancelDisabled);
-               dispatchBuildingStatesChangeEvent();
-               resLeft = 0;
-            }
-         }
-         
-         private function dispatchBuildingStatesChangeEvent(): void
-         {
-            dispatchEvent(new BuildingEvent(BuildingEvent.BUILDING_STATES_CHANGE));
-         }
-         
-         [Bindable]
-         private var missingStorageString: String = '';
-         private function calculateResLeft(): void
-         {
-            var planet:MSSObject = ML.latestPlanet.ssObject;
-            var metalCost: int = getMetalPrice();
-            var energyCost: int = getEnergyPrice();
-            var zetiumCost: int = getZetiumPrice();
-            missingStorageString = Resource.getMissingStoragesString(planet,
-               metalCost, energyCost, zetiumCost);
-            enoughStorage = (missingStorageString == ''?true:false);
-            resLeft = Resource.getTimeToReachResources
-               (planet.metal, planet.energy, planet.zetium, 
-                  metalCost, energyCost, zetiumCost);
-         }
-         
-         
-         protected function constructable_creationCompleteHandler(event:FlexEvent):void
-         {
-            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshConstructableStates);
-            constructable.addEventListener
-               (DemoChangedEvent.DEMO_SELECTION_CHANGED, handleDemoChange)
-         }
-         
-         
-         protected function queueList_dragStartHandler(event:DragEvent):void
-         {
-            queueList.dropEnabled = true;
-            queueList.dragMoveEnabled = true;
-         }
-         
-         private function resetBonuses(): void
-         {
-            armorBonus = 0;
-            energyBonus = 0;
-            constructionBonus = 0;
-         }
-         
-         protected function basecontainer1_rollOverHandler(event:MouseEvent):void
-         {
-            resetBonuses();
-         }
-         
-         private function getStringFromSeconds(seconds: int): String
-         {
-            return DateUtil.secondsToHumanString(seconds);
-         }
-         
-         
-         private function generatesEnergy(buildingType:String) : Boolean
-         {
-            return Building.calculateResourceGenerationRate(buildingType,
-               ResourceType.ENERGY,
-               {"level": 1}) > 0;
-         }
-         
-         
-         protected function queueList_creationCompleteHandler(event:FlexEvent):void
-         {
-            queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
-            queueList.scroller.setStyle('horizontalScrollPolicy', ScrollPolicy.OFF);
-         }
-         
+      }
 
-         protected function button1_clickHandler(event:MouseEvent):void
-         {
-            GlobalFlags.getInstance().lockApplication = true;
-            new PlanetsCommand(PlanetsCommand.TAKE, {
-               'id':ML.latestPlanet.id}).dispatch();
+      private function setConstructables(): void {
+         resetBonuses();
+         constructable.buildGalleryGrid();
+         checkTheDemoThing();
+         if (deployInProgress) {
+            if (cancelDisabled) {
+               cancelDisabled = false;
+            }
+            else {
+               new GSelectConstructableEvent(null);
+            }
          }
-         
-         private function getString(prop: String, args: Array = null): String
-         {
-            return Localizer.string('BuildingSidebar', prop, args);
-         }
-         
-         [Bindable]
-         private var BS: MCBuildingSelectedSidebar = 
-            MCBuildingSelectedSidebar.getInstance();
+         refreshConstructableStates();
+      }
 
+      private function handleSidebarChange(e: ScreensSwitchEvent): void {
+         if (SD.currentName == SidebarScreens.CONSTRUCTION) {
+            setConstructables();
+         }
+      }
+
+      private function reset(e: GlobalEvent): void {
+         EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePending);
+         waitingForApproval = false;
+      }
+
+      private var MA: MCMainArea = MCMainArea.getInstance();
+      private var SD: MCSidebar = MCSidebar.getInstance();
+
+      protected function this_creationCompleteHandler(event: FlexEvent): void {
+         EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_COMMIT,
+                               dispatchBuildingComand);
+         EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_CANCEL,
+                               constructionCanceledHandler);
+         EventBroker.subscribe(GBuildingEvent.MOVE_CANCEL,
+                               constructionCanceledHandler);
+         EventBroker.subscribe(GBuildingEvent.MOVE_CONFIRM,
+                               constructionCanceledHandler);
+         EventBroker.subscribe(GBuildingEvent.MOVE_INIT,
+                               constructionMoveHandler);
+         EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
+         EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED,
+                               changeConstructable);
+         SD.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
+                             handleSidebarChange);
+         MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
+                             handleScreenChange);
+         EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE,
+                               refreshFacilities);
+         EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, prepare);
+         EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
+         //NavigationController.getInstance().addEventListener("mapLoaded", setFacilities);
+         prepare();
+      }
+
+
+      protected function queueList_dragCompleteHandler(event: DragEvent): void {
+         if (queueList.dragMoveEnabled) {
+            var tempElement: ConstructionQueueEntry =
+                   List(event.dragInitiator)
+                      .selectedItems[0] as ConstructionQueueEntry;
+            if (selectedFacility.constructionQueueEntries
+                   .getItemIndex(tempElement) != tempElement.position) {
+               var newPosition: int =
+                      tempElement.position > selectedFacility
+                                                .constructionQueueEntries
+                                                .getItemIndex(tempElement)
+                         ? selectedFacility.constructionQueueEntries
+                              .getItemIndex(tempElement)
+                         : selectedFacility.constructionQueueEntries
+                              .getItemIndex(tempElement) + 1;
+               new ConstructionQueuesCommand(
+                  ConstructionQueuesCommand.MOVE,
+                  {id: tempElement.id, position: newPosition}
+               ).dispatch();
+            }
+         }
+      }
+
+      private var cancelDisabled: Boolean = false;
+
+      private function refreshConstructableStates(e: Event = null): void {
+         if (deployInProgress) {
+            resLeft = 0;
+            missingStorageString = '';
+            enoughStorage = true;
+            return;
+         }
+         if (selectedFacility != null) {
+            constructable.refreshBuildingsStates
+               (selectedFacility.constructableType != null, cancelDisabled);
+            dispatchBuildingStatesChangeEvent();
+            if (selectedBuilding != null) {
+               calculateResLeft()
+            }
+            else {
+               resLeft = 0;
+            }
+         }
+         else {
+            constructable.refreshBuildingsStates(false, cancelDisabled);
+            dispatchBuildingStatesChangeEvent();
+            resLeft = 0;
+         }
+      }
+
+      private function dispatchBuildingStatesChangeEvent(): void {
+         dispatchEvent(new BuildingEvent(BuildingEvent.BUILDING_STATES_CHANGE));
+      }
+
+      [Bindable]
+      private var missingStorageString: String = '';
+
+      private function calculateResLeft(): void {
+         var planet: MSSObject = ML.latestPlanet.ssObject;
+         var metalCost: int = getMetalPrice();
+         var energyCost: int = getEnergyPrice();
+         var zetiumCost: int = getZetiumPrice();
+         missingStorageString = Resource.getMissingStoragesString(planet,
+                                                                  metalCost,
+                                                                  energyCost,
+                                                                  zetiumCost);
+         enoughStorage = (missingStorageString == '' ? true : false);
+         resLeft = Resource.getTimeToReachResources
+                      (planet.metal, planet.energy, planet.zetium,
+                       metalCost, energyCost, zetiumCost);
+      }
+
+
+      protected function constructable_creationCompleteHandler(event: FlexEvent): void {
+         EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE,
+                               refreshConstructableStates);
+         constructable.addEventListener
+            (DemoChangedEvent.DEMO_SELECTION_CHANGED, handleDemoChange)
+      }
+
+
+      protected function queueList_dragStartHandler(event: DragEvent): void {
+         queueList.dropEnabled = true;
+         queueList.dragMoveEnabled = true;
+      }
+
+      private function resetBonuses(): void {
+         armorBonus = 0;
+         energyBonus = 0;
+         constructionBonus = 0;
+      }
+
+      protected function basecontainer1_rollOverHandler(event: MouseEvent): void {
+         resetBonuses();
+      }
+
+      private function getStringFromSeconds(seconds: int): String {
+         return DateUtil.secondsToHumanString(seconds);
+      }
+
+
+      private function generatesEnergy(buildingType: String): Boolean {
+         return Building.calculateResourceGenerationRate(buildingType,
+                                                         ResourceType.ENERGY,
+                                                         {"level": 1}) > 0;
+      }
+
+
+      protected function queueList_creationCompleteHandler(event: FlexEvent): void {
+         queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
+         queueList.scroller.setStyle('horizontalScrollPolicy',
+                                     ScrollPolicy.OFF);
+      }
+
+
+      protected function button1_clickHandler(event: MouseEvent): void {
+         GlobalFlags.getInstance().lockApplication = true;
+         new PlanetsCommand(PlanetsCommand.TAKE, {
+            'id':ML.latestPlanet.id}).dispatch();
+      }
+
+      private function getString(prop: String, args: Array = null): String {
+         return Localizer.string('BuildingSidebar', prop, args);
+      }
+
+      [Bindable]
+      private var BS: MCBuildingSelectedSidebar =
+                     MCBuildingSelectedSidebar.getInstance();
       ]]>
    </fx:Script>
    

@@ -2,14 +2,14 @@ package models.factories
 {
    import models.BaseModel;
    import models.MWreckage;
-   import models.solarsystem.SSMetadata;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSSMetadata;
+   import models.solarsystem.MSolarSystem;
    
    import mx.core.mx_internal;
    
    
    /**
-    * Lets easily create instaces of solar systems. 
+    * Lets easily create instances of solar systems.
     */
    public class SolarSystemFactory
    {
@@ -21,24 +21,14 @@ package models.factories
        * @return instance of <code>SolarSystem</code> with values of properties
        * loaded from the data object.
        */
-      public static function fromObject(data:Object) : SolarSystem {
+      public static function fromObject(data:Object) : MSolarSystem {
          if (!data) {
             return null;
          }
-         
-         var ss:SolarSystem = BaseModel.createModel(SolarSystem, data);
-         if (data["metadata"] != null)
-            ss.metadata = BaseModel.createModel(SSMetadata, data.metadata);
-         for each (var object:Object in data.ssObjects) {
-            ss.addObject(SSObjectFactory.fromObject(object));
+         var ss:MSolarSystem = BaseModel.createModel(MSolarSystem, data);
+         if (data["metadata"] != null) {
+            ss.metadata = BaseModel.createModel(MSSMetadata, data.metadata);
          }
-         for each (var wreckage:Object in data.wreckages) {
-            ss.addObject(BaseModel.createModel(MWreckage, wreckage));
-         }
-         for each (var cooldown:Object in data.cooldowns) {
-            ss.addObject(CooldownFactory.MCooldownSpace_fromObject(cooldown));
-         }
-         
          return ss;
       }
    }

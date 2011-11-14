@@ -147,8 +147,8 @@ package controllers.units
                   break;
                
                case MapType.SOLAR_SYSTEM:
-                  if (!ML.latestSolarSystem.isBattleground)
-                     locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
+                  if (!ML.latestSSMap.solarSystem.isBattleground)
+                     locationSourceGalaxy = ML.latestSSMap.currentLocation;
                   else
                      locationSourceGalaxy = null;
                   
@@ -160,7 +160,7 @@ package controllers.units
                
                case MapType.PLANET:
                   if (!ML.latestPlanet.inBattleground)
-                     locationSourceGalaxy = ML.latestSolarSystem.currentLocation;
+                     locationSourceGalaxy = ML.latestSSMap.currentLocation;
                   else
                      locationSourceGalaxy = null;
                   locationSourceSolarSystem = ML.latestPlanet.currentLocation;
@@ -253,7 +253,7 @@ package controllers.units
                NAV_CTRL.toSolarSystem(
                   ML.latestPlanet.solarSystemId,
                   function() : void {
-                     ML.latestSolarSystem.moveTo(ML.latestPlanet.currentLocation);
+                     ML.latestSSMap.moveTo(ML.latestPlanet.currentLocation);
                   }
                );
                break;
@@ -286,10 +286,12 @@ package controllers.units
       }
       
       /**
-       * Called by <code>cotrollers.units.MoveAction</code> when server has sent us trip time back. Now user
-       * can choose to speed up or slow down the units.
+       * Called by <code>controllers.units.MoveAction</code> when server has
+       * sent us trip time back. Now user can choose to speed up or slow down
+       * the units.
        * 
-       * @param time when units would reach their destination if they are dispatched right away.
+       * @param arrivalTime when units would reach their destination if they
+       * are dispatched right away.
        */
       public function showSpeedUpPopup(arrivalTime:Number, hopCount: int) : void {
          if (hasEventListener(OrdersControllerEvent.UICMD_ACTIVATE_SPEED_UP_POPUP)) {
@@ -333,9 +335,9 @@ package controllers.units
       }
       
       
-      /* ######################### */
-      /* ### ORDER CANCELATION ### */
-      /* ######################### */
+      /* ########################## */
+      /* ### ORDER CANCELLATION ### */
+      /* ########################## */
       
       /**
        * Cancels current order: restores client to its state before the order issuing process
@@ -404,10 +406,7 @@ package controllers.units
       /* ################################ */
       
       private function squad_pendingChangeHandler(event:BaseModelEvent = null) : void {
-         if (_squad != null && _squad.pending)
-            flag_disableOrderPopup = true;
-         else
-            flag_disableOrderPopup = false;
+         flag_disableOrderPopup = _squad != null && _squad.pending;
       }
       
       

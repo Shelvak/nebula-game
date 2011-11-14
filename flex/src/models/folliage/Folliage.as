@@ -1,6 +1,6 @@
 package models.folliage
 {
-   import models.planet.PlanetObject;
+   import models.planet.MPlanetObject;
    import models.tile.TerrainType;
    
    import mx.collections.IList;
@@ -9,7 +9,7 @@ package models.folliage
    /**
     * Base class for folliages.
     */
-   public class Folliage extends PlanetObject
+   public class Folliage extends MPlanetObject
    {
       /**
        * Sets terrain type of each folliage in the list.
@@ -41,7 +41,7 @@ package models.folliage
        * from <code>TerrainType</code> class.
        * 
        * <p>Setting this property will dispatch
-       * <code>PlanetObjectEvent.IMAGE_CHANGE</code> event.</p>
+       * <code>MPlanetObjectEvent.IMAGE_CHANGE</code> event.</p>
        * 
        * @default TerrainType.GRASS
        */
