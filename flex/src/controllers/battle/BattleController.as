@@ -57,8 +57,8 @@ package controllers.battle
    import utils.MathUtil;
    import utils.Objects;
    import utils.StringUtil;
-   
-   
+
+
    public class BattleController
    {
       private static var _battleController:BattleController;
@@ -505,7 +505,7 @@ package controllers.battle
             {
                transporter.removeEventListener(AnimatedBitmapEvent.ANIMATION_COMPLETE, reduceAppearOrderCount);
                //kill unit after unloading?
-               if (!transporter.attacking && transporter.shouldDie)
+               if (transporter.attacking == 0 && transporter.shouldDie)
                {
                   transporter.addEventListener(
                      AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE,
@@ -517,7 +517,7 @@ package controllers.battle
                      throw new Error(transporter.participantModel.type+' cant die, because it is already dying');
                   }
                   if ((transporter.currentAnimation != null && transporter.currentAnimation.indexOf('fire') != -1) ||
-                     transporter.attacking)
+                     transporter.attacking > 0)
                   {
                      throw new Error(transporter.participantModel.type+' cant die, because it is shooting');
                   }
@@ -554,15 +554,15 @@ package controllers.battle
          {
             var attacker:BBattleParticipantComp =
                _battleMap.getParticipant(order.executorType, order.executorId);
-            if (attacker.attacking)
+            if (attacker.attacking > attacker.maxAttacking)
             {
                attacker.addPendingAttack(order);
                return;
             }
-            attacker.attacking = true;
+            attacker.attacking++;
             var attackerModel: IMBattleParticipant = _battleMap.getParticipantModel(order.executorType, order.executorId);
             var partIndex:int = 0;
-            var activateNextGun:Function = function (event:AnimatedBitmapEvent = null) : void
+            function activateNextGun(event:AnimatedBitmapEvent = null) : void
             {
                if (_battleMap != null)
                {
@@ -666,8 +666,8 @@ package controllers.battle
             {
                if (lastGun)
                { 
-                  var nextFireOrder: FireOrder = attacker.finishAttack();
-                  if (nextFireOrder != null)
+                  var nextFireOrders: Array = attacker.finishAttack();
+                  if (nextFireOrders != null)
                   {
                      var nextFireOrderTimer: Timer = new Timer(GROUP_DELAY * timeMultiplier, 1);
                      
@@ -689,12 +689,19 @@ package controllers.battle
                         nextFireOrderTimer.delay = nextFireOrderTimer.delay * (oldFps/fps);
                      }
                      
-                     var trigerNextAttacker: Function = function (e: TimerEvent): void
+                     function trigerNextAttacker(e: TimerEvent): void
                      {
-                        attacker.attacking = false;
+                        attacker.attacking--;
                         battleSpeedControl.removeEventListener(BattleControllerEvent.TOGGLE_PAUSE, togglePauseNextFire);
                         battleSpeedControl.removeEventListener(BattleControllerEvent.CHANGE_SPEED, changeNextFireDelayTimerSpeed);
-                        executeFire(nextFireOrder);
+                        if (attacker.attacking == 0)
+                        {
+                           attacker.cleanPendingOrders();
+                           for each (var nextFireOrder: FireOrder in nextFireOrders)
+                           {
+                              executeFire(nextFireOrder);
+                           }
+                        }
                      }
                      
                      nextFireOrderTimer.addEventListener(TimerEvent.TIMER, trigerNextAttacker);
@@ -705,9 +712,9 @@ package controllers.battle
                   }
                   else
                   {
-                     attacker.attacking = false;
+                     attacker.attacking--;
                   }
-                  if (attacker.shouldDie && !attacker.hasPendingAttacks() && !attacker.attacking)
+                  if (attacker.shouldDie && !attacker.hasPendingAttacks() && attacker.attacking == 0)
                   {
                      attacker.addEventListener(
                         AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE,
@@ -719,7 +726,7 @@ package controllers.battle
                         throw new Error(attacker.participantModel.type+' cant die, because it is already dying');
                      }
                      if ((attacker.currentAnimation != null && attacker.currentAnimation.indexOf('fire') != -1) ||
-                        attacker.attacking)
+                        attacker.attacking > 0)
                      {
                         throw new Error(attacker.participantModel.type+' cant die, because it is shooting');
                      }
@@ -732,7 +739,7 @@ package controllers.battle
             }
          }
          
-         var fireShot:Function = function(event:TimerEvent = null) : void
+         function fireShot(event:TimerEvent = null) : void
          {
             createProjectile(
                gunId, attacker, target, targetModel, 
@@ -756,8 +763,11 @@ package controllers.battle
                      if (attacker.dead)
                         throw new Error(attacker.participantModel.type+
                            ' is playing death animation, but still needs to shoot');
-                     
-                     attacker.playAnimationImmediately("fireGun" + gunId);
+                     if (attacker.currentAnimation == null ||
+                             attacker.currentAnimation.indexOf('fireGun') == -1)
+                     {
+                        attacker.playAnimationImmediately("fireGun" + gunId);
+                     }
                      if (gun.shots > 1)
                      {
                         shotDelayTimer.addEventListener(TimerEvent.TIMER, fireShot);
@@ -779,6 +789,7 @@ package controllers.battle
             else if (shotDelayTimer.currentCount == shotDelayTimer.repeatCount)
             {
                battleSpeedControl.removeEventListener(BattleControllerEvent.TOGGLE_PAUSE, togglePauseShotDelayTimer);
+               battleSpeedControl.removeEventListener(BattleControllerEvent.CHANGE_SPEED, changeShotDelayTimerSpeed);
                if (attacker.currentAnimation == null || attacker.currentAnimation.indexOf('fire') == -1)
                {
                   dealAnimationComplete();
@@ -843,9 +854,10 @@ package controllers.battle
              * arrival coordinates. This is a complex operation so handle with care!
              */
             var pointGun:Point    = attacker.getAbsoluteGunPosition(gunId);
-            var dispersion: Number = MathUtil.randomBetween(-gun.dispersion, gun.dispersion);
+            var dispersion: Point = target.getDispersion(_battle.rand);
             var pointTarget:Point = target.getAbsoluteTargetPoint();
-            pointTarget.y += dispersion;
+            pointTarget.y += dispersion.y;
+            pointTarget.x += dispersion.x;
             // angle between a horizontal axis and the vector which starts at pointGun and ends at pointTarget
             // in degrees
             var direction:Vector3D =  new Vector3D(pointTarget.x, pointTarget.y)
@@ -918,7 +930,9 @@ package controllers.battle
             var dmgBubble: DamageBubble = new DamageBubble();
             dmgBubble.depth = _battleMap.unitsMatrix.rowCount + 10;
             dmgBubble.damage = damageTaken;
-            dmgBubble.x = target.getAbsoluteTargetPoint().x - 20;
+            dmgBubble.x = target.getAbsoluteTargetPoint().x +
+                    ((target.flippedHorizontally ? -1 : 1) *
+                            (target.boxWidth/2)) - 20;
             dmgBubble.y = target.getAbsoluteTargetPoint().y - 20;
             _battleMap.addDamageBubble(dmgBubble);
             dmgBubbles.addItem(dmgBubble);
@@ -971,7 +985,7 @@ package controllers.battle
             }
             else
             {
-               if (target.hasAnimation("hit") && !target.attacking)
+               if (target.hasAnimation("hit") && target.attacking == 0)
                {
                   if (target.currentAnimation != null && target.currentAnimation.indexOf('fire') != -1)
                   {
@@ -1022,7 +1036,7 @@ package controllers.battle
             {
                // Don't play immediately if still shooting, because firing next gun depends on shooting
                // animations playing properly.
-               if (!participant.attacking && participant.currentAnimation != 'unload')
+               if (participant.attacking == 0 && participant.currentAnimation != 'unload')
                {
                   participant.addEventListener(
                      AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE,
@@ -1033,7 +1047,7 @@ package controllers.battle
                   {
                      throw new Error(participant.participantModel.type+' cant die, because it is already dying');
                   }
-                  if (participant.attacking)
+                  if (participant.attacking > 0)
                   {
                      throw new Error(participant.participantModel.type+' cant die, because it is shooting');
                   }
@@ -1061,32 +1075,33 @@ package controllers.battle
             var target: * = event.target;
             if (target is BBattleParticipantComp)
             {
-               if (!(target as BBattleParticipantComp).dead)
+               var bTarget: BBattleParticipantComp = BBattleParticipantComp(target);
+               if (!bTarget.dead)
                {
-                  throw new Error((target as BBattleParticipantComp).participantModel.type+
+                  throw new Error(bTarget.participantModel.type+
                      ' is not yet dead, but was requested to remove');
                }
-               if ((target as BBattleParticipantComp).getLiving() != 0)
-                  throw new Error((target as BBattleParticipantComp).participantModel.type+
+               if (bTarget.getLiving() != 0)
+                  throw new Error(bTarget.participantModel.type+
                      ' is still alive, and was requested to remove');
-               if ((target as BBattleParticipantComp).attacking)
-                  throw new Error((target as BBattleParticipantComp).participantModel.type+
+               if (bTarget.attacking > 0)
+                  throw new Error(bTarget.participantModel.type+
                      ' is still shooting, and was requested to remove');
-               if (target is BUnitComp)
+               if (bTarget is BUnitComp)
                {
                   var sadFlank: BFlank = _battle.getFlankByUnitId(
-                     ((target as BUnitComp).model as BUnit).id);
+                     BUnit(BUnitComp(bTarget).model).id);
                   
                   if (!sadFlank.hasAliveUnits())
                   {
                      _battleMap.unitsMatrix.freeCell(sadFlank.cellsToFree.start, 0);
                      _battleMap.unitsMatrix.freeCell(sadFlank.cellsToFree.end, 0);
                   }
-                  _battleMap.removeUnit(target as BUnitComp);
+                  _battleMap.removeUnit(BUnitComp(bTarget));
                }
                else
                {
-                  _battleMap.removeBuilding(target as BBuildingComp);
+                  _battleMap.removeBuilding(BBuildingComp(bTarget));
                }
             }
             else

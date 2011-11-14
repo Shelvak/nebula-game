@@ -12,6 +12,8 @@ package models
       function get box() : Rectangle;
       
       function get targetPoint() : Point;
+
+      function get hitBox() : Rectangle;
       
       function get hpActual() : int;
       function set hpActual(value:int) : void;
