@@ -128,7 +128,7 @@ module Parts::Constructor
     # the resources back.
     def cancel_constructable!
       raise GameLogicError.new("Constructor isn't working!") unless working?
-      constructable.cancel!
+      constructable.cancel!(true)
       CallbackManager.unregister(self,
         CallbackManager::EVENT_CONSTRUCTION_FINISHED)
       on_construction_finished!(false)

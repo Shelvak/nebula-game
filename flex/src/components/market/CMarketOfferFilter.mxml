@@ -280,12 +280,12 @@
                       labelFunction="{ResourceType.resourceLabelFunction}"
                       id="from"
                       requireSelection="true"
-                      width="152"
+                      minWidth="152"
                       change="from_changeHandler(event)"
                       itemRenderer="components.base.IRResource"/>
       <s:Label text="{getText('filter.for')}"/>
       <s:DropDownList id="toRes" dataProvider="{toKinds}"
-                      width="152"
+                      minWidth="152"
                       labelFunction="{ResourceType.resourceLabelFunction}"
                       change="toRes_changeHandler(event)"
                       requireSelection="true"

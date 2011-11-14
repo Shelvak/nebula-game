@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+    xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:mx="library://ns.adobe.com/flex/mx"
+        minWidth="100">
+   <fx:Script><![CDATA[
+      import models.location.LocationType;
+      import utils.locale.Localizer;
+
+      [Bindable]
+      private var locationType: int;
+
+      public override function set data(value: Object): void
+      {
+         super.data = value;
+         locationType = int(value);
+      }
+      ]]></fx:Script>
+   <s:Label id="txtLbl" text="{Localizer.string('Location',
+   locationType == LocationType.GALAXY ? 'description.short.galaxy'
+   : (locationType == LocationType.SOLAR_SYSTEM ? 'header.solarSystem'
+   : (locationType == LocationType.SS_OBJECT ? 'header.planet'
+   : 'header.any')))}" bottom="3" top="3" left="3" right="3"
+           maxDisplayedLines="1"/>
+</s:ItemRenderer>

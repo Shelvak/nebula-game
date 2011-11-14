@@ -31,7 +31,7 @@ class Nap < ActiveRecord::Base
   #
   # Alliances in a set have naps with alliance in hash key.
   #
-  def self.get_rules(alliance_ids, status=STATUS_ESTABLISHED)
+  def self.get_rules(alliance_ids, status=[STATUS_ESTABLISHED, STATUS_CANCELED])
     nap_rules = {}
 
     Nap.where(:status => status).where(

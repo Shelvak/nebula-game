@@ -18,7 +18,7 @@ system and planet.
             <s:HorizontalLayout horizontalAlign="left" gap="0"/>
          </s:layout>
          <notifications:NotificationsButton id="btnNotifications" name="{MainAreaScreens.NOTIFICATIONS}"/>
-         <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" width="100" dataProvider="{ML.player.planets}"/>
+         <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" minWidth="100" dataProvider="{ML.player.planets}"/>
          <base:AdvancedContainer height="100%">
             <base:layout>
                <s:HorizontalLayout gap="-9"/>

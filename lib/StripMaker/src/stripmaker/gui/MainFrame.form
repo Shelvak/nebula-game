@@ -57,7 +57,7 @@
                               <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="frameHeight" min="-2" pref="112" max="-2" attributes="0"/>
-                              <EmptySpace pref="58" max="-2" attributes="0"/>
+                              <EmptySpace pref="93" max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" alignment="0" groupAlignment="0" attributes="0">
                               <Component id="buildingsMode" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -72,12 +72,9 @@
                                           <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
                                           <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="buildingHeight" pref="62" max="32767" attributes="0"/>
+                                          <Component id="buildingHeight" pref="98" max="32767" attributes="0"/>
                                       </Group>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace pref="5" max="-2" attributes="0"/>
-                                      </Group>
+                                      <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -107,7 +104,7 @@
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="197" max="32767" attributes="0"/>
+                      <EmptySpace pref="161" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -185,7 +182,7 @@
                           <Group type="102" attributes="0">
                               <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="61" max="-2" attributes="0"/>
-                              <Component id="sharpenSelector" pref="546" max="32767" attributes="0"/>
+                              <Component id="sharpenSelector" pref="520" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
@@ -193,13 +190,13 @@
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Component id="statusLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" alignment="1" attributes="0">
-                                      <Component id="dataDirectory" pref="410" max="32767" attributes="0"/>
+                                      <Component id="dataDirectory" pref="354" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="chooseDataDirButton" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="loadDataButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="dataProgress" alignment="0" pref="546" max="32767" attributes="0"/>
+                                  <Component id="dataProgress" alignment="0" pref="510" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -226,7 +223,7 @@
                       <Component id="statusLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="dataProgress" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="230" max="32767" attributes="0"/>
+                      <EmptySpace pref="192" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -300,16 +297,14 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="boxCutter" alignment="0" max="32767" attributes="0"/>
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="boxLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="524" max="32767" attributes="0"/>
+                              <EmptySpace pref="533" max="32767" attributes="0"/>
                               <Component id="currentPosition" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="setBoxButton" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="setTargetPointButton" min="-2" max="-2" attributes="0"/>
+                              <Component id="setTargetBoxButton" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="gunSpinner" min="-2" pref="54" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -326,7 +321,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="setBoxButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="setTargetPointButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="setTargetBoxButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="gunSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="setGunPointsButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -334,9 +329,8 @@
                       <Component id="boxCutter" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="boxLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="currentPosition" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="boxLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -362,21 +356,16 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="681" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="673" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="283" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="253" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
             </Container>
-            <Component class="javax.swing.JLabel" name="jLabel8">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Box:"/>
-              </Properties>
-            </Component>
             <Component class="javax.swing.JLabel" name="boxLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="unknown"/>
@@ -398,15 +387,15 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="setBoxButtonActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="setTargetPointButton">
+            <Component class="javax.swing.JButton" name="setTargetBoxButton">
               <Properties>
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="2" green="af" red="ab" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Set target point"/>
+                <Property name="text" type="java.lang.String" value="Set target box"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="setTargetPointButtonActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="setTargetBoxButtonActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JSpinner" name="gunSpinner">
@@ -447,12 +436,12 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="jScrollPane1" alignment="0" pref="683" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" alignment="0" pref="675" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Group type="102" attributes="0">
                                       <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace pref="399" max="32767" attributes="0"/>
+                                      <EmptySpace pref="391" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
                                       <Component id="reloadMetadata" min="-2" max="-2" attributes="0"/>
@@ -474,7 +463,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" pref="285" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="261" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="saveButton" alignment="3" min="-2" max="-2" attributes="0"/>

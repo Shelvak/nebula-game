@@ -18,14 +18,14 @@ import java.util.List;
  */
 public class InfoManager {
   public static String getMetadata(Gatherer gatherer, Rectangle processedRect,
-          Rectangle box) {
+          Rectangle box, Rectangle targetBox) {
     StringWriter out = new StringWriter();
 
     out.write("---\n");
 
     out.write("# Box where actual unit is in default action.\n");
-    writeBoxProperties(out, box);
-    writeUnitProperties(out);
+    writeBoxProperties(out, "box", box);
+    writeUnitProperties(out, targetBox);
     writeProjectileProperties(out);
     
     out.write("# Actions\n");
@@ -83,11 +83,8 @@ public class InfoManager {
     return out.toString();
   }
 
-  public static String getTargetPoint(Point point) {
-    return String.format("target_point: [%d, %d]\n", point.x, point.y);
-  }
-
-  private static void writeUnitProperties(StringWriter out) {
+  private static void writeUnitProperties(StringWriter out, 
+          Rectangle targetBox) {
     out.write("### Combat Participant properties ###\n");
     out.write("# Only useful if this asset is unit or shooting building.\n");
     out.write("# Guns\n");
@@ -99,8 +96,8 @@ public class InfoManager {
     guns.add(new Point(0, 0));
     out.write(getGunPoints(guns));
     out.write("\n");
-    out.write("# Target point (where bullets hit).\n");
-    out.write(getTargetPoint(new Point(0, 0)));
+    out.write("# Target box (where bullets hit).\n");
+    out.write(getBoxProperties("target_box", targetBox));
     out.write("\n");
     out.write("# Is this unit passable when dead?\n");
     out.write("dead.passable: false\n");
@@ -134,14 +131,15 @@ public class InfoManager {
     out.write("\n");
   }
 
-  public static String getBoxProperties(Rectangle box) {
+  public static String getBoxProperties(String key, Rectangle box) {
     StringWriter out = new StringWriter();
-    writeBoxProperties(out, box);
+    writeBoxProperties(out, key, box);
     return out.toString();
   }
 
-  private static void writeBoxProperties(StringWriter out, Rectangle box) {
-    out.write("box:\n");
+  private static void writeBoxProperties(StringWriter out, String key, 
+          Rectangle box) {
+    out.write(key + ":\n");
     out.write(String.format("  top_left: [%d, %d]\n", box.x, box.y));
     out.write(String.format("  bottom_right: [%d, %d]\n",
             box.x + box.width, box.y + box.height));

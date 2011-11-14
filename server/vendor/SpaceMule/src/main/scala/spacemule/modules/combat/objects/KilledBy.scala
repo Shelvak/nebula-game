@@ -13,5 +13,9 @@ class KilledBy {
   def update(victim: Combatant, killer: Option[Player]) =
     map = map.updated(victim, killer)
 
+  def foreach(f: ((Combatant, Option[Player])) => Unit) {
+    map.foreach(f)
+  }
+
   def toMap: KilledBy.DataMap = map
 }

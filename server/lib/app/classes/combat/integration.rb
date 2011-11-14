@@ -88,6 +88,7 @@ module Combat::Integration
       unless player.nil?
         player.war_points += statistics[player.id][Combat::STATS_WAR_PTS_ATTR]
         player.victory_points += statistics[player.id][Combat::STATS_VPS_ATTR]
+        player.creds += statistics[player.id][Combat::STATS_CREDS_ATTR]
         player.save!
       end
     end
