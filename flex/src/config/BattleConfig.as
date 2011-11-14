@@ -201,8 +201,7 @@ package config
       public static function getUnitHitBox(type:String) : Rectangle
       {
          var point:Object = getUnitAnimationProps(type).targetBox;
-         return point == null ? getUnitBox(type)
-                 : new Rectangle(
+         return new Rectangle(
             point.topLeft[0],
             point.topLeft[1],
             point.bottomRight[0] - point.topLeft[0] + 1,
@@ -214,8 +213,7 @@ package config
       public static function getBuildingHitBox(type:String) : Rectangle
       {
          var point:Object = getBuildingAnimationProps(type).targetBox;
-         return point == null ? getBuildingBox(type)
-                 : new Rectangle(
+         return new Rectangle(
             point.topLeft[0],
             point.topLeft[1],
             point.bottomRight[0] - point.topLeft[0] + 1,
