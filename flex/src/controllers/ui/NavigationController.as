@@ -43,14 +43,15 @@ package controllers.ui
    import models.healing.MCHealingScreen;
    import models.infoscreen.MCInfoScreen;
    import models.map.MMap;
+   import models.map.MMapSolarSystem;
    import models.map.MapType;
    import models.market.MCMarketScreen;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.player.MRatingPlayer;
    import models.quest.Quest;
    import models.ratings.MCRatingsScreen;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    import models.unit.MCLoadUnloadScreen;
    import models.unit.MCUnitScreen;
    import models.unit.MCUnitsBuild;
@@ -114,59 +115,59 @@ package controllers.ui
             MainAreaScreens.GALAXY, null, false, true, MapType.GALAXY, "latestGalaxy",
             CMapGalaxy.screenShowHandler,
             CMapGalaxy.screenHideHandler
-         )
+         );
          _screenProperties[String (MainAreaScreens.SOLAR_SYSTEM)] = new ScreenProperties(
-            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSolarSystem",
+            MainAreaScreens.SOLAR_SYSTEM, null, false, true, MapType.SOLAR_SYSTEM, "latestSSMap",
             CMapSolarSystem.screenShowHandler,
             CMapSolarSystem.screenHideHandler
-         )
+         );
          _screenProperties[String (MainAreaScreens.PLANET)] = new ScreenProperties(
             MainAreaScreens.PLANET, SidebarScreens.CONSTRUCTION, true, true, MapType.PLANET, "latestPlanet",
             PlanetMap.screenShowHandler,
             PlanetMap.screenHideHandler
-         )
+         );
          _screenProperties[String (MainAreaScreens.TECH_TREE)] = new ScreenProperties(
             MainAreaScreens.TECH_TREE, SidebarScreens.TECH_TREE_BASE
-         )
+         );
          _screenProperties[String (MainAreaScreens.STORAGE)] = new ScreenProperties(
             MainAreaScreens.STORAGE, null, false
-         )
+         );
          _screenProperties[String (MainAreaScreens.UNITS)] = new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         )
+         );
          _screenProperties[String (MainAreaScreens.LOAD_UNLOAD)] = new ScreenProperties(
             MainAreaScreens.LOAD_UNLOAD, SidebarScreens.LOAD_UNLOAD
-         )
+         );
          _screenProperties[String (MainAreaScreens.HEAL)] = new ScreenProperties(
             MainAreaScreens.HEAL, SidebarScreens.HEAL
-         )
+         );
          _screenProperties[String (MainAreaScreens.MARKET)] = new ScreenProperties(
             MainAreaScreens.MARKET, SidebarScreens.MARKET
-         )
+         );
          _screenProperties[String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.GROUND)] = new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         )
+         );
          _screenProperties[String (MainAreaScreens.UNITS+Owner.ALLY+UnitKind.GROUND)] = new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         )
+         );
          _screenProperties[String (MainAreaScreens.UNITS+Owner.ENEMY+UnitKind.GROUND)] = new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         )
+         );
          _screenProperties[String (MainAreaScreens.UNITS+Owner.NAP+UnitKind.GROUND)] = new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         )
+         );
          _screenProperties[String (MainAreaScreens.UNITS+Owner.PLAYER+UnitKind.SPACE)] = new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         )
+         );
          _screenProperties[String (MainAreaScreens.UNITS+Owner.ALLY+UnitKind.SPACE)] = new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         )
+         );
          _screenProperties[String (MainAreaScreens.UNITS+Owner.ENEMY+UnitKind.SPACE)] = new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         )
+         );
          _screenProperties[String (MainAreaScreens.UNITS+Owner.NAP+UnitKind.SPACE)] = new ScreenProperties(
             MainAreaScreens.UNITS, SidebarScreens.UNITS_ACTIONS
-         )
+         );
          _screenProperties[String (MainAreaScreens.NOTIFICATIONS)] = new ScreenProperties(
             MainAreaScreens.NOTIFICATIONS, null, false, false, 0, null, function (): void
             {
@@ -175,45 +176,45 @@ package controllers.ui
                   ExternalInterface.call("notificationsOpened");
                }
             }
-         )
+         );
          _screenProperties[String (MainAreaScreens.QUESTS)] = new ScreenProperties(
             MainAreaScreens.QUESTS, null, false
-         )
+         );
          _screenProperties[String (MainAreaScreens.SQUADRONS)] = new ScreenProperties(
             MainAreaScreens.SQUADRONS, null, false
-         )
+         );
          _screenProperties[String (MainAreaScreens.INFO)] = new ScreenProperties(
             MainAreaScreens.INFO, null, false
-         )
+         );
          _screenProperties[String (MainAreaScreens.FACILITIES)] = new ScreenProperties(
             MainAreaScreens.FACILITIES, null, false
-         )
+         );
          _screenProperties[String (MainAreaScreens.RATINGS)] = new ScreenProperties(
             MainAreaScreens.RATINGS, null, false
-         )
+         );
          _screenProperties[String (MainAreaScreens.PLAYER)] = new ScreenProperties(
             MainAreaScreens.PLAYER, null, false
-         )
+         );
          _screenProperties[String (MainAreaScreens.DEFENSIVE_PORTAL)] = new ScreenProperties(
             MainAreaScreens.DEFENSIVE_PORTAL, null, false
-         )
+         );
          _screenProperties[String (MainAreaScreens.VIP)] = new ScreenProperties(
             MainAreaScreens.VIP, null, false
-         )
+         );
          _screenProperties[String (MainAreaScreens.ALLY_RATINGS)] = new ScreenProperties(
             MainAreaScreens.ALLY_RATINGS, null, false
-         )
+         );
          _screenProperties[String(MainAreaScreens.ALLIANCE)] = new ScreenProperties(
             MainAreaScreens.ALLIANCE, null, false
-         )
+         );
          _screenProperties[String(MainAreaScreens.WELCOME)] = new ScreenProperties(
             MainAreaScreens.WELCOME, null, false
-         )
+         );
          _screenProperties[String (MainAreaScreens.CHAT)] = new ScreenProperties(
             MainAreaScreens.CHAT, null, false, false, 0, null,
             MChat.getInstance().screenShowHandler,
             MChat.getInstance().screenHideHandler
-         )
+         );
          
          EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
@@ -294,7 +295,7 @@ package controllers.ui
                toGalaxy();
                break;
             case MainAreaScreens.SOLAR_SYSTEM:
-               toSolarSystem(ML.latestSolarSystem.id);
+               toSolarSystem(ML.latestSSMap.id);
                break;
             case MainAreaScreens.PLANET:
                toPlanet(ML.latestPlanet.ssObject);
@@ -367,17 +368,17 @@ package controllers.ui
        */
       public function toSolarSystem(id:int, completeHandler:Function = null) : void {
          callAfterMapLoaded(completeHandler);
-         var ss:SolarSystem;
+         var ss:MSolarSystem;
          if (ML.latestGalaxy.isBattleground(id))
-            ss = SolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
+            ss = MSolarSystem(ML.latestGalaxy.wormholes.getItemAt(0));
          else {
             ss = Collections.findFirst(ML.latestGalaxy.wormholes,
-               function (wormhole:SolarSystem) : Boolean {
+               function (wormhole:MSolarSystem) : Boolean {
                   return wormhole.id == id;
                }
             );
             if (ss == null) {
-               ss = new SolarSystem();
+               ss = new MSolarSystem();
                ss.id = id;
             }
          }
@@ -401,7 +402,7 @@ package controllers.ui
             callAfterMapLoaded(
                function(map:MMap) : void
                {
-                  map.zoomObject(ML.latestSolarSystem);
+                  map.zoomObject(ML.latestSSMap);
                   if (completeHandler != null)
                   {
                      completeHandler.call();
@@ -413,7 +414,7 @@ package controllers.ui
             return;
          }
          callAfterMapLoaded(completeHandler);
-         if (new Planet(planet).cached)
+         if (new MPlanet(planet).cached)
             showPlanet();
          else
             new PlanetsCommand(
@@ -461,13 +462,13 @@ package controllers.ui
       }
       
       
-      public function showSolarSystem(newSolarSystem:SolarSystem = null) : void
+      public function showSolarSystem(newSolarSystem:MMapSolarSystem = null) : void
       {
          showMap(_screenProperties[MainAreaScreens.SOLAR_SYSTEM], newSolarSystem);
       }
       
       
-      public function showPlanet(newPlanet:Planet = null) : void
+      public function showPlanet(newPlanet:MPlanet = null) : void
       {
          showMap(_screenProperties[MainAreaScreens.PLANET], newPlanet);
       }
@@ -492,27 +493,36 @@ package controllers.ui
          MCHealingScreen.getInstance().prepare(units, location);
          showNonMapScreen(_screenProperties[MainAreaScreens.HEAL]);
       }
-      
-      public function showStorage(transporter: Unit, oldUnits: ListCollectionView, oldLocation: *): void
-      {
-         var setTransporter: Function = function(e: Event): void
-         {
+
+      public function showStorage(transporter: Unit,
+                                  oldUnits: ListCollectionView,
+                                  oldLocation: *): void {
+         function setTransporter(e: Event): void {
             createdScreens[MainAreaScreens.STORAGE] = true;
-            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CHANGED, setTransporter);
-            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setTransporter);
-            new GUnitsScreenEvent(GUnitsScreenEvent.OPEN_STORAGE_SCREEN, {'location': transporter,
-               'oldLocation': oldLocation, 'oldUnits': oldUnits});
+            MA.removeEventListener(
+               ScreensSwitchEvent.SCREEN_CHANGED, setTransporter
+            );
+            MA.removeEventListener(
+               ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setTransporter
+            );
+            new GUnitsScreenEvent(
+               GUnitsScreenEvent.OPEN_STORAGE_SCREEN,
+               {'location': transporter,
+                  'oldLocation': oldLocation,
+                  'oldUnits': oldUnits}
+            );
          }
-         if (createdScreens[MainAreaScreens.STORAGE])
-         {
-            MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, setTransporter);
+         if (createdScreens[MainAreaScreens.STORAGE]) {
+            MA.addEventListener(
+               ScreensSwitchEvent.SCREEN_CHANGED, setTransporter
+            );
          }
-         else
-         {
-            MA.addEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setTransporter);
+         else {
+            MA.addEventListener(
+               ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, setTransporter
+            );
          }
          showNonMapScreen(_screenProperties[MainAreaScreens.STORAGE]);
-         
       }
       
       public function showLoadUnload(location: *, target: *, units: ListCollectionView): void
@@ -531,23 +541,23 @@ package controllers.ui
       public function showFacilities(facilityId: int, 
                                      cancelState: Boolean = false) : void
       {
-         var openFacilityWithId: Function = function(e: Event): void
-         {
+         var openFacilityWithId: Function = function(e: Event): void {
             createdScreens[MainAreaScreens.FACILITIES] = true;
-            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CHANGED, openFacilityWithId);
-            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, openFacilityWithId);
+            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
+                                   openFacilityWithId);
+            MA.removeEventListener(ScreensSwitchEvent
+                                      .SCREEN_CONSTRUCTION_COMPLETED,
+                                   openFacilityWithId);
             var BS: MCUnitsBuild = MCUnitsBuild.getInstance();
             BS.facilityId = facilityId;
-            if (cancelState)
-            {
+            if (cancelState) {
                BS.cancelId = facilityId;
             }
-            else
-            {
+            else {
                BS.cancelId = -1;
             }
             BS.openFacility();
-         }
+         };
          if (createdScreens[MainAreaScreens.FACILITIES])
          {
             MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, openFacilityWithId);
@@ -677,13 +687,15 @@ package controllers.ui
       public function showRatings(playerName: String = null) :void
       {
          var RS: MCRatingsScreen = MCRatingsScreen.getInstance();
-         var filterPlayer: Function = function(e: Event): void
-         {
+         var filterPlayer: Function = function(e: Event): void {
             createdScreens[MainAreaScreens.RATINGS] = true;
-            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CHANGED, filterPlayer);
-            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CONSTRUCTION_COMPLETED, filterPlayer);
+            MA.removeEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
+                                   filterPlayer);
+            MA.removeEventListener(ScreensSwitchEvent
+                                      .SCREEN_CONSTRUCTION_COMPLETED,
+                                   filterPlayer);
             RS.filterPlayer(playerName);
-         }
+         };
          if (createdScreens[MainAreaScreens.RATINGS])
          {
             MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, filterPlayer);
@@ -774,7 +786,7 @@ package controllers.ui
        * provided and will set appropriate property on <code>ModelLocator</code> to reflect
        * this change.
        * 
-       * @param screenName name of a screen that holds a map
+       * @param screenProps properties of a screen that holds a map
        * @param newMap model of a map if one needs to be created
        * 
        * @throws IllegalOperationError if
@@ -807,8 +819,9 @@ package controllers.ui
             );
          beforeScreenChange();
          ML.activeMapType = screenProps.heldMapType;
-         if (newMap != null)
+         if (newMap != null) {
             ML[screenProps.mapPropInModelLoc] = newMap;
+         }
          MA.resetToScreen(screenProps.screenName);
          resetActiveButton(screenProps.button);
          resetSidebarToCurrentScreenDefault();
@@ -820,7 +833,7 @@ package controllers.ui
          else {
             recreateMap(
                newMap,
-               function mapCreationCompleteHandler(event:FlexEvent) : void {
+               function (event:FlexEvent) : void {
                   dispatchMapLoadEvent(newMap);
                }
             );
@@ -878,7 +891,6 @@ package controllers.ui
             MA.destroyScreenMap(screenName);
          }
          catch (error:Error) {
-            return;
          }
       }
       

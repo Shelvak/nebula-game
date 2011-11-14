@@ -23,7 +23,7 @@ package models.building
    import models.parts.Upgradable;
    import models.parts.UpgradableType;
    import models.parts.events.UpgradeEvent;
-   import models.planet.PlanetObject;
+   import models.planet.MPlanetObject;
    import models.resource.ResourceType;
    import models.tile.Tile;
    import models.tile.TileKind;
@@ -78,7 +78,7 @@ package models.building
    /**
     * Generic building of a game.
     */
-   public class Building extends PlanetObject implements IUpgradableModel
+   public class Building extends MPlanetObject implements IUpgradableModel
    {
       private static function evalRateFormula(buildingType:String,
                                               resourceType:String,
@@ -499,7 +499,7 @@ package models.building
       /**
        * Returns <strong><code>true</code></strong>.
        * 
-       * @see models.planet.PlanetObject#isBlocking
+       * @see models.planet.MPlanetObject#isBlocking
        */
       override public function get isBlocking() : Boolean
       {

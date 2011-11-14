@@ -2,7 +2,7 @@ package controllers.objects.actions.customcontrollers
 {
    import models.factories.SolarSystemFactory;
    import models.galaxy.Galaxy;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    
    public class SolarSystemController extends BaseObjectController
@@ -13,7 +13,7 @@ package controllers.objects.actions.customcontrollers
       
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
-         var replacementSS:SolarSystem = SolarSystemFactory.fromObject(object);
+         var replacementSS:MSolarSystem = SolarSystemFactory.fromObject(object);
          var galaxy:Galaxy = ML.latestGalaxy;
          galaxy.removeObject(replacementSS); // lookup uses equals()
          galaxy.addObject(replacementSS);

@@ -11,7 +11,7 @@ package components.map.planet.objects
    import models.building.events.BuildingEvent;
    import models.events.BaseModelEvent;
    import models.parts.events.UpgradeEvent;
-   import models.planet.PlanetObject;
+   import models.planet.MPlanetObject;
    
    import mx.controls.ProgressBar;
    import mx.controls.ProgressBarLabelPlacement;
@@ -352,7 +352,7 @@ package components.map.planet.objects
       
       private function positionLevelIndicator() : void
       {
-         var corner:Point = PlanetObject.getBasementBottomCorner(model.width, model.height);
+         var corner:Point = MPlanetObject.getBasementBottomCorner(model.width, model.height);
          corner.x += model.imageWidth - model.realBasementWidth - _levelIndicator.width / 2;
          corner.y += model.imageHeight - model.realBasementHeight - _levelIndicator.height - LEVEL_INDICATOR_OFFSET;
          _levelIndicator.x = corner.x;
@@ -368,7 +368,7 @@ package components.map.planet.objects
       /* ############################ */
       
       
-      override protected function addModelEventListeners(model:PlanetObject) : void
+      override protected function addModelEventListeners(model:MPlanetObject) : void
       {
          super.addModelEventListeners(model);
          var b:Building = Building(model);
@@ -383,7 +383,7 @@ package components.map.planet.objects
       }
       
       
-      override protected function removeModelEventListeners(model:PlanetObject) : void
+      override protected function removeModelEventListeners(model:MPlanetObject) : void
       {
          super.removeModelEventListeners(model);
          var b:Building = Building(model);

@@ -19,9 +19,10 @@ package components.factories
    import models.galaxy.Galaxy;
    import models.galaxy.VisibleGalaxyArea;
    import models.map.MMap;
+   import models.map.MMapSolarSystem;
    import models.map.MapType;
-   import models.planet.Planet;
-   import models.solarsystem.SolarSystem;
+   import models.planet.MPlanet;
+   import models.solarsystem.MSolarSystem;
    
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
@@ -46,15 +47,16 @@ package components.factories
       MAP_FACTORY_METHODS[MapType.GALAXY] = function(g:Galaxy) : CMap {
          return new CMapGalaxy(g);
       };
-      MAP_FACTORY_METHODS[MapType.PLANET] = function(p:Planet) : CMap {
+      MAP_FACTORY_METHODS[MapType.PLANET] = function(p:MPlanet) : CMap {
          return new PlanetMap(p);
       };
       MAP_FACTORY_METHODS[MapType.BATTLE] = function(b:Battle) : CMap {
          return new BattleMap(b);
       };
-      MAP_FACTORY_METHODS[MapType.SOLAR_SYSTEM] = function(ss:SolarSystem) : CMap {
-         return new CMapSolarSystem(ss);
-      };
+      MAP_FACTORY_METHODS[MapType.SOLAR_SYSTEM] =
+         function(ssMap: MMapSolarSystem): CMap {
+            return new CMapSolarSystem(ssMap);
+         };
       
       
       private static function getMap(model:MMap) : CMap {

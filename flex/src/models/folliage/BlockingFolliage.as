@@ -19,7 +19,7 @@ package models.folliage
        * <code>FolliageTileKind</code> class.
        * 
        * <p>Setting this property will dispatch
-       * <code>PlanetObjectEvent.IMAGE_CHANGE</code> event.</p>
+       * <code>MPlanetObjectEvent.IMAGE_CHANGE</code> event.</p>
        * 
        * @default FolliageTileKind._3X3
        */
@@ -48,7 +48,7 @@ package models.folliage
       /**
        * Returns <strong><code>true</code></strong>.
        * 
-       * @see models.planet.PlanetObject#isBlocking
+       * @see models.planet.MPlanetObject#isBlocking
        */
       override public function get isBlocking() : Boolean
       {

@@ -14,12 +14,12 @@ package models.exploration
    import models.events.BaseModelEvent;
    import models.exploration.events.ExplorationStatusEvent;
    import models.folliage.BlockingFolliage;
-   import models.planet.Planet;
-   import models.planet.events.PlanetEvent;
+   import models.planet.MPlanet;
+   import models.planet.events.MPlanetEvent;
    import models.player.Player;
    import models.player.events.PlayerEvent;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.events.SSObjectEvent;
+   import models.solarsystem.events.MSSObjectEvent;
    
    import mx.events.PropertyChangeEvent;
    
@@ -99,7 +99,7 @@ package models.exploration
          return ModelLocator.getInstance();
       }
       
-      private function get planet() : Planet {
+      private function get planet() : MPlanet {
          return ML.latestPlanet;
       }
       
@@ -332,36 +332,36 @@ package models.exploration
          dispatchStatusChangeEvent();
       }
       
-      private function addPlanetEventHandlers(palnet:Planet) : void {
-         planet.addEventListener(PlanetEvent.OBJECT_ADD, planet_objectsListUpdateHandler, false, 0, true);
-         planet.addEventListener(PlanetEvent.OBJECT_REMOVE, planet_objectsListUpdateHandler, false, 0, true);
+      private function addPlanetEventHandlers(palnet:MPlanet) : void {
+         planet.addEventListener(MPlanetEvent.OBJECT_ADD, planet_objectsListUpdateHandler, false, 0, true);
+         planet.addEventListener(MPlanetEvent.OBJECT_REMOVE, planet_objectsListUpdateHandler, false, 0, true);
          planet.ssObject.addEventListener(
             PropertyChangeEvent.PROPERTY_CHANGE,
             ssObject_propertyChangeHandler, false, 0, true
          );
          planet.ssObject.addEventListener(
-            SSObjectEvent.OWNER_CHANGE,
+            MSSObjectEvent.OWNER_CHANGE,
             ssObject_ownerChangeHandler, false, 0, true
          );
       }
       
-      private function removePlanetEventHandlers(planet:Planet) : void
+      private function removePlanetEventHandlers(planet:MPlanet) : void
       {
-         planet.removeEventListener(PlanetEvent.OBJECT_ADD, planet_objectsListUpdateHandler, false);
-         planet.removeEventListener(PlanetEvent.OBJECT_REMOVE, planet_objectsListUpdateHandler, false);
+         planet.removeEventListener(MPlanetEvent.OBJECT_ADD, planet_objectsListUpdateHandler, false);
+         planet.removeEventListener(MPlanetEvent.OBJECT_REMOVE, planet_objectsListUpdateHandler, false);
          if (planet.ssObject != null) {
             planet.ssObject.removeEventListener(
                PropertyChangeEvent.PROPERTY_CHANGE,
                ssObject_propertyChangeHandler, false
             );
             planet.ssObject.removeEventListener(
-               SSObjectEvent.OWNER_CHANGE,
+               MSSObjectEvent.OWNER_CHANGE,
                ssObject_ownerChangeHandler, false
             );
          }
       }
       
-      private function planet_objectsListUpdateHandler(event:PlanetEvent) : void {
+      private function planet_objectsListUpdateHandler(event:MPlanetEvent) : void {
          dispatchStatusChangeEvent();
       }
       
@@ -372,7 +372,7 @@ package models.exploration
             dispatchStatusChangeEvent();
       }
       
-      private function ssObject_ownerChangeHandler(event:SSObjectEvent) : void {
+      private function ssObject_ownerChangeHandler(event:MSSObjectEvent) : void {
          dispatchStatusChangeEvent();
       }
       

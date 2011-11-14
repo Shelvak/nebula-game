@@ -5,7 +5,7 @@ package models.planet
    import flash.geom.Point;
    
    import models.BaseModel;
-   import models.planet.events.PlanetObjectEvent;
+   import models.planet.events.MPlanetObjectEvent;
    import models.tile.Tile;
    
    
@@ -13,34 +13,34 @@ package models.planet
     * Dispatched when any of positioning properties - and as a result dimension
     * (size) properties - have changed.
     * 
-    * @eventType models.planet.events.PlanetObjectEvent.DIMENSION_CHANGE
+    * @eventType models.planet.events.MPlanetObjectEvent.DIMENSION_CHANGE
     */
-   [Event(name="dimensionChange", type="models.planet.events.PlanetObjectEvent")]
+   [Event(name="dimensionChange", type="models.planet.events.MPlanetObjectEvent")]
    
    
    /**
     * Dispatched when <code>imageData</code> property (and as a result
     * <code>imageWidth</code> and <code>imageHeight</code> properties)
-    * of <code>PlanetObject</code> changes.
+    * of <code>MPlanetObject</code> changes.
     * 
-    * @eventType models.planet.events.PlanetObjectEvent.IMAGE_CHANGE
+    * @eventType models.planet.events.MPlanetObjectEvent.IMAGE_CHANGE
     */
-   [Event(name="imageChange", type="models.planet.events.PlanetObjectEvent")]
+   [Event(name="imageChange", type="models.planet.events.MPlanetObjectEvent")]
    
    
    /**
     * Dispatched when <code>zIndex</code> property has changed change.
     * 
-    * @eventType models.planet.events.PlanetObjectEvent.ZINDEX_CHANGE
+    * @eventType models.planet.events.MPlanetObjectEvent.ZINDEX_CHANGE
     */
-   [Event(name="zindexChange", type="models.planet.events.PlanetObjectEvent")]
+   [Event(name="zindexChange", type="models.planet.events.MPlanetObjectEvent")]
    
    
    /**
     * Base class for any planet object. This is abstract class and you should
     * not create instances of this class. You <code>must</code> subclass it. 
     */
-   public class PlanetObject extends BaseModel
+   public class MPlanetObject extends BaseModel
    {
       /**
        * Calculates real width of object's basment.
@@ -515,15 +515,15 @@ package models.planet
       
       
       /**
-       * Invoke this to dispatch <code>PlanetObjectEvent.IMAGE_CHANGE</code>
+       * Invoke this to dispatch <code>MPlanetObjectEvent.IMAGE_CHANGE</code>
        * event when the image changes. You have to invoke this method
        * manually in any derriving class.
        */
       protected function dispatchImageChangeEvent() : void
       {
-         if (hasEventListener(PlanetObjectEvent.IMAGE_CHANGE))
+         if (hasEventListener(MPlanetObjectEvent.IMAGE_CHANGE))
          {
-            dispatchEvent(new PlanetObjectEvent(PlanetObjectEvent.IMAGE_CHANGE));
+            dispatchEvent(new MPlanetObjectEvent(MPlanetObjectEvent.IMAGE_CHANGE));
          }
       }
       
@@ -532,21 +532,21 @@ package models.planet
        * Set this to <code>true</code> if you are about to update a few or
        * all of dimension properties (<code>x</code>, <code>y</code>,
        * <code>xEnd</code>, <code>yEnd</code>) to avoid multiple
-       * <code>PlanetObjectEvent.DIMENSION_CHANGE</code> events. However, if you
+       * <code>MPlanetObjectEvent.DIMENSION_CHANGE</code> events. However, if you
        * do so, you must set this property to <code>false</code> again
        * and invoke <code>dispatchDimensionChangeEvent()</code> manually.
        */
       protected var suppressDimensionChangeEvent:Boolean = false;
       /**
-       * Invoked this to dispatch <code>PlanetObjectEvent.DIMENSION_CHANGE</code>
-       * event. This method is autommaticly invoked by <code>PlanetObject</code>
+       * Invoked this to dispatch <code>MPlanetObjectEvent.DIMENSION_CHANGE</code>
+       * event. This method is autommaticly invoked by <code>MPlanetObject</code>
        * class.
        */
       protected function dispatchDimensionChangeEvent() : void
       {
-         if (!suppressDimensionChangeEvent && hasEventListener(PlanetObjectEvent.DIMENSION_CHANGE))
+         if (!suppressDimensionChangeEvent && hasEventListener(MPlanetObjectEvent.DIMENSION_CHANGE))
          {
-            dispatchEvent(new PlanetObjectEvent(PlanetObjectEvent.DIMENSION_CHANGE));
+            dispatchEvent(new MPlanetObjectEvent(MPlanetObjectEvent.DIMENSION_CHANGE));
          }
 //         dispatchPropertyUpdateEvent("realBasementHeight", realBasementHeight);
 //         dispatchPropertyUpdateEvent("realBasementWidth", realBasementWidth);
@@ -555,21 +555,21 @@ package models.planet
       
       /**
        * Set this to <code>true</code> if you want to avoid multiple
-       * <code>PlanetObjectEvent.ZINDEX_CHANGE</code> events. However, if you do so, you must
+       * <code>MPlanetObjectEvent.ZINDEX_CHANGE</code> events. However, if you do so, you must
        * set this property to <code>false</code> again and invoke
        * <code>dispatchZIndexChangeEvent()</code> manually.
        */
       protected var suppressZIndexChangeEvent:Boolean = false;
       /**
-       * Invoked this to dispatch <code>PlanetObjectEvent.ZINDEX_CHANGE</code>
-       * event. This method is autommaticly invoked by <code>PlanetObject</code>
+       * Invoked this to dispatch <code>MPlanetObjectEvent.ZINDEX_CHANGE</code>
+       * event. This method is autommaticly invoked by <code>MPlanetObject</code>
        * class.
        */
       protected function dispatchZIndexChangeEvent() : void
       {
-         if (!suppressZIndexChangeEvent && hasEventListener(PlanetObjectEvent.ZINDEX_CHANGE))
+         if (!suppressZIndexChangeEvent && hasEventListener(MPlanetObjectEvent.ZINDEX_CHANGE))
          {
-            dispatchEvent(new PlanetObjectEvent(PlanetObjectEvent.ZINDEX_CHANGE));
+            dispatchEvent(new MPlanetObjectEvent(MPlanetObjectEvent.ZINDEX_CHANGE));
          }
       }
    }

@@ -9,43 +9,39 @@
    
    <fx:Script>
       <![CDATA[
-         import components.base.viewport.Viewport;
-         import mx.events.FlexEvent;
-         
-         
-         private var _viewport:Viewport;
-         public function setViewport(viewport:Viewport) : void
-         {
-            _viewport = viewport;
-            initializeControllers();
+      import components.base.viewport.Viewport;
+
+      import mx.events.FlexEvent;
+
+
+      private var _viewport: Viewport;
+
+      public function setViewport(viewport: Viewport): void {
+         _viewport = viewport;
+         initializeControllers();
+      }
+
+
+      public function cleanup(): void {
+         _viewport = null;
+         zoom.cleanup();
+         planets.dataProvider = null;
+      }
+
+
+      private function this_initializeHandler(event: FlexEvent): void {
+         initializeControllers();
+      }
+
+
+      private function initializeControllers(): void {
+         if (zoom) {
+            zoom.setViewport(_viewport);
          }
-         
-         
-         public function cleanup() : void
-         {
-            _viewport = null;
-            zoom.cleanup();
-            planets.dataProvider = null;
+         if (planets) {
+            planets.dataProvider = ML.latestSSMap.importantObjects;
          }
-         
-         
-         private function this_initializeHandler(event:FlexEvent):void
-         {
-            initializeControllers();
-         }
-         
-         
-         private function initializeControllers() : void
-         {
-            if (zoom)
-            {
-               zoom.setViewport(_viewport);
-            }
-            if (planets)
-            {
-               planets.dataProvider = ML.latestSolarSystem.importantObjects;
-            }
-         }
+      }
       ]]>
    </fx:Script>
    

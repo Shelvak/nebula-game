@@ -8,155 +8,173 @@
    
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.skins.DeleteButtonSkin;
-         
-         import config.Config;
-         
-         import controllers.constructionqueues.ConstructionQueuesCommand;
-         import controllers.objects.ObjectClass;
-         
-         import globalevents.GUnitEvent;
-         
-         import models.building.Building;
-         import models.constructionqueueentry.ConstructionQueueEntry;
-         import models.parts.BuildingUpgradable;
-         import models.parts.Upgradable;
-         import models.parts.UpgradableType;
-         import models.parts.events.UpgradeEvent;
-         import models.planet.PlanetObject;
-         
-         import utils.DateUtil;
-         import utils.ModelUtil;
-         import utils.assets.AssetNames;
-         
-         [Bindable]
-         private var hovered: Boolean = false;
-         
-         public function set queryElementModel(value: ConstructionQueueEntry): void
-         {
-            if (value != null)
-            {
-               _queryElementModel = value;
-               constructor = ML.latestPlanet.getBuildingById(_queryElementModel.constructorId);
-               recalculateTime();               
-               var constructablePart: Upgradable = ModelUtil.getModelClass(
-                  constructor.constructableType) == ObjectClass.UNIT
-                  ? ML.latestPlanet.getUnitById(constructor.constructableId).upgradePart
-                  : ML.latestPlanet.getBuildingById(constructor.constructableId).upgradePart;
-               constructablePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
-               constructablePart.addEventListener(UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
-            }
+      import com.developmentarc.core.utils.EventBroker;
+
+      import controllers.constructionqueues.ConstructionQueuesCommand;
+      import controllers.objects.ObjectClass;
+
+      import globalevents.GUnitEvent;
+
+      import models.building.Building;
+      import models.constructionqueueentry.ConstructionQueueEntry;
+      import models.parts.BuildingUpgradable;
+      import models.parts.Upgradable;
+      import models.parts.UpgradableType;
+      import models.parts.events.UpgradeEvent;
+      import models.planet.MPlanetObject;
+
+      import utils.DateUtil;
+      import utils.ModelUtil;
+      import utils.assets.AssetNames;
+
+
+      [Bindable]
+      private var hovered: Boolean = false;
+
+      public function set queryElementModel(value: ConstructionQueueEntry): void {
+         if (value != null) {
+            _queryElementModel = value;
+            constructor = ML.latestPlanet.getBuildingById
+                             (_queryElementModel.constructorId);
+            recalculateTime();
+            var constructablePart: Upgradable =
+                   ModelUtil.getModelClass
+                      (constructor.constructableType) == ObjectClass.UNIT
+                      ? ML.latestPlanet
+                           .getUnitById(constructor.constructableId)
+                           .upgradePart
+                      : ML.latestPlanet
+                           .getBuildingById(constructor.constructableId)
+                           .upgradePart;
+            constructablePart.addEventListener(
+               UpgradeEvent.UPGRADE_PROGRESS, recalculateTime
+            );
+            constructablePart.addEventListener(
+               UpgradeEvent.UPGRADE_FINISHED, refreshConstructable
+            );
          }
-         
-         private var constructor: Building = null;
-         
-         private function recalculateTime(e: UpgradeEvent = null): void
-         {
-            if (ML.latestPlanet && constructor)
-            {
-               if (constructor.constructableType == null)
-                  return;
-               
-               var constructable: * = ModelUtil.getModelClass(
-                  constructor.constructableType) == ObjectClass.UNIT
-                  ? ML.latestPlanet.getUnitById(constructor.constructableId)
-                  : ML.latestPlanet.getBuildingById(constructor.constructableId);
-               if (constructable != null)
-               {
-                  var totalTime: Number = 0;
-                  totalTime += constructable.upgradePart.timeToFinish;
-                  for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries)
-                  {
-                     if (queueEntry.position < _queryElementModel.position)
-                     {
-                        if (queueEntry.isUnit)
-                        {
-                           totalTime += queueEntry.count * Upgradable.calculateUpgradeTime(
-                              UpgradableType.UNITS, ModelUtil.getModelSubclass(queueEntry.constructableType),
-                              {"level": 1}, constructor.constructorMod + BuildingUpgradable.getConstructionMod(constructor.type, constructor.level)
+      }
+
+      private var constructor: Building = null;
+
+      private function recalculateTime(e: UpgradeEvent = null): void {
+         if (ML.latestPlanet && constructor) {
+            if (constructor.constructableType == null) {
+               return;
+            }
+
+            var constructable: * =
+                   ModelUtil.getModelClass
+                      (constructor.constructableType) == ObjectClass.UNIT
+                      ? ML.latestPlanet.getUnitById(constructor.constructableId)
+                      : ML.latestPlanet.getBuildingById(constructor.constructableId);
+            if (constructable != null) {
+               var totalTime: Number = 0;
+               totalTime += constructable.upgradePart.timeToFinish;
+               for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries) {
+                  if (queueEntry.position < _queryElementModel.position) {
+                     if (queueEntry.isUnit) {
+                        totalTime +=
+                           queueEntry.count * Upgradable.calculateUpgradeTime(
+                              UpgradableType.UNITS,
+                              ModelUtil.getModelSubclass(
+                                 queueEntry.constructableType
+                              ),
+                              {"level": 1},
+                              constructor.constructorMod
+                                 + BuildingUpgradable
+                                      .getConstructionMod(constructor.type,
+                                                          constructor.level)
                            );
-                        }
-                        else
-                        {
-                           var ghost: Building = ML.latestPlanet.getObject(queueEntry.params.x, queueEntry.params.y) as Building;
-                           if (ghost != null)
-                           {
-                              totalTime += Upgradable.calculateUpgradeTime(
-                                 UpgradableType.BUILDINGS, ModelUtil.getModelSubclass(queueEntry.constructableType),
-                                 {"level": 1}, ghost.constructionMod + constructor.constructorMod
-                              );
-                           }
+                     }
+                     else {
+                        var ghost: Building =
+                               ML.latestPlanet.getObject(
+                                  queueEntry.params.x,
+                                  queueEntry.params.y
+                               ) as Building;
+                        if (ghost != null) {
+                           totalTime += Upgradable.calculateUpgradeTime(
+                              UpgradableType.BUILDINGS,
+                              ModelUtil.getModelSubclass
+                                 (queueEntry.constructableType),
+                              {"level": 1},
+                              ghost.constructionMod + constructor.constructorMod
+                           );
                         }
                      }
                   }
-                  timeLeft = DateUtil.secondsToHumanString(totalTime, 2);
                }
+               timeLeft = DateUtil.secondsToHumanString(totalTime, 2);
             }
          }
-         
-         private function refreshConstructable(e: UpgradeEvent): void
-         {
-            var constructablePart: Upgradable = e.currentTarget as Upgradable;
-            constructablePart.removeEventListener(UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
-            constructablePart.removeEventListener(UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
-            
-            var constructable: Building = ML.latestPlanet.getBuildingById(constructor.constructableId);
-            constructable.upgradePart.addEventListener(UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
-            constructable.upgradePart.addEventListener(UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
-         }
-         
-         public function get queryElementModel(): ConstructionQueueEntry
-         {
-            return _queryElementModel;
-         }
-         
-         [Bindable]
-         private var _queryElementModel: ConstructionQueueEntry;
-         
-         private static const imageHeight: int = 28;
-         private static const imageWidth: int = 42;
-         
-         [Bindable]
-         private var deletePending: Boolean = false;
-         
-         private function removeUpgradePending(e: Event): void
-         {
-            deletePending = false;
-         }
-         
-         private function get isUnit(): Boolean
-         {
-            return _queryElementModel.isUnit;
-         }
-         
-         protected function button1_clickHandler(event:MouseEvent):void
-         {
-            deletePending = true;
-            EventBroker.subscribe(GUnitEvent.DELETE_APPROVED, removeUpgradePending);
-            new ConstructionQueuesCommand(
-               ConstructionQueuesCommand.REDUCE,
-               {id: _queryElementModel.id,
-                  count: isUnit?_queryElementModel.count :1}
-            ).dispatch ();
-            if (!isUnit)
-            {
-               var obj: PlanetObject =  ML.latestPlanet.getObject(_queryElementModel.params.x, _queryElementModel.params.y);
-               if (obj is Building && Building(obj).level == 0)
-               {
-                  ML.latestPlanet.removeObject(obj);
-               }
-               else
-               {
-                  throw new Error('Ghost building ' + obj + ' was not found in planet with id: ' + ML.latestPlanet.id);
-               }
+      }
+
+      private function refreshConstructable(e: UpgradeEvent): void {
+         var constructablePart: Upgradable = e.currentTarget as Upgradable;
+         constructablePart.removeEventListener
+            (UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
+         constructablePart.removeEventListener
+            (UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
+
+         var constructable: Building =
+                ML.latestPlanet.getBuildingById(constructor.constructableId);
+         constructable.upgradePart.addEventListener
+            (UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
+         constructable.upgradePart.addEventListener
+            (UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
+      }
+
+      public function get queryElementModel(): ConstructionQueueEntry {
+         return _queryElementModel;
+      }
+
+      [Bindable]
+      private var _queryElementModel: ConstructionQueueEntry;
+
+      private static const imageHeight: int = 28;
+      private static const imageWidth: int = 42;
+
+      [Bindable]
+      private var deletePending: Boolean = false;
+
+      private function removeUpgradePending(e: Event): void {
+         deletePending = false;
+      }
+
+      private function get isUnit(): Boolean {
+         return _queryElementModel.isUnit;
+      }
+
+      protected function button1_clickHandler(event: MouseEvent): void {
+         deletePending = true;
+         EventBroker.subscribe
+            (GUnitEvent.DELETE_APPROVED, removeUpgradePending);
+         new ConstructionQueuesCommand(
+            ConstructionQueuesCommand.REDUCE,
+            {id: _queryElementModel.id,
+             count: isUnit ? _queryElementModel.count : 1}
+         ).dispatch();
+         if (!isUnit) {
+            var obj: MPlanetObject =
+                   ML.latestPlanet.getObject(
+                      _queryElementModel.params.x,
+                      _queryElementModel.params.y
+                   );
+            if (obj is Building && Building(obj).level == 0) {
+               ML.latestPlanet.removeObject(obj);
+            }
+            else {
+               throw new Error(
+                  'Ghost building ' + obj + ' was not found in planet '
+                     + 'with id: ' + ML.latestPlanet.id
+               );
             }
          }
-         
-         [Bindable]
-         private var timeLeft: String = null;
-         
+      }
+
+      [Bindable]
+      private var timeLeft: String = null;
       ]]>
    </fx:Script>
    

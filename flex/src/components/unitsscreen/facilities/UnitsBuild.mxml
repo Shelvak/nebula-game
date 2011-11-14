@@ -2,146 +2,138 @@
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:base="components.base.*"
-                    xmlns:mx="library://ns.adobe.com/flex/mx"
-                    xmlns:unitsscreen="components.unitsscreen.*"
+                    xmlns:facilities="components.unitsscreen.facilities.*"
                     creationComplete="unitsScreen_creationCompleteHandler(event)" 
-                    width="100%" height="100%" xmlns:facilities="components.unitsscreen.facilities.*">
+                    width="100%" height="100%">
    
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.skins.ListNonScrollableSkin;
-         
-         import controllers.ui.NavigationController;
-         
-         import globalevents.GUnitsScreenEvent;
-         import globalevents.GlobalEvent;
-         
-         import models.building.Building;
-         import models.building.events.BuildingEvent;
-         import models.planet.Planet;
-         import models.planet.events.PlanetEvent;
-         import models.unit.MCUnitsBuild;
-         import models.unit.events.UnitEvent;
-         
-         import mx.collections.ArrayCollection;
-         import mx.collections.ListCollectionView;
-         import mx.events.FlexEvent;
-         
-         import spark.events.IndexChangeEvent;
-         [Bindable]
-         private var facilities: ListCollectionView = new ListCollectionView();
-         
-         private function refreshFacilities(e: Event= null): void
-         {
-            var oldSelection: Building = facilitiesList.selectedItem;
-            var facility: Building;
-            if (facilities != null && facilities.length > 0)
-            {
-               for each (facility in facilities)
-               {
-                  facility.removeEventListener(BuildingEvent.EXPAND_FINISHED, scrollToSelected);
-                  facility.dispatchCollapseEvent();
-               }
-            }
-            facilities = latestPlanet.getUnitsFacilities();
-            for each (facility in facilities)
-            {
-               facility.addEventListener(BuildingEvent.EXPAND_FINISHED, scrollToSelected);
-               if (facility == oldSelection && e)
-               {
-                  facility.dispatchExpandEvent();
-               }
+      import com.developmentarc.core.utils.EventBroker;
+
+      import controllers.ui.NavigationController;
+
+      import globalevents.GlobalEvent;
+
+      import models.building.Building;
+      import models.building.events.BuildingEvent;
+      import models.planet.MPlanet;
+      import models.planet.events.MPlanetEvent;
+      import models.unit.MCUnitsBuild;
+      import models.unit.events.UnitEvent;
+
+      import mx.collections.ListCollectionView;
+      import mx.events.FlexEvent;
+
+      import spark.events.IndexChangeEvent;
+
+
+      [Bindable]
+      private var facilities: ListCollectionView = new ListCollectionView();
+
+      private function refreshFacilities(e: Event = null): void {
+         var oldSelection: Building = facilitiesList.selectedItem;
+         var facility: Building;
+         if (facilities != null && facilities.length > 0) {
+            for each (facility in facilities) {
+               facility.removeEventListener(BuildingEvent.EXPAND_FINISHED,
+                                            scrollToSelected);
+               facility.dispatchCollapseEvent();
             }
          }
-         
-         private var latestPlanet: Planet;
-         
-         private function scrollToSelected(e: Event): void
-         {
-            vPort.verticalScrollPosition = facilitiesList.selectedIndex * UnitFacility.SHOP_PART_HEIGHT;
-         }
-         
-         private function refreshPlanet(): void
-         {
-            if (latestPlanet != ML.latestPlanet)
-            {
-               if (latestPlanet != null)
-               {
-                  latestPlanet.removeEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
-               }
-               latestPlanet = ML.latestPlanet;
-               latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
-               refreshFacilities();
+         facilities = latestPlanet.getUnitsFacilities();
+         for each (facility in facilities) {
+            facility.addEventListener(BuildingEvent.EXPAND_FINISHED,
+                                      scrollToSelected);
+            if (facility == oldSelection && e) {
+               facility.dispatchExpandEvent();
             }
          }
-         
-         private function openFacilityById(e: UnitEvent): void
-         {
-            refreshPlanet();
-            for each(var element: Building in facilities)
-            {
-               if (element.id == BS.facilityId)
-               {
-                  element.dispatchExpandEvent();
-                  facilitiesList.selectedIndex = facilities.getItemIndex(element);
-                  facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchExpandEvent);
-                  facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchCollapseEvent);
-               }
-               else
-               {
-                  facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchExpandEvent);
-                  facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchCollapseEvent);
-               }
+      }
+
+      private var latestPlanet: MPlanet;
+
+      private function scrollToSelected(e: Event): void {
+         vPort.verticalScrollPosition =
+            facilitiesList.selectedIndex * UnitFacility.SHOP_PART_HEIGHT;
+      }
+
+      private function refreshPlanet(): void {
+         if (latestPlanet != ML.latestPlanet) {
+            if (latestPlanet != null) {
+               latestPlanet.removeEventListener(MPlanetEvent.BUILDING_UPGRADED,
+                                                refreshFacilities);
             }
-         }
-         
-         private function reset(e: GlobalEvent): void
-         {
-            if (latestPlanet != null)
-            {
-               latestPlanet.removeEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
-            }
-            latestPlanet = null;
-         }
-         
-         private var BS: MCUnitsBuild = MCUnitsBuild.getInstance();
-         
-         protected function unitsScreen_creationCompleteHandler(event:FlexEvent):void
-         {
-            BS.addEventListener(UnitEvent.OPEN_FACILITY, openFacilityById);
             latestPlanet = ML.latestPlanet;
+            latestPlanet.addEventListener(MPlanetEvent.BUILDING_UPGRADED,
+                                          refreshFacilities);
             refreshFacilities();
-            latestPlanet.addEventListener(PlanetEvent.BUILDING_UPGRADED, refreshFacilities);
-            var selectFacilityEvent: Function = function(e: FlexEvent): void
-            {
-               facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE, selectFacilityEvent);
-               NavigationController.getInstance().dispatchMainAreaScreenSwitchEvent();
-            }
-            EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
-            facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE, selectFacilityEvent);
          }
-         
-         
-         protected function facilitiesList_changeHandler(event:IndexChangeEvent):void
-         {
-            if (event.newIndex != -1)
-            {
-               for each (var element: Building in facilities)
-               if (facilities.getItemIndex(element) != facilitiesList.selectedIndex)
-               {
-                  facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchExpandEvent);
+      }
+
+      private function openFacilityById(e: UnitEvent): void {
+         refreshPlanet();
+         for each(var element: Building in facilities) {
+            if (element.id == BS.facilityId) {
+               element.dispatchExpandEvent();
+               facilitiesList.selectedIndex = facilities.getItemIndex(element);
+               facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE,
+                                               element.dispatchExpandEvent);
+               facilitiesList.removeEventListener
+                  (FlexEvent.UPDATE_COMPLETE, element.dispatchCollapseEvent);
+            }
+            else {
+               facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE,
+                                                  element.dispatchExpandEvent);
+               facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE,
+                                               element.dispatchCollapseEvent);
+            }
+         }
+      }
+
+      private function reset(e: GlobalEvent): void {
+         if (latestPlanet != null) {
+            latestPlanet.removeEventListener(MPlanetEvent.BUILDING_UPGRADED,
+                                             refreshFacilities);
+         }
+         latestPlanet = null;
+      }
+
+      private var BS: MCUnitsBuild = MCUnitsBuild.getInstance();
+
+      protected function unitsScreen_creationCompleteHandler(event: FlexEvent): void {
+         BS.addEventListener(UnitEvent.OPEN_FACILITY, openFacilityById);
+         latestPlanet = ML.latestPlanet;
+         refreshFacilities();
+         latestPlanet.addEventListener(MPlanetEvent.BUILDING_UPGRADED,
+                                       refreshFacilities);
+         var selectFacilityEvent: Function = function(e: FlexEvent): void {
+            facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE,
+                                               selectFacilityEvent);
+            NavigationController.getInstance()
+               .dispatchMainAreaScreenSwitchEvent();
+         };
+         EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
+         facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE,
+                                         selectFacilityEvent);
+      }
+
+
+      protected function facilitiesList_changeHandler(event: IndexChangeEvent): void {
+         if (event.newIndex != -1) {
+            for each (var element: Building in facilities)
+               if (facilities.getItemIndex(element)
+                      != facilitiesList.selectedIndex) {
+                  facilitiesList.removeEventListener
+                     (FlexEvent.UPDATE_COMPLETE, element.dispatchExpandEvent);
                   element.dispatchCollapseEvent();
                }
-               else
-               {
-                  facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE, element.dispatchCollapseEvent);
+               else {
+                  facilitiesList.removeEventListener
+                     (FlexEvent.UPDATE_COMPLETE, element.dispatchCollapseEvent);
                   element.dispatchExpandEvent();
                }
-            }
          }
-         
+      }
       ]]>
    </fx:Script>
    <s:Rect top="0" bottom="0" left="0" right="0">

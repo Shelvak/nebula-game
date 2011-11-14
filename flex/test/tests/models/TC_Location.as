@@ -17,11 +17,11 @@ package tests.models
    import models.location.LocationEvent;
    import models.location.LocationMinimal;
    import models.location.LocationType;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.player.PlayerMinimal;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSKind;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import namespaces.client_internal;
    
@@ -71,10 +71,10 @@ package tests.models
          ML.latestGalaxy = new Galaxy();
          ML.latestGalaxy.id = ML.player.galaxyId;
          ML.latestGalaxy.battlegroundId = 100;
-         ML.latestSolarSystem = new SolarSystem();
-         ML.latestSolarSystem.id = 1;
-         ML.latestGalaxy.addObject(ML.latestSolarSystem);
-         ML.latestPlanet = new Planet(new MSSObject());
+         ML.latestSSMap = new MSolarSystem();
+         ML.latestSSMap.id = 1;
+         ML.latestGalaxy.addObject(ML.latestSSMap);
+         ML.latestPlanet = new MPlanet(new MSSObject());
          ML.latestPlanet.id = 1;
          ML.latestPlanet.solarSystemId = 1;
          ML.player.reset();
@@ -179,7 +179,7 @@ package tests.models
       {
          loc.id = ML.latestGalaxy.battlegroundId;
          loc.type = LocationType.SOLAR_SYSTEM;
-         var wormhole:SolarSystem = new SolarSystem();
+         var wormhole:MSolarSystem = new MSolarSystem();
          wormhole.id = 2;
          wormhole.kind = SSKind.WORMHOLE;
          ML.latestGalaxy.addObject(wormhole);
@@ -251,7 +251,7 @@ package tests.models
       public function should_be_navigable_if_is_not_cached_planet_but_ss_cached() : void
       {
          loc.id = 2;
-         loc.solarSystemId = ML.latestSolarSystem.id;
+         loc.solarSystemId = ML.latestSSMap.id;
          loc.type = LocationType.SS_OBJECT;
          
          assertThat( loc.isNavigable, equals (true) );
@@ -262,13 +262,13 @@ package tests.models
       public function should_navigate_to_panet_if_not_cached_but_viewable_and_ss_cached() : void
       {
          loc.id = 2;
-         loc.solarSystemId = ML.latestSolarSystem.id;
+         loc.solarSystemId = ML.latestSSMap.id;
          loc.type = LocationType.SS_OBJECT;
          var p:MSSObject = new MSSObject();
          p.id = loc.id;
          p.solarSystemId = loc.solarSystemId;
          p.viewable = true;
-         ML.latestSolarSystem.addObject(p);
+         ML.latestSSMap.addObject(p);
          
          Expect.call(NAV_CTRL.toPlanet(null))
             .ignoreArguments()
@@ -286,13 +286,13 @@ package tests.models
       public function should_navigate_to_ss_if_planet_not_cached_and_not_viewable_and_ss_cached() : void
       {
          loc.id = 2;
-         loc.solarSystemId = ML.latestSolarSystem.id;
+         loc.solarSystemId = ML.latestSSMap.id;
          loc.type = LocationType.SS_OBJECT;
          var p:MSSObject = new MSSObject();
          p.id = loc.id;
          p.solarSystemId = loc.solarSystemId;
          p.viewable = false;
-         ML.latestSolarSystem.addObject(p);
+         ML.latestSSMap.addObject(p);
          
          Expect.call(NAV_CTRL.toSolarSystem(0))
             .ignoreArguments()
@@ -313,7 +313,7 @@ package tests.models
          loc.id = 2;
          loc.solarSystemId = ML.latestGalaxy.battlegroundId;
          loc.type = LocationType.SS_OBJECT;
-         ML.latestSolarSystem.id = loc.solarSystemId;
+         ML.latestSSMap.id = loc.solarSystemId;
          ML.latestPlanet.id = loc.id;
          ML.latestPlanet.solarSystemId = loc.solarSystemId;
          
@@ -337,7 +337,7 @@ package tests.models
          loc.id = 2;
          loc.solarSystemId = ML.latestGalaxy.battlegroundId;
          loc.type = LocationType.SS_OBJECT;
-         var wormhole:SolarSystem = new SolarSystem();
+         var wormhole:MSolarSystem = new MSolarSystem();
          wormhole.id = 2;
          wormhole.kind = SSKind.WORMHOLE;
          ML.latestGalaxy.addObject(wormhole);

@@ -7,7 +7,7 @@ package controllers.constructionqueues.actions
    import models.building.Building;
    import models.constructionqueueentry.ConstructionQueueEntry;
    import models.factories.ConstructionQueryEntryFactory;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    
 
    public class IndexAction extends CommunicationAction
@@ -23,7 +23,7 @@ package controllers.constructionqueues.actions
       {
          if (cmd.parameters.entries != null)
          {
-            var planet:Planet = ML.latestPlanet;
+            var planet:MPlanet = ML.latestPlanet;
             var currentFacility:Building = planet.getBuildingById(cmd.parameters.constructorId);
             currentFacility.constructionQueueEntries.removeAll();
             for each(var queueElementObj:Object in cmd.parameters.entries)

@@ -2,13 +2,13 @@ package controllers.objects.actions.customcontrollers
 {
    import models.ModelLocator;
    import models.folliage.BlockingFolliage;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    
    import utils.SingletonFactory;
 
    public class TileController extends BaseObjectController
    {
-      private function get planet() : Planet {
+      private function get planet() : MPlanet {
          return ModelLocator.getInstance().latestPlanet;
       }
       

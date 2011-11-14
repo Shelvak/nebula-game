@@ -1,6 +1,6 @@
 package globalevents
 {
-   import models.planet.Planet;
+   import models.planet.MPlanet;
 
    public class GPlanetEvent extends GlobalEvent
    {
@@ -15,11 +15,11 @@ package globalevents
       public static const PLANET_CHANGE:String = "latestPlanetChange";
       
       
-      private var _planet:Planet;
+      private var _planet:MPlanet;
       /**
-       * Instance of <code>Planet</code> that caused this event to be dispatched some way. 
+       * Instance of <code>MPlanet</code> that caused this event to be dispatched some way.
        */      
-      public function get planet() : Planet
+      public function get planet() : MPlanet
       {
          return _planet;
       }
@@ -27,7 +27,7 @@ package globalevents
       /**
        * Constructor. 
        */      
-      public function GPlanetEvent(type:String, p:Planet = null)
+      public function GPlanetEvent(type:String, p:MPlanet = null)
       {
          _planet = p;
          super(type, true);

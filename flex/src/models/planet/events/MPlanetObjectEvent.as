@@ -2,15 +2,15 @@ package models.planet.events
 {
    import flash.events.Event;
    
-   import models.planet.Planet;
-   import models.planet.PlanetObject;
+   import models.planet.MPlanet;
+   import models.planet.MPlanetObject;
    
-   public class PlanetObjectEvent extends Event
+   public class MPlanetObjectEvent extends Event
    {
       /**
        * Dispatched when <code>imageData</code> property (and as a result
        * <code>imageWidth</code> and <code>imageHeight</code> properties)
-       * of <code>PlanetObject</code> changes.
+       * of <code>MPlanetObject</code> changes.
        * 
        * @eventType planetObjectImageChange
        */
@@ -19,7 +19,7 @@ package models.planet.events
       
       /**
        * Dispatched when <code>x</code>, <code>y</code>, <code>xEnd</code> or
-       * <code>yEnd</code> properties of <code>PlanetObject</code> change:
+       * <code>yEnd</code> properties of <code>MPlanetObject</code> change:
        * as a result of this change <code>width</code>, <code>height</code>,
        * <code>realBasementWidth</code> and <code>realBasementHeight</code>
        * properties also change.
@@ -31,7 +31,7 @@ package models.planet.events
       
       /**
        * Dispatched when <code>x</code> or <code>y</code> of
-       * <code>PlanetObject</code> change: <code>zIndex</code> properties also
+       * <code>MPlanetObject</code> change: <code>zIndex</code> properties also
        * change.
        * 
        * @eventType planetObjectZIndexChange
@@ -42,16 +42,16 @@ package models.planet.events
       /**
        * Typed alias for <code>target</code> property.
        */
-      public function get planetObject() : PlanetObject
+      public function get planetObject() : MPlanetObject
       {
-         return target as PlanetObject;
+         return target as MPlanetObject;
       }
       
       
       /**
        * Constructor.
        */
-      public function PlanetObjectEvent(type:String)
+      public function MPlanetObjectEvent(type:String)
       {
          super(type, false, false);
       }

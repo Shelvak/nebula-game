@@ -11,7 +11,7 @@ package tests.spacemap
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.core.throws;
@@ -74,13 +74,13 @@ package tests.spacemap
       {
          var wreckage:MWreckage = new MWreckage();
          wreckage.currentLocation = new LocationMinimal();
-         var solarSystem:SolarSystem = new SolarSystem();
+         var solarSystem:MSolarSystem = new MSolarSystem();
          var objects:MStaticSpaceObjectsAggregator = new MStaticSpaceObjectsAggregator();
          objects.addItem(wreckage);
          objects.addItem(solarSystem);
          
          assertThat(
-            function():void{ objects.addItem(new SolarSystem()) },
+            function():void{ objects.addItem(new MSolarSystem()) },
             throws (IllegalOperationError)
          );
       };

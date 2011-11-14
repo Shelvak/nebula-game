@@ -5,44 +5,47 @@
                               xmlns:space="components.map.space.*"
                               xmlns:solarsystem="components.gameobjects.solarsystem.*"
                               title="{getString('title.solarSystemInfo')}">
-   <fx:Binding source="SolarSystem(staticObject)" destination="ss"/>
+   <fx:Binding source="MSolarSystem(staticObject)" destination="ss"/>
    <fx:Script>
       <![CDATA[
-         import models.location.LocationMinimal;
-         import models.solarsystem.MSSObject;
-         import models.solarsystem.SolarSystem;
-         
-         import spark.utils.TextFlowUtil;
-         
-         import utils.DateUtil;
-         import utils.locale.Localizer;
-         
-         
-         [Bindable]
-         private var ss:SolarSystem;
-         
-         
-         private function getString(property:String, parameters:Array = null) : String {
-            return Localizer.string("Galaxy", property, parameters);
-         }
-         
-         private function getBtnOpenLabel(ss:SolarSystem) : String {
-            return ss.isWormhole ?
-               getString("label.openWormhole") :
-               getString("label.openSolarSystem");
-         }
-         
-         private function getSectorLabel(ss:SolarSystem) : String {
-            return ss == null ? "" : LocationMinimal.getSectorLabel(ss.currentLocation);
-         }
-         
-         private function btnOpen_clickHandler(event:MouseEvent) : void {
-            ss.navigateTo();
-         }
-         
-         private function formatTime(seconds:int) : String {
-            return DateUtil.secondsToHumanString(seconds);
-         }
+      import models.location.LocationMinimal;
+      import models.solarsystem.MSSObject;
+      import models.solarsystem.MSolarSystem;
+      import models.solarsystem.MSolarSystem;
+
+      import spark.utils.TextFlowUtil;
+
+      import utils.DateUtil;
+      import utils.locale.Localizer;
+
+
+      [Bindable]
+      private var ss: MSolarSystem;
+
+
+      private function getString(property: String,
+                                 parameters: Array = null): String {
+         return Localizer.string("Galaxy", property, parameters);
+      }
+
+      private function getBtnOpenLabel(ss: MSolarSystem): String {
+         return ss.isWormhole ?
+                getString("label.openWormhole") :
+                getString("label.openSolarSystem");
+      }
+
+      private function getSectorLabel(ss: MSolarSystem): String {
+         return ss == null ? "" : LocationMinimal.getSectorLabel(ss
+                                                                    .currentLocation);
+      }
+
+      private function btnOpen_clickHandler(event: MouseEvent): void {
+         ss.navigateTo();
+      }
+
+      private function formatTime(seconds: int): String {
+         return DateUtil.secondsToHumanString(seconds);
+      }
       ]]>
    </fx:Script>
    <space:layout>

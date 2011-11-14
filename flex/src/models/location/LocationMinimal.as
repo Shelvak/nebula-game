@@ -105,7 +105,7 @@ package models.location
       public function get isObserved() : Boolean {
          return ML.latestPlanet && !ML.latestPlanet.fake && ML.latestPlanet.definesLocation(this) ||
                 ML.latestGalaxy && !ML.latestGalaxy.fake && ML.latestGalaxy.locationIsVisible(this) ||
-                ML.latestSolarSystem && !ML.latestSolarSystem.fake && ML.latestSolarSystem.definesLocation(this);
+                ML.latestSSMap && !ML.latestSSMap.fake && ML.latestSSMap.definesLocation(this);
       }
       
       
@@ -131,18 +131,18 @@ package models.location
       public function toLocation() : Location {
          if (!isGalaxy && !isObserved) {
             throw new IllegalOperationError(
-               "Can't construct instance of [class Location] from " + this + ": [prop isObserved] " +
-               "must return true for this method to work but returned " + isObserved
+               "Can't construct instance of [class Location] from "
+                  + this + ": [prop isObserved] must return true for this "
+                  + "method to work but returned " + isObserved
             );
          }
          var map:MMap;
-         switch (type)
-         {
+         switch (type) {
             case LocationType.GALAXY:
                map = ML.latestGalaxy;
                break;
             case LocationType.SOLAR_SYSTEM:
-               map = ML.latestSolarSystem;
+               map = ML.latestSSMap;
                break;
             case LocationType.SS_OBJECT:
                map = ML.latestPlanet;

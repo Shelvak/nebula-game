@@ -33,8 +33,8 @@ package components.map.planet
    import models.building.Building;
    import models.building.Extractor;
    import models.building.MCBuildingSelectedSidebar;
-   import models.planet.Planet;
-   import models.planet.events.PlanetEvent;
+   import models.planet.MPlanet;
+   import models.planet.events.MPlanetEvent;
    import models.tile.Tile;
    
    import mx.collections.ArrayCollection;
@@ -99,7 +99,7 @@ package components.map.planet
       private var _resourceTiles:ArrayCollection;
       
       
-      public override function initialize(objectsLayer:PlanetObjectsLayer, map:PlanetMap, planet:Planet) : void
+      public override function initialize(objectsLayer:PlanetObjectsLayer, map:PlanetMap, planet:MPlanet) : void
       {
          super.initialize(objectsLayer, map, planet);
          _resourceTilesIndicators = new Object();
@@ -262,15 +262,15 @@ package components.map.planet
       }
       
       
-      protected override function addPlanetEventHandlers(planet:Planet) : void
+      protected override function addPlanetEventHandlers(planet:MPlanet) : void
       {
-         planet.addEventListener(PlanetEvent.BUILDING_MOVE, planet_buildingMoveHandler, false, 0, true);
+         planet.addEventListener(MPlanetEvent.BUILDING_MOVE, planet_buildingMoveHandler, false, 0, true);
       }
       
       
-      protected override function removePlanetEventHandlers(planet:Planet) : void
+      protected override function removePlanetEventHandlers(planet:MPlanet) : void
       {
-         planet.removeEventListener(PlanetEvent.BUILDING_MOVE, planet_buildingMoveHandler, false);
+         planet.removeEventListener(MPlanetEvent.BUILDING_MOVE, planet_buildingMoveHandler, false);
       }
       
       
@@ -456,9 +456,9 @@ package components.map.planet
        * 
        * @param dispatchEvent if <code>true</code>, <code>GBuildingEvent.MOVE_CANCEL</code> event will
        * be dispatched.
-       * @param rollback if <code>true</code>, this means that modifications to <code>Planet</code>
+       * @param rollback if <code>true</code>, this means that modifications to <code>MPlanet</code>
        * have been made which have to be rolled back, if <code>false</code> - no modifications to
-       * <code>Planet</code> have been made and only current location of the <code>Building</code>
+       * <code>MPlanet</code> have been made and only current location of the <code>Building</code>
        * moved has to be restored.
        */
       private function cancelBuildingMoveProcess(dispatchEvent:Boolean, rollback:Boolean) : void
@@ -480,7 +480,7 @@ package components.map.planet
       }
       
       
-      private function planet_buildingMoveHandler(event:PlanetEvent) : void
+      private function planet_buildingMoveHandler(event:MPlanetEvent) : void
       {
          objectsLayer.positionObject(objectsLayer.getObjectByModel(event.object));
       }

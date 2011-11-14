@@ -14,7 +14,7 @@ package components.foliage
    
    import models.ModelLocator;
    import models.folliage.BlockingFolliage;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.player.Player;
    import models.player.events.PlayerEvent;
    
@@ -43,7 +43,7 @@ package components.foliage
          return ML.player;
       }
       
-      private function get planet() : Planet {
+      private function get planet() : MPlanet {
          return ML.latestPlanet;
       }
       

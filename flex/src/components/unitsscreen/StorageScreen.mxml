@@ -2,8 +2,6 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:base="components.base.*"
-         xmlns:mx="library://ns.adobe.com/flex/mx"
-         xmlns:location="components.location.*"
          xmlns:unitsscreen="components.unitsscreen.*"
          xmlns:screen="components.base.screen.*"
          xmlns:screens="components.screens.*"
@@ -13,243 +11,257 @@
    
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.base.ResourceSelectorComp;
-         
-         import controllers.GlobalFlags;
-         import controllers.ui.NavigationController;
-         import controllers.units.UnitsCommand;
-         
-         import globalevents.GResourcesEvent;
-         import globalevents.GUnitsScreenEvent;
-         
-         import models.MWreckage;
-         import models.ModelLocator;
-         import models.location.LocationType;
-         import models.resource.Resource;
-         import models.resource.ResourceType;
-         import models.unit.Unit;
-         import models.unit.UnitBuildingEntry;
-         import models.unit.UnitKind;
-         import models.unit.events.UnitEvent;
-         
-         import mx.collections.ArrayCollection;
-         import mx.collections.ListCollectionView;
-         import mx.events.CollectionEvent;
-         import mx.events.FlexEvent;
-         
-         import utils.datastructures.Collections;
-         import utils.locale.Localizer;
-         
-         
-         private function get NAV_CTRL() : NavigationController {
-            return NavigationController.getInstance();
-         }
-         
-         private function get ML() : ModelLocator {
-            return ModelLocator.getInstance();
-         }
-         
-         private function getString(property:String, parameters:Array = null) : String {
-            return Localizer.string("Units", property, parameters);
-         }
-         
-         
-         private function this_creationCompleteHandler(event:FlexEvent):void
-         {
-            EventBroker.subscribe(GUnitsScreenEvent.OPEN_STORAGE_SCREEN, setTransporter);
-            NAV_CTRL.dispatchMainAreaScreenSwitchEvent();
-         }
-         
-         [Bindable]
-         private var transporter: Unit;
-         
-         [Bindable]
-         private var cachedUnits: ArrayCollection = new ArrayCollection();
-         
-         [Bindable]
-         private var items: ArrayCollection = new ArrayCollection();
-         
-         private var wreckage: MWreckage = null;
-         
-         
-         private function refreshWreck(e: CollectionEvent): void
-         {
-            wreckage = filtered.length > 0? MWreckage(filtered.getItemAt(0)): null;
-            dispatchRefreshMaxStorageEvent();
-         }
-         
-         private function resetSliders(e: GResourcesEvent): void
-         {
-            wreckage = filtered.length > 0? MWreckage(filtered.getItemAt(0)): null;
-            EventBroker.unsubscribe(GResourcesEvent.WRECKAGES_UPDATED, resetSliders);
-            selectTransporterValues();
-            dispatchRefreshMaxStorageEvent();
-         }
-         
-         private function setTransporter(e: GUnitsScreenEvent): void
-         {
-            oldUnits = e.unitsCollection;
-            oldLocation = e.destination;
-            cachedUnits.removeAll();
-            var tempUnits: Object = {};
-            transporter = Unit(e.location);
-            filtered = (transporter.location.isSolarSystem
-               ? ML.latestSolarSystem.wreckages
-               : ML.latestGalaxy.wreckages);
-            filtered = Collections.filter(filtered, function (item: MWreckage): Boolean
-            {
+      import com.developmentarc.core.utils.EventBroker;
+
+      import components.base.ResourceSelectorComp;
+
+      import controllers.GlobalFlags;
+      import controllers.ui.NavigationController;
+      import controllers.units.UnitsCommand;
+
+      import globalevents.GResourcesEvent;
+      import globalevents.GUnitsScreenEvent;
+
+      import models.MWreckage;
+      import models.ModelLocator;
+      import models.location.LocationType;
+      import models.resource.Resource;
+      import models.resource.ResourceType;
+      import models.unit.Unit;
+      import models.unit.UnitBuildingEntry;
+      import models.unit.UnitKind;
+      import models.unit.events.UnitEvent;
+
+      import mx.collections.ArrayCollection;
+      import mx.collections.ListCollectionView;
+      import mx.events.CollectionEvent;
+      import mx.events.FlexEvent;
+
+      import utils.datastructures.Collections;
+      import utils.locale.Localizer;
+
+
+      private function get NAV_CTRL(): NavigationController {
+         return NavigationController.getInstance();
+      }
+
+      private function get ML(): ModelLocator {
+         return ModelLocator.getInstance();
+      }
+
+      private function getString(property: String,
+                                 parameters: Array = null): String {
+         return Localizer.string("Units", property, parameters);
+      }
+
+
+      private function this_creationCompleteHandler(event: FlexEvent): void {
+         EventBroker.subscribe(GUnitsScreenEvent.OPEN_STORAGE_SCREEN,
+                               setTransporter);
+         NAV_CTRL.dispatchMainAreaScreenSwitchEvent();
+      }
+
+      [Bindable]
+      private var transporter: Unit;
+
+      [Bindable]
+      private var cachedUnits: ArrayCollection = new ArrayCollection();
+
+      [Bindable]
+      private var items: ArrayCollection = new ArrayCollection();
+
+      private var wreckage: MWreckage = null;
+
+
+      private function refreshWreck(e: CollectionEvent): void {
+         wreckage = filtered.length > 0 ? MWreckage(filtered.getItemAt(0))
+                       : null;
+         dispatchRefreshMaxStorageEvent();
+      }
+
+      private function resetSliders(e: GResourcesEvent): void {
+         wreckage = filtered.length > 0 ? MWreckage(filtered.getItemAt(0))
+                       : null;
+         EventBroker.unsubscribe(GResourcesEvent.WRECKAGES_UPDATED,
+                                 resetSliders);
+         selectTransporterValues();
+         dispatchRefreshMaxStorageEvent();
+      }
+
+      private function setTransporter(e: GUnitsScreenEvent): void {
+         oldUnits = e.unitsCollection;
+         oldLocation = e.destination;
+         cachedUnits.removeAll();
+         var tempUnits: Object = {};
+         transporter = Unit(e.location);
+         filtered = (transporter.location.isSolarSystem
+                        ? ML.latestSSMap.wreckages
+                        : ML.latestGalaxy.wreckages);
+         filtered = Collections.filter(
+            filtered,
+            function (item: MWreckage): Boolean {
                return item.currentLocation.equals(transporter.location);
             });
-            
-            filtered.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshWreck);
-            
-            wreckage = filtered.length > 0? MWreckage(filtered.getItemAt(0)): null;
-            
-            for each (var unit: Unit in transporter.units)
-            {
-               if (!tempUnits['unit::'+unit.type])
+
+         filtered.addEventListener(
+            CollectionEvent.COLLECTION_CHANGE, refreshWreck
+         );
+
+         wreckage = filtered.length > 0
+                       ? MWreckage(filtered.getItemAt(0))
+                       : null;
+
+         for each (var unit: Unit in transporter.units) {
+            if (!tempUnits['unit::' + unit.type]) {
+               tempUnits['unit::' + unit.type] = 1;
+            }
+            else {
+               tempUnits['unit::' + unit.type]++;
+            }
+         }
+         for (var uType: String in tempUnits) {
+            cachedUnits.addItem(new UnitBuildingEntry(uType, tempUnits[uType]));
+         }
+         selectTransporterValues();
+      }
+
+      private var filtered: ListCollectionView;
+
+      private var oldStored: int;
+
+      private function selectTransporterValues(): void {
+         metalSelector.setValue(transporter.metal);
+         energySelector.setValue(transporter.energy);
+         zetiumSelector.setValue(transporter.zetium);
+      }
+
+      private var prevScreenParams: Object = null;
+      private var oldUnits: ListCollectionView;
+      private var oldLocation: *;
+
+      protected function manageUnits_clickHandler(event: UnitEvent): void {
+         prevScreenParams = {'units': oldUnits, 'location': oldLocation};
+         NAV_CTRL.showUnits(
+            Collections.filter(
+               ML.units,
+               function(item: Unit): Boolean {
+                  return ((item.location.type == LocationType.UNIT)
+                             && (item.location.id == transporter.id));
+               }),
+            transporter,
+            null,
+            UnitKind.GROUND
+         );
+      }
+
+      [Bindable (event="selectedResourcesChange")]
+      private function getMaxStock(resource: String): int {
+         var possibleStore: int =
+                (wreckage == null
+                    ? transporter[resource]
+                    : Math.min(transporter[resource] + wreckage[resource],
+                               Resource.calculateNewResources(
+                                  transporter[resource],
+                                  transporter.transporterStorage
+                                     - transporter.stored
+                                     - getOtherSelected(resource),
+                                  resource
+                               )));
+         return Math.max(0, possibleStore);
+      }
+
+      [Bindable (event="selectedResourcesChange")]
+      private function get transferPossible(): Boolean {
+         return (metalSelector.selectedVal != transporter.metal
+                    || energySelector.selectedVal != transporter.energy
+                    || zetiumSelector.selectedVal != transporter.zetium);
+      }
+
+      [Bindable (event="selectedResourcesChange")]
+      private function getOtherSelected(resource: String = ''): int {
+         var selectedTotal: int = 0;
+         if (metalSelector && energySelector && zetiumSelector) {
+            if (resource != ResourceType.METAL) {
+               selectedTotal +=
+                  Resource.getResourceVolume(
+                     metalSelector.selectedVal, ResourceType.METAL
+                  ) - Resource.getResourceVolume(
+                     transporter.metal, ResourceType.METAL
+                  );
+            }
+            if (resource != ResourceType.ENERGY) {
+               selectedTotal +=
+                  Resource.getResourceVolume(
+                     energySelector.selectedVal, ResourceType.ENERGY
+                  ) - Resource.getResourceVolume(
+                     transporter.energy, ResourceType.ENERGY
+                  );
+            }
+            if (resource != ResourceType.ZETIUM) {
+               selectedTotal +=
+                  Resource.getResourceVolume(
+                     zetiumSelector.selectedVal, ResourceType.ZETIUM
+                  ) - Resource.getResourceVolume(
+                     transporter.zetium, ResourceType.ZETIUM
+                  );
+            }
+         }
+         return selectedTotal;
+      }
+
+      protected function selectedResourcesChangeHandler(event: UnitEvent): void {
+         dispatchRefreshMaxStorageEvent();
+      }
+
+      private function dispatchRefreshMaxStorageEvent(e: Event = null): void {
+         dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
+      }
+
+      private function getResourceDiff(resource: String): int {
+         return ResourceSelectorComp(this[resource + 'Selector'])
+                   .selectedVal - int(transporter[resource]);
+      }
+
+
+      protected function transfer_clickHandler(event: UnitEvent): void {
+         if (transferPossible) {
+            GlobalFlags.getInstance().lockApplication = true;
+            EventBroker.subscribe(GResourcesEvent.WRECKAGES_UPDATED,
+                                  resetSliders);
+            new UnitsCommand(
+               UnitsCommand.TRANSFER_RESOURCES,
                {
-                  tempUnits['unit::'+unit.type] = 1;
-               }
-               else
-               {
-                  tempUnits['unit::'+unit.type]++;
-               }
-            }
-            for (var uType: String in tempUnits)
-            {
-               cachedUnits.addItem(new UnitBuildingEntry(uType, tempUnits[uType]));
-            }
-            selectTransporterValues();
+                  transporterId: transporter.id,
+                  metal: getResourceDiff(ResourceType.METAL),
+                  energy: getResourceDiff(ResourceType.ENERGY),
+                  zetium: getResourceDiff(ResourceType.ZETIUM)
+               }).dispatch();
          }
-         
-         private var filtered: ListCollectionView;
-         
-         private var oldStored: int;
-         
-         private function selectTransporterValues(): void
-         {
-            metalSelector.setValue(transporter.metal);
-            energySelector.setValue(transporter.energy);
-            zetiumSelector.setValue(transporter.zetium);
+      }
+
+
+      protected function close_clickHandler(event: MouseEvent): void {
+         if (prevScreenParams == null) {
+            NAV_CTRL.showPreviousScreen();
          }
-         
-         private var prevScreenParams: Object = null;
-         private var oldUnits: ListCollectionView;
-         private var oldLocation: *;
-         
-         protected function manageUnits_clickHandler(event:UnitEvent):void
-         {
-            prevScreenParams = {'units': oldUnits, 'location': oldLocation};
-            NAV_CTRL.showUnits(Collections.filter(ML.units, 
-               function(item: Unit): Boolean
-               {
-                  return ((item.location.type == LocationType.UNIT) && (item.location.id == transporter.id));
-               }), transporter, null, UnitKind.GROUND);
+         else {
+            NAV_CTRL.showUnits(prevScreenParams.units,
+                               prevScreenParams.location);
+            prevScreenParams = null;
          }
-         
-         [Bindable (event="selectedResourcesChange")]
-         private function getMaxStock(resource: String): int
-         {            
-            var possibleStore: int = (wreckage == null
-               ? transporter[resource]
-               : Math.min(transporter[resource] + wreckage[resource], 
-                  Resource.calculateNewResources(transporter[resource], 
-                     transporter.transporterStorage - transporter.stored - 
-                     getOtherSelected(resource), resource)));
-            return Math.max(0, possibleStore);
-         }
-         
-         [Bindable (event="selectedResourcesChange")]
-         private function get transferPossible(): Boolean
-         {
-            return (metalSelector.selectedVal != transporter.metal
-               || energySelector.selectedVal != transporter.energy
-               || zetiumSelector.selectedVal != transporter.zetium);
-         }
-         
-         [Bindable (event="selectedResourcesChange")]
-         private function getOtherSelected(resource: String = ''): int
-         {
-            var selectedTotal: int = 0;
-            if (metalSelector && energySelector && zetiumSelector)
-            {
-               if (resource != ResourceType.METAL)
-                  selectedTotal += Resource.getResourceVolume(metalSelector.selectedVal, ResourceType.METAL) - 
-                     Resource.getResourceVolume(transporter.metal, ResourceType.METAL);
-               if (resource != ResourceType.ENERGY)
-                  selectedTotal += Resource.getResourceVolume(energySelector.selectedVal, ResourceType.ENERGY) - 
-                     Resource.getResourceVolume(transporter.energy, ResourceType.ENERGY);
-               if (resource != ResourceType.ZETIUM)
-                  selectedTotal += Resource.getResourceVolume(zetiumSelector.selectedVal, ResourceType.ZETIUM) - 
-                     Resource.getResourceVolume(transporter.zetium, ResourceType.ZETIUM);
-            }
-            return selectedTotal;
-         }
-         
-         protected function selectedResourcesChangeHandler(event:UnitEvent):void
-         {
-            dispatchRefreshMaxStorageEvent();
-         }
-         
-         private function dispatchRefreshMaxStorageEvent(e: Event = null): void
-         {
-            dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
-         }
-         
-         private function getResourceDiff(resource: String): int
-         {
-            return ResourceSelectorComp(this[resource + 'Selector']).selectedVal - int(transporter[resource]);
-         }
-         
-         
-         protected function transfer_clickHandler(event:UnitEvent):void
-         {
-            if (transferPossible)
-            {
-               GlobalFlags.getInstance().lockApplication = true;
-               EventBroker.subscribe(GResourcesEvent.WRECKAGES_UPDATED, resetSliders);
-               new UnitsCommand(
-                  UnitsCommand.TRANSFER_RESOURCES,
-                  {
-                     transporterId: transporter.id,
-                     metal: getResourceDiff(ResourceType.METAL),
-                     energy: getResourceDiff(ResourceType.ENERGY),
-                     zetium: getResourceDiff(ResourceType.ZETIUM)
-                  }).dispatch();
-            }
-         }
-         
-         
-         protected function close_clickHandler(event:MouseEvent):void
-         {
-            if (prevScreenParams == null)
-            {
-               NAV_CTRL.showPreviousScreen();
-            }
-            else
-            {
-               NAV_CTRL.showUnits(prevScreenParams.units, prevScreenParams.location);
-               prevScreenParams = null;
-            }
-         }
-         
-         private function selectAll(): void
-         {
-            metalSelector.setValue(metalSelector.maxAmmount);
-            energySelector.setValue(energySelector.maxAmmount);
-            zetiumSelector.setValue(zetiumSelector.maxAmmount); 
-         }
-         
-         private function selectNone(): void
-         {
-            metalSelector.setValue(0);
-            energySelector.setValue(0);
-            zetiumSelector.setValue(0); 
-         }
-           
+      }
+
+      private function selectAll(): void {
+         metalSelector.setValue(metalSelector.maxAmmount);
+         energySelector.setValue(energySelector.maxAmmount);
+         zetiumSelector.setValue(zetiumSelector.maxAmmount);
+      }
+
+      private function selectNone(): void {
+         metalSelector.setValue(0);
+         energySelector.setValue(0);
+         zetiumSelector.setValue(0);
+      }
       ]]>
    </fx:Script>
    

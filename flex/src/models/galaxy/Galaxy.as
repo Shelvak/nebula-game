@@ -9,7 +9,7 @@ package models.galaxy
    import models.map.MMapSpace;
    import models.map.MapArea;
    import models.map.MapType;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
@@ -63,7 +63,7 @@ package models.galaxy
       public var battlegroundId:int = 0;
       
       private var _solarSystems:ListCollectionView;
-      private function ff_solarSystems(ss:SolarSystem) : Boolean {
+      private function ff_solarSystems(ss:MSolarSystem) : Boolean {
          return !ss.isWormhole;
       }
       [Bindable(event="willNotChange")]
@@ -80,7 +80,7 @@ package models.galaxy
       }
       
       private var _solarSystemsWithPlayer:ListCollectionView = new ListCollectionView();
-      private function ff_solarSystemsWithPlayer(ss:SolarSystem) : Boolean {
+      private function ff_solarSystemsWithPlayer(ss:MSolarSystem) : Boolean {
          return ss.metadata != null &&
                 ss.metadata.playerAssets;
       }
@@ -99,7 +99,7 @@ package models.galaxy
       }
       
       private var _wormholes:ListCollectionView;
-      private function ff_wormholes(ss:SolarSystem) : Boolean {
+      private function ff_wormholes(ss:MSolarSystem) : Boolean {
          return ss.isWormhole;
       }
       [Bindable(event="willNotChange")]
@@ -124,7 +124,7 @@ package models.galaxy
        * system returns <code>false</code>.
        */
       public function isWormhole(ssId:int) : Boolean {
-         var ss:SolarSystem = Collections.findFirstWithId(_wormholes, ssId);
+         var ss:MSolarSystem = Collections.findFirstWithId(_wormholes, ssId);
          return ss != null && ss.isWormhole;
       }
       
@@ -139,7 +139,7 @@ package models.galaxy
        * Determines if the given solar system id is that of a battleground solar system.
        */
       public function isMiniBattleground(ssId:int) : Boolean {
-         var ss:SolarSystem = Collections.findFirstWithId(_solarSystems, ssId);
+         var ss:MSolarSystem = Collections.findFirstWithId(_solarSystems, ssId);
          return ss != null && ss.isMiniBattleground;
       }
       
@@ -192,9 +192,9 @@ package models.galaxy
        * @return instance of <code>SolarSystem</code> or <code>null</code>
        * if a solar system with given id does not exists.
        */
-      public function getSSById(id:int) : SolarSystem {
+      public function getSSById(id:int) : MSolarSystem {
          return Collections.findFirst(naturalObjects,
-            function (ss:SolarSystem) : Boolean {
+            function (ss:MSolarSystem) : Boolean {
                return ss.id == id;
             }
          );
@@ -203,8 +203,8 @@ package models.galaxy
       /**
        * Returns solar system at the given coordinates or null if there is no solar system there.
        */
-      public function getSSAt(x:int, y:int) : SolarSystem {
-         return SolarSystem(getNaturalObjectAt(x, y));
+      public function getSSAt(x:int, y:int) : MSolarSystem {
+         return MSolarSystem(getNaturalObjectAt(x, y));
       }
       
       /**

@@ -37,7 +37,7 @@ package tests.utils.tests
          Localizer.addBundle(bundle2);
          
          setCurrentLocale(Locale.EN);
-      };
+      }
       
       [Test]
       public function findSimpleString() : void
@@ -90,7 +90,7 @@ package tests.utils.tests
       private function pluralize(str:String, params:Array, locale:String = "en") : String
       {
          return Localizer.pluralize(str, params, locale);
-      };
+      }
       
       
       [Test]
@@ -116,7 +116,7 @@ package tests.utils.tests
             "should throw error when pluralized string does not have all forms specified",
             _pluralize("{0 one[? dog]}", [2]), throws (Error)
          );
-      };
+      }
       
       
       [Test]
@@ -153,7 +153,7 @@ package tests.utils.tests
             pluralize("{0 bar[CAT] foo[CATS]} vs {1 foo[DOG] bar[DOGS]}", ["foo", "bar"]),
             equals ("CATS vs DOGS")
          );
-      };
+      }
       
       
       [Test]
@@ -163,7 +163,7 @@ package tests.utils.tests
          assertThat( "0",               pluralize(str, [0], Locale.EN), equals ("no dogs")  );
          assertThat( "1",               pluralize(str, [1], Locale.EN), equals ("dog")  );
          assertThat( "everything else", pluralize(str, [5], Locale.EN), equals ("5 dogs") );
-      };
+      }
       
       
       [Test]
@@ -173,7 +173,7 @@ package tests.utils.tests
          assertThat( "0",                pluralize(str, [ 0], Locale.EN), equals ("0 dogs")  );
          assertThat( "-1",               pluralize(str, [-1], Locale.EN), equals ("-1 dog")  );
          assertThat( "-everything else", pluralize(str, [-5], Locale.EN), equals ("-5 dogs") );
-      };
+      }
       
       
       [Test]
@@ -198,7 +198,7 @@ package tests.utils.tests
          
          assertThat( "3rd form: everything else:  8", _pluralize( 8), equals ( "8 šunys") );
          assertThat( "3rd form: everything else: 25", _pluralize(25), equals ("25 šunys") );
-      };
+      }
       
       
       [Test]
@@ -223,7 +223,7 @@ package tests.utils.tests
          
          assertThat( "3rd form: everything else:  -8", _pluralize( -8), equals ( "-8 šunys") );
          assertThat( "3rd form: everything else: -25", _pluralize(-25), equals ("-25 šunys") );
-      };
+      }
       
       
       [Test]
@@ -234,7 +234,7 @@ package tests.utils.tests
          
          assertThat( "is 1: 1", _pluralize( 1), equals ("1 šuo") );
          assertThat( "ends in 1, not 11: 21", _pluralize(21), equals ("21 šuo") );
-      };
+      }
       
       [Test]
       public function pluralize_should_respect_latvian_rules() : void {
@@ -265,7 +265,7 @@ package tests.utils.tests
          
          assertThat( "is 1", _pluralize(1), equals ("1 tanks") );
          assertThat( "is 0", _pluralize(0), equals ("0 tanki") );
-      };
+      }
       
       [Test]
       public function string_should_replace_simple_as_well_as_pluralizable_parameters() : void
@@ -286,7 +286,7 @@ package tests.utils.tests
             "should replace both parameter types",
             string("both", ["Bob", 2]), equals ("My name is Bob and I have 2 cars")
          );
-      };
+      }
       
       
       [Test]
@@ -299,19 +299,19 @@ package tests.utils.tests
             string("reference", ["Bob", 2, "Yahoo!"]),
             equals ("Hi! My name is Bob and I have 2 cars. Yahoo!")
          );
-      };
+      }
       
       [Test]
       public function resolveObjectNames() : void {
          function none(amount:int) : String {
             return Localizer.resolveObjectNames("[obj:" + amount + ":Shocker]");
-         };
+         }
          function what(amount:int) : String {
             return Localizer.resolveObjectNames("[obj:" + amount + ":Shocker:what]");
-         };
+         }
          function whos(amount:int) : String {
             return Localizer.resolveObjectNames("[obj:" + amount + ":Shocker:whos]");
-         };
+         }
          setCurrentLocale(Locale.LT);
          addBundle(Locale.LT, "Objects", {
             "Shocker":      "{0 one[mechas] 1sts[? mechas] tens[? mechų] many[? mechai]}",
@@ -347,7 +347,7 @@ package tests.utils.tests
          function what(amount:int, downcase:Boolean) : String {
             var resolvableSequence:String = "[obj:" + amount + ":Shocker:what" + (downcase ? ":dc]" : "]");
             return Localizer.resolveObjectNames(resolvableSequence);
-         };
+         }
          function none(amount:int, downcase:Boolean) : String {
             var resolvableSequence:String = "[obj:" + amount + ":Shocker" + (downcase ? "::dc]" : "]");
             return Localizer.resolveObjectNames(resolvableSequence);
@@ -356,12 +356,12 @@ package tests.utils.tests
             return Localizer.resolveObjectNames("[obj:0:Jumper" + (downcase ? "::dc]" : "]"));
          }
          addBundle(Locale.LT, "Objects", {
-            "Jumper":       "Didelis Šoklys",
+            "Jumper":       "DIDELIS Šoklys",
             "Shocker":      "{0 one[Mechas] 1sts[? Mechas] tens[? Mechų] many[? Mechai]}",
             "Shocker-what": "{0 one[Mechą] 1sts[? Mechą] tens[? Mechų] many[? Mechus]}"
          });
          
-         assertThat( "U_case, none, plain:", nonePlain(false), equals ("Didelis Šoklys") );
+         assertThat( "U_case, none, plain:", nonePlain(false), equals ("DIDELIS Šoklys") );
          assertThat( "d_case, none, plain:", nonePlain( true), equals ("didelis šoklys") );
          
          assertThat( "U_case, none:  1", none( 1, false), equals (   "Mechas") );

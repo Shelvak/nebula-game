@@ -33,7 +33,7 @@ package controllers.objects.actions.customcontrollers
          if (location.isSSObject)
             ML.latestPlanet.ssObject.cooldown = cooldown;
          else {
-            var map:MMapSpace = MMapSpace(location.isGalaxy ? ML.latestGalaxy : ML.latestSolarSystem);
+            var map:MMapSpace = MMapSpace(location.isGalaxy ? ML.latestGalaxy : ML.latestSSMap);
             // Server often sends objects|created with a cooldown in the same location just
             // before a few seconds it is about to be removed by the client
             Collections.removeFirstEqualTo(map.cooldowns, cooldown, true);

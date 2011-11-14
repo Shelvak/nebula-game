@@ -4,7 +4,7 @@ package models.galaxy
    
    import models.location.LocationMinimal;
    import models.map.MapArea;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    import models.unit.Unit;
    
    import mx.collections.IList;
@@ -51,7 +51,7 @@ package models.galaxy
             if (entry.yMin < _yMin) _yMin = entry.yMin;
             if (entry.yMax > _yMax) _yMax = entry.yMax;
          }
-         for each (var ss:SolarSystem in _solarSystems.toArray()) {
+         for each (var ss:MSolarSystem in _solarSystems.toArray()) {
             updateBounds(ss.currentLocation);
          }
          for each (var unit:Unit in _units.toArray()) {
