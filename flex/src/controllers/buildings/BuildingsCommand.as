@@ -15,6 +15,7 @@ package controllers.buildings
       public static const SELF_DESTRUCT: String = "buildings|self_destruct";
       public static const ACTIVATE: String = "buildings|activate";
       public static const DEACTIVATE: String = "buildings|deactivate";
+      public static const REPAIR: String = "buildings|repair";
       public static const ACTIVATE_OVERDRIVE: String = "buildings|activate_overdrive";
       public static const DEACTIVATE_OVERDRIVE: String = "buildings|deactivate_overdrive";
       public static const CANCEL_CONSTRUCTOR: String = "buildings|cancel_constructor";
