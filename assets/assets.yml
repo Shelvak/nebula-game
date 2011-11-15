@@ -555,6 +555,9 @@ assets:
         center.png:                 Pinfo_center_repeat.png
         right.png:                  Pinfo_right.png
 
+      "healing":
+        indicator.png:              Building_heal_bar.png
+
       "ss_navigator":
         bottom_left.png:            Snavig_bottom_left.png
         center_left.png:            Snavig_center_left.png
