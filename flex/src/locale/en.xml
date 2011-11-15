@@ -412,6 +412,15 @@
     </message.pressOnEmpty>
     <panelTitle.scientists value="Scientists" />
     <panelTitle.cancelProgress value="Cancel upgrade" />
+    <panelTitle.repairBuilding value="Repair building" />
+    <warning.repairBuilding>
+      <p>Turret won't participate in combat until repairs are finished.</p>
+    </warning.repairBuilding>
+    <warning.repairBuildingTechNeeded>
+      <p>You need to research [reference:Objects/Technology_BuildingRepair]
+      technology to repair turrets.</p>
+    </warning.repairBuildingTechNeeded>
+    <label.repairBuilding value="Repair"/>
     <label.cancelUpgrade>
       <p>These resources will be returned if you cancel upgrade of this 
       building:</p>

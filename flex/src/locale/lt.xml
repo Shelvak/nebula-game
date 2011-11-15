@@ -511,6 +511,16 @@
     </message.pressOnEmpty>
     <panelTitle.scientists value="Mokslininkai" />
     <panelTitle.cancelProgress value="Atšaukti statybas" />
+    <panelTitle.repairBuilding value="Pastato taisymas" />
+    <warning.repairBuilding>
+      <p>Gynybinis bokštelis nedalyvaus kovose tol, kol taisymo darbai nebus
+        baigti.</p>
+    </warning.repairBuilding>
+    <warning.repairBuildingTechNeeded>
+      <p>Tau reikia išrasti [reference:Objects/Technology_BuildingRepair]
+        technologiją, kad galėtum taisyti gynybinius bokštelius.</p>
+    </warning.repairBuildingTechNeeded>
+    <label.repairBuilding value="Taisyti"/>
     <label.cancelUpgrade value="Atšaukęs pastato tobulinimą gausi:" />
     <label.cancelConstructor value="Atšaukęs pastato statybą gausi:" />
     <label.cancel value="Atšaukti" />

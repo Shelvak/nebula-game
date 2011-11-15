@@ -551,6 +551,17 @@
     </message.pressOnEmpty>
     <panelTitle.scientists value="Zinātnieki" />
     <panelTitle.cancelProgress value="Atcelt jauninājumus" />
+    <!-- TODO -->
+    <panelTitle.repairBuilding value="Repair building" />
+    <warning.repairBuilding>
+      <p>Turret won't participate in combat until repairs are finished.</p>
+    </warning.repairBuilding>
+    <warning.repairBuildingTechNeeded>
+      <p>You need to research [reference:Objects/Technology_BuildingRepair]
+      technology to repair turrets.</p>
+    </warning.repairBuildingTechNeeded>
+    <label.repairBuilding value="Repair"/>
+    <!-- /TODO -->
     <label.cancelUpgrade>
       <p>Šādi resursi tiks atgriezti, ja jūs atcelsiet šīs ēkas būvniecību:</p>
     </label.cancelUpgrade>
