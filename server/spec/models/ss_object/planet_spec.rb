@@ -127,152 +127,6 @@ describe SsObject::Planet do
     end
   end
   
-  describe "raiding" do
-    describe ".npc_raid_unit_count" do
-      before(:all) do
-        @values = {
-          'raiding.raiders' => [
-            [3, "gnat", 5, 0],
-            [3, "gnat", 4, 1],
-            [4, "gnat", 3, 0],
-            [4, "glancer", 4, 0],
-          ]
-        }
-      end
-
-      it "should return empty array if player has too few planets" do
-        with_config_values(@values) do
-          SsObject::Planet.npc_raid_unit_count(2).should == []
-        end
-      end
-
-      it "should return units when we meet threshold" do
-        with_config_values(@values) do
-          SsObject::Planet.npc_raid_unit_count(3).should == [
-            ["gnat", 5, 0],
-            ["gnat", 4, 1],
-          ]
-        end
-      end
-
-      it "should return units when we meed threshold (4 planets)" do
-        with_config_values(@values) do
-          SsObject::Planet.npc_raid_unit_count(4).should == [
-            ["gnat", 5 * 2 + 3, 0],
-            ["gnat", 4 * 2, 1],
-            ["glancer", 4, 0],
-          ]
-        end
-      end
-    end
-
-    describe "#npc_raid_units" do
-      before(:all) do
-        @player = Factory.create(:player, :planets_count => 3)
-        @planet = Factory.create(:planet, :player => @player)
-        SsObject::Planet.should_receive(:npc_raid_unit_count).
-          with(@player.planets_count).and_return([
-            ["gnat", 2, 0],
-            ["glancer", 1, 1],
-          ])
-        @units = @planet.npc_raid_units
-      end
-
-      it "should place units in planet" do
-        @units.each { |unit| unit.location.should == @planet.location_point }
-      end
-
-      it "should set unit flanks" do
-        @units.map(&:flank).should == [0, 0, 1]
-      end
-
-      it "should set unit levels" do
-        @units.each { |unit| unit.level.should == 1 }
-      end
-
-      it "should set unit to full hp" do
-        @units.each { |unit| unit.hp.should == unit.hit_points }
-      end
-
-      it "should not belong to any player" do
-        @units.each { |unit| unit.player.should be_nil }
-      end
-
-      it "should be correct types" do
-        @units.map { |u| u.class.to_s }.should == [
-          "Unit::Gnat",
-          "Unit::Gnat",
-          "Unit::Glancer",
-        ]
-      end
-
-      it "should not be saved" do
-        @units.each { |unit| unit.id.should be_nil }
-      end
-    end
-
-    describe "#npc_raid!" do
-      before(:each) do
-        @player = Factory.create(:player)
-        @planet = Factory.create(:planet, :player => @player)
-        @unit = Factory.create(:u_trooper, :location => @planet,
-          :player => @player, :level => 1)
-      end
-      
-      it "should create units" do
-        raiders = [
-          Factory.build(:u_gnat, :location => @planet, :player => nil,
-            :level => 1)
-        ]
-        @planet.should_receive(:npc_raid_units).and_return(raiders)
-        Unit.should_receive(:save_all_units).with(raiders, nil, 
-          EventBroker::CREATED)
-        @planet.npc_raid!
-      end
-
-      it "should check location" do
-        Combat::LocationChecker.should_receive(:check_location).
-          with(@planet.location_point)
-        @planet.npc_raid!
-      end
-      
-      it "should register raid if next raid should happen" do
-        @planet.stub!(:should_raid?).and_return(true)
-        @planet.should_receive(:register_raid!)
-        @planet.npc_raid!
-      end
-
-      it "should clear #next_raid_at if next raid should not happen" do
-        @planet.stub!(:should_raid?).and_return(false)
-        @planet.should_receive(:clear_raid!)
-        @planet.npc_raid!
-      end
-    end
-
-    describe ".should_raid?" do
-      it "should return false if planet is NPC" do
-        Factory.create(:planet).should_raid?.should be_false
-      end
-
-      it "should return false if player does not have 2 non-raidable planets" do
-        Factory.create(:planet_with_player).should_raid?.should be_false
-      end
-
-      it "should return true if planet is in BG solar system" do
-        Factory.create(:planet_with_player, 
-          :solar_system => Factory.create(:mini_battleground)).should_raid?.
-          should be_true
-      end
-
-      it "should return true if player already has 2 non-raidable planets" do
-        player = Factory.create(:player)
-        Factory.create(:planet, :player => player)
-        Factory.create(:planet, :player => player)
-        Factory.create(:planet, :player => player).should_raid?.should be_true
-      end
-    end
-  end
-  
   describe "#name" do
     before(:each) do
       @min = CONFIG['planet.validation.name.length.min']
@@ -1470,19 +1324,13 @@ describe SsObject::Planet do
     end
 
     describe "npc raid" do
-      it "should call #npc_raid!" do
+      it "should call RaidSpawner#raid!" do
         id = 10
-        mock = Factory.create(:planet_with_player)
-        SsObject::Planet.should_receive(:find).with(id).and_return(mock)
-        mock.should_receive(:npc_raid!)
-        SsObject::Planet.on_callback(id, CallbackManager::EVENT_RAID)
-      end
-
-      it "should not call Combat.npc_raid! if it's an NPC planet" do
-        id = 10
-        mock = Factory.create(:planet)
-        SsObject::Planet.should_receive(:find).with(id).and_return(mock)
-        mock.should_not_receive(:npc_raid!)
+        planet = Factory.create(:planet_with_player)
+        SsObject::Planet.should_receive(:find).with(id).and_return(planet)
+        spawner = mock(RaidSpawner)
+        RaidSpawner.should_receive(:new).with(planet).and_return(spawner)
+        spawner.should_receive(:raid!)
         SsObject::Planet.on_callback(id, CallbackManager::EVENT_RAID)
       end
     end

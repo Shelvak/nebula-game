@@ -1,35 +1,48 @@
 ---
-# From what number of planets should NPC raiding start?
-planet.threshold: 3
 # Time delay range between raids.
 delay: [<%= 24.hours %> / speed, <%= 48.hours %> / speed]
 
 # What will raid the planet?
 #
-# Each level above min planet count multiplies attackers.
+# unit type: [unit count range from formula, unit count range end formula,
+#   unit chance formula]
 #
-# E.g.: if we have [3, gnat, 2, 0] then if you have 5 planets, you will be 
-# attacked by (5 - 3 + 1) * 2 = 6 gnats.
-#
-# [min planet count, unit type, unit count, flank]
-raiders:
-  - [3, gnat, 12, 0]
-  - [3, gnat, 4, 1]
-  - [3, glancer, 6, 1]
-  - [3, spudder, 4, 0]
-  - [3, spudder, 2, 1]
-  - [3, gnawer, 1, 0]
+# formulas get one argument: arg, which is players planet count.
 
-  - [4, spudder, 6, 1]
-  - [4, gnawer, 3, 0]
-  - [4, dirac, 4, 0]
-  - [4, dirac, 4, 1]
+# Raiding for normal planets. arg is planet count.
+raiders.planet:
+  # 2 planets
+  gnat: [(arg - 1) ** 2.6 * 2, (arg - 2) ** 2.8 * 4, 0.3 + (arg - 3) * 0.2]
+  glancer: [(arg - 1) ** 2.6 * 1, (arg - 2) ** 2.8 * 3, 0.2 + (arg - 3) * 0.1]
+  # 3 planets
+  spudder: [(arg - 2) * 6, (arg - 2) * 15, 0.1 + (arg - 3) * 0.35]
+  gnawer: [(arg - 2) * 1, (arg - 2) * 10, 0.2 + (arg - 3) * 0.25]
+  dirac: [0, (arg - 2) ** 1.2 * 10, 0.1 + (arg - 3) * 0.2]
+  # 4 planets
+  thor: [(arg - 3) ** 1.1 * 4, (arg - 3) ** 1.4 * 8, 0.5 + (arg - 5) * 0.1]
+  # 5 planets
+  demosis: [(arg - 4) ** 1.2 * 3, (arg - 4) ** 1.4 * 5, 0.2 + (arg - 6) * 0.3]
 
-  - [5, spudder, 8, 0]
-  - [5, spudder, 4, 1]
-  - [5, gnawer, 3, 0]
-  - [5, thor, 4, 0]
-  - [5, thor, 8, 1]
+# Raiding for pulsar/battleground planets. arg is bg planet count.
+raiders.battleground:
+  # 1 planet
+  gnat: [arg * 5, arg ** 1.2 * 15, 0.3 + (arg - 1) * 0.2]
+  glancer: [arg * 3, arg ** 1.3 * 8, 0.2 + (arg - 1) * 0.1]
+  spudder: [arg * 2, arg ** 1.4 * 6, 0.1 + (arg - 1) * 0.35]
+  gnawer: [0, arg ** 1.5 * 4, 0.2 + (arg - 1) * 0.25]
+  # 2 planets
+  dirac: [(arg - 1) * 3, (arg - 1) ** 1.6 * 10, 0.1 + (arg - 2) * 0.3]
+  thor: [(arg - 1) ** 1.25 * 2, (arg - 1) ** 1.6 * 10, 0.2 + (arg - 2) * 0.15]
+  # 3 planets
+  demosis: [(arg - 2) ** 1.35 * 2, (arg - 2) ** 1.6 * 4, 0.25 + (arg - 3) * 0.15]
 
-  - [6, demosis, 3, 0]
-  - [6, thor, 4, 1]
+# Raiding for apocalypse. arg is days since apocalypse.
+raiders.apocalypse:
+  gnat: [arg * 5, arg ** 1.3 * 60, 0.025 + (arg - 1) * 0.015]
+  glancer: [arg * 2, arg ** 1.4 * 45, 0.025 + (arg - 1) * 0.015]
+  spudder: [arg, arg ** 1.5 * 30, 0.005 + (arg - 1) * 0.005]
+  gnawer: [arg, arg ** 1.6 * 30, 0.005 + (arg - 1) * 0.005]
+  dirac: [arg * 5, arg ** 1.3 * 15, 0.025 + (arg - 1) * 0.015]
+  thor: [arg * 3, arg ** 1.4 * 12, 0.005 + (arg - 1) * 0.005]
+  demosis: [arg * 1, arg ** 1.5 * 9, 0.005 + (arg - 1) * 0.005]
+  boss_ship: [0, 1, arg * 0.005]

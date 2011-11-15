@@ -87,9 +87,31 @@ class Cfg; class << self
 
   ### combat.yml ###
 
+  def max_flanks; CONFIG['combat.flanks.max']; end
+  
   # For how long planet is protected after protection is initiated?
   def planet_protection_duration
     CONFIG.evalproperty('combat.cooldown.protection.duration')
+  end
+
+  ### raiding.yml ###
+
+  def raiding_delay_range
+    from, to = CONFIG['raiding.delay']
+    from = CONFIG.safe_eval(from)
+    to = CONFIG.safe_eval(to)
+    from..to
+  end
+
+  def raiding_delay_random
+    CONFIG.eval_hashrand('raiding.delay')
+  end
+
+  def raiding_config(key)
+    config = CONFIG["raiding.raiders.#{key}"]
+    raise ArgumentError.new("Unknown raiding config key #{key.inspect}!") \
+      if config.nil?
+    config
   end
 
   ### galaxy.yml ###
