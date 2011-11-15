@@ -3,10 +3,13 @@ package models.technology
    import config.Config;
    
    import controllers.objects.ObjectClass;
-   
+
+   import flash.events.Event;
+
    import globalevents.GTechnologiesEvent;
    
    import models.BaseModel;
+   import models.parts.events.UpgradeEvent;
    import models.technology.events.TechnologyEvent;
    
    import mx.collections.ArrayCollection;
@@ -30,6 +33,7 @@ package models.technology
             tech.cleanup();
          }
          technologies.removeAll();
+         _buildingRepairTechnology = null;
          coordsHash = null;
       }
       
@@ -108,6 +112,23 @@ package models.technology
       {
          return coordsHash[getCoordsAsString(x, y)];
       }
+
+      private var _buildingRepairTechnology:Technology = null;
+      [Bindable (event="repairBuildingChanged")]
+      public function get buildingRepairTechnology() : Technology {
+         if (_buildingRepairTechnology == null) {
+            _buildingRepairTechnology = getTechnologyByType(Technology.BUILDING_REPAIR);
+            _buildingRepairTechnology.addEventListener
+               (UpgradeEvent.LEVEL_CHANGE,
+                       buildingRepairTechnologyLvlChangeHandler, false, 0, true);
+         }
+         return _buildingRepairTechnology;
+      }
+
+      [Bindable (event="repairBuildingChanged")]
+      public function get hasBuildingRepairTechnology() : Boolean {
+         return buildingRepairTechnology.level > 0;
+      }
       
       public function getTechnologyById(tech_id: int): Technology
       {
@@ -122,10 +143,22 @@ package models.technology
          if (element.type == StringUtil.underscoreToCamelCase(tech_type)) return element;
          return null;
       }
+
+      private function buildingRepairTechnologyLvlChangeHandler(e: UpgradeEvent): void
+      {
+         if (hasEventListener(TechnologyEvent.REPAIR_BUILDING_LEVEL_CHANGED))
+         {
+            dispatchEvent(new TechnologyEvent(
+                    TechnologyEvent.REPAIR_BUILDING_LEVEL_CHANGED));
+         }
+      }
       
       public function dispatchTechsChangeEvent(): void
       {
-         dispatchEvent(new TechnologyEvent(TechnologyEvent.TECHNOLOGY_CHANGED));
+         if (hasEventListener(TechnologyEvent.TECHNOLOGY_CHANGED))
+         {
+            dispatchEvent(new TechnologyEvent(TechnologyEvent.TECHNOLOGY_CHANGED));
+         }
       }
       
    }

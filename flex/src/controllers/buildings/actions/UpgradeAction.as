@@ -3,8 +3,7 @@ package controllers.buildings.actions
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   
-   import globalevents.GBuildingEvent;
+   import controllers.GlobalFlags;
    
    import models.building.Building;
    import models.factories.BuildingFactory;
@@ -36,12 +35,12 @@ package controllers.buildings.actions
       public override function cancel(rmo:ClientRMO) : void
       {
          super.cancel(rmo);
-         new GBuildingEvent(GBuildingEvent.UPGRADE_APPROVED);
+         GlobalFlags.getInstance().lockApplication = false;
       }
       
       public override function result(rmo:ClientRMO):void
       {
-         new GBuildingEvent(GBuildingEvent.UPGRADE_APPROVED);
+         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }
