@@ -1,43 +1,10 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb'))
 
 describe Building::HealingCenter do
-  describe "#resources_for_healing" do
-    it "should return resources" do
-      building = Factory.build(:b_healing_center, :level => 1)
-      unit = Factory.build(:u_crow, :level => 1, :hp_percentage => 0.35)
-      percentage = (1 - unit.hp.to_f / unit.hit_points)
-      mod = building.cost_modifier
-      building.resources_for_healing(unit).should == [
-        (unit.metal_cost * percentage * mod).round,
-        (unit.energy_cost * percentage * mod).round,
-        (unit.zetium_cost * percentage * mod).round
-      ]
-    end
+  it "should include Parts::Healing" do
+    Building::HealingCenter.should include(Parts::Healing)
   end
-
-  describe "#cost_modifier" do
-    it "should return value" do
-      b = Factory.build(:b_healing_center, :level => 2)
-      with_config_values(
-        'buildings.healing_center.healing.cost.mod' => '10 - 2 * level'
-      ) do
-        b.cost_modifier.should == 6
-      end
-    end
-  end
-
-  describe "#healing_time" do
-    it "should return ceiled values" do
-      b = Factory.build(:b_healing_center, :level => 2)
-      with_config_values(
-        'buildings.healing_center.healing.time.mod' => 
-          '(0.35 - 0.1 * level) / speed'
-      ) do
-        b.healing_time(10).should == 2
-      end
-    end
-  end
-
+  
   describe "#as_json" do
     it_behaves_like "as json", Factory.build(:b_healing_center), nil,
                     %w{cooldown_ends_at}, []

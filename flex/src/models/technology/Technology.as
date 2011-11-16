@@ -12,6 +12,7 @@ package models.technology
    import models.ModelLocator;
    import models.building.Building;
    import models.building.MCBuildingSelectedSidebar;
+   import models.healing.HealPrice;
    import models.parts.IUpgradableModel;
    import models.parts.Requirement;
    import models.parts.TechnologyUpgradable;
@@ -22,6 +23,7 @@ package models.technology
    
    import utils.DateUtil;
    import utils.Objects;
+   import utils.StringUtil;
    import utils.StringUtil;
    import utils.locale.Localizer;
    
@@ -45,7 +47,9 @@ package models.technology
    public class Technology extends BaseModel implements IUpgradableModel
    {      
       
-      include "../mixins/upgradableProxyProps.as"; 
+      include "../mixins/upgradableProxyProps.as";
+
+      public static const BUILDING_REPAIR: String = 'BuildingRepair';
       
       [Required]
       public var type: String;
@@ -263,6 +267,18 @@ package models.technology
       public function get warPoints(): int
       {
          return getWarPoints(type, upgradePart.level + 1);
+      }
+
+      public function get repairPriceMod(): Number
+      {
+         return StringUtil.evalFormula(Config.getTechnologyProperty(
+                 type, HealPrice.HEALING_COST_MOD), {'level': level});
+      }
+
+      public function get repairCooldownMod(): Number
+      {
+         return StringUtil.evalFormula(Config.getTechnologyProperty(
+                 type, HealPrice.HEALING_TIME_MOD), {'level': level});
       }
       
       private function handleLevelChange(e: UpgradeEvent): void

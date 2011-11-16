@@ -46,6 +46,8 @@ package models.objectives
                return new CompleteQuests(objective);
             case ObjectiveType.HEAL_HP:
                return new HealHp(objective);
+            case ObjectiveType.REPAIR_HP:
+               return new RepairHp(objective);
             case ObjectiveType.MOVE_BUILDING:
                return new MoveBuilding(objective);
             case ObjectiveType.SELF_DESTRUCT:

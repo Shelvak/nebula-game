@@ -58,7 +58,9 @@ package controllers.objects.actions.customcontrollers
       }
       
       public function unitsDestroyed(unitIds:Array, reason:String) : void {
-         var destroyedUnits:ArrayCollection = ML.units.removeWithIDs(unitIds, reason == UpdatedReason.COMBAT);
+         var destroyedUnits:ArrayCollection = ML.units.removeWithIDs(unitIds,
+                 (reason == UpdatedReason.COMBAT
+                         || reason == UpdatedReason.DEPLOYMENT));
          SQUADS_CTRL.destroyEmptySquadrons(destroyedUnits);
          ORDERS_CTRL.cancelOrderIfInvolves(destroyedUnits);
       }

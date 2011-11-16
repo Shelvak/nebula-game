@@ -451,6 +451,17 @@ describe UnitsController do
       end.should_not raise_error(ActiveRecord::RecordNotFound)
     end
 
+    it "should not fail if player is deploying to alliance planet" do
+      alliance = create_alliance
+      player.alliance = alliance
+      player.save!
+      @planet.update_row! :player_id => alliance.owner_id
+
+      lambda do
+        invoke @action, @params
+      end.should_not raise_error(ActiveRecord::RecordNotFound)
+    end
+
     it "should fail if player doesn't own that planet" do
       @planet.player = nil
       @planet.save!

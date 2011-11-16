@@ -163,6 +163,7 @@ assets:
           %w{SelfDestruct Building},
           ["AccelerateFlight", ""],
           ["HealHp", ""],
+          ["RepairHp", ""],
         ].each do |type, *keys|
           keys.each do |key|
             key.gsub!("::", "_")
@@ -554,6 +555,9 @@ assets:
         left.png:                   Pinfo_left.png
         center.png:                 Pinfo_center_repeat.png
         right.png:                  Pinfo_right.png
+
+      "healing":
+        indicator.png:              Building_heal_bar.png
 
       "ss_navigator":
         bottom_left.png:            Snavig_bottom_left.png

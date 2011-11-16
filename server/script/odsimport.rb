@@ -44,6 +44,8 @@ MAIN_TITLE_PROPS = [
   [/E store mod$/, ".mod.energy.store"],
   [/Z gen mod$/, ".mod.zetium.generate"],
   [/Z store mod$/, ".mod.zetium.store"],
+  [/healing time mod$/, ".healing.time.mod"],
+  [/healing cost mod$/, ".healing.cost.mod"],
 ]
 
 MAIN_TITLE_ALIASES = [
@@ -209,11 +211,16 @@ def read_unit_definition(row, sheet, sections)
     metal, energy, zetium, population, volume, storage,
     ss_hop_time, galaxy_hop_time = sheet[row]
 
+  metal = metal.to_f
+  energy = energy.to_f
+  zetium = zetium.to_f
+
   case tier
   when "Towers"
+    metal = "#{metal} * level"
+    energy = "#{energy} * level"
+    zetium = "#{zetium} * level"
     ["buildings"]
-  when "MTow"
-    ["buildings", "units"]
   else
     ["units"]
   end.each do |section|
@@ -237,9 +244,9 @@ def read_unit_definition(row, sheet, sections)
       attrs.push [armor_type.downcase.to_sym, "armor"] unless armor_type == ""
       attrs.push ["#{armor_mod.to_i} * (level-1)", "armor_mod"]
       attrs.push [max_lvl.to_i, "max_level"] unless zero?(max_lvl)
-      attrs.push [metal.to_f, "metal.cost"]
-      attrs.push [energy.to_f, "energy.cost"]
-      attrs.push [zetium.to_f, "zetium.cost"]
+      attrs.push [metal, "metal.cost"]
+      attrs.push [energy, "energy.cost"]
+      attrs.push [zetium, "zetium.cost"]
       attrs.push [population.to_i, "population"] unless zero?(population) ||
         section == "buildings"
       attrs.push [volume.to_i, "volume"] unless zero?(volume) ||
@@ -308,7 +315,7 @@ until mode == :finished
 end
 
 IGNORED_KEYS = [
-  /^buildings\.(.+?)\.(armor|armor_mod|xp_needed)$/,
+  /^buildings\.(.+?)\.(armor|xp_needed)$/,
   /^technologies\.mdh\.mod\.(armor|damage)$/
 ]
 
@@ -330,7 +337,13 @@ sections.each do |section, values|
           value = value.to_json.gsub(":", ": ").gsub(",", ", ")
         end
 
-        if key =~ /\.((solar_system|galaxy)\.hop_time|upgrade_time)$/
+        if key =~ /
+          \.(
+            (solar_system|galaxy)\.hop_time|
+            upgrade_time|
+            healing\.time\.mod
+          )
+        $/x
           value = "(#{value}) / speed"
         elsif key =~ /(generate|use)$/ && ! key.include?(".mod.")
           value = "(#{value}) * speed"

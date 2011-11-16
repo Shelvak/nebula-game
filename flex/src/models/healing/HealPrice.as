@@ -1,21 +1,48 @@
 package models.healing
 {
    import models.ModelLocator;
+   import models.building.Building;
    import models.building.BuildingType;
    import models.parts.Upgradable;
    import models.parts.UpgradableType;
    import models.resource.ResourceType;
    import models.solarsystem.MSSObject;
+   import models.technology.Technology;
    import models.unit.MCUnit;
    import models.unit.Unit;
 
    [Bindable]
    public class HealPrice
    {
+      public static const HEALING_COST_MOD: String = 'healing.cost.mod';
+      public static const HEALING_TIME_MOD: String = 'healing.time.mod';
+
       public var metal: Number = 0;
       public var energy: Number = 0;
       public var zetium: Number = 0;
       public var cooldown: int = 0;
+
+      public static function calculateRepairPrice(building: Building): HealPrice
+      {
+         var price: HealPrice = new HealPrice();
+         var tech: Technology = ModelLocator.getInstance().technologies.getTechnologyByType(
+                 Technology.BUILDING_REPAIR);
+         var priceMod : Number = tech.repairPriceMod;
+         var cooldownMod: Number = tech.repairCooldownMod;
+         price.metal = Math.round(Upgradable.calculateCost(UpgradableType.BUILDINGS,
+           building.type, ResourceType.METAL, {'level': building.level})
+          * priceMod * building.damagePercentage);
+         price.energy = Math.round(Upgradable.calculateCost(UpgradableType.BUILDINGS,
+           building.type, ResourceType.ENERGY, {'level': building.level})
+          * priceMod * building.damagePercentage);
+         price.zetium = Math.round(Upgradable.calculateCost(UpgradableType.BUILDINGS,
+           building.type, ResourceType.ZETIUM, {'level': building.level})
+          * priceMod * building.damagePercentage);
+         price.cooldown = Math.round((building.hpMax - building.hp) * cooldownMod);
+         price.cooldown = Math.max(1, price.cooldown);
+
+         return price;
+      }
       
       
       public static function calculateHealingPrice(units: Array, level: int = 1, 

@@ -24,7 +24,12 @@ module Parts::Deployable
 
         # Destroy unit, it has been consumed.
         destroy!
-        EventBroker.fire(self, EventBroker::DESTROYED)
+        # Dispatch event with deployment reason, because if the unit is being
+        # deployed to alliance planet directly from a transporter, ally client
+        # won't have unit in its unit list and has to silently ignore this
+        # message.
+        EventBroker.fire(self, EventBroker::DESTROYED,
+                         EventBroker::REASON_DEPLOYMENT)
       end
     end
 

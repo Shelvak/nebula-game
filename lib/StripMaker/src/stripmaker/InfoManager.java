@@ -17,6 +17,12 @@ import java.util.List;
  * @author arturas
  */
 public class InfoManager {
+  public final static String KEY_BOX = "box";
+  public final static String KEY_TARGET_BOX = "target_box";
+  public final static String KEY_GUN_POINTS = "gun_points";
+  public final static String KEY_TOP_LEFT = "top_left";
+  public final static String KEY_BOTTOM_RIGHT = "bottom_right";
+  
   public static String getMetadata(Gatherer gatherer, Rectangle processedRect,
           Rectangle box, Rectangle targetBox) {
     StringWriter out = new StringWriter();
@@ -24,7 +30,7 @@ public class InfoManager {
     out.write("---\n");
 
     out.write("# Box where actual unit is in default action.\n");
-    writeBoxProperties(out, "box", box);
+    writeBoxProperties(out, KEY_BOX, box);
     writeUnitProperties(out, targetBox);
     writeProjectileProperties(out);
     
@@ -76,7 +82,7 @@ public class InfoManager {
 
   public static String getGunPoints(ArrayList<Point> guns) {
     StringWriter out = new StringWriter();
-    out.write("gun_points:\n");
+    out.write(KEY_GUN_POINTS + ":\n");
     for (Point gun: guns) {
       out.write(String.format("  - [%d, %d]\n", gun.x, gun.y));
     }
@@ -97,7 +103,7 @@ public class InfoManager {
     out.write(getGunPoints(guns));
     out.write("\n");
     out.write("# Target box (where bullets hit).\n");
-    out.write(getBoxProperties("target_box", targetBox));
+    out.write(getBoxProperties(KEY_TARGET_BOX, targetBox));
     out.write("\n");
     out.write("# Is this unit passable when dead?\n");
     out.write("dead.passable: false\n");
@@ -140,8 +146,8 @@ public class InfoManager {
   private static void writeBoxProperties(StringWriter out, String key, 
           Rectangle box) {
     out.write(key + ":\n");
-    out.write(String.format("  top_left: [%d, %d]\n", box.x, box.y));
-    out.write(String.format("  bottom_right: [%d, %d]\n",
+    out.write(String.format("  %s: [%d, %d]\n", KEY_TOP_LEFT, box.x, box.y));
+    out.write(String.format("  %s: [%d, %d]\n", KEY_BOTTOM_RIGHT,
             box.x + box.width, box.y + box.height));
     out.write("\n");
   }

@@ -386,6 +386,9 @@
     <Technology_ShipStorage value="External Cargo Decks" />
     <Technology_DefensivePortal ref="Building_DefensivePortal" />
     <Technology_Alliances value="Alliances" />
+    <Technology_BuildingRepair value="Repair Drones" />
+    <Technology_TurretArmor value="Structural Linking" />
+    <Technology_TurretDamage value="Particle Chargers" />
 
     <!-- Other stuff -->
 
@@ -548,6 +551,17 @@
     </message.pressOnEmpty>
     <panelTitle.scientists value="Zinātnieki" />
     <panelTitle.cancelProgress value="Atcelt jauninājumus" />
+    <!-- TODO -->
+    <panelTitle.repairBuilding value="Repair building" />
+    <warning.repairBuilding>
+      <p>Turret won't participate in combat until repairs are finished.</p>
+    </warning.repairBuilding>
+    <warning.repairBuildingTechNeeded>
+      <p>You need to research [reference:Objects/Technology_BuildingRepair]
+      technology to repair turrets.</p>
+    </warning.repairBuildingTechNeeded>
+    <label.repairBuilding value="Repair"/>
+    <!-- /TODO -->
     <label.cancelUpgrade>
       <p>Šādi resursi tiks atgriezti, ja jūs atcelsiet šīs ēkas būvniecību:</p>
     </label.cancelUpgrade>
@@ -2124,9 +2138,17 @@
     <objectiveText.HaveWarPoints value="Ir {0} Kara {1}" />
     <objectiveText.HavePoints value="Ir {0} {1}" />
 
+    <!-- TODO -->
     <!-- HEAL_HP
     0: count of hit points to heal -->
-    <objectiveText.HealHp value="Saārstēt {0} HP" />
+    <objectiveText.HealHp value="Heal {0} HP for units" />
+    <!-- /TODO -->
+
+    <!-- TODO -->
+    <!-- REPAIR_HP
+    0: count of hit points to repair -->
+    <objectiveText.RepairHp value="Repair {0} HP for buildings" />
+    <!-- /TODO -->
     
     <!-- MOVE_BUILDINGS
     0: count of times to move building -->
@@ -3538,10 +3560,25 @@
     <property.mod.movementTimeDecrease value="Samazināts gājienu skaits" />
     <property.mod.storage value="TODO: Storage bonus" />
     <property.maxPlayers value="Maksimālais spēlētāju skaits" />
+    <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
+    <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
 
     <UnitTech>
       <p>Ar pirmo līmeni atbloķē šo iespēju. Nākošie līmeņi to uzlabo.</p>
     </UnitTech>
+    <UnitUpgrade>
+      <p>Katrs līmenis palielina uzbrukumu un aizsardzību.</p>
+    </UnitUpgrade>
+
+    <!-- TODO -->
+    <BuildingTech>
+      <p>First level of this technology unlocks described building. Other levels
+        upgrade it.</p>
+    </BuildingTech>
+    <BuildingUpgrade>
+      <p>Each level increases building armor and damage.</p>
+    </BuildingUpgrade>
+    <!-- /TODO -->
 
     <Zetium.common>
       <p>
@@ -3605,7 +3642,8 @@
     <MetabolicChargers.about>
       <p>
         Pēdējie atklājumi bruņu tehnoloģijās ļauj ievietot zetium shards 
-        karavīru bruņās, kas padara tos daudz izturīgākus pret ienaidnieka uzbrukumiem. 
+        karavīru bruņās, kas padara tos daudz izturīgākus pret ienaidnieka
+        uzbrukumiem.
       </p>
       <p>[reference:ArmorTech] [reference:InfantryUpgradeTech]</p>
     </MetabolicChargers.about>
@@ -3747,22 +3785,59 @@
     </PowderedZetium.about>
 
     <Vulcan.name ref="Buildings/Vulcan.name" />
-    <Vulcan.about ref="Buildings/Vulcan.about" />
+    <Vulcan.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Vulcan.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Vulcan.about>
 
     <MobileVulcan.name ref="Units/MobileVulcan.name" />
     <MobileVulcan.about ref="Units/MobileVulcan.about" />
 
     <Screamer.name ref="Buildings/Screamer.name" />
-    <Screamer.about ref="Buildings/Screamer.about" />
+    <Screamer.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Screamer.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Screamer.about>
 
     <MobileScreamer.name ref="Units/MobileScreamer.name" />
     <MobileScreamer.about ref="Units/MobileScreamer.about" />
 
     <Thunder.name ref="Buildings/Thunder.name" />
-    <Thunder.about ref="Buildings/Thunder.about" />
+    <Thunder.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Thunder.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Thunder.about>
 
     <MobileThunder.name ref="Units/MobileThunder.name" />
     <MobileThunder.about ref="Units/MobileThunder.about" />
+
+    <!-- TODO -->
+    <TurretUpgradeTech value="for turrets, both stationary and mobile." />
+
+    <TurretArmor.name ref="Objects/Technology_TurretArmor" />
+    <TurretArmor.about>
+      <p>
+        Advances in nanotechnology allows us to increase structural linking
+        between basic molecules used in our defensive structures, thus
+        increasing their resistance to damage and ensuring turret longevity.
+      </p>
+      <p>[reference:ArmorTech] [reference:TurretUpgradeTech]</p>
+    </TurretArmor.about>
+
+    <TurretDamage.name ref="Objects/Technology_TurretDamage" />
+    <TurretDamage.about>
+      <p>
+        These particle chargers give our turret weapon systems substantial
+        advantage over traditional projectiles. Supercharged projectiles travel
+        faster and deliver more damage on impact, thus reducing enemies to
+        shreds more quickly.
+      </p>
+      <p>[reference:WeaponsTech] [reference:TurretUpgradeTech]</p>
+    </TurretDamage.about>
+    <!-- /TODO -->
 
     <GroundFactory.name ref="Buildings/GroundFactory.name" />
     <GroundFactory.about>
@@ -3787,10 +3862,6 @@
       <p>Saīsina lidojuma laiku [reference:Objects/Unit_Mule] un
       [reference:Objects/Unit_Rhyno] klases gaisa kuģiem.</p>
     </HeavyFlight.about>
-    
-    <UnitUpgrade>
-      <p>Katrs līmenis palielina uzbrukumu un aizsardzību.</p>
-    </UnitUpgrade>
 
     <Trooper.name ref="Units/Trooper.name" />
     <Trooper.about>
@@ -3933,6 +4004,23 @@
       <p>Ļauj uzbūvēt [reference:Buildings/HealingCenter.name].</p>
       <p>[reference:Buildings/HealingCenter.common]</p>
     </HealingCenter.about>
+
+    <!-- TODO -->
+    <BuildingRepair.name ref="Objects/Technology_BuildingRepair" />
+    <BuildingRepair.about>
+      <p>
+        These mobile drones allow repairing even severely damaged buildings
+        without having to tear building down and build it from ground up which
+        makes them perfect for repairing heavily upgraded buildings. However
+        this process takes time and building will not be operational while it
+        is being repaired.
+      </p>
+      <p>
+        Allows repairing damaged buildings. Upgrading this technology reduces
+        repair cost and time.
+      </p>
+    </BuildingRepair.about>
+    <!-- /TODO -->
 
     <Alliances.name ref="Objects/Technology_Alliances" />
     <Alliances.about>

@@ -128,6 +128,19 @@ package models.resource
             return tempStorageString;
          }
       }
+
+      /**
+       *
+       * @param planet - planet which resources to eval
+       * @param building - building to repair
+       * @return if planet has enough resources to repair building
+       *
+       */
+      public static function canRepairBuilding(planet: MSSObject,
+                                               building: Building): Boolean
+      {
+        return true;
+      }
       
       /**
        * 

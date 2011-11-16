@@ -1,5 +1,10 @@
 module Parts::WithCooldown
   def self.included(receiver)
+    raise ArgumentError.new(
+      "You cannot mix #{self} with Parts::Repairable because they both " +
+        "use #cooldown_ends_at!"
+    ) if receiver.include?(Parts::Repairable)
+
     receiver.send :include, InstanceMethods
     receiver.extend ClassMethods
   end

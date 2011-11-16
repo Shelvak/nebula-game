@@ -331,7 +331,13 @@
     <Technology_DefensivePortal-whos value="Building_DefensivePortal-whos" />
     <Technology_Alliances value="Sąjungos" />
     <Technology_Alliances-whos value="Sąjungų" />
-    
+    <Technology_BuildingRepair value="Taisymo robotai" />
+    <Technology_BuildingRepair-whos value="Taisymo robotų" />
+    <Technology_TurretArmor value="Struktūrinis surišimas" />
+    <Technology_TurretArmor-whos value="Struktūrinio surišimo" />
+    <Technology_TurretDamage value="Dalelių greitintuvai" />
+    <Technology_TurretDamage-whos value="Dalelių greitintuvų" />
+
     <!-- Kita -->
     
     <Technology value="Technologija" />
@@ -505,6 +511,16 @@
     </message.pressOnEmpty>
     <panelTitle.scientists value="Mokslininkai" />
     <panelTitle.cancelProgress value="Atšaukti statybas" />
+    <panelTitle.repairBuilding value="Pastato taisymas" />
+    <warning.repairBuilding>
+      <p>Gynybinis bokštelis nedalyvaus kovose tol, kol taisymo darbai nebus
+        baigti.</p>
+    </warning.repairBuilding>
+    <warning.repairBuildingTechNeeded>
+      <p>Tau reikia išrasti [reference:Objects/Technology_BuildingRepair]
+        technologiją, kad galėtum taisyti gynybinius bokštelius.</p>
+    </warning.repairBuildingTechNeeded>
+    <label.repairBuilding value="Taisyti"/>
     <label.cancelUpgrade value="Atšaukęs pastato tobulinimą gausi:" />
     <label.cancelConstructor value="Atšaukęs pastato statybą gausi:" />
     <label.cancel value="Atšaukti" />
@@ -2037,8 +2053,17 @@
 
     <!-- HEAL_HP
     0: count of hit points to heal -->
-    <objectiveText.HealHp 
-    value="Atstatyk {0 1sts[? gyvybės tašką] tens[? gyvybės taškų] many[? gyvybės taškus]}" />
+    <objectiveText.HealHp>
+      <p>Atstatyk {0 1sts[? gyvybės tašką] tens[? gyvybės taškų]
+        many[? gyvybės taškus]} kariams/laivams</p>
+    </objectiveText.HealHp>
+
+    <!-- REPAIR_HP
+    0: count of hit points to repair -->
+    <objectiveText.RepairHp>
+      <p>Atstatyk {0 1sts[? gyvybės tašką] tens[? gyvybės taškų]
+        many[? gyvybės taškus]} gynybiniams bokšteliams</p>
+    </objectiveText.RepairHp>
     
     <!-- MOVE_BUILDINGS
     0: count of times to move building -->
@@ -3445,11 +3470,22 @@
     <property.mod.movementTimeDecrease value="Judėjimo trukmės sumažinimas" />
     <property.mod.storage value="Talpumo priedas" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
+    <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
+    <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
 
     <UnitTech>
-      <p>Pirmas šios technologijos lygis atrakiną šį karį/laivą. Kiti jos 
+      <p>Pirmas šios technologijos lygis atrakiną šį karį/laivą. Kiti jos
       lygiai jį tobulina.</p>
     </UnitTech>
+    <UnitUpgrade>
+      <p>Kiekvienas patobulinimo lygis didina šarvų atsparumą ir ginklų žalą.</p>
+    </UnitUpgrade>
+
+    <BuildingTech>
+      <p>Pirmas šios technologijos lygis atrakiną šį pastatą. Kiti jos
+      lygiai jį tobulina.</p>
+    </BuildingTech>
+    <BuildingUpgrade ref="UnitUpgrade" />
 
     <Zetium.common>
       <p>
@@ -3633,22 +3669,56 @@
     </PowderedZetium.about>
 
     <Vulcan.name ref="Buildings/Vulcan.name" />
-    <Vulcan.about ref="Buildings/Vulcan.about" />
+    <Vulcan.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Vulcan.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Vulcan.about>
 
     <MobileVulcan.name ref="Units/MobileVulcan.name" />
     <MobileVulcan.about ref="Units/MobileVulcan.about" />
 
     <Screamer.name ref="Buildings/Screamer.name" />
-    <Screamer.about ref="Buildings/Screamer.about" />
+    <Screamer.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Screamer.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Screamer.about>
 
     <MobileScreamer.name ref="Units/MobileScreamer.name" />
     <MobileScreamer.about ref="Units/MobileScreamer.about" />
 
     <Thunder.name ref="Buildings/Thunder.name" />
-    <Thunder.about ref="Buildings/Thunder.about" />
+    <Thunder.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Thunder.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Thunder.about>
 
     <MobileThunder.name ref="Units/MobileThunder.name" />
     <MobileThunder.about ref="Units/MobileThunder.about" />
+
+    <TurretUpgradeTech value="stacionariems ir mobiliems bokšteliams." />
+
+    <TurretArmor.name ref="Objects/Technology_TurretArmor" />
+    <TurretArmor.about>
+      <p>
+        Pasinaudojus pažanga nanotechnologijoje mes galime sustiprinti
+        ryšius tarp molekulių mūsų gynybinių bokštelių struktūroje, taip
+        padarydami juos atsparesnius žalai ir prailgindami jų gyvavimo trukmę.
+      </p>
+      <p>[reference:ArmorTech] [reference:TurretUpgradeTech]</p>
+    </TurretArmor.about>
+
+    <TurretDamage.name ref="Objects/Technology_TurretDamage" />
+    <TurretDamage.about>
+      <p>
+        Gynybinių bokštelių ginklų sistemos praturtintos dalelių greitintuvais
+        yra žymiai efektyvesnės nei jų pirmtakai. Įgreitintos dalelės greičiau
+        skrenda ir pataikiusios sukelia daugiau žalos.
+      </p>
+      <p>[reference:WeaponsTech] [reference:TurretUpgradeTech]</p>
+    </TurretDamage.about>
 
     <GroundFactory.name ref="Buildings/GroundFactory.name" />
     <GroundFactory.about>
@@ -3671,10 +3741,6 @@
       patys lėčiausi mūsų laivai, tad ši technologija yra labai pravarti.</p>
       <p>Sutrumpina skrydžio laiką mulo ir raganosio klasės laivams.</p>
     </HeavyFlight.about>
-    
-    <UnitUpgrade>
-      <p>Kiekvienas patobulinimo lygis didina šarvų atsparumą ir ginklų žalą.</p>
-    </UnitUpgrade>
 
     <Trooper.name ref="Units/Trooper.name" />
     <Trooper.about>
@@ -3792,6 +3858,21 @@
       <p>Leidžia statyti techninę ligoninę.</p>
       <p>[reference:Buildings/HealingCenter.common]</p>
     </HealingCenter.about>
+
+    <BuildingRepair.name ref="Objects/Technology_BuildingRepair" />
+    <BuildingRepair.about>
+      <p>
+        Pasitelkus į pagalbą šiuos mobilius robotus galima suremontuoti netgi
+        labai smarkiai pažeistus pastatus, kuriuos kitaip tektų tiesiog griauti
+        ir statyti iš naujo, todėl ši technologija ypatingai tinka smarkiai
+        patobulintiems pastatams. Tiesa, pastatų remontas užtrunka ir kol
+        pastatas yra remontuojamas, jis negali būti naudojamas.
+      </p>
+      <p>
+        Leidžia taisyti pažeistus pastatus. Šios technologijos tobulinimas
+        mažina taisymo kainą ir trukmę.
+      </p>
+    </BuildingRepair.about>
 
     <Alliances.name ref="Objects/Technology_Alliances" />
     <Alliances.about>

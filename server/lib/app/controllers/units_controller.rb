@@ -289,9 +289,10 @@ class UnitsController < GenericController
   # Response: None
   #
   def action_deploy
-    param_options :required => %w{planet_id unit_id x y}
+    param_options :required => {:planet_id => Fixnum, :unit_id => Fixnum,
+                                :x => Fixnum, :y => Fixnum}
 
-    planet = SsObject::Planet.where(:player_id => player.id).find(
+    planet = SsObject::Planet.where(:player_id => player.friendly_ids).find(
       params['planet_id'])
     unit = Unit.where(:player_id => player.id).find(params['unit_id'])
     raise ActiveRecord::RecordNotFound.new(

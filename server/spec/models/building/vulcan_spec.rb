@@ -2,4 +2,5 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_hel
 
 describe Building::Vulcan do
   it_behaves_like "with army points", Factory.build(:b_vulcan)
+  it_behaves_like "with repairable", Factory.build(:b_vulcan)
 end
