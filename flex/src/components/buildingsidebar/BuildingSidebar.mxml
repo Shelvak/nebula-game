@@ -648,6 +648,9 @@
                    &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}"
                    skinClass="components.skins.GreenButtonSkin"
                    click="button1_clickHandler(event)"/>
+         <base:Warning width="100%" showSign="false"
+                       visible="{deployInProgress}"
+                       text="{getString('warning.deployInAlliancePlanet')}}"/>
       </base:AdvancedContainer>
       <base:Panel left="0" right="0" bottom="0"
                   title="{getString('infoTitle')}"
