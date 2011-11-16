@@ -37,7 +37,7 @@ package models.unit
    {
       public static const JUMP_IN_SS: String = "move.solarSystem.hopTime";
       public static const JUMP_IN_GALAXY: String = "move.galaxy.hopTime";
-      public static const JUMP_SPEED_MOD: String = "mod.movementTimeDecrease";
+      public static const JUMP_SPEED_MOD: String = "movementTimeDecrease";
 
       public static function getJumpTime(formula: String, type: String,
                              level: int): String
@@ -48,7 +48,7 @@ package models.unit
          );
          return DateUtil.secondsToHumanString(
                  Math.round(StringUtil.evalFormula(formula,
-                        {"level": level}) * (100 - mod) / 100), 2);
+                        {"level": level}) * (100 - mod) / 100));
       }
 
       public static function getValidUnits(facility: Building): ArrayCollection
