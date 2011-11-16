@@ -1,34 +1,34 @@
 package components.movement
 {
    import com.developmentarc.core.utils.EventBroker;
-   
+
    import components.map.space.Grid;
-   
+
    import flash.geom.Point;
-   
+
    import globalevents.GlobalEvent;
-   
+
    import interfaces.ICleanable;
-   
+
    import models.ModelLocator;
    import models.OwnerColor;
    import models.galaxy.Galaxy;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
+   import models.map.MMapSolarSystem;
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.SolarSystem;
-   
+
    import spark.components.Group;
-   
+
    import utils.DateUtil;
    import utils.Objects;
    import utils.locale.Localizer;
-   
-   
+
+
    public class CRoute extends Group implements ICleanable
    {
       public function get squadron() : MSquadron {
@@ -153,9 +153,11 @@ package components.movement
                showJumpsAt = galaxy.getSSAt(loc.x, loc.y) != null;
             }
             else if (loc.isSolarSystem) {
-               var ss:SolarSystem = ModelLocator.getInstance().
-                  latestSolarSystem;
-               var sso:MSSObject = ss.getSSObjectAt(locWrap.position, locWrap.angle);
+               var ss:MMapSolarSystem = ModelLocator.getInstance().latestSSMap;
+               var sso:MSSObject = ss.getSSObjectAt(
+                  locWrap.position,
+                  locWrap.angle
+               );
                showJumpsAt = sso != null && (sso.isPlanet || sso.isJumpgate);
             }
 

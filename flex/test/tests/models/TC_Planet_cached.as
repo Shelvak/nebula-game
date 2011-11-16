@@ -4,16 +4,16 @@ package tests.models
    
    import models.ModelLocator;
    import models.galaxy.Galaxy;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import org.hamcrest.assertThat;
    
    import utils.SingletonFactory;
 
    /**
-    * Tests cached property of Planet.
+    * Tests cached property of MPlanet.
     */
    public class TC_Planet_cached
    {
@@ -23,7 +23,7 @@ package tests.models
       
       
       private var ML:ModelLocator;
-      private var p:Planet;
+      private var p:MPlanet;
       
       
       [Before]
@@ -34,12 +34,12 @@ package tests.models
          ML.player.galaxyId = 1;
          ML.latestGalaxy = new Galaxy();
          ML.latestGalaxy.id = ML.player.galaxyId;
-         ML.latestSolarSystem = new SolarSystem();
-         ML.latestSolarSystem.id = 1;
-         ML.latestPlanet = new Planet(new MSSObject());
+         ML.latestSSMap = new MSolarSystem();
+         ML.latestSSMap.id = 1;
+         ML.latestPlanet = new MPlanet(new MSSObject());
          ML.latestPlanet.id = 1;
          ML.latestPlanet.solarSystemId = 1;
-         p = new Planet(new MSSObject());
+         p = new MPlanet(new MSSObject());
          p.id = 1;
          p.solarSystemId = 1;
       };

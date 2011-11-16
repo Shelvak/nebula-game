@@ -52,12 +52,15 @@ package models.map
             object.navigateTo();
          }
          else {
-            throw new IllegalOperationError("No navigable objects in this aggregator " + this);
+            throw new IllegalOperationError(
+               "No navigable objects in this aggregator " + this
+            );
          }
       }
       
       /**
-       * Looks for an object of given type (see <code>MMapSpace.STATIC_OBJECT_*</code> constants).
+       * Looks for an object of given type
+       * (see <code>MMapSpace.STATIC_OBJECT_*</code> constants).
        */
       public function findObjectOfType(type:int) : IMStaticSpaceObject {
          return Collections.findFirst(this,
@@ -68,11 +71,14 @@ package models.map
       }
       
       /**
-       * Location all agregated space objects are in.
+       * Location all aggregated space objects are in.
        */
-      public function get currentLocation() : LocationMinimal {
+      public function get currentLocation(): LocationMinimal {
          if (length == 0) {
-            throw new IllegalOperationError("There are no static objects aggregated by this StaticSpaceSectorObject");
+            throw new IllegalOperationError(
+               "There are no static objects aggregated by "
+                  + "this StaticSpaceSectorObject"
+            );
          }
          return IMStaticSpaceObject(getItemAt(0)).currentLocation;
       }
@@ -81,15 +87,18 @@ package models.map
          var newObject:IMStaticSpaceObject = IMStaticSpaceObject(item);
          if (length != 0 && !newObject.currentLocation.equals(currentLocation)) {
             throw new IllegalOperationError(
-               "Can't add given object " + item + " to this list: other objects "
-               + "are not in the same location:\n   "
-               + toArray().join("   \n")
+               "Can't add given object " + item + " to this list: other "
+                  + "objects are not in the same location:"
+                  + "\n   " + toArray().join("\n   ")
             );
          }
-         var objectOfSameType:IMStaticSpaceObject = findObjectOfType(newObject.objectType);
+         var objectOfSameType:IMStaticSpaceObject =
+                findObjectOfType(newObject.objectType);
          if (objectOfSameType != null) {
-            throw new IllegalOperationError("New object " + newObject + " is of the same objectType as " +
-                                            "another object " + objectOfSameType + " in this list");
+            throw new IllegalOperationError(
+               "New object " + newObject + " is of the same objectType as "
+                  + "another object " + objectOfSameType + " in this list"
+            );
          }
          super.addItemAt(item, index);
       }

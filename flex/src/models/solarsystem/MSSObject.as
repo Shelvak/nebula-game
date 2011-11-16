@@ -26,7 +26,7 @@ package models.solarsystem
    import models.player.PlayerMinimal;
    import models.resource.Resource;
    import models.resource.ResourceType;
-   import models.solarsystem.events.SSObjectEvent;
+   import models.solarsystem.events.MSSObjectEvent;
    import models.tile.TerrainType;
    
    import namespaces.prop_name;
@@ -42,23 +42,23 @@ package models.solarsystem
    /**
     * Dispatched when player who owns this solar system object has changed.
     * 
-    * @eventType models.solarsystem.events.SSObjectEvent.PLAYER_CHANGE
+    * @eventType models.solarsystem.events.MSSObjectEvent.PLAYER_CHANGE
     */
-   [Event(name="playerChange", type="models.solarsystem.events.SSObjectEvent")]
+   [Event(name="playerChange", type="models.solarsystem.events.MSSObjectEvent")]
    
    /**
     * Dispatched when <code>owner</code> property changes.
     * 
-    * @eventType models.solarsystem.events.SSObjectEvent.OWNER_CHANGE
+    * @eventType models.solarsystem.events.MSSObjectEvent.OWNER_CHANGE
     */
-   [Event(name="ownerChange", type="models.solarsystem.events.SSObjectEvent")]
+   [Event(name="ownerChange", type="models.solarsystem.events.MSSObjectEvent")]
    
    /**
     * Dispatched when <code>cooldown</code> property changes.
     * 
-    * @eventType models.solarsystem.events.SSObjectEvent.COOLDOWN_CHANGE
+    * @eventType models.solarsystem.events.MSSObjectEvent.COOLDOWN_CHANGE
     */
-   [Event(name="cooldownChange", type="models.solarsystem.events.SSObjectEvent")]
+   [Event(name="cooldownChange", type="models.solarsystem.events.MSSObjectEvent")]
    
    public class MSSObject extends BaseModel implements IMStaticSpaceObject, ICleanable
    {
@@ -475,7 +475,7 @@ package models.solarsystem
       public function set owner(value:int) : void {
          if (_owner != value) {
             _owner = value;
-            dispatchSimpleEvent(SSObjectEvent, SSObjectEvent.OWNER_CHANGE);
+            dispatchSimpleEvent(MSSObjectEvent, MSSObjectEvent.OWNER_CHANGE);
             dispatchPropertyUpdateEvent(prop_name::owner, _owner);
             dispatchPropertyUpdateEvent(prop_name::isOwned, isOwned);
             dispatchPropertyUpdateEvent(prop_name::ownerIsPlayer, ownerIsPlayer);
@@ -505,7 +505,7 @@ package models.solarsystem
       public function set player(value:PlayerMinimal) : void {
          if (_player != value) {
             _player = value;
-            dispatchSimpleEvent(SSObjectEvent, SSObjectEvent.PLAYER_CHANGE);
+            dispatchSimpleEvent(MSSObjectEvent, MSSObjectEvent.PLAYER_CHANGE);
             dispatchPropertyUpdateEvent("player", player);
          }
       }
@@ -770,7 +770,7 @@ package models.solarsystem
       public function set cooldown(value:MCooldown) : void {
          if (_cooldown != value) {
             _cooldown = value;
-            dispatchSimpleEvent(SSObjectEvent, SSObjectEvent.COOLDOWN_CHANGE);
+            dispatchSimpleEvent(MSSObjectEvent, MSSObjectEvent.COOLDOWN_CHANGE);
          }
       }
       /**

@@ -5,7 +5,7 @@ package controllers.objects.actions.customcontrollers
    import models.building.Building;
    import models.building.events.BuildingEvent;
    import models.factories.BuildingFactory;
-   import models.planet.PlanetObject;
+   import models.planet.MPlanetObject;
    
    
    public class BuildingController extends BaseObjectController
@@ -18,7 +18,7 @@ package controllers.objects.actions.customcontrollers
       public override function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
          var building:Building = BuildingFactory.fromObject(object);
          if (ML.latestPlanet && ML.latestPlanet.id == building.planetId) {
-            var objectOnPoint:PlanetObject = ML.latestPlanet.getObject(building.x, building.y);
+            var objectOnPoint:MPlanetObject = ML.latestPlanet.getObject(building.x, building.y);
             if (objectOnPoint != null && objectOnPoint is Building) {
                var ghost:Building = Building(objectOnPoint);
                ghost.copyProperties(building);

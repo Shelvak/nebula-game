@@ -1,7 +1,7 @@
 package tests._old.models
 {
-   import models.planet.Planet;
-   import models.planet.PlanetObject;
+   import models.planet.MPlanet;
+   import models.planet.MPlanetObject;
    import models.solarsystem.MSSObject;
    
    import mx.collections.ArrayCollection;
@@ -17,7 +17,7 @@ package tests._old.models
     */
    public class ZIndexCalculatorTest extends TestCase
    {
-      private var planet:Planet = null;
+      private var planet:MPlanet = null;
       private var objects:ArrayCollection = null;
       
       /**
@@ -28,7 +28,7 @@ package tests._old.models
          var sso:MSSObject = new MSSObject();
          sso.width = 7;
          sso.height = 9;
-         planet = new Planet(sso);
+         planet = new MPlanet(sso);
          objects = new ArrayCollection();
       };
       
@@ -251,7 +251,7 @@ package tests._old.models
       
       private function newObject(x:int, y:int, xEnd:int = -1, yEnd:int = -1) : void
       {
-         var object:PlanetObject = new PlanetObjectImpl();
+         var object:MPlanetObject = new PlanetObjectImpl();
          object.x = x;
          object.y = y;
          object.xEnd = xEnd >= 0 ? xEnd : x;
@@ -262,10 +262,10 @@ package tests._old.models
 }
 
 
-import models.planet.PlanetObject;
+import models.planet.MPlanetObject;
 
 
-class PlanetObjectImpl extends PlanetObject
+class PlanetObjectImpl extends MPlanetObject
 {
    public function PlanetObjectImpl()
    {

@@ -4,20 +4,20 @@
 
 import flash.errors.IllegalOperationError;
 
-import models.planet.PlanetObject;
+import models.planet.MPlanetObject;
 
 
 
-private var _model:PlanetObject = null;
+private var _model:MPlanetObject = null;
 [Bindable("willNotChange")]
-public function get model():PlanetObject
+public function get model():MPlanetObject
 {
    return _model;
 }
 
 
 private var fModelInitialized:Boolean = false;
-public function initModel(model:PlanetObject) : void
+public function initModel(model:MPlanetObject) : void
 {
    if (fModelInitialized)
    {

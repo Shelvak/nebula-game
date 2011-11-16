@@ -10,7 +10,7 @@ package components.map.planet
    
    import models.location.LocationMinimal;
    import models.map.MapDimensionType;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.tile.Tile;
    
    import utils.assets.AssetNames;
@@ -61,7 +61,7 @@ package components.map.planet
        * 
        * @param model a planet to create map for
        */
-      public function PlanetMap(model:Planet)
+      public function PlanetMap(model:MPlanet)
       {         
          super(model);
          _coordsTransform = new PlanetMapCoordsTransform(model.width, model.height, BORDER_SIZE);
@@ -134,9 +134,9 @@ package components.map.planet
       /**
        * Typed getter for property <code>model</code>.
        */      
-      public function getPlanet() : Planet
+      public function getPlanet() : MPlanet
       {
-         return Planet(model);
+         return MPlanet(model);
       }
       
       

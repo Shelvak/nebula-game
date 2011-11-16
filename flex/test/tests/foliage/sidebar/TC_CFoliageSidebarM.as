@@ -11,11 +11,11 @@ package tests.foliage.sidebar
    import models.Owner;
    import models.folliage.BlockingFolliage;
    import models.galaxy.Galaxy;
-   import models.planet.Planet;
+   import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSKind;
    import models.solarsystem.SSObjectType;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.object.isFalse;
@@ -37,7 +37,8 @@ package tests.foliage.sidebar
          ssObject.width = 5;
          ssObject.height = 5;
          ssObject.owner = Owner.PLAYER;
-         ML.latestPlanet = new Planet(ssObject);
+         ssObject.solarSystemId = 999;
+         ML.latestPlanet = new MPlanet(ssObject);
          model = new CFoliageSidebarM();
       }
       
@@ -85,7 +86,7 @@ package tests.foliage.sidebar
             model.terraformPanelVisible, isFalse()
          );
 
-         var pulsar:SolarSystem = new SolarSystem();
+         var pulsar:MSolarSystem = new MSolarSystem();
          pulsar.id = 10;
          pulsar.kind = SSKind.BATTLEGROUND;
          ML.latestGalaxy.addObject(pulsar);

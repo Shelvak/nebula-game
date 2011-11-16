@@ -6,7 +6,7 @@ package components.map.planet.objects
    import flash.display.GraphicsPathCommand;
    import flash.geom.Point;
    
-   import models.planet.PlanetObject;
+   import models.planet.MPlanetObject;
    
    import mx.core.UIComponent;
    
@@ -111,10 +111,10 @@ package components.map.planet.objects
          if (f_needsRedraw)
          {
             var g:Graphics = graphics;
-            var top:Point = PlanetObject.getBasementTopCorner(logicalWidth);
-            var left:Point = PlanetObject.getBasementLeftCorner(logicalWidth);
-            var bottom:Point = PlanetObject.getBasementBottomCorner(logicalWidth, logicalHeight);
-            var right:Point = PlanetObject.getBasementRightCorner(logicalWidth, logicalHeight);
+            var top:Point = MPlanetObject.getBasementTopCorner(logicalWidth);
+            var left:Point = MPlanetObject.getBasementLeftCorner(logicalWidth);
+            var bottom:Point = MPlanetObject.getBasementBottomCorner(logicalWidth, logicalHeight);
+            var right:Point = MPlanetObject.getBasementRightCorner(logicalWidth, logicalHeight);
             g.clear();
             g.beginFill(_color);
             g.drawPath(

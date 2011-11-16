@@ -32,7 +32,7 @@ package models.folliage
        * Kind of a folliage.
        * 
        * <p>Setting this property will dispatch
-       * <code>PlanetObjectEvent.IMAGE_CHANGE</code> event.</p>
+       * <code>MPlanetObjectEvent.IMAGE_CHANGE</code> event.</p>
        * 
        * @default 0
        */
@@ -98,7 +98,7 @@ package models.folliage
        * This property is <strong>Read Only</strong>. It <strong>does
        * not have</strong> <code>Required</code> metadata tag defined.
        * 
-       * @see models.planet.PlanetObject#xEnd
+       * @see models.planet.MPlanetObject#xEnd
        */
       override public function set xEnd(v:Number) : void
       {
@@ -118,7 +118,7 @@ package models.folliage
        * This property is <strong>Read Only</strong>. It <strong>does
        * not have</strong> <code>Required</code> metadata tag defined.
        * 
-       * @see models.planet.PlanetObject#yEnd
+       * @see models.planet.MPlanetObject#yEnd
        */
       override public function set yEnd(v:Number) : void
       {
@@ -150,7 +150,7 @@ package models.folliage
       /**
        * Returns <strong><code>false</code></strong>.
        * 
-       * @see models.planet.PlanetObject#isBlocking
+       * @see models.planet.MPlanetObject#isBlocking
        */
       override public function get isBlocking() : Boolean
       {

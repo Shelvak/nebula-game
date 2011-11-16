@@ -7,9 +7,10 @@ package components.map.space
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
+   import models.map.MMapSolarSystem;
    import models.map.MMapSpace;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import mx.graphics.SolidColorStroke;
    
@@ -61,7 +62,7 @@ package components.map.space
       /* ###################### */
       
       
-      public function CMapSolarSystem(model:SolarSystem)
+      public function CMapSolarSystem(model:MMapSolarSystem)
       {
          super(model);
       }
@@ -69,12 +70,13 @@ package components.map.space
       /**
        * Called by <code>NavigationController</code> when ssobject map screen is shown.
        */
-      public static function screenShowHandler() : void
-      {
-         if (ModelLocator.getInstance().latestSolarSystem.isBattleground)
-         {
-            Messenger.show(Localizer.string("SSObjects", "message.battleground"), Messenger.VERY_LONG, 
-               'info/battleground');
+      public static function screenShowHandler(): void {
+         var ssMap:MMapSolarSystem = ModelLocator.getInstance().latestSSMap;
+         if (ssMap.solarSystem.isBattleground) {
+            Messenger.show(
+               Localizer.string("SSObjects", "message.battleground"),
+               Messenger.VERY_LONG, 'info/battleground'
+            );
          }
       }
       
@@ -109,7 +111,7 @@ package components.map.space
          var star:BitmapImage = new BitmapImage();
          star.verticalCenter = 0;
          star.horizontalCenter = 0;
-         star.source = getSolarSystem().imageData;
+         star.source = getMapModel().solarSystem.imageData;
          objectsContainer.addElement(star);
          
          // Orbits
@@ -125,9 +127,9 @@ package components.map.space
          var bottom:LocationMinimal = new LocationMinimal();
          _locWrapper.location = bottom;
          _locWrapper.angle = 90;
-         left.id = top.id = right.id = bottom.id = getSolarSystem().id;
+         left.id = top.id = right.id = bottom.id = getMapModel().id;
          left.type = top.type = right.type = bottom.type = LocationType.SOLAR_SYSTEM;
-         for (var position:int = 0; position < getSolarSystem().orbitsTotal; position++)
+         for (var position:int = 0; position < getMapModel().orbitsTotal; position++)
          {
             for each (var location:LocationMinimal in [left, right, top, bottom])
             {
@@ -169,11 +171,11 @@ package components.map.space
       
       
       /**
-       * Typed gettor for <code>model</code> property.
+       * Typed getter for <code>model</code> property.
        */
-      public function getSolarSystem() : SolarSystem
+      public function getMapModel() : MMapSolarSystem
       {
-         return SolarSystem(model);
+         return MMapSolarSystem(model);
       }
    }
 }

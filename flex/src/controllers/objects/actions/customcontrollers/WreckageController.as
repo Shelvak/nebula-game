@@ -22,7 +22,7 @@ package controllers.objects.actions.customcontrollers
          var wreck:MWreckage = BaseModel.createModel(MWreckage, object);
          if (wreck.currentLocation.isObserved) {
             if (wreck.currentLocation.type == LocationType.SOLAR_SYSTEM)
-               ML.latestSolarSystem.addObject(wreck);
+               ML.latestSSMap.addObject(wreck);
             else
                ML.latestGalaxy.addObject(wreck);
          }
@@ -34,8 +34,8 @@ package controllers.objects.actions.customcontrollers
          var wreckOld:MWreckage = null;
          if (ML.latestGalaxy != null)
             wreckOld = Collections.findFirstEqualTo(ML.latestGalaxy.wreckages, wreckNew);
-         if (ML.latestSolarSystem != null && wreckOld == null)
-            wreckOld = Collections.findFirstEqualTo(ML.latestSolarSystem.wreckages, wreckNew);
+         if (ML.latestSSMap != null && wreckOld == null)
+            wreckOld = Collections.findFirstEqualTo(ML.latestSSMap.wreckages, wreckNew);
          if (wreckOld == null)
             throw new Error("Can't update wreckage " + wreckNew + ": the object was was not found");
          wreckOld.copyProperties(wreckNew);
@@ -46,8 +46,8 @@ package controllers.objects.actions.customcontrollers
          var wreckSample:MWreckage = new MWreckage();
          wreckSample.id = objectId;
          var wreckRemoved:MWreckage = null;
-         if (ML.latestSolarSystem != null)
-            wreckRemoved = ML.latestSolarSystem.removeObject(wreckSample, true);
+         if (ML.latestSSMap != null)
+            wreckRemoved = ML.latestSSMap.removeObject(wreckSample, true);
          if (ML.latestGalaxy != null && wreckRemoved == null)
             wreckRemoved = ML.latestGalaxy.removeObject(wreckSample, true);
       }

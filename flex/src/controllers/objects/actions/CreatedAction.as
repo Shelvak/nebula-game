@@ -33,7 +33,7 @@ package controllers.objects.actions
             var map:MMap;
             switch (unit.location.type) {
                case LocationType.GALAXY: map = ML.latestGalaxy; break;
-               case LocationType.SOLAR_SYSTEM: map = ML.latestSolarSystem; break;
+               case LocationType.SOLAR_SYSTEM: map = ML.latestSSMap; break;
                case LocationType.SS_OBJECT: map = ML.latestPlanet; break;
                default: map = null;
             }

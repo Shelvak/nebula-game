@@ -10,7 +10,7 @@ package tests.maps
    import models.galaxy.Galaxy;
    import models.galaxy.VisibleGalaxyArea;
    import models.map.MapArea;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
    
    import mx.collections.ArrayCollection;
    
@@ -542,8 +542,8 @@ package tests.maps
          area = new VisibleGalaxyArea(galaxy, client, new GalaxyMapCoordsTransform(galaxy));
       }
       
-      private function solarSystem(id:int, x:int, y:int) : SolarSystem {
-         var ss:SolarSystem = new SolarSystem();
+      private function solarSystem(id:int, x:int, y:int) : MSolarSystem {
+         var ss:MSolarSystem = new MSolarSystem();
          ss.id = id;
          ss.x = x;
          ss.y = y;

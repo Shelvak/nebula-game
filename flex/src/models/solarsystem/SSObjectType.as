@@ -3,7 +3,7 @@ package models.solarsystem
    import utils.locale.Localizer;
 
    
-   public class SSObjectType
+   public final class SSObjectType
    {
       public static const PLANET:String = "Planet";
       public static const ASTEROID:String = "Asteroid";

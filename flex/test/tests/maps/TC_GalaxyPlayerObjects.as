@@ -17,9 +17,9 @@ package tests.maps
    import models.location.LocationType;
    import models.movement.MHop;
    import models.movement.MSquadron;
-   import models.solarsystem.SSMetadata;
+   import models.solarsystem.MSSMetadata;
    import models.solarsystem.SSMetadataType;
-   import models.solarsystem.SolarSystem;
+   import models.solarsystem.MSolarSystem;
 
    import mx.collections.ArrayCollection;
 
@@ -283,7 +283,7 @@ package tests.maps
          assertThat(
             "returns factory of IRSolarSystem for SolarSystem",
             GalaxyPlayerObjects
-               .itemRendererFunction(new SolarSystem())
+               .itemRendererFunction(new MSolarSystem())
                .newInstance(),
             isA (IRSolarSystem)
          );
@@ -311,12 +311,12 @@ package tests.maps
 
       private function getSolarSystem(id: int, x: int, y: int,
                                       playerShips: Boolean,
-                                      enemyShips: Boolean): SolarSystem {
-         var ss: SolarSystem = new SolarSystem();
+                                      enemyShips: Boolean): MSolarSystem {
+         var ss: MSolarSystem = new MSolarSystem();
          ss.id = id;
          ss.x = x;
          ss.y = y;
-         ss.metadata = new SSMetadata();
+         ss.metadata = new MSSMetadata();
          ss.metadata.playerShips = playerShips;
          ss.metadata.enemyShips = enemyShips;
          return ss;
@@ -353,7 +353,7 @@ package tests.maps
       }
 
       private function getSectorWithShips
-         (x: int, y: int, solarSystem: SolarSystem = null): SectorWithShips {
+         (x: int, y: int, solarSystem: MSolarSystem = null): SectorWithShips {
          return new SectorWithShips(
             getGalaxyLocation(x, y),
             solarSystem

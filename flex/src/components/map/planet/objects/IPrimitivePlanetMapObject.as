@@ -2,7 +2,7 @@ package components.map.planet.objects
 {
    import interfaces.ICleanable;
    
-   import models.planet.PlanetObject;
+   import models.planet.MPlanetObject;
    
    import mx.core.IVisualElement;
 
@@ -18,7 +18,7 @@ package components.map.planet.objects
        * 
        * @default null
        */
-      function get model() : PlanetObject;
+      function get model() : MPlanetObject;
       
       
       /**
@@ -29,7 +29,7 @@ package components.map.planet.objects
        * @throws flash.errors.IllegalOperationError when this method is called second time.
        * @throws flash.errors.IllegalOperationError when <code>model</code> is null or undefined.
        */
-      function initModel(model:PlanetObject) : void;
+      function initModel(model:MPlanetObject) : void;
       
       
       /**
