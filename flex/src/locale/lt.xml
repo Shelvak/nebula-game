@@ -517,7 +517,7 @@
         baigti.</p>
     </warning.repairBuilding>
     <warning.repairBuildingTechNeeded>
-      <p>Tau reikia išrasti [reference:Objects/Technology_BuildingRepair]
+      <p>Tau reikia išrasti [obj:1:Technology_BuildingRepair:whos:dc]
         technologiją, kad galėtum taisyti gynybinius bokštelius.</p>
     </warning.repairBuildingTechNeeded>
     <label.repairBuilding value="Taisyti"/>

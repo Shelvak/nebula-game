@@ -557,7 +557,7 @@
       <p>Turret won't participate in combat until repairs are finished.</p>
     </warning.repairBuilding>
     <warning.repairBuildingTechNeeded>
-      <p>You need to research [reference:Objects/Technology_BuildingRepair]
+      <p>You need to research [obj:1:Technology_BuildingRepair::dc]
       technology to repair turrets.</p>
     </warning.repairBuildingTechNeeded>
     <label.repairBuilding value="Repair"/>
