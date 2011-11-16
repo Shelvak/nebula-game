@@ -22,7 +22,7 @@ package components.battle
       public function appear(unitId: int): void
       {
          var appearUnit: BUnit = getGroupedParticipantModel(unitId) as BUnit;
-         appearGroup.removeExact(appearUnit);
+         appearGroup.removeItemAt(appearGroup.getItemIndex(appearUnit));
          group.addItem(appearUnit);
          if (groupLength == 1)
          {

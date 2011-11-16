@@ -228,7 +228,7 @@ package components.battle
       
       private function getMaxGrouped(groupWidth: Number, groupHeight: Number): int
       {
-         return Math.round(0.0005 * groupWidth * groupHeight + 1.5125);
+         return Math.round(0.02 * groupWidth * groupHeight + 40);
       }
       
       public function set currentGroupOrder(value: int): void

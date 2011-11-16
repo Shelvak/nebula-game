@@ -17,10 +17,50 @@
          public var modelId: int = 0;
          
          [Bindable]
-         public var maxStock: int;
-         
+         private var _maxStock: int;
+         private var tMaxStock: int;
+
+         public function set maxStock(value: int): void
+         {
+            tMaxStock = value;
+            stockChanged = true;
+            invalidateProperties();
+         }
+
+         public function get maxStock(): int
+         {
+            return tMaxStock;
+         }
+
+         public function get currentStock(): int
+         {
+            return tCurrentStock;
+         }
+
+         public function set currentStock(value: int): void
+         {
+            tCurrentStock = value;
+            stockChanged = true;
+            invalidateProperties();
+         }
+
+         private var stockChanged: Boolean = false;
+
+         protected override function commitProperties(): void
+         {
+            super.commitProperties();
+            if (stockChanged)
+            {
+               stockChanged = false;
+               _maxStock = tMaxStock;
+               _currentStock = tCurrentStock;
+            }
+         }
+
+         private var tCurrentStock: int;
+
          [Bindable]
-         public var currentStock: int;
+         private var _currentStock: int;
          
          [Bindable]
          public var playerStatus: int;
@@ -31,7 +71,7 @@
          <s:SolidColor color="{getTeamIndicatorColor(playerStatus)}"/>
       </s:fill>
    </s:Rect>
-   <base:SetableProgressBar curentStock="{currentStock}" maxStock="{maxStock}" specialHeight="5" 
+   <base:SetableProgressBar curentStock="{_currentStock}" maxStock="{_maxStock}" specialHeight="5"
                             text="" left="8" right="0" useColorCoding="true"/>
                             
 </s:Group>

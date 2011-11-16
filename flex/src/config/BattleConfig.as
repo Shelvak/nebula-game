@@ -5,7 +5,7 @@ package config
    
    import models.BaseModel;
    import models.battle.BGun;
-   
+
    import utils.StringUtil;
 
    public final class BattleConfig
@@ -21,7 +21,7 @@ package config
       {
          var key:String = "images.battlefield.units." + StringUtil.firstToLowerCase(type) + ".";
          var props: Object = new Object();
-         props.targetPoint = Config.getAssetValue(key + "targetPoint");
+         props.targetBox = Config.getAssetValue(key + "targetBox");
          props.box = Config.getAssetValue(key + "box");
          props.actions = Config.getAssetValue(key + "actions");
          props.gunPoints = Config.getAssetValue(key + "gunPoints");
@@ -33,7 +33,7 @@ package config
       {
          var key:String = "images.battlefield.buildings." + StringUtil.firstToLowerCase(type) + ".";
          var props: Object = new Object();
-         props.targetPoint = Config.getAssetValue(key + "targetPoint");
+         props.targetBox = Config.getAssetValue(key + "targetBox");
          props.box = Config.getAssetValue(key + "box");
          props.actions = Config.getAssetValue(key + "actions");
          props.gunPoints = Config.getAssetValue(key + "gunPoints");
@@ -198,17 +198,29 @@ package config
       }
       
       
-      public static function getUnitTargetPoint(type:String) : Point
+      public static function getUnitHitBox(type:String) : Rectangle
       {
-         var point:Object = getUnitAnimationProps(type).targetPoint;
-         return new Point(point[0], point[1]);
+         var point:Object = getUnitAnimationProps(type).targetBox;
+         return point == null ? getUnitBox(type)
+                 : new Rectangle(
+            point.topLeft[0],
+            point.topLeft[1],
+            point.bottomRight[0] - point.topLeft[0] + 1,
+            point.bottomRight[1] - point.topLeft[1] + 1
+         );
       }
       
       
-      public static function getBuildingTargetPoint(type:String) : Point
+      public static function getBuildingHitBox(type:String) : Rectangle
       {
-         var point:Object = getBuildingAnimationProps(type).targetPoint;
-         return new Point(point[0], point[1]);
+         var point:Object = getBuildingAnimationProps(type).targetBox;
+         return point == null ? getBuildingBox(type)
+                 : new Rectangle(
+            point.topLeft[0],
+            point.topLeft[1],
+            point.bottomRight[0] - point.topLeft[0] + 1,
+            point.bottomRight[1] - point.topLeft[1] + 1
+         );
       }
       
       
