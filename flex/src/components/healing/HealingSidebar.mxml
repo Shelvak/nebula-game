@@ -29,7 +29,7 @@
          import models.solarsystem.MSSObject;
          
          import mx.events.FlexEvent;
-         
+
          import utils.DateUtil;
          import utils.assets.AssetNames;
          import utils.locale.Localizer;
@@ -143,10 +143,13 @@
             </base:Panel>
             
             <unitsscreen:NoSelectionPanel visible="{HS.price == null}"/>
-            
+
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.healing')}"
-                        visible="{HS.price != null}">
-               <base:AdvancedContainer width="100%">
+                    visible="{getTime(HS.location.cooldownEndsAt) >= currentTime
+                    || HS.price != null}">
+               <base:AdvancedContainer width="100%" visible="{HS.price != null}"
+                       top="0" bottom="{btnHeal.height + 12}"
+                       includeInLayout="{HS.price != null}">
                   <s:Label fontWeight="bold" text="{Localizer.string ('Units', 'label.willHeal')}"/>
                   <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{HS.price.metal}"
                                       labelStyleName="{HS.price.metal > ML.latestPlanet.ssObject.metal.currentStock
@@ -181,22 +184,22 @@
                            [DateUtil.secondsToHumanString(HS.price.cooldown)])}" 
                            visible="{getTime(HS.location.cooldownEndsAt) &lt; currentTime}"
                            paddingTop="6"/>
-                  
-                  <s:Group
-                     toolTip="{getTime(HS.location.cooldownEndsAt) &lt; currentTime?'':Localizer.string ('Units', 'toolTip.healCooldown')}">
-                     <s:Button label="{getTime(HS.location.cooldownEndsAt) &lt; currentTime? Localizer.string ('Units', 'label.heal')
-                               :DateUtil.secondsToHumanString((getTime(HS.location.cooldownEndsAt) - currentTime)/1000)}"
-                               click="heal_clickHandler(event)"
-                               horizontalCenter="0"
-                               enabled="{getTime(HS.location.cooldownEndsAt) &lt; currentTime
-                               &amp;&amp; hasEnoughResources}"
-                               skinClass="components.skins.GreenButtonSkin"/>
-                  </s:Group>
                   <base:layout>
                      <s:VerticalLayout paddingLeft="10" paddingRight="6" paddingTop="6" paddingBottom="6" 
                                        horizontalAlign="justify"/>
                   </base:layout>
                </base:AdvancedContainer>
+
+               <s:Group bottom="6" id="btnHeal" left="10" right="6"
+                  toolTip="{getTime(HS.location.cooldownEndsAt) &lt; currentTime?'':Localizer.string ('Units', 'toolTip.healCooldown')}">
+                  <s:Button label="{getTime(HS.location.cooldownEndsAt) &lt; currentTime? Localizer.string ('Units', 'label.heal')
+                            :DateUtil.secondsToHumanString((getTime(HS.location.cooldownEndsAt) - currentTime)/1000)}"
+                            click="heal_clickHandler(event)"
+                            horizontalCenter="0"
+                            enabled="{getTime(HS.location.cooldownEndsAt) &lt; currentTime
+                            &amp;&amp; hasEnoughResources}"
+                            skinClass="components.skins.GreenButtonSkin"/>
+               </s:Group>
             </base:Panel>
             
             <s:Group width="100%">
