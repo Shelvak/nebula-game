@@ -10,6 +10,16 @@ module Parts::Repairable
   end
 
   module InstanceMethods
+    def repairing?
+      state == Building::STATE_REPAIRING
+    end
+
+    def check_upgrade!(*args)
+      raise GameLogicError.new("Cannot upgrade building while repairing!") \
+        if repairing?
+      super(*args)
+    end
+
     # Start repairs.
     def repair!
       raise GameLogicError.new("#{self} must be active for repairs!") \
