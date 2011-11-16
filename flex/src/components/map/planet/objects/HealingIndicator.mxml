@@ -5,8 +5,8 @@
         visible="{timeLeft != null}">
    <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
    AssetNames.UI_IMAGES_FOLDER + 'healing/indicator')}"/>
-   <s:Label left="72" top="30" width="82" textAlign="center"
-            text="{timeLeft}" fontSize="16" fontWeight="bold"/>
+   <s:Label left="70" top="32" width="82" textAlign="center"
+            text="{timeLeft}" fontSize="14" fontWeight="bold"/>
    <fx:Script><![CDATA[
       import globalevents.GlobalEvent;
 
