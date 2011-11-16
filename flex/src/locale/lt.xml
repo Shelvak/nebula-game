@@ -2053,8 +2053,17 @@
 
     <!-- HEAL_HP
     0: count of hit points to heal -->
-    <objectiveText.HealHp 
-    value="Atstatyk {0 1sts[? gyvybės tašką] tens[? gyvybės taškų] many[? gyvybės taškus]}" />
+    <objectiveText.HealHp>
+      <p>Atstatyk {0 1sts[? gyvybės tašką] tens[? gyvybės taškų]
+        many[? gyvybės taškus]} kariams/laivams</p>
+    </objectiveText.HealHp>
+
+    <!-- REPAIR_HP
+    0: count of hit points to repair -->
+    <objectiveText.RepairHp>
+      <p>Atstatyk {0 1sts[? gyvybės tašką] tens[? gyvybės taškų]
+        many[? gyvybės taškus]} gynybiniams bokšteliams</p>
+    </objectiveText.RepairHp>
     
     <!-- MOVE_BUILDINGS
     0: count of times to move building -->

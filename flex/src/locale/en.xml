@@ -1961,7 +1961,11 @@
 
     <!-- HEAL_HP
     0: count of hit points to heal -->
-    <objectiveText.HealHp value="Heal {0} HP" />
+    <objectiveText.HealHp value="Heal {0} HP for units" />
+
+    <!-- REPAIR_HP
+    0: count of hit points to repair -->
+    <objectiveText.RepairHp value="Repair {0} HP for buildings" />
     
     <!-- MOVE_BUILDINGS
     0: count of times to move building -->

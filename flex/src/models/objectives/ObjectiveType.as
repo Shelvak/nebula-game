@@ -9,6 +9,7 @@ package models.objectives
       public static const COMPLETE_ACHIEVEMENTS: String = "CompleteAchievements";
       public static const COMPLETE_QUESTS: String = "CompleteQuests";
       public static const HEAL_HP: String = "HealHp";
+      public static const REPAIR_HP: String = "RepairHp";
       public static const MOVE_BUILDING: String = "MoveBuilding";
       public static const SELF_DESTRUCT: String = "SelfDestruct";
       public static const HAVE_UPGRADED_TO: String = "HaveUpgradedTo";
