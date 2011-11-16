@@ -68,7 +68,8 @@ describe Unit::DeployableTest do
     end
 
     it "should dispatch destroyed event" do
-      should_fire_event(@unit, EventBroker::DESTROYED) do
+      should_fire_event(@unit, EventBroker::DESTROYED,
+                        EventBroker::REASON_DEPLOYMENT) do
         @unit.deploy(@planet, 0, 0)
       end
     end
