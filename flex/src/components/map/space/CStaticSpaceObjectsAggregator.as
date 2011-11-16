@@ -7,7 +7,6 @@ package components.map.space
    import models.map.MStaticSpaceObjectsAggregator;
 
    import mx.events.CollectionEvent;
-   import mx.events.CollectionEventKind;
 
    import spark.components.Group;
 
@@ -17,14 +16,6 @@ package components.map.space
    public class CStaticSpaceObjectsAggregator extends Group
    {
       private var _staticObjectsAggregator:MStaticSpaceObjectsAggregator;
-      /**
-       * Returns model provided in the constructor of this class.
-       */
-      public function get staticObjectsAggregator() : MStaticSpaceObjectsAggregator {
-         return _staticObjectsAggregator;
-      }
-
-
       private var _customComponentClasses:StaticObjectComponentClasses;
 
 
