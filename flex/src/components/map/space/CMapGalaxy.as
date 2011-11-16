@@ -14,8 +14,12 @@ package components.map.space
    import models.map.MStaticSpaceObjectsAggregator;
 
    import mx.collections.ArrayCollection;
+   import mx.logging.ILogger;
+   import mx.logging.Log;
 
    import spark.components.Group;
+
+   import utils.Objects;
 
    import utils.locale.Localizer;
 
@@ -46,7 +50,10 @@ package components.map.space
       COMP_CLASSES.addComponents(MMapSpace.STATIC_OBJECT_NATURAL, CSolarSystem, CSolarSystemInfo);
       COMP_CLASSES.addComponents(MMapSpace.STATIC_OBJECT_COOLDOWN, CCooldown, CCooldownInfo);
       COMP_CLASSES.addComponents(MMapSpace.STATIC_OBJECT_WRECKAGE, CWreckage, CWreckageInfo);
-      
+
+      private function get logger() : ILogger {
+         return Log.getLogger(Objects.getClassName(this, true));
+      }
       
       /* ###################### */
       /* ### INITIALIZATION ### */
@@ -123,22 +130,24 @@ package components.map.space
          var aggrComponent:CStaticSpaceObjectsAggregator;
          var aggrModel:MStaticSpaceObjectsAggregator;
          if (modelsInSector.length > 0) {
-            sector.object = _staticObjectsPool.borrowObject();
-            aggrComponent = sector.object;
+            while (aggrComponent == null) {
+               aggrComponent = _staticObjectsPool.borrowObject();
+               if (aggrComponent.model.length > 0) {
+                  logger.warn(
+                     "sectorShown(): Got invalid object {0} from "
+                        + "_staticObjectsPool."
+                        + "\nNOT returning it to the pool. Will try getting "
+                        + "another one."
+                        + "\nThis indicates potential error in the pool "
+                        + "implementation or its usage and is potentially "
+                        + "causing memory leak.", aggrComponent
+                  );
+                  aggrComponent = null;
+               }
+            }
+            sector.object = aggrComponent;
             aggrModel = aggrComponent.model;
-            try {
-               aggrModel.addAll(modelsInSector);
-            }
-            catch (err:Error) {
-               throw new Error(
-                  "Error while trying to add static objects "
-                     + modelsInSector.toArray().join(", ")
-                     + " at (" + x + "; " + y + ")"
-                     + " to borrowed CStaticSpaceObjectsAggregator "
-                     + aggrComponent + ". Original error message:"
-                     + "\n" + err.message
-               );
-            }
+            aggrModel.addAll(modelsInSector);
             grid.positionStaticObjectInSector(aggrModel.currentLocation);
             squadronsController.repositionAllSquadronsIn(aggrModel.currentLocation);
             var model:IMStaticSpaceObject = IMStaticSpaceObject(aggrModel.getItemAt(0)); 

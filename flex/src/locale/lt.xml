@@ -511,9 +511,6 @@
     </message.pressOnEmpty>
     <panelTitle.scientists value="Mokslininkai" />
     <panelTitle.cancelProgress value="Atšaukti statybas" />
-    <warning.deployInAlliancePlanet>
-      <p>Po išskleidimo pastatas priklausys planetos savininkui.</p>
-    </warning.deployInAlliancePlanet>
     <panelTitle.repairBuilding value="Pastato taisymas" />
     <warning.repairBuilding>
       <p>Gynybinis bokštelis nedalyvaus kovose tol, kol taisymo darbai nebus
@@ -604,6 +601,10 @@
     <deployInProgress value="Vykdomas išskleidimas" />
 
     <timeToFinish value="Iki užbaigimo" />
+    
+    <warning.deployInAlliancePlanet>
+      <p>Po išskleidimo pastatas priklausys planetos savininkui.</p>
+    </warning.deployInAlliancePlanet>
   </BuildingSidebar>
 
   <Buildings>

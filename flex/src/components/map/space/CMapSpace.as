@@ -794,7 +794,7 @@ package components.map.space
          {
             var wreckage:MWreckage = MWreckage(
                CStaticSpaceObjectsAggregator(event.target)
-                  .staticObjectsAggregator
+                  .model
                   .findObjectOfType(MMapSpace.STATIC_OBJECT_WRECKAGE)
             );
             if (wreckage != null)
