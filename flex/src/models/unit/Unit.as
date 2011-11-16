@@ -1,7 +1,9 @@
 package models.unit
 {
    import config.Config;
-   
+
+   import controllers.objects.ObjectClass;
+
    import flash.display.BitmapData;
    
    import models.BaseModel;
@@ -21,7 +23,9 @@ package models.unit
    
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
-   
+
+   import utils.DateUtil;
+
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    import utils.datastructures.Collections;
@@ -31,6 +35,22 @@ package models.unit
    [Bindable]
    public class Unit extends BaseModel implements IUpgradableModel
    {
+      public static const JUMP_IN_SS: String = "move.solarSystem.hopTime";
+      public static const JUMP_IN_GALAXY: String = "move.galaxy.hopTime";
+      public static const JUMP_SPEED_MOD: String = "mod.movementTimeDecrease";
+
+      public static function getJumpTime(formula: String, type: String,
+                             level: int): String
+      {
+         var mod: Number = ML.technologies.getTechnologiesPropertyMod(
+             JUMP_SPEED_MOD, ObjectClass.UNIT + '/' +
+                         StringUtil.camelCaseToUnderscore(type)
+         );
+         return DateUtil.secondsToHumanString(
+                 Math.round(StringUtil.evalFormula(formula,
+                        {"level": level}) * (100 - mod) / 100), 2);
+      }
+
       public static function getValidUnits(facility: Building): ArrayCollection
       {
          var resultList: ArrayCollection = new ArrayCollection();

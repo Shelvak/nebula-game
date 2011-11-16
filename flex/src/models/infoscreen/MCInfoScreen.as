@@ -33,7 +33,8 @@ package models.infoscreen
    import models.technology.Technology;
    import models.technology.events.TechnologyEvent;
    import models.unit.ReachKind;
-   
+   import models.unit.Unit;
+
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    import mx.collections.SortField;
@@ -71,7 +72,9 @@ package models.infoscreen
       
       //properties that dont need to be displayed in difference column of datagrid
       private static const diffIgnorableProperties: Array =
-         ['upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost', 'deploysTo', 'volume', 'width', 'height'];
+         ['upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost', 'deploysTo',
+            'volume', 'width', 'height', 'move.solarSystem.hopTime',
+            'move.galaxy.hopTime'];
       
       //properties that dont need to be displayed in data grid
       private static const ignorableProperties: Array = 
@@ -243,7 +246,8 @@ package models.infoscreen
          for (var element: String in model.infoData)
          {
             var hourly: Boolean = false;
-            if ((ignorableProperties.indexOf(element) == -1) && (ignorableProperties.indexOf(element.split('.')[0]) == -1)) 
+            if ((ignorableProperties.indexOf(element) == -1)
+                    && (ignorableProperties.indexOf(element.split('.')[0]) == -1))
             {
                var currentValue: Number;
                var newValue: Number;
@@ -405,11 +409,15 @@ package models.infoscreen
                      }
                   }
                   
-                  if (element.indexOf('hopTime') != -1)
+                  if (element == Unit.JUMP_IN_GALAXY
+                          || element == Unit.JUMP_IN_SS)
                   {
-                     newValueString = DateUtil.secondsToHumanString(newValue);
-                     currentValueString = DateUtil.secondsToHumanString(currentValue);
-                     diffString = DateUtil.secondsToHumanString(newValue - currentValue);
+                     currentValueString = Unit.getJumpTime(model.infoData[element],
+                             model.type,
+                             model.usefulLevel);
+                     newValueString = Unit.getJumpTime(model.infoData[element],
+                             model.type,
+                             model.usefulLevel);
                   }
                   
                   if (element.indexOf(TechnologyUpgradable.MOD) == 0
