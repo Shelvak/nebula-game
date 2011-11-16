@@ -1016,6 +1016,8 @@ describe Building do
     before(:each) do
       @model = Factory.create(:building_built, 
         opts_upgrading + {:level => 1, :state => Building::STATE_INACTIVE})
+      CallbackManager.register(@model, CallbackManager::EVENT_UPGRADE_FINISHED,
+        @model.upgrade_ends_at)
     end
     
     it "should return to active state" do

@@ -163,6 +163,7 @@ assets:
           %w{SelfDestruct Building},
           ["AccelerateFlight", ""],
           ["HealHp", ""],
+          ["RepairHp", ""],
         ].each do |type, *keys|
           keys.each do |key|
             key.gsub!("::", "_")
