@@ -22,6 +22,7 @@ package models.infoscreen
    
    import models.ModelLocator;
    import models.building.Building;
+   import models.healing.HealPrice;
    import models.infoscreen.events.InfoScreenEvent;
    import models.parts.BuildingUpgradable;
    import models.parts.TechnologyUpgradable;
@@ -287,14 +288,27 @@ package models.infoscreen
                      }
                      useRounding = true;
                   }
-                  else if (element == Building.HEALING_COST_MOD || element == Building.HEALING_TIME_MOD)
+                  else if (element == HealPrice.HEALING_COST_MOD
+                          || element == HealPrice.HEALING_TIME_MOD)
                   {
-                     currentValue = MathUtil.round(Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, 
-                        model.type, element, {'level': model.usefulLevel}),
-                        Config.getRoundingPrecision());
-                     newValue = MathUtil.round(Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, 
-                        model.type, element, {'level': selectedLevel}),
-                        Config.getRoundingPrecision());
+                     if (model.objectType == ObjectClass.BUILDING)
+                     {
+                        currentValue = MathUtil.round(Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS,
+                           model.type, element, {'level': model.usefulLevel}),
+                           Config.getRoundingPrecision());
+                        newValue = MathUtil.round(Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS,
+                           model.type, element, {'level': selectedLevel}),
+                           Config.getRoundingPrecision());
+                     }
+                     else
+                     {
+                        currentValue = MathUtil.round(Upgradable.evalUpgradableFormula(UpgradableType.TECHNOLOGIES,
+                           model.type, element, {'level': model.usefulLevel}),
+                           Config.getRoundingPrecision());
+                        newValue = MathUtil.round(Upgradable.evalUpgradableFormula(UpgradableType.TECHNOLOGIES,
+                           model.type, element, {'level': selectedLevel}),
+                           Config.getRoundingPrecision());
+                     }
                      useRounding = true;
                   }
                   else if (element == Technology.WAR_POINTS)

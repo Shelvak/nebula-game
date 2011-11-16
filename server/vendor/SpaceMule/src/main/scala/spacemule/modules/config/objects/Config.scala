@@ -190,6 +190,9 @@ object Config {
   }
 
   private def cost(key: String) = double(key).ceil.toInt
+  private def cost(key: String, level: Int) =
+    formulaEval(key, Map("level" -> level.toBigDecimal)).
+      doubleValue().ceil.toInt
   private def speed = int("speed")
 
   //////////////////////////////////////////////////////////////////////////////
@@ -488,12 +491,12 @@ object Config {
   def buildingHp(name: String) =
     int("buildings.%s.hp".format(name.underscore))
 
-  def buildingMetalCost(name: String) =
-    cost("buildings.%s.metal.cost".format(name.underscore))
-  def buildingEnergyCost(name: String) =
-    cost("buildings.%s.energy.cost".format(name.underscore))
-  def buildingZetiumCost(name: String) =
-    cost("buildings.%s.zetium.cost".format(name.underscore))
+  def metalCost(b: combat.objects.Building) =
+    cost("buildings.%s.metal.cost".format(b.name.underscore), b.level)
+  def energyCost(b: combat.objects.Building) =
+    cost("buildings.%s.energy.cost".format(b.name.underscore), b.level)
+  def zetiumCost(b: combat.objects.Building) =
+    cost("buildings.%s.zetium.cost".format(b.name.underscore), b.level)
   def buildingGunDefinitions(name: String) =
     gunDefinitions("buildings.%s.guns".format(name.underscore))
 

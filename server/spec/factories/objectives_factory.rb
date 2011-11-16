@@ -82,3 +82,6 @@ Factory.define :o_heal_hp, :parent => :objective,
 :class => Objective::HealHp do |m|
   m.key Objective::HealHp::KEY
 end
+
+Factory.define :o_repair_hp, :parent => :objective,
+:class => Objective::RepairHp do |m|; end

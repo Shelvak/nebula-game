@@ -4,4 +4,5 @@ require File.expand_path(
 
 describe Building::MobileVulcan do
   it_behaves_like "with army points", Factory.create(:b_mobile_vulcan)
+  it_behaves_like "with repairable", Factory.create(:b_mobile_vulcan)
 end

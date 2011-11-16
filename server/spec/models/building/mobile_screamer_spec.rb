@@ -4,4 +4,5 @@ require File.expand_path(
 
 describe Building::MobileScreamer do
   it_behaves_like "with army points", Factory.create(:b_mobile_screamer)
+  it_behaves_like "with repairable", Factory.create(:b_mobile_screamer)
 end

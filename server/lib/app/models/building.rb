@@ -4,6 +4,7 @@ class Building < ActiveRecord::Base
   STATE_INACTIVE = 0
   STATE_ACTIVE = 1
   STATE_WORKING = 2
+  STATE_REPAIRING = 3
 
   belongs_to :planet, :class_name => "SsObject::Planet"
   delegate :player, :player_id, :to => :planet
@@ -38,9 +39,12 @@ class Building < ActiveRecord::Base
   include Parts::Notifier
   include Parts::Object
 
-  scope :inactive, :conditions => {:state => STATE_INACTIVE}
-  scope :active, :conditions => {:state => STATE_ACTIVE}
-  scope :working, :conditions => {:state => STATE_WORKING}
+  # Cannot use where() here because DB connection is not established yet
+  # when we are loading this.
+  scope :inactive, {:conditions => {:state => STATE_INACTIVE}}
+  scope :active, {:conditions => {:state => STATE_ACTIVE}}
+  scope :working, {:conditions => {:state => STATE_WORKING}}
+  scope :repairing, {:conditions => {:state => STATE_REPAIRING}}
 
   scope :of_player, Proc.new { |player|
     player = player.id if player.is_a? Player

@@ -1,5 +1,9 @@
 package models.building
 {
+   import flash.events.Event;
+
+   import models.resource.ResourcesAmount;
+
    // Explicitly reference all building classes here that are not referenced directly anywhere in the code.
    MetalExtractor;
    MetalExtractorT2;
@@ -99,8 +103,6 @@ package models.building
       public static const STORE: String = 'store';
       public static const RADAR_STRENGTH: String = 'radar.strength';
       public static const FEE: String = 'fee';
-      public static const HEALING_COST_MOD: String = 'healing.cost.mod';
-      public static const HEALING_TIME_MOD: String = 'healing.time.mod';
       
       public static function getMarketTaxRate(marketLevel: int): Number
       {
@@ -275,6 +277,7 @@ package models.building
       public static const INACTIVE: int = 0;
       public static const ACTIVE: int = 1;
       public static const WORKING: int = 2;
+      public static const REPAIRING: int = 3;
       
       
       include "../mixins/upgradableProxyProps.as"; 
@@ -340,6 +343,16 @@ package models.building
       public function get constructionQueueEntries(): ModelsCollection
       {
          return _constructionQueueEntries;
+      }
+
+      public function get damagePercentage(): Number
+      {
+         return (hpMax - hp)/hpMax;
+      }
+
+      public function get alivePercentage(): Number
+      {
+         return hp/hpMax;
       }
       
       [Optional]
@@ -417,7 +430,8 @@ package models.building
        *state means:
        * 0 - inactive
        * 1 - active
-       * 2 - working 
+       * 2 - working
+       * 3 - repairing
        */
       public var state: int = 0;
       
