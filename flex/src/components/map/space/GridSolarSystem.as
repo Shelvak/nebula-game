@@ -7,7 +7,6 @@ package components.map.space
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
    import models.map.MMapSolarSystem;
-   import models.solarsystem.MSolarSystem;
    
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;

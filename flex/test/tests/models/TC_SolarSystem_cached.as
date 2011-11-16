@@ -4,6 +4,7 @@ package tests.models
    
    import models.ModelLocator;
    import models.galaxy.Galaxy;
+   import models.map.MMapSolarSystem;
    import models.solarsystem.SSKind;
    import models.solarsystem.MSolarSystem;
    
@@ -19,7 +20,7 @@ package tests.models
    {
       public function TC_SolarSystem_cached()
       {
-      };
+      }
       
       
       private var ML:ModelLocator;
@@ -34,12 +35,12 @@ package tests.models
          ML.player.galaxyId = 1;
          ML.latestGalaxy = new Galaxy();
          ML.latestGalaxy.id = ML.player.galaxyId;
-         ML.latestSSMap = new MSolarSystem();
+         ML.latestSSMap = new MMapSolarSystem(new MSolarSystem());
          ML.latestSSMap.id = 1;
-         ML.latestGalaxy.addObject(ML.latestSSMap);
+         ML.latestGalaxy.addObject(ML.latestSSMap.solarSystem);
          ss = new MSolarSystem();
          ss.id = 1;
-      };
+      }
       
       
       [After]
@@ -49,7 +50,7 @@ package tests.models
          ML.reset();
          ML = null;
          ss = null;
-      };
+      }
       
       
       [Test]
@@ -57,7 +58,7 @@ package tests.models
       {
          ML.latestSSMap = null;
          assertFalse();
-      };
+      }
       
       
       [Test]
@@ -65,18 +66,18 @@ package tests.models
       {
          ML.latestSSMap.fake = true;
          assertFalse();
-      };
+      }
       
       
       [Test]
       public function should_not_be_cached_if_ids_do_not_match_and_both_are_not_wormholes() : void
       {
          ML.latestSSMap.id = 1;
-         ML.latestSSMap.kind = SSKind.NORMAL;
+         ML.latestSSMap.solarSystem.kind = SSKind.NORMAL;
          ss.id = 2;
          ss.kind = SSKind.NORMAL;
          assertFalse();
-      };
+      }
       
       
       [Test]
@@ -87,7 +88,7 @@ package tests.models
          ss.id = 1;
          ss.fake = true;
          assertTrue();
-      };
+      }
       
       
       [Test]
@@ -95,19 +96,19 @@ package tests.models
       {
          // setUp() has set up all instances to be valid and cached
          assertTrue();
-      };
+      }
       
       
       [Test]
       public function should_not_be_cached_if_ids_do_not_match_and_both_are_wormholes() : void
       {
          ML.latestSSMap.id = 1;
-         ML.latestSSMap.kind = SSKind.WORMHOLE;
+         ML.latestSSMap.solarSystem.kind = SSKind.WORMHOLE;
          ss.id = 2;
          ss.kind = SSKind.WORMHOLE;
          ML.latestGalaxy.addObject(ss);
          assertFalse();
-      };
+      }
       
       
       [Test]
@@ -119,7 +120,7 @@ package tests.models
          ss.kind = SSKind.WORMHOLE;
          ML.latestGalaxy.addObject(ss);
          assertTrue();
-      };
+      }
       
       
       /* ############### */

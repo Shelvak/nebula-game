@@ -8,7 +8,6 @@ package controllers.objects.actions.customcontrollers
    import models.map.MapType;
    import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.MSolarSystem;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;

@@ -133,8 +133,11 @@ package controllers.planets.actions
             ss.fake = true;
             ss.id = planet.solarSystemId;
             var ssInGalaxy:MSolarSystem = ML.latestGalaxy.getSSById(ss.id);
-            if (ssInGalaxy == null)
-               throw new Error("Can't find solar system with id " + ss.id + " in galaxy.");
+            if (ssInGalaxy == null) {
+               throw new Error(
+                  "Can't find solar system with id " + ss.id + " in galaxy."
+               );
+            }
             ss.x = ssInGalaxy.x;
             ss.y = ssInGalaxy.y;
             ss.kind = ssInGalaxy.kind;
