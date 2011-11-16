@@ -10,7 +10,6 @@ package components.map.space
    import models.map.MMapSolarSystem;
    import models.map.MMapSpace;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.MSolarSystem;
    
    import mx.graphics.SolidColorStroke;
    

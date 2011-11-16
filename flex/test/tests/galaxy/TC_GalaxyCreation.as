@@ -14,6 +14,7 @@ package tests.galaxy
    import models.galaxy.Galaxy;
    import models.location.LocationMinimal;
    import models.location.LocationType;
+   import models.map.MMapSolarSystem;
    import models.map.MapArea;
    import models.movement.MHop;
    import models.movement.MRoute;
@@ -80,8 +81,8 @@ package tests.galaxy
                new MapArea(-5, 5, -5, 5)
             ],
             new ArrayCollection([  // solar systems
-               makeSS(1, 0, 0),
-               makeSS(2, 0, 1)
+               makeSSMap(1, 0, 0).solarSystem,
+               makeSSMap(2, 0, 1).solarSystem
             ]),
             new ArrayCollection([  // wreckages
                makeWreck(1, 2, 2),
@@ -177,7 +178,7 @@ package tests.galaxy
          var g:Galaxy = new Galaxy();
          g.id = GALAXY_ID;
          g.battlegroundId = BATTLEGROUND_ID;
-         g.addObject(makeSS(1, 0, 0));
+         g.addObject(makeSSMap(1, 0, 0).solarSystem);
          g.addObject(makeWreck(1, 0, 0));
          g.addObject(makeCool(1, 0, 0));
          ML.units.addItem(makeUnit(1, PID_PLAYER, 1, 0, 0));
@@ -201,22 +202,22 @@ package tests.galaxy
       public function createGalaxyInvalidatesChachedSolarSystemIfItIsNotVisible() : void {
          function makeUnit(id:int) : Unit {
             var unit:Unit = new Unit();
-            unit.type == "Trooper";
+            unit.type = "Trooper";
             unit.id = id;
             unit.squadronId = id;
             unit.location = makeLoc(1, LocationType.SOLAR_SYSTEM, 0, 0);
             return unit;
          }
-         var ss:MSolarSystem = makeSS(1, 0, 0);
-         ss.units.addItem(makeUnit(1));
-         ss.units.addItem(makeUnit(2));
-         squadsCtrl.createSquadronsForUnits(ss.units, ss);
+         var ssMap:MMapSolarSystem = makeSSMap(1, 0, 0);
+         ssMap.units.addItem(makeUnit(1));
+         ssMap.units.addItem(makeUnit(2));
+         squadsCtrl.createSquadronsForUnits(ssMap.units, ssMap);
          var g:Galaxy = new Galaxy();
          g.id = GALAXY_ID;
          g.battlegroundId = BATTLEGROUND_ID;
-         g.addObject(ss);
+         g.addObject(ssMap.solarSystem);
          ML.latestGalaxy = g;
-         ML.latestSSMap = ss;
+         ML.latestSSMap = ssMap;
          
          createEmptyGalaxy();
          
@@ -228,19 +229,19 @@ package tests.galaxy
       
       [Test]
       public function createGalaxyLeavesCachedSolarSystemIfItIsVisible() : void {
-         var ss:MSolarSystem = makeSS(1, 0, 0);
+         var ssMap:MMapSolarSystem = makeSSMap(1, 0, 0);
          var g:Galaxy = new Galaxy();
          g.id = GALAXY_ID;
          g.battlegroundId = BATTLEGROUND_ID;
-         g.addObject(ss);
+         g.addObject(ssMap.solarSystem);
          ML.latestGalaxy = g;
-         ML.latestSSMap = ss;
+         ML.latestSSMap = ssMap;
          
          showAction.createGalaxy(
             GALAXY_ID,
             BATTLEGROUND_ID,
             new Array(),
-            new ArrayCollection([makeSS(1, 0, 0)]),
+            new ArrayCollection([makeSSMap(1, 0, 0).solarSystem]),
             new ArrayCollection(),
             new ArrayCollection(),
             new ArrayCollection(),
@@ -248,14 +249,14 @@ package tests.galaxy
             new Object()
          );
          
-         assertThat( "cached solar system is the same", ML.latestSSMap, sameInstance (ss) );
+         assertThat( "cached solar system is the same", ML.latestSSMap, sameInstance (ssMap) );
       }
       
       [Test]
-      public function createGalaxyInvalidatesChachedPlanetIfSolarSystemIsNotVisible() : void {
+      public function createGalaxyInvalidatesCachedPlanetIfSolarSystemIsNotVisible() : void {
          function makeUnit(id:int) : Unit {
             var unit:Unit = new Unit();
-            unit.type == "Trooper";
+            unit.type = "Trooper";
             unit.id = id;
             unit.squadronId = id;
             unit.location = makeLoc(1, LocationType.SS_OBJECT, 0, 0);
@@ -269,14 +270,14 @@ package tests.galaxy
          planet.units.addItem(makeUnit(1));
          planet.units.addItem(makeUnit(2));
          squadsCtrl.createSquadronsForUnits(planet.units, planet);
-         var ss:MSolarSystem = makeSS(1, 0, 0);
-         ss.addObject(ssObj);
+         var ssMap:MMapSolarSystem = makeSSMap(1, 0, 0);
+         ssMap.addObject(ssObj);
          var g:Galaxy = new Galaxy();
          g.id = GALAXY_ID;
          g.battlegroundId = BATTLEGROUND_ID;
-         g.addObject(makeSS(1, 0, 0));
+         g.addObject(makeSSMap(1, 0, 0).solarSystem);
          ML.latestGalaxy = g;
-         ML.latestSSMap = ss;
+         ML.latestSSMap = ssMap;
          ML.latestPlanet = planet;
          
          createEmptyGalaxy();
@@ -295,21 +296,21 @@ package tests.galaxy
          ssObj.type = SSObjectType.PLANET;
          ssObj.solarSystemId = 1;
          var planet:MPlanet = new MPlanet(ssObj);
-         var ss:MSolarSystem = makeSS(1, 0, 0);
-         ss.addObject(ssObj);
+         var ssMap:MMapSolarSystem = makeSSMap(1, 0, 0);
+         ssMap.addObject(ssObj);
          var g:Galaxy = new Galaxy();
          g.id = GALAXY_ID;
          g.battlegroundId = BATTLEGROUND_ID;
-         g.addObject(makeSS(1, 0, 0));
+         g.addObject(makeSSMap(1, 0, 0).solarSystem);
          ML.latestGalaxy = g;
-         ML.latestSSMap = ss;
+         ML.latestSSMap = ssMap;
          ML.latestPlanet = planet;
          
          showAction.createGalaxy(
             GALAXY_ID,
             BATTLEGROUND_ID,
             new Array(),
-            new ArrayCollection([makeSS(1, 0, 0)]),
+            new ArrayCollection([makeSSMap(1, 0, 0).solarSystem]),
             new ArrayCollection(),
             new ArrayCollection(),
             new ArrayCollection(),
@@ -319,7 +320,7 @@ package tests.galaxy
          
          assertThat( "# of solar systems", galaxy.solarSystems, arrayWithSize (1) );
          assertThat( "solar system in galaxy created", galaxy.getSSById(1), notNullValue() );
-         assertThat( "cached solar system is the same", ML.latestSSMap, sameInstance (ss) );
+         assertThat( "cached solar system is the same", ML.latestSSMap, sameInstance (ssMap) );
          assertThat( "cached planet is the same", ML.latestPlanet, sameInstance (planet) );
       }
       
@@ -371,13 +372,13 @@ package tests.galaxy
          );
       }
       
-      private function makeSS(id:int, x:int, y:int, kind:int = SSKind.NORMAL) : MSolarSystem {
+      private function makeSSMap(id:int, x:int, y:int, kind:int = SSKind.NORMAL) : MMapSolarSystem {
          var ss:MSolarSystem = new MSolarSystem();
          ss.id = id;
          ss.x = x;
          ss.y = y;
          ss.kind = kind;
-         return ss;
+         return new MMapSolarSystem(ss);
       }
       
       private function makeWreck(id:int, x:int, y:int) : MWreckage {

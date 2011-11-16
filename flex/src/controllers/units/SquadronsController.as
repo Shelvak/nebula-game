@@ -221,8 +221,8 @@ package controllers.units
       {
          function refreshUnitsInUnitScreenModel() : void {
             if (ML.latestPlanet != null) {
-               // TODO: Find out why some filters don't refresh if you dont call 
-               // refresh function on the list
+               // TODO: Find out why some filters don't refresh if you don't
+               // call refresh function on the list
                var US:MCUnitScreen = MCUnitScreen.getInstance();
                if (US.units != null) {
                   US.units.refresh();
@@ -496,7 +496,9 @@ package controllers.units
             if (unit.kind == UnitKind.SPACE) {
                var squad:MSquadron = findSquad(unit.squadronId, unit.playerId, unit.location);
                if (squad != null) {
-                  squad.units.refresh();
+                  if (squad.units != null) {
+                     squad.units.refresh();
+                  }
                   if (!squad.hasUnits) {
                      SQUADS.removeExact(squad);
                      if (squad.isMoving && squad.isFriendly) {

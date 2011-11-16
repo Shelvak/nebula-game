@@ -150,7 +150,7 @@ package models.planet
        *    <li>calls <code>cleanup()</code> on <code>ssObject</code> and sets it to <code>null</code></li>
        * </ul>
        * 
-       * @see Map#cleanup()
+       * @see MMap#cleanup()
        */
       public override function cleanup() : void
       {
@@ -219,7 +219,7 @@ package models.planet
       /**
        * Returns <code>MapType.PLANET</code>.
        * 
-       * @see models.map.Map#mapType
+       * @see models.map.MMap#mapType
        */
       override public function get mapType() : int
       {
@@ -376,17 +376,6 @@ package models.planet
       public function get angle() : Number
       {
          return _ssObject.angle;
-      }
-      
-      
-      /**
-       * Proxy to <code>ssObject.angleRadians</code>.
-       * 
-       * @see MSSObject#angleRadians
-       */
-      public function get angleRadians() : Number
-      {
-         return _ssObject.angleRadians;
       }
       
       
@@ -931,8 +920,7 @@ package models.planet
        * Adds <code>MPlanetObject</code> to the planet and dispatches
        * <code>MPlanetEvent.OBJECT_ADD</code> event.
        * 
-       * @param object An object that needs to be added
-       * @param list List to which the given object must be added
+       * @param obj An object that needs to be added
        * 
        * @throws Error if another object occupies the same space as the given one
        */

@@ -382,13 +382,15 @@ package controllers.ui
                ss.id = id;
             }
          }
-         if (ss.cached)
+         if (ss.cached) {
             showSolarSystem();
-         else
+         }
+         else {
             new SolarSystemsCommand(
                SolarSystemsCommand.SHOW,
                new controllers.solarsystems.actions.ShowActionParams(ss.id, false)
             ).dispatch();
+         }
       }
       
       

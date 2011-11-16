@@ -8,7 +8,7 @@ package controllers.solarsystems.actions
    
    import models.BaseModel;
    import models.MWreckage;
-   import models.cooldown.MCooldown;
+   import models.cooldown.MCooldownSpace;
    import models.factories.SolarSystemFactory;
    import models.factories.UnitFactory;
    import models.map.MMapSolarSystem;
@@ -82,7 +82,7 @@ package controllers.solarsystems.actions
          var ssMap:MMapSolarSystem = new MMapSolarSystem(ss);
          createMapObjects(ssMap, MSSObject, params["ssObjects"]);
          createMapObjects(ssMap, MWreckage, params["wreckages"]);
-         createMapObjects(ssMap, MCooldown, params["cooldowns"]);
+         createMapObjects(ssMap, MCooldownSpace, params["cooldowns"]);
 
          // destroy latest a planet if its not in the given solar system
          if (ML.latestPlanet != null

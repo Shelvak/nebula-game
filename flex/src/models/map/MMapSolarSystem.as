@@ -21,8 +21,8 @@ package models.map
    public class MMapSolarSystem extends MMapSpace implements IUpdatable
    {
       public function MMapSolarSystem(solarSystem:MSolarSystem) {
-         super();
          _solarSystem = Objects.paramNotNull("solarSystem", solarSystem);
+         super();
          _importantObjects = Collections.filter(
             naturalObjects,
             ff_importantObjects

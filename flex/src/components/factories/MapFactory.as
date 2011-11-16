@@ -22,7 +22,6 @@ package components.factories
    import models.map.MMapSolarSystem;
    import models.map.MapType;
    import models.planet.MPlanet;
-   import models.solarsystem.MSolarSystem;
    
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
@@ -118,7 +117,7 @@ package components.factories
        * 
        * @param model model of a map to create map component and then viewport component for.
        *  
-       * @return ready to use isntance of <code>ViewportZoomable</code>
+       * @return ready to use instance of <code>ViewportZoomable</code>
        */
       public static function getViewportWithMap(model:MMap) : ViewportZoomable {
          var map:CMap = getMap(model);

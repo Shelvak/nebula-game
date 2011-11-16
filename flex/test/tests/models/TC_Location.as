@@ -17,6 +17,7 @@ package tests.models
    import models.location.LocationEvent;
    import models.location.LocationMinimal;
    import models.location.LocationType;
+   import models.map.MMapSolarSystem;
    import models.planet.MPlanet;
    import models.player.PlayerMinimal;
    import models.solarsystem.MSSObject;
@@ -42,7 +43,7 @@ package tests.models
    {
       public function TC_Location()
       {
-      };
+      }
       
       
       [Rule]
@@ -71,9 +72,9 @@ package tests.models
          ML.latestGalaxy = new Galaxy();
          ML.latestGalaxy.id = ML.player.galaxyId;
          ML.latestGalaxy.battlegroundId = 100;
-         ML.latestSSMap = new MSolarSystem();
+         ML.latestSSMap = new MMapSolarSystem(new MSolarSystem());
          ML.latestSSMap.id = 1;
-         ML.latestGalaxy.addObject(ML.latestSSMap);
+         ML.latestGalaxy.addObject(ML.latestSSMap.solarSystem);
          ML.latestPlanet = new MPlanet(new MSSObject());
          ML.latestPlanet.id = 1;
          ML.latestPlanet.solarSystemId = 1;
@@ -85,7 +86,7 @@ package tests.models
             NavigationController,
             mockRepository.createStrict(NavigationController)
          );
-      };
+      }
       
       
       [After]
@@ -96,7 +97,7 @@ package tests.models
          ML = null;
          loc = null;
          mockRepository = null;
-      };
+      }
       
       
       [Test]
@@ -139,7 +140,7 @@ package tests.models
          mockRepository.replayAll();
          loc.navigateTo();
          mockRepository.verifyAll();
-      };
+      }
       
       
       [Test]
@@ -161,7 +162,7 @@ package tests.models
          mockRepository.replayAll();
          loc.navigateTo();
          mockRepository.verifyAll();
-      };
+      }
       
       
       [Test]
@@ -171,7 +172,7 @@ package tests.models
          loc.type = LocationType.SOLAR_SYSTEM;
          
          assertThat( loc.isNavigable, equals (false) );
-      };
+      }
       
       
       [Test]
@@ -185,7 +186,7 @@ package tests.models
          ML.latestGalaxy.addObject(wormhole);
          
          assertThat( loc.isNavigable, equals (true) );
-      };
+      }
       
       
       [Test]
@@ -194,7 +195,7 @@ package tests.models
          loc.id = ML.latestGalaxy.battlegroundId;
          loc.type = LocationType.SOLAR_SYSTEM;
          assertThat( loc.isNavigable, equals (false) );
-      };
+      }
       
       
       [Test]
@@ -220,7 +221,7 @@ package tests.models
          mockRepository.replayAll();
          loc.navigateTo();
          mockRepository.verifyAll();
-      };
+      }
       
       
       [Test]
@@ -244,7 +245,7 @@ package tests.models
          mockRepository.replayAll();
          loc.navigateTo();
          mockRepository.verifyAll();
-      };
+      }
       
       
       [Test]
@@ -255,7 +256,7 @@ package tests.models
          loc.type = LocationType.SS_OBJECT;
          
          assertThat( loc.isNavigable, equals (true) );
-      };
+      }
       
       
       [Test]
@@ -279,7 +280,7 @@ package tests.models
          mockRepository.replayAll();
          loc.navigateTo();
          mockRepository.verifyAll();
-      };
+      }
       
       
       [Test]
@@ -304,7 +305,7 @@ package tests.models
          mockRepository.replayAll();
          loc.navigateTo();
          mockRepository.verifyAll();
-      };
+      }
       
       
       [Test]
@@ -328,7 +329,7 @@ package tests.models
          mockRepository.replayAll();
          loc.navigateTo();
          mockRepository.verifyAll();
-      };
+      }
       
       
       [Test]
@@ -354,7 +355,7 @@ package tests.models
          mockRepository.replayAll();
          loc.navigateTo();
          mockRepository.verifyAll();
-      };
+      }
       
       
       [Test]
@@ -365,7 +366,7 @@ package tests.models
          loc.type = LocationType.SS_OBJECT;
          
          assertThat( loc.isNavigable, equals (false) );
-      };
+      }
       
       [Test]
       public function namePropertyChange() : void {

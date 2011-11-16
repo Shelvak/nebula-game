@@ -4,6 +4,7 @@ package tests.models
    
    import models.ModelLocator;
    import models.galaxy.Galaxy;
+   import models.map.MMapSolarSystem;
    import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
@@ -34,7 +35,7 @@ package tests.models
          ML.player.galaxyId = 1;
          ML.latestGalaxy = new Galaxy();
          ML.latestGalaxy.id = ML.player.galaxyId;
-         ML.latestSSMap = new MSolarSystem();
+         ML.latestSSMap = new MMapSolarSystem(new MSolarSystem());
          ML.latestSSMap.id = 1;
          ML.latestPlanet = new MPlanet(new MSSObject());
          ML.latestPlanet.id = 1;
@@ -42,7 +43,7 @@ package tests.models
          p = new MPlanet(new MSSObject());
          p.id = 1;
          p.solarSystemId = 1;
-      };
+      }
       
       
       [After]
@@ -53,7 +54,7 @@ package tests.models
          ML = null;
          p.cleanup();
          p = null;
-      };
+      }
       
       
       [Test]
@@ -61,7 +62,7 @@ package tests.models
       {
          ML.latestPlanet = null;
          assertFalse();
-      };
+      }
       
       
       [Test]
@@ -69,7 +70,7 @@ package tests.models
       {
          ML.latestPlanet.fake = true;
          assertFalse();
-      };
+      }
       
       
       [Test]
@@ -78,7 +79,7 @@ package tests.models
          ML.latestPlanet.id = 1;
          p.id = 2;
          assertFalse();
-      };
+      }
       
       
       [Test]
@@ -86,7 +87,7 @@ package tests.models
       {
          // setUp() has set up all cached models
          assertTrue();
-      };
+      }
       
       
       [Test]
@@ -97,7 +98,7 @@ package tests.models
          p.id = 1;
          p.fake = true;
          assertTrue();
-      };
+      }
       
       
       /* ############### */
