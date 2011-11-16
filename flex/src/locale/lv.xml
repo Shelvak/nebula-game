@@ -552,9 +552,6 @@
     <panelTitle.scientists value="Zinātnieki" />
     <panelTitle.cancelProgress value="Atcelt jauninājumus" />
     <!-- TODO -->
-    <warning.deployInAlliancePlanet>
-      <p>After deployment this building will belong to the planet owner.</p>
-    </warning.deployInAlliancePlanet>
     <panelTitle.repairBuilding value="Repair building" />
     <warning.repairBuilding>
       <p>Turret won't participate in combat until repairs are finished.</p>
@@ -647,6 +644,12 @@
     <deployInProgress value="Deploy in progress" />
 
     <timeToFinish value="Laiks beigt" />
+
+    <!-- TODO -->
+    <warning.deployInAlliancePlanet>
+      <p>After deployment this building will belong to the planet owner.</p>
+    </warning.deployInAlliancePlanet>
+    <!-- /TODO -->
   </BuildingSidebar>
 
   <Buildings>

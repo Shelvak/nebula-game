@@ -416,9 +416,6 @@
     <warning.repairBuilding>
       <p>Turret won't participate in combat until repairs are finished.</p>
     </warning.repairBuilding>
-    <warning.deployInAlliancePlanet>
-      <p>After deployment this building will belong to the planet owner.</p>
-    </warning.deployInAlliancePlanet>
     <warning.repairBuildingTechNeeded>
       <p>You need to research [reference:Objects/Technology_BuildingRepair]
       technology to repair turrets.</p>
@@ -503,6 +500,10 @@
     <deployInProgress value="Deploy in progress" />
 
     <timeToFinish value="Time to finish" />
+    
+    <warning.deployInAlliancePlanet>
+      <p>After deployment this building will belong to the planet owner.</p>
+    </warning.deployInAlliancePlanet>
   </BuildingSidebar>
 
   <Buildings>
