@@ -2138,9 +2138,17 @@
     <objectiveText.HaveWarPoints value="Ir {0} Kara {1}" />
     <objectiveText.HavePoints value="Ir {0} {1}" />
 
+    <!-- TODO -->
     <!-- HEAL_HP
     0: count of hit points to heal -->
-    <objectiveText.HealHp value="Saārstēt {0} HP" />
+    <objectiveText.HealHp value="Heal {0} HP for units" />
+    <!-- /TODO -->
+
+    <!-- TODO -->
+    <!-- REPAIR_HP
+    0: count of hit points to repair -->
+    <objectiveText.RepairHp value="Repair {0} HP for buildings" />
+    <!-- /TODO -->
     
     <!-- MOVE_BUILDINGS
     0: count of times to move building -->

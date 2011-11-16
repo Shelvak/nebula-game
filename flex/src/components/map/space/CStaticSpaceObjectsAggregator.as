@@ -156,7 +156,7 @@ package components.map.space
          return "[class: " + Objects.getClassName(this)
                    + ", model: " + model
                    + ", selected: " + _selected
-                   + ", visible: " + visible
+                   + ", visible: " + visible + "]";
       }
 
 

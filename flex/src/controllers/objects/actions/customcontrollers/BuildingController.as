@@ -20,9 +20,18 @@ package controllers.objects.actions.customcontrollers
          if (ML.latestPlanet && ML.latestPlanet.id == building.planetId) {
             var objectOnPoint:MPlanetObject = ML.latestPlanet.getObject(building.x, building.y);
             if (objectOnPoint != null && objectOnPoint is Building) {
-               var ghost:Building = Building(objectOnPoint);
-               ghost.copyProperties(building);
-               ghost.upgradePart.startUpgrade();
+               if (Building(objectOnPoint).isGhost)
+               {
+                  var ghost:Building = Building(objectOnPoint);
+                  ghost.copyProperties(building);
+                  ghost.upgradePart.startUpgrade();
+               }
+               else
+               {
+                  throw new Error("Can't create building: " + building.toString()
+                          + ", other building: " + Building(objectOnPoint).toString()
+                          + "exists on the same point and it is not a ghost");
+               }
             }
             else {
                ML.latestPlanet.build(building);
