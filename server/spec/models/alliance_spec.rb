@@ -149,7 +149,7 @@ describe Alliance do
       @ratings.find { |h| h['alliance_id'].nil? }.should be_nil
     end
 
-    (Player::POINT_ATTRIBUTES + %w{planets_count}).each do
+    (Player::POINT_ATTRIBUTES + %w{planets_count bg_planets_count}).each do
       |attr|
 
       it "should sum #{attr}" do

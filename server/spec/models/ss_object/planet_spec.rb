@@ -156,26 +156,49 @@ describe SsObject::Planet do
 
   describe "player changing" do
     before(:each) do
-      @old = Factory.create(:player, :planets_count => 5)
-      @new = Factory.create(:player, :planets_count => 10)
+      @old = Factory.create(:player, :planets_count => 5,
+                            :bg_planets_count => 8)
+      @new = Factory.create(:player, :planets_count => 10,
+                            :bg_planets_count => 12)
       @planet = Factory.create :planet, :player => @old
       @planet.player = @new
     end
 
     describe "planets counter cache" do
-      it "should increase by 1 for new player" do
-        lambda do
-          @planet.save!
-          @new.reload
-        end.should change(@new, :planets_count).by(1)
+      shared_examples_for "changing counter cache" do |attribute|
+        it "should increase by 1 for new player" do
+          lambda do
+            @planet.save!
+            @new.reload
+          end.should change(@new, attribute).by(1)
+        end
+
+        it "should decrease by 1 for old player" do
+          lambda do
+            @planet.save!
+            @old.reload
+          end.should change(@old, attribute).by(-1)
+        end
       end
 
-      it "should decrease by 1 for old player" do
-        lambda do
-          @planet.save!
-          @old.reload
-        end.should change(@old, :planets_count).by(-1)
+      shared_examples_for "not changing counter cache" do |attribute|
+        it "should not change for new player" do
+          lambda do
+            @planet.save!
+            @new.reload
+          end.should_not change(@new, attribute)
+        end
+
+        it "should not change for old player" do
+          lambda do
+            @planet.save!
+            @old.reload
+          end.should_not change(@old, attribute)
+        end
       end
+
+      it_should_behave_like "changing counter cache", :planets_count
+      it_should_behave_like "not changing counter cache", :bg_planets_count
 
       [:battleground, :mini_battleground].each do |type|
         describe "in #{type}" do
@@ -183,19 +206,8 @@ describe SsObject::Planet do
             @planet.solar_system = Factory.create(type)
           end
 
-          it "should not change for new player" do
-            lambda do
-              @planet.save!
-              @new.reload
-            end.should_not change(@new, :planets_count)
-          end
-
-          it "should not change for old player" do
-            lambda do
-              @planet.save!
-              @old.reload
-            end.should_not change(@old, :planets_count)
-          end
+          it_should_behave_like "changing counter cache", :bg_planets_count
+          it_should_behave_like "not changing counter cache", :planets_count
         end
       end
     end
@@ -229,58 +241,7 @@ describe SsObject::Planet do
         end
       end
     end
-
-    describe "#should_raid? returns false" do
-      before(:each) do
-        @planet.next_raid_at = @next_raid_at = 10.hours.from_now
-        CallbackManager.register(@planet, CallbackManager::EVENT_RAID,
-          @planet.next_raid_at)
-        @planet.should_receive(:should_raid?).and_return(false)
-      end
-
-      it "should clear next_raid_at" do
-        @planet.save!
-        @planet.next_raid_at.should be_nil
-      end
-
-      it "should unregister callback" do
-        @planet.save!
-        @planet.should_not have_callback(CallbackManager::EVENT_RAID,
-          @next_raid_at)
-      end
-    end
-
-    describe "#should_raid? returns true" do
-      before(:each) do
-        @planet.should_receive(:should_raid?).and_return(true)
-      end
-      
-      it "should register next raid" do
-        @planet.save!
-        @planet.raid_registered?.should be_true
-      end
-
-      it "should set next raid to be in a confined window." do
-        @planet.save!
-        (
-          (CONFIG.safe_eval(CONFIG['raiding.delay'][0]).from_now)..(
-            CONFIG.safe_eval(CONFIG['raiding.delay'][1]).from_now)
-        ).should cover(@planet.next_raid_at)
-      end
-
-      it "should register callback" do
-        @planet.save!
-        @planet.should have_callback(CallbackManager::EVENT_RAID,
-          @planet.next_raid_at)
-      end
-
-      it "should reregister raid if it is already scheduled" do
-        @planet.next_raid_at = 10.minutes.from_now
-        @planet.should_receive(:register_raid)
-        @planet.save!
-      end
-    end
-
+    
     it "should save new #owner_changed" do
       @planet.save!
       @planet.owner_changed.should be_within(SPEC_TIME_PRECISION).of(Time.now)
@@ -1144,7 +1105,9 @@ describe SsObject::Planet do
           energy energy_generation_rate energy_usage_rate energy_storage
           zetium zetium_generation_rate metal_usage_rate zetium_storage
           last_resources_update energy_diminish_registered status
-          exploration_x exploration_y exploration_ends_at}
+          exploration_x exploration_y exploration_ends_at
+          next_raid_at raid_arg
+        }
     end
     
     describe "with :view" do
@@ -1155,7 +1118,8 @@ describe SsObject::Planet do
           energy energy_generation_rate energy_usage_rate energy_storage
           zetium zetium_generation_rate zetium_usage_rate zetium_storage
           last_resources_update
-        }, %w{energy_diminish_registered}
+        },
+        %w{next_raid_at raid_arg energy_diminish_registered}
     end
 
     describe "with :owner" do
@@ -1166,7 +1130,7 @@ describe SsObject::Planet do
         zetium_rate_boost_ends_at zetium_storage_boost_ends_at
         exploration_x exploration_y exploration_ends_at
         can_destroy_building_at
-        next_raid_at owner_changed
+        next_raid_at raid_arg owner_changed
         metal metal_generation_rate metal_usage_rate metal_storage
         energy energy_generation_rate energy_usage_rate energy_storage
         zetium zetium_generation_rate zetium_usage_rate zetium_storage
