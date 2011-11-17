@@ -14,6 +14,7 @@ class GalaxiesController < GenericController
   #     :metadata => FowSsEntry#merge_metadata
   #   }
   # - battleground_id (Fixnum): ID of battleground solar system
+  # - apocalypse_start (Time | nil): time of apocalypse start, if started.
   # - units (Hash[]): Unit#as_json with :perspective
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom units belong.
@@ -38,8 +39,8 @@ class GalaxiesController < GenericController
       :galaxy_id => player.galaxy_id,
       :solar_systems => SolarSystem.visible_for(player).as_json,
       :battleground_id => Galaxy.battleground_id(player.galaxy_id),
-      :units => units.map {
-        |unit| unit.as_json(:perspective => resolver) },
+      :apocalypse_start => Galaxy.apocalypse_start(player.galaxy_id),
+      :units => units.map { |unit| unit.as_json(:perspective => resolver) },
       :players => Player.minimal_from_objects(units),
       :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
         Route.non_friendly_for_galaxy(fow_entries, player.friendly_ids)
@@ -48,5 +49,18 @@ class GalaxiesController < GenericController
       :fow_entries => fow_entries.map(&:as_json),
       :wreckages => Wreckage.by_fow_entries(fow_entries).map(&:as_json),
       :cooldowns => Cooldown.by_fow_entries(fow_entries).map(&:as_json)
+  end
+
+  # Notifies client that the apocalypse has started.
+  #
+  # Invocation: by server
+  #
+  # Paramenters: None
+  #
+  # Response: Empty
+  #
+  def action_apocalypse
+    only_push!
+    respond
   end
 end
