@@ -231,7 +231,6 @@ class SsObject::Planet < SsObject
   private
   # Set #next_raid_at & #owner_changed.
   before_update :if => Proc.new { |r| r.player_id_changed? } do
-    should_raid? ? register_raid : clear_raid
     self.owner_changed = Time.now
     
     true
@@ -339,6 +338,8 @@ class SsObject::Planet < SsObject
         new_player.victory_points += CONFIG['battleground.planet.takeover.vps']
         Unit.give_units(CONFIG['battleground.planet.bonus'], self, new_player)
       end
+      old_player.bg_planets_count -= 1 if old_player
+      new_player.bg_planets_count += 1 if new_player
     else
       old_player.planets_count -= 1 if old_player
       new_player.planets_count += 1 if new_player

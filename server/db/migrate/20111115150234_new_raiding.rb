@@ -13,7 +13,12 @@ class NewRaiding < ActiveRecord::Migration
                :default => 0
     end
 
+    player_count = Player.size
+    index = 1
     Player.find_each do |player|
+      $stdout.write "\r#{player.name} @ galaxy id #{player.galaxy_id} (#{
+        index}/#{player_count})"
+
       player.bg_planets_count = player.planets.accept do |planet|
         planet.solar_system.battleground?
       end.size
@@ -31,7 +36,10 @@ class NewRaiding < ActiveRecord::Migration
         end
         planet.save!
       end
+      
+      index += 1
     end
+    puts
   end
 
   def self.down
