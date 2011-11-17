@@ -13,7 +13,7 @@ class NewRaiding < ActiveRecord::Migration
                :default => 0
     end
 
-    player_count = Player.size
+    player_count = Player.count
     index = 1
     Player.find_each do |player|
       $stdout.write "\r#{player.name} @ galaxy id #{player.galaxy_id} (#{
