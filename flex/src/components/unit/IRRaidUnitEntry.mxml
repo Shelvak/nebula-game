@@ -63,7 +63,11 @@
             <!-- count -->
             <s:Label styleName="unitsCount"
                      text="{RaidingUnitEntry(data).countFrom + '-' +
-                     RaidingUnitEntry(data).countTo}"/>
+                     RaidingUnitEntry(data).countTo}"
+                    fontSize="{RaidingUnitEntry(data).countTo &lt; 1000
+                    ? 12 : (RaidingUnitEntry(data).countFrom &lt; 1000
+                    ? 10 : (RaidingUnitEntry(data).countTo &lt; 10000
+                    ? 9 : 8))}"/>
          </s:Group>
          
          <s:Button skinClass="components.skins.InfoButtonSkin" click="info_clickHandler(event)"

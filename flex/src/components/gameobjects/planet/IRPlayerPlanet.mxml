@@ -13,7 +13,11 @@
    <fx:Script>
       <![CDATA[
          import config.Config;
-         
+
+         import models.ModelLocator;
+
+         import models.planet.MPlanet;
+
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
          
@@ -27,7 +31,9 @@
          {
             return numFmt.format(number);
          }
-         
+
+         [Bindable]
+         private var ML: ModelLocator = ModelLocator.getInstance();
          
          private function getResourceLabelStyle(currentStock:Number, maxStock:Number) : String
          {
@@ -71,7 +77,14 @@
                           textToDisplay="{format(MSSObject(data).zetium.currentStock)} / {format(MSSObject(data).zetium.maxStock)}"
                           labelStyleName="{getResourceLabelStyle(MSSObject(data).zetium.currentStock, MSSObject(data).zetium.maxStock)}"/>
       <base:ImageAndLabel type="{ResourceType.RAID_TIME}" textToDisplay="{MSSObject(data).raidTime}" 
-                          visible="{MSSObject(data).raidTime != null}"/>
+                          visible="{MPlanet.hasRaiders(
+                            ML.latestGalaxy.apocalypseStarted == null
+                            ? ML.latestPlanet.ssObject.raidArg
+                            : 0,
+                            ML.latestPlanet.ssObject.nextRaidAt,
+                            (ML.latestSSMap == null
+                            || ML.latestSSMap.solarSystem.isBattleground),
+                            ML.latestGalaxy.apocalypseStarted)}"/>
    </s:Group>
    
 </s:ItemRenderer>

@@ -221,17 +221,17 @@ package config
       
       public static function getRaidingPlanetUnits(): Object
       {
-         return getValue('raiding.planet');
+         return getValue('raiding.raiders.planet');
       }
 
       public static function getRaidingBattlegroundUnits(): Object
       {
-         return getValue('raiding.battleground');
+         return getValue('raiding.raiders.battleground');
       }
 
       public static function getRaidingApocalypseUnits(): Object
       {
-         return getValue('raiding.apocalypse');
+         return getValue('raiding.raiders.apocalypse');
       }
       
       public static function getPointsToWin(): int

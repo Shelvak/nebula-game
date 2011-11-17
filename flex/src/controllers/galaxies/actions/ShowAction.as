@@ -179,7 +179,8 @@ package controllers.galaxies.actions
          var galaxy:Galaxy = new Galaxy();
          galaxy.id = galaxyId;
          galaxy.battlegroundId = battlegroundId;
-         galaxy.apocalypseStarted = DateUtil.parseServerDTF(apocalypseStarted);
+         galaxy.apocalypseStarted = apocalypseStarted == null
+                 ? null : DateUtil.parseServerDTF(apocalypseStarted);
          galaxy.addAllObjects(solarSystems);
          galaxy.addAllObjects(wreckages);
          galaxy.addAllObjects(cooldowns);

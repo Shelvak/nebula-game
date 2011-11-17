@@ -4101,6 +4101,8 @@
     <label.manage value="Tvarkyti" />
     <label.withPlanets 
       value="Su {0 one[? planeta] tens[? planetų] many[? planetomis]}" />
+    <label.afterDays
+      value="{0 one[? diena] tens[? dienų] many[? dienos]} po apokalipsės" />
     <label.resources value="Resursai" />
     <label.transferResources value="Perkelti" />
     <!-- 0 - resources string, 1 - 'is' or 'are' 

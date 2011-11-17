@@ -51,6 +51,12 @@
             addPlanet = 1;
          }
       }
+
+      private function getDays(toDate: Date, fromDate: Date): int
+      {
+         return Math.round((toDate.time - fromDate.time)/
+                     (1000 * 60 * 60 * 24));
+      }
       ]]>
    </fx:Script>
    
@@ -88,7 +94,7 @@
                         left="0" right="0" textAlign="center"/>
             </s:Group>
             
-            <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRUnitBuildingEntrySmall"
+            <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRRaidUnitEntry"
                          dataProvider="{MPlanet.getRaiders(
                                         ML.latestGalaxy.apocalypseStarted == null
                                         ? ML.latestPlanet.ssObject.raidArg
@@ -123,11 +129,17 @@
             
             <s:Group top="25" left="20" right="30">
                <s:Label fontSize="12" fontWeight="bold" 
-                        text="{Localizer.string('Units', 'label.withPlanets', [ML.player.planetsCount + addPlanet])}" 
+                        text="{Localizer.string('Units',
+                         ML.latestGalaxy.apocalypseStarted == null
+                         ? 'label.withPlanets' : 'label.afterDays',
+                        [ML.latestGalaxy.apocalypseStarted == null
+                         ? ML.latestPlanet.ssObject.raidArg + addPlanet
+                         : getDays(ML.latestPlanet.ssObject.nextRaidAt,
+                         ML.latestGalaxy.apocalypseStarted) + addPlanet])}"
                         left="0" right="0" textAlign="center"/>
             </s:Group>
             
-            <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRUnitBuildingEntrySmall"
+            <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRRaidUnitEntry"
                          dataProvider="{MPlanet.getRaiders(
                                         ML.latestGalaxy.apocalypseStarted == null
                                         ? ML.latestPlanet.ssObject.raidArg + addPlanet

@@ -4258,6 +4258,9 @@
     <label.deploy value="Izvietot" />
     <label.manage value="Pārvaldīt" />
     <label.withPlanets value="Ar {0} planētām" />
+    <!-- TODO -->
+    <label.afterDays value="{0} days after apocalypse" />
+    <!-- /TODO -->
     <label.resources value="Resursi" />
     <label.transferResources value="Pārvietot" />
     <!-- 0 - resources string, 1 - 'is' or 'are' -->
