@@ -517,7 +517,7 @@
         baigti.</p>
     </warning.repairBuilding>
     <warning.repairBuildingTechNeeded>
-      <p>Tau reikia išrasti [reference:Objects/Technology_BuildingRepair]
+      <p>Tau reikia išrasti [obj:1:Technology_BuildingRepair:whos:dc]
         technologiją, kad galėtum taisyti gynybinius bokštelius.</p>
     </warning.repairBuildingTechNeeded>
     <label.repairBuilding value="Taisyti"/>
@@ -601,6 +601,10 @@
     <deployInProgress value="Vykdomas išskleidimas" />
 
     <timeToFinish value="Iki užbaigimo" />
+    
+    <warning.deployInAlliancePlanet>
+      <p>Po išskleidimo pastatas priklausys planetos savininkui.</p>
+    </warning.deployInAlliancePlanet>
   </BuildingSidebar>
 
   <Buildings>
@@ -1081,30 +1085,23 @@
       perkelti.</p>
     </DefensivePortal.about>
 
-    <GivesUnits>
-      <p>Šis pastatas kas tam tikrą laiką duoda planetos sąvininkui karių.</p>
-    </GivesUnits>
-
     <NpcInfantryFactory.name ref="Objects/Building_NpcInfantryFactory" />
     <NpcInfantryFactory.about>
       <p>Ši senovinė gamykla gamina mažus robotus iš saulės energijos ir 
       susintezuoto silikono. Sklinda gandai, jog jie auginami organiniu būdu,
       tačiau niekas to negali patvirtinti...</p>
-      <p>[reference:GivesUnits]</p>
     </NpcInfantryFactory.about>
 
     <NpcTankFactory.name ref="Objects/Building_NpcTankFactory" />
     <NpcTankFactory.about>
       <p>Šiame ateiviškame fabrike gaminami galingi ir puikiai ginkluoti 
       robotai.</p>
-      <p>[reference:GivesUnits]</p>
     </NpcTankFactory.about>
 
     <NpcSpaceFactory.name ref="Objects/Building_NpcSpaceFactory" />
     <NpcSpaceFactory.about>
       <p>Ši gamykla, esanti po žeme, gamina galingus ateivių laivus, kurie
       gali būti panaudoti tiek gynybai, tiek puolimui.</p>
-      <p>[reference:GivesUnits]</p>
     </NpcSpaceFactory.about>
 
     <NpcHall.name ref="Objects/Building_NpcHall" />

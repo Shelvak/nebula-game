@@ -244,7 +244,7 @@ class DeployHelpers; class << self
   def server_symlink(ssh)
     current_dir = DEPLOY_CONFIG_SERVER_CURRENT
     shared_dir = "#{DEPLOY_CONFIG[:paths][:remote][:server]}/shared"
-    %w{log vendor/bundle}.each do |dir|
+    %w{log run vendor/bundle}.each do |dir|
       target = "#{current_dir}/#{dir}"
       ssh.exec!("mkdir -p #{shared_dir}/#{dir}")
       ssh.exec!("rm -rf #{target}")
