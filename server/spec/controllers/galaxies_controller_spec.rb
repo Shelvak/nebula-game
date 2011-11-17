@@ -143,4 +143,18 @@ describe GalaxiesController do
       end
     end
   end
+
+  describe "galaxies|apocalypse" do
+    before(:each) do
+      @action = "galaxies|apocalypse"
+      @params = {}
+    end
+
+    it_should_behave_like "only push"
+
+    it "should respond with empty params" do
+      should_respond_with {}
+      invoke @action, @params
+    end
+  end
 end

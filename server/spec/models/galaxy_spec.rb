@@ -10,6 +10,20 @@ describe Galaxy do
     end
   end
 
+  describe ".apocalypse_start" do
+    it "should return time if it has started" do
+      time = 5.days.ago
+      galaxy = Factory.create(:galaxy, :apocalypse_start => time)
+      Galaxy.apocalypse_start(galaxy.id).should be_within(SPEC_TIME_PRECISION).
+        of(time)
+    end
+
+    it "should return nil if it has not started" do
+      galaxy = Factory.create(:galaxy, :apocalypse_start => nil)
+      Galaxy.apocalypse_start(galaxy.id).should be_nil
+    end
+  end
+
   describe ".units" do
     before(:all) do
       galaxy = Factory.create :galaxy

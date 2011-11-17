@@ -16,11 +16,16 @@ class Galaxy < ActiveRecord::Base
 
   # Returns ID of battleground solar system.
   def self.battleground_id(galaxy_id)
-    SolarSystem.connection.select_value(
-      "SELECT id FROM `#{SolarSystem.table_name
-        }` WHERE galaxy_id=#{galaxy_id.to_i
-        } AND x IS NULL and y IS NULL LIMIT 1"
-    ).to_i
+    SolarSystem.select("id").
+      where(:galaxy_id => galaxy_id, :x => nil, :y => nil).
+      c_select_value.to_i
+  end
+
+  # Returns ID of battleground solar system.
+  def self.apocalypse_start(galaxy_id)
+    time = Galaxy.select("apocalypse_start").where(:id => galaxy_id).
+      c_select_value
+    time.is_a?(String) ? Time.parse(time) : time
   end
 
   # Returns units visible for _player_ in +Galaxy+.
