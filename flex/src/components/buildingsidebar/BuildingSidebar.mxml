@@ -51,12 +51,15 @@
       import models.unit.UnitKind;
 
       import mx.collections.ListCollectionView;
+      import mx.collections.Sort;
+      import mx.collections.SortField;
       import mx.core.ScrollPolicy;
       import mx.events.DragEvent;
       import mx.events.FlexEvent;
       import mx.managers.DragManager;
 
       import spark.components.Label;
+      import spark.events.IndexChangeEvent;
 
       import utils.DateUtil;
       import utils.datastructures.Collections;
@@ -116,33 +119,59 @@
       }
 
       private static const CONSTRUCTORS: Array =
-                              Config.getConstructors(ObjectClass.BUILDING);
+              Config.getConstructors(ObjectClass.BUILDING);
 
       private function setFacilities(): void {
          if (ML.latestPlanet != null) {
+            facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE,
+                    changeSelected);
             _buildingFacilities = Collections.filter(
-               ML.latestPlanet.objects,
-               function (item: MPlanetObject): Boolean {
-                  return (item is Building)
-                            && (BuildingSidebar.CONSTRUCTORS
-                                   .indexOf(Building(item).type) != -1)
-                            && (Building(item).state != Building.INACTIVE)
-                            && (Building(item).upgradePart)
-                            && (Building(item).upgradePart.level > 0)
-                            && (Building(item).upgradePart
-                                   .upgradeEndsAt == null);
-               });
-            facilities.buildGaleryGrid(_buildingFacilities);
-            refreshFacilities();
-            refreshConstructableStates();
+                    ML.latestPlanet.objects,
+                    function (item: MPlanetObject): Boolean {
+                       if (!(item is Building))
+                       {
+                           return false;
+                       }
+                       var building: Building = Building(item);
+                       return (BuildingSidebar.CONSTRUCTORS
+                               .indexOf(building.type) != -1)
+                               && (building.state != Building.INACTIVE)
+                               && (building.upgradePart != null)
+                               && (!building.isGhost)
+                               && (building.upgradePart.level > 0)
+                               && (building.upgradePart.upgradeEndsAt == null);
+                    });
+            _buildingFacilities.sort = new Sort();
+            _buildingFacilities.sort.compareFunction = constructorModSort;
+            _buildingFacilities.refresh();
          }
       }
 
-      private function refreshFacilities(e: GPlanetEvent = null): void {
-         if (_buildingFacilities && facilities) {
-            facilities.manualSelect();
+      private function constructorModSort(a: Object,  b: Object,
+                                          fields: Array = null): int
+      {
+         if (!(a is Building) || !(b is Building))
+         {
+            return 0;
          }
-         checkTheDemoThing();
+         else
+         {
+            var aBuilding: Building = Building(a);
+            var bBuilding: Building = Building(b);
+            if (aBuilding.constructorMod > bBuilding.constructorMod)
+            {
+               return -1;
+            }
+            else if (bBuilding.constructorMod > aBuilding.constructorMod)
+            {
+               return 1;
+            }
+            else if (aBuilding.id > bBuilding.id)
+            {
+               return 1;
+            }
+            else return -1;
+         }
       }
 
       private function removePending(e: GObjectEvent): void {
@@ -155,14 +184,14 @@
          if (ML.latestPlanet != null) {
             if (selectedFacility != null) {
                var isConstructing: int =
-                      selectedFacility.constructableType != null ? 1 : 0;
+                       selectedFacility.constructableType != null ? 1 : 0;
                constructable.toggleToDemo(
-                  (selectedFacility.constructionQueueEntries.length
-                      + isConstructing) >= (selectedFacility.maxQueryItems + 1)
+                       (selectedFacility.constructionQueueEntries.length
+                               + isConstructing) >= (selectedFacility.maxQueryItems + 1)
                );
                selectedConstructionModel =
-                  ML.latestPlanet.getBuildingById(selectedFacility
-                                                     .constructableId);
+                       ML.latestPlanet.getBuildingById(selectedFacility
+                               .constructableId);
             }
             else {
                constructable.toggleToDemo(true);
@@ -228,23 +257,23 @@
          EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePending);
          if (e.building.unitDeployed == null) {
             new BuildingsCommand(
-               BuildingsCommand.NEW,
-               {
-                  planetId: ML.latestPlanet.id,
-                  x: e.building.x, y: e.building.y,
-                  type: e.building.type,
-                  constructorId: selectedFacility.id}
+                    BuildingsCommand.NEW,
+                    {
+                       planetId: ML.latestPlanet.id,
+                       x: e.building.x, y: e.building.y,
+                       type: e.building.type,
+                       constructorId: selectedFacility.id}
             ).dispatch();
             waitingForApproval = true;
          }
          else {
             new UnitsCommand(
-               UnitsCommand.DEPLOY,
-               {
-                  planetId: ML.latestPlanet.id,
-                  x: e.building.x, y: e.building.y,
-                  unitId: e.building.unitDeployed.id
-               }
+                    UnitsCommand.DEPLOY,
+                    {
+                       planetId: ML.latestPlanet.id,
+                       x: e.building.x, y: e.building.y,
+                       unitId: e.building.unitDeployed.id
+                    }
             ).dispatch();
             e.building.unitDeployed = null;
          }
@@ -273,11 +302,11 @@
          constructable.deselectBuilding();
          constructable.moving = false;
          if (e.type == GBuildingEvent.MOVE_CANCEL
-                || e.type == GBuildingEvent.MOVE_CONFIRM) {
+                 || e.type == GBuildingEvent.MOVE_CONFIRM) {
             MCBuildingSelectedSidebar.getInstance().selectedBuilding =
-               e.building;
+                    e.building;
             MCSidebar.getInstance().showScreen
-               (SidebarScreens.BUILDING_SELECTED);
+                    (SidebarScreens.BUILDING_SELECTED);
          }
       }
 
@@ -285,11 +314,11 @@
       public function get buildTime(): String {
          if (selectedBuilding != null) {
             return DateUtil.secondsToHumanString(
-               Upgradable.calculateUpgradeTime(
-                  UpgradableType.BUILDINGS, selectedBuilding, {"level": 1},
-                  (deployInProgress ? 0 : selectedFacility.constructorMod)
-                     + constructionMod
-               )
+                    Upgradable.calculateUpgradeTime(
+                            UpgradableType.BUILDINGS, selectedBuilding, {"level": 1},
+                            (deployInProgress ? 0 : selectedFacility.constructorMod)
+                                    + constructionMod
+                    )
             );
          }
          else {
@@ -347,7 +376,7 @@
 
       private function setAllBonuses(e: GBuildingMoveEvent): void {
          var bonuses: BuildingBonuses =
-                BuildingBonuses.refreshBonuses(e.tilesUnder);
+                 BuildingBonuses.refreshBonuses(e.tilesUnder);
          armorBonus = bonuses.armor;
          energyBonus = bonuses.energyOutput;
          constructionBonus = bonuses.constructionTime;
@@ -366,22 +395,27 @@
        * function that is done when facility from building
        * facilities list is selected
        **/
-      protected function changeSelected(e: SelectFacilityEvent): void {
+      protected function changeSelected(e: FlexEvent = null): void {
+         if (e != null)
+         {
+            facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE,
+                    changeSelected);
+         }
          selectedConstructionModel = null;
          if (selectedFacility != null) {
             selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE,
-                                                 cancelDrag);
+                    cancelDrag);
             selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE,
-                                                 checkTheDemoThing);
+                    checkTheDemoThing);
          }
-         selectedFacility = e.facility;
+         selectedFacility = Building(facilitiesList.selectedItem);
          if (selectedFacility != null) {
             selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE,
-                                              cancelDrag);
+                    cancelDrag);
             selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE,
-                                              checkTheDemoThing);
+                    checkTheDemoThing);
             selectedConstructionModel =
-               ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
+                    ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
          }
          checkTheDemoThing();
          dispatchBuildTimeChangeEvent();
@@ -390,36 +424,36 @@
       [Bindable (event ="buildingsStatesChange")]
       private function getMetalPrice(): int {
          if (deployInProgress
-                || (constructable != null && constructable.moving)) {
+                 || (constructable != null && constructable.moving)) {
             return 0;
          }
          return Upgradable.calculateCost(UpgradableType.BUILDINGS,
-                                         selectedBuilding,
-                                         ResourceType.METAL, {"level": 1});
+                 selectedBuilding,
+                 ResourceType.METAL, {"level": 1});
       }
 
 
       [Bindable (event ="buildingsStatesChange")]
       private function getEnergyPrice(): int {
          if (deployInProgress
-                || (constructable != null && constructable.moving)) {
+                 || (constructable != null && constructable.moving)) {
             return 0;
          }
          return Upgradable.calculateCost(UpgradableType.BUILDINGS,
-                                         selectedBuilding,
-                                         ResourceType.ENERGY, {"level": 1});
+                 selectedBuilding,
+                 ResourceType.ENERGY, {"level": 1});
       }
 
 
       [Bindable (event ="buildingsStatesChange")]
       private function getZetiumPrice(): int {
          if (deployInProgress
-                || (constructable != null && constructable.moving)) {
+                 || (constructable != null && constructable.moving)) {
             return 0;
          }
          return Upgradable.calculateCost(UpgradableType.BUILDINGS,
-                                         selectedBuilding,
-                                         ResourceType.ZETIUM, {"level": 1});
+                 selectedBuilding,
+                 ResourceType.ZETIUM, {"level": 1});
       }
 
       private function handleScreenChange(e: ScreensSwitchEvent): void {
@@ -464,24 +498,24 @@
 
       protected function this_creationCompleteHandler(event: FlexEvent): void {
          EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_COMMIT,
-                               dispatchBuildingComand);
+                 dispatchBuildingComand);
          EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_CANCEL,
-                               constructionCanceledHandler);
+                 constructionCanceledHandler);
          EventBroker.subscribe(GBuildingEvent.MOVE_CANCEL,
-                               constructionCanceledHandler);
+                 constructionCanceledHandler);
          EventBroker.subscribe(GBuildingEvent.MOVE_CONFIRM,
-                               constructionCanceledHandler);
+                 constructionCanceledHandler);
          EventBroker.subscribe(GBuildingEvent.MOVE_INIT,
-                               constructionMoveHandler);
+                 constructionMoveHandler);
          EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
          EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED,
-                               changeConstructable);
+                 changeConstructable);
          SD.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
-                             handleSidebarChange);
+                 handleSidebarChange);
          MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
-                             handleScreenChange);
+                 handleScreenChange);
          EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE,
-                               refreshFacilities);
+                 checkTheDemoThing);
          EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, prepare);
          EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
          //NavigationController.getInstance().addEventListener("mapLoaded", setFacilities);
@@ -492,21 +526,21 @@
       protected function queueList_dragCompleteHandler(event: DragEvent): void {
          if (queueList.dragMoveEnabled) {
             var tempElement: ConstructionQueueEntry =
-                   List(event.dragInitiator)
-                      .selectedItems[0] as ConstructionQueueEntry;
+                    List(event.dragInitiator)
+                            .selectedItems[0] as ConstructionQueueEntry;
             if (selectedFacility.constructionQueueEntries
-                   .getItemIndex(tempElement) != tempElement.position) {
+                    .getItemIndex(tempElement) != tempElement.position) {
                var newPosition: int =
-                      tempElement.position > selectedFacility
-                                                .constructionQueueEntries
-                                                .getItemIndex(tempElement)
-                         ? selectedFacility.constructionQueueEntries
-                              .getItemIndex(tempElement)
-                         : selectedFacility.constructionQueueEntries
-                              .getItemIndex(tempElement) + 1;
+                       tempElement.position > selectedFacility
+                               .constructionQueueEntries
+                               .getItemIndex(tempElement)
+                               ? selectedFacility.constructionQueueEntries
+                               .getItemIndex(tempElement)
+                               : selectedFacility.constructionQueueEntries
+                               .getItemIndex(tempElement) + 1;
                new ConstructionQueuesCommand(
-                  ConstructionQueuesCommand.MOVE,
-                  {id: tempElement.id, position: newPosition}
+                       ConstructionQueuesCommand.MOVE,
+                       {id: tempElement.id, position: newPosition}
                ).dispatch();
             }
          }
@@ -523,7 +557,7 @@
          }
          if (selectedFacility != null) {
             constructable.refreshBuildingsStates
-               (selectedFacility.constructableType != null, cancelDisabled);
+                    (selectedFacility.constructableType != null, cancelDisabled);
             dispatchBuildingStatesChangeEvent();
             if (selectedBuilding != null) {
                calculateResLeft()
@@ -552,21 +586,21 @@
          var energyCost: int = getEnergyPrice();
          var zetiumCost: int = getZetiumPrice();
          missingStorageString = Resource.getMissingStoragesString(planet,
-                                                                  metalCost,
-                                                                  energyCost,
-                                                                  zetiumCost);
+                 metalCost,
+                 energyCost,
+                 zetiumCost);
          enoughStorage = (missingStorageString == '' ? true : false);
          resLeft = Resource.getTimeToReachResources
-                      (planet.metal, planet.energy, planet.zetium,
-                       metalCost, energyCost, zetiumCost);
+                 (planet.metal, planet.energy, planet.zetium,
+                         metalCost, energyCost, zetiumCost);
       }
 
 
       protected function constructable_creationCompleteHandler(event: FlexEvent): void {
          EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE,
-                               refreshConstructableStates);
+                 refreshConstructableStates);
          constructable.addEventListener
-            (DemoChangedEvent.DEMO_SELECTION_CHANGED, handleDemoChange)
+                 (DemoChangedEvent.DEMO_SELECTION_CHANGED, handleDemoChange)
       }
 
 
@@ -592,15 +626,15 @@
 
       private function generatesEnergy(buildingType: String): Boolean {
          return Building.calculateResourceGenerationRate(buildingType,
-                                                         ResourceType.ENERGY,
-                                                         {"level": 1}) > 0;
+                 ResourceType.ENERGY,
+                 {"level": 1}) > 0;
       }
 
 
       protected function queueList_creationCompleteHandler(event: FlexEvent): void {
          queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
          queueList.scroller.setStyle('horizontalScrollPolicy',
-                                     ScrollPolicy.OFF);
+                 ScrollPolicy.OFF);
       }
 
 
@@ -616,7 +650,7 @@
 
       [Bindable]
       private var BS: MCBuildingSelectedSidebar =
-                     MCBuildingSelectedSidebar.getInstance();
+              MCBuildingSelectedSidebar.getInstance();
       ]]>
    </fx:Script>
    
@@ -701,10 +735,29 @@
                                     left="0" right="0" top="0">
                <s:Label id="noFacLabel" text="{getString('noFacilities')}"  
                         visible="{_buildingFacilities.length == 0}"/>
-               <elements:BuildingFacilities id="facilities" height="{_buildingFacilities.length > 2?130:62}"
-                                            visible="{_buildingFacilities.length != 0}" 
-                                            creationComplete="facilities.addEventListener
-                                            (SelectFacilityEvent.FACILITY_SELECTED_EVENT, changeSelected)"/>
+               <s:List id="facilitiesList"
+                       itemRenderer="components.buildingsidebar.IRBuildingFacility"
+                       visible="{_buildingFacilities.length != 0}"
+                       borderVisible="false"
+                       dataProvider="{_buildingFacilities}"
+                       change="changeSelected()"
+                       creationComplete="changeSelected();
+                       facilitiesList.scroller.setStyle('horizontalScrollPolicy',
+                           ScrollPolicy.OFF)"
+                       requireSelection="true"
+                       maxHeight="150">
+                  <s:layout>
+                     <s:TileLayout requestedColumnCount="{(_buildingFacilities
+                        == null || _buildingFacilities.length &lt; 2)
+                        ? 1 : 2}" columnWidth="{(_buildingFacilities
+                        == null || _buildingFacilities.length &lt; 2)
+                        ? facilitiesList.width - 2
+                        : (_buildingFacilities.length &lt; 5
+                        ? (facilitiesList.width - 2) / 2 - 4
+                        : (facilitiesList.width - 10) / 2 - 4)}"
+                        rowHeight="68"/>
+                  </s:layout>
+               </s:List>
                
                <s:Group visible="{!(!(noFacLabel.visible == false) || !(selectedFacility.constructableId != 0))}" 
                         width="100%" id="queueGroup">
@@ -737,7 +790,7 @@
                   </s:layout>
                </s:Group>
                <base:layout>
-                  <s:VerticalLayout paddingLeft="6"/>
+                  <s:VerticalLayout paddingLeft="6" horizontalAlign="justify"/>
                </base:layout>
                
             </base:AdvancedContainer>
