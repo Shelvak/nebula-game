@@ -3894,6 +3894,18 @@
     <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
+
+    <!-- params:
+         0 - minimal count of this type of units in raid
+         1 - unit count that might add to the minimal count
+         2 - % probability for each additional unit to be added -->
+    <tooltip.raidProbability>
+      <p>Minimal number of units arriving: {0}</p>
+      <p>
+        There might be {1} additional units with each unit having {2}%
+        probability of appearing.
+      </p>
+    </tooltip.raidProbability>
     
     <tooltip.freeStorage>
       <p>This ship has {0} units of storage available.</p>

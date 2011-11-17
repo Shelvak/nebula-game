@@ -219,14 +219,19 @@ package config
          return getValue('speed');
       }
       
-      public static function getRaidingInfo(): Array
+      public static function getRaidingPlanetUnits(): Object
       {
-         return getValue('raiding.raiders');
+         return getValue('raiding.planet');
       }
-      
-      public static function getRaidingPlanetLimit(): int
+
+      public static function getRaidingBattlegroundUnits(): Object
       {
-         return getValue('raiding.planet.threshold');
+         return getValue('raiding.battleground');
+      }
+
+      public static function getRaidingApocalypseUnits(): Object
+      {
+         return getValue('raiding.apocalypse');
       }
       
       public static function getPointsToWin(): int

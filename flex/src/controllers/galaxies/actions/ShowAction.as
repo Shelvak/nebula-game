@@ -29,6 +29,8 @@ package controllers.galaxies.actions
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
 
+   import utils.DateUtil;
+
 
    /**
     * Downloads list of solar systems for a galaxy and shows galaxy map.
@@ -85,6 +87,7 @@ package controllers.galaxies.actions
          createGalaxy(
             ML.player.galaxyId,
             params["battlegroundId"],
+            params["apocalypseStarted"],
             GalaxyFactory.createFowEntries(params["fowEntries"]),
             GalaxyFactory.createSolarSystems(params["solarSystems"]),
             BaseModel.createCollection(
@@ -164,6 +167,7 @@ package controllers.galaxies.actions
       
       public function createGalaxy(galaxyId:int,
                                    battlegroundId:int,
+                                   apocalypseStarted: String,
                                    fowEntries:Array,
                                    solarSystems:IList,
                                    wreckages:IList,
@@ -175,6 +179,7 @@ package controllers.galaxies.actions
          var galaxy:Galaxy = new Galaxy();
          galaxy.id = galaxyId;
          galaxy.battlegroundId = battlegroundId;
+         galaxy.apocalypseStarted = DateUtil.parseServerDTF(apocalypseStarted);
          galaxy.addAllObjects(solarSystems);
          galaxy.addAllObjects(wreckages);
          galaxy.addAllObjects(cooldowns);

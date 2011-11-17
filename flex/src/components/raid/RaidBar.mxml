@@ -89,10 +89,16 @@
             </s:Group>
             
             <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRUnitBuildingEntrySmall"
-                         dataProvider="{MPlanet.getRaiders(ML.player.planetsCount)}">
+                         dataProvider="{MPlanet.getRaiders(
+                                        ML.latestGalaxy.apocalypseStarted == null
+                                        ? ML.latestPlanet.ssObject.raidArg
+                                        : 0,
+                                        ML.latestPlanet.ssObject.nextRaidAt,
+                                        (ML.latestSSMap == null
+                                        || ML.latestSSMap.solarSystem.isBattleground),
+                                        ML.latestGalaxy.apocalypseStarted)}">
                <s:layout>
-                  <s:TileLayout requestedRowCount="{Math.max(1, 
-                                Math.ceil(Number(MPlanet.getRaiders(ML.player.planetsCount).length)/4))}"/>
+                  <s:TileLayout requestedColumnCount="4"/>
                </s:layout>
             </s:DataGroup>
          </s:Group>
@@ -122,10 +128,16 @@
             </s:Group>
             
             <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRUnitBuildingEntrySmall"
-                         dataProvider="{MPlanet.getRaiders(ML.player.planetsCount + addPlanet)}">
+                         dataProvider="{MPlanet.getRaiders(
+                                        ML.latestGalaxy.apocalypseStarted == null
+                                        ? ML.latestPlanet.ssObject.raidArg + addPlanet
+                                        : addPlanet,
+                                        ML.latestPlanet.ssObject.nextRaidAt,
+                                        (ML.latestSSMap == null
+                                        || ML.latestSSMap.solarSystem.isBattleground),
+                                        ML.latestGalaxy.apocalypseStarted)}">
                <s:layout>
-                  <s:TileLayout requestedColumnCount="4" requestedRowCount="{Math.max(1, 
-                                Math.ceil(Number(MPlanet.getRaiders(ML.player.planetsCount + addPlanet).length)/4))}"/>
+                  <s:TileLayout requestedColumnCount="4"/>
                </s:layout>
             </s:DataGroup>
          </s:Group>

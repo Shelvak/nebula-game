@@ -3949,6 +3949,19 @@
     <property.population value="Populiacija" />
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
+
+    <!-- params:
+         0 - minimal count of this type of units in raid
+         1 - unit count that might add to the minimal count
+         2 - % probability for each additional unit to be added -->
+    <tooltip.raidProbability>
+      <p>Minimalus atvykstančių karių kiekis: {0}</p>
+      <p>
+        Papildomai gali prisidėti dar {1 one[? karys] tens[? karių]
+        many[? kariai]}, kiekvienas karys prisideda su {2}% tikimybę.
+      </p>
+    </tooltip.raidProbability>
+
     
     <tooltip.freeStorage>
       <p>Šiame laive dar liko {0} vietos.</p>

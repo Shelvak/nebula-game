@@ -4,7 +4,7 @@ package models.planet
    
    import controllers.folliages.PlanetFolliagesAnimator;
    import controllers.objects.ObjectClass;
-   
+
    import interfaces.ICleanable;
    
    import models.BaseModel;
@@ -26,6 +26,7 @@ package models.planet
    import models.solarsystem.MSSObject;
    import models.tile.Tile;
    import models.tile.TileKind;
+   import models.unit.RaidingUnitEntry;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
    import models.unit.UnitKind;
@@ -38,6 +39,7 @@ package models.planet
    
    import utils.ModelUtil;
    import utils.Objects;
+   import utils.StringUtil;
    import utils.datastructures.Collections;
    
    
@@ -102,33 +104,80 @@ package models.planet
          _buildings = Collections.filter(objects, filterFunction_buildings);
          _folliages = Collections.filter(objects, filterFunction_folliages);
       }
-      
-      public static function getRaiders(planetCount: int): ArrayCollection
+
+      public static function hasRaiders(raidArg: int, nextRaidAt: Date,
+                                        battleGround: Boolean,
+                                        apocalypseStarted: Date): Boolean
       {
-         if (planetCount < Config.getRaidingPlanetLimit())
+         var data: Object;
+         var arg: int;
+         if (apocalypseStarted != null)
          {
-            return null;
+            data = Config.getRaidingApocalypseUnits();
+            arg =  Math.round((nextRaidAt.time - apocalypseStarted.time)/
+                    (1000 * 60 * 60 * 24));
          }
-         var data: Array = Config.getRaidingInfo();
-         var hashedUnits: Object = {};
-         for each (var obj: Object in data)
+         else if (battleGround)
          {
-            var count: int = (planetCount - obj[0] + 1) * obj[2];
-            if (count > 0)
+            data = Config.getRaidingBattlegroundUnits();
+            arg = raidArg;
+         }
+         else
+         {
+            data = Config.getRaidingPlanetUnits();
+            arg = raidArg;
+         }
+         for (var unitType: String in data)
+         {
+            var countTo: int = Math.round(StringUtil.evalFormula(
+                    data[unitType][1], {'arg': arg}));
+            if (countTo > 0)
             {
-               if (hashedUnits[obj[1]] == null)
-               {
-                  hashedUnits[obj[1]] = new UnitBuildingEntry(ModelUtil.getModelType(ObjectClass.UNIT,
-                     obj[1]), count);
-               }
-               else
-               {
-                  UnitBuildingEntry(hashedUnits[obj[1]]).count += count;
-               }
+               return true;
+            }
+         }
+         return false;
+      }
+      
+      public static function getRaiders(raidArg: int, nextRaidAt: Date,
+                                        battleGround: Boolean,
+                                        apocalypseStarted: Date): ArrayCollection
+      {
+         var data: Object;
+         var arg: int;
+         if (apocalypseStarted != null)
+         {
+            data = Config.getRaidingApocalypseUnits();
+            arg =  Math.round((nextRaidAt.time - apocalypseStarted.time)/
+                    (1000 * 60 * 60 * 24));
+         }
+         else if (battleGround)
+         {
+            data = Config.getRaidingBattlegroundUnits();
+            arg = raidArg;
+         }
+         else
+         {
+            data = Config.getRaidingPlanetUnits();
+            arg = raidArg;
+         }
+         var hashedUnits: Object = {};
+         for (var unitType: String in data)
+         {
+            var countFrom: int = Math.round(StringUtil.evalFormula(
+                    data[unitType][0], {'arg': arg}));
+            var countTo: int = Math.round(StringUtil.evalFormula(
+                    data[unitType][1], {'arg': arg}));
+            var prob: Number = StringUtil.evalFormula(
+                    data[unitType][2], {'arg': arg});
+            if (countTo > 0)
+            {
+               hashedUnits[unitType] = new RaidingUnitEntry(unitType, countFrom,
+                  countTo, prob);
             }
          }
          var resultCollection: ArrayCollection = new ArrayCollection();
-         for each (var entry: UnitBuildingEntry in hashedUnits)
+         for each (var entry: RaidingUnitEntry in hashedUnits)
          {
             resultCollection.addItem(entry);
          }
