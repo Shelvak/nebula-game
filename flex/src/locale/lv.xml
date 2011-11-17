@@ -1134,25 +1134,17 @@
       <p>Katrs līmenis palielina teleporta ietilpību.</p>
     </DefensivePortal.about>
 
-    <GivesUnits>
-      <p>
-        Šīs ēkas dod planētas īpašniekam vienības, pēc noteikta laika posma. 
-      </p>
-    </GivesUnits>
-
     <NpcInfantryFactory.name ref="Objects/Building_NpcInfantryFactory" />
     <NpcInfantryFactory.about>
       <p>
         This ancient factory produces light units out of solar energy and 
         silicone it synthesizes within it. 
       </p>
-      <p>[reference:GivesUnits]</p>
     </NpcInfantryFactory.about>
 
     <NpcTankFactory.name ref="Objects/Building_NpcTankFactory" />
     <NpcTankFactory.about>
       <p>Spēcīgas un smagi bruņotas mašīnas, tiek būvētas šajā laboratorijā.</p>
-      <p>[reference:GivesUnits]</p>
     </NpcTankFactory.about>
 
     <NpcSpaceFactory.name ref="Objects/Building_NpcSpaceFactory" />
@@ -1161,7 +1153,6 @@
         Šīs pazemes iekārtas būvē kosmosa kuģus, kurus var izmantot aizsardzībā 
         un galaktikas iekarojumos. 
       </p>
-      <p>[reference:GivesUnits]</p>
     </NpcSpaceFactory.about>
 
     <NpcHall.name ref="Objects/Building_NpcHall" />
