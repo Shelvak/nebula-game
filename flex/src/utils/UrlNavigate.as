@@ -1,65 +1,55 @@
 package utils
 {
-   import config.Config;
-   
    import controllers.startup.StartupInfo;
-   
+
    import flash.net.URLRequest;
    import flash.net.navigateToURL;
 
+
    public class UrlNavigate
    {
-      public static function getInstance(): UrlNavigate
-      {
+      public static function getInstance(): UrlNavigate {
          return SingletonFactory.getSingletonInstance(UrlNavigate);
       }
-      
-      private function get wikiUrlRoot(): String
-      {
-         return 'http://wiki.' + StartupInfo.getInstance().webHost + '/index.php/';
+
+      private function get wikiUrlRoot(): String {
+         return 'http://wiki.' + StartupInfo.getInstance().webHost
+                   + '/index.php/';
       }
-      
-      public function get urlRoot(): String
-      {
+
+      public function get urlRoot(): String {
          return 'http://' + StartupInfo.getInstance().webHost + '/';
       }
-      
-      public function getTipImageUrl(tipId:int) : String
-      {
+
+      public function getTipImageUrl(tipId: int): String {
          return urlRoot + "tips/" + tipId;
       }
-      
-      public function showUrl(path: String): void
-      {
+
+      public function showUrl(path: String): void {
          navigateToURL(new URLRequest(urlRoot + path));
       }
-      
-      public function showWikiUrl(path: String): void
-      {
+
+      public function showWikiUrl(path: String): void {
          navigateToURL(new URLRequest(wikiUrlRoot + path));
       }
-      
-      public function showInviteFriendUrl() : void {
+
+      public function showInviteFriendUrl(): void {
          showUrl('invite-referral');
       }
-      
-      public function showBuyCreds(): void
-      {
+
+      public function showBuyCreds(): void {
          showUrl('buy-creds');
       }
 
-      public function showIntro(): void
-      {
+      public function showIntro(): void {
          showTutorial('intro');
       }
 
-      public function showInfo(name: String): void
-      {
+      public function showInfo(name: String): void {
          showUrl('info/' + name);
       }
-      
-      public function showTutorial(name: String): void
-      {
+
+      public function showTutorial(name: String): void {
          showUrl('tutorials/' + name + '-' + StartupInfo.getInstance().locale);
       }
    }

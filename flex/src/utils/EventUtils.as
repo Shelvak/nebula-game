@@ -14,21 +14,17 @@ package utils
        * argument and all other arguments (if any) have default values. This method will dispatch an event if
        * <code>target.hasEventListener(type)</code> returns <code>true</code>.
        * 
-       * @param target event dispatcher to dispatch event from.
-       *        <b>Not null.</b>
-       * @param CLASS event class
-       *        <b>Not null.</b>
-       * @param type event type
-       *        <b>Not null. Not empty string.</b>
+       * @param target event dispatcher to dispatch event from | <b>not null</b>
+       * @param CLASS event class | <b>not null</b>
+       * @param type event type | <b>not null, not empty string</b>
        */
-      public static function dispatchSimpleEvent(target:IEventDispatcher, CLASS:Class, type:String) : void
-      {
+      public static function dispatchSimpleEvent(target: IEventDispatcher,
+                                                 CLASS: Class,
+                                                 type: String): void {
          Objects.paramNotNull("target", target);
          Objects.paramNotNull("CLASS", CLASS);
          Objects.paramNotEquals("type", type, [null, ""]);
-         
-         if (target.hasEventListener(type))
-         {
+         if (target.hasEventListener(type)) {
             target.dispatchEvent(Event(new CLASS(type)));
          }
       }

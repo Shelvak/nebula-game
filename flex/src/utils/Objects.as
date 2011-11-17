@@ -99,7 +99,7 @@ package utils
        * Lets you find out if a given class has got a given metadata tag.
        * This method uses ActionScript reflection feature.
        * 
-       * @param value a Class to be examined
+       * @param type a Class to be examined
        * @param tag Name of metadata tag
        * 
        * @return <code>true</code> if the given class has a given metadata tag defined or <code>false</code>
@@ -109,10 +109,7 @@ package utils
          if (type == null)
             return false;
          var typeData:XML = describeType(type).factory[0];
-         if (typeData.metadata.(@name == tag)[0] != null)
-            return true;
-         else
-            return false;
+         return typeData.metadata.(@name == tag)[0] != null;
       }
       
       /**
@@ -250,8 +247,12 @@ package utils
                                                  exclusions:ArrayCollection) : void {
          for each (var prop:XML in data) {
             if (! exclusions.contains(prop.@name.toString())) {
-               if (name) callback(prop.@name)
-               else callback(CLASS[prop.@name])
+               if (name) {
+                  callback(prop.@name);
+               }
+               else {
+                  callback(CLASS[prop.@name]);
+               }
             }
          }
       }
@@ -539,7 +540,7 @@ package utils
        * new XML object and does not cache them (caching makes things a lot faster).
        */
       public static function describeType(type:Class) : XML {
-         var typeInfo:XML = null
+         var typeInfo: XML = null;
          if (DT_CACHE[type] !== undefined)
             typeInfo = DT_CACHE[type];
          else {
