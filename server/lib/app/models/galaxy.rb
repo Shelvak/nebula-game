@@ -14,6 +14,11 @@ class Galaxy < ActiveRecord::Base
   # development galaxies.
   def dev?; Cfg.development_galaxy?(ruleset); end
 
+  # Has the apocalyse started in this galaxy?
+  def apocalypse_started?
+    ! apocalypse_start.nil?
+  end
+
   # Returns ID of battleground solar system.
   def self.battleground_id(galaxy_id)
     SolarSystem.connection.select_value(

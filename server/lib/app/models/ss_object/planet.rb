@@ -11,7 +11,6 @@ class SsObject::Planet < SsObject
   include Parts::PlanetExploration
   include Parts::PlanetBoosts
   include Parts::DelayedEventDispatcher
-  include Parts::Raiding
 
   scope :for_player, Proc.new { |player|
     player_id = player.is_a?(Player) ? player.id : player
@@ -217,35 +216,6 @@ class SsObject::Planet < SsObject
   # Checks if building can be self-destructed.
   def can_destroy_building?
     can_destroy_building_at.nil? || can_destroy_building_at < Time.now
-  end
-
-  # Registers raid on this planet.
-  def register_raid
-    self.next_raid_at = CONFIG.eval_hashrand('raiding.delay').from_now
-    CallbackManager.register_or_update(self, CallbackManager::EVENT_RAID,
-      self.next_raid_at)
-    delayed_fire(self, EventBroker::CHANGED, 
-      EventBroker::REASON_OWNER_PROP_CHANGE)
-  end
-
-  def register_raid!
-    register_raid
-    save!
-  end
-
-  def raid_registered?; ! next_raid_at.nil?; end
-
-  def clear_raid
-    CallbackManager.unregister(self, CallbackManager::EVENT_RAID) if \
-      raid_registered?
-    self.next_raid_at = nil
-    delayed_fire(self, EventBroker::CHANGED, 
-      EventBroker::REASON_OWNER_PROP_CHANGE)
-  end
-
-  def clear_raid!
-    clear_raid
-    save!
   end
   
   RESOURCES = Resources::TYPES
@@ -495,8 +465,8 @@ class SsObject::Planet < SsObject
         EventBroker.fire(model, EventBroker::CHANGED)
       when CallbackManager::EVENT_RAID
         model = find(id)
-        # Don't raid if planet does not belong to planet.
-        model.npc_raid! unless model.player_id.nil?
+        spawner = RaidSpawner.new(model)
+        spawner.raid!
       when CallbackManager::EVENT_EXPLORATION_COMPLETE
         find(id).finish_exploration!
       else

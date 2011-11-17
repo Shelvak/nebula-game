@@ -241,8 +241,8 @@ object Config {
   )
   def battlegroundCombatVps(groundDamage: Int, spaceDamage: Int): Double =
     formulaEval(battlegroundCombatVpsExpression, Map(
-      "damage_dealt_to_ground" -> groundDamage.toBigDecimal(),
-      "damage_dealt_to_space" -> spaceDamage.toBigDecimal()
+      "damage_dealt_to_ground" -> groundDamage.toBigDecimal,
+      "damage_dealt_to_space" -> spaceDamage.toBigDecimal
     )).doubleValue()
 
   def vpsForReceivedDamage(combatant: Combatant, damage: Int): Double = {
@@ -404,8 +404,8 @@ object Config {
   private def buildingRate(kind: String)
                           (building: Building, resource: String) = {
     val name = building.name.underscore
-    val level = building.level.toBigDecimal()
-    val default = 0.toBigDecimal()
+    val level = building.level.toBigDecimal
+    val default = 0.toBigDecimal
     
     formulaEval(
       "buildings.%s.%s.%s".format(name, resource, kind), Map("level" -> level),
@@ -431,8 +431,8 @@ object Config {
 
   private def buildingStorage(building: Building, resource: String) = {
     val name = building.name.underscore
-    val level = building.level.toBigDecimal()
-    val default = 0.toBigDecimal()
+    val level = building.level.toBigDecimal
+    val default = 0.toBigDecimal
 
     formulaEval(
       "buildings.%s.%s.store".format(name, resource), Map("level" -> level),
@@ -593,4 +593,7 @@ object Config {
   def folliageKinds2ndType(terrainType: Int) = seq[Long](
     "planet.folliage.type.2.variations.%d".format(terrainType)
   ).map { _.toInt }
+
+  def raidingDelayRange = evalRange("raiding.delay")
+  def raidingDelayRandomDate = raidingDelayRange.random.seconds.fromNow
 }
