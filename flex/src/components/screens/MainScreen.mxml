@@ -66,13 +66,13 @@ bars and so on.
          <bars:ResourcesBar id="resBar" visible="{ML.activeMapType == MapType.PLANET}"/>
          <raid:RaidBar id="raidBar" visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
                                               MPlanet.hasRaiders(
-                                              ML.latestGalaxy.apocalypseStarted == null
+                                              ML.latestGalaxy.apocalypseStart == null
                                               ? ML.latestPlanet.ssObject.raidArg
                                               : 0,
                                               ML.latestPlanet.ssObject.nextRaidAt,
                                               (ML.latestSSMap == null
                                               || ML.latestSSMap.solarSystem.isBattleground),
-                                              ML.latestGalaxy.apocalypseStarted)
+                                              ML.latestGalaxy.apocalypseStart)
                                               &amp;&amp;
                                               ML.latestPlanet.ssObject.owner == Owner.PLAYER &amp;&amp;
                                               ML.latestPlanet.ssObject.nextRaidAt}"/>

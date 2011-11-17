@@ -10,8 +10,8 @@ package controllers.galaxies.actions
    public class ApocalypseAction extends CommunicationAction
    {
       public override function applyServerAction(cmd: CommunicationCommand): void {
-         ML.latestGalaxy.apocalypseStarted = DateUtil.parseServerDTF(
-                 cmd.parameters.apocalypseStarted);
+         ML.latestGalaxy.apocalypseStart = DateUtil.parseServerDTF(
+                 cmd.parameters.apocalypseStart);
       }
    }
 }

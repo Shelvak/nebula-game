@@ -49,7 +49,7 @@ package models.galaxy
       }
 
       [Bindable]
-      public var apocalypseStarted: Date = null;
+      public var apocalypseStart: Date = null;
       
       [Required]
       [Bindable(event="willNotChange")]

@@ -87,7 +87,7 @@ package controllers.galaxies.actions
          createGalaxy(
             ML.player.galaxyId,
             params["battlegroundId"],
-            params["apocalypseStarted"],
+            params["apocalypseStart"],
             GalaxyFactory.createFowEntries(params["fowEntries"]),
             GalaxyFactory.createSolarSystems(params["solarSystems"]),
             BaseModel.createCollection(
@@ -167,7 +167,7 @@ package controllers.galaxies.actions
       
       public function createGalaxy(galaxyId:int,
                                    battlegroundId:int,
-                                   apocalypseStarted: String,
+                                   apocalypseStart: String,
                                    fowEntries:Array,
                                    solarSystems:IList,
                                    wreckages:IList,
@@ -179,8 +179,8 @@ package controllers.galaxies.actions
          var galaxy:Galaxy = new Galaxy();
          galaxy.id = galaxyId;
          galaxy.battlegroundId = battlegroundId;
-         galaxy.apocalypseStarted = apocalypseStarted == null
-                 ? null : DateUtil.parseServerDTF(apocalypseStarted);
+         galaxy.apocalypseStart = apocalypseStart == null
+                 ? null : DateUtil.parseServerDTF(apocalypseStart);
          galaxy.addAllObjects(solarSystems);
          galaxy.addAllObjects(wreckages);
          galaxy.addAllObjects(cooldowns);

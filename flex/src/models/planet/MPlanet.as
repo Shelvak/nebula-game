@@ -107,14 +107,14 @@ package models.planet
 
       public static function hasRaiders(raidArg: int, nextRaidAt: Date,
                                         battleGround: Boolean,
-                                        apocalypseStarted: Date): Boolean
+                                        apocalypseStart: Date): Boolean
       {
          var data: Object;
          var arg: int;
-         if (apocalypseStarted != null)
+         if (apocalypseStart != null)
          {
             data = Config.getRaidingApocalypseUnits();
-            arg =  Math.round((nextRaidAt.time - apocalypseStarted.time)/
+            arg =  Math.round((nextRaidAt.time - apocalypseStart.time)/
                     (1000 * 60 * 60 * 24));
          }
          else if (battleGround)
@@ -141,14 +141,14 @@ package models.planet
       
       public static function getRaiders(raidArg: int, nextRaidAt: Date,
                                         battleGround: Boolean,
-                                        apocalypseStarted: Date): ArrayCollection
+                                        apocalypseStart: Date): ArrayCollection
       {
          var data: Object;
          var arg: int;
-         if (apocalypseStarted != null)
+         if (apocalypseStart != null)
          {
             data = Config.getRaidingApocalypseUnits();
-            arg =  Math.round((nextRaidAt.time - apocalypseStarted.time)/
+            arg =  Math.round((nextRaidAt.time - apocalypseStart.time)/
                     (1000 * 60 * 60 * 24));
             // for info in raid bar for next raids
             arg += raidArg;

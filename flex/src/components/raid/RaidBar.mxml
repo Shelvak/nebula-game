@@ -96,13 +96,13 @@
             
             <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRRaidUnitEntry"
                          dataProvider="{MPlanet.getRaiders(
-                                        ML.latestGalaxy.apocalypseStarted == null
+                                        ML.latestGalaxy.apocalypseStart == null
                                         ? ML.latestPlanet.ssObject.raidArg
                                         : 0,
                                         ML.latestPlanet.ssObject.nextRaidAt,
                                         (ML.latestSSMap == null
                                         || ML.latestSSMap.solarSystem.isBattleground),
-                                        ML.latestGalaxy.apocalypseStarted)}">
+                                        ML.latestGalaxy.apocalypseStart)}">
                <s:layout>
                   <s:TileLayout requestedColumnCount="4"/>
                </s:layout>
@@ -130,24 +130,24 @@
             <s:Group top="25" left="20" right="30">
                <s:Label fontSize="12" fontWeight="bold" 
                         text="{Localizer.string('Units',
-                         ML.latestGalaxy.apocalypseStarted == null
+                         ML.latestGalaxy.apocalypseStart == null
                          ? 'label.withPlanets' : 'label.afterDays',
-                        [ML.latestGalaxy.apocalypseStarted == null
+                        [ML.latestGalaxy.apocalypseStart == null
                          ? ML.latestPlanet.ssObject.raidArg + addPlanet
                          : getDays(ML.latestPlanet.ssObject.nextRaidAt,
-                         ML.latestGalaxy.apocalypseStarted) + addPlanet])}"
+                         ML.latestGalaxy.apocalypseStart) + addPlanet])}"
                         left="0" right="0" textAlign="center"/>
             </s:Group>
             
             <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRRaidUnitEntry"
                          dataProvider="{MPlanet.getRaiders(
-                                        ML.latestGalaxy.apocalypseStarted == null
+                                        ML.latestGalaxy.apocalypseStart == null
                                         ? ML.latestPlanet.ssObject.raidArg + addPlanet
                                         : addPlanet,
                                         ML.latestPlanet.ssObject.nextRaidAt,
                                         (ML.latestSSMap == null
                                         || ML.latestSSMap.solarSystem.isBattleground),
-                                        ML.latestGalaxy.apocalypseStarted)}">
+                                        ML.latestGalaxy.apocalypseStart)}">
                <s:layout>
                   <s:TileLayout requestedColumnCount="4"/>
                </s:layout>
