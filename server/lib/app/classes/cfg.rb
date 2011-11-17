@@ -103,6 +103,11 @@ class Cfg; class << self
     from..to
   end
 
+  def raiding_delay_range_from(time)
+    range = raiding_delay_range
+    (time + range.first)..(time + range.last)
+  end
+
   def raiding_delay_random
     CONFIG.eval_hashrand('raiding.delay')
   end

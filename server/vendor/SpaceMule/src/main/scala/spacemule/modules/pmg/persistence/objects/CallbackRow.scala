@@ -4,6 +4,7 @@ import java.util.Calendar
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 import spacemule.persistence.{DB, RowObject, Row}
+import ss_object.{PlanetRow, AsteroidRow}
 
 object CallbackRow extends RowObject {
   val columnsSeq = List("class", "object_id", "event", "ends_at", "ruleset")
@@ -11,6 +12,10 @@ object CallbackRow extends RowObject {
   object Events extends Enumeration {
     type Event = Value
     
+    /**
+     * Planetary raid.
+     */
+    val Raid = Value(7, "planet raid")
     /**
      * Scheduled check for inactive player.
      */
@@ -33,19 +38,15 @@ object CallbackRow extends RowObject {
     val CreateZetiumSystemOffer = Value(14, "create zetium system offer")
   }
 
-  private var _playerInactivityCheck: String = null
+  private var _playerInactivityCheck: Calendar = null
   def playerInactivityCheck = _playerInactivityCheck
-  def initPlayerInactivityCheck = _playerInactivityCheck = DB.date(
-    Config.playerInactivityCheck.fromNow)
+  def initPlayerInactivityCheck = _playerInactivityCheck =
+    Config.playerInactivityCheck.fromNow
 
-  private var _asteroidSpawn: String = null
+  private var _asteroidSpawn: Calendar = null
   def asteroidSpawn = _asteroidSpawn
-  def initAsteroidSpawn = _asteroidSpawn = DB.date(
-    Config.asteroidFirstSpawnCooldown.fromNow)
-
-  private var _convoySpawn: String = null
-  def convoySpawn = _convoySpawn
-  def initConvoySpawn = _convoySpawn = DB.date(Config.convoyTime.fromNow)
+  def initAsteroidSpawn = _asteroidSpawn =
+    Config.asteroidFirstSpawnCooldown.fromNow
 
   private var _ssUnitsSpawn: Calendar = null
   def ssUnitsSpawn = _ssUnitsSpawn
@@ -58,34 +59,21 @@ object CallbackRow extends RowObject {
 case class CallbackRow(
   row: {def id: Int}, 
   ruleset: String, 
-  event: Option[CallbackRow.Events.Event] = None,
-  time: Option[Calendar] = None
+  event: CallbackRow.Events.Event,
+  time: Calendar
 ) extends Row {
   val companion = CallbackRow
 
-  val valuesSeq = List(
+  val valuesSeq = Seq[Any](
     row match {
       case galaxy: GalaxyRow => "Galaxy"
-      case asteroid: SSObjectRow => "SsObject::Asteroid"
+      case aRow: AsteroidRow => "SsObject::Asteroid"
+      case pRow: PlanetRow => "SsObject::Planet"
       case ssRow: SolarSystemRow => "SolarSystem"
     },
     row.id,
-    event match {
-      case Some(e) => e.id
-      case None => row match {
-        case galaxy: GalaxyRow => CallbackRow.Events.Spawn.id
-        case asteroid: SSObjectRow => CallbackRow.Events.Spawn.id
-        case ssRow: SolarSystemRow => CallbackRow.Events.CheckInactivePlayer.id
-      }
-    },
-    time match {
-      case Some(calendar) => DB.date(calendar)
-      case None => row match {
-        case galaxy: GalaxyRow => CallbackRow.convoySpawn
-        case asteroid: SSObjectRow => CallbackRow.asteroidSpawn
-        case ssRow: SolarSystemRow => CallbackRow.playerInactivityCheck
-      }
-    },
+    event.id,
+    DB.date(time),
     ruleset
   )
 }

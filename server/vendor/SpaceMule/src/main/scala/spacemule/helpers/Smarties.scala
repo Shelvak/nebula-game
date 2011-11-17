@@ -47,13 +47,13 @@ class SmartInt(int: Int) {
   def weeks = int * 3600 * 24 * 7
   def months = int * 3600 * 24 * 31
 
-  def fromNow() = {
+  def fromNow = {
     val calendar = Calendar.getInstance
     calendar.add(Calendar.SECOND, int)
     calendar
   }
   
-  def toBigDecimal() = new BigDecimal(int)
+  def toBigDecimal = new BigDecimal(int)
 }
 
 class SmartString(string: String) {

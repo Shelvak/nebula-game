@@ -102,6 +102,23 @@ shared_examples_for "starting resources" do |resolver, additional_items|
   end
 end
 
+shared_examples_for "with registered raid" do |raid_arg|
+  it "should have raid registered" do
+    models = @models || [@model]
+    models.each do |model|
+      model.should have_callback(CallbackManager::EVENT_RAID,
+        Cfg.raiding_delay_range_from(Time.now))
+    end
+  end
+
+  it "should have correct raid_arg set" do
+    models = @models || [@model]
+    models.each do |model|
+      model.raid_arg.should == raid_arg
+    end
+  end
+end
+
 # Buildings which are standing in battleground.
 bg_planet_buildings = [
   Building::NpcHall, Building::NpcInfantryFactory,
@@ -187,6 +204,8 @@ describe SpaceMule do
               sum + klass.send(attr, klass.max_level)
             end
           }
+
+        it_should_behave_like "with registered raid", 0
       end
       
       it_behaves_like "with planet units"
@@ -455,8 +474,11 @@ describe SpaceMule do
     describe "in planets" do
       before(:all) do
         ss_ids = SolarSystem.where(:galaxy_id => @galaxy.id).map(&:id)
-        @planets = SsObject::Planet.where(:solar_system_id => ss_ids).all
+        @planets = @models =
+          SsObject::Planet.where(:solar_system_id => ss_ids).all
       end
+
+      it_should_behave_like "with registered raid", 0
 
       it "should not place any tiles offmap" do
         @planets.each { |planet| planet.should_not have_offmap(Tile) }
