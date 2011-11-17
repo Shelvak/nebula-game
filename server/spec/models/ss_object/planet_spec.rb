@@ -1105,7 +1105,9 @@ describe SsObject::Planet do
           energy energy_generation_rate energy_usage_rate energy_storage
           zetium zetium_generation_rate metal_usage_rate zetium_storage
           last_resources_update energy_diminish_registered status
-          exploration_x exploration_y exploration_ends_at}
+          exploration_x exploration_y exploration_ends_at
+          next_raid_at raid_arg
+        }
     end
     
     describe "with :view" do
@@ -1116,7 +1118,8 @@ describe SsObject::Planet do
           energy energy_generation_rate energy_usage_rate energy_storage
           zetium zetium_generation_rate zetium_usage_rate zetium_storage
           last_resources_update
-        }, %w{energy_diminish_registered}
+        },
+        %w{next_raid_at raid_arg energy_diminish_registered}
     end
 
     describe "with :owner" do
@@ -1127,7 +1130,7 @@ describe SsObject::Planet do
         zetium_rate_boost_ends_at zetium_storage_boost_ends_at
         exploration_x exploration_y exploration_ends_at
         can_destroy_building_at
-        next_raid_at owner_changed
+        next_raid_at raid_arg owner_changed
         metal metal_generation_rate metal_usage_rate metal_storage
         energy energy_generation_rate energy_usage_rate energy_storage
         zetium zetium_generation_rate zetium_usage_rate zetium_storage

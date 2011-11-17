@@ -76,7 +76,7 @@ class SsObject::Planet < SsObject
   OWNER_ATTRIBUTES = %w{
     exploration_x exploration_y exploration_ends_at 
     can_destroy_building_at
-    next_raid_at owner_changed
+    next_raid_at raid_arg owner_changed
   } + RESOURCE_ATTRIBUTES
 
   # Attributes which are included when :view => true is passed to
