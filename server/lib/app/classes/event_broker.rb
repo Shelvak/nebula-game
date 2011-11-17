@@ -36,6 +36,8 @@ class EventBroker
   # Some action has been completed.
   # This is used in Route and is sent to client!
   REASON_COMPLETED = :completed
+  # Unit was deployed to a building.
+  REASON_DEPLOYMENT = :deployment
 
   @@handlers = Set.new
 

@@ -9,6 +9,22 @@ Factory.define(:b_repairable_test, :class => Building::RepairableTest,
                :parent => :building_built) {}
 
 describe Building::RepairableTest do
+  describe "#check_upgrade!" do
+    it "should fail if repairing" do
+      b = Factory.build(:b_repairable_test, :state => Building::STATE_REPAIRING)
+      lambda do
+        b.check_upgrade!
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should not fail if not repairing" do
+      b = Factory.build(:b_repairable_test, :state => Building::STATE_ACTIVE)
+      lambda do
+        b.check_upgrade!
+      end.should_not raise_error(GameLogicError)
+    end
+  end
+
   describe "#repair!" do
     let(:player) { Factory.create(:player) }
     let(:planet) do

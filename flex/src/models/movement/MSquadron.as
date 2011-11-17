@@ -242,17 +242,22 @@ package models.movement
        * @see models.movement.MRoute#jumpsAtEvent
        */
       public function set jumpsAtEvent(value:MTimeEventFixedMoment) : void {
+         Objects.notNull(
+            route,
+            "[prop jumpsAtEvent] can be set only if [prop route] is not"
+               + " null.\nthis: " + this
+         );
          route.jumpsAtEvent = value;
       }
       public function get jumpsAtEvent() : MTimeEventFixedMoment {
-         return route.jumpsAtEvent;
+         return route != null ? route.jumpsAtEvent : null;
       }
       
       /**
        * @see models.movement.MRoute#jumpPending
        */
       public function get jumpPending() : Boolean {
-         return route.jumpPending;
+         return route != null && route.jumpPending;
       }
       
       [Bindable(event="willNotChange")]
@@ -365,10 +370,12 @@ package models.movement
        */
       public function addHop(hop:MHop) : void {
          Objects.paramNotNull("hop", hop);
-         if (hasLocationEqualTo(hop.location))
+         if (hasLocationEqualTo(hop.location)) {
             throwLocationAlreadyInRouteError(hop.location);
-         if (lastHop && hop.index - lastHop.index != 1)
+         }
+         if (lastHop && hop.index - lastHop.index != 1) {
             throwHopOutOfOrderError(hop);
+         }
          hops.addItem(hop);
          dispatchHopAddEvent(hop);
       }

@@ -134,7 +134,8 @@ package components.map.planet.objects
              f_buildingUpgradePropChanged ||
              f_buildingIdChanged)
          {
-            if (b.upgradePart.upgradeCompleted && !b.isGhost && b.state == Building.INACTIVE)
+            if (b.upgradePart.upgradeCompleted && !b.isGhost
+                    && b.state == Building.INACTIVE)
             {
                if (mainImageContainer.filters != DISABLED_FILTERS)
                {
@@ -144,6 +145,14 @@ package components.map.planet.objects
             else
             {
                mainImageContainer.filters = null;
+            }
+            if (b.state == Building.REPAIRING)
+            {
+               _repairIndicator.building = b;
+            }
+            else
+            {
+               _repairIndicator.building = null;
             }
          }
          if (f_buildingLevelChanged)
@@ -161,9 +170,11 @@ package components.map.planet.objects
             _hpBar.setProgress(b.hp, b.hpMax);
             _hpBar.label = b.hp + "/" + b.hpMax;
          }
-         if (f_buildingIdChanged || f_selectionChanged || f_buildingHpChanged)
+         if (f_buildingIdChanged || f_selectionChanged || f_buildingHpChanged
+                 || f_buildingStateChanged)
          {
-            _hpBar.visible = !b.isGhost && b.hp > 0 && (b.isDamaged || selected);
+            _hpBar.visible = !b.isGhost && b.hp > 0 && (b.isDamaged || selected)
+                    && b.state != Building.REPAIRING;
          }
          if (f_buildingUpgradePropChanged || f_buildingUpgradeProgressed)
          {
@@ -293,6 +304,8 @@ package components.map.planet.objects
       private var _levelIndicator:LevelDisplay;
       
       private var _npcIndicator: BitmapImage;
+
+      private var _repairIndicator:HealingIndicator;
       
       
       override protected function createChildren() : void
@@ -327,6 +340,12 @@ package components.map.planet.objects
          _hpBar.mode = ProgressBarMode.MANUAL;
          _hpBar.depth = 900;
          addElement(_hpBar);
+
+         _repairIndicator = new HealingIndicator();
+         _repairIndicator.building = b.state == Building.REPAIRING ? b : null;
+         _repairIndicator.depth = 910;
+         addElement(_repairIndicator);
+         positionRepairIndicator();
          
          _constructionProgressBar = new ProgressBar();
          _constructionProgressBar.left = _constructionProgressBar.right = 30;
@@ -347,6 +366,16 @@ package components.map.planet.objects
          _alphaImage.fillMode = BitmapFillMode.CLIP;
          _alphaImage.depth = 100;
          addElement(_alphaImage);
+      }
+
+
+      private function positionRepairIndicator() : void
+      {
+         var corner:Point = MPlanetObject.getBasementTopCorner(model.width);
+         corner.x += model.imageWidth - model.realBasementWidth - 102;
+         corner.y += model.imageHeight - model.realBasementHeight - 63;
+         _repairIndicator.x = corner.x;
+         _repairIndicator.y = corner.y;
       }
       
       

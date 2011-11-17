@@ -1,7 +1,6 @@
 package models.factories
 {
    import models.BaseModel;
-   import models.MWreckage;
    import models.solarsystem.MSSMetadata;
    import models.solarsystem.MSolarSystem;
    

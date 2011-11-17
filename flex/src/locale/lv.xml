@@ -551,6 +551,17 @@
     </message.pressOnEmpty>
     <panelTitle.scientists value="Zinātnieki" />
     <panelTitle.cancelProgress value="Atcelt jauninājumus" />
+    <!-- TODO -->
+    <panelTitle.repairBuilding value="Repair building" />
+    <warning.repairBuilding>
+      <p>Turret won't participate in combat until repairs are finished.</p>
+    </warning.repairBuilding>
+    <warning.repairBuildingTechNeeded>
+      <p>You need to research [obj:1:Technology_BuildingRepair::dc]
+      technology to repair turrets.</p>
+    </warning.repairBuildingTechNeeded>
+    <label.repairBuilding value="Repair"/>
+    <!-- /TODO -->
     <label.cancelUpgrade>
       <p>Šādi resursi tiks atgriezti, ja jūs atcelsiet šīs ēkas būvniecību:</p>
     </label.cancelUpgrade>
@@ -633,6 +644,12 @@
     <deployInProgress value="Deploy in progress" />
 
     <timeToFinish value="Laiks beigt" />
+
+    <!-- TODO -->
+    <warning.deployInAlliancePlanet>
+      <p>After deployment this building will belong to the planet owner.</p>
+    </warning.deployInAlliancePlanet>
+    <!-- /TODO -->
   </BuildingSidebar>
 
   <Buildings>
@@ -1117,25 +1134,17 @@
       <p>Katrs līmenis palielina teleporta ietilpību.</p>
     </DefensivePortal.about>
 
-    <GivesUnits>
-      <p>
-        Šīs ēkas dod planētas īpašniekam vienības, pēc noteikta laika posma. 
-      </p>
-    </GivesUnits>
-
     <NpcInfantryFactory.name ref="Objects/Building_NpcInfantryFactory" />
     <NpcInfantryFactory.about>
       <p>
         This ancient factory produces light units out of solar energy and 
         silicone it synthesizes within it. 
       </p>
-      <p>[reference:GivesUnits]</p>
     </NpcInfantryFactory.about>
 
     <NpcTankFactory.name ref="Objects/Building_NpcTankFactory" />
     <NpcTankFactory.about>
       <p>Spēcīgas un smagi bruņotas mašīnas, tiek būvētas šajā laboratorijā.</p>
-      <p>[reference:GivesUnits]</p>
     </NpcTankFactory.about>
 
     <NpcSpaceFactory.name ref="Objects/Building_NpcSpaceFactory" />
@@ -1144,7 +1153,6 @@
         Šīs pazemes iekārtas būvē kosmosa kuģus, kurus var izmantot aizsardzībā 
         un galaktikas iekarojumos. 
       </p>
-      <p>[reference:GivesUnits]</p>
     </NpcSpaceFactory.about>
 
     <NpcHall.name ref="Objects/Building_NpcHall" />
@@ -2127,9 +2135,17 @@
     <objectiveText.HaveWarPoints value="Ir {0} Kara {1}" />
     <objectiveText.HavePoints value="Ir {0} {1}" />
 
+    <!-- TODO -->
     <!-- HEAL_HP
     0: count of hit points to heal -->
-    <objectiveText.HealHp value="Saārstēt {0} HP" />
+    <objectiveText.HealHp value="Heal {0} HP for units" />
+    <!-- /TODO -->
+
+    <!-- TODO -->
+    <!-- REPAIR_HP
+    0: count of hit points to repair -->
+    <objectiveText.RepairHp value="Repair {0} HP for buildings" />
+    <!-- /TODO -->
     
     <!-- MOVE_BUILDINGS
     0: count of times to move building -->

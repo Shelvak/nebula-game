@@ -648,7 +648,52 @@
                    &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}"
                    skinClass="components.skins.GreenButtonSkin"
                    click="button1_clickHandler(event)"/>
+         <base:Warning width="100%" showSign="false"
+                       visible="{deployInProgress}"
+                       text="{getString('warning.deployInAlliancePlanet')}}"/>
       </base:AdvancedContainer>
+      <base:Panel left="0" right="0" bottom="0"
+                  title="{getString('infoTitle')}"
+                  visible="{selectedBuilding != null &amp;&amp;
+                     (deployInProgress &amp;&amp;
+                     (armorText || energyText || constructionText)) &amp;&amp;
+                     ML.latestPlanet.ssObject.owner != Owner.PLAYER}">
+            <base:AdvancedContainer left="0" right="0">
+               <s:Label text="{getString('deployInProgress')}" fontWeight="bold"
+                        visible="{deployInProgress}"/>
+
+               <s:Label text="{getString('tileBonuses')}" fontWeight="bold"
+                        visible="{!((selectedBuilding == null) ||
+                        !((armorText) || (energyText) || (constructionText)))}"/>
+
+               <base:AdvancedContainer width="100%">
+                  <s:Label text="{getString('applicable')}" fontWeight="bold"
+                           paddingBottom="3"
+                           visible="{!((selectedBuilding == null) ||
+                           !((armorText != null) || (constructionText != null)
+                           || !((energyText == null) ||
+                           !generatesEnergy(selectedBuilding)) ))}"/>
+                  <elements:BonusLabel type="{getString('armor.bonus')}" ammount="{armorText}"
+                                       visible="{armorText != null}"/>
+                  <elements:BonusLabel type="{getString('construction.bonus')}"
+                                       ammount="{constructionText}"
+                                       visible="{constructionText != null}"/>
+                  <s:Label text="{getString('notApplicable')}" fontWeight="bold"
+                           paddingBottom="3" paddingTop="3"
+                           visible="{!((selectedBuilding == null) || (energyText == null)
+                           || generatesEnergy(selectedBuilding))}"/>
+                  <elements:BonusLabel type="{getString('energy.bonus')}"
+                                       ammount="{energyText}"
+                                       visible="{energyText != null}"/>
+                  <base:layout>
+                     <s:VerticalLayout gap="1" paddingLeft="12"/>
+                  </base:layout>
+               </base:AdvancedContainer>
+               <base:layout>
+                  <s:VerticalLayout gap="6" paddingLeft="6"/>
+               </base:layout>
+            </base:AdvancedContainer>
+         </base:Panel>
       <s:Group top="0" left="0" right="0" bottom="0" visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
          <base:Panel top="0" left="0" right="0" id="facilitiesPanel"
                      title="{getString('facilitiesTitle')}">
@@ -721,32 +766,32 @@
             visible="{selectedBuilding != null}" 
             height="16"
             click="constructable.deselectBuilding()"/>
-         
-         <base:Panel id="bonusPanel" left="0" right="0" bottom="0" 
+
+         <base:Panel id="bonusPanel" left="0" right="0" bottom="0"
                      title="{getString('infoTitle')}"
                      visible="{selectedBuilding != null &amp;&amp;
-                     (deployInProgress || metalPrice || energyPrice || zetiumPrice || armorText || 
+                     (deployInProgress || metalPrice || energyPrice || zetiumPrice || armorText ||
                      energyText || constructionText)}">
             <base:AdvancedContainer left="0" right="0">
                <s:Label text="{getString('deployInProgress')}" fontWeight="bold"
                         visible="{deployInProgress}"/>
                <s:Group visible="{metalPrice || energyPrice || zetiumPrice}">
                   <s:Group width="100">
-                     <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}" 
+                     <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}"
                                          labelStyleName="{getMetalPrice() > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"
                                          toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
-                     <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumPrice}" 
+                     <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumPrice}"
                                          labelStyleName="{getZetiumPrice() > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"
                                          toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
                      <s:layout>
                         <s:VerticalLayout gap="4"/>
-                     </s:layout> 
+                     </s:layout>
                   </s:Group>
                   <s:Group width="100">
-                     <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}" 
-                                         labelStyleName="{getEnergyPrice() > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}" 
+                     <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}"
+                                         labelStyleName="{getEnergyPrice() > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"
                                          toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
-                     <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{buildTime}" 
+                     <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{buildTime}"
                                          toolTip="{getString('timeToFinish')}"/>
                      <s:layout>
                         <s:VerticalLayout gap="4"/>
@@ -756,46 +801,46 @@
                      <s:HorizontalLayout/>
                   </s:layout>
                </s:Group>
-               
+
                <s:Label text="{getString('tileBonuses')}" fontWeight="bold"
-                        visible="{!((selectedBuilding == null) || 
+                        visible="{!((selectedBuilding == null) ||
                         !((armorText) || (energyText) || (constructionText))
                         )}"/>
-               
-               <base:AdvancedContainer id="bonusGroup" width="100%">               
+
+               <base:AdvancedContainer id="bonusGroup" width="100%">
                   <s:Label text="{getString('applicable')}" fontWeight="bold"
                            paddingBottom="3"
-                           visible="{!((selectedBuilding == null) || 
-                           !((armorText != null) || (constructionText != null) 
+                           visible="{!((selectedBuilding == null) ||
+                           !((armorText != null) || (constructionText != null)
                            || !((energyText == null) || !generatesEnergy(selectedBuilding)) ))}"/>
                   <elements:BonusLabel id="armorBonusLabel" type="{getString('armor.bonus')}" ammount="{armorText}"/>
                   <elements:BonusLabel id="constructionBonusLabel" type="{getString('construction.bonus')}" ammount="{constructionText}"/>
                   <s:Label text="{getString('notApplicable')}" fontWeight="bold"
                            paddingBottom="3" paddingTop="3"
-                           visible="{!((selectedBuilding == null) || (energyText == null) 
+                           visible="{!((selectedBuilding == null) || (energyText == null)
                            || generatesEnergy(selectedBuilding))}"/>
-                  <elements:BonusLabel id="energyBonusLabel" type="{getString('energy.bonus')}" 
+                  <elements:BonusLabel id="energyBonusLabel" type="{getString('energy.bonus')}"
                                        ammount="{energyText}"/>
                   <s:Group width="100%" visible="{resLeft != 0}">
                      <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
                               left="0" right="0"/>
                   </s:Group>
                   <s:Group width="100%" visible="{resLeft > 0}">
-                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}" width="100%" fontWeight="bold"/>  
+                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}" width="100%" fontWeight="bold"/>
                      <base:TimeLabel text="{getStringFromSeconds(resLeft)}" width="100%"/>
                      <s:layout>
                         <s:VerticalLayout paddingRight="6"/>
                      </s:layout>
                   </s:Group>
-                  
+
                   <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
                   styleName="unsatisfied"/-->
                   <s:Group width="100%" visible="{!enoughStorage}">
                      <s:Label text="{
-                              missingStorageString == '' 
-                                 ? '' 
+                              missingStorageString == ''
+                                 ? ''
                                  : Localizer.string('Resources','additionalStorage', [missingStorageString])
-                              }" 
+                              }"
                               styleName="unsatisfied" left="0" right="0"/>
                   </s:Group>
                   <base:layout>

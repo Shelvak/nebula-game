@@ -10,7 +10,6 @@
       <![CDATA[
       import models.location.LocationMinimal;
       import models.solarsystem.MSolarSystem;
-      import models.solarsystem.MSolarSystem;
 
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
@@ -30,8 +29,9 @@
       }
 
       private function getSectorLabel(ss: MSolarSystem): String {
-         return ss == null ? "" : LocationMinimal.getSectorLabel(ss
-                                                                    .currentLocation);
+         return ss == null
+                   ? ""
+                   : LocationMinimal.getSectorLabel(ss.currentLocation);
       }
       ]]>
    </fx:Script>

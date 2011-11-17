@@ -261,7 +261,8 @@
                    visible="{!(!(model.unit.deploysTo != null)
                    || (model.unit.owner != Owner.PLAYER)
                    || (!ML.latestPlanet)
-                   || (ML.latestPlanet.ssObject.owner != Owner.PLAYER))}"
+                   || !(ML.latestPlanet.ssObject.owner == Owner.PLAYER
+                    || ML.latestPlanet.ssObject.owner == Owner.ALLY))}"
                    skinClass="components.skins.DeployButtonSkin" 
                    toolTip="{Localizer.string('Units', 'label.deploy')}"/>
          

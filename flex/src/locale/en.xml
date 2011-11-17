@@ -412,6 +412,15 @@
     </message.pressOnEmpty>
     <panelTitle.scientists value="Scientists" />
     <panelTitle.cancelProgress value="Cancel upgrade" />
+    <panelTitle.repairBuilding value="Repair building" />
+    <warning.repairBuilding>
+      <p>Turret won't participate in combat until repairs are finished.</p>
+    </warning.repairBuilding>
+    <warning.repairBuildingTechNeeded>
+      <p>You need to research [obj:1:Technology_BuildingRepair::dc]
+      technology to repair turrets.</p>
+    </warning.repairBuildingTechNeeded>
+    <label.repairBuilding value="Repair"/>
     <label.cancelUpgrade>
       <p>These resources will be returned if you cancel upgrade of this 
       building:</p>
@@ -491,6 +500,10 @@
     <deployInProgress value="Deploy in progress" />
 
     <timeToFinish value="Time to finish" />
+    
+    <warning.deployInAlliancePlanet>
+      <p>After deployment this building will belong to the planet owner.</p>
+    </warning.deployInAlliancePlanet>
   </BuildingSidebar>
 
   <Buildings>
@@ -972,25 +985,17 @@
       <p>Each level increases incoming teleportation volume.</p>
     </DefensivePortal.about>
 
-    <GivesUnits>
-      <p>
-        This building gives units to planet owner after each period of time. 
-      </p>
-    </GivesUnits>
-
     <NpcInfantryFactory.name ref="Objects/Building_NpcInfantryFactory" />
     <NpcInfantryFactory.about>
       <p>
         This ancient factory produces light units out of solar energy and 
         silicone it synthesizes within it. 
       </p>
-      <p>[reference:GivesUnits]</p>
     </NpcInfantryFactory.about>
 
     <NpcTankFactory.name ref="Objects/Building_NpcTankFactory" />
     <NpcTankFactory.about>
       <p>Powerful and heavily armed machines are created in this laboratory.</p>
-      <p>[reference:GivesUnits]</p>
     </NpcTankFactory.about>
 
     <NpcSpaceFactory.name ref="Objects/Building_NpcSpaceFactory" />
@@ -999,7 +1004,6 @@
         This underground facility constructs spacecraft which can be used for 
         defense and galactic conquest. 
       </p>
-      <p>[reference:GivesUnits]</p>
     </NpcSpaceFactory.about>
 
     <NpcHall.name ref="Objects/Building_NpcHall" />
@@ -1952,7 +1956,11 @@
 
     <!-- HEAL_HP
     0: count of hit points to heal -->
-    <objectiveText.HealHp value="Heal {0} HP" />
+    <objectiveText.HealHp value="Heal {0} HP for units" />
+
+    <!-- REPAIR_HP
+    0: count of hit points to repair -->
+    <objectiveText.RepairHp value="Repair {0} HP for buildings" />
     
     <!-- MOVE_BUILDINGS
     0: count of times to move building -->

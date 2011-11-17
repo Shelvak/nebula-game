@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+    xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:mx="library://ns.adobe.com/flex/mx"
+        visible="{timeLeft != null}">
+   <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+   AssetNames.UI_IMAGES_FOLDER + 'healing/indicator')}"/>
+   <s:Label left="70" top="32" width="82" textAlign="center"
+            text="{timeLeft}" fontSize="14" fontWeight="bold"/>
+   <fx:Script><![CDATA[
+      import globalevents.GlobalEvent;
+
+      import models.building.Building;
+      import models.parts.events.UpgradeEvent;
+
+      import utils.DateUtil;
+
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+
+      private var _building: Building;
+
+      [Bindable]
+      private var timeLeft: String;
+
+      private function refreshRepairTime(e: GlobalEvent): void
+      {
+         if (_building != null)
+         {
+            var tNow: Number = new Date().time;
+            if (tNow < _building.cooldownEndsAt.time)
+            {
+               timeLeft = DateUtil.secondsToHumanString((
+                       _building.cooldownEndsAt.time - tNow)/1000, 2);
+            }
+            else
+            {
+               timeLeft = null;
+            }
+         }
+         else
+         {
+            GlobalEvent.unsubscribe_TIMED_UPDATE(refreshRepairTime);
+         }
+      }
+
+      public function set building(value: Building): void
+      {
+         if (_building != null)
+         {
+            GlobalEvent.unsubscribe_TIMED_UPDATE(refreshRepairTime);
+         }
+         _building = value;
+         if (_building != null)
+         {
+            GlobalEvent.subscribe_TIMED_UPDATE(refreshRepairTime);
+         }
+         else
+         {
+            timeLeft = null;
+         }
+      }
+      ]]></fx:Script>
+</s:Group>
