@@ -199,15 +199,6 @@
          }
       }
 
-      private function refreshBonusGroup(changed: String): void {
-         if (this[changed + "Text"] != null) {
-            this[changed + "BonusLabel"].visible = true
-         }
-         else {
-            this[changed + "BonusLabel"].visible = false;
-         }
-      }
-
       /**
        * this is done when user selects building from constructable list
        **/
@@ -337,7 +328,6 @@
          else {
             armorText = null;
          }
-         refreshBonusGroup("armor");
       }
 
       public function set energyBonus(energy: int): void {
@@ -350,7 +340,6 @@
          else {
             energyText = null;
          }
-         refreshBonusGroup("energy");
       }
 
       private var constructionMod: Number;
@@ -367,7 +356,6 @@
          }
          constructionMod = construction;
          dispatchBuildTimeChangeEvent();
-         refreshBonusGroup("construction");
       }
 
       private function dispatchBuildTimeChangeEvent(): void {
@@ -624,13 +612,6 @@
       }
 
 
-      private function generatesEnergy(buildingType: String): Boolean {
-         return Building.calculateResourceGenerationRate(buildingType,
-                 ResourceType.ENERGY,
-                 {"level": 1}) > 0;
-      }
-
-
       protected function queueList_creationCompleteHandler(event: FlexEvent): void {
          queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
          queueList.scroller.setStyle('horizontalScrollPolicy',
@@ -684,7 +665,7 @@
                    click="button1_clickHandler(event)"/>
          <base:Warning width="100%" showSign="false"
                        visible="{deployInProgress}"
-                       text="{getString('warning.deployInAlliancePlanet')}}"/>
+                       text="{getString('warning.deployInAlliancePlanet')}"/>
       </base:AdvancedContainer>
       <base:Panel left="0" right="0" bottom="0"
                   title="{getString('infoTitle')}"
@@ -696,33 +677,9 @@
                <s:Label text="{getString('deployInProgress')}" fontWeight="bold"
                         visible="{deployInProgress}"/>
 
-               <s:Label text="{getString('tileBonuses')}" fontWeight="bold"
-                        visible="{!((selectedBuilding == null) ||
-                        !((armorText) || (energyText) || (constructionText)))}"/>
-
-               <base:AdvancedContainer width="100%">
-                  <s:Label text="{getString('applicable')}" fontWeight="bold"
-                           paddingBottom="3"
-                           visible="{!((selectedBuilding == null) ||
-                           !((armorText != null) || (constructionText != null)
-                           || !((energyText == null) ||
-                           !generatesEnergy(selectedBuilding)) ))}"/>
-                  <elements:BonusLabel type="{getString('armor.bonus')}" ammount="{armorText}"
-                                       visible="{armorText != null}"/>
-                  <elements:BonusLabel type="{getString('construction.bonus')}"
-                                       ammount="{constructionText}"
-                                       visible="{constructionText != null}"/>
-                  <s:Label text="{getString('notApplicable')}" fontWeight="bold"
-                           paddingBottom="3" paddingTop="3"
-                           visible="{!((selectedBuilding == null) || (energyText == null)
-                           || generatesEnergy(selectedBuilding))}"/>
-                  <elements:BonusLabel type="{getString('energy.bonus')}"
-                                       ammount="{energyText}"
-                                       visible="{energyText != null}"/>
-                  <base:layout>
-                     <s:VerticalLayout gap="1" paddingLeft="12"/>
-                  </base:layout>
-               </base:AdvancedContainer>
+               <elements:BonusGroup building="{selectedBuilding}"
+                                    armor="{armorText}" energy="{energyText}"
+                                    construction="{constructionText}"/>
                <base:layout>
                   <s:VerticalLayout gap="6" paddingLeft="6"/>
                </base:layout>
@@ -855,25 +812,10 @@
                   </s:layout>
                </s:Group>
 
-               <s:Label text="{getString('tileBonuses')}" fontWeight="bold"
-                        visible="{!((selectedBuilding == null) ||
-                        !((armorText) || (energyText) || (constructionText))
-                        )}"/>
-
-               <base:AdvancedContainer id="bonusGroup" width="100%">
-                  <s:Label text="{getString('applicable')}" fontWeight="bold"
-                           paddingBottom="3"
-                           visible="{!((selectedBuilding == null) ||
-                           !((armorText != null) || (constructionText != null)
-                           || !((energyText == null) || !generatesEnergy(selectedBuilding)) ))}"/>
-                  <elements:BonusLabel id="armorBonusLabel" type="{getString('armor.bonus')}" ammount="{armorText}"/>
-                  <elements:BonusLabel id="constructionBonusLabel" type="{getString('construction.bonus')}" ammount="{constructionText}"/>
-                  <s:Label text="{getString('notApplicable')}" fontWeight="bold"
-                           paddingBottom="3" paddingTop="3"
-                           visible="{!((selectedBuilding == null) || (energyText == null)
-                           || generatesEnergy(selectedBuilding))}"/>
-                  <elements:BonusLabel id="energyBonusLabel" type="{getString('energy.bonus')}"
-                                       ammount="{energyText}"/>
+               <base:AdvancedContainer width="100%">
+                  <elements:BonusGroup building="{selectedBuilding}"
+                                       armor="{armorText}" energy="{energyText}"
+                                       construction="{constructionText}"/>
                   <s:Group width="100%" visible="{resLeft != 0}">
                      <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
                               left="0" right="0"/>
