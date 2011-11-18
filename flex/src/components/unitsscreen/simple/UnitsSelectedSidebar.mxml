@@ -40,7 +40,12 @@
          {
             US.setStance(stance);
          }
-         
+
+         protected function nonAgressive_clickHandler(nonAgressive: Boolean):void
+         {
+            US.setNonAgressive(nonAgressive);
+         }
+
          protected function order_clickHandler(event:MouseEvent):void
          {
             GlobalFlags.getInstance().lockApplication = true;
@@ -121,6 +126,19 @@
                          click="stance_clickHandler(Unit.STANCE_AGGRESSIVE)"
                          toolTip="{getText('stance.aggressive', 
                          BattleConfig.getStanceProps(Unit.STANCE_AGGRESSIVE))}"/>
+               <base:layout>
+                  <s:HorizontalLayout gap="5" paddingLeft="10"/>
+               </base:layout>
+            </base:Panel>
+
+            <base:Panel width="100%" title="{getText('label.setNonAgressive')}"
+                        visible="{US.selection.length > 0}">
+               <s:Button label="{getText('label.participate')}"
+                         click="nonAgressive_clickHandler(false)"
+                         toolTip="{getText('tooltip.agressive')}"/>
+               <s:Button label="{getText('label.dontParticipate')}"
+                         click="nonAgressive_clickHandler(true)"
+                         toolTip="{getText('tooltip.nonAgressive')}"/>
                <base:layout>
                   <s:HorizontalLayout gap="5" paddingLeft="10"/>
                </base:layout>

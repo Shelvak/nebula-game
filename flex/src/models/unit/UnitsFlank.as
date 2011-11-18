@@ -217,5 +217,16 @@ package models.unit
          US.transformedUnits.enableAutoUpdate();
          US.dispatchFormationChangeEvent();
       }
+
+      public function setNonAgressive(nonAgressive: Boolean): void
+      {
+         US.transformedUnits.disableAutoUpdate();
+         for each (var unit: MCUnit in selection)
+         {
+            unit.nonAgressive = nonAgressive;
+         }
+         US.transformedUnits.enableAutoUpdate();
+         US.dispatchFormationChangeEvent();
+      }
    }
 }

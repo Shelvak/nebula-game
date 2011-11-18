@@ -392,9 +392,11 @@ package models.unit
          for each(var unit: MCUnit in transformedUnits)
          {
             if (unit.stance != unit.unit.stance
-               || unit.flankModel.nr != unit.unit.flank)
+               || unit.flankModel.nr != unit.unit.flank
+                  || unit.nonAgressive != unit.unit.nonAgressive)
             {
-               changedUnits[unit.unit.id] = [unit.flankModel.nr, unit.stance];
+               changedUnits[unit.unit.id] =
+                       [unit.flankModel.nr, unit.stance, unit.nonAgressive];
             } 
          }
          return changedUnits;
@@ -406,7 +408,8 @@ package models.unit
          for each(var unit: MCUnit in transformedUnits)
          {
             if (unit.stance != unit.unit.stance
-               || unit.flankModel.nr != unit.unit.flank)
+               || unit.flankModel.nr != unit.unit.flank
+                    || unit.nonAgressive != unit.unit.nonAgressive)
             {
                return true;
             } 
@@ -482,6 +485,10 @@ package models.unit
                {
                   unit.stance = unit.unit.stance;
                }
+               if (unit.unit.nonAgressive != unit.nonAgressive)
+               {
+                  unit.nonAgressive = unit.unit.nonAgressive;
+               }
             }
             transformedUnits.enableAutoUpdate();
             dispatchFormationChangeEvent();
@@ -502,6 +509,10 @@ package models.unit
             if (unit.unit.stance != unit.stance)
             {
                unit.unit.stance = unit.stance;
+            }
+            if (unit.unit.nonAgressive != unit.nonAgressive)
+            {
+               unit.unit.nonAgressive = unit.nonAgressive;
             }
          }
          ML.units.enableAutoUpdate();
@@ -721,6 +732,15 @@ package models.unit
          for each (var flank: UnitsFlank in flanks)
          {
             flank.setStance(stance);
+         }
+         deselectUnits();
+      }
+
+      public function setNonAgressive(nonAgressive: Boolean): void
+      {
+         for each (var flank: UnitsFlank in flanks)
+         {
+            flank.setNonAgressive(nonAgressive);
          }
          deselectUnits();
       }
