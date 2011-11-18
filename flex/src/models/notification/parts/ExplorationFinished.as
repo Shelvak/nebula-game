@@ -6,6 +6,7 @@ package models.notification.parts
    import models.notification.INotificationPart;
    import models.notification.Notification;
    
+   import utils.Objects;
    import utils.locale.Localizer;
    
    public class ExplorationFinished extends BaseModel implements INotificationPart
@@ -17,7 +18,7 @@ package models.notification.parts
          {
             var params: Object = notif.params;
             rewards = new Reward(params.rewards);
-            location = BaseModel.createModel(Location, params.location);
+            location = Objects.create(Location, params.location);
          }
       }
       

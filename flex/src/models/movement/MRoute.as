@@ -1,9 +1,8 @@
 package models.movement
 {
    import interfaces.IUpdatable;
-   
+
    import models.BaseModel;
-   import models.ModelsCollection;
    import models.Owner;
    import models.location.ILocationUser;
    import models.location.Location;
@@ -11,15 +10,12 @@ package models.movement
    import models.player.PlayerMinimal;
    import models.time.MTimeEventFixedMoment;
    import models.unit.UnitBuildingEntry;
-   
+
    import mx.collections.ArrayCollection;
-   import mx.utils.ObjectUtil;
-   
-   import utils.DateUtil;
-   import utils.Objects;
+
    import utils.datastructures.Collections;
-   
-   
+
+
    /**
     * @see models.movement.event.MRouteEvent#JUMPS_AT_CHANGE
     */
@@ -73,14 +69,15 @@ package models.movement
       }
       
       
-      [Bindable]
+      [Required(alias="arrivesAt")]
+      [Bindable(event="willNotChange")]
       /**
        * Time (local) when this squadron will reach its destination.
        */
       public var arrivalEvent:MTimeEventFixedMoment = null;
       
-      
       private var _jumpsAtEvent:MTimeEventFixedMoment = null;
+      [Optional(alias="firstHop")]
       [Bindable(event="jumpsAtChange")]
       /**
        * Time (local) when this squadron will do a jump to another map.
@@ -94,7 +91,7 @@ package models.movement
       public function get jumpsAtEvent() : MTimeEventFixedMoment {
          return _jumpsAtEvent;
       }
-      
+
       [Bindable(event="jumpsAtChange")]
       /**
        * Is this squadron going to jump to another map?
@@ -213,22 +210,17 @@ package models.movement
       /* ########################### */
       /* ### BaseModel OVERRIDES ### */
       /* ########################### */
-      
-      protected override function afterCreateModel(data:Object) : void {
-         super.afterCreateModel(data);
-         if (sourceLocation.isSSObject)  sourceLocation.setDefaultCoordinates();
-         if (currentLocation.isSSObject) currentLocation.setDefaultCoordinates();
-         if (targetLocation.isSSObject)  currentLocation.setDefaultCoordinates();
-         var arrivesAt:String = Objects.notNull(
-            data["arrivesAt"],
-            "[prop arrivesAt] is required by [class: MRoute] but was not present in source object. " +
-            "The object was:\n" + ObjectUtil.toString(data)
-         );
-         arrivalEvent = new MTimeEventFixedMoment();
-         arrivalEvent.occuresAt = DateUtil.parseServerDTF(arrivesAt);
-         if (data["jumpsAt"] != null) {
-            _jumpsAtEvent = new MTimeEventFixedMoment();
-            _jumpsAtEvent.occuresAt = DateUtil.parseServerDTF(data["jumpsAt"]);
+
+      public override function afterCreate(data: Object): void {
+         super.afterCreate(data);
+         if (sourceLocation.isSSObject) {
+            sourceLocation.setDefaultCoordinates();
+         }
+         if (currentLocation.isSSObject) {
+            currentLocation.setDefaultCoordinates();
+         }
+         if (targetLocation.isSSObject) {
+            currentLocation.setDefaultCoordinates();
          }
       }
    }

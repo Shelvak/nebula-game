@@ -9,10 +9,9 @@ package controllers.galaxies.actions
    import controllers.solarsystems.actions.ShowActionParams;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
-   
+
    import globalevents.GlobalEvent;
-   
-   import models.BaseModel;
+
    import models.MWreckage;
    import models.cooldown.MCooldownSpace;
    import models.factories.GalaxyFactory;
@@ -24,10 +23,12 @@ package controllers.galaxies.actions
    import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
+
+   import utils.Objects;
 
 
    /**
@@ -87,15 +88,15 @@ package controllers.galaxies.actions
             params["battlegroundId"],
             GalaxyFactory.createFowEntries(params["fowEntries"]),
             GalaxyFactory.createSolarSystems(params["solarSystems"]),
-            BaseModel.createCollection(
-               ArrayCollection, MWreckage, params["wreckages"]
+            Objects.fillCollection(
+               new ArrayCollection(), MWreckage, params["wreckages"]
             ),
-            BaseModel.createCollection(
-               ArrayCollection, MCooldownSpace, params["cooldowns"]
+            Objects.fillCollection(
+               new ArrayCollection(), MCooldownSpace, params["cooldowns"]
             ),
             UnitFactory.fromObjects(params["units"], params["players"]),
-            IList(BaseModel.createCollection(
-               ArrayCollection, MHop, params["routeHops"])
+            IList(Objects.fillCollection(
+               new ArrayCollection(), MHop, params["routeHops"])
             ).toArray(),
             params["nonFriendlyJumpsAt"]
          );

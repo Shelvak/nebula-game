@@ -1,12 +1,12 @@
 package models.factories
 {
-   import models.BaseModel;
    import models.cooldown.MCooldown;
    import models.resource.Resource;
    import models.resource.ResourceType;
    import models.solarsystem.MSSObject;
    
    import utils.DateUtil;
+   import utils.Objects;
    
    public class SSObjectFactory
    {
@@ -17,7 +17,7 @@ package models.factories
             return null;
          }
          
-         var object:MSSObject = BaseModel.createModel(MSSObject, data);
+         var object:MSSObject = Objects.create(MSSObject, data);
          if (data.cooldownEndsAt != null)
          {
             object.cooldown = new MCooldown();

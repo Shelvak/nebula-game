@@ -10,7 +10,7 @@ package utils
 	 */   
 	public class StringUtil
 	{
-		/**
+    	/**
 		 * Transforms first letter of a given string to UPPERCASE and returns resulting string.
        *
        * @param value string to be transformed

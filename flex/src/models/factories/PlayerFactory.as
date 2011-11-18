@@ -1,7 +1,8 @@
 package models.factories
 {
-   import models.BaseModel;
    import models.player.PlayerMinimal;
+   
+   import utils.Objects;
 
    public class PlayerFactory
    {
@@ -13,7 +14,7 @@ package models.factories
          var playersHash:Object = new Object();
          for (var id:String in hash)
          {
-            playersHash[id] = BaseModel.createModel(PlayerMinimal, hash[id]);
+            playersHash[id] = Objects.create(PlayerMinimal, hash[id]);
          }
          return playersHash;
       }

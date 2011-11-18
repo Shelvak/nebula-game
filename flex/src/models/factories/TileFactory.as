@@ -1,7 +1,8 @@
 package models.factories
 {
-   import models.BaseModel;
    import models.tile.Tile;
+   
+   import utils.Objects;
    
    /**
     * Lets easily create instaces of tiles. 
@@ -16,13 +17,8 @@ package models.factories
        * @return instance of <code>Tile</code> with values of properties
        * loaded from the data object.
        */
-      public static function fromObject (data: Object) :Tile
-      {
-         if (!data)
-         {
-            return null;
-         }
-         return BaseModel.createModel (Tile, data);
+      public static function fromObject(data:Object) : Tile {
+         return Objects.create(Tile, data);
       }
    }
 }

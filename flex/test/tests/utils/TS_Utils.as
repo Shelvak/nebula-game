@@ -1,8 +1,5 @@
 package tests.utils
 {
-   import tests.utils.tests.*;
-   
-   
    [Suite]
    [RunWith("org.flexunit.runners.Suite")]
    public class TS_Utils

@@ -7,7 +7,6 @@ package controllers.units
    
    import globalevents.GlobalEvent;
    
-   import models.BaseModel;
    import models.ModelLocator;
    import models.ModelsCollection;
    import models.Owner;
@@ -53,8 +52,9 @@ package controllers.units
       /**
        * @see components.map.space.SquadronsController#MOVE_EFFECT_DURATION
        */
-      private static const MOVE_EFFECT_DURATION:int =              // milliseconds
-         components.map.space.SquadronsController.MOVE_EFFECT_DURATION
+      private static const MOVE_EFFECT_DURATION: int = // milliseconds
+                              components.map.space.SquadronsController
+                                 .MOVE_EFFECT_DURATION;
       
       
       private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
@@ -207,7 +207,7 @@ package controllers.units
             destroySquadron(squad.id);
          }
          SquadronFactory.attachJumpsAt(route, jumpsAtString);
-         route.currentLocation = BaseModel.createModel(Location, routeData["current"]);
+         route.currentLocation = Objects.create(Location, routeData["current"]);
          route.cachedUnits.removeAll();
          route.cachedUnits.addAll(UnitFactory.createCachedUnits(routeData["cachedUnits"]));
       }
@@ -276,7 +276,7 @@ package controllers.units
          }
          else if (!squadToStop.currentHop.location.isSSObject)
          {
-            // Don't use squadToStop again: asynchronousity problems arise. See
+            // Don't use squadToStop again: asynchronously problems arise. See
             // components.map.space.SquadronsController#destroySquadron() for more explanation on this
             squadStationary = new MSquadron();
             squadStationary.owner = squadToStop.owner;
@@ -330,10 +330,11 @@ package controllers.units
        */
       public function createRoute(data:Object, owner:int = Owner.NPC) : MRoute
       {
-         var route:MRoute = BaseModel.createModel(MRoute, data);
+         var route:MRoute = Objects.create(MRoute, data);
          route.cachedUnits.addAll(UnitFactory.createCachedUnits(data["cachedUnits"]));
-         if (owner != Owner.NPC)
+         if (owner != Owner.NPC) {
             route.owner = owner;
+         }
          ROUTES.addItem(route);
          return route;
       }
@@ -381,7 +382,8 @@ package controllers.units
       {
          var squad:MSquadron;
          var unitIds:ArrayCollection = new ArrayCollection($unitIds);
-         var currentLocation:LocationMinimal = BaseModel.createModel(LocationMinimal, route["current"]);
+         var currentLocation:LocationMinimal =
+                Objects.create(LocationMinimal, route["current"]);
          if (currentLocation.isSSObject) {
             currentLocation.setDefaultCoordinates();
          }
@@ -401,7 +403,7 @@ package controllers.units
             route["status"] = unit.owner; 
             squad = SquadronFactory.fromObject(route);
             squad.player = unit.player;
-            squad.addAllHops(BaseModel.createCollection(ArrayCollection, MHop, route["hops"]));
+            squad.addAllHops(Objects.fillCollection(new ArrayCollection(), MHop, route["hops"]));
             units.disableAutoUpdate();
             for each (unit in units) {
                unit.squadronId = squad.id;

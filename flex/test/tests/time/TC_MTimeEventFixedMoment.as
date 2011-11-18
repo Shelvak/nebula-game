@@ -1,5 +1,6 @@
 package tests.time
 {
+   import ext.hamcrest.date.dateEqual;
    import ext.hamcrest.events.causesTarget;
    import ext.hamcrest.events.event;
    import ext.hamcrest.object.equals;
@@ -12,17 +13,18 @@ package tests.time
    import org.hamcrest.assertThat;
    import org.hamcrest.core.not;
    import org.hamcrest.core.throws;
-   import org.hamcrest.date.dateEqual;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
+   import org.hamcrest.object.notNullValue;
+   
+   import testsutils.DateUtl;
    
    import utils.DateUtil;
    
    
    public class TC_MTimeEventFixedMoment
    {
-      public function TC_MTimeEventFixedMoment()
-      {
+      public function TC_MTimeEventFixedMoment() {
       }
       
       
@@ -30,10 +32,25 @@ package tests.time
       
       
       [Before]
-      public function setUp() : void
-      {
+      public function setUp() : void {
+         DateUtil.now = new Date().time;
          timeEvent = new MTimeEventFixedMoment();
-      };
+      }
+      
+      [Test]
+      public function autoCreate() : void {
+         var event:MTimeEventFixedMoment;
+         var dateString:String = "2000-01-01T00:00:00+00:00";
+         var date:Date = DateUtl.createUTC(2000, 0, 1);
+         
+         event = MTimeEventFixedMoment.autoCreate(null, dateString);
+         assertThat( "creates new instance if [param currValue] is null", event, notNullValue() );
+         assertThat( "parses date string passed in [param value]", event.occuresAt, dateEqual (date) );
+         
+         event = MTimeEventFixedMoment.autoCreate(timeEvent, dateString);
+         assertThat( "returns [param currValue] if it is not null", event, equals (timeEvent) );
+         assertThat( "parses date string passed in [param value]", event.occuresAt, dateEqual (date) );
+      }
       
       [Test]
       public function defaultPropValues() : void {

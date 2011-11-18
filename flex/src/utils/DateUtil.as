@@ -13,6 +13,18 @@ package utils
    public class DateUtil
    {
       /**
+       * Type processor function for <code>Objects</code>.
+       */
+      public static function autoCreate(currValue:Date, value:String) : Date {
+         var valueDate:Date = parseServerDTF(value);
+         if (currValue != null) {
+            currValue.time = valueDate.time;
+            return currValue;
+         }
+         return valueDate;
+      }
+      
+      /**
        * January 1, 1970
        */
       public static const BEGINNING:Date = new Date(0);
@@ -124,7 +136,7 @@ package utils
        * <code>locale.xml/Formatters.date.shortDate</code>.
        */
       public static function formatShortDate(date: Date): String {
-         Objects.paramNotNull("date", date)
+         Objects.paramNotNull("date", date);
          return format(date, "shortDate");
       }
 
@@ -133,7 +145,7 @@ package utils
        * <code>locale.xml/Formatters.date.shortDateTime</code>.
        */
       public static function formatShortDateTime(date: Date): String {
-         Objects.paramNotNull("date", date)
+         Objects.paramNotNull("date", date);
          return format(date, "shortDateTime");
       }
 

@@ -60,7 +60,7 @@ package models.time
       function get occuresAt() : Date;
       
       /**
-       * Shortcut for <code>this.occuresAt.toString()</code>.
+       * Shortcut for <code>DateUtil.formatShortDateTime(this.occuresAt)</code>.
        */
       function get occuresAtString() : String;
    }

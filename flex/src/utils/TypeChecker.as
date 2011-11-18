@@ -3,6 +3,7 @@ package utils
    import flash.utils.getQualifiedClassName;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.IList;
 
    /**
     * Defines static methods for checking variable types. 
@@ -107,6 +108,14 @@ package utils
             return false;
          }
          return getQualifiedClassName(instance).indexOf("<") >= 0;
+      }
+      
+      /**
+       * Checks if a given instance is a collection (<code>Array</code>, <code>Vector</code> or
+       * <code>IList</code>).
+       */
+      public static function isCollection(instance:*) : Boolean {
+         return instance is Array || instance is IList || isVector(instance);
       }
    }
 }

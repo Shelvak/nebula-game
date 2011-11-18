@@ -1,24 +1,17 @@
 package tests._old.testsuites
 {
-   import net.digitalprimates.fluint.tests.TestSuite;
-   
    import tests._old.utils.*;
    import tests._old.utils.remote.rmo.RMOClassesTest;
    
    
-   
-   
-   public class UtilsTestSuite extends TestSuite
+   [Suite]
+   [RunWith("org.flexunit.runners.Suite")]
+   public class UtilsTestSuite
    {
-      public function UtilsTestSuite()
-      {
-         super ();
-         
-         addTestCase(new PropertiesTranformerTest());
-         addTestCase(new TypeCheckerTest());
-         addTestCase(new NameResolverTest());
-         addTestCase(new ObjectsTest());
-         addTestCase(new RMOClassesTest());
-      }
+         public var propertiesTransformerTest:PropertiesTranformerTest;
+         public var typeCheckerTest:TypeCheckerTest;
+         public var nameResolverTest:NameResolverTest;
+         public var objectsTest:ObjectsTest;
+         public var rmoClassesTest:RMOClassesTest;
    }
 }

@@ -366,10 +366,11 @@ package models.location
        * If this location is SS_OBJECT sets <code>player</code> to <code>PlayerMinimal.NPC_PLAYER</code>
        * it it has not been set yet.
        */
-      protected override function afterCreateModel(data:Object) : void {
-         if (isSSObject && player == null)
+      public override function afterCreate(data: Object): void {
+         if (isSSObject && player == null) {
             player = PlayerMinimal.NPC_PLAYER;
-         super.afterCreateModel(data);
+         }
+         super.afterCreate(data);
       }
       
       

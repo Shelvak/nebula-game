@@ -26,7 +26,7 @@ package components.alliance
    import spark.components.Button;
    
    import utils.DateUtil;
-   import utils.EventUtils;
+   import utils.Events;
    import utils.SingletonFactory;
    import utils.locale.Localizer;
    
@@ -315,7 +315,7 @@ package components.alliance
       
       
       private function dispatchSimpleEvent(type:String) : void {
-         EventUtils.dispatchSimpleEvent(this, AllianceScreenMEvent, type);
+         Events.dispatchSimpleEvent(this, AllianceScreenMEvent, type);
       }
    }
 }
