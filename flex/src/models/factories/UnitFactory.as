@@ -13,6 +13,8 @@ package models.factories
    
    import utils.Objects;
    
+   import utils.Objects;
+   
    
    /**
     * Lets easily create instances of units.
