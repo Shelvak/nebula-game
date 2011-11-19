@@ -703,14 +703,6 @@ describe SsObject::Planet do
         @planet.solar_system = Factory.create(:battleground)
       end
 
-      it "should increase victory points for new player" do
-        lambda do
-          @planet.save!
-          @new.reload
-        end.should change(@new, :victory_points).by(
-          CONFIG["battleground.planet.takeover.vps"])
-      end
-
       it "should give units in that planet" do
         Unit.should_receive(:give_units).with(
           CONFIG['battleground.planet.bonus'],

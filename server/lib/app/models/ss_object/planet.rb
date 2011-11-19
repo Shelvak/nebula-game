@@ -366,7 +366,6 @@ class SsObject::Planet < SsObject
     solar_system = self.solar_system
     if solar_system.battleground?
       if new_player
-        new_player.victory_points += CONFIG['battleground.planet.takeover.vps']
         Unit.give_units(CONFIG['battleground.planet.bonus'], self, new_player)
       end
     else
