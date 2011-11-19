@@ -2,7 +2,7 @@
 # members about the change. Also inform player if it is set (this is needed
 # when player is thrown out of alliance, both his and alliance visibility
 # changes then).
-class FowChangeEvent
+class Event::FowChange
   def initialize(player, alliance)
     @player_ids = alliance ? alliance.member_ids : []
     if ! player.nil? && ! @player_ids.include?(player.id)

@@ -1,6 +1,6 @@
 # Class encapsulating change of player statuses that should be updated in
 # client.
-class StatusChangeEvent
+class Event::StatusChange
   # Hash of {notifiable_player_id => [[player_id, new_status], ...]} pairs.
   # where _notifiable_player_id_ is id of +Player+ for which change should
   # be sent.

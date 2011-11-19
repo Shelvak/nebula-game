@@ -16,7 +16,7 @@ shared_examples_for "fow entry" do
 
   describe ".increase" do
     it "should fire event if created" do
-      should_fire_event(FowChangeEvent.new(@player, @player.alliance),
+      should_fire_event(Event::FowChange.new(@player, @player.alliance),
           EventBroker::FOW_CHANGE, @event_reason) do
         @klass.increase(@first_arg, @player)
       end
@@ -28,7 +28,7 @@ shared_examples_for "fow entry" do
 
     it "should not fire event if updated" do
       @klass.increase(@first_arg, @player)
-      should_not_fire_event(FowChangeEvent.new(@player, @player.alliance),
+      should_not_fire_event(Event::FowChange.new(@player, @player.alliance),
           EventBroker::FOW_CHANGE, @event_reason) do
         @klass.increase(@first_arg, @player)
       end
@@ -100,7 +100,7 @@ shared_examples_for "fow entry" do
     end
 
     it "should not fire event if updated" do
-      should_not_fire_event(FowChangeEvent.new(@player, @player.alliance),
+      should_not_fire_event(Event::FowChange.new(@player, @player.alliance),
           EventBroker::FOW_CHANGE, @event_reason) do
         @klass.decrease(@first_arg, @player, 1)
       end

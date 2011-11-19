@@ -1,5 +1,5 @@
 # FOW change event when single solar system is changed.
-class FowChangeEvent::SolarSystem < FowChangeEvent
+class Event::FowChange::SolarSystem < Event::FowChange
   attr_reader :solar_system_id
   # Hash of _player_id_ => [+SolarSystemMetadata+, ...]
   attr_reader :metadatas

@@ -65,9 +65,10 @@ describe Player do
   end
   
   describe "#victory_points" do
+    let(:alliance) { Factory.create(:alliance) }
+    let(:player) { Factory.create(:player, :alliance => alliance) }
+
     it "should add to alliance victory points too" do
-      alliance = Factory.create(:alliance)
-      player = Factory.create(:player, :alliance => alliance)
       player.victory_points += 100
       lambda do
         player.save!
@@ -76,12 +77,25 @@ describe Player do
     end
 
     it "should add to #alliance_vps too" do
-      alliance = Factory.create(:alliance)
-      player = Factory.create(:player, :alliance => alliance)
       player.victory_points += 100
       lambda do
         player.save!
       end.should change(player, :alliance_vps).by(100)
+    end
+
+    describe "finishing galaxy" do
+      it "should check it if vps were updated" do
+        player.victory_points += 100
+        player.galaxy.should_receive(:check_if_finished!).
+          with(player.victory_points)
+        player.save!
+      end
+
+      it "should not check it if vps were not updated" do
+        player.war_points += 1000
+        player.galaxy.should_not_receive(:check_if_finished!)
+        player.save!
+      end
     end
   end
 

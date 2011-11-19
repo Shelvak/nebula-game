@@ -1,4 +1,4 @@
-class PlanetObserversChangeEvent
+class Event::PlanetObserversChange
   # ID for changed planet.
   attr_reader :planet_id
 
@@ -11,7 +11,7 @@ class PlanetObserversChangeEvent
   end
 
   def to_s
-    "<PlanetObserversChangeEvent planet_id=#{@planet_id.inspect
+    "<Event::PlanetObserversChange planet_id=#{@planet_id.inspect
       } non_observer_ids=#{@non_observer_ids.inspect}>"
   end
 

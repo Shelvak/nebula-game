@@ -537,7 +537,7 @@ class SsObject::Planet < SsObject
               # And if some players were viewing the planet, but they can't
               # anymore, dispatch event to unset their session planet ids.
               EventBroker.fire(
-                PlanetObserversChangeEvent.
+                Event::PlanetObserversChange.
                   new(object.id, old_observers - new_observers),
                 EventBroker::CREATED
               )

@@ -1,11 +1,11 @@
 require File.expand_path(
-  File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
+  File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 )
 
-describe StatusChangeEvent::Alliance do
+describe Event::StatusChange::Alliance do
   [
-    [StatusChangeEvent::Alliance::ACCEPT, StatusResolver::ALLY],
-    [StatusChangeEvent::Alliance::THROW_OUT, StatusResolver::ENEMY],
+    [Event::StatusChange::Alliance::ACCEPT, StatusResolver::ALLY],
+    [Event::StatusChange::Alliance::THROW_OUT, StatusResolver::ENEMY],
   ].each do |action, status|
     describe "#{action}" do
       before(:all) do
@@ -20,7 +20,7 @@ describe StatusChangeEvent::Alliance do
           Factory.create(:player, :alliance => @alliance)
         ]
         @player = Factory.create(:player, :alliance => @alliance)
-        @event = StatusChangeEvent::Alliance.new(
+        @event = Event::StatusChange::Alliance.new(
           @alliance,
           @player,
           action

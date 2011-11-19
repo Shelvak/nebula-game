@@ -1,5 +1,5 @@
 # Event for movement preparation.
-class MovementPrepareEvent
+class Event::MovementPrepare
   attr_reader :route, :unit_ids
 
   def initialize(route, unit_ids)

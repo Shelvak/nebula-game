@@ -1,4 +1,4 @@
-class FowChangeEvent::SsDestroyed < FowChangeEvent
+class Event::FowChange::SsDestroyed < Event::FowChange
   attr_reader :metadata
 
   def initialize(solar_system_id, player_id, alliance_id)

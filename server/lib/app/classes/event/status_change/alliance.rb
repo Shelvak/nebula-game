@@ -1,6 +1,6 @@
 # This gets created when alliance accepts/throws out a player and 
 # unit/planet statuses need to be changed in client.
-class StatusChangeEvent::Alliance < StatusChangeEvent
+class Event::StatusChange::Alliance < Event::StatusChange
   # Player gets accepted to alliance
   ACCEPT = :accept
   # Player gets thrown out of alliance

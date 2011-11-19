@@ -31,6 +31,8 @@ class Alliance < ActiveRecord::Base
   end
 
   after_update do
+    galaxy.check_if_finished!(victory_points) if victory_points_changed?
+
     ControlManager.instance.alliance_renamed(self) \
       if name_changed? && ! galaxy.dev?
   end
@@ -190,8 +192,8 @@ class Alliance < ActiveRecord::Base
     # Dispatch changed on owner because he has alliance_player_count
     EventBroker.fire(owner, EventBroker::CHANGED)
     # Dispatch changed for status changed event
-    event = StatusChangeEvent::Alliance.new(self, player, 
-      StatusChangeEvent::Alliance::ACCEPT)
+    event = Event::StatusChange::Alliance.new(self, player,
+      Event::StatusChange::Alliance::ACCEPT)
     EventBroker.fire(event, EventBroker::CHANGED)
 
     true
@@ -218,8 +220,8 @@ class Alliance < ActiveRecord::Base
     # Dispatch changed on owner because he has alliance_player_count
     EventBroker.fire(owner, EventBroker::CHANGED)
     # Dispatch changed for status changed event
-    event = StatusChangeEvent::Alliance.new(self, player, 
-      StatusChangeEvent::Alliance::THROW_OUT)
+    event = Event::StatusChange::Alliance.new(self, player,
+      Event::StatusChange::Alliance::THROW_OUT)
     EventBroker.fire(event, EventBroker::CHANGED)
 
     true

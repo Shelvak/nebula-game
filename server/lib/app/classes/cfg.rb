@@ -10,6 +10,12 @@ class Cfg; class << self
     CONFIG['development', ruleset]
   end
 
+  ### battleground.yml ###
+
+  def vps_for_winning
+    CONFIG['battleground.victory.condition']
+  end
+
   ### buildings.yml ###
 
   def buildings_overdrive_output_multiplier
@@ -108,6 +114,10 @@ class Cfg; class << self
 
   def galaxy_convoy_units_definition
     CONFIG["galaxy.convoy.units"]
+  end
+
+  def apocalypse_start_time
+    CONFIG.evalproperty('galaxy.apocalypse.quiet_time').from_now
   end
 
   ### tiles.yml ###

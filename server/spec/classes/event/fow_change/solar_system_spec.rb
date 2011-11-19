@@ -1,6 +1,8 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb'))
+require File.expand_path(
+  File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
+)
 
-describe FowChangeEvent::SolarSystem do
+describe Event::FowChange::SolarSystem do
   before(:all) do
     solar_system = Factory.create(:solar_system)
     alliance = Factory.create(:alliance)
@@ -15,7 +17,7 @@ describe FowChangeEvent::SolarSystem do
     @fse_both = Factory.create(:fse_player, :solar_system => solar_system,
       :player => @player_both)
 
-    event = FowChangeEvent::SolarSystem.new(solar_system.id)
+    event = Event::FowChange::SolarSystem.new(solar_system.id)
     @player_ids = event.player_ids
     @metadatas = event.metadatas
   end

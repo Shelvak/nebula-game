@@ -1,4 +1,4 @@
-class MovementEvent
+class Event::Movement
   attr_reader :route, :previous_location, :current_hop, :next_hop
 
   def initialize(route, previous_location, current_hop, next_hop)

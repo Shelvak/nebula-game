@@ -49,6 +49,23 @@ describe Alliance do
     end
   end
 
+  describe "finishing galaxy" do
+    let(:alliance) { Factory.create(:alliance) }
+
+    it "should check it if vps were updated" do
+      alliance.victory_points += 100
+      alliance.galaxy.should_receive(:check_if_finished!).
+        with(alliance.victory_points)
+      alliance.save!
+    end
+
+    it "should not check it if vps were not updated" do
+      alliance.name += "a"
+      alliance.galaxy.should_not_receive(:check_if_finished!)
+      alliance.save!
+    end
+  end
+
   describe "#as_json" do
     required_fields = %w{id name description victory_points owner_id}
     it_behaves_like "as json", Factory.create(:alliance), nil,
@@ -383,10 +400,10 @@ describe Alliance do
       end
     end
     
-    it "should dispatch changed with StatusChangeEvent" do
+    it "should dispatch changed with Event::StatusChange" do
       should_fire_event(
-        StatusChangeEvent::Alliance.new(@alliance, @player, 
-          StatusChangeEvent::Alliance::ACCEPT), 
+        Event::StatusChange::Alliance.new(@alliance, @player,
+          Event::StatusChange::Alliance::ACCEPT),
         EventBroker::CHANGED
       ) do
         @alliance.accept(@player)
@@ -459,10 +476,10 @@ describe Alliance do
       end
     end
     
-    it "should dispatch changed with StatusChangeEvent" do
+    it "should dispatch changed with Event::StatusChange" do
       should_fire_event(
-        StatusChangeEvent::Alliance.new(@alliance, @player,
-          StatusChangeEvent::Alliance::THROW_OUT), 
+        Event::StatusChange::Alliance.new(@alliance, @player,
+          Event::StatusChange::Alliance::THROW_OUT),
         EventBroker::CHANGED
       ) do
         @alliance.throw_out(@player)

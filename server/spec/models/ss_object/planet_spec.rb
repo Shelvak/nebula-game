@@ -1833,8 +1833,8 @@ describe SsObject::Planet do
           end
         end
 
-        it "should fire created with PlanetObserversChangeEvent" do
-          event = PlanetObserversChangeEvent.
+        it "should fire created with Event::PlanetObserversChange" do
+          event = Event::PlanetObserversChange.
             new(@planet.id, [@unit.player_id])
           should_fire_event(event, EventBroker::CREATED) do
             SsObject::Planet.changing_viewable(@unit.location) do
