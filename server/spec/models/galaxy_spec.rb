@@ -142,6 +142,32 @@ describe Galaxy do
     end
   end
 
+  describe "#check_if_finished!" do
+    let(:galaxy) { Factory.create(:galaxy) }
+
+    it "should not finish if dev" do
+      galaxy = Factory.create(:galaxy, :ruleset => "dev")
+      galaxy.should_not_receive(:finish!)
+      galaxy.check_if_finished!(Cfg.vps_for_winning)
+    end
+
+    it "should not finish if already finished" do
+      galaxy = Factory.create(:galaxy, :apocalypse_start => 15.minutes.from_now)
+      galaxy.should_not_receive(:finish!)
+      galaxy.check_if_finished!(Cfg.vps_for_winning)
+    end
+
+    it "should not finish if not enough victory points" do
+      galaxy.should_not_receive(:finish!)
+      galaxy.check_if_finished!(Cfg.vps_for_winning - 1)
+    end
+
+    it "should finish otherwise" do
+      galaxy.should_receive(:finish!)
+      galaxy.check_if_finished!(Cfg.vps_for_winning)
+    end
+  end
+
   describe "#finish!" do
     let(:galaxy) { Factory.create(:galaxy) }
 
