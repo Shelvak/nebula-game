@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:ui="components.ui.*"
+         implements="mx.core.IToolTip">
+   <fx:Binding source="ML.latestGalaxy.apocalypseStartEvent"
+               destination="apocalypseEvent"/>
+   <fx:Script>
+      <![CDATA[
+      import models.ModelLocator;
+      import models.time.MTimeEventFixedMoment;
+
+      import utils.locale.Localizer;
+
+
+      private static const SECONDS_IN_DAY: int = 24 * 60 * 60;
+
+      private function get ML(): ModelLocator {
+         return ModelLocator.getInstance();
+      }
+
+      [Bindable]
+      private var apocalypseEvent: MTimeEventFixedMoment;
+
+      private function getString(property: String,
+                                 params: Array = null): String {
+         return Localizer.string("Galaxy", "label.apocalypse." + property,
+                                 params);
+      }
+
+      private function getDays(elapsedTime: Number): int {
+         return Math.round(elapsedTime / SECONDS_IN_DAY);
+      }
+
+      private function getReward(elapsedTime: Number): int {
+         return getDays(elapsedTime);
+      }
+
+      /* ################ */
+      /* ### ITooltip ### */
+      /* ################ */
+
+      public function get text(): String {
+         return "";
+      }
+
+      public function set text(value: String): void {
+      }
+      ]]>
+   </fx:Script>
+   <ui:DarkRoundedBackground left="0" right="0" top="0" bottom="0"/>
+   <s:Group left="5" right="5" top="5" bottom="5">
+      <s:layout>
+         <s:VerticalLayout gap="4" horizontalAlign="center"/>
+      </s:layout>
+      <s:Group visible="{apocalypseEvent.hasOccured}"
+               includeInLayout="{apocalypseEvent.hasOccured}"
+               left="5" right="5" top="5" bottom="5">
+         <s:layout>
+            <s:VerticalLayout gap="4" horizontalAlign="center"/>
+         </s:layout>
+         <s:Label
+            text="{getString('started', [apocalypseEvent.occuresAtString])}"/>
+         <s:Label
+            text="{getString('dayOf', [getDays(apocalypseEvent.occurredBefore)])}"/>
+         <s:Label
+            text="{getString('reward', [getReward(apocalypseEvent.occurredBefore)])}"/>
+      </s:Group>
+      <s:Group visible="{!apocalypseEvent.hasOccured}"
+               includeInLayout="{!apocalypseEvent.hasOccured}}"
+               left="5" right="5" top="5" bottom="5">
+         <s:layout>
+            <s:VerticalLayout gap="4" horizontalAlign="center"/>
+         </s:layout>
+         <s:Label text="{getString('willStart')}"/>
+         <s:Label
+            text="{apocalypseEvent.occuresAtString} ({apocalypseEvent.occuresInString}})"/>
+      </s:Group>
+      <s:Label text="{getString('moreInfo')}"/>
+   </s:Group>
+</s:Group>

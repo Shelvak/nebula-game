@@ -1212,6 +1212,11 @@
     </label.shield>
     <label.over value="Fleet over"/>
     <message.noRadar value="You need a Radar to explore the galaxy" />
+    <label.apocalypse.willStart value="Apocalypse will start"/>
+    <label.apocalypse.started value="Apocalypse started {0}"/>
+    <label.apocalypse.dayOf value="It is now day {0}"/>
+    <label.apocalypse.reward value="You will get {0} creds if you survive"/>
+    <label.apocalypse.moreInfo value="Click for more information"/>
   </Galaxy>
 
   <General>

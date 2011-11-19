@@ -2,24 +2,33 @@ package models.time
 {
    import flash.events.EventDispatcher;
    import flash.events.IEventDispatcher;
-   
+
+   import models.time.events.MTimeEventEvent;
+
+   import namespaces.change_flag;
+
+   import namespaces.change_flag;
+
    import utils.DateUtil;
    import utils.Objects;
    
+   [Event(name="occuredBefore", type="models.time.events.MTimeEventEvent")]
 
    /**
     * Marks a fixed moment in time.
     * 
-    * <p>You set <code>occuresAt</code> to some <code>Date</code> (<code>null</code> is not allowed) and this
-    * values remains the same until you set it again. Meanwhile <code>occuresIn</code> is updated when time
-    * advances.
+    * <p>You set <code>occuresAt</code> to some <code>Date</code>
+    * (<code>null</code> is not allowed) and this values remains the same
+    * until you set it again. Meanwhile <code>occuresIn</code> and
+    * <code>occurredBefore</code> is updated when time advances.
     */
    public class MTimeEventFixedMoment extends MTimeEvent
    {
       /**
        * Type processor function for <code>Objects</code>.
        */
-      public static function autoCreate(currValue:MTimeEventFixedMoment, value:String) : MTimeEventFixedMoment {
+      public static function autoCreate(currValue:MTimeEventFixedMoment,
+                                        value:String) : MTimeEventFixedMoment {
          var event:MTimeEventFixedMoment = null;
          event = currValue != null ? currValue : new MTimeEventFixedMoment();
          event.occuresAt = DateUtil.parseServerDTF(value);
@@ -64,6 +73,7 @@ package models.time
             occuresAtUpdated();
             occuresInUpdated();
             hasOccuredUpdated();
+            occuredBeforeUpdated();
             _hasOccuredDispatched = false;
          }
       }
@@ -81,6 +91,22 @@ package models.time
       {
          return _occuresAt.time <= DateUtil.now;
       }
+
+      change_flag var occuredBefore: Boolean = true;
+      /**
+       * Number of seconds the event has occurred before or 0 if event has not
+       * yet occurred.
+       */
+      [Bindable(event="occuredBeforeChange")]
+      public function get occurredBefore(): Number {
+         var diff:Number = DateUtil.now - _occuresAt.time;
+         return diff < 0 ? 0 : Math.floor(diff / 1000);
+      }
+
+      [Bindable(event="occuredBeforeChange")]
+      public function get occurredBeforeString(): String {
+         return DateUtil.secondsToHumanString(occurredBefore, 2);
+      }
       
       
       /* ###################### */
@@ -94,11 +120,31 @@ package models.time
       public override function update() : void
       {
          occuresInUpdated();
-         if (!_hasOccuredDispatched && _occuresAt.time <= DateUtil.now)
-         {
+         if (!_hasOccuredDispatched && _occuresAt.time <= DateUtil.now) {
             _hasOccuredDispatched = true;
             hasOccuredUpdated();
          }
+         if (_occuresAt.time <= DateUtil.now) {
+            occuredBeforeUpdated();
+         }
+      }
+
+      public override function resetChangeFlags(): void {
+         super.resetChangeFlags();
+         change_flag::occuredBefore = false;
+      }
+
+
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+
+      private function occuredBeforeUpdated(): void {
+         change_flag::occuredBefore = true;
+         dispatchSimpleEvent(
+            MTimeEventEvent,
+            MTimeEventEvent.OCCURRED_BEFORE_CHANGE
+         );
       }
    }
 }

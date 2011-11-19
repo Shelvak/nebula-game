@@ -19,8 +19,7 @@ package models.time
     */
    public class MTimeEvent extends EventDispatcher implements IMTimeEvent
    {
-      public function MTimeEvent()
-      {
+      public function MTimeEvent() {
          super();
       }
       
@@ -62,8 +61,9 @@ package models.time
       
       
       public function equals(o:Object):Boolean {
-         if (!(o is MTimeEvent) || Objects.getClassName(this) != Objects.getClassName(o))
+         if (!(o is MTimeEvent) || Objects.getClassName(this) != Objects.getClassName(o)) {
             return false;
+         }
          return NumberUtil.equal(this.occuresAt.time, MTimeEvent(o).occuresAt.time, 10);
       }
       

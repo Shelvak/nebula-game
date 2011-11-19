@@ -23,6 +23,7 @@ package controllers.galaxies.actions
    import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
+   import models.time.MTimeEventFixedMoment;
 
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
@@ -45,7 +46,7 @@ package controllers.galaxies.actions
     *    <li><code>solarSystems</code></li>
     *    <li><code>fowEntries</code></li>
     *    <li><code>wreckages</code></li>
-    *    <li><code>cooldows</code></li>
+    *    <li><code>cooldowns</code></li>
     *    <li><code>units</code></li>
     *    <li><code>players</code></li>
     *    <li><code>routeHops</code></li>
@@ -101,6 +102,14 @@ package controllers.galaxies.actions
             params["nonFriendlyJumpsAt"]
          );
          var galaxy:Galaxy = ML.latestGalaxy;
+
+         // TODO: move this to createGalaxy()
+         var apocalypseStart:String = params["apocalypseStart"];
+         if (apocalypseStart != null) {
+            galaxy.apocalypseStartEvent =
+               MTimeEventFixedMoment.autoCreate(null, apocalypseStart);
+         }
+         
          if (!startup) {
             if (params["reason"] == "alliance") {
                reloadPlanetMap();

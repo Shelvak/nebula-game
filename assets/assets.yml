@@ -888,6 +888,7 @@ assets:
         creds_large.png:                 300x300_creds.png
         heading_line.png:                Line.png
         heading_line_end.png:            Line_end.png
+        apocalypse.png:                  Endofdays0.png
 
       "info_screen":
         line.png: Info_name.png

@@ -5,11 +5,10 @@ system and planet.
 -->
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
                     xmlns:s="library://ns.adobe.com/flex/spark"
-                    xmlns:mx="library://ns.adobe.com/flex/halo"
+                    xmlns:galaxy="components.galaxy.*"
                     xmlns:mnu="components.menus.*"
                     xmlns:base="components.base.*"
-                    xmlns:notifications="components.notifications.*" 
-                    xmlns:unitsscreen="components.unitsscreen.*"
+                    xmlns:notifications="components.notifications.*"
                     creationComplete="this_creationCompleteHandler(event)" >
    
    <s:Group id="topLeftMenu">
@@ -19,6 +18,7 @@ system and planet.
          </s:layout>
          <notifications:NotificationsButton id="btnNotifications" name="{MainAreaScreens.NOTIFICATIONS}"/>
          <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" minWidth="100" dataProvider="{ML.player.planets}"/>
+         <galaxy:ApocalypseIcon/>
          <base:AdvancedContainer height="100%">
             <base:layout>
                <s:HorizontalLayout gap="-9"/>
