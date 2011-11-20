@@ -1310,6 +1310,30 @@
     </label.shield>
     <label.over value="Laivai virš"/>
     <message.noRadar value="Tau reikia radaro, jog matytum galaktiką" />
+
+    <tooltip.apocalypse.common>
+      <p>Paspausk, jog sužinotum daugiau.</p>
+    </tooltip.apocalypse.common>
+    <!-- {0}: date string
+         {1}: relative time string (5d/3h/...)-->
+    <tooltip.apocalypse.notStarted>
+      <p>Apokalipsė prasidės {0} (už {1}).<br/><br/></p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.notStarted>
+    <!--
+    {0}: date string
+    {1}: current apocalypose day
+    {2}: how many creds will you get
+    -->
+    <tooltip.apocalypse.started>
+      <p>Apokalipsė prasidėjo {0}.<br/><br/></p>
+      <p>
+        Dabar yra {1} apokalipsės diena. Praradęs paskutinę savo planetą
+        tu gausi {2 one[? kredą] 1sts[? kredą] tens[? kredų] many[? kredus]}.
+        <br/><br/>
+      </p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.started>
   </Galaxy>
 
   <General>

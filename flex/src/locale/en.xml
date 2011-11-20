@@ -1212,11 +1212,33 @@
     </label.shield>
     <label.over value="Fleet over"/>
     <message.noRadar value="You need a Radar to explore the galaxy" />
-    <label.apocalypse.willStart value="Apocalypse will start"/>
-    <label.apocalypse.started value="Apocalypse started {0}"/>
-    <label.apocalypse.dayOf value="It is now day {0}"/>
-    <label.apocalypse.reward value="You will get {0} creds if you survive"/>
-    <label.apocalypse.moreInfo value="Click for more information"/>
+
+    <tooltip.apocalypse.common>
+      <p>Click here for more information.</p>
+    </tooltip.apocalypse.common>
+    <!-- TODO: fix these to use TLF p margin instead of two brs. -->
+    <!--
+     {0}: date string
+     {1}: relative time string (5d/3h/...)
+    -->
+    <tooltip.apocalypse.notStarted>
+      <p>Apocalypse will start at {0} (in {1}).<br/><br/></p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.notStarted>
+    <!--
+    {0}: date string
+    {1}: current apocalypose day
+    {2}: how many creds will you get
+    -->
+    <tooltip.apocalypse.started>
+      <p>Apocalypse has started at {0}.<br/><br/></p>
+      <p>
+        It is now {1} apocalypse day. You will get
+        {2 one[one cred] many[? creds]} after losing your last planet.
+        <br/><br/>
+      </p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.started>
   </Galaxy>
 
   <General>

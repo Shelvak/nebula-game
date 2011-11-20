@@ -10,7 +10,7 @@ package controllers.galaxies
       public static const SHOW:String = "galaxies|show";
 
       /**
-       * @see controllers.galaxies.actions.ApocalypseStartAction
+       * @see controllers.galaxies.actions.ApocalypseAction
        */
       public static const APOCALYPSE_START:String = "galaxies|apocalypse_start";
       

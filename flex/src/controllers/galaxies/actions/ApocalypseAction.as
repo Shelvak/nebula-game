@@ -6,9 +6,9 @@ package controllers.galaxies.actions
    import models.time.MTimeEventFixedMoment;
 
 
-   public class ApocalypseStartAction extends CommunicationAction
+   public class ApocalypseAction extends CommunicationAction
    {
-      public function ApocalypseStartAction() {
+      public function ApocalypseAction() {
          super();
       }
 

@@ -1369,6 +1369,35 @@
     <label.over value="Fleet over"/>
     <!-- /TODO -->
     <message.noRadar value="Jums vajadzīgs radars, lai izpētītu galaktiku" />
+
+    <!-- TODO -->
+    <tooltip.apocalypse.common>
+      <p>Click here for more information.</p>
+    </tooltip.apocalypse.common>
+    <!-- TODO: fix these to use TLF p margin instead of two brs. -->
+    <!--
+     {0}: date string
+     {1}: relative time string (5d/3h/...)
+    -->
+    <tooltip.apocalypse.notStarted>
+      <p>Apocalypse will start at {0} (in {1}).<br/><br/></p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.notStarted>
+    <!--
+    {0}: date string
+    {1}: current apocalypose day
+    {2}: how many creds will you get
+    -->
+    <tooltip.apocalypse.started>
+      <p>Apocalypse has started at {0}.<br/><br/></p>
+      <p>
+        It is now {1} apocalypse day. You will get
+        {2 one[one cred] many[? creds]} after losing your last planet.
+        <br/><br/>
+      </p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.started>
+    <!-- /TODO -->
   </Galaxy>
 
   <General>

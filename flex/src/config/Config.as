@@ -1,18 +1,14 @@
 package config
 {
-   import controllers.objects.ObjectClass;
-   
    import models.building.BuildingBonuses;
    import models.tile.TileKind;
    import models.unit.ReachKind;
-   import models.unit.UnitBuildingEntry;
-   
+
    import mx.collections.ArrayCollection;
-   
+
    import utils.ModelUtil;
    import utils.StringUtil;
-   
-   
+
    /**
     * Holds all game configuration data received from server. 
     */
@@ -179,6 +175,13 @@ package config
       public static function getMaxPopulation(): int
       {
          return getValue("galaxy.player.population.max");
+      }
+
+      public static function getApocalypseSurvivalBonus(days: int): int {
+         return StringUtil.evalFormula(
+            getValue("galaxy.apocalypse.survivalBonus"),
+            {"days": days}
+         );
       }
       
       public static function getMarketFee(): String
