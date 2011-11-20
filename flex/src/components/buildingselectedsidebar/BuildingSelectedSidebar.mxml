@@ -95,11 +95,6 @@
          {
             return Localizer.string('BuildingSelectedSidebar', key, params);
          }
-         
-         private function getTextFlow(from: String): TextFlow
-         {
-            return TextFlowUtil.importFromString(from);
-         }
 
          private function queueList_dragStartHandler(event:DragEvent):void
          {
