@@ -1,23 +1,18 @@
 package models.factories
 {
-   import controllers.battle.BattleController;
-   
-   import models.BaseModel;
    import models.ModelLocator;
    import models.battle.BAlliance;
    import models.battle.BBuilding;
    import models.battle.BFlank;
    import models.battle.BPlayers;
    import models.battle.BUnit;
-   import models.battle.BUnitKind;
    import models.battle.Battle;
-   import models.battle.BattleParticipantType;
    import models.location.Location;
    
    import mx.collections.ArrayCollection;
-   import mx.utils.ObjectUtil;
    
    import utils.ArrayUtil;
+   import utils.Objects;
    import utils.PropertiesTransformer;
    import utils.random.Rndm;
    
@@ -39,7 +34,7 @@ package models.factories
          battle.speed = data.speed == null?1:data.speed;
          
          // Create location
-         battle.location = BaseModel.createModel(Location, data.location);
+         battle.location = Objects.create(Location, data.location);
          
          var bAlliances: BPlayers = new BPlayers();
          bAlliances.clear();
@@ -66,7 +61,7 @@ package models.factories
                //space units
                for each (var spaceUnit: Object in rawFlank.prop.space)
                {
-                  var sUnit: BUnit = BaseModel.createModel(BUnit, spaceUnit);
+                  var sUnit: BUnit = Objects.create(BUnit, spaceUnit);
                   sUnit.hpActual = sUnit.hp;
                   sUnit.playerStatus = bAlliances.getPlayerStatus(myId, sUnit.playerId);
                   if (alliance.status == -1)
@@ -80,7 +75,7 @@ package models.factories
                {
                   if (groundObject.kind == 0)
                   {
-                     var gUnit: BUnit = BaseModel.createModel(BUnit, groundObject);
+                     var gUnit: BUnit = Objects.create(BUnit, groundObject);
                      gUnit.hpActual = gUnit.hp;
                      gUnit.playerStatus = bAlliances.getPlayerStatus(myId, gUnit.playerId);
                      if (alliance.status == -1)
@@ -92,7 +87,7 @@ package models.factories
                   }
                   else
                   {
-                     var building: BBuilding = BaseModel.createModel(BBuilding, groundObject);
+                     var building: BBuilding = Objects.create(BBuilding, groundObject);
                      building.playerStatus = bAlliances.getPlayerStatus(myId, building.playerId);
                      if (alliance.status == -1)
                      {

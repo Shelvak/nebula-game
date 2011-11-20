@@ -19,7 +19,7 @@ package components.movement
    import models.unit.Unit;
    
    import utils.DateUtil;
-   import utils.EventUtils;
+   import utils.Events;
    import utils.Objects;
    import utils.UrlNavigate;
    import utils.locale.Localizer;
@@ -186,7 +186,7 @@ package components.movement
       
       private function dispatchPlayerCredsChangeEvent() : void
       {
-         EventUtils.dispatchSimpleEvent(
+         Events.dispatchSimpleEvent(
             this, CSpeedControlPopupMEvent, CSpeedControlPopupMEvent.PLAYER_CREDS_CHANGE
          );
       }
@@ -222,7 +222,7 @@ package components.movement
             }
             _speedModifier = value;
             _arrivalDate.occuresIn = Math.floor(_baseTripTime * value);
-            EventUtils.dispatchSimpleEvent(
+            Events.dispatchSimpleEvent(
                this, CSpeedControlPopupMEvent, CSpeedControlPopupMEvent.SPEED_MODIFIER_CHANGE
             );
             dispatchPlayerCredsChangeEvent();

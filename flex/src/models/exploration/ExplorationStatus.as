@@ -25,7 +25,7 @@ package models.exploration
    
    import namespaces.prop_name;
    
-   import utils.EventUtils;
+   import utils.Events;
    import utils.SingletonFactory;
    import utils.StringUtil;
    import utils.datastructures.Collections;
@@ -394,7 +394,7 @@ package models.exploration
       /* ################################## */
       
       private function dispatchStatusChangeEvent() : void {
-         EventUtils.dispatchSimpleEvent(this, ExplorationStatusEvent, ExplorationStatusEvent.STATUS_CHANGE);
+         Events.dispatchSimpleEvent(this, ExplorationStatusEvent, ExplorationStatusEvent.STATUS_CHANGE);
       }
    }
 }

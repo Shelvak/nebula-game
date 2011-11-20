@@ -1,7 +1,11 @@
 package models.galaxy
 {
    import flash.geom.Point;
-   
+
+   import interfaces.IUpdatable;
+
+   import models.BaseModel;
+
    import models.galaxy.events.GalaxyEvent;
    import models.location.Location;
    import models.location.LocationMinimal;
@@ -10,7 +14,8 @@ package models.galaxy
    import models.map.MapArea;
    import models.map.MapType;
    import models.solarsystem.MSolarSystem;
-   
+   import models.time.MTimeEventFixedMoment;
+
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.events.CollectionEvent;
@@ -31,8 +36,13 @@ package models.galaxy
     * @eventType models.events.GalaxyEvent.RESIZE
     */
    [Event(name="hasWormholesChange", type="models.galaxy.events.GalaxyEvent")]
+
+   /**
+    * @see models.galaxy.events.GalaxyEvent#APOCALYPSE_START_EVENT_CHANGE
+    */
+   [Event(name="apocalypseStartEventChange", type="models.galaxy.events.GalaxyEvent")]
    
-   public class Galaxy extends MMapSpace
+   public class Galaxy extends MMapSpace implements IUpdatable
    {
       private var _fowMatrixBuilder:FOWMatrixBuilder;
       
@@ -47,7 +57,26 @@ package models.galaxy
       public override function get cached() : Boolean {
          return ML.latestGalaxy != null && !ML.latestGalaxy.fake && id == ML.latestGalaxy.id;
       }
-      
+
+      private var _apocalypseStartEvent: MTimeEventFixedMoment = null;
+      [Bindable(event="apocalypseStartEventChange")]
+      public function set apocalypseStartEvent(value: MTimeEventFixedMoment): void {
+         if (_apocalypseStartEvent != value) {
+            _apocalypseStartEvent = value;
+            dispatchSimpleEvent(
+               GalaxyEvent, GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE
+            );
+         }
+      }
+      public function get apocalypseStartEvent(): MTimeEventFixedMoment {
+         return _apocalypseStartEvent;
+      }
+
+      [Bindable(event="apocalypseStartEventChange")]
+      public function get apocalypseActive(): Boolean {
+         return _apocalypseStartEvent != null;
+      }
+
       [Required]
       [Bindable(event="willNotChange")]
       /**
@@ -262,6 +291,18 @@ package models.galaxy
       
       private function dispatchResizeEvent() : void {
          dispatchSimpleEvent(GalaxyEvent, GalaxyEvent.RESIZE);
+      }
+
+      public function update(): void {
+         if (_apocalypseStartEvent != null) {
+            _apocalypseStartEvent.update();
+         }
+      }
+
+      public function resetChangeFlags(): void {
+         if (_apocalypseStartEvent != null) {
+            _apocalypseStartEvent.resetChangeFlags();
+         }
       }
    }
 }

@@ -6,33 +6,29 @@ package utils
 
    public class BitmapUtil
    {
-      public static function flipHorizontally(source:BitmapData) : BitmapData
-      {
+      public static function flipHorizontally(source: BitmapData): BitmapData {
          var result: BitmapData = new BitmapData(source.width, source.height);
-         for (var x:int = source.width - 1; x >= 0 ; x--)
-         {
-            for (var y:int = 0; y < source.height; y++)
-            {
-               result.setPixel32(source.width - x - 1, y, source.getPixel32(x, y));
+         for (var x: int = source.width - 1; x >= 0; x--) {
+            for (var y: int = 0; y < source.height; y++) {
+               result.setPixel32(
+                  source.width - x - 1, y, source.getPixel32(x, y)
+               );
             }
          }
          return result;
       }
 
-
-      public static function flipVertically(source:BitmapData) : BitmapData
-      {
-         var result:BitmapData = new BitmapData(source.width, source.height);
-         for (var x:int = 0; x < source.width; x++)
-         {
-            for (var y:int = source.height - 1; y >= 0; y--)
-            {
-               result.setPixel32(x, source.height - y - 1, source.getPixel32(x, y));
+      public static function flipVertically(source: BitmapData): BitmapData {
+         var result: BitmapData = new BitmapData(source.width, source.height);
+         for (var x: int = 0; x < source.width; x++) {
+            for (var y: int = source.height - 1; y >= 0; y--) {
+               result.setPixel32(
+                  x, source.height - y - 1, source.getPixel32(x, y)
+               );
             }
          }
          return result;
       }
-
 
       /**
        * This method will fill target area of target bitmap with pixels from source bitmap. If source bitmap is
@@ -47,29 +43,25 @@ package utils
        *
        * @see BitmapData#copyPixels()
        */
-      public static function fillWithBitmap(source:BitmapData,
-                                            target:BitmapData,
-                                            targetRect:Rectangle = null,
-                                            mergeAlpha:Boolean = false) : void
-      {
+      public static function fillWithBitmap(source: BitmapData,
+                                            target: BitmapData,
+                                            targetRect: Rectangle = null,
+                                            mergeAlpha: Boolean = false): void {
          // We have to fill whole target bitmap if targetArea has not been provided
-         if (targetRect == null)
-         {
+         if (targetRect == null) {
             targetRect = target.rect;
          }
 
-         var sourceRect:Rectangle = source.rect;
-         var targetPoint:Point = targetRect.topLeft.clone();
-         while (targetPoint.x < targetRect.width + targetRect.x)
-         {
-            while (targetPoint.y < targetRect.height + targetRect.y)
-            {
-               target.copyPixels(source, source.rect, targetPoint, null, null, mergeAlpha);
+         var targetPoint: Point = targetRect.topLeft.clone();
+         while (targetPoint.x < targetRect.width + targetRect.x) {
+            while (targetPoint.y < targetRect.height + targetRect.y) {
+               target.copyPixels(
+                  source, source.rect, targetPoint, null, null, mergeAlpha
+               );
                targetPoint.y += source.height;
             }
-
             targetPoint.x += source.width;
-            targetPoint.y  = targetRect.y;
+            targetPoint.y = targetRect.y;
          }
       }
    }

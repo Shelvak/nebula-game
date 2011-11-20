@@ -8,6 +8,11 @@ package controllers.galaxies
        * @see controllers.galaxies.actions.ShowAction
        */
       public static const SHOW:String = "galaxies|show";
+
+      /**
+       * @see controllers.galaxies.actions.ApocalypseStartAction
+       */
+      public static const APOCALYPSE_START:String = "galaxies|apocalypse_start";
       
       
       public function GalaxiesCommand(type:String,

@@ -2,9 +2,9 @@ package tests._old.models
 {
    import models.building.BuildingBonuses;
    
-   import net.digitalprimates.fluint.tests.TestCase;
+   import org.flexunit.asserts.assertEquals;
    
-   public class BuildingBonusesTest extends TestCase
+   public class BuildingBonusesTest
    {
       
       [Test]

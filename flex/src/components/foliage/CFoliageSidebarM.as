@@ -14,7 +14,7 @@ package components.foliage
    
    import namespaces.prop_name;
    
-   import utils.EventUtils;
+   import utils.Events;
    
    
    /**
@@ -101,7 +101,7 @@ package components.foliage
       }
       
       private function dispatchStateChangeEvent() : void {
-         EventUtils.dispatchSimpleEvent(this, CFoliageSidebarMEvent, CFoliageSidebarMEvent.STATE_CHANGE);
+         Events.dispatchSimpleEvent(this, CFoliageSidebarMEvent, CFoliageSidebarMEvent.STATE_CHANGE);
       }
    }
 }

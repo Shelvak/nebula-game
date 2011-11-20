@@ -1,10 +1,9 @@
 package models.factories
 {
-   import models.BaseModel;
    import models.solarsystem.MSSMetadata;
    import models.solarsystem.MSolarSystem;
    
-   import mx.core.mx_internal;
+   import utils.Objects;
    
    
    /**
@@ -24,9 +23,9 @@ package models.factories
          if (!data) {
             return null;
          }
-         var ss:MSolarSystem = BaseModel.createModel(MSolarSystem, data);
+         var ss:MSolarSystem = Objects.create(MSolarSystem, data);
          if (data["metadata"] != null) {
-            ss.metadata = BaseModel.createModel(MSSMetadata, data.metadata);
+            ss.metadata = Objects.create(MSSMetadata, data.metadata);
          }
          return ss;
       }

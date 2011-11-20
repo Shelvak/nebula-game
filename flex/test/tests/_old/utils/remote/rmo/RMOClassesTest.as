@@ -2,12 +2,16 @@ package tests._old.utils.remote.rmo
 {
    import com.adobe.serialization.json.JSON;
    
-   import net.digitalprimates.fluint.tests.TestCase;
+   import org.flexunit.asserts.assertEquals;
+   import org.flexunit.asserts.assertFalse;
+   import org.flexunit.asserts.assertNotNull;
+   import org.flexunit.asserts.assertNull;
+   import org.flexunit.asserts.assertTrue;
    
    import utils.remote.rmo.*;
 	
    
-	public class RMOClassesTest extends TestCase
+	public class RMOClassesTest
 	{
 	   // ################################################ //
 	   // ### Testing message parsing form JSON to RMO ### //

@@ -3,7 +3,6 @@ package components.base.viewport
    import flash.geom.Point;
    import flash.geom.Rectangle;
    
-   import utils.GeomUtils;
    import utils.Objects;
 
    /**
@@ -123,8 +122,8 @@ package components.base.viewport
             var newRect:AreaRectangle = newArea.rectangle;
             _client.visibleAreaChange(
                _clippedArea.rectangle,
-               oldRect.substract(newRect),
-               newRect.substract(oldRect)
+               oldRect.subtract(newRect),
+               newRect.subtract(oldRect)
             );
          }
       }
@@ -162,10 +161,10 @@ class AreaRectangle extends Rectangle
       return width <= 0 || height <= 0;
    }
    
-   public function substract(toSubstract:Rectangle) : Vector.<Rectangle> {
-      Objects.paramNotNull("rect", toSubstract);
+   public function subtract(toSubtract:Rectangle) : Vector.<Rectangle> {
+      Objects.paramNotNull("toSubtract", toSubtract);
       var sections:Vector.<Rectangle> = new Vector.<Rectangle>();
-      for each (var section:Rectangle in GeomUtils.substract(this, toSubstract)) {
+      for each (var section:Rectangle in GeomUtils.subtract(this, toSubtract)) {
          sections.push(new AreaRectangle(
             section.x, section.y,
             section.width, section.height

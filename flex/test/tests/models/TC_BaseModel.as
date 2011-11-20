@@ -2,344 +2,92 @@ package tests.models
 {
    import ext.hamcrest.object.equals;
    
-   import flash.geom.Point;
-   
    import models.BaseModel;
    
    import org.hamcrest.assertThat;
-   import org.hamcrest.core.not;
    import org.hamcrest.core.throws;
-   import org.hamcrest.number.isNotANumber;
-   import org.hamcrest.object.equalTo;
-   import org.hamcrest.object.notNullValue;
+   import org.hamcrest.object.isFalse;
+   import org.hamcrest.text.emptyString;
    
-   import tests.models.classes.ModelAggregator;
-   import tests.models.classes.ModelNested;
-   import tests.models.classes.ModelRequiredSelf;
+   import tests.models.classes.Model;
+   import tests.models.classes.ModelSkipProperty;
 
    public class TC_BaseModel
    {
-      [Test]
-      public function createModel_error() : void
-      {
-         assertThat(
-            function():void{ createModel(ModelInvalidMetadata, {invalid: "invalid"}) },
-            throws(Error)
-         );
-         
-         assertThat(
-            function():void{ createModel(ModelMissingCollectionMetadata, {collection: [1]}) },
-            throws (Error)
-         );
-         
-         assertThat(
-            function():void{ createModel(ModelUnsupportedCollectionItem, {collection: [new Date()]}) },
-            throws (Error)
-         );
-         
-         assertThat(
-            function():void{ createModel(ModelRequiredProps, {name: "MikisM"}) },
-            throws (Error)
-         );
-         
-         assertThat(
-            function():void{ createModel(ModelRequiredProps, {name: new Date(), age: 5}) },
-            throws (Error)
-         );
-         
-         assertThat(
-            function():void{ createModel(ModelDateProp, {date: "not a date"}) },
-            throws (Error)
-         );
-         
-         assertThat(
-            function():void{ createModel(ModelUnsupportedPropertyType, {point: new Point()}) },
-            throws (Error)
-         );
-         
-         assertThat(
-            function():void{ createModel(ModelRequiredSelf, {id: 2, self: {id: 3}}) },
-            throws (Error)
-         );
-         
-         
-         assertThat(
-            function():void{ createModel(ModelAliasProperties, {}) },
-            throws (Error)
-         );
-      };
-      
-      
-      /**
-       * Checks if tree-like structures are created using createModel().
-       */
-      public function createModel_nestedModels() : void
-      {
-         var model:ModelNested = createModel(ModelNested, {id: 1, nested: {id: 2}});
-         assertThat( model.id, equalTo (1) );
-         assertThat( model.nested, notNullValue() );
-         assertThat( model.nested.id, equalTo (2) );
-      };
-      
-      
-      /**
-       * Checks if null and undefined values are not copied when [Optional] tag is used. 
-       */
-      public function createModel_optional_undefinedAndNull() : void
-      {
-         var model:ModelOptionalMetadata = null;
-         
-         model = createModel(ModelOptionalMetadata, {optional: null});
-         assertThat( model.optional, equalTo ("default") );
-         
-         model = createModel(ModelOptionalMetadata, {});
-         assertThat( model.optional, equalTo ("default") );
-      };
-      
+      /* ######################## */
+      /* ### copyProperties() ### */
+      /* ######################## */
       
       [Test]
-      /**
-       * When "alias" attribute of [Optional] or [Required] metadata tag is specified property of
-       * source object named as specified by that attribute should be used instead of staticly
-       * typed property name of model beeing created.
-       */
-      public function createModel_propertyAlias() : void
-      {
-         var model:ModelAliasProperties = createModel(ModelAliasProperties, {
-            "requiredAlias": "required",
-            "optionalAlias": "optional",
-            "requiredModelAlias": new BaseModel()
-         });
-         assertThat( model.required, equalTo ("required") );
-         assertThat( model.optional, equalTo ("optional") );
-         assertThat( model.requiredModel, notNullValue() );
-      };
-      
-      [Test]
-      public function createModel_aggregatesPropsErrors() : void {
-         assertThat(
-            "when no properties provided for required aggregator",
-            function():void{ createModel(ModelPropsAggregatorRequired, {}) }, throws (Error)
-         );
-         assertThat(
-            "when no properties provided for optional aggregator",
-            function():void{ createModel(ModelPropsAggregatorOptional, {}) }, not (throws (Error))
-         );
-         assertThat(
-            "not providing required property for aggregator",
-            function():void{ createModel(ModelPropsAggregatorRequired, {"optional": 0}) }, throws (Error)
-         );
-         assertThat(
-            "not providing optional but providing required property for aggregator",
-            function():void{ createModel(ModelPropsAggregatorRequired, {"required": 0}) }, not (throws (Error))
-         );
-         assertThat(
-            "alias attribute not allowed on aggregators",
-            function():void{ createModel(ModelPropsAggregatorAlias, {"required": 0}) }, throws (Error)
-         );
-         assertThat(
-            "aggregatesProps and aggregatesPrefix attributes not allowed together",
-            function():void{ createModel(ModelPropsAndPrefixAggregator, {"required": 0, "optional": 0}) }, throws (Error)
-         );
+      public function copyProperties_nullSource() : void {
+         var model:Model = new Model();
+         model.copyProperties(null);
+         assertThat( "id should have not changed", model.id, equals (0) );
+         assertThat( "pending should have not changed", model.pending, isFalse() );
+         assertThat( "age should have not changed", model.age, equals (0) );
+         assertThat( "name should have not changed", model.name, emptyString() );
+         assertThat( "surname should have not changed", model.surname, emptyString() );
       }
       
       [Test]
-      public function createModel_aggregatesPrefixErrors() : void {
-         assertThat(
-            "when no properties provided for required aggregator",
-            function():void{ createModel(ModelPrefixAggregatorRequired, {}) }, throws (Error)
-         );
-         assertThat(
-            "when no properties provided for optional aggregator",
-            function():void{ createModel(ModelPrefixAggregatorOptional, {}) }, not (throws (Error))
-         );
-         assertThat(
-            "not providing required property for aggregator",
-            function():void{ createModel(ModelPrefixAggregatorRequired, {"prefixOptional": 0}) }, throws (Error)
-         );
-         assertThat(
-            "not providing optional but providing required property for aggregator",
-            function():void{ createModel(ModelPrefixAggregatorRequired, {"prefixRequired": 0}) }, not (throws (Error))
-         );
+      public function copyProperties_errors() : void {
+         var model:Model = new Model();
+         function $_copying(source:BaseModel, ignoreSkipProperty:Boolean = false, props:Array = null) : Function {
+            return function() : void {
+               model.copyProperties(source, ignoreSkipProperty, props);
+            }
+         }
+         assertThat( "[param source] of different type", $_copying(new BaseModel()), throws (TypeError) );
+         assertThat( "[param props] has undefined property", $_copying(new Model(), false, ["age", "nonExisting"]) );
       }
       
       [Test]
-      public function createModel_aggregatesProps() : void {
-         var aggregatorUser:IAggregatorUser;
-         var aggregator:ModelAggregator;
+      public function copyProperties() : void {
+         var dest:* = new Model();
+         var src:* = new Model();
+         function checkIfChanged(prop:String) : void {
+            assertThat( prop + " should have been copied", dest[prop], equals (src[prop]) );
+         };
+         function checkIfNotChanged(prop:String, oldValue:*) : void {
+            assertThat( prop + " should not have been changed", dest[prop], equals(oldValue) );
+         };
          
-         aggregatorUser = createModel(ModelPropsAggregatorRequired, {"required": 0});
-         aggregator = aggregatorUser.getAggregator();
-         assertThat( "aggregator without optional prop created", aggregator, notNullValue() );
-         assertThat( "aggregator.required", aggregator.required, equals (0) );
-         assertThat( "aggregator.optional", aggregator.optional, isNotANumber() );
+         // Try copying all properties
+         src.id = 5;
+         src.pending = true;
+         src.age = 8;
+         src.name = "Mykolas";
+         src.surname = "Mickus";
+         dest.copyProperties(src);
+         checkIfChanged("id");
+         checkIfChanged("age");
+         checkIfChanged("name");
+         checkIfChanged("surname");
          
-         aggregatorUser = createModel(ModelPropsAggregatorRequired, {"required": 0, "optional" :1});
-         aggregator = aggregatorUser.getAggregator();
-         assertThat( "aggregator with optional prop created", aggregator, notNullValue() );
-         assertThat( "aggregator.required", aggregator.required, equals (0) );
-         assertThat( "aggregator.optional", aggregator.optional, equals (1) );
+         // Now just a few of them
+         src.id = 8;
+         src.pending = false;
+         src.name = "Jonas";
+         src.surname = "Abromaitis";
+         dest.copyProperties(src, false, ["id", "name"]);
+         checkIfChanged("id");
+         checkIfChanged("name");
+         checkIfNotChanged("pending", false);
+         checkIfNotChanged("age", 8);
+         checkIfNotChanged("surname", "Mickus");
+         
+         // Check if [SkipProperty] works
+         dest = new ModelSkipProperty();
+         src = new ModelSkipProperty();
+         src.skipVariable = 5;
+         src.skipAccessor = 5;
+         src.notSkipVariable = 8;
+         src.notSkipAccessor = 8;
+         dest.copyProperties(src);
+         checkIfChanged("notSkipVariable");
+         checkIfChanged("notSkipAccessor");
+         checkIfNotChanged("skipVariable", 0);
+         checkIfNotChanged("skipAccessor", 0);
       }
-      
-      [Test]
-      public function createModel_aggregatesPrefix() : void {
-         var aggregatorUser:IAggregatorUser;
-         var aggregator:ModelAggregator;
-         
-         aggregatorUser = createModel(ModelPrefixAggregatorRequired, {"prefixRequired": 0});
-         aggregator = aggregatorUser.getAggregator();
-         assertThat( "aggregator without optional prop created", aggregator, notNullValue() );
-         assertThat( "aggregator.required", aggregator.required, equals (0) );
-         assertThat( "aggregator.optional", aggregator.optional, isNotANumber() );
-         
-         aggregatorUser = createModel(ModelPrefixAggregatorRequired, {"prefixRequired": 0, "prefixOptional" :1});
-         aggregator = aggregatorUser.getAggregator();
-         assertThat( "aggregator with optional prop created", aggregator, notNullValue() );
-         assertThat( "aggregator.required", aggregator.required, equals (0) );
-         assertThat( "aggregator.optional", aggregator.optional, equals (1) );
-      }
-      
-      private function createModel(type:Class, data:Object) : * {
-         return BaseModel.createModel(type, data);
-      }
-   }
-}
-
-
-import flash.geom.Point;
-
-import models.BaseModel;
-
-import tests.models.classes.ModelAggregator;
-
-
-class ModelInvalidMetadata extends BaseModel
-{
-   [Required]
-   [Optional]
-   public var invalid:String = null;
-}
-
-
-class ModelOptionalMetadata extends BaseModel
-{
-   [Optional]
-   public var optional:String = "default";
-}
-
-
-class ModelMissingCollectionMetadata extends BaseModel
-{
-   [Required]
-   public var collection:Array = null;
-}
-
-
-class ModelUnsupportedCollectionItem extends BaseModel
-{
-   [Required(elementType="Date")]
-   public var collection:Array = null;
-}
-
-
-class ModelRequiredProps extends BaseModel
-{
-   [Required]
-   public var name:String = "";
-   [Required]
-   public var age:int = 0;
-}
-
-
-class ModelDateProp extends BaseModel
-{
-   [Required]
-   public var date:Date = null;
-}
-
-
-class ModelUnsupportedPropertyType extends BaseModel
-{
-   [Required]
-   public var point:Point;
-}
-
-
-class ModelAliasProperties extends BaseModel
-{
-   [Required(alias="requiredAlias")]
-   /**
-    * [Required(serverAlias="requiredAlias")]
-    */
-   public var required:String = null;
-   
-   [Optional(alias="optionalAlias")]
-   /**
-    * [Optional(serverAlias="optionalAlias")]
-    */
-   public var optional:String = null;
-   
-   [Required(alias="requiredModelAlias")]
-   /**
-    * [Required(alias="requiredModelAlias")]
-    */
-   public var requiredModel:BaseModel = null;
-}
-
-interface IAggregatorUser
-{
-   function getAggregator() : ModelAggregator;
-}
-
-class ModelPropsAggregatorAlias extends BaseModel implements IAggregatorUser {
-   [Required(alias="aggregatorAlias", aggregatesProps="optional, required")]
-   public var aggregator:ModelAggregator;
-   public function getAggregator() : ModelAggregator {
-      return aggregator;
-   }
-}
-
-class ModelPropsAggregatorRequired extends BaseModel implements IAggregatorUser
-{
-   [Required(aggregatesProps="optional, required")]
-   public var aggregator:ModelAggregator;
-   public function getAggregator() : ModelAggregator {
-      return aggregator;
-   }
-}
-
-class ModelPropsAggregatorOptional extends BaseModel implements IAggregatorUser
-{
-   [Optional(aggregatesProps="optional, required")]
-   public var aggregator:ModelAggregator;
-   public function getAggregator() : ModelAggregator {
-      return aggregator;
-   }
-}
-
-class ModelPrefixAggregatorRequired extends BaseModel implements IAggregatorUser
-{
-   [Required(aggregatesPrefix="prefix")]
-   public var aggregator:ModelAggregator;
-   public function getAggregator() : ModelAggregator {
-      return aggregator;
-   }
-}
-
-class ModelPrefixAggregatorOptional extends BaseModel implements IAggregatorUser
-{
-   [Optional(aggregatesPrefix="prefix")]
-   public var aggregator:ModelAggregator;
-   public function getAggregator() : ModelAggregator {
-      return aggregator;
-   }
-}
-
-class ModelPropsAndPrefixAggregator extends BaseModel implements IAggregatorUser
-{
-   [Required(aggregatesProps="required", aggregatesPrefix="prefix")]
-   public var aggregator:ModelAggregator;
-   public function getAggregator() : ModelAggregator {
-      return aggregator;
    }
 }

@@ -8,7 +8,7 @@ package models.time
    import namespaces.change_flag;
    
    import utils.DateUtil;
-   import utils.EventUtils;
+   import utils.Events;
    import utils.NumberUtil;
    import utils.Objects;
    
@@ -19,8 +19,7 @@ package models.time
     */
    public class MTimeEvent extends EventDispatcher implements IMTimeEvent
    {
-      public function MTimeEvent()
-      {
+      public function MTimeEvent() {
          super();
       }
       
@@ -62,8 +61,9 @@ package models.time
       
       
       public function equals(o:Object):Boolean {
-         if (!(o is MTimeEvent) || Objects.getClassName(this) != Objects.getClassName(o))
+         if (!(o is MTimeEvent) || Objects.getClassName(this) != Objects.getClassName(o)) {
             return false;
+         }
          return NumberUtil.equal(this.occuresAt.time, MTimeEvent(o).occuresAt.time, 10);
       }
       
@@ -102,10 +102,10 @@ package models.time
       
       
       /**
-       * @see utils.EventUtils#dispatchSimpleEvent()
+       * @see utils.Events#dispatchSimpleEvent()
        */
       protected function dispatchSimpleEvent(CLASS:Class, type:String) : void {
-         EventUtils.dispatchSimpleEvent(this, CLASS, type);
+         Events.dispatchSimpleEvent(this, CLASS, type);
       }
       
       protected function occuresInUpdated() : void {

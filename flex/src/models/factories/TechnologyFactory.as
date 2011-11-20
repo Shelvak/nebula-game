@@ -1,12 +1,8 @@
 package models.factories
 {
-   
-   import config.Config;
-   
-   import flash.utils.getDefinitionByName;
-   
-   import models.BaseModel;
    import models.technology.Technology;
+   
+   import utils.Objects;
    
    
    /**
@@ -22,13 +18,8 @@ package models.factories
        * @return instance of <code>Technology</code> with values of properties
        * loaded from the data object.
        */
-      public static function fromObject(data:Object) : Technology
-      {
-         if (!data)
-         {
-            return null;
-         }
-         return BaseModel.createModel(Technology, data);
+      public static function fromObject(data:Object) : Technology {
+         return Objects.create(Technology, data);
       }
       
    }

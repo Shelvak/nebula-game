@@ -1,18 +1,20 @@
 package models.unit
 {
-   import models.BaseModel;
    import models.factories.UnitFactory;
    import models.location.Location;
    import models.player.PlayerMinimal;
-   
+
    import mx.collections.ArrayCollection;
+
+   import utils.Objects;
+
 
    public class MPositionedUnits
    {
       public function MPositionedUnits(_location: Object, units: Object, _player: PlayerMinimal)
       {
          cachedUnits = UnitFactory.createCachedUnits(units);
-         location = BaseModel.createModel(Location, _location);
+         location = Objects.create(Location, _location);
          player = _player;
       }
       

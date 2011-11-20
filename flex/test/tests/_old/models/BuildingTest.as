@@ -1,27 +1,26 @@
 package tests._old.models
 {
    import models.building.Building;
-   import models.building.BuildingBonuses;
    
-   import net.digitalprimates.fluint.tests.TestCase;
+   import org.flexunit.asserts.assertEquals;
+   import org.flexunit.asserts.assertFalse;
+   import org.flexunit.asserts.assertTrue;
    
    
-   
-   
-   public class BuildingTest extends TestCase
+   public class BuildingTest
    {
       private var b: Building;
       private var xMin :int, xMax: int, yMin: int, yMax: int;
       
-      
-      override protected function setUp () :void
+      [Before]
+      public function setUp () :void
       {
          b = new Building ();
          xMin = xMax = yMin = yMax = 0;
       };
       
-      
-      override protected function tearDown():void
+      [After]
+      public function tearDown():void
       {
          b.cleanup();
          b = null;

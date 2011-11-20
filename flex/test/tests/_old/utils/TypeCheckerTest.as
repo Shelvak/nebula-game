@@ -1,13 +1,19 @@
 package tests._old.utils
 {
-   import net.digitalprimates.fluint.tests.TestCase;
+   import mx.collections.ArrayCollection;
+   
+   import org.flexunit.asserts.assertFalse;
+   import org.flexunit.asserts.assertTrue;
+   import org.hamcrest.assertThat;
+   import org.hamcrest.object.isFalse;
+   import org.hamcrest.object.isTrue;
    
    import spark.components.Button;
    
    import utils.TypeChecker;
    
    
-   public class TypeCheckerTest extends TestCase
+   public class TypeCheckerTest
    {
       // ############################### //
       // ### Testing primitive types ### //
@@ -164,6 +170,21 @@ package tests._old.utils
             "A Vector of Buttons should be a Vector",
             TypeChecker.isVector(new Vector.<Button>())
          );
+      }
+      
+      [Test]
+      public function isCollection() : void {
+         function isCollection(instance:*) : Boolean {
+            return TypeChecker.isCollection(instance);
+         }
+         
+         assertThat( "Array is a collection", isCollection(new Array()), isTrue() );
+         assertThat( "Vector.<int> is a collection", isCollection(new Vector.<int>()), isTrue() );
+         assertThat( "Vector.<Object> is a collection", isCollection(new Vector.<Object>()), isTrue() );
+         assertThat( "IList is a collection", isCollection(new ArrayCollection()), isTrue() );
+         assertThat( "null is not a collection", isCollection(null), isFalse() );
+         assertThat( "Object is not a collection", isCollection(new Object()), isFalse() );
+         assertThat( "String is not a collection", isCollection("String"), isFalse() );
       }
    }
 }

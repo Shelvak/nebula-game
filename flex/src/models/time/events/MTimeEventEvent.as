@@ -33,6 +33,15 @@ package models.time.events
        * @see models.time.IMTimeEvent#occuresAt
        */
       public static const OCCURES_AT_CHANGE:String = "occuresAtChange";
+
+      /**
+       * Dispatched when <code>models.time.MTimeEventFixedMoment.occurredBefore</code> property changes.
+       *
+       * @eventType occuredBeforeChange
+       *
+       * @see models.time.MTimeEventFixedMoment#occuredBefore
+       */
+      public static const OCCURRED_BEFORE_CHANGE:String = "occurredBeforeChange";
       
       
       public function MTimeEventEvent(type:String)

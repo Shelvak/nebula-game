@@ -317,18 +317,18 @@ package components.map.space
       /**
        * <code>MouseEvent.CLICK</code> event handler. Ivoked by <code>CMapSpace</code>.
        */
-      internal function map_clickHandler(event:MouseEvent) : void
-      {
-         if (ORDERS_CTRL.issuingOrders)
-         {
+      internal function map_clickHandler(event: MouseEvent): void {
+         if (ORDERS_CTRL.issuingOrders) {
             doSectorProximitySearch();
-            var staticObject:* = getStaticObjectInSector(locationUnderMouse);
-            if (staticObject)
-            {
+            if (locationUnderMouse == null) {
+               // we don't have sector close enough to the mouse pointer
+               return;
+            }
+            var staticObject: * = getStaticObjectInSector(locationUnderMouse);
+            if (staticObject) {
                _map.selectComponent(staticObject);
             }
-            else
-            {
+            else {
                _map.deselectSelectedObject();
             }
             issueOrderToLocationUnderMouse();
