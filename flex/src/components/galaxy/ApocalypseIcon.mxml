@@ -4,12 +4,15 @@
          visible="{ML.latestGalaxy.apocalypseActive}"
          includeInLayout="{ML.latestGalaxy.apocalypseActive}"
          toolTipCreate="this_toolTipCreateHandler(event)"
-         toolTip="">
+         toolTip="This is needed for tooltip create to work"
+         click="UrlNavigate.getInstance().openApocalypseInfo()">
    <fx:Script>
       <![CDATA[
       import models.ModelLocator;
 
       import mx.events.ToolTipEvent;
+
+      import utils.UrlNavigate;
 
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
