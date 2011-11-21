@@ -1,7 +1,7 @@
 package models.factories
 {
    import models.market.MarketOffer;
-   
+
    import utils.Objects;
 
    public class MarketOfferFactory
