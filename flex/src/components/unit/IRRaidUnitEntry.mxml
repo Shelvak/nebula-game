@@ -50,10 +50,11 @@
          </s:Rect>
          
          <s:Group left="2" right="2" top="2" bottom="0"
-                  toolTip="{Localizer.string('Units', 'tooltip.raidProbability',
+                  toolTip="{RaidingUnitEntry(data).prob >= 1
+                  ? '' : Localizer.string('Units', 'tooltip.raidProbability',
                   [RaidingUnitEntry(data).countFrom,
                   RaidingUnitEntry(data).countTo - RaidingUnitEntry(data).countFrom,
-                  (RaidingUnitEntry(data).prob * 100).toFixed(1)])}">
+                  (Math.min(1, RaidingUnitEntry(data).prob) * 100).toFixed(1)])}">
             <s:layout>
                <s:VerticalLayout horizontalAlign="center" gap="4"/>
             </s:layout>
@@ -62,8 +63,9 @@
                            source="{RaidingUnitEntry(data).imageData}"/>
             <!-- count -->
             <s:Label styleName="unitsCount"
-                     text="{RaidingUnitEntry(data).countFrom + '-' +
-                     RaidingUnitEntry(data).countTo}"
+                     text="{(RaidingUnitEntry(data).prob >= 1
+                     ? '' : (RaidingUnitEntry(data).countFrom + '-'))
+                     + RaidingUnitEntry(data).countTo}"
                     fontSize="{RaidingUnitEntry(data).countTo &lt; 1000
                     ? 12 : (RaidingUnitEntry(data).countFrom &lt; 1000
                     ? 10 : (RaidingUnitEntry(data).countTo &lt; 10000
