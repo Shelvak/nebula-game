@@ -14,7 +14,7 @@ CLIENT_TARGET = File.join(PROJECT_ROOT, 'flex', 'target', 'dist')
 DEPLOY_CONFIG = {
   :username => "spacegame",
   # Number of releases kept in server (including current)
-  :releases_kept => 4,
+  :releases_kept => 6,
   :release_branch => {
     :stable => "master",
     :beta => "server"
