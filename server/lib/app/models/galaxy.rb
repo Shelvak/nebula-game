@@ -14,11 +14,6 @@ class Galaxy < ActiveRecord::Base
   # development galaxies.
   def dev?; Cfg.development_galaxy?(ruleset); end
 
-  # Has the apocalyse started in this galaxy?
-  def apocalypse_started?
-    ! apocalypse_start.nil?
-  end
-
   # Returns ID of battleground solar system.
   def self.battleground_id(galaxy_id)
     SolarSystem.select("id").
@@ -26,7 +21,7 @@ class Galaxy < ActiveRecord::Base
       c_select_value.to_i
   end
 
-  # Returns apocalypse start for the galaxy.
+  # Returns ID of battleground solar system.
   def self.apocalypse_start(galaxy_id)
     time = Galaxy.select("apocalypse_start").where(:id => galaxy_id).
       c_select_value
@@ -41,7 +36,7 @@ class Galaxy < ActiveRecord::Base
       sanitize_sql_for_conditions(
         {
           :player_id => player.friendly_ids,
-          :location_type => Location::GALAXY, 
+          :location_type => Location::GALAXY,
           :location_id => player.galaxy_id
         },
         Unit.table_name
@@ -71,7 +66,7 @@ class Galaxy < ActiveRecord::Base
   def self.create_player(galaxy_id, web_user_id, name)
     find(galaxy_id).create_player(web_user_id, name)
   end
-  
+
   def self.on_callback(id, event)
     case event
     when CallbackManager::EVENT_SPAWN
@@ -81,7 +76,7 @@ class Galaxy < ActiveRecord::Base
       CallbackManager.register(galaxy, CallbackManager::EVENT_SPAWN,
         CONFIG.evalproperty('galaxy.convoy.time').from_now)
     when CallbackManager::EVENT_CREATE_METAL_SYSTEM_OFFER,
-        CallbackManager::EVENT_CREATE_ENERGY_SYSTEM_OFFER, 
+        CallbackManager::EVENT_CREATE_ENERGY_SYSTEM_OFFER,
         CallbackManager::EVENT_CREATE_ZETIUM_SYSTEM_OFFER
       MarketOffer.create_system_offer(
         id, MarketOffer::CALLBACK_MAPPINGS_FLIPPED[event]
@@ -91,12 +86,57 @@ class Galaxy < ActiveRecord::Base
         CallbackManager::STRING_NAMES[event]} (#{event})")
     end
   end
-  
+
+  # Saves statistical galaxy data for when somebody wins the galaxy.
+  # @param galaxy_id [Fixnum]
+  # @return [TrueClass]
+  def self.save_galaxy_finish_data(galaxy_id)
+    ratings = Player.ratings(galaxy_id)
+    alliance_ratings = Alliance.ratings(galaxy_id)
+
+    data = JSON.generate({
+      'date' => Time.now,
+      'ratings' => ratings,
+      'alliance_ratings' => alliance_ratings
+    })
+    MAILER.call("WIN", "").call("We have a winner!\n\n" + data) \
+      if App.in_production?
+    File.open(
+      File.join(ROOT_DIR, "galaxy-#{galaxy_id}-finish-data.txt"),
+      "w"
+    ) { |f| f.write data } unless App.in_test?
+
+    true
+  end
+
+  # Check if this galaxy should be finished. If so - finish it.
+  # @param victory_points [Fixnum]
+  def check_if_finished!(victory_points)
+    finish! if ! dev? && ! finished? && victory_points >= Cfg.vps_for_winning
+  end
+
+  def finished?
+    ! apocalypse_start.nil?
+  end
+
+  # End galaxy and start countdown of apocalypse.
+  def finish!
+    self.class.save_galaxy_finish_data(id)
+
+    self.apocalypse_start = Cfg.apocalypse_start_time
+    save!
+    EventBroker.fire(
+      Event::ApocalypseStart.new(id, apocalypse_start), EventBroker::CREATED
+    )
+
+    true
+  end
+
   # Spawns convoy traveling from one random wormhole to other.
   def spawn_convoy!
     total = solar_systems.wormhole.count
     return if total < 2
-      
+
     CONFIG.with_set_scope(ruleset) do
       source = target = nil
       while source == target
@@ -120,11 +160,11 @@ class Galaxy < ActiveRecord::Base
           CONFIG['galaxy.convoy.speed_modifier'])
 
         units.each do |unit|
-          CallbackManager.register(unit, CallbackManager::EVENT_DESTROY, 
+          CallbackManager.register(unit, CallbackManager::EVENT_DESTROY,
             route.arrives_at)
         end
 
-        route 
+        route
       end
     end
   end
