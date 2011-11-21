@@ -73,6 +73,8 @@
       </s:Group>
       <s:Label text="{player.planetsCount}" width="{RatingsWidths.planetsCount}" 
                textAlign="center"/>
+      <s:Label text="{player.bgPlanetsCount}" width="{RatingsWidths.bgPlanetsCount}"
+               textAlign="center"/>
       <s:Label text="{player.economyPoints}" width="{RatingsWidths.economyPoints}" 
                textAlign="center"/>
       <s:Label text="{player.sciencePoints}" width="{RatingsWidths.sciencePoints}" 

@@ -114,7 +114,9 @@
                   <s:Group width="100%">
                   <s:Group width="100%">
                      <s:Label width="120" text="{Localizer.string('Ratings', 'planetsCount')}"/>
-                     <s:Label text="{player.planetsCount}"/>
+                     <s:Label text="{player.planetsCount + ' / ' + player.bgPlanetsCount}"
+                             toolTip="{Localizer.string('Ratings',
+                             'tooltip.planetsVsBattleground')}"/>
                      <s:layout>
                         <s:HorizontalLayout/>
                      </s:layout>
