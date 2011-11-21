@@ -8,7 +8,7 @@ import spacemule.modules.pmg.objects.SSObject
 import spacemule.modules.config.objects.Config
 import spacemule.persistence.{DB, RowObject, Row}
 import java.util.Calendar
-import ss_object.{AsteroidRow, PlanetRow}
+import ss_object._
 
 object SSObjectRow extends RowObject {
   val columnsSeq = List(
@@ -17,7 +17,7 @@ object SSObjectRow extends RowObject {
     "metal", "metal_generation_rate", "metal_usage_rate", "metal_storage",
     "energy", "energy_generation_rate", "energy_usage_rate", "energy_storage",
     "zetium", "zetium_generation_rate", "zetium_usage_rate", "zetium_storage",
-    "last_resources_update"
+    "last_resources_update", "next_raid_at"
   )
 
   object Resources {
@@ -47,6 +47,7 @@ object SSObjectRow extends RowObject {
   ) = ssObject match {
     case a: Asteroid => AsteroidRow(solarSystemRow, coord, a)
     case p: Planet => PlanetRow(solarSystemRow, coord, p)
+    case j: Jumpgate => JumpgateRow(solarSystemRow, coord, j)
   }
 }
 
@@ -67,10 +68,14 @@ abstract class SSObjectRow(
     SSObjectRow.Resources.Resource(0, 0, 0, 0)
   )
   val ownerChanged: Option[Calendar] = None
+  val nextRaidAt: Option[Calendar] = None
 
   // Initialize this lazily, because this abstract class is subclassed.
   lazy val valuesSeq = List(
     id, ssObject.name, solarSystemRow.id, coord.angle, coord.position,
     width, height, terrain, playerId, name, size, DB.date(ownerChanged)
-  ) ++ resources.toSeq
+  ) ++ resources.toSeq :+ (nextRaidAt match {
+    case Some(time) => DB.date(time)
+    case None => DB.loadInFileNull
+  })
 }

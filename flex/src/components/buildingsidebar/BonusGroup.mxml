@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:base="components.base.*"
+                        xmlns:elements="components.buildingsidebar.*"
+                        visible="{building != null}">
+   <fx:Script><![CDATA[
+      import models.building.Building;
+      import models.resource.ResourceType;
+
+      import utils.locale.Localizer;
+
+      [Bindable]
+      public var armor: String;
+      [Bindable]
+      public var construction: String;
+      [Bindable]
+      public var energy: String;
+
+      [Bindable]
+      public var building: String;
+
+      private function generatesEnergy(buildingType: String): Boolean {
+         return Building.calculateResourceGenerationRate(buildingType,
+                 ResourceType.ENERGY,
+                 {"level": 1}) > 0;
+      }
+
+      private function getString(prop: String, args: Array = null): String {
+         return Localizer.string('BuildingSidebar', prop, args);
+      }
+      ]]></fx:Script>
+      <s:Label text="{getString('tileBonuses')}" fontWeight="bold"
+               visible="{armor || energy || construction}"
+               paddingLeft="-12" paddingBottom="6" paddingTop="6"/>
+      <s:Label text="{getString('applicable')}" fontWeight="bold"
+               paddingBottom="3"
+               visible="{(armor != null) || (construction != null)
+               || (energy != null &amp;&amp; generatesEnergy(building))}"/>
+      <elements:BonusLabel type="{getString('armor.bonus')}" ammount="{armor}"
+                           visible="{armor != null}"/>
+      <elements:BonusLabel type="{getString('construction.bonus')}"
+                           ammount="{construction}"
+                           visible="{construction != null}"/>
+      <s:Label text="{getString('notApplicable')}" fontWeight="bold"
+               paddingBottom="3" paddingTop="3"
+               visible="{energy != null &amp;&amp; !generatesEnergy(building)}"/>
+      <elements:BonusLabel type="{getString('energy.bonus')}"
+                           ammount="{energy}"
+                           visible="{energy != null}"/>
+      <base:layout>
+         <s:VerticalLayout gap="1" paddingLeft="12"/>
+      </base:layout>
+</base:AdvancedContainer>

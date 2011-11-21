@@ -29,7 +29,8 @@ bars and so on.
          
          import models.Owner;
          import models.map.MapType;
-         
+         import models.planet.MPlanet;
+
          import utils.DateUtil;
          import utils.assets.AssetNames;
          import utils.locale.Localizer;
@@ -64,7 +65,15 @@ bars and so on.
          <menus:MainMenu id="mnuMain"/>
          <bars:ResourcesBar id="resBar" visible="{ML.activeMapType == MapType.PLANET}"/>
          <raid:RaidBar id="raidBar" visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
-                                              ML.player.planetsCount >= Config.getRaidingPlanetLimit() &amp;&amp;
+                                              MPlanet.hasRaiders(
+                                              ML.latestGalaxy.apocalypseStart == null
+                                              ? ML.latestPlanet.ssObject.raidArg
+                                              : 0,
+                                              ML.latestPlanet.ssObject.nextRaidAt,
+                                              (ML.latestSSMap == null
+                                              || ML.latestSSMap.solarSystem.isBattleground),
+                                              ML.latestGalaxy.apocalypseStart)
+                                              &amp;&amp;
                                               ML.latestPlanet.ssObject.owner == Owner.PLAYER &amp;&amp;
                                               ML.latestPlanet.ssObject.nextRaidAt}"/>
          <s:Group>

@@ -47,6 +47,9 @@ package models.galaxy
       public override function get cached() : Boolean {
          return ML.latestGalaxy != null && !ML.latestGalaxy.fake && id == ML.latestGalaxy.id;
       }
+
+      [Bindable]
+      public var apocalypseStart: Date = null;
       
       [Required]
       [Bindable(event="willNotChange")]
