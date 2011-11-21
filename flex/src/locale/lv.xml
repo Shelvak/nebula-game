@@ -4111,6 +4111,9 @@
 
   <Units>
     <title.storageScreen value="Ielādēt / Izlādēt"/>
+    <!-- TODO -->
+    <label.totalEmptyStorage value="Total empty storage: {0}"/>
+    <!-- /TODO -->
   
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Gatavs pēc {0}" />

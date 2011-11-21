@@ -3898,6 +3898,7 @@
 
   <Units>
     <title.storageScreen value="Load / Unload"/>
+    <label.totalEmptyStorage value="Total free storage: {0}"/>
   
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Ready in {0}" />
