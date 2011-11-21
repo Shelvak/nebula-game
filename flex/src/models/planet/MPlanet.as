@@ -183,6 +183,9 @@ package models.planet
          {
             resultCollection.addItem(entry);
          }
+         resultCollection.sort = new Sort();
+         resultCollection.sort.fields = [new SortField('type')];
+         resultCollection.refresh();
          return resultCollection;
       }
       
