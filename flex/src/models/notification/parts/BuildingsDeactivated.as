@@ -11,6 +11,7 @@ package models.notification.parts
    import mx.collections.ArrayCollection;
    
    import utils.ModelUtil;
+   import utils.Objects;
    import utils.locale.Localizer;
    
    
@@ -36,7 +37,7 @@ package models.notification.parts
          if (notif != null)
          {
             var params: Object = notif.params;
-            location = BaseModel.createModel(Location, params.location);
+            location = Objects.create(Location, params.location);
             buildings = new ArrayCollection();
             for (var type:String in params.buildings)
             {

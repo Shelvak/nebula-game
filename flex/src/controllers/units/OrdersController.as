@@ -1,45 +1,45 @@
 package controllers.units
 {
    import com.developmentarc.core.utils.EventBroker;
-   
+
    import components.movement.CTargetLocationPopup;
-   
+
    import controllers.ui.NavigationController;
    import controllers.units.actions.MoveActionParams;
    import controllers.units.actions.MoveMetaActionParams;
    import controllers.units.events.OrdersControllerEvent;
-   
+
    import flash.errors.IllegalOperationError;
    import flash.events.EventDispatcher;
    import flash.events.KeyboardEvent;
    import flash.ui.Keyboard;
-   
+
    import globalevents.GlobalEvent;
-   
-   import models.map.IMStaticSpaceObject;
+
    import models.ModelLocator;
    import models.events.BaseModelEvent;
    import models.location.LocationMinimal;
    import models.location.LocationType;
+   import models.map.IMStaticSpaceObject;
    import models.map.MapType;
    import models.movement.MSquadron;
    import models.solarsystem.MSSObject;
    import models.unit.Unit;
-   
+
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
    import mx.events.PropertyChangeEvent;
-   
+
    import namespaces.prop_name;
-   
-   import utils.EventUtils;
+
+   import utils.Events;
    import utils.Objects;
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
-   
-   
+
+
    /**
     * @see controllers.units.events.OrdersControllerEvent#ISSUING_ORDERS_CHANGE
     */
@@ -444,7 +444,7 @@ package controllers.units
       /* ############### */
       
       private function dispatchOrderCtrlEvent(type:String) : void {
-         EventUtils.dispatchSimpleEvent(this, OrdersControllerEvent, type);
+         Events.dispatchSimpleEvent(this, OrdersControllerEvent, type);
       }
    }
 }

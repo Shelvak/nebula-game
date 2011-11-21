@@ -2,11 +2,11 @@ package controllers.battle
 {
    import animation.AnimationTimer;
    import animation.events.AnimatedBitmapEvent;
-   
+
    import com.developmentarc.core.utils.EventBroker;
    import com.greensock.TweenLite;
    import com.greensock.easing.Linear;
-   
+
    import components.base.viewport.ViewportZoomable;
    import components.battle.BBattleParticipantComp;
    import components.battle.BBuildingComp;
@@ -17,13 +17,12 @@ package controllers.battle
    import components.battle.DamageBubble;
    import components.factories.MapFactory;
    import components.map.controllers.IMapViewportController;
-   
+
    import config.BattleConfig;
-   
+
    import controllers.navigation.MCTopLevel;
    import controllers.screens.Screens;
-   import controllers.ui.NavigationController;
-   
+
    import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.events.KeyboardEvent;
@@ -32,7 +31,7 @@ package controllers.battle
    import flash.geom.Vector3D;
    import flash.ui.Keyboard;
    import flash.utils.Timer;
-   
+
    import models.IMBattleParticipant;
    import models.Owner;
    import models.battle.BFlank;
@@ -46,17 +45,12 @@ package controllers.battle
    import models.battle.events.BattleControllerEvent;
    import models.factories.BattleFactory;
    import models.unit.UnitKind;
-   
+
    import mx.collections.ArrayCollection;
-   import mx.core.AdvancedLayoutFeatures;
    import mx.core.IVisualElement;
-   import mx.utils.ObjectUtil;
-   
-   import spark.components.NavigatorContent;
-   
+
    import utils.MathUtil;
    import utils.Objects;
-   import utils.StringUtil;
 
 
    public class BattleController
@@ -143,7 +137,7 @@ package controllers.battle
       /**
        * Constructor.
        * 
-       * @param model <code>Battle</code> instance containing information about whole battle:
+       * @param battle <code>Battle</code> instance containing information about whole battle:
        * units, buildings and playback information. Can't be <code>null</code>
        * 
        * @param battleMap <code>BattleMap</code> component
@@ -384,7 +378,7 @@ package controllers.battle
       {
          if (!appeared)
          {
-            if (Objects.hasAnyProperty(_battle.appearOrders))
+            if (Objects.hasAnyProp(_battle.appearOrders))
             {
                executeOrder();
             }
@@ -591,8 +585,8 @@ package controllers.battle
                   {
                      targetModel.hp -= firePart.damage;
                   }
-                  if (((attacker.x > target.x) && (attacker.flippedHorizontally == false)) ||
-                     ((attacker.x < target.x) && (attacker.flippedHorizontally == true)))
+                  if (((attacker.x > target.x) && (!attacker.flippedHorizontally)) ||
+                     ((attacker.x < target.x) && (attacker.flippedHorizontally)))
                      attacker.flipHorizontally();
                   activateGun(firePart.gunId, attacker, target, targetModel, partIndex == (order.fireParts.length - 1), firePart.damage);
                   partIndex++;
@@ -795,7 +789,7 @@ package controllers.battle
                   dealAnimationComplete();
                }
             }
-         };  
+         }
          if (attacker.currentAnimation != 'appear' && attacker.currentAnimation != 'unload')
          {
             fireShot();
@@ -1297,20 +1291,14 @@ package controllers.battle
       
    }
 }
-import config.BattleConfig;
-
-import controllers.battle.BattleController;
 
 import flash.geom.Point;
 import flash.geom.Vector3D;
-import flash.sampler.getGetterInvocationCount;
 
 import models.battle.Battle;
 import models.battle.FireOrder;
 
 import mx.core.AdvancedLayoutFeatures;
-
-import utils.StringUtil;
 
 
 class OrderType

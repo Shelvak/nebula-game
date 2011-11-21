@@ -1,14 +1,13 @@
 package controllers.objects.actions.customcontrollers
 {
-   import models.BaseModel;
    import models.cooldown.MCooldown;
    import models.cooldown.MCooldownSpace;
    import models.location.LocationMinimal;
    import models.map.MMapSpace;
    
    import utils.DateUtil;
-   import utils.SingletonFactory;
    import utils.datastructures.Collections;
+   import utils.Objects;
    
    
    public class CooldownController extends BaseObjectController
@@ -16,9 +15,12 @@ package controllers.objects.actions.customcontrollers
       public function CooldownController() {
          super();
       }
-      
-      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
-         var location:LocationMinimal = BaseModel.createModel(LocationMinimal, object.location);
+
+      public override function objectCreated(objectSubclass:String,
+                                             object:Object,
+                                             reason:String) : * {
+         var location:LocationMinimal =
+                Objects.create(LocationMinimal, object.location);
          
          // don't need cooldowns for other objects than maps
          if (!location.isObserved)

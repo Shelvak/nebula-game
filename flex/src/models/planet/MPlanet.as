@@ -1062,7 +1062,8 @@ package models.planet
       {
          for each (var building: Building in buildings)
          {
-            if (building.hasGuns && building.level > 0)
+            if (building.hasGuns && !building.isGhost &&
+                    building.upgradePart.upgradeEndsAt == null)
             {
                return true;
             }

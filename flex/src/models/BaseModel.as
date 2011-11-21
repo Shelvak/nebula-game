@@ -3,24 +3,18 @@ package models
    import com.adobe.errors.IllegalStateError;
    
    import flash.events.EventDispatcher;
-   import flash.utils.Dictionary;
-   import flash.utils.getDefinitionByName;
-   import flash.utils.getQualifiedClassName;
    
    import interfaces.IEqualsComparable;
    
    import models.events.BaseModelEvent;
    
    import mx.collections.ICollectionView;
-   import mx.collections.IList;
    import mx.events.PropertyChangeEvent;
    
    import namespaces.prop_name;
    
-   import utils.DateUtil;
-   import utils.EventUtils;
+   import utils.Events;
    import utils.Objects;
-   import utils.TypeChecker;
    import utils.assets.ImagePreloader;
    
    
@@ -54,8 +48,6 @@ package models
     */
    public class BaseModel extends EventDispatcher implements IBaseModel
    {
-      private static const WHITESPACE_REGEXP:RegExp = /\s/g;
-      
       /**
        * Reference to <code>ImagePreloader</code> singleton.
        */
@@ -94,371 +86,6 @@ package models
       }
       
       
-      private static const TYPE_POST_PROCESSORS:Dictionary = new Dictionary();
-      /**
-       * Sets post processor function for properties of given type.
-       * 
-       * @param type wich must have a post processor function called on each property of that type
-       * encountered by <code>createModel()</code>
-       * @param postProcessor a function wich will be called on a property of a given type after
-       * it has been set. Function signature should be:
-       * <pre>
-       *    postProcessor(instance:BaseModel, property:String, value:*) : void
-       * </pre>
-       * Here:
-       * <ul>
-       *    <li><code>instance</code> - a model wich is beeing created</li>
-       *    <li><code>property</code> - name of the property wich has been set</li>
-       *    <li><code>value</code> - current value of that property</li>
-       * </ul>
-       */
-      public static function setTypePostProcessor(type:Class, postProcessor:Function) : void {
-         TYPE_POST_PROCESSORS[type] = postProcessor;
-      }
-      
-      /**
-       * Creates a model and loads values to appropriate fields from a provided
-       * object.
-       * <ul>
-       *    <li>Properties that need to be filled must be marked with either
-       *        <code>[Optional]</code> or <code>[Required]</code> metadata tags;</li>
-       *    <li>Properties of primitive type are copied from the source object;</li>
-       *    <li>Properties that are of <code>BaseModel</code> type will cause recursive call to
-       *        <code>createModel()</code>. A model can't have property of the same type (or subtype)
-       *        as the model marked with <code>[Required]</code> and you can't created any similar loops
-       *        containing only <code>[Required]</code> tag;</li>
-       *    <li>Properties of <code>Array</code> and <code>IList</code> type must have
-       *        <code>elementType</code> attribute of <code>[Required|Optional]</code> metadata tag defined.
-       *        Properties of <code>Vector</code> type do not need this attribute. Currently element type can
-       *        only be a primitive type or derivative of <code>BaseModel</code>;</li>
-       *    <li>You can define properties of <code>BaseModel</code> as aggregators (<code>aggregatesProps
-       *        </code> and <code>aggregatesPrefix</code> attributes of <code>[Required|Optional]</code>)
-       *        tags. See <a target="_blank" href="http://wiki-dev.nebula44.com/wiki/Nebula_44:ClientCode">
-       *        wiki page</a> for more information on this feature;</li>
-       *    <li>If source object contains properties of different type than those that are defined
-       *        in destination class, method invocation will end up with error thrown;</li>
-       *    <li>Works only with dynamicly created properties of the data object.</li>
-       * 
-       * @param type Type of a model to be created.
-       * @param data Raw object containing data to be loaded to the model.
-       * 
-       * @return Newly created model with values loaded to its properties from
-       * the data object.
-       * 
-       * @throws Error if some properties in source object do not exist in the
-       * destination object or if some of them are of different type. 
-       */
-      public static function createModel(type:Class, data:Object) : *
-      {
-         if (data == null)
-            return null;
-         
-         var model:BaseModel = new type();
-         var info:XML = Objects.describeType(type).factory[0];
-         
-         var errors:Array = [];
-         function pushError(message:String) : void {
-            errors.push(message);
-         }
-         function copyProperty(propInfo:XML) : void
-         {
-            var metadata:XMLList = propInfo.metadata;
-            var metaRequired:XML = metadata.(@name == "Required")[0];
-            var metaOptional:XML = metadata.(@name == "Optional")[0];
-            
-            // Skip the property if its not required
-            if (!metaRequired && !metaOptional)
-               return;
-            
-            // Its illegal to declare both tags
-            if (metaRequired && metaOptional) {
-               pushError(
-                  "Property '" + propName + "' has both - [Required] and [Optional] - " +
-                  "metadata tags declared which is illegal."
-               );
-               return;
-            }
-            
-            var srvMeta:XML = metaRequired ? metaRequired : metaOptional;
-            var propName:String = propInfo.@name[0];
-            var propAlias:String = srvMeta.arg.(@key == "alias").@value[0];
-            var aggregatesProps:String = srvMeta.arg.(@key == "aggregatesProps").@value[0];
-            var aggregatesPrefix:String = srvMeta.arg.(@key == "aggregatesPrefix").@value[0];
-            
-            if ((aggregatesProps != null || aggregatesPrefix != null) && propAlias != null) {
-               pushError(
-                  "Property '" + propName + "' on class '" + type + "' has both - alias and aggregatesProps " +
-                  "(or aggregatesPrefix) - attributes defined which is illegal."
-               );
-               return;
-            }
-            if (aggregatesProps != null && aggregatesPrefix != null) {
-               pushError(
-                  "Property '" + propName + "' on class '" + type + "' has both - aggregatesProps and " +
-                  "aggregatesPrefix - attributes defined which is illegal."
-               );
-               return;
-            }
-            
-            if (propAlias == null)
-               propAlias = propName;
-            
-            var propClass:Class = getDefinitionByName(propInfo.@type[0]) as Class;
-            var propClassName:String = getQualifiedClassName(propClass);
-            
-            // Aggregator comes first
-            if (aggregatesProps != null || aggregatesPrefix != null) {
-               var aggrData:Object;
-               
-               // aggregates props
-               if (aggregatesProps != null) {
-                  aggregatesProps = aggregatesProps.replace(WHITESPACE_REGEXP, "");
-                  aggrData = new Object();
-                  for each (var aggrProp:String in aggregatesProps.split(",")) {
-                     if (data[aggrProp] !== undefined)
-                        aggrData[aggrProp] = data[aggrProp];
-                  }
-               }
-               // aggregates prefix
-               else
-                  aggrData = Objects.extractPropsWithPrefix(aggregatesPrefix, data);
-               
-               if (!Objects.hasAnyProperty(aggrData)) {
-                  if (metaRequired != null) {
-                     var errorMsg:String = "Aggregator defined by property '" + propName + "' is required but ";
-                     if (aggregatesProps != null)
-                        errorMsg += "none of aggregated properties [" + aggregatesProps + "]"; 
-                     else
-                        errorMsg += "no properties with prefix '" + aggregatesPrefix + "'";
-                     errorMsg += " are provided.";
-                     pushError(errorMsg);
-                  }
-               }
-               else
-                  model[propName] = createModel(propClass, aggrData);
-               return;
-            }
-            
-            // Property does not exist and property is required
-            if (metaRequired != null && data[propAlias] === undefined) {
-               pushError(
-                  "Property '" + propAlias + "' does not exist in source object but " +
-                  "is required by " + type + "."
-               );
-               return;
-            }
-            
-            // Skip null and undefined values in source object
-            if (data[propAlias] == null)
-               return;
-            
-            // Special treatment for Date fields
-            if (propClass == Date) {
-               try {
-                  model[propName] = DateUtil.parseServerDTF(data[propAlias], false);
-               }
-               catch (e:Error) {
-                  pushError(
-                     "Error while parsing [Date] property '" + propAlias +
-                     "'. Error message is: " + e.message + "."
-                  );
-                  return;
-               }
-            }
-            // Simple types
-            else if (TypeChecker.isPrimitiveClass(propClass)) {
-               if (!TypeChecker.isOfPrimitiveType(data[propAlias])) {
-                  pushError(
-                     "'" + propAlias + "' property in source object is " +
-                     getQualifiedClassName(data[propAlias]) + " but " + propClass + 
-                     " was expected in destination object [" + type + "]."
-                  );
-                  return;
-               }
-               else
-                  // Safely copy primitive property value
-                  model[propName] = data[propAlias];
-            }
-            // Raw object type: just copy the source and don't run any checks
-            else if (propClassName == "Object")
-               model[propName] = data[propAlias];
-            else {
-               var propInstance:Object = new propClass();
-               var isVector:Boolean = TypeChecker.isVector(propInstance);
-               
-               // Collections
-               if (propInstance is Array || propInstance is IList || isVector) {
-                  // elementType attribute is mandatory element for Array and IList properties
-                  var itemType:String = srvMeta.arg.(@key == "elementType").@value[0];
-                  if (!isVector && itemType == null) {
-                     pushError(
-                        "Property '" + propName + "' is of [class IList] or [class Array] type and " +
-                        "therefore requires elementType attribute of [Required|Optional] metadata tag " +
-                        "declared."
-                     );
-                     return;
-                  }
-                  
-                  if (isVector) {
-                     itemType = propClassName.substring(
-                        propClassName.indexOf("Vector.<") + 8,
-                        propClassName.length - 1
-                     );
-                  }
-                  
-                  // Collections can only contain primitive types or BaseModel
-                  var itemClass:Class = getDefinitionByName(itemType) as Class;
-                  var itemInstance:Object = new itemClass();
-                  if (!TypeChecker.isPrimitiveClass(itemClass) && !(itemInstance is BaseModel)) {
-                     pushError(
-                        "Property '" + propName + "' is a collection but the declared item type " + itemClass +
-                        " is not supported. BaseModel.createModel() only supports primitive types and " +
-                        "models.BaseModel as item type for collections."
-                     );
-                     return;
-                  }
-                  
-                  // Special case for ModelsCollection. See its documentation for more information.
-                  if (propInstance is ModelsCollection) {
-                     model[propName] = createCollection(ModelsCollection, itemClass, data[propAlias]);
-                     return;
-                  }
-                  
-                  // set model property collection
-                  model[propName] = propInstance;
-                  
-                  // To distinguish between primitive type and BaseModel
-                  var createItem:Function;
-                  if (TypeChecker.isPrimitiveClass(itemClass))
-                     createItem = function(data:Object) : Object {
-                        return data;
-                     };
-                  else
-                     createItem = function(data:Object) : Object {
-                        return BaseModel.createModel(itemClass, data);
-                     };
-                  
-                  // Different interfaces of different collections require small but
-                  // different piece of code
-                  var addItem:Function;
-                  if (isVector || propInstance is Array)
-                     addItem = function(item:Object) : void {
-                        propInstance.push(item);
-                     };
-                  else if (propInstance is IList)
-                     addItem = function(item:Object) : void {
-                        propInstance.addItem(item);
-                     };
-                  
-                  // Now create items
-                  for each (var item:Object in data[propAlias]) {
-                     addItem(createItem(item));
-                  }
-               }
-               else if (propInstance is BaseModel)
-               {
-                  if (propInstance is type && metaRequired) {
-                     pushError(
-                        "Property '" + propName + "' is marked with [Required] and is of exact type " +
-                        "as given model type " + type + ". This is not legal. Use [Optional] instead."
-                     );
-                     return;
-                  }
-                  model[propName] = createModel(propClass, data[propAlias]);
-               }
-               else {
-                  pushError(
-                     "Property '" + propName + "' is of type " + propClass + " which is not supported." 
-                  );
-                  return;
-               }
-            }
-            // run post-processor function on the property, if any
-            var postProcessor:Function = TYPE_POST_PROCESSORS[propClass]
-            if (postProcessor != null)
-               postProcessor(model, propName, model[propName]);
-         };
-         
-         for each (var propInfo:XML in info.accessor) {
-            copyProperty(propInfo);
-         }
-         for each (propInfo in info.variable) {
-            copyProperty(propInfo);
-         }
-         
-         if (errors.length != 0)
-            throw new Error(
-               errors.join("\n") + "\nFix properties in " + type + " or see to it that source " +
-               "object holds values for all required properties of correct type."
-            );
-         
-         model.afterCreateModel(data);
-         return model;
-      };
-      
-      
-      /**
-       * Creates a list of models of given type from the given list or array.
-       * 
-       * @param collectionType type of a collection to return. Must be collection class
-       * implementing <code>IList</code> 
-       * @param modelType type of models in the resulting list
-       * @param list an <code>IList</code> or <code>Array</code> of generic objects to use as
-       * data source for the resulting collection.
-       * 
-       * @return collection of <code>collectionType</code> type where each element is
-       * of <code>modelType</code> type.
-       * 
-       * @throws ArgumentError when
-       * <ul>
-       *    <li><code>collectionType</code> does not implement <code>IList</code></li>
-       *    <li>
-       *       <code>list</code> does not implement <code>IList</code> and is not an
-       *       <code>Array</code>
-       *    </li>
-       * </ul>
-       * @throws Error when <code>BaseModel.createModel()</code> throws any error.
-       * 
-       * @see #createModel()
-       */
-      public static function createCollection(collectionType:Class, modelType:Class, list:Object) : *
-      {
-         if ( !(new collectionType() is IList) )
-         {
-            throw new ArgumentError(
-               "[param collectionType] must be a class of collection implementing " +
-               "[interface IList] but was " + collectionType
-            );
-         }
-         if ( !(list is Array || list is IList) )
-         {
-            throw new ArgumentError(
-               "[param list] must be instance of [class Array] or [interface IList]"
-            );
-         }
-         var collection:IList = IList(new collectionType());
-         var item:Object;
-         
-         // Special case for ModelsCollection as that bastard has performance issues. See
-         // documentation of ModelsCollection for more insight on this problem.
-         if (collection is ModelsCollection)
-         {
-            var source:Array = new Array();
-            for each (item in list)
-            {
-               source.push(createModel(modelType, item));
-            }
-            return new collectionType(source);
-         }
-         
-         for each (item in list)
-         {
-            collection.addItem(createModel(modelType, item));
-         }
-         return collection;
-      }
-      
-      
       public function BaseModel()
       {
          super();
@@ -487,35 +114,23 @@ package models
        * @throws Error if <code>model</code> is of different type than
        * <code>this</code>.
        */
-      public function copyProperties(source:BaseModel, ignoreSkipProperty:Boolean = false, props:Array = null) : void
-      {
-         if (! source)
-         {   
+      public function copyProperties(source:BaseModel, ignoreSkipProperty:Boolean = false, props:Array = null) : void {
+         if (source == null)
             return;
-         }
          if (!(source is CLASS))
-         {
-            throw new Error("'source' is " + source.className + " but " + className + " was expected.");
-         }
+            throw new TypeError("'source' is " + source.className + " but " + className + " was expected.");
          var typeInfo:XML = Objects.describeType(CLASS).factory[0];
          ignoreSkipProperty = ignoreSkipProperty || props && props.length > 0;
          if (!props || props.length == 0)
-         {
             props = Objects.getPublicProperties(CLASS);
-         }
-         for each (var prop:String in props)
-         {
-            if (!(this[prop] == source[prop] || (this[prop] is IEqualsComparable) && IEqualsComparable(this[prop]).equals(source[prop])))
-            {
+         for each (var prop:String in props) {
+            if (!(this[prop] == source[prop] ||
+                 (this[prop] is IEqualsComparable) && IEqualsComparable(this[prop]).equals(source[prop]))) {
                var propInfo:XML = typeInfo.accessor.(@name == prop)[0];
                if (!propInfo)
-               {
                   propInfo = typeInfo.variable.(@name == prop)[0];
-               }
                if (ignoreSkipProperty || !propInfo.metadata.(@name == "SkipProperty")[0])
-               {
                   this[prop] = source[prop];
-               }
             }
          }
          afterCopyProperties(source, props);
@@ -688,18 +303,15 @@ package models
       
       
       /**
-       * Is called when <code>BaseModel.createModel()</code> has finished creation of a model.
-       * You can hook any additional postprocessing to be performed after creation of a model
-       * in this method. You must call invoke <code>super.afterCreateModel()</code> when overriding
-       * this method.
+       * Is called when <code>Objects.create()</code> has finished creation of a model. You can hook any
+       * additional postprocessing to be performed after creation of a model in this method. You must invoke
+       * <code>super.afterCreate()</code> when overriding this method.
        * 
        * @param data A generic object which was used as source for populating properties
        */
-      protected function afterCreateModel(data:Object) : void
-      {
+      public function afterCreate(data:Object) : void {
          refresh();
       }
-      
       
       /**
        * Is called when <code>this.copyProperties()</code> has copied all properties. You can hook
@@ -711,8 +323,7 @@ package models
        * 
        * @see #copyProperties()
        */
-      protected function afterCopyProperties(source:BaseModel, props:Array) : void
-      {
+      protected function afterCopyProperties(source:BaseModel, props:Array) : void {
          refresh();
       }
       
@@ -814,7 +425,7 @@ package models
       
       private function dispatchFlagDestructionPendingSetEvent() : void
       {
-         dispatchSimpleEvent(BaseModelEvent, BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET);
+         dispatchModelEvent(BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET);
       }
       
       
@@ -825,7 +436,7 @@ package models
        */
       protected function dispatchPendingChangeEvent() : void
       {
-         dispatchSimpleEvent(BaseModelEvent, BaseModelEvent.PENDING_CHANGE);
+         dispatchModelEvent(BaseModelEvent.PENDING_CHANGE);
       }
       
       
@@ -836,7 +447,7 @@ package models
        */
       protected function dispatchIdChangeEvent() : void
       {
-         dispatchSimpleEvent(BaseModelEvent, BaseModelEvent.MODEL_ID_CHANGE);
+         dispatchModelEvent(BaseModelEvent.MODEL_ID_CHANGE);
       }
       
       
@@ -865,11 +476,15 @@ package models
       
       
       /**
-       * @see utils.EventUtils#dispatchSimpleEvent()
+       * @see utils.Events#dispatchSimpleEvent()
        */
       protected function dispatchSimpleEvent(CLASS:Class, type:String) : void
       {
-         EventUtils.dispatchSimpleEvent(this, CLASS, type);
+         Events.dispatchSimpleEvent(this, CLASS, type);
+      }
+      
+      private function dispatchModelEvent(type:String) : void {
+         dispatchSimpleEvent(BaseModelEvent, type);
       }
       
       

@@ -95,11 +95,6 @@
          {
             return Localizer.string('BuildingSelectedSidebar', key, params);
          }
-         
-         private function getTextFlow(from: String): TextFlow
-         {
-            return TextFlowUtil.importFromString(from);
-         }
 
          private function queueList_dragStartHandler(event:DragEvent):void
          {
@@ -248,99 +243,6 @@
                      </base:AdvancedContainer>
                   </base:Panel>
 
-                  <base:Panel title="{getString('panelTitle.repairBuilding')}"
-                              visible="{bSidebar.selectedBuilding.isDamaged
-                              &amp;&amp; bSidebar.selectedBuilding.state !=
-                              Building.REPAIRING &amp;&amp;
-                              bSidebar.selectedBuilding.upgradePart.upgradeEndsAt
-                              == null}">
-                     <base:Warning text="{getString(
-                        'warning.repairBuildingTechNeeded')}"
-                        showSign="false"
-                        left="0" right="0" paddingTop="3" paddingBottom="3"
-                        visible="{!ML.technologies.hasBuildingRepairTechnology}"/>
-
-                     <base:AdvancedContainer left="0" right="0"
-                             includeInLayout="{ML.technologies.hasBuildingRepairTechnology}"
-                             visible="{ML.technologies.hasBuildingRepairTechnology}">
-                        <s:Group>
-                           <s:Group width="40%">
-                              <base:ImageAndLabel
-                                      type="{ResourceType.METAL}"
-                                      textToDisplay="{bSidebar.metalRepairCost.toFixed(2)}"
-                                      toolTip="{Localizer.string(
-                                      'Resources', ResourceType.METAL)}"
-                                      labelStyleName="{bSidebar.metalRepairCost >
-                                      ML.latestPlanet.ssObject.metal.currentStock
-                                      ? 'unsatisfied' : null}"/>
-                              <base:ImageAndLabel
-                                      type="{ResourceType.ZETIUM}"
-                                      textToDisplay="{bSidebar.zetiumRepairCost.toFixed(2)}"
-                                      toolTip="{Localizer.string(
-                                      'Resources', ResourceType.ZETIUM)}"
-                                      labelStyleName="{bSidebar.zetiumRepairCost >
-                                      ML.latestPlanet.ssObject.zetium.currentStock
-                                      ? 'unsatisfied' : null}"/>
-                              <s:layout>
-                                 <s:VerticalLayout gap="3" paddingLeft="6"/>
-                              </s:layout>
-                           </s:Group>
-                           <s:Group width="40%">
-                              <base:ImageAndLabel
-                                      type="{ResourceType.ENERGY}"
-                                      textToDisplay="{bSidebar.energyRepairCost.toFixed(2)}"
-                                      toolTip="{Localizer.string(
-                                      'Resources', ResourceType.ENERGY)}"
-                                      labelStyleName="{bSidebar.energyRepairCost >
-                                      ML.latestPlanet.ssObject.energy.currentStock
-                                      ? 'unsatisfied' : null}"/>
-                              <base:ImageAndLabel
-                                      type="{ResourceType.TIME}"
-                                      textToDisplay="{bSidebar.timeRepairCost}"
-                                      toolTip="{Localizer.string(
-                                      'Resources', ResourceType.TIME)}"/>
-                              <s:layout>
-                                 <s:VerticalLayout gap="3" paddingLeft="6"/>
-                              </s:layout>
-                           </s:Group>
-                           <s:layout>
-                              <s:HorizontalLayout gap="3" paddingLeft="6"/>
-                           </s:layout>
-                        </s:Group>
-                        <base:Warning text="{getString('warning.repairBuilding')}"
-                                visible="{bSidebar.selectedBuilding.state !=
-                                Building.REPAIRING}"
-                                showSign="false"/>
-                        <base:AdvancedContainer visible="{!bSidebar.canRepairBuilding}">
-                           <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
-                                 styleName="unsatisfied"/>
-                           <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}"
-                                 visible="{bSidebar.repairResLeft > 0}" fontWeight="bold"/>
-                           <base:TimeLabel text="{bSidebar.repairResLeftString}"
-                                        visible="{bSidebar.repairResLeft > 0}"/>
-
-                           <s:Label text="{Localizer.string('Resources','additionalStorage',
-                                 [bSidebar.missingRepairStorageString])}"
-                                 visible="{!bSidebar.enoughRepairStorage}"
-                                 styleName="unsatisfied"/>
-                           <base:layout>
-                              <s:VerticalLayout paddingLeft="6" paddingRight="6" horizontalAlign="justify"/>
-                           </base:layout>
-                        </base:AdvancedContainer>
-                        <s:Group>
-                           <s:Button skinClass="components.skins.GreenButtonSkin"
-                                     enabled="{bSidebar.canRepairBuilding &amp;&amp;
-                                     !bSidebar.selectedBuilding.pending}"
-                                     click="bSidebar.repairBuilding()"
-                                     label="{getString('label.repairBuilding')}"
-                                     horizontalCenter="0"/>
-                        </s:Group>
-                        <base:layout>
-                           <s:VerticalLayout horizontalAlign="justify"/>
-                        </base:layout>
-                     </base:AdvancedContainer>
-                  </base:Panel>
-                  
                   <base:Panel title="{getString('panelTitle.cancelProgress')}"
                               visible="{bSidebar.selectedBuilding.upgradePart.upgradeEndsAt != null}">
                      <base:AdvancedContainer left="0" right="0">
@@ -573,7 +475,100 @@
                         <s:VerticalLayout gap="3" horizontalAlign="justify"/>
                      </base:layout>
                   </base:Panel>
-                  
+
+                  <base:Panel title="{getString('panelTitle.repairBuilding')}"
+                              visible="{bSidebar.selectedBuilding.isDamaged
+                              &amp;&amp; bSidebar.selectedBuilding.state !=
+                              Building.REPAIRING &amp;&amp;
+                              bSidebar.selectedBuilding.upgradePart.upgradeEndsAt
+                              == null}">
+                     <base:Warning text="{getString(
+                        'warning.repairBuildingTechNeeded')}"
+                        showSign="false"
+                        left="0" right="0" paddingTop="3" paddingBottom="3"
+                        visible="{!ML.technologies.hasBuildingRepairTechnology}"/>
+
+                     <base:AdvancedContainer left="0" right="0"
+                             includeInLayout="{ML.technologies.hasBuildingRepairTechnology}"
+                             visible="{ML.technologies.hasBuildingRepairTechnology}">
+                        <s:Group>
+                           <s:Group width="40%">
+                              <base:ImageAndLabel
+                                      type="{ResourceType.METAL}"
+                                      textToDisplay="{bSidebar.metalRepairCost.toFixed(2)}"
+                                      toolTip="{Localizer.string(
+                                      'Resources', ResourceType.METAL)}"
+                                      labelStyleName="{bSidebar.metalRepairCost >
+                                      ML.latestPlanet.ssObject.metal.currentStock
+                                      ? 'unsatisfied' : null}"/>
+                              <base:ImageAndLabel
+                                      type="{ResourceType.ZETIUM}"
+                                      textToDisplay="{bSidebar.zetiumRepairCost.toFixed(2)}"
+                                      toolTip="{Localizer.string(
+                                      'Resources', ResourceType.ZETIUM)}"
+                                      labelStyleName="{bSidebar.zetiumRepairCost >
+                                      ML.latestPlanet.ssObject.zetium.currentStock
+                                      ? 'unsatisfied' : null}"/>
+                              <s:layout>
+                                 <s:VerticalLayout gap="3" paddingLeft="6"/>
+                              </s:layout>
+                           </s:Group>
+                           <s:Group width="40%">
+                              <base:ImageAndLabel
+                                      type="{ResourceType.ENERGY}"
+                                      textToDisplay="{bSidebar.energyRepairCost.toFixed(2)}"
+                                      toolTip="{Localizer.string(
+                                      'Resources', ResourceType.ENERGY)}"
+                                      labelStyleName="{bSidebar.energyRepairCost >
+                                      ML.latestPlanet.ssObject.energy.currentStock
+                                      ? 'unsatisfied' : null}"/>
+                              <base:ImageAndLabel
+                                      type="{ResourceType.TIME}"
+                                      textToDisplay="{bSidebar.timeRepairCost}"
+                                      toolTip="{Localizer.string(
+                                      'Resources', ResourceType.TIME)}"/>
+                              <s:layout>
+                                 <s:VerticalLayout gap="3" paddingLeft="6"/>
+                              </s:layout>
+                           </s:Group>
+                           <s:layout>
+                              <s:HorizontalLayout gap="3" paddingLeft="6"/>
+                           </s:layout>
+                        </s:Group>
+                        <base:Warning text="{getString('warning.repairBuilding')}"
+                                visible="{bSidebar.selectedBuilding.state !=
+                                Building.REPAIRING}"
+                                showSign="false"/>
+                        <base:AdvancedContainer visible="{!bSidebar.canRepairBuilding}">
+                           <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
+                                 styleName="unsatisfied"/>
+                           <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}"
+                                 visible="{bSidebar.repairResLeft > 0}" fontWeight="bold"/>
+                           <base:TimeLabel text="{bSidebar.repairResLeftString}"
+                                        visible="{bSidebar.repairResLeft > 0}"/>
+
+                           <s:Label text="{Localizer.string('Resources','additionalStorage',
+                                 [bSidebar.missingRepairStorageString])}"
+                                 visible="{!bSidebar.enoughRepairStorage}"
+                                 styleName="unsatisfied"/>
+                           <base:layout>
+                              <s:VerticalLayout paddingLeft="6" paddingRight="6" horizontalAlign="justify"/>
+                           </base:layout>
+                        </base:AdvancedContainer>
+                        <s:Group>
+                           <s:Button skinClass="components.skins.GreenButtonSkin"
+                                     enabled="{bSidebar.canRepairBuilding &amp;&amp;
+                                     !bSidebar.selectedBuilding.pending}"
+                                     click="bSidebar.repairBuilding()"
+                                     label="{getString('label.repairBuilding')}"
+                                     horizontalCenter="0"/>
+                        </s:Group>
+                        <base:layout>
+                           <s:VerticalLayout horizontalAlign="justify"/>
+                        </base:layout>
+                     </base:AdvancedContainer>
+                  </base:Panel>
+                   
                   <base:Panel title="{getString('title.inactiveBuilding')}"
                               visible="{bSidebar.selectedBuilding.state == Building.INACTIVE}">
                      <s:Label left="6" right="6" fontSize="12"

@@ -1212,6 +1212,33 @@
     </label.shield>
     <label.over value="Fleet over"/>
     <message.noRadar value="You need a Radar to explore the galaxy" />
+
+    <tooltip.apocalypse.common>
+      <p>Click here for more information.</p>
+    </tooltip.apocalypse.common>
+    <!-- TODO: fix these to use TLF p margin instead of two brs. -->
+    <!--
+     {0}: date string
+     {1}: relative time string (5d/3h/...)
+    -->
+    <tooltip.apocalypse.notStarted>
+      <p>Apocalypse will start at {0} (in {1}).<br/><br/></p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.notStarted>
+    <!--
+    {0}: date string
+    {1}: current apocalypose day
+    {2}: how many creds will you get
+    -->
+    <tooltip.apocalypse.started>
+      <p>Apocalypse has started at {0}.<br/><br/></p>
+      <p>
+        It is now {1} apocalypse day. You will get
+        {2 one[one cred] many[? creds]} after losing your last planet.
+        <br/><br/>
+      </p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.started>
   </Galaxy>
 
   <General>
@@ -3204,6 +3231,8 @@
   </Resources>
 
   <SSObjects>
+    <label.totalVolume value="Total volume: {0}"/>
+    <label.wreckageVolume value="(volume: {0})"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    
     <title.info value="{0} info" />
     <!-- {0}: Planet/Jumpgate/Asteroid  
@@ -3869,6 +3898,7 @@
 
   <Units>
     <title.storageScreen value="Load / Unload"/>
+    <label.totalEmptyStorage value="Total free storage: {0}"/>
   
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Ready in {0}" />

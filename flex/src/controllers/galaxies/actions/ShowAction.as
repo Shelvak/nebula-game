@@ -9,10 +9,9 @@ package controllers.galaxies.actions
    import controllers.solarsystems.actions.ShowActionParams;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
-   
+
    import globalevents.GlobalEvent;
-   
-   import models.BaseModel;
+
    import models.MWreckage;
    import models.cooldown.MCooldownSpace;
    import models.factories.GalaxyFactory;
@@ -24,12 +23,13 @@ package controllers.galaxies.actions
    import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
-   
+   import models.time.MTimeEventFixedMoment;
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
 
-   import utils.DateUtil;
+   import utils.Objects;
 
 
    /**
@@ -46,7 +46,7 @@ package controllers.galaxies.actions
     *    <li><code>solarSystems</code></li>
     *    <li><code>fowEntries</code></li>
     *    <li><code>wreckages</code></li>
-    *    <li><code>cooldows</code></li>
+    *    <li><code>cooldowns</code></li>
     *    <li><code>units</code></li>
     *    <li><code>players</code></li>
     *    <li><code>routeHops</code></li>
@@ -90,19 +90,20 @@ package controllers.galaxies.actions
             params["apocalypseStart"],
             GalaxyFactory.createFowEntries(params["fowEntries"]),
             GalaxyFactory.createSolarSystems(params["solarSystems"]),
-            BaseModel.createCollection(
-               ArrayCollection, MWreckage, params["wreckages"]
+            Objects.fillCollection(
+               new ArrayCollection(), MWreckage, params["wreckages"]
             ),
-            BaseModel.createCollection(
-               ArrayCollection, MCooldownSpace, params["cooldowns"]
+            Objects.fillCollection(
+               new ArrayCollection(), MCooldownSpace, params["cooldowns"]
             ),
             UnitFactory.fromObjects(params["units"], params["players"]),
-            IList(BaseModel.createCollection(
-               ArrayCollection, MHop, params["routeHops"])
+            IList(Objects.fillCollection(
+               new ArrayCollection(), MHop, params["routeHops"])
             ).toArray(),
             params["nonFriendlyJumpsAt"]
          );
          var galaxy:Galaxy = ML.latestGalaxy;
+
          if (!startup) {
             if (params["reason"] == "alliance") {
                reloadPlanetMap();
@@ -179,8 +180,10 @@ package controllers.galaxies.actions
          var galaxy:Galaxy = new Galaxy();
          galaxy.id = galaxyId;
          galaxy.battlegroundId = battlegroundId;
-         galaxy.apocalypseStart = apocalypseStart == null
-                 ? null : DateUtil.parseServerDTF(apocalypseStart);
+         if (apocalypseStart != null) {
+            galaxy.apocalypseStartEvent =
+               MTimeEventFixedMoment.autoCreate(null, apocalypseStart);
+         }
          galaxy.addAllObjects(solarSystems);
          galaxy.addAllObjects(wreckages);
          galaxy.addAllObjects(cooldowns);

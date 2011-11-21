@@ -1,11 +1,11 @@
 package models.notification.parts
 {
-   import models.BaseModel;
    import models.alliance.MAllianceMinimal;
    import models.notification.INotificationPart;
    import models.notification.Notification;
    import models.player.PlayerMinimal;
    
+   import utils.Objects;
    import utils.locale.Localizer;
    
    
@@ -19,8 +19,8 @@ package models.notification.parts
          if (notif != null)
          {
             var params:Object = notif.params;
-            _player = BaseModel.createModel(PlayerMinimal, params["player"]);
-            _alliance = BaseModel.createModel(MAllianceMinimal, params["alliance"]);
+            _player = Objects.create(PlayerMinimal, params["player"]);
+            _alliance = Objects.create(MAllianceMinimal, params["alliance"]);
          }
       }
       

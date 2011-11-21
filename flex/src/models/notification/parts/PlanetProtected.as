@@ -6,6 +6,7 @@ package models.notification.parts
    import models.notification.Notification;
    
    import utils.DateUtil;
+   import utils.Objects;
    import utils.locale.Localizer;
    
    public class PlanetProtected extends BaseModel implements INotificationPart
@@ -26,7 +27,7 @@ package models.notification.parts
          duration = DateUtil.secondsToHumanString(params.duration);
          endsAt = new Date(notif.createdAt.time);
          endsAt.setSeconds(params.duration + notif.createdAt.seconds);
-         location = BaseModel.createModel(Location, params.planet);
+         location = Objects.create(Location, params.planet);
          outcome = params.outcome;
       }
       

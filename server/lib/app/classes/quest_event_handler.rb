@@ -28,7 +28,7 @@ class QuestEventHandler
     objects = objects.dup
     objects.reject! do |object|
       case object
-      when ObjectiveProgress, QuestProgress, MovementPrepareEvent
+      when ObjectiveProgress, QuestProgress, Event::MovementPrepare
         true
       else
         false

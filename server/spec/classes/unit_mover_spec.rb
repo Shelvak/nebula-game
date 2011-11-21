@@ -313,7 +313,7 @@ describe UnitMover do
       UnitMover.move(@player.id, @unit_ids, @source, @target)
 
       SPEC_EVENT_HANDLER.events.find do |object, event_name, reason|
-        object.is_a?(MovementPrepareEvent) &&
+        object.is_a?(Event::MovementPrepare) &&
           event_name == EventBroker::MOVEMENT_PREPARE
       end.should_not be_nil
     end

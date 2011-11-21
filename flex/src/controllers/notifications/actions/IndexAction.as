@@ -3,10 +3,11 @@ package controllers.notifications.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    
-   import models.BaseModel;
    import models.notification.Notification;
    
    import mx.collections.ArrayCollection;
+   
+   import utils.Objects;
    
    
    /**
@@ -28,8 +29,8 @@ package controllers.notifications.actions
       {
          ML.notifications.removeAll();
          ML.notifications.addAll(
-            BaseModel.createCollection(
-               ArrayCollection,
+             Objects.fillCollection(
+               new ArrayCollection(),
                Notification,
                cmd.parameters.notifications
             )

@@ -16,150 +16,173 @@
    
    <fx:Script>
       <![CDATA[
-         import controllers.DisplayManager;
-         import controllers.startup.ChecksumsLoader;
-         import controllers.startup.StartupInfo;
-         import controllers.startup.StartupManager;
-         
-         import models.events.LocaleEvent;
-         
-         import mx.binding.utils.BindingUtils;
-         import mx.controls.Alert;
-         
-         import utils.EventUtils;
-         import utils.MathUtil;
-         import utils.UrlNavigate;
-         import utils.assets.events.ImagePreloaderEvent;
-         import utils.locale.Localizer;
-         import utils.locale.XMLBundlesLoader;
-         
-         
-         private function this_addedToStageHandler(event:Event) : void {
-            DisplayManager.setFPSForStartup();
+      import controllers.DisplayManager;
+      import controllers.startup.ChecksumsLoader;
+      import controllers.startup.StartupInfo;
+      import controllers.startup.StartupManager;
+
+      import models.events.LocaleEvent;
+
+      import mx.binding.utils.BindingUtils;
+      import mx.controls.Alert;
+
+      import utils.Events;
+      import utils.MathUtil;
+      import utils.UrlNavigate;
+      import utils.assets.events.ImagePreloaderEvent;
+      import utils.locale.Localizer;
+      import utils.locale.XMLBundlesLoader;
+
+
+      private function this_addedToStageHandler(event: Event): void {
+         DisplayManager.setFPSForStartup();
+      }
+
+
+      /* ##################### */
+      /* ### STARTUP CHECK ### */
+      /* ##################### */
+
+      private function get STARTUP_INFO(): StartupInfo {
+         return StartupInfo.getInstance();
+      }
+
+      private function this_creationCompleteHandler(): void {
+         if (STARTUP_INFO.loadSuccessful) {
+            loadChecksums();
          }
-         
-         
-         /* ##################### */
-         /* ### STARTUP CHECK ### */
-         /* ##################### */
-         
-         private function get STARTUP_INFO() : StartupInfo {
-            return StartupInfo.getInstance();
+         else {
+            Alert
+               .show("ExternalInterface not available: please upgrade your browser.",
+                     "Error!");
          }
-         
-         private function this_creationCompleteHandler() : void {
-            if (STARTUP_INFO.loadSuccessful)
-               loadChecksums();
-            else
-               Alert.show("ExternalInterface not available: please upgrade your browser.", "Error!");
+      }
+
+
+      /* ################# */
+      /* ### CHECKSUMS ### */
+      /* ################# */
+
+      private var _checksumsLoader: ChecksumsLoader;
+
+      private function loadChecksums(): void {
+         _checksumsLoader = new ChecksumsLoader(STARTUP_INFO);
+         _checksumsLoader.addEventListener(Event.COMPLETE,
+                                           checksumsLoader_completeHandler,
+                                           false, 0, true);
+         _checksumsLoader.load();
+      }
+
+      private function checksumsLoader_completeHandler(event: Event): void {
+         _checksumsLoader.removeEventListener(Event.COMPLETE,
+                                              checksumsLoader_completeHandler,
+                                              false);
+         _checksumsLoader = null;
+         loadLocaleXML();
+      }
+
+
+      /* ############## */
+      /* ### LOCALE ### */
+      /* ############## */
+
+      private var _bundlesLoader: XMLBundlesLoader;
+
+      private function loadLocaleXML(): void {
+         _bundlesLoader = new XMLBundlesLoader(STARTUP_INFO.locale);
+         _bundlesLoader.addEventListener(Event.COMPLETE,
+                                         bundlesLoader_completeHandler, false,
+                                         0, true);
+         _bundlesLoader.load();
+      }
+
+      private function bundlesLoader_completeHandler(event: Event): void {
+         if (_bundlesLoader.loadSuccessful) {
+            dispatchBundlesLoadedEvent();
+            lblPleaseWait.text = getString("label.pleaseWait");
+            lblTipLabel.text = getString("label.tip");
+            BindingUtils.bindSetter(setLblDownloadProgressText,
+                                    downloadProgress, "value", false, true);
+
+            var tipsTotal: int = _bundlesLoader.data.child("Tips").children()
+                                    .length();
+            var randomTip: int = Math.round(MathUtil.randomBetween(0,
+                                                                   tipsTotal - 1));
+            lblTipText.text = Localizer.string("Tips", "tip." + randomTip);
+            imgTip.source = UrlNavigate.getInstance().getTipImageUrl(randomTip);
+
+            loadImages();
          }
-         
-         
-         /* ################# */
-         /* ### CHECKSUMS ### */
-         /* ################# */
-         
-         private var _checksumsLoader:ChecksumsLoader;
-         
-         private function loadChecksums() : void {
-            _checksumsLoader = new ChecksumsLoader(STARTUP_INFO);
-            _checksumsLoader.addEventListener(Event.COMPLETE, checksumsLoader_completeHandler, false, 0, true);
-            _checksumsLoader.load();
+         else {
+            Alert.show("Unable to load locale data: " + _bundlesLoader.error,
+                       "Error!");
          }
-         
-         private function checksumsLoader_completeHandler(event:Event) : void {
-            _checksumsLoader.removeEventListener(Event.COMPLETE, checksumsLoader_completeHandler, false);
-            _checksumsLoader = null;
-            loadLocaleXML();
-         }
-         
-         
-         /* ############## */
-         /* ### LOCALE ### */
-         /* ############## */
-         
-         private var _bundlesLoader:XMLBundlesLoader;
-          
-         private function loadLocaleXML() : void {
-            _bundlesLoader = new XMLBundlesLoader(STARTUP_INFO.locale);
-            _bundlesLoader.addEventListener(Event.COMPLETE, bundlesLoader_completeHandler, false, 0, true);
-            _bundlesLoader.load();
-         }
-         
-         private function bundlesLoader_completeHandler(event:Event) : void {
-            if (_bundlesLoader.loadSuccessful) {
-               dispatchBundlesLoadedEvent();
-               lblPleaseWait.text = getString("label.pleaseWait");
-               lblTipLabel.text = getString("label.tip");
-               BindingUtils.bindSetter(setLblDownloadProgressText, downloadProgress, "value", false, true);
-               
-               var tipsTotal:int = _bundlesLoader.data.child("Tips").children().length();
-               var randomTip:int = Math.round(MathUtil.randomBetween(0, tipsTotal - 1));
-               lblTipText.text = Localizer.string("Tips", "tip." + randomTip);
-               imgTip.source = UrlNavigate.getInstance().getTipImageUrl(randomTip);
-               
-               loadImages();
-            }
-            else
-               Alert.show("Unable to load locale data: " + _bundlesLoader.error, "Error!");
-            _bundlesLoader.removeEventListener(Event.COMPLETE, bundlesLoader_completeHandler, false);
-            _bundlesLoader = null;
-         }
-         
-         
-         /* ############## */
-         /* ### IMAGES ### */
-         /* ############## */
-         
-         private function IMG_unpackProgressHandler(event:ImagePreloaderEvent) : void {
-            unpackProgress.setProgress(IMG.currentUnpackingProgress, 1);
-         }
-         
-         /**
-          * Starts downloading images.
-          */
-         private function loadImages() : void {
-            IMG.addEventListener(ProgressEvent.PROGRESS, imageLoaded);
-            IMG.addEventListener(ImagePreloaderEvent.UNPACK_PROGRESS, IMG_unpackProgressHandler);
-            IMG.addEventListener(Event.COMPLETE, imagesLoadComplete);
-            IMG.startDownload();
-         }
-         
-         /**
-          * Updates progress bar when image is downloaded.
-          */ 
-         private function imageLoaded(event:ProgressEvent) : void {
-            downloadProgress.setProgress(event.bytesLoaded, event.bytesTotal);
-            setLblDownloadProgressText(event.bytesLoaded);
-         }
-         
-         /**
-          * Switch to login screen when download is complete.
-          */ 
-         private function imagesLoadComplete(event:Event) : void {
-            DisplayManager.setFPSForGame();
-            IMG.removeEventListener(ProgressEvent.PROGRESS, imageLoaded);
-            IMG.removeEventListener(ImagePreloaderEvent.UNPACK_PROGRESS, IMG_unpackProgressHandler);
-            IMG.removeEventListener(Event.COMPLETE, imagesLoadComplete);
-            StartupManager.initializeAppAfterLoad();
-         }
-         
-         
-         /* ############### */
-         /* ### HELPERS ### */
-         /* ############### */
-         
-         private function getString(property:String, parameters:Array = null) : String {
-            return Localizer.string("LoadingScreen", property, parameters);
-         }
-         
-         private function setLblDownloadProgressText(value:Number) : void {
-            lblDownloadProgress.text = getString("label.progress", [downloadProgress.value]);
-         }
-         
-         private function dispatchBundlesLoadedEvent() : void {
-            EventUtils.dispatchSimpleEvent(this, LocaleEvent, LocaleEvent.BUNDLES_LOADED);
-         }
+         _bundlesLoader.removeEventListener(Event.COMPLETE,
+                                            bundlesLoader_completeHandler,
+                                            false);
+         _bundlesLoader = null;
+      }
+
+
+      /* ############## */
+      /* ### IMAGES ### */
+      /* ############## */
+
+      private function IMG_unpackProgressHandler(event: ImagePreloaderEvent): void {
+         unpackProgress.setProgress(IMG.currentUnpackingProgress, 1);
+      }
+
+      /**
+       * Starts downloading images.
+       */
+      private function loadImages(): void {
+         IMG.addEventListener(ProgressEvent.PROGRESS, imageLoaded);
+         IMG.addEventListener(ImagePreloaderEvent.UNPACK_PROGRESS,
+                              IMG_unpackProgressHandler);
+         IMG.addEventListener(Event.COMPLETE, imagesLoadComplete);
+         IMG.startDownload();
+      }
+
+      /**
+       * Updates progress bar when image is downloaded.
+       */
+      private function imageLoaded(event: ProgressEvent): void {
+         downloadProgress.setProgress(event.bytesLoaded, event.bytesTotal);
+         setLblDownloadProgressText(event.bytesLoaded);
+      }
+
+      /**
+       * Switch to login screen when download is complete.
+       */
+      private function imagesLoadComplete(event: Event): void {
+         DisplayManager.setFPSForGame();
+         IMG.removeEventListener(ProgressEvent.PROGRESS, imageLoaded);
+         IMG.removeEventListener(ImagePreloaderEvent.UNPACK_PROGRESS,
+                                 IMG_unpackProgressHandler);
+         IMG.removeEventListener(Event.COMPLETE, imagesLoadComplete);
+         StartupManager.initializeAppAfterLoad();
+      }
+
+
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+
+      private function getString(property: String,
+                                 parameters: Array = null): String {
+         return Localizer.string("LoadingScreen", property, parameters);
+      }
+
+      private function setLblDownloadProgressText(value: Number): void {
+         lblDownloadProgress.text = getString("label.progress", [
+            downloadProgress.value
+         ]);
+      }
+
+      private function dispatchBundlesLoadedEvent(): void {
+         Events.dispatchSimpleEvent(this, LocaleEvent,
+                                    LocaleEvent.BUNDLES_LOADED);
+      }
       ]]>
    </fx:Script>
    

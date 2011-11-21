@@ -8,7 +8,7 @@ package models.notification.parts
    
    import mx.collections.ArrayCollection;
    
-   import utils.ModelUtil;
+   import utils.Objects;
    import utils.locale.Localizer;
    
    
@@ -36,8 +36,8 @@ package models.notification.parts
          if (notif != null)
          {
             var params: Object = notif.params;
-            buyer = BaseModel.createModel(PlayerMinimal, params.buyer);
-            location = BaseModel.createModel(Location, params.planet);
+            buyer = Objects.create(PlayerMinimal, params.buyer);
+            location = Objects.create(Location, params.planet);
             fromKind = params.fromKind;
             toKind = params.toKind;
             amount = params.amount;

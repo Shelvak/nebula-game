@@ -150,7 +150,7 @@ class FowSsEntry < ActiveRecord::Base
         end
 
         EventBroker.fire(
-          FowChangeEvent::Recalculate.new(changed, solar_system_id),
+          Event::FowChange::Recalculate.new(changed, solar_system_id),
           EventBroker::FOW_CHANGE,
           EventBroker::REASON_SS_ENTRY
         ) if dispatch_event && changed.present?
@@ -248,13 +248,13 @@ class FowSsEntry < ActiveRecord::Base
       # destroyed
       if status == :destroyed && alliance_status == :destroyed
         EventBroker.fire(
-          FowChangeEvent::SsDestroyed.new(solar_system_id,
+          Event::FowChange::SsDestroyed.new(solar_system_id,
             destroyed_player_id, destroyed_alliance_id),
           EventBroker::FOW_CHANGE,
           EventBroker::REASON_SS_ENTRY)
       else
         EventBroker.fire(
-          FowChangeEvent::SolarSystem.new(solar_system_id),
+          Event::FowChange::SolarSystem.new(solar_system_id),
           EventBroker::FOW_CHANGE,
           EventBroker::REASON_SS_ENTRY)
       end if dispatch_event

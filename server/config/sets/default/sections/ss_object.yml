@@ -21,7 +21,7 @@ rich_asteroid.zetium_rate: [2, 6]
 # Asteroid wreckage spawn rate ranges.
 #
 # 15 asteroids average, x * 3 hrs avg spawn time, 0,15 mule capacity.
-<% mult = 12; cap = 0.15 %>
+<% mult = 36; cap = 0.15 %>
 
 asteroid.wreckage.metal.spawn: [<%= mult * cap * 36 %>, <%= mult * cap * 104 %>]
 asteroid.wreckage.energy.spawn: [<%= mult * cap * 104 %>, <%= mult * cap * 320 %>]

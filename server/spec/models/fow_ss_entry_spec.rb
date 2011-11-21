@@ -24,7 +24,7 @@ shared_examples_for "fow ss entry recalculate" do
 
     it "should dispatch event" do
       should_fire_event(
-        an_instance_of(FowChangeEvent::Recalculate),
+        an_instance_of(Event::FowChange::Recalculate),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_SS_ENTRY
       ) do
@@ -34,7 +34,7 @@ shared_examples_for "fow ss entry recalculate" do
 
     it "should not dispatch event if silenced" do
       should_not_fire_event(
-        an_instance_of(FowChangeEvent::Recalculate),
+        an_instance_of(Event::FowChange::Recalculate),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_SS_ENTRY
       ) do
@@ -55,7 +55,7 @@ shared_examples_for "fow ss entry recalculate" do
 
     it "should not dispatch event even if asked" do
       should_not_fire_event(
-        an_instance_of(FowChangeEvent::Recalculate),
+        an_instance_of(Event::FowChange::Recalculate),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_SS_ENTRY
       ) do
@@ -180,7 +180,7 @@ describe FowSsEntry do
 
       it "should dispatch destroyed for that solar system when decreasing" do
         @klass.increase(@first_arg, @player, 2)
-        should_fire_event(kind_of(FowChangeEvent::SsDestroyed),
+        should_fire_event(kind_of(Event::FowChange::SsDestroyed),
           EventBroker::FOW_CHANGE,
           EventBroker::REASON_SS_ENTRY
         ) do
@@ -219,7 +219,7 @@ describe FowSsEntry do
     it "should fire event if updated but recalculate returned true" do
       @klass.increase(@first_arg, @player)
       should_fire_event(
-        FowChangeEvent::SolarSystem.new(@solar_system_id),
+        Event::FowChange::SolarSystem.new(@solar_system_id),
         EventBroker::FOW_CHANGE, @event_reason
       ) do
         @klass.stub!(:recalculate).and_return(true)
@@ -235,7 +235,7 @@ describe FowSsEntry do
           :solar_system => @solar_system, :counter => 2, :alliance => @alliance)
 
         should_fire_event(
-          FowChangeEvent::SolarSystem.new(@solar_system_id),
+          Event::FowChange::SolarSystem.new(@solar_system_id),
           EventBroker::FOW_CHANGE, @event_reason
         ) do
           @klass.stub!(:recalculate).and_return(true)
@@ -246,7 +246,7 @@ describe FowSsEntry do
 
     it "should not fire event if created but asked not to do so" do
       should_not_fire_event(
-        FowChangeEvent::SolarSystem.new(@solar_system_id),
+        Event::FowChange::SolarSystem.new(@solar_system_id),
         EventBroker::FOW_CHANGE, @event_reason) do
         @klass.increase(@solar_system_id, @player, 1, false)
       end
@@ -256,7 +256,7 @@ describe FowSsEntry do
       @klass.increase(@solar_system_id, @player)
 
       should_not_fire_event(
-        FowChangeEvent::SolarSystem.new(@solar_system_id),
+        Event::FowChange::SolarSystem.new(@solar_system_id),
         EventBroker::FOW_CHANGE, @event_reason) do
         @klass.decrease(@solar_system_id, @player, 1, false)
       end

@@ -10,7 +10,7 @@ package tests.notifications.tests.parts
    
    import tests.notifications.Data;
    
-   import testsutils.LocalizerUtil;
+   import testsutils.LocalizerUtl;
 
    
    public class TC_NotEnoughResources
@@ -21,8 +21,8 @@ package tests.notifications.tests.parts
       [Test(description="Test if constructor sets properties")]
       public function testConstructor() : void
       {
-         LocalizerUtil.setUp();
-         LocalizerUtil.addBundle("Players", {"npc": "NPC"});
+         LocalizerUtl.setUp();
+         LocalizerUtl.addBundle("Players", {"npc": "NPC"});
          
          var notif:Notification = new Notification();
          notif.params = Data.partNotEnoughResources;
@@ -41,7 +41,7 @@ package tests.notifications.tests.parts
             "solarSystemId": 16
          }));
          
-         LocalizerUtil.tearDown();
+         LocalizerUtl.tearDown();
       }
    }
 }

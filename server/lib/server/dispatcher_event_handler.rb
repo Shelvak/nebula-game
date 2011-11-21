@@ -28,6 +28,7 @@ class DispatcherEventHandler
   end
 
   private
+  # @param reason [Symbol]
   def handle_created(objects, reason)
     object = objects[0]
     if object.is_a? Parts::Object
@@ -40,16 +41,28 @@ class DispatcherEventHandler
           filter
         )
       end
-    elsif object.is_a?(PlanetObserversChangeEvent)
+    elsif object.is_a?(Event::PlanetObserversChange)
       filter = DispatcherPushFilter.
         new(DispatcherPushFilter::SS_OBJECT, object.planet_id)
-      
+
       object.non_observer_ids.each do |player_id|
         @dispatcher.push_to_player(
           player_id,
           PlanetsController::ACTION_UNSET_CURRENT,
           {},
           filter
+        )
+      end
+    elsif object.is_a?(Event::ApocalypseStart)
+      params = {'start' => object.start}
+      player_ids = Player.select("id").where(:galaxy_id => object.galaxy_id).
+        c_select_values
+      player_ids.each do |player_id|
+        @dispatcher.push_to_player(
+          player_id,
+          GalaxiesController::ACTION_APOCALYPSE,
+          params,
+          nil
         )
       end
     else
@@ -82,7 +95,7 @@ class DispatcherEventHandler
     end
   end
 
-  def handle_changed(objects, reason)    
+  def handle_changed(objects, reason)
     object = objects[0]
     # Case matching doesn't work sometimes
     if object.is_a? Player
@@ -124,7 +137,7 @@ class DispatcherEventHandler
           )
         end
       end
-    elsif object.is_a?(StatusChangeEvent)
+    elsif object.is_a?(Event::StatusChange)
       object.statuses.each do |player_id, changes|
         @dispatcher.push_to_player(
           player_id,
@@ -272,7 +285,7 @@ class DispatcherEventHandler
     fow_change_event.player_ids.each do |player_id|
       case reason
       when EventBroker::REASON_SS_ENTRY
-        if fow_change_event.is_a?(FowChangeEvent::SsDestroyed)
+        if fow_change_event.is_a?(Event::FowChange::SsDestroyed)
           @dispatcher.push_to_player(player_id,
             ObjectsController::ACTION_DESTROYED,
             {
@@ -312,7 +325,7 @@ class DispatcherEventHandler
 
   # Filter objects to avoid conditions, where we try to notify user about
   # unsupported kinds.
-  # 
+  #
   # E.g.: units inside other units are invisible to everyone and should
   # never be included in objects passed to #resolve_objects.
   #
@@ -478,7 +491,7 @@ class DispatcherEventHandler
 
   def self.debug(message, &block)
     if block
-      LOGGER.block message, {:level => :debug, 
+      LOGGER.block message, {:level => :debug,
         :server_name => "DispatcherEventHandler"}, &block
     else
       LOGGER.debug message, "DispatcherEventHandler"

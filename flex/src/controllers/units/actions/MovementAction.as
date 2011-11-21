@@ -4,11 +4,12 @@ package controllers.units.actions
    import controllers.CommunicationCommand;
    import controllers.units.SquadronsController;
    
-   import models.BaseModel;
    import models.factories.UnitFactory;
    import models.movement.MHop;
    
    import mx.collections.ArrayCollection;
+   
+   import utils.Objects;
    
    
    /**
@@ -51,13 +52,13 @@ package controllers.units.actions
          var jumpsAt:String = params["jumpsAt"];
          // we have received next hop for hostile squad
          if (units.length == 0) {
-            SQUADS_CTRL.addHopToSquadron(BaseModel.createModel(MHop, routeHops[0]));
+            SQUADS_CTRL.addHopToSquadron(Objects.create(MHop, routeHops[0]));
          }
          // friendly squadron made a jump between maps or a squadron jumped into players visible area
          else {
             SQUADS_CTRL.executeJump(
                UnitFactory.fromObjects(units, players),
-               BaseModel.createCollection(ArrayCollection, MHop, routeHops),
+               Objects.fillCollection(new ArrayCollection(), MHop, routeHops),
                jumpsAt
             );
          }

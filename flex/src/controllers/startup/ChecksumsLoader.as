@@ -2,9 +2,10 @@ package controllers.startup
 {
    import flash.events.Event;
    import flash.events.EventDispatcher;
-   
-   import utils.EventUtils;
+
+   import utils.Events;
    import utils.Objects;
+
 
    /**
     * Dispatched when both checksum files have been downloaded.
@@ -42,8 +43,9 @@ package controllers.startup
       
       private function fileLoadComplete() : void {
          _filesLoaded++;
-         if (_filesLoaded == 2)
-            EventUtils.dispatchSimpleEvent(this, Event, Event.COMPLETE);
+         if (_filesLoaded == 2) {
+            Events.dispatchSimpleEvent(this, Event, Event.COMPLETE);
+         }
       }
    }
 }

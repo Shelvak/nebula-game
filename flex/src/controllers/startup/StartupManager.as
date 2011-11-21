@@ -59,10 +59,10 @@ package controllers.startup
    
    import globalevents.GlobalEvent;
    
-   import models.BaseModel;
    import models.ModelLocator;
    import models.announcement.MAnnouncement;
    import models.chat.MChat;
+   import models.time.MTimeEventFixedMoment;
    
    import mx.logging.ILogger;
    import mx.logging.Log;
@@ -112,7 +112,7 @@ package controllers.startup
             registerStartupInfo(new StartupInfo());
             return false;
          }
-         startupInfo = BaseModel.createModel(StartupInfo, ExternalInterface.call("getGameOptions"));
+         startupInfo = Objects.create(StartupInfo, ExternalInterface.call("getGameOptions"));
          if (startupInfo == null) {
             registerStartupInfo(new StartupInfo());
             return false;
@@ -152,7 +152,7 @@ package controllers.startup
          ToolTipManager.hideDelay = int.MAX_VALUE;
          initializeFreeSingletons();
          bindCommandsToActions();
-         setupBaseModel();
+         setupObjects();
          masterTrigger = new MasterUpdateTrigger();
          connectAndAuthorize();
       }
@@ -218,14 +218,9 @@ package controllers.startup
       }
       
       
-      private static function setupBaseModel() : void
-      {
-         BaseModel.setTypePostProcessor(Date,
-            function(instance:BaseModel, property:String, value:Date) : void
-            {
-               instance[property] = DateUtil.getLocalTime(value);
-            }
-         );
+      private static function setupObjects() : void {
+         Objects.setTypeProcessor(Date, DateUtil.autoCreate);
+         Objects.setTypeProcessor(MTimeEventFixedMoment, MTimeEventFixedMoment.autoCreate);
       }
       
       
@@ -403,7 +398,8 @@ package controllers.startup
       private static function bindGalaxiesCommands() : void
       {
          bindPair(GalaxiesCommand.SHOW, new controllers.galaxies.actions.ShowAction());
-         bindPair(GalaxiesCommand.APOCALYPSE, new controllers.galaxies.actions.ApocalypseAction());
+         bindPair(GalaxiesCommand.APOCALYPSE,
+                 new controllers.galaxies.actions.ApocalypseAction());
       }
       private static function bindSolarSystemsCommands() : void
       {

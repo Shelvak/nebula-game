@@ -125,7 +125,7 @@ package models.map
       public function substract(toSubstract:MapArea) : Vector.<MapArea> {
          Objects.paramNotNull("toSubstract", toSubstract);
          var sections:Vector.<MapArea> = new Vector.<MapArea>();
-         for each (var section:Rectangle in GeomUtils.substract(this._rect, toSubstract._rect)) {
+         for each (var section:Rectangle in GeomUtils.subtract(this._rect, toSubstract._rect)) {
             sections.push(MapArea.createFromRectangle(section));
          }
          return sections;

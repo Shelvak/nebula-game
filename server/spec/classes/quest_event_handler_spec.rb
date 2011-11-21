@@ -22,9 +22,9 @@ describe QuestEventHandler do
       QuestEventHandler.filter([QuestProgress.new]).should be_blank
     end
 
-    it "should filter MovementPrepareEvent" do
+    it "should filter Event::MovementPrepare" do
       QuestEventHandler.filter(
-        [MovementPrepareEvent.new(:route, :ids)]
+        [Event::MovementPrepare.new(:route, :ids)]
       ).should be_blank
     end
   end

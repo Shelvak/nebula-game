@@ -45,7 +45,7 @@ class UnitMover
       CallbackManager.register(hops[0], CallbackManager::EVENT_MOVEMENT,
         hops[0].arrives_at)
       EventBroker.fire(
-        MovementPrepareEvent.new(route, unit_ids),
+        Event::MovementPrepare.new(route, unit_ids),
         EventBroker::MOVEMENT_PREPARE
       )
 

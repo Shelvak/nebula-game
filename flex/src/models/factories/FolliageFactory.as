@@ -2,12 +2,13 @@ package models.factories
 {
    import flash.geom.Point;
    
-   import models.BaseModel;
    import models.folliage.BlockingFolliage;
    import models.folliage.NonblockingFolliage;
    import models.tile.FolliageTileKind;
    import models.tile.TerrainType;
    import models.tile.Tile;
+   
+   import utils.Objects;
    
    
    /**
@@ -23,7 +24,7 @@ package models.factories
        * @return instance of <code>NonblockingFolliage</code>.
        */
       public static function nonblockingFromObject(data:Object) : NonblockingFolliage {
-         return BaseModel.createModel(NonblockingFolliage, data);
+         return Objects.create(NonblockingFolliage, data);
       }
       
       /**

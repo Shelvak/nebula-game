@@ -1,12 +1,12 @@
 package utils.assets
 {
    import assets.AssetsBundle;
-   
+
    import config.Config;
-   
+
    import controllers.startup.StartupInfo;
    import controllers.startup.StartupMode;
-   
+
    import flash.display.BitmapData;
    import flash.display.Loader;
    import flash.display.MovieClip;
@@ -14,9 +14,8 @@ package utils.assets
    import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.events.IOErrorEvent;
-   import flash.events.ProgressEvent;
    import flash.utils.getQualifiedClassName;
-   
+
    import mx.events.ModuleEvent;
    import mx.formatters.NumberFormatter;
    import mx.logging.ILogger;
@@ -26,13 +25,13 @@ package utils.assets
 
    import namespaces.client_internal;
 
-   import utils.EventUtils;
+   import utils.Events;
    import utils.Objects;
    import utils.PropertiesTransformer;
    import utils.SingletonFactory;
    import utils.assets.events.ImagePreloaderEvent;
-   
-   
+
+
    /**
     * Dispached after each image downloaded.
     * 
@@ -122,7 +121,7 @@ package utils.assets
          else {
             var percentage:int = event.bytesLoaded * 100 / event.bytesTotal;
             var formatter:NumberFormatter = new NumberFormatter();
-            formatter.precision = 1
+            formatter.precision = 1;
             
             currentModuleLabel = _currentModule + " (" + percentage.toString() + " % - " +
                formatter.format(event.bytesLoaded / 1024) + "k/" +
@@ -182,8 +181,8 @@ package utils.assets
             return null;
          }
          return getFrames(name)[0];
-      };
-      
+      }
+
       /* ################ */
       /* ### DOWNLOAD ### */
       /* ################ */
@@ -435,7 +434,7 @@ package utils.assets
       
       private function dispatchUnpackProgressEvent() : void
       {
-         EventUtils.dispatchSimpleEvent(this, ImagePreloaderEvent, ImagePreloaderEvent.UNPACK_PROGRESS);
+         Events.dispatchSimpleEvent(this, ImagePreloaderEvent, ImagePreloaderEvent.UNPACK_PROGRESS);
       }
    }
 }
