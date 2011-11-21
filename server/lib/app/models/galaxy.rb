@@ -26,7 +26,7 @@ class Galaxy < ActiveRecord::Base
       c_select_value.to_i
   end
 
-  # Returns ID of battleground solar system.
+  # Returns apocalypse start for the galaxy.
   def self.apocalypse_start(galaxy_id)
     time = Galaxy.select("apocalypse_start").where(:id => galaxy_id).
       c_select_value
