@@ -140,7 +140,7 @@ object Config {
   }
   
   /**
-   * Same as range(), but range limits are forumlas with speed.
+   * Same as range(), but range limits are formulas with speed.
    */
   private def evalRange(key: String): Range = {
     val rangeData = seq[String](key)
@@ -594,6 +594,6 @@ object Config {
     "planet.folliage.type.2.variations.%d".format(terrainType)
   ).map { _.toInt }
 
-  def raidingDelayRange = evalRange("raiding.delay")
+  def raidingDelayRange = range("raiding.delay")
   def raidingDelayRandomDate = raidingDelayRange.random.seconds.fromNow
 }

@@ -8,7 +8,7 @@ import spacemule.modules.pmg.objects.SSObject
 import spacemule.modules.config.objects.Config
 import spacemule.persistence.{DB, RowObject, Row}
 import java.util.Calendar
-import ss_object.{AsteroidRow, PlanetRow}
+import ss_object._
 
 object SSObjectRow extends RowObject {
   val columnsSeq = List(
@@ -47,6 +47,7 @@ object SSObjectRow extends RowObject {
   ) = ssObject match {
     case a: Asteroid => AsteroidRow(solarSystemRow, coord, a)
     case p: Planet => PlanetRow(solarSystemRow, coord, p)
+    case j: Jumpgate => JumpgateRow(solarSystemRow, coord, j)
   }
 }
 
