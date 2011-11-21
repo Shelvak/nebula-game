@@ -3424,6 +3424,10 @@
   </Resources>
 
   <SSObjects>
+    <!-- TODO -->
+    <label.totalVolume value="Total volume: {0}"/>
+    <label.wreckageVolume value="(volume: {0})"/>
+    <!-- /TODO -->
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    
     <title.info value="{0} informācija" />
     <!-- {0}: Planet/Jumpgate/Asteroid  
