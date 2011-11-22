@@ -77,6 +77,7 @@
          private static const victoryPtsField: SortField = new SortField('victoryPoints', false, true, true);
          private static const pointsField: SortField = new SortField('points', false, true, true);
          private static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
+         private static const bgPlanetsCountField: SortField = new SortField('bgPlanetsCount', false, true, true);
          private static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);
          private static const sciencePtsField: SortField = new SortField('sciencePoints', false, true, true);
          private static const armyPtsField: SortField = new SortField('armyPoints', false, true, true);
@@ -87,14 +88,15 @@
             {
                'rank':[rankField],
                'name':[nameField],
-               'playersCount':[playersCountField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'planetsCount':[planetsCountField, victoryPtsField, pointsField, nameField],
-               'economyPoints':[economyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'armyPoints':[armyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'warPoints':[warPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
-               'victoryPoints':[victoryPtsField, pointsField, planetsCountField, nameField],
-               'points':[pointsField, victoryPtsField, planetsCountField, nameField]
+               'playersCount':[playersCountField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+               'planetsCount':[planetsCountField, bgPlanetsCountField, victoryPtsField, pointsField, nameField],
+               'bgPlanetsCount':[bgPlanetsCountField, planetsCountField, victoryPtsField, pointsField, nameField],
+               'economyPoints':[economyPtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+               'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+               'armyPoints':[armyPtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+               'warPoints':[warPtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+               'victoryPoints':[victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+               'points':[pointsField, victoryPtsField, bgPlanetsCountField, planetsCountField, nameField]
             }
          
          protected function header_ratingsSortHandler(event:HeaderEvent):void

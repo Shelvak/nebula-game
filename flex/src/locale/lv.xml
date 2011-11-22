@@ -3358,7 +3358,22 @@
     <alliance value="Alianse" />
     <points value="Kopējie punkti" />
     <playersCount value="Spēlētāji" />
-    <planetsCount value="Planētas" />
+    <!-- TODO -->
+    <planetsCount value="RPC" />
+    <bgPlanetsCount value="SPC" />
+    <tooltip.planetsCount value="Regular planets count" />
+    <specialPlanets.common>
+      <p>Special planets are located in battleground or pulsar solar systems.</p>
+    </specialPlanets.common>
+    <tooltip.bgPlanetsCount>
+      <p>Special planets count.</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.bgPlanetsCount>
+    <tooltip.planetsVsBattleground>
+      <p>Regular planets count / Special planets count</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.planetsVsBattleground>
+    <!-- /TODO -->
     <warPoints value="Kara punkti" />
     <economyPoints value="Ekonomijas punkti" />
     <sciencePoints value="Zinātnes punkti" />

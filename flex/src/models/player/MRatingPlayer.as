@@ -73,6 +73,8 @@ package models.player
       public var name: String;
       [Required]
       public var planetsCount: int;
+      [Required]
+      public var bgPlanetsCount: int;
       [Optional]
       public var playersCount: int;
       [Optional]
