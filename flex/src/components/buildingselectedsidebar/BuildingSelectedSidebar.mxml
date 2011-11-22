@@ -328,10 +328,7 @@
                      </base:layout>
                   </base:Panel>
                   
-                  <buildingselectedsidebar:PlanetOwnerPanel 
-                     npc="{bSidebar.selectedBuilding.type == BuildingType.NPC_GROUND_FACTORY
-                     || bSidebar.selectedBuilding.type == BuildingType.NPC_SPACE_FACTORY
-                     || bSidebar.selectedBuilding.type == BuildingType.NPC_INFANTRY_FACTORY}"
+                  <buildingselectedsidebar:PlanetOwnerPanel id="ownerPanel"
                      visible="{ML.latestPlanet.ssObject.ownerChanged != null
                      &amp;&amp; (
                      bSidebar.selectedBuilding.type == BuildingType.NPC_GROUND_FACTORY
@@ -899,10 +896,16 @@
                                             ? 0
                                             : Resource.getModelCancelRevenue(bSidebar.constructablet, ResourceType.ZETIUM,
                                             bSidebar.constructableBuiltPart)), 2).toString()}"/>
+                        <base:Warning width="100%" showSign="false"
+                                      visible="{!(ownerPanel.minDestructDaysPassed
+                                      || bSidebar.canDestroyBuilding)}"
+                                      text="{getString('warning.selfDestructGuard')}"/>
                         <s:Group width="100%">
                            <s:Button right="6" label="{bSidebar.canDestroyBuilding?getString('destroy')
                                      :bSidebar.destructRemainingTime}"
-                                     enabled="{!bSidebar.selectedBuilding.pending}"
+                                     enabled="{!bSidebar.selectedBuilding.pending
+                                     &amp;&amp; (ownerPanel.minDestructDaysPassed
+                                      || bSidebar.canDestroyBuilding)}"
                                      skinClass="{bSidebar.canDestroyBuilding
                                      ? ButtonSkin : CreditButtonSkin}"
                                      click="bSidebar.selfDestruct_clickHandler(event)"/>

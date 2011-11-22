@@ -435,6 +435,11 @@
       <p>Anything this building is constructing will be destroyed if you 
       initiate self-destruct on this building.</p>
     </warning.buildingWorking>
+    <!-- {0}: time of planet guard (like "5d") -->
+    <warning.selfDestructGuard>
+      <p>You can not destroy your buildings for creds in planet which belongs
+      to you for less than {0}</p>
+    </warning.selfDestructGuard>
     <toolTip.afterUpgrade value="After upgrade" />
     <title.boost value="Boost" />
     <title.buildingBonus value="Building bonus" />

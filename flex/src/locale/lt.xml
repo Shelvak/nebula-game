@@ -532,6 +532,11 @@
       <p>Jeigu liepsi šiam pastatui susinaikinti, tada tai, 
       ką stato šis pastatas, bus taip pat sunaikinta.</p>
     </warning.buildingWorking>
+    <!-- {0}: time of planet guard (like "5d") -->
+    <warning.selfDestructGuard>
+      <p>Tu negali griauti pastatų savo planetoje už kredus, jei ji
+        buvo perimta prieš mažiau nei {0}</p>
+    </warning.selfDestructGuard>
     <toolTip.afterUpgrade value="Po patobulinimo" />
     <warning.deployCancel 
     value="Atšaukus statybas išskleidžiamas tankas bus prarastas!" /> 

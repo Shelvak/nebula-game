@@ -573,6 +573,13 @@
     <warning.buildingWorking>
       <p>Viss, kas šai ;ekai tiek būvēts tiks iznīcināts, ja jūs tai veiksiet pašiznīcināšanos.</p>
     </warning.buildingWorking>
+    <!-- TODO -->
+    <!-- {0}: time of planet guard (like "5d") -->
+    <warning.selfDestructGuard>
+      <p>You can not destroy your buildings for creds in planet which belongs
+      to you for less than {0}</p>
+    </warning.selfDestructGuard>
+    <!-- /TODO -->
     <toolTip.afterUpgrade value="Pēc jauninājumiem" />
     <title.boost value="Palielināt" />
     <title.buildingBonus value="Ēkas bonusi" />
