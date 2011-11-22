@@ -124,7 +124,15 @@ class Galaxy < ActiveRecord::Base
     self.class.save_galaxy_finish_data(id)
 
     self.apocalypse_start = Cfg.apocalypse_start_time
-    save!
+
+    transaction do
+      save!
+      players.find_each do |player|
+        player.creds += player.victory_points
+        player.save!
+      end
+    end
+
     EventBroker.fire(
       Event::ApocalypseStart.new(id, apocalypse_start), EventBroker::CREATED
     )

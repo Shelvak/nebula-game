@@ -190,6 +190,23 @@ describe Galaxy do
         galaxy.finish!
       end
     end
+
+    it "should add #creds to players by converting #victory_points" do
+      players = [
+        Factory.create(:player, :galaxy => galaxy, :creds => 123,
+                       :victory_points => 100),
+        Factory.create(:player, :galaxy => galaxy, :creds => 820,
+                       :victory_points => 600),
+        Factory.create(:player, :galaxy => galaxy, :creds => 1045,
+                       :victory_points => 500),
+      ]
+      galaxy.finish!
+      players.each do |player|
+        old_creds = player.creds
+        player.reload
+        player.creds.should == old_creds + player.victory_points
+      end
+    end
   end
 
   describe "#by_coords" do
