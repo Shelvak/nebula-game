@@ -119,6 +119,10 @@ class Galaxy < ActiveRecord::Base
     ! apocalypse_start.nil?
   end
 
+  def apocalypse_started?
+    finished? && apocalypse_start < Time.now
+  end
+
   # End galaxy and start countdown of apocalypse.
   def finish!
     self.class.save_galaxy_finish_data(id)
