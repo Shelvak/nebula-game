@@ -17,6 +17,7 @@ package controllers.solarsystems.actions
 
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   import mx.logging.Log;
 
    import utils.Objects;
    import utils.remote.rmo.ClientRMO;
@@ -24,7 +25,7 @@ package controllers.solarsystems.actions
 
    /**
     * Downloads objects for one solar system and shows solar system map.
-    * 
+    *
     * <p>
     * Client -->> Server: <code>ShowActionParams</code>
     * </p>
@@ -37,7 +38,7 @@ package controllers.solarsystems.actions
     *        objects in the solar system</li>
     * </ul>
     * </p>
-    * 
+    *
     * @see controllers.solarsystems.actions.ShowActionParams
     */
    public class ShowAction extends CommunicationAction
@@ -45,45 +46,56 @@ package controllers.solarsystems.actions
       private function get SQUADS_CTRL() : SquadronsController {
          return SquadronsController.getInstance();
       }
-      
+
       private function get NAV_CTRL() : NavigationController {
          return NavigationController.getInstance();
       }
-      
+
       private function get GF() : GlobalFlags {
          return GlobalFlags.getInstance();
       }
-      
-      
+
+
       public function ShowAction()
       {
          super();
       }
-      
+
       // Should applyServerAction() create only the map or also switch screen?
       private var f_createMapOnly:Boolean = false;
       private function resetFlags() : void {
          f_createMapOnly = false;
          GF.lockApplication = false;
       }
-      
-      
+
+
       override public function applyClientAction(cmd:CommunicationCommand) : void {
          GF.lockApplication = true;
          var params:ShowActionParams = ShowActionParams(cmd.parameters);
          f_createMapOnly = params.createMapOnly;
          sendMessage(new ClientRMO({"id": params.solarSystemId}));
       }
-      
-      override public function applyServerAction(cmd:CommunicationCommand) : void {
+
+      override public function applyServerAction(cmd: CommunicationCommand): void {
+         function log(message: String): void {
+            Log.getLogger("controllers.solarsystems.actions.ShowAction")
+               .debug("@applyServerAction(): " + message);
+         }
+
          var params:Object = cmd.parameters;
 
+         log("creating MSolarSystem");
          var ss:MSolarSystem = SolarSystemFactory.fromObject(params["solarSystem"]);
+         log("creating MMapSolarSystem");
          var ssMap:MMapSolarSystem = new MMapSolarSystem(ss);
+         log("creating MSSObject's for MMapSolarSystem");
          createMapObjects(ssMap, MSSObject, params["ssObjects"]);
+         log("creating MWreckage's for MMapSolarSystem");
          createMapObjects(ssMap, MWreckage, params["wreckages"]);
+         log("creating MCooldownSpace's for MMapSolarSystem");
          createMapObjects(ssMap, MCooldownSpace, params["cooldowns"]);
 
+         log("check and destroy ML.latestPlanet");
          // destroy latest a planet if its not in the given solar system
          if (ML.latestPlanet != null
                 && (!ML.latestPlanet.inBattleground
@@ -94,11 +106,13 @@ package controllers.solarsystems.actions
                ML.latestPlanet = null;
             }
          }
+         log("check and destroy ML.latestSSMap");
          // destroy old solar system
          if (ML.latestSSMap != null) {
             ML.latestSSMap.setFlag_destructionPending();
             ML.latestSSMap = null;
          }
+         log("creating units, squads, hops");
          var units:ArrayCollection = UnitFactory.fromObjects(params["units"], params["players"]);
          ML.units.disableAutoUpdate();
          ML.units.addAll(units);
@@ -107,19 +121,21 @@ package controllers.solarsystems.actions
          SQUADS_CTRL.addHopsToSquadrons(IList(Objects.fillCollection(new ArrayCollection(), MHop, params["routeHops"])).toArray());
          SQUADS_CTRL.attachJumpsAtToHostileSquads(ssMap.squadrons, params["nonFriendlyJumpsAt"]);
          if (f_createMapOnly) {
+            log("just recreating solar system map");
             NAV_CTRL.recreateMap(ssMap);
          }
          else {
+            log("showing new solar system map");
             NAV_CTRL.showSolarSystem(ssMap);
          }
          resetFlags();
       }
-      
+
       public override function cancel(rmo:ClientRMO) : void {
          resetFlags();
          super.cancel(rmo);
       }
-      
+
       public override function result(rmo:ClientRMO) : void {
          resetFlags();
          super.result(rmo);

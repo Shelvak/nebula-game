@@ -11,12 +11,32 @@ import com.adobe.ac.logging.GlobalExceptionHandlerAction;
    import models.ModelLocator;
    
    import mx.core.FlexGlobals;
-   
-   
-   public class GlobalErrorHandler implements GlobalExceptionHandlerAction {
+   import mx.logging.ILogger;
+   import mx.logging.Log;
+
+
+   public class GlobalErrorHandler implements GlobalExceptionHandlerAction
+   {
       private var crashed: Boolean = false;
+
+      private function get logger(): ILogger {
+         return Log.getLogger("utils.GlobalErrorHandler");
+      }
+
       public function handle(error:Object) : void {
          if (error is Error && !crashed) {
+            var err: Error = Error(error);
+            logger.fatal(
+               "Crash on error:"
+                  + "\n      id: {0}"
+                  + "\n    name: {1}"
+                  + "\n message: {2}"
+                  + "\n   class: {3}",
+               err.errorID,
+               err.name,
+               err.message,
+               Objects.getClassName(error)
+            );
             crashed = true;
             var ML:ModelLocator = ModelLocator.getInstance();
             var message:String = 'Client error! Version ' + Version.VERSION +
