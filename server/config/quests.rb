@@ -324,12 +324,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
   end.tap do |quest|
     quest.define(122) do
       have_upgraded_to Building::MobileVulcan
-      have_upgraded_to Building::MobileScreamer
-      have_upgraded_to Building::MobileThunder
 
-      reward_cost Building::MobileVulcan, :count => 0.3
-      reward_cost Building::MobileScreamer, :count => 0.3
-      reward_cost Building::MobileThunder, :count => 0.3
+      reward_cost Building::MobileVulcan, :count => 0.6
     end
   end.define(21) do
     have_upgraded_to Building::Headquarters
