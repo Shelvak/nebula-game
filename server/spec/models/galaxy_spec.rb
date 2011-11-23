@@ -253,6 +253,20 @@ describe Galaxy do
       )
       @galaxy.convert_vps_to_creds!
     end
+
+    it "should not send out notifications if there is nothing gained" do
+      @allies.each do |player|
+        player.alliance_vps = 0
+        player.victory_points = 0
+        player.save!
+      end
+
+      @non_ally.victory_points = 0
+      @non_ally.save!
+
+      Notification.should_not_receive(:create_for_vps_to_creds_conversion)
+      @galaxy.convert_vps_to_creds!
+    end
   end
 
   describe "#by_coords" do
