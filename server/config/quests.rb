@@ -3,7 +3,7 @@
 # New quests can be added here but do not edit old ones!
 
 # Please update this if you add new quests ;)
-# Last quest id: 121
+# Last quest id: 122
 #
 
 # [unit, count, level]
@@ -321,8 +321,18 @@ QUESTS = QuestDefinition.define(:debug => false) do
 
     reward_unit Unit::Mule
     reward_unit Unit::Mdh
+  end.tap do |quest|
+    quest.define(122) do
+      have_upgraded_to Building::MobileVulcan
+      have_upgraded_to Building::MobileScreamer
+      have_upgraded_to Building::MobileThunder
+
+      reward_cost Building::MobileVulcan, :count => 0.3
+      reward_cost Building::MobileScreamer, :count => 0.3
+      reward_cost Building::MobileThunder, :count => 0.3
+    end
   end.define(21) do
-    upgrade_to Building::Headquarters
+    have_upgraded_to Building::Headquarters
 
     reward_metal Building::Headquarters.metal_storage(1) * 0.4
     reward_energy Building::Headquarters.energy_storage(1) * 0.4

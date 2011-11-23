@@ -534,6 +534,8 @@ object Config {
     "ss_object.regular.planet.units")
   lazy val homeworldPlanetGroundUnits = unitsEntry(
     "ss_object.homeworld.planet.units")
+  lazy val homeworldExpansionPlanetGroundUnits = unitsEntry(
+    "ss_object.homeworld.expansion_planet.units")
   lazy val battlegroundPlanetGroundUnits = unitsEntry(
     "ss_object.battleground.planet.units")
   
