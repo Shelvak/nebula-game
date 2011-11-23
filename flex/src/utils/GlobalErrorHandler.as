@@ -42,14 +42,18 @@ import com.adobe.ac.logging.GlobalExceptionHandlerAction;
             var message:String = 'Client error! Version ' + Version.VERSION +
                '\n\n';
             message += "Exception data:\n";
-            message += 'Error id: ' + error.errorID + '\n';
-            message += 'Stacktrace:\n' + error.getStackTrace() + '\n\n';
+            message += 'Error id: ' + err.errorID + '\n';
+            message += 'Stacktrace:\n' + err.getStackTrace() + '\n\n';
             message += ML.debugLog;
 //            message += "Global unit list:\n" + ML.units + "\n\n";
 //            message += "Global squads list:\n" + ML.squadrons + "\n\n";
 //            message += "Global routes list:\n" + ML.routes + "\n\n";
 //            message += "Global notifications list:\n" + ML.notifications;
-            FlexGlobals.topLevelApplication.crash(message, !Capabilities.isDebugger);
+
+            // Error #1502: A script has executed for longer than the default timeout period of 15 seconds.
+            var slowClient: Boolean = err.id == 1502;
+            
+            FlexGlobals.topLevelApplication.crash(message, slowClient, !Capabilities.isDebugger);
          }
          StartupManager.resetApp();
       }

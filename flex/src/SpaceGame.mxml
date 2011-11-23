@@ -64,12 +64,15 @@
          [Bindable]
          private var crashed: Boolean = false;
          
-         public function crash(msg: String, showDebugWarning: Boolean): void
+         public function crash(msg: String,
+                               slowClientMessage: Boolean,
+                               showDebugWarning: Boolean): void
          {
             if (!crashed)
             {
                crashed = true;
                globalErrorPopUp.messageText = msg;
+               globalErrorPopUp.slowClientMessage = slowClientMessage;
                globalErrorPopUp.showDebugPlayerWarning = showDebugWarning;
                GlobalFlags.getInstance().lockApplication = true;
             }
