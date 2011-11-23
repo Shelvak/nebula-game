@@ -36,7 +36,8 @@ class Homeworld(val player: Player) extends SolarSystem {
   }
   
   override protected def groundUnits(obj: SSObject) = obj match {
-    case planet: Planet => Config.homeworldPlanetGroundUnits
+    case hw: ss_objects.Homeworld => Config.homeworldPlanetGroundUnits
+    case planet: Planet => Config.homeworldExpansionPlanetGroundUnits
     case _ => super.groundUnits(obj)
   }
 
