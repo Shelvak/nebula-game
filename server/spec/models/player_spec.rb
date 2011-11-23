@@ -97,6 +97,37 @@ describe Player do
         player.save!
       end
     end
+
+    describe "finished galaxy" do
+      before(:each) do
+        player.galaxy.apocalypse_start = 10.days.from_now
+        player.galaxy.save!
+      end
+
+      it "should not increase #victory_points anymore" do
+        lambda do
+          player.victory_points += 100
+          player.save!
+          player.reload
+        end.should_not change(player, :victory_points)
+      end
+
+      it "should not add to alliance victory points" do
+        player.victory_points += 100
+        lambda do
+          player.save!
+          alliance.reload
+        end.should_not change(alliance, :victory_points)
+      end
+
+      it "should not add to #alliance_vps too" do
+        player.victory_points += 100
+        lambda do
+          player.save!
+          player.reload
+        end.should_not change(player, :alliance_vps)
+      end
+    end
   end
 
   describe "referral points" do

@@ -435,6 +435,11 @@
       <p>Anything this building is constructing will be destroyed if you 
       initiate self-destruct on this building.</p>
     </warning.buildingWorking>
+    <!-- {0}: time of planet guard (like "5d") -->
+    <warning.selfDestructGuard>
+      <p>You can not destroy your buildings for creds in planet which belongs
+      to you for less than {0}</p>
+    </warning.selfDestructGuard>
     <toolTip.afterUpgrade value="After upgrade" />
     <title.boost value="Boost" />
     <title.buildingBonus value="Building bonus" />
@@ -2975,6 +2980,17 @@
       </p>
       <p>To annex a planet we must land with our ships on its soil.</p>
     </about.20>
+
+    <title.122 value="Fortifying Colonies" />
+    <about.122>
+      <p>Commander!</p>
+      <p>
+        We have found some abandoned mobile structures in our second colony
+        ready for deployment. We should use them to fortify our second base as
+        our intelligence reports raiders are heading this way.
+      </p>
+      <p>Go, deploy them at once!</p>
+    </about.122>
 
     <title.21 value="The Second Outpost" />
     <about.21>

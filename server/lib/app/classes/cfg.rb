@@ -18,6 +18,10 @@ class Cfg; class << self
 
   ### buildings.yml ###
 
+  def buildings_self_destruct_creds_safeguard_time
+    CONFIG.evalproperty('buildings.self_destruct.creds.safeguard_time')
+  end
+
   def buildings_overdrive_output_multiplier
     CONFIG['buildings.overdrive.multiplier.output']
   end

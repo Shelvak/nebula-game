@@ -534,6 +534,8 @@ object Config {
     "ss_object.regular.planet.units")
   lazy val homeworldPlanetGroundUnits = unitsEntry(
     "ss_object.homeworld.planet.units")
+  lazy val homeworldExpansionPlanetGroundUnits = unitsEntry(
+    "ss_object.homeworld.expansion_planet.units")
   lazy val battlegroundPlanetGroundUnits = unitsEntry(
     "ss_object.battleground.planet.units")
   
@@ -594,6 +596,6 @@ object Config {
     "planet.folliage.type.2.variations.%d".format(terrainType)
   ).map { _.toInt }
 
-  def raidingDelayRange = range("raiding.delay")
+  def raidingDelayRange = evalRange("raiding.delay")
   def raidingDelayRandomDate = raidingDelayRange.random.seconds.fromNow
 }

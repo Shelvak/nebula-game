@@ -532,6 +532,11 @@
       <p>Jeigu liepsi šiam pastatui susinaikinti, tada tai, 
       ką stato šis pastatas, bus taip pat sunaikinta.</p>
     </warning.buildingWorking>
+    <!-- {0}: time of planet guard (like "5d") -->
+    <warning.selfDestructGuard>
+      <p>Tu negali griauti pastatų savo planetoje už kredus, jei ji
+        buvo perimta prieš mažiau nei {0}</p>
+    </warning.selfDestructGuard>
     <toolTip.afterUpgrade value="Po patobulinimo" />
     <warning.deployCancel 
     value="Atšaukus statybas išskleidžiamas tankas bus prarastas!" /> 
@@ -3117,6 +3122,21 @@
       <p>Planetos užėmimui jums reikės nusileisti su mūsų laivais ant tos 
       planetos žemės.</p>
     </about.20>
+
+    <title.122 value="Kolonijos įtvirtinimas" />
+    <about.122>
+      <p>Komandore!</p>
+      <p>
+        Antrojoje kolonijoje mes radome keletą apleistų mobilių pastatų,
+        kuriuos mūsų inžinieriai prikėlė antrąjam gyvenimui! Dabar jie puikiai
+        veikia ir yra paruošti išskleidimui.
+      </p>
+      <p>
+        Mūsų žvalgyba praneša, jog į šią koloniją jau nusitaikė ateivių piratai,
+        tad reikia kuo greičiau juos išskleisti ir užtikrinti šios kolonijos
+        saugumą!
+      </p>
+    </about.122>
 
     <title.21 value="Antroji stovykla" />
     <about.21>

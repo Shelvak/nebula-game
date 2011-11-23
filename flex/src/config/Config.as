@@ -578,7 +578,13 @@ package config
       /* ################################ */
       /* ### BUILDINGS CONFIG GETTERS ### */
       /* ################################ */
-      
+
+      /* in seconds */
+      public static function getBuildingDestructSafeguardTime(): int
+      {
+         return getValue('buildings.selfDestruct.creds.safeguardTime');
+      }
+
       public static function getBuildingOverdriveOutput(): Number
       {
          return getValue('buildings.overdrive.multiplier.output');

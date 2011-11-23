@@ -20,8 +20,18 @@ describe Building do
   describe "#self_destruct!" do
     before(:each) do
       @player = Factory.create(:player)
-      @planet = Factory.create(:planet, :player => @player)
+      @planet = Factory.create(:planet, :player => @player,
+        :owner_changed => Cfg.buildings_self_destruct_creds_safeguard_time.ago)
       @building = Factory.create(:building, :planet => @planet)
+    end
+
+    it "should not fail if player is not planet owner for long enough" do
+      @planet.owner_changed += 10.minutes
+      @planet.save!
+
+      lambda do
+        @building.self_destruct!
+      end.should_not raise_error(GameLogicError)
     end
 
     it "should fail if planets cooldown has not yet passed" do
@@ -46,6 +56,15 @@ describe Building do
         lambda do
           @building.self_destruct!(true)
         end.should_not raise_error(GameLogicError)
+      end
+
+      it "should fail if player is not planet owner for long enough" do
+        @planet.owner_changed += 10.minutes
+        @planet.save!
+
+        lambda do
+          @building.self_destruct!(true)
+        end.should raise_error(GameLogicError)
       end
 
       it "should fail if player does not have enough creds" do

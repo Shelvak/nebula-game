@@ -296,10 +296,15 @@ class Player < ActiveRecord::Base
       end
     end
 
-    if ! alliance_id.nil? && victory_points_changed?
+    if victory_points_changed?
       old, new = victory_points_change
-      self.alliance_vps ||= 0
-      self.alliance_vps += (new || 0) - (old || 0)
+      if galaxy.finished?
+        # Don't change victory points after galaxy is finished.
+        self.victory_points = old
+      elsif ! alliance_id.nil?
+        self.alliance_vps ||= 0
+        self.alliance_vps += (new || 0) - (old || 0)
+      end
     end
 
     true
