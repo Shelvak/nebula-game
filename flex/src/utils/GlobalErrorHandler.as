@@ -51,7 +51,7 @@ import com.adobe.ac.logging.GlobalExceptionHandlerAction;
 //            message += "Global notifications list:\n" + ML.notifications;
 
             // Error #1502: A script has executed for longer than the default timeout period of 15 seconds.
-            var slowClient: Boolean = err.id == 1502;
+            var slowClient: Boolean = err.errorID == 1502;
             
             FlexGlobals.topLevelApplication.crash(message, slowClient, !Capabilities.isDebugger);
          }
