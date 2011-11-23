@@ -1579,7 +1579,20 @@
     <title.kickedFromAlliance value="Kicked from alliance" />
     <message.kickedFromAlliance value="Kicked from alliance {0}" />
     <label.kickedFromAlliance 
-    value="You have been kicked from alliance" />
+      value="You have been kicked from alliance" />
+
+    <title.credsConverted
+      value="Someone collected enough victory points to win." />
+    <message.credsConverted
+      value="Victory points converted to creds"/>
+    <label.credsConverted>
+      <p>Your victory points was converted to creds.</p>
+      <p>Creds gained:</p>
+    </label.credsConverted>
+    <credsConverted.personalCreds value="● Personal creds: {0}"/>
+    <credsConverted.allianceCreds
+      value="● Creds from alliance pool: {0} (overall alliance pool: {1})"/>
+    <credsConverted.personalCredsTotal value="● Total creds you gained: {0}"/>
 
     <title.achievementCompleted value="Achievement completed" />
     <message.achievementCompleted ref="title.achievementCompleted" />

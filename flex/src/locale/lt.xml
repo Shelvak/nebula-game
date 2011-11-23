@@ -1678,6 +1678,19 @@
     <label.kickedFromAlliance 
     value="Tu buvai pašalintas iš sąjungos" />
 
+    <title.credsConverted
+      value="Kažkas surinko pakankamą pergalės taškų skaičių galaktikos laimėjimui." />
+    <message.credsConverted
+      value="Pergalės taškai buvo iškeisti į kredus"/>
+    <label.credsConverted>
+      <p>Tavo pergalės taškai buvo pakeisti kredais.</p>
+      <p>Gauta kredų:</p>
+    </label.credsConverted>
+    <credsConverted.personalCreds value="● Asmeniniai kredai: {0}"/>
+    <credsConverted.allianceCreds
+      value="● Kredai iš sąjungos: {0} (Iš viso sąjunga gavo: {1})"/>
+    <credsConverted.personalCredsTotal value="● Iš viso Tu gavai: {0}"/>
+
     <title.achievementCompleted value="Pasiekimas įgytas" />
     <message.achievementCompleted ref="title.achievementCompleted" />
 

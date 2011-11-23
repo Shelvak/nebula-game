@@ -12,21 +12,19 @@ package components.notifications
    public class IRNotificationPartFactory
    {
       private static const TYPE_TO_CLASS:Object = new Object();
-      with (NotificationType)
-      {
-         TYPE_TO_CLASS[NOT_ENOUGH_RESOURCES] = IRNotEnoughResources;
-         TYPE_TO_CLASS[COMBAT_LOG] = IRCombatLog;
-         TYPE_TO_CLASS[ACHIEVEMENT_COMPLETED] = IRAchievementCompleted;
-         TYPE_TO_CLASS[QUEST_COMPLETED] = IRQuestLog;
-         TYPE_TO_CLASS[BUILDINGS_DEACTIVATED] = IRBuildingsDeactivated;
-         TYPE_TO_CLASS[EXPLORATION_FINISHED] = IRExplorationFinished;
-         TYPE_TO_CLASS[PLANET_ANNEXED] = IRPlanetAnnexed;
-         TYPE_TO_CLASS[PLANET_PROTECTED] = IRPlanetProtected;
-         TYPE_TO_CLASS[ALLIANCE_INVITATION] = IRAllianceInvitation;
-         TYPE_TO_CLASS[KICKED_FROM_ALLIANCE] = IRKickedFromAlliance;
-         TYPE_TO_CLASS[ALLIANCE_JOINED] = IRAllianceJoined;
-         TYPE_TO_CLASS[MARKET_OFFER_BOUGHT] = IRMarketOfferBought;
-      }
+      TYPE_TO_CLASS[NotificationType.NOT_ENOUGH_RESOURCES] = IRNotEnoughResources;
+      TYPE_TO_CLASS[NotificationType.COMBAT_LOG] = IRCombatLog;
+      TYPE_TO_CLASS[NotificationType.ACHIEVEMENT_COMPLETED] = IRAchievementCompleted;
+      TYPE_TO_CLASS[NotificationType.QUEST_COMPLETED] = IRQuestLog;
+      TYPE_TO_CLASS[NotificationType.BUILDINGS_DEACTIVATED] = IRBuildingsDeactivated;
+      TYPE_TO_CLASS[NotificationType.EXPLORATION_FINISHED] = IRExplorationFinished;
+      TYPE_TO_CLASS[NotificationType.PLANET_ANNEXED] = IRPlanetAnnexed;
+      TYPE_TO_CLASS[NotificationType.PLANET_PROTECTED] = IRPlanetProtected;
+      TYPE_TO_CLASS[NotificationType.ALLIANCE_INVITATION] = IRAllianceInvitation;
+      TYPE_TO_CLASS[NotificationType.KICKED_FROM_ALLIANCE] = IRKickedFromAlliance;
+      TYPE_TO_CLASS[NotificationType.ALLIANCE_JOINED] = IRAllianceJoined;
+      TYPE_TO_CLASS[NotificationType.MARKET_OFFER_BOUGHT] = IRMarketOfferBought;
+      TYPE_TO_CLASS[NotificationType.VPS_CONVERTED_TO_CREDS] = IRCredsConverted;
       
       
       /**
