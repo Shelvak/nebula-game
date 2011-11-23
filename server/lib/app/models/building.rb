@@ -244,6 +244,13 @@ class Building < ActiveRecord::Base
 
     player = nil
     if with_credits
+      raise GameLogicError.new(
+        "Player cannot destroy building with creds, because not enough time " +
+          "has passed for him as planet owner."
+      ) \
+        if Time.now - planet.owner_changed <
+          Cfg.buildings_self_destruct_creds_safeguard_time
+
       player = self.player
       creds_needed = CONFIG['creds.building.destroy']
       raise GameLogicError.new("Player does not have enough creds! Req: #{

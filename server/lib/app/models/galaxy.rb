@@ -6,6 +6,8 @@ class Galaxy < ActiveRecord::Base
   # FK :dependent => :delete_all
   has_many :players
   # FK :dependent => :delete_all
+  has_many :alliances
+  # FK :dependent => :delete_all
   has_many :solar_systems
   # FK :dependent => :delete_all
   has_many :market_rates
@@ -119,17 +121,67 @@ class Galaxy < ActiveRecord::Base
     ! apocalypse_start.nil?
   end
 
+  def apocalypse_started?
+    finished? && apocalypse_start < Time.now
+  end
+
   # End galaxy and start countdown of apocalypse.
   def finish!
     self.class.save_galaxy_finish_data(id)
 
     self.apocalypse_start = Cfg.apocalypse_start_time
-    save!
+
+    transaction do
+      save!
+      convert_vps_to_creds!
+    end
+
     EventBroker.fire(
       Event::ApocalypseStart.new(id, apocalypse_start), EventBroker::CREATED
     )
 
     true
+  end
+
+  # Convert victory points to creds.
+  #
+  # If player is not in alliance:
+  # - convert all victory points to creds.
+  #
+  # If player is in alliance:
+  # - each player gets half alliance victory points + non-alliance vps.
+  # - distribute half avps from each player evenly amongst alliance members.
+  # - convert points to creds.
+  #
+  def convert_vps_to_creds!
+    alliance_ids = alliances.select("id").c_select_values.map(&:to_i)
+
+    alliance_ids.each do |alliance_id|
+      alliance_players = players.where(:alliance_id => alliance_id).all
+
+      total_alliance_vps = alliance_players.map do |player|
+        player.alliance_vps / 2
+      end.sum
+
+      alliance_vps_per_player = total_alliance_vps / alliance_players.size
+      alliance_players.each do |player|
+        personal_creds = (player.victory_points - player.alliance_vps) +
+          (player.alliance_vps / 2)
+        player.creds += personal_creds + alliance_vps_per_player
+        player.save!
+        Notification.create_for_vps_to_creds_conversion(
+          player.id, personal_creds, total_alliance_vps, alliance_vps_per_player
+        )
+      end
+    end
+    
+    players.where(:alliance_id => nil).find_each do |player|
+      player.creds += player.victory_points
+      player.save!
+      Notification.create_for_vps_to_creds_conversion(
+        player.id, player.victory_points, nil, nil
+      )
+    end
   end
 
   # Spawns convoy traveling from one random wormhole to other.
