@@ -704,7 +704,7 @@ package utils
          var collIsArray:Boolean = collectionInstance is Array || TypeChecker.isVector(collectionInstance);
          if (!collIsList && !collIsArray)
             throw new TypeError(
-               "[param collectionIsntance] must be of Array, Vector or IList type but was " + 
+               "[param collectionInstance] must be of Array, Vector or IList type but was " +
                getClass(collectionInstance)
             );
          var dataIsList:Boolean = data is IList;
@@ -751,31 +751,22 @@ package utils
        *        attribute for <code>[Required|Optional]</code> metadata tag defined. Properties of
        *        <code>Vector</code> type do not need this attribute. Element type can any class;</li>
        *    <li>You can define properties of your classes as aggregators (<code>aggregatesProps</code> and
-       *        <code>aggregatesPrefix</code> attributes of <code>[Required|Optional]</code>) tags.
+       *        <code>aggregatesPrefix</code> attributes of <code>[Required|Optional]</code> tags).
        *        See <a target="_blank" href="http://wiki-dev.nebula44.com/wiki/Nebula_44:ClientCode"> wiki
        *        page</a> for more information on this feature;</li>
-       *    <li>Properties of complex types (not collections) may also have [PropsMap] tag attached to them.
+       *    <li>Properties of complex types (not collections) may also have <code>[PropsMap]</code> tag attached to them.
        *        This allows you to map properties from data object to properties of the complex type. For
-       *        more information on this feature see <a target="_blank"
-       *        href="http://wiki-dev.nebula44.com/wiki/Nebula_44:ClientCode"> wiki page</a>;</li>
+       *        more information on this feature see
+       *        <a target="_blank" href="http://wiki-dev.nebula44.com/wiki/Nebula_44:ClientCode">wiki page</a>;</li>
        *    <li>If data object contains properties of different type than those that are defined
        *        in destination class, method invocation will end up with an error;</li>
        *    <li>Works only with dynamicly created properties of the data object.</li>
        * </ul>
        * 
-       * @param type type of an instance to be created
-       * <ul><b>
-       * <li>Not null.</li>
-       * </b></ul>
-       * 
+       * @param type type of an instance to be created | <b>not null</b>
        * @param data raw object containing data to be loaded to the instance to be created
        * 
        * @return newly created object with values loaded to its properties from the data object
-       * 
-       * @throws Error if:
-       * <ul>
-       * <li></li>
-       * </ul> 
        */
       public static function create(type:Class, data:Object) : * {
          Objects.paramNotNull("type", type);

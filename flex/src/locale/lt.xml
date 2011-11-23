@@ -1970,6 +1970,11 @@
       atsparus! (bent jau kol kas). Na nieko, nesijaudink, visuomet gali 
       paleisti žaidimą iš naujo ir viskas turėtų (greičiausiai) būti gerai.</p>
     </crash>
+
+    <message.slowClient>
+      Tavo kompiuteris yra nepakankamai našus atlikti šią operaciją.
+      Tačiau jei manai, jog tai klaida, gali mums apie tai pranešti forume.
+    </message.slowClient>
     
     <title.log value="Derinimo žurnalas" />
     <message.log.general>

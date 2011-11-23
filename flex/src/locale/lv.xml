@@ -2069,6 +2069,11 @@
     </crash>
 
     <!-- TODO -->
+    <message.slowClient>
+       Your computer is not fast enough for this operation. But if you still
+       think that this is an error, feel free to report it to the forum.
+    </message.slowClient>
+
     <title.log value="Debug log" />
     <message.log.general>
       <p>This is an in-game log of your actions. Paste this to a file and 

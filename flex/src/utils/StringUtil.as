@@ -230,7 +230,8 @@ package utils
        * @see mx.utils.StringUtil#substitute()
        */
       public static function substitute(str:String, ...parameters) : String {
-         return mx.utils.StringUtil.substitute(str, parameters);
+         return mx.utils.StringUtil.substitute
+                   .apply(null, [str].concat(parameters));
       }
       
       /**
