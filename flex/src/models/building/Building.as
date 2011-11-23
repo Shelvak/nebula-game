@@ -524,7 +524,7 @@ package models.building
       public function get description(): String
       {
          return Localizer.string('Buildings', type + '.about');
-      };
+      }
       
       [Bindable(event="hpChange")]
       /**
@@ -584,7 +584,7 @@ package models.building
       {
          return calcEffectiveResourceRate(ResourceType.METAL);
          
-      };
+      }
       
       [Bindable (event="typeChange")]
       public function get maxLevel(): int
@@ -598,14 +598,14 @@ package models.building
       {
          return calcNextResourceRate(ResourceType.METAL);
          
-      };
+      }
       
       [Bindable (event="levelChange")]
       public function get energyRate(): Number
       {
          return calcEffectiveResourceRate(ResourceType.ENERGY, 1 + energyMod / 100);
          
-      };
+      }
       
       
       [Bindable (event="levelChange")]
@@ -613,14 +613,14 @@ package models.building
       {
          return calcNextResourceRate(ResourceType.ENERGY, 1 + energyMod / 100);
          
-      };
+      }
       
       
       [Bindable (event="levelChange")]
       public function get zetiumRate(): Number
       {
          return calcEffectiveResourceRate(ResourceType.ZETIUM);
-      };
+      }
       
       
       [Bindable (event="levelChange")]
@@ -628,69 +628,69 @@ package models.building
       {
          return calcNextResourceRate(ResourceType.ZETIUM);
          
-      };
+      }
       
       
       [Bindable (event="levelChange")]
       public function get metalStorage() : Number
       {
          return calcMaxStorageCapacity(ResourceType.METAL);
-      };
+      }
       
       
       [Bindable (event="levelChange")]
       public function get nextMetalStorage() : Number
       {
          return calcNextStorageCapacity(ResourceType.METAL);
-      };
+      }
       
       
       [Bindable (event="levelChange")] 
       public function get energyStorage() : Number
       {
          return calcMaxStorageCapacity(ResourceType.ENERGY);
-      };
+      }
       
       
       [Bindable (event="levelChange")]
       public function get nextEnergyStorage() : Number
       {
          return calcNextStorageCapacity(ResourceType.ENERGY);
-      };
+      }
       
       
       [Bindable (event="levelChange")]
       public function get zetiumStorage() : Number
       {
          return calcMaxStorageCapacity(ResourceType.ZETIUM);
-      };
+      }
       
       
       [Bindable (event="levelChange")]
       public function get nextZetiumStorage() : Number
       {
          return calcNextStorageCapacity(ResourceType.ZETIUM);
-      };
+      }
       
       
       [Bindable (event="levelChange")]
       public function get radarStrength() : int
       {
          return calculateRadarStrenth(type, {"level": level});
-      };
+      }
       
       
       [Bindable (event="levelChange")]
       public function get nextRadarStrength() : int
       {
          return calculateRadarStrenth(type, {"level": level+1});
-      };
+      }
       
       
       public function get constructablePosition() : Number
       {
          return Config.getConstructablePosition(type);
-      };
+      }
       
       
       [Bindable (event="typeChange")]
@@ -755,22 +755,14 @@ package models.building
       /**
        * Lets you find out if this building can be built on particular tile type.
        * 
-       * @param t One of <code>TileKind</code> constant values or instance of <code>Tile</code>.
-       * <code>null</code>s are considered as tiles of <code>TileKind.REGULAR</code> kind.
+       * @param t One of <code>TileKind</code> constant values
+       * @param borderTile is the given tile a border tile of the building?
        * 
        * @return <code>true</code> if the building can't be built on the given tile type or
        * <code>false</code> otherwise.  
        */
-      public function isTileRestricted(t:*) : Boolean
+      public function isTileRestricted(t:int, borderTile:Boolean = false) : Boolean
       {
-         if (t == null)
-         {
-            t = TileKind.REGULAR;
-         }
-         if (t is Tile)
-         {
-            t = Tile(t).kind;
-         }
          return getRestrictedTiles().contains(t);
       }
       

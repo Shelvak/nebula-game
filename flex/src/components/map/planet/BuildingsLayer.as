@@ -36,7 +36,8 @@ package components.map.planet
    import models.planet.MPlanet;
    import models.planet.events.MPlanetEvent;
    import models.tile.Tile;
-   
+   import models.tile.TileKind;
+
    import mx.collections.ArrayCollection;
    
    import spark.components.Button;
@@ -311,8 +312,6 @@ package components.map.planet
       
       /**
        * Starts the procees of building new structure on the map.
-       * 
-       * @param type Type of new building. 
        */
       private function startBuildingProcess(building:Building) : void
       {
@@ -582,12 +581,16 @@ package components.map.planet
          {
             for (var ly:int = yFrom; ly <= yTo; ly++)
             {
+               var tile:Tile = planet.isOnMap(lx, ly)
+                                  ? planet.getTile(lx, ly)
+                                  : null;
+               var tileKind:int = tile != null ? tile.kind : TileKind.REGULAR;
                // tiles under the building
                if (b.standsOn(lx, ly))
                {
                   tiles[lx - xFrom][ly - yFrom] =
                      ! planet.isOnMap(lx, ly) ||
-                       b.isTileRestricted(planet.getTile(lx, ly)) ||
+                       b.isTileRestricted(tileKind, false) ||
                        planet.buildingsInAreaExist(lx, lx, ly, ly, b) ||
                        planet.blockingFolliagesInAreaExist(lx, lx, ly, ly);
                }
@@ -596,10 +599,12 @@ package components.map.planet
                {
                   var border:int = PlanetMap.BORDER_SIZE;
                   tiles[lx - xFrom][ly - yFrom] =
-                     !  planet.isOnMap(lx, ly)
+                     !planet.isOnMap(lx, ly)
                      && (lx < -border || lx > planet.width  + border - 1 ||
                          ly < -border || ly > planet.height + border - 1)
-                     || planet.isOnMap(lx, ly) && planet.buildingsInAreaExist(lx, lx, ly, ly, b);
+                     || planet.isOnMap(lx, ly)
+                           && (planet.buildingsInAreaExist(lx, lx, ly, ly, b)
+                                  || b.isTileRestricted(tileKind, true));
                }
             }
          }
