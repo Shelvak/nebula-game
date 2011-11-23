@@ -95,13 +95,6 @@ file_options:
       # for combining.
       save_as: ""
 assets:
-  "cursors":
-    flex:
-      ".":
-        <% %w{normal active drag dragging}.each do |base| %>
-        <%= "#{base}.png: MouseCursor#{base.camelcase}.png" %>
-        <% end %>
-
   "images/buildings":
     "*":
       ".":

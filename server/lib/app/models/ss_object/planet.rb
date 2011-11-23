@@ -11,7 +11,6 @@ class SsObject::Planet < SsObject
   include Parts::PlanetExploration
   include Parts::PlanetBoosts
   include Parts::DelayedEventDispatcher
-  include Parts::Raiding
 
   scope :for_player, Proc.new { |player|
     player_id = player.is_a?(Player) ? player.id : player
@@ -77,7 +76,7 @@ class SsObject::Planet < SsObject
   OWNER_ATTRIBUTES = %w{
     exploration_x exploration_y exploration_ends_at 
     can_destroy_building_at
-    next_raid_at owner_changed
+    next_raid_at raid_arg owner_changed
   } + RESOURCE_ATTRIBUTES
 
   # Attributes which are included when :view => true is passed to
@@ -218,35 +217,6 @@ class SsObject::Planet < SsObject
   def can_destroy_building?
     can_destroy_building_at.nil? || can_destroy_building_at < Time.now
   end
-
-  # Registers raid on this planet.
-  def register_raid
-    self.next_raid_at = CONFIG.eval_hashrand('raiding.delay').from_now
-    CallbackManager.register_or_update(self, CallbackManager::EVENT_RAID,
-      self.next_raid_at)
-    delayed_fire(self, EventBroker::CHANGED, 
-      EventBroker::REASON_OWNER_PROP_CHANGE)
-  end
-
-  def register_raid!
-    register_raid
-    save!
-  end
-
-  def raid_registered?; ! next_raid_at.nil?; end
-
-  def clear_raid
-    CallbackManager.unregister(self, CallbackManager::EVENT_RAID) if \
-      raid_registered?
-    self.next_raid_at = nil
-    delayed_fire(self, EventBroker::CHANGED, 
-      EventBroker::REASON_OWNER_PROP_CHANGE)
-  end
-
-  def clear_raid!
-    clear_raid
-    save!
-  end
   
   RESOURCES = Resources::TYPES
   
@@ -261,7 +231,6 @@ class SsObject::Planet < SsObject
   private
   # Set #next_raid_at & #owner_changed.
   before_update :if => Proc.new { |r| r.player_id_changed? } do
-    should_raid? ? register_raid : clear_raid
     self.owner_changed = Time.now
     
     true
@@ -366,9 +335,10 @@ class SsObject::Planet < SsObject
     solar_system = self.solar_system
     if solar_system.battleground?
       if new_player
-        new_player.victory_points += CONFIG['battleground.planet.takeover.vps']
         Unit.give_units(CONFIG['battleground.planet.bonus'], self, new_player)
       end
+      old_player.bg_planets_count -= 1 if old_player
+      new_player.bg_planets_count += 1 if new_player
     else
       old_player.planets_count -= 1 if old_player
       new_player.planets_count += 1 if new_player
@@ -495,8 +465,8 @@ class SsObject::Planet < SsObject
         EventBroker.fire(model, EventBroker::CHANGED)
       when CallbackManager::EVENT_RAID
         model = find(id)
-        # Don't raid if planet does not belong to planet.
-        model.npc_raid! unless model.player_id.nil?
+        spawner = RaidSpawner.new(model)
+        spawner.raid!
       when CallbackManager::EVENT_EXPLORATION_COMPLETE
         find(id).finish_exploration!
       else
@@ -537,7 +507,7 @@ class SsObject::Planet < SsObject
               # And if some players were viewing the planet, but they can't
               # anymore, dispatch event to unset their session planet ids.
               EventBroker.fire(
-                PlanetObserversChangeEvent.
+                Event::PlanetObserversChange.
                   new(object.id, old_observers - new_observers),
                 EventBroker::CREATED
               )

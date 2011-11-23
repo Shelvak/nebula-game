@@ -1,6 +1,5 @@
 package spacemule.modules.pmg.persistence.objects
 
-import spacemule.modules.pmg.persistence.Manager
 import spacemule.modules.pmg.persistence.TableIds
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.ss_objects._
@@ -8,107 +7,75 @@ import spacemule.helpers.Converters._
 import spacemule.modules.pmg.objects.SSObject
 import spacemule.modules.config.objects.Config
 import spacemule.persistence.{DB, RowObject, Row}
+import java.util.Calendar
+import ss_object._
 
 object SSObjectRow extends RowObject {
   val columnsSeq = List(
     "id", "type", "solar_system_id", "angle", "position", "width", "height",
-    "terrain", "player_id", "name", "size",
+    "terrain", "player_id", "name", "size", "owner_changed",
     "metal", "metal_generation_rate", "metal_usage_rate", "metal_storage",
     "energy", "energy_generation_rate", "energy_usage_rate", "energy_storage",
     "zetium", "zetium_generation_rate", "zetium_usage_rate", "zetium_storage",
-    "last_resources_update", "owner_changed"
+    "last_resources_update", "next_raid_at"
   )
+
+  object Resources {
+    case class Resource(
+      stock: Double, generationRate: Double, usageRate: Double,
+      storage: Double
+    ) {
+      def toSeq = Seq(stock, generationRate, usageRate, storage)
+    }
+  }
+
+  case class Resources(
+    metal: Resources.Resource,
+    energy: Resources.Resource,
+    zetium: Resources.Resource,
+    lastResourcesUpdate: Option[Calendar] = None
+  ) {
+    def toSeq = metal.toSeq ++ energy.toSeq ++ zetium.toSeq :+
+      (lastResourcesUpdate match {
+        case Some(calendar) => DB.date(calendar)
+        case None => DB.loadInFileNull
+      })
+  }
+
+  def apply(
+    solarSystemRow: SolarSystemRow, coord: Coords, ssObject: SSObject
+  ) = ssObject match {
+    case a: Asteroid => AsteroidRow(solarSystemRow, coord, a)
+    case p: Planet => PlanetRow(solarSystemRow, coord, p)
+    case j: Jumpgate => JumpgateRow(solarSystemRow, coord, j)
+  }
 }
 
-case class SSObjectRow(solarSystemRow: SolarSystemRow, coord: Coords,
-                  ssObject: SSObject) extends Row {
+abstract class SSObjectRow(
+  solarSystemRow: SolarSystemRow, coord: Coords, ssObject: SSObject
+) extends Row {
   val companion = SSObjectRow
   val id = TableIds.ssObject.next
-  val width = ssObject match {
-    case planet: Planet => planet.area.width
-    case _ => 0
-  }
-  val height = ssObject match {
-    case planet: Planet => planet.area.height
-    case _ => 0
-  }
-  val size = ssObject match {
-    case planet: Planet => {
-      val areaPercentage = planet.area.edgeSum * 100 / Config.planetAreaMax
-      val range = Config.ssObjectSize
-      range.start + (range.end - range.start) * areaPercentage / 100
-    }
-    case _ => Config.ssObjectSize.random
-  }
-  val terrain = ssObject match {
-    case planet: Planet => planet.terrainType
-    case _ => 0
-  }
-  val playerId = ssObject match {
-    case h: Homeworld => solarSystemRow.playerRow.get.id.toString
-    case _ => DB.loadInFileNull
-  }
-  val name = ssObject match {
-    case bgPlanet: MiniBgPlanet => "%s-%d".format(
-        BgPlanet.Names.wrapped(bgPlanet.index),
-        id
-    )
-    case bgPlanet: BgPlanet => BgPlanet.Names.wrapped(bgPlanet.index)
-    case planet: Planet => "P-%d".format(id)
-    case _ => DB.loadInFileNull
-  }
+  val width = 0
+  val height = 0
+  val size = Config.ssObjectSize.random
+  val terrain = 0
+  val playerId = DB.loadInFileNull
+  val name = DB.loadInFileNull
+  val resources = SSObjectRow.Resources(
+    SSObjectRow.Resources.Resource(0, 0, 0, 0),
+    SSObjectRow.Resources.Resource(0, 0, 0, 0),
+    SSObjectRow.Resources.Resource(0, 0, 0, 0)
+  )
+  val ownerChanged: Option[Calendar] = None
+  val nextRaidAt: Option[Calendar] = None
 
-  val valuesSeq = List(
+  // Initialize this lazily, because this abstract class is subclassed.
+  lazy val valuesSeq = List(
     id, ssObject.name, solarSystemRow.id, coord.angle, coord.position,
-    width, height, terrain, playerId, name, size
-  ) ++ (ssObject match {
-    case asteroid: Asteroid =>
-      List(
-        0, asteroid.metalRate, 0, 0,
-        0, asteroid.energyRate, 0, 0,
-        0, asteroid.zetiumRate, 0, 0,
-        DB.loadInFileNull, DB.loadInFileNull
-      )
-    case homeworld: Homeworld =>
-      List(
-        Config.homeworldStartingMetal,
-        homeworld.metalGenerationRate,
-        homeworld.metalUsageRate,
-        homeworld.metalStorage,
-        Config.homeworldStartingEnergy,
-        homeworld.energyGenerationRate,
-        homeworld.energyUsageRate,
-        homeworld.energyStorage,
-        Config.homeworldStartingZetium,
-        homeworld.zetiumGenerationRate,
-        homeworld.zetiumUsageRate,
-        homeworld.zetiumStorage,
-        Manager.currentDateTime,
-        Manager.currentDateTime
-      )
-    case planet: Planet =>
-      List(
-        0,
-        planet.metalGenerationRate,
-        planet.metalUsageRate,
-        planet.metalStorage,
-        0,
-        planet.energyGenerationRate,
-        planet.energyUsageRate,
-        planet.energyStorage,
-        0,
-        planet.zetiumGenerationRate,
-        planet.zetiumUsageRate,
-        planet.zetiumStorage,
-        Manager.currentDateTime,
-        DB.loadInFileNull
-      )
-    case _ =>
-      List(
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        DB.loadInFileNull, DB.loadInFileNull
-      )
+    width, height, terrain, playerId, name, size, DB.date(ownerChanged)
+  ) ++ resources.toSeq :+ (nextRaidAt match {
+    case Some(time) => DB.date(time)
+    case None => DB.loadInFileNull
   })
 }

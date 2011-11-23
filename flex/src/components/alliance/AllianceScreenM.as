@@ -67,6 +67,7 @@ package components.alliance
       private static const allianceVpsField: SortField = new SortField('allianceVps', false, true, true);
       private static const pointsField: SortField = new SortField('points', false, true, true);
       private static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
+      private static const bgPlanetsCountField: SortField = new SortField('bgPlanetsCount', false, true, true);
       private static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);
       private static const sciencePtsField: SortField = new SortField('sciencePoints', false, true, true);
       private static const armyPtsField: SortField = new SortField('armyPoints', false, true, true);
@@ -76,29 +77,35 @@ package components.alliance
          {
             'rank':[rankField],
             'name':[nameField],
-            'alliance':[allianceField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
-            'planetsCount':[planetsCountField, allianceVpsField, victoryPtsField, pointsField, nameField],
-            'economyPoints':[economyPtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
-            'sciencePoints':[sciencePtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
-            'armyPoints':[armyPtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
-            'warPoints':[warPtsField, allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
-            'victoryPoints':[victoryPtsField, allianceVpsField, pointsField, planetsCountField, nameField],
-            'allianceVps':[allianceVpsField, victoryPtsField, pointsField, planetsCountField, nameField],
-            'points':[pointsField, allianceVpsField, victoryPtsField, planetsCountField, nameField]
+            'alliance':[allianceField, allianceVpsField, victoryPtsField,
+               pointsField, bgPlanetsCountField, planetsCountField, nameField],
+            'planetsCount':[planetsCountField, bgPlanetsCountField, allianceVpsField,
+               victoryPtsField, pointsField, nameField],
+            'bgPlanetsCount':[bgPlanetsCountField, planetsCountField, allianceVpsField,
+               victoryPtsField, pointsField, nameField],
+            'economyPoints':[economyPtsField, allianceVpsField, victoryPtsField,
+               pointsField, bgPlanetsCountField, planetsCountField, nameField],
+            'sciencePoints':[sciencePtsField, allianceVpsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+            'armyPoints':[armyPtsField, allianceVpsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+            'warPoints':[warPtsField, allianceVpsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+            'victoryPoints':[victoryPtsField, allianceVpsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+            'allianceVps':[allianceVpsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+            'points':[pointsField, allianceVpsField, victoryPtsField, bgPlanetsCountField, planetsCountField, nameField]
          }
       
       private static const inviteSortFields: Object = 
          {
             'rank':[rankField],
             'name':[nameField],
-            'alliance':[allianceField, victoryPtsField, pointsField, planetsCountField, nameField],
-            'planetsCount':[planetsCountField, victoryPtsField, pointsField, nameField],
-            'economyPoints':[economyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
-            'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, planetsCountField, nameField],
-            'armyPoints':[armyPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
-            'warPoints':[warPtsField, victoryPtsField, pointsField, planetsCountField, nameField],
-            'victoryPoints':[victoryPtsField, pointsField, planetsCountField, nameField],
-            'points':[pointsField, victoryPtsField, planetsCountField, nameField]
+            'alliance':[allianceField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+            'planetsCount':[planetsCountField, bgPlanetsCountField, victoryPtsField, pointsField, nameField],
+            'bgPlanetsCount':[planetsCountField, planetsCountField, victoryPtsField, pointsField, nameField],
+            'economyPoints':[economyPtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+            'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+            'armyPoints':[armyPtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+            'warPoints':[warPtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+            'victoryPoints':[victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
+            'points':[pointsField, victoryPtsField, bgPlanetsCountField, planetsCountField, nameField]
          }
          
       public static function getInstance() : AllianceScreenM {

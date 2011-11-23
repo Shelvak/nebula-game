@@ -1,12 +1,12 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe FowChangeEvent do
+describe Event::FowChange do
   describe "#player_ids" do
     before(:all) do
       @alliance = Factory.create(:alliance)
       @player1 = Factory.create(:player, :alliance => @alliance)
       @player2 = Factory.create(:player, :alliance => @alliance)
-      @result = FowChangeEvent.new(@player1, @alliance).player_ids
+      @result = Event::FowChange.new(@player1, @alliance).player_ids
     end
 
     it "should include player" do
@@ -19,7 +19,7 @@ describe FowChangeEvent do
 
     it "should include player even if it is not in alliance" do
       player = Factory.create(:player)
-      FowChangeEvent.new(
+      Event::FowChange.new(
         player, @alliance
       ).player_ids.should include(player.id)
     end

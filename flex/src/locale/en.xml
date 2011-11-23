@@ -1212,11 +1212,33 @@
     </label.shield>
     <label.over value="Fleet over"/>
     <message.noRadar value="You need a Radar to explore the galaxy" />
-    <label.apocalypse.willStart value="Apocalypse will start"/>
-    <label.apocalypse.started value="Apocalypse started {0}"/>
-    <label.apocalypse.dayOf value="It is now day {0}"/>
-    <label.apocalypse.reward value="You will get {0} creds if you survive"/>
-    <label.apocalypse.moreInfo value="Click for more information"/>
+
+    <tooltip.apocalypse.common>
+      <p>Click here for more information.</p>
+    </tooltip.apocalypse.common>
+    <!-- TODO: fix these to use TLF p margin instead of two brs. -->
+    <!--
+     {0}: date string
+     {1}: relative time string (5d/3h/...)
+    -->
+    <tooltip.apocalypse.notStarted>
+      <p>Apocalypse will start at {0} (in {1}).<br/><br/></p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.notStarted>
+    <!--
+    {0}: date string
+    {1}: current apocalypose day
+    {2}: how many creds will you get
+    -->
+    <tooltip.apocalypse.started>
+      <p>Apocalypse has started at {0}.<br/><br/></p>
+      <p>
+        It is now {1} apocalypse day. You will get
+        {2 one[one cred] many[? creds]} after losing your last planet.
+        <br/><br/>
+      </p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.started>
   </Galaxy>
 
   <General>
@@ -1844,6 +1866,11 @@
         will be fine (probably). 
       </p>
     </crash>
+
+    <message.slowClient>
+       Your computer is not fast enough for this operation. But if you still
+       think that this is an error, feel free to report it to the forum.
+    </message.slowClient>
 
     <title.log value="Debug log" />
     <message.log.general>
@@ -3145,7 +3172,20 @@
     <alliance value="Alliance" />
     <points value="Total points" />
     <playersCount value="Players" />
-    <planetsCount value="Planets" />
+    <planetsCount value="RPC" />
+    <bgPlanetsCount value="SPC" />
+    <tooltip.planetsCount value="Regular planets count" />
+    <specialPlanets.common>
+      <p>Special planets are located in battleground or pulsar solar systems.</p>
+    </specialPlanets.common>
+    <tooltip.bgPlanetsCount>
+      <p>Special planets count.</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.bgPlanetsCount>
+    <tooltip.planetsVsBattleground>
+      <p>Regular planets count / Special planets count</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.planetsVsBattleground>
     <warPoints value="War points" />
     <economyPoints value="Economy points" />
     <sciencePoints value="Science points" />
@@ -3209,6 +3249,8 @@
   </Resources>
 
   <SSObjects>
+    <label.totalVolume value="Total volume: {0}"/>
+    <label.wreckageVolume value="(volume: {0})"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    
     <title.info value="{0} info" />
     <!-- {0}: Planet/Jumpgate/Asteroid  
@@ -3874,6 +3916,7 @@
 
   <Units>
     <title.storageScreen value="Load / Unload"/>
+    <label.totalEmptyStorage value="Total free storage: {0}"/>
   
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Ready in {0}" />
@@ -3899,6 +3942,18 @@
     <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
+
+    <!-- params:
+         0 - minimal count of this type of units in raid
+         1 - unit count that might add to the minimal count
+         2 - % probability for each additional unit to be added -->
+    <tooltip.raidProbability>
+      <p>Minimal number of units arriving: {0}</p>
+      <p>
+        There might be {1} additional units with each unit having {2}%
+        probability of appearing.
+      </p>
+    </tooltip.raidProbability>
     
     <tooltip.freeStorage>
       <p>This ship has {0} units of storage available.</p>
@@ -4030,6 +4085,7 @@
     <label.deploy value="Deploy" />
     <label.manage value="Manage" />
     <label.withPlanets value="With {0} planets" />
+    <label.afterDays value="{0} days after apocalypse" />
     <label.resources value="Resources" />
     <label.transferResources value="Transfer" />
     <!-- 0 - resources string, 1 - 'is' or 'are' -->

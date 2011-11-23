@@ -1,18 +1,14 @@
 package config
 {
-   import controllers.objects.ObjectClass;
-   
    import models.building.BuildingBonuses;
    import models.tile.TileKind;
    import models.unit.ReachKind;
-   import models.unit.UnitBuildingEntry;
-   
+
    import mx.collections.ArrayCollection;
-   
+
    import utils.ModelUtil;
    import utils.StringUtil;
-   
-   
+
    /**
     * Holds all game configuration data received from server. 
     */
@@ -180,6 +176,13 @@ package config
       {
          return getValue("galaxy.player.population.max");
       }
+
+      public static function getApocalypseSurvivalBonus(days: int): int {
+         return StringUtil.evalFormula(
+            getValue("galaxy.apocalypse.survivalBonus"),
+            {"days": days}
+         );
+      }
       
       public static function getMarketFee(): String
       {
@@ -219,14 +222,19 @@ package config
          return getValue('speed');
       }
       
-      public static function getRaidingInfo(): Array
+      public static function getRaidingPlanetUnits(): Object
       {
-         return getValue('raiding.raiders');
+         return getValue('raiding.raiders.planet');
       }
-      
-      public static function getRaidingPlanetLimit(): int
+
+      public static function getRaidingBattlegroundUnits(): Object
       {
-         return getValue('raiding.planet.threshold');
+         return getValue('raiding.raiders.battleground');
+      }
+
+      public static function getRaidingApocalypseUnits(): Object
+      {
+         return getValue('raiding.raiders.apocalypse');
       }
       
       public static function getPointsToWin(): int

@@ -68,6 +68,10 @@ class CallbackManager
     # be scoped in _ruleset_. Beware that ruleset is not considered when
     # updating or checking for object existence.
     def register(object, event=EVENT_UPGRADE_FINISHED, time=nil)
+      raise ArgumentError.new("object was nil!") if object.nil?
+      raise ArgumentError.new("object was not a ActiveRecord::Base, but #{
+        object.class}!") unless object.is_a?(ActiveRecord::Base)
+
       time ||= object.upgrade_ends_at
 
       LOGGER.debug("CM: registering event '#{STRING_NAMES[event]

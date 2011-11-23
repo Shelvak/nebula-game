@@ -20,13 +20,19 @@ package controllers.timedupdate
       public function update() : void {
          _thePlayer.update();
          _announcement.update();
-         ModelLocator.getInstance().latestGalaxy.update();
+         if (ModelLocator.getInstance().latestGalaxy)
+         {
+            ModelLocator.getInstance().latestGalaxy.update();
+         }
       }
       
       public function resetChangeFlags() : void {
          _thePlayer.resetChangeFlags();
          _announcement.resetChangeFlags();
-         ModelLocator.getInstance().latestGalaxy.resetChangeFlags();
+         if (ModelLocator.getInstance().latestGalaxy)
+         {
+            ModelLocator.getInstance().latestGalaxy.resetChangeFlags();
+         }
       }
    }
 }

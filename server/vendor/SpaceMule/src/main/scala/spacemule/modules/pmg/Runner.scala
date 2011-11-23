@@ -2,7 +2,6 @@ package spacemule.modules.pmg
 
 import persistence.objects.{SaveResult, CallbackRow, GalaxyRow}
 import spacemule.helpers.Converters._
-import java.util.Date
 import spacemule.helpers.BenchmarkableMock
 import spacemule.modules.pmg.objects.Galaxy
 import spacemule.modules.pmg.objects.Player
@@ -11,6 +10,7 @@ import spacemule.modules.pmg.persistence.Manager
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.persistence.TableIds
 import spacemule.persistence.DB
+import java.util.{Calendar, Date}
 
 object Runner extends BenchmarkableMock {
   /**
@@ -21,7 +21,6 @@ object Runner extends BenchmarkableMock {
       val createdAt = DB.date(new Date())
       TableIds.initialize()
       val galaxyRow = new GalaxyRow(ruleset, callbackUrl, createdAt)
-      CallbackRow.initConvoySpawn
 
       val battleground = benchmark("create battleground") { 
         () =>
@@ -33,7 +32,10 @@ object Runner extends BenchmarkableMock {
       benchmark("saving") { () => 
         Manager.save { () =>
           Manager.galaxies += galaxyRow.values
-          Manager.callbacks += CallbackRow(galaxyRow, ruleset).values
+          Manager.callbacks += CallbackRow(
+            galaxyRow, ruleset, CallbackRow.Events.Spawn,
+            Config.convoyTime.fromNow
+          ).values
           
           // Create system offer creation cooldowns.
           List(
@@ -42,8 +44,8 @@ object Runner extends BenchmarkableMock {
             CallbackRow.Events.CreateZetiumSystemOffer
           ).foreach { event => 
             Manager.callbacks += CallbackRow(
-              galaxyRow, ruleset, Some(event),
-              Some(Config.marketBotRandomResourceCooldown.fromNow())
+              galaxyRow, ruleset, event,
+              Config.marketBotRandomResourceCooldown.fromNow
             ).values
           }
           val battlegroundRow = Manager.readBattleground(
@@ -53,8 +55,8 @@ object Runner extends BenchmarkableMock {
           )
           Manager.callbacks += CallbackRow(
             battlegroundRow, ruleset,
-            Some(CallbackRow.Events.Spawn),
-            Some(0.seconds.fromNow)
+            CallbackRow.Events.Spawn,
+            Calendar.getInstance
           ).values
         }
       }

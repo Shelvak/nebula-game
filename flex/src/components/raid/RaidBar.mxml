@@ -1,55 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
                     xmlns:s="library://ns.adobe.com/flex/spark"
-                    xmlns:mx="library://ns.adobe.com/flex/halo"
-                    xmlns:custom="components.resourcesbar.*"
                     xmlns:base="components.base.*"
                     xmlns:battle="components.battle.*"
                     width="{barGroup.width}">
    <fx:Script>
       <![CDATA[
-      import com.developmentarc.core.utils.EventBroker;
-
-      import globalevents.GlobalEvent;
-
-      import models.planet.MPlanet;
-
-      import models.planet.MPlanet;
-
-      import models.planet.MPlanet;
-
-      import models.planet.MPlanet;
-
       import models.planet.MPlanet;
       import models.resource.ResourceType;
+      import models.time.MTimeEventFixedMoment;
 
       import mx.events.EffectEvent;
-      import mx.events.FlexEvent;
 
       import utils.DateUtil;
       import utils.assets.AssetNames;
       import utils.locale.Localizer;
 
+      private static const DURATION_TIME:int = 100;
 
-      private static const DURATION_TIME: int = 100;
-
-      protected function shorten_effectEndHandler(event: EffectEvent): void {
+      protected function shorten_effectEndHandler(event:EffectEvent):void {
          infoPanel.visible = false;
       }
 
 
-      protected function widen_effectStartHandler(event: EffectEvent): void {
+      protected function widen_effectStartHandler(event:EffectEvent):void {
          infoPanel.visible = true;
       }
 
       [Bindable]
-      private var addPlanet: int = 1;
+      private var addPlanet:int = 1;
 
-      protected function shorten_effectStartHandler(event: EffectEvent): void {
+      protected function shorten_effectStartHandler(event:EffectEvent):void {
          if (nextGroup.x < background.width) {
             switchTo.play([nextGroup], true);
             addPlanet = 1;
          }
+      }
+
+      private function getDays(toDate:Date, fromDate: Date): int {
+         return Math.round((toDate.time - fromDate.time) /
+                 (1000 * 60 * 60 * 24));
       }
       ]]>
    </fx:Script>
@@ -88,11 +78,19 @@
                         left="0" right="0" textAlign="center"/>
             </s:Group>
             
-            <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRUnitBuildingEntrySmall"
-                         dataProvider="{MPlanet.getRaiders(ML.player.planetsCount)}">
+            <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRRaidUnitEntry"
+               dataProvider="{MPlanet.getRaiders(
+                  ML.latestGalaxy.apocalypseActive
+                     ? 0 : ML.latestPlanet.ssObject.raidArg,
+                  ML.latestPlanet.ssObject.nextRaidAt,
+                  (
+                     ML.latestSSMap == null ||
+                     ML.latestSSMap.solarSystem.isBattleground
+                  ),
+                  ML.latestGalaxy.apocalypseStartEvent
+               )}">
                <s:layout>
-                  <s:TileLayout requestedRowCount="{Math.max(1, 
-                                Math.ceil(Number(MPlanet.getRaiders(ML.player.planetsCount).length)/4))}"/>
+                  <s:TileLayout requestedColumnCount="4"/>
                </s:layout>
             </s:DataGroup>
          </s:Group>
@@ -117,15 +115,37 @@
             
             <s:Group top="25" left="20" right="30">
                <s:Label fontSize="12" fontWeight="bold" 
-                        text="{Localizer.string('Units', 'label.withPlanets', [ML.player.planetsCount + addPlanet])}" 
-                        left="0" right="0" textAlign="center"/>
+                  text="{Localizer.string(
+                     'Units',
+                     ML.latestGalaxy.apocalypseActive
+                        ? 'label.afterDays' : 'label.withPlanets',
+                     [
+                        ML.latestGalaxy.apocalypseActive
+                           ? getDays(
+                              ML.latestPlanet.ssObject.nextRaidAt,
+                              ML.latestGalaxy.apocalypseStartEvent.occuresAt
+                           ) + addPlanet
+                           : ML.latestPlanet.ssObject.raidArg + addPlanet
+                     ]
+                  )}"
+                  left="0" right="0" textAlign="center"/>
             </s:Group>
             
-            <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRUnitBuildingEntrySmall"
-                         dataProvider="{MPlanet.getRaiders(ML.player.planetsCount + addPlanet)}">
+            <s:DataGroup left="7" top="40" bottom="30"
+               itemRenderer="components.unit.IRRaidUnitEntry"
+               dataProvider="{MPlanet.getRaiders(
+                  ML.latestGalaxy.apocalypseActive
+                     ? addPlanet
+                     : ML.latestPlanet.ssObject.raidArg + addPlanet,
+                  ML.latestPlanet.ssObject.nextRaidAt,
+                  (
+                     ML.latestSSMap == null ||
+                     ML.latestSSMap.solarSystem.isBattleground
+                  ),
+                  ML.latestGalaxy.apocalypseStartEvent
+               )}">
                <s:layout>
-                  <s:TileLayout requestedColumnCount="4" requestedRowCount="{Math.max(1, 
-                                Math.ceil(Number(MPlanet.getRaiders(ML.player.planetsCount + addPlanet).length)/4))}"/>
+                  <s:TileLayout requestedColumnCount="4"/>
                </s:layout>
             </s:DataGroup>
          </s:Group>

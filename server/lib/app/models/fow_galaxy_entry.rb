@@ -95,7 +95,7 @@ class FowGalaxyEntry < ActiveRecord::Base
     # client.
     def dispatch_changed(player, alliance=nil)
       EventBroker.fire(
-        FowChangeEvent.new(player, alliance || player.alliance),
+        Event::FowChange.new(player, alliance || player.alliance),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_GALAXY_ENTRY
       )

@@ -20,8 +20,8 @@ describe Player do
       @result = Player.ratings(@alliance.galaxy_id)
     end
 
-    (%w{id name victory_points alliance_vps planets_count last_seen} +
-        Player::POINT_ATTRIBUTES).each do |attr|
+    (%w{id name victory_points alliance_vps planets_count bg_planets_count
+        last_seen} + Player::POINT_ATTRIBUTES).each do |attr|
       it "should include #{attr}" do
         @result.each_with_index do |row, index|
           row[attr].should == @players[index].send(attr)
@@ -65,9 +65,10 @@ describe Player do
   end
   
   describe "#victory_points" do
+    let(:alliance) { Factory.create(:alliance) }
+    let(:player) { Factory.create(:player, :alliance => alliance) }
+
     it "should add to alliance victory points too" do
-      alliance = Factory.create(:alliance)
-      player = Factory.create(:player, :alliance => alliance)
       player.victory_points += 100
       lambda do
         player.save!
@@ -76,12 +77,25 @@ describe Player do
     end
 
     it "should add to #alliance_vps too" do
-      alliance = Factory.create(:alliance)
-      player = Factory.create(:player, :alliance => alliance)
       player.victory_points += 100
       lambda do
         player.save!
       end.should change(player, :alliance_vps).by(100)
+    end
+
+    describe "finishing galaxy" do
+      it "should check it if vps were updated" do
+        player.victory_points += 100
+        player.galaxy.should_receive(:check_if_finished!).
+          with(player.victory_points)
+        player.save!
+      end
+
+      it "should not check it if vps were not updated" do
+        player.war_points += 1000
+        player.galaxy.should_not_receive(:check_if_finished!)
+        player.save!
+      end
     end
   end
 
@@ -688,7 +702,7 @@ describe Player do
     describe "normal mode" do
       required_fields = %w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
-        victory_points creds population population_cap planets_count
+        victory_points creds population population_cap
         alliance_id alliance_cooldown_ends_at
         free_creds vip_level vip_creds vip_until vip_creds_until
         portal_without_allies

@@ -244,7 +244,7 @@ describe RouteHop do
 
       it "should call .handle_fow_change" do
         RouteHop.should_receive(:handle_fow_change).with(
-          an_instance_of(MovementEvent))
+          an_instance_of(Event::Movement))
         RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
       end
 
@@ -350,7 +350,7 @@ describe RouteHop do
       "still belong to it" do
         handler = Object.new
         def handler.fire(object, event_name, reason)
-          @units = object.route.units.all if object.is_a?(MovementEvent)
+          @units = object.route.units.all if object.is_a?(Event::Movement)
         end
         def handler.units; @units; end
         EventBroker.register(handler)
@@ -380,7 +380,7 @@ describe RouteHop do
       FowSsEntry.should_receive(:increase).with(current.id,
         route.player, 8)
       RouteHop.handle_fow_change(
-        MovementEvent.new(route, previous_location, current_hop, nil)
+        Event::Movement.new(route, previous_location, current_hop, nil)
       )
     end
 
@@ -400,14 +400,14 @@ describe RouteHop do
       it "should not decrease fow ss entry" do
         FowSsEntry.should_not_receive(:decrease)
         RouteHop.handle_fow_change(
-          MovementEvent.new(@route, @previous_location, @current_hop, nil)
+          Event::Movement.new(@route, @previous_location, @current_hop, nil)
         )
       end
 
       it "should recalculate solar system metadata" do
         FowSsEntry.should_receive(:recalculate).with(@solar_system.id)
         RouteHop.handle_fow_change(
-          MovementEvent.new(@route, @previous_location, @current_hop, nil)
+          Event::Movement.new(@route, @previous_location, @current_hop, nil)
         )
       end
     end
@@ -428,14 +428,14 @@ describe RouteHop do
       it "should not increase fow ss entry" do
         FowSsEntry.should_not_receive(:increase)
         RouteHop.handle_fow_change(
-          MovementEvent.new(@route, @previous_location, @current_hop, nil)
+          Event::Movement.new(@route, @previous_location, @current_hop, nil)
         )
       end
 
       it "should recalculate solar system metadata" do
         FowSsEntry.should_receive(:recalculate).with(@solar_system.id)
         RouteHop.handle_fow_change(
-          MovementEvent.new(@route, @previous_location, @current_hop, nil)
+          Event::Movement.new(@route, @previous_location, @current_hop, nil)
         )
       end
     end
@@ -456,7 +456,7 @@ describe RouteHop do
       FowSsEntry.should_receive(:decrease).with(previous_location.id,
         route.player, 8)
       RouteHop.handle_fow_change(
-        MovementEvent.new(route, previous_location, current_hop, nil)
+        Event::Movement.new(route, previous_location, current_hop, nil)
       )
     end
   end

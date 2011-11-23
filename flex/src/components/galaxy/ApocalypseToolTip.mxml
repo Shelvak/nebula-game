@@ -2,13 +2,22 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:ui="components.ui.*"
-         implements="mx.core.IToolTip">
+         implements="mx.core.IToolTip"
+        mouseChildren="false">
    <fx:Binding source="ML.latestGalaxy.apocalypseStartEvent"
                destination="apocalypseEvent"/>
    <fx:Script>
       <![CDATA[
+      import config.Config;
+
+      import flashx.textLayout.elements.TextFlow;
+
       import models.ModelLocator;
       import models.time.MTimeEventFixedMoment;
+
+      import spark.utils.TextFlowUtil;
+
+      import utils.DateUtil;
 
       import utils.locale.Localizer;
 
@@ -22,18 +31,21 @@
       [Bindable]
       private var apocalypseEvent: MTimeEventFixedMoment;
 
-      private function getString(property: String,
-                                 params: Array = null): String {
-         return Localizer.string("Galaxy", "label.apocalypse." + property,
-                                 params);
+      private function getString(property: String, params: Array = null): String {
+         return Localizer.string("Galaxy", "tooltip.apocalypse." + property,
+                 params);
       }
 
       private function getDays(elapsedTime: Number): int {
-         return Math.round(elapsedTime / SECONDS_IN_DAY);
+         return Math.round(elapsedTime / SECONDS_IN_DAY) + 1;
+      }
+
+      private function getTime(remainingTime: Number): String {
+         return DateUtil.secondsToHumanString(remainingTime, 2);
       }
 
       private function getReward(elapsedTime: Number): int {
-         return getDays(elapsedTime);
+         return Config.getApocalypseSurvivalBonus(getDays(elapsedTime));
       }
 
       /* ################ */
@@ -46,36 +58,27 @@
 
       public function set text(value: String): void {
       }
+
+      public function getFlow(occured: Boolean, params: Array): TextFlow {
+         return TextFlowUtil.importFromString(occured
+                 ? getString('started', params)
+                 : getString('notStarted', params));
+      }
       ]]>
    </fx:Script>
-   <ui:DarkRoundedBackground left="0" right="0" top="0" bottom="0"/>
-   <s:Group left="5" right="5" top="5" bottom="5">
-      <s:layout>
-         <s:VerticalLayout gap="4" horizontalAlign="center"/>
-      </s:layout>
-      <s:Group visible="{apocalypseEvent.hasOccured}"
-               includeInLayout="{apocalypseEvent.hasOccured}"
-               left="5" right="5" top="5" bottom="5">
-         <s:layout>
-            <s:VerticalLayout gap="4" horizontalAlign="center"/>
-         </s:layout>
-         <s:Label
-            text="{getString('started', [apocalypseEvent.occuresAtString])}"/>
-         <s:Label
-            text="{getString('dayOf', [getDays(apocalypseEvent.occurredBefore)])}"/>
-         <s:Label
-            text="{getString('reward', [getReward(apocalypseEvent.occurredBefore)])}"/>
-      </s:Group>
-      <s:Group visible="{!apocalypseEvent.hasOccured}"
-               includeInLayout="{!apocalypseEvent.hasOccured}}"
-               left="5" right="5" top="5" bottom="5">
-         <s:layout>
-            <s:VerticalLayout gap="4" horizontalAlign="center"/>
-         </s:layout>
-         <s:Label text="{getString('willStart')}"/>
-         <s:Label
-            text="{apocalypseEvent.occuresAtString} ({apocalypseEvent.occuresInString}})"/>
-      </s:Group>
-      <s:Label text="{getString('moreInfo')}"/>
-   </s:Group>
+   <ui:DarkRoundedBackground left="0" right="0" top="0" bottom="0"
+           alpha="0.9"/>
+   <s:RichText color="#EEC500" fontSize="12" fontWeight="bold"
+               lineBreak="toFit" textAlign="center"
+               textFlow="{apocalypseEvent.hasOccured
+               ? getFlow(true, [
+                  apocalypseEvent.occuresAtString,
+                  getDays(apocalypseEvent.occurredBefore),
+                  getReward(apocalypseEvent.occurredBefore)
+                 ])
+               : getFlow(false, [
+                  apocalypseEvent.occuresAtString,
+                  getTime(apocalypseEvent.occuresIn)
+                 ])}"
+           left="5" right="5" top="5" bottom="5"/>
 </s:Group>

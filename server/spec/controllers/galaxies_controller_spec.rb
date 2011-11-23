@@ -143,4 +143,24 @@ describe GalaxiesController do
       end
     end
   end
+
+  describe "galaxies|apocalypse" do
+    before(:each) do
+      @action = "galaxies|apocalypse"
+      @params = {'start' => 15.minutes.from_now}
+      @method = :push
+    end
+
+    @required_params = %w{start}
+    it_should_behave_like "with param options"
+
+    it_should_behave_like "only push"
+
+    it "should respond with start time" do
+      push @action, @params
+      response_should_include(
+        :start => @params['start']
+      )
+    end
+  end
 end

@@ -26,6 +26,10 @@ object DB {
     new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date)
 
   def date(calendar: Calendar): String = date(calendar.getTime)
+  def date(calendar: Option[Calendar]): String = calendar match {
+    case Some(cal) => date(cal)
+    case None | null => loadInFileNull
+  }
 
   private var connection: Connection = null
   private var connStr: String = null

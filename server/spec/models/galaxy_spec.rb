@@ -10,6 +10,20 @@ describe Galaxy do
     end
   end
 
+  describe ".apocalypse_start" do
+    it "should return time if it has started" do
+      time = 5.days.ago
+      galaxy = Factory.create(:galaxy, :apocalypse_start => time)
+      Galaxy.apocalypse_start(galaxy.id).should be_within(SPEC_TIME_PRECISION).
+        of(time)
+    end
+
+    it "should return nil if it has not started" do
+      galaxy = Factory.create(:galaxy, :apocalypse_start => nil)
+      Galaxy.apocalypse_start(galaxy.id).should be_nil
+    end
+  end
+
   describe ".units" do
     before(:all) do
       galaxy = Factory.create :galaxy
@@ -127,7 +141,57 @@ describe Galaxy do
       end
     end
   end
-  
+
+  describe "#check_if_finished!" do
+    let(:galaxy) { Factory.create(:galaxy) }
+
+    it "should not finish if dev" do
+      galaxy = Factory.create(:galaxy, :ruleset => "dev")
+      galaxy.should_not_receive(:finish!)
+      galaxy.check_if_finished!(Cfg.vps_for_winning)
+    end
+
+    it "should not finish if already finished" do
+      galaxy = Factory.create(:galaxy, :apocalypse_start => 15.minutes.from_now)
+      galaxy.should_not_receive(:finish!)
+      galaxy.check_if_finished!(Cfg.vps_for_winning)
+    end
+
+    it "should not finish if not enough victory points" do
+      galaxy.should_not_receive(:finish!)
+      galaxy.check_if_finished!(Cfg.vps_for_winning - 1)
+    end
+
+    it "should finish otherwise" do
+      galaxy.should_receive(:finish!)
+      galaxy.check_if_finished!(Cfg.vps_for_winning)
+    end
+  end
+
+  describe "#finish!" do
+    let(:galaxy) { Factory.create(:galaxy) }
+
+    it "should save statistical data" do
+      Galaxy.should_receive(:save_galaxy_finish_data).with(galaxy.id)
+      galaxy.finish!
+    end
+
+    it "should set #apocalypse_start" do
+      galaxy.finish!
+      galaxy.reload
+      galaxy.apocalypse_start.should be_within(SPEC_TIME_PRECISION).
+                                       of(Cfg.apocalypse_start_time)
+    end
+
+    it "should dispatch apocalypse event" do
+      should_fire_event(
+        an_instance_of(Event::ApocalypseStart), EventBroker::CREATED
+      ) do
+        galaxy.finish!
+      end
+    end
+  end
+
   describe "#by_coords" do
     it "should return solar system by x,y" do
       model = Factory.create :galaxy

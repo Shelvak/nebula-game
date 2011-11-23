@@ -127,152 +127,6 @@ describe SsObject::Planet do
     end
   end
   
-  describe "raiding" do
-    describe ".npc_raid_unit_count" do
-      before(:all) do
-        @values = {
-          'raiding.raiders' => [
-            [3, "gnat", 5, 0],
-            [3, "gnat", 4, 1],
-            [4, "gnat", 3, 0],
-            [4, "glancer", 4, 0],
-          ]
-        }
-      end
-
-      it "should return empty array if player has too few planets" do
-        with_config_values(@values) do
-          SsObject::Planet.npc_raid_unit_count(2).should == []
-        end
-      end
-
-      it "should return units when we meet threshold" do
-        with_config_values(@values) do
-          SsObject::Planet.npc_raid_unit_count(3).should == [
-            ["gnat", 5, 0],
-            ["gnat", 4, 1],
-          ]
-        end
-      end
-
-      it "should return units when we meed threshold (4 planets)" do
-        with_config_values(@values) do
-          SsObject::Planet.npc_raid_unit_count(4).should == [
-            ["gnat", 5 * 2 + 3, 0],
-            ["gnat", 4 * 2, 1],
-            ["glancer", 4, 0],
-          ]
-        end
-      end
-    end
-
-    describe "#npc_raid_units" do
-      before(:all) do
-        @player = Factory.create(:player, :planets_count => 3)
-        @planet = Factory.create(:planet, :player => @player)
-        SsObject::Planet.should_receive(:npc_raid_unit_count).
-          with(@player.planets_count).and_return([
-            ["gnat", 2, 0],
-            ["glancer", 1, 1],
-          ])
-        @units = @planet.npc_raid_units
-      end
-
-      it "should place units in planet" do
-        @units.each { |unit| unit.location.should == @planet.location_point }
-      end
-
-      it "should set unit flanks" do
-        @units.map(&:flank).should == [0, 0, 1]
-      end
-
-      it "should set unit levels" do
-        @units.each { |unit| unit.level.should == 1 }
-      end
-
-      it "should set unit to full hp" do
-        @units.each { |unit| unit.hp.should == unit.hit_points }
-      end
-
-      it "should not belong to any player" do
-        @units.each { |unit| unit.player.should be_nil }
-      end
-
-      it "should be correct types" do
-        @units.map { |u| u.class.to_s }.should == [
-          "Unit::Gnat",
-          "Unit::Gnat",
-          "Unit::Glancer",
-        ]
-      end
-
-      it "should not be saved" do
-        @units.each { |unit| unit.id.should be_nil }
-      end
-    end
-
-    describe "#npc_raid!" do
-      before(:each) do
-        @player = Factory.create(:player)
-        @planet = Factory.create(:planet, :player => @player)
-        @unit = Factory.create(:u_trooper, :location => @planet,
-          :player => @player, :level => 1)
-      end
-      
-      it "should create units" do
-        raiders = [
-          Factory.build(:u_gnat, :location => @planet, :player => nil,
-            :level => 1)
-        ]
-        @planet.should_receive(:npc_raid_units).and_return(raiders)
-        Unit.should_receive(:save_all_units).with(raiders, nil, 
-          EventBroker::CREATED)
-        @planet.npc_raid!
-      end
-
-      it "should check location" do
-        Combat::LocationChecker.should_receive(:check_location).
-          with(@planet.location_point)
-        @planet.npc_raid!
-      end
-      
-      it "should register raid if next raid should happen" do
-        @planet.stub!(:should_raid?).and_return(true)
-        @planet.should_receive(:register_raid!)
-        @planet.npc_raid!
-      end
-
-      it "should clear #next_raid_at if next raid should not happen" do
-        @planet.stub!(:should_raid?).and_return(false)
-        @planet.should_receive(:clear_raid!)
-        @planet.npc_raid!
-      end
-    end
-
-    describe ".should_raid?" do
-      it "should return false if planet is NPC" do
-        Factory.create(:planet).should_raid?.should be_false
-      end
-
-      it "should return false if player does not have 2 non-raidable planets" do
-        Factory.create(:planet_with_player).should_raid?.should be_false
-      end
-
-      it "should return true if planet is in BG solar system" do
-        Factory.create(:planet_with_player, 
-          :solar_system => Factory.create(:mini_battleground)).should_raid?.
-          should be_true
-      end
-
-      it "should return true if player already has 2 non-raidable planets" do
-        player = Factory.create(:player)
-        Factory.create(:planet, :player => player)
-        Factory.create(:planet, :player => player)
-        Factory.create(:planet, :player => player).should_raid?.should be_true
-      end
-    end
-  end
-  
   describe "#name" do
     before(:each) do
       @min = CONFIG['planet.validation.name.length.min']
@@ -302,26 +156,49 @@ describe SsObject::Planet do
 
   describe "player changing" do
     before(:each) do
-      @old = Factory.create(:player, :planets_count => 5)
-      @new = Factory.create(:player, :planets_count => 10)
+      @old = Factory.create(:player, :planets_count => 5,
+                            :bg_planets_count => 8)
+      @new = Factory.create(:player, :planets_count => 10,
+                            :bg_planets_count => 12)
       @planet = Factory.create :planet, :player => @old
       @planet.player = @new
     end
 
     describe "planets counter cache" do
-      it "should increase by 1 for new player" do
-        lambda do
-          @planet.save!
-          @new.reload
-        end.should change(@new, :planets_count).by(1)
+      shared_examples_for "changing counter cache" do |attribute|
+        it "should increase by 1 for new player" do
+          lambda do
+            @planet.save!
+            @new.reload
+          end.should change(@new, attribute).by(1)
+        end
+
+        it "should decrease by 1 for old player" do
+          lambda do
+            @planet.save!
+            @old.reload
+          end.should change(@old, attribute).by(-1)
+        end
       end
 
-      it "should decrease by 1 for old player" do
-        lambda do
-          @planet.save!
-          @old.reload
-        end.should change(@old, :planets_count).by(-1)
+      shared_examples_for "not changing counter cache" do |attribute|
+        it "should not change for new player" do
+          lambda do
+            @planet.save!
+            @new.reload
+          end.should_not change(@new, attribute)
+        end
+
+        it "should not change for old player" do
+          lambda do
+            @planet.save!
+            @old.reload
+          end.should_not change(@old, attribute)
+        end
       end
+
+      it_should_behave_like "changing counter cache", :planets_count
+      it_should_behave_like "not changing counter cache", :bg_planets_count
 
       [:battleground, :mini_battleground].each do |type|
         describe "in #{type}" do
@@ -329,19 +206,8 @@ describe SsObject::Planet do
             @planet.solar_system = Factory.create(type)
           end
 
-          it "should not change for new player" do
-            lambda do
-              @planet.save!
-              @new.reload
-            end.should_not change(@new, :planets_count)
-          end
-
-          it "should not change for old player" do
-            lambda do
-              @planet.save!
-              @old.reload
-            end.should_not change(@old, :planets_count)
-          end
+          it_should_behave_like "changing counter cache", :bg_planets_count
+          it_should_behave_like "not changing counter cache", :planets_count
         end
       end
     end
@@ -375,58 +241,7 @@ describe SsObject::Planet do
         end
       end
     end
-
-    describe "#should_raid? returns false" do
-      before(:each) do
-        @planet.next_raid_at = @next_raid_at = 10.hours.from_now
-        CallbackManager.register(@planet, CallbackManager::EVENT_RAID,
-          @planet.next_raid_at)
-        @planet.should_receive(:should_raid?).and_return(false)
-      end
-
-      it "should clear next_raid_at" do
-        @planet.save!
-        @planet.next_raid_at.should be_nil
-      end
-
-      it "should unregister callback" do
-        @planet.save!
-        @planet.should_not have_callback(CallbackManager::EVENT_RAID,
-          @next_raid_at)
-      end
-    end
-
-    describe "#should_raid? returns true" do
-      before(:each) do
-        @planet.should_receive(:should_raid?).and_return(true)
-      end
-      
-      it "should register next raid" do
-        @planet.save!
-        @planet.raid_registered?.should be_true
-      end
-
-      it "should set next raid to be in a confined window." do
-        @planet.save!
-        (
-          (CONFIG.safe_eval(CONFIG['raiding.delay'][0]).from_now)..(
-            CONFIG.safe_eval(CONFIG['raiding.delay'][1]).from_now)
-        ).should cover(@planet.next_raid_at)
-      end
-
-      it "should register callback" do
-        @planet.save!
-        @planet.should have_callback(CallbackManager::EVENT_RAID,
-          @planet.next_raid_at)
-      end
-
-      it "should reregister raid if it is already scheduled" do
-        @planet.next_raid_at = 10.minutes.from_now
-        @planet.should_receive(:register_raid)
-        @planet.save!
-      end
-    end
-
+    
     it "should save new #owner_changed" do
       @planet.save!
       @planet.owner_changed.should be_within(SPEC_TIME_PRECISION).of(Time.now)
@@ -701,14 +516,6 @@ describe SsObject::Planet do
     describe "battleground planets" do
       before(:each) do
         @planet.solar_system = Factory.create(:battleground)
-      end
-
-      it "should increase victory points for new player" do
-        lambda do
-          @planet.save!
-          @new.reload
-        end.should change(@new, :victory_points).by(
-          CONFIG["battleground.planet.takeover.vps"])
       end
 
       it "should give units in that planet" do
@@ -1290,7 +1097,9 @@ describe SsObject::Planet do
           energy energy_generation_rate energy_usage_rate energy_storage
           zetium zetium_generation_rate metal_usage_rate zetium_storage
           last_resources_update energy_diminish_registered status
-          exploration_x exploration_y exploration_ends_at}
+          exploration_x exploration_y exploration_ends_at
+          next_raid_at raid_arg
+        }
     end
     
     describe "with :view" do
@@ -1301,7 +1110,8 @@ describe SsObject::Planet do
           energy energy_generation_rate energy_usage_rate energy_storage
           zetium zetium_generation_rate zetium_usage_rate zetium_storage
           last_resources_update
-        }, %w{energy_diminish_registered}
+        },
+        %w{next_raid_at raid_arg energy_diminish_registered}
     end
 
     describe "with :owner" do
@@ -1312,7 +1122,7 @@ describe SsObject::Planet do
         zetium_rate_boost_ends_at zetium_storage_boost_ends_at
         exploration_x exploration_y exploration_ends_at
         can_destroy_building_at
-        next_raid_at owner_changed
+        next_raid_at raid_arg owner_changed
         metal metal_generation_rate metal_usage_rate metal_storage
         energy energy_generation_rate energy_usage_rate energy_storage
         zetium zetium_generation_rate zetium_usage_rate zetium_storage
@@ -1470,19 +1280,13 @@ describe SsObject::Planet do
     end
 
     describe "npc raid" do
-      it "should call #npc_raid!" do
+      it "should call RaidSpawner#raid!" do
         id = 10
-        mock = Factory.create(:planet_with_player)
-        SsObject::Planet.should_receive(:find).with(id).and_return(mock)
-        mock.should_receive(:npc_raid!)
-        SsObject::Planet.on_callback(id, CallbackManager::EVENT_RAID)
-      end
-
-      it "should not call Combat.npc_raid! if it's an NPC planet" do
-        id = 10
-        mock = Factory.create(:planet)
-        SsObject::Planet.should_receive(:find).with(id).and_return(mock)
-        mock.should_not_receive(:npc_raid!)
+        planet = Factory.create(:planet_with_player)
+        SsObject::Planet.should_receive(:find).with(id).and_return(planet)
+        spawner = mock(RaidSpawner)
+        RaidSpawner.should_receive(:new).with(planet).and_return(spawner)
+        spawner.should_receive(:raid!)
         SsObject::Planet.on_callback(id, CallbackManager::EVENT_RAID)
       end
     end
@@ -1833,8 +1637,8 @@ describe SsObject::Planet do
           end
         end
 
-        it "should fire created with PlanetObserversChangeEvent" do
-          event = PlanetObserversChangeEvent.
+        it "should fire created with Event::PlanetObserversChange" do
+          event = Event::PlanetObserversChange.
             new(@planet.id, [@unit.player_id])
           should_fire_event(event, EventBroker::CREATED) do
             SsObject::Planet.changing_viewable(@unit.location) do

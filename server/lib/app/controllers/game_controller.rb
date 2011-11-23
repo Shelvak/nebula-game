@@ -22,7 +22,11 @@ class GameController < GenericController
     |
     guns\.
     |
-    galaxy\.player\.population\.max
+    galaxy\.(
+      player\.population\.max
+      |
+      apocalypse\.survival_bonus
+    )
     |
     units\.
     |

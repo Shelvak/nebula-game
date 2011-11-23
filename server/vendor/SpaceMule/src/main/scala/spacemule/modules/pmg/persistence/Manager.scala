@@ -8,9 +8,11 @@ import scala.collection.mutable.HashSet
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.ss_objects.Planet
 import spacemule.modules.pmg.objects.ss_objects
+import spacemule.modules.config.objects.Config
 import spacemule.persistence.DB
 import java.util.{Calendar, Date}
-import spacemule.modules.pmg.objects.solar_systems.{Wormhole, MiniBattleground, Battleground, Homeworld}
+import spacemule.modules.pmg.objects.solar_systems.{Wormhole, Battleground,
+  Homeworld}
 
 /**
  * Created by IntelliJ IDEA.
@@ -336,7 +338,7 @@ object Manager {
     def addSpawn() = {
       callbacks += CallbackRow(
         ssRow, galaxy.ruleset,
-        Some(CallbackRow.Events.Spawn), Some(Calendar.getInstance)
+        CallbackRow.Events.Spawn, Calendar.getInstance
       ).values
     }
 
@@ -355,7 +357,11 @@ object Manager {
         startQuests(playerRow)
 
         // Add player inactivity check
-        callbacks += CallbackRow(ssRow, galaxy.ruleset).values
+        callbacks += CallbackRow(
+          ssRow, galaxy.ruleset,
+          CallbackRow.Events.CheckInactivePlayer,
+          CallbackRow.playerInactivityCheck
+        ).values
         addSpawn() // Spawn callback
       case wh: Wormhole =>
         addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords)
@@ -370,7 +376,7 @@ object Manager {
   }
 
   private def readSSObjects(galaxy: Galaxy, ssRow: SolarSystemRow,
-                            solarSystem: SolarSystem) = {
+                            solarSystem: SolarSystem) {
     solarSystem.objects.foreach {
       case(coords, obj) =>
         readSSObject(galaxy, ssRow, coords, obj)
@@ -379,7 +385,7 @@ object Manager {
 
   private def readSSObject(galaxy: Galaxy, ssRow: SolarSystemRow,
                            coords: Coords, obj: SSObject) = {
-    val ssoRow = new SSObjectRow(ssRow, coords, obj)
+    val ssoRow = SSObjectRow(ssRow, coords, obj)
 
     ssObjects += ssoRow.values
 
@@ -405,7 +411,7 @@ object Manager {
 
     // Additional creation steps
     obj match {
-      case planet: Planet => readPlanet(ssRow.galaxyId, ssoRow, planet)
+      case planet: Planet => readPlanet(galaxy, ssRow.galaxyId, ssoRow, planet)
       case asteroid: ss_objects.Asteroid => readAsteroid(galaxy, ssoRow)
       case _ => ()
     }
@@ -414,11 +420,21 @@ object Manager {
   }
 
   private def readAsteroid(galaxy: Galaxy, ssoRow: SSObjectRow) = {
-    callbacks += CallbackRow(ssoRow, galaxy.ruleset).values
+    callbacks += CallbackRow(
+      ssoRow, galaxy.ruleset,
+      CallbackRow.Events.Spawn,
+      CallbackRow.asteroidSpawn
+    ).values
   }
 
-  private def readPlanet(galaxyId: Int, ssoRow: SSObjectRow,
+  private def readPlanet(galaxy: Galaxy, galaxyId: Int, ssoRow: SSObjectRow,
                          planet: Planet) = {
+    callbacks += CallbackRow(
+      ssoRow, galaxy.ruleset,
+      CallbackRow.Events.Raid,
+      planet.nextRaidAt
+    ).values
+
     planet.foreachTile { case (coord, kind) =>
         // Only add tiles which mean something.
         if (kind != Planet.TileNormal && kind != Planet.TileVoid) {

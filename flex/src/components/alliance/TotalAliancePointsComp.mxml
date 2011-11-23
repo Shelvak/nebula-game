@@ -42,6 +42,8 @@
                [alliance.players.length])}" textAlign="center"/>
       <s:Label text="{alliance.totalPlanetsCount}" width="{RatingsWidths.planetsCount}" 
                textAlign="center"/>
+      <s:Label text="{alliance.totalBgPlanetsCount}" width="{RatingsWidths.bgPlanetsCount}"
+               textAlign="center"/>
       <s:Label text="{alliance.totalEconomyPoints}" width="{RatingsWidths.economyPoints}" 
                textAlign="center"/>
       <s:Label text="{alliance.totalSciencePoints}" width="{RatingsWidths.sciencePoints}" 

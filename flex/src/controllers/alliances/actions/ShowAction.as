@@ -42,6 +42,7 @@ package controllers.alliances.actions
             ally.totalEconomyPoints += player.economyPoints;
             ally.totalPoints += player.points;
             ally.totalPlanetsCount += player.planetsCount;
+            ally.totalBgPlanetsCount += player.bgPlanetsCount;
             ally.totalVictoryPoints += player.victoryPoints;
             player.allianceOwnerId = ally.ownerId;
          }

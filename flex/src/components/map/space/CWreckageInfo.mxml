@@ -17,6 +17,7 @@
          
          import models.MWreckage;
          import models.building.Building;
+         import models.resource.Resource;
          import models.resource.ResourceType;
          
          import utils.locale.Localizer;
@@ -29,18 +30,44 @@
       ]]>
    </fx:Script>
    <space:layout>
-      <s:VerticalLayout paddingLeft="5"/>
+      <s:VerticalLayout paddingLeft="5" paddingRight="3" horizontalAlign="justify"/>
    </space:layout>
-   <base:ImageAndLabel visible="{MWreckage(staticObject).metal > 0}"
-                       includeInLayout="{MWreckage(staticObject).metal > 0}"
-                       textToDisplay="{fmtNumber.format(MWreckage(staticObject).metal)}"
-                       type="{ResourceType.METAL}"/>
-   <base:ImageAndLabel visible="{MWreckage(staticObject).energy > 0}"
-                       includeInLayout="{MWreckage(staticObject).energy > 0}"
-                       textToDisplay="{fmtNumber.format(MWreckage(staticObject).energy)}"
-                       type="{ResourceType.ENERGY}"/>
-   <base:ImageAndLabel visible="{MWreckage(staticObject).zetium > 0}"
-                       includeInLayout="{MWreckage(staticObject).zetium > 0}"
-                       textToDisplay="{fmtNumber.format(MWreckage(staticObject).zetium)}"
-                       type="{ResourceType.ZETIUM}"/>
+   <s:Group visible="{MWreckage(staticObject).metal > 0}"
+            includeInLayout="{MWreckage(staticObject).metal > 0}">
+      <base:ImageAndLabel textToDisplay="{fmtNumber.format(MWreckage(
+                          staticObject).metal)}" type="{ResourceType.METAL}"/>
+      <s:Label width="100%" textAlign="right" text="{getString('label.wreckageVolume',
+                          [Resource.getResourceVolume(MWreckage(staticObject).metal,
+                          ResourceType.METAL)])}"/>
+      <s:layout>
+         <s:HorizontalLayout verticalAlign="middle"/>
+      </s:layout>
+   </s:Group>
+   <s:Group visible="{MWreckage(staticObject).energy > 0}"
+            includeInLayout="{MWreckage(staticObject).energy > 0}">
+      <base:ImageAndLabel textToDisplay="{fmtNumber.format(MWreckage(
+                          staticObject).energy)}" type="{ResourceType.ENERGY}"/>
+      <s:Label width="100%" textAlign="right" text="{getString('label.wreckageVolume',
+                          [Resource.getResourceVolume(MWreckage(staticObject).energy,
+                          ResourceType.ENERGY)])}"/>
+      <s:layout>
+         <s:HorizontalLayout verticalAlign="middle"/>
+      </s:layout>
+   </s:Group>
+   <s:Group visible="{MWreckage(staticObject).zetium > 0}"
+            includeInLayout="{MWreckage(staticObject).zetium > 0}">
+      <base:ImageAndLabel textToDisplay="{fmtNumber.format(MWreckage(
+                          staticObject).zetium)}" type="{ResourceType.ZETIUM}"/>
+      <s:Label width="100%" textAlign="right" text="{getString('label.wreckageVolume',
+                          [Resource.getResourceVolume(MWreckage(staticObject).zetium,
+                          ResourceType.ZETIUM)])}"/>
+      <s:layout>
+         <s:HorizontalLayout verticalAlign="middle"/>
+      </s:layout>
+   </s:Group>
+   <s:Label text="{getString('label.totalVolume', [Resource.getResourcesVolume(
+   MWreckage(staticObject).metal,
+   MWreckage(staticObject).energy,
+   MWreckage(staticObject).zetium
+   )])}" fontWeight="bold" fontSize="14" color="#eec500" paddingTop="6"/>
 </space:CStaticSpaceObjectInfo>

@@ -280,6 +280,10 @@ package models.solarsystem
       [Optional]
       [Bindable]
       public var nextRaidAt: Date;
+
+      [Optional]
+      [Bindable]
+      public var raidArg: int;
       
       [Bindable(event="willNotChange")]
       /**
@@ -671,7 +675,7 @@ package models.solarsystem
          }
          if (ML.latestPlanet && this == ML.latestPlanet.ssObject)
             new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE);
-         if (nextRaidAt && ML.player.planetsCount >= Config.getRaidingPlanetLimit())
+         if (nextRaidAt != null)
             raidTime = DateUtil.secondsToHumanString((nextRaidAt.time - DateUtil.now)/1000,2);
          else
             raidTime = null;

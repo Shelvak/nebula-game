@@ -69,6 +69,10 @@ package models.market
       
       public function get fromKind(): int
       {
+         if (fromResource == null)
+         {
+            return -1;
+         }
          return int(OfferResourceKind[fromResource]);
       }
       
@@ -84,6 +88,10 @@ package models.market
       
       public function get toKind(): int
       {
+         if (toResource == null)
+         {
+            return -1;
+         }
          return int(OfferResourceKind[toResource]);
       }
       

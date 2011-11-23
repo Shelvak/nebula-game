@@ -29,6 +29,10 @@ package utils
          navigateToURL(new URLRequest(urlRoot + path));
       }
 
+      public function openApocalypseInfo(): void {
+         navigateToURL(new URLRequest(wikiUrlRoot + 'apocalypse'));
+      }
+
       public function showWikiUrl(path: String): void {
          navigateToURL(new URLRequest(wikiUrlRoot + path));
       }

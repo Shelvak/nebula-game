@@ -103,7 +103,19 @@
                text="{Localizer.string('Ratings', 'planetsCount')}" textAlign="center"
                rollOver="label_rollOverHandler(event)" 
                rollOut="label_rollOutHandler(event)"
-               click="label_clickHandler(event, 'planetsCount')"/>
+               click="label_clickHandler(event, 'planetsCount')"
+               toolTip="{Localizer.string('Ratings', 'tooltip.planetsCount')}"/>
+      <s:Line yFrom="0" yTo="24">
+         <s:stroke>
+            <s:SolidColorStroke color="0xffffff" weight="1"/>
+         </s:stroke>
+      </s:Line>
+      <s:Label width="{RatingsWidths.bgPlanetsCount}"
+               text="{Localizer.string('Ratings', 'bgPlanetsCount')}" textAlign="center"
+               rollOver="label_rollOverHandler(event)"
+               rollOut="label_rollOutHandler(event)"
+               click="label_clickHandler(event, 'bgPlanetsCount')"
+               toolTip="{Localizer.string('Ratings', 'tooltip.bgPlanetsCount')}"/>
       <s:Line yFrom="0" yTo="24">
          <s:stroke>
             <s:SolidColorStroke color="0xffffff" weight="1"/>

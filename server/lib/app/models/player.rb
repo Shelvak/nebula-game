@@ -160,7 +160,7 @@ class Player < ActiveRecord::Base
     else
       json = attributes.only(*%w{id name scientists scientists_total xp
         economy_points army_points science_points war_points
-        victory_points population population_cap planets_count
+        victory_points population population_cap
         alliance_id alliance_cooldown_ends_at
         free_creds vip_creds vip_level vip_until vip_creds_until}
       )
@@ -181,7 +181,8 @@ class Player < ActiveRecord::Base
   POINT_ATTRIBUTES = %w{economy_points science_points army_points war_points}
 
   RATING_ATTRIBUTES_SQL = (
-    %w{id name victory_points alliance_vps planets_count} + POINT_ATTRIBUTES
+    %w{id name victory_points alliance_vps planets_count bg_planets_count} +
+      POINT_ATTRIBUTES
   ).map { |attr| "`#{table_name}`.`#{attr}`" }.join(", ")
 
   # Returns ratings for _galaxy_id_. If _player_ids_ are given then
@@ -200,6 +201,7 @@ class Player < ActiveRecord::Base
   #     "victory_points" => Fixnum,
   #     "alliance_vps" => Fixnum,
   #     "planets_count" => Fixnum,
+  #     "bg_planets_count" => Fixnum,
   #     "war_points" => Fixnum,
   #     "science_points" => Fixnum,
   #     "economy_points" => Fixnum,
@@ -357,10 +359,14 @@ class Player < ActiveRecord::Base
       hub.on_language_change(self) if language_changed?
     end
 
-    if victory_points_changed? && ! alliance.nil?
-      old, new = victory_points_change
-      alliance.victory_points += new - old
-      alliance.save!
+    if victory_points_changed?
+      galaxy.check_if_finished!(victory_points)
+
+      unless alliance.nil?
+        old, new = victory_points_change
+        alliance.victory_points += new - old
+        alliance.save!
+      end
     end
   end
 

@@ -1310,6 +1310,30 @@
     </label.shield>
     <label.over value="Laivai virš"/>
     <message.noRadar value="Tau reikia radaro, jog matytum galaktiką" />
+
+    <tooltip.apocalypse.common>
+      <p>Paspausk, jog sužinotum daugiau.</p>
+    </tooltip.apocalypse.common>
+    <!-- {0}: date string
+         {1}: relative time string (5d/3h/...)-->
+    <tooltip.apocalypse.notStarted>
+      <p>Apokalipsė prasidės {0} (už {1}).<br/><br/></p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.notStarted>
+    <!--
+    {0}: date string
+    {1}: current apocalypose day
+    {2}: how many creds will you get
+    -->
+    <tooltip.apocalypse.started>
+      <p>Apokalipsė prasidėjo {0}.<br/><br/></p>
+      <p>
+        Dabar yra {1} apokalipsės diena. Praradęs paskutinę savo planetą
+        tu gausi {2 one[? kredą] 1sts[? kredą] tens[? kredų] many[? kredus]}.
+        <br/><br/>
+      </p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.started>
   </Galaxy>
 
   <General>
@@ -1928,6 +1952,11 @@
       atsparus! (bent jau kol kas). Na nieko, nesijaudink, visuomet gali 
       paleisti žaidimą iš naujo ir viskas turėtų (greičiausiai) būti gerai.</p>
     </crash>
+
+    <message.slowClient>
+      Tavo kompiuteris yra nepakankamai našus atlikti šią operaciją.
+      Tačiau jei manai, jog tai klaida, gali mums apie tai pranešti forume.
+    </message.slowClient>
     
     <title.log value="Derinimo žurnalas" />
     <message.log.general>
@@ -3251,7 +3280,20 @@
     <alliance value="Sąjunga" />
     <points value="Viso taškų" />
     <playersCount value="Žaidėjai" />
-    <planetsCount value="Planetos" />
+    <planetsCount value="PPK" />
+    <bgPlanetsCount value="SPK" />
+    <tooltip.planetsCount value="Paprastųjų planetų kiekis" />
+    <specialPlanets.common>
+      <p>Specialiosios planetos - tai planetos esančios pulsaruose arba arenoje</p>
+    </specialPlanets.common>
+    <tooltip.bgPlanetsCount>
+      <p>Specialiųjų planetų kiekis.</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.bgPlanetsCount>
+    <tooltip.planetsVsBattleground>
+      <p>Paprastųjų planetų kiekis / Specialiųjų planetų kiekis</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.planetsVsBattleground>
     <warPoints value="Karo taškai" />
     <economyPoints value="Ekonomikos taškai" />
     <sciencePoints value="Mokslo taškai" />
@@ -3313,6 +3355,8 @@
   </Resources>
 
   <SSObjects>
+    <label.totalVolume value="Bendra apimtis: {0}"/>
+    <label.wreckageVolume value="(apimtis: {0})"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->
     <title.info 
       value="{0 Planet[Planetos] Jumpgate[Šuolio vartų] Asteroid[Asteroido] Wreckage[Nuolaužų] Cooldown[Pertraukos]} informacija" />
@@ -3928,6 +3972,7 @@
 
   <Units>
     <title.storageScreen value="Įkrauti / Iškrauti"/>
+    <label.totalEmptyStorage value="Laisvos vietos: {0}"/>
   
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Bus už {0}" />
@@ -3949,6 +3994,19 @@
     <property.population value="Populiacija" />
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
+
+    <!-- params:
+         0 - minimal count of this type of units in raid
+         1 - unit count that might add to the minimal count
+         2 - % probability for each additional unit to be added -->
+    <tooltip.raidProbability>
+      <p>Minimalus atvykstančių karių kiekis: {0}</p>
+      <p>
+        Papildomai gali prisidėti dar {1 one[? karys] tens[? karių]
+        many[? kariai]}, kiekvienas karys prisideda su {2}% tikimybę.
+      </p>
+    </tooltip.raidProbability>
+
     
     <tooltip.freeStorage>
       <p>Šiame laive dar liko {0} vietos.</p>
@@ -4088,6 +4146,8 @@
     <label.manage value="Tvarkyti" />
     <label.withPlanets 
       value="Su {0 one[? planeta] tens[? planetų] many[? planetomis]}" />
+    <label.afterDays
+      value="{0 one[? diena] tens[? dienų] many[? dienos]} po apokalipsės" />
     <label.resources value="Resursai" />
     <label.transferResources value="Perkelti" />
     <!-- 0 - resources string, 1 - 'is' or 'are' 

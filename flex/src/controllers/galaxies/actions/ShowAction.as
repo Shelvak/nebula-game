@@ -87,6 +87,7 @@ package controllers.galaxies.actions
          createGalaxy(
             ML.player.galaxyId,
             params["battlegroundId"],
+            params["apocalypseStart"],
             GalaxyFactory.createFowEntries(params["fowEntries"]),
             GalaxyFactory.createSolarSystems(params["solarSystems"]),
             Objects.fillCollection(
@@ -103,13 +104,6 @@ package controllers.galaxies.actions
          );
          var galaxy:Galaxy = ML.latestGalaxy;
 
-         // TODO: move this to createGalaxy()
-         var apocalypseStart:String = params["apocalypseStart"];
-         if (apocalypseStart != null) {
-            galaxy.apocalypseStartEvent =
-               MTimeEventFixedMoment.autoCreate(null, apocalypseStart);
-         }
-         
          if (!startup) {
             if (params["reason"] == "alliance") {
                reloadPlanetMap();
@@ -174,6 +168,7 @@ package controllers.galaxies.actions
       
       public function createGalaxy(galaxyId:int,
                                    battlegroundId:int,
+                                   apocalypseStart: String,
                                    fowEntries:Array,
                                    solarSystems:IList,
                                    wreckages:IList,
@@ -185,6 +180,10 @@ package controllers.galaxies.actions
          var galaxy:Galaxy = new Galaxy();
          galaxy.id = galaxyId;
          galaxy.battlegroundId = battlegroundId;
+         if (apocalypseStart != null) {
+            galaxy.apocalypseStartEvent =
+               MTimeEventFixedMoment.autoCreate(null, apocalypseStart);
+         }
          galaxy.addAllObjects(solarSystems);
          galaxy.addAllObjects(wreckages);
          galaxy.addAllObjects(cooldowns);

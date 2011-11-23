@@ -174,25 +174,20 @@ benchmark :logger do
   end
 end
 
-config_dir = nil
-benchmark :game_config do
-  require File.join(ROOT_DIR, 'config', 'environments', App.env)
-  LOGGER.info "Initializing in '#{App.env}' environment..."
+def read_config(*path)
+  template = ERB.new(File.read(File.expand_path(File.join(*path))))
+  YAML.load(template.result(binding))
+end
 
-  # Set up config object
-  CONFIG = GameConfig.new
-
-  def read_config(*path)
-    template = ERB.new(File.read(File.expand_path(File.join(*path))))
-    YAML.load(template.result(binding))
-  end
+def load_config
+  load File.join(ROOT_DIR, 'config', 'environments', App.env + ".rb")
+  LOGGER.info "Loading configuration for '#{App.env}' environment..."
 
   # Load custom environment configuration file if it exists
-  config_dir = File.expand_path(File.join(ROOT_DIR, 'config'))
-  sets_dir = File.expand_path(File.join(config_dir, 'sets'))
+  sets_dir = File.expand_path(File.join(CONFIG_DIR, 'sets'))
 
   # Merge server-level config
-  CONFIG.merge!(read_config(config_dir, 'application.yml'))
+  CONFIG.merge!(read_config(CONFIG_DIR, 'application.yml'))
 
   Dir["#{sets_dir}/*"].each do |dir_name|
     set_name, fallback_name = File.basename(dir_name).split("-")
@@ -213,7 +208,9 @@ benchmark :game_config do
 
     # ENV config is great for overrides (i.e. in test)
     env_config_file = File.join(dir_name, "#{ENV['configuration']}.yml")
-    env_config = File.exists?(env_config_file) ? read_config(env_config_file) : {}
+    env_config = File.exists?(env_config_file) \
+      ? read_config(env_config_file) : {}
+    
     if env_config.is_a?(Hash)
       CONFIG.merge!(env_config, set_name)
     elsif ! env_config.nil?
@@ -224,9 +221,16 @@ benchmark :game_config do
   end
 end
 
+benchmark :game_config do
+  # Set up config object
+  CONFIG_DIR = File.expand_path(File.join(ROOT_DIR, 'config'))
+  CONFIG = GameConfig.new
+  load_config
+end
+
 benchmark :db do
   # Establish database connection
-  DB_CONFIG = read_config(config_dir, 'database.yml')
+  DB_CONFIG = read_config(CONFIG_DIR, 'database.yml')
   DB_CONFIG.each { |env, config| config["adapter"] = "jdbcmysql" }
   USED_DB_CONFIG = DB_CONFIG[ENV['db_environment']]
   DB_MIGRATIONS_DIR = File.expand_path(

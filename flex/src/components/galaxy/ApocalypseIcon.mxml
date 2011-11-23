@@ -1,15 +1,20 @@
 <?xml version="1.0"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
-         visible="{ML.latestGalaxy.apocalypseActive}"
-         includeInLayout="{ML.latestGalaxy.apocalypseActive}"
+         visible="{ML.latestGalaxy != null
+         &amp;&amp; ML.latestGalaxy.apocalypseActive}"
+         includeInLayout="{ML.latestGalaxy != null
+         &amp;&amp; ML.latestGalaxy.apocalypseActive}"
          toolTipCreate="this_toolTipCreateHandler(event)"
-         toolTip="">
+         toolTip="This is needed for tooltip create to work"
+         click="UrlNavigate.getInstance().openApocalypseInfo()">
    <fx:Script>
       <![CDATA[
       import models.ModelLocator;
 
       import mx.events.ToolTipEvent;
+
+      import utils.UrlNavigate;
 
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
