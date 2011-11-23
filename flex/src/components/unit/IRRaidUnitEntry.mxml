@@ -63,9 +63,11 @@
                            source="{RaidingUnitEntry(data).imageData}"/>
             <!-- count -->
             <s:Label styleName="unitsCount"
-                     text="{(RaidingUnitEntry(data).prob >= 1
+                     text="{((RaidingUnitEntry(data).prob >= 1
+                        || (RaidingUnitEntry(data).countFrom
+                        == RaidingUnitEntry(data).countTo))
                      ? '' : (RaidingUnitEntry(data).countFrom + '-'))
-                     + RaidingUnitEntry(data).countTo}"
+                        + RaidingUnitEntry(data).countTo}"
                     fontSize="{RaidingUnitEntry(data).countTo &lt; 1000
                     ? 12 : (RaidingUnitEntry(data).countFrom &lt; 1000
                     ? 10 : (RaidingUnitEntry(data).countTo &lt; 10000
