@@ -92,7 +92,8 @@ package models.infoscreen
       {
          if (armor == ArmorTypes.FORTIFIED && (reach == ReachKind.GROUND || reach == ReachKind.BOTH))
          {
-            return new ArrayCollection(buildBuildingEntries(Config.getAllBuildingsTypes(), lvl, mod));
+            return new ArrayCollection(buildBuildingEntries(
+                    Config.getBuildingWithGunsTypes(), lvl, mod));
          }
          else
          {

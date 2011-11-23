@@ -630,7 +630,7 @@ package models.infoscreen
       protected function refreshWeakAgainst(): void
       {
          var coefObjects: ArrayCollection = new ArrayCollection();
-         var buildingTypes: Array = Config.getAllBuildingsTypes();
+         var buildingTypes: Array = Config.getBuildingWithGunsTypes();
          if ((model.objectType == ObjectClass.BUILDING && Config.getBuildingGuns(model.type).length > 0) 
             || (model.objectType == ObjectClass.UNIT && Config.getUnitGuns(model.type).length > 0))
          {
