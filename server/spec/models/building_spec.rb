@@ -353,7 +353,7 @@ describe Building do
       [@model.x, @model.y].should == [10, 15]
     end
 
-    it "should check for collisions" do
+    it "should check for collisions with buildings" do
       Factory.create(:building, :planet => @model.planet, :x => 10, :y => 15)
       lambda do
         @model.move!(10, 15)
@@ -364,6 +364,13 @@ describe Building do
       lambda do
         @model.move!(@model.x + 1, @model.y)
       end.should_not raise_error(ActiveRecord::RecordInvalid)
+    end
+
+    it "should check for collisions with tiles" do
+      Factory.create(:t_ore, :planet => @model.planet, :x => 10, :y => 15)
+      lambda do
+        @model.move!(10, 15)
+      end.should raise_error(ActiveRecord::RecordInvalid)
     end
 
     it "should check for offmap" do
@@ -767,10 +774,6 @@ describe Building do
     end
 
     describe "collision detection" do
-      before(:all) do
-        @building1 = Factory.create(:building, :x => 20, :y => 20)
-      end
-
       COLLISION_MAP = [
         {:x =>  0, :y =>  1, :name => "top"},
         {:x =>  1, :y =>  0, :name => "right"},
@@ -782,48 +785,76 @@ describe Building do
         {:x =>  1, :y => -1, :name => "bottom right"},
       ]
 
-      COLLISION_MAP.each do |entry|
-        it "should check #{entry[:name]} collision" do
-          building2 = Factory.build(:building, :planet => @building1.planet)
-          if entry[:x] == 1
-            building2.x = @building1.x_end + 1
-          elsif entry[:x] == -1
-            building2.x = @building1.x - building2.width
-          else
-            building2.x = @building1.x
+      shared_examples_for "checking colisions" do |obstruction, border|
+        describe "collision" do
+          COLLISION_MAP.each do |entry|
+            it "should check #{entry[:name]}" do
+              building = Factory.build(:building, :planet => obstruction.planet)
+              building.x = case entry[:x]
+                when 1 then obstruction.x_end + (border ? 1 : 0)
+                when -1 then obstruction.x - building.width + (border ? 0 : 1)
+                else obstruction.x
+              end
+              building.y = case entry[:y]
+                when 1 then obstruction.y_end + (border ? 1 : 0)
+                when -1 then obstruction.y - building.height + (border ? 0 : 1)
+                else obstruction.y
+              end
+              building.should_not be_valid
+            end
           end
-          if entry[:y] == 1
-            building2.y = @building1.y_end + 1
-          elsif entry[:y] == -1
-            building2.y = @building1.y - building2.height
-          else
-            building2.y = @building1.y
-          end
-          building2.should_not be_valid
         end
 
-        it "should check #{entry[:name]} safe placement" do
-          building2 = Factory.build(:building, :planet => @building1.planet)
-          if entry[:x] == 1
-            building2.x = @building1.x_end + 2
-          elsif entry[:x] == -1
-            building2.x = @building1.x - building2.width - 1
-          else
-            building2.x = @building1.x
+        describe "safe placement" do
+          COLLISION_MAP.each do |entry|
+            it "should check #{entry[:name]}" do
+              building = Factory.build(:building, :planet => obstruction.planet)
+              building.x = case entry[:x]
+                when 1 then obstruction.x_end + (border ? 2 : 1)
+                when -1 then obstruction.x - building.width - (border ? 1 : 0)
+                else obstruction.x
+              end
+              building.y = case entry[:y]
+                when 1 then obstruction.y_end + (border ? 2 : 1)
+                when -1 then obstruction.y - building.height - (border ? 1 : 0)
+                else obstruction.y
+              end
+              building.should be_valid
+            end
           end
-          if entry[:y] == 1
-            building2.y = @building1.y_end + 2
-          elsif entry[:y] == -1
-            building2.y = @building1.y - building2.height - 1
-          else
-            building2.y = @building1.y
+        end
+      end
+
+      describe "against buildings" do
+        it_should_behave_like "checking colisions",
+          Factory.create(:building, :x => 20, :y => 20),
+          true
+      end
+
+      describe "against resource tiles" do
+        Tile::RESOURCE_TILES.each do |tile_type|
+          describe Tile::MAPPING[tile_type] do
+            it_should_behave_like "checking colisions",
+              Factory.create(:tile, :kind => tile_type, :x => 20, :y => 20),
+              true
           end
-          building2.should be_valid
+        end
+      end
+
+      describe "against exploration tiles" do
+        Tile::EXPLORATION_TILES.each do |tile_type|
+          describe Tile::MAPPING[tile_type] do
+            it_should_behave_like "checking colisions",
+              Factory.create(:tile, :kind => tile_type, :x => 20, :y => 20),
+              false
+          end
         end
       end
 
       it "should not do these checks if updating" do
-        lambda { @building1.save! }.should_not raise_error(ActiveRecord::RecordInvalid)
+        lambda do
+          @building1.save!
+        end.should_not raise_error(ActiveRecord::RecordInvalid)
       end
     end
 
