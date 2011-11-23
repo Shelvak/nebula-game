@@ -596,6 +596,6 @@ object Config {
     "planet.folliage.type.2.variations.%d".format(terrainType)
   ).map { _.toInt }
 
-  def raidingDelayRange = range("raiding.delay")
+  def raidingDelayRange = evalRange("raiding.delay")
   def raidingDelayRandomDate = raidingDelayRange.random.seconds.fromNow
 }

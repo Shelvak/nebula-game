@@ -1,5 +1,6 @@
 package config
 {
+   import models.building.Building;
    import models.building.BuildingBonuses;
    import models.tile.TileKind;
    import models.unit.ReachKind;
@@ -578,7 +579,13 @@ package config
       /* ################################ */
       /* ### BUILDINGS CONFIG GETTERS ### */
       /* ################################ */
-      
+
+      /* in seconds */
+      public static function getBuildingDestructSafeguardTime(): int
+      {
+         return getValue('buildings.selfDestruct.creds.safeguardTime');
+      }
+
       public static function getBuildingOverdriveOutput(): Number
       {
          return getValue('buildings.overdrive.multiplier.output');
@@ -665,14 +672,15 @@ package config
       }
       
       
-      public static function getAllBuildingsTypes(): Array
+      public static function getBuildingWithGunsTypes(): Array
       {
          var types: Array = new Array();
          var data: Object = grabPropertiesFromData("^buildings\.", 1);
          for (var key: String in data)
          {
             var parts: Array = key.split(".");
-            if (parts[1] == 'hp')
+            if (parts[1] == 'hp' && Building.buildingHasGuns(
+                    StringUtil.underscoreToCamelCase(parts[0])))
                types.push(StringUtil.underscoreToCamelCase(parts[0]));
          }
          return types;

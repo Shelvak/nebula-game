@@ -532,6 +532,11 @@
       <p>Jeigu liepsi šiam pastatui susinaikinti, tada tai, 
       ką stato šis pastatas, bus taip pat sunaikinta.</p>
     </warning.buildingWorking>
+    <!-- {0}: time of planet guard (like "5d") -->
+    <warning.selfDestructGuard>
+      <p>Tu negali griauti pastatų savo planetoje už kredus, jei ji
+        buvo perimta prieš mažiau nei {0}</p>
+    </warning.selfDestructGuard>
     <toolTip.afterUpgrade value="Po patobulinimo" />
     <warning.deployCancel 
     value="Atšaukus statybas išskleidžiamas tankas bus prarastas!" /> 
@@ -1672,6 +1677,19 @@
     <message.kickedFromAlliance value="Buvai pašalintas iš sąjungos {0}" />
     <label.kickedFromAlliance 
     value="Tu buvai pašalintas iš sąjungos" />
+
+    <title.credsConverted
+      value="Kažkas surinko pakankamą pergalės taškų skaičių galaktikos laimėjimui." />
+    <message.credsConverted
+      value="Pergalės taškai buvo iškeisti į kredus"/>
+    <label.credsConverted>
+      <p>Tavo pergalės taškai buvo pakeisti kredais.</p>
+      <p>Gauta kredų:</p>
+    </label.credsConverted>
+    <credsConverted.personalCreds value="● Asmeniniai kredai: {0}"/>
+    <credsConverted.allianceCreds
+      value="● Kredai iš sąjungos: {0} (Iš viso sąjunga gavo: {1})"/>
+    <credsConverted.personalCredsTotal value="● Iš viso Tu gavai: {0}"/>
 
     <title.achievementCompleted value="Pasiekimas įgytas" />
     <message.achievementCompleted ref="title.achievementCompleted" />
