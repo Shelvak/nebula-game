@@ -899,7 +899,10 @@
                         <base:Warning width="100%" showSign="false"
                                       visible="{!(ownerPanel.minDestructDaysPassed
                                       || bSidebar.canDestroyBuilding)}"
-                                      text="{getString('warning.selfDestructGuard')}"/>
+                                      text="{getString('warning.selfDestructGuard',
+                                      [DateUtil.secondsToHumanString(
+                                      Config.getBuildingDestructSafeguardTime(),
+                                      2)])}"/>
                         <s:Group width="100%">
                            <s:Button right="6" label="{bSidebar.canDestroyBuilding?getString('destroy')
                                      :bSidebar.destructRemainingTime}"
