@@ -431,6 +431,17 @@
                }
             ).dispatch();
          }
+
+         /* TODO implement toggle button for this one */
+         protected function buildHidden(event:Event):void
+         {
+            new BuildingsCommand(BuildingsCommand.SET_BUILD_HIDDEN,
+               {
+                  'model': _facility,
+                  'enable': !_facility.buildHidden
+               }
+            ).dispatch();
+         }
          
       ]]>
    </fx:Script>  
