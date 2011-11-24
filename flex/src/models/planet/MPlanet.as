@@ -1,12 +1,14 @@
 package models.planet
 {
+   import components.map.planet.PlanetMap;
+
    import config.Config;
-   
+
    import controllers.folliages.PlanetFolliagesAnimator;
    import controllers.objects.ObjectClass;
 
    import interfaces.ICleanable;
-   
+
    import models.BaseModel;
    import models.Owner;
    import models.building.Building;
@@ -29,21 +31,19 @@ package models.planet
    import models.time.MTimeEventFixedMoment;
    import models.unit.RaidingUnitEntry;
    import models.unit.Unit;
-   import models.unit.UnitBuildingEntry;
    import models.unit.UnitKind;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
-   
-   import utils.ModelUtil;
+
    import utils.Objects;
    import utils.StringUtil;
    import utils.datastructures.Collections;
-   
-   
+
+
    /**
     * Dispatched when an object has been added to this planet.
     * 
@@ -587,34 +587,32 @@ package models.planet
       {
          tilesMatrix[t.x][t.y] = t;
       }
-      
-      
+
+
       /**
-       * Removes a tile form this planet if one is found.
-       * 
-       * @param t A tile to be removed form the planet.
-       */
-      public function removeTile(t:Tile) :void
-      {
-         if (tilesMatrix[t.x][t.y] == t)
-         {
-            tilesMatrix[t.x][t.y] = null;
-         }
-      }
-      
-      
-      /**
-       * Returns <code>Tile</code> object in the given coordinates.
+       * Returns <code>Tile</code> object at the given coordinates.
        * 
        * @param x
        * @param y
-       * 
+       *
        * @return instance of <code>Tile</code> or <code>null</code> if there is no tile (regular tile)
        * in the given coordinates.
-       */      
-      public function getTile(x:int, y:int) : Tile
-      {
+       */
+      public function getTile(x: int, y: int): Tile {
          return tilesMatrix[x][y];
+      }
+
+      /**
+       * Returns kind of a tile at the given coordinates.
+       *
+       * @param x
+       * @param y
+       * 
+       * @return kind of a tile
+       */
+      public function getTileKind(x: int, y: int): int {
+         var tile:Tile = getTile(x, y);
+         return tile != null ? tile.kind : TileKind.REGULAR;
       }
       
       
@@ -1050,7 +1048,7 @@ package models.planet
        * Removes <code>MPlanetObject</code> from the planet and dispatches
        * <code>MPlanetEvent.OBJECT_REMOVE</code> event if the object has actually been removed.
        * 
-       * @param object An object that needs to be removed
+       * @param obj An object that needs to be removed
        * @param silent not used
        */
       public override function removeObject(obj:BaseModel, silent:Boolean = false) : * {
@@ -1265,24 +1263,39 @@ package models.planet
       
       
       /**
-       * Determines if a given building migth occupy restricted tiles.
+       * Determines if a given building might occupy restricted tiles.
        *  
        * @param building
        * 
        * @return <code>true</code> if the given building might occupy tiles that
        * it could not be built on or <code>false</code> otherwise.
-       */      
-      public function restrTilesUnderBuildingExist(building:Building) : Boolean
-      {
-         for (var x:int = building.x; x <= building.xEnd; x++)
-         {
-            for (var y:int = building.y; y <= building.yEnd; y++)
-            {
-               var t:Tile = getTile(x, y);
-               if (building.isTileRestricted(t != null
-                                                ? t.kind
-                                                : TileKind.REGULAR))
-               {
+       */
+      public function restrTilesUnderBuildingExist(building: Building): Boolean {
+         for (var x: int = building.x; x <= building.xEnd; x++) {
+            for (var y: int = building.y; y <= building.yEnd; y++) {
+               if (building.isTileRestricted(getTileKind(x, y))) {
+                  return true;
+               }
+            }
+         }
+         return false;
+      }
+
+      /**
+       * Determines if are any restricted tiles around the building.
+       */
+      public function restrTilesAroundBuildingExist(building: Building): Boolean {
+         Objects.paramNotNull("building", building);
+         var border:int = PlanetMap.BORDER_SIZE;
+         var bx:int = building.x;
+         var by:int = building.y;
+         var bxEnd:int = building.xEnd;
+         var byEnd:int = building.yEnd;
+         for (var x: int = bx - border; x <= bxEnd + border; x++) {
+            for (var y: int = by - border; y <= byEnd + border; y++) {
+               if (isOnMap(x, y)
+                      && (x < bx || x > bxEnd || y < by || y > byEnd)
+                      && building.isTileRestricted(getTileKind(x, y), true)) {
                   return true;
                }
             }
@@ -1299,15 +1312,13 @@ package models.planet
        * @return Array ot tiles under the building. Elements in the array are integers
        * from <code>TileKind</code> class.
        */      
-      public function getTilesUnderBuilding(building:Building) : Array
-      {
-         var result:Array = [];
-         for (var x:int = Math.max(0, building.x); x < Math.min(width, building.xEnd + 1); x++)
-         {
-            for (var y:int = Math.max(0, building.y); y < Math.min(height, building.yEnd + 1); y++)
-            {
-               var t:Tile = getTile(x, y);
-               result.push(t ? t.kind : TileKind.REGULAR);
+      public function getTilesUnderBuilding(building:Building) : Array {
+         var result: Array = [];
+         for (var x: int = Math.max(0, building.x);
+              x < Math.min(width, building.xEnd + 1); x++) {
+            for (var y: int = Math.max(0, building.y);
+                 y < Math.min(height, building.yEnd + 1); y++) {
+               result.push(getTileKind(x, y));
             }
          }
          return result;
@@ -1317,28 +1328,27 @@ package models.planet
       /**
        * Use this method to find out if a building can be built in its current position.
        *  
-       * @param b A building that is about to be built
+       * @param building A building that is about to be built
        * @return <code>true</code> if a building can be built or <code>false</code>
        * otherwise.
        */
-      public function canBeBuilt(building:Building) : Boolean
-      {
-         if (isBuildingOnMap(building) &&
-            !restrTilesUnderBuildingExist(building) &&
-            !buildingsAroundExist(building) &&
-            !blockingFolliagesUnderExist(building))
-         {
+      public function canBeBuilt(building: Building): Boolean {
+         if (isBuildingOnMap(building)
+                && !restrTilesUnderBuildingExist(building)
+                && !restrTilesAroundBuildingExist(building)
+                && !buildingsAroundExist(building)
+                && !blockingFolliagesUnderExist(building)) {
             return true;
          }
          return false;
       }
-      
-      
+
+
       /**
        * Builds a building on this planet: removes folliages that are in the
        * basement area of the building and adds this building to objects list.
        * 
-       * @param building A building that needs to be built.
+       * @param b A building that needs to be built.
        */
       public function build(b:Building) : void
       {
@@ -1477,17 +1487,8 @@ package models.planet
       /* ################################## */
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
-      
-      
-      public function dispatchUnitCreateEvent() : void
-      {
-         if (hasEventListener(MPlanetEvent.UNIT_UPGRADE_STARTED))
-         {
-            dispatchEvent(new MPlanetEvent(MPlanetEvent.UNIT_UPGRADE_STARTED));
-         }
-      }
-      
-      
+
+
       public function dispatchUnitRefreshEvent() : void
       {
          if (!f_cleanupStarted &&

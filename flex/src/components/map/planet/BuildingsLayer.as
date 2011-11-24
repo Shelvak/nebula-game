@@ -1,7 +1,7 @@
 package components.map.planet
 {
    import com.developmentarc.core.utils.EventBroker;
-   
+
    import components.map.planet.objects.BuildingPlaceholder;
    import components.map.planet.objects.IInteractivePlanetMapObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;
@@ -9,43 +9,41 @@ package components.map.planet
    import components.map.planet.objects.PlanetObjectBasement;
    import components.map.planet.objects.PlanetObjectBasementColor;
    import components.popups.ActionConfirmationPopup;
-   
+
    import config.Config;
-   
+
    import controllers.Messenger;
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.MoveActionParams;
    import controllers.navigation.MCSidebar;
    import controllers.screens.SidebarScreens;
-   
+
    import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
    import flash.geom.Point;
    import flash.ui.Keyboard;
-   
+
    import flashx.textLayout.formats.LineBreak;
-   
+
    import globalevents.GBuildingEvent;
    import globalevents.GBuildingMoveEvent;
    import globalevents.GSelectConstructableEvent;
-   
-   import models.ModelLocator;
+
    import models.building.Building;
    import models.building.Extractor;
    import models.building.MCBuildingSelectedSidebar;
    import models.planet.MPlanet;
    import models.planet.events.MPlanetEvent;
    import models.tile.Tile;
-   import models.tile.TileKind;
 
    import mx.collections.ArrayCollection;
-   
+
    import spark.components.Button;
    import spark.components.Label;
-   
+
    import utils.locale.Localizer;
-   
-   
+
+
    /**
     * Dispatched from <code>EventBroker</code> while user is moving new building
     * around the map and as a result tiles under the building are changing.
@@ -70,45 +68,35 @@ package components.map.planet
    
    public class BuildingsLayer extends PlanetVirtualLayer
    {
-      private var ML:ModelLocator = ModelLocator.getInstance();
-      
-      
-      override protected function get componentClass() : Class
-      {
+      override protected function get componentClass(): Class {
          return MapBuilding;
       }
-      
-      
-      override protected function get modelClass() : Class
-      {
+
+      override protected function get modelClass(): Class {
          return Building;
       }
-      
-      
-      protected override function get objectsListName() : String
-      {
+
+      protected override function get objectsListName(): String {
          return "buildings";
       }
-      
-      
+
+
       /* ################################# */
       /* ### RESOURCE TILES INDICATORS ### */
       /* ################################# */
       
-      
       private var _resourceTilesIndicators:Object;
       private var _resourceTiles:ArrayCollection;
-      
-      
-      public override function initialize(objectsLayer:PlanetObjectsLayer, map:PlanetMap, planet:MPlanet) : void
-      {
+
+      public override function initialize(objectsLayer:PlanetObjectsLayer,
+                                          map:PlanetMap,
+                                          planet:MPlanet) : void {
          super.initialize(objectsLayer, map, planet);
          _resourceTilesIndicators = new Object();
          _resourceTiles = planet.resourceTiles;
          var lw:int = Extractor.WIDTH;
          var lh:int = Extractor.HEIGHT;
-         for each (var t:Tile in _resourceTiles)
-         {
+         for each (var t:Tile in _resourceTiles) {
             var indicator:PlanetObjectBasement = new PlanetObjectBasement();
             var lxMax:int = t.x + lw - 1;
             var lyMax:int = t.y + lh - 1;
@@ -123,14 +111,10 @@ package components.map.planet
             objectsLayer.addElement(indicator);
          }
       }
-      
-      
-      public override function cleanup():void
-      {
-         if (objectsLayer != null && _resourceTilesIndicators != null)
-         {
-            for each (var indicator:PlanetObjectBasement in _resourceTilesIndicators)
-            {
+
+      public override function cleanup(): void {
+         if (objectsLayer != null && _resourceTilesIndicators != null) {
+            for each (var indicator: PlanetObjectBasement in _resourceTilesIndicators) {
                objectsLayer.removeElement(indicator);
             }
             _resourceTiles = null;
@@ -138,23 +122,16 @@ package components.map.planet
          }
          super.cleanup();
       }
-      
-      
-      private function hideAllResourceTilesIndicators() : void
-      {
-         for each (var indicator:PlanetObjectBasement in _resourceTilesIndicators)
-         {
+
+      private function hideAllResourceTilesIndicators(): void {
+         for each (var indicator: PlanetObjectBasement in _resourceTilesIndicators) {
             indicator.visible = false;
          }
       }
-      
-      
-      private function showResourceTilesIndicators(kind:int) : void
-      {
-         for each (var t:Tile in _resourceTiles)
-         {
-            if (t.kind == kind)
-            {
+
+      private function showResourceTilesIndicators(kind: int): void {
+         for each (var t: Tile in _resourceTiles) {
+            if (t.kind == kind) {
                var indicator:PlanetObjectBasement = _resourceTilesIndicators[t.hashKey()];
                if (planet.buildingsInAreaExist(t.x - Building.GAP_BETWEEN,
                                                t.x - Building.GAP_BETWEEN + 1,
@@ -162,10 +139,10 @@ package components.map.planet
                                                t.y + Building.GAP_BETWEEN + 1,
                                                _buildingPH.getBuilding()))
                {
-                  indicator.color = PlanetObjectBasementColor.BUILDING_RESTRICTED;
+                  indicator.color =
+                     PlanetObjectBasementColor.BUILDING_RESTRICTED;
                }
-               else
-               {
+               else {
                   indicator.color = PlanetObjectBasementColor.BUILDING_OK;
                }
                indicator.visible = true;
@@ -177,35 +154,33 @@ package components.map.planet
       /* ###################### */
       /* ### EVENT HANDLERS ### */
       /* ###################### */
-      
-      
-      override public function handleMouseEvent(event:MouseEvent) : void
-      {
-         switch (event.type)
-         {
+
+      override public function handleMouseEvent(event: MouseEvent): void {
+         switch (event.type) {
             case MouseEvent.MOUSE_OVER:
                this_mouseOverHandler(event);
                break;
-            
+
             case MouseEvent.MOUSE_MOVE:
                this_mouseMoveHandler(event);
-               objectsLayer.redispatchEventFromMap(event);   // For map drag to work
+               // For map drag to work
+               objectsLayer.redispatchEventFromMap(event);
                break;
-            
+
             case MouseEvent.CLICK:
                this_clickHandler(event);
                break;
-            
+
             case MouseEvent.MOUSE_DOWN:
             case MouseEvent.MOUSE_UP:
-               objectsLayer.redispatchEventFromMap(event);   // For map drag to work
+               // For map drag to work
+               objectsLayer.redispatchEventFromMap(event);
                break;
          }
       }
-      
-      
-      override protected function addGlobalEventHandlers() : void
-      {
+
+
+      override protected function addGlobalEventHandlers() : void {
          super.addGlobalEventHandlers();
          EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, global_buildingSelectedHandler);
          EventBroker.subscribe(GBuildingEvent.MOVE_INIT, global_moveInitHandler);
@@ -214,9 +189,7 @@ package components.map.planet
          EventBroker.subscribe(KeyboardEvent.KEY_DOWN, global_keyDownHandler);
       }
       
-      
-      override protected function removeGlobalEventHandlers() : void
-      {
+      override protected function removeGlobalEventHandlers() : void {
          EventBroker.unsubscribe(GSelectConstructableEvent.BUILDING_SELECTED, global_buildingSelectedHandler);
          EventBroker.unsubscribe(GBuildingEvent.MOVE_INIT, global_moveInitHandler);
          EventBroker.unsubscribe(GBuildingEvent.MOVE_CONFIRM, global_moveConfirmHandler);
@@ -224,166 +197,132 @@ package components.map.planet
          EventBroker.unsubscribe(KeyboardEvent.KEY_DOWN, global_keyDownHandler);
          super.removeGlobalEventHandlers();
       }
-      
-      
-      private function global_keyDownHandler(event:KeyboardEvent) : void
-      {
-         if (event.keyCode == Keyboard.ESCAPE)
-         {
-            if (_buildingMoveProcessStarted && !_waitingUserConfirmationForMove)
-            {
+
+      private function global_keyDownHandler(event:KeyboardEvent) : void {
+         if (event.keyCode == Keyboard.ESCAPE) {
+            if (_buildingMoveProcessStarted
+                   && !_waitingUserConfirmationForMove) {
                cancelBuildingMoveProcess(true, false);
             }
          }
       }
-      
-      
-      private function this_mouseOverHandler(e:MouseEvent) : void
-      {
+
+      private function this_mouseOverHandler(e: MouseEvent): void {
          positionBuildingPH();
       }
-      
-      
-      private function this_mouseMoveHandler(e:MouseEvent) : void
-      {
+
+      private function this_mouseMoveHandler(e: MouseEvent): void {
          positionBuildingPH();
       }
-      
-      
-      private function this_clickHandler(e:MouseEvent) : void
-      {
-         if (_buildingProcessStarted)
-         {
+
+      private function this_clickHandler(e: MouseEvent): void {
+         if (_buildingProcessStarted) {
             commitBuildingProcess();
          }
-         else if (_buildingMoveProcessStarted)
-         {
+         else if (_buildingMoveProcessStarted) {
             commitBuildingMoveProcess();
          }
       }
-      
-      
-      protected override function addPlanetEventHandlers(planet:MPlanet) : void
-      {
-         planet.addEventListener(MPlanetEvent.BUILDING_MOVE, planet_buildingMoveHandler, false, 0, true);
+
+      protected override function addPlanetEventHandlers(planet: MPlanet): void {
+         planet.addEventListener(MPlanetEvent.BUILDING_MOVE,
+                                 planet_buildingMoveHandler, false, 0, true);
       }
       
-      
-      protected override function removePlanetEventHandlers(planet:MPlanet) : void
-      {
-         planet.removeEventListener(MPlanetEvent.BUILDING_MOVE, planet_buildingMoveHandler, false);
+      protected override function removePlanetEventHandlers(planet: MPlanet): void {
+         planet.removeEventListener(MPlanetEvent.BUILDING_MOVE,
+                                    planet_buildingMoveHandler, false);
       }
-      
-      
+
+
       /* ######################## */
       /* ### BUILDING PROCESS ### */
       /* ######################## */
       
-      
       private var _buildingPH:BuildingPlaceholder = null;
-      private var _deselectMsg:String = Localizer.string('BuildingSidebar', 'pressEsc');
+      private var _deselectMsg:String =
+                     Localizer.string('BuildingSidebar', 'pressEsc');
       private var _buildingProcessStarted:Boolean = false;
-      
       
       /**
        * This event is received from <code>BuildingSidebar</code> when user selects
        * a building to build.
        */
-      private function global_buildingSelectedHandler(event:GSelectConstructableEvent) : void
-      {
-         if (_buildingMoveProcessStarted)
-         {
+      private function global_buildingSelectedHandler(event: GSelectConstructableEvent): void {
+         if (_buildingMoveProcessStarted) {
             objectsLayer.deselectSelectedObject();
             cancelBuildingMoveProcess(false, false);
          }
-         if (event.building == null)
-         {
-            if (_buildingProcessStarted)
-            {
+         if (event.building == null) {
+            if (_buildingProcessStarted) {
                cancelBuildingProcess();
             }
          }
-         else
-         {
+         else {
             startBuildingProcess(event.building);
          }
       }
-      
-      
+
       /**
        * Starts the procees of building new structure on the map.
        */
-      private function startBuildingProcess(building:Building) : void
-      {
+      private function startBuildingProcess(building: Building): void {
          cancelBuildingProcess();
          _buildingProcessStarted = true;
          initBuildingPH(building);
       }
-      
-      
+
       /**
-       * Cancels building process if one has been started. 
+       * Cancels building process if one has been started.
        */
-      private function cancelBuildingProcess() : void
-      {
+      private function cancelBuildingProcess(): void {
          _buildingProcessStarted = false;
          destroyBuildingPH();
          Messenger.hide();
       }
-      
-      
+
       /**
        * Commits building process: dispatches event, cancels building process
-       * and resets all buildings' states to default. 
+       * and resets all buildings' states to default.
        */
-      private function commitBuildingProcess() : void
-      {
-         if (planet.canBeBuilt(_buildingPH.getBuilding()))
-         {
-            new GBuildingEvent(GBuildingEvent.CONSTRUCTION_COMMIT, _buildingPH.getBuilding());
+      private function commitBuildingProcess(): void {
+         if (planet.canBeBuilt(_buildingPH.getBuilding())) {
+            new GBuildingEvent(
+               GBuildingEvent.CONSTRUCTION_COMMIT, _buildingPH.getBuilding()
+            );
          }
-         else
-         {
+         else {
             new GBuildingEvent(GBuildingEvent.CONSTRUCTION_CANCEL);
          }
-         cancelBuildingProcess(); 
+         cancelBuildingProcess();
       }
-      
-      
+
+
       /* ######################## */
       /* ### MOVEMENT PROCESS ### */
       /* ######################## */
-      
       
       private var _buildingMoveProcessStarted:Boolean = false;
       private var _waitingUserConfirmationForMove:Boolean = false;
       private var _waitingServerResponse:Boolean = false;
       private var _oldX:int;
       private var _oldY:int;
-      
-      
-      private function global_moveInitHandler(event:GBuildingEvent) : void
-      {
+
+      private function global_moveInitHandler(event: GBuildingEvent): void {
          startBuildingMoveProcess(event.building);
       }
-      
-      
-      private function global_moveConfirmHandler(event:GBuildingEvent) : void
-      {
+
+      private function global_moveConfirmHandler(event: GBuildingEvent): void {
          _waitingServerResponse = false;
          confirmBuildingMoveProcess();
       }
       
-      
-      private function global_moveCancelHandler(event:GBuildingEvent) : void
-      {
+      private function global_moveCancelHandler(event: GBuildingEvent): void {
          _waitingServerResponse = false;
          cancelBuildingMoveProcess(false, true);
       }
-      
-      
-      private function startBuildingMoveProcess(building:Building) : void
-      {
+
+      private function startBuildingMoveProcess(building: Building): void {
          cancelBuildingMoveProcess(false, false);
          _buildingMoveProcessStarted = true;
          _waitingUserConfirmationForMove = false;
@@ -391,13 +330,11 @@ package components.map.planet
          _oldY = building.y;
          initBuildingPH(building);
       }
-      
-      
-      private function commitBuildingMoveProcess() : void
-      {
+
+
+      private function commitBuildingMoveProcess(): void {
          var b:Building = _buildingPH.getBuilding();
-         if ((b.x != _oldX || b.y != _oldY) && planet.canBeBuilt(b))
-         {
+         if ((b.x != _oldX || b.y != _oldY) && planet.canBeBuilt(b)) {
             // ask for user confirmation before sending message to the server
             _waitingUserConfirmationForMove = true;
             var popup:ActionConfirmationPopup = new ActionConfirmationPopup();
@@ -411,15 +348,13 @@ package components.map.planet
             popup.addElement(lblMessage);
             popup.show();
          }
-         else
-         {
+         else {
             cancelBuildingMoveProcess(true, false);
          }
       }
       
       
-      private function movePopup_confirmButtonHandler(button:Button) : void
-      {
+      private function movePopup_confirmButtonHandler(button:Button) : void {
          _waitingUserConfirmationForMove = false;
          _waitingServerResponse = true;
          var b:Building = _buildingPH.getBuilding();
@@ -433,23 +368,18 @@ package components.map.planet
             new MoveActionParams(b, newX, newY)
          ).dispatch();
       }
-      
-      
-      private function movePopup_cancelButtonHandler(button:Button) : void
-      {
+
+      private function movePopup_cancelButtonHandler(button: Button): void {
          _waitingUserConfirmationForMove = false;
          cancelBuildingMoveProcess(true, false);
       }
-      
-      
-      private function confirmBuildingMoveProcess() : void
-      {
+
+      private function confirmBuildingMoveProcess(): void {
          _buildingMoveProcessStarted = false;
          _waitingUserConfirmationForMove = false;
          destroyBuildingPH();
       }
-      
-      
+
       /**
        * Cancels move process either after some user action or action denial received from the server.
        * 
@@ -460,28 +390,32 @@ package components.map.planet
        * <code>MPlanet</code> have been made and only current location of the <code>Building</code>
        * moved has to be restored.
        */
-      private function cancelBuildingMoveProcess(dispatchEvent:Boolean, rollback:Boolean) : void
-      {
-         if (!_buildingMoveProcessStarted)
+      private function cancelBuildingMoveProcess(dispatchEvent: Boolean,
+                                                 rollback: Boolean): void {
+         if (!_buildingMoveProcessStarted) {
             return;
+         }
          _buildingMoveProcessStarted = false;
          _waitingUserConfirmationForMove = false;
          if (!_waitingServerResponse) {
-            var b:Building = _buildingPH.getBuilding();
-            if (rollback)
+            var b: Building = _buildingPH.getBuilding();
+            if (rollback) {
                planet.moveBuilding(b, _oldX, _oldY);
-            else
+            }
+            else {
                b.moveTo(_oldX, _oldY);
+            }
             destroyBuildingPH();
          }
-         if (dispatchEvent)
+         if (dispatchEvent) {
             new GBuildingEvent(GBuildingEvent.MOVE_CANCEL, b);
+         }
       }
-      
-      
-      private function planet_buildingMoveHandler(event:MPlanetEvent) : void
-      {
-         objectsLayer.positionObject(objectsLayer.getObjectByModel(event.object));
+
+      private function planet_buildingMoveHandler(event: MPlanetEvent): void {
+         objectsLayer.positionObject(
+            objectsLayer.getObjectByModel(event.object)
+         );
       }
       
       
@@ -490,42 +424,33 @@ package components.map.planet
       /* ################################## */
       
       
-      private function initBuildingPH(building:Building) : void
-      {
+      private function initBuildingPH(building: Building): void {
          Messenger.show(_deselectMsg);
-         
+
          objectsLayer.passOverMouseEventsTo(this);
-         
+
          building.moveTo(-1, -1);
-         
+
          _buildingPH = new BuildingPlaceholder();
          _buildingPH.initModel(building);
          _buildingPH.depth = Number.MAX_VALUE;
          _buildingPH.visible = false;
-         
+
          objectsLayer.addObject(_buildingPH, false);
-         if (building.isExtractor)
-         {
+         if (building.isExtractor) {
             showResourceTilesIndicators(Extractor(building).baseResource);
          }
-         if (!_buildingMoveProcessStarted)
-         {
+         if (!_buildingMoveProcessStarted) {
             objectsLayer.deselectSelectedObject();
          }
          objectsLayer.resetAllInteractiveObjectsState();
          positionBuildingPH();
       }
-      
-      
-      private function destroyBuildingPH() : void
-      {
-         // TODO i got NPE at objectsLayer.takeOverMouseEvents(); so, i add null check
-         if (objectsLayer != null)
-         {
-            if (_buildingPH != null)
-            {
-               if (_buildingPH.getBuilding().isExtractor)
-               {
+
+      private function destroyBuildingPH(): void {
+         if (objectsLayer != null) {
+            if (_buildingPH != null) {
+               if (_buildingPH.getBuilding().isExtractor) {
                   hideAllResourceTilesIndicators();
                }
                objectsLayer.removeElement(_buildingPH);
@@ -536,40 +461,37 @@ package components.map.planet
             objectsLayer.resetAllInteractiveObjectsState();
          }
       }
-      
-      
+
       /**
        * Moves building placeholder to a tile under the mouse and updates associated building model
        * accordingly.
-       * 
+       *
        * <p>Calls <code>updateBuildingPHState()</code> and
        * <code>makeOverlappingBuildingsTransp()</code> if position has actually been
        * changed.</p>
        */
-      private function positionBuildingPH() : void
-      {
-         var b:Building = _buildingPH.getBuilding();
-         var lc:Point = map.coordsTransform.realToLogical(new Point(objectsLayer.mouseX, objectsLayer.mouseY));
-         
+      private function positionBuildingPH(): void {
+         var b: Building = _buildingPH.getBuilding();
+         var lc: Point = map.coordsTransform.realToLogical(
+            new Point(objectsLayer.mouseX,objectsLayer.mouseY)
+         );
+
          // Don't do anything if building has not been moved.
-         if (!b.moveTo(lc.x, lc.y))
-         {
+         if (!b.moveTo(lc.x, lc.y)) {
             return;
          }
-         
+
          _buildingPH.visible = true;
          objectsLayer.positionObject(_buildingPH);
          dispatchBuildingMoveEvent(b);
          updateBuildingPHState();
          makeOverlappingObjectsTransp();
       }
-      
-      
+
       /**
        * Updates building placeholder state.
        */
-      private function updateBuildingPHState() : void
-      {
+      private function updateBuildingPHState() : void {
          var b:Building = _buildingPH.getBuilding();
          var tiles:Vector.<Vector.<Boolean>> = _buildingPH.interferingTiles;
          var gap:int   = Building.GAP_BETWEEN;
@@ -577,26 +499,18 @@ package components.map.planet
          var xTo:int   = b.xEnd + gap;
          var yFrom:int = b.y    - gap;
          var yTo:int   = b.yEnd + gap;
-         for (var lx:int = xFrom; lx <= xTo; lx++)
-         {
-            for (var ly:int = yFrom; ly <= yTo; ly++)
-            {
-               var tile:Tile = planet.isOnMap(lx, ly)
-                                  ? planet.getTile(lx, ly)
-                                  : null;
-               var tileKind:int = tile != null ? tile.kind : TileKind.REGULAR;
+         for (var lx:int = xFrom; lx <= xTo; lx++) {
+            for (var ly:int = yFrom; ly <= yTo; ly++) {
                // tiles under the building
-               if (b.standsOn(lx, ly))
-               {
+               if (b.standsOn(lx, ly)) {
                   tiles[lx - xFrom][ly - yFrom] =
-                     ! planet.isOnMap(lx, ly) ||
-                       b.isTileRestricted(tileKind, false) ||
-                       planet.buildingsInAreaExist(lx, lx, ly, ly, b) ||
-                       planet.blockingFolliagesInAreaExist(lx, lx, ly, ly);
+                     !planet.isOnMap(lx, ly)
+                        || b.isTileRestricted(planet.getTileKind(lx, ly), false)
+                        || planet.buildingsInAreaExist(lx, lx, ly, ly, b)
+                        || planet.blockingFolliagesInAreaExist(lx, lx, ly, ly);
                }
                // tiles around the building
-               else
-               {
+               else {
                   var border:int = PlanetMap.BORDER_SIZE;
                   tiles[lx - xFrom][ly - yFrom] =
                      !planet.isOnMap(lx, ly)
@@ -604,74 +518,67 @@ package components.map.planet
                          ly < -border || ly > planet.height + border - 1)
                      || planet.isOnMap(lx, ly)
                            && (planet.buildingsInAreaExist(lx, lx, ly, ly, b)
-                                  || b.isTileRestricted(tileKind, true));
+                                  || b.isTileRestricted(planet.getTileKind(lx, ly), true));
                }
             }
          }
          _buildingPH.applyInterferingTiles();
       }
-      
-      
-      private function dispatchBuildingMoveEvent(building:Building) : void
-      {
-         new GBuildingMoveEvent(GBuildingMoveEvent.MOVE, planet.getTilesUnderBuilding(building), building);
+
+      private function dispatchBuildingMoveEvent(building: Building): void {
+         new GBuildingMoveEvent(
+            GBuildingMoveEvent.MOVE,
+            planet.getTilesUnderBuilding(building),
+            building
+         );
       }
-      
-      
+
+
       /**
        * Makes any existing buildings around the placeholder transparent in order
        * a user could be able to see tiles behind and under those buildings.
        */
-      private function makeOverlappingObjectsTransp() : void
-      {
+      private function makeOverlappingObjectsTransp(): void {
          objectsLayer.resetAllInteractiveObjectsState();
-         for each (var object:IInteractivePlanetMapObject in objectsLayer.getOverlappingObjects(_buildingPH))
-         {
+         for each (var object: IInteractivePlanetMapObject
+            in objectsLayer.getOverlappingObjects(_buildingPH)) {
             object.faded = true;
          }
       }
-      
-      
+
+
       /* ######################################## */
       /* ### BUILDING SELECTION / DESELECTION ### */
       /* ######################################## */
-      
-      private function get buildingSidebar(): MCBuildingSelectedSidebar
-      {
+
+      private function get buildingSidebar(): MCBuildingSelectedSidebar {
          return MCBuildingSelectedSidebar.getInstance();
       }
-      
-      protected override function objectSelectedImpl(object:IInteractivePlanetMapObject) : void
-      {
+
+      protected override function objectSelectedImpl(object: IInteractivePlanetMapObject): void {
          buildingSidebar.selectedBuilding = Building(object.model);
          SD.showScreen(SidebarScreens.BUILDING_SELECTED);
       }
-      
-      private function get SD(): MCSidebar
-      {
+
+      private function get SD(): MCSidebar {
          return MCSidebar.getInstance();
       }
-      
-      protected override function objectDeselectedImpl(object:IInteractivePlanetMapObject) : void
-      {
+
+      protected override function objectDeselectedImpl(object: IInteractivePlanetMapObject): void {
          buildingSidebar.selectedBuilding = null;
-         if (!_buildingMoveProcessStarted)
-         {
+         if (!_buildingMoveProcessStarted) {
             SD.showPrevious();
          }
       }
-      
-      
-      /* ######################### */
-      /* ### OPENNING BUILDING ### */
-      /* ######################### */
-      
-      
-      protected override function openObjectImpl(object:IPrimitivePlanetMapObject) : void
-      {
-         var buildingC:MapBuilding = MapBuilding(object);
-         if (!buildingC.getBuilding().isGhost)
-         {
+
+
+      /* ######################## */
+      /* ### OPENING BUILDING ### */
+      /* ######################## */
+
+      protected override function openObjectImpl(object: IPrimitivePlanetMapObject): void {
+         var buildingC: MapBuilding = MapBuilding(object);
+         if (!buildingC.getBuilding().isGhost) {
             MCBuildingSelectedSidebar.getInstance().openBuilding(
                Building(buildingC.model));
          }
