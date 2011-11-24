@@ -18,6 +18,28 @@ describe Unit do
       Unit.non_combat_types.should_not include("Crow")
     end
   end
+
+  describe ".combat" do
+    it "should not include level == 0" do
+      Unit.combat.where(:id => Factory.create!(:u_trooper, :level => 0).id).
+        first.should be_nil
+    end
+
+    it "should not include non combat types" do
+      Unit.combat.where(:id => Factory.create!(:u_mdh).id).
+        first.should be_nil
+    end
+
+    it "should not include hidden units" do
+      Unit.combat.where(:id => Factory.create!(:u_trooper, :hidden => true).id).
+        first.should be_nil
+    end
+
+    it "should return combat types" do
+      Unit.combat.where(:id => Factory.create!(:u_trooper).id).
+        first.should_not be_nil
+    end
+  end
   
   describe ".on_callback" do
     describe "destroy" do
@@ -316,11 +338,12 @@ describe Unit do
     end
   end
 
-  describe ".update_location_all" do
+  describe ".update_location_sql" do
     before(:all) do
       @unit = Factory.create(:unit)
       @location = GalaxyPoint.new(Factory.create(:galaxy).id, 100, -100)
-      Unit.update_location_all(@location, {:id => @unit.id})
+      Unit.where(:id => @unit.id).
+        update_all(Unit.update_location_sql(@location))
       @unit.reload
     end
 
@@ -598,9 +621,9 @@ describe Unit do
       Factory.create(:unit),
       nil,
       %w{id level player_id upgrade_ends_at type flank route_id stance
-      construction_mod location hp},
+      construction_mod location hp hidden},
       %w{location_id location_x location_y location_type hp_remainder
-      pause_remainder stored metal energy zetium galaxy_id xp}
+      pause_remainder stored metal energy zetium galaxy_id xp flags}
 
     it "should include location#as_json" do
       model = Factory.create(:unit)
@@ -711,6 +734,12 @@ describe Unit do
     describe "exclude_non_combat_types=true" do
       it "should not include ids from non combat types" do
         Factory.create!(:u_mdh, :location => @location, :player => @p1)
+        Unit.player_ids_in_location(@location, true).should == []
+      end
+
+      it "should not include ids from hidden units" do
+        Factory.create!(:u_trooper, :location => @location, :player => @p1,
+          :hidden => true)
         Unit.player_ids_in_location(@location, true).should == []
       end
     end
@@ -916,13 +945,11 @@ describe Unit do
     end
 
     it "should validate stance" do
-      with_config_values("combat.flanks.max" => 5) do
-        lambda do
-          Unit.update_combat_attributes(@player.id,
-            @unit1.id => [0, -1]
-          )
-        end.should raise_error(ArgumentError)
-      end
+      lambda do
+        Unit.update_combat_attributes(@player.id,
+          @unit1.id => [0, -1]
+        )
+      end.should raise_error(ArgumentError)
     end
 
     it "should mass update units with new attributes" do
@@ -970,6 +997,61 @@ describe Unit do
         [1, Combat::STANCE_AGGRESSIVE],
         [0, Combat::STANCE_NEUTRAL],
       ]
+    end
+  end
+
+  describe ".mass_set_hidden" do
+    let(:player) { Factory.create(:player) }
+    let(:planet) { Factory.create(:planet, :player => player) }
+    let(:units) { [
+      Factory.create(:unit, :player => player, :location => planet),
+      Factory.create(:unit, :player => player, :location => planet),
+      Factory.create(:unit, :player => player, :location => planet),
+    ] }
+    let(:unit_ids) { units.map(&:id) }
+
+    it "should fail if planet does not belong to player" do
+      planet.update_row! :player_id => Factory.create(:player).id
+      lambda do
+        Unit.mass_set_hidden(player.id, planet.id, unit_ids, true)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if one of the units does not belong to player" do
+      units[0].player = Factory.create(:player)
+      units[0].save!
+      lambda do
+        Unit.mass_set_hidden(player.id, planet.id, unit_ids, true)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if unit is not in planet" do
+      units[0].location = planet.solar_system_point
+      units[0].save!
+      lambda do
+        Unit.mass_set_hidden(player.id, planet.id, unit_ids, true)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should not change hidden flag if failed" do
+      units[0].location = planet.solar_system_point
+      units[0].save!
+      begin
+        Unit.mass_set_hidden(player.id, planet.id, unit_ids, true)
+      rescue GameLogicError; end
+      units[0].reload
+      units[0].should_not be_hidden
+    end
+
+    it "should not change unrelated unit flags on same planet" do
+      last_unit_id = unit_ids.pop
+      Unit.mass_set_hidden(player.id, planet.id, unit_ids, true)
+      Unit.find(last_unit_id).should_not be_hidden
+    end
+
+    it "should change flag for given units" do
+      Unit.mass_set_hidden(player.id, planet.id, unit_ids, true)
+      units.each { |u| u.reload.should be_hidden }
     end
   end
 

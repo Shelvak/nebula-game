@@ -34,15 +34,38 @@ class UnitsController < GenericController
   # Invocation: by client
   #
   # Parameters:
-  # - updates (Hash): hash of unit_id => [flank, stance] pairs.
+  # - updates (Hash): hash of {unit_id => [flank, stance, hidden]} pairs.
   #
   # Response: None
   #
   def action_update
-    param_options :required => %w{updates}
+    param_options :required => {:updates => Hash}
     Unit.update_combat_attributes(player.id, params['updates'])
 
     true
+  end
+
+  ACTION_SET_HIDDEN = 'units|set_hidden'
+  # Mass sets hidden property on given player units.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - planet_id (Fixnum): planet where the units should be hidden.
+  # - unit_ids (Fixnum[]): array of unit ids which should be hidden.
+  # - value (Boolean): should units be hidden or not.
+  #
+  # Response: None
+  #
+  def action_set_hidden
+    param_options :required => {
+      :planet_id => Fixnum, :unit_ids => Array,
+      :value => [TrueClass, FalseClass]
+    }
+
+    Unit.mass_set_hidden(
+      player.id, params['planet_id'], params['unit_ids'], params['value']
+    )
   end
 
   ACTION_ATTACK = 'units|attack'

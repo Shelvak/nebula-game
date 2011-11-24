@@ -50,8 +50,7 @@ describe AnnouncementsController do
       @method = :push
     end
     
-    @required_params = %w{message ends_at}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{message ends_at}
     it_behaves_like "only push"
     
     %w{message ends_at}.each do |attr|

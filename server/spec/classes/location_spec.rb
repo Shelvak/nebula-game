@@ -14,21 +14,14 @@ describe Location do
 
     it "should include players from units" do
       player = Factory.create(:player)
-      Factory.create(:unit_built, :location => @location, :player => player)
-      Factory.create(:unit_built, :location => @location, :player => player)
+      returns = [1,2,3,4,5]
+      Unit.should_receive(:player_ids_in_location).with(@location, true).
+        and_return(returns)
 
-      Location.combat_player_ids(@location).should include(player.id)
-    end
-
-    it "should not include players from non-combat units" do
-      player = Factory.create(:player)
-      Factory.create!(:u_mdh, :location => @location, :player => player)
-
-      Location.combat_player_ids(@location).should_not include(player.id)
+      (Location.combat_player_ids(@location) & returns).should_not be_blank
     end
 
     it "should include nils" do
-      player = Factory.create(:player)
       Factory.create(:unit_built, :location => @location, :player => nil)
 
       Location.combat_player_ids(@location).should include(nil)

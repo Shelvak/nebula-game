@@ -28,8 +28,7 @@ describe AlliancesController do
       @tech = Factory.create!(:t_alliances, :player => player, :level => 1)
     end
 
-    @required_params = %w{name}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{name}
 
     it "should fail if player does not have level 1 technology" do
       @tech.level = 0
@@ -112,8 +111,7 @@ describe AlliancesController do
       @params = {'player_id' => @invitee.id}
     end
 
-    @required_params = %w{player_id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{player_id}
     it_behaves_like "only by owner"
 
     it "should fail if player does not see that planet" do
@@ -159,8 +157,7 @@ describe AlliancesController do
       @params = {'notification_id' => @notification}
     end
 
-    @required_params = %w{notification_id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{notification_id}
 
     it "should fail if notification belongs to other player" do
       @notification.player = Factory.create(:player)
@@ -292,8 +289,7 @@ describe AlliancesController do
       @params = {'player_id' => @member.id}
     end
 
-    @required_params = %w{player_id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{player_id}
     it_behaves_like "only by owner"
 
     it "should fail if current player is not in alliance" do
@@ -354,8 +350,7 @@ describe AlliancesController do
       @params = {'id' => @alliance.id}
     end
 
-    @required_params = %w{id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id}
 
     it "should respond with alliance name" do
       invoke @action, @params
@@ -460,8 +455,7 @@ describe AlliancesController do
       @params = {'description' => 'lol'}
     end
 
-    @required_params = %w{description}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{description}
 
     it "should change alliance description" do
       invoke @action, @params

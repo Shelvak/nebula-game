@@ -1,5 +1,5 @@
-shared_examples_for "with param options" do
-  (@required_params || []).each do |param|
+shared_examples_for "with param options" do |required_params|
+  required_params.each do |param|
     it "should require #{param} parameter" do
       lambda do
         @params.delete param

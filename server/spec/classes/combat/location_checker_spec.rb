@@ -278,7 +278,8 @@ describe Combat::LocationChecker do
         Factory.create(:unit, :location => @route_hop.location,
           :player => player)
       end
-      Combat::LocationChecker.send(:check_for_enemies, @route_hop.location).status ==
+      Combat::LocationChecker.
+        send(:check_for_enemies, @route_hop.location).status ==
         Combat::CheckReport::NO_CONFLICT
     end
 

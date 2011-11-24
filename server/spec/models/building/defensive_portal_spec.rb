@@ -287,6 +287,41 @@ describe Building::DefensivePortal do
                [ally_planet.id], [ally_player.id], :total_volume)
       end
 
+      it "should not teleport non-combat types" do
+        player = Factory.create(:player)
+        planet = Factory.create(:planet, :player => player)
+        Factory.create!(:u_mdh, :location => planet, :player => player)
+
+        Building::DefensivePortal.should_receive(:pick_unit_ids_from_list).
+          with([], [], :total_volume)
+        Building::DefensivePortal.
+          send(:pick_unit_ids, player.id, [planet.id], [], [], :total_volume)
+      end
+
+      it "should not teleport hidden units" do
+        player = Factory.create(:player)
+        planet = Factory.create(:planet, :player => player)
+        Factory.create!(:u_trooper, :location => planet,
+                        :player => player, :hidden => true)
+
+        Building::DefensivePortal.should_receive(:pick_unit_ids_from_list).
+          with([], [], :total_volume)
+        Building::DefensivePortal.
+          send(:pick_unit_ids, player.id, [planet.id], [], [], :total_volume)
+      end
+
+      it "should not include units under construction" do
+        player = Factory.create(:player)
+        planet = Factory.create(:planet, :player => player)
+        Factory.create!(:u_trooper, :location => planet,
+                        :player => player, :level => 0)
+
+        Building::DefensivePortal.should_receive(:pick_unit_ids_from_list).
+          with([], [], :total_volume)
+        Building::DefensivePortal.
+          send(:pick_unit_ids, player.id, [planet.id], [], [], :total_volume)
+      end
+
       it "should not include enemy units" do
         player = Factory.create(:player)
         planet = Factory.create(:planet)

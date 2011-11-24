@@ -231,6 +231,23 @@ class BuildingsController < GenericController
     building.save!
   end
 
+  # Sets constructor building hidden units.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the constructor.
+  # - enabled (Boolean):
+  #
+  def action_set_build_hidden
+    param_options :required => {:id => Fixnum,
+                                :enabled => [TrueClass, FalseClass]}
+
+    building = find_building
+    building.build_hidden = params['enabled']
+    building.save!
+  end
+
   # Starts repairs of the building.
   #
   # Invocation: by client

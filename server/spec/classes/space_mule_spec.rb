@@ -38,14 +38,14 @@ shared_examples_for "adding new solar systems" do
   end
 end
 
-shared_examples_for "with orbit units" do
+shared_examples_for "with orbit units" do |type, subtype|
+  subtype ||= 'planet'
+
   it "should have correct number of planet orbit units" do
-    @solar_systems.each do |solar_system|
-      (@planets || solar_system.planets).each do |planet|
-        planet.solar_system_point.should have_correct_unit_count(
-          "ss_object.#{@type}.orbit.planet.units"
-        )
-      end
+    (@planets || @solar_systems.map { |ss| ss.planets}.flatten).each do |planet|
+      planet.solar_system_point.should have_correct_unit_count(
+        "ss_object.#{type}.orbit.#{subtype}.units"
+      )
     end
   end
 
@@ -53,8 +53,8 @@ shared_examples_for "with orbit units" do
     @solar_systems.each do |solar_system|
       solar_system.asteroids.each do |asteroid|
         asteroid.solar_system_point.should have_correct_unit_count(
-          "ss_object.#{@type}.orbit.asteroid.units",
-          "ss_object.#{@type}.orbit.rich_asteroid.units"
+          "ss_object.#{type}.orbit.asteroid.units",
+          "ss_object.#{type}.orbit.rich_asteroid.units"
         )
       end
     end
@@ -64,21 +64,21 @@ shared_examples_for "with orbit units" do
     @solar_systems.each do |solar_system|
       solar_system.jumpgates.each do |jumpgate|
         jumpgate.solar_system_point.should have_correct_unit_count(
-          "ss_object.#{@type}.orbit.jumpgate.units"
+          "ss_object.#{type}.orbit.jumpgate.units"
         )
       end
     end
   end
 end
 
-shared_examples_for "with planet units" do
+shared_examples_for "with planet units" do |type, subtype|
+  subtype ||= 'planet'
+  
   it "should have correct number of planet ground units" do
-    @solar_systems.each do |solar_system|
-      (@planets || solar_system.planets).each do |planet|
-        planet.should have_correct_unit_count(
-          "ss_object.#{@type}.planet.units"
-        )
-      end
+    (@planets || @solar_systems.map { |ss| ss.planets}.flatten).each do |planet|
+      planet.should have_correct_unit_count(
+        "ss_object.#{type}.#{subtype}.units"
+      )
     end
   end
 end
@@ -106,7 +106,7 @@ shared_examples_for "with registered raid" do |raid_arg|
   it "should have #next_raid set" do
     models = @models || [@model]
     models.each do |model|
-      model.next_raid.should_not be_nil
+      model.next_raid_at.should_not be_nil
     end
   end
 
@@ -120,7 +120,8 @@ shared_examples_for "with registered raid" do |raid_arg|
   it "should have raid registered" do
     models = @models || [@model]
     models.each do |model|
-      model.should have_callback(CallbackManager::EVENT_RAID, model.next_raid)
+      model.should have_callback(
+                     CallbackManager::EVENT_RAID, model.next_raid_at)
     end
   end
 end
@@ -168,7 +169,6 @@ describe SpaceMule do
       before(:all) do
         @ss = @galaxy.solar_systems.where(:x => nil, :y => nil).first
         @solar_systems = [@ss]
-        @type = 'battleground'
       end
 
       it "should create battleground ss" do
@@ -214,8 +214,8 @@ describe SpaceMule do
         it_should_behave_like "with registered raid", 0
       end
       
-      it_behaves_like "with planet units"
-      it_behaves_like "with orbit units"
+      it_behaves_like "with planet units", 'battleground'
+      it_behaves_like "with orbit units", 'battleground'
     end
   
     it "should have spawn callback for first convoy" do
@@ -561,21 +561,24 @@ describe SpaceMule do
             first
           @ss = @homeworld.solar_system
           @solar_systems = [@ss]
-          @type = 'homeworld'
         end
-        
-        it_behaves_like "with planet units"
 
-        describe "orbit units" do
+        describe "homeworld" do
+          before(:each) do
+            @planets = [@homeworld]
+          end
+
+          it_behaves_like "with planet units", 'homeworld'
+          it_behaves_like "with orbit units", 'homeworld'
+        end
+
+        describe "expansion planets" do
           before(:each) do
             @planets = @ss.planets - [@homeworld]
           end
-          
-          it "should not have any units in homeworld orbit" do
-            Unit.in_location(@homeworld.solar_system_point).size.should == 0
-          end
-          
-          it_behaves_like "with orbit units"
+
+          it_behaves_like "with planet units", 'homeworld', 'expansion_planet'
+          it_behaves_like "with orbit units", 'homeworld', 'expansion_planet'
         end
       end
         
@@ -587,11 +590,10 @@ describe SpaceMule do
             "galaxy_id=? AND kind=? AND id!=?", 
             @galaxy.id, SolarSystem::KIND_NORMAL, homeworld_ss_id
           )
-          @type = 'regular'
         end
         
-        it_behaves_like "with planet units"
-        it_behaves_like "with orbit units"
+        it_behaves_like "with planet units", 'regular'
+        it_behaves_like "with orbit units", 'regular'
       end
       
       describe "mini battleground solar systems" do
@@ -602,11 +604,10 @@ describe SpaceMule do
             "galaxy_id=? AND kind=? AND x IS NOT NULL AND y IS NOT NULL", 
             @galaxy.id, SolarSystem::KIND_BATTLEGROUND
           )
-          @type = 'battleground'
         end
         
-        it_behaves_like "with planet units"
-        it_behaves_like "with orbit units"
+        it_behaves_like "with planet units", 'battleground'
+        it_behaves_like "with orbit units", 'battleground'
       end
     end
     

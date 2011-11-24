@@ -64,8 +64,7 @@ describe TechnologiesController do
       }
     end
 
-    @required_params = %w{type planet_id scientists speed_up}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{type planet_id scientists speed_up}
 
     it "should return new technology" do
       invoke @action, @params
@@ -98,8 +97,7 @@ describe TechnologiesController do
       }
     end
 
-    @required_params = %w{id planet_id scientists speed_up}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id planet_id scientists speed_up}
 
     it_behaves_like "technology upgradable"
     it_behaves_like "technology existing"
@@ -114,8 +112,7 @@ describe TechnologiesController do
         'scientists' => @technology.scientists * 2}
     end
 
-    @required_params = %w{id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id}
 
     it_behaves_like "technology existing"
 
@@ -134,8 +131,7 @@ describe TechnologiesController do
       @params = {'id' => @technology.id}
     end
 
-    @required_params = %w{id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id}
 
     it_behaves_like "technology existing"
 
@@ -156,8 +152,7 @@ describe TechnologiesController do
         'scientists' => @technology.scientists_min}
     end
 
-    @required_params = %w{id scientists}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id scientists}
 
     it_behaves_like "technology existing"
 

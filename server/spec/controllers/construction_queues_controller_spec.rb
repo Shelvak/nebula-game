@@ -35,8 +35,7 @@ describe ConstructionQueuesController do
 
     it_behaves_like "only push"
 
-    @required_params = %w{constructor_id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{constructor_id}
 
     it "should respond with constructor id" do
       should_respond_with \
@@ -62,8 +61,7 @@ describe ConstructionQueuesController do
         'count' => 2}
     end
 
-    @required_params = %w{id position}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id position}
     it_behaves_like "checking ownership"
 
     it "should move the entry" do
@@ -80,8 +78,7 @@ describe ConstructionQueuesController do
       @params = {'id' => @uq2.id, 'count' => @uq2.count / 4}
     end
 
-    @required_params = %w{id count}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id count}
     it_behaves_like "checking ownership"
 
     it "should reduce the entry" do

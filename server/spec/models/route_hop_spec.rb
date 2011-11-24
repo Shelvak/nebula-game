@@ -186,7 +186,8 @@ describe RouteHop do
       unit_overrides = {
         :route_id => @route.id,
         :location => @start_location,
-        :player_id => @player.id
+        :player_id => @player.id,
+        :hidden => true
       }
       @units = [
         Factory.create(:unit, unit_overrides),
@@ -214,6 +215,14 @@ describe RouteHop do
         unit.reload
         unit.location
       end.should == [@hop_target] * @units.size
+    end
+
+    it "should unhide units in route" do
+      RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
+      @units.map do |unit|
+        unit.reload
+        unit.hidden?
+      end.uniq.should == [false]
     end
 
     it "should delete this hop" do
@@ -327,9 +336,9 @@ describe RouteHop do
       it "should update current route location" do
         route = @hop.route
         RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-        SPEC_EVENT_HANDLER.events.find do |objects, event_name, reason|
+        SPEC_EVENT_HANDLER.events.find { |objects, event_name, reason|
           objects == [route] && event_name == EventBroker::DESTROYED
-        end[0][0].current.should == @hop_target.client_location
+        }[0][0].current.should == @hop_target.client_location
       end
 
       it "should destroy the route" do

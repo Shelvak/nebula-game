@@ -45,8 +45,7 @@ describe ChatController do
       @method = :push
     end
 
-    @required_params = %w{channel player}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{channel player}
     it_behaves_like "only push"
 
     it "should have channel name" do
@@ -73,8 +72,7 @@ describe ChatController do
       @method = :push
     end
 
-    @required_params = %w{channel player}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{channel player}
     it_behaves_like "only push"
 
     it "should have channel name" do
@@ -98,8 +96,7 @@ describe ChatController do
       @params = {'chan' => 'c', 'msg' => 'omg wtf lol!'}
     end
 
-    @required_params = %w{chan msg}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{chan msg}
 
     it "should invoke #channel_msg on hub" do
       hub = mock(Chat::Hub)
@@ -118,8 +115,7 @@ describe ChatController do
       @params = {'pid' => 10, 'msg' => 'omg wtf lol!'}
     end
 
-    @required_params = %w{pid msg}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{pid msg}
 
     it "should invoke #private_msg on hub" do
       hub = mock(Chat::Hub)

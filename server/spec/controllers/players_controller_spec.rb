@@ -20,8 +20,7 @@ describe PlayersController do
           'version' => Cfg.required_client_version}
       end
 
-      @required_params = %w{server_player_id web_player_id version}
-      it_behaves_like "with param options"
+      it_behaves_like "with param options", %w{server_player_id web_player_id version}
 
       describe "client too old" do
         before(:each) do
@@ -175,8 +174,7 @@ describe PlayersController do
         @params = {'id' => player.id}
       end
 
-      @required_params = %w{id}
-      it_behaves_like "with param options"
+      it_behaves_like "with param options", %w{id}
 
       it "should include player" do
         invoke @action, @params
@@ -241,8 +239,7 @@ describe PlayersController do
         @params = {'vip_level' => 1}
       end
 
-      @required_params = %w{vip_level}
-      it_behaves_like "with param options"
+      it_behaves_like "with param options", %w{vip_level}
 
       it "should invoke vip_start!" do
         player.should_receive(:vip_start!).with(@params['vip_level'])
@@ -266,8 +263,7 @@ describe PlayersController do
         @params = {'changes' => :changes}
       end
 
-      @required_params = %w{changes}
-      it_behaves_like "with param options"
+      it_behaves_like "with param options", %w{changes}
       it_behaves_like "only push"
       
       it "should respond" do
@@ -285,8 +281,7 @@ describe PlayersController do
         player.creds = @params['amount'] + 100
       end
       
-      @required_params = %w{amount}
-      it_behaves_like "with param options"
+      it_behaves_like "with param options", %w{amount}
       
       it "should call player#vip_convert" do
         player.should_receive(:vip_convert).with(@params['amount'])

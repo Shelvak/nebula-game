@@ -102,6 +102,7 @@ module Parts::Constructor
         hash["construction_queue_entries"] = construction_queue_entries.map(
           &:as_json)
         hash["build_in_2nd_flank"] = build_in_2nd_flank
+        hash["build_hidden"] = build_hidden
       end
     end
 
@@ -305,8 +306,10 @@ module Parts::Constructor
     private
 
     def before_finishing_constructable(constructable)
-      constructable.flank = 1 if build_in_2nd_flank? &&
-        constructable.is_a?(Unit)
+      if constructable.is_a?(Unit)
+        constructable.flank = 1 if build_in_2nd_flank?
+        constructable.hidden = true if build_hidden?
+      end
 
       constructable
     end

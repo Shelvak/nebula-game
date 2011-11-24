@@ -151,8 +151,7 @@ describe GalaxiesController do
       @method = :push
     end
 
-    @required_params = %w{start}
-    it_should_behave_like "with param options"
+    it_should_behave_like "with param options", %w{start}
 
     it_should_behave_like "only push"
 

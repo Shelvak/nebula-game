@@ -14,8 +14,7 @@ describe CombatLogsController do
       @params = {'id' => @combat_log.id}
     end
 
-    @required_params = %w{id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id}
 
     it "should return log" do
       should_respond_with :log => @combat_log.info

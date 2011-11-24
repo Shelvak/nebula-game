@@ -14,8 +14,7 @@ describe ObjectsController do
       @params = {'objects' => [@object]}
     end
 
-    @required_params = %w{objects}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{objects}
     it_behaves_like "only push"
 
     it "should include prepared objects" do
@@ -35,8 +34,7 @@ describe ObjectsController do
       @params = {'objects' => [@object], 'reason' => @reason}
     end
 
-    @required_params = %w{objects reason}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{objects reason}
     it_behaves_like "only push"
 
     it "should include prepared objects" do
@@ -60,8 +58,7 @@ describe ObjectsController do
       @params = {'objects' => [@object], 'reason' => 'reason'}
     end
 
-    @required_params = %w{objects reason}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{objects reason}
     it_behaves_like "only push"
 
     it "should include prepared object ids" do

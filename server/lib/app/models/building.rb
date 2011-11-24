@@ -88,6 +88,8 @@ class Building < ActiveRecord::Base
     2 => :without_points,
     # For constructors - build units in 2nd flank.
     3 => :build_in_2nd_flank,
+    # For constructors - build hidden units.
+    4 => :build_hidden,
     :check_for_column => false
   )
 
