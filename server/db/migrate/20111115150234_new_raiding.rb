@@ -1,9 +1,5 @@
 class NewRaiding < ActiveRecord::Migration
   def self.up
-    change_table :galaxies do |t|
-      t.datetime :apocalypse_start
-    end
-
     change_table :ss_objects do |t|
       t.column :raid_arg, 'tinyint(2) unsigned', :null => false, :default => 0
     end
@@ -43,7 +39,6 @@ class NewRaiding < ActiveRecord::Migration
   end
 
   def self.down
-    remove_column :galaxies, :apocalypse_start
     remove_column :ss_objects, :raid_arg
     remove_column :players, :bg_planets_count
   end

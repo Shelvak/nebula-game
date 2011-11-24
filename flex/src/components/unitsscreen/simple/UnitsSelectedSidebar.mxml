@@ -26,10 +26,13 @@
          import models.location.Location;
          import models.resource.Resource;
          import models.resource.ResourceType;
+         import models.unit.MCUnit;
          import models.unit.MCUnitScreen;
          import models.unit.Unit;
          import models.unit.UnitKind;
-         
+
+         import mx.collections.ArrayCollection;
+
          import mx.events.FlexEvent;
          
          import utils.assets.AssetNames;
@@ -79,6 +82,30 @@
          private function selectNone(): void
          {
             US.deselectUnits();
+         }
+
+         private function hasEmptyStorage(from: ArrayCollection): Boolean
+         {
+            for each (var unit: Unit in from)
+            {
+               if (unit.stored < ML.technologies.getUnitStorage(
+                       unit.type, unit.level))
+               {
+                  return true;
+               }
+            }
+            return false;
+         }
+
+         private function getEmptyStorageLabel(from: ArrayCollection): String
+         {
+            var storage: int = 0;
+            for each (var unit: Unit in from)
+            {
+               storage += ML.technologies.getUnitStorage(
+                       unit.type, unit.level) - unit.stored;
+            }
+            return getText('label.totalEmptyStorage', [storage]);
          }
          
          protected function button1_clickHandler(event:MouseEvent):void
@@ -155,6 +182,11 @@
                         || (US.currentKind == UnitKind.SQUADRON)) 
                         || US.hasChanges)}">
                <base:AdvancedContainer width="100%">
+                  <s:Group visible="{hasEmptyStorage(US.selection)}">
+                     <s:Label left="3" right="3" top="6" fontWeight="bold" fontSize="14"
+                              text="{getEmptyStorageLabel(US.selection)}"
+                              color="#eec500"/>
+                  </s:Group>
                   <s:Button label="{getText('label.attack')}" horizontalCenter="0"
                             visible="{US.target is Building}"
                             enabled="{US.selection.length > 0}" click="order_clickHandler(event)"

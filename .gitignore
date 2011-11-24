@@ -46,6 +46,7 @@ server/run/stopped_normally
 server/vendor/SpaceMule/target/
 server/vendor/SpaceMule/project/boot/
 server/vendor/SpaceMule/project/target/
+server/vendor/SpaceMule/project/project/target/
 
 # StripMaker ignores
 lib/StripMaker/data

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
-               xmlns:s="library://ns.adobe.com/flex/spark" 
-               xmlns:mx="library://ns.adobe.com/flex/halo"
+               xmlns:s="library://ns.adobe.com/flex/spark"
                xmlns:flexunitui="http://www.adobe.com/2009/flexUnitUIRunner"
                minWidth="1024" minHeight="768"
                creationComplete="onCreationComplete()" >   
@@ -28,6 +27,7 @@
          import tests.utils.datastructures.TS_DataStructures;
          
          import utils.DateUtil;
+         import utils.Objects;
          
          
          private var core:FlexUnitCore;
@@ -51,7 +51,6 @@
                TS_Announcement,
                TS_Galaxy,
                TS_Maps,
-               CommunicationsTestSuite,
                ModelsTestSuite,
                UtilsTestSuite
             ];
@@ -71,6 +70,13 @@
          {
             // NaN would break half of the tests
             DateUtil.timeDiff = 0;
+            
+            // Objects setup
+            Objects.setTypeProcessor(Date,
+               function(currValue:Date, value:String) : Object {
+                  return DateUtil.parseServerDTF(value);
+               }
+            );
             
             core = new FlexUnitCore();
             core.addListener(new UIListener(runner));

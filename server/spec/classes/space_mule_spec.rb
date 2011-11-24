@@ -103,11 +103,10 @@ shared_examples_for "starting resources" do |resolver, additional_items|
 end
 
 shared_examples_for "with registered raid" do |raid_arg|
-  it "should have raid registered" do
+  it "should have #next_raid set" do
     models = @models || [@model]
     models.each do |model|
-      model.should have_callback(CallbackManager::EVENT_RAID,
-        Cfg.raiding_delay_range_from(Time.now))
+      model.next_raid.should_not be_nil
     end
   end
 
@@ -115,6 +114,13 @@ shared_examples_for "with registered raid" do |raid_arg|
     models = @models || [@model]
     models.each do |model|
       model.raid_arg.should == raid_arg
+    end
+  end
+
+  it "should have raid registered" do
+    models = @models || [@model]
+    models.each do |model|
+      model.should have_callback(CallbackManager::EVENT_RAID, model.next_raid)
     end
   end
 end

@@ -9,7 +9,9 @@
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
-         
+
+         import config.Config;
+
          import globalevents.GlobalEvent;
          
          import mx.events.FlexEvent;
@@ -18,13 +20,13 @@
          import utils.locale.Localizer;
          
          [Bindable]
-         public var npc: Boolean;
-         
-         [Bindable]
          public var ownership: Date;
          
          [Bindable]
          private var timePassed: String;
+
+         [Bindable]
+         public var minDestructDaysPassed: Boolean;
          
          private function getText(prop: String, params: Array = null): String
          {
@@ -35,8 +37,14 @@
          {
             if (ownership != null)
             {
-               timePassed = DateUtil.secondsToHumanString(
-                  (new Date().time - ownership.time) / 1000, 1);
+               var seconds: int = (new Date().time - ownership.time) / 1000;
+               minDestructDaysPassed = seconds >
+                       Config.getBuildingDestructSafeguardTime();
+               timePassed = DateUtil.secondsToHumanString(seconds, 1);
+            }
+            else
+            {
+               timePassed = null;
             }
          }
          
@@ -50,6 +58,7 @@
          protected function panel1_removedFromStageHandler(event:Event):void
          {
             GlobalEvent.unsubscribe_TIMED_UPDATE(refreshTime);
+            timePassed = null;
          }
 
       ]]>

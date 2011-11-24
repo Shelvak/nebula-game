@@ -1,11 +1,5 @@
 package tests.animation
 {
-   import tests.animation.tests.TC_AnimatedBitmap;
-   import tests.animation.tests.TC_BattleFactory;
-   import tests.animation.tests.TC_BattleMatrix;
-   import tests.animation.tests.TC_PlaceFinder;
-   import tests.animation.tests.TC_Sequence;
-   import tests.animation.tests.TC_SequencePlayer;
 
    [Suite]
    [RunWith("org.flexunit.runners.Suite")]

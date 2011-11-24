@@ -21,7 +21,7 @@ rich_asteroid.zetium_rate: [2, 6]
 # Asteroid wreckage spawn rate ranges.
 #
 # 15 asteroids average, x * 3 hrs avg spawn time, 0,15 mule capacity.
-<% mult = 12; cap = 0.15 %>
+<% mult = 36; cap = 0.15 %>
 
 asteroid.wreckage.metal.spawn: [<%= mult * cap * 36 %>, <%= mult * cap * 104 %>]
 asteroid.wreckage.energy.spawn: [<%= mult * cap * 104 %>, <%= mult * cap * 320 %>]
@@ -53,6 +53,11 @@ battleground.planet.units:
   - [glancer, [5, 10], 1]
   - [gnat, [10, 15], [0, 1]]
 homeworld.planet.units: []
+homeworld.expansion_planet.units:
+  - [mdh, [1, 1], 0]
+  - [mobile_vulcan, [1, 1], 0]
+  - [mobile_screamer, [1, 1], 0]
+  - [mobile_thunder, [1, 1], 0]
 
 ### Orbit units configuration. Not overridable.
 

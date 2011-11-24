@@ -5,8 +5,7 @@ package controllers.solarsystems.actions
    import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
-   
-   import models.BaseModel;
+
    import models.MWreckage;
    import models.cooldown.MCooldownSpace;
    import models.factories.SolarSystemFactory;
@@ -15,13 +14,14 @@ package controllers.solarsystems.actions
    import models.movement.MHop;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
-   
+
+   import utils.Objects;
    import utils.remote.rmo.ClientRMO;
-   
-   
+
+
    /**
     * Downloads objects for one solar system and shows solar system map.
     * 
@@ -104,7 +104,7 @@ package controllers.solarsystems.actions
          ML.units.addAll(units);
          ML.units.enableAutoUpdate();
          SQUADS_CTRL.createSquadronsForUnits(units, ssMap);
-         SQUADS_CTRL.addHopsToSquadrons(IList(BaseModel.createCollection(ArrayCollection, MHop, params["routeHops"])).toArray());
+         SQUADS_CTRL.addHopsToSquadrons(IList(Objects.fillCollection(new ArrayCollection(), MHop, params["routeHops"])).toArray());
          SQUADS_CTRL.attachJumpsAtToHostileSquads(ssMap.squadrons, params["nonFriendlyJumpsAt"]);
          if (f_createMapOnly) {
             NAV_CTRL.recreateMap(ssMap);
@@ -129,7 +129,7 @@ package controllers.solarsystems.actions
                                         objectClass:Class,
                                         objects:Object): void {
          ssMap.addAllObjects(
-            BaseModel.createCollection(ArrayCollection, objectClass, objects)
+            Objects.fillCollection(new ArrayCollection(), objectClass, objects)
          );
       }
    }

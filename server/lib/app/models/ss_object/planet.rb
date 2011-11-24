@@ -335,7 +335,6 @@ class SsObject::Planet < SsObject
     solar_system = self.solar_system
     if solar_system.battleground?
       if new_player
-        new_player.victory_points += CONFIG['battleground.planet.takeover.vps']
         Unit.give_units(CONFIG['battleground.planet.bonus'], self, new_player)
       end
       old_player.bg_planets_count -= 1 if old_player
@@ -508,7 +507,7 @@ class SsObject::Planet < SsObject
               # And if some players were viewing the planet, but they can't
               # anymore, dispatch event to unset their session planet ids.
               EventBroker.fire(
-                PlanetObserversChangeEvent.
+                Event::PlanetObserversChange.
                   new(object.id, old_observers - new_observers),
                 EventBroker::CREATED
               )

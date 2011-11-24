@@ -1,10 +1,10 @@
 package tests._old.utils
 {
-   import net.digitalprimates.fluint.tests.TestCase;
+   import org.flexunit.asserts.assertEquals;
    
    import utils.NameResolver;
 
-   public class NameResolverTest extends TestCase
+   public class NameResolverTest
    {
       private var names:Array = ["Alfa", "Beta", "Gama", "Theta", "Omega"];
       

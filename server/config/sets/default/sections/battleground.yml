@@ -1,9 +1,6 @@
 ---
 # How much victory points you need to win the game?
-victory.condition: 150000
-
-# How much victory points you get for planet takeover?
-planet.takeover.vps: 10
+victory.condition: 300000
 
 # Bonus for planet occupation.
 # [type, count]

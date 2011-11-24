@@ -2,12 +2,13 @@ package tests._old.utils
 {
    import com.adobe.utils.ArrayUtil;
    
-   import net.digitalprimates.fluint.tests.TestCase;
+   import org.flexunit.asserts.assertEquals;
+   import org.flexunit.asserts.assertTrue;
    
    import utils.Objects;
    
    
-   public class ObjectsTest extends TestCase
+   public class ObjectsTest
    {
       [Test]
       public function hasMetadata() : void

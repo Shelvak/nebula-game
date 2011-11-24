@@ -51,16 +51,20 @@ class GalaxiesController < GenericController
       :cooldowns => Cooldown.by_fow_entries(fow_entries).map(&:as_json)
   end
 
+  ACTION_APOCALYPSE = 'galaxies|apocalypse'
   # Notifies client that the apocalypse has started.
   #
   # Invocation: by server
   #
-  # Paramenters: None
+  # Parameters: Same as response.
   #
-  # Response: Empty
+  # Response:
+  # - start (Time): start date of apocalypse
   #
   def action_apocalypse
+    param_options :required => {:start => Time}
+
     only_push!
-    respond
+    respond :start => params['start']
   end
 end

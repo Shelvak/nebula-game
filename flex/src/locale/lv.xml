@@ -573,6 +573,13 @@
     <warning.buildingWorking>
       <p>Viss, kas šai ;ekai tiek būvēts tiks iznīcināts, ja jūs tai veiksiet pašiznīcināšanos.</p>
     </warning.buildingWorking>
+    <!-- TODO -->
+    <!-- {0}: time of planet guard (like "5d") -->
+    <warning.selfDestructGuard>
+      <p>You can not destroy your buildings for creds in planet which belongs
+      to you for less than {0}</p>
+    </warning.selfDestructGuard>
+    <!-- /TODO -->
     <toolTip.afterUpgrade value="Pēc jauninājumiem" />
     <title.boost value="Palielināt" />
     <title.buildingBonus value="Ēkas bonusi" />
@@ -1369,6 +1376,35 @@
     <label.over value="Fleet over"/>
     <!-- /TODO -->
     <message.noRadar value="Jums vajadzīgs radars, lai izpētītu galaktiku" />
+
+    <!-- TODO -->
+    <tooltip.apocalypse.common>
+      <p>Click here for more information.</p>
+    </tooltip.apocalypse.common>
+    <!-- TODO: fix these to use TLF p margin instead of two brs. -->
+    <!--
+     {0}: date string
+     {1}: relative time string (5d/3h/...)
+    -->
+    <tooltip.apocalypse.notStarted>
+      <p>Apocalypse will start at {0} (in {1}).<br/><br/></p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.notStarted>
+    <!--
+    {0}: date string
+    {1}: current apocalypose day
+    {2}: how many creds will you get
+    -->
+    <tooltip.apocalypse.started>
+      <p>Apocalypse has started at {0}.<br/><br/></p>
+      <p>
+        It is now {1} apocalypse day. You will get
+        {2 one[one cred] many[? creds]} after losing your last planet.
+        <br/><br/>
+      </p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.started>
+    <!-- /TODO -->
   </Galaxy>
 
   <General>
@@ -1722,6 +1758,21 @@
     <message.kickedFromAlliance value="Izmests no alianses {0}" />
     <label.kickedFromAlliance 
     value="Jūs esat izmests no alianses" />
+
+    <!-- TODO -->
+    <title.credsConverted
+      value="Someone collected enough victory points to win." />
+    <message.credsConverted
+      value="Victory points converted to creds"/>
+    <label.credsConverted>
+      <p>Your victory points was converted to creds.</p>
+      <p>Creds gained:</p>
+    </label.credsConverted>
+    <credsConverted.personalCreds value="● Personal creds: {0}"/>
+    <credsConverted.allianceCreds
+      value="● Creds from alliance pool: {0} (overall alliance pool: {1})"/>
+    <credsConverted.personalCredsTotal value="● Total creds you gained: {0}"/>
+    <!-- /TODO -->
 
     <title.achievementCompleted value="Sasniegums pabeigts" />
     <message.achievementCompleted ref="title.achievementCompleted" />
@@ -3133,6 +3184,19 @@
       <p>To annex a planet we must land with our ships on its soil.</p>
     </about.20>
 
+    <!-- TODO -->
+    <title.122 value="Fortifying Colonies" />
+    <about.122>
+      <p>Commander!</p>
+      <p>
+        We have found some abandoned mobile structures in our second colony
+        ready for deployment. We should use them to fortify our second base as
+        our intelligence reports raiders are heading this way.
+      </p>
+      <p>Go, deploy them at once!</p>
+    </about.122>
+    <!-- /TODO -->
+
     <title.21 value="Otrais postenis" />
     <about.21>
       <p>Lielisks darbs, komandieri!</p>
@@ -3329,7 +3393,22 @@
     <alliance value="Alianse" />
     <points value="Kopējie punkti" />
     <playersCount value="Spēlētāji" />
-    <planetsCount value="Planētas" />
+    <!-- TODO -->
+    <planetsCount value="RPC" />
+    <bgPlanetsCount value="SPC" />
+    <tooltip.planetsCount value="Regular planets count" />
+    <specialPlanets.common>
+      <p>Special planets are located in battleground or pulsar solar systems.</p>
+    </specialPlanets.common>
+    <tooltip.bgPlanetsCount>
+      <p>Special planets count.</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.bgPlanetsCount>
+    <tooltip.planetsVsBattleground>
+      <p>Regular planets count / Special planets count</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.planetsVsBattleground>
+    <!-- /TODO -->
     <warPoints value="Kara punkti" />
     <economyPoints value="Ekonomijas punkti" />
     <sciencePoints value="Zinātnes punkti" />
@@ -3395,6 +3474,10 @@
   </Resources>
 
   <SSObjects>
+    <!-- TODO -->
+    <label.totalVolume value="Total volume: {0}"/>
+    <label.wreckageVolume value="(volume: {0})"/>
+    <!-- /TODO -->
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    
     <title.info value="{0} informācija" />
     <!-- {0}: Planet/Jumpgate/Asteroid  
@@ -4078,6 +4161,9 @@
 
   <Units>
     <title.storageScreen value="Ielādēt / Izlādēt"/>
+    <!-- TODO -->
+    <label.totalEmptyStorage value="Total empty storage: {0}"/>
+    <!-- /TODO -->
   
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Gatavs pēc {0}" />

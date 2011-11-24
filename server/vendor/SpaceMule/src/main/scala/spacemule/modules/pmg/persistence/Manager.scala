@@ -432,7 +432,7 @@ object Manager {
     callbacks += CallbackRow(
       ssoRow, galaxy.ruleset,
       CallbackRow.Events.Raid,
-      Config.raidingDelayRandomDate
+      planet.nextRaidAt
     ).values
 
     planet.foreachTile { case (coord, kind) =>

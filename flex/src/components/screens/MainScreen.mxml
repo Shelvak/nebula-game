@@ -64,18 +64,22 @@ bars and so on.
          <base:layout><s:HorizontalLayout verticalAlign="bottom" gap="10"/></base:layout>
          <menus:MainMenu id="mnuMain"/>
          <bars:ResourcesBar id="resBar" visible="{ML.activeMapType == MapType.PLANET}"/>
-         <raid:RaidBar id="raidBar" visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
-                                              MPlanet.hasRaiders(
-                                              ML.latestGalaxy.apocalypseStart == null
-                                              ? ML.latestPlanet.ssObject.raidArg
-                                              : 0,
-                                              ML.latestPlanet.ssObject.nextRaidAt,
-                                              (ML.latestSSMap == null
-                                              || ML.latestSSMap.solarSystem.isBattleground),
-                                              ML.latestGalaxy.apocalypseStart)
-                                              &amp;&amp;
-                                              ML.latestPlanet.ssObject.owner == Owner.PLAYER &amp;&amp;
-                                              ML.latestPlanet.ssObject.nextRaidAt}"/>
+         <raid:RaidBar id="raidBar"
+            visible="{
+               ML.activeMapType == MapType.PLANET &amp;&amp;
+               MPlanet.hasRaiders(
+                  ML.latestGalaxy.apocalypseActive
+                     ? 0 : ML.latestPlanet.ssObject.raidArg,
+                  ML.latestPlanet.ssObject.nextRaidAt,
+                  (
+                     ML.latestSSMap == null ||
+                     ML.latestSSMap.solarSystem.isBattleground
+                  ),
+                  ML.latestGalaxy.apocalypseStartEvent
+               ) &amp;&amp;
+               ML.latestPlanet.ssObject.owner == Owner.PLAYER &amp;&amp;
+               ML.latestPlanet.ssObject.nextRaidAt
+            }"/>
          <s:Group>
             <ui:IconWithLabel id="icoPlanetCooldown" toolTip="{Localizer.string('General', 'label.cooldownEndsIn')}"
                               icon="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 'cooldown_large')}"

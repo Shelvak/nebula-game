@@ -11,6 +11,8 @@
 # * Notification#create_for_planet_protected
 # * Notification#create_for_kicked_from_alliance
 # * Notification#create_for_alliance_joined
+# * Notification#create_for_market_offer_bought
+# * Notification#create_for_vps_to_creds_conversion
 #
 class Notification < ActiveRecord::Base
   # These methods must be defined before the include.
@@ -28,7 +30,7 @@ class Notification < ActiveRecord::Base
   EVENT_BUILDINGS_DEACTIVATED = 1
   # There was combat.
   EVENT_COMBAT = 2
-  # Quest has been completed.
+  # Achievement has been completed.
   EVENT_ACHIEVEMENT_COMPLETED = 3
   # Quest has been completed.
   EVENT_QUEST_COMPLETED = 4
@@ -46,6 +48,8 @@ class Notification < ActiveRecord::Base
   EVENT_ALLIANCE_JOINED = 10
   # Some piece of market offer was bought.
   EVENT_MARKET_OFFER_BOUGHT = 11
+  # Creds awarded for victory points.
+  EVENT_VPS_CONVERTED_TO_CREDS = 12
 
   # custom_serialize converts all :symbols to 'symbols'
   serialize :params
@@ -482,5 +486,32 @@ class Notification < ActiveRecord::Base
       }
     )
     model.save!
+
+    model
+  end
+
+  # EVENT_VICTORY_POINTS_AWARDED = 12
+  #
+  # params = {
+  #   :personal_creds => Fixnum (Amount of creds awarded personally),
+  #   :total_alliance_creds => Fixnum | nil (Amount of creds for all alliance,
+  #     nil if not in alliance),
+  #   :alliance_creds_per_player => Fixnum | nil (Amount of creds for all
+  #     alliance, nil if not in alliance),
+  # }
+  def self.create_for_vps_to_creds_conversion(player_id, personal_creds,
+      total_alliance_creds, alliance_creds_per_player)
+    model = new(
+      :event => EVENT_VPS_CONVERTED_TO_CREDS,
+      :player_id => player_id,
+      :params => {
+        :personal_creds => personal_creds,
+        :total_alliance_creds => total_alliance_creds,
+        :alliance_creds_per_player => alliance_creds_per_player
+      }
+    )
+    model.save!
+
+    model
   end
 end

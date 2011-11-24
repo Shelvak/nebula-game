@@ -435,6 +435,11 @@
       <p>Anything this building is constructing will be destroyed if you 
       initiate self-destruct on this building.</p>
     </warning.buildingWorking>
+    <!-- {0}: time of planet guard (like "5d") -->
+    <warning.selfDestructGuard>
+      <p>You can not destroy your buildings for creds in planet which belongs
+      to you for less than {0}</p>
+    </warning.selfDestructGuard>
     <toolTip.afterUpgrade value="After upgrade" />
     <title.boost value="Boost" />
     <title.buildingBonus value="Building bonus" />
@@ -1212,6 +1217,33 @@
     </label.shield>
     <label.over value="Fleet over"/>
     <message.noRadar value="You need a Radar to explore the galaxy" />
+
+    <tooltip.apocalypse.common>
+      <p>Click here for more information.</p>
+    </tooltip.apocalypse.common>
+    <!-- TODO: fix these to use TLF p margin instead of two brs. -->
+    <!--
+     {0}: date string
+     {1}: relative time string (5d/3h/...)
+    -->
+    <tooltip.apocalypse.notStarted>
+      <p>Apocalypse will start at {0} (in {1}).<br/><br/></p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.notStarted>
+    <!--
+    {0}: date string
+    {1}: current apocalypose day
+    {2}: how many creds will you get
+    -->
+    <tooltip.apocalypse.started>
+      <p>Apocalypse has started at {0}.<br/><br/></p>
+      <p>
+        It is now {1} apocalypse day. You will get
+        {2 one[one cred] many[? creds]} after losing your last planet.
+        <br/><br/>
+      </p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.started>
   </Galaxy>
 
   <General>
@@ -1547,7 +1579,20 @@
     <title.kickedFromAlliance value="Kicked from alliance" />
     <message.kickedFromAlliance value="Kicked from alliance {0}" />
     <label.kickedFromAlliance 
-    value="You have been kicked from alliance" />
+      value="You have been kicked from alliance" />
+
+    <title.credsConverted
+      value="Someone collected enough victory points to win." />
+    <message.credsConverted
+      value="Victory points converted to creds"/>
+    <label.credsConverted>
+      <p>Your victory points was converted to creds.</p>
+      <p>Creds gained:</p>
+    </label.credsConverted>
+    <credsConverted.personalCreds value="● Personal creds: {0}"/>
+    <credsConverted.allianceCreds
+      value="● Creds from alliance pool: {0} (overall alliance pool: {1})"/>
+    <credsConverted.personalCredsTotal value="● Total creds you gained: {0}"/>
 
     <title.achievementCompleted value="Achievement completed" />
     <message.achievementCompleted ref="title.achievementCompleted" />
@@ -2944,6 +2989,17 @@
       <p>To annex a planet we must land with our ships on its soil.</p>
     </about.20>
 
+    <title.122 value="Fortifying Colonies" />
+    <about.122>
+      <p>Commander!</p>
+      <p>
+        We have found some abandoned mobile structures in our second colony
+        ready for deployment. We should use them to fortify our second base as
+        our intelligence reports raiders are heading this way.
+      </p>
+      <p>Go, deploy them at once!</p>
+    </about.122>
+
     <title.21 value="The Second Outpost" />
     <about.21>
       <p>Great job, Commander!</p>
@@ -3140,7 +3196,20 @@
     <alliance value="Alliance" />
     <points value="Total points" />
     <playersCount value="Players" />
-    <planetsCount value="Planets" />
+    <planetsCount value="RPC" />
+    <bgPlanetsCount value="SPC" />
+    <tooltip.planetsCount value="Regular planets count" />
+    <specialPlanets.common>
+      <p>Special planets are located in battleground or pulsar solar systems.</p>
+    </specialPlanets.common>
+    <tooltip.bgPlanetsCount>
+      <p>Special planets count.</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.bgPlanetsCount>
+    <tooltip.planetsVsBattleground>
+      <p>Regular planets count / Special planets count</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.planetsVsBattleground>
     <warPoints value="War points" />
     <economyPoints value="Economy points" />
     <sciencePoints value="Science points" />
@@ -3204,6 +3273,8 @@
   </Resources>
 
   <SSObjects>
+    <label.totalVolume value="Total volume: {0}"/>
+    <label.wreckageVolume value="(volume: {0})"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    
     <title.info value="{0} info" />
     <!-- {0}: Planet/Jumpgate/Asteroid  
@@ -3869,6 +3940,7 @@
 
   <Units>
     <title.storageScreen value="Load / Unload"/>
+    <label.totalEmptyStorage value="Total free storage: {0}"/>
   
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Ready in {0}" />

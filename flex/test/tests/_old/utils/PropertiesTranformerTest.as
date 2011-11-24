@@ -1,10 +1,13 @@
 package tests._old.utils
 {
-   import net.digitalprimates.fluint.tests.TestCase;
+   import org.flexunit.asserts.assertEquals;
+   import org.flexunit.asserts.assertFalse;
+   import org.flexunit.asserts.assertNull;
+   import org.flexunit.asserts.assertTrue;
    
    import utils.PropertiesTransformer;
    
-   public class PropertiesTranformerTest extends TestCase
+   public class PropertiesTranformerTest
    {
       // ######################################################## //
       // ### Testing cenversion form under_score to CamelCase ### //

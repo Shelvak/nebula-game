@@ -35,6 +35,8 @@ package models.alliance
       [Bindable]
       public var totalPlanetsCount: int = 0;
       [Bindable]
+      public var totalBgPlanetsCount: int = 0;
+      [Bindable]
       public var totalPoints: int = 0;
       [Bindable]
       public var id: int = 0;

@@ -45,7 +45,7 @@ package utils.locale
             if (parameters)
                resultString = mx.utils.StringUtil.substitute(
                   resultString, parameters);
-         } 
+         }
          else
          {
             throw new Error('Resource ' + property + ' for bundle ' + bundle + 

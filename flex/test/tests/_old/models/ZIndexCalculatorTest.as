@@ -6,7 +6,7 @@ package tests._old.models
    
    import mx.collections.ArrayCollection;
    
-   import net.digitalprimates.fluint.tests.TestCase;
+   import org.flexunit.asserts.assertEquals;
    
    /**
     * Map size in all tests is 7 x 8 (W x H).
@@ -15,15 +15,13 @@ package tests._old.models
     * Objects of 1x1 size are marked with zIndex value;
     * Objects larger than 1x1 are marked as # and the top-right corner holds zIndex value;
     */
-   public class ZIndexCalculatorTest extends TestCase
+   public class ZIndexCalculatorTest
    {
       private var planet:MPlanet = null;
       private var objects:ArrayCollection = null;
       
-      /**
-       * Initialize planet.
-       */
-      protected override function setUp() : void
+      [Before]
+      public function setUp() : void
       {
          var sso:MSSObject = new MSSObject();
          sso.width = 7;

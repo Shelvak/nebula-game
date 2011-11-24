@@ -1,8 +1,8 @@
 ---
 # Plus 2 percent of armor for each titan tile
-titan.mod.armor: 2
+titan.mod.armor: 8
 junkyard.mod.construction: 2
-sand.mod.armor: -2
+sand.mod.armor: -8
 noxrium.mod.energy: 6
 
 ### Folliage exploration ###

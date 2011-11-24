@@ -26,6 +26,7 @@ package models.planet
    import models.solarsystem.MSSObject;
    import models.tile.Tile;
    import models.tile.TileKind;
+   import models.time.MTimeEventFixedMoment;
    import models.unit.RaidingUnitEntry;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
@@ -105,10 +106,14 @@ package models.planet
          _folliages = Collections.filter(objects, filterFunction_folliages);
       }
 
-      public static function hasRaiders(raidArg: int, nextRaidAt: Date,
-                                        battleGround: Boolean,
-                                        apocalypseStart: Date): Boolean
+      public static function hasRaiders(
+         raidArg: int, nextRaidAt: Date, battleGround: Boolean,
+         apocalypseMoment: MTimeEventFixedMoment
+      ): Boolean
       {
+         var apocalypseStart: Date = apocalypseMoment == null
+            ? null : apocalypseMoment.occuresAt;
+
          var data: Object;
          var arg: int;
          if (apocalypseStart != null)
@@ -139,17 +144,21 @@ package models.planet
          return false;
       }
       
-      public static function getRaiders(raidArg: int, nextRaidAt: Date,
-                                        battleGround: Boolean,
-                                        apocalypseStart: Date): ArrayCollection
+      public static function getRaiders(
+         raidArg: int, nextRaidAt: Date, battleGround: Boolean,
+         apocalypseMoment: MTimeEventFixedMoment): ArrayCollection
       {
+         var apocalypseStart: Date = apocalypseMoment == null
+            ? null : apocalypseMoment.occuresAt;
+
          var data: Object;
          var arg: int;
          if (apocalypseStart != null)
          {
             data = Config.getRaidingApocalypseUnits();
-            arg =  Math.round((nextRaidAt.time - apocalypseStart.time)/
-                    (1000 * 60 * 60 * 24));
+            arg =  Math.round(
+               (nextRaidAt.time - apocalypseStart.time) / (1000 * 60 * 60 * 24)
+            );
             // for info in raid bar for next raids
             arg += raidArg;
          }
@@ -183,6 +192,9 @@ package models.planet
          {
             resultCollection.addItem(entry);
          }
+         resultCollection.sort = new Sort();
+         resultCollection.sort.fields = [new SortField('type')];
+         resultCollection.refresh();
          return resultCollection;
       }
       
@@ -1059,7 +1071,8 @@ package models.planet
       {
          for each (var building: Building in buildings)
          {
-            if (building.hasGuns && building.level > 0)
+            if (building.hasGuns && !building.isGhost &&
+                    building.upgradePart.upgradeEndsAt == null)
             {
                return true;
             }

@@ -35,6 +35,7 @@ package tests.announcement
       public function setUp() : void {
          DateUtil.now = new Date().time;
          announcement = new MAnnouncement();
+         DateUtil.now = new Date().time;
       }
 
       [After]

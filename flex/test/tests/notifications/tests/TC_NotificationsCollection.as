@@ -5,13 +5,10 @@ package tests.notifications.tests
    import controllers.CommunicationCommand;
    import controllers.notifications.NotificationsCommand;
    
-   import models.BaseModel;
    import models.notification.Notification;
    import models.notification.NotificationType;
    import models.notification.NotificationsCollection;
    import models.notification.events.NotificationsCollectionEvent;
-   
-   import mx.events.CollectionEvent;
    
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.hasItems;
@@ -21,6 +18,8 @@ package tests.notifications.tests
    import org.hamcrest.object.nullValue;
    
    import tests.notifications.Data;
+   
+   import utils.Objects;
 
    public class TC_NotificationsCollection
    {
@@ -387,9 +386,8 @@ package tests.notifications.tests
       /* ############### */
       
       
-      private function createNotif(data:Object) : Notification
-      {
-         return BaseModel.createModel(Notification, data);
+      private function createNotif(data:Object) : Notification {
+         return Objects.create(Notification, data);
       }
    }
 }

@@ -1,8 +1,9 @@
 package components.map
 {
    import com.developmentarc.core.utils.EventBroker;
-   
-   import components.base.CustomCursorContainer;
+
+   import components.base.BaseContainer;
+
    import components.base.viewport.ViewportZoomable;
    
    import controllers.navigation.MCMainArea;
@@ -42,12 +43,8 @@ package components.map
     * any additional resources used by the deriving class.
     * </p>
     */
-   public class CMap extends CustomCursorContainer implements ICleanable
+   public class CMap extends BaseContainer implements ICleanable
    {
-      public static const CURSOR_OFFSET_X:int = -17;
-      public static const CURSOR_OFFSET_Y:int = CURSOR_OFFSET_X;
-      
-      
       /* ###################### */
       /* ### INITIALIZATION ### */
       /* ###################### */
@@ -63,7 +60,6 @@ package components.map
          super.model = model;
          addGlobalEventHandlers();
          addModelEventHandlers(model);
-//         setCursorProperty();
       }
       
       

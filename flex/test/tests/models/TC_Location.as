@@ -3,13 +3,12 @@ package tests.models
    import asmock.framework.Expect;
    import asmock.framework.MockRepository;
    import asmock.integration.flexunit.IncludeMocksRule;
-   
+
    import controllers.ui.NavigationController;
-   
+
    import ext.hamcrest.events.causesTarget;
    import ext.hamcrest.object.equals;
-   
-   import models.BaseModel;
+
    import models.ModelLocator;
    import models.Owner;
    import models.galaxy.Galaxy;
@@ -21,11 +20,11 @@ package tests.models
    import models.planet.MPlanet;
    import models.player.PlayerMinimal;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.SSKind;
    import models.solarsystem.MSolarSystem;
-   
+   import models.solarsystem.SSKind;
+
    import namespaces.client_internal;
-   
+
    import org.hamcrest.assertThat;
    import org.hamcrest.core.not;
    import org.hamcrest.core.throws;
@@ -34,10 +33,12 @@ package tests.models
    import org.hamcrest.object.notNullValue;
    import org.hamcrest.object.nullValue;
    import org.hamcrest.object.sameInstance;
-   
-   import testsutils.LocalizerUtil;
-   
+
+   import testsutils.LocalizerUtl;
+
+   import utils.Objects;
    import utils.SingletonFactory;
+
 
    public class TC_Location
    {
@@ -64,8 +65,8 @@ package tests.models
       
       [Before]
       public function setUp() : void {
-         LocalizerUtil.setUp();
-         LocalizerUtil.addBundle("Players", {"npc": "NPC"});
+         LocalizerUtl.setUp();
+         LocalizerUtl.addBundle("Players", {"npc": "NPC"});
          ML = ModelLocator.getInstance();
          ML.player.reset();
          ML.player.galaxyId = 1;
@@ -91,7 +92,7 @@ package tests.models
       
       [After]
       public function tearDown() : void {
-         LocalizerUtil.tearDown();
+         LocalizerUtl.tearDown();
          SingletonFactory.clearAllSingletonInstances();
          ML.reset();
          ML = null;
@@ -411,11 +412,11 @@ package tests.models
       
       [Test]
       public function autoCreation() : void {
-         loc = BaseModel.createModel(Location, {"type": LocationType.SS_OBJECT, "player": {"id": 1, "name": "mikism"}});
+         loc = Objects.create(Location, {"type": LocationType.SS_OBJECT, "player": {"id": 1, "name": "mikism"}});
          assertThat( "not NPC player: id", loc.player.id, equals (1) );
          assertThat( "not NPC player: name", loc.player.name, equals ("mikism") );
          
-         loc = BaseModel.createModel(Location, {"type": LocationType.SS_OBJECT});
+         loc = Objects.create(Location, {"type": LocationType.SS_OBJECT});
          assertThat( "NPC player", loc.player, sameInstance(PlayerMinimal.NPC_PLAYER) );
       }
    }

@@ -2,16 +2,19 @@ package controllers.galaxies.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import models.time.MTimeEventFixedMoment;
 
-   import utils.DateUtil;
-   /**
-    * Used for notifying client about started apocalypse
-    */
+
    public class ApocalypseAction extends CommunicationAction
    {
+      public function ApocalypseAction() {
+         super();
+      }
+
       public override function applyServerAction(cmd: CommunicationCommand): void {
-         ML.latestGalaxy.apocalypseStart = DateUtil.parseServerDTF(
-                 cmd.parameters.apocalypseStart);
+         var params:Object = cmd.parameters;
+         ML.latestGalaxy.apocalypseStartEvent =
+            MTimeEventFixedMoment.autoCreate(null, params["start"]);
       }
    }
 }

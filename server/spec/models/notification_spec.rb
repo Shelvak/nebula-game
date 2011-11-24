@@ -518,7 +518,7 @@ describe Notification do
     end
   end
   
-  describe ".create_for_kicked_from_alliance" do
+  describe ".create_for_alliance_joined" do
     before(:all) do
       @alliance = Factory.create(:alliance)
       @members = [
@@ -575,6 +575,98 @@ describe Notification do
         |notification| notification.event.should == 
           Notification::EVENT_ALLIANCE_JOINED
       end
+    end
+  end
+
+  describe ".create_for_market_offer_bought" do
+    before(:all) do
+      @market_offer = Factory.create(:market_offer)
+      @buyer = Factory.create(:player)
+      @amount = @market_offer.from_amount
+      @cost = 5032
+
+      @player_id = @market_offer.player.id
+      @event = Notification::EVENT_MARKET_OFFER_BOUGHT
+      @method = :create_for_market_offer_bought
+      @args = [@market_offer, @buyer, @amount, @cost]
+    end
+
+    it_behaves_like "create for"
+
+    it "should have :buyer" do
+      Notification.send(
+        @method, *@args
+      ).params[:buyer].should == @buyer.as_json(:mode => :minimal)
+    end
+
+    it "should have :planet" do
+      Notification.send(
+        @method, *@args
+      ).params[:planet].should == @market_offer.planet.client_location.as_json
+    end
+
+    it "should have :from_kind" do
+      Notification.send(
+        @method, *@args
+      ).params[:from_kind].should == @market_offer.from_kind
+    end
+
+    it "should have :amount" do
+      Notification.send(
+        @method, *@args
+      ).params[:amount].should == @amount
+    end
+
+    it "should have :to_kind" do
+      Notification.send(
+        @method, *@args
+      ).params[:to_kind].should == @market_offer.to_kind
+    end
+
+    it "should have :cost" do
+      Notification.send(
+        @method, *@args
+      ).params[:cost].should == @cost
+    end
+
+    it "should have :amount_left" do
+      Notification.send(
+        @method, *@args
+      ).params[:amount_left].should == @market_offer.from_amount
+    end
+  end
+
+  describe ".create_for_vps_to_creds_conversion" do
+    before(:all) do
+      @player_id = Factory.create(:player).id
+      @personal_creds = 123423
+      @total_alliance_creds = 234234
+      @alliance_creds_per_player = 2344
+
+      @event = Notification::EVENT_VPS_CONVERTED_TO_CREDS
+      @method = :create_for_vps_to_creds_conversion
+      @args = [@player_id, @personal_creds,
+        @total_alliance_creds, @alliance_creds_per_player]
+    end
+
+    it_behaves_like "create for"
+
+    it "should have :personal_creds" do
+      Notification.send(
+        @method, *@args
+      ).params[:personal_creds].should == @personal_creds
+    end
+
+    it "should have :total_alliance_creds" do
+      Notification.send(
+        @method, *@args
+      ).params[:total_alliance_creds].should == @total_alliance_creds
+    end
+
+    it "should have :alliance_creds_per_player" do
+      Notification.send(
+        @method, *@args
+      ).params[:alliance_creds_per_player].should == @alliance_creds_per_player
     end
   end
 end

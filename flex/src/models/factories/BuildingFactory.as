@@ -4,11 +4,10 @@ package models.factories
    
    import flash.utils.getDefinitionByName;
    
-   import models.BaseModel;
-   import models.ModelsCollection;
    import models.building.Building;
-   import models.building.BuildingBonuses;
    import models.building.Npc;
+   
+   import utils.Objects;
    
    
    /**
@@ -32,17 +31,17 @@ package models.factories
          }
          try
          {
-            return BaseModel.createModel(getDefinitionByName("models.building." + data.type) as Class, data);
+            return Objects.create(getDefinitionByName("models.building." + data.type) as Class, data);
          }
          catch (e:ReferenceError)
          {
             if (Config.getBuildingNpc(data.type))
             {
-               return BaseModel.createModel(Npc, data);
+               return Objects.create(Npc, data);
             }
             else
             {
-               return BaseModel.createModel(Building, data);
+               return Objects.create(Building, data);
             }
          }
          return null;

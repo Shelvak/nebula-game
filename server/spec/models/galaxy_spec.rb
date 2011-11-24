@@ -141,7 +141,120 @@ describe Galaxy do
       end
     end
   end
-  
+
+  describe "#check_if_finished!" do
+    let(:galaxy) { Factory.create(:galaxy) }
+
+    it "should not finish if dev" do
+      galaxy = Factory.create(:galaxy, :ruleset => "dev")
+      galaxy.should_not_receive(:finish!)
+      galaxy.check_if_finished!(Cfg.vps_for_winning)
+    end
+
+    it "should not finish if already finished" do
+      galaxy = Factory.create(:galaxy, :apocalypse_start => 15.minutes.from_now)
+      galaxy.should_not_receive(:finish!)
+      galaxy.check_if_finished!(Cfg.vps_for_winning)
+    end
+
+    it "should not finish if not enough victory points" do
+      galaxy.should_not_receive(:finish!)
+      galaxy.check_if_finished!(Cfg.vps_for_winning - 1)
+    end
+
+    it "should finish otherwise" do
+      galaxy.should_receive(:finish!)
+      galaxy.check_if_finished!(Cfg.vps_for_winning)
+    end
+  end
+
+  describe "#finish!" do
+    let(:galaxy) { Factory.create(:galaxy) }
+
+    it "should save statistical data" do
+      Galaxy.should_receive(:save_galaxy_finish_data).with(galaxy.id)
+      galaxy.finish!
+    end
+
+    it "should set #apocalypse_start" do
+      galaxy.finish!
+      galaxy.reload
+      galaxy.apocalypse_start.should be_within(SPEC_TIME_PRECISION).
+                                       of(Cfg.apocalypse_start_time)
+    end
+
+    it "should dispatch apocalypse event" do
+      should_fire_event(
+        an_instance_of(Event::ApocalypseStart), EventBroker::CREATED
+      ) do
+        galaxy.finish!
+      end
+    end
+
+    it "should call #convert_vps_to_creds!" do
+      galaxy.should_receive(:convert_vps_to_creds!)
+      galaxy.finish!
+    end
+  end
+
+  describe "#convert_vps_to_creds!" do
+    before(:each) do
+      @alliance = create_alliance
+      @alliance.owner.alliance_vps   = 8000
+      @alliance.owner.victory_points = 10000
+      @alliance.owner.creds          = 5000
+      @alliance.owner.save!
+
+      @galaxy = @alliance.galaxy
+
+      @allies = [
+        @alliance.owner,
+        Factory.create(:player,
+          :alliance => @alliance, :galaxy => @alliance.galaxy,
+          :creds => 10000, :victory_points => 12000, :alliance_vps => 10000),
+        Factory.create(:player,
+          :alliance => @alliance, :galaxy => @alliance.galaxy,
+          :creds => 4000, :victory_points => 6000, :alliance_vps => 5000)
+      ]
+      @alliance_total_creds = @allies.map { |a| a.alliance_vps / 2 }.sum
+      @alliance_per_player_creds = @alliance_total_creds / @allies.size
+
+      @non_ally = Factory.create(:player, :galaxy => @alliance.galaxy,
+        :creds => 2000, :victory_points => 6000, :alliance_vps => 5000)
+    end
+
+    it "should add creds by algorithm" do
+      @galaxy.convert_vps_to_creds!
+      @allies.each do |player|
+        old_creds = player.creds
+        player.reload
+        player.creds.should == old_creds +
+          (player.victory_points - player.alliance_vps) +
+          (player.alliance_vps / 2) + @alliance_per_player_creds
+      end
+
+      old_creds = @non_ally.creds
+      @non_ally.reload
+      @non_ally.creds.should == old_creds + @non_ally.victory_points
+    end
+
+    it "should send out notifications" do
+      @allies.each do |player|
+        personal_creds = (player.victory_points - player.alliance_vps) +
+          (player.alliance_vps / 2)
+        Notification.should_receive(:create_for_vps_to_creds_conversion).with(
+          player.id, personal_creds, @alliance_total_creds,
+          @alliance_per_player_creds
+        )
+      end
+
+      Notification.should_receive(:create_for_vps_to_creds_conversion).with(
+        @non_ally.id, @non_ally.victory_points, nil, nil
+      )
+      @galaxy.convert_vps_to_creds!
+    end
+  end
+
   describe "#by_coords" do
     it "should return solar system by x,y" do
       model = Factory.create :galaxy

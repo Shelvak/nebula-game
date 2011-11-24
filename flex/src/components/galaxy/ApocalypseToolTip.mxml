@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:ui="components.ui.*"
+         implements="mx.core.IToolTip"
+        mouseChildren="false">
+   <fx:Binding source="ML.latestGalaxy.apocalypseStartEvent"
+               destination="apocalypseEvent"/>
+   <fx:Script>
+      <![CDATA[
+      import config.Config;
+
+      import flashx.textLayout.elements.TextFlow;
+
+      import models.ModelLocator;
+      import models.time.MTimeEventFixedMoment;
+
+      import spark.utils.TextFlowUtil;
+
+      import utils.DateUtil;
+
+      import utils.locale.Localizer;
+
+
+      private static const SECONDS_IN_DAY: int = 24 * 60 * 60;
+
+      private function get ML(): ModelLocator {
+         return ModelLocator.getInstance();
+      }
+
+      [Bindable]
+      private var apocalypseEvent: MTimeEventFixedMoment;
+
+      private function getString(property: String, params: Array = null): String {
+         return Localizer.string("Galaxy", "tooltip.apocalypse." + property,
+                 params);
+      }
+
+      private function getDays(elapsedTime: Number): int {
+         return Math.round(elapsedTime / SECONDS_IN_DAY) + 1;
+      }
+
+      private function getTime(remainingTime: Number): String {
+         return DateUtil.secondsToHumanString(remainingTime, 2);
+      }
+
+      private function getReward(elapsedTime: Number): int {
+         return Config.getApocalypseSurvivalBonus(getDays(elapsedTime));
+      }
+
+      /* ################ */
+      /* ### ITooltip ### */
+      /* ################ */
+
+      public function get text(): String {
+         return "";
+      }
+
+      public function set text(value: String): void {
+      }
+
+      public function getFlow(occured: Boolean, params: Array): TextFlow {
+         return TextFlowUtil.importFromString(occured
+                 ? getString('started', params)
+                 : getString('notStarted', params));
+      }
+      ]]>
+   </fx:Script>
+   <ui:DarkRoundedBackground left="0" right="0" top="0" bottom="0"
+           alpha="0.9"/>
+   <s:RichText color="#EEC500" fontSize="12" fontWeight="bold"
+               lineBreak="toFit" textAlign="center"
+               textFlow="{apocalypseEvent.hasOccured
+               ? getFlow(true, [
+                  apocalypseEvent.occuresAtString,
+                  getDays(apocalypseEvent.occurredBefore),
+                  getReward(apocalypseEvent.occurredBefore)
+                 ])
+               : getFlow(false, [
+                  apocalypseEvent.occuresAtString,
+                  getTime(apocalypseEvent.occuresIn)
+                 ])}"
+           left="5" right="5" top="5" bottom="5"/>
+</s:Group>

@@ -52,8 +52,8 @@ describe DispatcherEventHandler do
       test_object_receive(TestObject.new, EventBroker::CREATED)
     end
 
-    it "should handle created PlanetObserversChangeEvent's" do
-      event = PlanetObserversChangeEvent.new(10, [1,2,3,4])
+    it "should handle Event::PlanetObserversChange" do
+      event = Event::PlanetObserversChange.new(10, [1,2,3,4])
       filter = DispatcherPushFilter.
         new(DispatcherPushFilter::SS_OBJECT, event.planet_id)
 
@@ -65,6 +65,29 @@ describe DispatcherEventHandler do
           filter
         )
       end
+
+      @handler.fire([event], EventBroker::CREATED, nil)
+    end
+
+    it "should handle Event::ApocalypseStart" do
+      galaxy = Factory.create(:galaxy, :apocalypse_start => 15.minutes.from_now)
+      players = [
+        Factory.create(:player, :galaxy => galaxy),
+        Factory.create(:player, :galaxy => galaxy),
+        Factory.create(:player, :galaxy => galaxy),
+        Factory.create(:player, :galaxy => galaxy)
+      ]
+
+      players.each do |player|
+        @dispatcher.should_receive(:push_to_player).with(
+          player.id,
+          GalaxiesController::ACTION_APOCALYPSE,
+          {'start' => galaxy.apocalypse_start},
+          nil
+        )
+      end
+
+      event = Event::ApocalypseStart.new(galaxy.id, galaxy.apocalypse_start)
 
       @handler.fire([event], EventBroker::CREATED, nil)
     end
@@ -162,8 +185,8 @@ describe DispatcherEventHandler do
       @handler.fire(obj, EventBroker::CHANGED, nil)
     end
     
-    it "should handle StatusChangeEvent" do
-      event = StatusChangeEvent.new({1 => [2, 3], 10 => [20, 1]})
+    it "should handle Event::StatusChange" do
+      event = Event::StatusChange.new({1 => [2, 3], 10 => [20, 1]})
       
       event.statuses.each do |player_id, changes|
         @dispatcher.should_receive(:push_to_player).with(
@@ -185,7 +208,7 @@ describe DispatcherEventHandler do
       describe "reason galaxy" do
         it "should send galaxy map" do
           player_ids = [1,2,3]
-          event = FowChangeEvent.new(nil, nil)
+          event = Event::FowChange.new(nil, nil)
           event.stub!(:player_ids).and_return(player_ids)
 
           player_ids.each do |player_id|
@@ -208,7 +231,7 @@ describe DispatcherEventHandler do
             2 => 'meta2',
             3 => 'meta3',
           }
-          event = FowChangeEvent::SolarSystem.new(0)
+          event = Event::FowChange::SolarSystem.new(0)
           event.stub!(:player_ids).and_return(player_ids)
           event.stub!(:metadatas).and_return(metadatas)
 
@@ -230,7 +253,7 @@ describe DispatcherEventHandler do
         it "should send destroyed if it was destroyed" do
           player_ids = [1,2,3]
           metadata = SolarSystemMetadata.new(:id => 10)
-          event = FowChangeEvent::SsDestroyed.new(10, nil, nil)
+          event = Event::FowChange::SsDestroyed.new(10, nil, nil)
           event.stub!(:player_ids).and_return(player_ids)
           event.stub!(:metadata).and_return(metadata)
 
@@ -317,7 +340,7 @@ describe DispatcherEventHandler do
           :next => false, :index => 1)
       ]
       
-      @event = MovementPrepareEvent.new(@route, @units.map(&:id))
+      @event = Event::MovementPrepare.new(@route, @units.map(&:id))
     end
 
     it "should handle friends" do

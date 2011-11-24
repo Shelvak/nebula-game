@@ -1,16 +1,12 @@
 package spacemule.modules.pmg.persistence.objects.ss_object
 
-import spacemule.modules.pmg.persistence.Manager
-import spacemule.modules.pmg.persistence.TableIds
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.ss_objects._
 import spacemule.helpers.Converters._
-import spacemule.modules.pmg.objects.SSObject
 import spacemule.modules.config.objects.Config
 import spacemule.persistence.DB
 import spacemule.modules.pmg.persistence.objects.{SSObjectRow, SolarSystemRow}
 import java.util.Calendar
-import spacemule.modules.pmg.persistence.objects.SSObjectRow.Resources._
 import spacemule.modules.pmg.persistence.objects.SSObjectRow.Resources
 
 case class PlanetRow(
@@ -43,6 +39,7 @@ case class PlanetRow(
     case hw: Homeworld => Now
     case _ => None
   }
+  override val nextRaidAt = Some(planet.nextRaidAt)
 
   override val resources = planet match {
     case homeworld: Homeworld => Resources(

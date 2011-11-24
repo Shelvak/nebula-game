@@ -1,11 +1,11 @@
 package models.factories
 {
    import models.map.MapArea;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
-   
-   
+
+
    /**
     * Lets easily create galaxy instances. 
     */   

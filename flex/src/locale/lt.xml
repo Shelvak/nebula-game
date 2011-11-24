@@ -532,6 +532,11 @@
       <p>Jeigu liepsi šiam pastatui susinaikinti, tada tai, 
       ką stato šis pastatas, bus taip pat sunaikinta.</p>
     </warning.buildingWorking>
+    <!-- {0}: time of planet guard (like "5d") -->
+    <warning.selfDestructGuard>
+      <p>Tu negali griauti pastatų savo planetoje už kredus, jei ji
+        buvo perimta prieš mažiau nei {0}</p>
+    </warning.selfDestructGuard>
     <toolTip.afterUpgrade value="Po patobulinimo" />
     <warning.deployCancel 
     value="Atšaukus statybas išskleidžiamas tankas bus prarastas!" /> 
@@ -1310,6 +1315,30 @@
     </label.shield>
     <label.over value="Laivai virš"/>
     <message.noRadar value="Tau reikia radaro, jog matytum galaktiką" />
+
+    <tooltip.apocalypse.common>
+      <p>Paspausk, jog sužinotum daugiau.</p>
+    </tooltip.apocalypse.common>
+    <!-- {0}: date string
+         {1}: relative time string (5d/3h/...)-->
+    <tooltip.apocalypse.notStarted>
+      <p>Apokalipsė prasidės {0} (už {1}).<br/><br/></p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.notStarted>
+    <!--
+    {0}: date string
+    {1}: current apocalypose day
+    {2}: how many creds will you get
+    -->
+    <tooltip.apocalypse.started>
+      <p>Apokalipsė prasidėjo {0}.<br/><br/></p>
+      <p>
+        Dabar yra {1} apokalipsės diena. Praradęs paskutinę savo planetą
+        tu gausi {2 one[? kredą] 1sts[? kredą] tens[? kredų] many[? kredus]}.
+        <br/><br/>
+      </p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.started>
   </Galaxy>
 
   <General>
@@ -1648,6 +1677,19 @@
     <message.kickedFromAlliance value="Buvai pašalintas iš sąjungos {0}" />
     <label.kickedFromAlliance 
     value="Tu buvai pašalintas iš sąjungos" />
+
+    <title.credsConverted
+      value="Kažkas surinko pakankamą pergalės taškų skaičių galaktikos laimėjimui." />
+    <message.credsConverted
+      value="Pergalės taškai buvo iškeisti į kredus"/>
+    <label.credsConverted>
+      <p>Tavo pergalės taškai buvo pakeisti kredais.</p>
+      <p>Gauta kredų:</p>
+    </label.credsConverted>
+    <credsConverted.personalCreds value="● Asmeniniai kredai: {0}"/>
+    <credsConverted.allianceCreds
+      value="● Kredai iš sąjungos: {0} (Iš viso sąjunga gavo: {1})"/>
+    <credsConverted.personalCredsTotal value="● Iš viso Tu gavai: {0}"/>
 
     <title.achievementCompleted value="Pasiekimas įgytas" />
     <message.achievementCompleted ref="title.achievementCompleted" />
@@ -3089,6 +3131,21 @@
       planetos žemės.</p>
     </about.20>
 
+    <title.122 value="Kolonijos įtvirtinimas" />
+    <about.122>
+      <p>Komandore!</p>
+      <p>
+        Antrojoje kolonijoje mes radome keletą apleistų mobilių pastatų,
+        kuriuos mūsų inžinieriai prikėlė antrąjam gyvenimui! Dabar jie puikiai
+        veikia ir yra paruošti išskleidimui.
+      </p>
+      <p>
+        Mūsų žvalgyba praneša, jog į šią koloniją jau nusitaikė ateivių piratai,
+        tad reikia kuo greičiau juos išskleisti ir užtikrinti šios kolonijos
+        saugumą!
+      </p>
+    </about.122>
+
     <title.21 value="Antroji stovykla" />
     <about.21>
       <p>Komandore, puikiai padirbėta!</p>
@@ -3251,7 +3308,20 @@
     <alliance value="Sąjunga" />
     <points value="Viso taškų" />
     <playersCount value="Žaidėjai" />
-    <planetsCount value="Planetos" />
+    <planetsCount value="PPK" />
+    <bgPlanetsCount value="SPK" />
+    <tooltip.planetsCount value="Paprastųjų planetų kiekis" />
+    <specialPlanets.common>
+      <p>Specialiosios planetos - tai planetos esančios pulsaruose arba arenoje</p>
+    </specialPlanets.common>
+    <tooltip.bgPlanetsCount>
+      <p>Specialiųjų planetų kiekis.</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.bgPlanetsCount>
+    <tooltip.planetsVsBattleground>
+      <p>Paprastųjų planetų kiekis / Specialiųjų planetų kiekis</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.planetsVsBattleground>
     <warPoints value="Karo taškai" />
     <economyPoints value="Ekonomikos taškai" />
     <sciencePoints value="Mokslo taškai" />
@@ -3313,6 +3383,8 @@
   </Resources>
 
   <SSObjects>
+    <label.totalVolume value="Bendra apimtis: {0}"/>
+    <label.wreckageVolume value="(apimtis: {0})"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->
     <title.info 
       value="{0 Planet[Planetos] Jumpgate[Šuolio vartų] Asteroid[Asteroido] Wreckage[Nuolaužų] Cooldown[Pertraukos]} informacija" />
@@ -3928,6 +4000,7 @@
 
   <Units>
     <title.storageScreen value="Įkrauti / Iškrauti"/>
+    <label.totalEmptyStorage value="Laisvos vietos: {0}"/>
   
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Bus už {0}" />

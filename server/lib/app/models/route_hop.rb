@@ -104,7 +104,7 @@ class RouteHop < ActiveRecord::Base
             next_hop.arrives_at)
         end
 
-        event = MovementEvent.new(route, old_location, self, next_hop)
+        event = Event::Movement.new(route, old_location, self, next_hop)
         zone_changed = Zone.different?(old_location, route.current)
 
         if zone_changed

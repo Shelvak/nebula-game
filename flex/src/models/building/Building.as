@@ -382,11 +382,16 @@ package models.building
       {
          return _type;
       }
-      
-      public function get hasGuns(): Boolean
+
+      public static function buildingHasGuns(type: String): Boolean
       {
          var guns: Array = Config.getBuildingGuns(type);
          return ((guns != null) && (guns.length > 0));
+      }
+
+      public function get hasGuns(): Boolean
+      {
+         return buildingHasGuns(type);
       }
       
       

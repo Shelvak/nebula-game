@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         visible="{ML.latestGalaxy != null
+         &amp;&amp; ML.latestGalaxy.apocalypseActive}"
+         includeInLayout="{ML.latestGalaxy != null
+         &amp;&amp; ML.latestGalaxy.apocalypseActive}"
+         toolTipCreate="this_toolTipCreateHandler(event)"
+         toolTip="This is needed for tooltip create to work"
+         click="UrlNavigate.getInstance().openApocalypseInfo()">
+   <fx:Script>
+      <![CDATA[
+      import models.ModelLocator;
+
+      import mx.events.ToolTipEvent;
+
+      import utils.UrlNavigate;
+
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+
+      private static function get ML(): ModelLocator {
+         return ModelLocator.getInstance();
+      }
+
+      private function getImage(name:String): BitmapData {
+         return ImagePreloader.getInstance().getImage(
+            AssetNames.UI_IMAGES_FOLDER + name
+         );
+      }
+
+      private function this_toolTipCreateHandler(event: ToolTipEvent): void {
+         event.toolTip = new ApocalypseToolTip();
+      }
+      ]]>
+   </fx:Script>
+   <s:BitmapImage source="{getImage('apocalypse')}"/>
+</s:Group>

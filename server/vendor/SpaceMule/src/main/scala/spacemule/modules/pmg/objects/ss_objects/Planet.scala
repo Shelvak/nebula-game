@@ -94,6 +94,8 @@ class Planet(planetArea: Int, terrains: Seq[Int]) extends SSObject
   def energyStorage = buildingsPropSum(Config.buildingEnergyStorage)
   def zetiumStorage = buildingsPropSum(Config.buildingZetiumStorage)
 
+  lazy val nextRaidAt = Config.raidingDelayRandomDate
+
   /**
    * Fills planet with objects: tiles, folliages and buildings 
    */

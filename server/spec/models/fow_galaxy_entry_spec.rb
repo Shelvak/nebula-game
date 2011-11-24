@@ -98,7 +98,7 @@ describe FowGalaxyEntry do
 
     it "should fire event if destroyed" do
       @klass.increase(@first_arg, @player, 2)
-      should_fire_event(kind_of(FowChangeEvent),
+      should_fire_event(kind_of(Event::FowChange),
           EventBroker::FOW_CHANGE, @event_reason) do
         @klass.decrease(@first_arg, @player, 2)
       end
@@ -146,7 +146,7 @@ describe FowGalaxyEntry do
       end
 
       it "should fire event" do
-        should_fire_event(FowChangeEvent.new(@player2, @player1.alliance),
+        should_fire_event(Event::FowChange.new(@player2, @player1.alliance),
             EventBroker::FOW_CHANGE,
             EventBroker::REASON_GALAXY_ENTRY) do
           FowGalaxyEntry.assimilate_player(@player1.alliance,
@@ -190,7 +190,7 @@ describe FowGalaxyEntry do
 
       it "should fire event" do
         should_fire_event(
-          FowChangeEvent.new(@player2, @player1.alliance),
+          Event::FowChange.new(@player2, @player1.alliance),
           EventBroker::FOW_CHANGE,
           EventBroker::REASON_GALAXY_ENTRY
         ) do
