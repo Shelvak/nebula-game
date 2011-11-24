@@ -1,10 +1,12 @@
 package controllers.chat.actions
 {
    import controllers.CommunicationCommand;
-   
+   import controllers.Messenger;
+
    import models.chat.MChatMessage;
    
    import utils.DateUtil;
+   import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
    
    
@@ -62,21 +64,21 @@ package controllers.chat.actions
              "msg":  msg.message},
             null,
             msg
-         ));
+         ), false);
       }
       
       
       public override function result(rmo:ClientRMO) : void
       {
-         super.result(rmo);
          MCHAT.messageSendSuccess(MChatMessage(rmo.additionalParams));
       }
       
       
       public override function cancel(rmo:ClientRMO) : void
       {
-         super.cancel(rmo);
          MCHAT.messageSendFailure(MChatMessage(rmo.additionalParams));
+         Messenger.show(Localizer.string("General", "message.actionCanceled"),
+                 Messenger.MEDIUM);
       }
    }
 }

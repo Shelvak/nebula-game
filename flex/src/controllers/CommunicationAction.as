@@ -105,9 +105,12 @@ package controllers
        * object: message will be dispached for you by this method. Also action and responder properties will
        * be set <strong>if they have not been set prior</strong> calling this method.
        */
-      protected function sendMessage(rmo:ClientRMO) :void
+      protected function sendMessage(rmo:ClientRMO, lockApplication: Boolean = true) :void
       {
-         appLocker.increaseLockCounter();
+         if (lockApplication)
+         {
+            appLocker.increaseLockCounter();
+         }
          if (rmo.action == null)
          {
             rmo.action = currentCommand.type;
