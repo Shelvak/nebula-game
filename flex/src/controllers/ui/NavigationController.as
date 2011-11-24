@@ -1,7 +1,7 @@
 package controllers.ui
 {
    import com.developmentarc.core.utils.EventBroker;
-   
+
    import components.base.viewport.ViewportZoomable;
    import components.defensiveportal.DefensivePortalScreen;
    import components.factories.MapFactory;
@@ -11,8 +11,7 @@ package controllers.ui
    import components.map.space.CMapSolarSystem;
    import components.player.PlayerScreen;
    import components.screens.MainAreaContainer;
-   
-   import controllers.GlobalFlags;
+
    import controllers.market.MarketCommand;
    import controllers.navigation.MCMainArea;
    import controllers.navigation.MCSidebar;
@@ -23,17 +22,17 @@ package controllers.ui
    import controllers.screens.SidebarScreens;
    import controllers.solarsystems.SolarSystemsCommand;
    import controllers.solarsystems.actions.ShowActionParams;
-   
+
    import flash.errors.IllegalOperationError;
    import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.events.MouseEvent;
    import flash.external.ExternalInterface;
-   
+
    import globalevents.GRatingsEvent;
    import globalevents.GUnitsScreenEvent;
    import globalevents.GlobalEvent;
-   
+
    import models.ModelLocator;
    import models.Owner;
    import models.building.Building;
@@ -57,19 +56,18 @@ package controllers.ui
    import models.unit.MCUnitsBuild;
    import models.unit.Unit;
    import models.unit.UnitKind;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
    import mx.events.FlexEvent;
-   
+
    import spark.components.Button;
    import spark.components.Group;
-   
+
    import utils.Objects;
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
-   
-   
+
    /**
     * <p>
     * Takes care of the pain related to navigation between different main area screens (maps, info
@@ -587,8 +585,7 @@ package controllers.ui
          var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
          mScreen.market = market;
          mScreen.planetId = ML.latestPlanet.id;
-         GlobalFlags.getInstance().lockApplication = true;
-         showNonMapScreen(_screenProperties[MainAreaScreens.MARKET], false);
+         showNonMapScreen(_screenProperties[MainAreaScreens.MARKET]);
          new MarketCommand(MarketCommand.INDEX, {
             'planetId': mScreen.planetId}).dispatch();
       }
@@ -612,7 +609,6 @@ package controllers.ui
       
       public function showPlayer(playerId: int) :void
       {
-         GlobalFlags.getInstance().lockApplication = true;
          new PlayersCommand(PlayersCommand.SHOW_PROFILE, {'id': playerId}).dispatch();
       }
       
@@ -621,7 +617,6 @@ package controllers.ui
       {
          function setData(): void
          {
-            GlobalFlags.getInstance().lockApplication = false;
             PlayerScreen(getScreen(MainAreaScreens.PLAYER)).player = player;
             PlayerScreen(getScreen(MainAreaScreens.PLAYER)).achievements = achievements;
          }
@@ -633,12 +628,11 @@ package controllers.ui
          {
             createdHandler = setData;
          }
-         showNonMapScreen(_screenProperties[MainAreaScreens.PLAYER], false);
+         showNonMapScreen(_screenProperties[MainAreaScreens.PLAYER]);
       }
       
       public function showDefensivePortal(planetId: int) :void
       {
-         GlobalFlags.getInstance().lockApplication = true;
          new PlanetsCommand(PlanetsCommand.PORTAL_UNITS, {'id': planetId}).dispatch();
       }
       
@@ -646,7 +640,6 @@ package controllers.ui
       {
          function setData(): void
          {
-            GlobalFlags.getInstance().lockApplication = false;
             DefensivePortalScreen(getScreen(
                MainAreaScreens.DEFENSIVE_PORTAL)).allUnits = units;
             DefensivePortalScreen(getScreen(
@@ -945,7 +938,7 @@ package controllers.ui
        * 
        * @throws IllegalOperationError if given name is of a map screen 
        */
-      private function showNonMapScreen(screenProps:ScreenProperties, unlockAfter: Boolean = true) : void
+      private function showNonMapScreen(screenProps:ScreenProperties) : void
       {
          if (screenProps.holdsMap)
          {
@@ -959,7 +952,7 @@ package controllers.ui
             return;
          
          beforeScreenChange();
-         MA.showScreen(screenProps.screenName, unlockAfter);
+         MA.showScreen(screenProps.screenName);
          resetActiveButton(screenProps.button);
          resetSidebarToCurrentScreenDefault();
          updateContainerState();
@@ -1124,7 +1117,6 @@ import flash.events.Event;
 import models.map.MMap;
 
 import spark.components.Button;
-
 
 internal class ScreenProperties
 {

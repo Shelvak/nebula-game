@@ -7,6 +7,8 @@ package controllers.units
       public static const NEW: String = "units|new";
       
       public static const UPDATE: String = "units|update";
+
+      public static const SET_HIDDEN: String = "units|setHidden";
       
       public static const ATTACK: String = "units|attack";
       

@@ -32,6 +32,7 @@ package controllers.notifications.actions
       
       public override function result(rmo:ClientRMO) : void
       {
+         super.result(rmo);
          Notification(rmo.model).starred = rmo.parameters.mark;
       }
    }

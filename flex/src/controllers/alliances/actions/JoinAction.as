@@ -2,13 +2,11 @@ package controllers.alliances.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    import controllers.Messenger;
-   
+
    import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
-   
-   
+
    /**
     * Joins an alliance. Can fail if alliance has too much members already.
     * 
@@ -27,12 +25,7 @@ package controllers.alliances.actions
     */
    public class JoinAction extends CommunicationAction
    {
-      private function get GF() : GlobalFlags
-      {
-         return GlobalFlags.getInstance();
-      }
-      
-      
+
       public function JoinAction()
       {
          super();
@@ -41,8 +34,8 @@ package controllers.alliances.actions
       
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
-         GF.lockApplication = true;
-         sendMessage(new ClientRMO({"notificationId": JoinActionParams(cmd.parameters).notificationId}));
+         sendMessage(new ClientRMO({"notificationId": JoinActionParams(
+                 cmd.parameters).notificationId}));
       }
       
       
@@ -52,19 +45,6 @@ package controllers.alliances.actions
             Messenger.show(Localizer.string('Alliances', 'message.joinSuccess'), Messenger.MEDIUM);
          else
             Messenger.show(Localizer.string('Alliances', 'message.joinFail'), Messenger.MEDIUM);
-      }
-      
-      
-      public override function result(rmo:ClientRMO):void
-      {
-         GF.lockApplication = false;
-      }
-      
-      
-      public override function cancel(rmo:ClientRMO):void
-      {
-         GF.lockApplication = false;
-         super.cancel(rmo);
       }
    }
 }

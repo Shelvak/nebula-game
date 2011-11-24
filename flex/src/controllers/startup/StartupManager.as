@@ -7,7 +7,7 @@ package controllers.startup
    
    import components.alliance.AllianceScreenM;
    
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.alliances.AlliancesCommand;
    import controllers.alliances.actions.*;
    import controllers.announcements.AnnouncementsCommand;
@@ -182,7 +182,7 @@ package controllers.startup
          MChat.getInstance().reset();
          MAnnouncement.getInstance().reset();
          AllianceScreenM.getInstance().reset();
-         GlobalFlags.getInstance().lockApplication = false;
+         ApplicationLocker.reset();
       }
       
       
@@ -311,6 +311,7 @@ package controllers.startup
          bindPair(UnitsCommand.SHOW, new controllers.units.actions.ShowAction());
          bindPair(UnitsCommand.NEW, new controllers.units.actions.NewAction());
          bindPair(UnitsCommand.UPDATE, new controllers.units.actions.UpdateAction());
+         bindPair(UnitsCommand.SET_HIDDEN, new controllers.units.actions.SetHiddenAction());
          bindPair(UnitsCommand.DEPLOY, new controllers.units.actions.DeployAction());
          bindPair(UnitsCommand.ATTACK, new controllers.units.actions.AttackAction());
          bindPair(UnitsCommand.DISMISS, new controllers.units.actions.DismissAction());
@@ -342,6 +343,7 @@ package controllers.startup
          bindPair(BuildingsCommand.CANCEL_UPGRADE, new controllers.buildings.actions.CancelUpgradeAction());
          bindPair(BuildingsCommand.MOVE, new controllers.buildings.actions.MoveAction());
          bindPair(BuildingsCommand.SET_BUILD_IN_2ND_FLANK, new controllers.buildings.actions.SetBuildIn2ndFlankAction());
+         bindPair(BuildingsCommand.SET_BUILD_HIDDEN, new controllers.buildings.actions.SetBuildHiddenAction());
       }
       private static function bindTechnologiesCommands() : void
       {

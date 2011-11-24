@@ -9,117 +9,108 @@
    
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.skins.GreenButtonSkin;
-         import components.skins.RedButtonSkin;
-         import components.unitsscreen.events.UnitsScreenEvent;
-         
-         import controllers.GlobalFlags;
-         import controllers.ui.NavigationController;
-         
-         import globalevents.GResourcesEvent;
-         import globalevents.GlobalEvent;
-         
-         import models.building.Building;
-         import models.healing.HealPrice;
-         import models.healing.MCHealingScreen;
-         import models.resource.Resource;
-         import models.resource.ResourceType;
-         import models.solarsystem.MSSObject;
-         
-         import mx.events.FlexEvent;
+      import com.developmentarc.core.utils.EventBroker;
 
-         import utils.DateUtil;
-         import utils.assets.AssetNames;
-         import utils.locale.Localizer;
-         
-         protected function button1_clickHandler(event:MouseEvent):void
-         {
-            NavigationController.getInstance().showPreviousScreen();
+      import components.skins.GreenButtonSkin;
+      import components.skins.RedButtonSkin;
+      import components.unitsscreen.events.UnitsScreenEvent;
+
+      import utils.ApplicationLocker;
+
+      import controllers.ui.NavigationController;
+
+      import globalevents.GResourcesEvent;
+      import globalevents.GlobalEvent;
+
+      import models.building.Building;
+      import models.healing.HealPrice;
+      import models.healing.MCHealingScreen;
+      import models.resource.Resource;
+      import models.resource.ResourceType;
+      import models.solarsystem.MSSObject;
+
+      import mx.events.FlexEvent;
+
+      import utils.DateUtil;
+      import utils.assets.AssetNames;
+      import utils.locale.Localizer;
+
+      protected function button1_clickHandler(event: MouseEvent): void {
+         NavigationController.getInstance().showPreviousScreen();
+      }
+
+      [Bindable]
+      private var HS: MCHealingScreen = MCHealingScreen.getInstance();
+
+      private function heal_clickHandler(e: Event): void {
+         HS.confirmHeal();
+      }
+
+      [Bindable]
+      private var currentTime: Number;
+
+      private function calcCurrentTime(e: GlobalEvent = null): void {
+         currentTime = new Date().time;
+      }
+
+      protected function basecontainer1_addedToStageHandler(event: Event): void {
+         calcCurrentTime();
+         EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, calcCurrentTime);
+         EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshResources);
+         HS.addEventListener(UnitsScreenEvent.HEALING_PRICE_CHANGE, refreshResources);
+         refreshResources();
+      }
+
+
+      protected function basecontainer1_removedFromStageHandler(event: Event): void {
+         EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, calcCurrentTime);
+         EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshResources);
+         HS.removeEventListener(UnitsScreenEvent.HEALING_PRICE_CHANGE, refreshResources);
+      }
+
+      private function refreshResources(e: Event = null): void {
+         if (ML.latestPlanet == null || HS.price == null) {
+            hasEnoughResources = true;
+            enoughStorage = true;
+            resLeft = 0;
+            return;
          }
-         
-         [Bindable]
-         private var HS: MCHealingScreen = MCHealingScreen.getInstance();
-         
-         private function heal_clickHandler(e: Event): void
-         {
-            HS.confirmHeal();
-         }
-         
-         [Bindable]
-         private var currentTime: Number;
-         
-         private function calcCurrentTime(e: GlobalEvent = null): void
-         {
-            currentTime = new Date().time;
-         }
-         
-         protected function basecontainer1_addedToStageHandler(event:Event):void
-         {
-            calcCurrentTime();
-            EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, calcCurrentTime);
-            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshResources);
-            HS.addEventListener(UnitsScreenEvent.HEALING_PRICE_CHANGE, refreshResources);
-            refreshResources();
-         }
-         
-         
-         protected function basecontainer1_removedFromStageHandler(event:Event):void
-         {
-            EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, calcCurrentTime);
-            EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshResources);
-            HS.removeEventListener(UnitsScreenEvent.HEALING_PRICE_CHANGE, refreshResources);
-         }
-         
-         private function refreshResources(e: Event = null): void
-         {
-            if (ML.latestPlanet == null || HS.price == null)
-            {
-               hasEnoughResources = true;
-               enoughStorage = true;
-               resLeft = 0;
-               return;
-            }
-            var ssObj: MSSObject = ML.latestPlanet.ssObject;
-            hasEnoughResources = !(
-               HS.price.metal > ssObj.metal.currentStock
-               || HS.price.energy > ssObj.energy.currentStock
-               || HS.price.zetium > ssObj.zetium.currentStock);
-            
-            missingStorageString = Resource.getMissingStoragesString(ssObj,
-               HS.price.metal, HS.price.energy, HS.price.zetium);
-            enoughStorage = (missingStorageString == ''?true:false);
-            resLeft = Resource.getTimeToReachResources
-               (ssObj.metal, ssObj.energy, ssObj.zetium, 
-                  HS.price.metal, HS.price.energy, HS.price.zetium);
-         }
-         
-         /**
-          * how many seconds are left to fulfill resources needs for building
-          **/
-         [Bindable]
-         private var resLeft: int = 0;
-         
-         [Bindable]
-         private var enoughStorage: Boolean = true;
-         
-         [Bindable]
-         private var missingStorageString: String = '';
-         
-         [Bindable]
-         private var hasEnoughResources: Boolean = true;
-         
-         private function getStringFromSeconds(seconds: int): String
-         {
-            return DateUtil.secondsToHumanString(seconds);
-         }
-         
-         private function getTime(from: Date): Number
-         {
-            return from.time;
-         }
-         
+         var ssObj: MSSObject = ML.latestPlanet.ssObject;
+         hasEnoughResources = !(
+                 HS.price.metal > ssObj.metal.currentStock
+                         || HS.price.energy > ssObj.energy.currentStock
+                         || HS.price.zetium > ssObj.zetium.currentStock);
+
+         missingStorageString = Resource.getMissingStoragesString(ssObj,
+                 HS.price.metal, HS.price.energy, HS.price.zetium);
+         enoughStorage = (missingStorageString == '' ? true : false);
+         resLeft = Resource.getTimeToReachResources
+                 (ssObj.metal, ssObj.energy, ssObj.zetium,
+                         HS.price.metal, HS.price.energy, HS.price.zetium);
+      }
+
+      /**
+       * how many seconds are left to fulfill resources needs for building
+       **/
+      [Bindable]
+      private var resLeft: int = 0;
+
+      [Bindable]
+      private var enoughStorage: Boolean = true;
+
+      [Bindable]
+      private var missingStorageString: String = '';
+
+      [Bindable]
+      private var hasEnoughResources: Boolean = true;
+
+      private function getStringFromSeconds(seconds: int): String {
+         return DateUtil.secondsToHumanString(seconds);
+      }
+
+      private function getTime(from: Date): Number {
+         return from.time;
+      }
       ]]>
    </fx:Script>
    <base:Scroller top="0" left="0" right="0" bottom="0" stepMultiplier="3">

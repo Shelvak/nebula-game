@@ -13,133 +13,120 @@
    </fx:Metadata>
    <fx:Script>
       <![CDATA[
-         import components.market.events.MarketEvent;
-         import components.popups.ActionConfirmationPopup;
-         import components.skins.GreenButtonSkin;
-         import components.skins.LargePanelSkin;
-         import components.skins.LinkButtonSkin;
-         
-         import controllers.GlobalFlags;
-         import controllers.market.MarketCommand;
-         import controllers.ui.NavigationController;
-         
-         import models.ModelLocator;
-         import models.market.MCMarketScreen;
-         import models.market.MarketOffer;
-         import models.market.OfferResourceKind;
-         import models.resource.Resource;
-         import models.resource.ResourceType;
-         import models.solarsystem.MSSObject;
-         
-         import utils.UrlNavigate;
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         import utils.locale.Localizer;
-         
-         [Bindable]
-         private var IMG: ImagePreloader = ImagePreloader.getInstance();
-         
-         [Bindable]
-         private var ML: ModelLocator = ModelLocator.getInstance();
-         
-         [Bindable]
-         private var _selectedOffer: MarketOffer;
-         
-         public function set selectedOffer(value: MarketOffer): void
-         {
-            _selectedOffer = value;
-            selector.value = 0;
-            cost = 0;
+      import components.market.events.MarketEvent;
+      import components.popups.ActionConfirmationPopup;
+      import components.skins.GreenButtonSkin;
+      import components.skins.LargePanelSkin;
+      import components.skins.LinkButtonSkin;
+
+      import utils.ApplicationLocker;
+
+      import controllers.market.MarketCommand;
+      import controllers.ui.NavigationController;
+
+      import models.ModelLocator;
+      import models.market.MCMarketScreen;
+      import models.market.MarketOffer;
+      import models.market.OfferResourceKind;
+      import models.resource.Resource;
+      import models.resource.ResourceType;
+      import models.solarsystem.MSSObject;
+
+      import utils.UrlNavigate;
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
+
+      [Bindable]
+      private var IMG: ImagePreloader = ImagePreloader.getInstance();
+
+      [Bindable]
+      private var ML: ModelLocator = ModelLocator.getInstance();
+
+      [Bindable]
+      private var _selectedOffer: MarketOffer;
+
+      public function set selectedOffer(value: MarketOffer): void {
+         _selectedOffer = value;
+         selector.value = 0;
+         cost = 0;
+         missingString = null;
+      }
+
+      public function get selectedOffer(): MarketOffer {
+         return _selectedOffer;
+      }
+
+      private function getText(prop: String, params: Array = null): String {
+         return Localizer.string('Market', prop, params);
+      }
+
+      [Bindable]
+      private var cost: int = 0;
+
+      protected function selector_changeHandler(event: Event): void {
+         var selVal: int = selector.value;
+         cost = Math.ceil(selVal * _selectedOffer.toRate);
+         var cPlanet: MSSObject = ML.latestPlanet.ssObject;
+         var storString: String = Resource.getNotFittingResourcesString(
+                 cPlanet,
+                 _selectedOffer.fromResource == ResourceType.METAL ? selVal : 0,
+                 _selectedOffer.fromResource == ResourceType.ENERGY ? selVal : 0,
+                 _selectedOffer.fromResource == ResourceType.ZETIUM ? selVal : 0);
+         if (storString == null) {
             missingString = null;
          }
-         public function get selectedOffer(): MarketOffer
-         {
-            return _selectedOffer;
+         else {
+            missingString = getText('tooltip.notEnoughStorage', [storString]);
          }
-         
-         private function getText(prop: String, params: Array = null): String
-         {
-            return Localizer.string('Market', prop, params);
-         }
-         
-         [Bindable]
-         private var cost: int = 0;
-         
-         protected function selector_changeHandler(event:Event):void
-         {
-            var selVal: int = selector.value;
-            cost = Math.ceil(selVal * _selectedOffer.toRate);
-            var cPlanet: MSSObject = ML.latestPlanet.ssObject;
-            var storString: String = Resource.getNotFittingResourcesString(
-               cPlanet, 
-               _selectedOffer.fromResource == ResourceType.METAL?selVal:0,
-               _selectedOffer.fromResource == ResourceType.ENERGY?selVal:0,
-               _selectedOffer.fromResource == ResourceType.ZETIUM?selVal:0);
-            if (storString == null)
-            {
-               missingString = null;
+      }
+
+      [Bindable]
+      private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
+
+      private function confirm(e: MouseEvent): void {
+         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+         popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+         var lbl: Label = new Label();
+         lbl.minWidth = 300;
+         lbl.text = Localizer.string('Popups', 'message.' +
+                 (_selectedOffer.fromId == ML.player.id ? 'cancelOffer' : 'buyOffer'));
+         popUp.addElement(lbl);
+         popUp.title = Localizer.string('Popups', 'title.' +
+                 (_selectedOffer.fromId == ML.player.id ? 'cancelOffer' : 'buyOffer'));
+         popUp.confirmButtonClickHandler = function (button: Button = null): void {
+            if (_selectedOffer.fromId == ML.player.id) {
+               new MarketCommand(MarketCommand.CANCEL, _selectedOffer.id).dispatch();
+               cancel();
             }
-            else
-            {
-               missingString = getText('tooltip.notEnoughStorage', [storString]);
+            else {
+               new MarketCommand(MarketCommand.BUY, {
+                  'offer': selectedOffer,
+                  'planetId': mScreen.planetId,
+                  'amount': Math.round(selector.value)
+               }).dispatch();
+               selector.value = 0;
+               cancel();
             }
-         }
-         
-         [Bindable]
-         private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
-         
-         private function confirm(e: MouseEvent): void
-         {
-            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
-            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
-            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-            var lbl: Label = new Label();
-            lbl.minWidth = 300;
-            lbl.text = Localizer.string('Popups', 'message.'+
-               (_selectedOffer.fromId == ML.player.id?'cancelOffer':'buyOffer'));
-            popUp.addElement(lbl);
-            popUp.title = Localizer.string('Popups', 'title.'+
-               (_selectedOffer.fromId == ML.player.id?'cancelOffer':'buyOffer'));
-            popUp.confirmButtonClickHandler = function (button: Button = null): void
-            {
-               GlobalFlags.getInstance().lockApplication = true;
-               if (_selectedOffer.fromId == ML.player.id)
-               {
-                  new MarketCommand(MarketCommand.CANCEL, _selectedOffer.id).dispatch();
-                  cancel();
-               }
-               else
-               {
-                  new MarketCommand(MarketCommand.BUY, {
-                     'offer': selectedOffer,
-                     'planetId': mScreen.planetId,
-                     'amount': Math.round(selector.value)
-                  }).dispatch();
-                  selector.value = 0;
-                  cancel();
-               }
-            };
-            popUp.show();
-         }
-         
-         private function cancel(e: MouseEvent = null): void
-         {
-            dispatchEvent(new MarketEvent(MarketEvent.DESELECT_OFFER));
-         }
-         
-         private function getImage(name:String) : BitmapData
-         {
-            return IMG.getImage(AssetNames.MARKET_SCREEN_IMAGE_FOLDER + name);
-         }
-         
-         [Bindable]
-         private var missingString: String = null;
-         
-         private function planetResource(res: String): Resource
-         {
-            return Resource(ML.latestPlanet.ssObject[res]);
-         }
-         
+         };
+         popUp.show();
+      }
+
+      private function cancel(e: MouseEvent = null): void {
+         dispatchEvent(new MarketEvent(MarketEvent.DESELECT_OFFER));
+      }
+
+      private function getImage(name: String): BitmapData {
+         return IMG.getImage(AssetNames.MARKET_SCREEN_IMAGE_FOLDER + name);
+      }
+
+      [Bindable]
+      private var missingString: String = null;
+
+      private function planetResource(res: String): Resource {
+         return Resource(ML.latestPlanet.ssObject[res]);
+      }
       ]]>
    </fx:Script>
    <!-- background -->

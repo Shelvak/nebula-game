@@ -5,57 +5,51 @@
                         xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
-         import components.popups.ActionConfirmationPopup;
-         
-         import config.Config;
-         
-         import controllers.GlobalFlags;
-         import controllers.planets.PlanetsCommand;
-         
-         import flashx.textLayout.elements.TextFlow;
-         
-         import models.resource.Resource;
-         
-         import spark.utils.TextFlowUtil;
-         
-         import utils.DateUtil;
-         import utils.UrlNavigate;
-         import utils.locale.Localizer;
-         [Bindable]
-         public var resource: Resource;
-         
-         protected function boost_clickHandler(attribute: String):void
-         {
-            if (ML.player.creds < Config.getPlanetBoostCost())
-            {
-               UrlNavigate.getInstance().showBuyCreds();
-            }
-            else
-            {
-               var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
-               popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
-               popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-               var lbl: Label = new Label();
-               lbl.minWidth = 300;
-               lbl.text = Localizer.string('Popups', 'message.areYouSure');
-               popUp.addElement(lbl);
-               popUp.title = Localizer.string('Popups', 'title.boostPlanet');
-               popUp.confirmButtonClickHandler = function (button: Button = null): void
-               {
-                  GlobalFlags.getInstance().lockApplication = true;
-                  new PlanetsCommand(PlanetsCommand.BOOST, {'planet': ML.latestPlanet,
-                     'resource': resource.type,
-                     'attribute': attribute
-                  }).dispatch();
-               };
-               popUp.show();
-            }
+      import components.popups.ActionConfirmationPopup;
+
+      import config.Config;
+
+      import controllers.planets.PlanetsCommand;
+
+      import flashx.textLayout.elements.TextFlow;
+
+      import models.resource.Resource;
+
+      import spark.utils.TextFlowUtil;
+
+      import utils.DateUtil;
+      import utils.UrlNavigate;
+      import utils.locale.Localizer;
+
+      [Bindable]
+      public var resource: Resource;
+
+      protected function boost_clickHandler(attribute: String): void {
+         if (ML.player.creds < Config.getPlanetBoostCost()) {
+            UrlNavigate.getInstance().showBuyCreds();
          }
-         
-         private function getTextFlow(from: String): TextFlow
-         {
-            return TextFlowUtil.importFromString(from);
+         else {
+            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+            var lbl: Label = new Label();
+            lbl.minWidth = 300;
+            lbl.text = Localizer.string('Popups', 'message.areYouSure');
+            popUp.addElement(lbl);
+            popUp.title = Localizer.string('Popups', 'title.boostPlanet');
+            popUp.confirmButtonClickHandler = function (button: Button = null): void {
+               new PlanetsCommand(PlanetsCommand.BOOST, {'planet': ML.latestPlanet,
+                  'resource': resource.type,
+                  'attribute': attribute
+               }).dispatch();
+            };
+            popUp.show();
          }
+      }
+
+      private function getTextFlow(from: String): TextFlow {
+         return TextFlowUtil.importFromString(from);
+      }
       ]]>
    </fx:Script>
    <!-- RATES BOOST -->

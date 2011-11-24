@@ -3,7 +3,7 @@ package models.unit
    import components.popups.ActionConfirmationPopup;
    import components.unitsscreen.events.UnitsScreenEvent;
    
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.ui.NavigationController;
    import controllers.units.OrdersController;
    import controllers.units.UnitsCommand;
@@ -381,9 +381,32 @@ package models.unit
       
       public function updateChanges(): void
       {
-         new UnitsCommand(UnitsCommand.UPDATE,                
-            {updates: getChanged()}
-         ).dispatch ();
+         if (hasFormationChanges)
+         {
+            new UnitsCommand(UnitsCommand.UPDATE,
+               {updates: getChanged()}
+            ).dispatch ();
+         }
+         if (hasHiddenChanges)
+         {
+            new UnitsCommand(UnitsCommand.SET_HIDDEN,
+               {
+                  'planetId': location.id,
+                  'unitIds': getHiddenChanged(),
+                  'value': true
+               }
+            ).dispatch ();
+         }
+         if (hasNotHiddenChanges)
+         {
+            new UnitsCommand(UnitsCommand.SET_HIDDEN,
+               {
+                  'planetId': location.id,
+                  'unitIds': getNotHiddenChanged(),
+                  'value': false
+               }
+            ).dispatch ();
+         }
       }
       
       private function getChanged(): Object
@@ -399,6 +422,69 @@ package models.unit
          }
          return changedUnits;
       }
+
+      private function getHiddenChanged(): Object
+      {
+         var changedUnits: Object = {};
+         for each(var unit: MCUnit in transformedUnits)
+         {
+            if (unit.hidden == true && unit.hidden != unit.unit.hidden)
+            {
+               changedUnits[unit.unit.id] = [true];
+            }
+         }
+         return changedUnits;
+      }
+
+      private function getNotHiddenChanged(): Object
+      {
+         var changedUnits: Object = {};
+         for each(var unit: MCUnit in transformedUnits)
+         {
+            if (unit.hidden == false && unit.hidden != unit.unit.hidden)
+            {
+               changedUnits[unit.unit.id] = [false];
+            }
+         }
+         return changedUnits;
+      }
+
+      public function get hasHiddenChanges(): Boolean
+      {
+         for each(var unit: MCUnit in transformedUnits)
+         {
+            if (unit.hidden == true && unit.hidden != unit.unit.hidden)
+            {
+               return true;
+            }
+         }
+         return false;
+      }
+
+      public function get hasNotHiddenChanges(): Boolean
+      {
+         for each(var unit: MCUnit in transformedUnits)
+         {
+            if (unit.hidden == false && unit.hidden != unit.unit.hidden)
+            {
+               return true;
+            }
+         }
+         return false;
+      }
+
+      public function get hasFormationChanges(): Boolean
+      {
+         for each(var unit: MCUnit in transformedUnits)
+         {
+            if (unit.stance != unit.unit.stance
+               || unit.flankModel.nr != unit.unit.flank)
+            {
+               return true;
+            }
+         }
+         return false;
+      }
       
       [Bindable (event="formationChange")]
       public function get hasChanges(): Boolean
@@ -406,7 +492,8 @@ package models.unit
          for each(var unit: MCUnit in transformedUnits)
          {
             if (unit.stance != unit.unit.stance
-               || unit.flankModel.nr != unit.unit.flank)
+               || unit.flankModel.nr != unit.unit.flank
+                    || unit.hidden != unit.unit.hidden)
             {
                return true;
             } 
@@ -482,6 +569,10 @@ package models.unit
                {
                   unit.stance = unit.unit.stance;
                }
+               if (unit.unit.hidden != unit.hidden)
+               {
+                  unit.hidden = unit.unit.hidden;
+               }
             }
             transformedUnits.enableAutoUpdate();
             dispatchFormationChangeEvent();
@@ -507,7 +598,22 @@ package models.unit
          ML.units.enableAutoUpdate();
          transformedUnits.enableAutoUpdate();
          dispatchFormationChangeEvent();
-         GlobalFlags.getInstance().lockApplication = false;
+      }
+
+      public function confirmHiddenChanges(): void
+      {
+         transformedUnits.disableAutoUpdate();
+         ML.units.disableAutoUpdate();
+         for each(var unit: MCUnit in transformedUnits)
+         {
+            if (unit.unit.hidden != unit.hidden)
+            {
+               unit.unit.hidden = unit.hidden;
+            }
+         }
+         ML.units.enableAutoUpdate();
+         transformedUnits.enableAutoUpdate();
+         dispatchFormationChangeEvent();
       }
       
       
@@ -665,7 +771,6 @@ package models.unit
          popUp.title = getPopupText('title.dismissUnits');
          popUp.confirmButtonClickHandler = function (button: Button = null): void
          {
-            GlobalFlags.getInstance().lockApplication = true;
             new UnitsCommand(
                UnitsCommand.DISMISS,
                {planetId: ML.latestPlanet.id,
@@ -721,6 +826,15 @@ package models.unit
          for each (var flank: UnitsFlank in flanks)
          {
             flank.setStance(stance);
+         }
+         deselectUnits();
+      }
+
+      public function setHidden(hidden: Boolean): void
+      {
+         for each (var flank: UnitsFlank in flanks)
+         {
+            flank.setHidden(hidden);
          }
          deselectUnits();
       }

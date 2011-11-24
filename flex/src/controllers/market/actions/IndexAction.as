@@ -2,13 +2,10 @@ package controllers.market.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
-   
+
    import models.ModelsCollection;
    import models.factories.MarketOfferFactory;
    import models.market.MCMarketScreen;
-   
-   import utils.remote.rmo.ClientRMO;
 
    /**
     * Send list of all market offers in the galaxy.
@@ -38,17 +35,6 @@ package controllers.market.actions
             cmd.parameters.planetOffers));
          mScreen.offerCount = cmd.parameters.offerCount;
          mScreen.resetScreen();
-      }
-      
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      public override function result(rmo:ClientRMO):void
-      {
-         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

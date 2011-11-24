@@ -1,21 +1,18 @@
 package controllers.alliances.actions
 {
    import components.alliance.AllianceScreenM;
-   
+
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
-   import controllers.ui.NavigationController;
-   
+
    import models.alliance.MAlliance;
    import models.player.MRatingPlayer;
-   
-   import mx.collections.ArrayCollection;
+
    import mx.collections.Sort;
    import mx.collections.SortField;
-   
+
    import utils.remote.rmo.ClientRMO;
-   
+
    /**
     * Gets alliance data. 
     */
@@ -27,7 +24,6 @@ package controllers.alliances.actions
       {
          allyId = cmd.parameters.id;
          sendMessage(new ClientRMO(cmd.parameters));
-         GlobalFlags.getInstance().lockApplication = true;
       }
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
@@ -77,17 +73,6 @@ package controllers.alliances.actions
       private function get ASM(): AllianceScreenM
       {
          return AllianceScreenM.getInstance();
-      }
-      
-      public override function result(rmo:ClientRMO):void
-      {
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

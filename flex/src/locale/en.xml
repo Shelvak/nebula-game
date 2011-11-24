@@ -3972,6 +3972,18 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
+    <title.hide value="Hide units"/>
+    <label.notHidden value="Don't hide"/>
+    <label.hidden value="Hide"/>
+    <tooltip.hidden>
+      <p>Units won't participate in combats while they are hidden.</p>
+      <p>Units will unhide if they are loaded into transporters or leaves planet</p>
+      <p>If you loose your planet, new owner of the planet will get all hidden
+        units.</p>
+    </tooltip.hidden>
+    <tooltip.notHidden>
+      <p>Not hidden units will participate in all combats.</p>
+    </tooltip.notHidden>
     <!-- params:
          0 - minimal count of this type of units in raid
          1 - unit count that might add to the minimal count

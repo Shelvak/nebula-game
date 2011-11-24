@@ -2,12 +2,9 @@ package controllers.technologies.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
-   
-   import models.technology.Technology;
-   
+
    import utils.remote.rmo.ClientRMO;
-   
+
    public class UnlearnAction extends CommunicationAction
    {
       private var techId: int;
@@ -20,15 +17,9 @@ package controllers.technologies.actions
       
       public override function result(rmo:ClientRMO):void
       {
+         super.result(rmo);
          ML.technologies.getTechnologyById(techId).level = 0;
          ML.technologies.dispatchTechsChangeEvent();
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

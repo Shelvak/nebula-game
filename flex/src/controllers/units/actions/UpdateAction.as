@@ -1,15 +1,11 @@
 package controllers.units.actions
 {
    import controllers.CommunicationAction;
-   import controllers.GlobalFlags;
-   
-   import globalevents.GUnitEvent;
-   
+
    import models.unit.MCUnitScreen;
-   
+
    import utils.remote.rmo.ClientRMO;
-   
-   
+
    /**
     * Used for updating units
     */
@@ -17,14 +13,8 @@ package controllers.units.actions
    {
       public override function result(rmo:ClientRMO) : void
       {
-         GlobalFlags.getInstance().lockApplication = false;
+         super.result(rmo);
          MCUnitScreen.getInstance().confirmChanges();
-      }
-      
-      override public function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

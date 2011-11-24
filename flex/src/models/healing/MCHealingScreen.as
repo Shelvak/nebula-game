@@ -4,7 +4,7 @@ package models.healing
    
    import components.unitsscreen.events.UnitsScreenEvent;
    
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.Messenger;
    import controllers.units.UnitsCommand;
    
@@ -148,7 +148,6 @@ package models.healing
          var _selectionIds: Array = selectionIds;
          if (_selectionIds.length > 0)
          {
-            GlobalFlags.getInstance().lockApplication = true;
             new UnitsCommand(
                UnitsCommand.HEAL,
                {

@@ -8,210 +8,184 @@
          width="100%" height="100%">
    <fx:Script>
       <![CDATA[
-         import components.skins.InfoButtonSkin;
-         
-         import controllers.GlobalFlags;
-         import controllers.objects.ObjectClass;
-         import controllers.players.PlayersCommand;
-         import controllers.screens.MainAreaScreens;
-         import controllers.ui.NavigationController;
-         
-         import models.ModelLocator;
-         import models.player.Player;
-         import models.unit.UnitBuildingEntry;
-         
-         import mx.collections.ArrayCollection;
-         import mx.collections.ListCollectionView;
-         import mx.collections.Sort;
-         import mx.collections.SortField;
-         import mx.events.FlexEvent;
-         
-         import utils.ModelUtil;
-         import utils.UrlNavigate;
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         import utils.locale.Localizer;
-         
-         private static function buildUnitsFromArray(source: Array): ArrayCollection
-         {
-            var newList: Array = [];
-            for each (var unit: Array in source)
-            {
-               newList.push(new UnitBuildingEntry(ModelUtil.getModelType(
-                  ObjectClass.UNIT, unit[0]), unit[1]));
-            }
-            var tempList: ArrayCollection = new ArrayCollection(newList);
-            tempList.sort = new Sort();
-            tempList.sort.fields = [new SortField('type')];
-            tempList.refresh();
-            return tempList;
+      import components.skins.InfoButtonSkin;
+
+      import utils.ApplicationLocker;
+
+      import controllers.objects.ObjectClass;
+      import controllers.players.PlayersCommand;
+      import controllers.screens.MainAreaScreens;
+      import controllers.ui.NavigationController;
+
+      import models.ModelLocator;
+      import models.player.Player;
+      import models.unit.UnitBuildingEntry;
+
+      import mx.collections.ArrayCollection;
+      import mx.collections.ListCollectionView;
+      import mx.collections.Sort;
+      import mx.collections.SortField;
+      import mx.events.FlexEvent;
+
+      import utils.ModelUtil;
+      import utils.UrlNavigate;
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
+
+      private static function buildUnitsFromArray(source: Array): ArrayCollection {
+         var newList: Array = [];
+         for each (var unit: Array in source) {
+            newList.push(new UnitBuildingEntry(ModelUtil.getModelType(
+                    ObjectClass.UNIT, unit[0]), unit[1]));
          }
-         
-         private function createCachedUnits(source:Object) : ArrayCollection
-         {
-            var result:Array = [];
-            for each (var unit: UnitBuildingEntry in source)
-            {
-               result.push(unit);
-            }
-            var tempList: ArrayCollection = new ArrayCollection(result);
-            tempList.sort = new Sort();
-            tempList.sort.fields = [new SortField('type')];
-            tempList.refresh();
-            return tempList;
+         var tempList: ArrayCollection = new ArrayCollection(newList);
+         tempList.sort = new Sort();
+         tempList.sort.fields = [new SortField('type')];
+         tempList.refresh();
+         return tempList;
+      }
+
+      private function createCachedUnits(source: Object): ArrayCollection {
+         var result: Array = [];
+         for each (var unit: UnitBuildingEntry in source) {
+            result.push(unit);
          }
-         
-         private function findPossibleUnits(): void
-         {
-            if (data != null && _maxVolume != 0)
-            {
-               var volumeLeft: int = _maxVolume;
-               function findPossible(source: Array): ArrayCollection
-               {
-                  if (source == null || source.length == 0)
-                  {
-                     return null;
-                  }
-                  var notEmpty: Boolean = false;
-                  var tempObject: Object = {};
-                  var finished: Boolean = false;
-                  var tempList: ListCollectionView = buildUnitsFromArray(source);
-                  while (!finished)
-                  {
-                     var i: int = Math.round((Math.random() * (tempList.length - 1)));
-                     var possibleUnit: UnitBuildingEntry = 
-                        UnitBuildingEntry(tempList.getItemAt(i));
-                     if (possibleUnit.singleUnitVolume <= volumeLeft)
-                     {
-                        if (tempObject[possibleUnit.type] == null)
-                        {
-                           tempObject[possibleUnit.type] = 
-                              new UnitBuildingEntry(possibleUnit.type, 1);
-                           notEmpty = true;
-                        }
-                        else
-                        {
-                           UnitBuildingEntry(tempObject[possibleUnit.type]).count++; 
-                        }
-                        if (possibleUnit.count > 1)
-                        {
-                           possibleUnit.count--;
-                        }
-                        else
-                        {
-                           tempList.removeItemAt(i);
-                        }
-                        volumeLeft -= possibleUnit.singleUnitVolume;
+         var tempList: ArrayCollection = new ArrayCollection(result);
+         tempList.sort = new Sort();
+         tempList.sort.fields = [new SortField('type')];
+         tempList.refresh();
+         return tempList;
+      }
+
+      private function findPossibleUnits(): void {
+         if (data != null && _maxVolume != 0) {
+            var volumeLeft: int = _maxVolume;
+
+            function findPossible(source: Array): ArrayCollection {
+               if (source == null || source.length == 0) {
+                  return null;
+               }
+               var notEmpty: Boolean = false;
+               var tempObject: Object = {};
+               var finished: Boolean = false;
+               var tempList: ListCollectionView = buildUnitsFromArray(source);
+               while (!finished) {
+                  var i: int = Math.round((Math.random() * (tempList.length - 1)));
+                  var possibleUnit: UnitBuildingEntry =
+                          UnitBuildingEntry(tempList.getItemAt(i));
+                  if (possibleUnit.singleUnitVolume <= volumeLeft) {
+                     if (tempObject[possibleUnit.type] == null) {
+                        tempObject[possibleUnit.type] =
+                                new UnitBuildingEntry(possibleUnit.type, 1);
+                        notEmpty = true;
                      }
-                     else
-                     {
-                        tempList.filterFunction = 
-                           function (item: UnitBuildingEntry): Boolean
-                           {
-                              return item.singleUnitVolume <= volumeLeft;
-                           };
-                        tempList.refresh();
+                     else {
+                        UnitBuildingEntry(tempObject[possibleUnit.type]).count++;
                      }
-                     finished = (tempList.length == 0);
+                     if (possibleUnit.count > 1) {
+                        possibleUnit.count--;
+                     }
+                     else {
+                        tempList.removeItemAt(i);
+                     }
+                     volumeLeft -= possibleUnit.singleUnitVolume;
                   }
-                  return notEmpty ? createCachedUnits(tempObject) : null;
+                  else {
+                     tempList.filterFunction =
+                             function (item: UnitBuildingEntry): Boolean {
+                                return item.singleUnitVolume <= volumeLeft;
+                             };
+                     tempList.refresh();
+                  }
+                  finished = (tempList.length == 0);
                }
-               yourPossibleUnits = findPossible(data.your);
-               allyPossibleUnits = findPossible(data.alliance);
+               return notEmpty ? createCachedUnits(tempObject) : null;
             }
-            else
-            {
-               yourPossibleUnits = null;
-               allyPossibleUnits = null;
+
+            yourPossibleUnits = findPossible(data.your);
+            allyPossibleUnits = findPossible(data.alliance);
+         }
+         else {
+            yourPossibleUnits = null;
+            allyPossibleUnits = null;
+         }
+      }
+
+      private function getVolume(list: ArrayCollection): int {
+         var totalVolume: int = 0;
+         if (list) {
+            for each (var unit: UnitBuildingEntry in list) {
+               totalVolume += (unit.count * unit.singleUnitVolume);
             }
          }
-         
-         private function getVolume(list: ArrayCollection): int
-         {
-            var totalVolume: int = 0;
-            if (list)
-            {
-               for each (var unit: UnitBuildingEntry in list)
-               {
-                  totalVolume += (unit.count * unit.singleUnitVolume);
-               }
-            }
-            return totalVolume;
+         return totalVolume;
+      }
+
+      [Bindable]
+      private var _maxVolume: int;
+      public function set maxVolume(value: int): void {
+         _maxVolume = value;
+         findPossibleUnits();
+      }
+
+      public function get maxVolume(): int {
+         return _maxVolume;
+      }
+
+      private var data: Object;
+
+      public function set allUnits(value: Object): void {
+         data = value;
+         if (data != null) {
+            playerUnits = buildUnitsFromArray(data.your);
+            allyUnits = buildUnitsFromArray(data.alliance);
          }
-         
-         [Bindable]
-         private var _maxVolume: int;
-         public function set maxVolume(value: int): void
-         {
-            _maxVolume = value;
-            findPossibleUnits();
-         }
-         
-         public function get maxVolume(): int
-         {
-            return _maxVolume;
-         }
-         private var data: Object;
-         public function set allUnits(value: Object): void
-         {
-            data = value;
-            if (data != null)
-            {
-               playerUnits = buildUnitsFromArray(data.your);
-               allyUnits = buildUnitsFromArray(data.alliance);
-            }
-            findPossibleUnits();
-         }
-         
-         public function get allUnits(): Object
-         {
-            return data;
-         }
-         
-         [Bindable]
-         private var playerUnits: ArrayCollection = new ArrayCollection();
-         [Bindable]
-         private var allyUnits: ArrayCollection = new ArrayCollection();
-         
-         
-         [Bindable]
-         public var yourPossibleUnits: ArrayCollection;
-         [Bindable]
-         public var allyPossibleUnits: ArrayCollection;
-         
-         protected function group1_creationCompleteHandler(event:FlexEvent):void
-         {
-            NavigationController.getInstance().creationCompleteFunction(
-               MainAreaScreens.DEFENSIVE_PORTAL, this);
-         }
-         
-         
-         private function getImage(name:String) : BitmapData
-         {
-            return ImagePreloader.getInstance()
-               .getImage(AssetNames.DEFENSIVE_PORTAL_IMAGES_FOLDER + "table_" + name);
-         }
-         
-         
-         private function getString(property:String, params: Array = null) : String
-         {
-            return Localizer.string("Units", "defensivePool." + property, params);
-         }
-         
-         protected function checkbox1_clickHandler(event:MouseEvent):void
-         {
-            GlobalFlags.getInstance().lockApplication = true;
-            new PlayersCommand(PlayersCommand.EDIT,
-               {
-                  'portalWithoutAllies': !ML.player.portalWithoutAllies
-               }
-            ).dispatch();
-            NavigationController.getInstance().showDefensivePortal(ML.latestPlanet.id);
-         }
-         
-         [Bindable]
-         private var ML: ModelLocator = ModelLocator.getInstance();
-         
+         findPossibleUnits();
+      }
+
+      public function get allUnits(): Object {
+         return data;
+      }
+
+      [Bindable]
+      private var playerUnits: ArrayCollection = new ArrayCollection();
+      [Bindable]
+      private var allyUnits: ArrayCollection = new ArrayCollection();
+
+
+      [Bindable]
+      public var yourPossibleUnits: ArrayCollection;
+      [Bindable]
+      public var allyPossibleUnits: ArrayCollection;
+
+      protected function group1_creationCompleteHandler(event: FlexEvent): void {
+         NavigationController.getInstance().creationCompleteFunction(
+                 MainAreaScreens.DEFENSIVE_PORTAL, this);
+      }
+
+
+      private function getImage(name: String): BitmapData {
+         return ImagePreloader.getInstance()
+                 .getImage(AssetNames.DEFENSIVE_PORTAL_IMAGES_FOLDER + "table_" + name);
+      }
+
+
+      private function getString(property: String, params: Array = null): String {
+         return Localizer.string("Units", "defensivePool." + property, params);
+      }
+
+      protected function checkbox1_clickHandler(event: MouseEvent): void {
+         new PlayersCommand(PlayersCommand.EDIT,
+                 {
+                    'portalWithoutAllies': !ML.player.portalWithoutAllies
+                 }
+         ).dispatch();
+         NavigationController.getInstance().showDefensivePortal(ML.latestPlanet.id);
+      }
+
+      [Bindable]
+      private var ML: ModelLocator = ModelLocator.getInstance();
       ]]>
    </fx:Script>
    <fx:Style>

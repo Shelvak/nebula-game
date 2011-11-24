@@ -2,7 +2,7 @@ package controllers.alliances.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.alliances.AlliancesCommand;
    import controllers.ui.NavigationController;
    
@@ -21,6 +21,7 @@ package controllers.alliances.actions
    {
       public override function result(rmo:ClientRMO):void
       {
+         super.result(rmo);
          new GAllianceEvent(GAllianceEvent.ALLIANCE_CONFIRMED);
       }
       

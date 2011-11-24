@@ -4,7 +4,7 @@ package controllers.players.actions
 
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.players.AuthorizationManager;
    import controllers.startup.StartupInfo;
    
@@ -18,10 +18,6 @@ package controllers.players.actions
    {
       private function get SI() : StartupInfo {
          return StartupInfo.getInstance();
-      }
-      
-      private function get GF() : GlobalFlags {
-         return GlobalFlags.getInstance();
       }
       
       private function get AM() : AuthorizationManager {
@@ -47,7 +43,6 @@ package controllers.players.actions
             AM.loginSuccessful();
          else {
             if (cmd.parameters["requiredVersion"]) {
-               GF.lockApplication = false;
                AM.versionTooOld(cmd.parameters["requiredVersion"]);
             }
             else {
@@ -57,7 +52,7 @@ package controllers.players.actions
       }
       
       public override function cancel(rmo:ClientRMO) : void {
-         GF.lockApplication = false;
+         super.cancel(rmo);
          AM.loginFailed();
       }
    }

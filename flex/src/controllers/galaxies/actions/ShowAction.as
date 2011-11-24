@@ -2,7 +2,7 @@ package controllers.galaxies.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.planets.PlanetsCommand;
    import controllers.planets.actions.ShowActionParams;
    import controllers.solarsystems.SolarSystemsCommand;
@@ -55,10 +55,6 @@ package controllers.galaxies.actions
     */
    public class ShowAction extends CommunicationAction
    {
-      private function get GF() : GlobalFlags {
-         return GlobalFlags.getInstance();
-      }
-      
       private function get SQUADS_CTRL() : SquadronsController {
          return SquadronsController.getInstance();
       }
@@ -70,13 +66,6 @@ package controllers.galaxies.actions
       
       public function ShowAction() {
          super();
-      }
-      
-      
-      override public function applyClientAction(cmd:CommunicationCommand) :
-            void {
-         GF.lockApplication = true;
-         super.applyClientAction(cmd);
       }
       
       public override function applyServerAction(cmd:CommunicationCommand) :
@@ -162,8 +151,6 @@ package controllers.galaxies.actions
                );
             }
          }
-         
-         GF.lockApplication = false;
       }
       
       public function createGalaxy(galaxyId:int,

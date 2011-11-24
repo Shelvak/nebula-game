@@ -1,21 +1,17 @@
 package controllers.units.actions
 {
-   
+
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
-   import controllers.ui.NavigationController;
-   
+
    import globalevents.GUnitEvent;
-   
+
    import models.factories.UnitFactory;
    import models.location.LocationType;
    import models.unit.Unit;
-   
+
    import utils.datastructures.Collections;
-   import utils.remote.rmo.ClientRMO;
-   
-   
+
    /**
     * Used for getting units in other unit
     * param_options :required => %w{unit_id}
@@ -26,7 +22,6 @@ package controllers.units.actions
       private var transporter: Unit;
       override public function applyClientAction(cmd:CommunicationCommand) : void
       {
-         GlobalFlags.getInstance().lockApplication = true;
          transporter = Unit(cmd.parameters);
          Collections.filter(ML.units,
             function(unit:Unit) : Boolean
@@ -36,17 +31,6 @@ package controllers.units.actions
          ).removeAll();
          cmd.parameters = {'unitId': transporter.id};
          super.applyClientAction(cmd);
-      }
-      
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      public override function result(rmo:ClientRMO):void
-      {
-         GlobalFlags.getInstance().lockApplication = false;
       }
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
