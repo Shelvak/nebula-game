@@ -165,50 +165,28 @@
    <fx:Binding source="Quest(data).title" destination="title"/>
    <fx:Script>
       <![CDATA[
-      import utils.assets.ImagePreloader;
-      import utils.UrlNavigate;
-
-      import models.resource.Resource;
-
-      import utils.StringUtil;
-
-      import spark.events.IndexChangeEvent;
-
-      import utils.MathUtil;
-
-      import globalevents.GlobalEvent;
-
-      import controllers.Messenger;
-
-      import globalevents.GQuestEvent;
-
       import com.developmentarc.core.utils.EventBroker;
 
-      import utils.assets.AssetNames;
-
-      import utils.ApplicationLocker;
-
-      import utils.locale.Localizer;
-
-      import components.gameobjects.planet.IRPlayerPlanet;
-      import components.unit.IRUnitBuildingEntrySmall;
-
+      import controllers.Messenger;
       import controllers.quests.QuestsCommand;
 
-      import models.solarsystem.MSSObject;
-      import models.planet.MPlanet;
+      import globalevents.GQuestEvent;
+      import globalevents.GlobalEvent;
+
       import models.ModelLocator;
       import models.quest.Quest;
       import models.quest.events.QuestEvent;
+      import models.resource.Resource;
       import models.resource.ResourceType;
+      import models.solarsystem.MSSObject;
 
-      import mx.collections.ArrayCollection;
-      import mx.events.FlexEvent;
+      import spark.events.IndexChangeEvent;
 
-
-      private static function get GF(): ApplicationLocker {
-         return ApplicationLocker.getInstance();
-      }
+      import utils.StringUtil;
+      import utils.UrlNavigate;
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
 
       private static function get ML(): ModelLocator {
          return ModelLocator.getInstance();
@@ -327,7 +305,6 @@
       }
 
       private function btnClaim_clickHandler(event: MouseEvent): void {
-         GF.lockApplication = true;
          EventBroker.subscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
          new QuestsCommand(
                  QuestsCommand.CLAIM_REWARDS,

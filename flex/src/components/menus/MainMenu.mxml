@@ -10,14 +10,6 @@
       <![CDATA[
       import components.alliance.AllianceScreenM;
 
-      import utils.ApplicationLocker;
-
-      import utils.ApplicationLocker;
-
-      import utils.ApplicationLocker;
-
-      import utils.ApplicationLocker;
-
       import controllers.alliances.AlliancesCommand;
       import controllers.players.PlayersCommand;
       import controllers.ui.NavigationController;
@@ -32,14 +24,11 @@
 
       import spark.components.Button;
 
-      import utils.ApplicationLocker;
-
       import utils.StringUtil;
       import utils.UrlNavigate;
       import utils.assets.AssetNames;
       import utils.datastructures.Collections;
       import utils.locale.Localizer;
-
 
       private function get NAV_CTRL(): NavigationController {
          return NavigationController.getInstance();
@@ -113,8 +102,9 @@
          <!--- Button for viewing squadrons screen. -->
          <s:Group width="100%">
             <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
-            <s:Button id="btnUnits" click="ApplicationLocker.getInstance().lockApplication = true;
-                      new UnitsCommand(UnitsCommand.POSITIONS).dispatch()" left="22" right="0" top="5" bottom="5"
+            <s:Button id="btnUnits"
+                      click="new UnitsCommand(UnitsCommand.POSITIONS).dispatch()"
+                      left="22" right="0" top="5" bottom="5"
                       enabled="true"
                       label="{getBtnUnitsLabel(ML.routes.length, allyRoutes.length)}"
                       toolTip="{Localizer.string('MainMenu', 'tooltip.units')}"/>
@@ -122,16 +112,19 @@
          <!--- Button for viewing ratings screen. -->
          <s:Group width="100%">
             <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
-            <s:Button id="btnRatings" click="ApplicationLocker.getInstance().lockApplication = true;
-                      new PlayersCommand(PlayersCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
-                                                                             label="{Localizer.string('MainMenu', 'label.ratings')}"/>
+            <s:Button id="btnRatings"
+                      click="new PlayersCommand(PlayersCommand.RATINGS).dispatch()"
+                      left="22" right="0" top="5" bottom="5"
+                      label="{Localizer.string('MainMenu', 'label.ratings')}"/>
          </s:Group>
          <!--- Button for viewing alliance ratings screen. -->
          <s:Group width="100%">
             <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
-            <s:Button id="btnAllyRatings" click="ApplicationLocker.getInstance().lockApplication = true;
-                      new AlliancesCommand(AlliancesCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
-                                                                                 label="{Localizer.string('MainMenu', 'label.alliances')}"/>
+            <s:Button id="btnAllyRatings"
+                      click=" new AlliancesCommand(
+                        AlliancesCommand.RATINGS).dispatch()"
+                      left="22" right="0" top="5" bottom="5"
+                      label="{Localizer.string('MainMenu', 'label.alliances')}"/>
          </s:Group>
          <!--- Button for buying creds -->
          <s:Group width="100%">

@@ -20,7 +20,6 @@ package controllers.units.actions
     */
    public class MoveAction extends CommunicationAction
    {
-      private var GF:ApplicationLocker = ApplicationLocker.getInstance();
       private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
       
       
@@ -32,7 +31,6 @@ package controllers.units.actions
       
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
-         GF.lockApplication = true;
          var params:MoveActionParams = MoveActionParams(cmd.parameters);
          var locSource:LocationMinimal = params.sourceLocation;
          var locTarget:LocationMinimal = params.targetLocation;
@@ -57,7 +55,6 @@ package controllers.units.actions
       {
          super.cancel(rmo);
          ORDERS_CTRL.cancelOrder();
-         GF.lockApplication = false;
       }
    }
 }

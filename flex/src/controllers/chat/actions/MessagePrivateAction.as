@@ -68,6 +68,7 @@ package controllers.chat.actions
       
       public override function result(rmo:ClientRMO) : void
       {
+         super.result(rmo);
          MCHAT.messageSendSuccess(MChatMessage(rmo.additionalParams));
       }
       

@@ -20,10 +20,6 @@ package controllers.players.actions
          return StartupInfo.getInstance();
       }
       
-      private function get GF() : ApplicationLocker {
-         return ApplicationLocker.getInstance();
-      }
-      
       private function get AM() : AuthorizationManager {
          return AuthorizationManager.getInstance();
       }
@@ -47,7 +43,6 @@ package controllers.players.actions
             AM.loginSuccessful();
          else {
             if (cmd.parameters["requiredVersion"]) {
-               GF.lockApplication = false;
                AM.versionTooOld(cmd.parameters["requiredVersion"]);
             }
             else {
@@ -57,7 +52,7 @@ package controllers.players.actions
       }
       
       public override function cancel(rmo:ClientRMO) : void {
-         GF.lockApplication = false;
+         super.cancel(rmo);
          AM.loginFailed();
       }
    }

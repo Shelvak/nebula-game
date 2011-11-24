@@ -32,6 +32,7 @@ package controllers.planets.actions
       }
       
       public override function result(rmo:ClientRMO):void {
+         super.result(rmo);
          if (ML.latestPlanet != null)
             Messenger.show(Localizer.string('SSObjects', 'message.planetRenamed', 
                [ML.latestPlanet.ssObject.name]), Messenger.MEDIUM);

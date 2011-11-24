@@ -58,7 +58,7 @@ package utils
        * spinner will be shown.
        */
       public function get applicationLocked(): Boolean {
-         return lockCounter == 0;
+         return lockCounter > 0;
       }
 
       public function increaseLockCounter(): void {

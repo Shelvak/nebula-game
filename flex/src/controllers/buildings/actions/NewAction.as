@@ -19,6 +19,7 @@ package controllers.buildings.actions
       
       public override function result(rmo:ClientRMO):void
       {
+         super.result(rmo);
          new GObjectEvent(GObjectEvent.OBJECT_APPROVED);
       }
    }

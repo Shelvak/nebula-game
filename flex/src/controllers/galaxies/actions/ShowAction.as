@@ -55,10 +55,6 @@ package controllers.galaxies.actions
     */
    public class ShowAction extends CommunicationAction
    {
-      private function get GF() : ApplicationLocker {
-         return ApplicationLocker.getInstance();
-      }
-      
       private function get SQUADS_CTRL() : SquadronsController {
          return SquadronsController.getInstance();
       }
@@ -70,13 +66,6 @@ package controllers.galaxies.actions
       
       public function ShowAction() {
          super();
-      }
-      
-      
-      override public function applyClientAction(cmd:CommunicationCommand) :
-            void {
-         GF.lockApplication = true;
-         super.applyClientAction(cmd);
       }
       
       public override function applyServerAction(cmd:CommunicationCommand) :
@@ -162,8 +151,6 @@ package controllers.galaxies.actions
                );
             }
          }
-         
-         GF.lockApplication = false;
       }
       
       public function createGalaxy(galaxyId:int,

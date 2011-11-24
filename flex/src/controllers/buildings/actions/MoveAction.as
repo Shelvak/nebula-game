@@ -2,13 +2,11 @@ package controllers.buildings.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import utils.ApplicationLocker;
-   
+
    import globalevents.GBuildingEvent;
-   
+
    import utils.remote.rmo.ClientRMO;
-   
-   
+
    /**
     * Moves building to another spot in the planet. Requires credits.
     * 
@@ -20,21 +18,13 @@ package controllers.buildings.actions
     */
    public class MoveAction extends CommunicationAction
    {
-      private function get GF() : ApplicationLocker
-      {
-         return ApplicationLocker.getInstance();
-      }
-      
-      
       public function MoveAction()
       {
          super();
       }
-      
-      
+
       override public function applyClientAction(cmd:CommunicationCommand):void
       {
-         GF.lockApplication = true;
          var params:MoveActionParams = MoveActionParams(cmd.parameters);
          sendMessage(
             new ClientRMO(
@@ -53,7 +43,6 @@ package controllers.buildings.actions
          super.cancel(rmo);
          var params:MoveActionParams = MoveActionParams(rmo.additionalParams);
          new GBuildingEvent(GBuildingEvent.MOVE_CANCEL, params.building);
-         GF.lockApplication = false;
       }
       
       
@@ -62,7 +51,6 @@ package controllers.buildings.actions
          super.result(rmo);
          var params:MoveActionParams = MoveActionParams(rmo.additionalParams);
          new GBuildingEvent(GBuildingEvent.MOVE_CONFIRM, params.building);
-         GF.lockApplication = false;
       }
    }
 }

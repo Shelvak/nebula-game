@@ -21,6 +21,7 @@ package controllers.alliances.actions
    {
       public override function result(rmo:ClientRMO):void
       {
+         super.result(rmo);
          new GAllianceEvent(GAllianceEvent.ALLIANCE_CONFIRMED);
       }
       

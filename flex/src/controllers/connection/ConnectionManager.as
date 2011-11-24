@@ -1,32 +1,30 @@
 package controllers.connection
 {
    import com.developmentarc.core.utils.EventBroker;
-   
+
    import components.announcement.AnnouncementPopup;
    import components.popups.ErrorPopup;
-   
-   import utils.ApplicationLocker;
+
    import controllers.combatlogs.CombatLogsCommand;
    import controllers.messages.ResponseMessagesTracker;
    import controllers.players.PlayersCommand;
    import controllers.startup.StartupInfo;
    import controllers.startup.StartupManager;
    import controllers.startup.StartupMode;
-   
+
    import globalevents.GlobalEvent;
-   
+
    import models.ModelLocator;
-   
+
    import spark.components.Button;
-   
+
    import utils.SingletonFactory;
    import utils.locale.Localizer;
    import utils.remote.IServerProxy;
    import utils.remote.ServerProxyInstance;
    import utils.remote.events.ServerProxyEvent;
    import utils.remote.rmo.ServerRMO;
-   
-   
+
    public class ConnectionManager
    {
       public static function getInstance() : ConnectionManager
@@ -50,12 +48,6 @@ package controllers.connection
       private function get SERVER_PROXY() : IServerProxy
       {
          return ServerProxyInstance.getInstance();
-      }
-      
-      
-      private function get G_FLAGS() : ApplicationLocker
-      {
-         return ApplicationLocker.getInstance();
       }
       
       
@@ -164,7 +156,6 @@ package controllers.connection
             announcementPopup.show();
          
          RESP_MSG_TRACKER.reset();
-         G_FLAGS.lockApplication = false;
       }
       
       
@@ -265,7 +256,6 @@ package controllers.connection
          popup.show();
          
          RESP_MSG_TRACKER.reset();
-         G_FLAGS.lockApplication = false;
       }
    }
 }

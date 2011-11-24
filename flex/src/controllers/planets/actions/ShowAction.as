@@ -48,10 +48,6 @@ package controllers.planets.actions
     */
    public class ShowAction extends CommunicationAction
    {
-      private function get GF() : ApplicationLocker {
-         return ApplicationLocker.getInstance();
-      }
-      
       private function get NAV_CTRL() : NavigationController {
          return NavigationController.getInstance();
       }
@@ -65,13 +61,11 @@ package controllers.planets.actions
       private var f_createMapOnly:Boolean = false;
       private function resetFlags() : void {
          f_createMapOnly = false;
-         GF.lockApplication = false;
       }
       
       
       override public function applyClientAction(cmd:CommunicationCommand) : void {
          var params:ShowActionParams = ShowActionParams(cmd.parameters);
-         GF.lockApplication = true;
          f_createMapOnly = params.createMapOnly;
          sendMessage(new ClientRMO({"id": params.planetId}));
       }
