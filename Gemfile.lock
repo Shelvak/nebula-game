@@ -1,28 +1,28 @@
 GIT
   remote: git://github.com/arturaz/flag_shih_tzu.git
-  revision: 3bf3911928f086633d5862cf7b2464e0ba23bdaf
+  revision: 4cb1c9088e6fb33eec49bda402f92cef11c2dc69
   specs:
-    flag_shih_tzu (0.2.3)
+    flag_shih_tzu (0.2.4)
       activerecord (>= 2.3.0)
 
 GEM
   remote: http://rubygems.org/
   remote: http://gems.github.com/
   specs:
-    activemodel (3.0.10)
-      activesupport (= 3.0.10)
+    activemodel (3.0.11)
+      activesupport (= 3.0.11)
       builder (~> 2.1.2)
       i18n (~> 0.5.0)
-    activerecord (3.0.10)
-      activemodel (= 3.0.10)
-      activesupport (= 3.0.10)
+    activerecord (3.0.11)
+      activemodel (= 3.0.11)
+      activesupport (= 3.0.11)
       arel (~> 2.0.10)
       tzinfo (~> 0.3.23)
     activerecord-jdbc-adapter (1.2.0)
     activerecord-jdbcmysql-adapter (1.2.0)
       activerecord-jdbc-adapter (~> 1.2.0)
       jdbc-mysql (~> 5.1.0)
-    activesupport (3.0.10)
+    activesupport (3.0.11)
     arel (2.0.10)
     bouncy-castle-java (1.5.0146.1)
     builder (2.1.2)
@@ -82,7 +82,7 @@ GEM
     treetop (1.4.10)
       polyglot
       polyglot (>= 0.3.1)
-    tzinfo (0.3.29)
+    tzinfo (0.3.31)
     xml-simple (1.1.0)
 
 PLATFORMS
