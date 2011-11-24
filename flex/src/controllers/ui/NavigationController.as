@@ -585,7 +585,7 @@ package controllers.ui
          var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
          mScreen.market = market;
          mScreen.planetId = ML.latestPlanet.id;
-         showNonMapScreen(_screenProperties[MainAreaScreens.MARKET], false);
+         showNonMapScreen(_screenProperties[MainAreaScreens.MARKET]);
          new MarketCommand(MarketCommand.INDEX, {
             'planetId': mScreen.planetId}).dispatch();
       }
@@ -628,7 +628,7 @@ package controllers.ui
          {
             createdHandler = setData;
          }
-         showNonMapScreen(_screenProperties[MainAreaScreens.PLAYER], false);
+         showNonMapScreen(_screenProperties[MainAreaScreens.PLAYER]);
       }
       
       public function showDefensivePortal(planetId: int) :void
@@ -938,7 +938,7 @@ package controllers.ui
        * 
        * @throws IllegalOperationError if given name is of a map screen 
        */
-      private function showNonMapScreen(screenProps:ScreenProperties, unlockAfter: Boolean = true) : void
+      private function showNonMapScreen(screenProps:ScreenProperties) : void
       {
          if (screenProps.holdsMap)
          {
@@ -952,7 +952,7 @@ package controllers.ui
             return;
          
          beforeScreenChange();
-         MA.showScreen(screenProps.screenName, unlockAfter);
+         MA.showScreen(screenProps.screenName);
          resetActiveButton(screenProps.button);
          resetSidebarToCurrentScreenDefault();
          updateContainerState();

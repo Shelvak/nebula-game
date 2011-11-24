@@ -16,9 +16,9 @@ package controllers.navigation
          return SidebarScreens.EMPTY;
       }
       
-      public override function showScreen(name:String, unlockAfter:Boolean=true, pushToStack:Boolean=true):void
+      public override function showScreen(name:String, pushToStack:Boolean=true):void
       {
-         super.showScreen(name, false, pushToStack);
+         super.showScreen(name, pushToStack);
       }
    }
 }

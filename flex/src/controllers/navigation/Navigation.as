@@ -26,12 +26,10 @@ package controllers.navigation
       /**
        * 
        * @param name - new screen name
-       * TODO : remove unlock after
        * @param unlockAfter - should we remove pending flag after screen show
        * 
        */      
-      public function showScreen(name:String, unlockAfter: Boolean = true,
-         pushToStack: Boolean = true) : void
+      public function showScreen(name:String, pushToStack: Boolean = true) : void
       {
          if (name == currentName)
             return;
@@ -77,7 +75,7 @@ package controllers.navigation
       {
          if (!namesStack.isEmpty)
          {
-            showScreen(namesStack.pop(), true, false);
+            showScreen(namesStack.pop(), false);
          }
          else
          {
@@ -100,7 +98,7 @@ package controllers.navigation
          if (currentName == name)
             return;
          
-         showScreen(name, true, false);
+         showScreen(name, false);
       }
       
       public function destroyScreenMap(screenName: String): void
