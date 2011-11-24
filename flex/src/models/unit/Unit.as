@@ -395,7 +395,7 @@ package models.unit
       }
 
       [Optional]
-      public var nonAgressive: Boolean = false;
+      public var hidden: Boolean = false;
       
       
       [Required]

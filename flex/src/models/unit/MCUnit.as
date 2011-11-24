@@ -7,7 +7,7 @@ package models.unit
          unit = _unit;
          flankModel = flank;
          stance = unit.stance;
-         nonAgressive = unit.nonAgressive;
+         hidden = unit.hidden;
          loadUnload = _loadUnload;
       }
       
@@ -21,7 +21,7 @@ package models.unit
       public var stance: int;
 
       [Bindable]
-      public var nonAgressive: Boolean;
+      public var hidden: Boolean;
       
       [Bindable]
       public var flankModel: UnitsFlank;

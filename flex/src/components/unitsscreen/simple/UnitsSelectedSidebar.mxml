@@ -41,9 +41,9 @@
             US.setStance(stance);
          }
 
-         protected function nonAgressive_clickHandler(nonAgressive: Boolean):void
+         protected function hide(hidden: Boolean):void
          {
-            US.setNonAgressive(nonAgressive);
+            US.setHidden(hidden);
          }
 
          protected function order_clickHandler(event:MouseEvent):void
@@ -131,14 +131,14 @@
                </base:layout>
             </base:Panel>
 
-            <base:Panel width="100%" title="{getText('label.setNonAgressive')}"
+            <base:Panel width="100%" title="{getText('label.setHidden')}"
                         visible="{US.selection.length > 0}">
-               <s:Button label="{getText('label.participate')}"
-                         click="nonAgressive_clickHandler(false)"
-                         toolTip="{getText('tooltip.agressive')}"/>
-               <s:Button label="{getText('label.dontParticipate')}"
-                         click="nonAgressive_clickHandler(true)"
-                         toolTip="{getText('tooltip.nonAgressive')}"/>
+               <s:Button label="{getText('label.notHidden')}"
+                         click="hide(false)"
+                         toolTip="{getText('tooltip.notHidden')}"/>
+               <s:Button label="{getText('label.hidden')}"
+                         click="hide(true)"
+                         toolTip="{getText('tooltip.hidden')}"/>
                <base:layout>
                   <s:HorizontalLayout gap="5" paddingLeft="10"/>
                </base:layout>

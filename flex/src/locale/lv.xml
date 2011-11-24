@@ -4101,17 +4101,18 @@
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
     
     <!-- TODO: translate this -->
-    <label.setNonAgressive value="Participation in combat"/>
-    <label.participate value="Participate"/>
-    <label.dontParticipate value="Don't"/>
-    <tooltip.agressive>
-      <p>These units will participate in all combats.</p>
-    </tooltip.agressive>
-    <tooltip.nonAgressive>
-      <p>These units will not participate in any combats that are occuring
-        in your planet. If you loose your planet, new owner of the planet will
-        get all non participating units.</p>
-    </tooltip.nonAgressive>
+    <label.hidden value="Hide units"/>
+    <label.notHidden value="Don't hide"/>
+    <label.hidden value="Hide"/>
+    <tooltip.hidden>
+      <p>Units won't participate in combats while they are hidden.</p>
+      <p>Units will unhide if they are loaded into transporters or leaves planet</p>
+      <p>If you loose your planet, new owner of the planet will get all hidden
+        units.</p>
+    </tooltip.hidden>
+    <tooltip.notHidden>
+      <p>Not hidden units will participate in all combats.</p>
+    </tooltip.notHidden>
 
     <!-- params:
          0 - minimal count of this type of units in raid

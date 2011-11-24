@@ -3950,17 +3950,19 @@
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
 
-    <label.setNonAgressive value="Dalyvavimas kovose"/>
-    <label.participate value="Dalyvauti"/>
-    <label.dontParticipate value="Nedalyvauti"/>
-    <tooltip.agressive>
-      <p>Šie kariai dalyvaus visose kovose.</p>
-    </tooltip.agressive>
-    <tooltip.nonAgressive>
-      <p>Šie kariai nedalyvaus kovose, kurios vyks Tavo planetose.
-        Jei tu prarasi savo planetą, naujas planetos sąvininkas gaus visus
-        Tavo karius, kurie nedalyvavo mūšiuose.</p>
-    </tooltip.nonAgressive>
+    <label.hidden value="Paslėpti karius"/>
+    <label.notHidden value="Nesislėpti"/>
+    <label.hidden value="Pasislėpti"/>
+    <tooltip.hidden>
+      <p>Paslėpti kariai nedalyvaus kovose.</p>
+      <p>Kariai nebebus paslėpti jei juos įkrausi į transporterius arba jie
+        paliks planetą.</p>
+      <p>Jei prarasi savo planetą, visi paslėpti kariai atiteks naujam planetos
+        savininkui.</p>
+    </tooltip.hidden>
+    <tooltip.notHidden>
+      <p>Nepaslėpti kariai dalyvaus visose kovose.</p>
+    </tooltip.notHidden>
 
     <!-- params:
          0 - minimal count of this type of units in raid

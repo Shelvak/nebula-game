@@ -381,9 +381,32 @@ package models.unit
       
       public function updateChanges(): void
       {
-         new UnitsCommand(UnitsCommand.UPDATE,                
-            {updates: getChanged()}
-         ).dispatch ();
+         if (hasFormationChanges)
+         {
+            new UnitsCommand(UnitsCommand.UPDATE,
+               {updates: getChanged()}
+            ).dispatch ();
+         }
+         if (hasHiddenChanges)
+         {
+            new UnitsCommand(UnitsCommand.SET_HIDDEN,
+               {
+                  'planetId': location.id,
+                  'unitIds': getHiddenChanged(),
+                  'value': true
+               }
+            ).dispatch ();
+         }
+         if (hasNotHiddenChanges)
+         {
+            new UnitsCommand(UnitsCommand.SET_HIDDEN,
+               {
+                  'planetId': location.id,
+                  'unitIds': getNotHiddenChanged(),
+                  'value': false
+               }
+            ).dispatch ();
+         }
       }
       
       private function getChanged(): Object
@@ -392,14 +415,75 @@ package models.unit
          for each(var unit: MCUnit in transformedUnits)
          {
             if (unit.stance != unit.unit.stance
-               || unit.flankModel.nr != unit.unit.flank
-                  || unit.nonAgressive != unit.unit.nonAgressive)
+               || unit.flankModel.nr != unit.unit.flank)
             {
-               changedUnits[unit.unit.id] =
-                       [unit.flankModel.nr, unit.stance, unit.nonAgressive];
+               changedUnits[unit.unit.id] = [unit.flankModel.nr, unit.stance];
             } 
          }
          return changedUnits;
+      }
+
+      private function getHiddenChanged(): Object
+      {
+         var changedUnits: Object = {};
+         for each(var unit: MCUnit in transformedUnits)
+         {
+            if (unit.hidden == true && unit.hidden != unit.unit.hidden)
+            {
+               changedUnits[unit.unit.id] = [true];
+            }
+         }
+         return changedUnits;
+      }
+
+      private function getNotHiddenChanged(): Object
+      {
+         var changedUnits: Object = {};
+         for each(var unit: MCUnit in transformedUnits)
+         {
+            if (unit.hidden == false && unit.hidden != unit.unit.hidden)
+            {
+               changedUnits[unit.unit.id] = [false];
+            }
+         }
+         return changedUnits;
+      }
+
+      public function get hasHiddenChanges(): Boolean
+      {
+         for each(var unit: MCUnit in transformedUnits)
+         {
+            if (unit.hidden == true && unit.hidden != unit.unit.hidden)
+            {
+               return true;
+            }
+         }
+         return false;
+      }
+
+      public function get hasNotHiddenChanges(): Boolean
+      {
+         for each(var unit: MCUnit in transformedUnits)
+         {
+            if (unit.hidden == false && unit.hidden != unit.unit.hidden)
+            {
+               return true;
+            }
+         }
+         return false;
+      }
+
+      public function get hasFormationChanges(): Boolean
+      {
+         for each(var unit: MCUnit in transformedUnits)
+         {
+            if (unit.stance != unit.unit.stance
+               || unit.flankModel.nr != unit.unit.flank)
+            {
+               return true;
+            }
+         }
+         return false;
       }
       
       [Bindable (event="formationChange")]
@@ -409,7 +493,7 @@ package models.unit
          {
             if (unit.stance != unit.unit.stance
                || unit.flankModel.nr != unit.unit.flank
-                    || unit.nonAgressive != unit.unit.nonAgressive)
+                    || unit.hidden != unit.unit.hidden)
             {
                return true;
             } 
@@ -485,9 +569,9 @@ package models.unit
                {
                   unit.stance = unit.unit.stance;
                }
-               if (unit.unit.nonAgressive != unit.nonAgressive)
+               if (unit.unit.hidden != unit.hidden)
                {
-                  unit.nonAgressive = unit.unit.nonAgressive;
+                  unit.hidden = unit.unit.hidden;
                }
             }
             transformedUnits.enableAutoUpdate();
@@ -510,15 +594,26 @@ package models.unit
             {
                unit.unit.stance = unit.stance;
             }
-            if (unit.unit.nonAgressive != unit.nonAgressive)
+         }
+         ML.units.enableAutoUpdate();
+         transformedUnits.enableAutoUpdate();
+         dispatchFormationChangeEvent();
+      }
+
+      public function confirmHiddenChanges(): void
+      {
+         transformedUnits.disableAutoUpdate();
+         ML.units.disableAutoUpdate();
+         for each(var unit: MCUnit in transformedUnits)
+         {
+            if (unit.unit.hidden != unit.hidden)
             {
-               unit.unit.nonAgressive = unit.nonAgressive;
+               unit.unit.hidden = unit.hidden;
             }
          }
          ML.units.enableAutoUpdate();
          transformedUnits.enableAutoUpdate();
          dispatchFormationChangeEvent();
-         GlobalFlags.getInstance().lockApplication = false;
       }
       
       
@@ -736,11 +831,11 @@ package models.unit
          deselectUnits();
       }
 
-      public function setNonAgressive(nonAgressive: Boolean): void
+      public function setHidden(hidden: Boolean): void
       {
          for each (var flank: UnitsFlank in flanks)
          {
-            flank.setNonAgressive(nonAgressive);
+            flank.setHidden(hidden);
          }
          deselectUnits();
       }

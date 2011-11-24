@@ -316,6 +316,7 @@ package controllers.startup
          bindPair(UnitsCommand.SHOW, new controllers.units.actions.ShowAction());
          bindPair(UnitsCommand.NEW, new controllers.units.actions.NewAction());
          bindPair(UnitsCommand.UPDATE, new controllers.units.actions.UpdateAction());
+         bindPair(UnitsCommand.SET_HIDDEN, new controllers.units.actions.SetHiddenAction());
          bindPair(UnitsCommand.DEPLOY, new controllers.units.actions.DeployAction());
          bindPair(UnitsCommand.ATTACK, new controllers.units.actions.AttackAction());
          bindPair(UnitsCommand.DISMISS, new controllers.units.actions.DismissAction());

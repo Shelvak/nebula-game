@@ -218,12 +218,12 @@ package models.unit
          US.dispatchFormationChangeEvent();
       }
 
-      public function setNonAgressive(nonAgressive: Boolean): void
+      public function setHidden(hidden: Boolean): void
       {
          US.transformedUnits.disableAutoUpdate();
          for each (var unit: MCUnit in selection)
          {
-            unit.nonAgressive = nonAgressive;
+            unit.hidden = hidden;
          }
          US.transformedUnits.enableAutoUpdate();
          US.dispatchFormationChangeEvent();
