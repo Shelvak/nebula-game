@@ -11,139 +11,121 @@
    <fx:Binding source="ML.player.allianceCooldown.occuresIn" destination="leftTime"/>
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.popups.ActionConfirmationPopup;
-         import components.skins.LinkButtonSkin;
-         
-         import config.Config;
-         
-         import controllers.GlobalFlags;
-         import controllers.alliances.AlliancesCommand;
-         import controllers.screens.MainAreaScreens;
-         import controllers.ui.NavigationController;
-         
-         import globalevents.GAllianceEvent;
-         
-         import models.ModelLocator;
-         import models.technology.Technology;
-         
-         import mx.events.FlexEvent;
-         
-         import utils.DateUtil;
-         import utils.UrlNavigate;
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         import utils.locale.Localizer;
-         
-         
-         [Bindable(event="willNotChange")]
-         private function get ML() : ModelLocator {
-            return ModelLocator.getInstance();
+      import com.developmentarc.core.utils.EventBroker;
+
+      import components.popups.ActionConfirmationPopup;
+
+      import config.Config;
+
+      import controllers.alliances.AlliancesCommand;
+      import controllers.screens.MainAreaScreens;
+      import controllers.ui.NavigationController;
+
+      import globalevents.GAllianceEvent;
+
+      import models.ModelLocator;
+      import models.technology.Technology;
+
+      import mx.events.FlexEvent;
+
+      import utils.DateUtil;
+      import utils.UrlNavigate;
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
+
+      [Bindable(event="willNotChange")]
+      private function get ML(): ModelLocator {
+         return ModelLocator.getInstance();
+      }
+
+
+      [Bindable(event="willNotChange")]
+      private function get model(): AllianceScreenM {
+         return AllianceScreenM.getInstance();
+      }
+
+      [Bindable (event="willNotChange")]
+      private function get allianceTech(): Technology {
+         return ML.technologies.getTechnologyByType('alliances');
+      }
+
+      private function createAlliance(e: Event): void {
+         if (allyName.text.length >= Config.getMinAllyNameLength()) {
+            allianceExists = false;
+            EventBroker.subscribe(GAllianceEvent.ALLIANCE_CONFIRMED, removeAlliancePending);
+            EventBroker.subscribe(GAllianceEvent.ALLIANCE_FAILED, removeAlliancePending);
+            new AlliancesCommand(
+                    AlliancesCommand.NEW,
+                    {'name': allyName.text}
+            ).dispatch();
          }
-         
-         
-         [Bindable(event="willNotChange")]
-         private function get model() : AllianceScreenM {
-            return AllianceScreenM.getInstance();
+      }
+
+      private function removeAlliancePending(e: GAllianceEvent): void {
+         EventBroker.unsubscribe(GAllianceEvent.ALLIANCE_CONFIRMED, removeAlliancePending);
+         EventBroker.unsubscribe(GAllianceEvent.ALLIANCE_FAILED, removeAlliancePending);
+         if (e.type == GAllianceEvent.ALLIANCE_FAILED) {
+            allianceExists = true;
          }
-         
-         [Bindable (event="willNotChange")]
-         private function get allianceTech(): Technology
-         {
-            return ML.technologies.getTechnologyByType('alliances');
+      }
+
+      [Bindable]
+      private var allianceExists: Boolean = false;
+
+      protected function this_creationCompleteHandler(event: FlexEvent): void {
+         NavigationController.getInstance().creationCompleteFunction(MainAreaScreens.ALLIANCE, this);
+
+         tabDescription.width =
+                 tabManagement.width = Math.max(tabDescription.width, tabManagement.width);
+      }
+
+      [Bindable]
+      private var leftTime: Number = 0;
+
+      private function renameAlliance(e: MouseEvent): void {
+         if (ML.player.creds < Config.getEditAllianceCredits()) {
+            UrlNavigate.getInstance().showBuyCreds();
          }
-         
-         private function createAlliance(e: Event): void
-         {
-            if (allyName.text.length >= Config.getMinAllyNameLength())
-            {
-               GlobalFlags.getInstance().lockApplication = true;
-               allianceExists = false;
-               EventBroker.subscribe(GAllianceEvent.ALLIANCE_CONFIRMED, removeAlliancePending);
-               EventBroker.subscribe(GAllianceEvent.ALLIANCE_FAILED, removeAlliancePending);
-               new AlliancesCommand(AlliancesCommand.NEW, 
-                  {'name': allyName.text}).dispatch();
-            }
+         else if (allyNewName.text.length >= Config.getMinAllyNameLength()) {
+
+            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+            var lbl: Label = new Label();
+            lbl.minWidth = 300;
+            lbl.text = Localizer.string('Popups', 'message.renameAlliance',
+                    [allyNewName.text, Config.getEditAllianceCredits()]);
+            popUp.addElement(lbl);
+            popUp.title = Localizer.string('Popups', 'title.renameAlliance');
+            popUp.confirmButtonClickHandler = function (button: Button = null): void {
+               new AlliancesCommand(AlliancesCommand.EDIT,
+                       {'name': allyNewName.text}).dispatch();
+               allyNewName.text = '';
+            };
+            popUp.show();
          }
-         
-         private function removeAlliancePending(e: GAllianceEvent): void
-         {
-            EventBroker.unsubscribe(GAllianceEvent.ALLIANCE_CONFIRMED, removeAlliancePending);
-            EventBroker.unsubscribe(GAllianceEvent.ALLIANCE_FAILED, removeAlliancePending);
-            if (e.type == GAllianceEvent.ALLIANCE_FAILED)
-            {
-               allianceExists = true;
-            }
-            GlobalFlags.getInstance().lockApplication = false;
-         }
-         
-         [Bindable]
-         private var allianceExists: Boolean = false;
-         
-         protected function this_creationCompleteHandler(event:FlexEvent):void
-         {
-            NavigationController.getInstance().creationCompleteFunction(MainAreaScreens.ALLIANCE, this);
-            
-            tabDescription.width =
-               tabManagement.width = Math.max(tabDescription.width, tabManagement.width);
-         }
-         
-         [Bindable]
-         private var leftTime: Number = 0;
-         
-         private function renameAlliance(e: MouseEvent): void
-         {
-            if (ML.player.creds < Config.getEditAllianceCredits())
-            {
-               UrlNavigate.getInstance().showBuyCreds();
-            }
-            else if (allyNewName.text.length >= Config.getMinAllyNameLength())
-            {
-               
-               var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
-               popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
-               popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-               var lbl: Label = new Label();
-               lbl.minWidth = 300;
-               lbl.text = Localizer.string('Popups', 'message.renameAlliance',
-                  [allyNewName.text, Config.getEditAllianceCredits()]);
-               popUp.addElement(lbl);
-               popUp.title = Localizer.string('Popups', 'title.renameAlliance');
-               popUp.confirmButtonClickHandler = function (button: Button = null): void
-               {
-                  GlobalFlags.getInstance().lockApplication = true;
-                  new AlliancesCommand(AlliancesCommand.EDIT, 
-                     {'name': allyNewName.text}).dispatch();
-                  allyNewName.text = '';
-               };
-               popUp.show();
-            }
-         }
-         
-         [Bindable]
-         private var editing: Boolean = false;
-         
-         protected function save_clickHandler(event:MouseEvent):void
-         {
-            GlobalFlags.getInstance().lockApplication = true;
-            model.alliance.newDescription = desc.text;
-            new AlliancesCommand(AlliancesCommand.EDIT_DESCRIPTION, 
-               model.alliance).dispatch();
-            editing = false;
-         }
-         
-         
-         private function getString(property:String, parameters:Array = null) : String
-         {
-            return Localizer.string("Alliances", property, parameters);
-         }
-         
-         
-         private function getImage(name:String) : BitmapData
-         {
-            return ImagePreloader.getInstance().getImage(AssetNames.ALLIANCE_SCREEN_IMAGE_FOLDER + name);
-         }
+      }
+
+      [Bindable]
+      private var editing: Boolean = false;
+
+      protected function save_clickHandler(event: MouseEvent): void {
+         model.alliance.newDescription = desc.text;
+         new AlliancesCommand(AlliancesCommand.EDIT_DESCRIPTION,
+                 model.alliance).dispatch();
+         editing = false;
+      }
+
+
+      private function getString(property: String, parameters: Array = null): String {
+         return Localizer.string("Alliances", property, parameters);
+      }
+
+
+      private function getImage(name: String): BitmapData {
+         return ImagePreloader.getInstance().getImage(AssetNames.ALLIANCE_SCREEN_IMAGE_FOLDER + name);
+      }
       ]]>
    </fx:Script>
    <screens:GradientBackground gradientWidth="{(width - 400) / 2}" />

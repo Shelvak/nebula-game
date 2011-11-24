@@ -4,7 +4,7 @@ package components.notifications.parts
    import components.notifications.IRNotificationPartBase;
    import components.notifications.parts.skins.PlanetAnnexedSkin;
    
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.players.PlayersCommand;
    import controllers.ui.NavigationController;
    
@@ -49,11 +49,8 @@ package components.notifications.parts
          if (f_NotificationPartChange)
          {
             var part: PlanetAnnexed = PlanetAnnexed(notificationPart);
-            function addLinkListeners(): void
-            {
-               lblRelatedPlayer.addEventListener(MouseEvent.CLICK, function(e: MouseEvent): void
-               {
-                  GlobalFlags.getInstance().lockApplication = true;
+            function addLinkListeners(): void {
+               lblRelatedPlayer.addEventListener(MouseEvent.CLICK, function(e: MouseEvent): void {
                   new PlayersCommand(PlayersCommand.RATINGS, part.owner.name).dispatch();
                });
             }

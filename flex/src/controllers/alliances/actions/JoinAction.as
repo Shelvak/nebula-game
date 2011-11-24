@@ -2,7 +2,7 @@ package controllers.alliances.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.Messenger;
    
    import utils.locale.Localizer;
@@ -27,9 +27,9 @@ package controllers.alliances.actions
     */
    public class JoinAction extends CommunicationAction
    {
-      private function get GF() : GlobalFlags
+      private function get GF() : ApplicationLocker
       {
-         return GlobalFlags.getInstance();
+         return ApplicationLocker.getInstance();
       }
       
       

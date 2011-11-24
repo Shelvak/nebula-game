@@ -7,110 +7,96 @@
                         creationComplete="advancedcontainer1_creationCompleteHandler(event)" xmlns:credits="components.credits.*">
    <fx:Script>
       <![CDATA[
-         import components.market.events.MarketEvent;
-         import components.popups.ActionConfirmationPopup;
-         import components.skins.GreenButtonSkin;
-         
-         import models.building.Building;
-         import models.resource.ResourceType;
-         
-         import mx.collections.ArrayCollection;
-         import mx.events.FlexEvent;
-         
-         import utils.MathUtil;
-         
-         protected function what_selectedResourceChangeHandler(event:Event):void
-         {
-            if (sellSelector.selectedVal < Config.getMinMarketOffer())
-            {
-               sellSelector.selectedVal = Config.getMinMarketOffer();
-            }
-            if (forWhat.selectedItem == what.selectedItem)
-            {
-               forWhat.selectedIndex = -1;
-               buildForWhat();
-            }
-            else
-            {
-               var oldSel: String = forWhat.selectedItem;
-               buildForWhat();
-               if (oldSel != null)
-               {
-                  forWhat.selectedIndex = availableResList.getItemIndex(oldSel);
-               }
-            }
-            updateRate();
+      import components.market.events.MarketEvent;
+      import components.popups.ActionConfirmationPopup;
+      import components.skins.GreenButtonSkin;
+
+      import models.building.Building;
+      import models.resource.ResourceType;
+
+      import mx.collections.ArrayCollection;
+      import mx.events.FlexEvent;
+
+      import utils.ApplicationLocker;
+
+      import utils.MathUtil;
+
+      protected function what_selectedResourceChangeHandler(event: Event): void {
+         if (sellSelector.selectedVal < Config.getMinMarketOffer()) {
+            sellSelector.selectedVal = Config.getMinMarketOffer();
          }
-         
-         [Bindable]
-         private var availableResList: ArrayCollection = new ArrayCollection();
-         
-         private function buildForWhat(): void
-         {
-            availableResList.removeAll();
-            function addResource(res: String): void
-            {
-               if (what.selectedItem != res)
-               {
-                  availableResList.addItem(res);
-               }
-            }
-            addResource(ResourceType.METAL);
-            addResource(ResourceType.ENERGY);
-            addResource(ResourceType.ZETIUM);
-            addResource(ResourceType.CREDS);
-         }
-         
-         protected function forWhat_selectedResourceChangeHandler(event:Event):void
-         {
-            updateRate();
-         }
-         
-         
-         protected function advancedcontainer1_creationCompleteHandler(event:FlexEvent):void
-         {
-            mScreen.addEventListener(MarketEvent.AVG_RATE_CHANGE, dispatchAvgRateChangeEvent);
-         }
-         
-         private function dispatchAvgRateChangeEvent(e: MarketEvent): void
-         {
-            if (hasEventListener(MarketEvent.AVG_RATE_CHANGE))
-            {
-               dispatchEvent(new MarketEvent(MarketEvent.AVG_RATE_CHANGE));
-            }
-         }
-         
-         protected function confirm_clickHandler(event:MouseEvent):void
-         {
-            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
-            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
-            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-            var lbl: Label = new Label();
-            lbl.minWidth = 300;
-            lbl.text = Localizer.string('Popups', 'message.createOffer');
-            popUp.addElement(lbl);
-            popUp.title = Localizer.string('Popups', 'title.createOffer');
-            popUp.confirmButtonClickHandler = function (button: Button = null): void
-            {
-               GlobalFlags.getInstance().lockApplication = true;
-               new MarketCommand(MarketCommand.NEW, {
-                  'marketId': mScreen.market.id,
-                  'fromAmount': sellSelector.selectedVal,
-                  'fromKind': OfferResourceKind[what.selectedItem],
-                  'toRate': forSelector.selectedVal/sellSelector.selectedVal,
-                  'toKind': OfferResourceKind[forWhat.selectedItem]
-               }).dispatch();
-               reset();
-            };
-            popUp.show();
-         }
-         
-         public function reset(): void
-         {
+         if (forWhat.selectedItem == what.selectedItem) {
             forWhat.selectedIndex = -1;
-            what.selectedIndex = -1;
+            buildForWhat();
          }
-         
+         else {
+            var oldSel: String = forWhat.selectedItem;
+            buildForWhat();
+            if (oldSel != null) {
+               forWhat.selectedIndex = availableResList.getItemIndex(oldSel);
+            }
+         }
+         updateRate();
+      }
+
+      [Bindable]
+      private var availableResList: ArrayCollection = new ArrayCollection();
+
+      private function buildForWhat(): void {
+         availableResList.removeAll();
+         function addResource(res: String): void {
+            if (what.selectedItem != res) {
+               availableResList.addItem(res);
+            }
+         }
+
+         addResource(ResourceType.METAL);
+         addResource(ResourceType.ENERGY);
+         addResource(ResourceType.ZETIUM);
+         addResource(ResourceType.CREDS);
+      }
+
+      protected function forWhat_selectedResourceChangeHandler(event: Event): void {
+         updateRate();
+      }
+
+
+      protected function advancedcontainer1_creationCompleteHandler(event: FlexEvent): void {
+         mScreen.addEventListener(MarketEvent.AVG_RATE_CHANGE, dispatchAvgRateChangeEvent);
+      }
+
+      private function dispatchAvgRateChangeEvent(e: MarketEvent): void {
+         if (hasEventListener(MarketEvent.AVG_RATE_CHANGE)) {
+            dispatchEvent(new MarketEvent(MarketEvent.AVG_RATE_CHANGE));
+         }
+      }
+
+      protected function confirm_clickHandler(event: MouseEvent): void {
+         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+         popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+         var lbl: Label = new Label();
+         lbl.minWidth = 300;
+         lbl.text = Localizer.string('Popups', 'message.createOffer');
+         popUp.addElement(lbl);
+         popUp.title = Localizer.string('Popups', 'title.createOffer');
+         popUp.confirmButtonClickHandler = function (button: Button = null): void {
+            new MarketCommand(MarketCommand.NEW, {
+               'marketId': mScreen.market.id,
+               'fromAmount': sellSelector.selectedVal,
+               'fromKind': OfferResourceKind[what.selectedItem],
+               'toRate': forSelector.selectedVal / sellSelector.selectedVal,
+               'toKind': OfferResourceKind[forWhat.selectedItem]
+            }).dispatch();
+            reset();
+         };
+         popUp.show();
+      }
+
+      public function reset(): void {
+         forWhat.selectedIndex = -1;
+         what.selectedIndex = -1;
+      }
       ]]>
    </fx:Script>
    <base:layout>
@@ -118,79 +104,72 @@
    </base:layout>
    <fx:Script>
       <![CDATA[
-         import models.market.MCMarketScreen;
-         import models.market.OfferResourceKind;
-         import controllers.market.MarketCommand;
-         import controllers.GlobalFlags;
-         import config.Config;
-         import models.resource.Resource;
-         import utils.locale.Localizer;
-         
-         private function getText(prop: String, params: Array = null): String
-         {
-            return Localizer.string('Market', prop, params);
+      import models.market.MCMarketScreen;
+      import models.market.OfferResourceKind;
+
+      import controllers.market.MarketCommand;
+
+      import utils.ApplicationLocker;
+
+      import config.Config;
+
+      import models.resource.Resource;
+
+      import utils.locale.Localizer;
+
+      private function getText(prop: String, params: Array = null): String {
+         return Localizer.string('Market', prop, params);
+      }
+
+      [Bindable]
+      public var taxRate: Number;
+
+      private function getResource(res: String): Resource {
+         return Resource(ML.latestPlanet.ssObject[res]);
+      }
+
+      private function updateRate(): void {
+         if (what.selectedItem != null && forWhat.selectedItem != null) {
+            new MarketCommand(MarketCommand.AVG_RATE, {
+               'fromKind': int(OfferResourceKind[what.selectedItem]),
+               'toKind': int(OfferResourceKind[forWhat.selectedItem])
+            }).dispatch();
          }
-         
-         [Bindable]
-         public var taxRate: Number;
-         
-         private function getResource(res: String): Resource
-         {
-            return Resource(ML.latestPlanet.ssObject[res]);
+      }
+
+      [Bindable (event="avgRateChange")]
+      private function getMarketRate(currentRate: Number): int {
+         var rate: Number = (currentRate / mScreen.avgRate);
+         return Math.abs(Math.round(100 - (rate * 100)));
+      }
+
+      private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
+
+      [Bindable (event="avgRateChange")]
+      private function getCheaper(currentRate: Number): Boolean {
+         return currentRate <= mScreen.avgRate;
+      }
+
+      [Bindable (event="avgRateChange")]
+      private function getMaxOffer(amount: int): int {
+         return Math.round((mScreen.avgRate * (1 + Config.getMarketRange())) * amount);
+      }
+
+      [Bindable (event="avgRateChange")]
+      private function getMinOffer(amount: int): int {
+         return Math.round((mScreen.avgRate * (1 - Config.getMarketRange())) * amount);
+      }
+
+      private function getResourceWithoutTaxes(resource: String, taxes: Number): Number {
+         if (resource == ResourceType.CREDS) {
+            return Resource.getGivenResourceWithoutTaxes(
+                    ML.player.creds - ML.player.vipCreds - ML.player.freeCreds,
+                    taxes);
          }
-         
-         private function updateRate(): void
-         {
-            if (what.selectedItem != null && forWhat.selectedItem != null)
-            {
-               GlobalFlags.getInstance().lockApplication = true;
-               new MarketCommand(MarketCommand.AVG_RATE, {
-                  'fromKind': int(OfferResourceKind[what.selectedItem]),
-                  'toKind': int(OfferResourceKind[forWhat.selectedItem])
-               }).dispatch();
-            }
+         else {
+            return getResource(resource).getWithoutTaxes(taxes);
          }
-         
-         [Bindable (event="avgRateChange")]
-         private function getMarketRate(currentRate: Number): int
-         {
-            var rate: Number = (currentRate/mScreen.avgRate);
-            return Math.abs(Math.round(100 - (rate * 100)));
-         }
-         
-         private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
-         
-         [Bindable (event="avgRateChange")]
-         private function getCheaper(currentRate: Number): Boolean
-         {
-            return currentRate <= mScreen.avgRate;
-         }
-         
-         [Bindable (event="avgRateChange")]
-         private function getMaxOffer(amount: int): int
-         {
-            return Math.round((mScreen.avgRate * (1 + Config.getMarketRange())) * amount);
-         }
-         
-         [Bindable (event="avgRateChange")]
-         private function getMinOffer(amount: int): int
-         {
-            return Math.round((mScreen.avgRate * (1 - Config.getMarketRange())) * amount);
-         }
-         
-         private function getResourceWithoutTaxes(resource: String, taxes: Number): Number
-         {
-            if (resource == ResourceType.CREDS)
-            {
-               return Resource.getGivenResourceWithoutTaxes(
-                  ML.player.creds - ML.player.vipCreds - ML.player.freeCreds,
-                  taxes);
-            }
-            else
-            {
-               return getResource(resource).getWithoutTaxes(taxes);
-            }
-         }
+      }
       ]]>
    </fx:Script>
    <s:Label text="{getText('label.wantToSell')}" styleName="h3" paddingBottom="3"

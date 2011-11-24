@@ -2,7 +2,7 @@ package controllers.market.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.Messenger;
    
    import models.factories.MarketOfferFactory;
@@ -44,15 +44,9 @@ package controllers.market.actions
          mScreen.offerCount++;
       }
       
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
       public override function result(rmo:ClientRMO):void
       {
-         GlobalFlags.getInstance().lockApplication = false;
+         super.result(rmo);
          Messenger.show(Localizer.string('Market', 'message.offerSubmited'), 
             Messenger.MEDIUM);
       }

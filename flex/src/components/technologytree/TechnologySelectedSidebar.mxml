@@ -11,410 +11,358 @@
    
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.credits.AccelerateSelector;
-         import components.credits.ConfirmCredsLabel;
-         import components.popups.ActionConfirmationPopup;
-         import components.popups.WaitingCredsPopup;
-         import components.skins.GreenButtonSkin;
-         import components.skins.PauseButtonSkin;
-         
-         import config.Config;
-         
-         import controllers.GlobalFlags;
-         import controllers.navigation.MCMainArea;
-         import controllers.navigation.MCSidebar;
-         import controllers.objects.ObjectClass;
-         import controllers.screens.MainAreaScreens;
-         import controllers.screens.SidebarScreens;
-         import controllers.technologies.TechnologiesCommand;
-         import controllers.ui.NavigationController;
-         
-         import flash.utils.getTimer;
-         
-         import flashx.textLayout.elements.TextFlow;
-         
-         import globalevents.GResourcesEvent;
-         import globalevents.GTechnologiesEvent;
-         
-         import models.factories.BuildingFactory;
-         import models.parts.Upgradable;
-         import models.parts.events.UpgradeEvent;
-         import models.resource.Resource;
-         import models.resource.ResourceType;
-         import models.resource.ResourcesAmount;
-         import models.solarsystem.MSSObject;
-         import models.technology.MCTechnologySelectedSidebar;
-         import models.technology.Technology;
-         import models.technology.events.TechnologyEvent;
-         import models.technology.events.TechnologySidebarEvent;
-         import models.unit.Unit;
-         
-         import mx.events.FlexEvent;
-         
-         import spark.utils.TextFlowUtil;
-         
-         import utils.DateUtil;
-         import utils.ModelUtil;
-         import utils.assets.AssetNames;
-         import utils.locale.Localizer;
-         
-         [Bindable]
-         private var _selectedModel: Technology;
-         
-         private function refreshSelected(e: TechnologySidebarEvent = null): void
-         {
-            if (_selectedModel != tScreen.selectedTechnology)
-            {
-               if (_selectedModel != null)
-               {
-                  if (_selectedModel.upgradePart != null)
-                  {
-                     _selectedModel.upgradePart.removeEventListener(UpgradeEvent.LEVEL_CHANGE, 
-                        refreshPriceOrientatedProperties);
-                     _selectedModel.upgradePart.removeEventListener(
-                        UpgradeEvent.UPGRADE_PROGRESS,
-                        model_upgradeProgressHandler
-                     );
-                     _selectedModel.upgradePart.removeEventListener(
-                        UpgradeEvent.UPGRADE_STOPPED,
-                        model_upgradeProgressHandler
-                     );
-                  }
-                  _selectedModel.removeEventListener(TechnologyEvent.SELECTED_CHANGE, 
-                     refreshPriceOrientatedProperties);
+      import com.developmentarc.core.utils.EventBroker;
+
+      import components.credits.AccelerateSelector;
+      import components.credits.ConfirmCredsLabel;
+      import components.popups.ActionConfirmationPopup;
+      import components.popups.WaitingCredsPopup;
+      import components.skins.GreenButtonSkin;
+      import components.skins.PauseButtonSkin;
+
+      import config.Config;
+
+      import utils.ApplicationLocker;
+
+      import controllers.navigation.MCMainArea;
+      import controllers.navigation.MCSidebar;
+      import controllers.objects.ObjectClass;
+      import controllers.screens.MainAreaScreens;
+      import controllers.screens.SidebarScreens;
+      import controllers.technologies.TechnologiesCommand;
+      import controllers.ui.NavigationController;
+
+      import flash.utils.getTimer;
+
+      import flashx.textLayout.elements.TextFlow;
+
+      import globalevents.GResourcesEvent;
+      import globalevents.GTechnologiesEvent;
+
+      import models.factories.BuildingFactory;
+      import models.parts.Upgradable;
+      import models.parts.events.UpgradeEvent;
+      import models.resource.Resource;
+      import models.resource.ResourceType;
+      import models.resource.ResourcesAmount;
+      import models.solarsystem.MSSObject;
+      import models.technology.MCTechnologySelectedSidebar;
+      import models.technology.Technology;
+      import models.technology.events.TechnologyEvent;
+      import models.technology.events.TechnologySidebarEvent;
+      import models.unit.Unit;
+
+      import mx.events.FlexEvent;
+
+      import spark.utils.TextFlowUtil;
+
+      import utils.DateUtil;
+      import utils.ModelUtil;
+      import utils.assets.AssetNames;
+      import utils.locale.Localizer;
+
+      [Bindable]
+      private var _selectedModel: Technology;
+
+      private function refreshSelected(e: TechnologySidebarEvent = null): void {
+         if (_selectedModel != tScreen.selectedTechnology) {
+            if (_selectedModel != null) {
+               if (_selectedModel.upgradePart != null) {
+                  _selectedModel.upgradePart.removeEventListener(UpgradeEvent.LEVEL_CHANGE,
+                          refreshPriceOrientatedProperties);
+                  _selectedModel.upgradePart.removeEventListener(
+                          UpgradeEvent.UPGRADE_PROGRESS,
+                          model_upgradeProgressHandler
+                  );
+                  _selectedModel.upgradePart.removeEventListener(
+                          UpgradeEvent.UPGRADE_STOPPED,
+                          model_upgradeProgressHandler
+                  );
                }
-               _selectedModel = tScreen.selectedTechnology;
-               if (_selectedModel != null)
-               {
-                  if (_selectedModel.upgradePart != null)
-                  {
-                     _selectedModel.upgradePart.addEventListener(UpgradeEvent.LEVEL_CHANGE,
-                        refreshPriceOrientatedProperties);
-                     _selectedModel.upgradePart.addEventListener(
-                        UpgradeEvent.UPGRADE_PROGRESS,
-                        model_upgradeProgressHandler
-                     );
-                     _selectedModel.upgradePart.addEventListener(
-                        UpgradeEvent.UPGRADE_STOPPED,
-                        model_upgradeProgressHandler
-                     );
-                  }
-                  _selectedModel.addEventListener(TechnologyEvent.SELECTED_CHANGE, 
-                     refreshPriceOrientatedProperties);
-                  
-               }
+               _selectedModel.removeEventListener(TechnologyEvent.SELECTED_CHANGE,
+                       refreshPriceOrientatedProperties);
             }
-            if (_selectedModel)
-            {
-               refreshPriceOrientatedProperties();
-               pauseButton.selected = _selectedModel.pauseRemainder != 0;
+            _selectedModel = tScreen.selectedTechnology;
+            if (_selectedModel != null) {
+               if (_selectedModel.upgradePart != null) {
+                  _selectedModel.upgradePart.addEventListener(UpgradeEvent.LEVEL_CHANGE,
+                          refreshPriceOrientatedProperties);
+                  _selectedModel.upgradePart.addEventListener(
+                          UpgradeEvent.UPGRADE_PROGRESS,
+                          model_upgradeProgressHandler
+                  );
+                  _selectedModel.upgradePart.addEventListener(
+                          UpgradeEvent.UPGRADE_STOPPED,
+                          model_upgradeProgressHandler
+                  );
+               }
+               _selectedModel.addEventListener(TechnologyEvent.SELECTED_CHANGE,
+                       refreshPriceOrientatedProperties);
+
             }
          }
-         
-         [Bindable]
-         private var metalCost: Number;
-         
-         [Bindable]
-         private var energyCost: Number;
-         
-         [Bindable]
-         private var zetiumCost: Number;
-         
-         [Bindable]
-         private var timeCost: String;
-         
-         [Bindable]
-         private var canBeUpgraded: Boolean = false;
-         
-         /**
-          * how many seconds are left to fulfill resources needs for technology
-          **/
-         [Bindable]
-         private var resLeft: int = 0;
-         
-         [Bindable]
-         private var enoughStorage: Boolean = true;
-         
-         private var missingStorages: Array = [];
-         [Bindable]
-         private var missingStorageString: String = '';
-         
-         private function calculateResLeft(): void
-         {
-            var planet:MSSObject = ML.latestPlanet.ssObject;
-            missingStorageString = Resource.getMissingStoragesString(planet,
-               metalCost, energyCost, zetiumCost);
-            enoughStorage = (missingStorageString == ''?true:false);
-            resLeft = Resource.getTimeToReachResources
-               (planet.metal, planet.energy, planet.zetium, 
-                  metalCost, energyCost, zetiumCost);
+         if (_selectedModel) {
+            refreshPriceOrientatedProperties();
+            pauseButton.selected = _selectedModel.pauseRemainder != 0;
          }
-         
-         public function refreshUpgradeState(e: Event = null): void
-         {
-            if (ML.latestPlanet != null)
-            {
-               var planet:MSSObject = ML.latestPlanet.ssObject;
-               if (_selectedModel != null)
-               {
-                  canBeUpgraded = !((metalCost > planet.metal.currentStock) ||
-                     (energyCost > planet.energy.currentStock) ||
-                     (zetiumCost > planet.zetium.currentStock));
-                  
-                  calculateResLeft();
-               }
-               else
-                  resLeft = 0;
-            }
-         }
-         
-         protected function recalculateCosts(): void
-         {
-            if (_selectedModel)
-            {
-               var upgradable:Upgradable = _selectedModel.upgradePart;
-               var speedBoostCost:Number = speedUpBoost.selected  ?Config.getTechnologiesSpeedUpCost() : 1;
-               var resources:ResourcesAmount = upgradable.resourcesNeededForNextLevel();
-               metalCost  = resources.metal  * speedBoostCost;
-               energyCost = resources.energy * speedBoostCost;
-               zetiumCost = resources.zetium * speedBoostCost;
-               var timeSeconds:int = _selectedModel.upgradePart.calcUpgradeTime(
-                  {'level': _selectedModel.upgradePart.level + 1,
-                     'scientists': scientistsSelector.value,
-                     'speedUp': speedUpBoost.selected});
-               timeSeconds = timeSeconds > 1 ? timeSeconds : 1;
-               timeCost = getStringFromSeconds(timeSeconds, 3);
-            }
-         }
-         
-         private function refreshPriceOrientatedProperties(e: Event = null): void
-         {
-            if (e is UpgradeEvent)
-            {
-               scientistsSelector.value = scientistsSelector.minimum;
-            }
-            recalculateCosts();
-            refreshUpgradeState();
-         }
-         
-         private function getTextFlow(value: String): TextFlow
-         {
-            return TextFlowUtil.importFromString(value);
-         }
-         
-         protected function unlearn(event:MouseEvent):void
-         {
-            var confirmPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
-            var confirmLabel: ConfirmCredsLabel = new ConfirmCredsLabel();
-            confirmLabel.popUp = confirmPopUp;
-            var destCreds: int = Config.getTechnologyUnlearnCost();
-            confirmLabel.credsRequired = destCreds;
-            confirmLabel.textFlow = getTextFlow(
-               Localizer.string('Credits', 'label.unlearnPrice', [destCreds]));
-            confirmLabel.refreshPopup();
-            confirmPopUp.addElement(confirmLabel);
-            confirmPopUp.confirmButtonClickHandler = function (button: Button = null): void
-            {
-               function doDestruct(): void
-               {
-                  GlobalFlags.getInstance().lockApplication = true;
-                  new TechnologiesCommand(TechnologiesCommand.UNLEARN, 
-                     {'id': _selectedModel.id}).dispatch();
-               }
-               if (confirmLabel.hasEnoughCredits())
-               {
-                  doDestruct();
-               }
-               else
-               {
-                  WaitingCredsPopup.showPopup(destCreds, doDestruct);
-               }
-            };
-            confirmPopUp.show();
-         }
-         
-         protected function upgradeButton_clickHandler(event:MouseEvent):void
-         {
-            GlobalFlags.getInstance().lockApplication = true;
-            if (_selectedModel.upgradePart.level == 0)
-            {
-               new TechnologiesCommand(
-                  TechnologiesCommand.NEW,
-                  {type: _selectedModel.type,
-                     planet_id: ML.latestPlanet.id,
-                     scientists: scientistsSelector.value,
-                     speed_up: speedUpBoost.selected}
-               ).dispatch ();
+      }
+
+      [Bindable]
+      private var metalCost: Number;
+
+      [Bindable]
+      private var energyCost: Number;
+
+      [Bindable]
+      private var zetiumCost: Number;
+
+      [Bindable]
+      private var timeCost: String;
+
+      [Bindable]
+      private var canBeUpgraded: Boolean = false;
+
+      /**
+       * how many seconds are left to fulfill resources needs for technology
+       **/
+      [Bindable]
+      private var resLeft: int = 0;
+
+      [Bindable]
+      private var enoughStorage: Boolean = true;
+
+      private var missingStorages: Array = [];
+      [Bindable]
+      private var missingStorageString: String = '';
+
+      private function calculateResLeft(): void {
+         var planet: MSSObject = ML.latestPlanet.ssObject;
+         missingStorageString = Resource.getMissingStoragesString(planet,
+                 metalCost, energyCost, zetiumCost);
+         enoughStorage = (missingStorageString == '' ? true : false);
+         resLeft = Resource.getTimeToReachResources
+                 (planet.metal, planet.energy, planet.zetium,
+                         metalCost, energyCost, zetiumCost);
+      }
+
+      public function refreshUpgradeState(e: Event = null): void {
+         if (ML.latestPlanet != null) {
+            var planet: MSSObject = ML.latestPlanet.ssObject;
+            if (_selectedModel != null) {
+               canBeUpgraded = !((metalCost > planet.metal.currentStock) ||
+                       (energyCost > planet.energy.currentStock) ||
+                       (zetiumCost > planet.zetium.currentStock));
+
+               calculateResLeft();
             }
             else
-            {
-               new TechnologiesCommand(
-                  TechnologiesCommand.UPGRADE,
-                  {id: _selectedModel.id,
-                     planet_id: ML.latestPlanet.id,
-                     scientists: scientistsSelector.value,
-                     speed_up: speedUpBoost.selected}
-               ).dispatch ();
+               resLeft = 0;
+         }
+      }
+
+      protected function recalculateCosts(): void {
+         if (_selectedModel) {
+            var upgradable: Upgradable = _selectedModel.upgradePart;
+            var speedBoostCost: Number = speedUpBoost.selected ? Config.getTechnologiesSpeedUpCost() : 1;
+            var resources: ResourcesAmount = upgradable.resourcesNeededForNextLevel();
+            metalCost = resources.metal * speedBoostCost;
+            energyCost = resources.energy * speedBoostCost;
+            zetiumCost = resources.zetium * speedBoostCost;
+            var timeSeconds: int = _selectedModel.upgradePart.calcUpgradeTime(
+                    {'level': _selectedModel.upgradePart.level + 1,
+                       'scientists': scientistsSelector.value,
+                       'speedUp': speedUpBoost.selected});
+            timeSeconds = timeSeconds > 1 ? timeSeconds : 1;
+            timeCost = getStringFromSeconds(timeSeconds, 3);
+         }
+      }
+
+      private function refreshPriceOrientatedProperties(e: Event = null): void {
+         if (e is UpgradeEvent) {
+            scientistsSelector.value = scientistsSelector.minimum;
+         }
+         recalculateCosts();
+         refreshUpgradeState();
+      }
+
+      private function getTextFlow(value: String): TextFlow {
+         return TextFlowUtil.importFromString(value);
+      }
+
+      protected function unlearn(event: MouseEvent): void {
+         var confirmPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var confirmLabel: ConfirmCredsLabel = new ConfirmCredsLabel();
+         confirmLabel.popUp = confirmPopUp;
+         var destCreds: int = Config.getTechnologyUnlearnCost();
+         confirmLabel.credsRequired = destCreds;
+         confirmLabel.textFlow = getTextFlow(
+                 Localizer.string('Credits', 'label.unlearnPrice', [destCreds]));
+         confirmLabel.refreshPopup();
+         confirmPopUp.addElement(confirmLabel);
+         confirmPopUp.confirmButtonClickHandler = function (button: Button = null): void {
+            function doDestruct(): void {
+               new TechnologiesCommand(TechnologiesCommand.UNLEARN,
+                       {'id': _selectedModel.id}).dispatch();
             }
-         } 
-         
-         protected function deselect_clickHandler(event:MouseEvent):void
-         {
-            var MA: MCMainArea = MCMainArea.getInstance();
-            if (MA.currentName == MainAreaScreens.INFO)
-               MA.showPrevious();
-            MCSidebar.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_BASE);
-         }
-         
-         
-         protected function details_clickHandler(event:MouseEvent):void
-         {
-            NavigationController.getInstance().showInfo(_selectedModel);
-         }
-         
-         
-         protected function unlocks_clickHandler(event:MouseEvent):void
-         {
-            var temp: *;
-            if (ModelUtil.getModelClass(Config.unlockHash[_selectedModel.type]) == ObjectClass.BUILDING)
-            {
-               temp = BuildingFactory.createDefault(
-                  ModelUtil.getModelSubclass(Config.unlockHash[_selectedModel.type]));
+
+            if (confirmLabel.hasEnoughCredits()) {
+               doDestruct();
             }
-            else
-            {
-               temp = new Unit();
-               temp.type = ModelUtil.getModelSubclass(Config.unlockHash[_selectedModel.type]);
-               temp.upgradePart.level = 0;
+            else {
+               WaitingCredsPopup.showPopup(destCreds, doDestruct);
             }
-            NavigationController.getInstance().showInfo(temp);
-         }
-         
-         
-         protected function speedUpBoost_changeHandler(event:Event):void
-         {
-            refreshPriceOrientatedProperties();
-         }
-         
-         override protected function updateDisplayList(uw:Number, uh:Number) : void
-         {
-            super.updateDisplayList(uw, uh);
-            if (!_selectedModel || !_selectedModel.upgradePart)
-            {
-               return;
-            }
-            
-            if (_selectedModel.pauseRemainder != 0 || _selectedModel.upgradePart.upgradeEndsAt != null)
-            {
-               techProgressBar.setProgress(_selectedModel.upgradePart.upgradeProgress, 1);
-            }
-         }
-         
-         
-         private function model_upgradeProgressHandler(e:UpgradeEvent) : void
-         {
-            invalidateDisplayList();
-         }
-         
-         protected function pause_clickHandler(event:MouseEvent):void
-         {
-            GlobalFlags.getInstance().lockApplication = true;
-            if (pauseButton.selected)
-            {
-               scientistsSelector.value = _selectedModel.scientists;
-               new TechnologiesCommand(
-                  TechnologiesCommand.PAUSE,
-                  {id: _selectedModel.id}
-               ).dispatch ();
-            }
-            else
-            {
-               new TechnologiesCommand(
-                  TechnologiesCommand.RESUME,
-                  {id: _selectedModel.id,
-                     scientists: scientistsSelector.value}
-               ).dispatch ();
-            }
-         }
-         
-         private var tScreen: MCTechnologySelectedSidebar =
-            MCTechnologySelectedSidebar.getInstance();
-         
-         protected function techSidebar_creationCompleteHandler(event:FlexEvent):void
-         {
-            tScreen.addEventListener(TechnologySidebarEvent.SELECTED_CHANGE, refreshSelected);
-            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
-            refreshPriceOrientatedProperties();
-            refreshSelected();
-         }
-         
-         
-         protected function scientistsSelector_changeHandler(event:Event):void
-         {
-            refreshPriceOrientatedProperties();
-         }
-         
-         protected function button1_clickHandler(event:MouseEvent):void
-         {
-            GlobalFlags.getInstance().lockApplication = true;
+         };
+         confirmPopUp.show();
+      }
+
+      protected function upgradeButton_clickHandler(event: MouseEvent): void {
+         if (_selectedModel.upgradePart.level == 0) {
             new TechnologiesCommand(
-               TechnologiesCommand.UPDATE,
-               {id: _selectedModel.id,
-                  scientists: scientistsSelector.value}
-            ).dispatch ();
+                    TechnologiesCommand.NEW,
+                    {type: _selectedModel.type,
+                       planet_id: ML.latestPlanet.id,
+                       scientists: scientistsSelector.value,
+                       speed_up: speedUpBoost.selected}
+            ).dispatch();
          }
-         
-         private function getStringFromSeconds(seconds: int, parts: int = 2): String
-         {
-            return DateUtil.secondsToHumanString(seconds, parts);
+         else {
+            new TechnologiesCommand(
+                    TechnologiesCommand.UPGRADE,
+                    {id: _selectedModel.id,
+                       planet_id: ML.latestPlanet.id,
+                       scientists: scientistsSelector.value,
+                       speed_up: speedUpBoost.selected}
+            ).dispatch();
          }
-         
-         private function hasUnlockingStuff(type: String): String
-         {
-            return Config.unlockHash[type];
+      }
+
+      protected function deselect_clickHandler(event: MouseEvent): void {
+         var MA: MCMainArea = MCMainArea.getInstance();
+         if (MA.currentName == MainAreaScreens.INFO)
+            MA.showPrevious();
+         MCSidebar.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_BASE);
+      }
+
+
+      protected function details_clickHandler(event: MouseEvent): void {
+         NavigationController.getInstance().showInfo(_selectedModel);
+      }
+
+
+      protected function unlocks_clickHandler(event: MouseEvent): void {
+         var temp: *;
+         if (ModelUtil.getModelClass(Config.unlockHash[_selectedModel.type]) == ObjectClass.BUILDING) {
+            temp = BuildingFactory.createDefault(
+                    ModelUtil.getModelSubclass(Config.unlockHash[_selectedModel.type]));
          }
-         
-         
-         protected function coin_clickHandler(event:MouseEvent):void
-         {
-            var accelerator: AccelerateSelector = new AccelerateSelector();
-            accelerator.upgradePart = _selectedModel.upgradePart;
-            var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
-            accelerator.popUp = speedPopUp;
-            speedPopUp.confirmButtonEnabled = false;
-            speedPopUp.confirmButtonClickHandler = function(): void
-            {
-               function doAccelerate(): void
-               {
-                  GlobalFlags.getInstance().lockApplication = true;
-                  new TechnologiesCommand(TechnologiesCommand.ACCELERATE_UPGRADE, 
-                     {'id': _selectedModel.id, 
-                        'index': accelerator.selectedAccelerateType}).dispatch(); 
-               }
-               if (accelerator.hasEnoughCredits())
-               {
-                  doAccelerate();
-               }
-               else
-               {
-                  WaitingCredsPopup.showPopup(accelerator.selectedCost, doAccelerate);
-               }
+         else {
+            temp = new Unit();
+            temp.type = ModelUtil.getModelSubclass(Config.unlockHash[_selectedModel.type]);
+            temp.upgradePart.level = 0;
+         }
+         NavigationController.getInstance().showInfo(temp);
+      }
+
+
+      protected function speedUpBoost_changeHandler(event: Event): void {
+         refreshPriceOrientatedProperties();
+      }
+
+      override protected function updateDisplayList(uw: Number, uh: Number): void {
+         super.updateDisplayList(uw, uh);
+         if (!_selectedModel || !_selectedModel.upgradePart) {
+            return;
+         }
+
+         if (_selectedModel.pauseRemainder != 0 || _selectedModel.upgradePart.upgradeEndsAt != null) {
+            techProgressBar.setProgress(_selectedModel.upgradePart.upgradeProgress, 1);
+         }
+      }
+
+
+      private function model_upgradeProgressHandler(e: UpgradeEvent): void {
+         invalidateDisplayList();
+      }
+
+      protected function pause_clickHandler(event: MouseEvent): void {
+         if (pauseButton.selected) {
+            scientistsSelector.value = _selectedModel.scientists;
+            new TechnologiesCommand(
+                    TechnologiesCommand.PAUSE,
+                    {id: _selectedModel.id}
+            ).dispatch();
+         }
+         else {
+            new TechnologiesCommand(
+                    TechnologiesCommand.RESUME,
+                    {id: _selectedModel.id,
+                       scientists: scientistsSelector.value}
+            ).dispatch();
+         }
+      }
+
+      private var tScreen: MCTechnologySelectedSidebar =
+              MCTechnologySelectedSidebar.getInstance();
+
+      protected function techSidebar_creationCompleteHandler(event: FlexEvent): void {
+         tScreen.addEventListener(TechnologySidebarEvent.SELECTED_CHANGE, refreshSelected);
+         EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
+         refreshPriceOrientatedProperties();
+         refreshSelected();
+      }
+
+
+      protected function scientistsSelector_changeHandler(event: Event): void {
+         refreshPriceOrientatedProperties();
+      }
+
+      protected function button1_clickHandler(event: MouseEvent): void {
+         new TechnologiesCommand(
+                 TechnologiesCommand.UPDATE,
+                 {id: _selectedModel.id,
+                    scientists: scientistsSelector.value}
+         ).dispatch();
+      }
+
+      private function getStringFromSeconds(seconds: int, parts: int = 2): String {
+         return DateUtil.secondsToHumanString(seconds, parts);
+      }
+
+      private function hasUnlockingStuff(type: String): String {
+         return Config.unlockHash[type];
+      }
+
+
+      protected function coin_clickHandler(event: MouseEvent): void {
+         var accelerator: AccelerateSelector = new AccelerateSelector();
+         accelerator.upgradePart = _selectedModel.upgradePart;
+         var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         accelerator.popUp = speedPopUp;
+         speedPopUp.confirmButtonEnabled = false;
+         speedPopUp.confirmButtonClickHandler = function(): void {
+            function doAccelerate(): void {
+               new TechnologiesCommand(TechnologiesCommand.ACCELERATE_UPGRADE,
+                       {'id': _selectedModel.id,
+                          'index': accelerator.selectedAccelerateType}).dispatch();
             }
-            speedPopUp.addElement(accelerator);
-            speedPopUp.show();
-         }
-         
-         
-         protected function pauseButton_creationCompleteHandler(event:FlexEvent):void
-         {
-            if (_selectedModel != null)
-            {
-               pauseButton.selected = _selectedModel.pauseRemainder != 0;
+
+            if (accelerator.hasEnoughCredits()) {
+               doAccelerate();
+            }
+            else {
+               WaitingCredsPopup.showPopup(accelerator.selectedCost, doAccelerate);
             }
          }
-         
+         speedPopUp.addElement(accelerator);
+         speedPopUp.show();
+      }
+
+
+      protected function pauseButton_creationCompleteHandler(event: FlexEvent): void {
+         if (_selectedModel != null) {
+            pauseButton.selected = _selectedModel.pauseRemainder != 0;
+         }
+      }
       ]]>
    </fx:Script>
    <base:Scroller id="scrollCont" top="0" bottom="0" width="100%" 

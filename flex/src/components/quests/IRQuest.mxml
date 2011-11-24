@@ -186,7 +186,7 @@
 
       import utils.assets.AssetNames;
 
-      import controllers.GlobalFlags;
+      import utils.ApplicationLocker;
 
       import utils.locale.Localizer;
 
@@ -206,8 +206,8 @@
       import mx.events.FlexEvent;
 
 
-      private static function get GF(): GlobalFlags {
-         return GlobalFlags.getInstance();
+      private static function get GF(): ApplicationLocker {
+         return ApplicationLocker.getInstance();
       }
 
       private static function get ML(): ModelLocator {
@@ -218,8 +218,7 @@
          return ImagePreloader.getInstance().getImage(name);
       }
 
-      private function getString(property: String,
-                                 parameters: Array = null): String {
+      private function getString(property: String, parameters: Array = null): String {
          return Localizer.string("Quests", property, parameters);
       }
 
@@ -261,20 +260,19 @@
       [Bindable]
       private var completed: Boolean;
 
-      protected override function dataCommit(oldValue: Object,
-                                             newValue: Object): void {
+      protected override function dataCommit(oldValue: Object, newValue: Object): void {
          var quest: Quest;
          if (oldValue != null) {
             quest = Quest(oldValue);
             quest.removeEventListener(QuestEvent.STATUS_CHANGE,
-                                      quest_statusChange);
+                    quest_statusChange);
             quest.removeEventListener(QuestEvent.REFRESH_REQUESTED,
-                                      refreshQuest);
+                    refreshQuest);
          }
          if (newValue != null) {
             quest = Quest(newValue);
             quest.addEventListener(QuestEvent.STATUS_CHANGE,
-                                   quest_statusChange);
+                    quest_statusChange);
             quest.addEventListener(QuestEvent.REFRESH_REQUESTED, refreshQuest);
             refreshTitle();
          }
@@ -286,7 +284,7 @@
          if (quest) {
             title = quest.title;
             progress = getString('label.progress',
-                                 [quest.completed, quest.objectives.length]);
+                    [quest.completed, quest.objectives.length]);
             completed = (quest.status == Quest.STATUS_COMPLETED);
             ML.quests.applyCurrentFilter();
          }
@@ -332,17 +330,17 @@
          GF.lockApplication = true;
          EventBroker.subscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
          new QuestsCommand(
-            QuestsCommand.CLAIM_REWARDS,
-            {"planetId": MSSObject(planetSelector.selectedItem).id,
-             "id": quest.id}
+                 QuestsCommand.CLAIM_REWARDS,
+                 {"planetId": MSSObject(planetSelector.selectedItem).id,
+                    "id": quest.id}
          ).dispatch();
       }
 
       private function approveClaim(event: GQuestEvent): void {
          Messenger.show(
-            getString('message.rewardClaimed',
-                      [MSSObject(planetSelector.selectedItem).name]),
-            Messenger.MEDIUM
+                 getString('message.rewardClaimed',
+                         [MSSObject(planetSelector.selectedItem).name]),
+                 Messenger.MEDIUM
          );
          EventBroker.unsubscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
          refreshNotFitting();

@@ -15,7 +15,8 @@
 
       import components.base.ResourceSelectorComp;
 
-      import controllers.GlobalFlags;
+      import utils.ApplicationLocker;
+
       import controllers.ui.NavigationController;
       import controllers.units.UnitsCommand;
 
@@ -49,15 +50,14 @@
          return ModelLocator.getInstance();
       }
 
-      private function getString(property: String,
-                                 parameters: Array = null): String {
+      private function getString(property: String, parameters: Array = null): String {
          return Localizer.string("Units", property, parameters);
       }
 
 
       private function this_creationCompleteHandler(event: FlexEvent): void {
          EventBroker.subscribe(GUnitsScreenEvent.OPEN_STORAGE_SCREEN,
-                               setTransporter);
+                 setTransporter);
          NAV_CTRL.dispatchMainAreaScreenSwitchEvent();
       }
 
@@ -75,15 +75,15 @@
 
       private function refreshWreck(e: CollectionEvent): void {
          wreckage = filtered.length > 0 ? MWreckage(filtered.getItemAt(0))
-                       : null;
+                 : null;
          dispatchRefreshMaxStorageEvent();
       }
 
       private function resetSliders(e: GResourcesEvent): void {
          wreckage = filtered.length > 0 ? MWreckage(filtered.getItemAt(0))
-                       : null;
+                 : null;
          EventBroker.unsubscribe(GResourcesEvent.WRECKAGES_UPDATED,
-                                 resetSliders);
+                 resetSliders);
          selectTransporterValues();
          dispatchRefreshMaxStorageEvent();
       }
@@ -95,21 +95,21 @@
          var tempUnits: Object = {};
          transporter = Unit(e.location);
          filtered = (transporter.location.isSolarSystem
-                        ? ML.latestSSMap.wreckages
-                        : ML.latestGalaxy.wreckages);
+                 ? ML.latestSSMap.wreckages
+                 : ML.latestGalaxy.wreckages);
          filtered = Collections.filter(
-            filtered,
-            function (item: MWreckage): Boolean {
-               return item.currentLocation.equals(transporter.location);
-            });
+                 filtered,
+                 function (item: MWreckage): Boolean {
+                    return item.currentLocation.equals(transporter.location);
+                 });
 
          filtered.addEventListener(
-            CollectionEvent.COLLECTION_CHANGE, refreshWreck
+                 CollectionEvent.COLLECTION_CHANGE, refreshWreck
          );
 
          wreckage = filtered.length > 0
-                       ? MWreckage(filtered.getItemAt(0))
-                       : null;
+                 ? MWreckage(filtered.getItemAt(0))
+                 : null;
 
          for each (var unit: Unit in transporter.units) {
             if (!tempUnits['unit::' + unit.type]) {
@@ -142,39 +142,39 @@
       protected function manageUnits_clickHandler(event: UnitEvent): void {
          prevScreenParams = {'units': oldUnits, 'location': oldLocation};
          NAV_CTRL.showUnits(
-            Collections.filter(
-               ML.units,
-               function(item: Unit): Boolean {
-                  return ((item.location.type == LocationType.UNIT)
-                             && (item.location.id == transporter.id));
-               }),
-            transporter,
-            null,
-            UnitKind.GROUND
+                 Collections.filter(
+                         ML.units,
+                         function(item: Unit): Boolean {
+                            return ((item.location.type == LocationType.UNIT)
+                                    && (item.location.id == transporter.id));
+                         }),
+                 transporter,
+                 null,
+                 UnitKind.GROUND
          );
       }
 
       [Bindable (event="selectedResourcesChange")]
       private function getMaxStock(resource: String): int {
          var possibleStore: int =
-                (wreckage == null
-                    ? transporter[resource]
-                    : Math.min(transporter[resource] + wreckage[resource],
-                               Resource.calculateNewResources(
-                                  transporter[resource],
-                                  transporter.transporterStorage
-                                     - transporter.stored
-                                     - getOtherSelected(resource),
-                                  resource
-                               )));
+                 (wreckage == null
+                         ? transporter[resource]
+                         : Math.min(transporter[resource] + wreckage[resource],
+                         Resource.calculateNewResources(
+                                 transporter[resource],
+                                 transporter.transporterStorage
+                                         - transporter.stored
+                                         - getOtherSelected(resource),
+                                 resource
+                         )));
          return Math.max(0, possibleStore);
       }
 
       [Bindable (event="selectedResourcesChange")]
       private function get transferPossible(): Boolean {
          return (metalSelector.selectedVal != transporter.metal
-                    || energySelector.selectedVal != transporter.energy
-                    || zetiumSelector.selectedVal != transporter.zetium);
+                 || energySelector.selectedVal != transporter.energy
+                 || zetiumSelector.selectedVal != transporter.zetium);
       }
 
       [Bindable (event="selectedResourcesChange")]
@@ -183,27 +183,27 @@
          if (metalSelector && energySelector && zetiumSelector) {
             if (resource != ResourceType.METAL) {
                selectedTotal +=
-                  Resource.getResourceVolume(
-                     metalSelector.selectedVal, ResourceType.METAL
-                  ) - Resource.getResourceVolume(
-                     transporter.metal, ResourceType.METAL
-                  );
+                       Resource.getResourceVolume(
+                               metalSelector.selectedVal, ResourceType.METAL
+                       ) - Resource.getResourceVolume(
+                               transporter.metal, ResourceType.METAL
+                       );
             }
             if (resource != ResourceType.ENERGY) {
                selectedTotal +=
-                  Resource.getResourceVolume(
-                     energySelector.selectedVal, ResourceType.ENERGY
-                  ) - Resource.getResourceVolume(
-                     transporter.energy, ResourceType.ENERGY
-                  );
+                       Resource.getResourceVolume(
+                               energySelector.selectedVal, ResourceType.ENERGY
+                       ) - Resource.getResourceVolume(
+                               transporter.energy, ResourceType.ENERGY
+                       );
             }
             if (resource != ResourceType.ZETIUM) {
                selectedTotal +=
-                  Resource.getResourceVolume(
-                     zetiumSelector.selectedVal, ResourceType.ZETIUM
-                  ) - Resource.getResourceVolume(
-                     transporter.zetium, ResourceType.ZETIUM
-                  );
+                       Resource.getResourceVolume(
+                               zetiumSelector.selectedVal, ResourceType.ZETIUM
+                       ) - Resource.getResourceVolume(
+                               transporter.zetium, ResourceType.ZETIUM
+                       );
             }
          }
          return selectedTotal;
@@ -219,23 +219,22 @@
 
       private function getResourceDiff(resource: String): int {
          return ResourceSelectorComp(this[resource + 'Selector'])
-                   .selectedVal - int(transporter[resource]);
+                 .selectedVal - int(transporter[resource]);
       }
 
 
       protected function transfer_clickHandler(event: UnitEvent): void {
          if (transferPossible) {
-            GlobalFlags.getInstance().lockApplication = true;
             EventBroker.subscribe(GResourcesEvent.WRECKAGES_UPDATED,
-                                  resetSliders);
+                    resetSliders);
             new UnitsCommand(
-               UnitsCommand.TRANSFER_RESOURCES,
-               {
-                  transporterId: transporter.id,
-                  metal: getResourceDiff(ResourceType.METAL),
-                  energy: getResourceDiff(ResourceType.ENERGY),
-                  zetium: getResourceDiff(ResourceType.ZETIUM)
-               }).dispatch();
+                    UnitsCommand.TRANSFER_RESOURCES,
+                    {
+                       transporterId: transporter.id,
+                       metal: getResourceDiff(ResourceType.METAL),
+                       energy: getResourceDiff(ResourceType.ENERGY),
+                       zetium: getResourceDiff(ResourceType.ZETIUM)
+                    }).dispatch();
          }
       }
 
@@ -246,7 +245,7 @@
          }
          else {
             NAV_CTRL.showUnits(prevScreenParams.units,
-                               prevScreenParams.location);
+                    prevScreenParams.location);
             prevScreenParams = null;
          }
       }

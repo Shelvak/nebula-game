@@ -7,116 +7,100 @@
    
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.skins.GreenButtonSkin;
-         import components.skins.RedButtonSkin;
-         import components.skins.StanceButtonSkin;
-         
-         import config.BattleConfig;
-         
-         import controllers.GlobalFlags;
-         import controllers.ui.NavigationController;
-         
-         import globalevents.GUnitEvent;
-         import globalevents.GUnitsScreenEvent;
-         
-         import models.Owner;
-         import models.building.Building;
-         import models.location.Location;
-         import models.resource.Resource;
-         import models.resource.ResourceType;
-         import models.unit.MCUnit;
-         import models.unit.MCUnitScreen;
-         import models.unit.Unit;
-         import models.unit.UnitKind;
+      import com.developmentarc.core.utils.EventBroker;
 
-         import mx.collections.ArrayCollection;
+      import components.skins.GreenButtonSkin;
+      import components.skins.RedButtonSkin;
+      import components.skins.StanceButtonSkin;
 
-         import mx.events.FlexEvent;
-         
-         import utils.assets.AssetNames;
-         import utils.locale.Localizer;
-         
-         
-         protected function stance_clickHandler(stance: int):void
-         {
-            US.setStance(stance);
-         }
+      import config.BattleConfig;
 
-         protected function hide(hidden: Boolean):void
-         {
-            US.setHidden(hidden);
-         }
+      import utils.ApplicationLocker;
 
-         protected function order_clickHandler(event:MouseEvent):void
-         {
-            GlobalFlags.getInstance().lockApplication = true;
-            US.confirmAttack();
-         }
-         
-         protected function dismiss_clickHandler(event:MouseEvent):void
-         {
-            US.confirmDismiss();
-         }
-         
-         [Bindable]
-         private var US: MCUnitScreen = MCUnitScreen.getInstance();
-         
-         protected function formationConfirm_clickHandler(event:MouseEvent):void
-         {
-            GlobalFlags.getInstance().lockApplication = true;
-            US.updateChanges();
-         }
-         
-         protected function formationCancel_clickHandler(event:MouseEvent):void
-         {
-            US.cancel();
-         }
-         
-         private function selectAll(): void
-         {
-            US.selectAll();
-         }
-         
-         private function selectNone(): void
-         {
-            US.deselectUnits();
-         }
+      import controllers.ui.NavigationController;
 
-         private function hasEmptyStorage(from: ArrayCollection): Boolean
-         {
-            for each (var unit: Unit in from)
-            {
-               if (unit.stored < ML.technologies.getUnitStorage(
-                       unit.type, unit.level))
-               {
-                  return true;
-               }
+      import globalevents.GUnitEvent;
+      import globalevents.GUnitsScreenEvent;
+
+      import models.Owner;
+      import models.building.Building;
+      import models.location.Location;
+      import models.resource.Resource;
+      import models.resource.ResourceType;
+      import models.unit.MCUnit;
+      import models.unit.MCUnitScreen;
+      import models.unit.Unit;
+      import models.unit.UnitKind;
+
+      import mx.collections.ArrayCollection;
+
+      import mx.events.FlexEvent;
+
+      import utils.assets.AssetNames;
+      import utils.locale.Localizer;
+
+
+      protected function stance_clickHandler(stance: int): void {
+         US.setStance(stance);
+      }
+
+      protected function hide(hidden: Boolean): void {
+         US.setHidden(hidden);
+      }
+
+      protected function order_clickHandler(event: MouseEvent): void {
+         US.confirmAttack();
+      }
+
+      protected function dismiss_clickHandler(event: MouseEvent): void {
+         US.confirmDismiss();
+      }
+
+      [Bindable]
+      private var US: MCUnitScreen = MCUnitScreen.getInstance();
+
+      protected function formationConfirm_clickHandler(event: MouseEvent): void {
+         US.updateChanges();
+      }
+
+      protected function formationCancel_clickHandler(event: MouseEvent): void {
+         US.cancel();
+      }
+
+      private function selectAll(): void {
+         US.selectAll();
+      }
+
+      private function selectNone(): void {
+         US.deselectUnits();
+      }
+
+      private function hasEmptyStorage(from: ArrayCollection): Boolean {
+         for each (var unit: Unit in from) {
+            if (unit.stored < ML.technologies.getUnitStorage(
+                    unit.type, unit.level)) {
+               return true;
             }
-            return false;
          }
+         return false;
+      }
 
-         private function getEmptyStorageLabel(from: ArrayCollection): String
-         {
-            var storage: int = 0;
-            for each (var unit: Unit in from)
-            {
-               storage += ML.technologies.getUnitStorage(
-                       unit.type, unit.level) - unit.stored;
-            }
-            return getText('label.totalEmptyStorage', [storage]);
+      private function getEmptyStorageLabel(from: ArrayCollection): String {
+         var storage: int = 0;
+         for each (var unit: Unit in from) {
+            storage += ML.technologies.getUnitStorage(
+                    unit.type, unit.level) - unit.stored;
          }
-         
-         protected function button1_clickHandler(event:MouseEvent):void
-         {
-            NavigationController.getInstance().showPreviousScreen();
-         }
-         
-         private function getText(prop: String, params: Array = null): String
-         {
-            return Localizer.string('Units', prop, params);
-         }
+         return getText('label.totalEmptyStorage', [storage]);
+      }
+
+      protected function button1_clickHandler(event: MouseEvent): void {
+         NavigationController.getInstance().showPreviousScreen();
+      }
+
+      private function getText(prop: String, params: Array = null): String {
+         return Localizer.string('Units', prop, params);
+      }
       ]]>
    </fx:Script>
    <base:Scroller top="0" left="0" right="0" bottom="0" stepMultiplier="3">

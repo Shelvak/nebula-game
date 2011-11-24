@@ -1,13 +1,10 @@
 package controllers.units.actions
 {
    import components.squadronsscreen.OverviewUnits;
-   
+
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
-   
-   import utils.remote.rmo.ClientRMO;
 
    /**
     * Returns all unit positions and counts in given scope, structured in such
@@ -35,17 +32,6 @@ package controllers.units.actions
       {
          OU.setData(cmd.parameters.positions, cmd.parameters.players);
          NavigationController.getInstance().showSquadrons();
-      }
-      
-      public override function result(rmo:ClientRMO):void
-      {
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

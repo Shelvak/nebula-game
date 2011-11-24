@@ -2,12 +2,9 @@ package controllers.market.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
-   
+
    import models.market.MCMarketScreen;
-   
-   import utils.remote.rmo.ClientRMO;
-   
+
    /**
     * Return average market rate for selling resource 1 -> resource 2.
     * 
@@ -26,16 +23,6 @@ package controllers.market.actions
     */
    public class AvgRateAction extends CommunicationAction
    {
-      public override function result(rmo:ClientRMO):void
-      {
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
-      }
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
          MCMarketScreen.getInstance().avgRate = cmd.parameters.avgRate;

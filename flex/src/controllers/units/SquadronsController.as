@@ -2,7 +2,7 @@ package controllers.units
 {
    import components.map.space.SquadronsController;
    
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.Messenger;
    
    import globalevents.GlobalEvent;
@@ -58,7 +58,7 @@ package controllers.units
       
       
       private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
-      private var GF:GlobalFlags = GlobalFlags.getInstance();
+      private var GF:ApplicationLocker = ApplicationLocker.getInstance();
       private var ML:ModelLocator = ModelLocator.getInstance();
       private var SQUADS:SquadronsList = ML.squadrons;
       private var ROUTES:ModelsCollection = ML.routes;

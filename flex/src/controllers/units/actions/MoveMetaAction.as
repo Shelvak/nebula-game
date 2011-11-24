@@ -2,7 +2,7 @@ package controllers.units.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.units.OrdersController;
    
    import models.location.LocationMinimal;
@@ -36,9 +36,9 @@ package controllers.units.actions
       }
       
       
-      private function get GF() : GlobalFlags
+      private function get GF() : ApplicationLocker
       {
-         return GlobalFlags.getInstance();
+         return ApplicationLocker.getInstance();
       }
       
       

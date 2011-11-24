@@ -1,14 +1,12 @@
 package controllers.navigation
 {
-   import controllers.GlobalFlags;
-   
    import flash.events.EventDispatcher;
-   
+
    import models.events.ScreensSwitchEvent;
-   
+
    import mx.core.IVisualElement;
    import mx.events.FlexEvent;
-   
+
    import utils.datastructures.SimpleStack;
 
    public class Navigation extends EventDispatcher
@@ -28,6 +26,7 @@ package controllers.navigation
       /**
        * 
        * @param name - new screen name
+       * TODO : remove unlock after
        * @param unlockAfter - should we remove pending flag after screen show
        * 
        */      
@@ -42,10 +41,6 @@ package controllers.navigation
          }
          dispatchScreenChangingEvent();
          currentName = name;
-         if (unlockAfter)
-         {
-            GlobalFlags.getInstance().lockApplication = false;
-         }
          dispatchScreenChangedEvent()
       }    
       

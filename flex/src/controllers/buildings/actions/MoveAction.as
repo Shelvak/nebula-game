@@ -2,7 +2,7 @@ package controllers.buildings.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    
    import globalevents.GBuildingEvent;
    
@@ -20,9 +20,9 @@ package controllers.buildings.actions
     */
    public class MoveAction extends CommunicationAction
    {
-      private function get GF() : GlobalFlags
+      private function get GF() : ApplicationLocker
       {
-         return GlobalFlags.getInstance();
+         return ApplicationLocker.getInstance();
       }
       
       

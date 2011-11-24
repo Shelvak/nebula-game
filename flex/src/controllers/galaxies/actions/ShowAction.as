@@ -2,7 +2,7 @@ package controllers.galaxies.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.planets.PlanetsCommand;
    import controllers.planets.actions.ShowActionParams;
    import controllers.solarsystems.SolarSystemsCommand;
@@ -55,8 +55,8 @@ package controllers.galaxies.actions
     */
    public class ShowAction extends CommunicationAction
    {
-      private function get GF() : GlobalFlags {
-         return GlobalFlags.getInstance();
+      private function get GF() : ApplicationLocker {
+         return ApplicationLocker.getInstance();
       }
       
       private function get SQUADS_CTRL() : SquadronsController {

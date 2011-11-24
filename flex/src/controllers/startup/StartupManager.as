@@ -7,7 +7,7 @@ package controllers.startup
    
    import components.alliance.AllianceScreenM;
    
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.alliances.AlliancesCommand;
    import controllers.alliances.actions.*;
    import controllers.announcements.AnnouncementsCommand;
@@ -182,7 +182,7 @@ package controllers.startup
          MChat.getInstance().reset();
          MAnnouncement.getInstance().reset();
          AllianceScreenM.getInstance().reset();
-         GlobalFlags.getInstance().lockApplication = false;
+         ApplicationLocker.reset();
       }
       
       

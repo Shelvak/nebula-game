@@ -2,17 +2,12 @@ package controllers.alliances.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
    
    import models.factories.RatingsPlayerFactory;
    import models.player.MRatingPlayer;
-   
-   import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    import mx.collections.SortField;
-   
-   import utils.remote.rmo.ClientRMO;
    
    /**
     * Gets ratings data. 
@@ -32,7 +27,6 @@ package controllers.alliances.actions
          
          MRatingPlayer.refreshRanks(ML.allyRatings);
          NavigationController.getInstance().showAllyRatings();
-         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

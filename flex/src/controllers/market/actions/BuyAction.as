@@ -2,15 +2,14 @@ package controllers.market.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    import controllers.Messenger;
-   
+
    import models.market.MCMarketScreen;
    import models.market.MarketOffer;
-   
+
    import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
-   
+
    /**
     * Buy some part of the offer from the market. Resources then are
     * transmitted to you planet/player.
@@ -42,17 +41,6 @@ package controllers.market.actions
          'planetId': cmd.parameters.planetId,
          'amount': cmd.parameters.amount
          }, offer));
-      }
-      
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      public override function result(rmo:ClientRMO):void
-      {
-         GlobalFlags.getInstance().lockApplication = false;
       }
       
       public override function applyServerAction(cmd:CommunicationCommand) : void

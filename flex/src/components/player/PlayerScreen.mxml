@@ -9,61 +9,56 @@
          creationComplete="group1_creationCompleteHandler(event)" >
    <fx:Script>
       <![CDATA[
-         import components.alliance.AllianceScreenM;
-         import components.skins.LargePanelSkin;
-         import components.skins.LinkButtonSkin;
-         
-         import controllers.GlobalFlags;
-         import controllers.players.PlayersCommand;
-         import controllers.screens.MainAreaScreens;
-         import controllers.ui.NavigationController;
-         
-         import models.ModelLocator;
-         import models.chat.MChat;
-         import models.player.MRatingPlayer;
-         
-         import mx.collections.ArrayCollection;
-         import mx.events.FlexEvent;
-         
-         import utils.UrlNavigate;
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         import utils.locale.Localizer;
-         
-         private static const CONTENT_WIDTH: int = 600;
-         
-         [Bindable]
-         public var player: MRatingPlayer = null;
-         [Bindable]
-         public var achievements: ArrayCollection;
-         
-         [Bindable]
-         private var IMG: ImagePreloader = ImagePreloader.getInstance();
-         
-         private var NC: NavigationController = NavigationController.getInstance();
-         
-         protected function alliance_clickHandler(event:MouseEvent):void
-         {
-            AllianceScreenM.getInstance().showScreen(player.alliance.id);
-         }
-         
-         protected function ratings_clickHandler(event:MouseEvent):void
-         {
-            GlobalFlags.getInstance().lockApplication = true;
-            new PlayersCommand(PlayersCommand.RATINGS, player.name).dispatch()
-         }
-         
-         protected function chat_clickHandler(event:MouseEvent):void
-         {
-            MChat.getInstance().openPrivateChannel(player.id, player.name);
-         }
-         
-         
-         protected function group1_creationCompleteHandler(event:FlexEvent):void
-         {
-            NC.creationCompleteFunction(MainAreaScreens.PLAYER, this);
-         }
-         
+      import components.alliance.AllianceScreenM;
+      import components.skins.LargePanelSkin;
+      import components.skins.LinkButtonSkin;
+
+      import utils.ApplicationLocker;
+
+      import controllers.players.PlayersCommand;
+      import controllers.screens.MainAreaScreens;
+      import controllers.ui.NavigationController;
+
+      import models.ModelLocator;
+      import models.chat.MChat;
+      import models.player.MRatingPlayer;
+
+      import mx.collections.ArrayCollection;
+      import mx.events.FlexEvent;
+
+      import utils.UrlNavigate;
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
+
+      private static const CONTENT_WIDTH: int = 600;
+
+      [Bindable]
+      public var player: MRatingPlayer = null;
+      [Bindable]
+      public var achievements: ArrayCollection;
+
+      [Bindable]
+      private var IMG: ImagePreloader = ImagePreloader.getInstance();
+
+      private var NC: NavigationController = NavigationController.getInstance();
+
+      protected function alliance_clickHandler(event: MouseEvent): void {
+         AllianceScreenM.getInstance().showScreen(player.alliance.id);
+      }
+
+      protected function ratings_clickHandler(event: MouseEvent): void {
+         new PlayersCommand(PlayersCommand.RATINGS, player.name).dispatch()
+      }
+
+      protected function chat_clickHandler(event: MouseEvent): void {
+         MChat.getInstance().openPrivateChannel(player.id, player.name);
+      }
+
+
+      protected function group1_creationCompleteHandler(event: FlexEvent): void {
+         NC.creationCompleteFunction(MainAreaScreens.PLAYER, this);
+      }
       ]]>
    </fx:Script>
    <s:Label fontSize="52" horizontalCenter="0" verticalCenter="0" color="#eec500"

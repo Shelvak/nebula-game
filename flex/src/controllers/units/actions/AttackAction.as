@@ -1,19 +1,11 @@
 package controllers.units.actions
 {
-   
-   import components.notifications.NotificationAlert;
-   
+
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
-   
-   import globalevents.GUnitEvent;
-   
+
    import models.notification.Notification;
-   
-   import utils.remote.rmo.ClientRMO;
-   
-   
+
    /**
     * Used for constructing new building
     */
@@ -30,17 +22,6 @@ package controllers.units.actions
             }
          }
          ML.notifications.show(cmd.parameters.notificationId);
-      }
-      
-      override public function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      override public function result(rmo:ClientRMO):void
-      {
-         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

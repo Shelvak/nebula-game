@@ -2,7 +2,7 @@ package controllers.planets.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    
    import utils.remote.rmo.ClientRMO;
    
@@ -16,8 +16,8 @@ package controllers.planets.actions
     */
    public class FinishExplorationAction extends CommunicationAction
    {
-      private function get GF() : GlobalFlags {
-         return GlobalFlags.getInstance();
+      private function get GF() : ApplicationLocker {
+         return ApplicationLocker.getInstance();
       }
       
       

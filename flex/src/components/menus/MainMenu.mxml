@@ -8,74 +8,79 @@
 
    <fx:Script>
       <![CDATA[
-         import components.alliance.AllianceScreenM;
-         
-         import controllers.GlobalFlags;
-         import controllers.alliances.AlliancesCommand;
-         import controllers.players.PlayersCommand;
-         import controllers.ui.NavigationController;
-         import controllers.units.UnitsCommand;
-         
-         import models.ModelLocator;
-         import models.Owner;
-         import models.credit.VipLevelsData;
-         import models.movement.MRoute;
-         
-         import mx.collections.ListCollectionView;
-         
-         import spark.components.Button;
-         
-         import utils.StringUtil;
-         import utils.UrlNavigate;
-         import utils.assets.AssetNames;
-         import utils.datastructures.Collections;
-         import utils.locale.Localizer;
-         
-         
-         private function get NAV_CTRL () : NavigationController {
-            return NavigationController.getInstance();
+      import components.alliance.AllianceScreenM;
+
+      import utils.ApplicationLocker;
+
+      import utils.ApplicationLocker;
+
+      import utils.ApplicationLocker;
+
+      import utils.ApplicationLocker;
+
+      import controllers.alliances.AlliancesCommand;
+      import controllers.players.PlayersCommand;
+      import controllers.ui.NavigationController;
+      import controllers.units.UnitsCommand;
+
+      import models.ModelLocator;
+      import models.Owner;
+      import models.credit.VipLevelsData;
+      import models.movement.MRoute;
+
+      import mx.collections.ListCollectionView;
+
+      import spark.components.Button;
+
+      import utils.ApplicationLocker;
+
+      import utils.StringUtil;
+      import utils.UrlNavigate;
+      import utils.assets.AssetNames;
+      import utils.datastructures.Collections;
+      import utils.locale.Localizer;
+
+
+      private function get NAV_CTRL(): NavigationController {
+         return NavigationController.getInstance();
+      }
+
+      /**
+       * Show and hide menu items when btnStart is toggled.
+       */
+      private function showHideMenu(): void {
+         if (btnStart.selected)
+            menuItems.enabled = true;
+         else
+            menuItems.enabled = false;
+      }
+
+
+      /**
+       * When any of menu buttons is pressed menu should dissapear so
+       * btnStart is clicked programaticaly.
+       */
+      private function toggleStartButton(event: MouseEvent): void {
+         if (event.target is Button) {
+            btnStart.selected = false;
+            btnStart.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
          }
-         
-         /**
-          * Show and hide menu items when btnStart is toggled.
-          */ 
-         private function showHideMenu() : void {
-            if (btnStart.selected)
-               menuItems.enabled = true;
-            else
-               menuItems.enabled = false;
-         }
-         
-         
-         /**
-          * When any of menu buttons is pressed menu should dissapear so
-          * btnStart is clicked programaticaly. 
-          */ 
-         private function toggleStartButton(event:MouseEvent) : void
-         {
-            if (event.target is Button)
-            {
-               btnStart.selected = false;
-               btnStart.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
-            }
-         }
-         
-         [Bindable]
-         private var allyRoutes: ListCollectionView = Collections.filter(ModelLocator.getInstance().routes,
-            function (item: MRoute): Boolean
-            {
-               return item.owner == Owner.ALLY;
-            });
-         
-         private function getBtnUnitsLabel(allSquads:int, allySquads: int) : String
-         {
-            return Localizer.string("MainMenu", "label.units", 
-               [allSquads - allySquads, allySquads])
-         }
-         
-         private function getImage(name:String) : BitmapData {
-            return IMG.getImage(AssetNames.START_MENU_FOLDER + name);
-         }
+      }
+
+      [Bindable]
+      private var allyRoutes: ListCollectionView = Collections.filter(ModelLocator.getInstance().routes,
+              function (item: MRoute): Boolean {
+                 return item.owner == Owner.ALLY;
+              });
+
+      private function getBtnUnitsLabel(allSquads: int, allySquads: int): String {
+         return Localizer.string("MainMenu", "label.units",
+                 [allSquads - allySquads, allySquads])
+      }
+
+      private function getImage(name: String): BitmapData {
+         return IMG.getImage(AssetNames.START_MENU_FOLDER + name);
+      }
       ]]>
    </fx:Script>
    
@@ -108,7 +113,7 @@
          <!--- Button for viewing squadrons screen. -->
          <s:Group width="100%">
             <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
-            <s:Button id="btnUnits" click="GlobalFlags.getInstance().lockApplication = true;
+            <s:Button id="btnUnits" click="ApplicationLocker.getInstance().lockApplication = true;
                       new UnitsCommand(UnitsCommand.POSITIONS).dispatch()" left="22" right="0" top="5" bottom="5"
                       enabled="true"
                       label="{getBtnUnitsLabel(ML.routes.length, allyRoutes.length)}"
@@ -117,14 +122,14 @@
          <!--- Button for viewing ratings screen. -->
          <s:Group width="100%">
             <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
-            <s:Button id="btnRatings" click="GlobalFlags.getInstance().lockApplication = true;
+            <s:Button id="btnRatings" click="ApplicationLocker.getInstance().lockApplication = true;
                       new PlayersCommand(PlayersCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
                                                                              label="{Localizer.string('MainMenu', 'label.ratings')}"/>
          </s:Group>
          <!--- Button for viewing alliance ratings screen. -->
          <s:Group width="100%">
             <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
-            <s:Button id="btnAllyRatings" click="GlobalFlags.getInstance().lockApplication = true;
+            <s:Button id="btnAllyRatings" click="ApplicationLocker.getInstance().lockApplication = true;
                       new AlliancesCommand(AlliancesCommand.RATINGS).dispatch()" left="22" right="0" top="5" bottom="5"
                                                                                  label="{Localizer.string('MainMenu', 'label.alliances')}"/>
          </s:Group>

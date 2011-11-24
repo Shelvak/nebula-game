@@ -2,7 +2,7 @@ package controllers.planets.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
    
@@ -48,8 +48,8 @@ package controllers.planets.actions
     */
    public class ShowAction extends CommunicationAction
    {
-      private function get GF() : GlobalFlags {
-         return GlobalFlags.getInstance();
+      private function get GF() : ApplicationLocker {
+         return ApplicationLocker.getInstance();
       }
       
       private function get NAV_CTRL() : NavigationController {

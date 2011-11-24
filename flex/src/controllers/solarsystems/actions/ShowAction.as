@@ -2,7 +2,7 @@ package controllers.solarsystems.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
 
@@ -50,8 +50,8 @@ package controllers.solarsystems.actions
          return NavigationController.getInstance();
       }
       
-      private function get GF() : GlobalFlags {
-         return GlobalFlags.getInstance();
+      private function get GF() : ApplicationLocker {
+         return ApplicationLocker.getInstance();
       }
       
       

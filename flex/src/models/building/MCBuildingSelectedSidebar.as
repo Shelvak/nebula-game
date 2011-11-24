@@ -11,7 +11,7 @@ package models.building
 
    import config.Config;
 
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
 
    import controllers.Messenger;
 
@@ -479,7 +479,6 @@ package models.building
 
       public function upgrade_clickHandler(event:MouseEvent):void
       {
-         GlobalFlags.getInstance().lockApplication = true;
          new BuildingsCommand(
             BuildingsCommand.UPGRADE,
             {id: _selectedBuilding.id}
@@ -656,7 +655,6 @@ package models.building
          {
             function doAccelerate(): void
             {
-               GlobalFlags.getInstance().lockApplication = true;
                if (_selectedBuilding.upgradePart.level > 0)
                {
                   new BuildingsCommand(BuildingsCommand.ACCELERATE_UPGRADE,
@@ -729,7 +727,6 @@ package models.building
 
       public function repairBuilding(): void
       {
-         GlobalFlags.getInstance().lockApplication = true;
          new BuildingsCommand(BuildingsCommand.REPAIR,
             _selectedBuilding).dispatch();
       }

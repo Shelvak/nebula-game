@@ -5,7 +5,7 @@ package controllers.connection
    import components.announcement.AnnouncementPopup;
    import components.popups.ErrorPopup;
    
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.combatlogs.CombatLogsCommand;
    import controllers.messages.ResponseMessagesTracker;
    import controllers.players.PlayersCommand;
@@ -53,9 +53,9 @@ package controllers.connection
       }
       
       
-      private function get G_FLAGS() : GlobalFlags
+      private function get G_FLAGS() : ApplicationLocker
       {
-         return GlobalFlags.getInstance();
+         return ApplicationLocker.getInstance();
       }
       
       

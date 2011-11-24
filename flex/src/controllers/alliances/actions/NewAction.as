@@ -2,7 +2,7 @@ package controllers.alliances.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.alliances.AlliancesCommand;
    import controllers.ui.NavigationController;
    

@@ -3,7 +3,7 @@ package models.unit
    import components.popups.ActionConfirmationPopup;
    import components.unitsscreen.events.UnitsScreenEvent;
    
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.ui.NavigationController;
    import controllers.units.OrdersController;
    import controllers.units.UnitsCommand;
@@ -771,7 +771,6 @@ package models.unit
          popUp.title = getPopupText('title.dismissUnits');
          popUp.confirmButtonClickHandler = function (button: Button = null): void
          {
-            GlobalFlags.getInstance().lockApplication = true;
             new UnitsCommand(
                UnitsCommand.DISMISS,
                {planetId: ML.latestPlanet.id,

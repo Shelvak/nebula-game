@@ -4,7 +4,9 @@ package controllers
    
    import flash.errors.IllegalOperationError;
    import flash.events.Event;
-   
+
+   import utils.ApplicationLocker;
+
    import utils.locale.Localizer;
    import utils.remote.IResponder;
    import utils.remote.rmo.ClientRMO;
@@ -21,7 +23,11 @@ package controllers
        * A command currently beeing processed.
        */
       protected var currentCommand:CommunicationCommand;
-      
+
+      private function get appLocker(): ApplicationLocker
+      {
+         return ApplicationLocker.getInstance();
+      }
       
       /**
        * Override this if your action needs to do anything when a response message has been received from
@@ -31,6 +37,7 @@ package controllers
        */
       public function result(rmo:ClientRMO) : void
       {
+          appLocker.decreaseLockCounter();
       }
       
       
@@ -43,6 +50,7 @@ package controllers
        */
       public function cancel(rmo:ClientRMO) : void
       {
+         appLocker.decreaseLockCounter();
          Messenger.show(Localizer.string("General", "message.actionCanceled"), Messenger.MEDIUM);
       }
       
@@ -99,6 +107,7 @@ package controllers
        */
       protected function sendMessage(rmo:ClientRMO) :void
       {
+         appLocker.increaseLockCounter();
          if (rmo.action == null)
          {
             rmo.action = currentCommand.type;

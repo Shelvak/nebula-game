@@ -2,7 +2,6 @@ package controllers.alliances.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    
    import models.alliance.MAlliance;
    
@@ -30,7 +29,7 @@ package controllers.alliances.actions
       
       public override function result(rmo:ClientRMO):void
       {
-         GlobalFlags.getInstance().lockApplication = false;
+         super.result(rmo);
          alliance.description = alliance.newDescription;
          alliance = null;
       }
@@ -38,7 +37,6 @@ package controllers.alliances.actions
       public override function cancel(rmo:ClientRMO):void
       {
          super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
          alliance.newDescription = alliance.description;
          alliance = null;
       }

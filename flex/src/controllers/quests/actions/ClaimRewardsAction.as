@@ -1,7 +1,7 @@
 package controllers.quests.actions
 {
    import controllers.CommunicationAction;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.Messenger;
    
    import globalevents.GQuestEvent;
@@ -14,15 +14,8 @@ package controllers.quests.actions
    {
       public override function result(rmo:ClientRMO) : void
       {
+         super.result(rmo);
          new GQuestEvent(GQuestEvent.CLAIM_APROVED);
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         result(rmo);
       }
    }
 }

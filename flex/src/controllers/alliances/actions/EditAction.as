@@ -4,12 +4,10 @@ package controllers.alliances.actions
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    import controllers.Messenger;
    import controllers.alliances.AlliancesErrorType;
    
    import utils.locale.Localizer;
-   import utils.remote.rmo.ClientRMO;
    
    /**
     * Edits alliance properties
@@ -37,17 +35,6 @@ package controllers.alliances.actions
          {
             AllianceScreenM.getInstance().alliance.name = allyName;
          }
-      }
-      
-      public override function result(rmo:ClientRMO):void
-      {
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

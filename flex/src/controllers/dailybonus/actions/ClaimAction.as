@@ -2,14 +2,14 @@ package controllers.dailybonus.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    
    import utils.remote.rmo.ClientRMO;
 
    public class ClaimAction extends CommunicationAction
    {
-      private function get GF() : GlobalFlags {
-         return GlobalFlags.getInstance();
+      private function get GF() : ApplicationLocker {
+         return ApplicationLocker.getInstance();
       }
       
       
