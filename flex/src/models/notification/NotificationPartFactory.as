@@ -13,21 +13,19 @@ package models.notification
        * Maps notification types (events) to their model classes.
        */
       private static const TYPE_TO_CLASS:Object = new Object();
-      with (NotificationType)
-      {
-         TYPE_TO_CLASS[NOT_ENOUGH_RESOURCES] = NotEnoughResources;
-         TYPE_TO_CLASS[BUILDINGS_DEACTIVATED] = BuildingsDeactivated;
-         TYPE_TO_CLASS[COMBAT_LOG] = CombatLog;
-         TYPE_TO_CLASS[ACHIEVEMENT_COMPLETED] = AchievementCompleted;
-         TYPE_TO_CLASS[QUEST_COMPLETED] = QuestCompletedLog;
-         TYPE_TO_CLASS[EXPLORATION_FINISHED] = ExplorationFinished;
-         TYPE_TO_CLASS[PLANET_ANNEXED] = PlanetAnnexed;
-         TYPE_TO_CLASS[PLANET_PROTECTED] = PlanetProtected;
-         TYPE_TO_CLASS[ALLIANCE_INVITATION] =  AllianceInvitation;
-         TYPE_TO_CLASS[KICKED_FROM_ALLIANCE] = KickedFromAlliance;
-         TYPE_TO_CLASS[ALLIANCE_JOINED] = AllianceJoined;
-         TYPE_TO_CLASS[MARKET_OFFER_BOUGHT] = MarketOfferBought;
-      };
+      TYPE_TO_CLASS[NotificationType.NOT_ENOUGH_RESOURCES] = NotEnoughResources;
+      TYPE_TO_CLASS[NotificationType.BUILDINGS_DEACTIVATED] = BuildingsDeactivated;
+      TYPE_TO_CLASS[NotificationType.COMBAT_LOG] = CombatLog;
+      TYPE_TO_CLASS[NotificationType.ACHIEVEMENT_COMPLETED] = AchievementCompleted;
+      TYPE_TO_CLASS[NotificationType.QUEST_COMPLETED] = QuestCompletedLog;
+      TYPE_TO_CLASS[NotificationType.EXPLORATION_FINISHED] = ExplorationFinished;
+      TYPE_TO_CLASS[NotificationType.PLANET_ANNEXED] = PlanetAnnexed;
+      TYPE_TO_CLASS[NotificationType.PLANET_PROTECTED] = PlanetProtected;
+      TYPE_TO_CLASS[NotificationType.ALLIANCE_INVITATION] =  AllianceInvitation;
+      TYPE_TO_CLASS[NotificationType.KICKED_FROM_ALLIANCE] = KickedFromAlliance;
+      TYPE_TO_CLASS[NotificationType.ALLIANCE_JOINED] = AllianceJoined;
+      TYPE_TO_CLASS[NotificationType.MARKET_OFFER_BOUGHT] = MarketOfferBought;
+      TYPE_TO_CLASS[NotificationType.VPS_CONVERTED_TO_CREDS] = CredsConverted;
       
       /**
        * Creates concrete instance of <code>INotificationPart</code> and returns it.

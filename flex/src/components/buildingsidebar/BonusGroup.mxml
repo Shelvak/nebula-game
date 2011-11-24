@@ -36,19 +36,33 @@
                paddingLeft="-12" paddingBottom="6" paddingTop="6"/>
       <s:Label text="{getString('applicable')}" fontWeight="bold"
                paddingBottom="3"
-               visible="{(armor != null) || (construction != null)
-               || (energy != null &amp;&amp; generatesEnergy(building))}"/>
-      <elements:BonusLabel type="{getString('armor.bonus')}" ammount="{armor}"
-                           visible="{armor != null}"/>
+               visible="{(armor != null
+                     &amp;&amp; Building.buildingHasGuns(building))
+                  || (construction != null)
+                  || (energy != null
+                     &amp;&amp; generatesEnergy(building))}"/>
       <elements:BonusLabel type="{getString('construction.bonus')}"
                            ammount="{construction}"
                            visible="{construction != null}"/>
-      <s:Label text="{getString('notApplicable')}" fontWeight="bold"
-               paddingBottom="3" paddingTop="3"
-               visible="{energy != null &amp;&amp; !generatesEnergy(building)}"/>
+      <elements:BonusLabel type="{getString('armor.bonus')}" ammount="{armor}"
+                           visible="{armor != null
+                           &amp;&amp; Building.buildingHasGuns(building)}"/>
       <elements:BonusLabel type="{getString('energy.bonus')}"
                            ammount="{energy}"
-                           visible="{energy != null}"/>
+                           visible="{energy != null &amp;&amp;
+                              generatesEnergy(building)}"/>
+      <s:Label text="{getString('notApplicable')}" fontWeight="bold"
+               paddingBottom="3" paddingTop="3"
+               visible="{(energy != null &amp;&amp; !generatesEnergy(building))
+               || (armor != null
+                  &amp;&amp; !(Building.buildingHasGuns(building)))}"/>
+      <elements:BonusLabel type="{getString('armor.bonus')}" ammount="{armor}"
+                           visible="{armor != null
+                           &amp;&amp; !(Building.buildingHasGuns(building))}"/>
+      <elements:BonusLabel type="{getString('energy.bonus')}"
+                           ammount="{energy}"
+                           visible="{energy != null &amp;&amp;
+                              !generatesEnergy(building)}"/>
       <base:layout>
          <s:VerticalLayout gap="1" paddingLeft="12"/>
       </base:layout>
