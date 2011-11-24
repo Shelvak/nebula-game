@@ -132,7 +132,9 @@
             </base:Panel>
 
             <base:Panel width="100%" title="{getText('label.setHidden')}"
-                        visible="{US.selection.length > 0}">
+                        visible="{(US.selection.length > 0)
+                        &amp;&amp; (US.location is Location)
+                        &amp;&amp; (Location(US.location).isSSObject)}">
                <s:Button label="{getText('label.notHidden')}"
                          click="hide(false)"
                          toolTip="{getText('tooltip.notHidden')}"/>
