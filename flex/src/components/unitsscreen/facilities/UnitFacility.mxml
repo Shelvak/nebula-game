@@ -15,434 +15,379 @@
    
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.skins.ListNonScrollableSkin;
-         import components.skins.PreviousButtonSkin;
-         import components.unitsscreen.UnitScreenAnimationDurations;
-         
-         import config.Config;
-         
-         import controllers.buildings.BuildingsCommand;
-         import controllers.constructionqueues.ConstructionQueuesCommand;
-         import controllers.units.UnitsCommand;
-         
-         import globalevents.GObjectEvent;
-         import globalevents.GTechnologiesEvent;
-         import globalevents.GlobalEvent;
-         
-         import models.building.Building;
-         import models.building.events.BuildingEvent;
-         import models.constructionqueueentry.ConstructionQueueEntry;
-         import models.parts.Upgradable;
-         import models.parts.UpgradableType;
-         import models.resource.ResourceType;
-         import models.solarsystem.MSSObject;
-         import models.unit.Unit;
-         
-         import mx.collections.ArrayCollection;
-         import mx.core.IUIComponent;
-         import mx.core.UIComponent;
-         import mx.events.DragEvent;
-         import mx.events.FlexEvent;
-         import mx.managers.DragManager;
-         
-         import spark.effects.Move;
-         
-         import utils.StringUtil;
-         import utils.assets.AssetNames;
-         import utils.locale.Localizer;
-         
-         public static const SHOP_PART_HEIGHT: Number = 180;
-         
-         [Bindable]
-         private var _facility: Building;
-         
-         public function set facility(value: Building): void
-         {
-            var oldBuilding: Building = _facility;
-            if (_facility != null)
-            {  
-               _facility.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDragIfNeeded);
-               _facility.removeEventListener(BuildingEvent.COLLAPSE, collapseList);
-               _facility.removeEventListener(BuildingEvent.EXPAND, expandList);
-            }
-            _facility = value;
-            if (_facility != null)
-            {  
-               _facility.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDragIfNeeded);
-               _facility.addEventListener(BuildingEvent.COLLAPSE, collapseList);
-               _facility.addEventListener(BuildingEvent.EXPAND, expandList);
-            }
-            if ((oldBuilding != null) && (_facility != null))
-            {
-               if (oldBuilding.id != _facility.id)
-                  recalculateUnitsList();
-            }
-            else
-               if (_facility != null)
-                  recalculateUnitsList();
-            
+      import com.developmentarc.core.utils.EventBroker;
+
+      import components.skins.ListNonScrollableSkin;
+      import components.skins.PreviousButtonSkin;
+      import components.unitsscreen.UnitScreenAnimationDurations;
+
+      import config.Config;
+
+      import controllers.buildings.BuildingsCommand;
+      import controllers.constructionqueues.ConstructionQueuesCommand;
+      import controllers.units.UnitsCommand;
+
+      import globalevents.GObjectEvent;
+      import globalevents.GTechnologiesEvent;
+      import globalevents.GlobalEvent;
+
+      import models.building.Building;
+      import models.building.events.BuildingEvent;
+      import models.constructionqueueentry.ConstructionQueueEntry;
+      import models.parts.Upgradable;
+      import models.parts.UpgradableType;
+      import models.resource.ResourceType;
+      import models.solarsystem.MSSObject;
+      import models.unit.Unit;
+
+      import mx.collections.ArrayCollection;
+      import mx.core.IUIComponent;
+      import mx.core.UIComponent;
+      import mx.events.DragEvent;
+      import mx.events.FlexEvent;
+      import mx.managers.DragManager;
+
+      import spark.effects.Move;
+
+      import utils.StringUtil;
+      import utils.assets.AssetNames;
+      import utils.locale.Localizer;
+
+      public static const SHOP_PART_HEIGHT: Number = 180;
+
+      [Bindable]
+      private var _facility: Building;
+
+      public function set facility(value: Building): void {
+         var oldBuilding: Building = _facility;
+         if (_facility != null) {
+            _facility.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDragIfNeeded);
+            _facility.removeEventListener(BuildingEvent.COLLAPSE, collapseList);
+            _facility.removeEventListener(BuildingEvent.EXPAND, expandList);
          }
-         
-         [Bindable]
-         private var purchasableList: ArrayCollection = null;
-         
-         private static const imageSize: int = 172;
-         
-         [Bindable]
-         private var purchasePending: Boolean = false;
-         
-         [Bindable]
-         private var isMoving: Boolean = false;
-         
-         [Bindable]
-         private var unitsList: ArrayCollection = null;
-         
-         [Bindable]
-         private var upgradeState: Boolean = false;
-         
-         private function cancelDragIfNeeded(e: BuildingEvent): void
-         {
-            purchasePending = false;
-            if (isMoving || shop.selectedItem && _facility && shop.selectedItem.facility &&
-               ((_facility.getQueueEmptySpace() < shop.selectedItem.facility.selectedCount 
-                  || (_facility.constructableId == 0 && !checkIfCanBeBought(shop.selectedItem.type)))))
-            {
-               isMoving = false;
-               DragManager.acceptDragDrop(null);
-               content.layout.hideDropIndicator();
-               DragManager.showFeedback(DragManager.NONE);
-               content.drawFocus(false);
-            }
+         _facility = value;
+         if (_facility != null) {
+            _facility.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDragIfNeeded);
+            _facility.addEventListener(BuildingEvent.COLLAPSE, collapseList);
+            _facility.addEventListener(BuildingEvent.EXPAND, expandList);
          }
-         
-         protected function queue_dragDropHandler(event:DragEvent):void
-         {
-            if ((event.dragInitiator == shop) && (_facility.getQueueEmptySpace() > 0) && (checkIfCanBeBought(shop.selectedItem.type)))
-            {
-               dispatchNewCommand(shop.selectedItem.type, 
-                  shop.selectedItem.facility.selectedCount);
-            }
-            else
-               if (!isMoving)
-                  event.preventDefault();
-            
+         if ((oldBuilding != null) && (_facility != null)) {
+            if (oldBuilding.id != _facility.id)
+               recalculateUnitsList();
          }
-         
-         private function dispatchNewCommand(item: String, count: int): void
-         {
-            purchasePending = true;
-            EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
-            new UnitsCommand(UnitsCommand.NEW,                
-               {type: StringUtil.underscoreToCamelCase(item),
-                  count: count,
-                  constructorId: _facility.id}
-            ).dispatch ();
+         else
+         if (_facility != null)
+            recalculateUnitsList();
+
+      }
+
+      [Bindable]
+      private var purchasableList: ArrayCollection = null;
+
+      private static const imageSize: int = 172;
+
+      [Bindable]
+      private var purchasePending: Boolean = false;
+
+      [Bindable]
+      private var isMoving: Boolean = false;
+
+      [Bindable]
+      private var unitsList: ArrayCollection = null;
+
+      [Bindable]
+      private var upgradeState: Boolean = false;
+
+      private function cancelDragIfNeeded(e: BuildingEvent): void {
+         purchasePending = false;
+         if (isMoving || shop.selectedItem && _facility && shop.selectedItem.facility &&
+                 ((_facility.getQueueEmptySpace() < shop.selectedItem.facility.selectedCount
+                         || (_facility.constructableId == 0 && !checkIfCanBeBought(shop.selectedItem.type))))) {
+            isMoving = false;
+            DragManager.acceptDragDrop(null);
+            content.layout.hideDropIndicator();
+            DragManager.showFeedback(DragManager.NONE);
+            content.drawFocus(false);
          }
-         
-         private function removePurchacePending(e: GObjectEvent): void
-         {
-            purchasePending = false;
-            EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
+      }
+
+      protected function queue_dragDropHandler(event: DragEvent): void {
+         if ((event.dragInitiator == shop) && (_facility.getQueueEmptySpace() > 0) && (checkIfCanBeBought(shop.selectedItem.type))) {
+            dispatchNewCommand(shop.selectedItem.type,
+                    shop.selectedItem.facility.selectedCount);
          }
-         
-         
-         protected function queue_dragEnterHandler(event:DragEvent):void
-         {           
-            if ((_facility.getQueueEmptySpace() > 0) && (event.dragInitiator === shop))
-            {
-               if (_facility.selectedCount != -1)
-               {
-                  DragManager.acceptDragDrop(event.target as IUIComponent);
-               }
+         else
+         if (!isMoving)
+            event.preventDefault();
+
+      }
+
+      private function dispatchNewCommand(item: String, count: int): void {
+         purchasePending = true;
+         EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
+         new UnitsCommand(UnitsCommand.NEW,
+                 {type: StringUtil.underscoreToCamelCase(item),
+                    count: count,
+                    constructorId: _facility.id}
+         ).dispatch();
+      }
+
+      private function removePurchacePending(e: GObjectEvent): void {
+         purchasePending = false;
+         EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
+      }
+
+
+      protected function queue_dragEnterHandler(event: DragEvent): void {
+         if ((_facility.getQueueEmptySpace() > 0) && (event.dragInitiator === shop)) {
+            if (_facility.selectedCount != -1) {
+               DragManager.acceptDragDrop(event.target as IUIComponent);
             }
          }
-         
-         public function expandList(e: Event = null): void
-         {
-            if (currentState != "expanded")
-            {
-               collapse.stop();
-               expand.play();
-               (currentState = "expanded");
+      }
+
+      public function expandList(e: Event = null): void {
+         if (currentState != "expanded") {
+            collapse.stop();
+            expand.play();
+            (currentState = "expanded");
+         }
+      }
+
+      public function collapseList(e: Event = null): void {
+         if (currentState != "collapsed") {
+            expand.stop();
+            collapse.play();
+            currentState = "collapsed"
+         }
+      }
+
+
+      protected function content_dragCompleteHandler(event: DragEvent = null): void {
+         if (isMoving) {
+            var tempElement: ConstructionQueueEntry = (content.selectedItems[0] as ConstructionQueueEntry);
+            if (_facility.constructionQueueEntries.getItemIndex(tempElement) !=
+                    tempElement.position) {
+               purchasePending = true;
+               EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
+               var newPosition: int = tempElement.position > _facility.constructionQueueEntries.getItemIndex(tempElement) ?
+                       content.selectedIndex : content.selectedIndex + 1;
+               new ConstructionQueuesCommand(
+                       ConstructionQueuesCommand.MOVE,
+                       {id: tempElement.id,
+                          count: tempElement.countSelected,
+                          position: newPosition}
+               ).dispatch();
             }
+            isMoving = false;
          }
-         
-         public function collapseList(e: Event = null): void
-         {
-            if (currentState != "collapsed")
-            {
-               expand.stop();
-               collapse.play();
-               currentState = "collapsed"
-            }
+      }
+
+
+      protected function content_dragStartHandler(event: DragEvent): void {
+         isMoving = true;
+      }
+
+
+      protected function shop_creationCompleteHandler(event: FlexEvent): void {
+         EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, recalculateUnitsList);
+      }
+
+
+      private function recalculateUnitsList(e: Event = null): void {
+         if (_facility != null) {
+            unitsList = Unit.getAllUnits(_facility);
          }
-         
-         
-         
-         protected function content_dragCompleteHandler(event:DragEvent = null):void
-         {
-            if (isMoving)
-            {
-               var tempElement: ConstructionQueueEntry = (content.selectedItems[0] as ConstructionQueueEntry);
-               if (_facility.constructionQueueEntries.getItemIndex(tempElement) != 
-                  tempElement.position)
-               {
-                  purchasePending = true;
-                  EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePurchacePending);
-                  var newPosition: int = tempElement.position> _facility.constructionQueueEntries.getItemIndex(tempElement)? 
-                     content.selectedIndex: content.selectedIndex + 1;
-                  new ConstructionQueuesCommand(
-                     ConstructionQueuesCommand.MOVE,
-                     {id: tempElement.id,
-                        count: tempElement.countSelected,
-                        position: newPosition}
-                  ).dispatch ();
-               }
-               isMoving = false;
-            }
+         else {
+            unitsList = new ArrayCollection();
          }
-         
-         
-         protected function content_dragStartHandler(event:DragEvent):void
-         {
-            isMoving = true;
-         }
-         
-         
-         protected function shop_creationCompleteHandler(event:FlexEvent):void
-         {
-            EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, recalculateUnitsList);
-         }
-         
-         
-         
-         private function recalculateUnitsList(e: Event = null): void
-         {
-            if (_facility != null)
-            {
-               unitsList = Unit.getAllUnits(_facility);
-            }
-            else
-            {
-               unitsList = new ArrayCollection();
-            }
-         }
-         
-         private function refreshUpgradeState(): void
-         {
-            if ((_facility.constructableType != null) && (_facility.getQueueEmptySpace() > 0))
-               upgradeState = true
-            else if (_facility.constructableType != null)
-               upgradeState = false
-            else if (!checkIfCanBeBought(StringUtil.firstToUpperCase(shop.selectedItem.type)))
-               upgradeState = false
-            else
-               upgradeState = true;
-         }
-         
-         private function checkIfCanBeBought(type: String): Boolean
-         {
-            var planet:MSSObject = ML.latestPlanet.ssObject;
-            function calcCost(resourceType:String) : Number
-            {
-               return Upgradable.calculateCost(UpgradableType.UNITS, type, resourceType, {"level": 1});
-            }
-            var canBeUpgraded:Boolean = 
-               calcCost(ResourceType.METAL)  <= planet.metal.currentStock  &&
-               calcCost(ResourceType.ENERGY) <= planet.energy.currentStock &&
-               calcCost(ResourceType.ZETIUM) <= planet.zetium.currentStock;
-            if (canBeUpgraded)
-               return true;
-            return false;
-         }
-         
-         private static const PREVIOUS_QUEUE: int = 1;
-         private static const NEXT_QUEUE: int = 2;
-         private static const PREVIOUS_SHOP: int = 3;
-         private static const NEXT_SHOP: int = 4;
-         
-         private static const QUEUE_SCROLL_STEP: int = 10;
-         private static const SHOP_SCROLL_STEP: int = 10;
-         private static const SHOP_SKIP_STEP: int = 200;
-         
-         private static const SCROLL_DELAY: int = 30;
-         
-         private var scrollTimer: Timer = new Timer(SCROLL_DELAY);
-         
-         private var scrollType: int = 0;
-         
-         protected function nextQueue_rollOverHandler(event:Event):void
-         {
-            scrollType = NEXT_QUEUE;
-            scrollTimer.start();
-         }
-         
-         
-         protected function previousQueue_rollOverHandler(event:Event):void
-         {
-            scrollType = PREVIOUS_QUEUE;
-            scrollTimer.start();
-         }
-         
-         protected function nextShop_rollOverHandler(event:Event):void
-         {
-            scrollType = NEXT_SHOP;
-            scrollTimer.start();
-         }
-         
-         
-         protected function previousShop_rollOverHandler(event:Event):void
-         {
-            scrollType = PREVIOUS_SHOP;
-            scrollTimer.start();
-         }
-         
-         private function scrollViewport(e: TimerEvent): void
-         {
-            switch (scrollType)
-            {
-               case PREVIOUS_QUEUE:
-                  if (queueViewport.horizontalScrollPosition > 0)
-                  {
-                     queueViewport.horizontalScrollPosition -= 
-                        Math.min(queueViewport.horizontalScrollPosition, QUEUE_SCROLL_STEP);
-                  }
-                  break;
-               case NEXT_QUEUE:
-                  if (queueViewport.horizontalScrollPosition < (content.width - queueCont.width))
-                  {
-                     queueViewport.horizontalScrollPosition += 
-                        Math.min((content.width - queueCont.width)-queueViewport.horizontalScrollPosition, QUEUE_SCROLL_STEP);
-                  }
-                  break;
-               case PREVIOUS_SHOP:
-                  if (shopViewport.horizontalScrollPosition > 0)
-                  {
-                     shopViewport.horizontalScrollPosition -= 
-                        Math.min(shopViewport.horizontalScrollPosition, SHOP_SCROLL_STEP);
-                  }
-                  break;
-               case NEXT_SHOP:
-                  if (shopViewport.horizontalScrollPosition < (shop.width - shopCont.width))
-                  {
-                     shopViewport.horizontalScrollPosition += 
-                        Math.min((shop.width - shopCont.width)-shopViewport.horizontalScrollPosition, SHOP_SCROLL_STEP);
-                  }
-                  break;
-               default:
-                  throw new Error('Scrolling failed, with uknown scroll type: ' + scrollType);
-            }
-         }
-         
-         
-         protected function scroll_rollOutHandler(event:Event):void
-         {
-            scrollType = 0;
-            scrollTimer.stop();
-         }
-         
-         
-         protected function nextQueue_dragEnterHandler(event:DragEvent):void
-         {      
-            DragManager.acceptDragDrop(event.target as IUIComponent);
-            nextQueue_rollOverHandler(event);
-            content.dragMoveEnabled = false;
-         }
-         
-         
-         protected function previousQueue_dragEnterHandler(event:DragEvent):void
-         {      
-            DragManager.acceptDragDrop(event.target as IUIComponent);
-            previousQueue_rollOverHandler(event);
-            content.dragMoveEnabled = false;
-         }
-         
-         
-         protected function nextShop_dragEnterHandler(event:DragEvent):void
-         {      
-            DragManager.acceptDragDrop(event.target as IUIComponent);
-            nextShop_rollOverHandler(event);
-            content.dragMoveEnabled = false;
-         }
-         
-         
-         protected function previousShop_dragEnterHandler(event:DragEvent):void
-         {      
-            DragManager.acceptDragDrop(event.target as IUIComponent);
-            previousShop_rollOverHandler(event);
-            content.dragMoveEnabled = false;
-         }
-         
-         
-         protected function button_dragDropHandler(event:Event):void
-         {      
-            callLater(function (): void
-            {
-               content.dragMoveEnabled = true;
-            });
-         }
-         
-         private function reset(e: GlobalEvent): void
-         {
-            facility = null;
-         }
-         
-         protected function advancedcontainer1_addedToStageHandler(event:Event):void
-         {
-            scrollTimer.addEventListener(TimerEvent.TIMER, scrollViewport);
-            EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
-         }
-         
-         
-         protected function advancedcontainer1_removedFromStageHandler(event:Event):void
-         {
-            scrollTimer.stop();
-            scrollTimer.removeEventListener(TimerEvent.TIMER, scrollViewport);
-         }
-         
-         
-         protected function nextShop_clickHandler(event:MouseEvent):void
-         {
-            if (shopViewport.horizontalScrollPosition < (shop.width - shopCont.width))
-            {
-               shopViewport.horizontalScrollPosition += 
-                  Math.min((shop.width - shopCont.width)-shopViewport.horizontalScrollPosition, SHOP_SKIP_STEP);
-            }
-         }
-         
-         
-         protected function previousShop_clickHandler(event:MouseEvent):void
-         {
-            if (shopViewport.horizontalScrollPosition > 0)
-            {
-               shopViewport.horizontalScrollPosition -= 
-                  Math.min(shopViewport.horizontalScrollPosition, SHOP_SKIP_STEP);
-            }
-         }
-         
-         protected function togglebutton1_clickHandler(event:Event):void
-         {
-            new BuildingsCommand(BuildingsCommand.SET_BUILD_IN_2ND_FLANK,
-               {
-                  'model': _facility,
-                  'enable': !_facility.buildIn2ndFlank
-               }
-            ).dispatch();
+      }
+
+      private function refreshUpgradeState(): void {
+         if ((_facility.constructableType != null) && (_facility.getQueueEmptySpace() > 0))
+            upgradeState = true
+         else if (_facility.constructableType != null)
+            upgradeState = false
+         else if (!checkIfCanBeBought(StringUtil.firstToUpperCase(shop.selectedItem.type)))
+            upgradeState = false
+         else
+            upgradeState = true;
+      }
+
+      private function checkIfCanBeBought(type: String): Boolean {
+         var planet: MSSObject = ML.latestPlanet.ssObject;
+
+         function calcCost(resourceType: String): Number {
+            return Upgradable.calculateCost(UpgradableType.UNITS, type, resourceType, {"level": 1});
          }
 
-         /* TODO implement toggle button for this one */
-         protected function buildHidden(event:Event):void
-         {
-            new BuildingsCommand(BuildingsCommand.SET_BUILD_HIDDEN,
-               {
-                  'model': _facility,
-                  'enable': !_facility.buildHidden
+         var canBeUpgraded: Boolean =
+                 calcCost(ResourceType.METAL) <= planet.metal.currentStock &&
+                         calcCost(ResourceType.ENERGY) <= planet.energy.currentStock &&
+                         calcCost(ResourceType.ZETIUM) <= planet.zetium.currentStock;
+         if (canBeUpgraded)
+            return true;
+         return false;
+      }
+
+      private static const PREVIOUS_QUEUE: int = 1;
+      private static const NEXT_QUEUE: int = 2;
+      private static const PREVIOUS_SHOP: int = 3;
+      private static const NEXT_SHOP: int = 4;
+
+      private static const QUEUE_SCROLL_STEP: int = 10;
+      private static const SHOP_SCROLL_STEP: int = 10;
+      private static const SHOP_SKIP_STEP: int = 200;
+
+      private static const SCROLL_DELAY: int = 30;
+
+      private var scrollTimer: Timer = new Timer(SCROLL_DELAY);
+
+      private var scrollType: int = 0;
+
+      protected function nextQueue_rollOverHandler(event: Event): void {
+         scrollType = NEXT_QUEUE;
+         scrollTimer.start();
+      }
+
+
+      protected function previousQueue_rollOverHandler(event: Event): void {
+         scrollType = PREVIOUS_QUEUE;
+         scrollTimer.start();
+      }
+
+      protected function nextShop_rollOverHandler(event: Event): void {
+         scrollType = NEXT_SHOP;
+         scrollTimer.start();
+      }
+
+
+      protected function previousShop_rollOverHandler(event: Event): void {
+         scrollType = PREVIOUS_SHOP;
+         scrollTimer.start();
+      }
+
+      private function scrollViewport(e: TimerEvent): void {
+         switch (scrollType) {
+            case PREVIOUS_QUEUE:
+               if (queueViewport.horizontalScrollPosition > 0) {
+                  queueViewport.horizontalScrollPosition -=
+                          Math.min(queueViewport.horizontalScrollPosition, QUEUE_SCROLL_STEP);
                }
-            ).dispatch();
+               break;
+            case NEXT_QUEUE:
+               if (queueViewport.horizontalScrollPosition < (content.width - queueCont.width)) {
+                  queueViewport.horizontalScrollPosition +=
+                          Math.min((content.width - queueCont.width) - queueViewport.horizontalScrollPosition, QUEUE_SCROLL_STEP);
+               }
+               break;
+            case PREVIOUS_SHOP:
+               if (shopViewport.horizontalScrollPosition > 0) {
+                  shopViewport.horizontalScrollPosition -=
+                          Math.min(shopViewport.horizontalScrollPosition, SHOP_SCROLL_STEP);
+               }
+               break;
+            case NEXT_SHOP:
+               if (shopViewport.horizontalScrollPosition < (shop.width - shopCont.width)) {
+                  shopViewport.horizontalScrollPosition +=
+                          Math.min((shop.width - shopCont.width) - shopViewport.horizontalScrollPosition, SHOP_SCROLL_STEP);
+               }
+               break;
+            default:
+               throw new Error('Scrolling failed, with uknown scroll type: ' + scrollType);
          }
-         
+      }
+
+
+      protected function scroll_rollOutHandler(event: Event): void {
+         scrollType = 0;
+         scrollTimer.stop();
+      }
+
+
+      protected function nextQueue_dragEnterHandler(event: DragEvent): void {
+         DragManager.acceptDragDrop(event.target as IUIComponent);
+         nextQueue_rollOverHandler(event);
+         content.dragMoveEnabled = false;
+      }
+
+
+      protected function previousQueue_dragEnterHandler(event: DragEvent): void {
+         DragManager.acceptDragDrop(event.target as IUIComponent);
+         previousQueue_rollOverHandler(event);
+         content.dragMoveEnabled = false;
+      }
+
+
+      protected function nextShop_dragEnterHandler(event: DragEvent): void {
+         DragManager.acceptDragDrop(event.target as IUIComponent);
+         nextShop_rollOverHandler(event);
+         content.dragMoveEnabled = false;
+      }
+
+
+      protected function previousShop_dragEnterHandler(event: DragEvent): void {
+         DragManager.acceptDragDrop(event.target as IUIComponent);
+         previousShop_rollOverHandler(event);
+         content.dragMoveEnabled = false;
+      }
+
+
+      protected function button_dragDropHandler(event: Event): void {
+         callLater(function (): void {
+            content.dragMoveEnabled = true;
+         });
+      }
+
+      private function reset(e: GlobalEvent): void {
+         facility = null;
+      }
+
+      protected function advancedcontainer1_addedToStageHandler(event: Event): void {
+         scrollTimer.addEventListener(TimerEvent.TIMER, scrollViewport);
+         EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
+      }
+
+
+      protected function advancedcontainer1_removedFromStageHandler(event: Event): void {
+         scrollTimer.stop();
+         scrollTimer.removeEventListener(TimerEvent.TIMER, scrollViewport);
+      }
+
+
+      protected function nextShop_clickHandler(event: MouseEvent): void {
+         if (shopViewport.horizontalScrollPosition < (shop.width - shopCont.width)) {
+            shopViewport.horizontalScrollPosition +=
+                    Math.min((shop.width - shopCont.width) - shopViewport.horizontalScrollPosition, SHOP_SKIP_STEP);
+         }
+      }
+
+
+      protected function previousShop_clickHandler(event: MouseEvent): void {
+         if (shopViewport.horizontalScrollPosition > 0) {
+            shopViewport.horizontalScrollPosition -=
+                    Math.min(shopViewport.horizontalScrollPosition, SHOP_SKIP_STEP);
+         }
+      }
+
+      protected function btnFlank_clickHandler(event: Event): void {
+         new BuildingsCommand(BuildingsCommand.SET_BUILD_IN_2ND_FLANK,
+            {
+               'model': _facility,
+               'enable': ! _facility.buildIn2ndFlank
+            }
+         ).dispatch();
+      }
+
+      /* TODO implement toggle button for this one */
+      protected function btnHidden_clickHandler(event: Event): void {
+         new BuildingsCommand(BuildingsCommand.SET_BUILD_HIDDEN,
+            {
+               'model': _facility,
+               'enable': ! _facility.buildHidden
+            }
+         ).dispatch();
+      }
       ]]>
    </fx:Script>  
    <fx:Declarations>
@@ -516,10 +461,12 @@
          
          <s:ToggleButton skinClass="components.skins.ChangeDefaultFlankButtonSkin" 
                          selected="{_facility.buildIn2ndFlank}" id="btnFlank"
-                         click="togglebutton1_clickHandler(event)"
-                         toolTip="{Localizer.string('Units', 'tooltip.'+(_facility.buildIn2ndFlank
-                         ? 'buildInFlank2'
-                         : 'buildInFlank1'))}"/>
+                         click="btnFlank_clickHandler(event)"
+                         toolTip="{Localizer.string(
+                           'Units',
+                           'tooltip.' + ( _facility.buildIn2ndFlank
+                              ? 'buildInFlank2' : 'buildInFlank1')
+                         )}"/>
          <s:Group id="facilityGroup" left="{btnFlank.width}">
             <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'top_left')}"/>
             <s:Group width="{imageSize}" height="{imageSize}" left="4" top="4">

@@ -423,27 +423,27 @@ package models.unit
          return changedUnits;
       }
 
-      private function getHiddenChanged(): Object
+      private function getHiddenChanged(): Array
       {
-         var changedUnits: Object = {};
+         var changedUnits: Array = []
          for each(var unit: MCUnit in transformedUnits)
          {
             if (unit.hidden == true && unit.hidden != unit.unit.hidden)
             {
-               changedUnits[unit.unit.id] = [true];
+               changedUnits.push(unit.unit.id);
             }
          }
          return changedUnits;
       }
 
-      private function getNotHiddenChanged(): Object
+      private function getNotHiddenChanged(): Array
       {
-         var changedUnits: Object = {};
+         var changedUnits: Array = [];
          for each(var unit: MCUnit in transformedUnits)
          {
             if (unit.hidden == false && unit.hidden != unit.unit.hidden)
             {
-               changedUnits[unit.unit.id] = [false];
+               changedUnits.push(unit.unit.id);
             }
          }
          return changedUnits;
