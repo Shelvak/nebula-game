@@ -142,7 +142,7 @@
                </base:layout>
             </base:Panel>
 
-            <base:Panel width="100%" title="{getText('label.setHidden')}"
+            <base:Panel width="100%" title="{getText('title.hide')}"
                         visible="{(US.selection.length > 0)
                         &amp;&amp; (US.location is Location)
                         &amp;&amp; (Location(US.location).isSSObject)}">

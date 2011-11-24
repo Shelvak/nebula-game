@@ -3967,7 +3967,7 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
-    <label.hidden value="Hide units"/>
+    <title.hide value="Hide units"/>
     <label.notHidden value="Don't hide"/>
     <label.hidden value="Hide"/>
     <tooltip.hidden>

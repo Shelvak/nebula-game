@@ -4023,7 +4023,7 @@
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
 
-    <label.hidden value="Paslėpti karius"/>
+    <title.hide value="Paslėpti karius"/>
     <label.notHidden value="Nesislėpti"/>
     <label.hidden value="Pasislėpti"/>
     <tooltip.hidden>

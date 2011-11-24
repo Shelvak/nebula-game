@@ -4187,7 +4187,7 @@
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
     
     <!-- TODO: translate this -->
-    <label.hidden value="Hide units"/>
+    <title.hide value="Hide units"/>
     <label.notHidden value="Don't hide"/>
     <label.hidden value="Hide"/>
     <tooltip.hidden>
