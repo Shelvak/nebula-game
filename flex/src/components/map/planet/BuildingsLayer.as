@@ -264,7 +264,7 @@ package components.map.planet
       }
 
       /**
-       * Starts the procees of building new structure on the map.
+       * Starts the process of building new structure on the map.
        */
       private function startBuildingProcess(building: Building): void {
          cancelBuildingProcess();
