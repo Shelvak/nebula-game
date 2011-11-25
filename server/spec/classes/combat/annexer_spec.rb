@@ -107,9 +107,9 @@ describe Combat::Annexer do
       end
       
       describe "when owner lost" do
-        describe "if it's owners last planet" do
+        describe "if the planet is protected" do
           before(:each) do
-            @owner.planets_count = 1
+            @owner.planets_count = Cfg.player_protected_planets
             @owner.save!
           end
           
@@ -132,6 +132,14 @@ describe Combat::Annexer do
               ss = @planet.solar_system
               ss.kind = SolarSystem::KIND_BATTLEGROUND
               ss.save!
+            end
+
+            it_should_behave_like "taking planet"
+          end
+
+          describe "when apocalypse has started" do
+            before(:each) do
+              @owner.galaxy.stub(:apocalypse_started?).and_return(true)
             end
 
             it_should_behave_like "taking planet"

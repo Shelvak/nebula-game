@@ -247,6 +247,9 @@ class PlanetsController < GenericController
   #
   def action_take
     param_options :required => {:id => Fixnum}
+
+    raise GameLogicError.new("Cannot take planets during apocalypse!") \
+      if player.galaxy.apocalypse_started?
     
     planet = SsObject::Planet.where("player_id IS NULL").find(params['id'])
     raise GameLogicError.new(

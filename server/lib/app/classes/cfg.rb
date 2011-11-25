@@ -143,6 +143,10 @@ class Cfg; class << self
     CONFIG['galaxy.player.referral.points_needed']
   end
 
+  def player_protected_planets
+    CONFIG['galaxy.player.protected_planets']
+  end
+
   def galaxy_convoy_units_definition
     CONFIG["galaxy.convoy.units"]
   end

@@ -17,12 +17,12 @@ class Combat::Annexer
         # he is not NPC).
         if outcomes[planet.player_id] == Combat::OUTCOME_LOSE &&
             ! planet.player_id.nil?
-          if planet.player.planets_count == 1 &&
-              ! planet.solar_system.battleground?
-            # Don't take players last planet.
+          if ! planet.solar_system.battleground? && (
+              planet.player.planets_count <= Cfg.player_protected_planets &&
+                ! planet.player.galaxy.apocalypse_started?
+          )
             protect(planet, outcomes)
           else
-            # Take the planet away from him.
             annex_planet(planet, outcomes)
           end
         end
