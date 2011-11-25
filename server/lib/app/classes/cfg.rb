@@ -155,6 +155,10 @@ class Cfg; class << self
     CONFIG.evalproperty('galaxy.apocalypse.quiet_time').from_now
   end
 
+  def apocalypse_survival_bonus(death_day)
+    CONFIG.evalproperty('galaxy.apocalypse.survival_bonus', 'days' => death_day)
+  end
+
   ### tiles.yml ###
 
   # Initializes exploration rewards and returns possible rewards.

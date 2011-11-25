@@ -121,10 +121,6 @@ class Galaxy < ActiveRecord::Base
     ! apocalypse_start.nil?
   end
 
-  def apocalypse_started?
-    finished? && apocalypse_start < Time.now
-  end
-
   # End galaxy and start countdown of apocalypse.
   def finish!
     self.class.save_galaxy_finish_data(id)
@@ -142,6 +138,48 @@ class Galaxy < ActiveRecord::Base
 
     true
   end
+
+  def apocalypse_started?
+    finished? && apocalypse_start < Time.now
+  end
+
+  # Returns which apocalypse day it currently is.
+  def apocalypse_day
+    raise ArgumentError.new("Apocalypse hasn't started yet! Start on: #{
+      apocalypse_start}") unless apocalypse_started?
+
+    ((Time.now - apocalypse_start) / 1.day).round
+  end
+
+  ## Saves statistical galaxy data for when somebody wins the galaxy.
+  ## @param galaxy_id [Fixnum]
+  ## @return [TrueClass]
+  #def self.save_galaxy_apocalypse_finish_data(galaxy_id)
+  #  ratings = Player.ratings(galaxy_id)
+  #  alliance_ratings = Alliance.ratings(galaxy_id)
+  #
+  #  data = JSON.generate({
+  #    'date' => Time.now,
+  #    'ratings' => ratings,
+  #    'alliance_ratings' => alliance_ratings
+  #  })
+  #  MAILER.call("WIN", "").call("We have a winner!\n\n" + data) \
+  #    if App.in_production?
+  #  File.open(
+  #    File.join(ROOT_DIR, "galaxy-#{galaxy_id}-finish-data.txt"),
+  #    "w"
+  #  ) { |f| f.write data } unless App.in_test?
+  #
+  #  true
+  #end
+  #
+  #def check_if_apocalypse_finished!
+  #  finish_apocalypse! if players.where('planets_count > 0').exists?
+  #end
+  #
+  #def finish_apocalypse!
+  #
+  #end
 
   # Convert victory points to creds.
   #
