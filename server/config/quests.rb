@@ -51,13 +51,13 @@ QUESTS = QuestDefinition.define(:debug => false) do
       explore_object Tile::FOLLIAGE_3X3
 
       reward_points 200
-      reward_unit Unit::Gnat, :hp => 25
+      reward_unit Unit::Gnat
     end.define(23) do
       # 3x3 because we don't have a research center.
       explore_object Tile::FOLLIAGE_3X3, :count => 10
 
       reward_points 1000
-      reward_unit Unit::Glancer, :hp => 60
+      reward_unit Unit::Glancer
     end
 
     # Side quest chain
@@ -94,8 +94,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
   end.define(8, "attacking") do
     destroy_npc_building Building::NpcMetalExtractor
 
-    reward_unit Unit::Trooper, :level => 2, :hp => 50, :count => 2
-    reward_unit Unit::Trooper, :level => 3, :hp => 30
+    reward_unit Unit::Trooper, :level => 2, :count => 2
+    reward_unit Unit::Trooper, :level => 3
     reward_cost Building::ResearchCenter, :count => 1.05
     reward_creds (CONFIG['creds.vip'][0][0] * 1.5).ceil
   end.tap do |quest|
@@ -144,20 +144,17 @@ QUESTS = QuestDefinition.define(:debug => false) do
       explore_object Tile::FOLLIAGE_6X2, :count => 5
 
       reward_points 800
-      reward_unit Unit::Gnat, :hp => 25, :count => 2
-      reward_unit Unit::Gnat, :hp => 20, :count => 2
-      reward_unit Unit::Gnat, :hp => 15, :count => 2
-      reward_unit Unit::Gnat, :hp => 10, :count => 2
+      reward_unit Unit::Gnat, :count => 8
     end.define(25) do
       explore_object Tile::FOLLIAGE_4X4, :count => 5
 
       reward_points 800
-      reward_unit Unit::Glancer, :hp => 80, :count => 2
+      reward_unit Unit::Glancer, :count => 2
     end.define(26) do
       explore_object Tile::FOLLIAGE_6X6, :count => 10
 
       reward_points 1600
-      reward_unit Unit::Spudder, :hp => 96, :count => 1
+      reward_unit Unit::Spudder, :count => 1
     end
 
     # Side quest line
@@ -245,29 +242,29 @@ QUESTS = QuestDefinition.define(:debug => false) do
     quest.define(16) do
       have_points 15000
 
-      reward_unit Unit::Trooper, :level => 3, :count => 1, :hp => 100
-      reward_unit Unit::Seeker, :level => 2, :count => 1, :hp => 100
-      reward_unit Unit::Shocker, :level => 1, :count => 2, :hp => 100
+      reward_unit Unit::Trooper, :level => 3, :count => 1
+      reward_unit Unit::Seeker, :level => 2, :count => 1
+      reward_unit Unit::Shocker, :level => 1, :count => 2
     end.define(28) do
       have_points 30000
 
-      reward_unit Unit::Scorpion, :level => 2, :count => 1, :hp => 70
-      reward_unit Unit::Azure, :level => 1, :count => 1, :hp => 100
+      reward_unit Unit::Scorpion, :level => 2, :count => 1
+      reward_unit Unit::Azure, :level => 1, :count => 1
     end.define(29) do
       have_points 60000
 
-      reward_unit Unit::Cyrix, :level => 2, :count => 1, :hp => 60
-      reward_unit Unit::Crow, :level => 1, :count => 2, :hp => 100
+      reward_unit Unit::Cyrix, :level => 2, :count => 1
+      reward_unit Unit::Crow, :level => 1, :count => 2
     end.define(30) do
       have_points 80000
 
-      reward_unit Unit::Avenger, :level => 1, :count => 1, :hp => 100
-      reward_unit Unit::Dart, :level => 1, :count => 1, :hp => 100
+      reward_unit Unit::Avenger, :level => 1, :count => 1
+      reward_unit Unit::Dart, :level => 1, :count => 1
     end.define(33) do
       have_points 150000
 
-      reward_unit Unit::Rhyno, :level => 1, :count => 1, :hp => 100
-      reward_unit Unit::Cyrix, :level => 3, :count => 2, :hp => 100
+      reward_unit Unit::Rhyno, :level => 1, :count => 1
+      reward_unit Unit::Cyrix, :level => 3, :count => 2
     end.define(64) do
       have_points 350000
 
