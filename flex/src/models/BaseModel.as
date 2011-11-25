@@ -37,6 +37,11 @@ package models
    [Event(name="modelIdChange", type="models.events.BaseModelEvent")]
    
    /**
+    * @see models.events.BaseModelEvent#UPDATE
+    */
+   [Event(name="update", type="models.events.BaseModelEvent")]
+   
+   /**
     * @see mx.events.PropertyChangeEvent
     * @eventType mx.events.PropertyChangeEvent.PROPERTY_CHANGE
     */   
@@ -445,11 +450,19 @@ package models
        * (<code>PropertyChangeEvent</code> will be also dispatched). This event is dispatched
        * autommaticly by <code>BaseModel</code> class.
        */
-      protected function dispatchIdChangeEvent() : void
-      {
+      protected function dispatchIdChangeEvent() : void {
          dispatchModelEvent(BaseModelEvent.MODEL_ID_CHANGE);
       }
       
+      /**
+       * Call to dispatch <code>BaseModel.UPDATE</code> event. This event should only be dispached by
+       * models implementing <code>IUpdatable</code> interface.
+       * 
+       * @see models.events.BaseModelEvent#UPDATE
+       */
+      protected function dispatchUpdateEvent() : void {
+         dispatchModelEvent(BaseModelEvent.UPDATE);
+      }
       
       /**
        * Creates <code>PropertyChangeEvent</code> event of <code>PropertyChangeEventKind.UPDATE</code>

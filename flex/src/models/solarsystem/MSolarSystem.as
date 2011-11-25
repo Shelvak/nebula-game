@@ -68,19 +68,6 @@ package models.solarsystem
       public function MSolarSystem() {
          super();
       }
-      
-      
-      private var _importantObjects:ListCollectionView;
-      private function ff_importantObjects(object:MSSObject) : Boolean {
-         return object.isPlanet || object.isJumpgate;
-      }
-      [Bindable(event="willNotChange")]
-      /**
-       * Important to player objects (planets and jumpgates).
-       */
-      public function get importantObjects() : ListCollectionView {
-         return _importantObjects;
-      }
 
       public function get cached(): Boolean {
          if (ML.latestSSMap == null) {

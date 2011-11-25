@@ -4,93 +4,94 @@ package models.cooldown
    
    import models.BaseModel;
    import models.map.IMStaticMapObject;
-   import models.cooldown.events.MCooldownEvent;
    import models.location.LocationMinimal;
-   
-   import namespaces.change_flag;
-   
-   import utils.DateUtil;
+   import models.time.MTimeEventFixedMoment;
    
    
-   /**
-    * Dispatched when <code>endsIn</code> property has changed.
-    * 
-    * @eventType models.cooldown.events.MCooldownEvent.ENDS_IN_CHANGE
-    */
-   [Event(name="endsInChange", type="models.cooldown.events.MCooldownEvent")]
+//   /**
+//    * Dispatched when <code>endsIn</code> property has changed.
+//    * 
+//    * @eventType models.cooldown.events.MCooldownEvent.ENDS_IN_CHANGE
+//    */
+//   [Event(name="endsInChange", type="models.cooldown.events.MCooldownEvent")]
    
    
    public class MCooldown extends BaseModel implements IMStaticMapObject, IUpdatable
    {
-      public function MCooldown()
-      {
+      public function MCooldown() {
          super();
       }
       
-      
-      private var _endsAt:Date = null;
-      [Required]
-      [Bindable(event="willNotChange")]
+      [Required(alias="endsAt")]
       /**
-       * Time when this cooldown ends. Never <code>null</code> once initialized. Default is <code>null</code>.
-       * 
-       * <p>Metadata:<br/>
-       * [Required]<br/>
-       * [Binable(event="willNotChange")]
-       * </p>
+       * Time when this cooldown ends.
        */
-      public function set endsAt(value:Date) : void
-      {
-         _endsAt = value;
+      public const endsEvent:MTimeEventFixedMoment = new MTimeEventFixedMoment();
+      
+      
+//      private var _endsAt:Date = null;
+//      [Required]
+//      [Bindable(event="willNotChange")]
+//      /**
+//       * Time when this cooldown ends. Never <code>null</code> once initialized. Default is <code>null</code>.
+//       * 
+//       * <p>Metadata:<br/>
+//       * [Required]<br/>
+//       * [Binable(event="willNotChange")]
+//       * </p>
+//       */
+//      public function set endsAt(value:Date) : void
+//      {
+//         _endsAt = value;
+//      }
+//      /**
+//       * @private
+//       */
+//      public function get endsAt() : Date
+//      {
+//         return _endsAt;
+//      }
+      
+//      change_flag var endsIn:Boolean = true;
+//      [Bindable(event="endsInChange")]
+//      /**
+//       * Number of seconds this cooldown will end in.
+//       * 
+//       * <p>Metadata:<br/>
+//       * [Bindable(event="endsInChange")]
+//       * </p>
+//       */
+//      public function get endsIn() : Number
+//      {
+//         checkState_endsAt();
+//         return Math.max(0, (_endsAt.time - DateUtil.now) / 1000);
+//      }
+      
+      
+//      /**
+//       * Returns <code>true</code> if this cooldown has ended (and needs to be destroyed).
+//       */
+//      public function get hasEnded() : Boolean
+//      {
+//         return endsIn == 0;
+//      }
+      
+      
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+      
+      public function update() : void {
+         endsEvent.update();
+         dispatchUpdateEvent();
+//         change_flag::endsIn = true;
+//         dispatchSimpleEvent(MCooldownEvent, MCooldownEvent.ENDS_IN_CHANGE);
+//         dispatchUpdateEvent();
       }
-      /**
-       * @private
-       */
-      public function get endsAt() : Date
-      {
-         return _endsAt;
-      }
       
-      change_flag var endsIn:Boolean = true;
-      [Bindable(event="endsInChange")]
-      /**
-       * Number of seconds this cooldown will end in.
-       * 
-       * <p>Metadata:<br/>
-       * [Bindable(event="endsInChange")]
-       * </p>
-       */
-      public function get endsIn() : Number
-      {
-         checkState_endsAt();
-         return Math.max(0, (_endsAt.time - DateUtil.now) / 1000);
-      }
-      
-      
-      /**
-       * Returns <code>true</code> if this cooldown has ended (and needs to be destroyed).
-       */
-      public function get hasEnded() : Boolean
-      {
-         return endsIn == 0;
-      }
-      
-      
-      /* ###################### */
-      /* ### IMSelfUpdating ### */
-      /* ###################### */
-      
-      
-      public function update() : void
-      {
-         change_flag::endsIn = true;
-         dispatchSimpleEvent(MCooldownEvent, MCooldownEvent.ENDS_IN_CHANGE);
-      }
-      
-      
-      public function resetChangeFlags() : void
-      {
-         change_flag::endsIn = false;
+      public function resetChangeFlags() : void {
+         endsEvent.resetChangeFlags();
+//         change_flag::endsIn = false;
       }
       
       
@@ -108,27 +109,21 @@ package models.cooldown
        * [Required(alias="location")]
        * </p>
        */
-      public function set currentLocation(value:LocationMinimal) : void
-      {
+      public function set currentLocation(value:LocationMinimal) : void {
          _currentLocation = value;
       }
       /**
        * @private
        */
-      public function get currentLocation() : LocationMinimal
-      {
+      public function get currentLocation() : LocationMinimal {
          return _currentLocation;
       }
       
-      
-      public function get isNavigable() : Boolean
-      {
+      public function get isNavigable() : Boolean {
          return false;
       }
       
-      
-      public function navigateTo() : void
-      {
+      public function navigateTo() : void {
       }
       
       
@@ -136,22 +131,9 @@ package models.cooldown
       /* ### STATE VALIDATION ### */
       /* ######################## */
       
-      
-      private function checkState_endsAt() : void
-      {
-         if (_endsAt == null)
-         {
-            throwIllegalStateError("[prop endsAt] is null.");
-         }
-      }
-      
-      
-      private function checkState_currentLocation() : void
-      {
+      private function checkState_currentLocation() : void {
          if (_currentLocation == null)
-         {
             throwIllegalStateError("[prop currentLocation] is null.");
-         }
       }
       
       
@@ -159,16 +141,14 @@ package models.cooldown
       /* ### BaseModel OVERRIDES ### */
       /* ########################### */
       
-      
       public override function toString() : String
       {
          return "[class: " + CLASS + 
                 ", id: " + id +
                 ", currentLocation: " + currentLocation +
-                ", endsAt: " + endsAt +
+                ", endsAt: " + endsEvent.occuresAt +
                 "]";
       }
-      
       
       public override function equals(o:Object) : Boolean
       {

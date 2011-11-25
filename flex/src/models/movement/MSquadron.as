@@ -1,10 +1,12 @@
 package models.movement
 {
+   import controllers.timedupdate.MasterUpdateTrigger;
+
    import flash.errors.IllegalOperationError;
-   
+
    import interfaces.ICleanable;
    import interfaces.IUpdatable;
-   
+
    import models.BaseModel;
    import models.ModelsCollection;
    import models.Owner;
@@ -18,16 +20,15 @@ package models.movement
    import models.player.PlayerMinimal;
    import models.time.MTimeEventFixedMoment;
    import models.unit.Unit;
-   
+
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.logging.ILogger;
    import mx.logging.Log;
-   
-   import namespaces.client_internal;
-   
+
    import utils.Objects;
    import utils.datastructures.Collections;
+
 
    /**
     * Dispatched when a hop has been added to or removed from the route. Event is not dispatched when a move
@@ -57,15 +58,18 @@ package models.movement
       }
       
       
-      public function MSquadron() : void
-      {
+      public function MSquadron(): void {
          super();
-         units = Collections.filter(ML.units,
-            function(unit:Unit) : Boolean {
-               if (isMoving)
+         units = Collections.filter(
+            ML.units,
+            function(unit: Unit): Boolean {
+               if (isMoving) {
                   return id == unit.squadronId;
-               else if (!unit.isMoving && currentHop != null)
-                  return unit.location.equals(currentHop.location) && unit.playerId == player.id;
+               }
+               else if (!unit.isMoving && currentHop != null) {
+                  return unit.location.equals(currentHop.location)
+                            && unit.playerId == player.id;
+               }
                return false;
             }
          );
@@ -280,7 +284,7 @@ package models.movement
        * Hops that make up the route of this squadron. Do not modify this list directly: use
        * <code>addHop(), addAllHops(), moveToNextHop()</code> methods instead.
        */
-      public var hops:ModelsCollection = new ModelsCollection();
+      public const hops:ModelsCollection = new ModelsCollection();
       
       /**
        * Last hop of the route of the squadron.
@@ -328,19 +332,6 @@ package models.movement
        */
       public function rebuildCachedUnits() : void {
          _route.cachedUnits = UnitFactory.buildCachedUnitsFromUnits(units);
-      }
-      
-      /**
-       * Caches <code>owner</code> and <code>id</code> values from <code>route</code>
-       * in private variables. Creates current hop form <code>route.currentLocation</code>. 
-       * 
-       * @throws IllegalOperationError if <code>route</code> has not been set
-       */
-      client_internal function captureRouteValues() : void {
-         checkRoute();
-         id = _route.id;
-         owner = _route.owner;
-         createCurrentHop(_route.currentLocation);
       }
       
       /**
@@ -422,7 +413,7 @@ package models.movement
          
          // look for the last hop the squad has to jump to
          for each (hop in hops) {
-            if (hop.arrivesAt.time <= time) {
+            if (hop.arrivalEvent.occuresAt.time <= time) {
                endHop = hop;
             }
             else {
@@ -525,17 +516,20 @@ package models.movement
       /* ################## */
       /* ### IUpdatable ### */
       /* ################## */
-      
-      public function update() : void {
+
+      public function update(): void {
          if (isHostile && jumpsAtEvent != null) {
             jumpsAtEvent.update();
          }
+         MasterUpdateTrigger.resetChangeFlags(hops);
       }
-      
-      public function resetChangeFlags() : void {
+
+      public function resetChangeFlags(): void {
          if (isHostile && jumpsAtEvent != null) {
             jumpsAtEvent.resetChangeFlags();
          }
+         MasterUpdateTrigger.update(hops);
+         dispatchUpdateEvent();
       }
       
       
@@ -640,11 +634,6 @@ package models.movement
             "A hop defining the same point in space (" + location + ") is already in the route of " +
             "this squadron: a route can't have two hops defining the same point in space."
          );
-      }
-      
-      private function checkRoute() : void {
-         if (_route == null)
-            throw new IllegalOperationError("Unable to perform operation: [prop route] has not been set");
       }
    }
 }

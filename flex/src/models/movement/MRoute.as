@@ -17,13 +17,13 @@ package models.movement
 
 
    /**
-    * @see models.movement.event.MRouteEvent#JUMPS_AT_CHANGE
+    * @see models.movement.events.MRouteEvent#JUMPS_AT_CHANGE
     */
    [Event(name="jumpsAtChange", type="models.movement.events.MRouteEvent")]
    
    /**
-    * Should only be used to store additional information about squadrons belonging to either the
-    * palyer or his/her allies.
+    * Should only be used to store additional information about squadrons
+    * belonging to either the player or his/her allies.
     */
    public class MRoute extends BaseModel implements IUpdatable, ILocationUser
    {
@@ -176,8 +176,8 @@ package models.movement
       /* ################## */
       /* ### IUpdatable ### */
       /* ################## */
-      
-      public function resetChangeFlags() : void {
+
+      public function resetChangeFlags(): void {
          if (arrivalEvent != null) {
             arrivalEvent.resetChangeFlags();
          }
@@ -185,14 +185,15 @@ package models.movement
             _jumpsAtEvent.resetChangeFlags();
          }
       }
-      
-      public function update() : void {
+
+      public function update(): void {
          if (arrivalEvent != null) {
             arrivalEvent.update();
          }
          if (_jumpsAtEvent != null) {
             _jumpsAtEvent.update();
          }
+         dispatchUpdateEvent();
       }
       
       

@@ -3,10 +3,54 @@ package controllers.timedupdate
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    
+   import interfaces.IUpdatable;
+   
    import utils.DateUtil;
+   import utils.datastructures.iterators.IIterator;
+   import utils.datastructures.iterators.IIteratorFactory;
 
    public class MasterUpdateTrigger
    {
+      /**
+       * Invokes <code>update()</code> method on each <code>IUpdatable</code> in the given list.
+       * 
+       * @param list a list of instances of <code>IUpdatable</code>
+       * <ul><b>
+       * <li>Not null.</li>
+       * <li>Array, Vector or IList.</li>
+       * </b></ul>
+       * 
+       * @see controllers.timedupdate.MasterUpdateTrigger#resetChangeFlags()
+       * @see interfaces.IUpdatable
+       * @see interfaces.IUpdatable#update()
+       */
+      public static function update(list:*) : void {
+         var it:IIterator = IIteratorFactory.getIterator(list);
+         while (it.hasNext) {
+            IUpdatable(it.next()).update();
+         }
+      }
+      
+      /**
+       * Invokes <code>resetChangeFlags()</code> method on each <code>IUpdatable</code> in the given list.
+       * 
+       * @param list a list of instances of <code>IUpdatable</code>
+       * <ul><b>
+       * <li>Not null.</li>
+       * <li>Array, Vector or IList.</li>
+       * </b></ul>
+       * 
+       * @see controllers.timedupdate.MasterUpdateTrigger#update()
+       * @see interfaces.IUpdatable
+       * @see interfaces.IUpdatable#resetChangeFlags()
+       */
+      public static function resetChangeFlags(list:*) : void {
+         var it:IIterator = IIteratorFactory.getIterator(list);
+         while (it.hasNext) {
+            IUpdatable(it.next()).resetChangeFlags();
+         }
+      }
+      
       public function MasterUpdateTrigger() {
          // triggers must be initialized before the timer as we need to number of triggers
          // to determine delay interval of the timer

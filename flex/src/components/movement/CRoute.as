@@ -1,12 +1,8 @@
 package components.movement
 {
-   import com.developmentarc.core.utils.EventBroker;
-
    import components.map.space.Grid;
 
    import flash.geom.Point;
-
-   import globalevents.GlobalEvent;
 
    import interfaces.ICleanable;
 
@@ -16,6 +12,7 @@ package components.movement
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.map.MMapSolarSystem;
+   import models.events.BaseModelEvent;
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.movement.events.MRouteEvent;
@@ -24,7 +21,6 @@ package components.movement
 
    import spark.components.Group;
 
-   import utils.DateUtil;
    import utils.Objects;
    import utils.locale.Localizer;
 
@@ -46,11 +42,9 @@ package components.movement
       /* ###################### */
       
       /**
-       * Constructor.
-       * 
        * @param squadC model of a squadron travelling along the route
-       * @param grid reference to map grid (will be used for calculating positioning and sizing
-       * component)
+       * @param grid reference to map grid (will be used for calculating
+       * positioning and sizing component)
        */
       public function CRoute(squadC:CSquadronMapIcon, grid:Grid) {
          super();
@@ -60,11 +54,9 @@ package components.movement
          _grid = Objects.paramNotNull("grid", grid);
          _squadM = squadC.squadron;
          addModelEventHandlers(_squadM);
-         addGlobalEventHandlers();
       }
       
       public function cleanup() : void {
-         removeGlobalEventHandlers();
          if (_squadM != null) {
             removeModelEventHandlers(_squadM);
             _squadM = null;
@@ -75,9 +67,8 @@ package components.movement
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
-      
-      
-      public override function set visible(value:Boolean):void {
+
+      public override function set visible(value: Boolean): void {
          if (super.visible != value) {
             super.visible = value;
             f_visibleChanged = true;
@@ -85,15 +76,14 @@ package components.movement
             invalidateDisplayList();
          }
       }
-      
-      
-      private var f_visibleChanged:Boolean = true;
-      
-      
-      protected override function commitProperties() : void {
+
+      private var f_visibleChanged: Boolean = true;
+
+      protected override function commitProperties(): void {
          super.commitProperties();
-         if (f_visibleChanged)
+         if (f_visibleChanged) {
             mouseEnabled = mouseChildren = visible;
+         }
          f_visibleChanged = false;
       }
       
@@ -101,20 +91,20 @@ package components.movement
       /* ################ */
       /* ### CHILDREN ### */
       /* ################ */
-      
-      private var _hopsEndpoints:Vector.<CHopInfo>;
-      
-      private function createHopEndpoint() : void {
-         var hopInfo:CHopInfo = new CHopInfo();
+
+      private var _hopsEndpoints: Vector.<CHopInfo>;
+
+      private function createHopEndpoint(): void {
+         var hopInfo: CHopInfo = new CHopInfo();
          hopInfo.squadOwner = squadron.owner;
          hopInfo.arrivesInLabelText = getLabel("arrivesIn");
          _hopsEndpoints.push(hopInfo);
          addElement(hopInfo);
       }
-      
-      private function removeFirstHopEndpoint() : void {
+
+      private function removeFirstHopEndpoint(): void {
          if (_hopsEndpoints.length > 1 || !squadron.jumpPending) {
-            removeElement(_hopsEndpoints.shift());            
+            removeElement(_hopsEndpoints.shift());
          }
       }
       
@@ -132,7 +122,7 @@ package components.movement
             hop = MHop(_squadM.hops.getItemAt(idx));
             coords = _grid.getSectorRealCoordinates(hop.location);
             hopInfo = _hopsEndpoints[idx];
-            hopInfo.arrivesInValueText = getEventInString(hop.arrivesAt.time);
+            hopInfo.arrivesInValueText = hop.arrivalEvent.occuresInString;
             hopInfo.arrivesInVisible = true;
             hopInfo.x = coords.x;
             hopInfo.y = coords.y;
@@ -163,12 +153,14 @@ package components.movement
 
             hopInfo.jumpsInVisible = showJumpsAt;
             if (showJumpsAt) {
-               hopInfo.jumpsInLabelText = getLabel(
-                  (
-                     loc.isSolarSystem &&
-                     ss.getSSObjectAt(locWrap.position, locWrap.angle).isPlanet
-                  ) ? "landsIn" : "jumpsIn"
-               );
+               hopInfo.jumpsInLabelText =
+                  getLabel(
+                     loc.isSolarSystem
+                        && ss.getSSObjectAt(locWrap.position,
+                                            locWrap.angle).isPlanet
+                        ? "landsIn"
+                        : "jumpsIn"
+                  );
                coords = _grid.getSectorRealCoordinates(loc);
                hopInfo.jumpsInValueText = _squadM.jumpsAtEvent.occuresInString;
                hopInfo.x = coords.x;
@@ -221,14 +213,31 @@ package components.movement
       /* ### MODEL EVENT HANDLERS ### */
       /* ############################ */
       
-      private function addModelEventHandlers(squad:MSquadron) : void {
-         squad.addEventListener(MRouteEvent.CHANGE, model_routeChangeHandler, false, 0, true);
-         squad.addEventListener(MRouteEvent.JUMPS_AT_CHANGE, model_jumpsAtChangeHandler, false, 0, true);
+      private function addModelEventHandlers(squad: MSquadron): void {
+         squad.addEventListener(
+            MRouteEvent.CHANGE, model_routeChangeHandler,
+            false, 0, true
+         );
+         squad.addEventListener(
+            MRouteEvent.JUMPS_AT_CHANGE,
+            model_jumpsAtChangeHandler, false, 0, true
+         );
+         squad.addEventListener(
+            BaseModelEvent.UPDATE, model_updateHandler,
+            false, 0, true
+         );
       }
       
       private function removeModelEventHandlers(squad:MSquadron) : void {
-         squad.removeEventListener(MRouteEvent.CHANGE, model_routeChangeHandler, false);
-         squad.removeEventListener(MRouteEvent.JUMPS_AT_CHANGE, model_jumpsAtChangeHandler, false);
+         squad.removeEventListener(
+            MRouteEvent.CHANGE, model_routeChangeHandler, false
+         );
+         squad.removeEventListener(
+            MRouteEvent.JUMPS_AT_CHANGE, model_jumpsAtChangeHandler, false
+         );
+         squad.removeEventListener(
+            BaseModelEvent.UPDATE, model_updateHandler, false
+         );
       }
       
       private function model_routeChangeHandler(event:MRouteEvent) : void {
@@ -240,41 +249,19 @@ package components.movement
          }
          invalidateDisplayList();
       }
+
+      private function model_updateHandler(event:BaseModelEvent) : void {
+         updateHopsEndpoints();
+      }
       
       private function model_jumpsAtChangeHandler(e: MRouteEvent) : void {
          invalidateDisplayList();
       }
       
       
-      /* ############################# */
-      /* ### GLOBAL EVENT HANDLERS ### */
-      /* ############################# */
-      
-      private function addGlobalEventHandlers() : void {
-         EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, global_timedUpdateHandler);
-      }
-      
-      private function removeGlobalEventHandlers() : void {
-         EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, global_timedUpdateHandler);
-      }     
-      
-      private function global_timedUpdateHandler(event:GlobalEvent) : void {
-         if (_squadM != null) {
-            updateHopsEndpoints();
-         }
-      }
-      
-      
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
-      
-      private function getEventInString(time:Number) : String {
-         return DateUtil.secondsToHumanString(
-            Math.max(0, (time - DateUtil.now) / 1000),
-            2
-         );
-      }
       
       private function getLabel(property:String) : String {
          return Localizer.string("Movement", "label.hop." + property);

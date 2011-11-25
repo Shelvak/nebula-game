@@ -20,7 +20,6 @@ package models.planet
    import models.folliage.NonblockingFolliage;
    import models.location.Location;
    import models.location.LocationMinimal;
-   import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
    import models.map.MMap;
    import models.map.MapType;
@@ -425,42 +424,6 @@ package models.planet
       
       
       /**
-       * Proxy to <code>ssObject.angle</code>.
-       * 
-       * @see MSSObject#angle
-       */
-      public function set angle(value:Number) : void
-      {
-         _ssObject.angle = value;
-      }
-      /**
-       * @private
-       */
-      public function get angle() : Number
-      {
-         return _ssObject.angle;
-      }
-      
-      
-      /**
-       * Proxy to <code>ssObject.angle</code>.
-       * 
-       * @see MSSObject#position
-       */
-      public function set position(value:int) : void
-      {
-         _ssObject.position = value;
-      }
-      /**
-       * @private
-       */
-      public function get position() : int
-      {
-         return _ssObject.position;
-      }
-      
-      
-      /**
        * Proxy to <code>ssObject.solarSystemId</code>.
        * 
        * @see MSSObject#solarSystemId
@@ -503,37 +466,23 @@ package models.planet
       /* ################ */
       
       
-      public override function get currentLocation() : LocationMinimal
-      {
-         var locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem(new LocationMinimal());
-         locWrapper.type = LocationType.SOLAR_SYSTEM;
-         locWrapper.id = solarSystemId;
-         locWrapper.angle = angle;
-         locWrapper.position = position;
-         return locWrapper.location;
+      public override function get currentLocation() : LocationMinimal {
+         return _ssObject.currentLocation;
       }
       
-      
-      public function toLocation(): Location
-      {
+      public function toLocation(): Location {
          return _ssObject.toLocation();
       }
       
-      
-      public override function getLocation(x:int, y:int) : Location
-      {
+      public override function getLocation(x:int, y:int) : Location {
          return toLocation();
       }
       
-      
-      protected override function get definedLocationType() : int
-      {
+      protected override function get definedLocationType() : int {
          return LocationType.SS_OBJECT;
       }
       
-      
-      protected override function definesLocationImpl(location:LocationMinimal) : Boolean
-      {
+      protected override function definesLocationImpl(location:LocationMinimal) : Boolean {
          return location.isSSObject && location.id == id;
       }
       

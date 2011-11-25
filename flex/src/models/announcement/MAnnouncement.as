@@ -85,6 +85,7 @@ package models.announcement
          event.update();
          if (event.change_flag::hasOccured)
             dispatchAnnouncmentEvent(MAnnouncementEvent.BUTTON_VISIBLE_CHANGE);
+         dispatchUpdateEvent();
       }
       
       public function resetChangeFlags() : void {

@@ -23,7 +23,6 @@ package controllers.timedupdate
        */
       function register(model:IUpdatable) : void;
       
-      
       /**
        * Unregisters given instance of <code>IUpdatable</code> from this trigger.
        * 
