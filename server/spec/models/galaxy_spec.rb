@@ -197,6 +197,21 @@ describe Galaxy do
     end
   end
 
+  describe "#apocalypse_day" do
+    let(:galaxy) { Factory.build(:galaxy, :apocalypse_start => 15.6.days.ago) }
+
+    it "should fail if apocalypse hasn't started yet" do
+      galaxy.stub(:apocalypse_started?).and_return(false)
+      lambda do
+        galaxy.apocalypse_day
+      end.should raise_error(ArgumentError)
+    end
+
+    it "should return rounded number of days otherwise" do
+      galaxy.apocalypse_day.should == 16
+    end
+  end
+
   describe "#convert_vps_to_creds!" do
     before(:each) do
       @alliance = create_alliance

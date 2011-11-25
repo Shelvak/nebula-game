@@ -10,6 +10,9 @@ zone.players: 20
 
 # How long initial shield lasts on players home solar system?
 player.shield_duration: <%= 2.weeks %> / speed
+# Min number of planets player can have. Planets above this number can be taken
+# by other players.
+player.protected_planets: 1
 # Free population given to player upon creation
 player.population: 60
 # Maximum population player can have.

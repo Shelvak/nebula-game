@@ -6,7 +6,7 @@ Factory.define :player do |m|
   m.scientists_total 2000
   m.population 1000
   m.population_cap 2000
-  m.planets_count 0
+  m.planets_count 1
   m.war_points 1000
   m.first_time false
 end

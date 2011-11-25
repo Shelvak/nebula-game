@@ -130,6 +130,62 @@ describe Player do
     end
   end
 
+  describe "on death" do
+    let(:player) do
+      player = Factory.create(:player, :planets_count => 2, :pure_creds => 323)
+      player.galaxy.stub(:apocalypse_day).and_return(15)
+      player
+    end
+
+    describe "if #planets_count gets updated to 0" do
+      before(:each) do
+        player.planets_count = 0
+      end
+
+      it "should set #death_day" do
+        lambda do
+          player.save!
+        end.should change(player, :death_day).to(player.galaxy.apocalypse_day)
+      end
+
+      it "should transfer player creds + apocalypse survival bonus to web" do
+        ControlManager.instance.should_receive(:player_death).
+          with(player, player.pure_creds +
+                 Cfg.apocalypse_survival_bonus(player.galaxy.apocalypse_day))
+        player.save!
+      end
+
+      it "should set #pure_creds to 0" do
+        lambda do
+          player.save!
+        end.should change(player, :pure_creds).to(0)
+      end
+    end
+
+    describe "if #planets_count does not get updated to 0" do
+      before(:each) do
+        player.planets_count = 1
+      end
+
+      it "should not set #death_day" do
+        lambda do
+          player.save!
+        end.should_not change(player, :death_day)
+      end
+
+      it "should not change player creds" do
+        lambda do
+          player.save!
+        end.should_not change(player, :creds)
+      end
+
+      it "should not transfer anything to web" do
+        ControlManager.instance.should_not_receive(:player_death)
+        player.save!
+      end
+    end
+  end
+
   describe "referral points" do
     let(:player) do
       Factory.create(

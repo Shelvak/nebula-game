@@ -181,8 +181,10 @@ class Player < ActiveRecord::Base
   POINT_ATTRIBUTES = %w{economy_points science_points army_points war_points}
 
   RATING_ATTRIBUTES_SQL = (
-    %w{id name victory_points alliance_vps planets_count bg_planets_count} +
-      POINT_ATTRIBUTES
+    %w{
+      id name victory_points alliance_vps death_day
+      planets_count bg_planets_count
+    } + POINT_ATTRIBUTES
   ).map { |attr| "`#{table_name}`.`#{attr}`" }.join(", ")
 
   # Returns ratings for _galaxy_id_. If _player_ids_ are given then
@@ -200,6 +202,7 @@ class Player < ActiveRecord::Base
   #     "name" => String (player name),
   #     "victory_points" => Fixnum,
   #     "alliance_vps" => Fixnum,
+  #     "death_day" => Fixnum,
   #     "planets_count" => Fixnum,
   #     "bg_planets_count" => Fixnum,
   #     "war_points" => Fixnum,
@@ -307,6 +310,15 @@ class Player < ActiveRecord::Base
       end
     end
 
+
+    if planets_count_changed? && planets_count == 0
+      self.death_day = galaxy.apocalypse_day
+      ControlManager.instance.player_death(
+        self, pure_creds + Cfg.apocalypse_survival_bonus(death_day)
+      )
+      self.pure_creds = 0
+    end
+
     true
   end
 
@@ -373,6 +385,12 @@ class Player < ActiveRecord::Base
         alliance.save!
       end
     end
+
+    #if planets_count_changed? && planets_count == 0
+    #  galaxy.check_
+    #  galaxy.alive_players -= 1
+    #  galaxy.save!
+    #end
   end
 
   # Increase or decrease scientist count.

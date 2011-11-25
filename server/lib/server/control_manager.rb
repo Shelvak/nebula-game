@@ -172,6 +172,21 @@ class ControlManager
     end
   end
 
+  # Notify web that this player is dead. Transfer _amount_ of creds back
+  # to the web.
+  def player_death(player, amount)
+    only_in_production("player_death invoked for #{player}") do
+      response = post_to_web(player.galaxy.callback_url,
+        "player_death",
+        'player_id' => player.id,
+        'web_user_id' => player.web_user_id,
+        'creds' => amount
+      )
+
+      check_response(response)
+    end
+  end
+
   def player_destroyed(player)
     only_in_production("player_destroyed invoked for #{player}") do
       response = post_to_web(player.galaxy.callback_url, 

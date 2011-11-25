@@ -487,7 +487,15 @@ describe PlanetsController do
     end
     
     it_behaves_like "with param options", %w{id}
-    
+
+    it "should fail if it's apocalypse" do
+      player.galaxy.stub(:apocalypse_started?).and_return(true)
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
     it "should fail if planet does not belong to npc" do
       @planet.player = Factory.create(:player)
       @planet.save!
