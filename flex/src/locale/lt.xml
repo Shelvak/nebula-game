@@ -606,7 +606,11 @@
     <deployInProgress value="Vykdomas išskleidimas" />
 
     <timeToFinish value="Iki užbaigimo" />
-    
+
+    <warning.apocalypseClaimForbidden>
+      <p>Tu negali užimti naujų planetų apokalipsei prasidėjus.</p>
+    </warning.apocalypseClaimForbidden>
+
     <warning.deployInAlliancePlanet>
       <p>Po išskleidimo pastatas priklausys planetos savininkui.</p>
     </warning.deployInAlliancePlanet>

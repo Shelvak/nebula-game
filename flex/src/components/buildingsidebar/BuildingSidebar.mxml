@@ -639,14 +639,26 @@
             <s:Label text="{getString('label.noPlayerUnits')}" styleName="unsatisfied"
                      left="0" right="0"/>
          </s:Group>
-         <s:Button label="{getString('label.claimPlanet')}"
-                   visible="{ML.latestPlanet.ssObject.player == null
-                   &amp;&amp; !ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY)
-                   &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE)
-                   &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
-                   &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}"
+         <s:Group visible="{ML.latestPlanet.ssObject.player == null
+             &amp;&amp; !ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY)
+             &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE)
+             &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
+             &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}">
+                <s:Button label="{getString('label.claimPlanet')}"
+                   visible="{!ML.latestGalaxy.apocalypseActive
+                   || !ML.latestGalaxy.apocalypseStartEvent.hasOccured}"
+                   includeInLayout="{!ML.latestGalaxy.apocalypseActive
+                   || !ML.latestGalaxy.apocalypseStartEvent.hasOccured}"
                    skinClass="components.skins.GreenButtonSkin"
                    click="button1_clickHandler(event)"/>
+
+                <base:Warning width="100%" showSign="false"
+                   visible="{ML.latestGalaxy.apocalypseActive
+                   &amp;&amp; ML.latestGalaxy.apocalypseStartEvent.hasOccured}"
+                   includeInLayout="{ML.latestGalaxy.apocalypseActive
+                   &amp;&amp; ML.latestGalaxy.apocalypseStartEvent.hasOccured}"
+                   text="{getString('warning.apocalypseClaimForbidden')}"/>
+         </s:Group>
          <base:Warning width="100%" showSign="false"
                        visible="{deployInProgress}"
                        text="{getString('warning.deployInAlliancePlanet')}"/>

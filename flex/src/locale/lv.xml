@@ -653,6 +653,10 @@
     <timeToFinish value="Laiks beigt" />
 
     <!-- TODO -->
+    <warning.apocalypseClaimForbidden>
+      <p>You can't claim new planets after apocalypse has started.</p>
+    </warning.apocalypseClaimForbidden>
+
     <warning.deployInAlliancePlanet>
       <p>After deployment this building will belong to the planet owner.</p>
     </warning.deployInAlliancePlanet>
