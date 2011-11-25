@@ -3973,15 +3973,15 @@
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
     <title.hide value="Hide units"/>
-    <label.notHidden value="Don't hide"/>
-    <label.hidden value="Hide"/>
     <tooltip.hidden>
+      <p>Hide</p>
       <p>Units won't participate in combats while they are hidden.</p>
       <p>Units will unhide if they are loaded into transporters or leaves planet</p>
       <p>If you loose your planet, new owner of the planet will get all hidden
         units.</p>
     </tooltip.hidden>
     <tooltip.notHidden>
+      <p>Don't hide</p>
       <p>Not hidden units will participate in all combats.</p>
     </tooltip.notHidden>
     <!-- params:
@@ -4000,19 +4000,29 @@
       <p>This ship has {0} units of storage available.</p>
     </tooltip.freeStorage>
     
-    <tooltip.buildInFlankCommon>
+    <tooltip.buildSwitchCommon>
       <p>Click to change.</p>
-    </tooltip.buildInFlankCommon>
+    </tooltip.buildSwitchCommon>
     
     <tooltip.buildInFlank1>
       <p>Your units will appear in first flank.</p>
-      <p>[reference:tooltip.buildInFlankCommon]</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildInFlank1>
     
     <tooltip.buildInFlank2>
       <p>Your units will appear in second flank.</p>
-      <p>[reference:tooltip.buildInFlankCommon]</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildInFlank2>
+
+    <tooltip.buildHidden>
+      <p>Your units will be built hidden.</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
+    </tooltip.buildHidden>
+
+    <tooltip.buildNotHidden>
+      <p>Your units will be built not hidden.</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
+    </tooltip.buildNotHidden>
     
     <tooltip.populationCommon>
       <p>{0} population left</p>

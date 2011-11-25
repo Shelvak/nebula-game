@@ -4029,9 +4029,8 @@
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
 
     <title.hide value="Paslėpti karius"/>
-    <label.notHidden value="Nesislėpti"/>
-    <label.hidden value="Pasislėpti"/>
     <tooltip.hidden>
+      <p>Slėpti</p>
       <p>Paslėpti kariai nedalyvaus kovose.</p>
       <p>Kariai nebebus paslėpti jei juos įkrausi į transporterius arba jie
         paliks planetą.</p>
@@ -4039,6 +4038,7 @@
         savininkui.</p>
     </tooltip.hidden>
     <tooltip.notHidden>
+      <p>Neslėpti</p>
       <p>Nepaslėpti kariai dalyvaus visose kovose.</p>
     </tooltip.notHidden>
 
@@ -4059,19 +4059,29 @@
       <p>Šiame laive dar liko {0} vietos.</p>
     </tooltip.freeStorage>
     
-    <tooltip.buildInFlankCommon>
+    <tooltip.buildSwitchCommon>
       <p>Paspausk, kad pakeistum.</p>
-    </tooltip.buildInFlankCommon>
+    </tooltip.buildSwitchCommon>
     
     <tooltip.buildInFlank1>
       <p>Tavo kariai atsiras pirmame flange.</p>
-      <p>[reference:tooltip.buildInFlankCommon]</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildInFlank1>
     
     <tooltip.buildInFlank2>
       <p>Tavo kariai atsiras antrame flange.</p>
-      <p>[reference:tooltip.buildInFlankCommon]</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildInFlank2>
+
+    <tooltip.buildHidden>
+      <p>Tavo kariai bus nepasislėpę.</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
+    </tooltip.buildHidden>
+
+    <tooltip.buildNotHidden>
+      <p>Tavo kariai bus pasislėpę.</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
+    </tooltip.buildNotHidden>
     
     <tooltip.populationCommon>
       <p>{0 one[? laisvas gyventojas] tens[? laisvų gyventojų] 

@@ -229,8 +229,11 @@
       <s:Group right="0" width="24" bottom="0" top="0">
          <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(
                         Unit.STANCE_WORD + model.unit.stance))}" 
-                        top="10" horizontalCenter="0"/>
-         <s:Button skinClass="components.skins.InfoButtonSkin" horizontalCenter="0" bottom="10"
+                        top="2" horizontalCenter="0"/>
+         <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName('hide'))}"
+                        top="26" horizontalCenter="0"
+                        visible="{model.hidden}"/>
+         <s:Button skinClass="components.skins.InfoButtonSkin" horizontalCenter="0" bottom="5"
                    click="info_clickHandler(event)"/>
       </s:Group>
    </s:Group>

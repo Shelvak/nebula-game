@@ -534,6 +534,8 @@ assets:
         cooldown_large.png: 20x20_cooldown.png
         population.png: PopulationIcon.png
         overdrive.png: Overdrive.png
+        hide.png: Hide_icon.png
+        unhide.png: Unhide_icon.png
 
       "notifications":
         outcome_loose.jpg:          Outcome_loose.jpg
@@ -823,6 +825,17 @@ assets:
         switch_flank_1.png: Flankswitch_1.png
         switch_flank_2.png: Flankswitch_2.png
         switch_flank_0.png: Flankswitch_0.png
+        switch_not_hidden.png: Switch_unhide.png
+        switch_hidden.png: Switch_hide.png
+        switch_hidden_down.png: Switch_hide_down.png
+        hide_disabled.png:  Hide_disable.png
+        hide_down.png:  Hide_down.png
+        hide_over.png:  Hide_over.png
+        hide_up.png:  Hide_up.png
+        unhide_disabled.png:  Unhide_disable.png
+        unhide_down.png:  Unhide_down.png
+        unhide_over.png:  Unhide_over.png
+        unhide_up.png:  Unhide_up.png
 
       "level_parts":
         level_empty.png: Level_00.png

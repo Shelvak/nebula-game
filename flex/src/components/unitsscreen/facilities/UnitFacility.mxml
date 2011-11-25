@@ -460,13 +460,22 @@
          
          
          <s:ToggleButton skinClass="components.skins.ChangeDefaultFlankButtonSkin" 
-                         selected="{_facility.buildIn2ndFlank}" id="btnFlank"
-                         click="btnFlank_clickHandler(event)"
-                         toolTip="{Localizer.string(
-                           'Units',
-                           'tooltip.' + ( _facility.buildIn2ndFlank
-                              ? 'buildInFlank2' : 'buildInFlank1')
-                         )}"/>
+                selected="{_facility.buildIn2ndFlank}" id="btnFlank"
+                click="btnFlank_clickHandler(event)"
+                toolTip="{Localizer.string(
+                  'Units',
+                  'tooltip.' + ( _facility.buildIn2ndFlank
+                     ? 'buildInFlank2' : 'buildInFlank1')
+                )}"/>
+         <s:ToggleButton skinClass="components.skins.ChangeBuildHiddenSkin"
+                         top="{btnFlank.height}"
+                selected="{_facility.buildHidden}" id="btnHidden"
+                click="btnHidden_clickHandler(event)"
+                toolTip="{Localizer.string(
+                  'Units',
+                  'tooltip.' + ( _facility.buildHidden
+                     ? 'buildHidden' : 'buildNotHidden')
+                )}"/>
          <s:Group id="facilityGroup" left="{btnFlank.width}">
             <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'top_left')}"/>
             <s:Group width="{imageSize}" height="{imageSize}" left="4" top="4">
