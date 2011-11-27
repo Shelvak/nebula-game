@@ -20,8 +20,11 @@ describe Player do
       @result = Player.ratings(@alliance.galaxy_id)
     end
 
-    (%w{id name victory_points alliance_vps planets_count bg_planets_count
-        last_seen} + Player::POINT_ATTRIBUTES).each do |attr|
+    (
+      %w{id name victory_points alliance_vps death_day
+         planets_count bg_planets_count last_seen} +
+      Player::POINT_ATTRIBUTES
+    ).each do |attr|
       it "should include #{attr}" do
         @result.each_with_index do |row, index|
           row[attr].should == @players[index].send(attr)
@@ -160,6 +163,11 @@ describe Player do
           player.save!
         end.should change(player, :pure_creds).to(0)
       end
+
+      it "should check if galaxy has ended" do
+        player.galaxy.should_receive(:check_if_apocalypse_finished!)
+        player.save!
+      end
     end
 
     describe "if #planets_count does not get updated to 0" do
@@ -181,6 +189,11 @@ describe Player do
 
       it "should not transfer anything to web" do
         ControlManager.instance.should_not_receive(:player_death)
+        player.save!
+      end
+
+      it "should not check if galaxy has ended" do
+        player.galaxy.should_not_receive(:check_if_apocalypse_finished!)
         player.save!
       end
     end
