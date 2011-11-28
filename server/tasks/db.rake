@@ -12,6 +12,13 @@ def each_unique_db_config
 end
 
 namespace :db do
+  def clone_test_unless_production!
+    unless ENV['environment'] == 'production'
+      puts "Cloning database schema to test."
+      Rake::Task['db:test:clone'].invoke
+    end
+  end
+
   desc "Establish connection to database. (rake dep)"
   task :connection => :environment do
     ActiveRecord::Base.establish_connection(DB_CONFIG[App.env])
@@ -28,10 +35,7 @@ namespace :db do
     )
     puts "Done!\n"
 
-    unless ENV['environment'] == 'production'
-      puts "Cloning database schema to test."
-      Rake::Task['db:test:clone'].invoke
-    end
+    clone_test_unless_production!
   end
 
   namespace :migrate do
@@ -43,6 +47,17 @@ namespace :db do
       ActiveRecord::Base.establish_connection(DB_CONFIG[App.env])
       ActiveRecord::Migrator.rollback(DB_MIGRATIONS_DIR, 1)
       Rake::Task['db:migrate'].invoke
+    end
+
+    desc "Revert last migration."
+    task :revert => :environment do
+      check_for_production!
+
+      puts "Rollbacking in #{App.env}..."
+      ActiveRecord::Base.establish_connection(DB_CONFIG[App.env])
+      ActiveRecord::Migrator.rollback(DB_MIGRATIONS_DIR, 1)
+
+      clone_test_unless_production!
     end
   end
 
