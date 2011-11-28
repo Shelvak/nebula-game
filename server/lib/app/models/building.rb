@@ -277,13 +277,12 @@ class Building < ActiveRecord::Base
         stats.save!
         player.save!
       end
-      planet.save!
+      planet.delayed_fire(planet, EventBroker::CHANGED,
+        EventBroker::REASON_OWNER_PROP_CHANGE)
       Objective::SelfDestruct.progress(self)
       destroy!
+      planet.save!
     end
-
-    EventBroker.fire(planet, EventBroker::CHANGED,
-      EventBroker::REASON_OWNER_PROP_CHANGE)
   end
 
   # Moves building to new coordinates using creds.
