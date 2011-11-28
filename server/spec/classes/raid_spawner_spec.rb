@@ -42,6 +42,15 @@ describe RaidSpawner do
           with(planet.location_point)
         spawner.raid!
       end
+
+      it "should reload planet after check" do
+        invoked = false
+        Combat::LocationChecker.should_receive(:check_location).and_return do
+          invoked = true
+        end
+        planet.should_receive(:reload).and_return { invoked.should be_true }
+        spawner.raid!
+      end
     end
 
     describe "when raiders do not exist" do
