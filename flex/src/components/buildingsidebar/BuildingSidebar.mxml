@@ -50,6 +50,8 @@
       import mx.collections.ListCollectionView;
       import mx.collections.Sort;
       import mx.core.ScrollPolicy;
+      import mx.events.CollectionEvent;
+      import mx.events.CollectionEventKind;
       import mx.events.DragEvent;
       import mx.events.FlexEvent;
       import mx.managers.DragManager;
@@ -119,6 +121,12 @@
          if (ML.latestPlanet != null) {
             facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE,
                     changeSelected);
+            if (_buildingFacilities != null)
+            {
+               _buildingFacilities.removeEventListener(
+                       CollectionEvent.COLLECTION_CHANGE,
+                       refreshFacilitySelection)
+            }
             _buildingFacilities = Collections.filter(
                     ML.latestPlanet.objects,
                     function (item: MPlanetObject): Boolean {
@@ -137,6 +145,18 @@
             _buildingFacilities.sort = new Sort();
             _buildingFacilities.sort.compareFunction = constructorModSort;
             _buildingFacilities.refresh();
+            _buildingFacilities.addEventListener(CollectionEvent.COLLECTION_CHANGE,
+               refreshFacilitySelection)
+         }
+      }
+
+      private function refreshFacilitySelection(e: CollectionEvent): void
+      {
+         if (e.kind == CollectionEventKind.ADD
+                 || e.kind == CollectionEventKind.REMOVE
+                 || e.kind == CollectionEventKind.RESET)
+         {
+            changeSelected();
          }
       }
 
