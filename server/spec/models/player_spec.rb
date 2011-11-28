@@ -134,9 +134,10 @@ describe Player do
   end
 
   describe "on death" do
+    let(:galaxy) { Factory.create(:galaxy, :apocalypse_start => 15.days.ago) }
     let(:player) do
-      player = Factory.create(:player, :planets_count => 2, :pure_creds => 323)
-      player.galaxy.stub(:apocalypse_day).and_return(15)
+      player = Factory.create(:player, :planets_count => 2, :pure_creds => 323,
+        :bg_planets_count => 0, :galaxy => galaxy)
       player
     end
 

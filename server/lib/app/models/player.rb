@@ -308,6 +308,15 @@ class Player < ActiveRecord::Base
     )
   end
 
+  # Player is considered dead when he no more has any planets.
+  def dead?
+    planets_count == 0 && bg_planets_count == 0
+  end
+
+  def dead_changed?
+    planets_count_changed? || bg_planets_count_changed?
+  end
+
   # Make sure we don't get below 0 points, 
   before_save do
     POINT_ATTRIBUTES.each do |attr|
@@ -335,8 +344,7 @@ class Player < ActiveRecord::Base
       end
     end
 
-
-    if planets_count_changed? && planets_count == 0
+    if dead_changed? && dead?
       self.death_day = galaxy.apocalypse_day
       ControlManager.instance.player_death(
         self, pure_creds + Cfg.apocalypse_survival_bonus(death_day)
@@ -411,8 +419,7 @@ class Player < ActiveRecord::Base
       end
     end
 
-    galaxy.check_if_apocalypse_finished! \
-      if planets_count_changed? && planets_count == 0
+    galaxy.check_if_apocalypse_finished! if dead_changed? && dead?
   end
 
   # Increase or decrease scientist count.
