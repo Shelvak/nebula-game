@@ -92,12 +92,13 @@ class Galaxy < ActiveRecord::Base
   # Saves statistical galaxy data for when somebody wins the galaxy.
   # @param galaxy_id [Fixnum]
   # @return [TrueClass]
-  def self.save_galaxy_finish_data(galaxy_id)
+  def self.save_finish_data(galaxy_id)
     ratings = Player.ratings(galaxy_id)
     alliance_ratings = Alliance.ratings(galaxy_id)
 
     data = JSON.generate({
       'date' => Time.now,
+      'apocalypse' => false,
       'ratings' => ratings,
       'alliance_ratings' => alliance_ratings
     })
@@ -123,7 +124,7 @@ class Galaxy < ActiveRecord::Base
 
   # End galaxy and start countdown of apocalypse.
   def finish!
-    self.class.save_galaxy_finish_data(id)
+    self.class.save_finish_data(id)
 
     self.apocalypse_start = Cfg.apocalypse_start_time
 
@@ -151,35 +152,35 @@ class Galaxy < ActiveRecord::Base
     ((Time.now - apocalypse_start) / 1.day).round
   end
 
-  ## Saves statistical galaxy data for when somebody wins the galaxy.
-  ## @param galaxy_id [Fixnum]
-  ## @return [TrueClass]
-  #def self.save_galaxy_apocalypse_finish_data(galaxy_id)
-  #  ratings = Player.ratings(galaxy_id)
-  #  alliance_ratings = Alliance.ratings(galaxy_id)
-  #
-  #  data = JSON.generate({
-  #    'date' => Time.now,
-  #    'ratings' => ratings,
-  #    'alliance_ratings' => alliance_ratings
-  #  })
-  #  MAILER.call("WIN", "").call("We have a winner!\n\n" + data) \
-  #    if App.in_production?
-  #  File.open(
-  #    File.join(ROOT_DIR, "galaxy-#{galaxy_id}-finish-data.txt"),
-  #    "w"
-  #  ) { |f| f.write data } unless App.in_test?
-  #
-  #  true
-  #end
-  #
-  #def check_if_apocalypse_finished!
-  #  finish_apocalypse! if players.where('planets_count > 0').exists?
-  #end
-  #
-  #def finish_apocalypse!
-  #
-  #end
+  # Saves statistical galaxy data for when somebody wins the galaxy.
+  # @param galaxy_id [Fixnum]
+  # @return [TrueClass]
+  def self.save_apocalypse_finish_data(galaxy_id)
+    ratings = Player.ratings(galaxy_id)
+
+    data = JSON.generate({
+      'date' => Time.now,
+      'apocalypse' => true,
+      'ratings' => ratings
+    })
+    MAILER.call("WIN", "").call("We have an apocalypse winner!\n\n" + data) \
+      if App.in_production?
+    File.open(
+      File.join(ROOT_DIR, "galaxy-#{galaxy_id}-apocalypse-finish-data.txt"),
+      "w"
+    ) { |f| f.write data } unless App.in_test?
+
+    true
+  end
+
+  def check_if_apocalypse_finished!
+    raise ArgumentError.new(
+      "Cannot check if apocalypse finished if it hasn't started!"
+    ) unless apocalypse_started?
+
+    self.class.save_apocalypse_finish_data(id) \
+      unless players.where('planets_count > 0').exists?
+  end
 
   # Convert victory points to creds.
   #

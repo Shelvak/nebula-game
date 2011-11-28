@@ -116,13 +116,18 @@ describe Combat::Annexer do
           it "should create a protection cooldown" do
             Combat::Annexer.annex!(@planet, @check_report, @outcomes)
             @planet.should have_cooldown(
-              Cfg.planet_protection_duration.from_now)
+              Cfg.planet_protection_duration(@planet.solar_system.galaxy).
+                from_now
+            )
           end
           
           it "should create protection notifications" do
+            duration = Cfg.
+              planet_protection_duration(@planet.solar_system.galaxy)
+
             @alliances.values.flatten.compact.each do |player|
               Notification.should_receive(:create_for_planet_protected).
-                with(player.id, @planet, @outcomes[player.id])
+                with(player.id, @planet, @outcomes[player.id], duration)
             end
             Combat::Annexer.annex!(@planet, @check_report, @outcomes)
           end

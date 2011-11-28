@@ -38,14 +38,15 @@ class Combat::Annexer
 
     # Protects player from losing his last planet.
     def protect(planet, outcomes)
+      duration = Cfg.planet_protection_duration(planet.solar_system.galaxy)
+
       ActiveRecord::Base.transaction do
         outcomes.each do |player_id, outcome|
           Notification.create_for_planet_protected(player_id, planet, 
-            outcome) unless player_id.nil?
+            outcome, duration) unless player_id.nil?
         end
         
-        Cooldown.create_unless_exists(planet,
-          Cfg.planet_protection_duration.from_now)
+        Cooldown.create_unless_exists(planet, duration.from_now)
       end
     end
     

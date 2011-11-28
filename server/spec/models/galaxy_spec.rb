@@ -168,11 +168,41 @@ describe Galaxy do
     end
   end
 
+  describe "#check_if_apocalypse_finished!" do
+    let(:galaxy) do
+      Factory.create(:galaxy, :apocalypse_start => 10.minutes.ago)
+    end
+
+    it "should fail if apocalypse has not yet started" do
+      galaxy.stub!(:apocalypse_started?).and_return(false)
+      lambda do
+        galaxy.check_if_apocalypse_finished!
+      end.should raise_error(ArgumentError)
+    end
+
+    it "should call .save_apocalypse_finish_data" do
+      Factory.create(:player, :galaxy => galaxy, :planets_count => 0)
+
+      Galaxy.should_receive(:save_apocalypse_finish_data).with(galaxy.id)
+      galaxy.check_if_apocalypse_finished!
+    end
+
+    describe "we still have alive players" do
+      it "should not call .save_apocalypse_finish_data" do
+        Factory.create(:player, :galaxy => galaxy, :planets_count => 1)
+
+        Galaxy.should_not_receive(:save_apocalypse_finish_data)
+        galaxy.check_if_apocalypse_finished!
+      end
+    end
+
+  end
+
   describe "#finish!" do
     let(:galaxy) { Factory.create(:galaxy) }
 
     it "should save statistical data" do
-      Galaxy.should_receive(:save_galaxy_finish_data).with(galaxy.id)
+      Galaxy.should_receive(:save_finish_data).with(galaxy.id)
       galaxy.finish!
     end
 

@@ -465,10 +465,11 @@ describe Notification do
       @planet = Factory.create(:planet_with_player)
       @player_id = Factory.create(:player).id
       @outcome = Combat::OUTCOME_LOSE
+      @duration = 50.minutes
 
       @event = Notification::EVENT_PLANET_PROTECTED
       @method = :create_for_planet_protected
-      @args = [@player_id, @planet, @outcome]
+      @args = [@player_id, @planet, @outcome, @duration]
     end
 
     it_behaves_like "create for"
@@ -488,7 +489,7 @@ describe Notification do
     it "should have :duration" do
       Notification.send(
         @method, *@args
-      ).params[:duration].should == Cfg.planet_protection_duration
+      ).params[:duration].should == @duration
     end
     
     it "should have :outcome" do

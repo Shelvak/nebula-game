@@ -238,6 +238,31 @@ class Player < ActiveRecord::Base
       end
   end
 
+  # Returns
+  def self.apocalypse_ratings(galaxy_id)
+    p = table_name
+    (condition.nil? ? self : condition).
+      select(
+        RATING_ATTRIBUTES_SQL + ", a.name AS a_name, a.id AS a_id, last_seen"
+      ).
+      where(:galaxy_id => galaxy_id).
+      joins("LEFT JOIN #{Alliance.table_name} AS a
+        ON `#{p}`.alliance_id=a.id").
+      order("id").
+      c_select_all.
+      map do |row|
+        alliance_id = row.delete('a_id')
+        alliance_name = row.delete('a_name')
+        row['alliance'] = alliance_id \
+          ? {'id' => alliance_id, 'name' => alliance_name} \
+          : nil
+        row['last_seen'] = true if Dispatcher.instance.connected?(row['id'])
+        row['last_seen'] = Time.parse(row['last_seen']) \
+          if row['last_seen'].is_a?(String)
+        row
+      end
+  end
+
   # Number that represents maximum population for player.
   def population_max
     [Cfg.player_max_population, population_cap].min
@@ -283,6 +308,15 @@ class Player < ActiveRecord::Base
     )
   end
 
+  # Player is considered dead when he no more has any planets.
+  def dead?
+    planets_count == 0 && bg_planets_count == 0
+  end
+
+  def dead_changed?
+    planets_count_changed? || bg_planets_count_changed?
+  end
+
   # Make sure we don't get below 0 points, 
   before_save do
     POINT_ATTRIBUTES.each do |attr|
@@ -310,8 +344,7 @@ class Player < ActiveRecord::Base
       end
     end
 
-
-    if planets_count_changed? && planets_count == 0
+    if dead_changed? && dead?
       self.death_day = galaxy.apocalypse_day
       ControlManager.instance.player_death(
         self, pure_creds + Cfg.apocalypse_survival_bonus(death_day)
@@ -386,11 +419,7 @@ class Player < ActiveRecord::Base
       end
     end
 
-    #if planets_count_changed? && planets_count == 0
-    #  galaxy.check_
-    #  galaxy.alive_players -= 1
-    #  galaxy.save!
-    #end
+    galaxy.check_if_apocalypse_finished! if dead_changed? && dead?
   end
 
   # Increase or decrease scientist count.

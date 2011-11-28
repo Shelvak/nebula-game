@@ -401,14 +401,14 @@ class Notification < ActiveRecord::Base
   #   :duration => Fixnum (duration of protection),
   #   :outcome => Fixnum (what was the outcome of that battle for you)
   # }
-  def self.create_for_planet_protected(player_id, planet, outcome)
+  def self.create_for_planet_protected(player_id, planet, outcome, duration)
     model = new(
       :event => EVENT_PLANET_PROTECTED,
       :player_id => player_id,
       :params => {
         :planet => planet.client_location.as_json,
         :owner_id => planet.player_id,
-        :duration => Cfg.planet_protection_duration,
+        :duration => duration,
         :outcome => outcome
       }
     )

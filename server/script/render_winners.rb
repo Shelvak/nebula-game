@@ -5,11 +5,13 @@ if ARGV.size < 1
 end
 
 PART_DATE = 'date'
+PART_APOCALYPSE = 'apocalypse'
 PART_PLAYER_RATINGS = 'ratings'
 PART_ALLIANCE_RATINGS = 'alliance_ratings'
 
 LABEL_INDEX = "Turinys"
 LABEL_GALAXY_WIN_DATE = "Galaktikos laimėjimo data"
+LABEL_GALAXY_END_DATE = "Galaktikos pabaigos data"
 LABEL_ALLIANCES = "Sąjungos"
 LABEL_PLAYERS = "Žaidėjai"
 LABEL_TITLE = "Galaktikos laimėtojai"
@@ -28,6 +30,7 @@ LABEL_ARMY_POINTS = "Kariuomenės taškai"
 LABEL_WAR_POINTS = "Karo taškai"
 LABEL_ALLIANCE_VICTORY_POINTS = "Sąjungos pergalės taškų"
 LABEL_VICTORY_POINTS = "Pergalės taškų"
+LABEL_DEATH_DAY = "Pražūties diena"
 LABEL_TOTAL_POINTS = "Bendri taškai"
 
 ATTR_ID = 'id'
@@ -42,6 +45,7 @@ ATTR_ARMY_POINTS = 'army_points'
 ATTR_WAR_POINTS = 'war_points'
 ATTR_ALLIANCE_VICTORY_POINTS = 'alliance_vps'
 ATTR_VICTORY_POINTS = 'victory_points'
+ATTR_DEATH_DAY = 'death_day'
 ATTR_TOTAL_POINTS = 'total_points'
 
 NAME_TOP = "top"
@@ -55,7 +59,9 @@ def read_data(filename)
   data = JSON.parse(File.read(filename))
 
   # Calculate total points for each row.
-  [data[PART_PLAYER_RATINGS], data[PART_ALLIANCE_RATINGS]].each do |ratings|
+  parts = [data[PART_PLAYER_RATINGS]]
+  parts.push data[PART_ALLIANCE_RATINGS] unless data[PART_APOCALYPSE]
+  parts.each do |ratings|
     ratings.each do |row|
       row[ATTR_TOTAL_POINTS] = total_points(row)
     end
@@ -67,6 +73,7 @@ def read_data(filename)
   #     "name" => String (player name),
   #     "victory_points" => Fixnum,
   #     "alliance_vps" => Fixnum,
+  #     "death_day" => Fixnum,
   #     "planets_count" => Fixnum,
   #     "war_points" => Fixnum,
   #     "science_points" => Fixnum,
@@ -76,33 +83,39 @@ def read_data(filename)
   #     "last_seen" => true (currently online) | Time | nil (never logged in),
   #   }
   data[PART_PLAYER_RATINGS].sort! do |r1, r2|
-    status = (r1[ATTR_VICTORY_POINTS] <=> r2[ATTR_VICTORY_POINTS]) * -1
-    status = (r1[ATTR_TOTAL_POINTS] <=> r2[ATTR_TOTAL_POINTS]) * -1 \
-      if status == 0
-    status = (r1[ATTR_PLANETS_COUNT] <=> r2[ATTR_PLANETS_COUNT]) * -1 \
-      if status == 0
+    if data[PART_APOCALYPSE]
+      status = (r1[ATTR_DEATH_DAY] <=> r2[ATTR_DEATH_DAY]) * -1
+    else
+      status = (r1[ATTR_VICTORY_POINTS] <=> r2[ATTR_VICTORY_POINTS]) * -1
+      status = (r1[ATTR_TOTAL_POINTS] <=> r2[ATTR_TOTAL_POINTS]) * -1 \
+        if status == 0
+      status = (r1[ATTR_PLANETS_COUNT] <=> r2[ATTR_PLANETS_COUNT]) * -1 \
+        if status == 0
+    end
     status == 0 ? r1[ATTR_ID] <=> r2[ATTR_ID] : status
   end
 
-  # Sort alliances
-  # {
-  #   'players_count'   => Fixnum, # Number of players in the alliance.
-  #   'alliance_id'     => Fixnum, # ID of the alliance
-  #   'name'            => String, # Name of the alliance
-  #   'war_points',     => Fixnum, # Sum of alliance war points
-  #   'army_points',    => Fixnum, # -""-
-  #   'science_points', => Fixnum, # -""-
-  #   'economy_points', => Fixnum, # -""-
-  #   'victory_points', => Fixnum, # -""-
-  #   'planets_count',  => Fixnum  # -""-
-  # }
-  data[PART_ALLIANCE_RATINGS].sort! do |r1, r2|
-    status = (r1[ATTR_VICTORY_POINTS] <=> r2[ATTR_VICTORY_POINTS]) * -1
-    status = (r1[ATTR_TOTAL_POINTS] <=> r2[ATTR_TOTAL_POINTS]) * -1 \
-      if status == 0
-    status = (r1[ATTR_PLAYERS_COUNT] <=> r2[ATTR_PLAYERS_COUNT]) * -1 \
-      if status == 0
-    status == 0 ? r1[ATTR_ALLIANCE_ID] <=> r2[ATTR_ALLIANCE_ID] : status
+  unless data[PART_APOCALYPSE]
+    # Sort alliances
+    # {
+    #   'players_count'   => Fixnum, # Number of players in the alliance.
+    #   'alliance_id'     => Fixnum, # ID of the alliance
+    #   'name'            => String, # Name of the alliance
+    #   'war_points',     => Fixnum, # Sum of alliance war points
+    #   'army_points',    => Fixnum, # -""-
+    #   'science_points', => Fixnum, # -""-
+    #   'economy_points', => Fixnum, # -""-
+    #   'victory_points', => Fixnum, # -""-
+    #   'planets_count',  => Fixnum  # -""-
+    # }
+    data[PART_ALLIANCE_RATINGS].sort! do |r1, r2|
+      status = (r1[ATTR_VICTORY_POINTS] <=> r2[ATTR_VICTORY_POINTS]) * -1
+      status = (r1[ATTR_TOTAL_POINTS] <=> r2[ATTR_TOTAL_POINTS]) * -1 \
+        if status == 0
+      status = (r1[ATTR_PLAYERS_COUNT] <=> r2[ATTR_PLAYERS_COUNT]) * -1 \
+        if status == 0
+      status == 0 ? r1[ATTR_ALLIANCE_ID] <=> r2[ATTR_ALLIANCE_ID] : status
+    end
   end
 
   data
@@ -235,13 +248,17 @@ def players(b, data)
       b.th LABEL_NO
       b.th LABEL_PLAYER
       b.th LABEL_ALLIANCE
-      b.th LABEL_PLANETS_COUNT
-      b.th LABEL_ECONOMY_POINTS
-      b.th LABEL_SCIENCE_POINTS
-      b.th LABEL_ARMY_POINTS
-      b.th LABEL_WAR_POINTS
-      b.th LABEL_VICTORY_POINTS
-      b.th LABEL_TOTAL_POINTS
+      if data[PART_APOCALYPSE]
+        b.th LABEL_DEATH_DAY
+      else
+        b.th LABEL_PLANETS_COUNT
+        b.th LABEL_ECONOMY_POINTS
+        b.th LABEL_SCIENCE_POINTS
+        b.th LABEL_ARMY_POINTS
+        b.th LABEL_WAR_POINTS
+        b.th LABEL_VICTORY_POINTS
+        b.th LABEL_TOTAL_POINTS
+      end
     end
 
     data[PART_PLAYER_RATINGS].each_with_index do |row, index|
@@ -252,22 +269,31 @@ def players(b, data)
         end
         if row[ATTR_ALLIANCE]
           b.td do
-            b.a row[ATTR_ALLIANCE][ATTR_NAME],
-                # This is evil.
-                :href => "##{alliance_id(
-                  {ATTR_ALLIANCE_ID => row[ATTR_ALLIANCE][ATTR_ID]}
-                )}"
+            if data[PART_APOCALYPSE]
+              row[ATTR_ALLIANCE][ATTR_NAME]
+            else
+              b.a row[ATTR_ALLIANCE][ATTR_NAME],
+                  # This is evil.
+                  :href => "##{alliance_id(
+                    {ATTR_ALLIANCE_ID => row[ATTR_ALLIANCE][ATTR_ID]}
+                  )}"
+            end
           end
         else
           b.td LABEL_WITHOUT_ALLIANCE
         end
-        b.td row[ATTR_PLANETS_COUNT]
-        b.td row[ATTR_ECONOMY_POINTS]
-        b.td row[ATTR_SCIENCE_POINTS]
-        b.td row[ATTR_ARMY_POINTS]
-        b.td row[ATTR_WAR_POINTS]
-        b.td row[ATTR_VICTORY_POINTS]
-        b.td row[ATTR_TOTAL_POINTS]
+
+        if data[PART_APOCALYPSE]
+          b.td row[ATTR_DEATH_DAY]
+        else
+          b.td row[ATTR_PLANETS_COUNT]
+          b.td row[ATTR_ECONOMY_POINTS]
+          b.td row[ATTR_SCIENCE_POINTS]
+          b.td row[ATTR_ARMY_POINTS]
+          b.td row[ATTR_WAR_POINTS]
+          b.td row[ATTR_VICTORY_POINTS]
+          b.td row[ATTR_TOTAL_POINTS]
+        end
       end
     end
   end
@@ -288,16 +314,20 @@ html = b.html do
   b.body do
     b.a :name => NAME_TOP
 
-    b.h1 LABEL_INDEX
-    b.ul do
-      b.li { b.a LABEL_ALLIANCES, :href => "##{NAME_ALLIANCES}" }
-      b.li { b.a LABEL_PLAYERS, :href => "##{NAME_PLAYERS}" }
+    unless data[PART_APOCALYPSE]
+      b.h1 LABEL_INDEX
+
+      b.ul do
+        b.li { b.a LABEL_ALLIANCES, :href => "##{NAME_ALLIANCES}" }
+        b.li { b.a LABEL_PLAYERS, :href => "##{NAME_PLAYERS}" }
+      end
     end
 
-    b.h1 LABEL_GALAXY_WIN_DATE
+    b.h1 data[PART_APOCALYPSE] \
+      ? LABEL_GALAXY_END_DATE : LABEL_GALAXY_WIN_DATE
     b.p Time.parse(data[PART_DATE]).to_s(:db)
     
-    alliances(b, data)
+    alliances(b, data) unless data[PART_APOCALYPSE]
     players(b, data)
   end
 end
