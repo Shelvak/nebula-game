@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-class CBTest
+class CBTest < ActiveRecord::Base
   attr_reader :id
   def initialize(id); @id = id; end
   def self.on_callback(id, event); end

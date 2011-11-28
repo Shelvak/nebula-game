@@ -6,7 +6,8 @@ Factory.define :player do |m|
   m.scientists_total 2000
   m.population 1000
   m.population_cap 2000
-  m.planets_count 1
+  # We often take planets away from players, so just give extra planets.
+  m.planets_count 3
   m.war_points 1000
   m.first_time false
 end
@@ -15,5 +16,5 @@ Factory.define :player_for_ratings, :parent => :player do |m|
   (Player::POINT_ATTRIBUTES + %w{victory_points}).each do |attr|
     m.send(attr) { rand(100) }
   end
-  m.planets_count { 1 + rand(10) }
+  m.planets_count { 2 + rand(10) }
 end

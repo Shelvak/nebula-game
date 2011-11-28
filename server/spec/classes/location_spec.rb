@@ -3,7 +3,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb
 describe Location do
   describe ".combat_player_ids" do
     before(:each) do
-      @planet = Factory.create :planet_with_player
+      @player = Factory.create(:player, :planets_count => 2)
+      @planet = Factory.create(:planet, :player => @player)
       @location = @planet.location
     end
     

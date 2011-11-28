@@ -883,41 +883,6 @@ describe Building do
         sum
       end
 
-      Tile::BLOCK_SIZES.each do |kind, dimensions|
-        name = Tile::MAPPING[kind]
-        width, height = dimensions
-
-        [0, width - 1].each do |x_shift|
-          [0, height - 1].each do |y_shift|
-            it "should not be able to build on #{name
-            } (shift: #{x_shift}, #{y_shift})" do
-              tile = Factory.create "t_#{name}", :planet => @planet,
-                :x => 12,
-                :y => 12
-              building = Factory.build :building, :planet => @planet,
-                :x => tile.x + x_shift,
-                :y => tile.y + y_shift
-              building.should_not be_valid
-            end
-          end
-        end
-
-        [[-1, -1], [width, 0]].each do |x_shift, x_mod|
-          [[-1, -1], [height, 0]].each do |y_shift, y_mod|
-            it "should be able to next to #{name
-            } (shift: #{x_shift}, #{y_shift})" do
-              tile = Factory.create "t_#{name}", :planet => @planet,
-                :x => 20,
-                :y => 20
-              building = Factory.build :building, :planet => @planet
-              building.x = tile.x + x_shift + (building.width - 1) * x_mod
-              building.y = tile.y + y_shift + (building.height - 1) * y_mod
-              building.should be_valid
-            end
-          end
-        end
-      end
-
       it "should not calculate anything if all of the mods are set" do
         building = Factory.create :building, :planet => @planet,
           :x => 0, :y => 0, :armor_mod => 90, :constructor_mod => 90,
