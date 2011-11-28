@@ -100,8 +100,11 @@ class Cfg; class << self
   def max_flanks; CONFIG['combat.flanks.max']; end
   
   # For how long planet is protected after protection is initiated?
-  def planet_protection_duration
-    CONFIG.evalproperty('combat.cooldown.protection.duration')
+  def planet_protection_duration(galaxy)
+    key = galaxy.finished? \
+      ? 'combat.cooldown.protection.finished_galaxy.duration' \
+      : 'combat.cooldown.protection.duration'
+    CONFIG.evalproperty(key)
   end
 
   ### raiding.yml ###
