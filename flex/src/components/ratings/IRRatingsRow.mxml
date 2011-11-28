@@ -110,10 +110,26 @@
                    skinClass="components.skins.LinkButtonSkin"
                    click="AllianceScreenM.getInstance().showScreen(player.alliance.id)"/>
       </s:Group>
-      <s:Label text="{player.planetsCount}" width="{RatingsWidths.planetsCount}" 
-               textAlign="center"/>
+      <s:Label text="{player.planetsCount}" width="{RatingsWidths.planetsCount}"
+               textAlign="center" visible="{player.planetsCount > 0
+               || player.bgPlanetsCount > 0}"
+               includeInLayout="{player.planetsCount > 0
+               || player.bgPlanetsCount > 0}"/>
       <s:Label text="{player.bgPlanetsCount}" width="{RatingsWidths.bgPlanetsCount}"
-               textAlign="center"/>
+               textAlign="center" visible="{player.planetsCount > 0
+               || player.bgPlanetsCount > 0}"
+               includeInLayout="{player.planetsCount > 0
+               || player.bgPlanetsCount > 0}"/>
+      <s:Label text="{Localizer.string('Ratings', 'label.deathDay',
+                  [player.deathDay])}"
+               toolTip="{Localizer.string('Ratings', 'tooltip.deathDay',
+                  [player.deathDay])}"
+               width="{RatingsWidths.planetsCount + 1 + RatingsWidths.bgPlanetsCount}"
+               textAlign="center" visible="{player.planetsCount == 0
+               &amp;&amp; player.bgPlanetsCount == 0}"
+               includeInLayout="{player.planetsCount == 0
+               &amp;&amp; player.bgPlanetsCount == 0}"
+               styleName="unsatisfied"/>
       <s:Label text="{player.economyPoints}" width="{RatingsWidths.economyPoints}" 
                textAlign="center"/>
       <s:Label text="{player.sciencePoints}" width="{RatingsWidths.sciencePoints}" 

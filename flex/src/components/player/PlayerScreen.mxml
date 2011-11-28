@@ -108,10 +108,24 @@
                            text="{Localizer.string('Alliances', 'label.notInAlliance')}" />
                   <s:Group width="100%">
                   <s:Group width="100%">
-                     <s:Label width="120" text="{Localizer.string('Ratings', 'planetsCount')}"/>
+                     <s:Label width="120" text="{Localizer.string('Ratings', 'planetsCount.long')}"/>
                      <s:Label text="{player.planetsCount + ' / ' + player.bgPlanetsCount}"
                              toolTip="{Localizer.string('Ratings',
-                             'tooltip.planetsVsBattleground')}"/>
+                             'tooltip.planetsVsBattleground')}"
+                             visible="{player.planetsCount > 0
+                             || player.bgPlanetsCount > 0}"
+                             includeInLayout="{player.planetsCount > 0
+                             || player.bgPlanetsCount > 0}"/>
+
+                     <s:Label text="{Localizer.string('Ratings', 'label.deathDay',
+                                 [player.deathDay])}"
+                              toolTip="{Localizer.string('Ratings', 'tooltip.deathDay',
+                                 [player.deathDay])}"
+                              textAlign="center" visible="{player.planetsCount == 0
+                              &amp;&amp; player.bgPlanetsCount == 0}"
+                              includeInLayout="{player.planetsCount == 0
+                              &amp;&amp; player.bgPlanetsCount == 0}"
+                              styleName="unsatisfied"/>
                      <s:layout>
                         <s:HorizontalLayout/>
                      </s:layout>

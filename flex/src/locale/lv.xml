@@ -3403,6 +3403,11 @@
     <points value="Kopējie punkti" />
     <playersCount value="Spēlētāji" />
     <!-- TODO -->
+    <tooltip.deathDay>
+      <p>Player lost his last planet at day {0} after apocalypse has started</p>
+    </tooltip.deathDay>
+    <label.deathDay value="0 (day {0})"/>
+    <planetsCount.long value="Planets count" />
     <planetsCount value="RPC" />
     <bgPlanetsCount value="SPC" />
     <tooltip.planetsCount value="Regular planets count" />

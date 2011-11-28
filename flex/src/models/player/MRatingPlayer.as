@@ -78,6 +78,8 @@ package models.player
       [Optional]
       public var playersCount: int;
       [Optional]
+      public var deathDay: int;
+      [Optional]
       public var victoryPoints: int;
       [Optional]
       public var allianceVps: int;

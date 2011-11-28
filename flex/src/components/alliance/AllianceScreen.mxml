@@ -235,9 +235,9 @@
                <base:layout>
                   <s:VerticalLayout horizontalAlign="right"/>
                </base:layout>
-               <s:Group>
+               <s:Group width="100%">
                   <s:layout>
-                     <s:VerticalLayout gap="0" horizontalAlign="contentJustify"/>
+                     <s:VerticalLayout gap="0" horizontalAlign="center"/>
                   </s:layout>
                   <alliance:MembersRatingsHeader id="header"
                                                  listSort="model.header_ratingsSortHandler(event)"/>

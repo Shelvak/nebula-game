@@ -3317,7 +3317,13 @@
     <alliance value="Sąjunga" />
     <points value="Viso taškų" />
     <playersCount value="Žaidėjai" />
+    <tooltip.deathDay>
+      <p>Žaidėjas prarado paskutinę savo planetą {0}-ą dieną po apokalipsės
+        pradžios</p>
+    </tooltip.deathDay>
+    <label.deathDay value="0 ({0}d.)"/>
     <planetsCount value="PPK" />
+    <planetsCount.long value="Planetų kiekis" />
     <bgPlanetsCount value="SPK" />
     <tooltip.planetsCount value="Paprastųjų planetų kiekis" />
     <specialPlanets.common>
