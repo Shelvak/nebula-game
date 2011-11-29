@@ -26,7 +26,7 @@ package models
    
    /**
     * @see models.events.BaseModelEvent#FLAG_DESTRUCTION_PENDING_SET
-    * @eventType models.events.BaseModelEvent.FLAG_DESSTRUCTION_PENDING_SET
+    * @eventType models.events.BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET
     */
    [Event(name="flagDestructionPendingSet", type="models.events.BaseModelEvent")]
    
