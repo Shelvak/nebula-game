@@ -540,7 +540,7 @@ describe Combat do
         end
         player(:planet_owner => true)
         player = self.player do
-          units { mule(:hp => 100) { azure :count => 1 } }
+          units { mule(:hp => 1) { azure :count => 1 } }
         end
       end
       @player = player.player

@@ -14,11 +14,13 @@ package controllers.constructionqueues.actions
    {
       public override function result(rmo:ClientRMO) : void
       {
+         super.result(rmo);
          new GUnitEvent(GUnitEvent.DELETE_APPROVED);
       }
       
       public override function cancel(rmo:ClientRMO):void
       {
+         super.cancel(rmo);
          new GUnitEvent(GUnitEvent.DELETE_APPROVED);
       }
 //      # Reduce count from ConstructionQueueEntry.

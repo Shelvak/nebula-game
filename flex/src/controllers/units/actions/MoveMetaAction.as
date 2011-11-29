@@ -2,7 +2,7 @@ package controllers.units.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.units.OrdersController;
    
    import models.location.LocationMinimal;
@@ -34,23 +34,14 @@ package controllers.units.actions
       {
          return OrdersController.getInstance();
       }
-      
-      
-      private function get GF() : GlobalFlags
-      {
-         return GlobalFlags.getInstance();
-      }
-      
-      
+
       public function MoveMetaAction()
       {
          super();
       }
       
-      
       public override function applyClientAction(cmd:CommunicationCommand) : void
       {
-         GF.lockApplication = true;
          var params:MoveMetaActionParams = MoveMetaActionParams(cmd.parameters);
          var locSource:LocationMinimal = params.sourceLocation;
          var locTarget:LocationMinimal = params.targetLocation;
@@ -72,7 +63,6 @@ package controllers.units.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         GF.lockApplication = false;
          ORDERS_CTRL.showSpeedUpPopup(DateUtil.parseServerDTF(
             cmd.parameters.arrivalDate).time, cmd.parameters.hopCount);
       }
@@ -80,7 +70,6 @@ package controllers.units.actions
       
       public override function cancel(rmo:ClientRMO) : void
       {
-         GF.lockApplication = false;
          ORDERS_CTRL.cancelOrder();
          super.cancel(rmo);
       }

@@ -88,6 +88,8 @@ class Building < ActiveRecord::Base
     2 => :without_points,
     # For constructors - build units in 2nd flank.
     3 => :build_in_2nd_flank,
+    # For constructors - build hidden units.
+    4 => :build_hidden,
     :check_for_column => false
   )
 
@@ -275,13 +277,12 @@ class Building < ActiveRecord::Base
         stats.save!
         player.save!
       end
-      planet.save!
+      planet.delayed_fire(planet, EventBroker::CHANGED,
+        EventBroker::REASON_OWNER_PROP_CHANGE)
       Objective::SelfDestruct.progress(self)
       destroy!
+      planet.save!
     end
-
-    EventBroker.fire(planet, EventBroker::CHANGED,
-      EventBroker::REASON_OWNER_PROP_CHANGE)
   end
 
   # Moves building to new coordinates using creds.

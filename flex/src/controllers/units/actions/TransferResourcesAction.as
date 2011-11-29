@@ -1,16 +1,12 @@
 package controllers.units.actions
 {
-   
+
    import controllers.CommunicationAction;
-   import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
-   
+
    import globalevents.GResourcesEvent;
-   import globalevents.GUnitEvent;
-   
+
    import utils.remote.rmo.ClientRMO;
-   
-   
+
    /**
     * Used for loading resources
     *  # Parameters:
@@ -23,14 +19,8 @@ package controllers.units.actions
    {
       public override function result(rmo:ClientRMO) : void
       {
+         super.result(rmo);
          new GResourcesEvent(GResourcesEvent.WRECKAGES_UPDATED);
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

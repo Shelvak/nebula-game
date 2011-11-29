@@ -2,20 +2,17 @@ package controllers.players.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
-   
+
    import models.factories.RatingsPlayerFactory;
    import models.player.MRatingPlayer;
    import models.ratings.MCRatingsScreen;
-   
-   import mx.collections.ArrayCollection;
+
    import mx.collections.ListCollectionView;
-   import mx.collections.Sort;
    import mx.collections.SortField;
-   
+
    import utils.remote.rmo.ClientRMO;
-   
+
    /**
     * Gets ratings data. 
     */
@@ -49,7 +46,6 @@ package controllers.players.actions
          }
          NavigationController.getInstance().showRatings(playerName);
          playerName = null;
-         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

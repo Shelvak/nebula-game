@@ -17,12 +17,12 @@ class Combat::Annexer
         # he is not NPC).
         if outcomes[planet.player_id] == Combat::OUTCOME_LOSE &&
             ! planet.player_id.nil?
-          if planet.player.planets_count == 1 &&
-              ! planet.solar_system.battleground?
-            # Don't take players last planet.
+          if ! planet.solar_system.battleground? && (
+              planet.player.planets_count <= Cfg.player_protected_planets &&
+                ! planet.player.galaxy.apocalypse_started?
+          )
             protect(planet, outcomes)
           else
-            # Take the planet away from him.
             annex_planet(planet, outcomes)
           end
         end
@@ -38,14 +38,15 @@ class Combat::Annexer
 
     # Protects player from losing his last planet.
     def protect(planet, outcomes)
+      duration = Cfg.planet_protection_duration(planet.solar_system.galaxy)
+
       ActiveRecord::Base.transaction do
         outcomes.each do |player_id, outcome|
           Notification.create_for_planet_protected(player_id, planet, 
-            outcome) unless player_id.nil?
+            outcome, duration) unless player_id.nil?
         end
         
-        Cooldown.create_unless_exists(planet,
-          Cfg.planet_protection_duration.from_now)
+        Cooldown.create_unless_exists(planet, duration.from_now)
       end
     end
     

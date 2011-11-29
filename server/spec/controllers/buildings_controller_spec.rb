@@ -8,8 +8,7 @@ describe BuildingsController do
   end
 
   shared_examples_for "finding building" do
-    @required_params = %w{id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id}
     
     it "should raise error if building is not found" do
       @building.destroy
@@ -65,9 +64,8 @@ describe BuildingsController do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
-    
-    @required_params = %w{constructor_id x y type}
-    it_behaves_like "with param options"
+
+    it_behaves_like "with param options", %w{constructor_id x y type}
   end
 
   describe "buildings|upgrade" do
@@ -211,8 +209,7 @@ describe BuildingsController do
       @params = {'id' => @building.id, 'with_creds' => false}
     end
 
-    @required_params = %w{id with_creds}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id with_creds}
     it_behaves_like "finding building"
 
     it "should self destruct the building" do
@@ -231,8 +228,7 @@ describe BuildingsController do
       @params = {'id' => @building.id, 'x' => 10, 'y' => 15}
     end
 
-    @required_params = %w{id x y}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id x y}
     it_behaves_like "finding building"
 
     it "should move building" do
@@ -243,8 +239,7 @@ describe BuildingsController do
   end
 
   shared_examples_for "accelerate" do
-    @required_params = %w{id index}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id index}
     
     it "should raise error when providing wrong index" do
       lambda do
@@ -357,8 +352,26 @@ describe BuildingsController do
       lambda do
         invoke @action, @params
         @building.reload
-      end.should change(@building, :build_in_2nd_flank).
-        to(@params['enabled'])
+      end.should change(@building, :build_in_2nd_flank).to(@params['enabled'])
+    end
+  end
+
+  describe "buildings|set_build_hidden" do
+    before(:each) do
+      @planet = Factory.create(:planet, :player => player)
+      @building = Factory.create(:building, :planet => @planet)
+
+      @action = "buildings|set_build_hidden"
+      @params = {'id' => @building.id, 'enabled' => true}
+    end
+
+    it_behaves_like "finding building"
+
+    it "should set flag on building" do
+      lambda do
+        invoke @action, @params
+        @building.reload
+      end.should change(@building, :build_hidden).to(@params['enabled'])
     end
   end
 end

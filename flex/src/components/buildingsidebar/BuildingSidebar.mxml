@@ -12,11 +12,8 @@
       <![CDATA[
       import com.developmentarc.core.utils.EventBroker;
 
-      import components.skins.GreenButtonSkin;
-
       import config.Config;
 
-      import controllers.GlobalFlags;
       import controllers.buildings.BuildingsCommand;
       import controllers.constructionqueues.ConstructionQueuesCommand;
       import controllers.navigation.MCMainArea;
@@ -52,19 +49,18 @@
 
       import mx.collections.ListCollectionView;
       import mx.collections.Sort;
-      import mx.collections.SortField;
       import mx.core.ScrollPolicy;
+      import mx.events.CollectionEvent;
+      import mx.events.CollectionEventKind;
       import mx.events.DragEvent;
       import mx.events.FlexEvent;
       import mx.managers.DragManager;
 
       import spark.components.Label;
-      import spark.events.IndexChangeEvent;
 
       import utils.DateUtil;
       import utils.datastructures.Collections;
       import utils.locale.Localizer;
-
 
       [Bindable]
       private var waitingForApproval: Boolean = false;
@@ -125,12 +121,17 @@
          if (ML.latestPlanet != null) {
             facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE,
                     changeSelected);
+            if (_buildingFacilities != null)
+            {
+               _buildingFacilities.removeEventListener(
+                       CollectionEvent.COLLECTION_CHANGE,
+                       refreshFacilitySelection)
+            }
             _buildingFacilities = Collections.filter(
                     ML.latestPlanet.objects,
                     function (item: MPlanetObject): Boolean {
-                       if (!(item is Building))
-                       {
-                           return false;
+                       if (!(item is Building)) {
+                          return false;
                        }
                        var building: Building = Building(item);
                        return (BuildingSidebar.CONSTRUCTORS
@@ -144,30 +145,35 @@
             _buildingFacilities.sort = new Sort();
             _buildingFacilities.sort.compareFunction = constructorModSort;
             _buildingFacilities.refresh();
+            _buildingFacilities.addEventListener(CollectionEvent.COLLECTION_CHANGE,
+               refreshFacilitySelection)
          }
       }
 
-      private function constructorModSort(a: Object,  b: Object,
-                                          fields: Array = null): int
+      private function refreshFacilitySelection(e: CollectionEvent): void
       {
-         if (!(a is Building) || !(b is Building))
+         if (e.kind == CollectionEventKind.ADD
+                 || e.kind == CollectionEventKind.REMOVE
+                 || e.kind == CollectionEventKind.RESET)
          {
+            changeSelected();
+         }
+      }
+
+      private function constructorModSort(a: Object, b: Object, fields: Array = null): int {
+         if (!(a is Building) || !(b is Building)) {
             return 0;
          }
-         else
-         {
+         else {
             var aBuilding: Building = Building(a);
             var bBuilding: Building = Building(b);
-            if (aBuilding.constructorMod > bBuilding.constructorMod)
-            {
+            if (aBuilding.constructorMod > bBuilding.constructorMod) {
                return -1;
             }
-            else if (bBuilding.constructorMod > aBuilding.constructorMod)
-            {
+            else if (bBuilding.constructorMod > aBuilding.constructorMod) {
                return 1;
             }
-            else if (aBuilding.id > bBuilding.id)
-            {
+            else if (aBuilding.id > bBuilding.id) {
                return 1;
             }
             else return -1;
@@ -384,8 +390,7 @@
        * facilities list is selected
        **/
       protected function changeSelected(e: FlexEvent = null): void {
-         if (e != null)
-         {
+         if (e != null) {
             facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE,
                     changeSelected);
          }
@@ -620,7 +625,6 @@
 
 
       protected function button1_clickHandler(event: MouseEvent): void {
-         GlobalFlags.getInstance().lockApplication = true;
          new PlanetsCommand(PlanetsCommand.TAKE, {
             'id':ML.latestPlanet.id}).dispatch();
       }
@@ -655,14 +659,26 @@
             <s:Label text="{getString('label.noPlayerUnits')}" styleName="unsatisfied"
                      left="0" right="0"/>
          </s:Group>
-         <s:Button label="{getString('label.claimPlanet')}"
-                   visible="{ML.latestPlanet.ssObject.player == null
-                   &amp;&amp; !ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY)
-                   &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE)
-                   &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
-                   &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}"
+         <s:Group visible="{ML.latestPlanet.ssObject.player == null
+             &amp;&amp; !ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY)
+             &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE)
+             &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
+             &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}">
+                <s:Button label="{getString('label.claimPlanet')}"
+                   visible="{!ML.latestGalaxy.apocalypseActive
+                   || !ML.latestGalaxy.apocalypseStartEvent.hasOccured}"
+                   includeInLayout="{!ML.latestGalaxy.apocalypseActive
+                   || !ML.latestGalaxy.apocalypseStartEvent.hasOccured}"
                    skinClass="components.skins.GreenButtonSkin"
                    click="button1_clickHandler(event)"/>
+
+                <base:Warning width="100%" showSign="false"
+                   visible="{ML.latestGalaxy.apocalypseActive
+                   &amp;&amp; ML.latestGalaxy.apocalypseStartEvent.hasOccured}"
+                   includeInLayout="{ML.latestGalaxy.apocalypseActive
+                   &amp;&amp; ML.latestGalaxy.apocalypseStartEvent.hasOccured}"
+                   text="{getString('warning.apocalypseClaimForbidden')}"/>
+         </s:Group>
          <base:Warning width="100%" showSign="false"
                        visible="{deployInProgress}"
                        text="{getString('warning.deployInAlliancePlanet')}"/>

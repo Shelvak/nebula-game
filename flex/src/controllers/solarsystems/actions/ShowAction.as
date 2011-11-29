@@ -2,7 +2,6 @@ package controllers.solarsystems.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
 
@@ -21,7 +20,6 @@ package controllers.solarsystems.actions
 
    import utils.Objects;
    import utils.remote.rmo.ClientRMO;
-
 
    /**
     * Downloads objects for one solar system and shows solar system map.
@@ -50,12 +48,7 @@ package controllers.solarsystems.actions
       private function get NAV_CTRL() : NavigationController {
          return NavigationController.getInstance();
       }
-
-      private function get GF() : GlobalFlags {
-         return GlobalFlags.getInstance();
-      }
-
-
+      
       public function ShowAction()
       {
          super();
@@ -65,12 +58,10 @@ package controllers.solarsystems.actions
       private var f_createMapOnly:Boolean = false;
       private function resetFlags() : void {
          f_createMapOnly = false;
-         GF.lockApplication = false;
       }
 
 
       override public function applyClientAction(cmd:CommunicationCommand) : void {
-         GF.lockApplication = true;
          var params:ShowActionParams = ShowActionParams(cmd.parameters);
          f_createMapOnly = params.createMapOnly;
          sendMessage(new ClientRMO({"id": params.solarSystemId}));

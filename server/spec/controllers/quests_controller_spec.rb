@@ -29,8 +29,7 @@ describe QuestsController do
       @params = {'id' => 10, 'planet_id' => 20}
     end
 
-    @required_params = %w{id planet_id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id planet_id}
 
     it "should claim rewards" do
       QuestProgress.should_receive(:claim_rewards!).with(

@@ -20,8 +20,11 @@ describe Player do
       @result = Player.ratings(@alliance.galaxy_id)
     end
 
-    (%w{id name victory_points alliance_vps planets_count bg_planets_count
-        last_seen} + Player::POINT_ATTRIBUTES).each do |attr|
+    (
+      %w{id name victory_points alliance_vps death_day
+         planets_count bg_planets_count last_seen} +
+      Player::POINT_ATTRIBUTES
+    ).each do |attr|
       it "should include #{attr}" do
         @result.each_with_index do |row, index|
           row[attr].should == @players[index].send(attr)
@@ -126,6 +129,73 @@ describe Player do
           player.save!
           player.reload
         end.should_not change(player, :alliance_vps)
+      end
+    end
+  end
+
+  describe "on death" do
+    let(:galaxy) { Factory.create(:galaxy, :apocalypse_start => 15.days.ago) }
+    let(:player) do
+      player = Factory.create(:player, :planets_count => 2, :pure_creds => 323,
+        :bg_planets_count => 0, :galaxy => galaxy)
+      player
+    end
+
+    describe "if #planets_count gets updated to 0" do
+      before(:each) do
+        player.planets_count = 0
+      end
+
+      it "should set #death_day" do
+        lambda do
+          player.save!
+        end.should change(player, :death_day).to(player.galaxy.apocalypse_day)
+      end
+
+      it "should transfer player creds + apocalypse survival bonus to web" do
+        ControlManager.instance.should_receive(:player_death).
+          with(player, player.pure_creds +
+                 Cfg.apocalypse_survival_bonus(player.galaxy.apocalypse_day))
+        player.save!
+      end
+
+      it "should set #pure_creds to 0" do
+        lambda do
+          player.save!
+        end.should change(player, :pure_creds).to(0)
+      end
+
+      it "should check if galaxy has ended" do
+        player.galaxy.should_receive(:check_if_apocalypse_finished!)
+        player.save!
+      end
+    end
+
+    describe "if #planets_count does not get updated to 0" do
+      before(:each) do
+        player.planets_count = 1
+      end
+
+      it "should not set #death_day" do
+        lambda do
+          player.save!
+        end.should_not change(player, :death_day)
+      end
+
+      it "should not change player creds" do
+        lambda do
+          player.save!
+        end.should_not change(player, :creds)
+      end
+
+      it "should not transfer anything to web" do
+        ControlManager.instance.should_not_receive(:player_death)
+        player.save!
+      end
+
+      it "should not check if galaxy has ended" do
+        player.galaxy.should_not_receive(:check_if_apocalypse_finished!)
+        player.save!
       end
     end
   end

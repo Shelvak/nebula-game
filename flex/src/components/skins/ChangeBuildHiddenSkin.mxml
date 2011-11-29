@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+               xmlns:base="components.base.*"
+               minWidth="10" minHeight="10"
+               alpha.disabledStates="0.5">
+   
+   <fx:Metadata>
+      [HostComponent("spark.components.ToggleButton")]
+   </fx:Metadata>
+   <fx:Script>
+      import utils.assets.AssetNames;
+   </fx:Script>
+   
+   <base:states>
+      <s:State name="up" stateGroups="deselectedStates, upStates" />
+      <s:State name="over" stateGroups="overStates, deselectedStates" />
+      <s:State name="down" stateGroups="downStates" />
+      <s:State name="disabled" stateGroups="disabledStates, deselectedStates" />
+      <s:State name="upAndSelected" stateGroups="selectedStates, upStates" />
+      <s:State name="overAndSelected" stateGroups="selectedStates, overStates" />
+      <s:State name="downAndSelected" stateGroups="downStates" />
+      <s:State name="disabledAndSelected" stateGroups="disabledStates, selectedStates" />
+   </base:states>
+   
+   <s:BitmapImage includeIn="deselectedStates"
+                  source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'switch_not_hidden')}"/>
+   <s:BitmapImage includeIn="selectedStates"
+                  source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'switch_hidden')}"/>
+   <s:BitmapImage includeIn="downStates"
+                  source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'switch_hidden_down')}"/>
+   
+</base:BaseSkin>

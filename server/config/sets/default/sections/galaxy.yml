@@ -10,6 +10,9 @@ zone.players: 20
 
 # How long initial shield lasts on players home solar system?
 player.shield_duration: <%= 2.weeks %> / speed
+# Min number of planets player can have. Planets above this number can be taken
+# by other players.
+player.protected_planets: 1
 # Free population given to player upon creation
 player.population: 60
 # Maximum population player can have.
@@ -26,7 +29,7 @@ player.inactivity_check.last_seen_in: <%= 3.days %> / speed
 player.referral.points_needed: 150000
 
 # Quiet time before apocalypse.
-apocalypse.quiet_time: <%= 10.days %> / speed
+apocalypse.quiet_time: <%= 6.days %> / speed
 # How much creds you get for each day survived in apocalypse. Days are counted
 # from 1.
 apocalypse.survival_bonus: days * 2000

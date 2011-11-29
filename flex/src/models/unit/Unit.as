@@ -393,6 +393,9 @@ package models.unit
       {
          return _stance;
       }
+
+      [Optional]
+      public var hidden: Boolean = false;
       
       
       [Required]

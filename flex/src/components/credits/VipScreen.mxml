@@ -7,81 +7,69 @@
          xmlns:base="components.base.*" xmlns:screens="components.screens.*">
    <fx:Script>
       <![CDATA[
-         import components.popups.ActionConfirmationPopup;
-         import components.popups.WaitingCredsPopup;
-         import components.skins.CreditButtonSkin;
-         import components.skins.GreenButtonSkin;
-         import components.skins.LargePanelSkin;
-         
-         import controllers.GlobalFlags;
-         import controllers.players.PlayersCommand;
-         import controllers.ui.NavigationController;
-         
-         import flashx.textLayout.formats.TextAlign;
-         
-         import models.ModelLocator;
-         import models.credit.VipLevelsData;
-         
-         import utils.MathUtil;
-         import utils.StringUtil;
-         import utils.locale.Localizer;
-         
-         
-         private static function get ML() : ModelLocator {
-            return ModelLocator.getInstance();
+      import components.popups.ActionConfirmationPopup;
+      import components.popups.WaitingCredsPopup;
+
+      import controllers.players.PlayersCommand;
+      import controllers.ui.NavigationController;
+
+      import flashx.textLayout.formats.TextAlign;
+
+      import models.ModelLocator;
+      import models.credit.VipLevelsData;
+
+      import utils.MathUtil;
+      import utils.StringUtil;
+      import utils.locale.Localizer;
+
+      private static function get ML(): ModelLocator {
+         return ModelLocator.getInstance();
+      }
+
+      private static function get NAV_CTRL(): NavigationController {
+         return NavigationController.getInstance();
+      }
+
+      private function getString(property: String, parameters: Array = null): String {
+         return Localizer.string("Credits", property, parameters);
+      }
+
+      private function order_clickHandler(e: Event): void {
+         var cost: int = VipLevelsData.getVipCost(
+                 int(VipLevelsData.vipSelection.selectedValue));
+
+         function getVip(): void {
+            new PlayersCommand(PlayersCommand.VIP,
+                    {'vipLevel': VipLevelsData.getSelectedLevel()}).dispatch();
          }
-         
-         private static function get NAV_CTRL() : NavigationController {
-            return NavigationController.getInstance();
+
+         if (cost > ML.player.creds) {
+            WaitingCredsPopup.showPopup(cost, getVip);
          }
-         
-         private function getString(property:String, parameters:Array = null) : String {
-            return Localizer.string("Credits", property, parameters);
+         else {
+            getVip();
          }
-         
-         private function order_clickHandler(e: Event): void
-         {
-            var cost: int = VipLevelsData.getVipCost(
-               int(VipLevelsData.vipSelection.selectedValue));
-            function getVip(): void
-            {
-               GlobalFlags.getInstance().lockApplication = true;
-               new PlayersCommand(PlayersCommand.VIP, 
-                  {'vipLevel': VipLevelsData.getSelectedLevel()}).dispatch();
-            }
-            if (cost > ML.player.creds)
-            {
-               WaitingCredsPopup.showPopup(cost, getVip);
-            }
-            else
-            {
-               getVip();
-            }
-         }
-         
-         
-         protected function button1_clickHandler(event:MouseEvent):void
-         {
-            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
-            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
-            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-            var lbl: Label = new Label();
-            lbl.minWidth = 300;
-            lbl.text = Localizer.string('Popups', 'message.convertCreds', 
-               [credSelector.value, VipLevelsData.getVipConvertedCreds(
-                  ML.player.vipLevel, credSelector.value)]);
-            popUp.addElement(lbl);
-            popUp.title = Localizer.string('Popups', 'title.convertCreds');
-            popUp.confirmButtonClickHandler = function (button: Button = null): void
-            {
-               GlobalFlags.getInstance().lockApplication = true;
-               new PlayersCommand(PlayersCommand.CONVERT_CREDS, 
-                  {'amount': credSelector.value}).dispatch();
-               credSelector.value = 0;
-            };
-            popUp.show();
-         }
-         
+      }
+
+
+      protected function button1_clickHandler(event: MouseEvent): void {
+         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+         popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+         var lbl: Label = new Label();
+         lbl.minWidth = 300;
+         lbl.text = Localizer.string('Popups', 'message.convertCreds',
+                 [credSelector.value, VipLevelsData.getVipConvertedCreds(
+                         ML.player.vipLevel, credSelector.value)]);
+         popUp.addElement(lbl);
+         popUp.title = Localizer.string('Popups', 'title.convertCreds');
+         popUp.confirmButtonClickHandler = function (button: Button = null): void {
+            new PlayersCommand(PlayersCommand.CONVERT_CREDS,
+                    {'amount': credSelector.value}).dispatch();
+            credSelector.value = 0;
+         };
+         popUp.show();
+      }
       ]]>
    </fx:Script>
    <screens:GradientBackground gradientWidth="{(width - header.width) / 2}"/>

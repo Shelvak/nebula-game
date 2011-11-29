@@ -60,6 +60,9 @@ class Tile < ActiveRecord::Base
     FOLLIAGE_6X2 => [6, 2],
   }
 
+  # Tiles that resource extractors are built upon.
+  RESOURCE_TILES = [ORE, GEOTHERMAL, ZETIUM]
+
   # Tile kinds that can be explored.
   EXPLORATION_TILES = [FOLLIAGE_3X3, FOLLIAGE_3X4, FOLLIAGE_4X3,
     FOLLIAGE_4X4, FOLLIAGE_4X6, FOLLIAGE_6X6, FOLLIAGE_6X2]
@@ -92,6 +95,23 @@ class Tile < ActiveRecord::Base
   #
   def as_json(options=nil)
     attributes
+  end
+
+  # Is this tile a block tile?
+  def block_tile?
+    BLOCK_SIZES.has_key?(kind)
+  end
+
+  def x_end
+    raise ArgumentError.new("#{self} is not a block tile!") unless block_tile?
+
+    x + BLOCK_SIZES[kind][0] - 1
+  end
+
+  def y_end
+    raise ArgumentError.new("#{self} is not a block tile!") unless block_tile?
+
+    y + BLOCK_SIZES[kind][1] - 1
   end
 
   # Checks if given _kind_ is exploration tile kind, raises ArgumentError

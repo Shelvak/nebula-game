@@ -6,42 +6,40 @@
                 xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
-         import components.popups.ErrorPopup;
-         import components.ratings.RatingsWidths;
-         
-         import controllers.GlobalFlags;
-         import controllers.alliances.AlliancesCommand;
-         import controllers.alliances.actions.InviteActionParams;
-         import controllers.ui.NavigationController;
-         
-         import models.ModelLocator;
-         import models.player.MRatingPlayer;
-         
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         import utils.locale.Localizer;
-         
-         [Bindable]
-         private var player: MRatingPlayer;
-         
-         public override function set data(value:Object):void
-         {
-            player = MRatingPlayer(value);
-         }
-         public override function get data():Object
-         {
-            return player;
-         }
-         
-         [Bindable]
-         private var ML: ModelLocator = ModelLocator.getInstance();
-         
-         protected function button1_clickHandler(event:MouseEvent):void
-         {
-            new AlliancesCommand(AlliancesCommand.INVITE, 
-               new InviteActionParams(player.id)).dispatch();
-         }
-         
+      import components.popups.ErrorPopup;
+      import components.ratings.RatingsWidths;
+
+      import utils.ApplicationLocker;
+
+      import controllers.alliances.AlliancesCommand;
+      import controllers.alliances.actions.InviteActionParams;
+      import controllers.ui.NavigationController;
+
+      import models.ModelLocator;
+      import models.player.MRatingPlayer;
+
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
+
+      [Bindable]
+      private var player: MRatingPlayer;
+
+      public override function set data(value: Object): void {
+         player = MRatingPlayer(value);
+      }
+
+      public override function get data(): Object {
+         return player;
+      }
+
+      [Bindable]
+      private var ML: ModelLocator = ModelLocator.getInstance();
+
+      protected function button1_clickHandler(event: MouseEvent): void {
+         new AlliancesCommand(AlliancesCommand.INVITE,
+                 new InviteActionParams(player.id)).dispatch();
+      }
       ]]>
    </fx:Script>
    <s:Rect left="0" right="0" top="0" bottom="0">

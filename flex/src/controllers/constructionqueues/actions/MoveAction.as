@@ -14,11 +14,13 @@ package controllers.constructionqueues.actions
    {
       public override function result(rmo:ClientRMO) : void
       {
+         super.result(rmo);
          new GBuildingEvent(GBuildingEvent.QUEUE_APROVED);
       }
       
       public override function cancel(rmo:ClientRMO) : void
       {
+         super.cancel(rmo);
          new GBuildingEvent(GBuildingEvent.QUEUE_APROVED);
       }
 //      # Move ConstructionQueueEntry in queue.

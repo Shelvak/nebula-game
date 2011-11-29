@@ -4,7 +4,7 @@ package controllers.game.actions
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.startup.StartupInfo;
    import controllers.startup.StartupMode;
    
@@ -17,8 +17,6 @@ package controllers.game.actions
    {
       override public function applyServerAction(cmd:CommunicationCommand) : void {
          Config.setConfig(cmd.parameters.config);
-         if (StartupInfo.getInstance().mode == StartupMode.GAME)
-            GlobalFlags.getInstance().lockApplication = true;
       }
    }
 }

@@ -56,8 +56,6 @@ homeworld.planet.units: []
 homeworld.expansion_planet.units:
   - [mdh, [1, 1], 0]
   - [mobile_vulcan, [1, 1], 0]
-  - [mobile_screamer, [1, 1], 0]
-  - [mobile_thunder, [1, 1], 0]
 
 ### Orbit units configuration. Not overridable.
 
@@ -83,7 +81,8 @@ regular.orbit.jumpgate.units:
   - [thor, [3, 7], [0, 1]]
   - [dirac, [5, 8], [0, 1]]
 
-homeworld.orbit.planet.units:
+homeworld.orbit.planet.units: []
+homeworld.orbit.expansion_planet.units:
   - [dirac, 4, 0]
 homeworld.orbit.asteroid.units:
   - [thor, 1, 0]

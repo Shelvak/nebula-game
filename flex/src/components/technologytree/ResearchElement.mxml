@@ -9,129 +9,113 @@
    
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.credits.AccelerateSelector;
-         import components.popups.ActionConfirmationPopup;
-         import components.popups.WaitingCredsPopup;
-         
-         import config.Config;
-         
-         import controllers.GlobalFlags;
-         import controllers.technologies.TechnologiesCommand;
-         
-         import globalevents.GCreditEvent;
-         import globalevents.GlobalEvent;
-         
-         import models.parts.events.UpgradeEvent;
-         import models.resource.ResourceType;
-         import models.technology.Technology;
-         
-         import mx.events.FlexEvent;
-         
-         import utils.DateUtil;
-         import utils.assets.AssetNames;
-         import utils.locale.Localizer;
-         
-         [Bindable]
-         private var _researchModel: Technology;
-         
-         public function set researchModel(value: Technology): void
-         {
-            removeModelEventListeners();
-            _researchModel = value;
-            if (value)
-            {
-               addModelEventListeners();
-            }
+      import com.developmentarc.core.utils.EventBroker;
+
+      import components.credits.AccelerateSelector;
+      import components.popups.ActionConfirmationPopup;
+      import components.popups.WaitingCredsPopup;
+
+      import config.Config;
+
+      import utils.ApplicationLocker;
+
+      import controllers.technologies.TechnologiesCommand;
+
+      import globalevents.GCreditEvent;
+      import globalevents.GlobalEvent;
+
+      import models.parts.events.UpgradeEvent;
+      import models.resource.ResourceType;
+      import models.technology.Technology;
+
+      import mx.events.FlexEvent;
+
+      import utils.DateUtil;
+      import utils.assets.AssetNames;
+      import utils.locale.Localizer;
+
+      [Bindable]
+      private var _researchModel: Technology;
+
+      public function set researchModel(value: Technology): void {
+         removeModelEventListeners();
+         _researchModel = value;
+         if (value) {
+            addModelEventListeners();
          }
-         
-         public function get researchModel(): Technology
-         {
-            return _researchModel;
-         }
-         
-         override protected function updateDisplayList(uw:Number, uh:Number) : void
-         {
-            super.updateDisplayList(uw, uh);
-            
-            if (!_researchModel || !_researchModel.upgradePart)
-            {
-               return;
-            }
-            
-            if (_researchModel.pauseRemainder != 0 || _researchModel.upgradePart.upgradeEndsAt != null)
-            {
-               researchBar.setProgress(_researchModel.upgradePart.upgradeProgress, 1);
-            }
-         }
-         
-         protected function addModelEventListeners() : void
-         {
-            _researchModel.upgradePart.addEventListener(
-               UpgradeEvent.UPGRADE_PROGRESS,
-               model_upgradeProgressHandler
-            );
-            _researchModel.upgradePart.addEventListener(
-               UpgradeEvent.UPGRADE_STOPPED,
-               model_upgradeProgressHandler
-            );
-         }
-         
-         private function model_upgradeProgressHandler(e:UpgradeEvent) : void
-         {
-            invalidateDisplayList();
-         }
-         
-         private function removeModelEventListeners(e: GlobalEvent = null): void
-         {
-            if (_researchModel && _researchModel.upgradePart)
-            {
-               _researchModel.upgradePart.removeEventListener(
-                  UpgradeEvent.UPGRADE_PROGRESS,
-                  model_upgradeProgressHandler
-               );
-               _researchModel.upgradePart.removeEventListener(
-                  UpgradeEvent.UPGRADE_STOPPED,
-                  model_upgradeProgressHandler
-               );
-            }
-         }
-         
-         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
-         {
-            EventBroker.subscribe(GlobalEvent.APP_RESET, removeModelEventListeners);
-         }
-         
-         protected function coin_clickHandler(event:MouseEvent):void
-         {
-            var accelerator: AccelerateSelector = new AccelerateSelector();
-            accelerator.upgradePart = _researchModel.upgradePart;
-            var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
-            accelerator.popUp = speedPopUp;
-            speedPopUp.confirmButtonEnabled = false;
-            speedPopUp.confirmButtonClickHandler = function(): void
-            {
-               function doAccelerate(): void
-               {
-                  GlobalFlags.getInstance().lockApplication = true;
-                  new TechnologiesCommand(TechnologiesCommand.ACCELERATE_UPGRADE, 
-                     {'id': _researchModel.id, 
-                        'index': accelerator.selectedAccelerateType}).dispatch();
-               }
-               if (accelerator.hasEnoughCredits())
-               {
-                  doAccelerate();
-               }
-               else
-               {
-                  WaitingCredsPopup.showPopup(accelerator.selectedCost, doAccelerate);
-               }
-            }
-            speedPopUp.addElement(accelerator);
-            speedPopUp.show();
+      }
+
+      public function get researchModel(): Technology {
+         return _researchModel;
+      }
+
+      override protected function updateDisplayList(uw: Number, uh: Number): void {
+         super.updateDisplayList(uw, uh);
+
+         if (!_researchModel || !_researchModel.upgradePart) {
+            return;
          }
 
+         if (_researchModel.pauseRemainder != 0 || _researchModel.upgradePart.upgradeEndsAt != null) {
+            researchBar.setProgress(_researchModel.upgradePart.upgradeProgress, 1);
+         }
+      }
+
+      protected function addModelEventListeners(): void {
+         _researchModel.upgradePart.addEventListener(
+                 UpgradeEvent.UPGRADE_PROGRESS,
+                 model_upgradeProgressHandler
+         );
+         _researchModel.upgradePart.addEventListener(
+                 UpgradeEvent.UPGRADE_STOPPED,
+                 model_upgradeProgressHandler
+         );
+      }
+
+      private function model_upgradeProgressHandler(e: UpgradeEvent): void {
+         invalidateDisplayList();
+      }
+
+      private function removeModelEventListeners(e: GlobalEvent = null): void {
+         if (_researchModel && _researchModel.upgradePart) {
+            _researchModel.upgradePart.removeEventListener(
+                    UpgradeEvent.UPGRADE_PROGRESS,
+                    model_upgradeProgressHandler
+            );
+            _researchModel.upgradePart.removeEventListener(
+                    UpgradeEvent.UPGRADE_STOPPED,
+                    model_upgradeProgressHandler
+            );
+         }
+      }
+
+      protected function basecontainer1_creationCompleteHandler(event: FlexEvent): void {
+         EventBroker.subscribe(GlobalEvent.APP_RESET, removeModelEventListeners);
+      }
+
+      protected function coin_clickHandler(event: MouseEvent): void {
+         var accelerator: AccelerateSelector = new AccelerateSelector();
+         accelerator.upgradePart = _researchModel.upgradePart;
+         var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         accelerator.popUp = speedPopUp;
+         speedPopUp.confirmButtonEnabled = false;
+         speedPopUp.confirmButtonClickHandler = function(): void {
+            function doAccelerate(): void {
+               new TechnologiesCommand(TechnologiesCommand.ACCELERATE_UPGRADE,
+                       {'id': _researchModel.id,
+                          'index': accelerator.selectedAccelerateType}).dispatch();
+            }
+
+            if (accelerator.hasEnoughCredits()) {
+               doAccelerate();
+            }
+            else {
+               WaitingCredsPopup.showPopup(accelerator.selectedCost, doAccelerate);
+            }
+         }
+         speedPopUp.addElement(accelerator);
+         speedPopUp.show();
+      }
       ]]>
    </fx:Script>
    <s:Group left="0" right="0">

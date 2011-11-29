@@ -70,7 +70,8 @@ class CallbackManager
     def register(object, event=EVENT_UPGRADE_FINISHED, time=nil)
       raise ArgumentError.new("object was nil!") if object.nil?
       raise ArgumentError.new("object was not a ActiveRecord::Base, but #{
-        object.class}!") unless object.is_a?(ActiveRecord::Base)
+        object.class} with superclass #{object.class.superclass}!") \
+        unless object.is_a?(ActiveRecord::Base)
 
       time ||= object.upgrade_ends_at
 

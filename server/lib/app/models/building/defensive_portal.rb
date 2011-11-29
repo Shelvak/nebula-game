@@ -102,10 +102,13 @@ class Building::DefensivePortal < Building
       end
 
       available_yours = planet_ids.blank? \
-        ? [] : relation.where(condition([player_id], planet_ids)).map(&block)
+        ? [] \
+        : relation.where(condition([player_id], planet_ids)).
+            map(&block)
       available_ally = ally_player_ids.blank? || ally_planet_ids.blank? \
-        ? [] : relation.
-                 where(condition(ally_player_ids, ally_planet_ids)).map(&block)
+        ? [] \
+        : relation.where(condition(ally_player_ids, ally_planet_ids)).
+            map(&block)
 
       pick_unit_ids_from_list(available_yours, available_ally, total_volume)
     end
@@ -140,7 +143,8 @@ class Building::DefensivePortal < Building
       "type IN (#{PORTAL_UNIT_TYPES_SQL}) AND
         location_type=#{Location::SS_OBJECT} AND
         location_id IN (#{planet_ids}) AND
-        player_id IN (#{player_ids})"
+        player_id IN (#{player_ids}) AND
+        level > 0 AND #{Unit.not_hidden_condition}"
     end
 
     # Returns friendly player ids and planet ids from given _planet_.

@@ -22,4 +22,25 @@ describe Cfg do
       end
     end
   end
+
+  describe ".planet_protection_duration" do
+    let(:galaxy) { Factory.build(:galaxy) }
+
+    it "should return one key when galaxy is not finished" do
+      expected = CONFIG.evalproperty(
+        'combat.cooldown.protection.duration'
+      )
+      Cfg.planet_protection_duration(galaxy).
+        should be_within(SPEC_TIME_PRECISION).of(expected)
+    end
+
+    it "should return other key when galaxy is finished" do
+      galaxy.stub(:finished?).and_return(true)
+      expected = CONFIG.evalproperty(
+        'combat.cooldown.protection.finished_galaxy.duration'
+      )
+      Cfg.planet_protection_duration(galaxy).
+        should be_within(SPEC_TIME_PRECISION).of(expected)
+    end
+  end
 end

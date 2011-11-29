@@ -39,8 +39,7 @@ describe DailyBonusController do
       @params = {'planet_id' => @planet.id}
     end
     
-    @required_params = %w{planet_id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{planet_id}
     
     it "should fail if user does not own that planet" do
       @planet.player = nil

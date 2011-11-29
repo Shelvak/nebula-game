@@ -92,12 +92,13 @@ class Galaxy < ActiveRecord::Base
   # Saves statistical galaxy data for when somebody wins the galaxy.
   # @param galaxy_id [Fixnum]
   # @return [TrueClass]
-  def self.save_galaxy_finish_data(galaxy_id)
+  def self.save_finish_data(galaxy_id)
     ratings = Player.ratings(galaxy_id)
     alliance_ratings = Alliance.ratings(galaxy_id)
 
     data = JSON.generate({
       'date' => Time.now,
+      'apocalypse' => false,
       'ratings' => ratings,
       'alliance_ratings' => alliance_ratings
     })
@@ -121,13 +122,9 @@ class Galaxy < ActiveRecord::Base
     ! apocalypse_start.nil?
   end
 
-  def apocalypse_started?
-    finished? && apocalypse_start < Time.now
-  end
-
   # End galaxy and start countdown of apocalypse.
   def finish!
-    self.class.save_galaxy_finish_data(id)
+    self.class.save_finish_data(id)
 
     self.apocalypse_start = Cfg.apocalypse_start_time
 
@@ -141,6 +138,48 @@ class Galaxy < ActiveRecord::Base
     )
 
     true
+  end
+
+  def apocalypse_started?
+    finished? && apocalypse_start < Time.now
+  end
+
+  # Returns which apocalypse day it currently is.
+  def apocalypse_day
+    raise ArgumentError.new("Apocalypse hasn't started yet! Start on: #{
+      apocalypse_start}") unless apocalypse_started?
+
+    ((Time.now - apocalypse_start) / 1.day).round
+  end
+
+  # Saves statistical galaxy data for when somebody wins the galaxy.
+  # @param galaxy_id [Fixnum]
+  # @return [TrueClass]
+  def self.save_apocalypse_finish_data(galaxy_id)
+    ratings = Player.ratings(galaxy_id)
+
+    data = JSON.generate({
+      'date' => Time.now,
+      'apocalypse' => true,
+      'ratings' => ratings
+    })
+    MAILER.call("WIN", "").call("We have an apocalypse winner!\n\n" + data) \
+      if App.in_production?
+    File.open(
+      File.join(ROOT_DIR, "galaxy-#{galaxy_id}-apocalypse-finish-data.txt"),
+      "w"
+    ) { |f| f.write data } unless App.in_test?
+
+    true
+  end
+
+  def check_if_apocalypse_finished!
+    raise ArgumentError.new(
+      "Cannot check if apocalypse finished if it hasn't started!"
+    ) unless apocalypse_started?
+
+    self.class.save_apocalypse_finish_data(id) \
+      unless players.where('planets_count > 0').exists?
   end
 
   # Convert victory points to creds.
@@ -167,20 +206,25 @@ class Galaxy < ActiveRecord::Base
       alliance_players.each do |player|
         personal_creds = (player.victory_points - player.alliance_vps) +
           (player.alliance_vps / 2)
-        player.creds += personal_creds + alliance_vps_per_player
-        player.save!
-        Notification.create_for_vps_to_creds_conversion(
-          player.id, personal_creds, total_alliance_vps, alliance_vps_per_player
-        )
+        added_creds = personal_creds + alliance_vps_per_player
+        unless added_creds == 0
+          player.creds += added_creds
+          player.save!
+          Notification.create_for_vps_to_creds_conversion(
+            player.id, personal_creds, total_alliance_vps, alliance_vps_per_player
+          )
+        end
       end
     end
     
     players.where(:alliance_id => nil).find_each do |player|
-      player.creds += player.victory_points
-      player.save!
-      Notification.create_for_vps_to_creds_conversion(
-        player.id, player.victory_points, nil, nil
-      )
+      unless player.victory_points == 0
+        player.creds += player.victory_points
+        player.save!
+        Notification.create_for_vps_to_creds_conversion(
+          player.id, player.victory_points, nil, nil
+        )
+      end
     end
   end
 

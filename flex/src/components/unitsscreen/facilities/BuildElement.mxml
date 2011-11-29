@@ -8,159 +8,141 @@
    
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.credits.AccelerateSelector;
-         import components.popups.ActionConfirmationPopup;
-         
-         import controllers.GlobalFlags;
-         import controllers.buildings.BuildingsCommand;
-         import controllers.objects.ObjectClass;
-         
-         import globalevents.GCreditEvent;
-         
-         import models.parts.events.UpgradeEvent;
-         import models.resource.Resource;
-         import models.resource.ResourceType;
-         import models.unit.MCUnitsBuild;
-         import models.unit.Unit;
-         
-         import mx.events.FlexEvent;
-         
-         import spark.components.Button;
-         import spark.components.Label;
-         import spark.effects.Fade;
-         import spark.effects.animation.RepeatBehavior;
-         
-         import utils.UrlNavigate;
-         import utils.assets.AssetNames;
-         import utils.locale.Localizer;
-         
-         private var fade: Fade = new Fade();
-         
-         private static const FADE_TIME: int = 600;
-         private static const LOOP_TIME: int = 1500;
-         [Bindable]
-         private var _unitModel: Unit;
-         
-         public function set unitModel(value: Unit): void
-         {
-            if (_unitModel != value)
-            {
-               if (_unitModel != null)
-               {
-                  _unitModel.upgradePart.removeEventListener(
-                     UpgradeEvent.UPGRADE_PROGRESS,
-                     model_upgradeProgressHandler
-                  );
-                  fade.end();
-               }
-               _unitModel = value;
-               if (_unitModel != null)
-               {
-                  _unitModel.upgradePart.addEventListener(
-                     UpgradeEvent.UPGRADE_PROGRESS,
-                     model_upgradeProgressHandler
-                  );
-                  fade.play([lights]);
-               }
+      import com.developmentarc.core.utils.EventBroker;
+
+      import components.credits.AccelerateSelector;
+      import components.popups.ActionConfirmationPopup;
+
+      import utils.ApplicationLocker;
+
+      import controllers.buildings.BuildingsCommand;
+      import controllers.objects.ObjectClass;
+
+      import globalevents.GCreditEvent;
+
+      import models.parts.events.UpgradeEvent;
+      import models.resource.Resource;
+      import models.resource.ResourceType;
+      import models.unit.MCUnitsBuild;
+      import models.unit.Unit;
+
+      import mx.events.FlexEvent;
+
+      import spark.components.Button;
+      import spark.components.Label;
+      import spark.effects.Fade;
+      import spark.effects.animation.RepeatBehavior;
+
+      import utils.UrlNavigate;
+      import utils.assets.AssetNames;
+      import utils.locale.Localizer;
+
+      private var fade: Fade = new Fade();
+
+      private static const FADE_TIME: int = 600;
+      private static const LOOP_TIME: int = 1500;
+      [Bindable]
+      private var _unitModel: Unit;
+
+      public function set unitModel(value: Unit): void {
+         if (_unitModel != value) {
+            if (_unitModel != null) {
+               _unitModel.upgradePart.removeEventListener(
+                       UpgradeEvent.UPGRADE_PROGRESS,
+                       model_upgradeProgressHandler
+               );
+               fade.end();
+            }
+            _unitModel = value;
+            if (_unitModel != null) {
+               _unitModel.upgradePart.addEventListener(
+                       UpgradeEvent.UPGRADE_PROGRESS,
+                       model_upgradeProgressHandler
+               );
+               fade.play([lights]);
             }
          }
-         
-         [Bindable]
-         public var facilityId: int;
-         
-         private static const imageSize: int = 132;
-         
-         [Bindable]
-         private var builtPart: Number;
-         
-         override protected function updateDisplayList(uw:Number, uh:Number) : void
-         {
-            super.updateDisplayList(uw, uh);
-            if (!_unitModel || !_unitModel.upgradePart)
-            {
-               return;
+      }
+
+      [Bindable]
+      public var facilityId: int;
+
+      private static const imageSize: int = 132;
+
+      [Bindable]
+      private var builtPart: Number;
+
+      override protected function updateDisplayList(uw: Number, uh: Number): void {
+         super.updateDisplayList(uw, uh);
+         if (!_unitModel || !_unitModel.upgradePart) {
+            return;
+         }
+
+         if (!_unitModel.upgradePart.upgradeCompleted) {
+            progBar.setProgress(_unitModel.upgradePart.upgradeProgress, 1);
+            builtPart = _unitModel.upgradePart.upgradeProgress;
+         }
+         else {
+            progBar.setProgress(1, 1);
+         }
+      }
+
+      private function model_upgradeProgressHandler(e: UpgradeEvent): void {
+         invalidateDisplayList();
+      }
+
+
+      protected function basecontainer1_creationCompleteHandler(event: FlexEvent): void {
+         fade.duration = FADE_TIME;
+         fade.repeatBehavior = RepeatBehavior.REVERSE;
+         fade.repeatCount = 0;
+         fade.alphaFrom = 0;
+         fade.alphaTo = 1;
+      }
+
+
+      protected function coincomp1_clickHandler(event: MouseEvent): void {
+         var accelerator: AccelerateSelector = new AccelerateSelector();
+         accelerator.upgradePart = _unitModel.upgradePart;
+         var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         accelerator.popUp = speedPopUp;
+         speedPopUp.confirmButtonEnabled = false;
+         speedPopUp.confirmButtonClickHandler = function(): void {
+            if (accelerator.hasEnoughCredits()) {
+               new BuildingsCommand(BuildingsCommand.ACCELERATE_CONSTRUCTOR,
+                       {'id': ML.latestPlanet.getBuildingByConstructable(_unitModel.id, ObjectClass.UNIT).id,
+                          'index': accelerator.selectedAccelerateType}).dispatch();
             }
-            
-            if (!_unitModel.upgradePart.upgradeCompleted)
-            {
-               progBar.setProgress(_unitModel.upgradePart.upgradeProgress, 1);
-               builtPart = _unitModel.upgradePart.upgradeProgress;
-            }
-            else
-            {
-               progBar.setProgress(1,1);
+            else {
+               UrlNavigate.getInstance().showBuyCreds();
             }
          }
-         
-         private function model_upgradeProgressHandler(e:UpgradeEvent) : void
-         {
-            invalidateDisplayList();
-         }
-         
-         
-         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
-         {
-            fade.duration = FADE_TIME;
-            fade.repeatBehavior = RepeatBehavior.REVERSE;
-            fade.repeatCount = 0;
-            fade.alphaFrom = 0;
-            fade.alphaTo = 1;
-         }
-         
-         
-         protected function coincomp1_clickHandler(event:MouseEvent):void
-         {
-            var accelerator: AccelerateSelector = new AccelerateSelector();
-            accelerator.upgradePart = _unitModel.upgradePart;
-            var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
-            accelerator.popUp = speedPopUp;
-            speedPopUp.confirmButtonEnabled = false;
-            speedPopUp.confirmButtonClickHandler = function(): void
-            {
-               if (accelerator.hasEnoughCredits())
-               {
-                  GlobalFlags.getInstance().lockApplication = true;
-                  new BuildingsCommand(BuildingsCommand.ACCELERATE_CONSTRUCTOR, 
-                     {'id': ML.latestPlanet.getBuildingByConstructable(_unitModel.id, ObjectClass.UNIT).id, 
-                        'index': accelerator.selectedAccelerateType}).dispatch();
-               }
-               else
-               {
-                  UrlNavigate.getInstance().showBuyCreds();
-               }
-            }
-            speedPopUp.addElement(accelerator);
-            speedPopUp.show();
-         }
-         
-         [Bindable]
-         private var BS: MCUnitsBuild = MCUnitsBuild.getInstance();
-         
-         private function getString(prop: String, params: Array = null): String
-         {
-            return Localizer.string('Units', prop, params);
-         }
-         
-         private function cancelUpgrade(): void
-         {
-            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
-            popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
-            popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-            var lbl: Label = new Label();
-            lbl.minWidth = 300;
-            lbl.text = Localizer.string('Popups', 'message.cancelUnitTraining');
-            popUp.addElement(lbl);
-            popUp.title = Localizer.string('Popups', 'title.cancelUnitTraining');
-            popUp.confirmButtonClickHandler = function (button: Button = null): void
-            {
-               new BuildingsCommand(BuildingsCommand.CANCEL_CONSTRUCTOR, 
-                  {'id': facilityId}).dispatch();
-            };
-            popUp.show();
-         }
-         
+         speedPopUp.addElement(accelerator);
+         speedPopUp.show();
+      }
+
+      [Bindable]
+      private var BS: MCUnitsBuild = MCUnitsBuild.getInstance();
+
+      private function getString(prop: String, params: Array = null): String {
+         return Localizer.string('Units', prop, params);
+      }
+
+      private function cancelUpgrade(): void {
+         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+         popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+         var lbl: Label = new Label();
+         lbl.minWidth = 300;
+         lbl.text = Localizer.string('Popups', 'message.cancelUnitTraining');
+         popUp.addElement(lbl);
+         popUp.title = Localizer.string('Popups', 'title.cancelUnitTraining');
+         popUp.confirmButtonClickHandler = function (button: Button = null): void {
+            new BuildingsCommand(BuildingsCommand.CANCEL_CONSTRUCTOR,
+                    {'id': facilityId}).dispatch();
+         };
+         popUp.show();
+      }
       ]]>
    </fx:Script>
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready')}"/>

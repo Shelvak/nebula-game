@@ -7,6 +7,7 @@ package models.unit
          unit = _unit;
          flankModel = flank;
          stance = unit.stance;
+         hidden = unit.hidden;
          loadUnload = _loadUnload;
       }
       
@@ -18,6 +19,9 @@ package models.unit
       
       [Bindable]
       public var stance: int;
+
+      [Bindable]
+      public var hidden: Boolean;
       
       [Bindable]
       public var flankModel: UnitsFlank;

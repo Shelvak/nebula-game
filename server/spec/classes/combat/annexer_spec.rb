@@ -107,22 +107,27 @@ describe Combat::Annexer do
       end
       
       describe "when owner lost" do
-        describe "if it's owners last planet" do
+        describe "if the planet is protected" do
           before(:each) do
-            @owner.planets_count = 1
+            @owner.planets_count = Cfg.player_protected_planets
             @owner.save!
           end
           
           it "should create a protection cooldown" do
             Combat::Annexer.annex!(@planet, @check_report, @outcomes)
             @planet.should have_cooldown(
-              Cfg.planet_protection_duration.from_now)
+              Cfg.planet_protection_duration(@planet.solar_system.galaxy).
+                from_now
+            )
           end
           
           it "should create protection notifications" do
+            duration = Cfg.
+              planet_protection_duration(@planet.solar_system.galaxy)
+
             @alliances.values.flatten.compact.each do |player|
               Notification.should_receive(:create_for_planet_protected).
-                with(player.id, @planet, @outcomes[player.id])
+                with(player.id, @planet, @outcomes[player.id], duration)
             end
             Combat::Annexer.annex!(@planet, @check_report, @outcomes)
           end
@@ -132,6 +137,14 @@ describe Combat::Annexer do
               ss = @planet.solar_system
               ss.kind = SolarSystem::KIND_BATTLEGROUND
               ss.save!
+            end
+
+            it_should_behave_like "taking planet"
+          end
+
+          describe "when apocalypse has started" do
+            before(:each) do
+              @owner.galaxy.stub(:apocalypse_started?).and_return(true)
             end
 
             it_should_behave_like "taking planet"

@@ -2,7 +2,6 @@ package controllers.alliances.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    import controllers.Messenger;
    
    import utils.locale.Localizer;
@@ -29,20 +28,13 @@ package controllers.alliances.actions
       
       override public function applyClientAction(cmd:CommunicationCommand) : void
       {
-         GlobalFlags.getInstance().lockApplication = true;
          var params:InviteActionParams = InviteActionParams(cmd.parameters);
          sendMessage(new ClientRMO({"playerId": params.playerId}));
       }
       
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
       public override function result(rmo:ClientRMO):void
       {
-         GlobalFlags.getInstance().lockApplication = false;
+         super.result(rmo);
          Messenger.show(Localizer.string('Alliances', 'message.playerInvited'),
             Messenger.MEDIUM);
       }

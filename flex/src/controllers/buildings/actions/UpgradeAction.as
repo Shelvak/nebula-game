@@ -1,16 +1,12 @@
 package controllers.buildings.actions
 {
-   
+
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
-   
+
    import models.building.Building;
    import models.factories.BuildingFactory;
-   
-   import utils.remote.rmo.ClientRMO;
-   
-   
+
    /**
     * Used for upgrading building
     */
@@ -29,18 +25,6 @@ package controllers.buildings.actions
             }
             temp.cleanup();
          }
-      }
-      
-      
-      public override function cancel(rmo:ClientRMO) : void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      public override function result(rmo:ClientRMO):void
-      {
-         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

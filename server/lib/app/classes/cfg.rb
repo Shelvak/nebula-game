@@ -100,8 +100,11 @@ class Cfg; class << self
   def max_flanks; CONFIG['combat.flanks.max']; end
   
   # For how long planet is protected after protection is initiated?
-  def planet_protection_duration
-    CONFIG.evalproperty('combat.cooldown.protection.duration')
+  def planet_protection_duration(galaxy)
+    key = galaxy.finished? \
+      ? 'combat.cooldown.protection.finished_galaxy.duration' \
+      : 'combat.cooldown.protection.duration'
+    CONFIG.evalproperty(key)
   end
 
   ### raiding.yml ###
@@ -143,12 +146,20 @@ class Cfg; class << self
     CONFIG['galaxy.player.referral.points_needed']
   end
 
+  def player_protected_planets
+    CONFIG['galaxy.player.protected_planets']
+  end
+
   def galaxy_convoy_units_definition
     CONFIG["galaxy.convoy.units"]
   end
 
   def apocalypse_start_time
     CONFIG.evalproperty('galaxy.apocalypse.quiet_time').from_now
+  end
+
+  def apocalypse_survival_bonus(death_day)
+    CONFIG.evalproperty('galaxy.apocalypse.survival_bonus', 'days' => death_day)
   end
 
   ### tiles.yml ###

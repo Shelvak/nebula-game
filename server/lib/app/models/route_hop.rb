@@ -93,7 +93,9 @@ class RouteHop < ActiveRecord::Base
       transaction do
         route.current = location.client_location
 
-        Unit.update_all(location.location_attrs, {:route_id => route.id})
+        Unit.where(:route_id => route.id).update_all(
+          "#{Unit.update_location_sql(location)}, #{
+            Unit.set_flag_sql(:hidden, false)}")
 
         next_hop = route.hops.where(:index => index + 1).first
         if next_hop

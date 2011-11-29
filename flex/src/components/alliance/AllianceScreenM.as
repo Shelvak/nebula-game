@@ -2,35 +2,31 @@ package components.alliance
 {
    import components.alliance.events.AllianceScreenMEvent;
    import components.popups.ErrorPopup;
-   
+
    import config.Config;
-   
-   import controllers.GlobalFlags;
+
    import controllers.alliances.AlliancesCommand;
    import controllers.ui.NavigationController;
-   
-   import flash.events.Event;
+
    import flash.events.EventDispatcher;
    import flash.events.MouseEvent;
-   
+
    import models.ModelLocator;
    import models.alliance.MAlliance;
    import models.events.HeaderEvent;
    import models.player.MRatingPlayer;
    import models.player.events.PlayerEvent;
-   
-   import mx.collections.ArrayCollection;
+
    import mx.collections.Sort;
    import mx.collections.SortField;
-   
+
    import spark.components.Button;
-   
+
    import utils.DateUtil;
    import utils.Events;
    import utils.SingletonFactory;
    import utils.locale.Localizer;
-   
-   
+
    /**
     * @see components.alliance.events.AllianceScreenMEvent#TAB_SELECT
     * @eventType components.alliance.events.AllianceScreenMEvent.TAB_SELECT
@@ -309,7 +305,6 @@ package components.alliance
          popUp.title = Localizer.string('Popups', 'title.leaveAlly');
          popUp.retryButtonClickHandler = function (button: Button = null): void
          {
-            GlobalFlags.getInstance().lockApplication = true;
             new AlliancesCommand(AlliancesCommand.LEAVE).dispatch();
             alliance = null;
          };

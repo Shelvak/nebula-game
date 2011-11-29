@@ -41,8 +41,7 @@ describe RoutesController do
       @params = {'id' => @route.id}
     end
 
-    @required_params = %w{id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id}
 
     it "should check player" do
       route = Factory.create(:route)

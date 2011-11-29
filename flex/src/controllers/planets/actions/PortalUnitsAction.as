@@ -2,14 +2,8 @@ package controllers.planets.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
-   
-   import models.planet.MPlanet;
-   
-   import utils.locale.Localizer;
-   import utils.remote.rmo.ClientRMO;
-   
+
    /**
     *  # Returns portal units that would come to defend this planet.
     #
@@ -37,12 +31,6 @@ package controllers.planets.actions
     */   
    public class PortalUnitsAction extends CommunicationAction
    {
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
       public override function applyServerAction(cmd:CommunicationCommand):void
       {
          NavigationController.getInstance().openDefensivePortal(

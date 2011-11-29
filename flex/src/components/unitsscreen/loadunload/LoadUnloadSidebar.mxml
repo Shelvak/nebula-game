@@ -7,56 +7,48 @@
    
    <fx:Script>
       <![CDATA[
-         import components.skins.RedButtonSkin;
-         import components.skins.YellowButtonSkin;
-         
-         import controllers.GlobalFlags;
-         import controllers.ui.NavigationController;
-         
-         import models.unit.MCLoadUnloadScreen;
-         import models.unit.Unit;
-         
-         import utils.assets.AssetNames;
-         import utils.locale.Localizer;
-         
-         protected function button1_clickHandler(event:MouseEvent):void
-         {
-            NavigationController.getInstance().disableActiveButton();
-            NavigationController.getInstance().showPreviousScreen();
+      import components.skins.RedButtonSkin;
+      import components.skins.YellowButtonSkin;
+
+      import utils.ApplicationLocker;
+
+      import controllers.ui.NavigationController;
+
+      import models.unit.MCLoadUnloadScreen;
+      import models.unit.Unit;
+
+      import utils.assets.AssetNames;
+      import utils.locale.Localizer;
+
+      protected function button1_clickHandler(event: MouseEvent): void {
+         NavigationController.getInstance().disableActiveButton();
+         NavigationController.getInstance().showPreviousScreen();
+      }
+
+      [Bindable]
+      private var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();
+
+      private function selectAll(): void {
+         if (LS.resourcesSelected) {
+            LS.selectAllResources();
          }
-         
-         [Bindable]
-         private var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();
-         
-         private function selectAll(): void
-         {
-            if (LS.resourcesSelected)
-            {
-               LS.selectAllResources();
-            }
-            else
-            {
-               LS.selectAllUnits();
-            }
+         else {
+            LS.selectAllUnits();
          }
-         
-         private function selectNone(): void
-         {
-            if (LS.resourcesSelected)
-            {
-               LS.deselectAllResources();
-            }
-            else
-            {
-               LS.deselectAllUnits();
-            }
+      }
+
+      private function selectNone(): void {
+         if (LS.resourcesSelected) {
+            LS.deselectAllResources();
          }
-         
-         private function load_clickHandler(e: Event): void
-         {
-            GlobalFlags.getInstance().lockApplication = true;
-            LS.confirmTransfer();
+         else {
+            LS.deselectAllUnits();
          }
+      }
+
+      private function load_clickHandler(e: Event): void {
+         LS.confirmTransfer();
+      }
       ]]>
    </fx:Script>
    <base:Scroller top="0" left="0" right="0" bottom="0" stepMultiplier="3">

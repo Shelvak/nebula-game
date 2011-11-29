@@ -554,6 +554,8 @@ object Config {
 
   lazy val homeworldPlanetOrbitUnits = unitsEntry(
     "ss_object.homeworld.orbit.planet.units")
+  lazy val homeworldExpansionPlanetOrbitUnits = unitsEntry(
+    "ss_object.homeworld.orbit.expansion_planet.units")
   lazy val homeworldRichAsteroidOrbitUnits = unitsEntry(
     "ss_object.homeworld.orbit.rich_asteroid.units")
   lazy val homeworldAsteroidOrbitUnits = unitsEntry(

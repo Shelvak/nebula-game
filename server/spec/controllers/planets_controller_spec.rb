@@ -238,8 +238,7 @@ describe PlanetsController do
       @params = {'planet_id' => @planet.id, 'x' => @x, 'y' => @y}
     end
 
-    @required_params = %w{planet_id x y}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{planet_id x y}
 
     it "should fail if planet does not belong to player" do
       @planet.player = nil
@@ -297,8 +296,7 @@ describe PlanetsController do
       @params = {'id' => @planet.id}
     end
     
-    @required_params = %w{id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id}
     
     it "should fail if a planet does not belong to player" do
       @planet.update_row! ["player_id=?", Factory.create(:player).id]
@@ -328,8 +326,7 @@ describe PlanetsController do
       @params = {'id' => @planet.id, 'x' => @tile.x, 'y' => @tile.y}
     end
     
-    @required_params = %w{id x y}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id x y}
     
     it "should fail if planet does not belong to player" do
       @planet.update_row! ["player_id=?", Factory.create(:player).id]
@@ -359,8 +356,7 @@ describe PlanetsController do
       @params = {'id' => @planet.id, 'name' => "FooPlanet"}
     end
 
-    @required_params = %w{id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id}
 
     it "should fail if you are not the planet owner" do
       @planet.player = Factory.create(:player)
@@ -425,8 +421,7 @@ describe PlanetsController do
         'attribute' => 'rate'}
     end
 
-    @required_params = %w{id resource attribute}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id resource attribute}
 
     it "should fail if planet does not belong to you" do
       @planet.player = Factory.create(:player)
@@ -458,8 +453,7 @@ describe PlanetsController do
       @params = {'id' => @planet.id}
     end
 
-    @required_params = %w{id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id}
 
     it "should fail if trying to access not yours planet" do
       planet = Factory.create(:planet)
@@ -492,9 +486,16 @@ describe PlanetsController do
       @params = {'id' => @planet.id}
     end
     
-    @required_params = %w{id}
-    it_behaves_like "with param options"
-    
+    it_behaves_like "with param options", %w{id}
+
+    it "should fail if it's apocalypse" do
+      player.galaxy.stub(:apocalypse_started?).and_return(true)
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
     it "should fail if planet does not belong to npc" do
       @planet.player = Factory.create(:player)
       @planet.save!

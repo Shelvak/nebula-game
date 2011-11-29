@@ -35,7 +35,7 @@ describe Building::ConstructorTest do
 
   describe "#as_json" do
     it_behaves_like "as json", Factory.create(:b_constructor_test), nil,
-                    %w{construction_queue_entries build_in_2nd_flank}, []
+      %w{construction_queue_entries build_in_2nd_flank build_hidden}, []
   end
 
   describe "#construction_queue_entries" do
@@ -722,7 +722,7 @@ describe Building::ConstructorTest do
 
   describe "#before_finishing_constructable" do
     describe "when #build_in_2nd_flank is true" do
-      it "should set set constructable flank to 1 if it is a Unit" do
+      it "should set constructable flank to 1 if it is a Unit" do
         unit = Factory.create(:unit, opts_upgrading + {:flank => 0})
         model = Factory.create(:b_constructor_test, opts_working + {
           :constructable => unit, :build_in_2nd_flank => true
@@ -737,6 +737,27 @@ describe Building::ConstructorTest do
         model = Factory.create(:b_constructor_test, opts_working + {
           :constructable => building, :planet => building.planet, :x => 10,
           :build_in_2nd_flank => true
+        })
+        model.send(:before_finishing_constructable, building)
+      end
+    end
+
+    describe "when #build_hidden is true" do
+      it "should set hidden to true if it is a Unit" do
+        unit = Factory.create(:unit, opts_upgrading + {:hidden => false})
+        model = Factory.create(:b_constructor_test, opts_working + {
+          :constructable => unit, :build_hidden => true
+        })
+        lambda do
+          model.send(:before_finishing_constructable, unit)
+        end.should change(unit, :hidden?).to(true)
+      end
+
+      it "should not fail if it's a building" do
+        building = Factory.create(:building, opts_upgrading)
+        model = Factory.create(:b_constructor_test, opts_working + {
+          :constructable => building, :planet => building.planet, :x => 10,
+          :build_hidden => true
         })
         model.send(:before_finishing_constructable, building)
       end

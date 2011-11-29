@@ -1,12 +1,11 @@
 package controllers.units
 {
    import components.map.space.SquadronsController;
-   
-   import controllers.GlobalFlags;
+
    import controllers.Messenger;
-   
+
    import globalevents.GlobalEvent;
-   
+
    import models.ModelLocator;
    import models.ModelsCollection;
    import models.Owner;
@@ -24,21 +23,20 @@ package controllers.units
    import models.unit.MCUnitScreen;
    import models.unit.Unit;
    import models.unit.UnitKind;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.logging.ILogger;
    import mx.logging.Log;
    import mx.utils.ObjectUtil;
-   
+
    import utils.DateUtil;
    import utils.Objects;
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
-   
-   
+
    /**
     * Works with <code>MSquadron</code> objects and <code>ModelLocator.squadrons</code> list.
     */
@@ -58,7 +56,6 @@ package controllers.units
       
       
       private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
-      private var GF:GlobalFlags = GlobalFlags.getInstance();
       private var ML:ModelLocator = ModelLocator.getInstance();
       private var SQUADS:SquadronsList = ML.squadrons;
       private var ROUTES:ModelsCollection = ML.routes;
@@ -433,7 +430,6 @@ package controllers.units
             SQUADS.addItem(squad);
             if (squad.owner == Owner.PLAYER && ORDERS_CTRL.issuingOrders) {
                ORDERS_CTRL.orderComplete();
-               GF.lockApplication = false;
                Messenger.show(Localizer.string("Movement", "message.orderComplete"), Messenger.MEDIUM);
             }
          }
@@ -443,7 +439,6 @@ package controllers.units
             createRoute(route, owner);
             if (owner == Owner.PLAYER && ORDERS_CTRL.issuingOrders) {
                ORDERS_CTRL.orderComplete();
-               GF.lockApplication = false;
             }
          }
          

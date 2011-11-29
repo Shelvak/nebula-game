@@ -7,7 +7,7 @@ package controllers.dailybonus.actions
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
+   import utils.ApplicationLocker;
    import controllers.dailybonus.DailyBonusCommand;
    
    import models.Reward;
@@ -54,8 +54,7 @@ package controllers.dailybonus.actions
          };
          popUp.confirmButtonClickHandler = function(button: Button):void
          {
-            GlobalFlags.getInstance().lockApplication = true;
-            new DailyBonusCommand(DailyBonusCommand.CLAIM, 
+            new DailyBonusCommand(DailyBonusCommand.CLAIM,
                {'planetId': MSSObject(cont.planetSelector.selectedItem).id}
             ).dispatch();
          };

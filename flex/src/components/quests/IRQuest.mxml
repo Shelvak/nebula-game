@@ -165,50 +165,28 @@
    <fx:Binding source="Quest(data).title" destination="title"/>
    <fx:Script>
       <![CDATA[
-      import utils.assets.ImagePreloader;
-      import utils.UrlNavigate;
-
-      import models.resource.Resource;
-
-      import utils.StringUtil;
-
-      import spark.events.IndexChangeEvent;
-
-      import utils.MathUtil;
-
-      import globalevents.GlobalEvent;
-
-      import controllers.Messenger;
-
-      import globalevents.GQuestEvent;
-
       import com.developmentarc.core.utils.EventBroker;
 
-      import utils.assets.AssetNames;
-
-      import controllers.GlobalFlags;
-
-      import utils.locale.Localizer;
-
-      import components.gameobjects.planet.IRPlayerPlanet;
-      import components.unit.IRUnitBuildingEntrySmall;
-
+      import controllers.Messenger;
       import controllers.quests.QuestsCommand;
 
-      import models.solarsystem.MSSObject;
-      import models.planet.MPlanet;
+      import globalevents.GQuestEvent;
+      import globalevents.GlobalEvent;
+
       import models.ModelLocator;
       import models.quest.Quest;
       import models.quest.events.QuestEvent;
+      import models.resource.Resource;
       import models.resource.ResourceType;
+      import models.solarsystem.MSSObject;
 
-      import mx.collections.ArrayCollection;
-      import mx.events.FlexEvent;
+      import spark.events.IndexChangeEvent;
 
-
-      private static function get GF(): GlobalFlags {
-         return GlobalFlags.getInstance();
-      }
+      import utils.StringUtil;
+      import utils.UrlNavigate;
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
 
       private static function get ML(): ModelLocator {
          return ModelLocator.getInstance();
@@ -218,8 +196,7 @@
          return ImagePreloader.getInstance().getImage(name);
       }
 
-      private function getString(property: String,
-                                 parameters: Array = null): String {
+      private function getString(property: String, parameters: Array = null): String {
          return Localizer.string("Quests", property, parameters);
       }
 
@@ -261,20 +238,19 @@
       [Bindable]
       private var completed: Boolean;
 
-      protected override function dataCommit(oldValue: Object,
-                                             newValue: Object): void {
+      protected override function dataCommit(oldValue: Object, newValue: Object): void {
          var quest: Quest;
          if (oldValue != null) {
             quest = Quest(oldValue);
             quest.removeEventListener(QuestEvent.STATUS_CHANGE,
-                                      quest_statusChange);
+                    quest_statusChange);
             quest.removeEventListener(QuestEvent.REFRESH_REQUESTED,
-                                      refreshQuest);
+                    refreshQuest);
          }
          if (newValue != null) {
             quest = Quest(newValue);
             quest.addEventListener(QuestEvent.STATUS_CHANGE,
-                                   quest_statusChange);
+                    quest_statusChange);
             quest.addEventListener(QuestEvent.REFRESH_REQUESTED, refreshQuest);
             refreshTitle();
          }
@@ -286,7 +262,7 @@
          if (quest) {
             title = quest.title;
             progress = getString('label.progress',
-                                 [quest.completed, quest.objectives.length]);
+                    [quest.completed, quest.objectives.length]);
             completed = (quest.status == Quest.STATUS_COMPLETED);
             ML.quests.applyCurrentFilter();
          }
@@ -329,20 +305,19 @@
       }
 
       private function btnClaim_clickHandler(event: MouseEvent): void {
-         GF.lockApplication = true;
          EventBroker.subscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
          new QuestsCommand(
-            QuestsCommand.CLAIM_REWARDS,
-            {"planetId": MSSObject(planetSelector.selectedItem).id,
-             "id": quest.id}
+                 QuestsCommand.CLAIM_REWARDS,
+                 {"planetId": MSSObject(planetSelector.selectedItem).id,
+                    "id": quest.id}
          ).dispatch();
       }
 
       private function approveClaim(event: GQuestEvent): void {
          Messenger.show(
-            getString('message.rewardClaimed',
-                      [MSSObject(planetSelector.selectedItem).name]),
-            Messenger.MEDIUM
+                 getString('message.rewardClaimed',
+                         [MSSObject(planetSelector.selectedItem).name]),
+                 Messenger.MEDIUM
          );
          EventBroker.unsubscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
          refreshNotFitting();

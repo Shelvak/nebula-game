@@ -1,17 +1,13 @@
 package controllers.technologies.actions
 {
-	
-	import controllers.CommunicationAction;
-	import controllers.CommunicationCommand;
-	import controllers.GlobalFlags;
-	
-	import models.factories.TechnologyFactory;
-	import models.technology.Technology;
-	
-	import utils.remote.rmo.ClientRMO;
-	
-	
-	/**
+
+   import controllers.CommunicationAction;
+   import controllers.CommunicationCommand;
+
+   import models.factories.TechnologyFactory;
+   import models.technology.Technology;
+
+   /**
 	 * Used for updating technology
 	 */
 	public class UpdateAction extends CommunicationAction
@@ -26,16 +22,5 @@ package controllers.technologies.actions
          technology.upgradePart.startUpgrade();
          temp.cleanup();
 		}
-      
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      public override function result(rmo:ClientRMO):void
-      {
-         GlobalFlags.getInstance().lockApplication = false;
-      }
 	}
 }

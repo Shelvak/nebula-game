@@ -92,8 +92,7 @@ describe UnitsController do
       }
     end
 
-    @required_params = %w{type count constructor_id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{type count constructor_id}
 
     it "should not reply" do
       invoke @action, @params
@@ -121,12 +120,29 @@ describe UnitsController do
       @params = {'updates' => @updates}
     end
 
-    @required_params = %w{updates}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{updates}
 
-    it "should update flanks" do
+    it "should call Unit.update_combat_attributes" do
       Unit.should_receive(:update_combat_attributes).with(
         player.id, @updates
+      )
+      invoke @action, @params
+    end
+  end
+
+  describe "units|set_hidden" do
+    before(:each) do
+      @action = "units|set_hidden"
+      @params = {
+        'planet_id' => 5598, 'unit_ids' => [12, 13, 14], 'value' => true
+      }
+    end
+
+    it_behaves_like "with param options", %w{planet_id unit_ids value}
+
+    it "should call Unit.mass_set_hidden" do
+      Unit.should_receive(:mass_set_hidden).with(
+        player.id, @params['planet_id'], @params['unit_ids'], @params['value']
       )
       invoke @action, @params
     end
@@ -159,7 +175,8 @@ describe UnitsController do
         }
       end
 
-      @required_params = %w{planet_id target_id unit_ids}
+      it_should_behave_like "with param options",
+                            %w{planet_id target_id unit_ids}
 
       it "should raise RecordNotFound if it's not that player planet" do
         @planet.player = Factory.create(:player)
@@ -250,8 +267,7 @@ describe UnitsController do
         @method = :push
       end
       
-      @required_params = %w{notification_id}
-      it_behaves_like "with param options"
+      it_behaves_like "with param options", %w{notification_id}
 
       it "should respond with notification id" do
         should_respond_with :notification_id => @notification_id
@@ -280,8 +296,7 @@ describe UnitsController do
       }
     end
 
-    @required_params = %w{unit_ids source target}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{unit_ids source target}
     it_behaves_like "checking visibility"
 
     it "should invoke UnitMover" do
@@ -332,8 +347,7 @@ describe UnitsController do
       }
     end
 
-    @required_params = %w{unit_ids source target speed_modifier}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{unit_ids source target speed_modifier}
     it_behaves_like "checking visibility"
 
     it "should invoke UnitMover" do
@@ -379,8 +393,7 @@ describe UnitsController do
       @method = :push
     end
 
-    @required_params = %w{route unit_ids route_hops}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{route unit_ids route_hops}
     it_behaves_like "only push"
   end
 
@@ -398,8 +411,7 @@ describe UnitsController do
       @method = :push
     end
 
-    @required_params = %w{units route_hops jumps_at}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{units route_hops jumps_at}
     it_behaves_like "only push"
 
     it "should respond with units with perspective" do
@@ -439,8 +451,7 @@ describe UnitsController do
         'x' => 0, 'y' => 0}
     end
 
-    @required_params = %w{planet_id unit_id x y}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{planet_id unit_id x y}
 
     it "should not fail if unit is in another unit in same planet" do
       @unit.location = Factory.create(:unit, :location => @planet)
@@ -527,8 +538,7 @@ describe UnitsController do
         'transporter_id' => @transporter.id}
     end
 
-    @required_params = %w{unit_ids transporter_id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{unit_ids transporter_id}
     
     it_should_behave_like "checking all planet owner variations",
         {"you" => false, "no one" => false, "enemy" => false, "ally" => false,
@@ -588,8 +598,7 @@ describe UnitsController do
         'transporter_id' => @transporter.id}
     end
 
-    @required_params = %w{unit_ids transporter_id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{unit_ids transporter_id}
 
     it_should_behave_like "checking all planet owner variations",
         {"you" => false, "no one" => false, "enemy" => false, "ally" => false,
@@ -689,8 +698,7 @@ describe UnitsController do
         'energy' => 10, 'zetium' => 10}
     end
 
-    @required_params = %w{transporter_id metal energy zetium}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{transporter_id metal energy zetium}
 
     describe "loading" do
       it_should_behave_like "checking all planet owner variations",
@@ -759,8 +767,7 @@ describe UnitsController do
       @params = {'unit_id' => @transporter.id}
     end
 
-    @required_params = %w{unit_id}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{unit_id}
 
     it "should work if transporter belongs to ally" do
       player.alliance = Factory.create(:alliance)
@@ -860,8 +867,7 @@ describe UnitsController do
       @params = {'planet_id' => @planet.id, 'unit_ids' => @units.map(&:id)}
     end
 
-    @required_params = %w{planet_id unit_ids}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{planet_id unit_ids}
 
     it "should fail if planet does not belong to player" do
       @planet.player = Factory.create(:player)

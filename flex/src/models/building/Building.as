@@ -561,6 +561,9 @@ package models.building
       
       [Optional]
       public var buildIn2ndFlank: Boolean = false;
+
+      [Optional]
+      public var buildHidden: Boolean = false;
       
       /**
        * 

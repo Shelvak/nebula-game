@@ -94,8 +94,7 @@ describe NotificationsController do
       @params = {'ids' => [@notification.id]}
     end
 
-    @required_params = %w{ids}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{ids}
 
     it "should mark notifications as read" do
       invoke @action, @params
@@ -119,8 +118,7 @@ describe NotificationsController do
       @params = {'id' => @notification.id, 'mark' => true}
     end
 
-    @required_params = %w{id mark}
-    it_behaves_like "with param options"
+    it_behaves_like "with param options", %w{id mark}
 
     [
       ['starred', :should, true],

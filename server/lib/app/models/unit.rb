@@ -9,13 +9,15 @@ class Unit < ActiveRecord::Base
   include Parts::InLocation
   include Parts::Object
   include Parts::ArmyPoints
+  include FlagShihTzu
 
   composed_of :location, :class_name => 'LocationPoint',
       :mapping => LocationPoint.attributes_mapping_for(:location),
       :converter => LocationPoint::CONVERTER
   
   scope :combat, proc { 
-    where("level > 0 AND `type` NOT IN (?)", non_combat_types)
+    where("level > 0 AND `type` NOT IN (?) AND #{not_hidden_condition}",
+          non_combat_types)
   }
   
   # Regexp used to match building guns in config.
@@ -36,12 +38,18 @@ class Unit < ActiveRecord::Base
   belongs_to :player
   belongs_to :route
 
+  has_flags(
+    1 => :hidden,
+    :check_for_column => false
+  )
+
   # Attributes that are shown to owner.
   OWNER_ATTRIBUTES = %w{xp}
   OWNER_TRANSPORTER_ATTRIBUTES = %w{stored metal energy zetium}
 
   def as_json(options=nil)
-    additional = {:location => location.as_json, :hp => hp}
+    additional = {:location => location.as_json, :hp => hp,
+                  :hidden => hidden}
 
     if options
       if options[:perspective]
@@ -66,8 +74,8 @@ class Unit < ActiveRecord::Base
     
     attributes.except(
       *(
-        %w{location_id location_type location_x
-        location_y hp_remainder pause_remainder hp_percentage galaxy_id} +
+        %w{location_id location_type location_x location_y flags
+        hp_remainder pause_remainder hp_percentage galaxy_id} +
         OWNER_ATTRIBUTES + OWNER_TRANSPORTER_ATTRIBUTES
       )
     ).symbolize_keys.merge(additional).as_json
@@ -264,8 +272,7 @@ class Unit < ActiveRecord::Base
     
     def update_combat_attributes(player_id, updates)
       transaction do
-        updates.each do |unit_id, attributes|
-          flank, stance = attributes
+        updates.each do |unit_id, (flank, stance)|
           raise ArgumentError.new(
             "flank #{flank} is invalid (too large)!"
           ) unless flank_valid?(flank)
@@ -273,12 +280,31 @@ class Unit < ActiveRecord::Base
             "stance #{stance} is invalid!"
           ) unless stance_valid?(stance)
 
-          update_all(
-            ["flank=?, stance=?", flank, stance],
-            ["id=? AND player_id=?", unit_id, player_id]
+          where(:id => unit_id, :player_id => player_id).update_all(
+            "flank=#{flank.to_i}, stance=#{stance.to_i}"
           )
         end
       end
+    end
+
+    # Massively set hidden flag for player units in player planet.
+    def mass_set_hidden(player_id, planet_id, unit_ids, value)
+      raise GameLogicError.new(
+        "Cannot set hidden flag when not in your planet!"
+      ) unless SsObject::Planet.
+        where(:id => planet_id, :player_id => player_id).exists?
+
+      updated = Unit.where(
+        :player_id => player_id,
+        :location_type => Location::SS_OBJECT,
+        :location_id => planet_id,
+        :id => unit_ids
+      ).update_all Unit.set_flag_sql(:hidden, value)
+
+      raise GameLogicError.new("Not all requested units updated! Requested: #{
+        unit_ids.size}, updated: #{updated}") if unit_ids.size > updated
+
+      updated
     end
 
     # Return distinct player ids which have completed units for given
@@ -289,8 +315,7 @@ class Unit < ActiveRecord::Base
         # Do not compact here, because NPC units are also distinct player id
         # values.
         query = where(location.location_attrs).where("level > 0")
-        query = query.where("type NOT IN (?)", non_combat_types) \
-          if exclude_non_combat
+        query = query.combat if exclude_non_combat
 
         query.select("DISTINCT(player_id)").c_select_values.
           map { |id| id.nil? ? nil : id.to_i }
@@ -358,13 +383,9 @@ class Unit < ActiveRecord::Base
         end
     end
 
-    # Updates all units matching by _conditions_ to given +LocationPoint+.
-    def update_location_all(location, conditions=nil)
-      update_all(
-        ["location_id=?, location_type=?, location_x=?, location_y=?",
-          location.id, location.type, location.x, location.y],
-        conditions
-      )
+    # Generates sql for setting location to given +LocationPoint+.
+    def update_location_sql(location)
+      sanitize_sql_hash_for_assignment(location.location_attrs)
     end
 
     # Deletes units. Also removes them from Route#cached_units if

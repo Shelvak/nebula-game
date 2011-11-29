@@ -48,40 +48,38 @@ module Parts
     end
 
     def validate_position_check_ore
-      validate_position_check_block(Tile::ORE,
-        Tile::BLOCK_SIZES[Tile::ORE])
+      validate_position_check_block(
+        Tile::ORE, Tile::BLOCK_SIZES[Tile::ORE], true
+      )
     end
 
     def validate_position_check_geothermal
-      validate_position_check_block(Tile::GEOTHERMAL,
-        Tile::BLOCK_SIZES[Tile::GEOTHERMAL])
+      validate_position_check_block(
+        Tile::GEOTHERMAL, Tile::BLOCK_SIZES[Tile::GEOTHERMAL], true
+      )
     end
 
     def validate_position_check_zetium
-      validate_position_check_block(Tile::ZETIUM,
-        Tile::BLOCK_SIZES[Tile::ZETIUM])
+      validate_position_check_block(
+        Tile::ZETIUM, Tile::BLOCK_SIZES[Tile::ZETIUM], true
+      )
     end
 
     def validate_position_check_folliage(kind, dimensions)
       validate_position_check_block(kind, dimensions)
     end
 
-    def validate_position_check_block(tile, dimensions)
+    def validate_position_check_block(tile, dimensions, border=false)
       width, height = dimensions
 
-      if Tile.count(:conditions => [
-            "planet_id=? AND
-              x BETWEEN ? AND ? AND
-              y BETWEEN ? AND ? AND
-              kind=?",
-            planet_id,
-            x - width + 1, x_end,
-            y - height + 1, y_end,
-            tile
-          ]) > 0
+      if Tile.where(:planet_id => planet_id, :kind => tile).
+          where("x BETWEEN ? AND ?",
+            x - width + 1 + (border ? -1 : 0), x_end + (border ? 1 : 0)).
+          where("y BETWEEN ? AND ?",
+            y - height + 1 + (border ? -1 : 0), y_end + (border ? 1 : 0)).
+          count > 0
         errors.add(:base,
-          "Building cannot be built on block (tile: #{
-            Tile::MAPPING[tile]})!")
+          "Building cannot be built on block (tile: #{Tile::MAPPING[tile]})!")
       end
     end
   end

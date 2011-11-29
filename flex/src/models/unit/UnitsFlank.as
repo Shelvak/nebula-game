@@ -217,5 +217,16 @@ package models.unit
          US.transformedUnits.enableAutoUpdate();
          US.dispatchFormationChangeEvent();
       }
+
+      public function setHidden(hidden: Boolean): void
+      {
+         US.transformedUnits.disableAutoUpdate();
+         for each (var unit: MCUnit in selection)
+         {
+            unit.hidden = hidden;
+         }
+         US.transformedUnits.enableAutoUpdate();
+         US.dispatchFormationChangeEvent();
+      }
    }
 }

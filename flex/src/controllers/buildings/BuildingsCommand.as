@@ -23,6 +23,7 @@ package controllers.buildings
       public static const ACCELERATE_CONSTRUCTOR: String = "buildings|accelerate_constructor";
       public static const ACCELERATE_UPGRADE: String = "buildings|accelerate_upgrade";
       public static const SET_BUILD_IN_2ND_FLANK: String = "buildings|set_build_in_2nd_flank";
+      public static const SET_BUILD_HIDDEN: String = "buildings|set_build_hidden";
       
       
       /**

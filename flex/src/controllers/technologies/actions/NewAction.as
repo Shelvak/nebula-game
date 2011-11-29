@@ -10,15 +10,13 @@ package controllers.technologies.actions
 #   speed_up: Boolean, should we speed up the research?
    #
    */
+
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
-   
+
    import models.factories.TechnologyFactory;
    import models.technology.Technology;
-   
-   import utils.remote.rmo.ClientRMO;
-   
+
    /**
     * Used for researching new technology (from level 0)
     */
@@ -32,17 +30,6 @@ package controllers.technologies.actions
          technology.copyProperties(temp);
          technology.upgradePart.startUpgrade();
          temp.cleanup();
-      }
-      
-      public override function result(rmo:ClientRMO):void
-      {
-         GlobalFlags.getInstance().lockApplication = false;
-      }
-      
-      public override function cancel(rmo:ClientRMO) : void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }

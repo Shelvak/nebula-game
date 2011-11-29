@@ -81,7 +81,7 @@ describe Parts::Transportation do
     before(:each) do
       @transporter = Factory.create(:u_with_storage)
       @loadable = Factory.create(:u_loadable_test,
-        :location => @transporter.location)
+        :location => @transporter.location, :hidden => true)
     end
 
     it "should raise error if given blank array" do
@@ -134,6 +134,12 @@ describe Parts::Transportation do
       @loadable.location.object.should == @transporter
     end
 
+    it "should unset hidden on units" do
+      @transporter.load([@loadable])
+      @loadable.reload
+      @loadable.should_not be_hidden
+    end
+
     it "should fire changed on transporter & loaded units" do
       should_fire_event([@transporter, @loadable], EventBroker::CHANGED,
           EventBroker::REASON_TRANSPORTATION) do
@@ -164,6 +170,20 @@ describe Parts::Transportation do
       end.should raise_error(GameLogicError)
     end
 
+    it "should raise error if units are not in transporter" do
+      @loadable.location = @planet
+      lambda do
+        @transporter.unload([@loadable], @planet)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should raise error if units are hidden" do
+      @loadable.hidden = true
+      lambda do
+        @transporter.unload([@loadable], @planet)
+      end.should raise_error(GameLogicError)
+    end
+
     it "should decrease used storage counter" do
       lambda do
         @transporter.unload([@loadable], @planet)
@@ -179,6 +199,13 @@ describe Parts::Transportation do
       @transporter.unload([@loadable], @planet)
       @loadable.reload
       @loadable.location.should == @planet.location_point
+    end
+
+    it "should unset hidden on units" do
+      # #hidden? should really never be true here, but test clearing it anyway.
+      @transporter.unload([@loadable], @planet)
+      @loadable.reload
+      @loadable.should_not be_hidden
     end
 
     it "should fire changed on unloaded units" do

@@ -77,6 +77,16 @@ module Parts::Transportation
         "You did not give any units to unload!"
       ) if units.blank?
 
+      transporter_location = location_point
+      units.each do |unit|
+        raise GameLogicError.new(
+          "Unit #{unit} must be in #{self}!"
+        ) unless unit.location == transporter_location
+        raise GameLogicError.new(
+          "Unit #{unit} must not be hidden!"
+        ) if unit.hidden?
+      end
+
       transaction do
         self.stored -= self.class.calculate_volume(units)
         save!
@@ -112,7 +122,6 @@ module Parts::Transportation
       end
 
       will_unload = false
-      will_load = false
       resources = [[:metal, metal], [:energy, energy], [:zetium, zetium]]
 
       resources.each do |resource, value|
@@ -129,7 +138,6 @@ module Parts::Transportation
           raise GameLogicError.new(
             "Trying to load more #{resource} (#{value}) than we have (#{
               current})!") if value > current
-          will_load = true
         end
       end
 
@@ -166,9 +174,15 @@ module Parts::Transportation
     end
 
     def update_transporter_units(units, location)
-      Unit.update_location_all(location, {:id => units.map(&:id)})
-      # Update unit location before dispatching it to client
-      units.each { |unit| unit.location = location }
+      Unit.where(:id => units.map(&:id)).update_all \
+        "#{Unit.set_flag_sql(:hidden, false)}, #{
+          Unit.update_location_sql(location)}"
+      
+      # Update unit locations and hidden flags before dispatching it to client.
+      units.each do |unit|
+        unit.location = location
+        unit.hidden = false
+      end
 
       EventBroker.fire([self] + units, EventBroker::CHANGED,
         EventBroker::REASON_TRANSPORTATION)

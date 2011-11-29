@@ -505,7 +505,11 @@
     <deployInProgress value="Deploy in progress" />
 
     <timeToFinish value="Time to finish" />
-    
+
+    <warning.apocalypseClaimForbidden>
+      <p>You can't claim new planets after apocalypse has started.</p>
+    </warning.apocalypseClaimForbidden>
+
     <warning.deployInAlliancePlanet>
       <p>After deployment this building will belong to the planet owner.</p>
     </warning.deployInAlliancePlanet>
@@ -3201,6 +3205,11 @@
     <alliance value="Alliance" />
     <points value="Total points" />
     <playersCount value="Players" />
+    <tooltip.deathDay>
+      <p>Player lost his last planet at day {0} after apocalypse has started</p>
+    </tooltip.deathDay>
+    <label.deathDay value="0 (day {0})"/>
+    <planetsCount.long value="Planets count" />
     <planetsCount value="RPC" />
     <bgPlanetsCount value="SPC" />
     <tooltip.planetsCount value="Regular planets count" />
@@ -3972,6 +3981,18 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
+    <title.hide value="Hide units"/>
+    <tooltip.hidden>
+      <p>Hide</p>
+      <p>Units won't participate in combats while they are hidden.</p>
+      <p>Units will unhide if they are loaded into transporters or leaves planet</p>
+      <p>If you loose your planet, new owner of the planet will get all hidden
+        units.</p>
+    </tooltip.hidden>
+    <tooltip.notHidden>
+      <p>Don't hide</p>
+      <p>Not hidden units will participate in all combats.</p>
+    </tooltip.notHidden>
     <!-- params:
          0 - minimal count of this type of units in raid
          1 - unit count that might add to the minimal count
@@ -3988,19 +4009,29 @@
       <p>This ship has {0} units of storage available.</p>
     </tooltip.freeStorage>
     
-    <tooltip.buildInFlankCommon>
+    <tooltip.buildSwitchCommon>
       <p>Click to change.</p>
-    </tooltip.buildInFlankCommon>
+    </tooltip.buildSwitchCommon>
     
     <tooltip.buildInFlank1>
       <p>Your units will appear in first flank.</p>
-      <p>[reference:tooltip.buildInFlankCommon]</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildInFlank1>
     
     <tooltip.buildInFlank2>
       <p>Your units will appear in second flank.</p>
-      <p>[reference:tooltip.buildInFlankCommon]</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildInFlank2>
+
+    <tooltip.buildHidden>
+      <p>Your units will be built hidden.</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
+    </tooltip.buildHidden>
+
+    <tooltip.buildNotHidden>
+      <p>Your units will be built not hidden.</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
+    </tooltip.buildNotHidden>
     
     <tooltip.populationCommon>
       <p>{0} population left</p>

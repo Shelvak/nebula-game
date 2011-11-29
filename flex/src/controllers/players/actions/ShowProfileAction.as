@@ -2,16 +2,11 @@ package controllers.players.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.GlobalFlags;
    import controllers.ui.NavigationController;
-   
+
    import models.factories.AchievementFactory;
    import models.factories.RatingsPlayerFactory;
-   
-   import utils.remote.rmo.ClientRMO;
-   
-   
-   
+
    /**
     * Requests player profile information from server
     */
@@ -22,12 +17,6 @@ package controllers.players.actions
          NavigationController.getInstance().openPlayerScreen(
             RatingsPlayerFactory.fromObject(cmd.parameters.player),
             AchievementFactory.fromObjects(cmd.parameters.achievements));
-      }
-      
-      public override function cancel(rmo:ClientRMO):void
-      {
-         super.cancel(rmo);
-         GlobalFlags.getInstance().lockApplication = false;
       }
    }
 }
