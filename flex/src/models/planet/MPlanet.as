@@ -37,6 +37,7 @@ package models.planet
    import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
+   import mx.controls.Alert;
 
    import utils.Objects;
    import utils.StringUtil;
@@ -110,15 +111,13 @@ package models.planet
          apocalypseMoment: MTimeEventFixedMoment
       ): Boolean
       {
-         var apocalypseStart: Date = apocalypseMoment == null
-            ? null : apocalypseMoment.occuresAt;
-
          var data: Object;
          var arg: int;
-         if (apocalypseStart != null)
+         if (apocalypseMoment != null
+                 && apocalypseMoment.hasOccured)
          {
             data = Config.getRaidingApocalypseUnits();
-            arg =  Math.round((nextRaidAt.time - apocalypseStart.time)/
+            arg =  1 + Math.round((nextRaidAt.time - apocalypseMoment.occuresAt.time)/
                     (1000 * 60 * 60 * 24));
          }
          else if (battleGround)
@@ -147,16 +146,15 @@ package models.planet
          raidArg: int, nextRaidAt: Date, battleGround: Boolean,
          apocalypseMoment: MTimeEventFixedMoment): ArrayCollection
       {
-         var apocalypseStart: Date = apocalypseMoment == null
-            ? null : apocalypseMoment.occuresAt;
-
          var data: Object;
          var arg: int;
-         if (apocalypseStart != null)
+         if (apocalypseMoment != null
+                 && apocalypseMoment.hasOccured)
          {
             data = Config.getRaidingApocalypseUnits();
-            arg =  Math.round(
-               (nextRaidAt.time - apocalypseStart.time) / (1000 * 60 * 60 * 24)
+            arg =  1 + Math.round(
+               (nextRaidAt.time - apocalypseMoment.occuresAt.time) /
+                       (1000 * 60 * 60 * 24)
             );
             // for info in raid bar for next raids
             arg += raidArg;

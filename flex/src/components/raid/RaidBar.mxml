@@ -80,8 +80,8 @@
             
             <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRRaidUnitEntry"
                dataProvider="{MPlanet.getRaiders(
-                  ML.latestGalaxy.apocalypseActive &amp;&amp;
-                     ML.latestGalaxy.apocalypseStartEvent.hasOccured
+                  (ML.latestGalaxy.apocalypseActive &amp;&amp;
+                     ML.latestGalaxy.apocalypseStartEvent.hasOccured)
                         ? 0 : ML.latestPlanet.ssObject.raidArg,
                   ML.latestPlanet.ssObject.nextRaidAt,
                   (
@@ -118,12 +118,12 @@
                <s:Label fontSize="12" fontWeight="bold" 
                   text="{Localizer.string(
                      'Units',
-                     ML.latestGalaxy.apocalypseActive &amp;&amp;
-                        ML.latestGalaxy.apocalypseStartEvent.hasOccured
+                     (ML.latestGalaxy.apocalypseActive &amp;&amp;
+                        ML.latestGalaxy.apocalypseStartEvent.hasOccured)
                            ? 'label.afterDays' : 'label.withPlanets',
                      [
-                        ML.latestGalaxy.apocalypseActive &amp;&amp;
-                           ML.latestGalaxy.apocalypseStartEvent.hasOccured
+                       (ML.latestGalaxy.apocalypseActive &amp;&amp;
+                           ML.latestGalaxy.apocalypseStartEvent.hasOccured)
                               ? getDays(
                                  ML.latestPlanet.ssObject.nextRaidAt,
                                  ML.latestGalaxy.apocalypseStartEvent.occuresAt
@@ -137,8 +137,8 @@
             <s:DataGroup left="7" top="40" bottom="30"
                itemRenderer="components.unit.IRRaidUnitEntry"
                dataProvider="{MPlanet.getRaiders(
-                  ML.latestGalaxy.apocalypseActive &amp;&amp;
-                     ML.latestGalaxy.apocalypseStartEvent.hasOccured
+                  (ML.latestGalaxy.apocalypseActive &amp;&amp;
+                     ML.latestGalaxy.apocalypseStartEvent.hasOccured)
                         ? addPlanet
                         : ML.latestPlanet.ssObject.raidArg + addPlanet,
                   ML.latestPlanet.ssObject.nextRaidAt,
