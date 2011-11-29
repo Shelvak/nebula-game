@@ -28,7 +28,7 @@ package models.movement
       public const arrivalEvent: MTimeEventFixedMoment =
                             new MTimeEventFixedMoment();
 
-      [Required(alias="jumpsAt")]
+      [Optional(alias="jumpsAt")]
       /**
        * Time when squadron will jump to another map. This will be set only for last
        * hop in the current are (map).

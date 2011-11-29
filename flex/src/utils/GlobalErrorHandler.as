@@ -25,7 +25,7 @@ import com.adobe.ac.logging.GlobalExceptionHandlerAction;
 
       public function handle(error:Object) : void {
          if (error is Error && !crashed) {
-            var err: Error = Error(error);
+            var err: Error = error as Error;
             logger.fatal(
                "Crash on error:"
                   + "\n      id: {0}"
@@ -35,7 +35,7 @@ import com.adobe.ac.logging.GlobalExceptionHandlerAction;
                err.errorID,
                err.name,
                err.message,
-               Objects.getClassName(error)
+               Objects.getClassName(err)
             );
             crashed = true;
             var ML:ModelLocator = ModelLocator.getInstance();
@@ -43,7 +43,7 @@ import com.adobe.ac.logging.GlobalExceptionHandlerAction;
                '\n\n';
             message += "Exception data:\n";
             message += 'Error id: ' + err.errorID + '\n';
-            message += 'Stacktrace:\n' + err.getStackTrace() + '\n\n';
+            message += 'Stack trace:\n' + err.getStackTrace() + '\n\n';
             message += ML.debugLog;
 //            message += "Global unit list:\n" + ML.units + "\n\n";
 //            message += "Global squads list:\n" + ML.squadrons + "\n\n";

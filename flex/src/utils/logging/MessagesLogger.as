@@ -33,7 +33,7 @@ package utils.logging
          Objects.paramNotNull("logMessage", logMessage);
          Objects.paramNotNull("params", params);
          if (shouldBeLogged(message)) {
-            log.info(logMessage, params);
+            log.info.apply(null, [logMessage].concat(params));
          }
       }
       
