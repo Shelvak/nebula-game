@@ -181,22 +181,19 @@ package controllers.galaxies.actions
          SQUADS_CTRL.createSquadronsForUnits(units, galaxy);
          SQUADS_CTRL.addHopsToSquadrons(hops);
          SQUADS_CTRL.attachJumpsAtToHostileSquads(galaxy.squadrons, jumpsAtHash);
-         
-         var cachedSS:MSolarSystem = ML.latestSSMap != null
-                                        ? ML.latestSSMap.solarSystem
-                                        : null;
-         var ssInGalaxy:MSolarSystem = cachedSS != null
-                                          ? galaxy.getSSById(cachedSS.id)
-                                          : null;
-         var cachedPlanet:MPlanet = ML.latestPlanet;
-         if (cachedPlanet != null &&
-             galaxy.getSSById(cachedPlanet.solarSystemId) == null) {
-            ML.latestPlanet = null;
-         }
-         if (ssInGalaxy == null)
-            ML.latestSSMap = null;
-         
+
          ML.latestGalaxy = galaxy;
+         var cachedSS: MSolarSystem = ML.latestSSMap != null
+                                         ? ML.latestSSMap.solarSystem
+                                         : null;
+         if (cachedSS == null
+                || cachedSS.isGlobalBattleground
+                      && !galaxy.hasWormholes
+                || !cachedSS.isGlobalBattleground
+                      && galaxy.getSSById(cachedSS.id) == null) {
+            ML.latestPlanet = null;
+            ML.latestSSMap = null;
+         }
       }
       
       private function reloadPlanetMap() : void {

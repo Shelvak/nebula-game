@@ -16,13 +16,15 @@ package controllers.timedupdate
       }
 
       public function update(): void {
-         for each (var ss: MSolarSystem in ML.latestGalaxy.solarSystems) {
-            // remove shield protection if it has expired
-            if (ss.isShielded && ss.shieldEndsAt.time <= DateUtil.now) {
-               ss.shieldOwnerId = 0;
-               ss.shieldEndsAt = null;
+         if (solarSystemsInGalaxyAccessible) {
+            for each (var ss: MSolarSystem in ML.latestGalaxy.solarSystems) {
+               // remove shield protection if it has expired
+               if (ss.isShielded && ss.shieldEndsAt.time <= DateUtil.now) {
+                  ss.shieldOwnerId = 0;
+                  ss.shieldEndsAt = null;
+               }
+               ss.update();
             }
-            ss.update();
          }
       }
 
