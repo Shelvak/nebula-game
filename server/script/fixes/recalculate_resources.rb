@@ -5,10 +5,16 @@
 STDOUT.sync = true
 require File.dirname(__FILE__) + '/../../lib/initializer.rb'
 
-SsObject::Planet.all.each do |planet|
-  $stdout.write("P")
-  
-  galaxy = planet.solar_system.galaxy
+total = SsObject::Planet.count
+
+index = 1
+puts
+
+SsObject::Planet.find_each do |planet|
+  $stdout.write("\rP #{planet.id} (#{index}/#{total})")
+
+  solar_system = planet.solar_system
+  galaxy = solar_system.galaxy
   CONFIG.with_set_scope(galaxy.ruleset) do
     [:metal, :energy, :zetium].each do |resource|
       planet.send("#{resource}_generation_rate=", 0)
@@ -45,6 +51,7 @@ SsObject::Planet.all.each do |planet|
 
   planet.save!
   $stdout.write(".")
+  index += 1
 end
 
 puts
