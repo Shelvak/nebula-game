@@ -347,7 +347,7 @@ package tests.maps
                               arrivesAt: Date): MHop {
          var hop: MHop = new MHop();
          hop.index = index;
-         hop.arrivesAt = arrivesAt;
+         hop.arrivalEvent.occuresAt = arrivesAt;
          hop.location = getGalaxyLocation(x, y);
          return hop;
       }

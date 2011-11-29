@@ -1,18 +1,20 @@
 package utils
 {
-   import flash.errors.IllegalOperationError;
    import errors.AppError;
 
+   import flash.errors.IllegalOperationError;
    import flash.utils.Dictionary;
    import flash.utils.getDefinitionByName;
    import flash.utils.getQualifiedClassName;
-   
+
+   import interfaces.IAutoCreated;
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.utils.ObjectUtil;
-   
+
    import namespaces.client_internal;
-   
+
 
    /**
     * Has a bunch of methods for working with objects and classes. 
@@ -1093,14 +1095,9 @@ package utils
       private static function callAfterCreate(target:Object, data:Object) : void {
          paramNotNull("target", target);
          paramNotNull("data", data);
-         try {
-            var afterCreateCallback:Function = target["afterCreate"]; 
-            if (afterCreateCallback != null)
-               afterCreateCallback.call(null, data);
+         if (target is IAutoCreated) {
+            IAutoCreated(target).afterCreate(data);
          }
-         // ignore this error since afterCreate() method is optional and dynamic read of this method
-         // from the static class ends up with this error
-         catch (err:ReferenceError) {}
       }
    }
 }

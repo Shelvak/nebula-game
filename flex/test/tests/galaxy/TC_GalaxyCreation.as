@@ -77,6 +77,7 @@ package tests.galaxy
          showAction.createGalaxy(
             GALAXY_ID,
             BATTLEGROUND_ID,
+            null,
             [  // fow entries
                new MapArea(-5, 5, -5, 5)
             ],
@@ -240,6 +241,7 @@ package tests.galaxy
          showAction.createGalaxy(
             GALAXY_ID,
             BATTLEGROUND_ID,
+            null,
             new Array(),
             new ArrayCollection([makeSSMap(1, 0, 0).solarSystem]),
             new ArrayCollection(),
@@ -309,6 +311,7 @@ package tests.galaxy
          showAction.createGalaxy(
             GALAXY_ID,
             BATTLEGROUND_ID,
+            null,
             new Array(),
             new ArrayCollection([makeSSMap(1, 0, 0).solarSystem]),
             new ArrayCollection(),
@@ -345,6 +348,7 @@ package tests.galaxy
          showAction.createGalaxy(
             GALAXY_ID,
             BATTLEGROUND_ID,
+            null,
             new Array(),            // fow entries
             new ArrayCollection(),  // solar systems
             new ArrayCollection(),  // wreckages
@@ -424,7 +428,7 @@ package tests.galaxy
          hop.id = id;
          hop.routeId = routeId;
          hop.location = makeGalaxyLoc(x, y);
-         hop.arrivesAt = arrivesAt;
+         hop.arrivalEvent.occuresAt = arrivesAt;
          return hop;
       }
       

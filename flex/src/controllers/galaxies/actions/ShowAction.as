@@ -2,7 +2,6 @@ package controllers.galaxies.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import utils.ApplicationLocker;
    import controllers.planets.PlanetsCommand;
    import controllers.planets.actions.ShowActionParams;
    import controllers.solarsystems.SolarSystemsCommand;
@@ -20,7 +19,6 @@ package controllers.galaxies.actions
    import models.map.MapArea;
    import models.map.MapType;
    import models.movement.MHop;
-   import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
    import models.time.MTimeEventFixedMoment;
