@@ -37,6 +37,7 @@ package models.planet
    import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
+   import mx.controls.Alert;
 
    import utils.Objects;
    import utils.StringUtil;
@@ -112,10 +113,11 @@ package models.planet
       {
          var data: Object;
          var arg: int;
-         if (apocalypseMoment != null && apocalypseMoment.hasOccured)
+         if (apocalypseMoment != null
+                 && apocalypseMoment.hasOccured)
          {
             data = Config.getRaidingApocalypseUnits();
-            arg =  Math.round((nextRaidAt.time - apocalypseMoment.occuresAt.time)/
+            arg =  1 + Math.round((nextRaidAt.time - apocalypseMoment.occuresAt.time)/
                     (1000 * 60 * 60 * 24));
          }
          else if (battleGround)
@@ -146,10 +148,11 @@ package models.planet
       {
          var data: Object;
          var arg: int;
-         if (apocalypseMoment != null && apocalypseMoment.hasOccured)
+         if (apocalypseMoment != null
+                 && apocalypseMoment.hasOccured)
          {
             data = Config.getRaidingApocalypseUnits();
-            arg =  Math.round(
+            arg =  1 + Math.round(
                (nextRaidAt.time - apocalypseMoment.occuresAt.time) /
                        (1000 * 60 * 60 * 24)
             );
