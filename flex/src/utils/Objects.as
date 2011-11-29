@@ -11,6 +11,8 @@ package utils
 
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
+   import mx.logging.ILogger;
+   import mx.logging.Log;
    import mx.utils.ObjectUtil;
 
    import namespaces.client_internal;
@@ -21,6 +23,10 @@ package utils
     */
    public class Objects
    {
+      private static function get logger():ILogger {
+         return Log.getLogger("utils.Objects");
+      }
+
       /* ############# */
       /* ### CLASS ### */
       /* ############# */
@@ -719,10 +725,12 @@ package utils
          
          function addItem(data:Object) : void {
             var item:Object = createImpl(itemType, null, data);
-            if (collIsList)
+            if (collIsList) {
                IList(collectionInstance).addItem(item);
-            else
+            }
+            else {
                collectionInstance.push(item);
+            }
          }
          if (dataIsList) {
             var list:IList = IList(data);
@@ -776,7 +784,7 @@ package utils
       }
       private static function createImpl(type:Class, object:Object, data:Object, itemType:Class = null) : Object {
          paramNotNull("type", type);
-         
+
          if (data == null)
             return null;
          
@@ -865,9 +873,20 @@ package utils
                   continue;
                }
                
-               if (propAlias == null)
+               if (propAlias == null) {
                   propAlias = propName;
-               var propValue:* = object[propName];
+               }
+               var propValue:* = undefined;
+               try {
+                  propValue = object[propName];
+               }
+               catch(err:Error) {
+                  logger.warn(
+                     "@createImpl(): Error '{0}' while reading property '{1}' "
+                        + "of instance of {2}. Assuming 'undefined' value.",
+                     err.message, propName, type
+                  );
+               }
                var propData:* = data[propAlias];
                
                if (TypeChecker.isPrimitiveClass(propClass)) {
