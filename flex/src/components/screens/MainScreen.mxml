@@ -68,8 +68,9 @@ bars and so on.
             visible="{
                ML.activeMapType == MapType.PLANET &amp;&amp;
                MPlanet.hasRaiders(
-                  ML.latestGalaxy.apocalypseActive
-                     ? 0 : ML.latestPlanet.ssObject.raidArg,
+                  ML.latestGalaxy.apocalypseActive &amp;&amp;
+                     ML.latestGalaxy.apocalypseStartEvent.hasOccured
+                        ? 0 : ML.latestPlanet.ssObject.raidArg,
                   ML.latestPlanet.ssObject.nextRaidAt,
                   (
                      ML.latestSSMap == null ||
