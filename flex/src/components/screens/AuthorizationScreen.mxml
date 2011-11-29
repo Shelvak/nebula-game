@@ -17,6 +17,5 @@
    <s:layout>
       <s:VerticalLayout gap="20" verticalAlign="middle" horizontalAlign="center"/>
    </s:layout>
-   <base:SpinnerContainer busy="{authManager.working}" timeoutEnabled="false"/> 
    <s:Label text="{authManager.statusText}"/>
 </s:Group>
