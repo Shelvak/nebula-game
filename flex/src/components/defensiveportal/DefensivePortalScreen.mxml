@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-         xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:screens="components.screens.*"
          xmlns:base="components.base.*"
          creationComplete="group1_creationCompleteHandler(event)"
          width="100%" height="100%">
    <fx:Script>
       <![CDATA[
-      import components.skins.InfoButtonSkin;
-
-      import utils.ApplicationLocker;
-
       import controllers.objects.ObjectClass;
       import controllers.players.PlayersCommand;
       import controllers.screens.MainAreaScreens;
       import controllers.ui.NavigationController;
 
       import models.ModelLocator;
-      import models.player.Player;
       import models.unit.UnitBuildingEntry;
 
       import mx.collections.ArrayCollection;
@@ -33,11 +27,14 @@
       import utils.assets.ImagePreloader;
       import utils.locale.Localizer;
 
+
       private static function buildUnitsFromArray(source: Array): ArrayCollection {
          var newList: Array = [];
          for each (var unit: Array in source) {
-            newList.push(new UnitBuildingEntry(ModelUtil.getModelType(
-                    ObjectClass.UNIT, unit[0]), unit[1]));
+            newList.push(new UnitBuildingEntry(
+               ModelUtil.getModelType(ObjectClass.UNIT, unit[0]),
+               unit[1]
+            ));
          }
          var tempList: ArrayCollection = new ArrayCollection(newList);
          tempList.sort = new Sort();
@@ -71,17 +68,20 @@
                var finished: Boolean = false;
                var tempList: ListCollectionView = buildUnitsFromArray(source);
                while (!finished) {
-                  var i: int = Math.round((Math.random() * (tempList.length - 1)));
+                  var i: int = Math.round(
+                     (Math.random() * (tempList.length - 1))
+                  );
                   var possibleUnit: UnitBuildingEntry =
-                          UnitBuildingEntry(tempList.getItemAt(i));
+                         UnitBuildingEntry(tempList.getItemAt(i));
                   if (possibleUnit.singleUnitVolume <= volumeLeft) {
                      if (tempObject[possibleUnit.type] == null) {
                         tempObject[possibleUnit.type] =
-                                new UnitBuildingEntry(possibleUnit.type, 1);
+                           new UnitBuildingEntry(possibleUnit.type, 1);
                         notEmpty = true;
                      }
                      else {
-                        UnitBuildingEntry(tempObject[possibleUnit.type]).count++;
+                        UnitBuildingEntry(tempObject[possibleUnit.type])
+                           .count++;
                      }
                      if (possibleUnit.count > 1) {
                         possibleUnit.count--;
@@ -93,9 +93,9 @@
                   }
                   else {
                      tempList.filterFunction =
-                             function (item: UnitBuildingEntry): Boolean {
-                                return item.singleUnitVolume <= volumeLeft;
-                             };
+                        function (item: UnitBuildingEntry): Boolean {
+                           return item.singleUnitVolume <= volumeLeft;
+                        };
                      tempList.refresh();
                   }
                   finished = (tempList.length == 0);
@@ -144,10 +144,6 @@
          findPossibleUnits();
       }
 
-      public function get allUnits(): Object {
-         return data;
-      }
-
       [Bindable]
       private var playerUnits: ArrayCollection = new ArrayCollection();
       [Bindable]
@@ -161,27 +157,29 @@
 
       protected function group1_creationCompleteHandler(event: FlexEvent): void {
          NavigationController.getInstance().creationCompleteFunction(
-                 MainAreaScreens.DEFENSIVE_PORTAL, this);
+            MainAreaScreens.DEFENSIVE_PORTAL, this);
       }
 
 
       private function getImage(name: String): BitmapData {
-         return ImagePreloader.getInstance()
-                 .getImage(AssetNames.DEFENSIVE_PORTAL_IMAGES_FOLDER + "table_" + name);
+         return ImagePreloader.getInstance().getImage(
+            AssetNames.DEFENSIVE_PORTAL_IMAGES_FOLDER + "table_" + name
+         );
       }
 
 
-      private function getString(property: String, params: Array = null): String {
+      private function getString(property: String,
+                                 params: Array = null): String {
          return Localizer.string("Units", "defensivePool." + property, params);
       }
 
       protected function checkbox1_clickHandler(event: MouseEvent): void {
-         new PlayersCommand(PlayersCommand.EDIT,
-                 {
-                    'portalWithoutAllies': !ML.player.portalWithoutAllies
-                 }
+         new PlayersCommand(
+            PlayersCommand.EDIT,
+            {'portalWithoutAllies': !ML.player.portalWithoutAllies}
          ).dispatch();
-         NavigationController.getInstance().showDefensivePortal(ML.latestPlanet.id);
+         NavigationController.getInstance()
+            .showDefensivePortal(ML.latestPlanet.id);
       }
 
       [Bindable]
