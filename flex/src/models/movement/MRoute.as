@@ -214,14 +214,14 @@ package models.movement
 
       public override function afterCreate(data: Object): void {
          super.afterCreate(data);
-         if (sourceLocation.isSSObject) {
+         if (sourceLocation != null && sourceLocation.isSSObject) {
             sourceLocation.setDefaultCoordinates();
          }
-         if (currentLocation.isSSObject) {
+         if (currentLocation != null && currentLocation.isSSObject) {
             currentLocation.setDefaultCoordinates();
          }
-         if (targetLocation.isSSObject) {
-            currentLocation.setDefaultCoordinates();
+         if (targetLocation != null && targetLocation.isSSObject) {
+            targetLocation.setDefaultCoordinates();
          }
       }
    }
