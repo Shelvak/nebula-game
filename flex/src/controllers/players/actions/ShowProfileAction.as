@@ -16,7 +16,8 @@ package controllers.players.actions
       {
          NavigationController.getInstance().openPlayerScreen(
             RatingsPlayerFactory.fromObject(cmd.parameters.player),
-            AchievementFactory.fromObjects(cmd.parameters.achievements));
+            AchievementFactory.fromObjects(cmd.parameters.achievements)
+         );
       }
    }
 }

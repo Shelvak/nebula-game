@@ -521,15 +521,15 @@ package models.movement
          if (isHostile && jumpsAtEvent != null) {
             jumpsAtEvent.update();
          }
-         MasterUpdateTrigger.resetChangeFlags(hops);
+         MasterUpdateTrigger.update(hops);
+         dispatchUpdateEvent();
       }
 
       public function resetChangeFlags(): void {
          if (isHostile && jumpsAtEvent != null) {
             jumpsAtEvent.resetChangeFlags();
          }
-         MasterUpdateTrigger.update(hops);
-         dispatchUpdateEvent();
+         MasterUpdateTrigger.resetChangeFlags(hops);
       }
       
       
