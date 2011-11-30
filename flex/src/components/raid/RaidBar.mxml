@@ -6,8 +6,12 @@
                     width="{barGroup.width}">
    <fx:Script>
       <![CDATA[
+      import config.Config;
+      import config.Config;
+
       import models.planet.MPlanet;
       import models.resource.ResourceType;
+      import models.solarsystem.MSSObject;
       import models.time.MTimeEventFixedMoment;
 
       import mx.events.EffectEvent;
@@ -20,6 +24,7 @@
 
       protected function shorten_effectEndHandler(event:EffectEvent):void {
          infoPanel.visible = false;
+         addPlanet = 0;
       }
 
 
@@ -28,18 +33,51 @@
       }
 
       [Bindable]
-      private var addPlanet:int = 1;
-
-      protected function shorten_effectStartHandler(event:EffectEvent):void {
-         if (nextGroup.x < background.width) {
-            switchTo.play([nextGroup], true);
-            addPlanet = 1;
-         }
-      }
+      private var addPlanet:int = 0;
 
       private function getDays(toDate:Date, fromDate: Date): int {
          return Math.round((toDate.time - fromDate.time) /
                  (1000 * 60 * 60 * 24));
+      }
+
+      private function getMaxArg(ssObject: MSSObject): int
+      {
+         return (ssObject.inBattleground || ssObject.inMiniBattleground)
+                    ? Config.getRaidingBattlegroundMaxArg()
+                    : Config.getRaidingPlanetsMaxArg();
+      }
+
+      private function getPlanetCountLabel(apocalypseStarted: Boolean,
+                                           ssObject: MSSObject, raidArg: int,
+                                           raidArrives: Date,
+                                           apocalypseMoment: MTimeEventFixedMoment,
+                                           planetCountDiff: int): String
+      {
+         if (raidArrives == null)
+         {
+            return '';
+         }
+         if (planetCountDiff == 0)
+         {
+            return DateUtil.formatShortDateTime(raidArrives);
+         }
+         return Localizer.string('Units', apocalypseStarted
+                 ? 'label.afterDays'
+                 : (
+                     getMaxArg(ssObject) > (
+                        ML.latestPlanet.ssObject.raidArg + planetCountDiff
+                     )
+                        ? 'label.withPlanets'
+                        : 'label.withPlanetsOrMore'
+                   ),
+                 [
+                    (
+                        apocalypseStarted
+                           ? getDays(raidArrives, apocalypseMoment.occuresAt)
+                           : raidArg
+                    ) + planetCountDiff
+                 ]
+         );
       }
       ]]>
    </fx:Script>
@@ -48,10 +86,8 @@
       <s:Resize id="widen" heightTo="{background.height + 8}"
                 duration="{DURATION_TIME}" effectStart="widen_effectStartHandler(event)"/>
       
-      <s:Resize id="shorten" heightTo="0" effectStart="shorten_effectStartHandler(event)"
+      <s:Resize id="shorten" heightTo="0"
                 duration="{DURATION_TIME}" effectEnd="shorten_effectEndHandler(event)"/>
-      
-      <s:Move id="switchTo" xFrom="{background.width}" xTo="0" duration="{DURATION_TIME}" target="{nextGroup}"/>
       
       <s:Fade id="fadeIn" duration="{DURATION_TIME}"/>
       <s:Fade id="fadeOut" duration="{DURATION_TIME}"/>
@@ -61,73 +97,42 @@
                visible="false" clipAndEnableScrolling="true"
                rollOver="{shorten.stop(); fadeOut.stop(); widen.play([infoPanel]); fadeIn.play([infoPanel])}"
                rollOut="{widen.stop(); fadeIn.stop();  shorten.play([infoPanel]); fadeOut.play([infoPanel])}">
-         <!-- content rect background -->
          <s:Group width="100%" height="100%">
-            <s:BitmapImage id="background" source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'raiders_bar')}"/>
-            <s:Label left="48" top="7" fontSize="12" fontWeight="bold" color="#f4c300" 
-                     text="{Localizer.string('Units', 'label.incomingRaiders')}"
-                     right="32" textAlign="center"/>
-            <s:Button skinClass="components.skins.RightButtonSkin"
-                      right="12" top="2"
-                      click="switchTo.play([nextGroup])"/>
-            
-            <s:Group top="25" left="10" right="10">
-               <s:Label fontSize="12" fontWeight="bold" 
-                        text="{ML.latestPlanet.ssObject.nextRaidAt == null?''
-                        :DateUtil.formatShortDateTime(ML.latestPlanet.ssObject.nextRaidAt)}" 
-                        left="0" right="0" textAlign="center"/>
-            </s:Group>
-            
-            <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRRaidUnitEntry"
-               dataProvider="{MPlanet.getRaiders(
-                  ML.latestGalaxy.apocalypseHasStarted
-                        ? 0 : ML.latestPlanet.ssObject.raidArg,
-                  ML.latestPlanet.ssObject.nextRaidAt,
-                  (
-                     ML.latestPlanet.ssObject.inBattleground
-                     || ML.latestPlanet.ssObject.inMiniBattleground
-                  ),
-                  ML.latestGalaxy.apocalypseStartEvent
-               )}">
-               <s:layout>
-                  <s:TileLayout requestedColumnCount="4"/>
-               </s:layout>
-            </s:DataGroup>
-         </s:Group>
-         <s:Group id="nextGroup" width="100%" height="100%" x="{background.width}">
-            <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'raiders_bar')}"/>   
+            <s:BitmapImage source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'raiders_bar')}"
+                    id="background"/>
                <s:Button skinClass="components.skins.LeftButtonSkin"
                          left="28" top="2"
-                         click="
-                         if (addPlanet > 1)
-                         {
-                         addPlanet--;
-                         }
-                         else
-                         {
-                         switchTo.play([nextGroup], true)
-                         }"/>
+                         click="addPlanet--"
+                         visible="{MPlanet.hasRaiders(
+                           ML.latestGalaxy.apocalypseHasStarted
+                              ? addPlanet - 1
+                              : ML.latestPlanet.ssObject.raidArg + addPlanet - 1,
+                           ML.latestPlanet.ssObject.nextRaidAt,
+                           (
+                              ML.latestPlanet.ssObject.inBattleground
+                              || ML.latestPlanet.ssObject.inMiniBattleground
+                           ),
+                           ML.latestGalaxy.apocalypseStartEvent
+                        )}"/>
                <s:Label top="7" left="48" right="32" textAlign="center" fontSize="12" fontWeight="bold" color="#f4c300" 
                         text="{Localizer.string('Units', 'label.incomingRaiders')}"/>
                <s:Button skinClass="components.skins.RightButtonSkin"
                          right="12" top="2"
-                         click="addPlanet++"/>
+                         click="addPlanet++"
+                         visible="{ML.latestGalaxy.apocalypseHasStarted
+                         || (((ML.latestPlanet.inBattleground
+                             || ML.latestPlanet.inMiniBattleground)
+                                ? Config.getRaidingBattlegroundMaxArg()
+                                : Config.getRaidingPlanetsMaxArg())
+                             > (ML.latestPlanet.ssObject.raidArg + addPlanet))}"/>
             
             <s:Group top="25" left="20" right="30">
                <s:Label fontSize="12" fontWeight="bold" 
-                  text="{Localizer.string(
-                     'Units',
-                     ML.latestGalaxy.apocalypseHasStarted
-                           ? 'label.afterDays' : 'label.withPlanets',
-                     [
-                       ML.latestGalaxy.apocalypseHasStarted
-                           ? getDays(
-                              ML.latestPlanet.ssObject.nextRaidAt,
-                              ML.latestGalaxy.apocalypseStartEvent.occuresAt
-                           ) + addPlanet
-                           : ML.latestPlanet.ssObject.raidArg + addPlanet
-                     ]
-                  )}"
+                  text="{getPlanetCountLabel(ML.latestGalaxy.apocalypseHasStarted,
+                     ML.latestPlanet.ssObject, ML.latestPlanet.ssObject.raidArg,
+                     ML.latestPlanet.ssObject.nextRaidAt,
+                     ML.latestGalaxy.apocalypseStartEvent,
+                     addPlanet)}"
                   left="0" right="0" textAlign="center"/>
             </s:Group>
             
