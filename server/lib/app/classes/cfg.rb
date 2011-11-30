@@ -132,6 +132,13 @@ class Cfg; class << self
     config
   end
 
+  def raiding_max_arg(key)
+    max_arg = CONFIG["raiding.raiders.#{key}.max_arg"]
+    raise ArgumentError.new("Unknown raiding max_arg key #{key.inspect}!") \
+      if max_arg.nil?
+    max_arg
+  end
+
   ### galaxy.yml ###
 
   def player_initial_population; CONFIG['galaxy.player.population']; end

@@ -321,14 +321,20 @@ sheet = read_txt(File.dirname(__FILE__) + '/odsimport/raiders.txt')
 row = 0
 begin
   until sheet[row].nil?
-    title = sheet[row][0]
-    if ! title.nil? && title.match(/\D/)
+    line = sheet[row][0]
+    if ! line.nil? && line.match(/\D/)
+      title = line.match(/part\[(.+?)\]/)[1]
+      max_arg = (match = line.match(/max\[(\d+)\]/)).nil? ? nil : match[1].to_i
+
       key = case title
-      when "Planet raiders" then "raiders.planet"
-      when "Pulsar raiders" then "raiders.battleground"
-      when "Apocalypse raiders" then "raiders.apocalypse"
-      else raise "Unknown raiders title: #{title}"
+        when "planet raiders" then "raiders.planet"
+        when "pulsar raiders" then "raiders.battleground"
+        when "apocalypse raiders" then "raiders.apocalypse"
+        else raise "Unknown raiders title: #{title}"
       end
+
+      sections["raiding"] ||= {}
+      sections["raiding"]["#{key}.max_arg"] = max_arg unless max_arg.nil?
 
       row += 2
       sheet[row].each_with_index do |type, col|
@@ -342,7 +348,6 @@ begin
           chance_initial = sheet[row + 4][col]
           chance_arg_mult = sheet[row + 4][col + 1]
 
-          sections["raiding"] ||= {}
           sections["raiding"][key] ||= {}
           sections["raiding"][key][type] = [
             "(arg - #{arg_reductor}) ** #{from_range_pow_coef} * #{
