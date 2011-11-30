@@ -81,9 +81,9 @@
         visible="{MPlanet.hasRaiders(
           (ML.latestGalaxy.apocalypseActive &amp;&amp;
             ML.latestGalaxy.apocalypseStartEvent.hasOccured)
-               ? 0 : ML.latestPlanet.ssObject.raidArg,
-          ML.latestPlanet.ssObject.nextRaidAt,
-          (ML.latestSSMap == null || ML.latestSSMap.solarSystem.isBattleground),
+               ? 0 : MSSObject(data).raidArg,
+          MSSObject(data).nextRaidAt,
+          MSSObject(data).inBattleground || MSSObject(data).inMiniBattleground,
           ML.latestGalaxy.apocalypseStartEvent
         )}"/>
    </s:Group>

@@ -1141,7 +1141,7 @@ describe SsObject::Planet do
         energy_rate_boost_ends_at energy_storage_boost_ends_at
         zetium_rate_boost_ends_at zetium_storage_boost_ends_at
         last_resources_update
-        next_raid_at
+        next_raid_at raid_arg
         },
         %w{energy_diminish_registered}
     end
