@@ -10,10 +10,6 @@
    <fx:Script>
       <![CDATA[
       import components.alliance.AllianceScreenM;
-      import components.skins.LargePanelSkin;
-      import components.skins.LinkButtonSkin;
-
-      import utils.ApplicationLocker;
 
       import controllers.players.PlayersCommand;
       import controllers.screens.MainAreaScreens;
@@ -30,6 +26,7 @@
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
       import utils.locale.Localizer;
+
 
       private static const CONTENT_WIDTH: int = 600;
 
