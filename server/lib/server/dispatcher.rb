@@ -114,7 +114,7 @@ class Dispatcher
     end
   end
 
-  # Receive message from _server_. Confirm receiving. Pass message to all
+  # Receive message from _io_. Confirm receiving. Pass message to all
   # controllers.
   def receive(io, message)
     debug "Received message from [#{io}]: #{message.inspect}"
@@ -126,17 +126,17 @@ class Dispatcher
     ]
 
     unless message['client_id'].nil?
-      failed = false
+      error = nil
 
       # Catch game logic errors and say to client that this action failed.
       begin
         process_message(message)
       rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid,
           ActiveRecord::RecordNotDestroyed, GameError => e
-        failed = true
+        error = e.message
         LOGGER.info "Action failed: #{e.message}"
       end
-      confirm_receive_by_io(io, message, failed)
+      confirm_receive_by_io(io, message, error)
     else
       info "Dropping message without client id."
     end
@@ -356,10 +356,11 @@ class Dispatcher
 
   # Confirm client of _message_ receiving. Set _failed_ to inform client
   # that his last action has failed.
-  def confirm_receive_by_io(io, message, failed=false)
+  def confirm_receive_by_io(io, message, error=nil)
     confirmation = {'reply_to' => message[MESSAGE_ID_KEY]}
-    if failed
+    if error
       confirmation['failed'] = true
+      confirmation['error'] = error
       info "Sending failure message."
     else
       info "Sending confirmation message."
