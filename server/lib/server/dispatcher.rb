@@ -133,7 +133,7 @@ class Dispatcher
         process_message(message)
       rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid,
           ActiveRecord::RecordNotDestroyed, GameError => e
-        error = e.message
+        error = e
         LOGGER.info "Action failed: #{e.message}"
       end
       confirm_receive_by_io(io, message, error)
@@ -360,7 +360,10 @@ class Dispatcher
     confirmation = {'reply_to' => message[MESSAGE_ID_KEY]}
     if error
       confirmation['failed'] = true
-      confirmation['error'] = error
+      confirmation['error'] = {
+        'type' => error.class.to_s,
+        'message' => error.message
+      }
       info "Sending failure message."
     else
       info "Sending confirmation message."
