@@ -80,13 +80,12 @@
             
             <s:DataGroup left="7" top="40" bottom="30" itemRenderer="components.unit.IRRaidUnitEntry"
                dataProvider="{MPlanet.getRaiders(
-                  (ML.latestGalaxy.apocalypseActive &amp;&amp;
-                     ML.latestGalaxy.apocalypseStartEvent.hasOccured)
+                  ML.latestGalaxy.apocalypseHasStarted
                         ? 0 : ML.latestPlanet.ssObject.raidArg,
                   ML.latestPlanet.ssObject.nextRaidAt,
                   (
-                     ML.latestSSMap == null ||
-                     ML.latestSSMap.solarSystem.isBattleground
+                     ML.latestPlanet.ssObject.inBattleground
+                     || ML.latestPlanet.ssObject.inMiniBattleground
                   ),
                   ML.latestGalaxy.apocalypseStartEvent
                )}">
@@ -118,17 +117,15 @@
                <s:Label fontSize="12" fontWeight="bold" 
                   text="{Localizer.string(
                      'Units',
-                     (ML.latestGalaxy.apocalypseActive &amp;&amp;
-                        ML.latestGalaxy.apocalypseStartEvent.hasOccured)
+                     ML.latestGalaxy.apocalypseHasStarted
                            ? 'label.afterDays' : 'label.withPlanets',
                      [
-                       (ML.latestGalaxy.apocalypseActive &amp;&amp;
-                           ML.latestGalaxy.apocalypseStartEvent.hasOccured)
-                              ? getDays(
-                                 ML.latestPlanet.ssObject.nextRaidAt,
-                                 ML.latestGalaxy.apocalypseStartEvent.occuresAt
-                              ) + addPlanet
-                              : ML.latestPlanet.ssObject.raidArg + addPlanet
+                       ML.latestGalaxy.apocalypseHasStarted
+                           ? getDays(
+                              ML.latestPlanet.ssObject.nextRaidAt,
+                              ML.latestGalaxy.apocalypseStartEvent.occuresAt
+                           ) + addPlanet
+                           : ML.latestPlanet.ssObject.raidArg + addPlanet
                      ]
                   )}"
                   left="0" right="0" textAlign="center"/>
@@ -137,14 +134,13 @@
             <s:DataGroup left="7" top="40" bottom="30"
                itemRenderer="components.unit.IRRaidUnitEntry"
                dataProvider="{MPlanet.getRaiders(
-                  (ML.latestGalaxy.apocalypseActive &amp;&amp;
-                     ML.latestGalaxy.apocalypseStartEvent.hasOccured)
+                  ML.latestGalaxy.apocalypseHasStarted
                         ? addPlanet
                         : ML.latestPlanet.ssObject.raidArg + addPlanet,
                   ML.latestPlanet.ssObject.nextRaidAt,
                   (
-                     ML.latestSSMap == null ||
-                     ML.latestSSMap.solarSystem.isBattleground
+                     ML.latestPlanet.ssObject.inBattleground
+                     || ML.latestPlanet.ssObject.inMiniBattleground
                   ),
                   ML.latestGalaxy.apocalypseStartEvent
                )}">

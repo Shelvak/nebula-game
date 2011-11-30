@@ -79,8 +79,7 @@
       <base:ImageAndLabel type="{ResourceType.RAID_TIME}"
         textToDisplay="{MSSObject(data).raidTime}"
         visible="{MPlanet.hasRaiders(
-          (ML.latestGalaxy.apocalypseActive &amp;&amp;
-            ML.latestGalaxy.apocalypseStartEvent.hasOccured)
+          (ML.latestGalaxy.apocalypseHasStarted)
                ? 0 : MSSObject(data).raidArg,
           MSSObject(data).nextRaidAt,
           MSSObject(data).inBattleground || MSSObject(data).inMiniBattleground,
