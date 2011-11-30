@@ -136,15 +136,37 @@ describe RaidSpawner do
       RaidSpawner.new(apocalyptic_planet).generate_arg.should == 0
     end
 
-    it "should return player bg planet count if it's a bg planet" do
-      RaidSpawner.new(battleground_planet).generate_arg.
-        should == battleground_planet.player.bg_planets_count
+    describe "if it's a battleground planet" do
+      it "should return player bg planet count" do
+        RaidSpawner.new(battleground_planet).generate_arg.
+          should == battleground_planet.player.bg_planets_count
+      end
+
+      it "should return limit max arg" do
+        max = Cfg.raiding_max_arg(RaidSpawner::KEY_BATTLEGROUND)
+        battleground_planet.player.bg_planets_count = max + 1
+        RaidSpawner.new(battleground_planet).generate_arg.
+          should == max
+      end
     end
 
-    it "should return player planet count if it's a regular planet" do
-      planet = Factory.build(:planet,
-        :player => Factory.create(:player, :planets_count => 5))
-      RaidSpawner.new(planet).generate_arg.should == planet.player.planets_count
+    describe "if it's a regular planet" do
+      let(:planet) do
+        Factory.build(
+          :planet, :player => Factory.create(:player, :planets_count => 5)
+        )
+      end
+
+      it "should return player planet count " do
+        RaidSpawner.new(planet).generate_arg.
+          should == planet.player.planets_count
+      end
+
+      it "should return limit max arg" do
+        max = Cfg.raiding_max_arg(RaidSpawner::KEY_PLANET)
+        planet.player.planets_count = max + 1
+        RaidSpawner.new(planet).generate_arg.should == max
+      end
     end
   end
 
