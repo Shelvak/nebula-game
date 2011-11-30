@@ -77,7 +77,7 @@ package models.movement
       public var arrivalEvent:MTimeEventFixedMoment = null;
       
       private var _jumpsAtEvent:MTimeEventFixedMoment = null;
-      [Optional(alias="firstHop")]
+      [Optional(alias="jumpsAt")]
       [Bindable(event="jumpsAtChange")]
       /**
        * Time (local) when this squadron will do a jump to another map.
