@@ -111,15 +111,12 @@ package models.planet
          apocalypseMoment: MTimeEventFixedMoment
       ): Boolean
       {
-         var apocalypseStart: Date = apocalypseMoment == null
-            ? null : apocalypseMoment.occuresAt;
-
          var data: Object;
          var arg: int;
-         if (apocalypseStart != null)
+         if (apocalypseMoment != null && apocalypseMoment.hasOccured)
          {
             data = Config.getRaidingApocalypseUnits();
-            arg =  Math.round((nextRaidAt.time - apocalypseStart.time)/
+            arg =  Math.round((nextRaidAt.time - apocalypseMoment.occuresAt.time)/
                     (1000 * 60 * 60 * 24));
          }
          else if (battleGround)
@@ -148,16 +145,14 @@ package models.planet
          raidArg: int, nextRaidAt: Date, battleGround: Boolean,
          apocalypseMoment: MTimeEventFixedMoment): ArrayCollection
       {
-         var apocalypseStart: Date = apocalypseMoment == null
-            ? null : apocalypseMoment.occuresAt;
-
          var data: Object;
          var arg: int;
-         if (apocalypseStart != null)
+         if (apocalypseMoment != null && apocalypseMoment.hasOccured)
          {
             data = Config.getRaidingApocalypseUnits();
             arg =  Math.round(
-               (nextRaidAt.time - apocalypseStart.time) / (1000 * 60 * 60 * 24)
+               (nextRaidAt.time - apocalypseMoment.occuresAt.time) /
+                       (1000 * 60 * 60 * 24)
             );
             // for info in raid bar for next raids
             arg += raidArg;
