@@ -318,7 +318,8 @@
                            dataProvider="{model.alliance.invPlayers}"
                            itemRenderer="components.alliance.IRInvitableRatingsRow">
                            <s:layout>
-                              <s:VerticalLayout gap="0"/>
+                              <s:VerticalLayout gap="0"
+                                                useVirtualLayout="true" />
                            </s:layout>
                         </s:DataGroup>
                      </s:Group>

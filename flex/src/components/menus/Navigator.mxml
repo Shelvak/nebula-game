@@ -18,7 +18,6 @@ system and planet.
          </s:layout>
          <notifications:NotificationsButton id="btnNotifications" name="{MainAreaScreens.NOTIFICATIONS}"/>
          <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" minWidth="100" dataProvider="{ML.player.planets}"/>
-         <galaxy:ApocalypseIcon/>
          <base:AdvancedContainer height="100%">
             <base:layout>
                <s:HorizontalLayout gap="-9"/>
@@ -35,6 +34,7 @@ system and planet.
                                  visible="{ML.latestPlanet != null}"
                                  imageData="{ML.latestPlanet.ssObject.imageData}"
                                  label="{ML.latestPlanet.ssObject.name}"/>
+            <galaxy:ApocalypseIcon/>
          </base:AdvancedContainer>
       </s:Group>
       

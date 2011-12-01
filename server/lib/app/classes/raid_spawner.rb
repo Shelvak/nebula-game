@@ -43,8 +43,11 @@ class RaidSpawner
   # Returns raid argument that should be stored to database.
   def generate_arg
     return 0 if @planet.player_id.nil? || apocalypse?
-    return @planet.player.bg_planets_count if battleground?
-    @planet.player.planets_count
+
+    arg = battleground? \
+      ? @planet.player.bg_planets_count : @planet.player.planets_count
+    
+    [arg, Cfg.raiding_max_arg(key)].min
   end
 
   # Return array of built (but not saved) units.

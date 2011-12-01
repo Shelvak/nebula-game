@@ -474,7 +474,7 @@
                 toolTip="{Localizer.string(
                   'Units',
                   'tooltip.' + ( _facility.buildHidden
-                     ? 'buildHidden' : 'buildNotHidden')
+                     ? 'buildNotHidden' : 'buildHidden')
                 )}"/>
          <s:Group id="facilityGroup" left="{btnFlank.width}">
             <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'top_left')}"/>
