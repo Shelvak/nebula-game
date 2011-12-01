@@ -224,7 +224,7 @@ describe Dispatcher do
         @dispatcher.stub!(:assign_message_vars!)
         @dispatcher.stub!(:process_message).with(message).and_raise(ex)
         @dispatcher.should_receive(:confirm_receive_by_io).with(io,
-          message, true)
+          message, ex)
         @dispatcher.receive(io, message)
       end
     end
