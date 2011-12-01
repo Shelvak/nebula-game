@@ -335,7 +335,7 @@ package models
       
       /**
        * Call to refresh any collections in this model having filters dependent on some properties of
-       * this model. Is called automaticly in <code>afterCreateModel()</code> and <code>afterCopyProperties()</code>.
+       * this model. Is called automatically in <code>afterCreateModel()</code> and <code>afterCopyProperties()</code>.
        */
       public function refresh() : void
       {
@@ -448,7 +448,7 @@ package models
       /**
        * Invoke this to dispatch <code>BaseModelEvent.ID_CHANGE</code> event
        * (<code>PropertyChangeEvent</code> will be also dispatched). This event is dispatched
-       * autommaticly by <code>BaseModel</code> class.
+       * automatically by <code>BaseModel</code> class.
        */
       protected function dispatchIdChangeEvent() : void {
          dispatchModelEvent(BaseModelEvent.MODEL_ID_CHANGE);
