@@ -73,7 +73,7 @@
                  [
                     (
                         apocalypseStarted
-                           ? getDays(raidArrives, apocalypseMoment.occuresAt)
+                           ? 1 + getDays(raidArrives, apocalypseMoment.occuresAt)
                            : raidArg
                     ) + planetCountDiff
                  ]

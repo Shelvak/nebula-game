@@ -119,6 +119,8 @@ package models.planet
             data = Config.getRaidingApocalypseUnits();
             arg =  1 + Math.round((nextRaidAt.time - apocalypseMoment.occuresAt.time)/
                     (1000 * 60 * 60 * 24));
+            // for info in raid bar for next raids
+            arg += raidArg;
          }
          else if (battleGround)
          {
