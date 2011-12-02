@@ -28,19 +28,21 @@ package utils.remote.rmo
          }
          catch (err:JSONParseError)
          {
-            err.message = "Error while parsing JSON string:\n" + jsonString +
-                          "\nOriginal error message: " + err.message;
+            err.message = "Error while parsing JSON string:"
+                             + "\n" + jsonString
+                             + "\nOriginal error message: " + err.message;
             throw err;
          }
          var rmo: ServerRMO = new ServerRMO();
          
          if (data.hasOwnProperty("reply_to"))
          {
-            rmo.replyTo = data.reply_to;
+            rmo.replyTo = data["reply_to"];
          }
          if (data.hasOwnProperty("failed"))
          {
-            rmo.failed = data.failed;
+            rmo.failed = data["failed"];
+            rmo.error = data["error"];
          }
          else
          {
@@ -80,6 +82,13 @@ package utils.remote.rmo
        * @default false
        */
       public var failed:Boolean = false;
+
+
+      /**
+       * Only relevant for reply messages. This is not null and contains server
+       * error information if <code>failed == true</code>.
+       */
+      public var error:Object = null;
       
       
       /**

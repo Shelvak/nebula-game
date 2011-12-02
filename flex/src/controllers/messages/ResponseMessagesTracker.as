@@ -7,7 +7,9 @@ package controllers.messages
    import controllers.connection.ConnectionManager;
    
    import globalevents.GlobalEvent;
-   
+
+   import mx.utils.ObjectUtil;
+
    import spark.components.Button;
    
    import utils.SingletonFactory;
@@ -133,14 +135,23 @@ package controllers.messages
             {
                rmo.model.pending = false;
             }
-            msgLog.logMessage(
-               rmo.action, "Processing response message to {0}. Failed: {1}",
-               [rmo.id, sRMO.failed]
-            );
-            if (sRMO.failed)
+            if (sRMO.failed) {
+               msgLog.logMessage(
+                  rmo.action,
+                  "Processing response message to {0}. Success: false. "
+                     + "Server error: {1}",
+                  [rmo.id, ObjectUtil.toString(sRMO.error)]
+               );
                rmo.responder.cancel(rmo);
-            else
+            }
+            else {
+               msgLog.logMessage(
+                  rmo.action,
+                  "Processing response message to {0}. Success: true.",
+                  [rmo.id]
+               );
                rmo.responder.result(rmo);
+            }
             return rmo;
          }
          return null;

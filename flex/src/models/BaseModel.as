@@ -399,17 +399,12 @@ package models
       /* ########################### */
       
       
-      private function addSelfEventHandlers() : void
-      {
-         var addPropChangeHandler:Boolean = false;
-         for (var collectionProp:String in collectionsFilterProperties)
-         {
-            addPropChangeHandler = true;
+      private function addSelfEventHandlers(): void {
+         for (var collectionProp: String in collectionsFilterProperties) {
+            addEventListener(
+               PropertyChangeEvent.PROPERTY_CHANGE, this_propertyChangeHandler
+            );
             break;
-         }
-         if (addPropChangeHandler)
-         {
-            addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, this_propertyChangeHandler);
          }
       }
       
@@ -437,7 +432,7 @@ package models
       /**
        * Invoke this to dispatch <code>BaseModelEvent.PENDING_CHANGE</code> event.
        * (<code>PropertyChangeEvent</code> will be also dispatched) This event is dispatched
-       * autommaticly by <code>BaseModel</code> class.
+       * automatically by <code>BaseModel</code> class.
        */
       protected function dispatchPendingChangeEvent() : void
       {
