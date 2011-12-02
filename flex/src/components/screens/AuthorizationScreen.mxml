@@ -15,7 +15,9 @@
       ]]>
    </fx:Script>
    <s:layout>
-      <s:VerticalLayout gap="20" verticalAlign="middle" horizontalAlign="center"/>
+      <s:VerticalLayout paddingTop="60"
+                        verticalAlign="middle"
+                        horizontalAlign="center"/>
    </s:layout>
    <s:Label text="{authManager.statusText}"/>
 </s:Group>
