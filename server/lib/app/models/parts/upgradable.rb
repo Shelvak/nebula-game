@@ -122,9 +122,8 @@ module Parts
         metal = (metal_cost(level + 1) * percentage_left).floor
         energy = (energy_cost(level + 1) * percentage_left).floor
         zetium = (zetium_cost(level + 1) * percentage_left).floor
-        
-        SsObject::Planet.change_resources(planet_id,
-          metal, energy, zetium)
+
+        planet.increase(:metal => metal, :energy => energy, :zetium => zetium)
         
         self.upgrade_ends_at = nil
         transaction do
@@ -137,6 +136,7 @@ module Parts
             yield if block_given?
             save!
           end
+          planet.save!
         end
       end
 
@@ -331,8 +331,8 @@ module Parts
         energy_cost = self.energy_cost(level + 1)
         zetium_cost = self.zetium_cost(level + 1)
 
-        SsObject::Planet.change_resources(planet_id,
-          -metal_cost, -energy_cost, -zetium_cost)
+        planet.increase!(:metal => -metal_cost, :energy => -energy_cost,
+                         :zetium => -zetium_cost)
       end
 
       # Override me to implement logic for increasing player points based

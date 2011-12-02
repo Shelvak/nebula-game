@@ -165,15 +165,20 @@ class SsObject::Planet < SsObject
     end
   end
 
+  # Valid keys for #increase.
+  INCREASE_VALID_KEYS = Resources::TYPES.map do |resource|
+    ["", "_storage", "_generation_rate", "_usage_rate"].map do |type|
+      :"#{resource}#{type}"
+    end
+  end.flatten
+
   # Increase resource rates and storages.
   def increase(options)
     options.symbolize_keys!
+    options.assert_valid_keys(INCREASE_VALID_KEYS)
 
-    Resources::TYPES.each do |resource|
-      [:storage, :generation_rate, :usage_rate].each do |type|
-        name = "#{resource}_#{type}".to_sym
-        send("#{name}=", send(name) + (options[name] || 0))
-      end
+    INCREASE_VALID_KEYS.each do |key|
+      send("#{key}=", send(key) + (options[key] || 0))
     end
     
     # Reason is specified here because dispatcher event handler must
@@ -472,18 +477,6 @@ class SsObject::Planet < SsObject
       else
         raise CallbackManager::UnknownEvent.new(self, id, event)
       end
-    end
-
-    # Increases resources in the planet and fires EventBroker::CHANGED.
-    def change_resources(planet_id, metal, energy, zetium)
-      model = find(planet_id)
-      model.metal += metal
-      model.energy += energy
-      model.zetium += zetium
-      model.save!
-
-      EventBroker.fire(model, EventBroker::CHANGED,
-        EventBroker::REASON_OWNER_PROP_CHANGE)
     end
 
     # Checks if any of the given _locations_ is a planet. If so it

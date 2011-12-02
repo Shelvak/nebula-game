@@ -94,7 +94,7 @@ describe UnitsController do
 
     it_behaves_like "with param options", %w{type count constructor_id}
 
-    it "should not reply" do
+    it "should not have any reply" do
       invoke @action, @params
       @controller.response_params.should be_blank
     end

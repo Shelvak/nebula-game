@@ -13,7 +13,7 @@ package utils
    public final class ApplicationLocker extends EventDispatcher
    {
       /**
-       * @return allways the same instance of <code>GlobalFlags</code>
+       * @return always the same instance of <code>GlobalFlags</code>
        */
       public static function getInstance(): ApplicationLocker {
          return SingletonFactory.getSingletonInstance(ApplicationLocker);
@@ -34,9 +34,9 @@ package utils
          if (_lockCounter != value) {
             _lockCounter = value;
             Events.dispatchSimpleEvent(
-                    this,
-                    ApplicationLockerEvent,
-                    ApplicationLockerEvent.LOCK_CHANGE
+               this,
+               ApplicationLockerEvent,
+               ApplicationLockerEvent.LOCK_CHANGE
             );
          }
       }

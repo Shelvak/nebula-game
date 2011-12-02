@@ -112,8 +112,13 @@ class Unit < ActiveRecord::Base
     UnitLocation.new(id)
   end
 
-  def planet
-    location_type == Location::SS_OBJECT ? location : nil
+  def planet(reload=false)
+    if location_type == Location::SS_OBJECT
+      @_planet = nil if reload
+      @_planet ||= SsObject::Planet.find(planet_id)
+    else
+      nil
+    end
   end
   
   def planet_id

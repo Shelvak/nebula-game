@@ -46,7 +46,7 @@ package components.movement
       
       public function cleanup() : void {
          if (squadron != null) {
-            squadron = null
+            squadron = null;
             lstUnits.dataProvider = null;
             removeGlobalEventHandlers();
          }
@@ -84,7 +84,6 @@ package components.movement
       }
       
       private var f_squadronChanged:Boolean = true,
-         f_underMouseChanged:Boolean = true,
          f_squadronPendingChanged:Boolean = true;
       
       protected override function commitProperties() : void{
@@ -101,7 +100,7 @@ package components.movement
             lstUnits.dataProvider = _squadron != null ? _squadron.units : null;
             lstCachedUnits.dataProvider = _squadron != null 
                ? UnitFactory.buildCachedUnitsFromUnits(_squadron.units) : null;
-            visible = _squadron != null ? true : false;
+            visible = _squadron != null;
             showSourceLoc = _squadron != null && _squadron.isFriendly && _squadron.route != null;
             showDestLoc = showSourceLoc;
             updateUnitsOrdersButtonsVisibility();
@@ -296,7 +295,6 @@ package components.movement
             lblOwner.text = getString("label.owner");
          }
          else if (instance == btnOwner) {
-            addOwnerButtonEventHandlers(btnOwner);
             updateOwnerButton();
          }
          if (instance == btnOpenSourceLoc || instance == btnOpenDestLoc) {
@@ -329,10 +327,6 @@ package components.movement
          button.addEventListener(MouseEvent.CLICK, btnOpenDestLoc_clickHandler);
       }
       
-      private function addOwnerButtonEventHandlers(button:Button) : void {
-         button.addEventListener(MouseEvent.CLICK, btnOwner_clickHandler, false, 0, true);
-      }
-      
       private function unitsManagementButton_clickHandler(event:MouseEvent) : void {
          var unitIDs:Array = _squadron.units.toArray().map(
             function(unit:Unit, idx:int, array:Array) : int { return unit.id }
@@ -357,10 +351,6 @@ package components.movement
       
       private function btnOpenDestLoc_clickHandler(event:MouseEvent) : void {
          _squadron.route.targetLocation.navigateTo();
-      }
-      
-      private function btnOwner_clickHandler(event:MouseEvent) : void {
-         _squadron.player.show();
       }
       
       

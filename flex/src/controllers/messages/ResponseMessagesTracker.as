@@ -85,17 +85,25 @@ package controllers.messages
        * <code>responder</code> property of the given RMO is not set.
        * 
        * @param rmo Instance of <code>ClientRMO</code> that needs to wait for
-       * response from the server and get notified when that happens.  
-       */	   
-      public function addRMO(rmo:ClientRMO) : void
-      {
-         if (rmo.responder != null)
-         {
-            var record:PendingRMORecord = new PendingRMORecord(rmo);
+       * response from the server and get notified when that happens.
+       * <code>id</code> property will be modified if there already is another
+       * RMO waiting for a response from the server with the same id.
+       */
+      public function addRMO(rmo: ClientRMO): void {
+         if (rmo.responder != null) {
+            var record: PendingRMORecord = new PendingRMORecord(rmo);
+
+            // in case we already have a waiting message with the same id
+            // we have to make id of the given RMO to be unique
+            var id:Number = Number(rmo.id);
+            while (pendingRMOs[record.key] !== undefined) {
+               id++;
+               rmo.id = id.toString();
+            }
+            
             record.endTime = new Date().time + MAX_WAIT_TIME;
             pendingRMOs[record.key] = record;
-            if (rmo.model)
-            {
+            if (rmo.model != null) {
                rmo.model.pending = true;
             }
          }

@@ -26,7 +26,7 @@ package utils.remote.rmo
       
       
       /**
-       * A model that is assotiated mostly with this RMO. Will be used
+       * A model that is associated mostly with this RMO. Will be used
        * by <code>ResponseMessageTracker</code>.
        */      
       public var model:BaseModel = null;

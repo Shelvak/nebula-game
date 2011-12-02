@@ -77,7 +77,7 @@ package models.movement
       public var arrivalEvent:MTimeEventFixedMoment = null;
       
       private var _jumpsAtEvent:MTimeEventFixedMoment = null;
-      [Optional(alias="firstHop")]
+      [Optional(alias="jumpsAt")]
       [Bindable(event="jumpsAtChange")]
       /**
        * Time (local) when this squadron will do a jump to another map.
@@ -214,14 +214,14 @@ package models.movement
 
       public override function afterCreate(data: Object): void {
          super.afterCreate(data);
-         if (sourceLocation.isSSObject) {
+         if (sourceLocation != null && sourceLocation.isSSObject) {
             sourceLocation.setDefaultCoordinates();
          }
-         if (currentLocation.isSSObject) {
+         if (currentLocation != null && currentLocation.isSSObject) {
             currentLocation.setDefaultCoordinates();
          }
-         if (targetLocation.isSSObject) {
-            currentLocation.setDefaultCoordinates();
+         if (targetLocation != null && targetLocation.isSSObject) {
+            targetLocation.setDefaultCoordinates();
          }
       }
    }
