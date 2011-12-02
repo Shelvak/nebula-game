@@ -14,7 +14,13 @@ class ConstructionQueue
   # If type parameters matches count will be increased on last entry.
   # Else create new entry with position + 1.
   #
-  def self.push(constructor_id, constructable_type, count=1, params=nil)
+  # @param constructor_id [Fixnum]
+  # @param constructable_type [String]
+  # @param prepaid [Boolean]
+  # @param count [Fixnum]
+  # @param params [Hash]
+  def self.push(constructor_id, constructable_type, prepaid, count=1,
+      params=nil)
     raise ArgumentError.new("count must be greater than 0!") if count < 1
 
     # Find last entry in constructor queue.
@@ -27,6 +33,7 @@ class ConstructionQueue
       :constructable_type => constructable_type,
       :count => count,
       :position => position,
+      :prepaid => prepaid,
       # This is used for FK relation with player.
       :player_id => params.nil? ? nil : params[:player_id],
       :params => params
@@ -42,8 +49,8 @@ class ConstructionQueue
     end
 
     EventBroker.fire(
-      ConstructionQueue::Event.new(constructor_id),
-      EventBroker::CHANGED)
+      ConstructionQueue::Event.new(constructor.id), EventBroker::CHANGED
+    )
 
     return_value
   end
@@ -61,7 +68,7 @@ class ConstructionQueue
   # Clear constructor queue.
   def self.clear(constructor_id)
     ConstructionQueueEntry.where(:constructor_id => constructor_id).
-      delete_all
+      each(&:destroy)
   end
 
   # Reduce _count_ from given _model_ or _model_id_.
@@ -78,8 +85,7 @@ class ConstructionQueue
         "Cannot reduce more (#{count}) than model has #{model.count}!"
       )
     else
-      model.count -= count
-      model.save!
+      model.reduce!(count)
     end
 
     EventBroker.fire(

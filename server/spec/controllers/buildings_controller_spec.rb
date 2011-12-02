@@ -37,8 +37,19 @@ describe BuildingsController do
       @x = @constructor.x_end + 2
       @y = @constructor.y_end + 2
       @type = 'TestBuilding'
-      @params = {'type' => @type,
+      @params = {'type' => @type, 'prepaid' => true,
         'x' => @x, 'y' => @y, 'constructor_id' => @constructor.id}
+    end
+
+    it_behaves_like "with param options", %w{constructor_id x y type prepaid}
+
+    it "should fail if not prepaid and not player is not vip" do
+      @params['prepaid'] = false
+      player.stub(:vip?).and_return(false)
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
     end
 
     it "should not allow creating new buildings on planets that " +
@@ -65,7 +76,15 @@ describe BuildingsController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it_behaves_like "with param options", %w{constructor_id x y type}
+    it "should invoke #construct! on constructor" do
+      Building.should_receive(:find).
+        with(@constructor.id, an_instance_of(Hash)).and_return(@constructor)
+      @constructor.should_receive(:construct!).with(
+        "Building::#{@params['type']}", @params['prepaid'],
+        :x => @params['x'], :y => @params['y']
+      )
+      invoke @action, @params
+    end
   end
 
   describe "buildings|upgrade" do

@@ -88,11 +88,21 @@ describe UnitsController do
       @params = {
         'type' => 'TestUnit',
         'count' => 1,
-        'constructor_id' => @constructor.id
+        'constructor_id' => @constructor.id,
+        'prepaid' => true
       }
     end
 
-    it_behaves_like "with param options", %w{type count constructor_id}
+    it_behaves_like "with param options", %w{type count constructor_id prepaid}
+
+    it "should fail if not prepaid and player is not vip" do
+      @params['prepaid'] = false
+      player.stub(:vip?).and_return(false)
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
 
     it "should not have any reply" do
       invoke @action, @params
@@ -106,6 +116,16 @@ describe UnitsController do
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should invoke #construct! on constructor" do
+      Building.should_receive(:find).
+        with(@constructor.id, an_instance_of(Hash)).and_return(@constructor)
+      @constructor.should_receive(:construct!).with(
+        "Unit::#{@params['type']}", @params['prepaid'],
+        {:galaxy_id => player.galaxy_id}, @params['count'].to_i
+      )
+      invoke @action, @params
     end
   end
 

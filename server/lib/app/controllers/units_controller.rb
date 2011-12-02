@@ -9,23 +9,28 @@ class UnitsController < GenericController
   # - type (String): type of a unit, i. e. "Trooper"
   # - count (Fixnum): how much of that unit to build
   # - constructor_id (Fixnum): which constructor should build it
+  # - prepaid (Boolean): are these units paid for?
   #
   # Response: None
   #
   def action_new
-    param_options :required => %w{type count constructor_id}
+    param_options :required => {
+      :type => String, :count => Fixnum, :constructor_id => Fixnum,
+      :prepaid => [TrueClass, FalseClass]
+    }
 
-    constructor = Building.find(params['constructor_id'],
-      :include => :planet)
+    raise GameLogicError.new(
+      "Cannot build new building without resources unless VIP!"
+    ) unless params['prepaid'] || player.vip?
+
+    constructor = Building.find(params['constructor_id'], :include => :planet)
     raise ActiveRecord::RecordNotFound \
       if constructor.planet.player_id != player.id
 
-    constructor.construct!("Unit::#{params['type']}",
-      {:galaxy_id => player.galaxy_id},
-      params['count'].to_i)
-
-    # Flag as handled
-    true
+    constructor.construct!(
+      "Unit::#{params['type']}", params['prepaid'],
+      {:galaxy_id => player.galaxy_id}, params['count'].to_i
+    )
   end
 
   ACTION_UPDATE = 'units|update'

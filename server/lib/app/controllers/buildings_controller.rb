@@ -7,20 +7,29 @@ class BuildingsController < GenericController
   # - x (Fixnum)
   # - y (Fixnum)
   # - type (String): string of building type, e.g. SolarPlant
+  # - prepaid (Boolean): are these units paid for?
   #
   # Response: None
   #
   def action_new
-    param_options :required => {:constructor_id => Fixnum, :x => Fixnum,
-      :y => Fixnum, :type => String}
+    param_options :required => {
+      :constructor_id => Fixnum, :x => Fixnum, :y => Fixnum,
+      :type => String, :prepaid => [TrueClass, FalseClass]
+    }
+
+    raise GameLogicError.new(
+      "Cannot build new building without resources unless VIP!"
+    ) unless params['prepaid'] || player.vip?
 
     constructor = Building.find(params['constructor_id'],
       :include => :planet)
     raise ActiveRecord::RecordNotFound \
       if constructor.planet.player_id != player.id
 
-    constructor.construct!("Building::#{params['type']}",
-      :x => params['x'], :y => params['y'])
+    constructor.construct!(
+      "Building::#{params['type']}", params['prepaid'],
+      :x => params['x'], :y => params['y']
+    )
   end
 
   ACTION_UPGRADE = 'buildings|upgrade'

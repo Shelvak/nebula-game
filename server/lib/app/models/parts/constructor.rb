@@ -142,7 +142,7 @@ module Parts::Constructor
     # If there is not enough free slots, count will be reduced to match
     # free slot count.
     #
-    def construct!(type, params={}, count=1)
+    def construct!(type, prepaid, params={}, count=1)
       raise Building::BuildingInactiveError if inactive?
       raise GameLogicError.new(
         "Constructor #{self.class.to_s} cannot construct #{type}!"
@@ -161,16 +161,18 @@ module Parts::Constructor
       free_slots += 1 unless working?
       count = free_slots if count > free_slots
 
-      if working?
-        ConstructionQueue.push(id, type, count, params)
-      else
-        model = construct_model!(type, params)
-
-        if count > 1
-          entry = ConstructionQueue.push(id, type, count - 1, params)
-          {:model => model, :construction_queue_entry => entry}
+      transaction do
+        if working?
+          enqueue!(type, prepaid, count, params)
         else
-          model
+          model = construct_model!(type, false, params)
+
+          if count > 1
+            entry = enqueue!(type, prepaid, count - 1, params)
+            {:model => model, :construction_queue_entry => entry}
+          else
+            model
+          end
         end
       end
     end
@@ -230,9 +232,10 @@ module Parts::Constructor
         queue_entry = ConstructionQueue.shift(id)
 
         if queue_entry
-          construct_model!(queue_entry.constructable_type, queue_entry.params)
+          construct_model!(queue_entry.constructable_type, queue_entry.prepaid?,
+                           queue_entry.params)
         else
-          construct_model!(nil, nil)
+          construct_model!(nil, nil, nil)
         end
 
         self.constructable
@@ -255,19 +258,46 @@ module Parts::Constructor
       end
     end
 
-    def construct_model!(type, params)
+    # TODO: unregister from CM upon destruction
+
+    def params_for_type(type)
+      params = {}
+
+      case type
+      when /^Building/
+        params[:planet_id] = self.planet_id
+      when /^Unit/
+        params[:player_id] = self.planet.player_id
+        params[:location_id] = self.planet_id
+        params[:location_type] = Location::SS_OBJECT
+      end
+
+      params
+    end
+
+    private
+    # @param type [String]
+    # @param prepaid [Boolean]
+    # @param count [Fixnum]
+    # @param params [Hash]
+    # @return [ConstructionQueueEntry]
+    def enqueue!(type, prepaid, count, params)
+      ConstructionQueue.push(id, type, count, params)
+    end
+
+    def construct_model!(type, prepaid, params)
       # Stop constructing
       if type.nil?
         self.constructable = nil
         self.state = Building::STATE_ACTIVE
       else
-        model = type.constantize.new(params)
-        model.level = 0
+        model = build_model(type, params)
         model.construction_mod = self.constructor_mod +
           self.level_constructor_mod
         # Don't register upgrade finished callback, because we will call it
         # for the model when we get #on_construction_finished! called.
         model.register_upgrade_finished_callback = false
+        model.skip_resources = true if prepaid
         model.upgrade!
         EventBroker.fire(model, EventBroker::CREATED)
 
@@ -286,24 +316,11 @@ module Parts::Constructor
       model
     end
 
-    # TODO: unregister from CM upon destruction
-
-    def params_for_type(type)
-      params = {}
-      
-      case type
-      when /^Building/
-        params[:planet_id] = self.planet_id
-      when /^Unit/
-        params[:player_id] = self.planet.player_id
-        params[:location_id] = self.planet_id
-        params[:location_type] = Location::SS_OBJECT
-      end
-
-      params
+    def build_model(type, params)
+      model = type.constantize.new(params)
+      model.level = 0
+      model
     end
-
-    private
 
     def before_finishing_constructable(constructable)
       if constructable.is_a?(Unit)
