@@ -24,16 +24,16 @@
       textToDisplay="{ML.player.population + ' / ' + ML.player.populationMax}"
       toolTip="{
       (
-         ! ML.player.populationMaxReached
+         ML.player.populationMaxReached
             ? getString(
-               'tooltip.populationLeft',
-               [ML.player.populationMax - ML.player.population,
-                Config.getMaxPopulation()]
-              )
-            : getString(
                'tooltip.maxPopulationReached',
                [ML.player.populationMax - ML.player.population,
                 ML.player.populationCap, Config.getMaxPopulation()]
+              )
+            : getString(
+               'tooltip.populationLeft',
+               [ML.player.populationMax - ML.player.population,
+                Config.getMaxPopulation()]
               )
       ) + (
          ML.player.population > ML.player.populationMax
