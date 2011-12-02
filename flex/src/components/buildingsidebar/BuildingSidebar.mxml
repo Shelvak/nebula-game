@@ -665,18 +665,14 @@
              &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
              &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}">
                 <s:Button label="{getString('label.claimPlanet')}"
-                   visible="{!ML.latestGalaxy.apocalypseActive
-                   || !ML.latestGalaxy.apocalypseStartEvent.hasOccured}"
-                   includeInLayout="{!ML.latestGalaxy.apocalypseActive
-                   || !ML.latestGalaxy.apocalypseStartEvent.hasOccured}"
+                   visible="{!ML.latestGalaxy.apocalypseHasStarted}"
+                   includeInLayout="{!ML.latestGalaxy.apocalypseHasStarted}"
                    skinClass="components.skins.GreenButtonSkin"
                    click="button1_clickHandler(event)"/>
 
                 <base:Warning width="100%" showSign="false"
-                   visible="{ML.latestGalaxy.apocalypseActive
-                   &amp;&amp; ML.latestGalaxy.apocalypseStartEvent.hasOccured}"
-                   includeInLayout="{ML.latestGalaxy.apocalypseActive
-                   &amp;&amp; ML.latestGalaxy.apocalypseStartEvent.hasOccured}"
+                   visible="{ML.latestGalaxy.apocalypseHasStarted}"
+                   includeInLayout="{ML.latestGalaxy.apocalypseHasStarted}"
                    text="{getString('warning.apocalypseClaimForbidden')}"/>
          </s:Group>
          <base:Warning width="100%" showSign="false"

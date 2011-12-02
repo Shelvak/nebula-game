@@ -15,6 +15,7 @@ package models.galaxy
    import models.map.MapType;
    import models.solarsystem.MSolarSystem;
    import models.time.MTimeEventFixedMoment;
+   import models.time.events.MTimeEventEvent;
 
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
@@ -66,6 +67,9 @@ package models.galaxy
             dispatchSimpleEvent(
                GalaxyEvent, GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE
             );
+            _apocalypseStartEvent.addEventListener(
+                    MTimeEventEvent.HAS_OCCURED_CHANGE,
+                    dispatchApocalypseStartEventChangeEvent)
          }
       }
       public function get apocalypseStartEvent(): MTimeEventFixedMoment {
@@ -75,6 +79,12 @@ package models.galaxy
       [Bindable(event="apocalypseStartEventChange")]
       public function get apocalypseActive(): Boolean {
          return _apocalypseStartEvent != null;
+      }
+
+      [Bindable(event="apocalypseStartEventChange")]
+      public function get apocalypseHasStarted(): Boolean {
+         return _apocalypseStartEvent != null
+                 && _apocalypseStartEvent.hasOccured;
       }
 
       [Required]
@@ -287,6 +297,13 @@ package models.galaxy
       
       private function wormholes_collectionChangeHandler(event:CollectionEvent) : void {
          dispatchSimpleEvent(GalaxyEvent, GalaxyEvent.HAS_WORMHOLES_CHANGE);
+      }
+
+      private function dispatchApocalypseStartEventChangeEvent(e: MTimeEventEvent): void
+      {
+         dispatchSimpleEvent(
+            GalaxyEvent, GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE
+         );
       }
       
       private function dispatchResizeEvent() : void {

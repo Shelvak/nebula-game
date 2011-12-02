@@ -228,6 +228,16 @@ package config
          return getValue('raiding.raiders.planet');
       }
 
+      public static function getRaidingPlanetsMaxArg(): int
+      {
+         return getValue('raiding.raiders.planet.maxArg');
+      }
+
+      public static function getRaidingBattlegroundMaxArg(): int
+      {
+         return getValue('raiding.raiders.battleground.maxArg');
+      }
+
       public static function getRaidingBattlegroundUnits(): Object
       {
          return getValue('raiding.raiders.battleground');

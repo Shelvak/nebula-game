@@ -34,5 +34,5 @@
       }
       ]]>
    </fx:Script>
-   <s:BitmapImage source="{getImage('apocalypse')}"/>
+   <s:BitmapImage source="{getImage('apocalypse')}" left="20"/>
 </s:Group>

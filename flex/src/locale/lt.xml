@@ -4213,6 +4213,9 @@
     <label.manage value="Tvarkyti" />
     <label.withPlanets 
       value="Su {0 one[? planeta] tens[? planetų] many[? planetomis]}" />
+    <label.withPlanetsOrMore>
+      <p>Su {0 one[? planeta] tens[? planetų] many[? planetomis]} arba daugiau</p>
+    </label.withPlanetsOrMore>
     <label.afterDays
       value="{0 one[? diena] tens[? dienų] many[? dienos]} po apokalipsės" />
     <label.resources value="Resursai" />
