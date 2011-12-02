@@ -147,12 +147,12 @@ class RaidSpawner
     @_apocalypse ||= @planet.solar_system.galaxy.apocalypse_started?
   end
 
-  # How many days have passed since apocalypse start till next raid.
+  # Current apocalypse day.
   def apocalypse_raid_arg
     (
       (@planet.next_raid_at - @planet.solar_system.galaxy.apocalypse_start) /
         1.day
-    ).round
+    ).round + 1
   end
 
   def battleground?

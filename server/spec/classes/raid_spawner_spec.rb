@@ -238,10 +238,11 @@ describe RaidSpawner do
       it "should return data using RaidSpawner#apocalypse_raid_arg" do
         with_config_values('raiding.raiders.apocalypse' => {
           "gnat" => [
-            "arg", "arg * 2", "0.3 + (arg - 1) * 0.2"
+            "arg", "arg", "0.3 + (arg - 1) * 0.2"
           ]
         }) do
-          apocalyptic_planet.raid_arg = 10
+          # Set to nonsense to check that we're not using it.
+          apocalyptic_planet.raid_arg = 9999
           spawner = RaidSpawner.new(apocalyptic_planet)
           counts = spawner.unit_counts.inject({}) do
             |hash, (type, count, flank)|
@@ -249,7 +250,7 @@ describe RaidSpawner do
             hash[type] += count
             hash
           end
-          (6..12).should cover(counts['gnat'])
+          counts['gnat'].should == 7
         end
       end
     end
