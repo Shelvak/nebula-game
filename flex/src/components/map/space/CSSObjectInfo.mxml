@@ -37,12 +37,21 @@
          }
          
          private function getSectorLabel(ssObject:MSSObject) : String {
-            return ssObject == null ? "" : LocationMinimal.getSectorLabel(ssObject.currentLocation);
+            return ssObject == null
+               ? "" : LocationMinimal.getSectorLabel(ssObject.currentLocation);
+         }
+
+         private function getPlanetSizeLabel(ssObject:MSSObject) : String {
+            return ssObject == null
+               ? ""
+               : Localizer.string(
+                    "SSObjects", "label.planetSize", [ssObject.size]
+                 );
          }
       ]]>
    </fx:Script>
    
-   <!--- Full size palnet image -->
+   <!--- Full size planet image -->
    <s:BitmapImage id="bmpImage" horizontalCenter="0" source="{ssObject.imageData}"/>
    <base:AdvancedContainer left="0" right="0" top="{MSSObject.IMAGE_HEIGHT + 10}">
       <base:layout>
@@ -50,11 +59,16 @@
       </base:layout>
       
       <!--- Name of the the object -->
-      <s:Label id="lblName" text="{getString('typeAndName', [ssObject.typeName, ssObject.name])}"/>
+      <s:Label id="lblName"
+         text="{getString('typeAndName', [ssObject.typeName, ssObject.name])}"/>
       <!--- Sector -->
       <s:Label id="lblSector" text="{getSectorLabel(ssObject)}"/>
+      <!-- Planet size -->
+      <s:Label text="{getPlanetSizeLabel(ssObject)}"
+               visible="{ssObject.isPlanet}" />
       <!--- Player name who owns this planet. -->
-      <base:AdvancedContainer minWidth="0" minHeight="0" visible="{ssObject.isPlanet}">
+      <base:AdvancedContainer minWidth="0" minHeight="0"
+            visible="{ssObject.isPlanet}">
          <base:layout>
             <s:HorizontalLayout verticalAlign="middle" gap="5"/>
          </base:layout>
@@ -64,7 +78,7 @@
                                  visible="{ssObject.isOwned}"/>
       </base:AdvancedContainer>
       <!--- Allows player to invite the owner of this planet to the alliance -->
-      <s:Button id="btnIviteToAlliance"
+      <s:Button id="btnInviteToAlliance"
                 label="{getLabel('inviteToAlliance')}"
                 visible="{ssObject.canInviteOwnerToAlliance}"
                 click="ssObject.inviteOwnerToAlliance()"/>
