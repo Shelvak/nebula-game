@@ -144,12 +144,14 @@ class Galaxy < ActiveRecord::Base
     finished? && apocalypse_start < Time.now
   end
 
-  # Returns which apocalypse day it currently is.
-  def apocalypse_day
+  # Returns which apocalypse day it is on _date_. Uses +Time#now+ if _date_ is
+  # nil.
+  def apocalypse_day(date=nil)
     raise ArgumentError.new("Apocalypse hasn't started yet! Start on: #{
       apocalypse_start}") unless apocalypse_started?
 
-    ((Time.now - apocalypse_start) / 1.day).round
+    date ||= Time.now
+    ((date - apocalypse_start) / 1.day).round + 1
   end
 
   # Saves statistical galaxy data for when somebody wins the galaxy.

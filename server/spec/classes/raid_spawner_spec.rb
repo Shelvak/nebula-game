@@ -17,7 +17,7 @@ describe RaidSpawner do
     galaxy = Factory.build(:galaxy, :apocalypse_start => 5.6.days.ago)
     ss = Factory.build(:solar_system, :galaxy => galaxy)
     Factory.build(:planet, :solar_system => ss,
-      :next_raid_at => Time.now, :player => Factory.create(:player))
+      :next_raid_at => 5.days.from_now, :player => Factory.create(:player))
   end
 
   describe "#raid!" do
@@ -250,7 +250,7 @@ describe RaidSpawner do
             hash[type] += count
             hash
           end
-          counts['gnat'].should == 7
+          counts['gnat'].should == 7 + 5
         end
       end
     end

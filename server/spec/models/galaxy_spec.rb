@@ -238,7 +238,7 @@ describe Galaxy do
     end
 
     it "should return rounded number of days otherwise" do
-      galaxy.apocalypse_day.should == 16
+      galaxy.apocalypse_day.should == 17
     end
   end
 
