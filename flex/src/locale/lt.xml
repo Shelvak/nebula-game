@@ -3398,7 +3398,7 @@
   </Resources>
 
   <SSObjects>
-    <label.planetSize value="Plotas: {0} tūkst. kv. km"/>
+    <label.planetSize value="Plotas: {0} mil. kv. km"/>
     <label.totalVolume value="Bendra apimtis: {0}"/>
     <label.wreckageVolume value="(apimtis: {0})"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->
