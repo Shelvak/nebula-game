@@ -4,6 +4,10 @@ class Technology < ActiveRecord::Base
   include Parts::NeedsTechnology
   include Parts::SciencePoints
 
+  def planet(reload=false)
+    @_planet = nil if reload
+    @_planet ||= SsObject::Planet.find(planet_id)
+  end
   attr_accessor :planet_id
   belongs_to :player
 
@@ -25,10 +29,6 @@ class Technology < ActiveRecord::Base
       'pause_scientists' => pause_scientists,
       'speed_up' => speed_up
     }
-  end
-
-  def planet
-    SsObject.find(planet_id)
   end
 
   def check_upgrade!
