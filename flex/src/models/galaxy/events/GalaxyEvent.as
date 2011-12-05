@@ -12,6 +12,13 @@ package models.galaxy.events
        *
        * @see GalaxyEvent#galaxyResize
        */
+      public static const GALAXY_READY: String = "galaxyReady";
+
+      /**
+       * @eventType galaxyResize
+       *
+       * @see GalaxyEvent#galaxyResize
+       */
       public static const RESIZE: String = "galaxyResize";
 
       /**

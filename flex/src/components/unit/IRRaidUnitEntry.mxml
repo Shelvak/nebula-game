@@ -17,13 +17,9 @@
 
          protected function info_clickHandler(event:MouseEvent):void
          {
-            var entry: UnitBuildingEntry = UnitBuildingEntry(data);
-            var temp: * = entry.isUnit ? new Unit() : new Building();
-            temp.type = ModelUtil.getModelSubclass(entry.type, false);
-            if (temp.type == null)
-            {
-               temp.type = entry.type;
-            }
+            var entry: RaidingUnitEntry = RaidingUnitEntry(data);
+            var temp: Unit = new Unit();
+            temp.type = entry.type;
             temp.upgradePart.level = 0;
             NavigationController.getInstance().showInfo(temp);
          }
