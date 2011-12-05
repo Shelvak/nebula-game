@@ -47,8 +47,7 @@
                     : Config.getRaidingPlanetsMaxArg();
       }
 
-      private function getPlanetCountLabel(apocalypseStarted: Boolean,
-                                           ssObject: MSSObject, raidArg: int,
+      private function getPlanetCountLabel(ssObject: MSSObject, raidArg: int,
                                            raidArrives: Date,
                                            apocalypseMoment: MTimeEventFixedMoment,
                                            planetCountDiff: int): String
@@ -61,7 +60,8 @@
          {
             return DateUtil.formatShortDateTime(raidArrives);
          }
-         return Localizer.string('Units', apocalypseStarted
+         return Localizer.string('Units',
+                 ssObject.apocalypseWillBeStartedBeforeRaid
                  ? 'label.afterDays'
                  : (
                      getMaxArg(ssObject) > (
@@ -72,7 +72,7 @@
                    ),
                  [
                     (
-                        apocalypseStarted
+                        ssObject.apocalypseWillBeStartedBeforeRaid
                            ? 1 + getDays(raidArrives, apocalypseMoment.occuresAt)
                            : raidArg
                     ) + planetCountDiff
@@ -104,7 +104,7 @@
                          left="28" top="2"
                          click="addPlanet--"
                          visible="{MPlanet.hasRaiders(
-                           ML.latestGalaxy.apocalypseHasStarted
+                           ML.latestPlanet.ssObject.apocalypseWillBeStartedBeforeRaid
                               ? addPlanet - 1
                               : ML.latestPlanet.ssObject.raidArg + addPlanet - 1,
                            ML.latestPlanet.ssObject.nextRaidAt,
@@ -128,7 +128,7 @@
             
             <s:Group top="25" left="20" right="30">
                <s:Label fontSize="12" fontWeight="bold" 
-                  text="{getPlanetCountLabel(ML.latestGalaxy.apocalypseHasStarted,
+                  text="{getPlanetCountLabel(
                      ML.latestPlanet.ssObject, ML.latestPlanet.ssObject.raidArg,
                      ML.latestPlanet.ssObject.nextRaidAt,
                      ML.latestGalaxy.apocalypseStartEvent,
@@ -139,7 +139,7 @@
             <s:DataGroup left="7" top="40" bottom="30"
                itemRenderer="components.unit.IRRaidUnitEntry"
                dataProvider="{MPlanet.getRaiders(
-                  ML.latestGalaxy.apocalypseHasStarted
+                  ML.latestPlanet.ssObject.apocalypseWillBeStartedBeforeRaid
                         ? addPlanet
                         : ML.latestPlanet.ssObject.raidArg + addPlanet,
                   ML.latestPlanet.ssObject.nextRaidAt,
