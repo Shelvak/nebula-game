@@ -143,8 +143,8 @@ module Parts::Constructor
     # free slot count.
     #
     def construct!(type, prepaid, params={}, count=1)
-      #typesig binding,
-      #        String, Boolean, Hash, Fixnum
+      typesig binding,
+              String, Boolean, Hash, Fixnum
 
       raise Building::BuildingInactiveError if inactive?
       raise GameLogicError.new(
