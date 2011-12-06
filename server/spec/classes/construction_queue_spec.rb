@@ -293,6 +293,13 @@ describe ConstructionQueue do
       end
     end
 
+    it "should not merge prepaid and not-prepaid items" do
+      model1 = ConstructionQueue.push(@constructor_id, klass.to_s, true, 2)
+      model2 = ConstructionQueue.push(@constructor_id, klass.to_s, false, 2)
+      ConstructionQueue.move(model2.id, model1.position)
+      [model2, model1].map { |m| m.reload; m.position }.should == [0, 1]
+    end
+
     describe "single tests" do
       before(:each) do
         @model1 = ConstructionQueue.push(@constructor_id, klass.to_s, false, 2)

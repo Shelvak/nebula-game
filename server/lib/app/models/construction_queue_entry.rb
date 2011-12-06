@@ -89,6 +89,9 @@ class ConstructionQueueEntry < ActiveRecord::Base
   # Merges with _model_ by increasing _count_ in _self_ and destroying
   # _model_.
   def merge!(model)
+    raise ArgumentError.new("Cannot merge #{self} and #{model}!") \
+      unless can_merge?(model)
+
     transaction do
       self.count += model.count
       # Don't destroy unsaved records, because callbacks are still fired even

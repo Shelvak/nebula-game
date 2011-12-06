@@ -121,9 +121,7 @@ class ConstructionQueue
     old_position = model.position
 
     # Try to find entry we can merge with (in destination)
-    merge_target = ConstructionQueueEntry.find(:first, :conditions =>
-        create_conditions_for_merge_target(model, position)
-    )
+    merge_target = merge_target(model, position)
 
     # Default to move operation
     count ||= model.count
@@ -220,26 +218,15 @@ class ConstructionQueue
     end
   end
 
-  def self.create_conditions_for_merge_target(model, position)
-    condition = "id!=? AND constructor_id=? AND constructable_type=? AND " +
-      "position IN (?)"
-    args = [
-      model.id,
-      model.constructor_id,
-      model.constructable_type,
-      [position - 1, position]
-    ]
-
-    # Params is a serializable attribute
-    if model.params.nil?
-      condition += " AND params IS NULL"
-    else
-      condition += " AND params=?"
-      args.push model.params.to_yaml
-    end
-
-    args.unshift condition
-
-    args
+  def self.merge_target(model, position)
+    ConstructionQueueEntry.where(
+      :constructor_id => model.constructor_id,
+      :constructable_type => model.constructable_type,
+      :position => [position - 1, position],
+      :params => model.params.try(:to_yaml)
+    ).where("id != ?", model.id).where(
+      model.prepaid? \
+        ? model.class.prepaid_condition : model.class.not_prepaid_condition
+    ).first
   end
 end
