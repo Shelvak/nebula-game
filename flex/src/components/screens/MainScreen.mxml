@@ -66,7 +66,7 @@ bars and so on.
                ML.activeMapType == MapType.PLANET &amp;&amp;
                ML.latestPlanet != null &amp;&amp;
                MPlanet.hasRaiders(
-                  ML.latestGalaxy.apocalypseHasStarted
+                  ML.latestPlanet.ssObject.apocalypseWillBeStartedBeforeRaid
                      ? 0 : ML.latestPlanet.ssObject.raidArg,
                   ML.latestPlanet.ssObject.nextRaidAt,
                   (

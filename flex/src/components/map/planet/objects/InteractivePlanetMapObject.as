@@ -42,13 +42,6 @@ package components.map.planet.objects
       
       public function cleanup() : void
       {
-         if (_spinner)
-         {
-            _spinnerContainer.removeElement(_spinner);
-            _spinnerContainer = null;
-            _spinner.cleanup();
-            _spinner = null;
-         }
          if (model)
          {
             removeModelEventListeners(model);
@@ -105,7 +98,6 @@ package components.map.planet.objects
       
       
       private var f_fadedChanged:Boolean = true,
-                  f_pendingChanged:Boolean = true,
                   f_selectedChanged:Boolean = true;
       
       
@@ -123,24 +115,11 @@ package components.map.planet.objects
                alpha = 1;
             }
          }
-         if (f_pendingChanged && _spinner)
-         {
-            if (model && model.pending)
-            {
-               _spinnerContainer.visible = true;
-               _spinner.play();
-            }
-            else
-            {
-               _spinner.stop();
-               _spinnerContainer.visible = false;
-            }
-         }
          if (f_selectedChanged)
          {
             basement.visible = selected;
          }
-         f_fadedChanged = f_pendingChanged = f_selectedChanged = false;
+         f_fadedChanged = f_selectedChanged = false;
       }
       
       
@@ -161,18 +140,6 @@ package components.map.planet.objects
        * instead.
        */
       protected var mainImage:BitmapImage;
-      
-      
-      /**
-       * This will be used for indication of <code>pending</code> state.
-       */
-      private var _spinner:Spinner;
-      
-      
-      /**
-       * BtimapImage (Spinner) has to be wrapped by a container to function properly.
-       */      
-      private var _spinnerContainer:Group;
       
       
       /**
@@ -203,15 +170,6 @@ package components.map.planet.objects
          mainImage.fillMode = BitmapFillMode.CLIP;
          mainImage.source = model.imageData;
          mainImageContainer.addElement(mainImage);
-         
-         
-         _spinner = new Spinner();
-         _spinnerContainer = new Group();
-         _spinnerContainer.addElement(_spinner);
-         _spinnerContainer.verticalCenter =
-         _spinnerContainer.horizontalCenter = 0;
-         _spinnerContainer.depth = 1000;
-         addElement(_spinnerContainer);
       }
       
       
@@ -246,22 +204,12 @@ package components.map.planet.objects
       protected function addModelEventListeners(model:MPlanetObject) : void
       {
          addModelZIndexChangeHandler(model);
-         model.addEventListener(BaseModelEvent.PENDING_CHANGE, model_pendingChangeHandler);
       }
       
       
       protected function removeModelEventListeners(model:MPlanetObject) : void
       {
          removeModelZIndexChangeHandler(model);
-         model.removeEventListener(BaseModelEvent.PENDING_CHANGE, model_pendingChangeHandler);
-      }
-      
-      
-      private function model_pendingChangeHandler(event:BaseModelEvent) : void
-      {
-         f_pendingChanged = true;
-         invalidateProperties();
-         invalidateDisplayList();
       }
    }
 }

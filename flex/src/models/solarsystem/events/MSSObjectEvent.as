@@ -6,6 +6,12 @@ package models.solarsystem.events
    public class MSSObjectEvent extends Event
    {
       /**
+       * Dispatched when ssObject raid state changes.
+       *
+       * @eventType raidStateChange
+       */
+      public static const RAID_STATE_CHANGE:String = "raidStateChange";
+      /**
        * @see models.solarsystem.MSSObject
        */
       public static const PLAYER_CHANGE: String = "playerChange";

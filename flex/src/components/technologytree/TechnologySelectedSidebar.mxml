@@ -84,6 +84,12 @@
             }
             _selectedModel = tScreen.selectedTechnology;
             if (_selectedModel != null) {
+               if (ML.player.scientists + _selectedModel.scientists >
+                       _selectedModel.minScientists)
+               {
+                  scientistsSelector.value = Math.max(_selectedModel.scientists,
+                     _selectedModel.minScientists);
+               }
                if (_selectedModel.upgradePart != null) {
                   _selectedModel.upgradePart.addEventListener(UpgradeEvent.LEVEL_CHANGE,
                           refreshPriceOrientatedProperties);
@@ -425,8 +431,6 @@
                         <s:HSlider id="scientistsSelector" width="80%" showDataTip="false" 
                                    change="scientistsSelector_changeHandler(event)"
                                    mouseFocusEnabled="false"
-                                   value="{_selectedModel.minScientists &lt; _selectedModel.scientists?
-                                   _selectedModel.scientists:_selectedModel.minScientists}" 
                                    enabled="{(_selectedModel.minScientists &lt; (ML.player.scientists + _selectedModel.scientists))}"
                                    minimum="{_selectedModel.minScientists}" 
                                    maximum="{Math.min(_selectedModel.getMaxAssignableScientists(),

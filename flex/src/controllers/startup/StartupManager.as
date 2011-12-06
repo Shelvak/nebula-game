@@ -1,17 +1,16 @@
 package controllers.startup
 {
    import animation.AnimationTimer;
-   
+
    import com.developmentarc.core.actions.ActionDelegate;
    import com.developmentarc.core.actions.actions.AbstractAction;
-   
+
    import components.alliance.AllianceScreenM;
-   
-   import utils.ApplicationLocker;
+
    import controllers.alliances.AlliancesCommand;
    import controllers.alliances.actions.*;
    import controllers.announcements.AnnouncementsCommand;
-   import controllers.announcements.actions.NewAction;
+   import controllers.announcements.actions.*;
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.*;
    import controllers.chat.ChatCommand;
@@ -22,17 +21,13 @@ package controllers.startup
    import controllers.constructionqueues.ConstructionQueuesCommand;
    import controllers.constructionqueues.actions.*;
    import controllers.dailybonus.DailyBonusCommand;
-   import controllers.dailybonus.actions.ClaimAction;
-   import controllers.dailybonus.actions.ShowAction;
+   import controllers.dailybonus.actions.*;
    import controllers.galaxies.GalaxiesCommand;
    import controllers.galaxies.actions.*;
    import controllers.game.GameCommand;
    import controllers.game.actions.*;
    import controllers.market.MarketCommand;
-   import controllers.market.actions.AvgRateAction;
-   import controllers.market.actions.BuyAction;
-   import controllers.market.actions.CancelAction;
-   import controllers.market.actions.NewAction;
+   import controllers.market.actions.*;
    import controllers.notifications.NotificationsCommand;
    import controllers.notifications.actions.*;
    import controllers.objects.ObjectsCommand;
@@ -53,33 +48,34 @@ package controllers.startup
    import controllers.timedupdate.MasterUpdateTrigger;
    import controllers.units.UnitsCommand;
    import controllers.units.actions.*;
-   
+
    import flash.external.ExternalInterface;
    import flash.system.Security;
-   
+
    import globalevents.GlobalEvent;
-   
+
    import models.ModelLocator;
    import models.announcement.MAnnouncement;
    import models.chat.MChat;
    import models.time.MTimeEventFixedMoment;
-   
+
    import mx.logging.ILogger;
    import mx.logging.Log;
    import mx.logging.LogEventLevel;
    import mx.logging.targets.TraceTarget;
    import mx.managers.ToolTipManager;
-   
+
    import namespaces.client_internal;
-   
+
+   import utils.ApplicationLocker;
    import utils.DateUtil;
    import utils.Objects;
    import utils.SingletonFactory;
    import utils.StringUtil;
    import utils.logging.InMemoryTarget;
    import utils.logging.MessagesLogger;
-   
-   
+
+
    public final class StartupManager
    {
       private static function get logger() : ILogger {
@@ -273,24 +269,24 @@ package controllers.startup
       {
          bindPair(MarketCommand.INDEX, new controllers.market.actions.IndexAction());
          bindPair(MarketCommand.NEW, new controllers.market.actions.NewAction());
-         bindPair(MarketCommand.BUY, new controllers.market.actions.BuyAction());
-         bindPair(MarketCommand.CANCEL, new controllers.market.actions.CancelAction());
-         bindPair(MarketCommand.AVG_RATE, new controllers.market.actions.AvgRateAction());
+         bindPair(MarketCommand.BUY, new BuyAction());
+         bindPair(MarketCommand.CANCEL, new CancelAction());
+         bindPair(MarketCommand.AVG_RATE, new AvgRateAction());
       }
       private static function bindQuestsCommands() : void
       {
          bindPair(QuestsCommand.INDEX, new controllers.quests.actions.IndexAction());
-         bindPair(QuestsCommand.CLAIM_REWARDS, new controllers.quests.actions.ClaimRewardsAction());
+         bindPair(QuestsCommand.CLAIM_REWARDS, new ClaimRewardsAction());
       }
       private static function bindDailyBonusCommands() : void
       {
          bindPair(DailyBonusCommand.SHOW, new controllers.dailybonus.actions.ShowAction());
-         bindPair(DailyBonusCommand.CLAIM, new controllers.dailybonus.actions.ClaimAction());
+         bindPair(DailyBonusCommand.CLAIM, new ClaimAction());
       }
       private static function bindRoutesCommands() : void
       {
          bindPair(RoutesCommand.INDEX, new controllers.routes.actions.IndexAction());
-         bindPair(RoutesCommand.DESTROY, new controllers.routes.actions.DestroyAction());
+         bindPair(RoutesCommand.DESTROY, new DestroyAction());
       }
       private static function bindCombatLogsCommands() : void
       {
@@ -304,17 +300,17 @@ package controllers.startup
       }
       private static function bindUnitsCommands() : void
       {
-         bindPair(UnitsCommand.HEAL, new controllers.units.actions.HealAction());
-         bindPair(UnitsCommand.LOAD, new controllers.units.actions.LoadAction());
-         bindPair(UnitsCommand.UNLOAD, new controllers.units.actions.UnloadAction());
-         bindPair(UnitsCommand.TRANSFER_RESOURCES, new controllers.units.actions.TransferResourcesAction());
+         bindPair(UnitsCommand.HEAL, new HealAction());
+         bindPair(UnitsCommand.LOAD, new LoadAction());
+         bindPair(UnitsCommand.UNLOAD, new UnloadAction());
+         bindPair(UnitsCommand.TRANSFER_RESOURCES, new TransferResourcesAction());
          bindPair(UnitsCommand.SHOW, new controllers.units.actions.ShowAction());
          bindPair(UnitsCommand.NEW, new controllers.units.actions.NewAction());
          bindPair(UnitsCommand.UPDATE, new controllers.units.actions.UpdateAction());
-         bindPair(UnitsCommand.SET_HIDDEN, new controllers.units.actions.SetHiddenAction());
-         bindPair(UnitsCommand.DEPLOY, new controllers.units.actions.DeployAction());
-         bindPair(UnitsCommand.ATTACK, new controllers.units.actions.AttackAction());
-         bindPair(UnitsCommand.DISMISS, new controllers.units.actions.DismissAction());
+         bindPair(UnitsCommand.SET_HIDDEN, new SetHiddenAction());
+         bindPair(UnitsCommand.DEPLOY, new DeployAction());
+         bindPair(UnitsCommand.ATTACK, new AttackAction());
+         bindPair(UnitsCommand.DISMISS, new DismissAction());
          bindPair(UnitsCommand.MOVE, new controllers.units.actions.MoveAction());
          bindPair(UnitsCommand.MOVEMENT, new MovementAction());
          bindPair(UnitsCommand.MOVEMENT_PREPARE, new MovementPrepareAction());
@@ -323,27 +319,27 @@ package controllers.startup
       }
       private static function bindObjectsCommands() : void
       {
-         bindPair(ObjectsCommand.DESTROYED, new controllers.objects.actions.DestroyedAction());
-         bindPair(ObjectsCommand.UPDATED, new controllers.objects.actions.UpdatedAction());
-         bindPair(ObjectsCommand.CREATED, new controllers.objects.actions.CreatedAction());
+         bindPair(ObjectsCommand.DESTROYED, new DestroyedAction());
+         bindPair(ObjectsCommand.UPDATED, new UpdatedAction());
+         bindPair(ObjectsCommand.CREATED, new CreatedAction());
       }
       private static function bindBuildingsCommands() : void
       {
          bindPair(BuildingsCommand.NEW, new controllers.buildings.actions.NewAction());
          bindPair(BuildingsCommand.UPGRADE, new controllers.buildings.actions.UpgradeAction());
-         bindPair(BuildingsCommand.REPAIR, new controllers.buildings.actions.RepairAction());
-         bindPair(BuildingsCommand.SELF_DESTRUCT, new controllers.buildings.actions.SelfDestructAction());
-         bindPair(BuildingsCommand.ACTIVATE, new controllers.buildings.actions.ActivateAction());
-         bindPair(BuildingsCommand.DEACTIVATE, new controllers.buildings.actions.DeactivateAction());
-         bindPair(BuildingsCommand.ACTIVATE_OVERDRIVE, new controllers.buildings.actions.ActivateOverdriveAction());
-         bindPair(BuildingsCommand.DEACTIVATE_OVERDRIVE, new controllers.buildings.actions.DeactivateOverdriveAction());
-         bindPair(BuildingsCommand.ACCELERATE_CONSTRUCTOR, new controllers.buildings.actions.AccelerateConstructorAction());
-         bindPair(BuildingsCommand.ACCELERATE_UPGRADE, new controllers.buildings.actions.AccelerateUpgradeAction());
-         bindPair(BuildingsCommand.CANCEL_CONSTRUCTOR, new controllers.buildings.actions.CancelConstructorAction());
-         bindPair(BuildingsCommand.CANCEL_UPGRADE, new controllers.buildings.actions.CancelUpgradeAction());
+         bindPair(BuildingsCommand.REPAIR, new RepairAction());
+         bindPair(BuildingsCommand.SELF_DESTRUCT, new SelfDestructAction());
+         bindPair(BuildingsCommand.ACTIVATE, new ActivateAction());
+         bindPair(BuildingsCommand.DEACTIVATE, new DeactivateAction());
+         bindPair(BuildingsCommand.ACTIVATE_OVERDRIVE, new ActivateOverdriveAction());
+         bindPair(BuildingsCommand.DEACTIVATE_OVERDRIVE, new DeactivateOverdriveAction());
+         bindPair(BuildingsCommand.ACCELERATE_CONSTRUCTOR, new AccelerateConstructorAction());
+         bindPair(BuildingsCommand.ACCELERATE_UPGRADE, new AccelerateUpgradeAction());
+         bindPair(BuildingsCommand.CANCEL_CONSTRUCTOR, new CancelConstructorAction());
+         bindPair(BuildingsCommand.CANCEL_UPGRADE, new CancelUpgradeAction());
          bindPair(BuildingsCommand.MOVE, new controllers.buildings.actions.MoveAction());
-         bindPair(BuildingsCommand.SET_BUILD_IN_2ND_FLANK, new controllers.buildings.actions.SetBuildIn2ndFlankAction());
-         bindPair(BuildingsCommand.SET_BUILD_HIDDEN, new controllers.buildings.actions.SetBuildHiddenAction());
+         bindPair(BuildingsCommand.SET_BUILD_IN_2ND_FLANK, new SetBuildIn2ndFlankAction());
+         bindPair(BuildingsCommand.SET_BUILD_HIDDEN, new SetBuildHiddenAction());
       }
       private static function bindTechnologiesCommands() : void
       {
@@ -351,17 +347,17 @@ package controllers.startup
          bindPair(TechnologiesCommand.NEW, new controllers.technologies.actions.NewAction());
          bindPair(TechnologiesCommand.UPGRADE, new controllers.technologies.actions.UpgradeAction());
          bindPair(TechnologiesCommand.UPDATE, new controllers.technologies.actions.UpdateAction());
-         bindPair(TechnologiesCommand.UNLEARN, new controllers.technologies.actions.UnlearnAction());
-         bindPair(TechnologiesCommand.PAUSE, new controllers.technologies.actions.PauseAction());
-         bindPair(TechnologiesCommand.RESUME, new controllers.technologies.actions.ResumeAction());
-         bindPair(TechnologiesCommand.ACCELERATE_UPGRADE, new controllers.technologies.actions.AccelerateAction());
+         bindPair(TechnologiesCommand.UNLEARN, new UnlearnAction());
+         bindPair(TechnologiesCommand.PAUSE, new PauseAction());
+         bindPair(TechnologiesCommand.RESUME, new ResumeAction());
+         bindPair(TechnologiesCommand.ACCELERATE_UPGRADE, new AccelerateAction());
       }
       private static function bindConstructionQueuesCommands() : void
       {
          bindPair(ConstructionQueuesCommand.INDEX, new controllers.constructionqueues.actions.IndexAction());
          bindPair(ConstructionQueuesCommand.MOVE, new controllers.constructionqueues.actions.MoveAction());
-         bindPair(ConstructionQueuesCommand.REDUCE, new controllers.constructionqueues.actions.ReduceAction());
-         bindPair(ConstructionQueuesCommand.SPLIT, new controllers.constructionqueues.actions.SplitAction());
+         bindPair(ConstructionQueuesCommand.REDUCE, new ReduceAction());
+         bindPair(ConstructionQueuesCommand.SPLIT, new SplitAction());
       }
       private static function bindGameCommands() : void
       {
@@ -375,10 +371,10 @@ package controllers.startup
             bindPair(DISCONNECT, new DisconnectAction());
             bindPair(RATINGS, new controllers.players.actions.RatingsAction());
             bindPair(SHOW, new controllers.players.actions.ShowAction());
-            bindPair(SHOW_PROFILE, new controllers.players.actions.ShowProfileAction());
-            bindPair(CONVERT_CREDS, new controllers.players.actions.ConvertCredsAction());
+            bindPair(SHOW_PROFILE, new ShowProfileAction());
+            bindPair(CONVERT_CREDS, new ConvertCredsAction());
             bindPair(EDIT, new controllers.players.actions.EditAction());
-            bindPair(VIP, new controllers.players.actions.VipAction());
+            bindPair(VIP, new VipAction());
             bindPair(STATUS_CHANGE, new StatusChangeAction());
          }
       }
@@ -389,10 +385,10 @@ package controllers.startup
             bindPair(RATINGS, new controllers.alliances.actions.RatingsAction());
             bindPair(NEW, new controllers.alliances.actions.NewAction());
             bindPair(SHOW, new controllers.alliances.actions.ShowAction());
-            bindPair(KICK, new controllers.alliances.actions.KickAction());
-            bindPair(LEAVE, new controllers.alliances.actions.LeaveAction());
+            bindPair(KICK, new KickAction());
+            bindPair(LEAVE, new LeaveAction());
             bindPair(EDIT, new controllers.alliances.actions.EditAction());
-            bindPair(EDIT_DESCRIPTION, new controllers.alliances.actions.EditDescriptionAction());
+            bindPair(EDIT_DESCRIPTION, new EditDescriptionAction());
             bindPair(INVITE, new InviteAction());
             bindPair(JOIN, new JoinAction());
          }
@@ -401,7 +397,7 @@ package controllers.startup
       {
          bindPair(GalaxiesCommand.SHOW, new controllers.galaxies.actions.ShowAction());
          bindPair(GalaxiesCommand.APOCALYPSE,
-                 new controllers.galaxies.actions.ApocalypseAction());
+                 new ApocalypseAction());
       }
       private static function bindSolarSystemsCommands() : void
       {
@@ -414,8 +410,8 @@ package controllers.startup
          with (PlanetsCommand) {
             bindPair(SHOW, new controllers.planets.actions.ShowAction());
             bindPair(EDIT, new controllers.planets.actions.EditAction());
-            bindPair(BOOST, new controllers.planets.actions.BoostAction());
-            bindPair(TAKE, new controllers.planets.actions.TakeAction());
+            bindPair(BOOST, new BoostAction());
+            bindPair(TAKE, new TakeAction());
             bindPair(PLAYER_INDEX, new PlayerIndexAction());
             bindPair(EXPLORE, new ExploreAction());
             bindPair(FINISH_EXPLORATION, new FinishExplorationAction());

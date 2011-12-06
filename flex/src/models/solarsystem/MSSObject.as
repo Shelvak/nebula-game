@@ -15,6 +15,7 @@ package models.solarsystem
    import interfaces.ICleanable;
    
    import models.BaseModel;
+   import models.galaxy.events.GalaxyEvent;
    import models.map.IMStaticSpaceObject;
    import models.Owner;
    import models.cooldown.MCooldown;
@@ -59,7 +60,8 @@ package models.solarsystem
     */
    [Event(name="cooldownChange", type="models.solarsystem.events.MSSObjectEvent")]
    
-   public class MSSObject extends BaseModel implements IMStaticSpaceObject, ICleanable
+   public class MSSObject extends BaseModel implements IMStaticSpaceObject,
+                                                       ICleanable
    {
       /**
        * Returns variation id of a solar system object of given type, terrain and with given id.
@@ -114,10 +116,12 @@ package models.solarsystem
       public function MSSObject() {
          super();
          registerOrUnregisterTimedUpdateHandler();
+         registerOtherEventHandlers();
       }
       
       public function cleanup() : void {
          unregisterTimedUpdateHandler();
+         unregisterOtherEventHandlers();
       }
       
       
@@ -275,14 +279,33 @@ package models.solarsystem
       public function get type() : String {
          return _type;
       }
+
+      private var _nextRaidAt: Date;
       
       [Optional]
-      [Bindable]
-      public var nextRaidAt: Date;
+      [Bindable (event="raidStateChange")]
+      public function set nextRaidAt(value: Date): void
+      {
+         _nextRaidAt = value;
+         dispatchRaidStateChangeEvent();
+      }
+
+      public function get nextRaidAt(): Date
+      {
+         return _nextRaidAt;
+      }
 
       [Optional]
       [Bindable]
       public var raidArg: int;
+
+      [Bindable (event="raidStateChange")]
+      public function get apocalypseWillBeStartedBeforeRaid(): Boolean
+      {
+         return ML.latestGalaxy.apocalypseActive && nextRaidAt != null
+                 && (ML.latestGalaxy.apocalypseStartEvent.occuresAt.time <
+                     nextRaidAt.time);
+      }
       
       [Bindable(event="willNotChange")]
       /**
@@ -641,6 +664,47 @@ package models.solarsystem
          else
             unregisterTimedUpdateHandler();
       }
+
+      private function registerOtherEventHandlers(): void
+      {
+         if (ML.latestGalaxy != null)
+         {
+            registerApocalypseEventListener();
+         }
+         else
+         {
+            ML.addEventListener(GalaxyEvent.GALAXY_READY,
+                    registerApocalypseEventListener);
+         }
+      }
+
+      private function registerApocalypseEventListener(e: GalaxyEvent = null): void
+      {
+         if (e != null)
+         {
+            ML.removeEventListener(GalaxyEvent.GALAXY_READY,
+                    registerApocalypseEventListener);
+         }
+         ML.latestGalaxy.addEventListener(
+                 GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE,
+                 dispatchRaidStateChangeEvent);
+      }
+
+      private function unregisterOtherEventHandlers(): void
+      {
+         if (ML.latestGalaxy != null)
+         {
+            ML.latestGalaxy.removeEventListener(
+                    GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE,
+                    dispatchRaidStateChangeEvent);
+         }
+         else
+         {
+            ML.removeEventListener(GalaxyEvent.GALAXY_READY,
+                    registerApocalypseEventListener);
+         }
+      }
+
       private function registerTimedUpdateHandler() : void {
          if (!timedUpdateHandlerRegistered) {
             timedUpdateHandlerRegistered = true;
@@ -927,5 +991,10 @@ package models.solarsystem
        * [Optional]</i></p>
        */      
       public var ownerChanged: Date;
+
+      private function dispatchRaidStateChangeEvent(e: GalaxyEvent = null): void
+      {
+         dispatchSimpleEvent(MSSObjectEvent, MSSObjectEvent.RAID_STATE_CHANGE);
+      }
    }
 }

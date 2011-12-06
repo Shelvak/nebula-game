@@ -13,6 +13,7 @@ package models
 
    import models.folliage.BlockingFolliage;
    import models.galaxy.Galaxy;
+   import models.galaxy.events.GalaxyEvent;
    import models.map.MMapSolarSystem;
    import models.map.MapType;
    import models.movement.SquadronsList;
@@ -148,6 +149,10 @@ package models
                _latestGalaxy.cleanup();
             }
             _latestGalaxy = value;
+            if (_latestGalaxy)
+            {
+               dispatchGalaxyReadyEvent();
+            }
          }
       }
       /**
@@ -267,5 +272,13 @@ package models
        * <code>selectedBlockingFolliage</code> are mutually exclusive.
        */
       public var selectedFoliage:BlockingFolliage;
+
+      private function dispatchGalaxyReadyEvent(): void
+      {
+         if (hasEventListener(GalaxyEvent.GALAXY_READY))
+         {
+            dispatchEvent(new GalaxyEvent(GalaxyEvent.GALAXY_READY));
+         }
+      }
    }
 }
