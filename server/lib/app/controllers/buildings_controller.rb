@@ -14,7 +14,7 @@ class BuildingsController < GenericController
   def action_new
     param_options :required => {
       :constructor_id => Fixnum, :x => Fixnum, :y => Fixnum,
-      :type => String, :prepaid => [TrueClass, FalseClass]
+      :type => String, :prepaid => Boolean
     }
 
     raise GameLogicError.new(

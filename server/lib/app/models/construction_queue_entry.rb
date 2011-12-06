@@ -21,19 +21,29 @@ class ConstructionQueueEntry < ActiveRecord::Base
     :check_flag_column => false
   )
 
-  before_save do
-    reduce_resources!(count) if prepaid?
-    true
+  def as_json(options=nil)
+    {
+      'id' => id,
+      'constructable_type' => constructable_type,
+      'constructor_id' => constructor_id,
+      'count' => count,
+      'position' => position,
+      'prepaid' => prepaid?,
+      'params' => params
+    }
   end
 
   # Reduces resources from constructors planet.
   def reduce_resources!(count)
+    raise ArgumentError.new(
+      "Cannot reduce resources if this entry is not prepaid!"
+    ) unless prepaid?
     planet = constructor.planet
     metal_cost, energy_cost, zetium_cost = get_resources(count)
 
     raise GameLogicError.new(
       "Insuffient resources for #{planet}! Wanted to build #{count} of #{
-      type}, needed: metal: #{metal_cost}, energy: #{energy_cost
+      constructable_type}, needed: metal: #{metal_cost}, energy: #{energy_cost
       }, zetium: #{zetium_cost}"
     ) if planet.metal < metal_cost || planet.energy < energy_cost ||
       planet.zetium < zetium_cost
@@ -46,20 +56,24 @@ class ConstructionQueueEntry < ActiveRecord::Base
 
   # Returns resources to constructors planet.
   def return_resources!(count)
-    planet = constructor.planet
+    raise ArgumentError.new(
+      "Cannot return resources if this entry is not prepaid!"
+    ) unless prepaid?
+
     metal_cost, energy_cost, zetium_cost = get_resources(count)
 
-    planet.increase!(
+    constructor.planet.increase!(
       :metal => metal_cost, :energy => energy_cost,
       :zetium => zetium_cost
     )
   end
 
+  # Returns [metal, energy, zetium] required to build _count_ of models.
   def get_resources(count)
     model = constructor.build_model(constructable_type, params)
-    metal_cost = model.metal_cost(level + 1) * count
-    energy_cost = model.energy_cost(level + 1) * count
-    zetium_cost = model.zetium_cost(level + 1) * count
+    metal_cost = model.metal_cost(model.level + 1) * count
+    energy_cost = model.energy_cost(model.level + 1) * count
+    zetium_cost = model.zetium_cost(model.level + 1) * count
 
     [metal_cost, energy_cost, zetium_cost]
   end
@@ -68,7 +82,7 @@ class ConstructionQueueEntry < ActiveRecord::Base
     model.constructor_id == self.constructor_id \
       && model.constructable_type == self.constructable_type \
       && model.player_id == self.player_id \
-      && model.prepaid == self.prepaid \
+      && model.prepaid? == self.prepaid? \
       && model.params == self.params
   end
 
@@ -77,26 +91,24 @@ class ConstructionQueueEntry < ActiveRecord::Base
   def merge!(model)
     transaction do
       self.count += model.count
-      model.destroy!
+      # Don't destroy unsaved records, because callbacks are still fired even
+      # for not saved records and we don't want that.
+      model.destroy! unless model.new_record?
 
       save!
     end
   end
 
-  # Reduce models count by _count_. Give back resources on reducing.
+  # Reduce models count by _count_.
   def reduce!(count)
     self.count -= count
-
-    transaction do
-      return_resources!(count) if prepaid?
-      save!
-    end
+    save!
   end
 
   def to_s
     "<ConstructionQueueEntry id: #{id}, c_id: #{constructor_id}, p_id: #{
-      player_id}, pos: #{position}, count: #{count}, c_type: #{
-      constructable_type}>"
+      player_id}, pos: #{position}, prepaid: #{prepaid?}, count: #{count
+      }, c_type: #{constructable_type}>"
   end
 
   protected

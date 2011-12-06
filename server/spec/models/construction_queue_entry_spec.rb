@@ -1,15 +1,21 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe ConstructionQueueEntry do
+  describe "#as_json" do
+    it_should_behave_like "as json",
+      Factory.create(:construction_queue_entry), nil,
+      %w{id constructable_type constructor_id count position prepaid params},
+      %w{flags}
+  end
+
   describe "find" do
     it "should be ordered by position by default" do
       model1 = Factory.create(:construction_queue_entry, :position => 10)
       model2 = Factory.create(:construction_queue_entry, :position => 5)
       model3 = Factory.create(:construction_queue_entry, :position => 7)
 
-      ConstructionQueueEntry.all.map(&:position).should == [
-        model2, model3, model1
-      ].map(&:position)
+      ConstructionQueueEntry.where(:id => [model1.id, model2.id, model3.id]).
+        map(&:position).should == [model2, model3, model1].map(&:position)
     end
   end
 

@@ -1,4 +1,6 @@
-shared_examples_for "as json" do |model, options, required_fields, ommited_fields|
+shared_examples_for "as json" do
+  |model, options, required_fields, ommited_fields|
+  
   (required_fields || []).each do |attr|
     if attr.is_a?(Array)
       attr, block, title = attr
