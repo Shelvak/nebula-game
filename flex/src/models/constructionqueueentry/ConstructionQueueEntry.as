@@ -42,6 +42,9 @@ package models.constructionqueueentry
       
       [Required]
       public var position: int;
+
+      [Required]
+      public var prepaid: Boolean;
       
       [Required]
       public function set count(value: int): void

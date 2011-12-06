@@ -259,7 +259,9 @@
                        planetId: ML.latestPlanet.id,
                        x: e.building.x, y: e.building.y,
                        type: e.building.type,
-                       constructorId: selectedFacility.id}
+                       constructorId: selectedFacility.id,
+                       //TODO find out this property
+                       prepaid: true}
             ).dispatch();
             waitingForApproval = true;
          }

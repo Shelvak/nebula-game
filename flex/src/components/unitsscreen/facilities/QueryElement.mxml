@@ -26,9 +26,19 @@
          
          import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
-         
+
+         import spark.filters.ColorMatrixFilter;
+
          import utils.assets.AssetNames;
-         
+
+
+         private static const NOT_VALID_FILTER: Array = [
+            new ColorMatrixFilter([0.2, 0, 0, 0, 0, //red
+                                   0, 0.2, 0, 0, 0, //green
+                                   0, 0, 0.2, 0, 0, //blue
+                                   0, 0,   0, 1, 0])
+         ];
+
          private static const FADE_TIME: int = 300;
          [Bindable]
          private var _queryElementModel: ConstructionQueueEntry;
@@ -105,7 +115,9 @@
    <components:CenteredBitmapImage left="16" top="9"
                                    source="{IMG.getImage(AssetNames.getConstructableImageName(
                                    _queryElementModel.constructableType))}" 
-                                   width="{imageSize}" height="{imageSize}"/>
+                                   width="{imageSize}" height="{imageSize}"
+                                   filters="{_queryElementModel.prepaid
+                                   ? [] : NOT_VALID_FILTER}"/>
    
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready_over')}"
                   id="lights" alpha="0"/>

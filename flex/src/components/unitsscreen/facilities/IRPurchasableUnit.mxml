@@ -90,13 +90,13 @@
       private var selectedTimeCost: String = null;
 
       [Bindable]
-      private var qSelectedMetalCost: String = null;
+      private var qSelectedMetalCost: Number = 0;
 
       [Bindable]
-      private var qSelectedEnergyCost: String = null;
+      private var qSelectedEnergyCost: Number = 0;
 
       [Bindable]
-      private var qSelectedZetiumCost: String = null;
+      private var qSelectedZetiumCost: Number = 0;
 
       [Bindable]
       private var qSelectedTimeCost: String = null;
@@ -163,6 +163,8 @@
       [Bindable]
       private var canBeUpgraded: Boolean = false;
       [Bindable]
+      private var selectionCanBeUpgraded: Boolean = false;
+      [Bindable]
       private var enoughStorages: Boolean = false;
       [Bindable]
       private var enoughRates: Boolean = false;
@@ -190,17 +192,23 @@
                        || (selectedZetiumCost > planet.zetium .currentStock)
                        || (populationCost >
                               ML.player.populationMax - ML.player.population));
-               if (!canBeUpgraded) {
+               selectionCanBeUpgraded =
+                  !((qSelectedMetalCost > planet.metal .currentStock)
+                       || (qSelectedEnergyCost > planet.energy.currentStock)
+                       || (qSelectedZetiumCost > planet.zetium .currentStock)
+                       || (populationCost * selector.value >
+                              ML.player.populationMax - ML.player.population));
+               if (!selectionCanBeUpgraded) {
                   enoughStorages =
-                     !(selectedMetalCost > planet.metal.maxStock
-                          || selectedEnergyCost > planet.energy.maxStock
-                          || selectedZetiumCost > planet.zetium.maxStock);
+                     !(qSelectedMetalCost > planet.metal.maxStock
+                          || qSelectedEnergyCost > planet.energy.maxStock
+                          || qSelectedZetiumCost > planet.zetium.maxStock);
                   enoughRates =
-                     !(selectedMetalCost > planet.metal.currentStock
+                     !(qSelectedMetalCost > planet.metal.currentStock
                           && planet.metal.rate <= 0
-                          || selectedEnergyCost > planet.energy.currentStock
+                          || qSelectedEnergyCost > planet.energy.currentStock
                                 && planet.energy.rate <= 0
-                          || selectedZetiumCost > planet.zetium.currentStock
+                          || qSelectedZetiumCost > planet.zetium.currentStock
                                 && planet.zetium.rate <= 0
                           || (Config.getUnitPopulation(type) >
                                  ML.player.populationMax - ML.player.population));
@@ -208,9 +216,9 @@
                      Resource.getTimeToReachResources(planet.metal,
                                                       planet.energy,
                                                       planet.zetium,
-                                                      selectedMetalCost,
-                                                      selectedEnergyCost,
-                                                      selectedZetiumCost)
+                                                      qSelectedMetalCost,
+                                                      qSelectedEnergyCost,
+                                                      qSelectedZetiumCost)
                   );
                }
             }
@@ -234,13 +242,13 @@
          }
 
          selectedMetalCost = calcCost(ResourceType.METAL);
-         qSelectedMetalCost = (selectedMetalCost * selector.value).toString();
+         qSelectedMetalCost = selectedMetalCost * selector.value;
 
          selectedEnergyCost = calcCost(ResourceType.ENERGY);
-         qSelectedEnergyCost = (selectedEnergyCost * selector.value).toString();
+         qSelectedEnergyCost = selectedEnergyCost * selector.value;
 
          selectedZetiumCost = calcCost(ResourceType.ZETIUM);
-         qSelectedZetiumCost = (selectedZetiumCost * selector.value).toString();
+         qSelectedZetiumCost = selectedZetiumCost * selector.value;
 
          populationCost = Config.getUnitPopulation(type);
 
@@ -273,7 +281,8 @@
          new UnitsCommand(UnitsCommand.NEW,
                           {type: type,
                              count: selector.value,
-                             constructorId: facility.id}
+                             constructorId: facility.id,
+                             prepaid: canBeUpgraded}
          ).dispatch();
       }
 
@@ -298,9 +307,9 @@
          recalculateCosts();
          if (isValid) {
             var ptt: PriceToolTip = new PriceToolTip();
-            ptt.qMetalCost = qSelectedMetalCost;
-            ptt.qEnergyCost = qSelectedEnergyCost;
-            ptt.qZetiumCost = qSelectedZetiumCost;
+            ptt.qMetalCost = qSelectedMetalCost.toString();
+            ptt.qEnergyCost = qSelectedEnergyCost.toString();
+            ptt.qZetiumCost = qSelectedZetiumCost.toString();
             ptt.qPopulationCost =
                int(Config.getUnitPopulation(type) * selector.value).toString();
             ptt.qTimeCost = qSelectedTimeCost;
@@ -367,8 +376,11 @@
          
          <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit')}"/>
          <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
-            <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(type))}" 
-                                            width="100%" height="100%"/>
+            <components:CenteredBitmapImage
+                    source="{IMG.getImage(AssetNames.getUnitImageName(type))}"
+                    width="100%" height="100%"
+                    filters="{(ML.player.vipLevel > 0 &amp;&amp; !canBeUpgraded)
+                     ? NOT_VALID_FILTER : []}"/>
          </s:Group>
          <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_over')}"
                         id="lights" alpha="0"/>
@@ -379,7 +391,7 @@
                   type==null
                   ?''
                   :(facility.constructableType == null
-                     ?((canBeUpgraded || !isValid)
+                     ?((selectionCanBeUpgraded || !isValid)
                         ?Localizer.string('Units', type+'.name')
                         :(enoughRates
                            ?(enoughStorages
@@ -393,14 +405,16 @@
          <s:Group id="priceGroup" top="10" left="158" toolTip=" " creationComplete="priceGroup_creationCompleteHandler(event)" 
                   toolTipCreate="createCustomToolTip(event)">
             <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{qSelectedMetalCost}"
-                                labelStyleName="{selectedMetalCost > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"/>
+                                labelStyleName="{qSelectedMetalCost > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"/>
             <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{qSelectedEnergyCost}"
-                                labelStyleName="{selectedEnergyCost > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"/>
+                                labelStyleName="{qSelectedEnergyCost > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"/>
             <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qSelectedZetiumCost}"
-                                labelStyleName="{selectedZetiumCost > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"/>
+                                labelStyleName="{qSelectedZetiumCost > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"/>
             <base:ImageAndLabel type="{ResourceType.POPULATION}" textToDisplay="{Config.getUnitPopulation(type) * selector.value}"
-                                labelStyleName="{Config.getUnitPopulation(type) > 
-                                (ML.player.populationMax - ML.player.population)? 'unsatisfied':null}"/>
+                                labelStyleName="{Config.getUnitPopulation(type) *
+                                selector.value >
+                                (ML.player.populationMax - ML.player.population)
+                                 ? 'unsatisfied' : null}"/>
             <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{qSelectedTimeCost}"/>
             <s:layout>
                <s:VerticalLayout gap="6"/>
@@ -409,21 +423,26 @@
       </s:Group>
       <s:Group left="158" top="{priceGroup.height + 11}" rollOver="rolledOver()"
                filters="{filter}">
-         <s:NumericStepper id="selector" value="1" change="changeHandler(event)" minimum="1"
-                           enabled="{isValid}"
+         <s:NumericStepper id="selector" value="1" change="changeHandler(event)"
+                           minimum="1" enabled="{isValid}"
                            top="2" bottom="0" focusEnabled="false" snapInterval="1"
-                           maximum="{Math.max(1, facility.getQueueEmptySpace())}" width="50" textAlign="right"
-                           rollOver="rolledOver()"
+                           maximum="{Math.max(1, facility.getQueueEmptySpace())}"
+                           width="50" textAlign="right" rollOver="rolledOver()"
                            creationComplete="selector_creationCompleteHandler(event)"/>
          <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin"
                    enabled="{!(
-                   (facility.getQueueEmptySpace() &lt; 1) || 
-                   (!isValid) ||
-                   !(facility.constructableType != null || canBeUpgraded))}"
+                   (facility.getQueueEmptySpace() &lt; 1)
+                   || (!isValid)
+                   || !((facility.constructableType != null
+                           &amp;&amp; ML.player.vipLevel > 0
+                           &amp;&amp; !canBeUpgraded)
+                         || selectionCanBeUpgraded))}"
                    left="{selector.width}" click="bButton_clickHandler(event)"
                    rollOver="rolledOver()"/>
       </s:Group>
-      <s:Label verticalCenter="0" horizontalCenter="0" text="{Localizer.string('Units','label.technologyNeeded')}" fontSize="12" fontWeight="bold" color="#eec500"
+      <s:Label verticalCenter="0" horizontalCenter="0"
+               text="{Localizer.string('Units','label.technologyNeeded')}"
+               fontSize="12" fontWeight="bold" color="#eec500"
                alpha="{isValid?0:1}" id="lblValidation"/>
    </base:SpinnerContainer>
 </s:ItemRenderer>
