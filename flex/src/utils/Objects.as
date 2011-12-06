@@ -393,7 +393,7 @@ package utils
       /**
        * Checks if <code>paramValue</code> is not equal to any of given restricted values. If it is equal at
        * least to one of them, throws <code>ArgumentError</code> error. Operator <code>===</code> is used for
-       * comparision.
+       * comparison.
        * 
        * <p>Format of the error message is: "[param &lt;paramName&gt;] can't be equal to
        * &lt;restrictedValues&gt; but was equal to &lt;paramValue&gt;".
@@ -418,6 +418,36 @@ package utils
          }
          
          return paramValue;
+      }
+
+      /**
+       * Checks if <code>paramValue</code> is equal to at least one value in the
+       * <code>allowedValues</code> array. If that is not the case, throws an
+       * instance of <code>ArgumentError</code>.
+       *
+       * @param paramName name of a <code>paramValue</code> object in a
+       *        context where this method is called
+       * @param paramValue actual parameter value
+       * @param allowedValues values which are legal for <code>paramValue</code>
+       * 
+       * @return <code>paramValue</code>
+       *
+       * @throws ArgumentError if <code>paramValue</code> is not equal to any of
+       * values in <code>restrictedValues</code> array.
+       */
+      public static function paramEquals(paramName: String,
+                                         paramValue: *,
+                                         allowedValues: Array): * {
+         for each (var value: * in allowedValues) {
+            if (paramValue === value) {
+               return paramValue;
+            }
+         }
+         throw new ArgumentError(
+            "[param " + paramName + "] must be equal to at least one "
+               + "value in " + arrayJoin(allowedValues, ", ")
+               + " but was equal to " + toStr(paramValue)
+         );
       }
       
       /**
@@ -599,23 +629,37 @@ package utils
       /* ######################## */
       /* ### FAIL-FAST ERRORS ### */
       /* ######################## */
-      
+
+      /**
+       * @throws flash.errors.IllegalOperationError
+       */
+      public static function throwNotSupportedPropertyError(customMessage:String = null): void {
+         throwIllegalOperationError("Property not supported", customMessage);
+      }
+
+      /**
+       * @throws flash.errors.IllegalOperationError
+       */
+      public static function throwNotSupportedMethodError(customMessage:String = null): void {
+         throwIllegalOperationError("Method not supported", customMessage);
+      }
+
       /**
        * @throws flash.errors.IllegalOperationError
        */
       public static function throwAbstractMethodErrror(customMessage:String = null) : void {
-         throwAbstractMemberAccessError("Method is abstract", customMessage);
+         throwIllegalOperationError("Method is abstract", customMessage);
       }
       
       /**
        * @throws flash.errors.IllegalOperationError
        */
       public static function throwAbstractPropertyError(customMessage:String = null) : void {
-         throwAbstractMemberAccessError("Property is abstract", customMessage);
+         throwIllegalOperationError("Property is abstract", customMessage);
       }
       
-      private static function throwAbstractMemberAccessError(defaultMessage:String,
-                                                             customMessage:String) : void {
+      private static function throwIllegalOperationError(defaultMessage:String,
+                                                         customMessage:String) : void {
          throw new IllegalOperationError(customMessage != null ? customMessage : defaultMessage);
       }
       
