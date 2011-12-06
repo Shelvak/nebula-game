@@ -281,11 +281,10 @@ module Parts
       end
 
       def validate_upgrade_resources
-        planet = SsObject::Planet.find(planet_id)
         if (
           planet.metal < metal_cost(level + 1) \
-          or planet.energy < energy_cost(level + 1) \
-          or planet.zetium < zetium_cost(level + 1)
+          || planet.energy < energy_cost(level + 1) \
+          || planet.zetium < zetium_cost(level + 1)
         )
           raise NotEnoughResources.new("Insuffient resources! Metal: #{
               metal_cost(level + 1)}, energy: #{

@@ -21,24 +21,34 @@
       ]]>
    </fx:Script>      
    <base:ImageAndLabel type="{ResourceType.POPULATION}" id="popIcon"
-                       textToDisplay="{ML.player.population + ' / ' + ML.player.populationMax}"
-                       toolTip="{(!ML.player.populationMaxReached
-                       ? getString('tooltip.populationLeft',
-                       [ML.player.populationMax - ML.player.population,
-                       Config.getMaxPopulation()])
-                       : getString('tooltip.maxPopulationReached',
-                       [ML.player.populationMax - ML.player.population,
-                       ML.player.populationCap, Config.getMaxPopulation()]))
-                       + (ML.player.population > ML.player.populationMax
-                       ? '\n\n' + getString('tooltip.overPopulation', 
-                       [ML.player.overPopulationAntibonus])
-                       :'')}"
-                       paddingRight="9" paddingTop="3" textTopPadding="3"
-                       labelStyleName="{ML.player.populationMaxReached
-                       ?'yellow'
-                       :(ML.player.population >= ML.player.populationMax
-                       ?'unsatisfied'
-                       :null)}"/>
+      textToDisplay="{ML.player.population + ' / ' + ML.player.populationMax}"
+      toolTip="{
+      (
+         ML.player.populationMaxReached
+            ? getString(
+               'tooltip.maxPopulationReached',
+               [ML.player.populationMax - ML.player.population,
+                ML.player.populationCap, Config.getMaxPopulation()]
+              )
+            : getString(
+               'tooltip.populationLeft',
+               [ML.player.populationMax - ML.player.population,
+                Config.getMaxPopulation()]
+              )
+      ) + (
+         ML.player.population > ML.player.populationMax
+            ? '\n\n' + getString(
+               'tooltip.overPopulation', [ML.player.overPopulationAntibonus])
+            : ''
+      )}"
+      paddingRight="9" paddingTop="3" textTopPadding="3"
+      labelStyleName="{ML.player.populationMaxReached
+       ? 'yellow'
+       : (
+         ML.player.population > ML.player.populationMax
+            ? 'unsatisfied' : null
+         )
+     }" />
    <menus:KindUnitsMenu id="space" kind="{UnitKind.SPACE}" visible="{!((width &lt; (space.width + ground.width))
                         || (ML.activeMapType != MapType.PLANET) 
                         || (!ML.latestPlanet.hasActiveSpaceUnits()))}"/>

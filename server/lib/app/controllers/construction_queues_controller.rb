@@ -13,9 +13,10 @@ class ConstructionQueuesController < GenericController
   #
   def action_index
     only_push!
-    param_options :required => %w{constructor_id}
+    param_options :required => {:constructor_id => Fixnum}
 
-    respond :entries => ConstructionQueueEntry.where(
+    respond \
+      :entries => ConstructionQueueEntry.where(
         :constructor_id => params['constructor_id']
       ).all.map(&:as_json),
       :constructor_id => params['constructor_id']
@@ -33,25 +34,26 @@ class ConstructionQueuesController < GenericController
   # Pushes: ACTION_INDEX
   #
   def action_move
-    param_options :required => %w{id position}, :valid => %w{count}
+    param_options :required => {:id => Fixnum, :position => Fixnum},
+                  :valid => %w{count}
 
     entry = get_entry
-    ConstructionQueue.move(entry, params['position'],
-      params['count'])
+    ConstructionQueue.move(entry, params['position'], params['count'])
   end
 
-  # Reduce count from ConstructionQueueEntry.
+  # Reduce count from ConstructionQueueEntry. Returns resources for prepaid
+  # entries.
   #
   # Invokation: by client
   #
-  # Params:
-  #   * id - id of ConstructionQueueEntry
-  #   * count - count to reduce
+  # Parameters:
+  # - id (Fixnum): id of ConstructionQueueEntry
+  # - count (Fixnum): count to reduce
   #
   # Response: None
   #
   def action_reduce
-    param_options :required => %w{id count}
+    param_options :required => {:id => Fixnum, :count => Fixnum}
 
     entry = get_entry
     ConstructionQueue.reduce(entry, params['count'])
