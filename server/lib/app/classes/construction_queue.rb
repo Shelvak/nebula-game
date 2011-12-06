@@ -16,11 +16,14 @@ class ConstructionQueue
   #
   # @param constructor_id [Fixnum]
   # @param constructable_type [String]
-  # @param prepaid [Boolean]
+  # @param prepaid [TrueClass|FalseClass]
   # @param count [Fixnum]
-  # @param params [Hash]
-  def self.push(constructor_id, constructable_type, prepaid, count=1,
-      params=nil)
+  # @param params [Hash|NilClass]
+  def self.push(
+    constructor_id, constructable_type, prepaid, count=1, params=nil
+  )
+    typesig binding,
+            Fixnum, String, Boolean, Fixnum, [Hash, NilClass]
     raise ArgumentError.new("count must be greater than 0!") if count < 1
 
     # Find last entry in constructor queue.
@@ -41,15 +44,17 @@ class ConstructionQueue
 
     return_value = nil
     if model and model.can_merge?(new_model)
+      model.reduce_resources!(count) if prepaid
       model.merge!(new_model)
       return_value = model
     else
+      new_model.reduce_resources!(count) if prepaid
       new_model.save!
       return_value = new_model
     end
 
     EventBroker.fire(
-      ConstructionQueue::Event.new(constructor.id), EventBroker::CHANGED
+      Event::ConstructionQueue.new(constructor_id), EventBroker::CHANGED
     )
 
     return_value
@@ -60,37 +65,44 @@ class ConstructionQueue
     model = ConstructionQueueEntry.where(:constructor_id => constructor_id).
       first
 
-    reduce(model) unless model.nil?
+    reduce(model, 1, false) unless model.nil?
 
     model
   end
 
   # Clear constructor queue.
   def self.clear(constructor_id)
-    ConstructionQueueEntry.where(:constructor_id => constructor_id).
-      each(&:destroy)
+    ConstructionQueueEntry.where(:constructor_id => constructor_id).each do
+      |entry|
+
+      entry.return_resources!(entry.count) if entry.prepaid?
+      entry.destroy!
+    end
   end
 
-  # Reduce _count_ from given _model_ or _model_id_.
+  # Reduce _count_ from given _model_ or _model_id_. Return resources for
+  # prepaid entries.
   #
   # Destroy model if after that count is 0.
-  def self.reduce(model_or_id, count=1)
+  def self.reduce(model_or_id, count=1, return_resources=true)
     model = resolve_model(model_or_id)
 
+    raise GameLogicError.new(
+      "Cannot reduce more (#{count}) than model has (#{model.count})!"
+    ) if count > model.count
+
+    model.return_resources!(count) if return_resources && model.prepaid?
     if count == model.count
       model.destroy!
       merge_outer(model.constructor_id, model.position)
-    elsif count > model.count
-      raise GameLogicError.new(
-        "Cannot reduce more (#{count}) than model has #{model.count}!"
-      )
     else
       model.reduce!(count)
     end
 
     EventBroker.fire(
-      ConstructionQueue::Event.new(model.constructor_id),
-      EventBroker::CHANGED)
+      Event::ConstructionQueue.new(model.constructor_id),
+      EventBroker::CHANGED
+    )
 
     model
   end
@@ -176,7 +188,7 @@ class ConstructionQueue
     end
 
     EventBroker.fire(
-      ConstructionQueue::Event.new(model.constructor_id),
+      Event::ConstructionQueue.new(model.constructor_id),
       EventBroker::CHANGED)
 
     model

@@ -104,7 +104,7 @@ class DispatcherEventHandler
         object.id,
         PlayersController::ACTION_SHOW
       )
-    elsif object.is_a? ConstructionQueue::Event
+    elsif object.is_a? Event::ConstructionQueue
       planet = object.constructor.planet
       @dispatcher.push_to_player(
         planet.player_id,

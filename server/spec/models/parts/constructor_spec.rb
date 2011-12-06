@@ -14,7 +14,7 @@ describe Building::ConstructorTest do
       set_resources(@constructor.planet, 10000, 10000, 10000)
       @type = "Unit::Trooper"
       @params = {'galaxy_id' => @constructor.planet.solar_system.galaxy_id}
-      @data = @constructor.construct!(@type, @params, 3)
+      @data = @constructor.construct!(@type, false, @params, 3)
     end
 
     it "should cancel current constructable" do
@@ -102,8 +102,8 @@ describe Building::ConstructorTest do
       @constructor = Factory.create(:b_constructor_test,
         @args)
       set_resources(@constructor.planet, 10000, 10000, 10000)
-      @building = @constructor.construct!(@type,
-        Factory.attributes_for(:building)
+      @building = @constructor.construct!(
+        @type, false, Factory.attributes_for(:building)
       )
     end
 
@@ -165,10 +165,8 @@ describe Building::ConstructorTest do
     before(:each) do
       @type = 'Building::TestBuilding'
       @args = {:x => 10, :y => 20}
-      @constructor = Factory.create(:b_constructor_test,
-        @args)
-      set_resources(@constructor.planet,
-        10000, 10000, 10000)
+      @constructor = Factory.create(:b_constructor_test, @args)
+      set_resources(@constructor.planet, 10000, 10000, 10000)
     end
 
     it "should call Building::type.new with same args" do
@@ -177,28 +175,27 @@ describe Building::ConstructorTest do
       Building::TestBuilding.should_receive(:new).with(attrs).and_return(
         building
       )
-      @constructor.construct!(@type, attrs)
+      @constructor.construct!(@type, false, attrs)
     end
 
     it "should set constructable" do
-      model = @constructor.construct!(@type,
-        Factory.attributes_for(:building)
+      model = @constructor.construct!(
+        @type, false, Factory.attributes_for(:building)
       )
       @constructor.constructable.should == model
     end
 
     it "should create new building" do
-      @constructor.construct!(@type,
-        Factory.attributes_for(:building)
+      @constructor.construct!(
+        @type, false, Factory.attributes_for(:building)
       ).should be_instance_of(Building::TestBuilding)
     end
 
     describe "if both constructing and queued" do
       before(:each) do
         @count = 5
-        @response = @constructor.construct!("Unit::TestUnit",
-          Factory.attributes_for(:unit),
-          @count
+        @response = @constructor.construct!(
+          "Unit::TestUnit", false, Factory.attributes_for(:unit), @count
         )
       end
 
@@ -221,52 +218,54 @@ describe Building::ConstructorTest do
       building.should_receive(:upgrade!).and_return(true)
       @type.constantize.should_receive(:new).and_return(building)
       
-      @constructor.construct!(@type, @args)
+      @constructor.construct!(@type, false, @args)
     end
 
     it "should set state to working" do
-      @constructor.construct!(@type,
-          :x => 0, :y => 0)
+      @constructor.construct!(@type, false, :x => 0, :y => 0)
       @constructor.state.should == Building::STATE_WORKING
     end
 
     it "should force planet_id if Building is constructed" do
-      @constructor.construct!("Building::TestBuilding",
-        Factory.attributes_for(:building)
+      @constructor.construct!(
+        "Building::TestBuilding", false, Factory.attributes_for(:building)
       ).planet_id.should == @constructor.planet_id
     end
 
-    it "should force location_id if Unit is constructed" do
-      @constructor.construct!("Unit::TestUnit",
-        Factory.attributes_for(:unit)
-      ).location_id.should == @constructor.planet_id
-    end
+    describe "if Unit is constructed" do
+      let(:unit) do
+        @constructor.construct!(
+          "Unit::TestUnit", false, Factory.attributes_for(:unit)
+        )
+      end
 
-    it "should force location_type if Unit is constructed" do
-      @constructor.construct!("Unit::TestUnit",
-        Factory.attributes_for(:unit)
-      ).location_type.should == Location::SS_OBJECT
-    end
+      it "should force location_id if Unit is constructed" do
+        unit.location_id.should == @constructor.planet_id
+      end
 
-    it "should force player_id if Unit is constructed" do
-      @constructor.construct!("Unit::TestUnit",
-        Factory.attributes_for(:unit)
-      ).player_id.should == @constructor.planet.player_id
+      it "should force location_type if Unit is constructed" do
+        unit.location_type.should == Location::SS_OBJECT
+      end
+
+      it "should force player_id if Unit is constructed" do
+        unit.player_id.should == @constructor.planet.player_id
+      end
     end
 
     it "should not allow constructing if constructor is upgrading" do
       opts_upgrading | @constructor
 
       lambda do
-        @constructor.construct!("Building::TestUnconstructable",
+        @constructor.construct!("Building::TestUnconstructable", false,
           :x => @constructor.x_end + 2, :y => 0)
       end.should raise_error(GameLogicError)
     end
 
     it "should not allow upgrading if constructor is constructing" do
       opts_active | @constructor
-      @constructor.construct!(@type,
-        :x => @constructor.x_end + 2, :y => 0)
+      @constructor.construct!(
+        @type, false, :x => @constructor.x_end + 2, :y => 0
+      )
 
       lambda do
         @constructor.upgrade!
@@ -277,8 +276,10 @@ describe Building::ConstructorTest do
       opts_active | @constructor
 
       lambda do
-        @constructor.construct!("Building::TestUnconstructable",
-          :x => @constructor.x_end + 2, :y => 0)
+        @constructor.construct!(
+          "Building::TestUnconstructable", false,
+          :x => @constructor.x_end + 2, :y => 0
+        )
       end.should raise_error(GameLogicError)
     end
 
@@ -289,8 +290,7 @@ describe Building::ConstructorTest do
         'buildings.constructor_test.constructor.items' => []
       ) do
         lambda do
-            @constructor.construct!(@type,
-              :x => @constructor.x_end + 2)
+          @constructor.construct!(@type, false, :x => @constructor.x_end + 2)
         end.should raise_error(GameLogicError)
       end
     end
@@ -299,14 +299,12 @@ describe Building::ConstructorTest do
       opts_inactive | @constructor
         
       lambda do
-        @constructor.construct!(@type,
-          :x => @constructor.x_end + 2)
+        @constructor.construct!(@type, false, :x => @constructor.x_end + 2)
       end.should raise_error(GameLogicError)
     end
 
     it "should build if constructor is activated" do
-      building = @constructor.construct!(@type,
-        :x => 0, :y => 0)
+      building = @constructor.construct!(@type, false, :x => 0, :y => 0)
       building.should be_instance_of(Building::TestBuilding)
     end
 
@@ -315,34 +313,33 @@ describe Building::ConstructorTest do
 
       params = {:x => @constructor.x_end + 2, :y => 0}
 
-      ConstructionQueue.should_receive(:push).with(@constructor.id,
-        @type, 1, params.merge(
+      ConstructionQueue.should_receive(:push).with(
+        @constructor.id, @type, false, 1, params.merge(
           @constructor.send(:params_for_type, @type)
         )
       )
-      @constructor.construct!(@type, params)
+      @constructor.construct!(@type, false, params)
     end
 
     it "should return ConstructionQueueEntry if queued" do
       opts_working | @constructor
 
       params = {:x => @constructor.x_end + 2, :y => 0}
-      @constructor.construct!(@type, params).should be_instance_of(
-        ConstructionQueueEntry)
+      @constructor.construct!(@type, false, params).
+        should be_instance_of(ConstructionQueueEntry)
     end
-
 
     it "should not allow constructing if queue is full" do
       opts_working | @constructor
 
       params = {'x' => @constructor.x_end + 2, 'y' => 0}
-      @constructor.construct!(@type, params.merge('y' => 2))
-      @constructor.construct!(@type, params.merge('y' => 4))
-      @constructor.construct!(@type, params.merge('y' => 6))
+      @constructor.construct!(@type, false, params.merge('y' => 2))
+      @constructor.construct!(@type, false, params.merge('y' => 4))
+      @constructor.construct!(@type, false, params.merge('y' => 6))
 
       with_config_values "buildings.constructor_test.queue.max" => 3 do
         lambda do
-          @constructor.construct!(@type, params)
+          @constructor.construct!(@type, false, params)
         end.should raise_error(GameLogicError)
       end
     end
@@ -351,7 +348,7 @@ describe Building::ConstructorTest do
       params = {'x' => @constructor.x_end + 2, 'y' => 0}
 
       with_config_values "buildings.constructor_test.queue.max" => 2 do
-        hash = @constructor.construct!(@type, params, 10)
+        hash = @constructor.construct!(@type, false, params, 10)
         hash[:model].should_not be_nil
         hash[:construction_queue_entry].count.should == 2
       end
@@ -361,10 +358,10 @@ describe Building::ConstructorTest do
       opts_working | @constructor
 
       params = {'x' => @constructor.x_end + 2, 'y' => 0}
-      @constructor.construct!(@type, params.merge('y' => 2))
+      @constructor.construct!(@type, false, params.merge('y' => 2))
 
       with_config_values "buildings.constructor_test.queue.max" => 2 do
-        entry = @constructor.construct!(@type, params, 10)
+        entry = @constructor.construct!(@type, false, params, 10)
         entry.count.should == 1
       end
     end
@@ -377,7 +374,7 @@ describe Building::ConstructorTest do
 
       with_config_values "buildings.constructor_test.queue.max" => 0 do
         lambda do
-          @constructor.construct!(@type, params)
+          @constructor.construct!(@type, false, params)
         end.should_not raise_error(GameLogicError)
       end
     end
@@ -391,8 +388,8 @@ describe Building::ConstructorTest do
       @constructor = Factory.create(:b_constructor_test,
         :x => 10, :y => 20, :planet => @planet)
       set_resources(@constructor.planet, 10000, 10000, 10000)
-      @building = @constructor.construct!(@type,
-        Factory.attributes_for(:building)
+      @building = @constructor.construct!(
+        @type, false, Factory.attributes_for(:building)
       )
     end
 
@@ -647,7 +644,7 @@ describe Building::ConstructorTest do
     end
 
     it "should set level to 0" do
-      @model.send(:construct_model!, "Unit::TestUnit",
+      @model.send(:construct_model!, "Unit::TestUnit", false,
         :player_id => @player.id,
         :location_id => @model.planet_id,
         :location_type => Location::SS_OBJECT,
@@ -661,7 +658,7 @@ describe Building::ConstructorTest do
       end
 
       it "should add construction mod for units" do
-        unit = @model.send(:construct_model!, "Unit::TestUnit",
+        unit = @model.send(:construct_model!, "Unit::TestUnit", false,
           :player_id => @player.id,
           :location_id => @model.planet_id,
           :location_type => Location::SS_OBJECT,
@@ -672,7 +669,7 @@ describe Building::ConstructorTest do
 
       it "should add construction mod for buildings" do
         building = @model.send(:construct_model!, "Building::TestBuilding",
-          :x => 0, :y => 0, :planet_id => @model.planet_id)
+          false, :x => 0, :y => 0, :planet_id => @model.planet_id)
         building.construction_mod.should == @model.constructor_mod
       end
 
@@ -682,7 +679,7 @@ describe Building::ConstructorTest do
           'buildings.constructor_test.mod.construction' => '10 * level'
         ) do
           building = @model.send(:construct_model!, "Building::TestBuilding",
-            :x => 0, :y => 0, :planet_id => @model.planet_id)
+            false, :x => 0, :y => 0, :planet_id => @model.planet_id)
           building.construction_mod.should == 10
         end
       end
@@ -694,8 +691,8 @@ describe Building::ConstructorTest do
       Building::TestBuilding.stub!(:new).and_return(building)
 
       should_fire_event(building, EventBroker::CREATED) do
-        @model.send(:construct_model!, "Building::TestBuilding",
-          :x => 0, :y => 0)
+        @model.send(:construct_model!, "Building::TestBuilding", false,
+                    :x => 0, :y => 0)
       end
     end
 
@@ -709,13 +706,13 @@ describe Building::ConstructorTest do
           @model, CallbackManager::EVENT_CONSTRUCTION_FINISHED,
           building.upgrade_ends_at
         )
-        @model.send(:construct_model!, "Building::TestBuilding",
+        @model.send(:construct_model!, "Building::TestBuilding", false,
           :x => 0, :y => 0)
       end
 
       it "should not do it if clearing construction" do
         CallbackManager.should_not_receive(:register)
-        @model.send(:construct_model!, nil, nil)
+        @model.send(:construct_model!, nil, nil, nil)
       end
     end
   end

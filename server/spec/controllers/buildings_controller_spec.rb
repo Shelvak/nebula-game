@@ -274,7 +274,7 @@ describe BuildingsController do
       @planet = Factory.create(:planet, :player => player)
       @building = Factory.create(:b_headquarters, opts_active + 
           {:planet => @planet})
-      @constructable = @building.construct!("Building::Barracks",
+      @constructable = @building.construct!(Building::Barracks.to_s, false,
         :x => 10, :y => 10)
       
       @action = "buildings|accelerate_constructor"
@@ -321,7 +321,7 @@ describe BuildingsController do
       @planet = Factory.create(:planet, :player => player)
       @building = Factory.create(:b_headquarters, opts_active + 
           {:planet => @planet})
-      @constructable = @building.construct!("Building::Barracks",
+      @constructable = @building.construct!("Building::Barracks", false,
         :x => 10, :y => 10)
       
       @action = "buildings|cancel_constructor"

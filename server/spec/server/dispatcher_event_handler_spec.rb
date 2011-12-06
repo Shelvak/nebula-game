@@ -109,7 +109,7 @@ describe DispatcherEventHandler do
     it "should handle changed construction queue" do
       planet = Factory.create(:planet_with_player)
       constructor = Factory.create(:b_constructor_test, :planet => planet)
-      obj = ConstructionQueue::Event.new(constructor.id)
+      obj = Event::ConstructionQueue.new(constructor.id)
 
       @dispatcher.should_receive(:push_to_player).with(
         planet.player_id,

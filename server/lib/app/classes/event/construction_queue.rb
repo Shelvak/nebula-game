@@ -1,4 +1,4 @@
-class ConstructionQueue::Event
+class Event::ConstructionQueue
   attr_reader :constructor_id
 
   def initialize(constructor_id)

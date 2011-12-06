@@ -143,6 +143,9 @@ module Parts::Constructor
     # free slot count.
     #
     def construct!(type, prepaid, params={}, count=1)
+      #typesig binding,
+      #        String, Boolean, Hash, Fixnum
+
       raise Building::BuildingInactiveError if inactive?
       raise GameLogicError.new(
         "Constructor #{self.class.to_s} cannot construct #{type}!"
@@ -275,6 +278,12 @@ module Parts::Constructor
       params
     end
 
+    def build_model(type, params)
+      model = type.constantize.new(params)
+      model.level = 0
+      model
+    end
+
     private
     # @param type [String]
     # @param prepaid [Boolean]
@@ -282,7 +291,7 @@ module Parts::Constructor
     # @param params [Hash]
     # @return [ConstructionQueueEntry]
     def enqueue!(type, prepaid, count, params)
-      ConstructionQueue.push(id, type, count, params)
+      ConstructionQueue.push(id, type, prepaid, count, params)
     end
 
     def construct_model!(type, prepaid, params)
@@ -313,12 +322,6 @@ module Parts::Constructor
       EventBroker.fire(self, EventBroker::CHANGED,
         EventBroker::REASON_CONSTRUCTABLE_CHANGED)
 
-      model
-    end
-
-    def build_model(type, params)
-      model = type.constantize.new(params)
-      model.level = 0
       model
     end
 

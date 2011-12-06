@@ -19,11 +19,11 @@ describe ConstructionQueuesController do
     @planet = Factory.create :planet, :player => player
     @constructor = Factory.create :b_constructor_test, :planet => @planet
     @type = "Unit::TestUnit"
-    @uq1 = ConstructionQueue.push(@constructor.id, @type + "1", 100)
-    @uq2 = ConstructionQueue.push(@constructor.id, @type + "2", 100)
-    @uq3 = ConstructionQueue.push(@constructor.id, @type + "3", 100)
-    @uq4 = ConstructionQueue.push(@constructor.id, @type + "4", 100)
-    @uq5 = ConstructionQueue.push(@constructor.id, @type + "5", 100)
+    @uq1 = ConstructionQueue.push(@constructor.id, @type + "1", false, 100)
+    @uq2 = ConstructionQueue.push(@constructor.id, @type + "2", false, 100)
+    @uq3 = ConstructionQueue.push(@constructor.id, @type + "3", false, 100)
+    @uq4 = ConstructionQueue.push(@constructor.id, @type + "4", false, 100)
+    @uq5 = ConstructionQueue.push(@constructor.id, @type + "5", false, 100)
   end
 
   describe "construction_queues|index" do
