@@ -4323,9 +4323,6 @@
     <label.count value="Skaits:" />
     <label.current value="Pašreizējais" />
     <label.queued value="Rindā" />
-    <!-- These two have to be short, because they are in large font. -->
-    <label.dropItems.build value="Nomest priekšmetus šeit, lai būvētu!" />
-    <label.dropItems.queue value="Nomest priekšmetus šeit, lai ierindotu!" />
     <label.fullQueue value="Būvniecības rinda ir pilna" />
     <label.notEnoughResources value="Nepietiek resursu" />
     <label.notEnoughStorage value="Nepietiek vietas" />
