@@ -5,9 +5,19 @@
                 xmlns:mx="library://ns.adobe.com/flex/halo" 
                 addedToStage="itemrenderer1_addedToStageHandler(event)"
                 removedFromStage="itemrenderer1_removedFromStageHandler(event)"
-                toolTip="{_data.demo?Localizer.string('BuildingSidebar','queueFull')
-                :(_data.disabled?Localizer.string('BuildingSidebar','disabled')
-                :(_data.type?Localizer.string('Buildings',_data.type+'.tooltip'):''))}"
+                toolTip="{_data.demo
+                  ? Localizer.string('BuildingSidebar','queueFull')
+                  : (_data.disabled
+                     ? (_data.constructing
+                        ? Localizer.string('BuildingSidebar',
+                           'tooltip.becomeVipToQueue')
+                        : Localizer.string('BuildingSidebar','disabled'))
+                     : (_data.query
+                        ? Localizer.string('BuildingSidebar',
+                              'tooltip.willBeQueued')
+                        : (_data.type
+                           ? Localizer.string('Buildings', _data.type + '.tooltip')
+                           : '')))}"
                 xmlns:components="utils.components.*" width="95" height="80">	
    <fx:Script>
       <![CDATA[
@@ -73,21 +83,24 @@
          {
             if (_data && ML.latestPlanet && ML.latestPlanet.ssObject)
             {
-               if (_data.constructing)
+               var planet:MSSObject = ML.latestPlanet.ssObject;
+               function calcCost(resourceType:String) : Number
+               {
+                  return Upgradable.calculateCost(UpgradableType.BUILDINGS, _data.type,
+                     resourceType, {"level": 1});
+               }
+               if (_data.constructing && ML.player.vipLevel > 0)
                {
                   _data.disabled = false;
+                  _data.query = calcCost(ResourceType.METAL)  > planet.metal.currentStock  ||
+                        calcCost(ResourceType.ENERGY) > planet.energy.currentStock ||
+                        calcCost(ResourceType.ZETIUM) > planet.zetium.currentStock;
                }
                else
                {
-                     var planet:MSSObject = ML.latestPlanet.ssObject;
-                     function calcCost(resourceType:String) : Number
-                     {
-                        return Upgradable.calculateCost(UpgradableType.BUILDINGS, _data.type,
-                           resourceType, {"level": 1});
-                     }
-                     _data.disabled = calcCost(ResourceType.METAL)  > planet.metal.currentStock  ||
-                        calcCost(ResourceType.ENERGY) > planet.energy.currentStock ||
-                        calcCost(ResourceType.ZETIUM) > planet.zetium.currentStock;
+                  _data.disabled = calcCost(ResourceType.METAL)  > planet.metal.currentStock  ||
+                     calcCost(ResourceType.ENERGY) > planet.energy.currentStock ||
+                     calcCost(ResourceType.ZETIUM) > planet.zetium.currentStock;
                }
             }
          }
@@ -117,7 +130,12 @@
       <components:CenteredBitmapImage
          left="0" top="0" 
          right="0" bottom="0"       
-         filters="{_data.disabled?Filters.RED_FILTER:(_data.demo?Filters.GREY_FILTER:[])}"
+         filters="{_data.disabled
+            ? Filters.RED_FILTER
+            : (_data.demo
+               ? Filters.GREY_FILTER
+               : (_data.query
+                  ? Filters.GRAYSCALE : []))}"
          source="{IMG.getImage(AssetNames.getBuildingImageName(_data.type))}"/>
       <s:Button id="infoButton" right="0"  bottom="0" click="showInfoScreen(event)"
                 skinClass="components.skins.InfoButtonSkin"/>

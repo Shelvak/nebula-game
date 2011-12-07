@@ -635,6 +635,16 @@
     <label.noPlayerUnits>
       <p>You can not claim this planet because you don't have any units in it</p>
     </label.noPlayerUnits>
+
+    <tooltip.willBeQueued>
+      <p>This building will be added to queue.</p>
+      <p>However it is not paid for and will be cancelled if you don't have
+      enough resources at the construction time.</p>
+    </tooltip.willBeQueued>
+
+    <tooltip.becomeVipToQueue>
+      <p>Only VIP players can add buildings to the queue without paying first.</p>
+    </tooltip.becomeVipToQueue>
     <!-- /TODO -->
 
     <deselectButtonText value="deselect building" />
@@ -4211,6 +4221,7 @@
     <tooltip.becomeVipToQueue>
       <p>Only VIP players can add units to the queue without paying first.</p>
     </tooltip.becomeVipToQueue>
+
     <title.hide value="Hide units"/>
     <tooltip.hidden>
       <p>Hide</p>

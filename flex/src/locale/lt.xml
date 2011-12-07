@@ -592,6 +592,16 @@
       <p>Tu negali perimti šios planetos, nes neturi joje savo karių</p>
     </label.noPlayerUnits>
 
+    <tooltip.willBeQueued>
+      <p>Šis pastatas bus įdėtas į statymo eilę.</p>
+      <p>Už pastatą nebus sumokėta iš anksto ir jo statyba bus atšaukta jei
+        statymo metu Tau pritruks resursų.</p>
+    </tooltip.willBeQueued>
+
+    <tooltip.becomeVipToQueue>
+      <p>Tik VIP nariai gali dėti pastatus į eilę nesumokėję iš anksto.</p>
+    </tooltip.becomeVipToQueue>
+
     <deselectButtonText value="atžymėti pastatą" />
 
     <noFacilities value="Nėra statančių pastatų." />
