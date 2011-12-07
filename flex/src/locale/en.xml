@@ -3982,6 +3982,15 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
+    <tooltip.willBeQueued>
+      <p>These units will be added to queue.</p>
+      <p>However they are not paid for and will be cancelled if you don't have
+      enough resources at the construction time.</p>
+    </tooltip.willBeQueued>
+    <tooltip.becomeVipToQueue>
+      <p>Only VIP players can add units to the queue without paying first.</p>
+    </tooltip.becomeVipToQueue>
+
     <title.hide value="Hide units"/>
     <tooltip.hidden>
       <p>Hide</p>
@@ -4025,12 +4034,12 @@
     </tooltip.buildInFlank2>
 
     <tooltip.buildHidden>
-      <p>Your units will be built hidden.</p>
+      <p>Your units will be built not hidden.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildHidden>
 
     <tooltip.buildNotHidden>
-      <p>Your units will be built not hidden.</p>
+      <p>Your units will be built hidden.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildNotHidden>
     

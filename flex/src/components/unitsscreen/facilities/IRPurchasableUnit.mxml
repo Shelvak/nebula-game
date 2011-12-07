@@ -20,6 +20,7 @@
    
    <fx:Script>
       <![CDATA[
+      import components.base.Filters;
       import components.unitsscreen.NoToolTip;
 
       import com.developmentarc.core.utils.EventBroker;
@@ -365,6 +366,11 @@
          fadeOut.stop();
          fadeIn.play();
       }
+
+      private function getString (prop: String,  params: Array = null): String
+      {
+         return Localizer.string('Units', prop,  params);
+      }
       ]]>
    </fx:Script>
    <base:SpinnerContainer busy="{purchasePending}" top="0" left="0" right="0" bottom="0"  timeoutEnabled="false">
@@ -374,48 +380,62 @@
                fadeOut.play()"
                filters="{filter}">
          
-         <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit')}"/>
+         <s:BitmapImage source="{IMG.getImage(
+            AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit')}"/>
          <s:Group width="{imageSize}" height="{imageSize}" left="16" top="9">
             <components:CenteredBitmapImage
                     source="{IMG.getImage(AssetNames.getUnitImageName(type))}"
                     width="100%" height="100%"
                     filters="{(ML.player.vipLevel > 0 &amp;&amp; !canBeUpgraded)
-                     ? NOT_VALID_FILTER : []}"/>
+                     ? Filters.GRAYSCALE : []}"/>
          </s:Group>
-         <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_over')}"
+         <s:BitmapImage source="{IMG.getImage(
+            AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_over')}"
                         id="lights" alpha="0"/>
          <s:Button skinClass="components.skins.InfoButtonSkin" left="120" bottom="30"
                    click="info_clickHandler(event)"/>
          
-         <s:Label id="bottomLabel" horizontalCenter="0" text="{
-                  type==null
-                  ?''
-                  :(facility.constructableType == null
-                     ?((selectionCanBeUpgraded || !isValid)
-                        ?Localizer.string('Units', type+'.name')
-                        :(enoughRates
-                           ?(enoughStorages
-                              ?Localizer.string('Units', 'label.enoughIn', [resLeft])
-                              :Localizer.string('Units', 'label.notEnoughStorage'))
-                           :Localizer.string('Units', 'label.notEnoughResources')))
-                     :(facility.getQueueEmptySpace() &lt; 1
-                        ?Localizer.string('Units', 'label.fullQueue')
-                        :Localizer.string('Units', type+'.name')))}" bottom="5"/>
+         <s:Label id="bottomLabel" horizontalCenter="0"
+                  text="{type == null
+                     ? ''
+                     : (facility.getQueueEmptySpace() &lt; 1
+                        ? getString('label.fullQueue')
+                        : (selectionCanBeUpgraded || !isValid)
+                           ? getString(type+'.name')
+                           : (enoughRates
+                              ? (enoughStorages
+                                 ? getString('label.enoughIn', [resLeft])
+                                 : getString('label.notEnoughStorage'))
+                              : getString('label.notEnoughResources')))}"
+                  bottom="5"/>
          
-         <s:Group id="priceGroup" top="10" left="158" toolTip=" " creationComplete="priceGroup_creationCompleteHandler(event)" 
+         <s:Group id="priceGroup" top="10" left="158" toolTip=" "
+                  creationComplete="priceGroup_creationCompleteHandler(event)"
                   toolTipCreate="createCustomToolTip(event)">
-            <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{qSelectedMetalCost}"
-                                labelStyleName="{qSelectedMetalCost > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"/>
-            <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{qSelectedEnergyCost}"
-                                labelStyleName="{qSelectedEnergyCost > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"/>
-            <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{qSelectedZetiumCost}"
-                                labelStyleName="{qSelectedZetiumCost > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"/>
-            <base:ImageAndLabel type="{ResourceType.POPULATION}" textToDisplay="{Config.getUnitPopulation(type) * selector.value}"
+            <base:ImageAndLabel type="{ResourceType.METAL}"
+                                textToDisplay="{qSelectedMetalCost}"
+                                labelStyleName="{qSelectedMetalCost >
+                                ML.latestPlanet.ssObject.metal.currentStock
+                                ? 'unsatisfied' : null}"/>
+            <base:ImageAndLabel type="{ResourceType.ENERGY}"
+                                textToDisplay="{qSelectedEnergyCost}"
+                                labelStyleName="{qSelectedEnergyCost >
+                                ML.latestPlanet.ssObject.energy.currentStock
+                                ? 'unsatisfied' : null}"/>
+            <base:ImageAndLabel type="{ResourceType.ZETIUM}"
+                                textToDisplay="{qSelectedZetiumCost}"
+                                labelStyleName="{qSelectedZetiumCost >
+                                ML.latestPlanet.ssObject.zetium.currentStock
+                                ? 'unsatisfied' : null}"/>
+            <base:ImageAndLabel type="{ResourceType.POPULATION}"
+                                textToDisplay="{Config.getUnitPopulation(type) *
+                                selector.value}"
                                 labelStyleName="{Config.getUnitPopulation(type) *
                                 selector.value >
                                 (ML.player.populationMax - ML.player.population)
                                  ? 'unsatisfied' : null}"/>
-            <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{qSelectedTimeCost}"/>
+            <base:ImageAndLabel type="{ResourceType.TIME}"
+                                textToDisplay="{qSelectedTimeCost}"/>
             <s:layout>
                <s:VerticalLayout gap="6"/>
             </s:layout>
@@ -429,19 +449,26 @@
                            maximum="{Math.max(1, facility.getQueueEmptySpace())}"
                            width="50" textAlign="right" rollOver="rolledOver()"
                            creationComplete="selector_creationCompleteHandler(event)"/>
-         <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin"
-                   enabled="{!(
-                   (facility.getQueueEmptySpace() &lt; 1)
-                   || (!isValid)
-                   || !((facility.constructableType != null
-                           &amp;&amp; ML.player.vipLevel > 0
-                           &amp;&amp; !canBeUpgraded)
-                         || selectionCanBeUpgraded))}"
-                   left="{selector.width}" click="bButton_clickHandler(event)"
-                   rollOver="rolledOver()"/>
+         <s:Group left="{selector.width}"
+                  toolTip="{facility.getQueueEmptySpace() &lt; 1 || canBeUpgraded
+                     ? ''
+                     : (ML.player.vipLevel > 0
+                        ? getString('tooltip.willBeQueued')
+                        : getString('tooltip.becomeVipToQueue'))}">
+            <s:Button id="bButton" skinClass="components.skins.BuildButtonSkin"
+                      enabled="{!(
+                      (facility.getQueueEmptySpace() &lt; 1)
+                      || (!isValid)
+                      || !((facility.constructableType != null
+                              &amp;&amp; ML.player.vipLevel > 0
+                              &amp;&amp; !canBeUpgraded)
+                            || selectionCanBeUpgraded))}"
+                      click="bButton_clickHandler(event)"
+                      rollOver="rolledOver()"/>
+         </s:Group>
       </s:Group>
       <s:Label verticalCenter="0" horizontalCenter="0"
-               text="{Localizer.string('Units','label.technologyNeeded')}"
+               text="{getString('label.technologyNeeded')}"
                fontSize="12" fontWeight="bold" color="#eec500"
                alpha="{isValid?0:1}" id="lblValidation"/>
    </base:SpinnerContainer>

@@ -4039,6 +4039,15 @@
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
 
+    <tooltip.willBeQueued>
+      <p>Šie kariai bus įdėti į statymo eilę.</p>
+      <p>Už karius nebus sumokėta iš anksto ir jų apmokymas bus atšauktas jei
+        statymo metu Tau pritruks resursų.</p>
+    </tooltip.willBeQueued>
+    <tooltip.becomeVipToQueue>
+      <p>Tik VIP nariai gali dėti karius į eilę nesumokėję iš anksto.</p>
+    </tooltip.becomeVipToQueue>
+
     <title.hide value="Paslėpti karius"/>
     <tooltip.hidden>
       <p>Slėpti</p>
