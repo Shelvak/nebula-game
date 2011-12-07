@@ -5,7 +5,10 @@ package models.constructionqueueentry
    import flash.events.Event;
    
    import models.BaseModel;
-   
+   import models.building.Building;
+   import models.parts.Upgradable;
+   import models.parts.UpgradableType;
+
    import utils.ModelUtil;
    import utils.locale.Localizer;
    
@@ -45,6 +48,27 @@ package models.constructionqueueentry
 
       [Required]
       public var prepaid: Boolean;
+
+      public function getConstructionTime(constructionMod: Number): int
+      {
+         var cTime: int = 0;
+         if (isUnit) {
+            cTime = count * Upgradable.calculateUpgradeTime(
+               UpgradableType.UNITS,
+               ModelUtil.getModelSubclass(constructableType),
+               {"level": 1}, constructionMod);
+         }
+         else {
+            var ghost: Building = Building(ML.latestPlanet.getObject(
+               params.x, params.y));
+            if (ghost != null) {
+               cTime = Upgradable.calculateUpgradeTime(UpgradableType.BUILDINGS,
+                  ModelUtil.getModelSubclass(constructableType), {"level": 1},
+                     ghost.constructionMod + constructionMod);
+            }
+         }
+         return cTime;
+      }
       
       [Required]
       public function set count(value: int): void

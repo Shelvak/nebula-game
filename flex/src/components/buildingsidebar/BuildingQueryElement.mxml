@@ -10,6 +10,8 @@
       <![CDATA[
       import com.developmentarc.core.utils.EventBroker;
 
+      import components.base.Filters;
+
       import controllers.constructionqueues.ConstructionQueuesCommand;
       import controllers.objects.ObjectClass;
 
@@ -72,37 +74,12 @@
                var totalTime: Number = 0;
                totalTime += constructable.upgradePart.timeToFinish;
                for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries) {
-                  if (queueEntry.position < _queryElementModel.position) {
-                     if (queueEntry.isUnit) {
-                        totalTime +=
-                           queueEntry.count * Upgradable.calculateUpgradeTime(
-                              UpgradableType.UNITS,
-                              ModelUtil.getModelSubclass(
-                                 queueEntry.constructableType
-                              ),
-                              {"level": 1},
-                              constructor.constructorMod
-                                 + BuildingUpgradable
-                                      .getConstructionMod(constructor.type,
-                                                          constructor.level)
-                           );
-                     }
-                     else {
-                        var ghost: Building =
-                               ML.latestPlanet.getObject(
-                                  queueEntry.params.x,
-                                  queueEntry.params.y
-                               ) as Building;
-                        if (ghost != null) {
-                           totalTime += Upgradable.calculateUpgradeTime(
-                              UpgradableType.BUILDINGS,
-                              ModelUtil.getModelSubclass
-                                 (queueEntry.constructableType),
-                              {"level": 1},
-                              ghost.constructionMod + constructor.constructorMod
-                           );
-                        }
-                     }
+                  if (queueEntry.position <= _queryElementModel.position) {
+                     totalTime += queueEntry.getConstructionTime(queueEntry.isUnit
+                        ? constructor.constructorMod
+                           + BuildingUpgradable.getConstructionMod(
+                               constructor.type, constructor.level)
+                        : constructor.constructorMod)
                   }
                }
                timeLeft = DateUtil.secondsToHumanString(totalTime, 2);
@@ -190,7 +167,9 @@
       </s:Rect>
       <components:CenteredBitmapImage left="1" top="1" right="1" bottom="1" id="buildingImage"
                                       source="{IMG.getImage(AssetNames.getConstructableImageName(_queryElementModel.constructableType))}"
-                                      rollOver="hovered = true" rollOut="hovered = false"/>
+                                      rollOver="hovered = true" rollOut="hovered = false"
+                                      filters="{_queryElementModel.prepaid
+                                        ? [] : Filters.GRAYSCALE}"/>
       <s:Group visible="{_queryElementModel.count > 1}" top="1" left="1" 
                width="{countLbl.width + 4}">
          <ui:DarkRoundedBackground top="0" bottom="0" left="0" right="0"/>
