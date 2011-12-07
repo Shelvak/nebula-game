@@ -4240,6 +4240,7 @@
       value="{0 one[? diena] tens[? dienų] many[? dienos]} po apokalipsės" />
     <label.resources value="Resursai" />
     <label.transferResources value="Perkelti" />
+    <label.cancelPrepaid value="Tu gausi"/>
     <!-- 0 - resources string, 1 - 'is' or 'are' 
     in lt we dont use parameter 1 -->
     <label.planetFull>

@@ -4404,6 +4404,8 @@
     <label.manage value="Pārvaldīt" />
     <label.withPlanets value="Ar {0} planētām" />
     <!-- TODO -->
+    <label.cancelPrepaid value="You will get"/>
+
     <label.withPlanetsOrMore value="With {0} planets or more" />
     <label.afterDays value="{0 one[? day] many[? days]} after apocalypse" />
     <!-- /TODO -->

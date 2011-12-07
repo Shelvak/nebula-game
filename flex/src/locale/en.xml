@@ -4108,6 +4108,8 @@
     <defensivePool.maxVolume value="Max power:" />
     <defensivePool.pickUnits value="Show other" />
 
+    <label.cancelPrepaid value="You will get"/>
+
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
     <label.current value="Current" />
