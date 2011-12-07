@@ -200,7 +200,17 @@
             </s:Group>
          </base:Scroller>    
       </s:Group>
-      
+
+      <s:Group width="100%">
+         <s:Label text="{getString('label.additionalPrivileges')}" fontSize="14"
+                 color="#eec500" fontWeight="bold"/>
+         <s:Label text="{getString('label.queueBuilding')}" fontSize="10"
+                 paddingLeft="6"/>
+         <s:layout>
+            <s:VerticalLayout paddingLeft="3"/>
+         </s:layout>
+      </s:Group>
+
       <s:Group width="100%">
          <base:Warning text="{getString('warning.becomeVIP')}"
                        paddingTop="20" horizontalCenter="0" width="90%"

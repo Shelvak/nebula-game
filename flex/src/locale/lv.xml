@@ -1311,6 +1311,11 @@
     </label.notEnough>
     <warning.notEnoughVipCreds 
     value="Lai pārvērstu VIP kredītus, jums jābūt vismaz {0}" />
+    <!-- TODO -->
+    <label.additionalPrivileges value="You will also get these privileges:"/>
+    <label.queueBuilding
+    value="Adding buildings and units to construction queue without paying first"/>
+    <!-- /TODO -->
   </Credits>
 
   <Exploration>
