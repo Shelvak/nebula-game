@@ -60,8 +60,12 @@ object Finder {
           "from jumpgates cannot be Empty if travelling outside SS!"
         )
 
-      locations ++= findInSolarSystem(fromPoint, sourceJumpgates,
-                                      avoidablePoints)
+      locations ++= findInSolarSystem(
+        fromPoint, sourceJumpgates,
+        // When selecting source solar system jumpgate don't skip it if it is
+        // our current location.
+        avoidablePoints.map { points => points.filterNot(_ == fromPoint) }
+      )
 
       // Switch traveling source to galaxy.
       current = GalaxyPoint(
@@ -95,10 +99,16 @@ object Finder {
         sys.error(
           "Target jumpgates must be defined if jumping to other SS!"
         )
-      val toJumpgate = nearestFor(target match {
+      val toJumpgate = nearestFor(
+        target match {
           case p: Planet => p.solarSystemPoint
           case ssp: SolarSystemPoint => ssp
-      }, targetJumpgates, avoidablePoints)
+        },
+        targetJumpgates,
+        // When selecting target solar system jumpgate don't skip it if it is
+        // our target.
+        avoidablePoints.map { points => points.filterNot(_ == target) }
+      )
 
       // Travel to the SS we're jumping to
       locations ++= findInGalaxy(
@@ -189,12 +199,13 @@ object Finder {
     val avoidableInSs = filterAvoidablePoints(source.solarSystem,
                                               avoidablePoints)
 
-    val filteredDestinations = destinations.filter { destination =>
-      avoidableInSs match {
-        case None => true
-        // Only keep this point if it's not in the avoidable list.
-        case Some(points) => ! points.contains(destination.coords)
-      }
+    val filteredDestinations = avoidableInSs match {
+      case None => destinations
+      case Some(points) =>
+        destinations.filter { destination =>
+          // Only keep this point if it's not in the avoidable list.
+          ! points.contains(destination.coords)
+        }
     }
 
     // Use original destinations if filtered destinations are empty.

@@ -819,6 +819,12 @@ describe SpaceMule do
       end,
       path("fly through npc units if there is no other way").avoiding_npc.
       solar_system(ss3) { from(0, 0).through(1,0, 2,0).to(3, 0) },
+      # 0000980: Wrong route path calculation
+      # http://bt.nebula44.com/view.php?id=980
+      path("jump from galaxy directly to ss jg if target is the same jg").
+        galaxy(galaxy) { from(ss3) }.
+        solar_system(ss3) { to(ss3_jg1) }.
+        avoiding_npc,
 
       ### Planet
 
