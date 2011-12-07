@@ -10,10 +10,7 @@ module Location
   # buildings is also checked.
   #
   def self.combat_player_ids(location_point)
-    # Should have used Scala...
-    raise ArgumentError.new(
-      "Expecting LocationPoint but #{location_point.inspect} given!") \
-      unless location_point.is_a?(LocationPoint)
+    typesig binding, LocationPoint
     
     player_ids = []
     if location_point.type == SS_OBJECT
@@ -32,6 +29,8 @@ module Location
   # Location#location_attrs. It can be +GalaxyPoint+,
   # +SolarSystemPoint+, +SsObject+, +Unit+ or +Building+.
   def self.find_by_attrs(attrs)
+    typesig binding, Hash
+
     case attrs[:location_type]
     when Location::GALAXY
       GalaxyPoint.new(attrs[:location_id], attrs[:location_x],
