@@ -204,10 +204,11 @@
       <s:Group width="100%">
          <s:Label text="{getString('label.additionalPrivileges')}" fontSize="14"
                  color="#eec500" fontWeight="bold"/>
-         <s:Label text="{getString('label.queueBuilding')}" fontSize="10"
+         <s:Label text="{getString('label.queueBuilding')}" fontSize="12"
                  paddingLeft="6"/>
          <s:layout>
-            <s:VerticalLayout paddingLeft="3"/>
+            <s:VerticalLayout paddingLeft="3" horizontalAlign="justify"
+                    paddingTop="10"/>
          </s:layout>
       </s:Group>
 
