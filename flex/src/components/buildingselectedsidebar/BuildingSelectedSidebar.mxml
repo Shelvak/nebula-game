@@ -929,10 +929,14 @@
                         <base:ImageAndLabel type="{ResourceType.POPULATION}" paddingLeft="6"
                                             visible="{bSidebar.selectedBuilding.constructableId != 0
                                             &amp;&amp; (bSidebar.constructableObject is Unit)}"
-                                            textToDisplay="{(Config.getUnitPopulation(
-                                            Unit(bSidebar.constructableObject).type)
-                                            + bSidebar.selectedBuilding.getQueueTotalPopulation())
-                                            .toString()}"/>
+                                            textToDisplay="{
+                                           (bSidebar.selectedBuilding.constructableId != 0
+                                            &amp;&amp; (bSidebar.constructableObject is Unit))
+                                               ? (Config.getUnitPopulation(
+                                                  Unit(bSidebar.constructableObject).type)
+                                                  + bSidebar.selectedBuilding.getQueueTotalPopulation())
+                                                  .toString()
+                                               : ''}"/>
                         <base:Warning width="100%" showSign="false"
                                       visible="{!(ownerPanel.minDestructDaysPassed
                                       || bSidebar.canDestroyBuilding)}"
