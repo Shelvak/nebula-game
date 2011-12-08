@@ -10,6 +10,8 @@
       <![CDATA[
       import config.Config;
 
+      import models.ModelLocator;
+
       import models.constructionqueueentry.ConstructionQueueEntry;
       import models.parts.Upgradable;
       import models.parts.UpgradableType;
@@ -23,17 +25,12 @@
 
       public function set model(value: ConstructionQueueEntry): void
       {
-         function calcCost(resType: String): String
+         function calcCost(resType: String): int
          {
-            var cost: int = Math.floor(Upgradable.calculateCost(value.isUnit
+            return Math.floor(Upgradable.calculateCost(value.isUnit
                     ? UpgradableType.UNITS : UpgradableType.BUILDINGS,
                     ModelUtil.getModelSubclass(value.constructableType),
                     resType, {'level': 1}) * value.count);
-            if (cost == 0)
-            {
-               return null;
-            }
-            return cost.toString();
          }
          metalCost = calcCost(ResourceType.METAL);
          energyCost = calcCost(ResourceType.ENERGY);
@@ -45,13 +42,13 @@
       }
 
       [Bindable]
-      public var metalCost: String;
+      public var metalCost: int;
 
       [Bindable]
-      public var energyCost: String;
+      public var energyCost: int;
 
       [Bindable]
-      public var zetiumCost: String;
+      public var zetiumCost: int;
 
       [Bindable]
       public var populationCost: String;
@@ -69,6 +66,9 @@
          return ImagePreloader.getInstance().getImage
             (AssetNames.UNITS_SCREEN_IMAGE_FOLDER + "hint_" + name);
       }
+
+      [Bindable]
+      private var ML: ModelLocator = ModelLocator.getInstance();
 		]]>
 	</fx:Script>
    <s:Rect left="1" right="1" top="2" bottom="2" alpha="0.75">
@@ -101,12 +101,24 @@
       <s:Label textAlign="center" fontSize="14" paddingLeft="-6"
                paddingBottom="3"
                text="{Localizer.string('Units', 'label.cancelPrepaid')}"/>
-      <base:ImageAndLabel type="{ResourceType.METAL}" visible="{metalCost != null}"
-                          textToDisplay="{metalCost}"/>
-      <base:ImageAndLabel type="{ResourceType.ENERGY}" visible="{energyCost != null}"
-                          textToDisplay="{energyCost}"/>
-      <base:ImageAndLabel type="{ResourceType.ZETIUM}" visible="{zetiumCost != null}"
-                          textToDisplay="{zetiumCost}"/>
+      <base:ImageAndLabel type="{ResourceType.METAL}" visible="{metalCost != 0}"
+                          textToDisplay="{metalCost.toString()}"
+                          labelStyleName="{metalCost +
+                             ML.latestPlanet.ssObject.metal.currentStock >
+                             ML.latestPlanet.ssObject.metal.maxStock
+                             ? 'yellow' : null}"/>
+      <base:ImageAndLabel type="{ResourceType.ENERGY}" visible="{energyCost != 0}"
+                          textToDisplay="{energyCost.toString()}"
+                          labelStyleName="{energyCost +
+                             ML.latestPlanet.ssObject.energy.currentStock >
+                             ML.latestPlanet.ssObject.energy.maxStock
+                             ? 'yellow' : null}"/>
+      <base:ImageAndLabel type="{ResourceType.ZETIUM}" visible="{zetiumCost != 0}"
+                          textToDisplay="{zetiumCost.toString()}"
+                          labelStyleName="{zetiumCost +
+                             ML.latestPlanet.ssObject.zetium.currentStock >
+                             ML.latestPlanet.ssObject.zetium.maxStock
+                             ? 'yellow' : null}"/>
       <base:ImageAndLabel type="{ResourceType.POPULATION}" visible="{populationCost != null}"
                           textToDisplay="{populationCost}"/>
       <base:layout>

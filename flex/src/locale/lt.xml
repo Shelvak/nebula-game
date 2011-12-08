@@ -3399,6 +3399,7 @@
     <full value="Pilnas per {0}" />
     <empty value="Tuščias per {0}" />
     <and value="ir" />
+    <notEnoughStorage value="Nepakanka talpyklų." />
     <notEnoughResources value="Nepakanka resursų." />
     <enoughResourcesIn value="Resursų užteks už:" />
     <insufficientRate value="Nepakankamas resursų išgavimo greitis" />

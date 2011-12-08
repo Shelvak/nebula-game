@@ -243,11 +243,23 @@
          <base:AdvancedContainer top="6" bottom="6" left="{8 + titleLabel.height}"
                                  right="20">
             <base:ImageAndLabel type="{ResourceType.METAL}" paddingLeft="6"
-                                textToDisplay="{metalValue * countSelector.value}"/>
+                                textToDisplay="{metalValue * countSelector.value}"
+                                labelStyleName="{metalValue * countSelector.value +
+                                ML.latestPlanet.ssObject.metal.currentStock >
+                                ML.latestPlanet.ssObject.metal.maxStock
+                                ? 'yellow' : null}"/>
             <base:ImageAndLabel type="{ResourceType.ENERGY}" paddingLeft="6"
-                                textToDisplay="{energyValue * countSelector.value}"/>
+                                textToDisplay="{energyValue * countSelector.value}"
+                                labelStyleName="{energyValue * countSelector.value +
+                                ML.latestPlanet.ssObject.energy.currentStock >
+                                ML.latestPlanet.ssObject.energy.maxStock
+                                ? 'yellow' : null}"/>
             <base:ImageAndLabel type="{ResourceType.ZETIUM}" paddingLeft="6"
-                                textToDisplay="{zetiumValue * countSelector.value}"/>
+                                textToDisplay="{zetiumValue * countSelector.value}"
+                                labelStyleName="{zetiumValue * countSelector.value +
+                                ML.latestPlanet.ssObject.zetium.currentStock >
+                                ML.latestPlanet.ssObject.zetium.maxStock
+                                ? 'yellow' : null}"/>
             <base:ImageAndLabel type="{ResourceType.POPULATION}" paddingLeft="6"
                                 textToDisplay="{populationValue * countSelector.value}"/>
             <base:layout>

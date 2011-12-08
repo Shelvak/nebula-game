@@ -3287,6 +3287,7 @@
     <empty value="Empty in {0}" />
     <and value="and" />
     <notEnoughResources value="Insufficient resources." />
+    <notEnoughStorage value="Insufficient storage." />
     <enoughResourcesIn value="Enough resources in:" />
     <insufficientRate value="Insufficient resource extraction rate." />
     <!-- {0}: metal/energy/zetium -->

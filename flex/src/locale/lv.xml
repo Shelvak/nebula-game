@@ -3489,6 +3489,9 @@
     <full value="Pilns pēc {0}" />
     <empty value="Tukšs pēc {0}" />
     <and value="un" />
+    <!-- TODO -->
+    <notEnoughStorage value="Insufficient storage." />
+    <!-- /TODO -->
     <notEnoughResources value="Nepietiek resursu." />
     <enoughResourcesIn value="Resursu pietiks pēc:" />
     <insufficientRate value="Nepietiekams resursu ieguves ātrums." />
