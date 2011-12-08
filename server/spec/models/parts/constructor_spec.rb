@@ -19,17 +19,17 @@ describe Building::ConstructorTest do
 
     it "should cancel current constructable" do
       @constructor.constructable.should_receive(:cancel!)
-      @constructor.destroy
+      @constructor.destroy!
     end
 
     it "should clear construction queue entries" do
       ConstructionQueue.should_receive(:clear).with(@constructor.id)
-      @constructor.destroy
+      @constructor.destroy!
     end
 
     it "should deactivate" do
       @constructor.should_receive(:deactivate)
-      @constructor.destroy
+      @constructor.destroy!
     end
   end
 
