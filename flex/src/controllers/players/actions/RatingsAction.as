@@ -33,10 +33,22 @@ package controllers.players.actions
       {
          var RS: MCRatingsScreen = MCRatingsScreen.getInstance();
          RS.source = RatingsPlayerFactory.fromObjects(cmd.parameters.ratings);
-         RS.sortList([new SortField('victoryPoints', true, true, true), 
-            new SortField('points', true, true, true),
-            new SortField('planetsCount', true, true, true),
-            new SortField('name')]);
+         if (ML.latestGalaxy.apocalypseHasStarted)
+         {
+            RS.sortList([new SortField('planetsCount', false, true, true),
+               new SortField('bgPlanetsCount', false, true, true),
+               new SortField('deathDay', false, true, true),
+               new SortField('victoryPoints', false, true, true),
+               new SortField('points', false, true, true),
+               new SortField('name')]);
+         }
+         else
+         {
+            RS.sortList([new SortField('victoryPoints', false, true, true),
+               new SortField('points', false, true, true),
+               new SortField('planetsCount', false, true, true),
+               new SortField('name')]);
+         }
          RS.ratings = new ListCollectionView(RS.source);
          var i: int = 0;
          for each (var player: MRatingPlayer in RS.source)
