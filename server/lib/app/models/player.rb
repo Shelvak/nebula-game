@@ -120,7 +120,8 @@ class Player < ActiveRecord::Base
 
   # Is daily bonus available for this player?
   def daily_bonus_available?
-    ! first_time? && (daily_bonus_at.nil? || daily_bonus_at <= Time.now)
+    ! first_time? && (planets_count > 0 || bg_planets_count > 0) &&
+      (daily_bonus_at.nil? || daily_bonus_at <= Time.now)
   end
 
   # Set next daily bonus expiration.
