@@ -11,6 +11,7 @@
       import com.developmentarc.core.utils.EventBroker;
 
       import components.base.Filters;
+      import components.unitsscreen.NoToolTip;
 
       import controllers.constructionqueues.ConstructionQueuesCommand;
       import controllers.objects.ObjectClass;
@@ -25,10 +26,14 @@
       import models.parts.events.UpgradeEvent;
       import models.planet.MPlanetObject;
 
+      import mx.events.ToolTipEvent;
+
       import utils.DateUtil;
       import utils.ModelUtil;
       import utils.assets.AssetNames;
 
+      [Bindable]
+      private var canceling: Boolean = false;
 
       [Bindable]
       private var hovered: Boolean = false;
@@ -37,22 +42,22 @@
          if (value != null) {
             _queryElementModel = value;
             constructor = ML.latestPlanet.getBuildingById
-                             (_queryElementModel.constructorId);
+                    (_queryElementModel.constructorId);
             recalculateTime();
             var constructablePart: Upgradable =
-                   ModelUtil.getModelClass
-                      (constructor.constructableType) == ObjectClass.UNIT
-                      ? ML.latestPlanet
-                           .getUnitById(constructor.constructableId)
-                           .upgradePart
-                      : ML.latestPlanet
-                           .getBuildingById(constructor.constructableId)
-                           .upgradePart;
+                    ModelUtil.getModelClass
+                            (constructor.constructableType) == ObjectClass.UNIT
+                            ? ML.latestPlanet
+                            .getUnitById(constructor.constructableId)
+                            .upgradePart
+                            : ML.latestPlanet
+                            .getBuildingById(constructor.constructableId)
+                            .upgradePart;
             constructablePart.addEventListener(
-               UpgradeEvent.UPGRADE_PROGRESS, recalculateTime
+                    UpgradeEvent.UPGRADE_PROGRESS, recalculateTime
             );
             constructablePart.addEventListener(
-               UpgradeEvent.UPGRADE_FINISHED, refreshConstructable
+                    UpgradeEvent.UPGRADE_FINISHED, refreshConstructable
             );
          }
       }
@@ -66,20 +71,20 @@
             }
 
             var constructable: * =
-                   ModelUtil.getModelClass
-                      (constructor.constructableType) == ObjectClass.UNIT
-                      ? ML.latestPlanet.getUnitById(constructor.constructableId)
-                      : ML.latestPlanet.getBuildingById(constructor.constructableId);
+                    ModelUtil.getModelClass
+                            (constructor.constructableType) == ObjectClass.UNIT
+                            ? ML.latestPlanet.getUnitById(constructor.constructableId)
+                            : ML.latestPlanet.getBuildingById(constructor.constructableId);
             if (constructable != null) {
                var totalTime: Number = 0;
                totalTime += constructable.upgradePart.timeToFinish;
                for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries) {
                   if (queueEntry.position <= _queryElementModel.position) {
                      totalTime += queueEntry.getConstructionTime(queueEntry.isUnit
-                        ? constructor.constructorMod
-                           + BuildingUpgradable.getConstructionMod(
-                               constructor.type, constructor.level)
-                        : constructor.constructorMod)
+                             ? constructor.constructorMod
+                             + BuildingUpgradable.getConstructionMod(
+                             constructor.type, constructor.level)
+                             : constructor.constructorMod)
                   }
                }
                timeLeft = DateUtil.secondsToHumanString(totalTime, 2);
@@ -90,16 +95,16 @@
       private function refreshConstructable(e: UpgradeEvent): void {
          var constructablePart: Upgradable = e.currentTarget as Upgradable;
          constructablePart.removeEventListener
-            (UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
+                 (UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
          constructablePart.removeEventListener
-            (UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
+                 (UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
 
          var constructable: Building =
-                ML.latestPlanet.getBuildingById(constructor.constructableId);
+                 ML.latestPlanet.getBuildingById(constructor.constructableId);
          constructable.upgradePart.addEventListener
-            (UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
+                 (UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
          constructable.upgradePart.addEventListener
-            (UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
+                 (UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
       }
 
       public function get queryElementModel(): ConstructionQueueEntry {
@@ -126,25 +131,25 @@
       protected function button1_clickHandler(event: MouseEvent): void {
          deletePending = true;
          EventBroker.subscribe
-            (GUnitEvent.DELETE_APPROVED, removeUpgradePending);
+                 (GUnitEvent.DELETE_APPROVED, removeUpgradePending);
          new ConstructionQueuesCommand(
-            ConstructionQueuesCommand.REDUCE,
-            {id: _queryElementModel.id,
-             count: isUnit ? _queryElementModel.count : 1}
+                 ConstructionQueuesCommand.REDUCE,
+                 {id: _queryElementModel.id,
+                    count: isUnit ? _queryElementModel.count : 1}
          ).dispatch();
          if (!isUnit) {
             var obj: MPlanetObject =
-                   ML.latestPlanet.getObject(
-                      _queryElementModel.params.x,
-                      _queryElementModel.params.y
-                   );
+                    ML.latestPlanet.getObject(
+                            _queryElementModel.params.x,
+                            _queryElementModel.params.y
+                    );
             if (obj is Building && Building(obj).level == 0) {
                ML.latestPlanet.removeObject(obj);
             }
             else {
                throw new Error(
-                  'Ghost building ' + obj + ' was not found in planet '
-                     + 'with id: ' + ML.latestPlanet.id
+                       'Ghost building ' + obj + ' was not found in planet '
+                               + 'with id: ' + ML.latestPlanet.id
                );
             }
          }
@@ -152,6 +157,20 @@
 
       [Bindable]
       private var timeLeft: String = null;
+
+      private function btnDelete_toolTipCreateHandler(event: ToolTipEvent): void
+      {
+         if (_queryElementModel.prepaid)
+         {
+            var tlt: CancelPrepaidTooltip = new CancelPrepaidTooltip();
+            tlt.model = _queryElementModel;
+            event.toolTip = tlt;
+         }
+         else
+         {
+            event.toolTip = new NoToolTip();
+         }
+      }
       ]]>
    </fx:Script>
    
@@ -183,9 +202,12 @@
          <s:Button skinClass="components.skins.DeleteButtonSkin"
                    id="btnDelete"
                    left="1" top="1" bottom="1" right="1"
-                   rollOver="hovered = true" rollOut="hovered = false" 
+                   rollOver="hovered = true"
+                   rollOut="hovered = false"
                    click="button1_clickHandler(event)"
-                   enabled="{!deletePending}"/>
+                   enabled="{!deletePending}"
+                   toolTip=" "
+                   toolTipCreate="btnDelete_toolTipCreateHandler(event)"/>
       </s:Group>
       <s:Group bottom="0" horizontalCenter="0" 
                width="{timeLbl.width + 4}">
