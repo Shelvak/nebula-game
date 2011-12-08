@@ -5,19 +5,20 @@
                 xmlns:mx="library://ns.adobe.com/flex/halo" 
                 addedToStage="itemrenderer1_addedToStageHandler(event)"
                 removedFromStage="itemrenderer1_removedFromStageHandler(event)"
-                toolTip="{_data.demo
-                  ? Localizer.string('BuildingSidebar','queueFull')
-                  : (_data.disabled
-                     ? (_data.constructing
-                        ? Localizer.string('BuildingSidebar',
-                           'tooltip.becomeVipToQueue')
-                        : Localizer.string('BuildingSidebar','disabled'))
-                     : (_data.query
-                        ? Localizer.string('BuildingSidebar',
-                              'tooltip.willBeQueued')
-                        : (_data.type
-                           ? Localizer.string('Buildings', _data.type + '.tooltip')
-                           : '')))}"
+                toolTip="{_data.type
+                  ? Localizer.string('Buildings', _data.type + '.tooltip')
+                     + (_data.demo
+                        ? '\n\n' + Localizer.string('BuildingSidebar','queueFull')
+                        : (_data.disabled
+                           ? (_data.constructing
+                              ? '\n\n' + Localizer.string('BuildingSidebar',
+                                 'tooltip.becomeVipToQueue')
+                              : '\n\n' + Localizer.string('BuildingSidebar','disabled'))
+                           : (_data.query
+                              ? '\n\n' + Localizer.string('BuildingSidebar',
+                                    'tooltip.willBeQueued')
+                              : '')))
+                  : ''}"
                 xmlns:components="utils.components.*" width="95" height="80">	
    <fx:Script>
       <![CDATA[
@@ -133,7 +134,7 @@
          filters="{_data.disabled
             ? Filters.RED_FILTER
             : (_data.demo
-               ? Filters.GREY_FILTER
+               ? Filters.RED_FILTER
                : (_data.query
                   ? Filters.GRAYSCALE : []))}"
          source="{IMG.getImage(AssetNames.getBuildingImageName(_data.type))}"/>
