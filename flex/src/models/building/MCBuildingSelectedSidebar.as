@@ -364,7 +364,7 @@ package models.building
       }
 
       [Bindable]
-      public var constructablet: * = null;
+      public var constructableObject: * = null;
 
       private function refreshConstructor(e: Event = null): void
       {
@@ -389,12 +389,12 @@ package models.building
                if (ModelUtil.getModelClass(constructor.constructableType)
                        == ObjectClass.UNIT)
                {
-                  constructablet = ML.latestPlanet.getUnitById(
+                  constructableObject = ML.latestPlanet.getUnitById(
                           constructor.constructableId);
                }
                else
                {
-                  constructablet = ML.latestPlanet.getBuildingById(
+                  constructableObject = ML.latestPlanet.getBuildingById(
                           constructor.constructableId);
                }
                GlobalEvent.subscribe_TIMED_UPDATE(refreshBuiltPart);
@@ -421,10 +421,10 @@ package models.building
       private function refreshBuiltPart(e: GlobalEvent): void
       {
          //if server did not sent updated message or client did not yet received it avoid NPE
-         if (constructablet != null)
+         if (constructableObject != null)
          {
             constructableBuiltPart = Upgradable(
-                    constructablet.upgradePart).upgradeProgress;
+                    constructableObject.upgradePart).upgradeProgress;
          }
       }
 

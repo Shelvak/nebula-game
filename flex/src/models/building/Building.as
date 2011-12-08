@@ -4,6 +4,10 @@ package models.building
 
    import models.resource.ResourcesAmount;
 
+   import utils.ModelUtil;
+
+   import utils.ModelUtil;
+
    // Explicitly reference all building classes here that are not referenced directly anywhere in the code.
    MetalExtractor;
    MetalExtractorT2;
@@ -330,6 +334,42 @@ package models.building
          for each (var entry: ConstructionQueueEntry in constructionQueueEntries)
          count += entry.count;
          return Config.getBuildingMaxQueue(type) - count;
+      }
+
+      [Bindable (event="queryChange")]
+      public function getQueueTotalPopulation(): int
+      {
+         var totalCost: int = 0;
+         for each (var entry: ConstructionQueueEntry in constructionQueueEntries)
+         {
+            if (entry.prepaid)
+            {
+               totalCost += Config.getUnitPopulation(ModelUtil.getModelSubclass(
+                       entry.constructableType)) * entry.count;
+            }
+         }
+         return totalCost;
+      }
+
+      [Bindable (event="queryChange")]
+      public function getQueueTotalResourceValue(resType: String): int
+      {
+         function calcCost(qEntry: ConstructionQueueEntry): int
+         {
+            return Upgradable.calculateCost(qEntry.isUnit
+                    ? UpgradableType.UNITS : UpgradableType.BUILDINGS,
+                    ModelUtil.getModelSubclass(qEntry.constructableType),
+                    resType, {'level': 1}) * qEntry.count;
+         }
+         var totalCost: int = 0;
+         for each (var entry: ConstructionQueueEntry in constructionQueueEntries)
+         {
+            if (entry.prepaid)
+            {
+               totalCost += calcCost(entry);
+            }
+         }
+         return totalCost;
       }
       
       [Bindable (event="queryChange")]
