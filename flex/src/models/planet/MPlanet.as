@@ -747,30 +747,33 @@ package models.planet
       
       
       [Bindable(event="unitRefresh")]
-      public function hasActiveUnits(owner: int = -1, kind: String = null): Boolean
+      public function hasActiveUnits(owner: int = -1, kind: String = null,
+                                              hiddenCounts: Boolean = true): Boolean
       {
          if (kind == UnitKind.SPACE)
          {
-            return hasActiveSpaceUnits(owner);
+            return hasActiveSpaceUnits(owner, hiddenCounts);
          }
          else if (kind == UnitKind.GROUND)
          {
-            return hasActiveGroundUnits(owner);
+            return hasActiveGroundUnits(owner, hiddenCounts);
          }
          else
          {
-            return hasActiveGroundUnits(owner) || hasActiveSpaceUnits(owner);
+            return hasActiveGroundUnits(owner, hiddenCounts) || hasActiveSpaceUnits(owner, hiddenCounts);
          }
       }
       
       
       [Bindable(event="unitRefresh")]
-      public function hasActiveGroundUnits(owner: int = -1): Boolean
+      public function hasActiveGroundUnits(owner: int = -1,
+                                              hiddenCounts: Boolean = true): Boolean
       {
          return Collections.findFirst(units,
             function(unit:Unit) : Boolean
             {
                return unit.level > 0 && unit.kind == UnitKind.GROUND
+               && (!unit.hidden || hiddenCounts)
                && (owner == -1 || owner == unit.owner
                   || (owner == Owner.ENEMY && unit.owner == Owner.NPC));
             }
@@ -779,12 +782,14 @@ package models.planet
       
       
       [Bindable(event="unitRefresh")]
-      public function hasActiveSpaceUnits(owner: int = -1): Boolean
+      public function hasActiveSpaceUnits(owner: int = -1,
+                                              hiddenCounts: Boolean = true): Boolean
       {
          return Collections.findFirst(units,
             function(unit:Unit) : Boolean
             {
                return unit.level > 0 && unit.kind == UnitKind.SPACE
+               && (!unit.hidden || hiddenCounts)
                && (owner == -1
                   || owner == unit.owner
                   || (owner == Owner.ENEMY && unit.owner == Owner.NPC));
@@ -857,12 +862,14 @@ package models.planet
       }
       
       [Bindable(event="unitRefresh")]
-      public function hasAgressiveGroundUnits(owner: int = Owner.PLAYER): Boolean
+      public function hasAgressiveGroundUnits(owner: int = Owner.PLAYER,
+                                              hiddenCounts: Boolean = true): Boolean
       {
-         return getAgressiveGroundUnits(owner).length > 0;
+         return getAgressiveGroundUnits(owner, hiddenCounts).length > 0;
       }
       
-      public function getAgressiveGroundUnits(owner: int = Owner.PLAYER): ListCollectionView
+      public function getAgressiveGroundUnits(owner: int = Owner.PLAYER,
+                                              hiddenCounts: Boolean = true): ListCollectionView
       {
          return Collections.filter(ML.units, function(unit: Unit): Boolean
          {
@@ -870,7 +877,8 @@ package models.planet
             {
                return (unit.level > 0
                   && definesLocation(unit.location) 
-                  && unit.kind == UnitKind.GROUND 
+                  && unit.kind == UnitKind.GROUND
+                  && (!unit.hidden || hiddenCounts)
                   && (unit.owner == owner || (owner == Owner.ENEMY && unit.owner == Owner.NPC))
                   && unit.hasGuns);
             }
