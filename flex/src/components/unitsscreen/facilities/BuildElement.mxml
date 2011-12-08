@@ -13,6 +13,8 @@
       import components.credits.AccelerateSelector;
       import components.popups.ActionConfirmationPopup;
 
+      import config.Config;
+
       import utils.ApplicationLocker;
 
       import controllers.buildings.BuildingsCommand;
@@ -91,6 +93,11 @@
          invalidateDisplayList();
       }
 
+      [Bindable (event="willNotChange")]
+      private function get notEnoughStorageTooltip(): String
+      {
+         return Localizer.string('Resources', 'notEnoughStorage');
+      }
 
       protected function basecontainer1_creationCompleteHandler(event: FlexEvent): void {
          fade.duration = FADE_TIME;
@@ -179,19 +186,54 @@
                                 textToDisplay="{Resource.getModelCancelRevenueString(
                                 _unitModel, ResourceType.METAL, builtPart)}"
                                 mouseOver="BS.cancelId = facilityId"
-                                mouseOut="BS.cancelId = -1"/>
+                                mouseOut="BS.cancelId = -1"
+                                labelStyleName="{Resource.getModelCancelRevenue(
+                                _unitModel, ResourceType.METAL, builtPart) +
+                                ML.latestPlanet.ssObject.metal.currentStock >
+                                ML.latestPlanet.ssObject.metal.maxStock
+                                ? 'yellow' : null}"
+                                toolTip="{Resource.getModelCancelRevenue(
+                                _unitModel, ResourceType.METAL, builtPart) +
+                                ML.latestPlanet.ssObject.metal.currentStock >
+                                ML.latestPlanet.ssObject.metal.maxStock
+                                ? notEnoughStorageTooltip : null}"/>
             <base:ImageAndLabel type="{ResourceType.ENERGY}" paddingLeft="6" 
                                 visible="{Resource.getModelCancelRevenueString(
                                 _unitModel, ResourceType.ENERGY, builtPart) != null}"
                                 textToDisplay="{Resource.getModelCancelRevenueString(
                                 _unitModel, ResourceType.ENERGY, builtPart)}"
                                 mouseOver="BS.cancelId = facilityId"
-                                mouseOut="BS.cancelId = -1"/>
+                                mouseOut="BS.cancelId = -1"
+                                labelStyleName="{Resource.getModelCancelRevenue(
+                                _unitModel, ResourceType.ENERGY, builtPart) +
+                                ML.latestPlanet.ssObject.energy.currentStock >
+                                ML.latestPlanet.ssObject.energy.maxStock
+                                ? 'yellow' : null}"
+                                toolTip="{Resource.getModelCancelRevenue(
+                                _unitModel, ResourceType.ENERGY, builtPart) +
+                                ML.latestPlanet.ssObject.energy.currentStock >
+                                ML.latestPlanet.ssObject.energy.maxStock
+                                ? notEnoughStorageTooltip : null}"/>
             <base:ImageAndLabel type="{ResourceType.ZETIUM}" paddingLeft="6"
                                 visible="{Resource.getModelCancelRevenueString(
                                 _unitModel, ResourceType.ZETIUM, builtPart) != null}"
                                 textToDisplay="{Resource.getModelCancelRevenueString(
                                 _unitModel, ResourceType.ZETIUM, builtPart)}"
+                                mouseOver="BS.cancelId = facilityId"
+                                mouseOut="BS.cancelId = -1"
+                                labelStyleName="{Resource.getModelCancelRevenue(
+                                _unitModel, ResourceType.ZETIUM, builtPart) +
+                                ML.latestPlanet.ssObject.zetium.currentStock >
+                                ML.latestPlanet.ssObject.zetium.maxStock
+                                ? 'yellow' : null}"
+                                toolTip="{Resource.getModelCancelRevenue(
+                                _unitModel, ResourceType.ZETIUM, builtPart) +
+                                ML.latestPlanet.ssObject.zetium.currentStock >
+                                ML.latestPlanet.ssObject.zetium.maxStock
+                                ? notEnoughStorageTooltip : null}"/>
+            <base:ImageAndLabel type="{ResourceType.POPULATION}" paddingLeft="6"
+                                textToDisplay="{Config.getUnitPopulation(
+                                _unitModel.type).toString()}"
                                 mouseOver="BS.cancelId = facilityId"
                                 mouseOut="BS.cancelId = -1"/>
             <base:layout>

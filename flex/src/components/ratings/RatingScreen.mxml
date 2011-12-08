@@ -130,6 +130,7 @@
          private static const allianceField: SortField = new SortField('alliance', true);
          private static const victoryPtsField: SortField = new SortField('victoryPoints', false, true, true);
          private static const pointsField: SortField = new SortField('points', false, true, true);
+         private static const deathDayField: SortField = new SortField('deathDay', false, true, true);
          private static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
          private static const bgPlanetsCountField: SortField = new SortField('bgPlanetsCount', false, true, true);
          private static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);
@@ -143,8 +144,8 @@
                'rank':[rankField],
                'name':[nameField],
                'alliance':[allianceField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
-               'planetsCount':[planetsCountField, bgPlanetsCountField, victoryPtsField, pointsField, nameField],
-               'bgPlanetsCount':[bgPlanetsCountField, planetsCountField, victoryPtsField, pointsField, nameField],
+               'planetsCount':[planetsCountField, bgPlanetsCountField, deathDayField, victoryPtsField, pointsField, nameField],
+               'bgPlanetsCount':[bgPlanetsCountField, planetsCountField, deathDayField, victoryPtsField, pointsField, nameField],
                'economyPoints':[economyPtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
                'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
                'armyPoints':[armyPtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],

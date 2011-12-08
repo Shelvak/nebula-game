@@ -22,6 +22,8 @@
 
       import config.Config;
 
+      import models.unit.Unit;
+
       import utils.ApplicationLocker;
 
       import controllers.Messenger;
@@ -293,7 +295,7 @@
                               || bSidebar.selectedBuilding.constructableType != null}">
                      <buildingsidebar:BuildingProgressElement id="progressElement"
                                                               constructableModel="{
-                                                              bSidebar.constructablet}"/>
+                                                              bSidebar.constructableObject}"/>
                      <s:List id="queueList" 
                              dataProvider="{bSidebar.constructor.constructionQueueEntries}"
                              useVirtualLayout="false"
@@ -619,7 +621,8 @@
                                                (bSidebar.selectedBuilding.overdriven ? Config.getBuildingOverdriveUsage() : 1) *
                                                3600, PRECISION))+ ' / ' +
                                                Localizer.string('General', 'hour.short')}"
-                                               lblColor="{bSidebar.selectedBuilding.nextEnergyRate &lt; 0?0xff0000:0x00ff00}"
+                                               lblColor="{bSidebar.selectedBuilding.nextEnergyRate &lt; 0
+                                                ? 0xff0000 : 0x00ff00}"
                                                visible="{bSidebar.selectedBuilding.upgradePart.level &lt; bSidebar.selectedBuilding.maxLevel
                                                &amp;&amp; bSidebar.selectedBuilding.managable}"
                                                toolTip="{getString('toolTip.afterUpgrade')}"/>
@@ -631,7 +634,8 @@
                            <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{
                                                (bSidebar.selectedBuilding.zetiumRate >= 0?
                                                ('+' + NumberUtil.toShortString(bSidebar.selectedBuilding.zetiumRate *
-                                               (bSidebar.selectedBuilding.overdriven ? Config.getBuildingOverdriveOutput() : 1) *
+                                               (bSidebar.selectedBuilding.overdriven
+                                               ? Config.getBuildingOverdriveOutput() : 1) *
                                                ML.resourcesMods.getRateMod(ResourceType.ZETIUM)* 
                                                ML.latestPlanet.ssObject.zetium.boost.getRateBoost() * 3600, PRECISION)):
                                                NumberUtil.toShortString(bSidebar.selectedBuilding.zetiumRate * 3600, PRECISION))+ ' / ' +
@@ -653,7 +657,8 @@
                            </s:layout>
                         </s:Group>
                         
-                        <s:Group visible="{(bSidebar.selectedBuilding.zetiumRate > 0 || bSidebar.selectedBuilding.metalRate > 0)
+                        <s:Group visible="{(bSidebar.selectedBuilding.zetiumRate > 0
+                                 || bSidebar.selectedBuilding.metalRate > 0)
                                  &amp;&amp; bSidebar.selectedBuilding.energyRate &lt; 0
                                  &amp;&amp; !bSidebar.selectedBuilding.overdriven}">
                            <s:Label text="{getString('label.activateOverdrive',
@@ -834,15 +839,27 @@
                               || bSidebar.selectedBuilding.energyMod != 0
                               || bSidebar.selectedBuilding.armorMod != 0}">
                      <base:AdvancedContainer left="0" right="0">
-                        <s:Label text="{getString('construction.bonus') + ': ' + (bSidebar.selectedBuilding.constructorMod > 0?'+':'')
-                                 +bSidebar.selectedBuilding.constructorMod + '%'}" visible="{bSidebar.selectedBuilding.constructorMod != 0}"
-                                                                        color="{bSidebar.selectedBuilding.constructorMod > 0?0x00ff00:0xff0000}"/>
-                        <s:Label text="{getString('energy.bonus') + ': ' + (bSidebar.selectedBuilding.energyMod > 0?'+':'')
-                                 +bSidebar.selectedBuilding.energyMod + '%'}" visible="{bSidebar.selectedBuilding.energyMod != 0}"
-                                                                   color="{bSidebar.selectedBuilding.energyMod > 0?0x00ff00:0xff0000}"/>
-                        <s:Label text="{getString('armor.bonus') + ': ' + (bSidebar.selectedBuilding.armorMod > 0?'+':'')
-                                 +bSidebar.selectedBuilding.armorMod + '%'}" visible="{bSidebar.selectedBuilding.armorMod != 0}"
-                                                                  color="{bSidebar.selectedBuilding.armorMod > 0?0x00ff00:0xff0000}"/>
+                        <s:Label
+                           text="{getString('construction.bonus') + ': ' +
+                        (bSidebar.selectedBuilding.constructorMod > 0 ? '+' : '')
+                        + bSidebar.selectedBuilding.constructorMod + '%'}"
+                           visible="{bSidebar.selectedBuilding.constructorMod != 0}"
+                           color="{bSidebar.selectedBuilding.constructorMod > 0
+                              ? 0x00ff00 : 0xff0000}"/>
+                        <s:Label
+                           text="{getString('energy.bonus') + ': ' +
+                        (bSidebar.selectedBuilding.energyMod > 0 ? '+' : '')
+                        + bSidebar.selectedBuilding.energyMod + '%'}"
+                           visible="{bSidebar.selectedBuilding.energyMod != 0}"
+                           color="{bSidebar.selectedBuilding.energyMod > 0
+                              ? 0x00ff00 : 0xff0000}"/>
+                        <s:Label
+                           text="{getString('armor.bonus') + ': ' +
+                        (bSidebar.selectedBuilding.armorMod > 0 ? '+' : '')
+                        + bSidebar.selectedBuilding.armorMod + '%'}"
+                           visible="{bSidebar.selectedBuilding.armorMod != 0}"
+                           color="{bSidebar.selectedBuilding.armorMod > 0
+                              ? 0x00ff00 : 0xff0000}"/>
                         <base:layout>
                            <s:VerticalLayout paddingLeft="6"/>
                         </base:layout>
@@ -851,46 +868,75 @@
                   
                   <base:Panel title="{getString('selfDestruct')}"
                               visible="{bSidebar.selectedBuilding.managable
-                              &amp;&amp; !bSidebar.selectedBuilding.npc &amp;&amp; !bSidebar.selectedBuilding.isGhost
+                              &amp;&amp; !bSidebar.selectedBuilding.npc
+                              &amp;&amp; !bSidebar.selectedBuilding.isGhost
                               &amp;&amp; bSidebar.selectedBuilding.upgradePart.upgradeEndsAt == null}">
                      <base:AdvancedContainer left="0" right="0">
-                        <s:Group width="100%" visible="{bSidebar.selectedBuilding.upgradePart.level > 0}">
+                        <s:Group
+                           width="100%"
+                           visible="{bSidebar.selectedBuilding.upgradePart.level > 0}">
                            <s:Label text="{getString('destructResources')}"
                                     left="0" right="0"/>
                         </s:Group>
                         <base:ImageAndLabel type="{ResourceType.METAL}" paddingLeft="6" 
                                             visible="{bSidebar.selectedBuilding.upgradePart.level > 0}"
                                             textToDisplay="{MathUtil.round(
-                                            Resource.calculateBuildingDestructRevenue(bSidebar.selectedBuilding.type,
-                                            bSidebar.selectedBuilding.upgradePart.level, ResourceType.METAL)
+                                            Resource.calculateBuildingDestructRevenue(
+                                            bSidebar.selectedBuilding.type,
+                                            bSidebar.selectedBuilding.upgradePart.level,
+                                            ResourceType.METAL)
                                             + (bSidebar.selectedBuilding.constructableId == 0
-                                            || Resource.getModelCancelRevenueString(bSidebar.constructablet, ResourceType.METAL,
+                                            || Resource.getModelCancelRevenueString(
+                                            bSidebar.constructableObject, ResourceType.METAL,
                                             bSidebar.constructableBuiltPart) == null
                                             ? 0
-                                            : Resource.getModelCancelRevenue(bSidebar.constructablet, ResourceType.METAL,
-                                            bSidebar.constructableBuiltPart)), 2).toString()}"/>
+                                            : Resource.getModelCancelRevenue(
+                                            bSidebar.constructableObject, ResourceType.METAL,
+                                            bSidebar.constructableBuiltPart))
+                                            + (bSidebar.selectedBuilding.getQueueTotalResourceValue
+                                            (ResourceType.METAL)), 2).toString()}"/>
                         <base:ImageAndLabel type="{ResourceType.ENERGY}" paddingLeft="6" 
                                             visible="{bSidebar.selectedBuilding.upgradePart.level > 0}"
                                             textToDisplay="{MathUtil.round(
                                             Resource.calculateBuildingDestructRevenue(bSidebar.selectedBuilding.type,
                                             bSidebar.selectedBuilding.upgradePart.level, ResourceType.ENERGY)
                                             + (bSidebar.selectedBuilding.constructableId == 0
-                                            || Resource.getModelCancelRevenueString(bSidebar.constructablet, ResourceType.ENERGY,
+                                            || Resource.getModelCancelRevenueString(
+                                            bSidebar.constructableObject, ResourceType.ENERGY,
                                             bSidebar.constructableBuiltPart) == null
                                             ? 0
-                                            : Resource.getModelCancelRevenue(bSidebar.constructablet, ResourceType.ENERGY,
-                                            bSidebar.constructableBuiltPart)), 2).toString()}"/>
+                                            : Resource.getModelCancelRevenue(
+                                            bSidebar.constructableObject, ResourceType.ENERGY,
+                                            bSidebar.constructableBuiltPart))
+                                            + (bSidebar.selectedBuilding.getQueueTotalResourceValue
+                                            (ResourceType.ENERGY)), 2).toString()}"/>
                         <base:ImageAndLabel type="{ResourceType.ZETIUM}" paddingLeft="6"
                                             visible="{bSidebar.selectedBuilding.upgradePart.level > 0}"
                                             textToDisplay="{MathUtil.round(
                                             Resource.calculateBuildingDestructRevenue(bSidebar.selectedBuilding.type,
                                             bSidebar.selectedBuilding.upgradePart.level, ResourceType.ZETIUM)
                                             + (bSidebar.selectedBuilding.constructableId == 0
-                                            || Resource.getModelCancelRevenueString(bSidebar.constructablet, ResourceType.ZETIUM,
+                                            || Resource.getModelCancelRevenueString(
+                                            bSidebar.constructableObject, ResourceType.ZETIUM,
                                             bSidebar.constructableBuiltPart) == null
                                             ? 0
-                                            : Resource.getModelCancelRevenue(bSidebar.constructablet, ResourceType.ZETIUM,
-                                            bSidebar.constructableBuiltPart)), 2).toString()}"/>
+                                            : Resource.getModelCancelRevenue(
+                                            bSidebar.constructableObject, ResourceType.ZETIUM,
+                                            bSidebar.constructableBuiltPart))
+                                            + (bSidebar.selectedBuilding.getQueueTotalResourceValue
+                                            (ResourceType.ZETIUM)), 2).toString()}"/>
+
+                        <base:ImageAndLabel type="{ResourceType.POPULATION}" paddingLeft="6"
+                                            visible="{bSidebar.selectedBuilding.constructableId != 0
+                                            &amp;&amp; (bSidebar.constructableObject is Unit)}"
+                                            textToDisplay="{
+                                           (bSidebar.selectedBuilding.constructableId != 0
+                                            &amp;&amp; (bSidebar.constructableObject is Unit))
+                                               ? (Config.getUnitPopulation(
+                                                  Unit(bSidebar.constructableObject).type)
+                                                  + bSidebar.selectedBuilding.getQueueTotalPopulation())
+                                                  .toString()
+                                               : ''}"/>
                         <base:Warning width="100%" showSign="false"
                                       visible="{!(ownerPanel.minDestructDaysPassed
                                       || bSidebar.canDestroyBuilding)}"
@@ -899,8 +945,9 @@
                                       Config.getBuildingDestructSafeguardTime(),
                                       2)])}"/>
                         <s:Group width="100%">
-                           <s:Button right="6" label="{bSidebar.canDestroyBuilding?getString('destroy')
-                                     :bSidebar.destructRemainingTime}"
+                           <s:Button right="6" label="{bSidebar.canDestroyBuilding
+                                     ? getString('destroy')
+                                     : bSidebar.destructRemainingTime}"
                                      enabled="{!bSidebar.selectedBuilding.pending
                                      &amp;&amp; (ownerPanel.minDestructDaysPassed
                                       || bSidebar.canDestroyBuilding)}"
@@ -916,21 +963,25 @@
                                     left="0" right="0"/>
                         </s:Group>
                         <base:layout>
-                           <s:VerticalLayout paddingLeft="6" paddingTop="6" paddingRight="6" paddingBottom="6"/>
+                           <s:VerticalLayout paddingLeft="6" paddingTop="6"
+                                             paddingRight="6" paddingBottom="6"/>
                         </base:layout>
                      </base:AdvancedContainer>
                   </base:Panel>
                   
                   <base:Panel title="{getString('move')}" 
                               visible="{bSidebar.selectedBuilding.managable
-                              &amp;&amp; !bSidebar.selectedBuilding.npc &amp;&amp; !bSidebar.selectedBuilding.isGhost
+                              &amp;&amp; !bSidebar.selectedBuilding.npc
+                              &amp;&amp; !bSidebar.selectedBuilding.isGhost
                               &amp;&amp; bSidebar.selectedBuilding.upgradePart.upgradeEndsAt == null
                               &amp;&amp; bSidebar.selectedBuilding.state != Building.WORKING}">
                      <base:AdvancedContainer left="0" right="0">
-                        <s:Label text="{Localizer.string('Credits', 'label.movePrice', [Config.getMoveCredits()])}"/>
+                        <s:Label text="{Localizer.string('Credits', 'label.movePrice',
+                           [Config.getMoveCredits()])}"/>
                         <s:Group>
                            <s:Button right="6" label="{Localizer.string('Credits',
-                                     ML.player.creds &lt; Config.getMoveCredits()?'label.buy':'label.move')}"
+                                     ML.player.creds &lt; Config.getMoveCredits()
+                                       ? 'label.buy' : 'label.move')}"
                                      enabled="{!bSidebar.selectedBuilding.pending}"
                                      skinClass="components.skins.CreditButtonSkin" 
                                      click="bSidebar.moveButton_click(event)"/>
@@ -938,11 +989,12 @@
                         <s:Label visible="{ML.player.creds &lt; Config.getMoveCredits()}"
                                  text="{Localizer.string('Credits', 'label.notEnough', 
                                  [Config.getMoveCredits() - ML.player.creds])}" 
-                                 paddingLeft="6" 
-                                 paddingRight="6" textAlign="center" styleName="unsatisfied"
+                                 paddingLeft="6" paddingRight="6"
+                                 textAlign="center" styleName="unsatisfied"
                                  fontWeight="bold"/>
                         <base:layout>
-                           <s:VerticalLayout horizontalAlign="justify" paddingLeft="6" paddingRight="6"/>
+                           <s:VerticalLayout horizontalAlign="justify"
+                                             paddingLeft="6" paddingRight="6"/>
                         </base:layout>
                      </base:AdvancedContainer>
                   </base:Panel>
@@ -952,17 +1004,24 @@
                   </base:layout>
                </base:AdvancedContainer>
                <base:Panel title="{getString('title.buildingBonus')}"
-                           visible="{Config.getBuildingCredsBonus(bSidebar.selectedBuilding.type) > 0
-                           || Config.getBuildingVictoryPtsBonus(bSidebar.selectedBuilding.type) > 0}">
+                           visible="{Config.getBuildingCredsBonus(
+                              bSidebar.selectedBuilding.type) > 0
+                           || Config.getBuildingVictoryPtsBonus(
+                              bSidebar.selectedBuilding.type) > 0}">
                   <base:AdvancedContainer left="0" right="0">
-                     <s:Label visible="{bSidebar.selectedBuilding.type == BuildingType.NPC_HALL}"
+                     <s:Label visible="{bSidebar.selectedBuilding.type
+                        == BuildingType.NPC_HALL}"
                               text="{'\u2022 '+getString('label.victoryPoint',
-                              [Config.getBuildingVictoryPtsBonus(bSidebar.selectedBuilding.type)])}"/>
-                     <s:Label visible="{bSidebar.selectedBuilding.type == BuildingType.NPC_HALL}"
+                        [Config.getBuildingVictoryPtsBonus(
+                           bSidebar.selectedBuilding.type)])}"/>
+                     <s:Label visible="{bSidebar.selectedBuilding.type
+                        == BuildingType.NPC_HALL}"
                               text="{'\u2022 '+getString('label.cred',
-                              [Config.getBuildingCredsBonus(bSidebar.selectedBuilding.type)])}"/>
+                        [Config.getBuildingCredsBonus(
+                           bSidebar.selectedBuilding.type)])}"/>
                      <base:layout>
-                        <s:VerticalLayout horizontalAlign="justify" paddingLeft="6" paddingRight="6"/>
+                        <s:VerticalLayout horizontalAlign="justify"
+                                          paddingLeft="6" paddingRight="6"/>
                      </base:layout>
                   </base:AdvancedContainer>
                </base:Panel>

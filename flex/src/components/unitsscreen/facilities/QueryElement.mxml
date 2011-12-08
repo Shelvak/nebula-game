@@ -15,29 +15,37 @@
    <fx:Script>
       <![CDATA[
          import com.developmentarc.core.utils.EventBroker;
-         
+
+         import components.base.Filters;
+
          import components.skins.DeleteButtonSkin;
-         
+
+         import config.Config;
+
          import controllers.constructionqueues.ConstructionQueuesCommand;
-         
+
          import globalevents.GUnitEvent;
-         
+
+         import models.building.Building;
+
          import models.constructionqueueentry.ConstructionQueueEntry;
-         
+         import models.parts.BuildingUpgradable;
+         import models.parts.Upgradable;
+         import models.parts.UpgradableType;
+         import models.parts.events.UpgradeEvent;
+         import models.resource.ResourceType;
+         import models.unit.Unit;
+
          import mx.collections.ArrayCollection;
          import mx.events.FlexEvent;
 
          import spark.filters.ColorMatrixFilter;
 
+         import utils.DateUtil;
+         import utils.ModelUtil;
+
          import utils.assets.AssetNames;
-
-
-         private static const NOT_VALID_FILTER: Array = [
-            new ColorMatrixFilter([0.2, 0, 0, 0, 0, //red
-                                   0, 0.2, 0, 0, 0, //green
-                                   0, 0, 0.2, 0, 0, //blue
-                                   0, 0,   0, 1, 0])
-         ];
+         import utils.locale.Localizer;
 
          private static const FADE_TIME: int = 300;
          [Bindable]
@@ -57,6 +65,60 @@
          public function set queryElementModel(value: ConstructionQueueEntry): void
          {
             _queryElementModel = value;
+            if (_queryElementModel == null)
+            {
+               return;
+            }
+            var constructor: Building = ML.latestPlanet.getBuildingById
+                             (_queryElementModel.constructorId);
+            recalculateTime();
+            var constructablePart: Upgradable = ML.latestPlanet.getUnitById(
+                    constructor.constructableId).upgradePart;
+            constructablePart.addEventListener(
+               UpgradeEvent.UPGRADE_PROGRESS, recalculateTime
+            );
+            constructablePart.addEventListener(
+               UpgradeEvent.UPGRADE_FINISHED, refreshConstructable
+            );
+            refreshCancelRevenue();
+         }
+
+         [Bindable]
+         private var deleting: Boolean = false;
+         [Bindable]
+         private var metalValue: int;
+         [Bindable]
+         private var energyValue: int;
+         [Bindable]
+         private var zetiumValue: int;
+         [Bindable]
+         private var populationValue: int;
+
+         private function refreshCancelRevenue(): void
+         {
+            if (_queryElementModel.prepaid)
+            {
+               function calcCost(resType: String): int
+               {
+                  return Upgradable.calculateCost(UpgradableType.UNITS,
+                          ModelUtil.getModelSubclass(
+                                  _queryElementModel.constructableType), resType,
+                          {'level': 1});
+               }
+               metalValue = calcCost(ResourceType.METAL);
+               energyValue = calcCost(ResourceType.ENERGY);
+               zetiumValue = calcCost(ResourceType.ZETIUM);
+               populationValue = Config.getUnitPopulation(
+                       ModelUtil.getModelSubclass(
+                                  _queryElementModel.constructableType));
+            }
+            else
+            {
+               metalValue = 0;
+               energyValue = 0;
+               zetiumValue = 0;
+               populationValue = 0;
+            }
          }
          
          private static const imageSize: int = 132;
@@ -107,28 +169,116 @@
                countSelector.value = _queryElementModel.countSelected;
             }
          }
+
+         private function refreshConstructable(e: UpgradeEvent): void {
+            var constructablePart: Upgradable = e.currentTarget as Upgradable;
+            constructablePart.removeEventListener
+               (UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
+            constructablePart.removeEventListener
+               (UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
+
+            var constructor: Building = ML.latestPlanet.getBuildingById
+                             (_queryElementModel.constructorId);
+            var constructable: Building =
+                   ML.latestPlanet.getBuildingById(constructor.constructableId);
+            constructable.upgradePart.addEventListener
+               (UpgradeEvent.UPGRADE_PROGRESS, recalculateTime);
+            constructable.upgradePart.addEventListener
+               (UpgradeEvent.UPGRADE_FINISHED, refreshConstructable);
+         }
+
+         [Bindable]
+         private var timeLeft: String = null;
+
+         private function recalculateTime(e: UpgradeEvent = null): void {
+            if (ML.latestPlanet && _queryElementModel)
+            {
+               var constructor: Building = ML.latestPlanet.getBuildingById(
+                    _queryElementModel.constructorId);
+               if (constructor) {
+                  if (constructor.constructableType == null) {
+                     return;
+                  }
+
+                  var constructable: Unit = ML.latestPlanet.getUnitById(
+                          constructor.constructableId);
+                  if (constructable != null) {
+                     var totalTime: Number = 0;
+                     totalTime += constructable.upgradePart.timeToFinish;
+                     for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries) {
+                        if (queueEntry.position <= _queryElementModel.position) {
+                           totalTime += queueEntry.getConstructionTime(
+                              constructor.constructorMod
+                                 + BuildingUpgradable.getConstructionMod(
+                                     constructor.type, constructor.level))
+                        }
+                     }
+                     timeLeft = DateUtil.secondsToHumanString(totalTime, 2);
+                  }
+               }
+            }
+         }
          
       ]]>
    </fx:Script>
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready')}"/>
    
-   <components:CenteredBitmapImage left="16" top="9"
+   <components:CenteredBitmapImage left="16" top="9" id="mainImage"
                                    source="{IMG.getImage(AssetNames.getConstructableImageName(
                                    _queryElementModel.constructableType))}" 
                                    width="{imageSize}" height="{imageSize}"
                                    filters="{_queryElementModel.prepaid
-                                   ? [] : NOT_VALID_FILTER}"/>
-   
+                                   ? [] : Filters.GRAYSCALE}"/>
+   <s:Group visible="{_queryElementModel.prepaid &amp;&amp; deleting}"
+               top="9" left="16" width="{mainImage.width}"
+               height="{mainImage.height}">
+         <s:Rect top="0" bottom="0" left="0" right="0" alpha="0.9">
+            <s:fill>
+               <s:SolidColor color="#000000"/>
+            </s:fill>
+         </s:Rect>
+         <s:Label rotation="270" id="titleLabel" top="6" bottom="6"
+                  left="6" textAlign="center" fontSize="14"
+                  text="{Localizer.string('Units', 'label.cancelPrepaid')}"/>
+         <base:AdvancedContainer top="6" bottom="6" left="{8 + titleLabel.height}"
+                                 right="20">
+            <base:ImageAndLabel type="{ResourceType.METAL}" paddingLeft="6"
+                                textToDisplay="{metalValue * countSelector.value}"
+                                labelStyleName="{metalValue * countSelector.value +
+                                ML.latestPlanet.ssObject.metal.currentStock >
+                                ML.latestPlanet.ssObject.metal.maxStock
+                                ? 'yellow' : null}"/>
+            <base:ImageAndLabel type="{ResourceType.ENERGY}" paddingLeft="6"
+                                textToDisplay="{energyValue * countSelector.value}"
+                                labelStyleName="{energyValue * countSelector.value +
+                                ML.latestPlanet.ssObject.energy.currentStock >
+                                ML.latestPlanet.ssObject.energy.maxStock
+                                ? 'yellow' : null}"/>
+            <base:ImageAndLabel type="{ResourceType.ZETIUM}" paddingLeft="6"
+                                textToDisplay="{zetiumValue * countSelector.value}"
+                                labelStyleName="{zetiumValue * countSelector.value +
+                                ML.latestPlanet.ssObject.zetium.currentStock >
+                                ML.latestPlanet.ssObject.zetium.maxStock
+                                ? 'yellow' : null}"/>
+            <base:ImageAndLabel type="{ResourceType.POPULATION}" paddingLeft="6"
+                                textToDisplay="{populationValue * countSelector.value}"/>
+            <base:layout>
+               <s:VerticalLayout paddingTop="28"/>
+            </base:layout>
+         </base:AdvancedContainer>
+   </s:Group>
+
    <s:BitmapImage source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_ready_over')}"
                   id="lights" alpha="0"/>
-   
    <s:Group right="16" top="9">
+
       <s:BitmapImage source="{IMG.getImage(
                      AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_counter_left')}"
                      left="0" top="0" id="countLeft"/>
       <s:BitmapImage source="{IMG.getImage(
                      AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'unit_counter_repeat')}"
                      right="0" left="{countLeft.width}" top="0"/>
+
       <s:Group left="8" top="1" bottom="2" right="3">
       <s:Label  right="0" top="2" styleName="h3"
                 includeInLayout="{!_queryElementModel.selected}"
@@ -139,17 +289,20 @@
                 right="0" top="1"
                 visible="{_queryElementModel.selected}"
                 includeInLayout="{_queryElementModel.selected}"
-                enabled="{!deletePending}"/> 
+                enabled="{!deletePending}"
+                rollOver="deleting = true"
+                rollOut="deleting = false"/>
       <s:NumericStepper id="countSelector" 
                         visible="{!(!(_queryElementModel.count > 1) || !(_queryElementModel.selected))}"
                         includeInLayout="{!(!(_queryElementModel.count > 1) || !(_queryElementModel.selected))}"
                         right="20" top="0" maximum="{_queryElementModel.count}" minimum="1" 
                         change="countSelector_changeHandler(event)"/> 
       </s:Group>
+
    </s:Group>
    
     
    
-   <s:Label text="{_queryElementModel.title}"  left="42" top="148" width="89" textAlign="center"/>
+   <s:Label text="{timeLeft}"  left="42" top="148" width="89" textAlign="center"/>
    
 </base:BaseContainer>

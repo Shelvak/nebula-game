@@ -635,6 +635,16 @@
     <label.noPlayerUnits>
       <p>You can not claim this planet because you don't have any units in it</p>
     </label.noPlayerUnits>
+
+    <tooltip.willBeQueued>
+      <p>This building will be added to queue.</p>
+      <p>However it will not be paid for and will be cancelled if you don't have
+      enough resources at the construction time.</p>
+    </tooltip.willBeQueued>
+
+    <tooltip.becomeVipToQueue>
+      <p>Only VIP players can add buildings to the queue without paying first.</p>
+    </tooltip.becomeVipToQueue>
     <!-- /TODO -->
 
     <deselectButtonText value="deselect building" />
@@ -1301,6 +1311,11 @@
     </label.notEnough>
     <warning.notEnoughVipCreds 
     value="Lai pārvērstu VIP kredītus, jums jābūt vismaz {0}" />
+    <!-- TODO -->
+    <label.additionalPrivileges value="You will also get these privileges:"/>
+    <label.queueBuilding
+    value="Adding buildings and units to construction queue without paying first"/>
+    <!-- /TODO -->
   </Credits>
 
   <Exploration>
@@ -3474,6 +3489,9 @@
     <full value="Pilns pēc {0}" />
     <empty value="Tukšs pēc {0}" />
     <and value="un" />
+    <!-- TODO -->
+    <notEnoughStorage value="Insufficient storage." />
+    <!-- /TODO -->
     <notEnoughResources value="Nepietiek resursu." />
     <enoughResourcesIn value="Resursu pietiks pēc:" />
     <insufficientRate value="Nepietiekams resursu ieguves ātrums." />
@@ -4202,6 +4220,16 @@
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
     
     <!-- TODO: translate this -->
+    <tooltip.willBeQueued>
+      <p>These units will be added to queue.</p>
+      <p>However they will not be paid for and will be cancelled if you don't have
+      enough resources at the construction time.</p>
+    </tooltip.willBeQueued>
+
+    <tooltip.becomeVipToQueue>
+      <p>Only VIP players can add units to the queue without paying first.</p>
+    </tooltip.becomeVipToQueue>
+
     <title.hide value="Hide units"/>
     <tooltip.hidden>
       <p>Hide</p>
@@ -4246,12 +4274,12 @@
     </tooltip.buildInFlank2>
 
     <tooltip.buildHidden>
-      <p>Your units will be built hidden.</p>
+      <p>Your units will be built not hidden.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildHidden>
 
     <tooltip.buildNotHidden>
-      <p>Your units will be built not hidden.</p>
+      <p>Your units will be built hidden.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildNotHidden>
     <!-- /TODO: translate this -->
@@ -4379,6 +4407,8 @@
     <label.manage value="Pārvaldīt" />
     <label.withPlanets value="Ar {0} planētām" />
     <!-- TODO -->
+    <label.cancelPrepaid value="You will get"/>
+
     <label.withPlanetsOrMore value="With {0} planets or more" />
     <label.afterDays value="{0 one[? day] many[? days]} after apocalypse" />
     <!-- /TODO -->

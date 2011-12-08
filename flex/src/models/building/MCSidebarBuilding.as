@@ -11,6 +11,7 @@ package models.building
       public var constructing: Boolean = false;
       public var type: String;
       public var disabled: Boolean = false;
+      public var query: Boolean = false;
       public function MCSidebarBuilding(_type: String)
       {
          type = _type;

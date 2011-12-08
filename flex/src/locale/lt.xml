@@ -592,6 +592,16 @@
       <p>Tu negali perimti šios planetos, nes neturi joje savo karių</p>
     </label.noPlayerUnits>
 
+    <tooltip.willBeQueued>
+      <p>Šis pastatas bus įdėtas į statymo eilę.</p>
+      <p>Už pastatą nebus sumokėta iš anksto ir jo statyba bus atšaukta jei
+        statymo metu Tau pritruks resursų.</p>
+    </tooltip.willBeQueued>
+
+    <tooltip.becomeVipToQueue>
+      <p>Tik VIP nariai gali dėti pastatus į eilę nesumokėję iš anksto.</p>
+    </tooltip.becomeVipToQueue>
+
     <deselectButtonText value="atžymėti pastatą" />
 
     <noFacilities value="Nėra statančių pastatų." />
@@ -1244,6 +1254,9 @@
     </label.notEnough>
     <warning.notEnoughVipCreds 
     value="Tu turi turėti bent {0} VIP kredus, kad galėtum juos keisti" />
+    <label.additionalPrivileges value="Tu taip pat gausi šias privilegijas:"/>
+    <label.queueBuilding
+    value="Dėti pastatus ir karius/laivus į eilę prieš tai nesumokėjus."/>
   </Credits>
 
   <Exploration>
@@ -3386,6 +3399,7 @@
     <full value="Pilnas per {0}" />
     <empty value="Tuščias per {0}" />
     <and value="ir" />
+    <notEnoughStorage value="Nepakanka talpyklų." />
     <notEnoughResources value="Nepakanka resursų." />
     <enoughResourcesIn value="Resursų užteks už:" />
     <insufficientRate value="Nepakankamas resursų išgavimo greitis" />
@@ -4039,6 +4053,15 @@
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
 
+    <tooltip.willBeQueued>
+      <p>Šie kariai bus įdėti į statymo eilę.</p>
+      <p>Už karius nebus sumokėta iš anksto ir jų apmokymas bus atšauktas jei
+        statymo metu Tau pritruks resursų.</p>
+    </tooltip.willBeQueued>
+    <tooltip.becomeVipToQueue>
+      <p>Tik VIP nariai gali dėti karius į eilę nesumokėję iš anksto.</p>
+    </tooltip.becomeVipToQueue>
+
     <title.hide value="Paslėpti karius"/>
     <tooltip.hidden>
       <p>Slėpti</p>
@@ -4218,6 +4241,7 @@
       value="{0 one[? diena] tens[? dienų] many[? dienos]} po apokalipsės" />
     <label.resources value="Resursai" />
     <label.transferResources value="Perkelti" />
+    <label.cancelPrepaid value="Tu gausi"/>
     <!-- 0 - resources string, 1 - 'is' or 'are' 
     in lt we dont use parameter 1 -->
     <label.planetFull>

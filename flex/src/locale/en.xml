@@ -491,6 +491,16 @@
       <p>You can not claim this planet because you don't have any units in it</p>
     </label.noPlayerUnits>
 
+    <tooltip.willBeQueued>
+      <p>This building will be added to queue.</p>
+      <p>However it will not be paid for and will be cancelled if you don't have
+      enough resources at the construction time.</p>
+    </tooltip.willBeQueued>
+
+    <tooltip.becomeVipToQueue>
+      <p>Only VIP players can add buildings to the queue without paying first.</p>
+    </tooltip.becomeVipToQueue>
+
     <deselectButtonText value="deselect building" />
 
     <noFacilities value="There are no facilities available." />
@@ -1144,6 +1154,9 @@
     </label.notEnough>
     <warning.notEnoughVipCreds 
     value="To convert VIP creds you must at least have {0} of them" />
+    <label.additionalPrivileges value="You will also get these privileges:"/>
+    <label.queueBuilding
+    value="Adding buildings and units to construction queue without paying first."/>
   </Credits>
 
   <Exploration>
@@ -3274,6 +3287,7 @@
     <empty value="Empty in {0}" />
     <and value="and" />
     <notEnoughResources value="Insufficient resources." />
+    <notEnoughStorage value="Insufficient storage." />
     <enoughResourcesIn value="Enough resources in:" />
     <insufficientRate value="Insufficient resource extraction rate." />
     <!-- {0}: metal/energy/zetium -->
@@ -3982,6 +3996,15 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
+    <tooltip.willBeQueued>
+      <p>These units will be added to queue.</p>
+      <p>However they will not be paid for and will be cancelled if you don't have
+      enough resources at the construction time.</p>
+    </tooltip.willBeQueued>
+    <tooltip.becomeVipToQueue>
+      <p>Only VIP players can add units to the queue without paying first.</p>
+    </tooltip.becomeVipToQueue>
+
     <title.hide value="Hide units"/>
     <tooltip.hidden>
       <p>Hide</p>
@@ -4025,12 +4048,12 @@
     </tooltip.buildInFlank2>
 
     <tooltip.buildHidden>
-      <p>Your units will be built hidden.</p>
+      <p>Your units will be built not hidden.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildHidden>
 
     <tooltip.buildNotHidden>
-      <p>Your units will be built not hidden.</p>
+      <p>Your units will be built hidden.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildNotHidden>
     
@@ -4085,6 +4108,8 @@
     <defensivePool.teleportedVolume value="Teleported volume:" />
     <defensivePool.maxVolume value="Max power:" />
     <defensivePool.pickUnits value="Show other" />
+
+    <label.cancelPrepaid value="You will get"/>
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
