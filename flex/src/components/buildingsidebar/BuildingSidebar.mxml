@@ -648,8 +648,8 @@
          </base:layout>
          <base:Warning text="{getString('notYourPlanet')}"
                        width="100%"/>
-         <s:Group width="100%" visible="{(ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY)
-                  || ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE)
+         <s:Group width="100%" visible="{(ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY, false)
+                  || ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE, false)
                   || ML.latestPlanet.hasBuildingsWithGuns)
                   &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
             <s:Label text="{getString('label.planetHasEnemies')}" styleName="unsatisfied"
@@ -661,8 +661,8 @@
                      left="0" right="0"/>
          </s:Group>
          <s:Group visible="{ML.latestPlanet.ssObject.player == null
-             &amp;&amp; !ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY)
-             &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE)
+             &amp;&amp; !ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY, false)
+             &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE, false)
              &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
              &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}">
                 <s:Button label="{getString('label.claimPlanet')}"
