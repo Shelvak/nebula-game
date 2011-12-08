@@ -638,7 +638,7 @@
 
     <tooltip.willBeQueued>
       <p>This building will be added to queue.</p>
-      <p>However it is not paid for and will be cancelled if you don't have
+      <p>However it will not be paid for and will be cancelled if you don't have
       enough resources at the construction time.</p>
     </tooltip.willBeQueued>
 
@@ -4219,7 +4219,7 @@
     <!-- TODO: translate this -->
     <tooltip.willBeQueued>
       <p>These units will be added to queue.</p>
-      <p>However they are not paid for and will be cancelled if you don't have
+      <p>However they will not be paid for and will be cancelled if you don't have
       enough resources at the construction time.</p>
     </tooltip.willBeQueued>
 
