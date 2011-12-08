@@ -5,9 +5,7 @@
 #
 class ConstructionQueueEntry < ActiveRecord::Base
   default_scope :order => :position
-  belongs_to :upgradable, :polymorphic => true
   belongs_to :constructor, :class_name => "Building"
-  belongs_to :player
   serialize :params, Hash
 
   def self.notify_on_update?; false; end
@@ -39,19 +37,28 @@ class ConstructionQueueEntry < ActiveRecord::Base
       "Cannot reduce resources if this entry is not prepaid!"
     ) unless prepaid?
     planet = constructor.planet
-    metal_cost, energy_cost, zetium_cost = get_resources(count)
+    metal_cost, energy_cost, zetium_cost, population_cost = get_resources(count)
+    player = get_player(planet, population_cost)
 
     raise GameLogicError.new(
-      "Insuffient resources for #{planet}! Wanted to build #{count} of #{
-      constructable_type}, needed: metal: #{metal_cost}, energy: #{energy_cost
-      }, zetium: #{zetium_cost}"
+      "Insuffient resources for #{planet} && #{player}! Wanted to build #{count
+      } of #{constructable_type}, needed: metal: #{metal_cost}, energy: #{
+      energy_cost}, zetium: #{zetium_cost}, population: #{population_cost}"
     ) if planet.metal < metal_cost || planet.energy < energy_cost ||
-      planet.zetium < zetium_cost
+      planet.zetium < zetium_cost ||
+      (! player.nil? && player.population_free < population_cost)
 
-    planet.increase!(
-      :metal => -metal_cost, :energy => -energy_cost,
-      :zetium => -zetium_cost
-    )
+    transaction do
+      planet.increase!(
+        :metal => -metal_cost, :energy => -energy_cost,
+        :zetium => -zetium_cost
+      )
+
+      unless player.nil?
+        player.population += population_cost
+        player.save!
+      end
+    end
   end
 
   # Returns resources to constructors planet.
@@ -60,28 +67,48 @@ class ConstructionQueueEntry < ActiveRecord::Base
       "Cannot return resources if this entry is not prepaid!"
     ) unless prepaid?
 
-    metal_cost, energy_cost, zetium_cost = get_resources(count)
+    planet = constructor.planet
+    metal_cost, energy_cost, zetium_cost, population_cost = get_resources(count)
+    player = get_player(planet, population_cost)
 
-    constructor.planet.increase!(
-      :metal => metal_cost, :energy => energy_cost,
-      :zetium => zetium_cost
-    )
+    transaction do
+      planet.increase!(
+        :metal => metal_cost, :energy => energy_cost,
+        :zetium => zetium_cost
+      )
+
+      unless player.nil?
+        player.population -= population_cost
+        player.save!
+      end
+    end
   end
 
-  # Returns [metal, energy, zetium] required to build _count_ of models.
-  def get_resources(count)
-    model = constructor.build_model(constructable_type, params)
-    metal_cost = model.metal_cost(model.level + 1) * count
-    energy_cost = model.energy_cost(model.level + 1) * count
-    zetium_cost = model.zetium_cost(model.level + 1) * count
+  # Class of _constructable_type_.
+  def constructable_class
+    constructable_type.constantize
+  end
 
-    [metal_cost, energy_cost, zetium_cost]
+  # Returns [metal, energy, zetium, population] required to build _count_
+  # of models.
+  def get_resources(count)
+    raise ArgumentError.new(
+      "Cannot get resources if this entry is not prepaid!"
+    ) unless prepaid?
+
+    klass = constructable_class
+    metal_cost = klass.metal_cost(1) * count
+    energy_cost = klass.energy_cost(1) * count
+    zetium_cost = klass.zetium_cost(1) * count
+    population_cost = constructable_type.starts_with?("Unit") \
+      ? klass.population * count : 0
+
+    [metal_cost, energy_cost, zetium_cost, population_cost]
   end
 
   def can_merge?(model)
     model.constructor_id == self.constructor_id \
       && model.constructable_type == self.constructable_type \
-      && model.player_id == self.player_id \
       && model.prepaid? == self.prepaid? \
       && model.params == self.params
   end
@@ -109,12 +136,24 @@ class ConstructionQueueEntry < ActiveRecord::Base
   end
 
   def to_s
-    "<ConstructionQueueEntry id: #{id}, c_id: #{constructor_id}, p_id: #{
-      player_id}, pos: #{position}, prepaid: #{prepaid?}, count: #{count
+    "<ConstructionQueueEntry id: #{id}, c_id: #{constructor_id
+      }, pos: #{position}, prepaid: #{prepaid?}, count: #{count
       }, c_type: #{constructable_type}>"
   end
 
   protected
+  def get_player(planet, population_cost)
+    player = nil
+    if population_cost > 0
+      player = planet.player
+      raise ArgumentError.new(
+        "Wanted to reduce/increase #{population_cost} population for #{count
+        } of #{constructable_type} but player is nil for #{planet}!"
+      ) if player.nil?
+    end
+    player
+  end
+
   validate :validate_count
   def validate_count
     errors.add(:count, "must be positive!") unless count > 0

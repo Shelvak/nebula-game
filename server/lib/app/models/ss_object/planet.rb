@@ -258,8 +258,11 @@ class SsObject::Planet < SsObject
     population_count = 0
     max_population_count = 0
     buildings.each do |building|
-      ConstructionQueue.clear(building.id) \
-        if building.constructor? and building.working?
+      if building.constructor? and building.working?
+        population_count += ConstructionQueueEntry.
+          where(:constructor_id => building.id).prepaid.
+          map { |cqe| cqe.get_resources(cqe.count)[3] }.sum
+      end
 
       # Inactive buildings do not give radar visibility, scientists or
       # population.

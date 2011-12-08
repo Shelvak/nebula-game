@@ -23,8 +23,8 @@ describe Building::ConstructorTest do
     end
 
     it "should clear construction queue entries" do
+      ConstructionQueue.should_receive(:clear).with(@constructor.id)
       @constructor.destroy
-      @constructor.construction_queue_entries(true).should be_blank
     end
 
     it "should deactivate" do
@@ -195,7 +195,8 @@ describe Building::ConstructorTest do
       before(:each) do
         @count = 5
         @response = @constructor.construct!(
-          "Unit::TestUnit", false, Factory.attributes_for(:unit), @count
+          "Unit::TestUnit", false,
+          {:galaxy_id => @constructor.planet.solar_system.galaxy_id}, @count
         )
       end
 
@@ -235,7 +236,8 @@ describe Building::ConstructorTest do
     describe "if Unit is constructed" do
       let(:unit) do
         @constructor.construct!(
-          "Unit::TestUnit", false, Factory.attributes_for(:unit)
+          "Unit::TestUnit", false,
+          {:galaxy_id => @constructor.planet.solar_system.galaxy_id}
         )
       end
 
