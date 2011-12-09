@@ -644,18 +644,17 @@
       <base:AdvancedContainer top="0" left="0" right="0" visible="{ML.latestPlanet.ssObject.owner != Owner.PLAYER}">
          <base:layout>
             <s:VerticalLayout paddingLeft="6" paddingRight="6" paddingTop="6"
-                              horizontalAlign="center"/>
+                              horizontalAlign="justify"/>
          </base:layout>
-         <base:Warning text="{getString('notYourPlanet')}"
-                       width="100%"/>
-         <s:Group width="100%" visible="{(ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY, false)
+         <base:Warning text="{getString('notYourPlanet')}"/>
+         <s:Group visible="{(ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY, false)
                   || ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE, false)
                   || ML.latestPlanet.hasBuildingsWithGuns)
                   &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
             <s:Label text="{getString('label.planetHasEnemies')}" styleName="unsatisfied"
                      left="0" right="0"/>
          </s:Group>
-         <s:Group width="100%" visible="{!ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
+         <s:Group visible="{!ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
                   &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
             <s:Label text="{getString('label.noPlayerUnits')}" styleName="unsatisfied"
                      left="0" right="0"/>
@@ -669,14 +668,15 @@
                    visible="{!ML.latestGalaxy.apocalypseHasStarted}"
                    includeInLayout="{!ML.latestGalaxy.apocalypseHasStarted}"
                    skinClass="components.skins.GreenButtonSkin"
-                   click="button1_clickHandler(event)"/>
+                   click="button1_clickHandler(event)"
+                   horizontalCenter="0"/>
 
                 <base:Warning width="100%" showSign="false"
                    visible="{ML.latestGalaxy.apocalypseHasStarted}"
                    includeInLayout="{ML.latestGalaxy.apocalypseHasStarted}"
                    text="{getString('warning.apocalypseClaimForbidden')}"/>
          </s:Group>
-         <base:Warning width="100%" showSign="false"
+         <base:Warning showSign="false"
                        visible="{deployInProgress}"
                        text="{getString('warning.deployInAlliancePlanet')}"/>
       </base:AdvancedContainer>
