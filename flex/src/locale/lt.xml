@@ -1256,7 +1256,7 @@
     value="Tu turi turėti bent {0} VIP kredus, kad galėtum juos keisti" />
     <label.additionalPrivileges value="Tu taip pat gausi šias privilegijas:"/>
     <label.queueBuilding
-    value="Dėti pastatus ir karius/laivus į eilę prieš tai nesumokėjus."/>
+    value="● Dėti pastatus ir karius/laivus į eilę prieš tai nesumokėjus."/>
   </Credits>
 
   <Exploration>

@@ -1156,7 +1156,7 @@
     value="To convert VIP creds you must at least have {0} of them" />
     <label.additionalPrivileges value="You will also get these privileges:"/>
     <label.queueBuilding
-    value="Adding buildings and units to construction queue without paying first."/>
+    value="● Adding buildings and units to construction queue without paying first."/>
   </Credits>
 
   <Exploration>
