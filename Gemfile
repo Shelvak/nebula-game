@@ -45,6 +45,6 @@ end
 # Only setuped, but not required (in test env).
 group :test_setup do
   gem "rspec", "~>2.0"
-  gem "factory_girl", "~>2.0"
+  gem "factory_girl", "~>2.1.2"
   gem "mocha"
 end

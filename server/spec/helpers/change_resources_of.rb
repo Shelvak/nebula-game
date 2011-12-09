@@ -9,7 +9,13 @@ RSpec::Matchers.define :change_resources_of do
   end
 
   check_change = lambda do |actual_change, expected_change|
-    change_range.call(expected_change).cover?(actual_change)
+    if expected_change.nil?
+      actual_change != 0
+    elsif expected_change == 0 && change_delta == 0
+      actual_change == 0
+    else
+      change_range.call(expected_change).cover?(actual_change)
+    end
   end
 
   change_msg = lambda do |actual_change, expected_change|
