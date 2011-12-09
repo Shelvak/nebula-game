@@ -1,7 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe ConstructionQueue do
-  let(:klass) { Building::TestBuilding }
+  let(:klass) { Unit::Azure }
   let(:klass2) { Building::Barracks }
   let(:klass3) { Building::GroundFactory }
   let(:klass4) { Building::CollectorT1 }
@@ -9,7 +9,8 @@ describe ConstructionQueue do
 
   before(:each) do
     # We need player there to dispatch event to broker.
-    @planet = Factory.create(:planet_with_player)
+    @player = Factory.create(:player)
+    @planet = Factory.create(:planet, :player => @player)
     set_resources(@planet, 1_000_000, 1_000_000, 1_000_000,
                   2_000_000, 2_000_000, 2_000_000)
     
@@ -31,14 +32,6 @@ describe ConstructionQueue do
           constructable_type.should == klass.to_s
       end
 
-      it "should extract player_id from params" do
-        player = Factory.create(:player)
-        entry = ConstructionQueue.push(@constructor_id, klass.to_s, false, 1,
-          :player_id => player.id)
-
-        entry.player_id.should == player.id
-      end
-
       it "should set position to 0" do
         ConstructionQueue.push(@constructor_id, klass.to_s, false).position.
           should == 0
@@ -49,10 +42,17 @@ describe ConstructionQueue do
           ConstructionQueue.push(@constructor_id, klass.to_s, true, count)
           @planet.reload
         end.should change_resources_of(@planet,
-          - Building::TestBuilding.metal_cost(1) * count,
-          - Building::TestBuilding.energy_cost(1) * count,
-          - Building::TestBuilding.zetium_cost(1) * count
+          - klass.metal_cost(1) * count,
+          - klass.energy_cost(1) * count,
+          - klass.zetium_cost(1) * count
         )
+      end
+
+      it "should increase population if prepaid" do
+        lambda do
+          ConstructionQueue.push(@constructor_id, klass.to_s, true, count)
+          @player.reload
+        end.should change(@player, :population).by(klass.population * count)
       end
 
       it "should not reduce resources if not prepaid" do
@@ -60,6 +60,13 @@ describe ConstructionQueue do
           ConstructionQueue.push(@constructor_id, klass.to_s, false, count)
           @planet.reload
         end.should_not change_resources_of(@planet)
+      end
+
+      it "should not increase population if not prepaid" do
+        lambda do
+          ConstructionQueue.push(@constructor_id, klass.to_s, false, count)
+          @player.reload
+        end.should_not change(@player, :population)
       end
     end
 
@@ -102,6 +109,26 @@ describe ConstructionQueue do
           ConstructionQueue.push(@constructor_id, klass.to_s, false, count)
           @planet.reload
         end.should_not change_resources_of(@planet)
+      end
+
+      it "should increase population if prepaid" do
+        ConstructionQueue.push(@constructor_id, klass.to_s, true)
+        @player.reload
+
+        lambda do
+          ConstructionQueue.push(@constructor_id, klass.to_s, true, count)
+          @player.reload
+        end.should change(@player, :population).by(klass.population * count)
+      end
+
+      it "should not increase populatio if not prepaid" do
+        ConstructionQueue.push(@constructor_id, klass.to_s, false)
+        @player.reload
+
+        lambda do
+          ConstructionQueue.push(@constructor_id, klass.to_s, false, count)
+          @player.reload
+        end.should_not change(@player, :population)
       end
     end
 
@@ -201,12 +228,28 @@ describe ConstructionQueue do
       end.should_not change_resources_of(@planet)
     end
 
+    it "should not free population for not prepaid items" do
+      lambda do
+        ConstructionQueue.push(@constructor.id, Unit::Crow.to_s, false, 10)
+        ConstructionQueue.clear(@constructor.id)
+        @player.reload
+      end.should_not change(@player, :population)
+    end
+
     it "should return resources for prepaid items" do
       lambda do
         ConstructionQueue.push(@constructor.id, Unit::Crow.to_s, true, 10)
         ConstructionQueue.clear(@constructor.id)
         @planet.reload
       end.should_not change_resources_of(@planet)
+    end
+
+    it "should free population for prepaid items" do
+      lambda do
+        ConstructionQueue.push(@constructor.id, Unit::Crow.to_s, true, 10)
+        ConstructionQueue.clear(@constructor.id)
+        @player.reload
+      end.should_not change(@player, :population)
     end
   end
 
@@ -274,6 +317,30 @@ describe ConstructionQueue do
         ConstructionQueue.reduce(mock.id, 6)
         @planet.reload
       end.should_not change_resources_of(@planet)
+    end
+
+    it "should increase population if prepaid" do
+      lambda do
+        mock = ConstructionQueue.push(@constructor_id, klass.to_s, true, 10)
+        ConstructionQueue.reduce(mock.id, 6)
+        @player.reload
+      end.should change(@player, :population).by(klass.population * 4)
+    end
+
+    it "should return resources if prepaid && destroying object" do
+      lambda do
+        mock = ConstructionQueue.push(@constructor_id, klass.to_s, true, 10)
+        ConstructionQueue.reduce(mock.id, 10)
+        @player.reload
+      end.should_not change(@player, :population)
+    end
+
+    it "should not return resources if not prepaid" do
+      lambda do
+        mock = ConstructionQueue.push(@constructor_id, klass.to_s, false, 10)
+        ConstructionQueue.reduce(mock.id, 6)
+        @player.reload
+      end.should_not change(@player, :population)
     end
   end
 

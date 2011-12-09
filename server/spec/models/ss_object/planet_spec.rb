@@ -161,6 +161,7 @@ describe SsObject::Planet do
       @new = Factory.create(:player, :planets_count => 10,
                             :bg_planets_count => 12)
       @planet = Factory.create :planet, :player => @old
+      set_resources(@planet, 1_000_000, 1_000_000, 1_000_000)
       @planet.player = @new
     end
 
@@ -317,11 +318,40 @@ describe SsObject::Planet do
       end
     end
 
-    it "should clear constructor queues" do
-      constructor = Factory.create(:b_constructor_test, opts_working + {
-          :planet => @planet})
-      ConstructionQueue.should_receive(:clear).with(constructor.id)
-      @planet.save!
+    describe "prepaid constructor queue entries" do
+      let(:constructor) do
+        Factory.create(:b_constructor_test, opts_working + {:planet => @planet})
+      end
+      let(:prepaid_entries) do
+        [
+          ConstructionQueue.push(constructor.id, Unit::Trooper.to_s, true, 5),
+          ConstructionQueue.push(constructor.id, Unit::Azure.to_s, true, 5)
+        ]
+      end
+      let(:population) do
+        prepaid_entries.map { |e| e.constructable_class.population * e.count }.
+          sum
+      end
+
+      before(:each) do
+        ConstructionQueue.push(constructor.id, Unit::Azure.to_s, false, 5)
+        self.prepaid_entries
+        @old.reload
+      end
+
+      it "should free population for old player" do
+        lambda do
+          @planet.save!
+          @old.reload
+        end.should change(@old, :population).by(- population)
+      end
+
+      it "should take population for new player" do
+        lambda do
+          @planet.save!
+          @new.reload
+        end.should change(@new, :population).by(population)
+      end
     end
     
     describe "market offers where #from_kind is creds" do

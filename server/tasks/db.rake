@@ -61,11 +61,14 @@ namespace :db do
     end
   end
 
-  desc "Seed database with initial values."
+  desc "Seed database with initial values. Use ruleset=xxx to change ruleset."
   task :seed => :environment do
     ActiveRecord::Base.establish_connection(DB_CONFIG[App.env])
     require File.join(ROOT_DIR, 'db', 'seeds.rb')
   end
+
+  desc "load, migrate & seed database"
+  task :reseed => [:load, :migrate, :seed]
 
   namespace :password do
     desc 'Clone config/database.sample.yml and write to database.yml ' +

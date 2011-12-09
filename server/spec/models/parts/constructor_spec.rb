@@ -19,17 +19,17 @@ describe Building::ConstructorTest do
 
     it "should cancel current constructable" do
       @constructor.constructable.should_receive(:cancel!)
-      @constructor.destroy
+      @constructor.destroy!
     end
 
     it "should clear construction queue entries" do
-      @constructor.destroy
-      @constructor.construction_queue_entries(true).should be_blank
+      ConstructionQueue.should_receive(:clear).with(@constructor.id)
+      @constructor.destroy!
     end
 
     it "should deactivate" do
       @constructor.should_receive(:deactivate)
-      @constructor.destroy
+      @constructor.destroy!
     end
   end
 
@@ -195,7 +195,8 @@ describe Building::ConstructorTest do
       before(:each) do
         @count = 5
         @response = @constructor.construct!(
-          "Unit::TestUnit", false, Factory.attributes_for(:unit), @count
+          "Unit::TestUnit", false,
+          {:galaxy_id => @constructor.planet.solar_system.galaxy_id}, @count
         )
       end
 
@@ -235,7 +236,8 @@ describe Building::ConstructorTest do
     describe "if Unit is constructed" do
       let(:unit) do
         @constructor.construct!(
-          "Unit::TestUnit", false, Factory.attributes_for(:unit)
+          "Unit::TestUnit", false,
+          {:galaxy_id => @constructor.planet.solar_system.galaxy_id}
         )
       end
 

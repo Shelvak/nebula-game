@@ -303,6 +303,12 @@ describe Player do
       Factory.build(:player, :daily_bonus_at => 10.seconds.ago).
         daily_bonus_available?.should be_true
     end
+
+    it "should return false if player does not have any planets" do
+      Factory.build(:player, :daily_bonus_at => nil,
+                    :planets_count => 0, :bg_planets_count => 0).
+        daily_bonus_available?.should be_false
+    end
     
     it "should return false if it's players first time" do
       Factory.build(:player, :daily_bonus_at => nil, :first_time => true).

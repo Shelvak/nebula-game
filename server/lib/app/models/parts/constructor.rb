@@ -23,6 +23,7 @@ module Parts::Constructor
           before_destroy do
             # Reset state to active so we could deactivate.
             if working?
+              ConstructionQueue.clear(id)
               cancel_constructable!
               self.state = Building::STATE_ACTIVE
               deactivate
@@ -270,7 +271,6 @@ module Parts::Constructor
       when /^Building/
         params[:planet_id] = self.planet_id
       when /^Unit/
-        params[:player_id] = self.planet.player_id
         params[:location_id] = self.planet_id
         params[:location_type] = Location::SS_OBJECT
       end
@@ -278,13 +278,21 @@ module Parts::Constructor
       params
     end
 
+    private
+    # @param type [String]
+    # @param params [Hash]
     def build_model(type, params)
+      typesig binding, String, Hash
+
       model = type.constantize.new(params)
+      model.player_id = SsObject.
+        select("player_id").where(:id => model.location.id).c_select_value \
+        if type =~ /^Unit/
       model.level = 0
+
       model
     end
 
-    private
     # @param type [String]
     # @param prepaid [Boolean]
     # @param count [Fixnum]

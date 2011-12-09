@@ -438,7 +438,7 @@
     <!-- {0}: time of planet guard (like "5d") -->
     <warning.selfDestructGuard>
       <p>You can not destroy your buildings for creds in planet which belongs
-      to you for less than {0}</p>
+      to you for less than {0}.</p>
     </warning.selfDestructGuard>
     <toolTip.afterUpgrade value="After upgrade" />
     <title.boost value="Boost" />

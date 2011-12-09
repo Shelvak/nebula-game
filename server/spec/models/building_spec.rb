@@ -180,6 +180,42 @@ describe Building do
         end.should raise_error(ActiveRecord::RecordNotFound)
       end
     end
+
+    # Bugfix
+    #
+    # If destroying a working constructor with prepaid entries, the later SQL
+    # update overwrote planet resources and only a part of resources were given
+    # back.
+    #
+    # This could have been avoided if:
+    # 1) AR would use += in SQL.
+    # 2) or it would have a identity map which actually works.
+    it "should return resources for building, constructable & prepaid entries" \
+    do
+      set_resources(@planet, 100_000, 100_000, 100_000,
+                    200_000, 200_000, 200_000)
+      unit_class = Unit::Scorpion
+      count = 5
+
+      model = Factory.create!(:b_ground_factory,
+                              opts_active + {:planet => @planet, :x => 10})
+      model.construct!(
+        unit_class.to_s, true,
+        {:galaxy_id => model.planet.solar_system.galaxy_id}, count
+      )
+      @planet.reload
+
+      metal, energy, zetium = model.self_destruct_resources
+      lambda do
+        model.self_destruct!
+        @planet.reload
+      end.should change_resources_of(@planet,
+                   metal + unit_class.metal_cost(1) * count,
+                   energy + unit_class.energy_cost(1) * count,
+                   zetium + unit_class.zetium_cost(1) * count,
+                   5
+                 )
+    end
   end
 
   describe "#move!" do

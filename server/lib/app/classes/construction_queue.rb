@@ -37,8 +37,6 @@ class ConstructionQueue
       :count => count,
       :position => position,
       :prepaid => prepaid,
-      # This is used for FK relation with player.
-      :player_id => params.nil? ? nil : params[:player_id],
       :params => params
     )
 
@@ -72,12 +70,11 @@ class ConstructionQueue
 
   # Clear constructor queue.
   def self.clear(constructor_id)
-    ConstructionQueueEntry.where(:constructor_id => constructor_id).each do
-      |entry|
+    typesig binding, Fixnum
 
-      entry.return_resources!(entry.count) if entry.prepaid?
-      entry.destroy!
-    end
+    condition = ConstructionQueueEntry.where(:constructor_id => constructor_id)
+    condition.prepaid.each { |entry| entry.return_resources!(entry.count) }
+    condition.delete_all
   end
 
   # Reduce _count_ from given _model_ or _model_id_. Return resources for

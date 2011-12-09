@@ -265,23 +265,26 @@ class Building < ActiveRecord::Base
         unless planet.can_destroy_building?
     end
 
-    planet.can_destroy_building_at = CONFIG.evalproperty(
-      "buildings.self_destruct.cooldown").since unless with_credits
-    metal, energy, zetium = self_destruct_resources
-    planet.metal += metal
-    planet.energy += energy
-    planet.zetium += zetium
-
     transaction do
       if with_credits
         stats.save!
         player.save!
       end
-      planet.delayed_fire(planet, EventBroker::CHANGED,
-        EventBroker::REASON_OWNER_PROP_CHANGE)
       Objective::SelfDestruct.progress(self)
+
       destroy!
-      planet.save!
+
+      # We need to reload the planet, because #destroy! might have increased
+      # resources on it. Baargh, we need identity map badly here!
+      planet.reload
+      planet.can_destroy_building_at = CONFIG.evalproperty(
+        "buildings.self_destruct.cooldown"
+      ).since unless with_credits
+      planet.delayed_fire(planet, EventBroker::CHANGED,
+                          EventBroker::REASON_OWNER_PROP_CHANGE)
+
+      metal, energy, zetium = self_destruct_resources
+      planet.increase!(:metal => metal, :energy => energy, :zetium => zetium)
     end
   end
 
