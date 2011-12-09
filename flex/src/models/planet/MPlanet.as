@@ -1328,10 +1328,12 @@ package models.planet
        * @param y logical y coordinate 
        * @param constructorId if of a constructor this ghost will be constructed by
        */
-      public function buildGhost(type:String, x:int, y:int, constructorId: int) : void
+      public function buildGhost(type:String, x:int, y:int, constructorId: int,
+              prepaid: Boolean) : void
       {
          
-         var ghost:Building = BuildingFactory.createGhost(type, x, y, constructorId);
+         var ghost:Building = BuildingFactory.createGhost(type, x, y, constructorId,
+            prepaid);
          var bonuses: BuildingBonuses = BuildingBonuses.refreshBonuses(getTilesUnderBuilding(ghost));
          ghost.constructionMod = bonuses.constructionTime;
          build(ghost);

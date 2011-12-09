@@ -71,7 +71,8 @@ package models.factories
                      ModelUtil.getModelSubclass(queueEntry.constructableType),
                      queueEntry.params.x,
                      queueEntry.params.y,
-                     b.id
+                     b.id,
+                     queueEntry.prepaid
                   ));
                }
             }

@@ -89,7 +89,8 @@ package models.factories
        * @param y y coordinate of a ghost on the map
        * @param constructorId id of a constructor this ghost will be constructed by
        */
-      public static function createGhost(type:String, x:int, y:int, constructorId:int) : Building
+      public static function createGhost(type:String, x:int, y:int, constructorId:int,
+              prepaid: Boolean) : Building
       {
          var ghost:Building = new Building();
          ghost.type = type;
@@ -100,6 +101,7 @@ package models.factories
             Config.getBuildingHeight(type)
          );
          ghost.constructorId = constructorId;
+         ghost.prepaid = prepaid;
          return ghost;
       }
    }

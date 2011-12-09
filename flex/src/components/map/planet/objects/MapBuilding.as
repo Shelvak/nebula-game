@@ -1,6 +1,8 @@
 package components.map.planet.objects
 {
-   
+
+   import components.base.Filters;
+
    import config.Config;
    
    import flash.display.Graphics;
@@ -119,6 +121,17 @@ package components.map.planet.objects
             if (b.isGhost)
             {
                mainImageContainer.alpha = 0.5;
+               if (!b.prepaid)
+               {
+                  if (mainImageContainer.filters != Filters.GRAYSCALE)
+                  {
+                     mainImageContainer.filters = Filters.GRAYSCALE;
+                  }
+               }
+               else
+               {
+                  mainImageContainer.filters = null;
+               }
             }
             else
             {
@@ -142,7 +155,7 @@ package components.map.planet.objects
                   mainImageContainer.filters = DISABLED_FILTERS;
                }
             }
-            else
+            else if (!b.isGhost)
             {
                mainImageContainer.filters = null;
             }
