@@ -1314,7 +1314,7 @@
     <!-- TODO -->
     <label.additionalPrivileges value="You will also get these privileges:"/>
     <label.queueBuilding
-    value="Adding buildings and units to construction queue without paying first"/>
+    value="● Adding buildings and units to construction queue without paying first"/>
     <!-- /TODO -->
   </Credits>
 
@@ -1912,6 +1912,9 @@
     <label.sendMessage value="Nosūtīt ziņu" />
     <title.achievements value="SASNIEGUMI" />
     <label.close value="Aizvērt" />
+    <!-- TODO -->
+    <label.noPlanets value="You have no planets"/>
+    <!-- /TODO -->
   </Players>
 
   <Popups>
@@ -3507,7 +3510,7 @@
 
   <SSObjects>
     <!-- TODO -->
-    <label.planetSize value="Area: {0} square kkm"/>
+    <label.planetArea value="Area: {0} x {1}"/>
     <label.totalVolume value="Total volume: {0}"/>
     <label.wreckageVolume value="(volume: {0})"/>
     <!-- /TODO -->

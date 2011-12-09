@@ -41,11 +41,12 @@
                ? "" : LocationMinimal.getSectorLabel(ssObject.currentLocation);
          }
 
-         private function getPlanetSizeLabel(ssObject:MSSObject) : String {
+         private function getPlanetAreaLabel(ssObject:MSSObject) : String {
             return ssObject == null
                ? ""
                : Localizer.string(
-                    "SSObjects", "label.planetSize", [ssObject.size]
+                    "SSObjects", "label.planetArea",
+                    [ssObject.width, ssObject.height]
                  );
          }
       ]]>
@@ -63,8 +64,8 @@
          text="{getString('typeAndName', [ssObject.typeName, ssObject.name])}"/>
       <!--- Sector -->
       <s:Label id="lblSector" text="{getSectorLabel(ssObject)}"/>
-      <!-- Planet size -->
-      <s:Label text="{getPlanetSizeLabel(ssObject)}"
+      <!-- Planet area -->
+      <s:Label text="{getPlanetAreaLabel(ssObject)}"
                visible="{ssObject.isPlanet}" />
       <!--- Player name who owns this planet. -->
       <base:AdvancedContainer minWidth="0" minHeight="0"

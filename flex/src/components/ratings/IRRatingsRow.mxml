@@ -33,46 +33,16 @@
          
          private function getImaginaryLevel(rank: int): int
          {
-            if (rank > 1000)
-            {
-               return 0;
-            }
-            else if (rank > 500)
-            {
-               return 1;
-            }
-            else if (rank > 250)
-            {
-               return 2;
-            }
-            else if (rank > 150)
-            {
-               return 3;
-            }
-            else if (rank > 100)
-            {
-               return 4;
-            }
-            else if (rank > 50)
-            {
-               return 5;
-            }
-            else if (rank > 30)
-            {
-               return 6;
-            }
-            else if (rank > 20)
-            {
-               return 7;
-            }
-            else if (rank > 10)
-            {
-               return 8;
-            }
-            else
-            {
-               return 9;
-            }
+            if (rank > 1000) return 0;
+            else if (rank > 500) return 1;
+            else if (rank > 250) return 2;
+            else if (rank > 150) return 3;
+            else if (rank > 100) return 4;
+            else if (rank > 50) return 5;
+            else if (rank > 30) return 6;
+            else if (rank > 20) return 7;
+            else if (rank > 10) return 8;
+            else return 9;
          }
       ]]>
    </fx:Script>

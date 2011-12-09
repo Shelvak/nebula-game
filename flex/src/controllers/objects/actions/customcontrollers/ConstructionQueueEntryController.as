@@ -30,7 +30,8 @@ package controllers.objects.actions.customcontrollers
                Objects.toSimpleClassName(query.constructableType),
                query.params.x,
                query.params.y,
-               constructor.id
+               constructor.id,
+               query.prepaid
             );
          return query;
       }

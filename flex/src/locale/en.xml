@@ -1156,7 +1156,7 @@
     value="To convert VIP creds you must at least have {0} of them" />
     <label.additionalPrivileges value="You will also get these privileges:"/>
     <label.queueBuilding
-    value="Adding buildings and units to construction queue without paying first."/>
+    value="● Adding buildings and units to construction queue without paying first."/>
   </Credits>
 
   <Exploration>
@@ -1730,6 +1730,7 @@
     <label.sendMessage value="Send message" />
     <title.achievements value="ACHIEVEMENTS" />
     <label.close value="Close" />
+    <label.noPlanets value="You have no planets"/>
   </Players>
 
   <Popups>
@@ -3301,7 +3302,7 @@
   </Resources>
 
   <SSObjects>
-    <label.planetSize value="Area: {0} square kkm"/>
+    <label.planetArea value="Area: {0} x {1}"/>
     <label.totalVolume value="Total volume: {0}"/>
     <label.wreckageVolume value="(volume: {0})"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    

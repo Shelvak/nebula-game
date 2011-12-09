@@ -81,7 +81,7 @@ class SsObject::Planet < SsObject
 
   # Attributes which are included when :view => true is passed to
   # #as_json
-  VIEW_ATTRIBUTES = %w{width height} + RESOURCE_ATTRIBUTES
+  VIEW_ATTRIBUTES = RESOURCE_ATTRIBUTES
 
   # Returns Planet JSON representation. It's basically same as 
   # SsObject#as_json but includes additional fields:
@@ -89,6 +89,7 @@ class SsObject::Planet < SsObject
   # * player (Player): Planet owner (can be nil)
   # * name (String): Planet name.
   # * terrain (Fixnum): terrain variation
+  # * width, height (Fixnum): width and height.
   #
   # These options can be passed:
   # * :owner => true to include owner only attributes
@@ -103,8 +104,13 @@ class SsObject::Planet < SsObject
   # * :viewable => boolean indicating if user can click to view this planet.
   #
   def as_json(options=nil)
-    additional = {"player" => Player.minimal(player_id), "name" => name,
-      "terrain" => terrain}
+    additional = {
+      "player" => Player.minimal(player_id),
+      "name" => name,
+      "terrain" => terrain,
+      "width" => width,
+      "height" => height
+    }
     if options
       options.assert_valid_keys :owner, :view, :perspective, :index
 

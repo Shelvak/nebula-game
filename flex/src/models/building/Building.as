@@ -440,6 +440,8 @@ package models.building
       {
          return id == 0;
       }
+
+      public var prepaid: Boolean;
       
       
       public function get isExtractor() : Boolean

@@ -34,8 +34,8 @@
       }
 
       private function getSectorLabel(ss: MSolarSystem): String {
-         return ss == null ? "" : LocationMinimal.getSectorLabel(ss
-                                                                    .currentLocation);
+         return ss == null
+           ? "" : LocationMinimal.getSectorLabel(ss.currentLocation);
       }
 
       private function btnOpen_clickHandler(event: MouseEvent): void {

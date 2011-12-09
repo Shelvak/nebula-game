@@ -1256,7 +1256,7 @@
     value="Tu turi turėti bent {0} VIP kredus, kad galėtum juos keisti" />
     <label.additionalPrivileges value="Tu taip pat gausi šias privilegijas:"/>
     <label.queueBuilding
-    value="Dėti pastatus ir karius/laivus į eilę prieš tai nesumokėjus."/>
+    value="● Dėti pastatus ir karius/laivus į eilę prieš tai nesumokėjus."/>
   </Credits>
 
   <Exploration>
@@ -1823,6 +1823,7 @@
     <label.sendMessage value="Nusiųsti žinutę" />
     <title.achievements value="PASIEKIMAI" />
     <label.close value="Uždaryti" />
+    <label.noPlanets value="Tu neturi planetų"/>
   </Players>
 
   <Popups>
@@ -3412,7 +3413,7 @@
   </Resources>
 
   <SSObjects>
-    <label.planetSize value="Plotas: {0} tūkst. kv. km"/>
+    <label.planetArea value="Plotas: {0} x {1}"/>
     <label.totalVolume value="Bendra apimtis: {0}"/>
     <label.wreckageVolume value="(apimtis: {0})"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->

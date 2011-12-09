@@ -78,7 +78,7 @@ package utils.remote
       
       
       /**
-       * Don't instansiate this class. Use <code>ServerProxyInstance.getInstance()</code>.
+       * Don't instantiate this class. Use <code>ServerProxyInstance.getInstance()</code>.
        */
       public function ServerConnector()
       {

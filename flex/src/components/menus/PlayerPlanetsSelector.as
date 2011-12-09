@@ -7,6 +7,7 @@ package components.menus
    import models.solarsystem.MSSObject;
    
    import mx.collections.ArrayCollection;
+   import mx.collections.IList;
    import mx.core.ClassFactory;
    
    import spark.components.DropDownList;
@@ -27,7 +28,6 @@ package components.menus
          super();
          requireSelection = false;
          itemRenderer = new ClassFactory(IRPlayerPlanet);
-         prompt = Localizer.string("SSObjects", "prompt.selectPlanet");
       }
       
       
@@ -38,7 +38,26 @@ package components.menus
       {
          return ArrayCollection(dataProvider);
       }
-      
+
+      private function refreshPrompt(): void
+      {
+         if (dataProvider != null && dataProvider.length > 0)
+         {
+            prompt = Localizer.string("SSObjects", "prompt.selectPlanet");
+            enabled = true;
+         }
+         else
+         {
+            prompt = Localizer.string('Players', 'label.noPlanets');
+            enabled = false;
+         }
+      }
+
+      public override function set dataProvider(value: IList): void
+      {
+         super.dataProvider = value;
+         refreshPrompt();
+      }
       
       protected override function itemSelected(index:int, selected:Boolean) : void
       {

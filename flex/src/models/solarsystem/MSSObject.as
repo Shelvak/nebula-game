@@ -60,7 +60,8 @@ package models.solarsystem
     */
    [Event(name="cooldownChange", type="models.solarsystem.events.MSSObjectEvent")]
    
-   public class MSSObject extends BaseModel implements IMStaticSpaceObject, ICleanable
+   public class MSSObject extends BaseModel implements IMStaticSpaceObject,
+                                                       ICleanable
    {
       /**
        * Returns variation id of a solar system object of given type, terrain and with given id.

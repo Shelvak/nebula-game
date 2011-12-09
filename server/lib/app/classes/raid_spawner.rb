@@ -149,10 +149,7 @@ class RaidSpawner
 
   # Current apocalypse day.
   def apocalypse_raid_arg
-    (
-      (@planet.next_raid_at - @planet.solar_system.galaxy.apocalypse_start) /
-        1.day
-    ).round + 1
+    @planet.solar_system.galaxy.apocalypse_day(@planet.next_raid_at)
   end
 
   def battleground?

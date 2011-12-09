@@ -1092,9 +1092,8 @@ describe SsObject::Planet do
 
     describe "without options" do
       it_behaves_like "as json", Factory.create(:planet), nil,
-        %w{name terrain},
-        %w{width height
-          metal metal_generation_rate metal_usage_rate metal_storage
+        %w{name terrain width height},
+        %w{metal metal_generation_rate metal_usage_rate metal_storage
           energy energy_generation_rate energy_usage_rate energy_storage
           zetium zetium_generation_rate metal_usage_rate zetium_storage
           last_resources_update energy_diminish_registered status
@@ -1106,7 +1105,6 @@ describe SsObject::Planet do
     describe "with :view" do
       it_behaves_like "as json", Factory.create(:planet), {:view => true},
         %w{
-          width height
           metal metal_generation_rate metal_usage_rate metal_storage
           energy energy_generation_rate energy_usage_rate energy_storage
           zetium zetium_generation_rate zetium_usage_rate zetium_storage

@@ -10,6 +10,8 @@
       import components.skins.RedButtonSkin;
       import components.skins.YellowButtonSkin;
 
+      import models.unit.MCUnitScreen;
+
       import utils.ApplicationLocker;
 
       import controllers.ui.NavigationController;
@@ -22,6 +24,7 @@
 
       protected function button1_clickHandler(event: MouseEvent): void {
          NavigationController.getInstance().disableActiveButton();
+         MCUnitScreen.getInstance().deselectUnits();
          NavigationController.getInstance().showPreviousScreen();
       }
 

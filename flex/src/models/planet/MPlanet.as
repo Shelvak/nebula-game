@@ -766,8 +766,9 @@ package models.planet
       
       
       [Bindable(event="unitRefresh")]
-      public function hasActiveGroundUnits(owner: int = -1, hiddenCounts: Boolean = true): Boolean
-      {
+      public function hasActiveGroundUnits(
+         owner: int = -1, hiddenCounts: Boolean = true
+      ): Boolean {
          return Collections.findFirst(units,
             function(unit:Unit) : Boolean
             {
@@ -781,8 +782,9 @@ package models.planet
       
       
       [Bindable(event="unitRefresh")]
-      public function hasActiveSpaceUnits(owner: int = -1, hiddenCounts: Boolean = true): Boolean
-      {
+      public function hasActiveSpaceUnits(
+         owner: int = -1, hiddenCounts: Boolean = true
+      ): Boolean {
          return Collections.findFirst(units,
             function(unit:Unit) : Boolean
             {
@@ -1328,10 +1330,12 @@ package models.planet
        * @param y logical y coordinate 
        * @param constructorId if of a constructor this ghost will be constructed by
        */
-      public function buildGhost(type:String, x:int, y:int, constructorId: int) : void
+      public function buildGhost(type:String, x:int, y:int, constructorId: int,
+              prepaid: Boolean) : void
       {
          
-         var ghost:Building = BuildingFactory.createGhost(type, x, y, constructorId);
+         var ghost:Building = BuildingFactory.createGhost(type, x, y, constructorId,
+            prepaid);
          var bonuses: BuildingBonuses = BuildingBonuses.refreshBonuses(getTilesUnderBuilding(ghost));
          ghost.constructionMod = bonuses.constructionTime;
          build(ghost);

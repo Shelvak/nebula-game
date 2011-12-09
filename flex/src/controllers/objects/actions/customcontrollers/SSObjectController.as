@@ -56,7 +56,8 @@ package controllers.objects.actions.customcontrollers
          
          // update current planet
          var planet:MPlanet = ML.latestPlanet;
-         var nameChanged:Boolean = planet != null && planet.ssObject.name != planetNew.name;
+         var nameChanged:Boolean =
+                planet != null && planet.ssObject.name != planetNew.name;
          if (planet != null && !planet.fake && planet.id == planetNew.id) {
             // the planet is not visible to the player anymore, so invalidate it
             if (!planetNew.viewable) {

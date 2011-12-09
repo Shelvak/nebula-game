@@ -115,8 +115,9 @@ package controllers.galaxies.actions
             // one planet and don't have any units in galaxy - then open first
             // player planet.
             var deepOpen:Boolean =
-               ML.player.firstTime || ML.player.planetsCountAll == 1 &&
-               ! galaxy.hasMoreThanOneObject && ! galaxy.hasUnits;
+               (ML.player.firstTime || ML.player.planetsCountAll == 1 &&
+               ! galaxy.hasMoreThanOneObject && ! galaxy.hasUnits)
+                       && ML.player.planets.length > 0;
             if (deepOpen) {
                NAV_CTRL.toGalaxy(galaxy,
                   function() : void {
