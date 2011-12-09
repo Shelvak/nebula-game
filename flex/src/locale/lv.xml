@@ -1912,6 +1912,9 @@
     <label.sendMessage value="Nosūtīt ziņu" />
     <title.achievements value="SASNIEGUMI" />
     <label.close value="Aizvērt" />
+    <!-- TODO -->
+    <label.noPlanets value="You have no planets"/>
+    <!-- /TODO -->
   </Players>
 
   <Popups>

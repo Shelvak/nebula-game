@@ -1730,6 +1730,7 @@
     <label.sendMessage value="Send message" />
     <title.achievements value="ACHIEVEMENTS" />
     <label.close value="Close" />
+    <label.noPlanets value="You have no planets"/>
   </Players>
 
   <Popups>

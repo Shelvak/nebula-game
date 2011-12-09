@@ -1823,6 +1823,7 @@
     <label.sendMessage value="Nusiųsti žinutę" />
     <title.achievements value="PASIEKIMAI" />
     <label.close value="Uždaryti" />
+    <label.noPlanets value="Tu neturi planetų"/>
   </Players>
 
   <Popups>
