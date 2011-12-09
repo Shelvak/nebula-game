@@ -9,7 +9,9 @@ package components.menus
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.core.ClassFactory;
-   
+   import mx.events.CollectionEvent;
+   import mx.events.CollectionEventKind;
+
    import spark.components.DropDownList;
    
    import utils.locale.Localizer;
@@ -39,23 +41,38 @@ package components.menus
          return ArrayCollection(dataProvider);
       }
 
-      private function refreshPrompt(): void
+      private function refreshPrompt(e: CollectionEvent = null): void
       {
-         if (dataProvider != null && dataProvider.length > 0)
+         if (e == null || e.kind == CollectionEventKind.ADD
+                 || e.kind == CollectionEventKind.REMOVE
+                 || e.kind == CollectionEventKind.RESET)
          {
-            prompt = Localizer.string("SSObjects", "prompt.selectPlanet");
-            enabled = true;
-         }
-         else
-         {
-            prompt = Localizer.string('Players', 'label.noPlanets');
-            enabled = false;
+            if (dataProvider != null && dataProvider.length > 0)
+            {
+               prompt = Localizer.string("SSObjects", "prompt.selectPlanet");
+               enabled = true;
+            }
+            else
+            {
+               prompt = Localizer.string('Players', 'label.noPlanets');
+               enabled = false;
+            }
          }
       }
 
       public override function set dataProvider(value: IList): void
       {
+         if (dataProvider != null)
+         {
+            dataProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE,
+               refreshPrompt)
+         }
          super.dataProvider = value;
+         if (dataProvider != null)
+         {
+            dataProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE,
+               refreshPrompt)
+         }
          refreshPrompt();
       }
       
