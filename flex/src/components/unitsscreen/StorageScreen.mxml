@@ -314,7 +314,7 @@
                                          buttonLabel="{getString('label.transferResources')}"
                                          skinClass="components.unitsscreen.StorageScreenSectionPanelSkin"
                                          panelButtonClick="transfer_clickHandler(event)">
-                  <s:Group width="80%">
+                  <s:Group width="85%">
                      <base:ResourceSelectorComp resourceType="{ResourceType.METAL}" 
                                                 maxAmmount="{getMaxStock(ResourceType.METAL)}"
                                                 id="metalSelector" 
@@ -323,12 +323,12 @@
                               (metalSelector.selectedVal - transporter.metal)}" 
                               color="{transporter.metal &gt; metalSelector.selectedVal?0xff0000:(
                               transporter.metal == metalSelector.selectedVal?0xffffff:0x00ff00)}"
-                              width="50" textAlign="right"/>
+                              width="60" textAlign="right"/>
                      <s:layout>
                         <s:HorizontalLayout verticalAlign="middle"/>
                      </s:layout>
                   </s:Group>
-                  <s:Group width="80%">
+                  <s:Group width="85%">
                      <base:ResourceSelectorComp resourceType="{ResourceType.ENERGY}" 
                                                 maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
                                                 id="energySelector"
@@ -337,12 +337,12 @@
                               (energySelector.selectedVal - transporter.energy)}" 
                               color="{transporter.energy &gt; energySelector.selectedVal?0xff0000:(
                               transporter.energy == energySelector.selectedVal?0xffffff:0x00ff00)}"
-                              width="50" textAlign="right"/>
+                              width="60" textAlign="right"/>
                      <s:layout>
                         <s:HorizontalLayout verticalAlign="middle"/>
                      </s:layout>
                   </s:Group>
-                  <s:Group width="80%">
+                  <s:Group width="85%">
                      <base:ResourceSelectorComp resourceType="{ResourceType.ZETIUM}"
                                                 maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
                                                 id="zetiumSelector"
@@ -351,12 +351,12 @@
                               (zetiumSelector.selectedVal - transporter.zetium)}" 
                               color="{transporter.zetium &gt; zetiumSelector.selectedVal?0xff0000:(
                               transporter.zetium == zetiumSelector.selectedVal?0xffffff:0x00ff00)}"
-                              width="50" textAlign="right"/>
+                              width="60" textAlign="right"/>
                      <s:layout>
                         <s:HorizontalLayout verticalAlign="middle"/>
                      </s:layout>
                   </s:Group>
-                  <s:Group width="80%">
+                  <s:Group width="85%">
                      <s:Group right="50" width="150">
                         <s:Button label="{getString('label.all')}" 
                                   click="selectAll()" right="0"/>
