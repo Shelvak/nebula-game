@@ -26,8 +26,9 @@ class RaidSpawner
   def register!
     @planet.next_raid_at += Cfg.raiding_delay_random
     @planet.raid_arg = generate_arg
-    CallbackManager.register(@planet, CallbackManager::EVENT_RAID,
-                             @planet.next_raid_at)
+    CallbackManager.register_or_update(
+      @planet, CallbackManager::EVENT_RAID, @planet.next_raid_at
+    )
     @planet.delayed_fire(@planet, EventBroker::CHANGED,
                          EventBroker::REASON_OWNER_PROP_CHANGE)
     @planet.save!

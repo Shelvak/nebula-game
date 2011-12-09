@@ -76,14 +76,15 @@ describe RaidSpawner do
   end
 
   describe "#register!" do
-    let(:planet) { Factory.create(:planet, :next_raid_at => Time.now) }
+    let(:planet) { Factory.create(:planet, :next_raid_at => 10.days.ago) }
     let(:spawner) { RaidSpawner.new(planet) }
 
     it "should shift #next_raid_at to the future" do
+      next_raid_at = planet.next_raid_at
       spawner.register!
       planet.reload
       range = Cfg.raiding_delay_range
-      range = (Time.now + range.first)..(Time.now + range.last)
+      range = (next_raid_at + range.first)..(next_raid_at + range.last)
       range.should cover(planet.next_raid_at)
     end
 
