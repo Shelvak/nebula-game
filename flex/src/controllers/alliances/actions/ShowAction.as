@@ -43,29 +43,59 @@ package controllers.alliances.actions
             player.allianceOwnerId = ally.ownerId;
          }
          ally.players.sort = new Sort();
-         ally.players.sort.fields = [
-            new SortField('allianceVps', true, true, true),
-            new SortField('victoryPoints', true, true, true),
-            new SortField('points', true, true, true),
-            new SortField('planetsCount', true, true, true),
-            new SortField('name')
-         ];
-         ally.players.refresh();
-         
-         if (ally.invPlayers)
+         if (ML.latestGalaxy.apocalypseHasStarted)
          {
-            ally.invPlayers.sort = new Sort();
-            ally.invPlayers.sort.fields = [
-               new SortField('victoryPoints', true, true, true),
-               new SortField('points', true, true, true),
-               new SortField('planetsCount', true, true, true),
-               new SortField('name')
+            ally.players.sort.fields = [
+               AllianceScreenM.planetsCountField,
+               AllianceScreenM.bgPlanetsCountField,
+               AllianceScreenM.deathDayField,
+               AllianceScreenM.allianceVpsField,
+               AllianceScreenM.victoryPtsField,
+               AllianceScreenM.pointsField,
+               AllianceScreenM.nameField
             ];
-            ally.invPlayers.refresh();  
-            
-            MRatingPlayer.refreshRanks(ally.invPlayers);
+
+            if (ally.invPlayers)
+            {
+               ally.invPlayers.sort = new Sort();
+               ally.invPlayers.sort.fields = [
+                  AllianceScreenM.planetsCountField,
+                  AllianceScreenM.bgPlanetsCountField,
+                  AllianceScreenM.deathDayField,
+                  AllianceScreenM.victoryPtsField,
+                  AllianceScreenM.pointsField,
+                  AllianceScreenM.nameField
+               ];
+               ally.invPlayers.refresh();
+               MRatingPlayer.refreshRanks(ally.invPlayers);
+            }
          }
-         
+         else
+         {
+            ally.players.sort.fields = [
+               AllianceScreenM.allianceVpsField,
+               AllianceScreenM.victoryPtsField,
+               AllianceScreenM.pointsField,
+               AllianceScreenM.planetsCountField,
+               AllianceScreenM.bgPlanetsCountField,
+               AllianceScreenM.nameField
+            ];
+
+            if (ally.invPlayers)
+            {
+               ally.invPlayers.sort = new Sort();
+               ally.invPlayers.sort.fields = [
+                  AllianceScreenM.victoryPtsField,
+                  AllianceScreenM.pointsField,
+                  AllianceScreenM.planetsCountField,
+                  AllianceScreenM.bgPlanetsCountField,
+                  AllianceScreenM.nameField
+               ];
+               ally.invPlayers.refresh();
+               MRatingPlayer.refreshRanks(ally.invPlayers);
+            }
+         }
+         ally.players.refresh();
          MRatingPlayer.refreshRanks(ally.players);
          ASM.alliance = ally;
       }

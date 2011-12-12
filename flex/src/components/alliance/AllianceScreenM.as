@@ -56,18 +56,19 @@ package components.alliance
       private static const TAB_PLAYERS:int = 1;
       private static const TAB_MANAGEMENT:int = 2;
       
-      private static const nameField: SortField = new SortField('name', true);
-      private static const rankField: SortField = new SortField('rank', false, false, true);
-      private static const allianceField: SortField = new SortField('alliance', true);
-      private static const victoryPtsField: SortField = new SortField('victoryPoints', false, true, true);
-      private static const allianceVpsField: SortField = new SortField('allianceVps', false, true, true);
-      private static const pointsField: SortField = new SortField('points', false, true, true);
-      private static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
-      private static const bgPlanetsCountField: SortField = new SortField('bgPlanetsCount', false, true, true);
-      private static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);
-      private static const sciencePtsField: SortField = new SortField('sciencePoints', false, true, true);
-      private static const armyPtsField: SortField = new SortField('armyPoints', false, true, true);
-      private static const warPtsField: SortField = new SortField('warPoints', false, true, true);
+      public static const nameField: SortField = new SortField('name', true);
+      public static const rankField: SortField = new SortField('rank', false, false, true);
+      public static const allianceField: SortField = new SortField('alliance', true);
+      public static const victoryPtsField: SortField = new SortField('victoryPoints', false, true, true);
+      public static const allianceVpsField: SortField = new SortField('allianceVps', false, true, true);
+      public static const pointsField: SortField = new SortField('points', false, true, true);
+      public static const deathDayField: SortField = new SortField('deathDay', false, true, true);
+      public static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
+      public static const bgPlanetsCountField: SortField = new SortField('bgPlanetsCount', false, true, true);
+      public static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);
+      public static const sciencePtsField: SortField = new SortField('sciencePoints', false, true, true);
+      public static const armyPtsField: SortField = new SortField('armyPoints', false, true, true);
+      public static const warPtsField: SortField = new SortField('warPoints', false, true, true);
       
       private static const sortFields: Object = 
          {
@@ -75,10 +76,10 @@ package components.alliance
             'name':[nameField],
             'alliance':[allianceField, allianceVpsField, victoryPtsField,
                pointsField, bgPlanetsCountField, planetsCountField, nameField],
-            'planetsCount':[planetsCountField, bgPlanetsCountField, allianceVpsField,
-               victoryPtsField, pointsField, nameField],
-            'bgPlanetsCount':[bgPlanetsCountField, planetsCountField, allianceVpsField,
-               victoryPtsField, pointsField, nameField],
+            'planetsCount':[planetsCountField, bgPlanetsCountField, deathDayField,
+               allianceVpsField, victoryPtsField, pointsField, nameField],
+            'bgPlanetsCount':[bgPlanetsCountField, planetsCountField, deathDayField,
+               allianceVpsField, victoryPtsField, pointsField, nameField],
             'economyPoints':[economyPtsField, allianceVpsField, victoryPtsField,
                pointsField, bgPlanetsCountField, planetsCountField, nameField],
             'sciencePoints':[sciencePtsField, allianceVpsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
@@ -94,8 +95,10 @@ package components.alliance
             'rank':[rankField],
             'name':[nameField],
             'alliance':[allianceField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
-            'planetsCount':[planetsCountField, bgPlanetsCountField, victoryPtsField, pointsField, nameField],
-            'bgPlanetsCount':[planetsCountField, planetsCountField, victoryPtsField, pointsField, nameField],
+            'planetsCount':[planetsCountField, bgPlanetsCountField, deathDayField,
+               victoryPtsField, pointsField, nameField],
+            'bgPlanetsCount':[bgPlanetsCountField, planetsCountField, deathDayField,
+               victoryPtsField, pointsField, nameField],
             'economyPoints':[economyPtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
             'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
             'armyPoints':[armyPtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
