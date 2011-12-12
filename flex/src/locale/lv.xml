@@ -3510,7 +3510,7 @@
 
   <SSObjects>
     <!-- TODO -->
-    <label.planetArea value="Area: {0} x {1}"/>
+    <label.planetArea value="Area: {0} x {1} tiles"/>
     <label.totalVolume value="Total volume: {0}"/>
     <label.wreckageVolume value="(volume: {0})"/>
     <!-- /TODO -->

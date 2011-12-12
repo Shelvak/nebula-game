@@ -3413,7 +3413,7 @@
   </Resources>
 
   <SSObjects>
-    <label.planetArea value="Plotas: {0} x {1}"/>
+    <label.planetArea value="Plotas: {0} x {1} langeliai"/>
     <label.totalVolume value="Bendra apimtis: {0}"/>
     <label.wreckageVolume value="(apimtis: {0})"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->
