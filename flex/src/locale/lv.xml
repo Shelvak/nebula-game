@@ -651,7 +651,7 @@
 
     <noFacilities value="Nav peejamas iespējas." />
     <disabled value="Nepietiekami resursi" />
-    <queueFull value="Contruction queue full for this constructor" />
+    <queueFull value="Contruction queue full for constructor." />
 
     <tileBonuses value="Tile bonuses:" />
     <armor.bonus value="bruņas" />

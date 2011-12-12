@@ -505,7 +505,7 @@
 
     <noFacilities value="There are no facilities available." />
     <disabled value="Not enough resources" />
-    <queueFull value="Contruction queue full for this constructor" />
+    <queueFull value="Contruction queue full for constructor." />
 
     <tileBonuses value="Tile bonuses:" />
     <armor.bonus value="armor" />

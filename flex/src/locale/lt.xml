@@ -606,7 +606,7 @@
 
     <noFacilities value="Nėra statančių pastatų." />
     <disabled value="Neužtenka resursų" />
-    <queueFull value="Šio pastato statymo eilė pilna" />
+    <queueFull value="Statančio pastato eilė pilna." />
 
     <tileBonuses value="Žemėlapio privalumai:" />
     <armor.bonus value="šarvai" />
