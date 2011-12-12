@@ -770,5 +770,24 @@ describe Combat do
         @scorpion.reload
       end.should change(@scorpion, :xp)
     end
+
+    it "should distribute wasted XP to alliance units too" do
+      scorpion = nil
+      dsl = CombatDsl.new do
+        location(:planet)
+        alliance do
+          player { units { zeus(:level => Unit::Zeus.max_level) } }
+          player { units { scorpion = scorpion() } }
+        end
+        player do
+          units { dirac }
+        end
+      end
+
+      lambda do
+        dsl.run
+        scorpion.reload
+      end.should change(scorpion, :xp)
+    end
   end
 end
