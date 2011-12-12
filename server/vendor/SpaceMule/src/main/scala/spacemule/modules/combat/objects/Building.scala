@@ -25,7 +25,11 @@ extends Combatant {
   /**
    * Buildings don't accumulate xp.
    */
-  override def xp_=(value: Int) {}
+  override def xp_=(value: Int) {
+    throw new UnsupportedOperationException("Buildings cannot gain XP!")
+  }
+
+  def gainsXp = false
 
   def metalCost = Config.metalCost(this)
   def energyCost = Config.energyCost(this)

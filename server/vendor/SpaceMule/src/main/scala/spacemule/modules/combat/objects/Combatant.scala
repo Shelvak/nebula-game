@@ -72,6 +72,10 @@ trait Combatant extends Trackable {
    * Level of this combatant.
    */
   var level: Int
+  /**
+   * Does this combatant still gain XP?
+   */
+  def gainsXp: Boolean
 
   /**
    * Metal cost.

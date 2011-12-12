@@ -23,6 +23,8 @@ extends Combatant with Ordered[Troop] {
 
   val hitPoints = Config.troopHp(name)
 
+  def gainsXp = level < Config.troopMaxLevel(this)
+
   def compare(troop: Troop): Int = flank.compare(troop.flank)
 
   override def toString =

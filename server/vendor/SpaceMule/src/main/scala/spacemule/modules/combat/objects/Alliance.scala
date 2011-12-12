@@ -8,7 +8,7 @@ import spacemule.helpers.{StdErrLog => L}
 class Alliance(val id: Long,
                val name: Option[String],
                val players: Set[Option[Player]],
-               combatants: Set[Combatant]) {
+               val combatants: Set[Combatant]) {
   private val (groundFlanks, spaceFlanks) = {
     val (ground, space) = combatants.partition { _.isGround }
     (new Flanks("ground", ground), new Flanks("space", space))

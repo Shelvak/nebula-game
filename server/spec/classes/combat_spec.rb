@@ -290,13 +290,13 @@ describe Combat do
   end
 
   it "should add to unit xp instead of overwriting it" do
+    rhyno = nil
     dsl = CombatDsl.new do
       location(:planet) { buildings { screamer } }
       player :planet_owner => true
-      player { units { rhyno } }
+      player { units { rhyno = rhyno() } }
     end
 
-    rhyno = dsl.units.to_a[0]
     rhyno.xp = 100
     player = rhyno.player
 
@@ -733,6 +733,42 @@ describe Combat do
       creds1.should == 0
       ncreds2.should == 0
       creds2.should == 0
+    end
+  end
+
+  describe "experience distribution" do
+    before(:each) do
+      zeus = scorpion = dirac = nil
+      @dsl = CombatDsl.new do
+        location(:planet)
+        player do
+          units do
+            zeus = zeus(:level => Unit::Zeus.max_level)
+            scorpion = scorpion()
+          end
+        end
+        player do
+          units { dirac = dirac() }
+        end
+      end
+
+      @zeus = zeus
+      @scorpion = scorpion
+      @dirac = dirac
+    end
+
+    it "should not increase xp for units who have reached their max level" do
+      lambda do
+        @dsl.run
+        @zeus.reload
+      end.should_not change(@zeus, :xp)
+    end
+
+    it "should distribute wasted XP to units that still need it" do
+      lambda do
+        @dsl.run
+        @scorpion.reload
+      end.should change(@scorpion, :xp)
     end
   end
 end

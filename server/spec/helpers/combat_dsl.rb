@@ -80,7 +80,7 @@ class CombatDsl
         unit = Factory.build!("u_#{name}", :location => @location,
           :galaxy_id => @galaxy_id,
           :level => (options[:level] || 1),
-          :flank => (options[:level] || 0),
+          :flank => (options[:flank] || 0),
           :player => @player
         )
         unit.hp = (

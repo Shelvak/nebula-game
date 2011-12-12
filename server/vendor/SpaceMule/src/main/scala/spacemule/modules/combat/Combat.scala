@@ -2,6 +2,7 @@ package spacemule.modules.combat
 
 import scala.{collection => sc}
 import scala.collection.mutable
+import mutable.HashMap
 import spacemule.helpers.Converters._
 import spacemule.helpers.{StdErrLog => L}
 import spacemule.modules.combat.objects._
@@ -32,6 +33,21 @@ object Combat {
      * or your allies were wiped out from the battlefield).
      */
     val Tie = Value(2, "tie")
+  }
+
+  class DistributedXpMap {
+    private[this] val data = HashMap[Option[Player], Int]()
+
+    def apply(player: Option[Player]) = {
+      if (data.contains(player)) data.apply(player)
+      else 0
+    }
+
+    def add(player: Option[Player], xp: Int) {
+      data.update(player, apply(player) + xp)
+    }
+
+    def foreach[C](f: ((Option[Player], Int)) => C) { data.foreach(f) }
   }
 
   def apply(
@@ -114,8 +130,23 @@ class Combat(
 
   val statistics = new Statistics(alliances, vpsForPlayerDamage)
 
+  /**
+   * XP gained by units that are maximally leveled up. This XP will be
+   * distributed to units which can still gain a level from it.
+   */
+  val distributedXp = new Combat.DistributedXpMap
+
   // Launch the combat in the constructor.
   L.debug("Running combat simulation", () => run())
+
+  // Distribute unused XP.
+  distributedXp.foreach { case (player, xp) =>
+    // Combatants which will get XP.
+    val targets = alliances.allianceFor(player).combatants.filter(_.gainsXp)
+    val xpPerCombatant = (xp.toFloat / targets.size).floor.toInt
+
+    targets.foreach { _.xp += xpPerCombatant }
+  }
 
   statistics.registerKilledBy(alliances.killedBy)
 
@@ -193,8 +224,12 @@ class Combat(
                 fire.hit(gun, target, damage)
 
                 val (sourceXp, targetXp) = Statistics.xp(target, damage)
-                combatant.xp += sourceXp
-                target.xp += targetXp
+                if (combatant.gainsXp) combatant.xp += sourceXp
+                else distributedXp.add(combatant.player, sourceXp)
+
+                if (target.gainsXp) target.xp += targetXp
+                else distributedXp.add(target.player, targetXp)
+
                 statistics.damage(combatant, target, damage, sourceXp,
                                   targetXp)
 

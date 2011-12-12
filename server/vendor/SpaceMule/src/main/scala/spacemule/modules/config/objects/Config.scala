@@ -517,6 +517,11 @@ object Config {
   def troopHp(unit: Troop): Int = troopHp(unit.name)
   def troopHp(name: String) = int("units.%s.hp".format(name.underscore))
 
+  def troopMaxLevel(troop: combat.objects.Troop): Int =
+    troopMaxLevel(troop.name)
+  def troopMaxLevel(name: String) =
+    int("units.%s.max_level".format(name.underscore))
+
   def troopMetalCost(name: String) =
     cost("units.%s.metal.cost".format(name.underscore))
   def troopEnergyCost(name: String) =
