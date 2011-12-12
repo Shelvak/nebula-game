@@ -277,11 +277,11 @@ end
 # Read variables sheet
 sheet = read_txt(File.dirname(__FILE__) + '/odsimport/variables.txt')
 sections["units"] ||= {}
-sections["units"]["transportation.volume.metal"] = sheet[11][1].to_f
-sections["units"]["transportation.volume.energy"] = sheet[12][1].to_f
-sections["units"]["transportation.volume.zetium"] = sheet[13][1].to_f
-sections["units"]["galaxy_ss_hop_ratio"] = sheet[19][1].to_f
-STORAGE_GAINED_PER_UNIT_LVL = sheet[27][1].to_f
+sections["units"]["transportation.volume.metal"] = sheet[10][1].to_f
+sections["units"]["transportation.volume.energy"] = sheet[11][1].to_f
+sections["units"]["transportation.volume.zetium"] = sheet[12][1].to_f
+sections["units"]["galaxy_ss_hop_ratio"] = sheet[18][1].to_f
+STORAGE_GAINED_PER_UNIT_LVL = sheet[26][1].to_f
 
 
 # Read units sheet.
