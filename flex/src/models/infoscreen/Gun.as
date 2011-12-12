@@ -10,7 +10,8 @@ package models.infoscreen
    
    import models.BaseModel;
    import models.unit.ReachKind;
-   
+   import models.unit.UnitKind;
+
    import mx.collections.ArrayCollection;
    
    import utils.MathUtil;
@@ -119,17 +120,22 @@ package models.infoscreen
       
       private function buildUnitEntries(types: Array, lvl: int, mod: Number): Array
       {
+         var entries: Array = [];
          for (var i: int = 0; i < types.length; i++)
          {
-            types[i] = new UnitBuildingInfoEntry(
-               ModelUtil.getModelType(ObjectClass.UNIT, types[i]),
-               Localizer.string('Units', StringUtil.underscoreToCamelCase(types[i]) + '.name'),
-               getDamagePerTick(lvl),
-               damage,
-               Config.getUnitArmorType(StringUtil.underscoreToCamelCase(types[i])), mod
-            );
+            if (Config.getUnitGuns(types[i]).length > 0
+                    || Config.getUnitKind(types[i]) == UnitKind.SPACE)
+            {
+               entries.push(new UnitBuildingInfoEntry(
+                  ModelUtil.getModelType(ObjectClass.UNIT, types[i]),
+                  Localizer.string('Units', StringUtil.underscoreToCamelCase(types[i]) + '.name'),
+                  getDamagePerTick(lvl),
+                  damage,
+                  Config.getUnitArmorType(StringUtil.underscoreToCamelCase(types[i])), mod
+               ));
+            }
          }
-         return types;
+         return entries;
       }
       
       private function getBestArmors(): Array

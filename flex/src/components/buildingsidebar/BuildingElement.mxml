@@ -99,6 +99,7 @@
                }
                else
                {
+                  _data.query = false;
                   _data.disabled = calcCost(ResourceType.METAL)  > planet.metal.currentStock  ||
                      calcCost(ResourceType.ENERGY) > planet.energy.currentStock ||
                      calcCost(ResourceType.ZETIUM) > planet.zetium.currentStock;

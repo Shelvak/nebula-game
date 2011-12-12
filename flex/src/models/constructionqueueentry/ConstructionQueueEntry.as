@@ -8,6 +8,7 @@ package models.constructionqueueentry
    import models.building.Building;
    import models.parts.Upgradable;
    import models.parts.UpgradableType;
+   import models.planet.MPlanetObject;
 
    import utils.ModelUtil;
    import utils.locale.Localizer;
@@ -59,12 +60,12 @@ package models.constructionqueueentry
                {"level": 1}, constructionMod);
          }
          else {
-            var ghost: Building = Building(ML.latestPlanet.getObject(
+            var ghost: MPlanetObject = MPlanetObject(ML.latestPlanet.getObject(
                params.x, params.y));
-            if (ghost != null) {
+            if (ghost != null && ghost is Building) {
                cTime = Upgradable.calculateUpgradeTime(UpgradableType.BUILDINGS,
                   ModelUtil.getModelSubclass(constructableType), {"level": 1},
-                     ghost.constructionMod + constructionMod);
+                     Building(ghost).constructionMod + constructionMod);
             }
          }
          return cTime;
