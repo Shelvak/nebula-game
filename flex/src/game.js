@@ -28,6 +28,11 @@ var locales = { // {{{
        "Server requires at least version \"" + requiredVersion + "\" but you " +
        "only have version \"" + currentVersion + "\".\n\n" +
        "Game will be reloaded to upgrade its version."
+  },
+  navigateAwayMessage: function(locale) {
+    if (locale == "lt") return "Ar tikrai nori uždaryti Nebula 44?";
+    if (locale == "lv") return "LOCALE: fixme";
+    return "Are you sure you want to close Nebula 44?";
   }
 } // }}}
 
@@ -215,6 +220,8 @@ function authorizationSuccessful() {
 
 // Called when authorization fails.
 function authorizationFailed() {
+  // Remove leave confirmation.
+  window.onbeforeunload = null;
   window.alert(locales.failedAuth(locale));
   window.location = "http://" + webHost;
 }
@@ -274,5 +281,10 @@ $(document).ready(function() {
       "100%", "100%", minVersion, assetsUrl + "playerProductInstall.swf", 
       flashvars, params, attributes);
   swfobject.createCSS("#flashContent", "display:block;text-align:left;");
+
+  // Ensure player does not close the game accidentaly.
+  window.onbeforeunload = function() {
+    return locales.navigateAwayMessage(locale);
+  }
 });
 // }}}
