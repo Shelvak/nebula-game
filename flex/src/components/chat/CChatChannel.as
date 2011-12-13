@@ -54,17 +54,39 @@ package components.chat
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
-      
+
+      // TODO temp fix for urls to work in chat
+      public function urlBugWorkaround(e: MChatChannelEvent): void
+      {
+         e.target.removeEventListener(MChatChannelEvent.GOT_SOME_MESSAGE,
+                 urlBugWorkaround);
+         var oldOne: MChatChannel = _model;
+         model = null;
+         model = oldOne;
+         urlFixed = true;
+      }
+
+      private var urlFixed: Boolean = false;
       
       private var _modelOld:MChatChannel;
       private var _model:MChatChannel;
       public function set model(value:MChatChannel) : void {
          if (_model != value) {
+            if (_model != null)
+            {
+               _model.removeEventListener(MChatChannelEvent.GOT_SOME_MESSAGE,
+                       urlBugWorkaround);
+            }
             if (_modelOld == null)
                _modelOld = _model;
             _model = value;
             f_modelChanged = true;
             invalidateProperties();
+            if (value != null && !urlFixed)
+            {
+               value.addEventListener(MChatChannelEvent.GOT_SOME_MESSAGE,
+                       urlBugWorkaround);
+            }
          }
       }
       /**
