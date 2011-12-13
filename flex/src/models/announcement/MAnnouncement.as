@@ -8,9 +8,9 @@ package models.announcement
    import models.time.MTimeEventFixedMoment;
    
    import namespaces.change_flag;
-   
-   import spark.utils.TextFlowUtil;
-   
+
+   import utils.TextFlowUtil;
+
    import utils.SingletonFactory;
    
    

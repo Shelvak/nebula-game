@@ -18,9 +18,9 @@ package components.foliage
    import spark.components.RichText;
    import spark.components.supportClasses.SkinnableComponent;
    import spark.primitives.BitmapImage;
-   import spark.utils.TextFlowUtil;
    
    import utils.DateUtil;
+   import utils.TextFlowUtil;
    import utils.UrlNavigate;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
