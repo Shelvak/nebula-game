@@ -5,17 +5,24 @@
          xmlns:buildingselectedsidebar="components.buildingselectedsidebar.*">
    <fx:Script>
       <![CDATA[
-         import models.ModelsCollection;
+      import components.skins.YellowButtonSkin;
+
+      import controllers.ui.NavigationController;
+
+      import models.ModelsCollection;
          import models.Owner;
          import models.building.Building;
          import models.building.Npc;
          import models.unit.Unit;
-         import models.unit.UnitsFlank;
+      import models.unit.UnitKind;
+      import models.unit.UnitsFlank;
          
          import mx.collections.ArrayCollection;
          import mx.collections.Sort;
          import mx.collections.SortField;
-         
+
+         import utils.locale.Localizer;
+
          [Bindable]
          private var flanks: ArrayCollection = new ArrayCollection();
          
@@ -66,4 +73,11 @@
          <s:VerticalLayout/>
       </s:layout>
    </s:DataGroup>
+
+   <s:Button label="{Localizer.string('Units', 'label.showNpc')}"
+             skinClass="{YellowButtonSkin}"
+             click="NavigationController.getInstance().showUnits(_building.units,
+               _building, null, UnitKind.GROUND, Owner.ENEMY)"/>
+
+   <s:layout><s:VerticalLayout horizontalAlign="center"/></s:layout>
 </s:Group>

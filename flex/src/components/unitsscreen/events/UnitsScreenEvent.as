@@ -13,6 +13,7 @@ package components.unitsscreen.events
       public static const UNIT_COUNT_CHANGE: String = 'unitsChange';
       public static const HEALING_PRICE_CHANGE: String = 'healingPriceChange';
       public static const FLANK_MODEL_CHANGE: String = 'flankModelChange';
+      public static const FLANK_UNITS_CHANGE: String = 'flankUnitsChange';
       public static const SELECTION_CHANGE: String = 'selectionChange';
       public static const SET_STANCE: String = 'setStance';
       public static const DROP_UNITS: String = 'dropUnits';

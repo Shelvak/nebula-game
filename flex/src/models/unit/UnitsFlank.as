@@ -10,14 +10,27 @@ package models.unit
    
    import models.ModelsCollection;
    import models.Owner;
-   
+   import models.factories.UnitFactory;
+
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
    
    [Bindable]
    public class UnitsFlank extends EventDispatcher
    {
-      public var flankUnits: ListCollectionView;
+      public function set flankUnits(value: ListCollectionView): void
+      {
+         _flankUnits = value;
+         refreshCachedUnits();
+         dispatchFlankUnitsChangeEvent();
+      }
+
+      [Bindable (event="flankUnitsChange")]
+      public function get flankUnits(): ListCollectionView
+      {
+         return _flankUnits;
+      }
+      private var _flankUnits: ListCollectionView;
       public var nr: int;
       public var owner: int;
       public var selection: ListCollectionView;
@@ -41,7 +54,35 @@ package models.unit
             flankUnits.addItem(model);
          }
          flankUnits.enableAutoUpdate();
+         refreshCachedUnits();
       }
+
+      private function refreshCachedUnits(): void
+      {
+         if (_flankUnits.length > 0
+                 && _flankUnits.getItemAt(0) is Unit)
+         {
+            cachedUnits = UnitFactory.buildCachedUnitsFromUnits(_flankUnits);
+         }
+//         else
+//         {
+//            var tObj: Object = {};
+//            for each (var unit: MCUnit in flankUnits)
+//            {
+//               if (tObj[unit.unit.type == null])
+//               {
+//                  tObj[unit.unit.type] = 1;
+//               }
+//               else
+//               {
+//                  tObj[unit.unit.type]++;
+//               }
+//            }
+//            cachedUnits = UnitFactory.createCachedUnits(tObj);
+//         }
+      }
+
+      public var cachedUnits: ArrayCollection;
       
       public function removeUnits(models: Array, dispatchEvnt: Boolean = true): void
       {
@@ -63,6 +104,7 @@ package models.unit
          {
             US.dispatchSelectionChangeEvent();
          }
+         refreshCachedUnits();
       }
       
       public static const UNDEFINED_SELECTION: int = -1;
@@ -227,6 +269,14 @@ package models.unit
          }
          US.transformedUnits.enableAutoUpdate();
          US.dispatchFormationChangeEvent();
+      }
+
+      private function dispatchFlankUnitsChangeEvent(): void
+      {
+         if (hasEventListener(UnitsScreenEvent.FLANK_UNITS_CHANGE))
+         {
+            dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FLANK_UNITS_CHANGE));
+         }
       }
    }
 }
