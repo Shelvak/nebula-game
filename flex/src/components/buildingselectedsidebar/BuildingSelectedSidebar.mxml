@@ -63,7 +63,7 @@
       import mx.events.FlexEvent;
       import mx.managers.DragManager;
 
-      import spark.utils.TextFlowUtil;
+      import utils.TextFlowUtil;
 
       import utils.DateUtil;
       import utils.MathUtil;

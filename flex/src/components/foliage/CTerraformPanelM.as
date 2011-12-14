@@ -20,7 +20,7 @@ package components.foliage
    
    import spark.components.Button;
    import spark.components.RichText;
-   import spark.utils.TextFlowUtil;
+   import utils.TextFlowUtil;
    
    import utils.Events;
    import utils.StringUtil;

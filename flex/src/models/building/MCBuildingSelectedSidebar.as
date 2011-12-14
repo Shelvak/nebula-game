@@ -56,7 +56,7 @@ package models.building
    import spark.components.Label;
 
    import spark.components.List;
-   import spark.utils.TextFlowUtil;
+   import utils.TextFlowUtil;
 
    import utils.DateUtil;
    import utils.ModelUtil;

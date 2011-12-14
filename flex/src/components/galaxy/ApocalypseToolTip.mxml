@@ -15,7 +15,7 @@
       import models.ModelLocator;
       import models.time.MTimeEventFixedMoment;
 
-      import spark.utils.TextFlowUtil;
+      import utils.TextFlowUtil;
 
       import utils.DateUtil;
 
