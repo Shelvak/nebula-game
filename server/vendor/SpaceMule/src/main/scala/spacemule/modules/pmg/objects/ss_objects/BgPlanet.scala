@@ -18,7 +18,8 @@ object BgPlanet {
 /**
  * Battleground planet with preset map.
  */
-class BgPlanet(val index: Int) extends Planet with PresetMap {
-  override val terrainType = Planet.terrains.wrapped(index)
+class BgPlanet(val index: Int)
+extends Planet(Config.planetArea, Planet.terrains.wrapped(index))
+with PresetMap {
   override protected def data = BgPlanet.Maps(index)
 }

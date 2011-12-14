@@ -52,10 +52,6 @@ battleground.planet.units:
   - [spudder, [5, 10], [0, 1]]
   - [glancer, [5, 10], 1]
   - [gnat, [10, 15], [0, 1]]
-homeworld.planet.units: []
-homeworld.expansion_planet.units:
-  - [mdh, [1, 1], 0]
-  - [mobile_vulcan, [1, 1], 0]
 
 ### Orbit units configuration. Not overridable.
 
@@ -72,35 +68,14 @@ regular.orbit.asteroid.units:
   - [demosis, [0, 1], 0]
   - [thor, [1, 4], [0, 1]]
   - [dirac, [2, 5], [0, 1]]
-regular.orbit.rich_asteroid.units:
-  - [demosis, [0, 2], 0]
-  - [thor, [1, 6], [0, 1]]
-  - [dirac, [4, 8], [0, 1]]
 regular.orbit.jumpgate.units:
   - [demosis, [1, 2], 0]
   - [thor, [3, 7], [0, 1]]
   - [dirac, [5, 8], [0, 1]]
-
-homeworld.orbit.planet.units: []
-homeworld.orbit.expansion_planet.units:
-  - [dirac, 4, 0]
-homeworld.orbit.asteroid.units:
-  - [thor, 1, 0]
-  - [dirac, 4, 1]
-homeworld.orbit.rich_asteroid.units:
-  - [thor, 3, 0]
-  - [dirac, 6, 1]
-homeworld.orbit.jumpgate.units:
-  - [demosis, 1, 0]
-  - [thor, 3, 0]
-  - [dirac, 8, 1]
 
 battleground.orbit.planet.units:
   - [demosis, [2, 8], [0, 1]]
   - [thor, [3, 12], [0, 1]]
   - [dirac, [5, 20], [0, 1]]
 battleground.orbit.asteroid.units: []
-battleground.orbit.rich_asteroid.units: []
 battleground.orbit.jumpgate.units: []
-
-  

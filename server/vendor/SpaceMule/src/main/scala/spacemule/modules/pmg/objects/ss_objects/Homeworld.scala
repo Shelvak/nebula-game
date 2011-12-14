@@ -13,11 +13,10 @@ import spacemule.modules.config.objects.Config
  */
 
 object Homeworld {
-  lazy val data = MapReader.parseMap(Config.homeworldMap,
-                                     Config.npcHomeworldBuildingUnitChances)
+  //lazy val data = MapReader.parseMap(Config.homeworldMap)
 }
 
-class Homeworld extends Planet with PresetMap {
-  override val terrainType = Planet.TerrainEarth
-  override protected def data = Homeworld.data
+abstract class Homeworld
+  extends Planet(Config.planetArea, Planet.Terrain.Earth) with PresetMap {
+  //override protected def data = Homeworld.data
 }

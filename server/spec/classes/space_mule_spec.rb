@@ -305,40 +305,9 @@ describe SpaceMule do
       end
     end
 
-    describe "homeworld" do
-      before(:all) do
-        @model = SsObject::Planet.where(:player_id => @player.id).first
-      end
-
-      it "should create one homeworld for player" do
-        SsObject::Planet.where(:player_id => @player.id).count.should == 1
-      end
-
-      it_should_behave_like "starting resources",
-        lambda { |attr| Building::Mothership.send(attr, 1) },
-        [
-          lambda { |resource|
-            ["", CONFIG["buildings.mothership.#{resource}.starting"]]
-          }
-        ]
-
-      it "should set your starting buildings to be without points" do
-        @model.buildings.each do |building|
-          building.should be_without_points
-        end
-      end
-    end
-
-    it "should not create other player if we try that again" do
-      player_count = Player.count
-      @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-      Player.count.should == player_count
-    end
-
     describe "home solar system" do
       before(:all) do
-        @ss = SsObject::Planet.where(:player_id => @player.id
-          ).first.solar_system
+        @ss = SolarSystem.where(:shield_owner_id => @player.id).first
       end
 
       it "should be shielded" do
@@ -349,37 +318,56 @@ describe SpaceMule do
         @ss.shield_owner_id.should == @player.id
       end
 
-      it "should have correct shield time" do
-        @ss.shield_ends_at.should be_within(10).of(
-          CONFIG.evalproperty('galaxy.player.shield_duration').
-            seconds.from_now
-        )
-      end
-
       it "should not have any other shielded ss" do
         SolarSystem.where(
           ["galaxy_id=? AND id!=?", @ss.galaxy_id, @ss.id]
-        ).all.each do |ss|
-          ss.should_not have_shield
-        end
-      end
-
-      it "should create other planets in that ss with specified area" do
-        @ss.planets.where(:player_id => nil).each do |planet|
-          (planet.width + planet.height).should == CONFIG[
-            'planet.home_system.area']
-        end
+        ).all.each { |ss| ss.should_not have_shield }
       end
 
       it "should register callback for inactivity check" do
         @ss.should have_callback(
           CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
-          CONFIG.evalproperty('galaxy.player.inactivity_check').from_now)
+          Cfg.player_inactivity_check(@player.points).from_now
+        )
       end
 
       it "should register callback for spawn" do
          @ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
       end
+
+      it "should be created from static configuration" do
+        @ss.should be_created_from_static_ss_configuration('solar_system.home')
+      end
+
+      #describe "planets" do
+      #  before(:all) do
+      #    @model = SsObject::Planet.where(:player_id => @player.id).first
+      #  end
+      #
+      #  it "should create one homeworld for player" do
+      #    SsObject::Planet.where(:player_id => @player.id).count.should == 1
+      #  end
+      #
+      #  it_should_behave_like "starting resources",
+      #    lambda { |attr| Building::Mothership.send(attr, 1) },
+      #    [
+      #      lambda { |resource|
+      #        ["", CONFIG["buildings.mothership.#{resource}.starting"]]
+      #      }
+      #    ]
+      #
+      #  it "should set your starting buildings to be without points" do
+      #    @model.buildings.each do |building|
+      #      building.should be_without_points
+      #    end
+      #  end
+      #end
+    end
+
+    it "should not create other player if we try that again" do
+      player_count = Player.count
+      @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
+      Player.count.should == player_count
     end
 
     describe "wormholes" do

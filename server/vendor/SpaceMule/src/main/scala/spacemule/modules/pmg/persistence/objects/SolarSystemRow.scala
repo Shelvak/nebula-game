@@ -10,17 +10,12 @@ import spacemule.modules.pmg.objects.{Galaxy, SolarSystem}
 import spacemule.persistence.DB
 
 object SolarSystemRow {
-  val columns = "`id`, `galaxy_id`, `x`, `y`, `kind`, `shield_ends_at`, " +
-    "`shield_owner_id`"
-
-  private var _shieldEndsAt: String = null
-  def shieldEndsAt = _shieldEndsAt
-  def initShieldEndsAt = _shieldEndsAt = DB.date(
-    Config.playerShieldDuration.fromNow)
+  val columns = "`id`, `galaxy_id`, `x`, `y`, `kind`, `shield_owner_id`"
 }
 
-case class SolarSystemRow(val galaxyId: Int, val solarSystem: SolarSystem,
-coords: Option[Coords]) {
+case class SolarSystemRow(
+  val galaxyId: Int, val solarSystem: SolarSystem, coords: Option[Coords]
+) {
   def this(galaxy: Galaxy, solarSystem: SolarSystem, coords: Coords) =
     this(galaxy.id, solarSystem, Some(coords))
 
@@ -30,7 +25,7 @@ coords: Option[Coords]) {
   }
 
   val id = TableIds.solarSystem.next
-  val values = "%d\t%d\t%s\t%s\t%d\t%s\t%s".format(
+  val values = "%d\t%d\t%s\t%s\t%d\t%s".format(
     id,
     galaxyId,
     coords match {
@@ -45,10 +40,6 @@ coords: Option[Coords]) {
       case bg: Battleground => SolarSystem.Battleground.id
       case wh: Wormhole => SolarSystem.Wormhole.id
       case _ => SolarSystem.Normal.id
-    },
-    playerRow match {
-      case Some(playerRow) => SolarSystemRow.shieldEndsAt
-      case None => DB.loadInFileNull
     },
     playerRow match {
       case Some(playerRow) => playerRow.id.toString

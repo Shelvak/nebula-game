@@ -11,10 +11,21 @@ import spacemule.modules.config.objects.Config
  * To change this template use File | Settings | File Templates.
  */
 
-class Asteroid extends SSObject {
-  val metalRate = Config.asteroidMetalRate(this)
-  val energyRate = Config.asteroidEnergyRate(this)
-  val zetiumRate = Config.asteroidZetiumRate(this)
+object Asteroid {
+  object Kind extends Enumeration {
+    val Regular = Value("regular")
+    val Rich = Value("rich")
+  }
+  
+  def apply(kind: Kind.Value) = new Asteroid(
+    Config.asteroidMetalRate(kind),
+    Config.asteroidEnergyRate(kind),
+    Config.asteroidZetiumRate(kind)
+  )
+}
 
+class Asteroid(
+  val metalRate: Double, val energyRate: Double, val zetiumRate: Double
+) extends SSObject {
   val name = "Asteroid"
 }

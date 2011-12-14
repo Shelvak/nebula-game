@@ -13,5 +13,5 @@ class Wormhole extends SolarSystem {
   /**
    * Wormholes do not have any objects inside them.
    */
-  override def createObjects() = {}
+  override def createObjectsImpl() {}
 }

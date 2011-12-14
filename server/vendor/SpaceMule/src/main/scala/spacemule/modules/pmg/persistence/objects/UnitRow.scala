@@ -3,7 +3,7 @@ package spacemule.modules.pmg.persistence.objects
 import spacemule.modules.pmg.persistence.TableIds
 import spacemule.modules.pmg.objects.{Location, Troop, Galaxy}
 import spacemule.modules.config.objects.Config
-import spacemule.persistence.DB
+import spacemule.persistence.{RowObject, Row, DB}
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,18 +13,23 @@ import spacemule.persistence.DB
  * To change this template use File | Settings | File Templates.
  */
 
-object UnitRow {
-  val columns = "`id`, `galaxy_id`, `type`, `level`, " +
-  "`location_id`, `location_type`, `location_x`, `location_y`, `flank`"
+object UnitRow extends RowObject {
+  val columnsSeq = Seq(
+    "id", "galaxy_id", "type", "level", "location_id",
+    "location_type", "location_x", "location_y", "flank", "hp_percentage"
+  )
 }
 
-case class UnitRow(galaxyId: Int, location: Location, unit: Troop) {
+case class UnitRow(galaxyId: Int, location: Location, troop: Troop)
+extends Row {
+  val companion = UnitRow
+
   val id = TableIds.unit.next
 
-  val values = "%d\t%d\t%s\t%d\t%d\t%d\t%s\t%s\t%d".format(
+  val valuesSeq = Seq(
     id,
     galaxyId,
-    unit.name,
+    troop.name,
     1,
     location.id,
     location.kind.id,
@@ -36,6 +41,7 @@ case class UnitRow(galaxyId: Int, location: Location, unit: Troop) {
       case Some(y: Int) => y.toString
       case None => DB.loadInFileNull
     },
-    unit.flank
+    troop.flank,
+    troop.hpPercentage
   )
 }

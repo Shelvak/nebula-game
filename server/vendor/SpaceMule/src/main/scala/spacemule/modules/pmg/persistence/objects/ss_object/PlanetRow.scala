@@ -19,7 +19,7 @@ case class PlanetRow(
     val range = Config.ssObjectSize
     range.start + (range.end - range.start) * areaPercentage / 100
   }
-  override val terrain = planet.terrainType
+  override val terrain = planet.terrain.id
   override val playerId = planet match {
     case h: Homeworld => solarSystemRow.playerRow.get.id.toString
     case _ => DB.loadInFileNull

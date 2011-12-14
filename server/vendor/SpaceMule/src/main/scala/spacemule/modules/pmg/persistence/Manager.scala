@@ -34,6 +34,7 @@ object Manager {
   val fowSsEntries = ListBuffer[String]()
   val questProgresses = ListBuffer[String]()
   val objectiveProgresses = ListBuffer[String]()
+  val wreckages = ListBuffer[String]()
   val callbacks = ListBuffer[String]()
 
   val galaxiesTable = "galaxies"
@@ -50,6 +51,7 @@ object Manager {
   val questProgressesTable = "quest_progresses"
   val objectivesTable = "objectives"
   val objectiveProgressesTable = "objective_progresses"
+  val wreckagesTable = "wreckages"
   val callbacksTable = "callbacks"
 
   /**
@@ -161,10 +163,11 @@ object Manager {
    * Clears all buffers.
    */
   private def clearBuffers() = {
-    List(galaxies, solarSystems, ssObjects, units, buildings,
-         foliages, tiles, players, fowSsEntries, questProgresses,
-         objectiveProgresses
-    ).foreach { buffer => buffer.clear }
+    List(
+      galaxies, solarSystems, ssObjects, units, buildings,
+      foliages, tiles, players, fowSsEntries, questProgresses,
+      objectiveProgresses, wreckages
+    ).foreach(_.clear())
   }
 
   private def speedup(block: () => Unit) = {
@@ -238,6 +241,7 @@ object Manager {
                questProgresses)
     saveBuffer(objectiveProgressesTable, ObjectiveProgressRow.columns,
                objectiveProgresses)
+    saveBuffer(wreckagesTable, WreckageRow.columns, wreckages)
   }
 
   private def saveBuffer(tableName: String, columns: String,
@@ -256,16 +260,15 @@ object Manager {
   }
 
   private def readGalaxy(galaxy: Galaxy) = {
-    SolarSystemRow.initShieldEndsAt
     CallbackRow.initPlayerInactivityCheck
     CallbackRow.initAsteroidSpawn
     CallbackRow.initSsUnitsSpawn
     galaxy.zones.foreach { case (coords, zone) => readZone(galaxy, zone) }
   }
 
-  private def readZone(galaxy: Galaxy, zone: Zone): Unit = {
+  private def readZone(galaxy: Galaxy, zone: Zone) {
     // Don't read zones without any defined players.
-    if (! zone.hasNewPlayers) return ()
+    if (! zone.hasNewPlayers) return
 
     zone.solarSystems.foreach { 
       case (coords, solarSystem) => {
@@ -384,39 +387,49 @@ object Manager {
   }
 
   private def readSSObject(galaxy: Galaxy, ssRow: SolarSystemRow,
-                           coords: Coords, obj: SSObject) = {
-    val ssoRow = SSObjectRow(ssRow, coords, obj)
-
-    ssObjects += ssoRow.values
-
-    // Create units in ground
-    obj.units.foreach { unit =>
-      val unitRow = new UnitRow(
-        ssRow.galaxyId,
-        Location(ssoRow.id, Location.SsObject, None, None),
-        unit
-      )
-      units += unitRow.values
-    }
-    // Create units in orbit
+                           coords: Coords, obj: SSObject) {
+    // Create orbit units
+    val location = Location(
+      ssRow.id, Location.SolarSystem, Some(coords.x), Some(coords.y)
+    )
     obj.orbitUnits.foreach { unit =>
-      val unitRow = new UnitRow(
-        ssRow.galaxyId,
-        Location(ssRow.id, Location.SolarSystem,
-                 Some[Int](coords.x), Some[Int](coords.y)),
-        unit
-      )
+      val unitRow = new UnitRow(ssRow.galaxyId, location, unit)
       units += unitRow.values
     }
 
-    // Additional creation steps
-    obj match {
-      case planet: Planet => readPlanet(galaxy, ssRow.galaxyId, ssoRow, planet)
-      case asteroid: ss_objects.Asteroid => readAsteroid(galaxy, ssoRow)
-      case _ => ()
+    // Create wreckage
+    obj.wreckage match {
+      case Some(entry) =>
+        val wreckageRow = WreckageRow(ssRow.galaxyId, location, entry)
+        wreckages += wreckageRow.values
+      case None => ()
     }
-    
-    ssoRow
+
+    obj match {
+      case _: ss_objects.Nothing => ()
+      case _ =>
+        val ssoRow = SSObjectRow(ssRow, coords, obj)
+        ssObjects += ssoRow.values
+
+        // Create units in ground
+        obj.units.foreach { unit =>
+          val unitRow = new UnitRow(
+            ssRow.galaxyId,
+            Location(ssoRow.id, Location.SsObject, None, None),
+            unit
+          )
+          units += unitRow.values
+        }
+
+        // Additional creation steps
+        obj match {
+          case planet: ss_objects.Planet =>
+            readPlanet(galaxy, ssRow.galaxyId, ssoRow, planet)
+          case asteroid: ss_objects.Asteroid =>
+            readAsteroid(galaxy, ssoRow)
+          case _ => ()
+        }
+    }
   }
 
   private def readAsteroid(galaxy: Galaxy, ssoRow: SSObjectRow) = {

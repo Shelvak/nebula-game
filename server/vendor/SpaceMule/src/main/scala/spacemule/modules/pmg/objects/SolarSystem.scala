@@ -2,7 +2,7 @@ package spacemule.modules.pmg.objects
 
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
-import ss_objects.{Jumpgate, RichAsteroid, Asteroid, Planet}
+import ss_objects.{Jumpgate, Asteroid, Planet}
 import util.Random
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
@@ -10,16 +10,9 @@ import spacemule.helpers.Converters._
 
 class SolarSystem {
   val orbitCount = Config.orbitCount
-  val planetCount = Config.planetCount(this)
-  val jumpgateCount = Config.jumpgateCount(this)
   val objects = HashMap[Coords, SSObject]()
   val wormhole = false
   val shielded = false
-
-  if (planetCount > orbitCount) {
-    throw new Exception("Planet count %d is more than orbit count %d!".format(
-      planetCount, orbitCount))
-  }
 
   /**
    * Ensures that multiple planets can't be on same orbit.
@@ -33,32 +26,49 @@ class SolarSystem {
 
   private var objectsCreated = false
 
-  def createObjects() = {
+  def createObjects() {
     if (objectsCreated) {
       sys.error("Can only create objects once per SolarSystem!")
     }
 
-    createPlanets()
-    
-    createObjectType(Config.asteroidCount(this)) { () => new Asteroid() }
-    createObjectType(Config.richAsteroidCount(this)) { () => new RichAsteroid() }
-    createJumpgates()
+    createObjectsImpl()
 
     objectsCreated = true
   }
 
-  /**
-   * For overriding in Homeworld solar systems.
-   */
-  protected def createPlanets() = {
+  protected[this] def createObjectsImpl() {
+    createPlanets()
+    createAsteroids()
+    createJumpgates()
+    createWreckages()
+  }
+
+  protected[this] def createPlanets() {
+    val planetCount = Config.planetCount(this)
+
+    if (planetCount > orbitCount) {
+      throw new Exception("Planet count %d is more than orbit count %d!".format(
+        planetCount, orbitCount))
+    }
+
     createObjectType(planetCount) { () => new Planet() }
   }
 
-  /**
-   * For overriding in Homeworld solar systems.
-   */
-  protected def createJumpgates() = {
-    createObjectType(jumpgateCount) { () => new Jumpgate() }
+  protected[this] def createAsteroids() {
+    createObjectType(Config.asteroidCount(this)) {
+      () => Asteroid(Asteroid.Kind.Regular)
+    }
+    createObjectType(Config.richAsteroidCount(this)) {
+      () => Asteroid(Asteroid.Kind.Rich)
+    }
+  }
+
+  protected[this] def createJumpgates() {
+    createObjectType(Config.jumpgateCount(this)) { () => new Jumpgate() }
+  }
+
+  protected[this] def createWreckages() {
+    createObjectType(Config.jumpgateCount(this)) { () => new Jumpgate() }
   }
 
   /**
@@ -169,7 +179,6 @@ class SolarSystem {
    */
   protected def orbitUnits(obj: SSObject) = obj match {
     case planet: Planet => Config.regularPlanetOrbitUnits
-    case asteroid: RichAsteroid => Config.regularRichAsteroidOrbitUnits
     case asteroid: Asteroid => Config.regularAsteroidOrbitUnits
     case jumpgate: Jumpgate => Config.regularJumpgateOrbitUnits
   }

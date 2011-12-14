@@ -14,9 +14,6 @@ area.max: 83
 # Area size range. Area is width + height.
 area: [50, 65]
 
-# Area of planets in home solar system.
-home_system.area: 60
-
 # Width/height division in area. If set to 30, height will be 30% of width.
 area.proportion: [45, 55]
 
@@ -217,16 +214,14 @@ tiles.f3x3: [0, 1]
 ### These are proportion based (excluding resource tiles).
 ### Isles is isle count of that specific type in terrain.
 tiles.regular: [160, 200]
-tiles.titan: [10, 20]
+tiles.titan: [15, 25]
 tiles.titan.isles: [3, 5]
-tiles.junkyard: [20, 40]
+tiles.junkyard: [30, 50]
 tiles.junkyard.isles: [3, 5]
 tiles.sand: [10, 50]
 tiles.sand.isles: [3, 5]
-tiles.noxrium: [20, 40]
+tiles.noxrium: [20, 45]
 tiles.noxrium.isles: [3, 5]
-tiles.water: [0, 0]
-tiles.water.isles: [0, 0]
 #
 
 ### NPC building chances
@@ -307,21 +302,3 @@ npc.building.units:
   - [4, 40, gnat, 1]
   - [4, 20, gnat, 0]
   - [4, 20, gnat, 1]
-
-
-# Same as above but for homeworld planets.
-#
-# In homeworlds we have mex, solar plant, zex & comm hub
-npc.homeworld.building.units:
-  - [8, 100, glancer, 1]
-  - [8, 100, gnat, 0]
-  - [8, 100, gnat, 1]
-  - [6, 100, glancer, 1]
-  - [6, 100, gnat, 0]
-  - [5, 100, glancer, 1]
-  - [5, 100, gnat, 0]
-  - [4, 100, gnat, 0]
-  - [4, 100, gnat, 0]
-  - [4, 100, gnat, 1]
-  - [4, 100, gnat, 1]
-  - [4, 100, gnat, 1]

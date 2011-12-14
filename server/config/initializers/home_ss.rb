@@ -7,7 +7,7 @@ lambda do
   #  "position,angle" => {
   #    "type" => "planet|asteroid|jumpgate|nothing"
   #    # array of [count, type, flank, hp percentage (Float)]
-  #    "units" => [[1, dirac, 0, 1.0]]
+  #    "units" => [[1, "dirac", 0, 1.0]]
   #    "wreckage" => [metal, energy, zetium] (Floats)
   #  }
   #
@@ -18,7 +18,14 @@ lambda do
   # Extra parameters for asteroid type:
   #   "resources" => [metal, energy, zetium] (Floats)
   #
-  initializer = Class.new
+  initializer = Class.new do
+    @dirac = Unit::Dirac.to_s.demodulize.underscore
+    @thor = Unit::Thor.to_s.demodulize.underscore
+    @demosis = Unit::Demosis.to_s.demodulize.underscore
+    # TODO: replace BossShip with convoy unit
+    @convoy_ship = Unit::BossShip.to_s.demodulize.underscore
+  end
+
   def initializer.run
     CONFIG['solar_system.home'] = {
       # Homeworld planet
@@ -26,14 +33,14 @@ lambda do
         "type" => "planet",
         "map" => "homeworld",
         "terrain" => 0, # Earth
-        "units" => [[1, "dirac", 0, 1.0]]
+        "units" => [[1, @dirac, 0, 1.0]]
       },
       # Expansion planet
       "1,135" => {
         "type" => "planet",
         "map" => "expansion",
         "terrain" => 2, # Mud
-        "units" => [[2, "dirac", 0, 1.0], [2, "dirac", 1, 1.0]]
+        "units" => [[2, @dirac, 0, 1.0], [2, @dirac, 1, 1.0]]
       },
       # First asteroids
       "0,0"   => {"type" => "asteroid", "resources" => r(1), "units" => u(1)},
@@ -79,8 +86,7 @@ lambda do
       # Jumpgate and its premises
       "3,202" => {
         "type" => "jumpgate",
-        # TODO: replace boss_ship with convoy unit
-        "units" => u(11) + [[1, "boss_ship", 0, 0.05]]
+        "units" => u(11) + [[1, @convoy_ship, 0, 0.05]]
       },
       "2,180" => {"type" => "asteroid", "resources" => r(3), "units" => u(10)},
       "2,210" => {"type" => "asteroid", "resources" => r(3), "units" => u(10)},
@@ -100,15 +106,15 @@ lambda do
 
   def initializer.u(arg)
     units = [
-      [(0.8 * arg).round, "dirac", 0, 1.0],
-      [arg.round, "dirac", 1, 1.0],
+      [(0.8 * arg).round, @dirac, 0, 1.0],
+      [arg.round, @dirac, 1, 1.0],
     ]
     units += [
-      [(0.25 * arg).round, "thor", 0, 1.0],
-      [(0.75 * arg).round, "thor", 1, 1.0],
+      [(0.25 * arg).round, @thor, 0, 1.0],
+      [(0.75 * arg).round, @thor, 1, 1.0],
     ] if arg >= 1.5
     units += [
-      [(0.5 * arg).round, "demosis", 0, 1.0]
+      [(0.5 * arg).round, @demosis, 0, 1.0]
     ] if arg >= 3
     units
   end

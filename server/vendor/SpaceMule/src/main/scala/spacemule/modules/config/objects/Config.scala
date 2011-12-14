@@ -11,7 +11,6 @@ import spacemule.modules.pmg.objects._
 import spacemule.modules.pmg.objects.planet.tiles.AreaTile
 import spacemule.modules.pmg.objects.planet.tiles.BlockTile
 import spacemule.modules.pmg.objects.solar_systems._
-import spacemule.modules.pmg.objects.ss_objects.{RichAsteroid, Asteroid}
 import spacemule.modules.pmg.objects.planet._
 import spacemule.modules.pmg.objects.planet.buildings._
 import spacemule.modules.combat
@@ -19,6 +18,7 @@ import spacemule.modules.pathfinder.{objects => pfo}
 import net.java.dev.eval.Expression
 import scala.collection.Map
 import spacemule.modules.combat.objects.{Combatant, Damage, Armor, Stance}
+import ss_objects.{Asteroid}
 
 object Config {
   /**
@@ -47,13 +47,13 @@ object Config {
     result
   }
 
-  private def getOpt[T](key: String): Option[T] =
+  private[this] def getOpt[T](key: String): Option[T] =
     sets.getOrError(
       currentSet,
       "Config set '%s' not found!".format(currentSet)
     ).get(key).asInstanceOf[Option[T]]
 
-  private def get[T](key: String): T =
+  private[objects] def get[T](key: String): T =
     getOpt[T](key) match {
       case Some(value) => value
       case None => throw new NoSuchElementException(
@@ -201,8 +201,9 @@ object Config {
 
   def zoneDiameter = int("galaxy.zone.diameter")
   def playersPerZone = int("galaxy.zone.players")
-  def playerShieldDuration = int("galaxy.player.shield_duration")
-  def playerInactivityCheck = int("galaxy.player.inactivity_check")
+  // Number of seconds for first inactivity check.
+  def playerInactivityCheck: Int =
+    seq[Seq[Long]]("galaxy.player.inactivity_check")(0)(1).toInt
   lazy val expansionSolarSystems =
     positions("galaxy.expansion_systems.positions")
   lazy val resourceSolarSystems =
@@ -280,9 +281,7 @@ object Config {
       double("solar_system.regular.jump.multiplier")
 
   def planetCount(solarSystem: SolarSystem) = solarSystem match {
-    case ss: Wormhole => 0
     case ss: Battleground => battlegroundPlanetPositions.size
-    case ss: Homeworld => int("solar_system.homeworld.planet.count")
     case ss: Expansion => range("solar_system.expansion.planet.count").random
     case ss: Resource => range("solar_system.resources.planet.count").random
   }
@@ -293,7 +292,6 @@ object Config {
   def asteroidCount(solarSystem: SolarSystem) = solarSystem match {
     case ss: Wormhole => 0
     case ss: Battleground => 0
-    case ss: Homeworld => int("solar_system.homeworld.asteroid.count")
     case ss: Expansion => range("solar_system.expansion.asteroid.count").random
     case ss: Resource => range("solar_system.resources.asteroid.count").random
   }
@@ -301,7 +299,6 @@ object Config {
   def richAsteroidCount(solarSystem: SolarSystem) = solarSystem match {
     case ss: Wormhole => 0
     case ss: Battleground => 0
-    case ss: Homeworld => int("solar_system.homeworld.rich_asteroid.count")
     case ss: Expansion => range(
         "solar_system.expansion.rich_asteroid.count").random
     case ss: Resource => range(
@@ -311,7 +308,6 @@ object Config {
   def jumpgateCount(solarSystem: SolarSystem) = solarSystem match {
     case ss: Wormhole => 0
     case ss: Battleground => battlegroundJumpgatePositions.size
-    case ss: Homeworld => int("solar_system.homeworld.jumpgate.count")
     case ss: Expansion => range("solar_system.expansion.jumpgate.count").random
     case ss: Resource => range("solar_system.resources.jumpgate.count").random
   }
@@ -324,24 +320,24 @@ object Config {
   def asteroidFirstSpawnCooldown = int(
     "ss_object.asteroid.wreckage.time.first")
 
-  def asteroidMetalRate(asteroid: Asteroid): Double = asteroid match {
-    case asteroid: RichAsteroid =>
+  def asteroidMetalRate(kind: Asteroid.Kind.Value): Double = kind match {
+    case Asteroid.Kind.Rich =>
       range("ss_object.rich_asteroid.metal_rate").random(asteroidRateStep)
-    case asteroid: Asteroid =>
+    case Asteroid.Kind.Regular =>
       range("ss_object.asteroid.metal_rate").random(asteroidRateStep)
   }
 
-  def asteroidEnergyRate(asteroid: Asteroid): Double = asteroid match {
-    case asteroid: RichAsteroid =>
+  def asteroidEnergyRate(kind: Asteroid.Kind.Value): Double = kind match {
+    case Asteroid.Kind.Rich =>
       range("ss_object.rich_asteroid.energy_rate").random(asteroidRateStep)
-    case asteroid: Asteroid =>
+    case Asteroid.Kind.Regular =>
       range("ss_object.asteroid.energy_rate").random(asteroidRateStep)
   }
 
-  def asteroidZetiumRate(asteroid: Asteroid): Double = asteroid match {
-    case asteroid: RichAsteroid =>
+  def asteroidZetiumRate(kind: Asteroid.Kind.Value): Double = kind match {
+    case Asteroid.Kind.Rich =>
       range("ss_object.rich_asteroid.zetium_rate").random(asteroidRateStep)
-    case asteroid: Asteroid =>
+    case Asteroid.Kind.Regular =>
       range("ss_object.asteroid.zetium_rate").random(asteroidRateStep)
   }
 
@@ -350,7 +346,7 @@ object Config {
   def planetArea = range("planet.area").random
   def planetProportion = range("planet.area.proportion").random / 100.0
 
-  def homeSolarSystemPlanetsArea = int("planet.home_system.area")
+  lazy val homeworldSsConfig = SsConfig("solar_system.home")
 
   def homeworldMap = map("planet.homeworld.map")
   def battlegroundPlanetMaps = (0 until battlegroundPlanetPositions.size).map {
@@ -550,37 +546,19 @@ object Config {
 
   lazy val regularPlanetOrbitUnits = unitsEntry(
     "ss_object.regular.orbit.planet.units")
-  lazy val regularRichAsteroidOrbitUnits = unitsEntry(
-    "ss_object.regular.orbit.rich_asteroid.units")
   lazy val regularAsteroidOrbitUnits = unitsEntry(
     "ss_object.regular.orbit.asteroid.units")
   lazy val regularJumpgateOrbitUnits = unitsEntry(
     "ss_object.regular.orbit.jumpgate.units")
 
-  lazy val homeworldPlanetOrbitUnits = unitsEntry(
-    "ss_object.homeworld.orbit.planet.units")
-  lazy val homeworldExpansionPlanetOrbitUnits = unitsEntry(
-    "ss_object.homeworld.orbit.expansion_planet.units")
-  lazy val homeworldRichAsteroidOrbitUnits = unitsEntry(
-    "ss_object.homeworld.orbit.rich_asteroid.units")
-  lazy val homeworldAsteroidOrbitUnits = unitsEntry(
-    "ss_object.homeworld.orbit.asteroid.units")
-  lazy val homeworldJumpgateOrbitUnits = unitsEntry(
-    "ss_object.homeworld.orbit.jumpgate.units")
-
   lazy val battlegroundPlanetOrbitUnits = unitsEntry(
     "ss_object.battleground.orbit.planet.units")
-  lazy val battlegroundRichAsteroidOrbitUnits = unitsEntry(
-    "ss_object.battleground.orbit.rich_asteroid.units")
   lazy val battlegroundAsteroidOrbitUnits = unitsEntry(
     "ss_object.battleground.orbit.asteroid.units")
   lazy val battlegroundJumpgateOrbitUnits = unitsEntry(
     "ss_object.battleground.orbit.jumpgate.units")
 
   // End of orbit units configuration
-
-  lazy val npcHomeworldBuildingUnitChances =
-    unitChances("planet.npc.homeworld.building.units")
 
   lazy val npcBuildingUnitChances =
     unitChances("planet.npc.building.units")

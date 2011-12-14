@@ -8,4 +8,4 @@ package spacemule.modules.pmg.objects
  * To change this template use File | Settings | File Templates.
  */
 
-case class Troop(name: String, flank: Int)
+case class Troop(name: String, flank: Int, hpPercentage: Double = 1.0)

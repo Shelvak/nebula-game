@@ -1,52 +1,49 @@
 package spacemule.modules.pmg.objects.solar_systems
 
+import spacemule.helpers.Converters._
 import spacemule.modules.pmg.objects._
-import spacemule.modules.config.objects.Config
-import spacemule.modules.pmg.objects.ss_objects.Asteroid
-import spacemule.modules.pmg.objects.ss_objects.Jumpgate
-import spacemule.modules.pmg.objects.ss_objects.Planet
-import spacemule.modules.pmg.objects.ss_objects.RichAsteroid
-
-object Homeworld {
-  /**
-   * Terrains for non homeworld planets in homeworld solar systems.
-   */
-  val NonHomeworldTerrains = (
-    Planet.terrains.toBuffer - Planet.TerrainEarth
-  ).toSeq
-}
+import spacemule.modules.config.objects.{SsConfig, Config}
+import spacemule.modules.pmg.classes.geom.Coords
+import ss_objects.{Asteroid, Planet, Jumpgate, Nothing}
 
 class Homeworld(val player: Player) extends SolarSystem {
   override val shielded = true
 
-  if (planetCount + 1 > orbitCount) {
-    throw new Exception(
-      "Planet count %d is more than orbit count %d for Homeworld ss!".format(
-      planetCount + 1, orbitCount))
-  }
-
-  override def createPlanets() = {
-    createObjectType(1) { () => new ss_objects.Homeworld() }
-    createObjectType(planetCount) { () =>
-      new Planet(
-        Config.homeSolarSystemPlanetsArea,
-        Homeworld.NonHomeworldTerrains
-      )
+  override def createObjectsImpl() {
+    Config.homeworldSsConfig.foreach { case(coords, entry) =>
+      entry match {
+        case e: SsConfig.PlanetEntry => createPlanet(coords, e)
+        case e: SsConfig.AsteroidEntry => createAsteroid(coords, e)
+        case e: SsConfig.JumpgateEntry => createObject(new Jumpgate, coords, e)
+        case e: SsConfig.NothingEntry => createObject(new Nothing, coords, e)
+      }
     }
   }
-  
-  override protected def groundUnits(obj: SSObject) = obj match {
-    case hw: ss_objects.Homeworld => Config.homeworldPlanetGroundUnits
-    case planet: Planet => Config.homeworldExpansionPlanetGroundUnits
-    case _ => super.groundUnits(obj)
+
+  private[this] def createPlanet(
+    coords: Coords, entry: SsConfig.PlanetEntry
+  ) {
   }
 
-  override protected def orbitUnits(obj: SSObject) = obj match {
-    case homeworld: ss_objects.Homeworld => Config.homeworldPlanetOrbitUnits
-    case planet: Planet => Config.homeworldExpansionPlanetOrbitUnits
-    case asteroid: RichAsteroid => Config.homeworldRichAsteroidOrbitUnits
-    case asteroid: Asteroid => Config.homeworldAsteroidOrbitUnits
-    case jumpgate: Jumpgate => Config.homeworldJumpgateOrbitUnits
-    case _ => super.orbitUnits(obj)
+  private[this] def createAsteroid(
+    coords: Coords, entry: SsConfig.AsteroidEntry
+  ) {
+    createObject(
+      new Asteroid(
+        entry.resources.metal, entry.resources.energy, entry.resources.zetium
+      ),
+      coords, entry
+    )
+  }
+
+  private[this] def createObject(
+    obj: SSObject, coords: Coords, entry: SsConfig.Entry
+  ) = {
+    objects(coords) = obj
+    
+    if (entry.units.isDefined) obj.createOrbitUnits(entry.units.get)
+    obj.wreckage = entry.wreckage
+
+    obj
   }
 }

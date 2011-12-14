@@ -25,10 +25,14 @@ import spacemule.modules.config.objects.Config
  */
 
 object Planet {
-  val TerrainEarth = 0
-  val TerrainDesert = 1
-  val TerrainMud = 2
-  val terrains = IndexedSeq(TerrainEarth, TerrainDesert, TerrainMud)
+  object Terrain extends Enumeration {
+    type Type = Value
+    val Earth = Value(0, "earth")
+    val Desert = Value(1, "desert")
+    val Mud = Value(2, "mud")
+  }
+
+  val terrains = IndexedSeq(Terrain.Earth, Terrain.Desert, Terrain.Mud)
 
   val TileNormal = AreaMap.DefaultValue
 
@@ -57,14 +61,15 @@ object Planet {
   }
 }
 
-class Planet(planetArea: Int, terrains: Seq[Int]) extends SSObject
-                                                     with TerrainFeatures {
-  def this() = this(Config.planetArea, Planet.terrains)
+class Planet(
+  planetArea: Int,
+  val terrain: Planet.Terrain.Type
+) extends SSObject with TerrainFeatures {
+  def this() = this(Config.planetArea, Planet.terrains.random)
 
   val name = "Planet"
 
   val area = Area.proportional(planetArea, Config.planetProportion)
-  val terrainType = terrains.random
 
   def foreachTile(block: (Coords, Int) => Unit) = tilesMap.foreach(block)
   def foreachFolliage(block: (Coords, Int) => Unit) = {
@@ -328,14 +333,14 @@ class Planet(planetArea: Int, terrains: Seq[Int]) extends SSObject
     val count2ndType = totalCount * Config.folliagePercentage2ndType / 100
     val count3rdType = totalCount - count1stType - count2ndType
 
-    val kinds1stType = Config.folliageKinds1stType(terrainType)
+    val kinds1stType = Config.folliageKinds1stType(terrain.id)
     putFolliages(
       count1stType,
       Config.folliageSpacingRadius1stType,
       () => { kinds1stType.random }
     )
 
-    val kinds2ndType = Config.folliageKinds1stType(terrainType)
+    val kinds2ndType = Config.folliageKinds1stType(terrain.id)
     putFolliages(
       count2ndType,
       Config.folliageSpacingRadius2ndType,
