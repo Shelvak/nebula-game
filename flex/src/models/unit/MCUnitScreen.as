@@ -66,7 +66,7 @@ package models.unit
       public function set units (value: ListCollectionView): void
       {
          _units = value;
-         sortByHp(_units);
+         Unit.sortByHp(_units);
       }
       
       public function get units (): ListCollectionView
@@ -378,17 +378,22 @@ package models.unit
          }
          refreshScreen();
       }
+
+      private var hiddenDispatched: Boolean = false;
+      private var formationDispatched: Boolean = false;
       
       public function updateChanges(): void
       {
          if (hasFormationChanges)
          {
+            formationDispatched = true;
             new UnitsCommand(UnitsCommand.UPDATE,
                {updates: getChanged()}
             ).dispatch ();
          }
          if (hasHiddenChanges)
          {
+            hiddenDispatched = true;
             new UnitsCommand(UnitsCommand.SET_HIDDEN,
                {
                   'planetId': location.id,
@@ -399,6 +404,7 @@ package models.unit
          }
          if (hasNotHiddenChanges)
          {
+            hiddenDispatched = true;
             new UnitsCommand(UnitsCommand.SET_HIDDEN,
                {
                   'planetId': location.id,
@@ -597,23 +603,38 @@ package models.unit
          }
          ML.units.enableAutoUpdate();
          transformedUnits.enableAutoUpdate();
+         formationDispatched = false;
+         if (!hiddenDispatched)
+         {
+            refreshScreen();
+         }
          dispatchFormationChangeEvent();
       }
 
       public function confirmHiddenChanges(): void
       {
-         transformedUnits.disableAutoUpdate();
-         ML.units.disableAutoUpdate();
-         for each(var unit: MCUnit in transformedUnits)
+         if (hiddenDispatched)
          {
-            if (unit.unit.hidden != unit.hidden)
+            transformedUnits.disableAutoUpdate();
+            ML.units.disableAutoUpdate();
+            for each(var unit: MCUnit in transformedUnits)
             {
-               unit.unit.hidden = unit.hidden;
+               if (unit.unit.hidden != unit.hidden)
+               {
+                  unit.unit.hidden = unit.hidden;
+               }
             }
+            ML.units.enableAutoUpdate();
+            transformedUnits.enableAutoUpdate();
+
+            hiddenDispatched = false;
+
+            if (!formationDispatched)
+            {
+               refreshScreen();
+            }
+            dispatchFormationChangeEvent();
          }
-         ML.units.enableAutoUpdate();
-         transformedUnits.enableAutoUpdate();
-         dispatchFormationChangeEvent();
       }
       
       
@@ -678,7 +699,7 @@ package models.unit
       {
          squadronVisible = true;
          filteredSquadronUnits = list;
-         sortByHp(filteredSquadronUnits);
+         Unit.sortByHp(filteredSquadronUnits);
          currentKind = UnitKind.SQUADRON;
          refreshScreen();
       }
@@ -837,17 +858,6 @@ package models.unit
             flank.setHidden(hidden);
          }
          deselectUnits();
-      }
-      
-      private function sortByHp(list: ListCollectionView): void
-      {
-         if (list)
-         {
-            list.sort = new Sort();
-            list.sort.fields = [new SortField('type'), 
-               new SortField('hp', false, true, true), new SortField('id', false, false, true)];
-            list.refresh();
-         }
       }
       
       private function refreshList(e: CollectionEvent): void

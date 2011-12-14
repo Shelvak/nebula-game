@@ -86,7 +86,7 @@ package models.unit
             oldProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
          }
          oldProvider = sUnits;
-         sortByHp(oldProvider);
+         Unit.sortByHp(oldProvider);
          
          oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
          
@@ -322,14 +322,6 @@ package models.unit
          deselectAllResources()
          deselectAllUnits();
          refreshVolume();
-      }
-      
-      private function sortByHp(list: ListCollectionView): void
-      {
-         list.sort = new Sort();
-         list.sort.fields = [new SortField('type'), 
-            new SortField('hp', false, true, true), new SortField('id', false, false, true)];
-         list.refresh();
       }
       
       private function dispatchUnitsChangeEvent(): void
