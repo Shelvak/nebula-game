@@ -19,7 +19,8 @@
       import models.Owner;
       
       import mx.events.FlexEvent;
-      
+      import mx.events.ToolTipEvent;
+
       import utils.assets.AssetNames;
       import utils.datastructures.Collections;
       import utils.locale.Localizer;
@@ -32,6 +33,12 @@
       protected function unitsList_rollOutHandler(event:MouseEvent):void
       {
          stage.removeEventListener(MouseEvent.MOUSE_UP,hostComponent.unitsList_dragDropHandler, true);
+      }
+
+      private function button1_toolTipCreateHandler(event: ToolTipEvent): void {
+         var tltip: CachedUnitsTooltip = new CachedUnitsTooltip();
+         tltip.cachedUnits = hostComponent.flankModel.getFlankCachedUnits();
+         event.toolTip = tltip;
       }
       
    </fx:Script>
@@ -68,9 +75,17 @@
       <s:Button skinClass="components.skins.ZoomOutButtonSkin" 
                 click="hostComponent.deselectAll()" 
                 horizontalCenter="0" y="28"/>
+      <s:Group toolTipCreate="button1_toolTipCreateHandler(event)"
+               horizontalCenter="0" y="46" toolTip=" "
+               visible="{hostComponent.flankModel.flankUnits.length > 0}">
+         <s:Button skinClass="components.skins.InfoButtonSkin"
+                   mouseEnabled="false"/>
+      </s:Group>
       <s:Label styleName="panelTitle" 
-               text="{Localizer.string('Units', 'label.flankNr'+hostComponent.flankModel.nr)}"
-               top="50" horizontalCenter="-3" rotation="90"/> 
+               text="{Localizer.string('Units', 'label.flankCountNr' +
+               hostComponent.flankModel.nr,
+               [hostComponent.flankModel.flankUnits.length])}"
+               top="70" horizontalCenter="-3" rotation="90"/>
    </s:Group>
    
    

@@ -471,7 +471,11 @@
     </label.deactivateOverdrive>
     <button.activateOverdrive value="Activate overdrive" />
     <button.deactivateOverdrive value="Deactivate overdrive" />
-    <warning.deployCancel value="You will not get your deployed unit back" /> 
+    <warning.deployCancel value="You will not get your deployed unit back" />
+    <warning.attackNpc>
+      <p>This is an NPC building. You can destroy it by killing all the units
+        inside.</p>
+    </warning.attackNpc>
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>
@@ -3997,6 +4001,8 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
+    <label.showNpc value="Show"/>
+
     <tooltip.willBeQueued>
       <p>These units will be added to queue.</p>
       <p>However they will not be paid for and will be cancelled if you don't have
@@ -4124,6 +4130,9 @@
     <label.currentFacilities value="Facilities" />
     <label.flankNr0 value="First" />
     <label.flankNr1 value="Second" />
+    <!-- 0: units count in that flank -->
+    <label.flankCountNr0 value="First ({0})" />
+    <label.flankCountNr1 value="Second ({0})" />
     <tooltip.flank>
       <p>{0} flank</p>
       <p>Units in {0} flank has {1}% probability to be hit.</p>

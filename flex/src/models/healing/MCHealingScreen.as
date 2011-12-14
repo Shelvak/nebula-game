@@ -61,7 +61,7 @@ package models.healing
          {
             return item.hp < item.hpMax;
          });
-         sortByHp(oldProvider);
+         Unit.sortByHp(oldProvider);
          
          oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
          
@@ -195,15 +195,6 @@ package models.healing
          dispatchUnitsChangeEvent();
       }
       
-      private function sortByHp(list: ListCollectionView): void
-      {
-         list.sort = new Sort();
-         list.sort.fields = [new SortField('type'), 
-            new SortField('hp', false, true, true), 
-            new SortField('id', false, false, true)];
-         list.refresh();
-      }
-      
       private function refreshList(e: CollectionEvent): void
       {
          if (e.kind == CollectionEventKind.ADD)
@@ -258,11 +249,14 @@ package models.healing
       
       public function selectNone(): void
       {
-         for each (var flank: MHealFlank in currentFlanks)
+         if (currentFlanks != null)
          {
-            flank.deselectAll(false);
+            for each (var flank: MHealFlank in currentFlanks)
+            {
+               flank.deselectAll(false);
+            }
+            refreshPrice();
          }
-         refreshPrice();
       }
       
       [Bindable (event="healingPriceChange")]

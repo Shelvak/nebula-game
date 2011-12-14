@@ -52,7 +52,9 @@
       </s:Path>
       <!--- Title of the component. -->
       <s:Label styleName="panelTitle" 
-               text="{Localizer.string('Units', 'label.flankNr'+hostComponent.flankModel.nr)}"
+               text="{Localizer.string('Units', 'label.flankCountNr' +
+               hostComponent.flankModel.nr,
+               [hostComponent.flankModel.flankUnits.length])}"
                top="12" horizontalCenter="-3" rotation="90"/> 
    </s:Group>
    
@@ -111,13 +113,29 @@
       
       <!--- All the content goes here -->
       <s:Group id="contentGroup" left="20" right="1" top="13" height="100%">
-         <s:Group width="100%" height="{flankLayout.rowCount * 79}">
+         <s:Group width="100%" height="{
+                     hostComponent.flankModel.flankUnits.length &lt;= 6
+                        ? flankLayout.rowCount * 79 : 0}"
+                  visible="{hostComponent.flankModel.flankUnits.length &lt;= 6}">
             <s:DataGroup id="unitsList" dataProvider="{hostComponent.flankModel.flankUnits}" 
                          left="0" right="0"
                          itemRenderer="components.unitsscreen.IRSimpleUnit">
                <s:layout>
                   <s:TileLayout horizontalGap="3" id="flankLayout" verticalGap="3"
                                 requestedColumnCount="2"/>
+               </s:layout>
+            </s:DataGroup>
+         </s:Group>
+         <s:Group width="100%" height="{
+                     hostComponent.flankModel.flankUnits.length > 6
+                        ? cFlankLayout.rowCount * 79 : 0}"
+                  visible="{hostComponent.flankModel.flankUnits.length > 6}">
+            <s:DataGroup id="cUnitsList" dataProvider="{hostComponent.flankModel.cachedUnits}"
+                         left="0" right="0"
+                         itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+               <s:layout>
+                  <s:TileLayout horizontalGap="3" id="cFlankLayout" verticalGap="3"
+                                requestedColumnCount="3"/>
                </s:layout>
             </s:DataGroup>
          </s:Group>

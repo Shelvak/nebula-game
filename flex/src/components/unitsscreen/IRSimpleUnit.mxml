@@ -90,7 +90,9 @@
                                   specialHeight="6" width="50" text="" top="0" useColorCoding="true"/>
          <components:CenteredBitmapImage source="{IMG.getImage(AssetNames.getUnitImageName(model.type))}" 
                                          width="50" height="50" horizontalCenter="0" top="9"/>
-         
+
+         <unitsscreen:XpBar xpCurrent="{model.xp}" xpNeeded="{Unit.getXpMax(model.type, model.level + 1)}"
+                            left="0" right="0" top="61" visible="{model.level &lt; model.maxLevel}"/>
          <unitsscreen:StarsContainer starCount="{model.upgradePart.level-1}" horizontalCenter="0" top="62"/>
          <s:Label id="hpLabel" top="9" width="50" height="0" textAlign="center" horizontalCenter="0" 
                   text="{model.hp+'\n'+'/'+'\n'+Config.getUnitHp(model.type)}" verticalAlign="middle"

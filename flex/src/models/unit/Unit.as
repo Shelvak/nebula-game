@@ -23,6 +23,8 @@ package models.unit
    
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
+   import mx.collections.Sort;
+   import mx.collections.SortField;
 
    import utils.DateUtil;
 
@@ -38,6 +40,19 @@ package models.unit
       public static const JUMP_IN_SS: String = "move.solarSystem.hopTime";
       public static const JUMP_IN_GALAXY: String = "move.galaxy.hopTime";
       public static const JUMP_SPEED_MOD: String = "movementTimeDecrease";
+
+
+      public static function sortByHp(list: ListCollectionView): void
+      {
+         if (list)
+         {
+            list.sort = new Sort();
+            list.sort.fields = [new SortField('hidden', false, true),
+               new SortField('type'),
+               new SortField('hp', false, true, true), new SortField('id', false, false, true)];
+            list.refresh();
+         }
+      }
 
       public static function getJumpTime(formula: String, type: String,
                              level: int): String
