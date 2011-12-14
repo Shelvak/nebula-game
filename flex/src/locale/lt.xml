@@ -4195,6 +4195,9 @@
     <label.currentFacilities value="Gamyklos" />
     <label.flankNr0 value="Pirmas" />
     <label.flankNr1 value="Antras" />
+    <!-- 0: units count in that flank -->
+    <label.flankCountNr0 value="Pirmas ({0})" />
+    <label.flankCountNr1 value="Antras ({0})" />
     <tooltip.flank>
       <p>{0} flangas</p>
       <p>Kariai šiame flange turi {1}% tikimybę, kad į juos pataikys.</p>

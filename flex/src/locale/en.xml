@@ -4130,6 +4130,9 @@
     <label.currentFacilities value="Facilities" />
     <label.flankNr0 value="First" />
     <label.flankNr1 value="Second" />
+    <!-- 0: units count in that flank -->
+    <label.flankCountNr0 value="First ({0})" />
+    <label.flankCountNr1 value="Second ({0})" />
     <tooltip.flank>
       <p>{0} flank</p>
       <p>Units in {0} flank has {1}% probability to be hit.</p>

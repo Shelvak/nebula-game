@@ -64,6 +64,10 @@ package models.unit
          {
             cachedUnits = UnitFactory.buildCachedUnitsFromUnits(_flankUnits);
          }
+         else
+         {
+            cachedUnits = null;
+         }
 //         else
 //         {
 //            var tObj: Object = {};
@@ -80,6 +84,27 @@ package models.unit
 //            }
 //            cachedUnits = UnitFactory.createCachedUnits(tObj);
 //         }
+      }
+
+      public function getFlankCachedUnits(): ArrayCollection
+      {
+         if (cachedUnits == null)
+         {
+            var tObj: Object = {};
+            for each (var unit: MCUnit in flankUnits)
+            {
+               if (tObj[unit.unit.type] == null)
+               {
+                  tObj[unit.unit.type] = 1;
+               }
+               else
+               {
+                  tObj[unit.unit.type]++;
+               }
+            }
+            cachedUnits = UnitFactory.createCachedUnits(tObj);
+         }
+         return cachedUnits;
       }
 
       public var cachedUnits: ArrayCollection;

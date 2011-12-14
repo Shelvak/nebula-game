@@ -52,7 +52,9 @@
       </s:Path>
       <!--- Title of the component. -->
       <s:Label styleName="panelTitle" 
-               text="{Localizer.string('Units', 'label.flankNr'+hostComponent.flankModel.nr)}"
+               text="{Localizer.string('Units', 'label.flankCountNr' +
+               hostComponent.flankModel.nr,
+               [hostComponent.flankModel.flankUnits.length])}"
                top="12" horizontalCenter="-3" rotation="90"/> 
    </s:Group>
    

@@ -4368,6 +4368,9 @@
     <label.currentFacilities value="Spējas" />
     <label.flankNr0 value="Pirmais" />
     <label.flankNr1 value="Otrais" />
+    <!-- 0: units count in that flank -->
+    <label.flankCountNr0 value="Pirmais ({0})" />
+    <label.flankCountNr1 value="Otrais ({0})" />
     <tooltip.flank>
       <p>{0} flank</p>
       <p>Units in {0} flank has {1}% probability to be hit.</p>
