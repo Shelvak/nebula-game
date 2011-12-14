@@ -460,45 +460,6 @@ describe Notification do
     end
   end
 
-  describe ".create_for_planet_protected" do
-    before(:all) do
-      @planet = Factory.create(:planet_with_player)
-      @player_id = Factory.create(:player).id
-      @outcome = Combat::OUTCOME_LOSE
-      @duration = 50.minutes
-
-      @event = Notification::EVENT_PLANET_PROTECTED
-      @method = :create_for_planet_protected
-      @args = [@player_id, @planet, @outcome, @duration]
-    end
-
-    it_behaves_like "create for"
-
-    it "should have :planet" do
-      Notification.send(
-        @method, *@args
-      ).params[:planet].should == @planet.client_location.as_json
-    end
-
-    it "should have :owner_id" do
-      Notification.send(
-        @method, *@args
-      ).params[:owner_id].should == @planet.player_id
-    end
-
-    it "should have :duration" do
-      Notification.send(
-        @method, *@args
-      ).params[:duration].should == @duration
-    end
-    
-    it "should have :outcome" do
-      Notification.send(
-        @method, *@args
-      ).params[:outcome].should == @outcome
-    end
-  end
-
   describe ".create_for_kicked_from_alliance" do
     before(:all) do
       @alliance = Factory.create(:alliance)

@@ -20,7 +20,6 @@ package models.notification
       TYPE_TO_CLASS[NotificationType.QUEST_COMPLETED] = QuestCompletedLog;
       TYPE_TO_CLASS[NotificationType.EXPLORATION_FINISHED] = ExplorationFinished;
       TYPE_TO_CLASS[NotificationType.PLANET_ANNEXED] = PlanetAnnexed;
-      TYPE_TO_CLASS[NotificationType.PLANET_PROTECTED] = PlanetProtected;
       TYPE_TO_CLASS[NotificationType.ALLIANCE_INVITATION] =  AllianceInvitation;
       TYPE_TO_CLASS[NotificationType.KICKED_FROM_ALLIANCE] = KickedFromAlliance;
       TYPE_TO_CLASS[NotificationType.ALLIANCE_JOINED] = AllianceJoined;

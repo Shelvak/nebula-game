@@ -3,33 +3,6 @@ require File.expand_path(
 )
 
 describe Combat::Annexer do
-  shared_examples_for "taking planet" do
-    it "should not create protection cooldown" do
-      Combat::Annexer.annex!(@planet, @check_report, @outcomes)
-      @planet.should_not have_cooldown
-    end
-
-    it "should not created protection notification" do
-      Notification.should_not_receive(:create_for_planet_protected)
-      Combat::Annexer.annex!(@planet, @check_report, @outcomes)
-    end
-
-    it "should take ownership of the planet" do
-      lambda do
-        Combat::Annexer.annex!(@planet, @check_report, @outcomes)
-        @planet.reload
-      end.should change(@planet, :player).to(nil)
-    end
-
-    it "should create planet annexed notifications" do
-      @alliances.values.flatten.compact.each do |player|
-        Notification.should_receive(:create_for_planet_annexed).
-          with(player.id, @planet, @outcomes[player.id])
-      end
-      Combat::Annexer.annex!(@planet, @check_report, @outcomes)
-    end
-  end
-
   describe ".annex!" do
     before(:all) do
       @alliances = {
@@ -107,57 +80,24 @@ describe Combat::Annexer do
       end
       
       describe "when owner lost" do
-        describe "if the planet is protected" do
-          before(:each) do
-            @owner.planets_count = Cfg.player_protected_planets
-            @owner.save!
-          end
-          
-          it "should create a protection cooldown" do
-            Combat::Annexer.annex!(@planet, @check_report, @outcomes)
-            @planet.should have_cooldown(
-              Cfg.planet_protection_duration(@planet.solar_system.galaxy).
-                from_now
-            )
-          end
-          
-          it "should create protection notifications" do
-            duration = Cfg.
-              planet_protection_duration(@planet.solar_system.galaxy)
-
-            @alliances.values.flatten.compact.each do |player|
-              Notification.should_receive(:create_for_planet_protected).
-                with(player.id, @planet, @outcomes[player.id], duration)
-            end
-            Combat::Annexer.annex!(@planet, @check_report, @outcomes)
-          end
-
-          describe "when in battleground solar system" do
-            before(:each) do
-              ss = @planet.solar_system
-              ss.kind = SolarSystem::KIND_BATTLEGROUND
-              ss.save!
-            end
-
-            it_should_behave_like "taking planet"
-          end
-
-          describe "when apocalypse has started" do
-            before(:each) do
-              @owner.galaxy.stub(:apocalypse_started?).and_return(true)
-            end
-
-            it_should_behave_like "taking planet"
-          end
+        it "should not create cooldown" do
+          Combat::Annexer.annex!(@planet, @check_report, @outcomes)
+          @planet.should_not have_cooldown
         end
-        
-        describe "when it's not the last planet" do
-          before(:each) do
-            @owner.planets_count = 4
-            @owner.save!
-          end
 
-          it_should_behave_like "taking planet"
+        it "should take ownership of the planet" do
+          lambda do
+            Combat::Annexer.annex!(@planet, @check_report, @outcomes)
+            @planet.reload
+          end.should change(@planet, :player).to(nil)
+        end
+
+        it "should create planet annexed notifications" do
+          @alliances.values.flatten.compact.each do |player|
+            Notification.should_receive(:create_for_planet_annexed).
+              with(player.id, @planet, @outcomes[player.id])
+          end
+          Combat::Annexer.annex!(@planet, @check_report, @outcomes)
         end
       end
     end

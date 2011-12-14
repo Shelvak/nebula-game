@@ -13,27 +13,18 @@ module Parts::Shieldable
     receiver.instance_eval do
       belongs_to :shield_owner, :foreign_key => :shield_owner_id,
         :class_name => "Player"
-      # Look to #has_shield? for conditions.
-      scope :shielded, where("shield_owner_id IS NOT NULL AND " +
-          "shield_ends_at IS NOT NULL AND shield_ends_at > NOW()")
+      scope :shielded, where("shield_owner_id IS NOT NULL")
     end
   end
 
   # Does this object have shield?
-  #
-  # Objects have shields if the owner is set and shield expiration date is
-  # in the future.
   def has_shield?
-    ! shield_owner_id.nil? && ! shield_ends_at.nil? &&
-      shield_ends_at > Time.now
+    ! shield_owner_id.nil?
   end
 
   def as_json(options=nil)
     hash = defined?(super) ? super(options) : {}
-    if has_shield?
-      hash["shield_ends_at"] = shield_ends_at.as_json
-      hash["shield_owner_id"] = shield_owner_id
-    end
+    hash["shield_owner_id"] = shield_owner_id if has_shield?
     hash
   end
 end

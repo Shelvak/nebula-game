@@ -98,14 +98,6 @@ class Cfg; class << self
   ### combat.yml ###
 
   def max_flanks; CONFIG['combat.flanks.max']; end
-  
-  # For how long planet is protected after protection is initiated?
-  def planet_protection_duration(galaxy)
-    key = galaxy.finished? \
-      ? 'combat.cooldown.protection.finished_galaxy.duration' \
-      : 'combat.cooldown.protection.duration'
-    CONFIG.evalproperty(key)
-  end
 
   ### raiding.yml ###
 
@@ -149,12 +141,14 @@ class Cfg; class << self
     CONFIG.evalproperty('galaxy.player.inactivity_check.last_seen_in')
   end
 
-  def player_referral_points_needed
-    CONFIG['galaxy.player.referral.points_needed']
+  def player_inactivity_check(points)
+    CONFIG['galaxy.player.inactivity_check'].each do |points_required, seconds|
+      return seconds if points <= points_required
+    end
   end
 
-  def player_protected_planets
-    CONFIG['galaxy.player.protected_planets']
+  def player_referral_points_needed
+    CONFIG['galaxy.player.referral.points_needed']
   end
 
   def galaxy_convoy_units_definition

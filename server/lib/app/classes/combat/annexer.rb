@@ -17,14 +17,7 @@ class Combat::Annexer
         # he is not NPC).
         if outcomes[planet.player_id] == Combat::OUTCOME_LOSE &&
             ! planet.player_id.nil?
-          if ! planet.solar_system.battleground? && (
-              planet.player.planets_count <= Cfg.player_protected_planets &&
-                ! planet.player.galaxy.apocalypse_started?
-          )
-            protect(planet, outcomes)
-          else
-            annex_planet(planet, outcomes)
-          end
+          annex_planet(planet, outcomes)
         end
       elsif check_report.status == Combat::CheckReport::NO_CONFLICT && 
         planet.player_id.nil?

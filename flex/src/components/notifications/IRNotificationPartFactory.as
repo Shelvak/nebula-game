@@ -19,7 +19,6 @@ package components.notifications
       TYPE_TO_CLASS[NotificationType.BUILDINGS_DEACTIVATED] = IRBuildingsDeactivated;
       TYPE_TO_CLASS[NotificationType.EXPLORATION_FINISHED] = IRExplorationFinished;
       TYPE_TO_CLASS[NotificationType.PLANET_ANNEXED] = IRPlanetAnnexed;
-      TYPE_TO_CLASS[NotificationType.PLANET_PROTECTED] = IRPlanetProtected;
       TYPE_TO_CLASS[NotificationType.ALLIANCE_INVITATION] = IRAllianceInvitation;
       TYPE_TO_CLASS[NotificationType.KICKED_FROM_ALLIANCE] = IRKickedFromAlliance;
       TYPE_TO_CLASS[NotificationType.ALLIANCE_JOINED] = IRAllianceJoined;

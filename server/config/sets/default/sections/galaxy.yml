@@ -8,21 +8,19 @@ zone.diameter: 8
 # Players per zone.
 zone.players: 20
 
-# How long initial shield lasts on players home solar system?
-player.shield_duration: <%= 2.weeks %> / speed
-# Min number of planets player can have. Planets above this number can be taken
-# by other players.
-player.protected_planets: 1
 # Free population given to player upon creation
 player.population: 60
 # Maximum population player can have.
 player.population.max: 2500
-# When should the inactivity check be scheduled for?
-player.inactivity_check: <%= 1.week %> / speed
-# How much points must player have to be considered active?
-player.inactivity_check.points: 15000
-# How recent should last player login be if he doesn't have enough points?
-player.inactivity_check.last_seen_in: <%= 3.days %> / speed
+player.inactivity_check:
+- [1, <%= 10.minutes %>]
+- [1000, <%= 1.hour %>]
+- [10000, <%= 1.day %>]
+- [25000, <%= 2.days %>]
+- [100000, <%= 3.days %>]
+- [250000, <%= 5.days %>]
+- [500000, <%= 10.days %>]
+- [1000000, <%= 14.days %>]
 
 # How much points do you need to trigger referral callback?
 # This one is also defined in web configuration.

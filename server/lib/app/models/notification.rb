@@ -40,8 +40,6 @@ class Notification < ActiveRecord::Base
   EVENT_PLANET_ANNEXED = 6
   # You have received an alliance invitation.
   EVENT_ALLIANCE_INVITATION = 7
-  # Planet protection has been initiated.
-  EVENT_PLANET_PROTECTED = 8
   # You have been kicked from alliance
   EVENT_ALLIANCE_KICK = 9
   # Player has joined alliance.
@@ -387,30 +385,6 @@ class Notification < ActiveRecord::Base
       :event => EVENT_ALLIANCE_INVITATION,
       :player_id => player.id,
       :params => {:alliance => alliance.as_json(:mode => :minimal)}
-    )
-    model.save!
-
-    model
-  end
-
-  # EVENT_PLANET_PROTECTED = 8
-  #
-  # params = {
-  #   :planet => ClientLocation#as_json,
-  #   :owner_id => Fixnum (ID of planet owner),
-  #   :duration => Fixnum (duration of protection),
-  #   :outcome => Fixnum (what was the outcome of that battle for you)
-  # }
-  def self.create_for_planet_protected(player_id, planet, outcome, duration)
-    model = new(
-      :event => EVENT_PLANET_PROTECTED,
-      :player_id => player_id,
-      :params => {
-        :planet => planet.client_location.as_json,
-        :owner_id => planet.player_id,
-        :duration => duration,
-        :outcome => outcome
-      }
     )
     model.save!
 
