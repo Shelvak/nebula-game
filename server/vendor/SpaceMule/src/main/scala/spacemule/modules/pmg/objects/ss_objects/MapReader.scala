@@ -55,16 +55,16 @@ object MapReader {
       case "%" => BlockTile.Geothermal
       case "$" => BlockTile.Zetium
       case "6" => BlockTile.Folliage6X6
-      case "^" => BlockTile.Folliage6X2
+      case "~" => BlockTile.Folliage6X2
       case "4" => BlockTile.Folliage4X6
       case "@" => BlockTile.Folliage4X4
       case "!" => BlockTile.Folliage4X3
       case "3" => BlockTile.Folliage3X3
-      case "#" => BlockTile.Folliage3X4
+      case "*" => BlockTile.Folliage3X4
       case "_" => AreaTile.Sand
       case "#" => AreaTile.Junkyard
       case "/" => AreaTile.Noxrium
-      case "t" => AreaTile.Titan
+      case "^" => AreaTile.Titan
       case _ => sys.error("Unknown map signature " + char)
     }
 
