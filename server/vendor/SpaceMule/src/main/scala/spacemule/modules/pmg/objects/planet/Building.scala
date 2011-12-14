@@ -18,9 +18,11 @@ object Building {
   // Player controlled buildings
 
   val Mothership = "Mothership"
-  val Screamer = "Screamer"
-  val Thunder = "Thunder"
-  val Vulcan = "Vulcan"
+  val Headquarters = "Headquarters"
+  val MexT2 = "MetalExtractorT2"
+  val CollectorT2 = "CollectorT2"
+  val ZexT2 = "ZetiumExtractorT2"
+  val Barracks = "Barracks"
 
   // These buildings are NPC origin, but players control them
 
@@ -41,18 +43,16 @@ object Building {
   val NpcResearchCenter = "NpcResearchCenter"
   val NpcJumpgate = "NpcJumpgate"
 
-  def create(name: String, x: Int, y: Int, level: Int=1): Building = {
-    val building = name match {
-      case Mothership | Screamer | Thunder | Vulcan | NpcHall |
-        NpcInfantryFactory | NpcTankFactory | NpcSpaceFactory =>
+  def create(name: String, x: Int, y: Int, level: Int=1): Building =
+    name match {
+      case Mothership | Headquarters | MexT2 | CollectorT2 | ZexT2 | Barracks |
+           NpcHall | NpcInfantryFactory | NpcTankFactory | NpcSpaceFactory =>
         new buildings.Player(name, x, y, level)
       case NpcMetalExtractor | NpcGeothermalPlant | NpcZetiumExtractor | 
         NpcSolarPlant | NpcCommunicationsHub | NpcTemple | NpcExcavationSite |
         NpcResearchCenter | NpcJumpgate =>
         new buildings.Npc(name, x, y, level)
     }
-    return building
-  }
 }
 
 class Building(val name: String, val x: Int, val y: Int, val level: Int) {

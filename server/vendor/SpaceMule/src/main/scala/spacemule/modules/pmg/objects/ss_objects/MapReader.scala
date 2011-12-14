@@ -61,9 +61,9 @@ object MapReader {
       case "!" => BlockTile.Folliage4X3
       case "3" => BlockTile.Folliage3X3
       case "#" => BlockTile.Folliage3X4
-      case "s" => AreaTile.Sand
-      case "j" => AreaTile.Junkyard
-      case "n" => AreaTile.Noxrium
+      case "_" => AreaTile.Sand
+      case "#" => AreaTile.Junkyard
+      case "/" => AreaTile.Noxrium
       case "t" => AreaTile.Titan
       case _ => sys.error("Unknown map signature " + char)
     }
@@ -79,21 +79,22 @@ object MapReader {
                           char: String,
                           chances: Seq[UnitChance],
                           level: Int) = {
-    val name = char.toLowerCase match {
+    val name = char match {
       case " " | "-" => null
       case "m" => Building.Mothership
-      case "v" => Building.Vulcan
-      case "s" => Building.Screamer
-      case "t" => Building.Thunder
-      case "x" => Building.NpcMetalExtractor
-      case "g" => Building.NpcGeothermalPlant
-      case "z" => Building.NpcZetiumExtractor
-      case "p" => Building.NpcSolarPlant
-      case "h" => Building.NpcCommunicationsHub
-      case "e" => Building.NpcTemple
-      case "c" => Building.NpcExcavationSite
-      case "r" => Building.NpcResearchCenter
-      case "u" => Building.NpcJumpgate
+      case "h" => Building.Headquarters
+      case "x" => Building.MexT2
+      case "c" => Building.CollectorT2
+      case "z" => Building.ZexT2
+      case "X" => Building.NpcMetalExtractor
+      case "G" => Building.NpcGeothermalPlant
+      case "Z" => Building.NpcZetiumExtractor
+      case "P" => Building.NpcSolarPlant
+      case "H" => Building.NpcCommunicationsHub
+      case "E" => Building.NpcTemple
+      case "C" => Building.NpcExcavationSite
+      case "R" => Building.NpcResearchCenter
+      case "U" => Building.NpcJumpgate
       case "a" => Building.NpcHall
       case "i" => Building.NpcInfantryFactory
       case "n" => Building.NpcTankFactory
