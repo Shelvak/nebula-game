@@ -91,7 +91,9 @@ lambda do
       "2,180" => {"type" => "asteroid", "resources" => r(3), "units" => u(10)},
       "2,210" => {"type" => "asteroid", "resources" => r(3), "units" => u(10)},
       "3,180" => {"type" => "nothing", "units" => u(10),},
-      "3,224" => {"type" => "nothing", "units" => u(10)}
+
+      # Mega-stash of resources
+      "3,224" => {"type" => "nothing", "units" => u(45), "wreckage" => w(8)}
     }
   end
 
