@@ -573,6 +573,10 @@
     </label.deactivateOverdrive>
     <button.activateOverdrive value="Aktyvuoti perkrovą" />
     <button.deactivateOverdrive value="Deaktyvuoti perkrovą" />
+    <warning.attackNpc>
+      <p>Šis pastatas priklauso ateiviams. Jei sunaikinsi visus viduje esančius
+        ateivių karius tai pastatas bus sugriautas.</p>
+    </warning.attackNpc>
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>
@@ -4053,6 +4057,8 @@
     <property.population value="Populiacija" />
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
+
+    <label.showNpc value="Rodyti"/>
 
     <tooltip.willBeQueued>
       <p>Šie kariai bus įdėti į statymo eilę.</p>

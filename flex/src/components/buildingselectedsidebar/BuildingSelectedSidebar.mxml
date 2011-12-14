@@ -169,6 +169,8 @@
                            </s:Group>
                            
                            <base:AdvancedContainer visible="{bSidebar.selectedBuilding.npc}">
+                              <base:Warning text="{getString('warning.attackNpc')}"
+                                            width="100%" showSign="false"/>
                               <s:Label text="{getString('noUnits')}" 
                                        visible="{!ML.latestPlanet.hasAgressiveGroundUnits()}"
                                        styleName="unsatisfied" fontSize="16"/>
@@ -178,7 +180,8 @@
                                         skinClass="components.skins.RedButtonSkin"
                                         label="{getString('attack')}"/>
                               <base:layout>
-                                 <s:VerticalLayout horizontalAlign="center"/>
+                                 <s:VerticalLayout horizontalAlign="center"
+                                         gap="9"/>
                               </base:layout>
                            </base:AdvancedContainer>
                            

@@ -615,6 +615,10 @@
     </label.deactivateOverdrive>
     <button.activateOverdrive value="Activate overdrive" />
     <button.deactivateOverdrive value="Deactivate overdrive" />
+    <warning.attackNpc>
+      <p>This is an NPC building. You can destroy it by killing all the units
+        inside.</p>
+    </warning.attackNpc>
     <!-- /TODO -->
   </BuildingSelectedSidebar>
 
@@ -4223,6 +4227,8 @@
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
     
     <!-- TODO: translate this -->
+    <label.showNpc value="Show"/>
+
     <tooltip.willBeQueued>
       <p>These units will be added to queue.</p>
       <p>However they will not be paid for and will be cancelled if you don't have
