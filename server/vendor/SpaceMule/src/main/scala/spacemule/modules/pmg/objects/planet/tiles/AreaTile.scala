@@ -50,8 +50,8 @@ object AreaTile {
       ).floor.toInt
     }
 
-    return tileCounts
+    tileCounts
   }
 }
 
-case class AreaTile(kind: Int) extends Tile
+case class AreaTile(kind: Int) extends Tile(kind)

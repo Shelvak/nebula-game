@@ -46,18 +46,7 @@ object SsConfig {
     extractResources(data, "wreckage")
 
   private[this] def extractUnits(data: CfgMap):
-  Option[Seq[UnitsEntry]] = {
-    data.get("units").map { items =>
-      items.asInstanceOf[Seq[IndexedSeq[Any]]].map { entryArray =>
-        new UnitsEntry(
-          entryArray(1).asInstanceOf[String],
-          Left(entryArray(0).asInstanceOf[Long].toInt),
-          Left(entryArray(2).asInstanceOf[Long].toInt),
-          entryArray(3).asInstanceOf[Double]
-        )
-      }
-    }
-  }
+    Option[Seq[UnitsEntry]] = data.get("units").map(UnitsEntry.extract(_))
 
   def apply(configKey: String): Map[Coords, Entry] = {
     Config.get[Map[String, CfgMap]](configKey).map {

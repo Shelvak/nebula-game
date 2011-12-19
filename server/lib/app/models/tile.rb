@@ -5,6 +5,8 @@ class Tile < ActiveRecord::Base
     {:id => :to_i, :x => :to_i, :y => :to_i, :kind => :to_i}
   end
 
+  # Not stored in database.
+  VOID = -1
   # Only metal extractors can be built on these
   ORE = 0
   # Only geothermal plants can be built on these
@@ -21,7 +23,10 @@ class Tile < ActiveRecord::Base
   TITAN = 6
   
   # Nothing can be built on these types
-  
+
+  FOLLIAGE_2X3 = 15
+  FOLLIAGE_2X4 = 16
+  FOLLIAGE_3X2 = 17
   FOLLIAGE_3X3 = 8
   FOLLIAGE_3X4 = 14
   FOLLIAGE_4X3 = 9
@@ -38,6 +43,9 @@ class Tile < ActiveRecord::Base
     JUNKYARD => 'junkyard',
     SAND => 'sand',
     TITAN => 'titan',
+    FOLLIAGE_2X3 => 'folliage_2x3',
+    FOLLIAGE_2X4 => 'folliage_2x4',
+    FOLLIAGE_3X2 => 'folliage_3x2',
     FOLLIAGE_3X3 => 'folliage_3x3',
     FOLLIAGE_3X4 => 'folliage_3x4',
     FOLLIAGE_4X3 => 'folliage_4x3',
@@ -51,6 +59,9 @@ class Tile < ActiveRecord::Base
     ORE => [2, 2],
     GEOTHERMAL => [2, 2],
     ZETIUM => [2, 2],
+    FOLLIAGE_2X3 => [2, 3],
+    FOLLIAGE_2X4 => [2, 4],
+    FOLLIAGE_3X2 => [3, 2],
     FOLLIAGE_3X3 => [3, 3],
     FOLLIAGE_3X4 => [3, 4],
     FOLLIAGE_4X3 => [4, 3],
@@ -64,8 +75,7 @@ class Tile < ActiveRecord::Base
   RESOURCE_TILES = [ORE, GEOTHERMAL, ZETIUM]
 
   # Tile kinds that can be explored.
-  EXPLORATION_TILES = [FOLLIAGE_3X3, FOLLIAGE_3X4, FOLLIAGE_4X3,
-    FOLLIAGE_4X4, FOLLIAGE_4X6, FOLLIAGE_6X6, FOLLIAGE_6X2]
+  EXPLORATION_TILES = MAPPING.keys - RESOURCE_TILES
   
   include Parts::Object
   def self.notify_on_create?; false; end

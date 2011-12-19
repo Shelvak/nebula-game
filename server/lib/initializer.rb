@@ -202,7 +202,8 @@ def load_config
       #LOGGER.debug("Loading config section #{section.inspect} from #{
       #  file.inspect}")
       CONFIG.with_scope(section) do |config|
-        config.merge!(read_config(file), set_name)
+        contents = read_config(file)
+        config.merge!(contents, set_name)
       end
     end
 

@@ -6,19 +6,18 @@ import spacemule.helpers.Converters._
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.Area
 import spacemule.modules.pmg.classes.geom.area.AreaTileConfig
-import spacemule.modules.pmg.classes.{ObjectChance, UnitChance}
+import spacemule.modules.pmg.classes.ObjectChance
 import spacemule.modules.pmg.objects._
 import spacemule.modules.pmg.objects.planet.tiles.AreaTile
 import spacemule.modules.pmg.objects.planet.tiles.BlockTile
 import spacemule.modules.pmg.objects.solar_systems._
 import spacemule.modules.pmg.objects.planet._
-import spacemule.modules.pmg.objects.planet.buildings._
 import spacemule.modules.combat
 import spacemule.modules.pathfinder.{objects => pfo}
 import net.java.dev.eval.Expression
 import scala.collection.Map
 import spacemule.modules.combat.objects.{Combatant, Damage, Armor, Stance}
-import ss_objects.{Asteroid}
+import ss_objects.Asteroid
 
 object Config {
   /**
@@ -79,6 +78,7 @@ object Config {
       )
   }
   private def string(key: String) = get[String](key)
+  private def boolean(key: String) = get[Boolean](key)
   private def double(key: String) = get[Any](key) match {
     case i: Int => i.toDouble
     case l: Long => l.toDouble
@@ -151,12 +151,6 @@ object Config {
     Range.inclusive(from, to)
   }
 
-  private def areaTileConfig(name: String): AreaTileConfig =
-    AreaTileConfig(
-      range("planet.tiles.%s.isles".format(name)).random,
-      range("planet.tiles.%s".format(name)).random
-    )
-
   private def objectChances(name: String): Seq[ObjectChance] = {
     seq[Seq[Any]](name).map { chanceSeq =>
         ObjectChance(
@@ -166,24 +160,11 @@ object Config {
     }
   }
 
-  private def unitChances(name: String): Seq[UnitChance] = {
-    seq[Seq[Any]](name).map { chanceSeq =>
-        UnitChance(
-          chanceSeq(0).asInstanceOf[Long].toInt,
-          chanceSeq(1).asInstanceOf[Long].toInt,
-          chanceSeq(2).asInstanceOf[String].camelcase,
-          chanceSeq(3).asInstanceOf[Long].toInt
-        )
-    }
-  }
-
   private def positions(name: String): Seq[Coords] = {
     seq[Seq[Long]](name).map { coordsSeq =>
       Coords(coordsSeq(0).toInt, coordsSeq(1).toInt)
     }
   }
-
-  private def map(name: String) = get[Seq[String]](name).reverse
 
   private def unitsEntry(name: String) = get[Seq[Seq[Any]]](name).map {
     entry => new UnitsEntry(entry)
@@ -342,18 +323,14 @@ object Config {
   }
 
   def ssObjectSize = range("ss_object.size")
-  def planetAreaMax = int("planet.area.max")
-  def planetArea = range("planet.area").random
-  def planetProportion = range("planet.area.proportion").random / 100.0
+
+  def planetExpandedMap(name: String) = get[
+    Map[String, Map[String, Any]]
+  ]("planet.expanded_map")(name)
 
   lazy val homeworldSsConfig = SsConfig("solar_system.home")
 
-  def homeworldMap = map("planet.homeworld.map")
-  def battlegroundPlanetMaps = (0 until battlegroundPlanetPositions.size).map {
-    index => map("planet.battleground.map.%d".format(index))
-  }
-  
-  def homeworldStartingMetal: Double = 
+  def homeworldStartingMetal: Double =
     double("buildings.mothership.metal.starting")
   def homeworldStartingEnergy: Double =
     double("buildings.mothership.energy.starting")
@@ -363,97 +340,6 @@ object Config {
     double("buildings.mothership.scientists").toInt
   def startingPopulationMax: Int =
     int("galaxy.player.population") + int("buildings.mothership.population")
-
-  def planetBlockTileCount(tile: BlockTile): Int = tile match {
-    case BlockTile.Ore => range("planet.tiles.ore").random
-    case BlockTile.Geothermal => range("planet.tiles.geothermal").random
-    case BlockTile.Zetium => range("planet.tiles.zetium").random
-    case BlockTile.Folliage3X3 => range("planet.tiles.f3x3").random
-    case BlockTile.Folliage3X4 => range("planet.tiles.f3x4").random
-    case BlockTile.Folliage4X3 => range("planet.tiles.f4x3").random
-    case BlockTile.Folliage4X4 => range("planet.tiles.f4x4").random
-    case BlockTile.Folliage4X6 => range("planet.tiles.f4x6").random
-    case BlockTile.Folliage6X6 => range("planet.tiles.f6x6").random
-    case BlockTile.Folliage6X2 => range("planet.tiles.f6x2").random
-  }
-
-  def planetAreaTileConfig(tile: AreaTile): AreaTileConfig = tile match {
-    case AreaTile.Regular => AreaTileConfig(
-      1, range("planet.tiles.regular").random
-    )
-    case AreaTile.Noxrium => areaTileConfig("noxrium")
-    case AreaTile.Junkyard => areaTileConfig("junkyard")
-    case AreaTile.Titan => areaTileConfig("titan")
-    case AreaTile.Sand => areaTileConfig("sand")
-  }
-
-  def extractorNpcChance(blockTile: BlockTile): Int = blockTile match {
-    case BlockTile.Ore => int("planet.npc.tiles.ore.chance")
-    case BlockTile.Geothermal => 
-      int("planet.npc.tiles.geothermal.chance")
-    case BlockTile.Zetium => int("planet.npc.tiles.zetium.chance")
-  }
-
-  def getBuildingArea(name: String): Area = area(
-    "buildings.%s".format(name.underscore))
-
-  private def buildingRate(kind: String)
-                          (building: Building, resource: String) = {
-    val name = building.name.underscore
-    val level = building.level.toBigDecimal
-    val default = 0.toBigDecimal
-    
-    formulaEval(
-      "buildings.%s.%s.%s".format(name, resource, kind), Map("level" -> level),
-      default
-    )
-  }
-
-  private val buildingGenerationRate = buildingRate("generate") _
-  def buildingMetalGenerationRate(building: Building) = 
-    buildingGenerationRate(building, "metal")
-  def buildingEnergyGenerationRate(building: Building) = 
-    buildingGenerationRate(building, "energy")
-  def buildingZetiumGenerationRate(building: Building) = 
-    buildingGenerationRate(building, "zetium")
-
-  private val buildingUsageRate = buildingRate("use") _
-  def buildingMetalUsageRate(building: Building) = 
-    buildingUsageRate(building, "metal")
-  def buildingEnergyUsageRate(building: Building) = 
-    buildingUsageRate(building, "energy")
-  def buildingZetiumUsageRate(building: Building) = 
-    buildingUsageRate(building, "zetium")
-
-  private def buildingStorage(building: Building, resource: String) = {
-    val name = building.name.underscore
-    val level = building.level.toBigDecimal
-    val default = 0.toBigDecimal
-
-    formulaEval(
-      "buildings.%s.%s.store".format(name, resource), Map("level" -> level),
-      default
-    )
-  }
-
-  def buildingMetalStorage(building: Building) =
-    buildingStorage(building, "metal")
-  def buildingEnergyStorage(building: Building) =
-    buildingStorage(building, "energy")
-  def buildingZetiumStorage(building: Building) =
-    buildingStorage(building, "zetium")
-
-  def npcBuildingChances = objectChances("planet.npc.building.chances")
-
-  def npcBuildingImportance(building: Npc): Int = building.name match {
-    case "NpcMetalExtractor" => 
-      int("planet.npc.building.metal_extractor.importance")
-    case "NpcGeothermalPlant" =>
-      int("planet.npc.building.geothermal_plant.importance")
-    case "NpcZetiumExtractor" =>
-      int("planet.npc.building.zetium_extractor.importance")
-    case _ => building.area.area
-  }
 
   // Common combatant attributes
 
@@ -480,7 +366,11 @@ object Config {
 
   lazy val battlegroundBuildingMaxLevel = 
     int("buildings.battleground.max_level")
-  
+
+  def unitEntriesFor(building: Building) = {
+
+  }
+
   def buildingInitiative(name: String) =
     int("buildings.%s.initiative".format(name.underscore))
   def buildingHp(building: Building): Int = buildingHp(building.name)
@@ -495,6 +385,63 @@ object Config {
     cost("buildings.%s.zetium.cost".format(b.name.underscore), b.level)
   def buildingGunDefinitions(name: String) =
     gunDefinitions("buildings.%s.guns".format(name.underscore))
+
+
+  def getBuildingArea(name: String): Area = area(
+    "buildings.%s".format(name.underscore))
+
+  private def buildingRate(kind: String)
+                          (building: Building, resource: String) = {
+    val name = building.name.underscore
+    val level = building.level.toBigDecimal
+    val default = 0.toBigDecimal
+
+    formulaEval(
+      "buildings.%s.%s.%s".format(name, resource, kind), Map("level" -> level),
+      default
+    )
+  }
+
+  private val buildingGenerationRate = buildingRate("generate") _
+  def buildingMetalGenerationRate(building: Building) =
+    buildingGenerationRate(building, "metal")
+  def buildingEnergyGenerationRate(building: Building) =
+    buildingGenerationRate(building, "energy")
+  def buildingZetiumGenerationRate(building: Building) =
+    buildingGenerationRate(building, "zetium")
+
+  private val buildingUsageRate = buildingRate("use") _
+  def buildingMetalUsageRate(building: Building) =
+    buildingUsageRate(building, "metal")
+  def buildingEnergyUsageRate(building: Building) =
+    buildingUsageRate(building, "energy")
+  def buildingZetiumUsageRate(building: Building) =
+    buildingUsageRate(building, "zetium")
+
+  private def buildingStorage(building: Building, resource: String) = {
+    val name = building.name.underscore
+    val level = building.level.toBigDecimal
+    val default = 0.toBigDecimal
+
+    formulaEval(
+      "buildings.%s.%s.store".format(name, resource), Map("level" -> level),
+      default
+    )
+  }
+
+  def buildingMetalStorage(building: Building) =
+    buildingStorage(building, "metal")
+  def buildingEnergyStorage(building: Building) =
+    buildingStorage(building, "energy")
+  def buildingZetiumStorage(building: Building) =
+    buildingStorage(building, "zetium")
+
+  def isBuildingNpc(name: String) = getOpt[Boolean](
+    "buildings.%s.npc".format(name.underscore)
+  ) match {
+    case Some(value) => value
+    case None => false
+  }
 
   // End of building attributes
   
@@ -559,9 +506,6 @@ object Config {
     "ss_object.battleground.orbit.jumpgate.units")
 
   // End of orbit units configuration
-
-  lazy val npcBuildingUnitChances =
-    unitChances("planet.npc.building.units")
 
   def folliagePercentage = range("planet.folliage.area").random
   def folliageVariations = int("ui.planet.folliage.variations")

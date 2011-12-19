@@ -155,7 +155,7 @@ class SmartSequence[+T, +Repr](sequence: SeqLike[T, Repr]) {
 }
 
 class SmartRange(range: Range) {
-  def random:Int = {
+  def random: Int = {
     val randEnd = (range.end - range.start + {
       if (range.isInclusive) 1 else 0
     }) / range.step

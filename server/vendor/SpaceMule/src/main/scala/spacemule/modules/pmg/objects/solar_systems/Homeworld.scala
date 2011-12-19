@@ -4,7 +4,7 @@ import spacemule.helpers.Converters._
 import spacemule.modules.pmg.objects._
 import spacemule.modules.config.objects.{SsConfig, Config}
 import spacemule.modules.pmg.classes.geom.Coords
-import ss_objects.{Asteroid, Planet, Jumpgate, Nothing}
+import ss_objects.{Asteroid, PredefinedPlanet, Jumpgate, Nothing}
 
 class Homeworld(val player: Player) extends SolarSystem {
   override val shielded = true
@@ -23,6 +23,10 @@ class Homeworld(val player: Player) extends SolarSystem {
   private[this] def createPlanet(
     coords: Coords, entry: SsConfig.PlanetEntry
   ) {
+    createObject(
+      new PredefinedPlanet(entry.mapName, entry.terrain),
+      coords, entry
+    )
   }
 
   private[this] def createAsteroid(

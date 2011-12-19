@@ -339,29 +339,99 @@ describe SpaceMule do
         @ss.should be_created_from_static_ss_configuration('solar_system.home')
       end
 
-      #describe "planets" do
-      #  before(:all) do
-      #    @model = SsObject::Planet.where(:player_id => @player.id).first
-      #  end
-      #
-      #  it "should create one homeworld for player" do
-      #    SsObject::Planet.where(:player_id => @player.id).count.should == 1
-      #  end
-      #
-      #  it_should_behave_like "starting resources",
-      #    lambda { |attr| Building::Mothership.send(attr, 1) },
-      #    [
-      #      lambda { |resource|
-      #        ["", CONFIG["buildings.mothership.#{resource}.starting"]]
-      #      }
-      #    ]
-      #
-      #  it "should set your starting buildings to be without points" do
-      #    @model.buildings.each do |building|
-      #      building.should be_without_points
-      #    end
-      #  end
-      #end
+      describe "planets" do
+        before(:all) do
+          @planets = CONFIG['solar_system.home'].inject([]) do
+            |storage, (key, item)|
+
+            if item['type'] == 'planet'
+              position, angle = key.split(",").map(&:to_i)
+
+              planet = SsObject::Planet.
+                where(:solar_system_id => @ss.id,
+                      :position => position, :angle => angle).first
+              raise "cannot find planet @ ss id #{@ss.id} @ #{key}!" \
+                if planet.nil?
+              storage << [planet, CONFIG["planet.expanded_maps"][item['map']]]
+            end
+
+            storage
+          end
+
+          @models = @planets.map { |planet, _| planet }
+        end
+
+        it "should have correct dimensions" do
+          @planets.each do |planet, map|
+            [planet.width, planet.height].should == map['size']
+          end
+        end
+
+        it "should create planet map that conforms to layout" do
+          @planets.each do |planet, map|
+            planet.should conform_to_tile_map(map['tiles'])
+          end
+        end
+
+        it "should place buildings & units from layout" do
+          @planets.each do |planet, map|
+            planet.should conform_to_building_map(map['buildings'])
+          end
+        end
+
+        #it "should set planet resources from those buildings" do
+        #  @planets.each do |planet, map|
+        #    resources = Resources::TYPES.inject({}) do |hash, resource|
+        #      [
+        #        :"#{resource}_generation_rate", :"#{resource}_usage_rate",
+        #        :"#{resource}_storage"
+        #      ].each do |sym|
+        #        hash[:expected][sym] = planet.send(sym)
+        #        hash[:actual][sym] = 0.0
+        #      end
+        #
+        #      hash
+        #    end
+        #
+        #    resources = planet.buildings.inject(resources) do |hash, building|
+        #      if building.class.manages_resources?
+        #        Resources::TYPES.each do |resource|
+        #          [
+        #            :"#{resource}_generation_rate", :"#{resource}_usage_rate",
+        #            :"#{resource}_storage"
+        #          ].each { |sym| hash[:actual][sym] += building.send(sym) }
+        #        end
+        #      end
+        #
+        #      hash
+        #    end
+        #
+        #    hash[:actual].should equal_to_hash(hash[:expected])
+        #  end
+        #end
+
+        it "should create one homeworld for player" do
+          SsObject::Planet.where(:player_id => @player.id).count.should == 1
+        end
+
+        #it_should_behave_like "starting resources",
+        #  lambda { |attr|
+        #    bg_planet_buildings.inject(0.0) do |sum, klass|
+        #      sum + klass.send(attr, klass.max_level)
+        #    end
+        #  }
+        #  [
+        #    lambda { |resource|
+        #      ["", CONFIG["buildings.mothership.#{resource}.starting"]]
+        #    }
+        #  ]
+        #
+        #it "should set your starting buildings to be without points" do
+        #  @model.buildings.each do |building|
+        #    building.should be_without_points
+        #  end
+        #end
+      end
     end
 
     it "should not create other player if we try that again" do

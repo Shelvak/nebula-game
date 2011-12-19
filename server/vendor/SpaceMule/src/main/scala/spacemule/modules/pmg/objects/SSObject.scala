@@ -53,8 +53,8 @@ trait SSObject {
   private def createUnits(
     entries: Iterable[UnitsEntry], target: ListBuffer[Troop]
   ) {
-    UnitsEntry.foreach(entries) { case (name, flank, hpPercentage) =>
-      target += Troop(name, flank, hpPercentage)
+    entries.foreach { entry =>
+      target ++= entry.createTroops()
     }
   }
 }

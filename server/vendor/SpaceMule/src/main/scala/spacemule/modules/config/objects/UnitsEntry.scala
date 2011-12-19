@@ -6,21 +6,26 @@
 package spacemule.modules.config.objects
 
 import spacemule.helpers.Converters._
+import collection.mutable.ListBuffer
+import spacemule.modules.pmg.objects.Troop
 
 object UnitsEntry {
-  def foreach(entries: Iterable[UnitsEntry])
-             (block: (String, Int, Double) => Unit) {
-    entries.foreach { entry =>
-      val count = entry.count match {
-        case Left(number) => number
-        case Right(range) => range.random
-      }
-      val flank = entry.flanks match {
-        case Left(number) => number
-        case Right(array) => array.random
-      }
-
-      count.times { () => block(entry.kind, flank, entry.hpPercentage) }
+  /**
+   * Extract data from dynamicly typed data store:
+   *
+    [
+      [count, type, flank, hp_percentage],
+      ...
+    ]
+   */
+  def extract(entries: Any): Seq[UnitsEntry] = {
+    entries.asInstanceOf[Seq[IndexedSeq[Any]]].map { entryArray =>
+      new UnitsEntry(
+        entryArray(1).asInstanceOf[String],
+        Left(entryArray(0).asInstanceOf[Long].toInt),
+        Left(entryArray(2).asInstanceOf[Long].toInt),
+        entryArray(3).asInstanceOf[Double]
+      )
     }
   }
 }
@@ -50,5 +55,21 @@ class UnitsEntry(
           Right(seq)
       }
     )
+  }
+
+  def createTroops() = {
+    val count = count match {
+      case Left(number) => number
+      case Right(range) => range.random
+    }
+    val flank = flanks match {
+      case Left(number) => number
+      case Right(array) => array.random
+    }
+
+    val troops = ListBuffer.empty[Troop]
+    count.times { () => troops += Troop(kind, flank, hpPercentage)  }
+
+    troops.toSeq
   }
 }

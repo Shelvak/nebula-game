@@ -30,4 +30,4 @@ object BlockTile {
   val resourceTypes = List[BlockTile](Ore, Geothermal, Zetium)
 }
 
-case class BlockTile(kind: Int, width: Int, height: Int) extends Tile
+case class BlockTile(kind: Int, width: Int, height: Int) extends Tile(kind)

@@ -18,7 +18,7 @@ trait TerrainFeatures {
   // Make this lazy to prevent NPE from early initialization.
   lazy protected val tilesMap = new AreaMap(area)
   protected val buildings = ListBuffer[Building]()
-  // Building occupied tiles
+  // Building occupied tiles. Used in populating free are with folliage.
   protected val buildingTiles = HashSet[Coords]()
   protected val folliages = ListBuffer[Folliage]()
 

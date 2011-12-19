@@ -1,20 +1,16 @@
 package spacemule.modules.pmg.objects.ss_objects
 
 import java.math.BigDecimal
-import java.awt.Rectangle
-import scala.collection.mutable.ArrayBuffer
 import spacemule.helpers.Converters._
-import spacemule.modules.pmg.classes.ObjectChance
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area._
 import spacemule.modules.pmg.objects.SSObject
 import spacemule.modules.pmg.objects.planet._
-import spacemule.modules.pmg.objects.planet.buildings._
 import spacemule.modules.pmg.objects.planet.tiles._
-import spacemule.helpers.Random
-import spacemule.helpers.RectFinder
 import spacemule.helpers.RandomArray
-import spacemule.modules.config.objects.Config
+import scala.{collection => sc}
+import collection.mutable.{HashSet, ListBuffer, ArrayBuffer}
+import spacemule.modules.config.objects.{UnitsEntry, Config}
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,14 +21,88 @@ import spacemule.modules.config.objects.Config
  */
 
 object Planet {
-  object Terrain extends Enumeration {
-    type Type = Value
-    val Earth = Value(0, "earth")
-    val Desert = Value(1, "desert")
-    val Mud = Value(2, "mud")
+  object MapSet {
+    /**
+     * Extract a map set from ruby config.
+     */
+    def extract(data: sc.Seq[Any]): MapSet = {
+      MapSet(data.toIndexedSeq.map { mapData =>
+        Map.extract(mapData.asInstanceOf[sc.Map[String, Any]])
+      })
+    }
   }
 
-  val terrains = IndexedSeq(Terrain.Earth, Terrain.Desert, Terrain.Mud)
+  case class MapSet(maps: IndexedSeq[Map])
+
+  object Map {
+    /**
+     * Extract a map from dynamic data structure like this:
+     *
+     {
+       'size' => [width, height],
+       'name' => String,
+       'terrain' => Fixnum,
+       'tiles' => {
+         kind (Fixnum) => [[x, y], ...]
+       },
+       'buildings' => {
+         building_name (String) => [[x, y, units], ...]
+       }
+     }
+     */
+    def extract(data: sc.Map[String, Any]): Map = {
+      val size = data("size").asInstanceOf[IndexedSeq[Long]]
+      val area = Area(size(0).toInt, size(1).toInt)
+
+      val name = data("name").asInstanceOf[String]
+      val terrainKind = data("terrain").asInstanceOf[Long].toInt
+
+      val tilesMap = new AreaMap(area)
+      data("tiles").asInstanceOf[
+        sc.Map[Long, Seq[
+          IndexedSeq[Long]
+        ]]
+      ].foreach { case (tileKind, tiles) =>
+        val tile = Tile(tileKind.toInt)
+        tiles.foreach { coordArray =>
+          val coord = Coords(coordArray(0).toInt, coordArray(1).toInt)
+          Planet.setTile(tilesMap, tile, coord)
+        }
+      }
+
+      val (buildings, buildingTiles) =
+        data("buildings").asInstanceOf[
+          sc.Map[String, Seq[IndexedSeq[Any]]]
+        ].foldLeft(
+          (ListBuffer.empty[Building], HashSet.empty[Coords])
+        ) { case ((b, bt), (buildingName, dataArray)) =>
+          dataArray.foreach { entryArray =>
+            val x = entryArray(0).asInstanceOf[Long].toInt
+            val y = entryArray(1).asInstanceOf[Long].toInt
+            val units = UnitsEntry.extract(entryArray(2))
+
+            val building = new Building(buildingName, x, y, 1)
+            building.createUnits(units)
+            b += building
+            building.eachCoords { coords => bt += coords }
+          }
+
+          (b, bt)
+        }
+
+      Map(area, name, terrainKind, tilesMap, buildings.toSeq, buildingTiles.toSet)
+    }
+  }
+
+  case class Map(
+    area: Area,
+    name: String,
+    terrain: Int,
+    tilesMap: AreaMap,
+    buildings: Seq[Building],
+    // Building occupied tiles. Used in populating free are with folliage.
+    buildingTiles: Set[Coords]
+  )
 
   val TileNormal = AreaMap.DefaultValue
 
@@ -61,26 +131,23 @@ object Planet {
   }
 }
 
-class Planet(
-  planetArea: Int,
-  val terrain: Planet.Terrain.Type
-) extends SSObject with TerrainFeatures {
-  def this() = this(Config.planetArea, Planet.terrains.random)
+class Planet(map: Planet.Map) extends SSObject {
+  def this() = this(Config.randomFree)
+
+  private[this] val folliages = ListBuffer[Folliage]()
 
   val name = "Planet"
 
-  val area = Area.proportional(planetArea, Config.planetProportion)
-
-  def foreachTile(block: (Coords, Int) => Unit) = tilesMap.foreach(block)
+  def foreachTile(block: (Coords, Int) => Unit) = map.tilesMap.foreach(block)
   def foreachFolliage(block: (Coords, Int) => Unit) = {
     folliages.foreach { folliage =>
       block(folliage.coords, folliage.kind)
     }
   }
-  def foreachBuilding(block: (Building) => Unit) = buildings.foreach(block)
+  def foreachBuilding(block: (Building) => Unit) = map.buildings.foreach(block)
 
   private def buildingsPropSum(f: (Building) => BigDecimal) = 
-    buildings.foldLeft(0.0) { 
+    map.buildings.foldLeft(0.0) {
       case (sum, building) => sum + f(building).doubleValue()
     }
   
@@ -102,202 +169,26 @@ class Planet(
   lazy val nextRaidAt = Config.raidingDelayRandomDate
 
   /**
-   * Fills planet with objects: tiles, folliages and buildings 
+   * Fills planet with folliage.
    */
-  override def initialize() = initializeTerrain()
-
-  protected def initializeTerrain() = {
-    val finder = new RectFinder(area)
-    putResources(finder)
-    putNpcBuildings(finder)
-    putBlockFolliages(finder)
-
-    putTerrainIsles()
-    putFolliage()
-  }
-
-  /**
-   * Puts block folliages on the map.
-   */
-  private def putBlockFolliages(finder: RectFinder) = {
-    BlockTile.folliageTypes.foreach { blockTile =>
-      (1 to Config.planetBlockTileCount(blockTile)).foreach { index =>
-        val rectangle = finder.findPlace(blockTile.width, blockTile.height)
-        rectangle match {
-          case Some(r: Rectangle) => fillBlockTile(blockTile, r)
-          // Nothing too bad if there are not enough place to put a block
-          // folliage
-          case None => ()
-        }
-      }
-    }
-  }
-
-  /**
-   * Puts resources on the map. Also increases planet importance for each
-   * resource tile it adds.
-   */
-  private def putResources(finder: RectFinder) = {
-    BlockTile.resourceTypes.foreach { blockTile =>
-      (1 to Config.planetBlockTileCount(blockTile)).foreach { index =>
-        // +2 adds border around resource tiles.
-        val rectangle = finder.findPlace(blockTile.width + 2,
-          blockTile.height + 2)
-
-        rectangle match {
-          case Some(r: Rectangle) => {
-            // Resource rectangles have borders around them and we don't want
-            // to fill these.
-            val actual = new Rectangle(
-              r.x + 1, r.y + 1, blockTile.width, blockTile.height
-            )
-            fillBlockTile(blockTile, actual)
-            putNpcExtractor(blockTile, actual)
-          }
-          case None => sys.error("Cannot place resource " + blockTile + "!")
-        }
-      }
-    }
-  }
-
-  /**
-   * Adds NPC extractor to resource tile.
-   */
-  private def putNpcExtractor(tile: BlockTile, rectangle: Rectangle) = {
-    if (Random.boolean(Config.extractorNpcChance(tile))) {
-      val npc = (tile match {
-        case BlockTile.Ore =>
-          Building.create("NpcMetalExtractor", rectangle.x, rectangle.y)
-        case BlockTile.Geothermal =>
-          Building.create("NpcGeothermalPlant", rectangle.x, rectangle.y)
-        case BlockTile.Zetium =>
-          Building.create("NpcZetiumExtractor", rectangle.x, rectangle.y)
-      }).asInstanceOf[Npc]
-      npc.createUnits(Config.npcBuildingUnitChances)
-      buildings += npc
-    }
-  }
-
-  /**
-   * Sets block tile on tilesMap.
-   */
-  private def fillBlockTile(tile: BlockTile, rectangle: Rectangle) = {
-    Planet.fillBlockTile(tilesMap, tile, rectangle.coord)
-  }
-
-  /**
-   * Puts npc buildings on the map.
-   */
-  private def putNpcBuildings(finder: RectFinder) = {
-    val unitChances = Config.npcBuildingUnitChances
-    ObjectChance.foreachByChance(Config.npcBuildingChances) { name =>
-      val area = Config.getBuildingArea(name)
-      val rectangle = finder.findPlace(area)
-
-      rectangle match {
-        case Some(r: Rectangle) => {
-          val building = Building.create(name, r.x, r.y)
-          if (building.isInstanceOf[Npc]) {
-            val npc = building.asInstanceOf[Npc]
-            npc.createUnits(unitChances)
-          }
-
-          buildings += building
-          building.eachCoords { coords => buildingTiles += coords }
-        }
-        // Nothing too bad if there is no space, just ignore it.
-        case None => ()
-      }
-    }
-  }
+  override def initialize() = putFolliage()
 
   protected def freeTilesList(
     excludeBuildings: Boolean
   ): RandomArray[Coords] = {
-    val free = new RandomArray[Coords](area.area)
+    val free = new RandomArray[Coords](map.area.area)
 
     // Populate array with free tiles.
-    tilesMap.foreach { (coords, value) =>
+    map.tilesMap.foreach { (coords, value) =>
       if (
         value == AreaMap.DefaultValue &&
-        (! buildingTiles.contains(coords))
+        (! map.buildingTiles.contains(coords))
       ) {
         free += coords
       }
     }
 
     return free
-  }
-
-  /**
-   * Generates terrain isles.
-   */
-  private def putTerrainIsles() = {
-    val free = freeTilesList(false)
-
-    AreaTile.tileCounts(free.size).foreach { case (areaTile, config) =>
-      // Don't place regular tiles, they are already there!
-      if (areaTile != AreaTile.Regular) {
-        val tilesPerIsle = (config.count.toDouble / config.isles).ceil.toInt
-        var tilesLeft = config.count
-
-        while (tilesLeft > 0) {
-          val placed = placeArea(free, areaTile, tilesPerIsle)
-          tilesLeft -= placed
-        }
-      }
-    }
-  }
-
-  /**
-   * Tries to place count tiles in area.
-   */
-  private def placeArea(free: RandomArray[Coords], tile: AreaTile,
-                        count: Int): Int = {
-    // This should never happen because all tile counts are proportional.
-    if (free.size < count) {
-      sys.error("Cannot place %d tiles when there is only %d left for %s".format(
-        count, free.size, tile
-      ))
-    }
-
-    val possible = new RandomArray[Coords]()
-
-    def addPossible(coords: Coords) = {
-      if (coords.x >= 0 && coords.x < area.width && coords.y >= 0
-              && coords.y < area.height
-              && tilesMap(coords) == AreaMap.DefaultValue
-              && ! buildingTiles.contains(coords)
-              && ! possible.contains(coords)) {
-        possible += coords
-      }
-    }
-
-    possible += free.random
-
-    var placed = 0
-    while (placed < count) {
-      // We might return early if we run out of space. Return how much tiles
-      // we placed then.
-      if (possible.size > 0) {
-        val coord = possible.takeRandom
-        Planet.setTile(tilesMap, tile, coord)
-        free -= coord
-        placed += 1
-
-        addPossible(Coords(coord.x + 1, coord.y))
-        addPossible(Coords(coord.x - 1, coord.y))
-        addPossible(Coords(coord.x, coord.y + 1))
-        addPossible(Coords(coord.x, coord.y - 1))
-      }
-      else {
-        return placed
-      }
-    }
-
-    // At this point places should really == count.
-    assert(placed == count)
-    return placed
   }
 
   protected def putFolliage() = {
@@ -333,14 +224,14 @@ class Planet(
     val count2ndType = totalCount * Config.folliagePercentage2ndType / 100
     val count3rdType = totalCount - count1stType - count2ndType
 
-    val kinds1stType = Config.folliageKinds1stType(terrain.id)
+    val kinds1stType = Config.folliageKinds1stType(map.terrain)
     putFolliages(
       count1stType,
       Config.folliageSpacingRadius1stType,
       () => { kinds1stType.random }
     )
 
-    val kinds2ndType = Config.folliageKinds1stType(terrain.id)
+    val kinds2ndType = Config.folliageKinds1stType(map.terrain)
     putFolliages(
       count2ndType,
       Config.folliageSpacingRadius2ndType,
