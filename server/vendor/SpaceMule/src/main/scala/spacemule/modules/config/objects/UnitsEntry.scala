@@ -21,16 +21,20 @@ object UnitsEntry {
   def extract(entries: Any): Seq[UnitsEntry] = {
     entries.asInstanceOf[Seq[IndexedSeq[Any]]].map { entryArray =>
       new UnitsEntry(
-        entryArray(1).asInstanceOf[String],
+        entryArray(1).asInstanceOf[String].camelcase,
         Left(entryArray(0).asInstanceOf[Long].toInt),
         Left(entryArray(2).asInstanceOf[Long].toInt),
-        entryArray(3).asInstanceOf[Double]
+        entryArray(3) match {
+          case l: Long => l.toDouble
+          case d: Double => d
+        }
       )
     }
   }
 }
 
 class UnitsEntry(
+                  // Dirac, Thor, Demosis, ...
                   val kind: String,
                   val count: Either[Int, Range],
                   val flanks: Either[Int, IndexedSeq[Int]],
@@ -58,7 +62,7 @@ class UnitsEntry(
   }
 
   def createTroops() = {
-    val count = count match {
+    val cnt = count match {
       case Left(number) => number
       case Right(range) => range.random
     }
@@ -68,7 +72,7 @@ class UnitsEntry(
     }
 
     val troops = ListBuffer.empty[Troop]
-    count.times { () => troops += Troop(kind, flank, hpPercentage)  }
+    cnt.times { () => troops += Troop(kind, flank, hpPercentage)  }
 
     troops.toSeq
   }

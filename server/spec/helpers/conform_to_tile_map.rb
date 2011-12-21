@@ -1,4 +1,4 @@
-RSpec::Matchers.define :be_created_from_static_ss_configuration do |tiles|
+RSpec::Matchers.define :conform_to_tile_map do |map_set|
   match do |planet|
     @errors = []
 

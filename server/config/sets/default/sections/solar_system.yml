@@ -25,10 +25,6 @@ battleground.jump.multiplier: 4
 expansion.planet.count: [2, 2]
 # Number of planets in resources ss
 resources.planet.count: [1, 3]
-# Fixed positions and terrains for planets in battleground solar system.
-# [position, angle]
-# Must have spaces between numbers!
-battleground.planet.positions: [[0, 270], [1, 45], [2, 210]]
 
 # Number of asteroids in expansion ss
 expansion.asteroid.count: [5, 9]
@@ -46,9 +42,6 @@ resources.rich_asteroid.count: [5, 10]
 expansion.jumpgate.count: [1, 2]
 # Number of jumpgates in resources ss
 resources.jumpgate.count: [2, 4]
-# Fixed positions of jumpgates in battleground.
-# Must have spaces between numbers!
-battleground.jumpgate.positions: [[3, 22], [3, 134], [3, 270]]
 
 ### Unit spawning
 # Available strategies:

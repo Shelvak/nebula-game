@@ -10,7 +10,7 @@ import spacemule.modules.pmg.objects.planet.tiles._
 import spacemule.helpers.RandomArray
 import scala.{collection => sc}
 import collection.mutable.{HashSet, ListBuffer, ArrayBuffer}
-import spacemule.modules.config.objects.{UnitsEntry, Config}
+import spacemule.modules.config.objects.{ResourcesEntry, UnitsEntry, Config}
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,14 +25,19 @@ object Planet {
     /**
      * Extract a map set from ruby config.
      */
-    def extract(data: sc.Seq[Any]): MapSet = {
-      MapSet(data.toIndexedSeq.map { mapData =>
+    def extract(data: sc.Seq[Any]) = {
+      val maps = data.map { mapData =>
         Map.extract(mapData.asInstanceOf[sc.Map[String, Any]])
-      })
+      }.toIndexedSeq
+      MapSet(maps)
     }
   }
-
-  case class MapSet(maps: IndexedSeq[Map])
+  
+  case class MapSet(maps: IndexedSeq[Map]) {
+    val weights = maps.map(_.weight)
+    
+    def random = maps.weightedRandom(weights)
+  }
 
   object Map {
     /**
@@ -42,6 +47,7 @@ object Planet {
        'size' => [width, height],
        'name' => String,
        'terrain' => Fixnum,
+       'weight' => Fixnum,
        'tiles' => {
          kind (Fixnum) => [[x, y], ...]
        },
@@ -51,46 +57,64 @@ object Planet {
      }
      */
     def extract(data: sc.Map[String, Any]): Map = {
-      val size = data("size").asInstanceOf[IndexedSeq[Long]]
-      val area = Area(size(0).toInt, size(1).toInt)
-
-      val name = data("name").asInstanceOf[String]
-      val terrainKind = data("terrain").asInstanceOf[Long].toInt
-
-      val tilesMap = new AreaMap(area)
-      data("tiles").asInstanceOf[
-        sc.Map[Long, Seq[
-          IndexedSeq[Long]
-        ]]
-      ].foreach { case (tileKind, tiles) =>
-        val tile = Tile(tileKind.toInt)
-        tiles.foreach { coordArray =>
-          val coord = Coords(coordArray(0).toInt, coordArray(1).toInt)
-          Planet.setTile(tilesMap, tile, coord)
-        }
-      }
-
-      val (buildings, buildingTiles) =
-        data("buildings").asInstanceOf[
-          sc.Map[String, Seq[IndexedSeq[Any]]]
-        ].foldLeft(
-          (ListBuffer.empty[Building], HashSet.empty[Coords])
-        ) { case ((b, bt), (buildingName, dataArray)) =>
-          dataArray.foreach { entryArray =>
-            val x = entryArray(0).asInstanceOf[Long].toInt
-            val y = entryArray(1).asInstanceOf[Long].toInt
-            val units = UnitsEntry.extract(entryArray(2))
-
-            val building = new Building(buildingName, x, y, 1)
-            building.createUnits(units)
-            b += building
-            building.eachCoords { coords => bt += coords }
+      try {
+        val size = data("size").asInstanceOf[IndexedSeq[Long]]
+        val area = Area(size(0).toInt, size(1).toInt)
+  
+        val name = data("name").asInstanceOf[String]
+        val terrainKind = data("terrain").asInstanceOf[Long].toInt
+  
+        val tilesMap = new AreaMap(area)
+        data("tiles").asInstanceOf[
+          sc.Map[Long, Seq[
+            IndexedSeq[Long]
+          ]]
+        ].foreach { case (tileKind, tiles) =>
+          val tile = Tile(tileKind.toInt)
+          tiles.foreach { coordArray =>
+            val coord = Coords(coordArray(0).toInt, coordArray(1).toInt)
+            Planet.setTile(tilesMap, tile, coord)
           }
-
-          (b, bt)
         }
-
-      Map(area, name, terrainKind, tilesMap, buildings.toSeq, buildingTiles.toSet)
+  
+        val weight = data("weight").asInstanceOf[Long].toInt
+        val resources = ResourcesEntry.extract(data("resources"))
+  
+        val (buildings, buildingTiles) =
+          data("buildings").asInstanceOf[
+            sc.Map[String, Seq[IndexedSeq[Any]]]
+          ].foldLeft(
+            (ListBuffer.empty[Building], HashSet.empty[Coords])
+          ) { case ((b, bt), (buildingName, dataArray)) =>
+            dataArray.foreach { entryArray =>
+              val x = entryArray(0).asInstanceOf[Long].toInt
+              val y = entryArray(1).asInstanceOf[Long].toInt
+              val level = entryArray(2).asInstanceOf[Long].toInt
+              val units = UnitsEntry.extract(entryArray(3))
+  
+              val building = new Building(buildingName, x, y, level)
+              building.createUnits(units)
+              b += building
+              building.eachCoords { coords => bt += coords }
+            }
+  
+            (b, bt)
+          }
+  
+        Map(
+          area, name, terrainKind, weight, resources, tilesMap, buildings.toSeq,
+          buildingTiles.toSet
+        )
+      }
+      catch {
+        case e: Exception =>
+          System.err.println(
+            "Error while extracting planet map definition from:\n\n%s".format(
+              data
+            )
+          )
+          throw e
+      }
     }
   }
 
@@ -98,11 +122,27 @@ object Planet {
     area: Area,
     name: String,
     terrain: Int,
+    weight: Int,
+    resources: ResourcesEntry,
     tilesMap: AreaMap,
     buildings: Seq[Building],
     // Building occupied tiles. Used in populating free are with folliage.
     buildingTiles: Set[Coords]
   )
+
+  /**
+   * Pulsar planet with preset map.
+   */
+  class Pulsar(index: Int)
+  extends Planet(Config.pulsarPlanetMaps.maps.wrapped(index))
+
+  /**
+   * Battleground planet with preset map.
+   */
+  class Battleground(index: Int)
+  extends Planet(Config.battlegroundPlanetMaps.maps.wrapped(index)) {
+    override def planetName(id: Int) = map.name
+  }
 
   val TileNormal = AreaMap.DefaultValue
 
@@ -122,7 +162,7 @@ object Planet {
     // Fill blocks with void
     (coords.x until (coords.x + tile.width)).foreach { x =>
       (coords.y until (coords.y + tile.height)).foreach { y =>
-        tilesMap(Coords(x, y)) = Planet.TileVoid
+        tilesMap(Coords(x, y)) = TileVoid
       }
     }
 
@@ -131,12 +171,15 @@ object Planet {
   }
 }
 
-class Planet(map: Planet.Map) extends SSObject {
-  def this() = this(Config.randomFree)
+class Planet(val map: Planet.Map, val ownedByPlayer: Boolean = false)
+extends SSObject {
+  def this() = this(Config.freeSystemPlanetMaps.random)
 
   private[this] val folliages = ListBuffer[Folliage]()
 
   val name = "Planet"
+  
+  def planetName(id: Int) = "%s-%d".format(map.name, id)
 
   def foreachTile(block: (Coords, Int) => Unit) = map.tilesMap.foreach(block)
   def foreachFolliage(block: (Coords, Int) => Unit) = {
@@ -146,9 +189,9 @@ class Planet(map: Planet.Map) extends SSObject {
   }
   def foreachBuilding(block: (Building) => Unit) = map.buildings.foreach(block)
 
-  private def buildingsPropSum(f: (Building) => BigDecimal) = 
+  private def buildingsPropSum(f: (Building) => Double) =
     map.buildings.foldLeft(0.0) {
-      case (sum, building) => sum + f(building).doubleValue()
+      case (sum, building) => sum + f(building)
     }
   
   def metalGenerationRate = 

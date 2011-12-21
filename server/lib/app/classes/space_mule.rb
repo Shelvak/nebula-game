@@ -139,6 +139,8 @@ class SpaceMule
   end
 
   def send_config
+    # This must be initialized before configuration is sent to SpaceMule.
+    PmgConfigInitializer.initialize
     LOGGER.info "Sending configuration"
     # Suppress huge configuration. No need to have it in logs.
     LOGGER.suppress(:debug) do

@@ -11,15 +11,12 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do |config_key|
 
       case data["type"]
         when "planet"
-          terrain = SsObject::Planet.where(ss_conditions).select("terrain").
-            c_select_value
-          if terrain.nil?
-            @errors << "Expected planet to exist @ #{position_str
-              } but it did not."
-          elsif terrain != data["terrain"]
+          owned_by_player = ! SsObject::Planet.where(ss_conditions).
+            select("player_id").c_select_value.nil?
+          if owned_by_player != data["owned_by_player"]
             @errors << "Expected planet @ #{position_str
-              } to have terrain type #{data["terrain"]
-              } but it had terrain type #{terrain}."
+              } to have owned_by_player: #{data["owned_by_player"]
+              } but it was #{owned_by_player}."
           end
         when "asteroid"
           row = SsObject::Asteroid.where(ss_conditions).
@@ -72,45 +69,35 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do |config_key|
           end
         end
       end
+
+      unless data["units"].nil?
+        location = SolarSystemPoint.new(solar_system.id, position, angle)
+        grouped = Unit.in_location(location).all.grouped_counts do |unit|
+          # Can't use Unit#type because it RANDOMLY returns Unit#class instead
+          # of actual #type attribute... Fuck that.
+          [unit[:type], unit.flank, unit.hp_percentage]
+        end
+
+        #"units" => [[1, "dirac", 0, 1.0]]
+        data["units"].each do |expected_count, type, flank, hp_percentage|
+          key = [type, flank, hp_percentage.to_f]
+          actual_count = grouped.delete(key) || 0
+          unless actual_count == expected_count
+            @errors << "Expected to have #{expected_count} #{type} in flank #{
+              flank} with #{hp_percentage * 100}% HP @ #{position_str
+              }, but only had #{actual_count}"
+          end
+        end
+
+        unless grouped.blank?
+          grouped.each do |(type, flank, hp_percentage), count|
+            @errors << "Expected not to have any #{type} in flank #{flank
+              } with #{hp_percentage * 100}% HP @ #{position_str
+              } but it did have #{count}."
+          end
+        end
+      end
     end
-
-
-    #@location = location
-    #grouped = Unit.in_location(location).all.grouped_counts do |unit|
-    #  # Can't use Unit#type because it RANDOMLY returns Unit#class instead
-    #  # of actual #type attribute... Fuck that.
-    #  [unit[:type], unit.flank]
-    #end
-    #
-    #config_keys.each do |config_key|
-    #  values = CONFIG[config_key]
-    #  raise ArgumentError.new("Unknown config key #{config_key}!") \
-    #    if values.nil?
-    #
-    #  if values.blank?
-    #    unless grouped.size == 0
-    #      @errors[config_key] ||= []
-    #      @errors[config_key].push "Expected no units, but had #{
-    #        grouped.inspect}"
-    #    end
-    #  else
-    #    values.each do |type, count_range, flanks|
-    #      type = type.camelcase
-    #      count_range = count_range.is_a?(Fixnum) \
-    #        ? (count_range..count_range) \
-    #        : (count_range[0]..count_range[1])
-    #      flanks = [flanks] if flanks.is_a?(Fixnum)
-    #
-    #      count = flanks.map { |flank| grouped[[type, flank]] || 0 }.sum
-    #
-    #      unless count_range.include?(count)
-    #        @errors[config_key] ||= []
-    #        @errors[config_key].push "Expected #{type} to be in #{
-    #          count_range} in flanks #{flanks.inspect} but it was #{count}."
-    #      end
-    #    end
-    #  end
-    #end
     
     @errors.blank?
   end

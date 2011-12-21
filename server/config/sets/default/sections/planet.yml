@@ -3,6 +3,10 @@
 # Planet configuration
 ######
 
+# This is planet area width + height and is used in proportional visual size
+# calculations.
+area.max: 90
+
 # Planet name validation properties
 validation.name.length.min: 3
 validation.name.length.max: 12

@@ -126,15 +126,21 @@ shared_examples_for "with registered raid" do |raid_arg|
   end
 end
 
-# Buildings which are standing in battleground.
-bg_planet_buildings = [
-  Building::NpcHall, Building::NpcInfantryFactory,
-  Building::NpcTankFactory, Building::NpcSpaceFactory
-]
-
 describe SpaceMule do
   before(:all) do
+    PmgConfigInitializer.initialize
+    @old_maps = CONFIG.filter(/^planet\.map\./)
+    @old_maps.each do |key, map_set|
+      CONFIG[key] = [map_set[0]]
+    end
+
     @mule = SpaceMule.instance
+  end
+
+  after(:all) do
+    @old_maps.each do |key, map_set|
+      CONFIG[key] = map_set[0]
+    end
   end
 
   describe "#create_galaxy" do
@@ -179,20 +185,10 @@ describe SpaceMule do
         @ss.kind.should == SolarSystem::KIND_BATTLEGROUND
       end
 
-      it "should create battleground jumpgates" do
-        @ss.jumpgates.count.should == CONFIG[
-          "solar_system.battleground.jumpgate.positions"].size
-      end
-
-      it "should create battleground planets" do
-        @ss.planets.count.should == CONFIG[
-          "solar_system.battleground.planet.positions"].size
-      end
-
-      it "should not create any asteroids" do
-        (
-          @ss.ss_objects.count - @ss.jumpgates.count - @ss.planets.count
-        ).should == 0
+      it "should be created from static configuration" do
+        @ss.should be_created_from_static_ss_configuration(
+                     'solar_system.battleground'
+                   )
       end
 
       it "should register callback for spawn" do
@@ -204,18 +200,10 @@ describe SpaceMule do
           @models = @ss.planets.all
         end
 
-        it_should_behave_like "starting resources",
-          lambda { |attr|
-            bg_planet_buildings.inject(0.0) do |sum, klass|
-              sum + klass.send(attr, klass.max_level)
-            end
-          }
-
         it_should_behave_like "with registered raid", 0
       end
       
       it_behaves_like "with planet units", 'battleground'
-      it_behaves_like "with orbit units", 'battleground'
     end
   
     it "should have spawn callback for first convoy" do
@@ -352,7 +340,7 @@ describe SpaceMule do
                       :position => position, :angle => angle).first
               raise "cannot find planet @ ss id #{@ss.id} @ #{key}!" \
                 if planet.nil?
-              storage << [planet, CONFIG["planet.expanded_maps"][item['map']]]
+              storage << [planet, CONFIG["planet.map.#{item['map']}"]]
             end
 
             storage
@@ -362,22 +350,23 @@ describe SpaceMule do
         end
 
         it "should have correct dimensions" do
-          @planets.each do |planet, map|
-            [planet.width, planet.height].should == map['size']
+          @planets.each do |planet, map_set|
+            map_set.map { |map| map['size'] }.
+              should include([planet.width, planet.height])
           end
         end
 
-        it "should create planet map that conforms to layout" do
-          @planets.each do |planet, map|
-            planet.should conform_to_tile_map(map['tiles'])
-          end
-        end
+        #it "should create planet map that conforms to specified map" do
+        #  @planets.each do |planet, map_set|
+        #    planet.should conform_to_tile_map_set(map_set)
+        #  end
+        #end
 
-        it "should place buildings & units from layout" do
-          @planets.each do |planet, map|
-            planet.should conform_to_building_map(map['buildings'])
-          end
-        end
+        #it "should place buildings & units from layout" do
+        #  @planets.each do |planet, map|
+        #    planet.should conform_to_building_map(map['buildings'])
+        #  end
+        #end
 
         #it "should set planet resources from those buildings" do
         #  @planets.each do |planet, map|
@@ -485,13 +474,6 @@ describe SpaceMule do
           @models = SsObject::Planet.
             where(:solar_system_id => @pulsars.map(&:id)).all
         end
-
-        it_should_behave_like "starting resources",
-          lambda { |attr|
-            bg_planet_buildings.inject(0.0) do |sum, klass|
-              sum + klass.send(attr, 1)
-            end
-          }
       end
     end
 

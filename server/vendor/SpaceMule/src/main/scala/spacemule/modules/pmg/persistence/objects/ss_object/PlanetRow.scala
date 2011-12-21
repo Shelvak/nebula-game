@@ -12,72 +12,40 @@ import spacemule.modules.pmg.persistence.objects.SSObjectRow.Resources
 case class PlanetRow(
   solarSystemRow: SolarSystemRow, coord: Coords, planet: Planet
 ) extends SSObjectRow(solarSystemRow, coord, planet) {
-  override val width = planet.area.width
-  override val height = planet.area.height
+  override val width = planet.map.area.width
+  override val height = planet.map.area.height
   override val size = {
-    val areaPercentage = planet.area.edgeSum * 100 / Config.planetAreaMax
+    val areaPercentage = planet.map.area.edgeSum * 100 / Config.planetAreaMax
     val range = Config.ssObjectSize
     range.start + (range.end - range.start) * areaPercentage / 100
   }
-  override val terrain = planet.terrain.id
-  override val playerId = planet match {
-    case h: Homeworld => solarSystemRow.playerRow.get.id.toString
-    case _ => DB.loadInFileNull
-  }
-  override val name = planet match {
-    case bgPlanet: MiniBgPlanet => "%s-%d".format(
-        BgPlanet.Names.wrapped(bgPlanet.index),
-        id
-    )
-    case bgPlanet: BgPlanet => BgPlanet.Names.wrapped(bgPlanet.index)
-    case planet: Planet => "P-%d".format(id)
-  }
+  override val terrain = planet.map.terrain
+  override val playerId =
+    if (planet.ownedByPlayer) solarSystemRow.playerRow.get.id.toString
+    else DB.loadInFileNull
+  override val name = planet.planetName(id)
 
   private val Now = Some(Calendar.getInstance())
 
-  override val ownerChanged = planet match {
-    case hw: Homeworld => Now
-    case _ => None
-  }
+  override val ownerChanged = if (planet.ownedByPlayer) Now else None
   override val nextRaidAt = Some(planet.nextRaidAt)
 
   override val resources = planet match {
-    case homeworld: Homeworld => Resources(
-      Resources.Resource(
-        Config.homeworldStartingMetal,
-        homeworld.metalGenerationRate,
-        homeworld.metalUsageRate,
-        homeworld.metalStorage
-      ),
-      Resources.Resource(
-        Config.homeworldStartingEnergy,
-        homeworld.energyGenerationRate,
-        homeworld.energyUsageRate,
-        homeworld.energyStorage
-      ),
-      Resources.Resource(
-        Config.homeworldStartingZetium,
-        homeworld.zetiumGenerationRate,
-        homeworld.zetiumUsageRate,
-        homeworld.zetiumStorage
-      ),
-      Now
-    )
     case p: Planet => Resources(
       Resources.Resource(
-        0,
+        p.map.resources.metal,
         p.metalGenerationRate,
         p.metalUsageRate,
         p.metalStorage
       ),
       Resources.Resource(
-        0,
+        p.map.resources.energy,
         p.energyGenerationRate,
         p.energyUsageRate,
         p.energyStorage
       ),
       Resources.Resource(
-        0,
+        p.map.resources.zetium,
         p.zetiumGenerationRate,
         p.zetiumUsageRate,
         p.zetiumStorage

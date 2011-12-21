@@ -7,6 +7,8 @@ import java.util.Calendar
 import scala.collection.Map
 import scala.collection.mutable
 import java.math.BigDecimal
+import Converters._
+import java.lang.IllegalStateException
 
 object Converters {
   implicit def intToSmartInt(int: Int) = new SmartInt(int)
@@ -134,12 +136,45 @@ class SmartRectangle(rectangle: Rectangle) {
 class SmartSequence[+T, +Repr](sequence: SeqLike[T, Repr]) {
   def random: T = {
     val size = sequence.size
-    if (size == 0) {
+    if (size == 0)
       throw new IllegalStateException(
         "Sequence " + sequence + " is empty, cannot give random element!"
       )
-    }
+
     sequence(Random.nextInt(size))
+  }
+
+  /**
+   * Chooses a random array element from the receiver based on the weights
+   * provided. Notice that it favors the element with the highest weight.
+   *
+   *  IndexedSeq(1,2,3).weightedRandom(Seq(1,4,1)) #=> 2
+   *  IndexedSeq(1,2,3).weightedRandom(Seq(1,4,1)) #=> 1
+   *  IndexedSeq(1,2,3).weightedRandom(Seq(1,4,1)) #=> 2
+   *  IndexedSeq(1,2,3).weightedRandom(Seq(1,4,1)) #=> 2
+   *  IndexedSeq(1,2,3).weightedRandom(Seq(1,4,1)) #=> 3
+   */
+  def weightedRandom(weights: Seq[Int]): T = {
+    if (sequence.length == 0)
+      throw new IllegalStateException(
+        "Sequence " + sequence + " is empty, cannot give random element!"
+      )
+    if (weights.length != sequence.length)
+      throw new IllegalArgumentException(
+        "Weights length (%d) must be the same as sequence length (%d)!".format(
+          weights.length, sequence.length
+        )
+      )
+
+    val total = weights.sum
+    var point = Random.nextDouble() * total
+
+    (sequence, weights).zipped.foreach { case(item, weight) =>
+      if (weight >= point) return item
+      point -= weight
+    }
+
+    throw new IllegalStateException("We should not ever reach this.")
   }
 
   /**

@@ -1,10 +1,8 @@
 package spacemule.modules.pmg.objects.planet
 
-import buildings._
 import collection.mutable.ListBuffer
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.Troop
-import spacemule.modules.pmg.classes.UnitChance
 import spacemule.modules.config.objects.{UnitsEntry, Config}
 
 /**

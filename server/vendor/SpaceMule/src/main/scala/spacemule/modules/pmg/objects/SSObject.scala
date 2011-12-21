@@ -1,9 +1,7 @@
 package spacemule.modules.pmg.objects
 
 import scala.collection.mutable.ListBuffer
-import spacemule.helpers.Random
-import spacemule.modules.pmg.classes.{UnitChance, ObjectChance}
-import spacemule.modules.config.objects.{ResourcesEntry, SsConfig, UnitsEntry}
+import spacemule.modules.config.objects.{ResourcesEntry, UnitsEntry}
 
 /**
  * Created by IntelliJ IDEA.

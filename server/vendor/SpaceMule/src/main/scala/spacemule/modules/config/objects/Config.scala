@@ -5,16 +5,12 @@ import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.Area
-import spacemule.modules.pmg.classes.geom.area.AreaTileConfig
 import spacemule.modules.pmg.classes.ObjectChance
 import spacemule.modules.pmg.objects._
-import spacemule.modules.pmg.objects.planet.tiles.AreaTile
-import spacemule.modules.pmg.objects.planet.tiles.BlockTile
 import spacemule.modules.pmg.objects.solar_systems._
 import spacemule.modules.pmg.objects.planet._
 import spacemule.modules.combat
 import spacemule.modules.pathfinder.{objects => pfo}
-import net.java.dev.eval.Expression
 import scala.collection.Map
 import spacemule.modules.combat.objects.{Combatant, Damage, Armor, Stance}
 import ss_objects.Asteroid
@@ -96,42 +92,26 @@ object Config {
   private def area(key: String) = new Area(
     int("%s.width".format(key)), int("%s.height".format(key))
   )
-  
-  def formula(formula: String, vars: Map[String, BigDecimal]): BigDecimal = {
-    formulaEval(parseFormula(formula), vars)
-  }
 
-  private def parseFormula(formula: String) =
-    new Expression(formula.replaceAll("\\*\\*", "pow"))
+  def formulaEval(key: String): Double =
+    FormulaEval.eval(get[Any](key).toString)
 
-  def formulaEval(key: String,
-                  vars: Map[String, BigDecimal]): BigDecimal = {
-    val formula = get[Any](key).toString
-    formulaEval(parseFormula(formula), vars)
-  }
+  def formulaEval(key: String, vars: Map[String, Double]): Double =
+    FormulaEval.eval(get[Any](key).toString, vars)
 
-  def formulaEval(key: String, vars: Map[String, BigDecimal],
-                  default: BigDecimal): BigDecimal = {
+  def formulaEval(key: String, default: Double): Double =
     getOpt[Any](key) match {
-      case Some(value) => this.formula(value.toString, vars)
+      case Some(value) => FormulaEval.eval(value.toString)
       case None => default
     }
-  }
-  
-  private def formulaEval(exp: Expression,
-                          vars: Map[String, BigDecimal]): BigDecimal = {
-    if (vars == null) {
-      exp.eval()
-    }
-    else {
-      val javaMap = new java.util.HashMap[String, BigDecimal]()
-      vars.foreach { case (key, value) =>
-          javaMap.put(key, value)
-      }
 
-      exp.eval(javaMap)
+  def formulaEval(
+    key: String, vars: Map[String, Double], default: Double
+  ): Double =
+    getOpt[Any](key) match {
+      case Some(value) => FormulaEval.eval(value.toString, vars)
+      case None => default
     }
-  }
 
   private def range(key: String): Range = {
     val rangeData = seq[Long](key)
@@ -144,9 +124,9 @@ object Config {
    */
   private def evalRange(key: String): Range = {
     val rangeData = seq[String](key)
-    val params = Map("speed" -> new BigDecimal(speed))
-    val from = formula(rangeData(0), params).intValue
-    val to = formula(rangeData(1), params).intValue
+    val params = Map("speed" -> speed.toDouble)
+    val from = FormulaEval.eval(rangeData(0), params).toInt
+    val to = FormulaEval.eval(rangeData(1), params).toInt
 
     Range.inclusive(from, to)
   }
@@ -172,8 +152,7 @@ object Config {
 
   private def cost(key: String) = double(key).ceil.toInt
   private def cost(key: String, level: Int) =
-    formulaEval(key, Map("level" -> level.toBigDecimal)).
-      doubleValue().ceil.toInt
+    formulaEval(key, Map("level" -> level.toDouble)).ceil.toInt
   private def speed = int("speed")
 
   //////////////////////////////////////////////////////////////////////////////
@@ -218,14 +197,11 @@ object Config {
   lazy val energyVolume = double("units.transportation.volume.energy")
   lazy val zetiumVolume = double("units.transportation.volume.zetium")
 
-  private lazy val battlegroundCombatVpsExpression = parseFormula(
-    get[String]("battleground.battle.victory_points")
-  )
   def battlegroundCombatVps(groundDamage: Int, spaceDamage: Int): Double =
-    formulaEval(battlegroundCombatVpsExpression, Map(
-      "damage_dealt_to_ground" -> groundDamage.toBigDecimal,
-      "damage_dealt_to_space" -> spaceDamage.toBigDecimal
-    )).doubleValue()
+    formulaEval("battleground.battle.victory_points", Map(
+      "damage_dealt_to_ground" -> groundDamage.toDouble,
+      "damage_dealt_to_space" -> spaceDamage.toDouble
+    ))
 
   def vpsForReceivedDamage(combatant: Combatant, damage: Int): Double = {
     val key = "%s.vps_on_damage".format(resolveCombatantKey(combatant))
@@ -250,10 +226,10 @@ object Config {
 
   def orbitLinkWeight(position: Int) = formulaEval(
     "solar_system.links.orbit.weight",
-    Map("position" -> new BigDecimal(position)))
+    Map("position" -> position.toDouble))
   def parentLinkWeight(position: Int) = formulaEval(
     "solar_system.links.parent.weight",
-    Map("position" -> new BigDecimal(position)))
+    Map("position" -> position.toDouble))
   def planetLinkWeight = double("solar_system.links.planet.weight")
   def wormholeHopMultiplier(ss: pfo.SolarSystem) = 
     if (ss.isGlobalBattleground)
@@ -262,13 +238,9 @@ object Config {
       double("solar_system.regular.jump.multiplier")
 
   def planetCount(solarSystem: SolarSystem) = solarSystem match {
-    case ss: Battleground => battlegroundPlanetPositions.size
     case ss: Expansion => range("solar_system.expansion.planet.count").random
     case ss: Resource => range("solar_system.resources.planet.count").random
   }
-
-  def battlegroundPlanetPositions =
-    positions("solar_system.battleground.planet.positions")
 
   def asteroidCount(solarSystem: SolarSystem) = solarSystem match {
     case ss: Wormhole => 0
@@ -288,13 +260,9 @@ object Config {
 
   def jumpgateCount(solarSystem: SolarSystem) = solarSystem match {
     case ss: Wormhole => 0
-    case ss: Battleground => battlegroundJumpgatePositions.size
     case ss: Expansion => range("solar_system.expansion.jumpgate.count").random
     case ss: Resource => range("solar_system.resources.jumpgate.count").random
   }
-
-  def battlegroundJumpgatePositions =
-    positions("solar_system.battleground.jumpgate.positions")
 
   def asteroidRateStep = double("ss_object.asteroid.rate_step")
 
@@ -329,13 +297,22 @@ object Config {
   ]("planet.expanded_map")(name)
 
   lazy val homeworldSsConfig = SsConfig("solar_system.home")
+  lazy val battlegroundSsConfig = SsConfig("solar_system.battleground")
+  lazy private[this] val (pulsarSsConfigs, pulsarSsConfigWeights) = get[
+    Seq[Map[String, Any]]
+  ]("solar_system.pulsar").foldLeft(
+    (Seq.empty[SsConfig.Data], Seq.empty[Int])
+  ) { case ((cfgs, weights), data) =>
+    val weight = data("weight").asInstanceOf[Long].toInt
+    val map = data("map").asInstanceOf[SsConfig.Data]
+    
+    (cfgs :+ map, weights :+ weight)
+  }
+  /**
+   * Pick a pulsar solar system config at random.
+   */
+  def pulsarSsConfig = pulsarSsConfigs.weightedRandom(pulsarSsConfigWeights)
 
-  def homeworldStartingMetal: Double =
-    double("buildings.mothership.metal.starting")
-  def homeworldStartingEnergy: Double =
-    double("buildings.mothership.energy.starting")
-  def homeworldStartingZetium: Double =
-    double("buildings.mothership.zetium.starting")
   def startingScientists: Int =
     double("buildings.mothership.scientists").toInt
   def startingPopulationMax: Int =
@@ -393,13 +370,21 @@ object Config {
   private def buildingRate(kind: String)
                           (building: Building, resource: String) = {
     val name = building.name.underscore
-    val level = building.level.toBigDecimal
-    val default = 0.toBigDecimal
+    val level = building.level.toDouble
+    val default = 0.0
+    val key = "buildings.%s.%s.%s".format(name, resource, kind)
 
-    formulaEval(
-      "buildings.%s.%s.%s".format(name, resource, kind), Map("level" -> level),
-      default
-    )
+    try {
+      formulaEval(key, Map("level" -> level), default)
+    }
+    catch {
+      case e: Exception =>
+        System.err.println(
+          "Error while evaluating building rate for %s, level %d".
+            format(key, building.level)
+        )
+        throw e
+    }
   }
 
   private val buildingGenerationRate = buildingRate("generate") _
@@ -420,8 +405,8 @@ object Config {
 
   private def buildingStorage(building: Building, resource: String) = {
     val name = building.name.underscore
-    val level = building.level.toBigDecimal
-    val default = 0.toBigDecimal
+    val level = building.level.toDouble
+    val default = 0.0
 
     formulaEval(
       "buildings.%s.%s.store".format(name, resource), Map("level" -> level),
@@ -452,9 +437,9 @@ object Config {
     string("units.%s.kind".format(name.underscore))
   def troopArmor(name: String) =
     string("units.%s.armor".format(name.underscore))
-  def troopArmorModifier(name: String, level: Int) =
+  def troopArmorModifier(name: String, level: Int): Double =
     formulaEval("units.%s.armor_mod".format(name.underscore),
-                Map("level" -> new BigDecimal(level))).doubleValue / 100
+                Map("level" -> level.toDouble)) / 100
   def troopInitiative(name: String) =
     int("units.%s.initiative".format(name.underscore))
   def troopHp(unit: Troop): Int = troopHp(unit.name)
@@ -498,15 +483,32 @@ object Config {
   lazy val regularJumpgateOrbitUnits = unitsEntry(
     "ss_object.regular.orbit.jumpgate.units")
 
-  lazy val battlegroundPlanetOrbitUnits = unitsEntry(
-    "ss_object.battleground.orbit.planet.units")
-  lazy val battlegroundAsteroidOrbitUnits = unitsEntry(
-    "ss_object.battleground.orbit.asteroid.units")
-  lazy val battlegroundJumpgateOrbitUnits = unitsEntry(
-    "ss_object.battleground.orbit.jumpgate.units")
-
   // End of orbit units configuration
 
+  // Planet configuration
+
+  def planetAreaMax = int("planet.area.max")
+  
+  private[this] val planetMapSetCache = 
+    HashMap.empty[String, ss_objects.Planet.MapSet]
+  
+  def mapSet(key: String) = {
+    if (! planetMapSetCache.contains(key)) {
+      val mapSet = ss_objects.Planet.MapSet.extract(
+        get[Seq[Any]]("planet.map.%s".format(key))
+      )
+      planetMapSetCache(key) = mapSet
+      mapSet
+    }
+    else {
+      planetMapSetCache(key)
+    }
+  }
+
+  def battlegroundPlanetMaps = mapSet("battleground")
+  def pulsarPlanetMaps = mapSet("pulsar")
+  def freeSystemPlanetMaps = mapSet("free_systems")
+  
   def folliagePercentage = range("planet.folliage.area").random
   def folliageVariations = int("ui.planet.folliage.variations")
 
@@ -525,6 +527,8 @@ object Config {
     "planet.folliage.type.2.variations.%d".format(terrainType)
   ).map { _.toInt }
 
+  // End of planet configuration
+  
   def raidingDelayRange = evalRange("raiding.delay")
   def raidingDelayRandomDate = raidingDelayRange.random.seconds.fromNow
 }

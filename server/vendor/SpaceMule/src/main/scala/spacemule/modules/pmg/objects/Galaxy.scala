@@ -5,7 +5,7 @@ import solar_systems.{Resource, Expansion, Homeworld}
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
-import spacemule.modules.pmg.objects.solar_systems.MiniBattleground
+import spacemule.modules.pmg.objects.solar_systems.Pulsar
 import spacemule.modules.pmg.objects.solar_systems.Wormhole
 
 /**
@@ -119,7 +119,7 @@ class Galaxy(val id: Int, val ruleset: String) {
       resourceSystems.foreach { coords =>
         zone.addSolarSystem(new Resource(), coords) }
       miniBattlegrounds.foreach { coords =>
-        zone.addSolarSystem(new MiniBattleground(), coords) }
+        zone.addSolarSystem(new Pulsar(), coords) }
     }
 
     zone.addSolarSystem(new Homeworld(player))

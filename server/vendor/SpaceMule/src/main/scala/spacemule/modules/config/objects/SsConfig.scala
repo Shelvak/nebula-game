@@ -1,7 +1,6 @@
 package spacemule.modules.config.objects
 
 import spacemule.modules.pmg.classes.geom.Coords
-import spacemule.modules.pmg.objects.ss_objects.Planet
 
 object SsConfig {
   sealed abstract class Entry(
@@ -10,7 +9,7 @@ object SsConfig {
   )
 
   case class PlanetEntry(
-    mapName: String, terrain: Planet.Terrain.Type,
+    mapName: String, ownedByPlayer: Boolean,
     override val wreckage: Option[ResourcesEntry] = None,
     override val units: Option[Seq[UnitsEntry]] = None
   ) extends Entry(wreckage, units)
@@ -37,8 +36,7 @@ object SsConfig {
     data: CfgMap, key: String = "resources"
   ) = {
     data.get(key).map { array =>
-      val resources = array.asInstanceOf[Seq[Double]]
-      ResourcesEntry(resources(0), resources(1), resources(2))
+      ResourcesEntry.extract(array)
     }
   }
 
@@ -48,39 +46,45 @@ object SsConfig {
   private[this] def extractUnits(data: CfgMap):
     Option[Seq[UnitsEntry]] = data.get("units").map(UnitsEntry.extract(_))
 
-  def apply(configKey: String): Map[Coords, Entry] = {
-    Config.get[Map[String, CfgMap]](configKey).map {
-      case (positionStr, entryData) =>
-        val splitted = positionStr.split(",").map(_.toInt)
-        val (position, angle) = (splitted(0), splitted(1))
-        val coords = Coords(position, angle)
+  type Data = Map[Coords, Entry]
 
-        val entry = entryData("type") match {
-          case "planet" => SsConfig.PlanetEntry(
-            entryData("map").asInstanceOf[String],
-            Planet.Terrain(entryData("terrain").asInstanceOf[Long].toInt),
-            extractWreckage(entryData),
-            extractUnits(entryData)
-          )
-          case "asteroid" => SsConfig.AsteroidEntry(
-            extractResources(entryData) match {
-              case Some(resources) => resources
-              case None => sys.error(
-                "Missing asteroid resources for %s[%s]['resources']".format(
-                  configKey, positionStr
-                )
+  def apply(configKey: String): Data = {
+    val data = Config.get[Map[String, CfgMap]](configKey)
+    apply(configKey, data)
+  }
+
+  def apply(configKey: String, data: Map[String, CfgMap]) = {
+    data.map { case (positionStr, entryData) =>
+      val splited = positionStr.split(",").map(_.toInt)
+      val (position, angle) = (splited(0), splited(1))
+      val coords = Coords(position, angle)
+
+      val entry = entryData("type") match {
+        case "planet" => SsConfig.PlanetEntry(
+          entryData("map").asInstanceOf[String],
+          entryData("owned_by_player").asInstanceOf[Boolean],
+          extractWreckage(entryData),
+          extractUnits(entryData)
+        )
+        case "asteroid" => SsConfig.AsteroidEntry(
+          extractResources(entryData) match {
+            case Some(resources) => resources
+            case None => sys.error(
+              "Missing asteroid resources for %s[%s]['resources']".format(
+                configKey, positionStr
               )
-            }, extractWreckage(entryData), extractUnits(entryData)
-          )
-          case "jumpgate" => SsConfig.JumpgateEntry(
-            extractWreckage(entryData), extractUnits(entryData)
-          )
-          case "nothing" => SsConfig.NothingEntry(
-            extractWreckage(entryData), extractUnits(entryData)
-          )
-        }
+            )
+          }, extractWreckage(entryData), extractUnits(entryData)
+        )
+        case "jumpgate" => SsConfig.JumpgateEntry(
+          extractWreckage(entryData), extractUnits(entryData)
+        )
+        case "nothing" => SsConfig.NothingEntry(
+          extractWreckage(entryData), extractUnits(entryData)
+        )
+      }
 
-        coords -> entry
+      coords -> entry
     }
   }
 }
