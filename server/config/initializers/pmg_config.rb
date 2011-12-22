@@ -8,25 +8,6 @@ class PmgConfigInitializer < GameConfig::Initializer
     ) { generate_planet_map }
   end
 
-  # Home solar system configuration.
-  #
-  # Common configuration
-  #
-  #  "position,angle" => {
-  #    "type" => "planet|asteroid|jumpgate|nothing"
-  #    # array of [count, type, flank, hp percentage (Float)]
-  #    "units" => [[1, "Dirac", 0, 1.0]]
-  #    "wreckage" => [metal, energy, zetium] (Floats)
-  #  }
-  #
-  # Extra parameters for planet type:
-  #   "map" => "homeworld|other_map_name"
-  #   "terrain" => 0 # Earth
-  #   "owned_by_player" => true|false
-  #
-  # Extra parameters for asteroid type:
-  #   "resources" => [metal, energy, zetium] (Floats)
-  #
   def self.generate_home_ss
     dirac = Unit::Dirac.to_s.demodulize
     thor = Unit::Thor.to_s.demodulize
@@ -34,15 +15,18 @@ class PmgConfigInitializer < GameConfig::Initializer
     # TODO: replace BossShip with convoy unit
     convoy_ship = Unit::BossShip.to_s.demodulize
 
+    w_re = /^w\[([\d\.]+)\]$/
     w = lambda do |level|
       level -= 1
       [3750.0 * 2 ** level, 7500.0 * 2 ** level, 1250.0 * 2 ** level]
     end
 
+    r_re = /^r\[([\d\.]+)\]$/
     r = lambda do |level|
       [2.0 * level, 2.0 * level, 2.0 * level]
     end
 
+    u_re = /^u\[([\d\.]+)\]$/
     u = lambda do |arg|
       units = [
         [(0.8 * arg).round, dirac, 0, 1.0],
@@ -58,110 +42,44 @@ class PmgConfigInitializer < GameConfig::Initializer
       units
     end
 
-    CONFIG['solar_system.home'] = {
-      # Homeworld planet
-      "0,90" => {
-        "type" => "planet",
-        "map" => "homeworld",
-        "owned_by_player" => true,
-        "units" => [[1, dirac, 0, 1.0]]
-      },
-      # Expansion planet
-      "1,135" => {
-        "type" => "planet",
-        "map" => "expansion",
-        "owned_by_player" => false,
-        "units" => [[2, dirac, 0, 1.0], [2, dirac, 1, 1.0]]
-      },
-      # First asteroids
-      "0,0"   => {"type" => "asteroid", "resources" => r[1], "units" => u[1]},
-      "0,180" => {"type" => "asteroid", "resources" => r[1], "units" => u[1]},
-      "1,90"  => {"type" => "asteroid", "resources" => r[2], "units" => u[1]},
-
-      # Resource path
-      "2,150" => {"type" => "nothing", "units" => u[1.25]},
-      "3,134" => {"type" => "nothing", "units" => u[1.75], "wreckage" => w[1]},
-      "3,112" => {"type" => "nothing", "units" => u[2.25]},
-      "3,90"  => {"type" => "nothing", "units" => u[2.5], "wreckage" => w[2]},
-      "3,66"  => {"type" => "nothing", "units" => u[2.75]},
-      "3,44"  => {"type" => "nothing", "units" => u[3], "wreckage" => w[3]},
-      "3,22"  => {"type" => "nothing", "units" => u[4]},
-      "3,0"   => {"type" => "nothing", "units" => u[5], "wreckage" => w[4]},
-      "3,336" => {"type" => "nothing", "units" => u[6]},
-      "3,314" => {"type" => "nothing", "units" => u[7], "wreckage" => w[5]},
-      "3,292" => {"type" => "nothing", "units" => u[8]},
-      "2,270" => {"type" => "nothing", "units" => u[9], "wreckage" => w[6]},
-
-      # Protective ring near the path
-      "1,180" => {"type" => "nothing", "units" => u[1.25]},
-      "1,0"   => {"type" => "nothing", "units" => u[1.5]},
-      "1,45"  => {"type" => "nothing", "units" => u[1.5]},
-      "3,156" => {"type" => "nothing", "units" => u[1.5]},
-      "2,120" => {"type" => "asteroid", "resources" => r[3], "units" => u[3]},
-      "2,90"  => {"type" => "nothing", "units" => u[4]},
-      "2,60"  => {"type" => "asteroid", "resources" => r[3], "units" => u[5]},
-      "2,30"  => {"type" => "asteroid", "resources" => r[3], "units" => u[6]},
-      "2,0"   => {"type" => "nothing", "units" => u[7]},
-      "2,330" => {"type" => "asteroid", "resources" => r[3], "units" => u[8]},
-      # Lesser biggest stash protection
-      "0,270" => {"type" => "asteroid", "resources" => r[1], "units" => u[8]},
-      "1,225" => {"type" => "asteroid", "resources" => r[2], "units" => u[8]},
-      "1,315" => {"type" => "asteroid", "resources" => r[2], "units" => u[8]},
-      # Greater biggest stash protection
-      "1,270" => {"type" => "nothing", "units" => u[10]},
-      "2,240" => {"type" => "asteroid", "resources" => r[3], "units" => u[10]},
-      "2,300" => {"type" => "nothing", "units" => u[10]},
-      "3,246" => {"type" => "nothing", "units" => u[10]},
-      "3,270" => {"type" => "nothing", "units" => u[10]},
-
-      # Jumpgate and its premises
-      "3,202" => {
-        "type" => "jumpgate",
-        "units" => u[11] + [[1, convoy_ship, 0, 0.05]]
-      },
-      "2,180" => {"type" => "asteroid", "resources" => r[3], "units" => u[10]},
-      "2,210" => {"type" => "asteroid", "resources" => r[3], "units" => u[10]},
-      "3,180" => {"type" => "nothing", "units" => u[10],},
-
-      # Mega-stash of resources
-      "3,224" => {"type" => "nothing", "units" => u[45], "wreckage" => w[8]}
-    }
-
-    CONFIG['solar_system.battleground'] = {}.tap do |c|
-      # 3 jumpgates
-      %w{3,22 3,134 3,270}.each do |position|
-        c[position] = {"type" => "jumpgate", "units" => u[20]}
+    apply_functions = lambda do |data, functions|
+      functions.each do |regexp, function|
+        match = data.match(regexp)
+        return function.call(match[1].to_f) if match
       end
 
-      # 3 arena planets
-      [
-        ["0,270", 40, "hard"], ["1,45", 35, "normal"], ["2,210", 30, "easy"]
-      ].each do |position, units_level, map_set_name|
-        c[position] = {
-          "type" => "planet",
-          "map" => "battleground.#{map_set_name}",
-          "owned_by_player" => false,
-          "units" => u[units_level] + [
-            [1, convoy_ship, 0, 1], [1, convoy_ship, 1, 1]
-          ]
-        }
-      end
+      raise "Unknown string signature: #{data}. Cannot apply any of the #{
+        functions.inspect}!"
+    end
 
-      # Spots with defensive aliens
-      %w{
-        3,112 2,120 2,150 3,156 2,180 1,180 0,180 1,225 3,202 3,224 2,240 3,246
-        2,270 1,270 3,292 1,315 0,0 1,0 2,0 3,0 0,90 1,90 2,60 3,44 2,30
-      }.each do |position|
-        c[position] = {"type" => "nothing", "units" => u[25]}
-      end
+    CONFIG.filter(/^solar_system\.map\./).each do |key, map_set|
+      CONFIG[key] = map_set.map do |map_parameters|
+        map_parameters['map'] = map_parameters['map'].inject({}) do
+          |hash, (position, data)|
 
-      # Resource stashes
-      %w{1,180 1,135 2,90 3,90 3,66 3,336 2,330 3,314 2,300}.each do |position|
-        c[position] = {
-          "type" => "nothing",
-          "units" => u[35] + [[2, convoy_ship, 0, 1], [1, convoy_ship, 1, 1]],
-          "wreckage" => [500_000.0, 1_000_000.0, 150_000.0]
-        }
+          if data.has_key?("units")
+            data["units"] = [data["units"]] unless data["units"].is_a?(Array)
+            data["units"] = data["units"].inject([]) do |array, unit_def|
+              if unit_def.is_a?(String)
+                array + apply_functions[unit_def, [[u_re, u]]]
+              else
+                array << unit_def
+                array
+              end
+            end
+          end
+
+          [
+            ["wreckage", [[w_re, w]]],
+            ["resources", [[r_re, r]]]
+          ].each do |type, functions|
+            data[type] = apply_functions[data[type], functions] \
+              if data[type].is_a?(String)
+          end
+
+          hash[position] = data
+          hash
+        end
       end
     end
   end

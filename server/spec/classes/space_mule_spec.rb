@@ -187,7 +187,7 @@ describe SpaceMule do
 
       it "should be created from static configuration" do
         @ss.should be_created_from_static_ss_configuration(
-                     'solar_system.battleground'
+                     CONFIG['solar_system.battleground'][0]
                    )
       end
 
