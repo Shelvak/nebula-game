@@ -71,7 +71,7 @@
 # void.
 homeworld:
   - terrain: <%= Terrain::EARTH %>
-    name: Terra
+    name: Terra-%d
     # More weight means more probability this map will be picked.
     weight: 1000
     resources: [2000.0, 4000.0, 0.0]
@@ -117,7 +117,7 @@ homeworld:
 
 expansion:
   - terrain: <%= Terrain::MUD %>
-    name: Nova
+    name: Nova-%d
     weight: 1000
     resources: [0.0, 0.0, 0.0]
     map:
@@ -164,6 +164,28 @@ expansion:
 # . . . . .
 #
 # Marks a spot where a player can place its turret.
+
+<%
+free_units = [
+  [4, "Gnat", 0, 1],
+  [6, "Gnat", 1, 1],
+  [5, "Glancer", 1, 1],
+  [2, "Spudder", 0, 1],
+  [9, "Spudder", 1, 1],
+  [6, "Gnawer", 0, 1],
+  [2, "Gnawer", 1, 1],
+]
+
+pulsar_units = free_units.map do |count, type, flank, hp_percentage|
+  [count * 3, type, flank, hp_percentage]
+end
+
+battleground_units = free_units.map do |count, type, flank, hp_percentage|
+  [count * 5, type, flank, hp_percentage]
+end
+
+%>
+
 battleground.hard:
   - terrain: <%= Terrain::EARTH %>
     name: Gramen
@@ -190,6 +212,7 @@ battleground.hard:
       - "--------. . ^-^-. --------^ ^-^-. ----"
       - "-n------. . ^-^-. --------^ ^ ^ . ----"
       - ". . . . . . . ^ . -f------. ^ ^ . 1---"
+    units: <%= battleground_units.inspect %>
 battleground.normal:
   - terrain: <%= Terrain::DESERT %>
     name: Inculta
@@ -212,6 +235,7 @@ battleground.normal:
       - "--------. ^-^-. *-----. ^-^-. . . . . "
       - "-n------^ ^-^-. . ^ ^ ^ ^-^-. ------. "
       - ". . . ^ ^ . ^ ^ ^ ^ . . . . . 5-----. "
+    units: <%= battleground_units.inspect %>
 battleground.easy:
   - terrain: <%= Terrain::MUD %>
     name: Limus
@@ -233,10 +257,11 @@ battleground.easy:
       - ". --------. . . ^ ------. . --------"
       - ". --------. ^-^-^ -i----. . --------"
       - ". -f------. ^-^-^ ^ ^ . . . 4-------"
+    units: <%= battleground_units.inspect %>
 
 pulsar:
   - terrain: <%= Terrain::EARTH %>
-    name: Gramen
+    name: Gramen-%d
     weight: 1000
     resources: [0.0, 0.0, 0.0]
     # 12 turrets
@@ -256,8 +281,9 @@ pulsar:
       - ". . -i----. . ^ . ----. . ^ ^ --------"
       - ". . . . . . ^-^-. 1---. ^-^-. -f------"
       - ". . . . . . ^-^-. . . . ^-^-^ ^ . . . "
+    units: <%= pulsar_units.inspect %>
   - terrain: <%= Terrain::DESERT %>
-    name: Inculta
+    name: Inculta-%d
     weight: 1000
     resources: [0.0, 0.0, 0.0]
     # 10 turrets
@@ -277,8 +303,9 @@ pulsar:
       - "--------. ^-^-. *-----. ^-^-. "
       - "-n------^ ^-^-. . ^ ^ ^ ^-^-. "
       - ". . . ^ ^ . ^ ^ ^ ^ . . . . . "
+    units: <%= pulsar_units.inspect %>
   - terrain: <%= Terrain::MUD %>
-    name: Limus
+    name: Limus-%d
     weight: 1000
     resources: [0.0, 0.0, 0.0]
     # 8 turrets
@@ -297,10 +324,12 @@ pulsar:
       - ". --------. . . ^ ------. . --------"
       - ". --------. ^-^-^ -i----. . --------"
       - ". -f------. ^-^-^ ^ ^ . . . 4-------"
+    units: <%= pulsar_units.inspect %>
 
-free_systems:
+# Planets in free systems.
+free:
   - terrain: <%= Terrain::EARTH %>
-    name: Gramen
+    name: Gramen-%d
     weight: 1000
     resources: [0.0, 0.0, 0.0]
     # 12 turrets
@@ -320,44 +349,4 @@ free_systems:
       - ". . -i----. . ^ . ----. . ^ ^ --------"
       - ". . . . . . ^-^-. 1---. ^-^-. -f------"
       - ". . . . . . ^-^-. . . . ^-^-^ ^ . . . "
-  - terrain: <%= Terrain::DESERT %>
-    name: Inculta
-    weight: 1000
-    resources: [0.0, 0.0, 0.0]
-    # 10 turrets
-    map:
-      - "^ ^-^-^ ^-^-. ^-^-. --------. "
-      - ". ^-^-. ^-^-. ^-^-. --------. "
-      - "^ ^ ^ . . ^ . . ^ . --------^ "
-      - "----^ ------. ^-^-. --------^ "
-      - "----^ ------. ^-^-^ -f------^ "
-      - "2---^ -i----. . . ^ ^ . . . ^ "
-      - ". . ^ ^ ^ ^ . ----. ^-^-^ ^-^-"
-      - ". ------. ^ . -a--. ^-^-. ^-^-"
-      - ". 5-----. ^ . . . . . . . ^ . "
-      - "^ ^ ^ ^ ^ ^-^-. ------. ^-^-. "
-      - "--------. ^-^-. ------. ^-^-. "
-      - "--------. . ^ . ------. . ^ . "
-      - "--------. ^-^-. *-----. ^-^-. "
-      - "-n------^ ^-^-. . ^ ^ ^ ^-^-. "
-      - ". . . ^ ^ . ^ ^ ^ ^ . . . . . "
-  - terrain: <%= Terrain::MUD %>
-    name: Limus
-    weight: 1000
-    resources: [0.0, 0.0, 0.0]
-    # 8 turrets
-    map:
-      - ". . . . . . ^-^-^ ----^ ^-^-^ ^-^-. "
-      - ". --------. ^-^-^ ----^ ^-^-^ ^-^-. "
-      - ". --------. . . . ----. . ^ . . . . "
-      - ". --------. ^-^-. 1---. . ^ --------"
-      - "^ @-------^ ^-^-. . . . . ^ --------"
-      - "^ ^ . . . ^ . . . --------^ --------"
-      - "^-^-. ^-^-^ ----^ --------^ @-------"
-      - "^-^-. ^-^-. -a--^ --------^ ^ . . . "
-      - ". ^ ^ ^ . . . ^ ^ -n------. --------"
-      - ". --------. ^-^-. . . . . . --------"
-      - ". --------. ^-^-^ ------. . --------"
-      - ". --------. . . ^ ------. . --------"
-      - ". --------. ^-^-^ -i----. . --------"
-      - ". -f------. ^-^-^ ^ ^ . . . 4-------"
+    units: <%= free_units.inspect %>

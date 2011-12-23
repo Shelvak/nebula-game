@@ -1,30 +1,33 @@
 package spacemule.modules.pmg.objects
 
-import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
 import ss_objects.{Jumpgate, Asteroid, Planet}
-import util.Random
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.HashMap
-import spacemule.helpers.Converters._
+import spacemule.modules.config.objects.{SsConfig, ResourcesEntry, Config}
 
-class SolarSystem {
-  val orbitCount = Config.orbitCount
-  val objects = HashMap[Coords, SSObject]()
-  val wormhole = false
+class SolarSystem(map: Option[SsConfig.Data]) {
+  def this(map: SsConfig.Data) = this(Some(map))
+
+  val kind = SolarSystem.Normal
   val shielded = false
 
+  val orbitCount = Config.orbitCount
+
+  private[this] var _objects = Map.empty[Coords, SSObject]
+  def objects = _objects
+
   /**
-   * Ensures that multiple planets can't be on same orbit.
+   * Units in solar system.
    */
-  val availableOrbits = new ArrayBuffer[Int](orbitCount)
+  private[this] var _units = Map.empty[Coords, Seq[Troop]]
+  def units = _units
 
-  // Cache available orbits
-  (0 until orbitCount).foreach { position =>
-    availableOrbits += position
-  }
+  /**
+   * Wreckage in orbit.
+   */
+  private[this] var _wreckages = Map.empty[Coords, ResourcesEntry]
+  def wreckages = _wreckages
 
-  private var objectsCreated = false
+  private[this] var objectsCreated = false
 
   def createObjects() {
     if (objectsCreated) {
@@ -37,150 +40,66 @@ class SolarSystem {
   }
 
   protected[this] def createObjectsImpl() {
-    createPlanets()
-    createAsteroids()
-    createJumpgates()
-    createWreckages()
-  }
-
-  protected[this] def createPlanets() {
-    val planetCount = Config.planetCount(this)
-
-    if (planetCount > orbitCount) {
-      throw new Exception("Planet count %d is more than orbit count %d!".format(
-        planetCount, orbitCount))
-    }
-
-    createObjectType(planetCount) { () => new Planet() }
-  }
-
-  protected[this] def createAsteroids() {
-    createObjectType(Config.asteroidCount(this)) {
-      () => Asteroid(Asteroid.Kind.Regular)
-    }
-    createObjectType(Config.richAsteroidCount(this)) {
-      () => Asteroid(Asteroid.Kind.Rich)
-    }
-  }
-
-  protected[this] def createJumpgates() {
-    createObjectType(Config.jumpgateCount(this)) { () => new Jumpgate() }
-  }
-
-  protected[this] def createWreckages() {
-    createObjectType(Config.jumpgateCount(this)) { () => new Jumpgate() }
-  }
-
-  /**
-   * Returns a random coordinate. Checks that objects wouldn't appear below
-   * others. Ensures that there is only one planet per orbit.
-   *
-   * Warning, this method WILL LOOP indefinitely if there are no spaces left!
-   */
-  private def randCoordinateFor(obj: SSObject): Coords = {
-    val maxIterations = 1000
-
-    def rand: Coords = {
-      // There cannot be more than one planet in orbit! Also jumpgates are always
-      // in outer ring.
-      val position = obj match {
-        case obj: Planet => availableOrbits.random
-        case obj: Jumpgate => orbitCount
-        case obj: SSObject => Random.nextInt(orbitCount)
-      }
-
-      val angle = SolarSystem.randAngle(position)
-      return new Coords(position, angle)
-    }
-
-    def check(coordinate: Coords): Boolean = {
-      if (! objects.contains(coordinate)) {
-        // If this coordinate is perpendicular top one, also check if we have
-        // nothing directly below us.
-        val (position, angle) = (coordinate.position, coordinate.angle)
-        val perpendicular = angle == 90 || angle == 270
-        if (
-          (
-            perpendicular &&
-            ! objects.contains(new Coords(position - 1, angle)) &&
-            ! objects.contains(new Coords(position + 1, angle))
-          )
-          || ! perpendicular
-        ) {
-          return true
+    map match {
+      case None => ()
+      case Some(m) =>
+        m.foreach { case(coords, entry) =>
+          entry match {
+            case e: SsConfig.PlanetEntry => createPlanet(coords, e)
+            case e: SsConfig.AsteroidEntry => createAsteroid(coords, e)
+            case e: SsConfig.JumpgateEntry =>
+              createObject(new Jumpgate, coords, e)
+            case e: SsConfig.NothingEntry => createObjectAssets(coords, e)
+          }
         }
-      }
-
-      return false
     }
+  }
 
-    try {
-      var coordinate: Coords = rand
-      var found = check(coordinate)
-      var iteration = 0
-      while (! found) {
-        if (iteration < maxIterations) {
-          coordinate = rand
-          found = check(coordinate)
+  private[this] def createPlanet(
+    coords: Coords, entry: SsConfig.PlanetEntry
+  ) {
+    createObject(
+      new Planet(Config.planetMap(entry.mapName), entry.ownedByPlayer),
+      coords, entry
+    )
+  }
+
+  private[this] def createAsteroid(
+    coords: Coords, entry: SsConfig.AsteroidEntry
+  ) {
+    createObject(
+      new Asteroid(
+        entry.resources.metal, entry.resources.energy, entry.resources.zetium
+      ),
+      coords, entry
+    )
+  }
+
+  private[this] def createObject(
+    obj: SSObject, coords: Coords, entry: SsConfig.Entry
+  ) = {
+    _objects += coords -> obj
+    createObjectAssets(coords, entry)
+    obj
+  }
+
+  private[this] def createObjectAssets(coords: Coords, entry: SsConfig.Entry) {
+    entry.units match {
+      case None => ()
+      case Some(units) =>
+        val addedUnits = units.flatMap(_.createTroops())
+
+        if (_units.contains(coords)) {
+          _units += coords -> (_units(coords) ++ addedUnits)
         }
-        else {
-          throw new IllegalStateException(
-            (
-              "Stuck in a loop trying to find position for %s in %s! " +
-              "Max iteration count (%d) reached!"
-            ).format(obj.toString, this.toString, maxIterations)
-          )
-        }
-
-        iteration += 1
-      }
-
-      // Remove position from
-      obj match {
-        case obj: Planet => availableOrbits -= coordinate.position
-        case _ => ()
-      }
-
-      return coordinate
+        else
+          _units += coords -> addedUnits
     }
-    catch {
-      case e: IllegalStateException => throw new IllegalStateException(
-        "No free spot available for %s in %s!".format(
-          obj.toString, this.toString
-        )
-      )
+
+    entry.wreckage match {
+      case None => ()
+      case Some(wreckage) => _wreckages += coords -> wreckage
     }
-  }
-
-  protected def createObjectType(count: Int)(create: () => SSObject) = {
-    (1 to count).foreach { index =>
-      val obj = create()
-      initializeAndAdd(obj, randCoordinateFor(obj))
-    }
-  }
-
-  protected def initializeAndAdd(obj: SSObject, coords: Coords) = {
-    obj.createUnits(groundUnits(obj))
-    obj.createOrbitUnits(orbitUnits(obj))
-    obj.initialize
-    objects(coords) = obj
-  }
-  
-  /**
-   * What units will appear in SS object?
-   */
-  protected def groundUnits(obj: SSObject) = obj match {
-    case planet: Planet => Config.regularPlanetGroundUnits
-    case _ => Nil
-  }
-
-  /**
-   * What units will appear on solar system orbit?
-   */
-  protected def orbitUnits(obj: SSObject) = obj match {
-    case planet: Planet => Config.regularPlanetOrbitUnits
-    case asteroid: Asteroid => Config.regularAsteroidOrbitUnits
-    case jumpgate: Jumpgate => Config.regularJumpgateOrbitUnits
   }
 }
 
@@ -189,17 +108,4 @@ object SolarSystem extends Enumeration {
   val Wormhole = Value(1, "wormhole")
   val Battleground = Value(2, "battleground")
   type Kind = Value
-      
-  /**
-   * Returns "random" angle. Each position have certain allowed angles and
-   * this method returns one of them.
-   */
-  def randAngle(position: Int): Int = {
-    val numOfQuarterPoints = position + 1
-    val quarterPointDegrees = 90 / numOfQuarterPoints
-
-    // random quarter + random point
-    return Random.nextInt(4) * 90 +
-            Random.nextInt(numOfQuarterPoints) * quarterPointDegrees
-  }
 }

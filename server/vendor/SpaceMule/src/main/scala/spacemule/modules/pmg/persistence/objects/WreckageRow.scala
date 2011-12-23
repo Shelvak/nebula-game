@@ -16,7 +16,6 @@ object WreckageRow extends RowObject {
 case class WreckageRow(galaxyId: Int, location: Location, entry: ResourcesEntry)
 extends Row {
   val companion = WreckageRow
-
   val id = TableIds.wreckages.next
 
   val valuesSeq = Seq(

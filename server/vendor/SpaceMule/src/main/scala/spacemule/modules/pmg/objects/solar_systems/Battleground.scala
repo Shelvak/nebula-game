@@ -6,7 +6,6 @@ import spacemule.modules.config.objects.Config
 /**
  * Solar system in which most battles happen.
  */
-class Battleground extends SolarSystem with FixedMap with PlanetGuardians {
-  val map = Config.battlegroundSsConfig
-  val planetGuardians = Config.battlegroundPlanetGroundUnits
+class Battleground extends SolarSystem(Config.battlegroundSsConfig) {
+  override val kind = SolarSystem.Battleground
 }

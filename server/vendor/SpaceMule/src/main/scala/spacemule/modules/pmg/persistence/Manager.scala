@@ -275,7 +275,7 @@ object Manager {
           solarSystem match {
             case Some(ss) => {
               val absoluteCoords = zone.absolute(coords)
-              readSolarSystem(galaxy, absoluteCoords, ss)
+              readSolarSystem(galaxy, Some(absoluteCoords), ss)
             }
             case None => ()
           }
@@ -322,21 +322,34 @@ object Manager {
       fowSsEntries += fowSseRow.values
     }
   }
-
-  def readBattleground(galaxyId: Int, galaxy: Galaxy, 
-                       battleground: Battleground) = {
-    val ssRow = new SolarSystemRow(galaxyId, battleground, None)
+  
+  def readSolarSystem(
+    galaxy: Galaxy, coords: Option[Coords], solarSystem: SolarSystem
+  ) = {
+    val ssRow = new SolarSystemRow(galaxy.id, solarSystem, coords)
     solarSystems += ssRow.values
 
-    readSSObjects(galaxy, ssRow, battleground)
+    // Create solar system units
+    solarSystem.units.foreach { case (ssPointCoord, troops) =>
+      val location = Location(
+        ssRow.id, Location.SolarSystem,
+        Some(ssPointCoord.x), Some(ssPointCoord.y)
+      )
+      troops.foreach { troop =>
+        val unitRow = new UnitRow(ssRow.galaxyId, location, troop)
+        units += unitRow.values
+      }
+    }
 
-    ssRow
-  }
-
-  private def readSolarSystem(galaxy: Galaxy, coords: Coords,
-                              solarSystem: SolarSystem) = {
-    val ssRow = new SolarSystemRow(galaxy, solarSystem, coords)
-    solarSystems += ssRow.values
+    // Create wreckages
+    solarSystem.wreckages.foreach { case(ssPointCoord, wreckage) =>
+      val location = Location(
+        ssRow.id, Location.SolarSystem,
+        Some(ssPointCoord.x), Some(ssPointCoord.y)
+      )
+      val wreckageRow = WreckageRow(ssRow.galaxyId, location, wreckage)
+      wreckages += wreckageRow.values
+    }
 
     def addSpawn() = {
       callbacks += CallbackRow(
@@ -345,16 +358,16 @@ object Manager {
       ).values
     }
 
-    // Add visibility for other players
+    // Add visibility for other players & spawns.
     solarSystem match {
       case h: Homeworld =>
-        addSsVisibilityForExistingPlayers(ssRow, false, galaxy, coords)
+        addSsVisibilityForExistingPlayers(ssRow, false, galaxy, coords.get)
 
         // Add visibility, player and start quests for that player
         // if this is a homeworld.
         val playerRow = ssRow.playerRow.get
         fowSsEntries += FowSsEntryRow(ssRow, Some(playerRow.id), None, 1,
-                                      false).values
+          false).values
         playerRows += playerRow
         players += playerRow.values
         startQuests(playerRow)
@@ -367,9 +380,11 @@ object Manager {
         ).values
         addSpawn() // Spawn callback
       case wh: Wormhole =>
-        addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords)
+        addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords.get)
+      case bg: Battleground =>
+        addSpawn() // Spawn callback
       case _ =>
-        addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords)
+        addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords.get)
         addSpawn() // Spawn callback
     }
 
@@ -388,47 +403,26 @@ object Manager {
 
   private def readSSObject(galaxy: Galaxy, ssRow: SolarSystemRow,
                            coords: Coords, obj: SSObject) {
-    // Create orbit units
-    val location = Location(
-      ssRow.id, Location.SolarSystem, Some(coords.x), Some(coords.y)
-    )
-    obj.orbitUnits.foreach { unit =>
-      val unitRow = new UnitRow(ssRow.galaxyId, location, unit)
+    val ssoRow = SSObjectRow(ssRow, coords, obj)
+    ssObjects += ssoRow.values
+
+    // Create units in ground
+    obj.units.foreach { unit =>
+      val unitRow = new UnitRow(
+        ssRow.galaxyId,
+        Location(ssoRow.id, Location.SsObject, None, None),
+        unit
+      )
       units += unitRow.values
     }
 
-    // Create wreckage
-    obj.wreckage match {
-      case Some(entry) =>
-        val wreckageRow = WreckageRow(ssRow.galaxyId, location, entry)
-        wreckages += wreckageRow.values
-      case None => ()
-    }
-
+    // Additional creation steps
     obj match {
-      case _: ss_objects.Nothing => ()
-      case _ =>
-        val ssoRow = SSObjectRow(ssRow, coords, obj)
-        ssObjects += ssoRow.values
-
-        // Create units in ground
-        obj.units.foreach { unit =>
-          val unitRow = new UnitRow(
-            ssRow.galaxyId,
-            Location(ssoRow.id, Location.SsObject, None, None),
-            unit
-          )
-          units += unitRow.values
-        }
-
-        // Additional creation steps
-        obj match {
-          case planet: ss_objects.Planet =>
-            readPlanet(galaxy, ssRow.galaxyId, ssoRow, planet)
-          case asteroid: ss_objects.Asteroid =>
-            readAsteroid(galaxy, ssoRow)
-          case _ => ()
-        }
+      case planet: ss_objects.Planet =>
+        readPlanet(galaxy, ssRow.galaxyId, ssoRow, planet)
+      case asteroid: ss_objects.Asteroid =>
+        readAsteroid(galaxy, ssoRow)
+      case _ => ()
     }
   }
 

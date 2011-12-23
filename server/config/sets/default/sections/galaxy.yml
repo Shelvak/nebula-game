@@ -37,11 +37,8 @@ apocalypse.survival_bonus: days * 2000
 # If you add any position types here, don't forget to add them to SpaceMules
 # Zone#playerCount method.
 
-# Positions of expansion systems.
-expansion_systems.positions:
-  - [2, 4]
-# Positions of resource systems.
-resource_systems.positions:
+# Positions of free solar systems.
+free_systems.positions:
   - [4, 5]
   - [5, 1]
 # Positions of wormholes to battleground.

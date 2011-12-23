@@ -1,23 +1,19 @@
 package spacemule.modules.pmg.persistence.objects
 
 import spacemule.modules.pmg.persistence.TableIds
-import java.util.Date
-import spacemule.helpers.Converters._
-import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
-import spacemule.modules.pmg.objects.solar_systems.{Battleground, Wormhole, Homeworld}
+import spacemule.modules.pmg.objects.solar_systems.Homeworld
 import spacemule.modules.pmg.objects.{Galaxy, SolarSystem}
-import spacemule.persistence.DB
+import spacemule.persistence.{Row, RowObject, DB}
 
-object SolarSystemRow {
-  val columns = "`id`, `galaxy_id`, `x`, `y`, `kind`, `shield_owner_id`"
+object SolarSystemRow extends RowObject {
+  val columnsSeq = Seq("id", "galaxy_id", "x", "y", "kind", "shield_owner_id")
 }
 
 case class SolarSystemRow(
   val galaxyId: Int, val solarSystem: SolarSystem, coords: Option[Coords]
-) {
-  def this(galaxy: Galaxy, solarSystem: SolarSystem, coords: Coords) =
-    this(galaxy.id, solarSystem, Some(coords))
+) extends Row {
+  val companion = SolarSystemRow
 
   val playerRow = solarSystem match {
     case homeworld: Homeworld => Some(new PlayerRow(galaxyId, homeworld.player))
@@ -25,7 +21,7 @@ case class SolarSystemRow(
   }
 
   val id = TableIds.solarSystem.next
-  val values = "%d\t%d\t%s\t%s\t%d\t%s".format(
+  val valuesSeq = Seq(
     id,
     galaxyId,
     coords match {
@@ -36,11 +32,7 @@ case class SolarSystemRow(
       case Some(coords) => coords.y.toString
       case None => DB.loadInFileNull
     },
-    solarSystem match {
-      case bg: Battleground => SolarSystem.Battleground.id
-      case wh: Wormhole => SolarSystem.Wormhole.id
-      case _ => SolarSystem.Normal.id
-    },
+    solarSystem.kind.id,
     playerRow match {
       case Some(playerRow) => playerRow.id.toString
       case None => DB.loadInFileNull

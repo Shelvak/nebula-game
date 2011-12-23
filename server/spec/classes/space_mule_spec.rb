@@ -38,42 +38,9 @@ shared_examples_for "adding new solar systems" do
   end
 end
 
-shared_examples_for "with orbit units" do |type, subtype|
-  subtype ||= 'planet'
-
-  it "should have correct number of planet orbit units" do
-    (@planets || @solar_systems.map { |ss| ss.planets}.flatten).each do |planet|
-      planet.solar_system_point.should have_correct_unit_count(
-        "ss_object.#{type}.orbit.#{subtype}.units"
-      )
-    end
-  end
-
-  it "should have correct number of asteroid orbit units" do
-    @solar_systems.each do |solar_system|
-      solar_system.asteroids.each do |asteroid|
-        asteroid.solar_system_point.should have_correct_unit_count(
-          "ss_object.#{type}.orbit.asteroid.units",
-          "ss_object.#{type}.orbit.rich_asteroid.units"
-        )
-      end
-    end
-  end
-
-  it "should have correct number of jumpgate orbit units" do
-    @solar_systems.each do |solar_system|
-      solar_system.jumpgates.each do |jumpgate|
-        jumpgate.solar_system_point.should have_correct_unit_count(
-          "ss_object.#{type}.orbit.jumpgate.units"
-        )
-      end
-    end
-  end
-end
-
 shared_examples_for "with planet units" do |type, subtype|
   subtype ||= 'planet'
-  
+
   it "should have correct number of planet ground units" do
     (@planets || @solar_systems.map { |ss| ss.planets}.flatten).each do |planet|
       planet.should have_correct_unit_count(
@@ -102,45 +69,19 @@ shared_examples_for "starting resources" do |resolver, additional_items|
   end
 end
 
-shared_examples_for "with registered raid" do |raid_arg|
-  it "should have #next_raid set" do
-    models = @models || [@model]
-    models.each do |model|
-      model.next_raid_at.should_not be_nil
-    end
-  end
-
-  it "should have correct raid_arg set" do
-    models = @models || [@model]
-    models.each do |model|
-      model.raid_arg.should == raid_arg
-    end
-  end
-
-  it "should have raid registered" do
-    models = @models || [@model]
-    models.each do |model|
-      model.should have_callback(
-                     CallbackManager::EVENT_RAID, model.next_raid_at)
-    end
-  end
-end
-
 describe SpaceMule do
   before(:all) do
+    # Ensure we're not testing against randomness: leave only one map of
+    # each type.
     PmgConfigInitializer.initialize
-    @old_maps = CONFIG.filter(/^planet\.map\./)
-    @old_maps.each do |key, map_set|
-      CONFIG[key] = [map_set[0]]
-    end
+    @old_maps = CONFIG.filter(/^(solar_system|planet)\.map\./)
+    @old_maps.each { |key, map_set| CONFIG[key] = [map_set[0]] }
 
     @mule = SpaceMule.instance
   end
 
   after(:all) do
-    @old_maps.each do |key, map_set|
-      CONFIG[key] = map_set[0]
-    end
+    @old_maps.each { |key, map_set| CONFIG[key] = map_set }
   end
 
   describe "#create_galaxy" do
@@ -187,23 +128,13 @@ describe SpaceMule do
 
       it "should be created from static configuration" do
         @ss.should be_created_from_static_ss_configuration(
-                     CONFIG['solar_system.battleground'][0]
+                     CONFIG['solar_system.map.battleground'][0]['map']
                    )
       end
 
       it "should register callback for spawn" do
-         @ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+        @ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
       end
-
-      describe "battleground planets" do
-        before(:all) do
-          @models = @ss.planets.all
-        end
-
-        it_should_behave_like "with registered raid", 0
-      end
-      
-      it_behaves_like "with planet units", 'battleground'
     end
   
     it "should have spawn callback for first convoy" do
@@ -524,8 +455,6 @@ describe SpaceMule do
           SsObject::Planet.where(:solar_system_id => ss_ids).all
       end
 
-      it_should_behave_like "with registered raid", 0
-
       it "should not place any tiles offmap" do
         @planets.each { |planet| planet.should_not have_offmap(Tile) }
       end
@@ -602,24 +531,6 @@ describe SpaceMule do
           @ss = @homeworld.solar_system
           @solar_systems = [@ss]
         end
-
-        describe "homeworld" do
-          before(:each) do
-            @planets = [@homeworld]
-          end
-
-          it_behaves_like "with planet units", 'homeworld'
-          it_behaves_like "with orbit units", 'homeworld'
-        end
-
-        describe "expansion planets" do
-          before(:each) do
-            @planets = @ss.planets - [@homeworld]
-          end
-
-          it_behaves_like "with planet units", 'homeworld', 'expansion_planet'
-          it_behaves_like "with orbit units", 'homeworld', 'expansion_planet'
-        end
       end
         
       describe "regular solar systems" do
@@ -632,8 +543,6 @@ describe SpaceMule do
           )
         end
         
-        it_behaves_like "with planet units", 'regular'
-        it_behaves_like "with orbit units", 'regular'
       end
       
       describe "mini battleground solar systems" do
@@ -646,8 +555,6 @@ describe SpaceMule do
           )
         end
         
-        it_behaves_like "with planet units", 'battleground'
-        it_behaves_like "with orbit units", 'battleground'
       end
     end
     

@@ -48,12 +48,7 @@ object SsConfig {
 
   type Data = Map[Coords, Entry]
 
-  def apply(configKey: String): Data = {
-    val data = Config.get[Map[String, CfgMap]](configKey)
-    apply(configKey, data)
-  }
-
-  def apply(configKey: String, data: Map[String, CfgMap]) = {
+  def apply(data: Map[String, CfgMap]) = {
     data.map { case (positionStr, entryData) =>
       val splited = positionStr.split(",").map(_.toInt)
       val (position, angle) = (splited(0), splited(1))
@@ -70,9 +65,7 @@ object SsConfig {
           extractResources(entryData) match {
             case Some(resources) => resources
             case None => sys.error(
-              "Missing asteroid resources for %s[%s]['resources']".format(
-                configKey, positionStr
-              )
+              "Missing asteroid resources for %s!".format(positionStr)
             )
           }, extractWreckage(entryData), extractUnits(entryData)
         )

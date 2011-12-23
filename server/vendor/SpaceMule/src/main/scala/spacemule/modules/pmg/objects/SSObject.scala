@@ -23,17 +23,8 @@ trait SSObject {
   /**
    * Ground units.
    */
-  val units = ListBuffer[Troop]()
-  
-  /**
-   * Units in orbit.
-   */
-  val orbitUnits = ListBuffer[Troop]()
-
-  /**
-   * Wreckage in orbit.
-   */
-  var wreckage: Option[ResourcesEntry] = None
+  protected[this] var _units = Seq.empty[Troop]
+  def units = _units
 
   /**
    * Provide initialization code here.
@@ -41,18 +32,8 @@ trait SSObject {
   def initialize {}
 
   def createUnits(entries: Iterable[UnitsEntry]) {
-    createUnits(entries, units)
-  }
-  
-  def createOrbitUnits(entries: Iterable[UnitsEntry]) {
-    createUnits(entries, orbitUnits)
-  }
-  
-  private def createUnits(
-    entries: Iterable[UnitsEntry], target: ListBuffer[Troop]
-  ) {
     entries.foreach { entry =>
-      target ++= entry.createTroops()
+      _units = _units ++ entry.createTroops()
     }
   }
 }

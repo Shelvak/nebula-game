@@ -2,13 +2,13 @@ class PmgConfigInitializer < GameConfig::Initializer
   def self.generate
     LOGGER.block(
       "Generating home solar system configuration", :level => :debug
-    ) { generate_home_ss }
+    ) { generate_ss_maps }
     LOGGER.block(
       "Generating planet map configurations", :level => :debug
-    ) { generate_planet_map }
+    ) { generate_planet_maps }
   end
 
-  def self.generate_home_ss
+  def self.generate_ss_maps
     dirac = Unit::Dirac.to_s.demodulize
     thor = Unit::Thor.to_s.demodulize
     demosis = Unit::Demosis.to_s.demodulize
@@ -55,7 +55,12 @@ class PmgConfigInitializer < GameConfig::Initializer
     CONFIG.filter(/^solar_system\.map\./).each do |key, map_set|
       CONFIG[key] = map_set.map do |map_parameters|
         map_parameters['map'] = map_parameters['map'].inject({}) do
-          |hash, (position, data)|
+          |hash, (position_str, data)|
+
+          position, angle = position_str.split(",").map(&:to_i)
+          raise ArgumentError.new(
+            "Invalid solar system point (#{position_str}) in map set #{key}"
+          ) unless SolarSystemPoint.angle_valid?(position, angle)
 
           if data.has_key?("units")
             data["units"] = [data["units"]] unless data["units"].is_a?(Array)
@@ -77,14 +82,16 @@ class PmgConfigInitializer < GameConfig::Initializer
               if data[type].is_a?(String)
           end
 
-          hash[position] = data
+          hash[position_str] = data
           hash
         end
+
+        map_parameters
       end
     end
   end
 
-  def self.generate_planet_map
+  def self.generate_planet_maps
     gnat = Unit::Gnat.to_s.demodulize
     gnat_flanks = [0.4, 0.6]
 
@@ -262,7 +269,8 @@ class PmgConfigInitializer < GameConfig::Initializer
     #   },
     #   'buildings' => {
     #     building_name (String) => [[x, y, units], ...]
-    #   }
+    #   },
+    #   'units' => UnitsEntry configuration
     # }
     #
     CONFIG.filter(/^planet\.map\./).each do |key, map_set|
@@ -275,7 +283,8 @@ class PmgConfigInitializer < GameConfig::Initializer
           'weight' => map_parameters['weight'],
           'resources' => map_parameters['resources'],
           'tiles' => {},
-          'buildings' => {}
+          'buildings' => {},
+          'units' => map_parameters['units']
         }
 
         map.reverse.each_with_index do |line, y|

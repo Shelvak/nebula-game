@@ -7,11 +7,6 @@ package spacemule.modules.pmg.objects.solar_systems
 
 import spacemule.modules.pmg.objects.SolarSystem
 
-class Wormhole extends SolarSystem {
-  override val wormhole = true
-
-  /**
-   * Wormholes do not have any objects inside them.
-   */
-  override def createObjectsImpl() {}
+class Wormhole extends SolarSystem(None) {
+  override val kind = SolarSystem.Wormhole
 }

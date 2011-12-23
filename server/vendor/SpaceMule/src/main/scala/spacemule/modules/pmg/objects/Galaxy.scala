@@ -1,7 +1,7 @@
 package spacemule.modules.pmg.objects
 
 import scala.collection.mutable.HashMap
-import solar_systems.{Resource, Expansion, Homeworld}
+import solar_systems.{Homeworld}
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
@@ -18,8 +18,7 @@ import spacemule.modules.pmg.objects.solar_systems.Wormhole
 
 class Galaxy(val id: Int, val ruleset: String) {
   val zoneDiameter = Config.zoneDiameter
-  val expansionSystems = Config.expansionSolarSystems
-  val resourceSystems = Config.resourceSolarSystems
+  val freeSystems = Config.freeSolarSystems
   val wormholes = Config.wormholes
   val miniBattlegrounds = Config.miniBattlegrounds
   val zones = new HashMap[Coords, Zone]()
@@ -114,10 +113,8 @@ class Galaxy(val id: Int, val ruleset: String) {
     if (zone.playerCount == 0) {
       wormholes.foreach { coords =>
         zone.addSolarSystem(new Wormhole(), coords) }
-      expansionSystems.foreach { coords =>
-        zone.addSolarSystem(new Expansion(), coords) }
-      resourceSystems.foreach { coords =>
-        zone.addSolarSystem(new Resource(), coords) }
+      freeSystems.foreach { coords =>
+        zone.addSolarSystem(new SolarSystem(Config.freeSsConfig), coords) }
       miniBattlegrounds.foreach { coords =>
         zone.addSolarSystem(new Pulsar(), coords) }
     }

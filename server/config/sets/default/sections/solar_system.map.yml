@@ -133,7 +133,7 @@ battleground:
           - u[35]
           - [2, BossShip, 0, 1]
           - [1, BossShip, 1, 1]
-        "wreckage": [500_000.0, 1_000_000.0, 150_000.0]
+        "wreckage": [500000.0, 1000000.0, 150000.0]
       <% end %>
 
 <%
@@ -145,6 +145,39 @@ battleground:
     3,246 3,270 3,292 3,314 3,336}
 %>
 pulsar:
+  <% 15.times do %>
+  - weight: 1000
+    map:
+      # 2-4 jumpgates
+      <% fourth_ring.random_elements(rand(2, 5)).each do |position| %>
+      "<%= position %>": {"type": "jumpgate", "units": u[22]}
+      <% end %>
+
+      # Defensive ring
+      <% third_ring.each do |position| %>
+      "<%= position %>": {"type": "nothing", "units": u[15]}
+      <% end %>
+      # Stronger defensive ring
+      <% second_ring.each do |position| %>
+      "<%= position %>": {"type": "nothing", "units": u[20]}
+      <% end %>
+
+      # Inner ring with planet
+      <% planet_position = first_ring.random_element %>
+      "<%= planet_position %>":
+        "type": "planet"
+        "map": "pulsar"
+        "owned_by_player": false
+        "units":
+          - u[25]
+          - [1, BossShip, 0, 1]
+      <% (first_ring - [planet_position]).each do |position| %>
+      "<%= position %>": {"type": "nothing", "units": u[25]}
+      <% end %>
+  <% end %>
+
+# Free, non-shielded systems.
+free:
   <% 15.times do %>
   - weight: 1000
     map:

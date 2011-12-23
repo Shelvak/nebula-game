@@ -13,7 +13,6 @@ import spacemule.modules.combat
 import spacemule.modules.pathfinder.{objects => pfo}
 import scala.collection.Map
 import spacemule.modules.combat.objects.{Combatant, Damage, Armor, Stance}
-import ss_objects.Asteroid
 
 object Config {
   /**
@@ -146,10 +145,6 @@ object Config {
     }
   }
 
-  private def unitsEntry(name: String) = get[Seq[Seq[Any]]](name).map {
-    entry => new UnitsEntry(entry)
-  }
-
   private def cost(key: String) = double(key).ceil.toInt
   private def cost(key: String, level: Int) =
     formulaEval(key, Map("level" -> level.toDouble)).ceil.toInt
@@ -164,10 +159,8 @@ object Config {
   // Number of seconds for first inactivity check.
   def playerInactivityCheck: Int =
     seq[Seq[Long]]("galaxy.player.inactivity_check")(0)(1).toInt
-  lazy val expansionSolarSystems =
-    positions("galaxy.expansion_systems.positions")
-  lazy val resourceSolarSystems =
-    positions("galaxy.resource_systems.positions")
+  lazy val freeSolarSystems =
+    positions("galaxy.free_systems.positions")
   lazy val wormholes = positions("galaxy.wormholes.positions")
   lazy val miniBattlegrounds = positions("galaxy.mini_battlegrounds.positions")
   def convoyTime = int("galaxy.convoy.time")
@@ -237,58 +230,8 @@ object Config {
     else 
       double("solar_system.regular.jump.multiplier")
 
-  def planetCount(solarSystem: SolarSystem) = solarSystem match {
-    case ss: Expansion => range("solar_system.expansion.planet.count").random
-    case ss: Resource => range("solar_system.resources.planet.count").random
-  }
-
-  def asteroidCount(solarSystem: SolarSystem) = solarSystem match {
-    case ss: Wormhole => 0
-    case ss: Battleground => 0
-    case ss: Expansion => range("solar_system.expansion.asteroid.count").random
-    case ss: Resource => range("solar_system.resources.asteroid.count").random
-  }
-
-  def richAsteroidCount(solarSystem: SolarSystem) = solarSystem match {
-    case ss: Wormhole => 0
-    case ss: Battleground => 0
-    case ss: Expansion => range(
-        "solar_system.expansion.rich_asteroid.count").random
-    case ss: Resource => range(
-        "solar_system.resources.rich_asteroid.count").random
-  }
-
-  def jumpgateCount(solarSystem: SolarSystem) = solarSystem match {
-    case ss: Wormhole => 0
-    case ss: Expansion => range("solar_system.expansion.jumpgate.count").random
-    case ss: Resource => range("solar_system.resources.jumpgate.count").random
-  }
-
-  def asteroidRateStep = double("ss_object.asteroid.rate_step")
-
   def asteroidFirstSpawnCooldown = int(
     "ss_object.asteroid.wreckage.time.first")
-
-  def asteroidMetalRate(kind: Asteroid.Kind.Value): Double = kind match {
-    case Asteroid.Kind.Rich =>
-      range("ss_object.rich_asteroid.metal_rate").random(asteroidRateStep)
-    case Asteroid.Kind.Regular =>
-      range("ss_object.asteroid.metal_rate").random(asteroidRateStep)
-  }
-
-  def asteroidEnergyRate(kind: Asteroid.Kind.Value): Double = kind match {
-    case Asteroid.Kind.Rich =>
-      range("ss_object.rich_asteroid.energy_rate").random(asteroidRateStep)
-    case Asteroid.Kind.Regular =>
-      range("ss_object.asteroid.energy_rate").random(asteroidRateStep)
-  }
-
-  def asteroidZetiumRate(kind: Asteroid.Kind.Value): Double = kind match {
-    case Asteroid.Kind.Rich =>
-      range("ss_object.rich_asteroid.zetium_rate").random(asteroidRateStep)
-    case Asteroid.Kind.Regular =>
-      range("ss_object.asteroid.zetium_rate").random(asteroidRateStep)
-  }
 
   def ssObjectSize = range("ss_object.size")
 
@@ -296,22 +239,32 @@ object Config {
     Map[String, Map[String, Any]]
   ]("planet.expanded_map")(name)
 
-  lazy val homeworldSsConfig = SsConfig("solar_system.home")
-  lazy val battlegroundSsConfig = SsConfig("solar_system.battleground")
-  lazy private[this] val (pulsarSsConfigs, pulsarSsConfigWeights) = get[
-    Seq[Map[String, Any]]
-  ]("solar_system.pulsar").foldLeft(
-    (Seq.empty[SsConfig.Data], Seq.empty[Int])
-  ) { case ((cfgs, weights), data) =>
-    val weight = data("weight").asInstanceOf[Long].toInt
-    val map = data("map").asInstanceOf[SsConfig.Data]
-    
-    (cfgs :+ map, weights :+ weight)
+  private[this] val solarSystemMapSets = HashMap.empty[String, SsMapSet]
+  def solarSystemMapSet(key: String) = {
+    if (solarSystemMapSets.contains(key)) {
+      solarSystemMapSets(key)
+    }
+    else {
+      val configKey = "solar_system.map.%s".format(key)
+      try {
+        val data = get[Any](configKey)
+        val set = SsMapSet.extract(data)
+        solarSystemMapSets(key) = set
+        set
+      }
+      catch {
+        case e: Exception =>
+          System.err.println("Error while getting %s!".format(configKey))
+          throw e
+      }
+    }
   }
-  /**
-   * Pick a pulsar solar system config at random.
-   */
-  def pulsarSsConfig = pulsarSsConfigs.weightedRandom(pulsarSsConfigWeights)
+  def solarSystemMap(key: String) = solarSystemMapSet(key).random
+  
+  def homeworldSsConfig = solarSystemMap("home")
+  def battlegroundSsConfig = solarSystemMap("battleground")
+  def pulsarSsConfig = solarSystemMap("pulsar")
+  def freeSsConfig = solarSystemMap("free")
 
   def startingScientists: Int =
     double("buildings.mothership.scientists").toInt
@@ -460,31 +413,7 @@ object Config {
     gunDefinitions("units.%s.guns".format(name.underscore))
 
   // End of unit attributes
-
-  // Ground units configuration
   
-  lazy val regularPlanetGroundUnits = unitsEntry(
-    "ss_object.regular.planet.units")
-  lazy val homeworldPlanetGroundUnits = unitsEntry(
-    "ss_object.homeworld.planet.units")
-  lazy val homeworldExpansionPlanetGroundUnits = unitsEntry(
-    "ss_object.homeworld.expansion_planet.units")
-  lazy val battlegroundPlanetGroundUnits = unitsEntry(
-    "ss_object.battleground.planet.units")
-  
-  // End of ground units configuration
-  
-  // Orbit units configuration
-
-  lazy val regularPlanetOrbitUnits = unitsEntry(
-    "ss_object.regular.orbit.planet.units")
-  lazy val regularAsteroidOrbitUnits = unitsEntry(
-    "ss_object.regular.orbit.asteroid.units")
-  lazy val regularJumpgateOrbitUnits = unitsEntry(
-    "ss_object.regular.orbit.jumpgate.units")
-
-  // End of orbit units configuration
-
   // Planet configuration
 
   def planetAreaMax = int("planet.area.max")
@@ -492,7 +421,7 @@ object Config {
   private[this] val planetMapSetCache = 
     HashMap.empty[String, ss_objects.Planet.MapSet]
   
-  def mapSet(key: String) = {
+  def mapSet(key: String): ss_objects.Planet.MapSet = {
     if (! planetMapSetCache.contains(key)) {
       val mapSet = ss_objects.Planet.MapSet.extract(
         get[Seq[Any]]("planet.map.%s".format(key))
@@ -505,9 +434,7 @@ object Config {
     }
   }
 
-  def battlegroundPlanetMaps = mapSet("battleground")
-  def pulsarPlanetMaps = mapSet("pulsar")
-  def freeSystemPlanetMaps = mapSet("free_systems")
+  def planetMap(mapSetName: String) = mapSet(mapSetName).random
   
   def folliagePercentage = range("planet.folliage.area").random
   def folliageVariations = int("ui.planet.folliage.variations")

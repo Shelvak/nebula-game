@@ -1,6 +1,5 @@
 package spacemule.modules.pmg.objects.ss_objects
 
-import java.math.BigDecimal
 import spacemule.helpers.Converters._
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area._
@@ -29,13 +28,13 @@ object Planet {
       val maps = data.map { mapData =>
         Map.extract(mapData.asInstanceOf[sc.Map[String, Any]])
       }.toIndexedSeq
-      MapSet(maps)
+      new MapSet(maps)
     }
   }
-  
-  case class MapSet(maps: IndexedSeq[Map]) {
-    val weights = maps.map(_.weight)
-    
+
+  class MapSet(maps: IndexedSeq[Map]) {
+    private[this] val weights = maps.map(_.weight)
+
     def random = maps.weightedRandom(weights)
   }
 
@@ -43,7 +42,7 @@ object Planet {
     /**
      * Extract a map from dynamic data structure like this:
      *
-     {
+    {
        'size' => [width, height],
        'name' => String,
        'terrain' => Fixnum,
@@ -53,37 +52,38 @@ object Planet {
        },
        'buildings' => {
          building_name (String) => [[x, y, units], ...]
-       }
+       },
+       'units' => UnitsEntry configuration
      }
      */
     def extract(data: sc.Map[String, Any]): Map = {
       try {
         val size = data("size").asInstanceOf[IndexedSeq[Long]]
         val area = Area(size(0).toInt, size(1).toInt)
-  
+
         val name = data("name").asInstanceOf[String]
         val terrainKind = data("terrain").asInstanceOf[Long].toInt
-  
+
         val tilesMap = new AreaMap(area)
         data("tiles").asInstanceOf[
           sc.Map[Long, Seq[
             IndexedSeq[Long]
-          ]]
-        ].foreach { case (tileKind, tiles) =>
+            ]]
+          ].foreach { case (tileKind, tiles) =>
           val tile = Tile(tileKind.toInt)
           tiles.foreach { coordArray =>
             val coord = Coords(coordArray(0).toInt, coordArray(1).toInt)
             Planet.setTile(tilesMap, tile, coord)
           }
         }
-  
+
         val weight = data("weight").asInstanceOf[Long].toInt
         val resources = ResourcesEntry.extract(data("resources"))
-  
+
         val (buildings, buildingTiles) =
           data("buildings").asInstanceOf[
             sc.Map[String, Seq[IndexedSeq[Any]]]
-          ].foldLeft(
+            ].foldLeft(
             (ListBuffer.empty[Building], HashSet.empty[Coords])
           ) { case ((b, bt), (buildingName, dataArray)) =>
             dataArray.foreach { entryArray =>
@@ -91,19 +91,21 @@ object Planet {
               val y = entryArray(1).asInstanceOf[Long].toInt
               val level = entryArray(2).asInstanceOf[Long].toInt
               val units = UnitsEntry.extract(entryArray(3))
-  
+
               val building = new Building(buildingName, x, y, level)
               building.createUnits(units)
               b += building
               building.eachCoords { coords => bt += coords }
             }
-  
+
             (b, bt)
           }
-  
+
+        val units = UnitsEntry.extract(data("units"))
+
         Map(
           area, name, terrainKind, weight, resources, tilesMap, buildings.toSeq,
-          buildingTiles.toSet
+          buildingTiles.toSet, units
         )
       }
       catch {
@@ -127,22 +129,9 @@ object Planet {
     tilesMap: AreaMap,
     buildings: Seq[Building],
     // Building occupied tiles. Used in populating free are with folliage.
-    buildingTiles: Set[Coords]
+    buildingTiles: Set[Coords],
+    units: Seq[UnitsEntry]
   )
-
-  /**
-   * Pulsar planet with preset map.
-   */
-  class Pulsar(index: Int)
-  extends Planet(Config.pulsarPlanetMaps.maps.wrapped(index))
-
-  /**
-   * Battleground planet with preset map.
-   */
-  class Battleground(index: Int)
-  extends Planet(Config.battlegroundPlanetMaps.maps.wrapped(index)) {
-    override def planetName(id: Int) = map.name
-  }
 
   val TileNormal = AreaMap.DefaultValue
 
@@ -173,17 +162,15 @@ object Planet {
 
 class Planet(val map: Planet.Map, val ownedByPlayer: Boolean = false)
 extends SSObject {
-  def this() = this(Config.freeSystemPlanetMaps.random)
-
-  private[this] val folliages = ListBuffer[Folliage]()
+  private[this] val foliages = ListBuffer[Folliage]()
 
   val name = "Planet"
   
-  def planetName(id: Int) = "%s-%d".format(map.name, id)
+  def planetName(id: Int) = map.name.format(id)
 
   def foreachTile(block: (Coords, Int) => Unit) = map.tilesMap.foreach(block)
   def foreachFolliage(block: (Coords, Int) => Unit) = {
-    folliages.foreach { folliage =>
+    foliages.foreach { folliage =>
       block(folliage.coords, folliage.kind)
     }
   }
@@ -214,7 +201,14 @@ extends SSObject {
   /**
    * Fills planet with folliage.
    */
-  override def initialize() = putFolliage()
+  override def initialize() = {
+    putFolliage()
+
+    // Create ground troops
+    map.units.foreach { unitsEntry =>
+      _units = _units ++ unitsEntry.createTroops()
+    }
+  }
 
   protected def freeTilesList(
     excludeBuildings: Boolean
@@ -240,7 +234,7 @@ extends SSObject {
     /**
      * This type requires spacing around them.
      */
-    def putFolliages(count: Int, radius: Int, kind: () => Int) = {
+    def putFoliages(count: Int, radius: Int, kind: () => Int) = {
       if (free.size > 0) {
         // We'll keep free spots for local type here
         val localFree = free.clone
@@ -248,7 +242,7 @@ extends SSObject {
         (1 to count).foreach { index =>
           if (localFree.size > 0) {
             val coords = localFree.takeRandom
-            folliages += Folliage(kind(), coords)
+            foliages += Folliage(kind(), coords)
             free -= coords
 
             // Remove everything around it in spacing radius.
@@ -268,14 +262,14 @@ extends SSObject {
     val count3rdType = totalCount - count1stType - count2ndType
 
     val kinds1stType = Config.folliageKinds1stType(map.terrain)
-    putFolliages(
+    putFoliages(
       count1stType,
       Config.folliageSpacingRadius1stType,
       () => { kinds1stType.random }
     )
 
     val kinds2ndType = Config.folliageKinds1stType(map.terrain)
-    putFolliages(
+    putFoliages(
       count2ndType,
       Config.folliageSpacingRadius2ndType,
       () => { kinds2ndType.random }
@@ -286,7 +280,7 @@ extends SSObject {
     kinds3rdType --= kinds1stType
     kinds3rdType --= kinds2ndType
     
-    putFolliages(
+    putFoliages(
       count3rdType,
       0,
       () => { kinds3rdType.random }
