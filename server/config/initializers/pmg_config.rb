@@ -268,7 +268,7 @@ class PmgConfigInitializer < GameConfig::Initializer
     #     kind (Fixnum) => [[x, y], ...]
     #   },
     #   'buildings' => {
-    #     building_name (String) => [[x, y, units], ...]
+    #     building_name (String) => [[x, y, level, units], ...]
     #   },
     #   'units' => UnitsEntry configuration
     # }

@@ -37,6 +37,10 @@ class LocationPoint
     end
   end
 
+  def self.planet(planet_id)
+    new(planet_id, SS_OBJECT, nil, nil)
+  end
+
   def initialize(id, type, x, y)
     raise ArgumentError.new(
       "id must be Fixnum, but was #{id.inspect}!"

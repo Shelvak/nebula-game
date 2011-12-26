@@ -2,31 +2,138 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
   |configuration|
 
   def check_planet(position_str, ss_conditions, data)
+    exp_to = "Expected planet @ #{position_str} to"
     if SsObject::Planet.where(ss_conditions).exists?
       planet = SsObject::Planet.where(ss_conditions).first
 
       owned_by_player = ! planet.player_id.nil?
-      @errors << "Expected planet @ #{position_str
-        } to have owned_by_player: #{data["owned_by_player"]
+      @errors << "#{exp_to} have owned_by_player: #{data["owned_by_player"]
         } but it was #{owned_by_player}." \
         if owned_by_player != data["owned_by_player"]
 
-      @errors << "Expected planet @ #{position_str
-        } to have next_raid_at but it did not." if planet.next_raid_at.nil?
+      @errors << "#{exp_to} have next_raid_at but it did not." \
+        if planet.next_raid_at.nil?
 
-      @errors << "Expected planet @ #{position_str
-        } to have raid_arg set to 0, but it was set to #{planet.raid_arg}" \
-        unless planet.raid_arg == 0
+      @errors << "#{exp_to} have raid_arg set to 0, but it was set to #{
+        planet.raid_arg}" unless planet.raid_arg == 0
 
-      @errors << "Expected planet @ #{position_str
-        } to have raid callback registered but it did not." \
+      @errors << "#{exp_to} have raid callback registered but it did not." \
         unless CallbackManager.has?(
           planet, CallbackManager::EVENT_RAID, planet.next_raid_at
         )
 
-      # TODO: check planet map configuration.
+      planet_data = CONFIG["planet.map.#{data['map']}"][0]
+
+      exp_width, exp_height = planet_data['size']
+      @errors << "#{exp_to} be #{exp_width}x#{exp_height} but it was #{
+        planet.width}x#{planet.height} instead" \
+        if [planet.width, planet.height] != planet_data['size']
+
+      @errors << "#{exp_to} have its name conforming to #{planet_data['name']
+        } but its name was #{planet.name.inspect}" \
+        unless planet.name.gsub(/\d+/, "%d") == planet_data['name']
+
+      @errors << "#{exp_to} have terrain type #{planet_data['terrain']
+        }, but it was #{planet.terrain}" \
+        unless planet.terrain == planet_data['terrain']
+
+      check_planet_starting_resources(exp_to, planet, planet_data)
+      check_planet_tiles(exp_to, planet, planet_data['tiles'])
+      check_planet_buildings(exp_to, planet, planet_data['buildings'],
+                             position_str)
+      check_units(
+        planet_data['units'],
+        LocationPoint.planet(planet.id),
+        "planet (id: #{planet.id}) @ #{position_str}"
+      )
     else
-      @errors << "Expected planet @ #{position_str} to exist but it did not."
+      @errors << "#{exp_to} exist but it did not."
+    end
+  end
+
+  def check_planet_starting_resources(exp_to, planet, data)
+    precision = 1.0
+
+    Resources::TYPES.each_with_index do |type, index|
+      actual = planet.send(type)
+      expected = data['resources'][index]
+
+      @errors << "#{exp_to} have resource #{type} within #{precision
+        } of #{expected} but it was #{actual}." \
+        unless actual.within?(expected, precision)
+    end
+  end
+
+  def check_planet_tiles(exp_to, planet, tiles)
+    tiles.each do |kind, coords|
+      if kind == Tile::VOID
+        rows = Tile.
+          select("x, y").
+          where(:planet_id => planet.id).
+          where(coords.map { |x, y| "(x=#{x} AND y=#{y})" }.join(" OR ")).
+          c_select_all
+
+        @errors << "#{exp_to} have no tiles at #{
+          rows.map { |r| "#{r['x']},#{r['y']}"}.join(', ')
+        } but it did." if rows.size > 0
+      else
+        actual_coords = Tile.
+          select("x, y").
+          where(:planet_id => planet.id, :kind => kind).
+          c_select_all.map { |row| [row['x'], row['y']] }
+
+        extra_tiles = actual_coords - coords
+        missing_tiles = coords - actual_coords
+
+        @errors << "#{exp_to} have no extra tiles of #{Tile::MAPPING[kind]
+          } but it did @ #{
+            extra_tiles.map { |x, y| "#{x},#{y}"}.join(', ')
+          }" if extra_tiles.size > 0
+        @errors << "#{exp_to} not have any missing tiles of #{
+          Tile::MAPPING[kind]} but it did @ #{
+            missing_tiles.map { |x, y| "#{x},#{y}"}.join(', ')
+          }" if missing_tiles.size > 0
+      end
+    end
+  end
+
+  def check_planet_buildings(exp_to, planet, buildings, position_str)
+    buildings.each do |type, type_data|
+      expected_data = type_data.map do |x, y, level, units|
+        [x, y, level]
+      end
+
+      rows = Building.
+        select("id, x, y, level").
+        where(:planet_id => planet.id, :type => type).
+        c_select_all
+      rows_by_coords = rows.hash_by { |row| [row['x'], row['y']] }
+      actual_data = rows.map { |row| [row['x'], row['y'], row['level']] }
+
+      extra_buildings = actual_data - expected_data
+      missing_buildings = expected_data - actual_data
+
+      @errors << "#{exp_to} have no extra buildings of #{type
+        } but it did @ #{
+          extra_buildings.map { |x, y, l| "#{x},#{y}(lvl: #{l})"}.join(', ')
+        }" if extra_buildings.size > 0
+      @errors << "#{exp_to} not have any missing buildings of #{type
+        } but it did @ #{
+          missing_buildings.map { |x, y, l| "#{x},#{y}(lvl: #{l})"}.join(', ')
+        }" if missing_buildings.size > 0
+
+      type_data.each do |x, y, level, units|
+        row = rows_by_coords[[x, y]]
+
+        unless row.nil?
+          location = LocationPoint.new(row['id'], Location::BUILDING, nil, nil)
+          check_units(
+            units, location,
+            "Building #{type} (id: #{row['id']}) in planet (id: #{planet.id
+              }) @ #{position_str}"
+          )
+        end
+      end
     end
   end
 
@@ -81,7 +188,9 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
     end
   end
 
-  def check_units(units_data, location)
+  def check_units(units_data, location, location_str=nil)
+    location_str ||= location.to_s
+
     grouped = Unit.in_location(location).all.grouped_counts do |unit|
       # Can't use Unit#type because it RANDOMLY returns Unit#class instead
       # of actual #type attribute... Fuck that.
@@ -94,7 +203,7 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
       actual_count = grouped.delete(key) || 0
       unless actual_count == expected_count
         @errors << "Expected to have #{expected_count} #{type} in flank #{
-          flank} with #{hp_percentage * 100}% HP @ #{location
+          flank} with #{hp_percentage * 100}% HP @ #{location_str
           }, but only had #{actual_count}"
       end
     end
@@ -102,7 +211,7 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
     unless grouped.blank?
       grouped.each do |(type, flank, hp_percentage), count|
         @errors << "Expected not to have any #{type} in flank #{flank
-          } with #{hp_percentage * 100}% HP @ #{location
+          } with #{hp_percentage * 100}% HP @ #{location_str
           } but it did have #{count}."
       end
     end
