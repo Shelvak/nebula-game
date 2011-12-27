@@ -11,6 +11,8 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
         } but it was #{owned_by_player}." \
         if owned_by_player != data["owned_by_player"]
 
+      check_planet_ownership(exp_to, planet) if data["owned_by_player"]
+
       @errors << "#{exp_to} have next_raid_at but it did not." \
         if planet.next_raid_at.nil?
 
@@ -37,8 +39,9 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
         }, but it was #{planet.terrain}" \
         unless planet.terrain == planet_data['terrain']
 
-      check_planet_starting_resources(exp_to, planet, planet_data)
+      check_planet_resources(exp_to, planet, planet_data['resources'])
       check_planet_tiles(exp_to, planet, planet_data['tiles'])
+      check_planet_folliage(exp_to, planet)
       check_planet_buildings(exp_to, planet, planet_data['buildings'],
                              position_str)
       check_units(
@@ -51,17 +54,64 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
     end
   end
 
-  def check_planet_starting_resources(exp_to, planet, data)
+  def check_planet_ownership(exp_to, planet)
+    @errors << "#{exp_to} to have #owner_changed set to #{Time.now
+      } but it was set to #{planet.owner_changed}" \
+      unless planet.owner_changed.within?(Time.now, SPEC_TIME_PRECISION)
+
+
+  end
+
+  def check_planet_resources(exp_to, planet, starting_resources)
     precision = 1.0
 
     Resources::TYPES.each_with_index do |type, index|
       actual = planet.send(type)
-      expected = data['resources'][index]
+      expected = starting_resources[index]
 
       @errors << "#{exp_to} have resource #{type} within #{precision
         } of #{expected} but it was #{actual}." \
         unless actual.within?(expected, precision)
     end
+
+    resources = Resources::TYPES.inject(
+      {:actual => {}, :expected => {}}
+    ) do |hash, resource|
+      [
+        :"#{resource}_generation_rate", :"#{resource}_usage_rate",
+        :"#{resource}_storage"
+      ].each do |sym|
+        hash[:actual][sym] = planet.send(sym)
+        hash[:expected][sym] = 0.0
+      end
+
+      hash
+    end
+
+    resources = planet.buildings.inject(resources) do |hash, building|
+      if building.class.manages_resources?
+        Resources::TYPES.each do |resource|
+          [
+            :"#{resource}_generation_rate", :"#{resource}_usage_rate",
+            :"#{resource}_storage"
+          ].each { |sym| hash[:expected][sym] += building.send(sym) }
+        end
+      end
+
+      hash
+    end
+
+    resources[:expected].each do |attr, expected|
+      actual = resources[:actual][attr]
+
+      @errors << "#{exp_to} have #{attr} within #{precision
+        } of #{expected} but it was #{actual}."\
+        unless actual.within?(expected, precision)
+    end
+
+    @errors << "#{exp_to} to have #last_resources_update set to #{Time.now
+      } but it was set to #{planet.last_resources_update}" \
+      unless planet.last_resources_update.within?(Time.now, SPEC_TIME_PRECISION)
   end
 
   def check_planet_tiles(exp_to, planet, tiles)
@@ -95,6 +145,11 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
           }" if missing_tiles.size > 0
       end
     end
+  end
+
+  def check_planet_folliage(exp_to, planet)
+    @errors << "#{exp_to} have some folliage, but it did not." \
+      if Folliage.where(:planet_id => planet.id).count == 0
   end
 
   def check_planet_buildings(exp_to, planet, buildings, position_str)
@@ -137,24 +192,27 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
     end
   end
 
-  def check_asteroid(position_str, ss_conditions)
-    row = SsObject::Asteroid.where(ss_conditions).
-      select(
-        Resources::TYPES.map { |t| "#{t}_generation_rate" }.join(", ")
-      ).c_select_one
+  def check_asteroid(position_str, ss_conditions, resources)
+    exp_to = "Expected asteroid @ #{position_str} to"
+    asteroid = SsObject::Asteroid.where(ss_conditions).first
 
-    if row.nil?
-      @errors << "Expected asteroid to exist @ #{position_str
-        } but it did not."
+    if asteroid.nil?
+      @errors << "#{exp_to} exist but it did not."
     else
       Resources::TYPES.each_with_index do |type, index|
-        actual = row["#{type}_generation_rate"]
-        expected = data["resources"][index]
-        if actual != expected
-          @errors << "Expected asteroid @ #{position_str} to have #{
-            type} rate of #{expected} but it had rate of #{actual}."
-        end
+        actual = asteroid.send :"#{type}_generation_rate"
+        expected = resources[index]
+        @errors << "#{exp_to} have #{type} rate of #{expected
+          } but it had rate of #{actual}." if actual != expected
       end
+
+      spawn_time = CONFIG.
+        evalproperty('ss_object.asteroid.wreckage.time.first').
+        from_now
+      @errors << "#{exp_to} have spawn callback @ #{spawn_time
+        } but it did not." \
+        unless CallbackManager.has?(asteroid, CallbackManager::EVENT_SPAWN,
+                                    spawn_time.to_range(SPEC_TIME_PRECISION))
     end
   end
 
@@ -231,7 +289,7 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
         when "planet"
           check_planet(position_str, ss_conditions, data)
         when "asteroid"
-          check_asteroid(position_str, ss_conditions)
+          check_asteroid(position_str, ss_conditions, data["resources"])
         when "jumpgate"
           check_jumpgate(position_str, ss_conditions)
       end

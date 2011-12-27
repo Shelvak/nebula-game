@@ -38,37 +38,6 @@ shared_examples_for "adding new solar systems" do
   end
 end
 
-shared_examples_for "with planet units" do |type, subtype|
-  subtype ||= 'planet'
-
-  it "should have correct number of planet ground units" do
-    (@planets || @solar_systems.map { |ss| ss.planets}.flatten).each do |planet|
-      planet.should have_correct_unit_count(
-        "ss_object.#{type}.#{subtype}.units"
-      )
-    end
-  end
-end
-
-shared_examples_for "starting resources" do |resolver, additional_items|
-  Resources::TYPES.each do |resource|
-    (
-      [[:_generation_rate, nil], [:_usage_rate, nil], [:_storage, nil]] +
-      (additional_items || []).map { |block| block.call(resource) }
-    ).each do |attr_suffix, value|
-      attr = :"#{resource}#{attr_suffix}"
-      value = resolver.call(attr) if value.nil?
-
-      it "should have correct ##{attr}" do
-        models = @models || [@model]
-        models.each do |model|
-          model.send(attr).should be_within(0.1).of(value)
-        end
-      end
-    end
-  end
-end
-
 describe SpaceMule do
   before(:all) do
     # Ensure we're not testing against randomness: leave only one map of
@@ -226,21 +195,13 @@ describe SpaceMule do
 
     describe "home solar system" do
       before(:all) do
-        @ss = SolarSystem.where(:shield_owner_id => @player.id).first
+        @condition = SolarSystem.
+          where(:player_id => @player.id, :kind => SolarSystem::KIND_NORMAL)
+        @ss = @condition.first
       end
 
-      it "should be shielded" do
-        @ss.should have_shield
-      end
-
-      it "should have correct shield owner" do
-        @ss.shield_owner_id.should == @player.id
-      end
-
-      it "should not have any other shielded ss" do
-        SolarSystem.where(
-          ["galaxy_id=? AND id!=?", @ss.galaxy_id, @ss.id]
-        ).all.each { |ss| ss.should_not have_shield }
+      it "should only have one home solar system" do
+        @condition.count.should == 1
       end
 
       it "should register callback for inactivity check" do
@@ -255,102 +216,9 @@ describe SpaceMule do
       end
 
       it "should be created from static configuration" do
-        @ss.should be_created_from_static_ss_configuration('solar_system.home')
-      end
-
-      describe "planets" do
-        before(:all) do
-          @planets = CONFIG['solar_system.home'].inject([]) do
-            |storage, (key, item)|
-
-            if item['type'] == 'planet'
-              position, angle = key.split(",").map(&:to_i)
-
-              planet = SsObject::Planet.
-                where(:solar_system_id => @ss.id,
-                      :position => position, :angle => angle).first
-              raise "cannot find planet @ ss id #{@ss.id} @ #{key}!" \
-                if planet.nil?
-              storage << [planet, CONFIG["planet.map.#{item['map']}"]]
-            end
-
-            storage
-          end
-
-          @models = @planets.map { |planet, _| planet }
-        end
-
-        it "should have correct dimensions" do
-          @planets.each do |planet, map_set|
-            map_set.map { |map| map['size'] }.
-              should include([planet.width, planet.height])
-          end
-        end
-
-        #it "should create planet map that conforms to specified map" do
-        #  @planets.each do |planet, map_set|
-        #    planet.should conform_to_tile_map_set(map_set)
-        #  end
-        #end
-
-        #it "should place buildings & units from layout" do
-        #  @planets.each do |planet, map|
-        #    planet.should conform_to_building_map(map['buildings'])
-        #  end
-        #end
-
-        #it "should set planet resources from those buildings" do
-        #  @planets.each do |planet, map|
-        #    resources = Resources::TYPES.inject({}) do |hash, resource|
-        #      [
-        #        :"#{resource}_generation_rate", :"#{resource}_usage_rate",
-        #        :"#{resource}_storage"
-        #      ].each do |sym|
-        #        hash[:expected][sym] = planet.send(sym)
-        #        hash[:actual][sym] = 0.0
-        #      end
-        #
-        #      hash
-        #    end
-        #
-        #    resources = planet.buildings.inject(resources) do |hash, building|
-        #      if building.class.manages_resources?
-        #        Resources::TYPES.each do |resource|
-        #          [
-        #            :"#{resource}_generation_rate", :"#{resource}_usage_rate",
-        #            :"#{resource}_storage"
-        #          ].each { |sym| hash[:actual][sym] += building.send(sym) }
-        #        end
-        #      end
-        #
-        #      hash
-        #    end
-        #
-        #    hash[:actual].should equal_to_hash(hash[:expected])
-        #  end
-        #end
-
-        it "should create one homeworld for player" do
-          SsObject::Planet.where(:player_id => @player.id).count.should == 1
-        end
-
-        #it_should_behave_like "starting resources",
-        #  lambda { |attr|
-        #    bg_planet_buildings.inject(0.0) do |sum, klass|
-        #      sum + klass.send(attr, klass.max_level)
-        #    end
-        #  }
-        #  [
-        #    lambda { |resource|
-        #      ["", CONFIG["buildings.mothership.#{resource}.starting"]]
-        #    }
-        #  ]
-        #
-        #it "should set your starting buildings to be without points" do
-        #  @model.buildings.each do |building|
-        #    building.should be_without_points
-        #  end
-        #end
+        @ss.should be_created_from_static_ss_configuration(
+                     CONFIG['solar_system.map.home'][0]['map']
+                   )
       end
     end
 
@@ -400,21 +268,20 @@ describe SpaceMule do
         end
       end
 
-      describe "planets" do
-        before(:all) do
-          @models = SsObject::Planet.
-            where(:solar_system_id => @pulsars.map(&:id)).all
+      it "should be created from static configuration" do
+        @pulsars.each do |pulsar|
+          pulsar.should be_created_from_static_ss_configuration(
+                       CONFIG['solar_system.map.pulsar'][0]['map']
+                     )
         end
       end
     end
 
-    describe "fixed free solar systems" do
+    describe "free solar systems" do
       before(:all) do
         @solar_systems = SolarSystem.where(
           :galaxy_id => @galaxy.id, :kind => SolarSystem::KIND_NORMAL
-        ).all.reject do |ss|
-          ss.planets.where("player_id IS NOT NULL").count > 0
-        end
+        ).where("player_id IS NULL").all
       end
 
       it "should register callback for spawn" do
@@ -422,28 +289,12 @@ describe SpaceMule do
           ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
         end
       end
-    end
 
-    describe "asteroids" do
-      before(:all) do
-        @asteroids = SsObject::Asteroid.where(
-          :solar_system_id => @galaxy.solar_systems.map(&:id)
-        )
-      end
-
-      it "should register callbacks for them" do
-        @asteroids.each do |asteroid|
-          asteroid.should have_callback(CallbackManager::EVENT_SPAWN,
-            CONFIG.evalproperty('ss_object.asteroid.wreckage.time.first').
-              from_now)
-        end
-      end
-
-      it "should have spawn resources properly set" do
-        @asteroids.each do |asteroid|
-          asteroid.should have_generation_rates(
-            'ss_object.asteroid', 'ss_object.rich_asteroid'
-          )
+      it "should be created from static configuration" do
+        @solar_systems.each do |ss|
+          ss.should be_created_from_static_ss_configuration(
+                      CONFIG['solar_system.map.free'][0]['map']
+                    )
         end
       end
     end
@@ -485,76 +336,6 @@ describe SpaceMule do
         @planets.each do |planet|
           planet.should_not have_blank_npc_buildings
         end
-      end
-
-      describe "homeworld" do
-        before(:all) do
-          @homeworld = SsObject::Planet.where(
-            :player_id => @player.id).first
-        end
-        
-        it "should set #owner_changed" do
-          @homeworld.owner_changed.
-            should be_within(SPEC_TIME_PRECISION).of(Time.now)
-        end
-        
-        describe "resources" do
-          it "should set last_resources_update" do
-            @homeworld.last_resources_update.should_not be_nil
-          end
-
-          %w{metal energy zetium}.each do |resource|
-            [
-              ["starting", ""],
-              ["generate", "_rate"],
-              ["store", "_storage"]
-            ].each do |config_name, attr_name|
-              it "should set #{resource} #{config_name}" do
-                @homeworld.send("#{resource}#{attr_name}").should be_within(
-                  0.5).of(
-                    CONFIG.evalproperty(
-                      "buildings.mothership.#{resource}.#{config_name}"
-                    )
-                  )
-              end
-            end
-          end
-        end
-      end
-    end
-
-    describe "units" do
-      describe "home solar system" do
-        before(:each) do
-          @homeworld = SsObject::Planet.where(:player_id => @player.id).
-            first
-          @ss = @homeworld.solar_system
-          @solar_systems = [@ss]
-        end
-      end
-        
-      describe "regular solar systems" do
-        before(:each) do
-          homeworld_ss_id = SsObject::Planet.
-            where(:player_id => @player.id).first.solar_system_id
-          @solar_systems = SolarSystem.where(
-            "galaxy_id=? AND kind=? AND id!=?", 
-            @galaxy.id, SolarSystem::KIND_NORMAL, homeworld_ss_id
-          )
-        end
-        
-      end
-      
-      describe "mini battleground solar systems" do
-        before(:each) do
-          homeworld_ss_id = SsObject::Planet.
-            where(:player_id => @player.id).first.solar_system_id
-          @solar_systems = SolarSystem.where(
-            "galaxy_id=? AND kind=? AND x IS NOT NULL AND y IS NOT NULL", 
-            @galaxy.id, SolarSystem::KIND_BATTLEGROUND
-          )
-        end
-        
       end
     end
     

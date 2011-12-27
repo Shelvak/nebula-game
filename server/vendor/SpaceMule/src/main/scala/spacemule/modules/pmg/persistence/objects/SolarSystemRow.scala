@@ -7,7 +7,7 @@ import spacemule.modules.pmg.objects.{Galaxy, SolarSystem}
 import spacemule.persistence.{Row, RowObject, DB}
 
 object SolarSystemRow extends RowObject {
-  val columnsSeq = Seq("id", "galaxy_id", "x", "y", "kind", "shield_owner_id")
+  val columnsSeq = Seq("id", "galaxy_id", "x", "y", "kind", "player_id")
 }
 
 case class SolarSystemRow(

@@ -26,11 +26,6 @@ trait SSObject {
   protected[this] var _units = Seq.empty[Troop]
   def units = _units
 
-  /**
-   * Provide initialization code here.
-   */
-  def initialize {}
-
   def createUnits(entries: Iterable[UnitsEntry]) {
     entries.foreach { entry =>
       _units = _units ++ entry.createTroops()

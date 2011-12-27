@@ -198,16 +198,11 @@ extends SSObject {
 
   lazy val nextRaidAt = Config.raidingDelayRandomDate
 
-  /**
-   * Fills planet with folliage.
-   */
-  override def initialize() = {
-    putFolliage()
+  putFolliage()
 
-    // Create ground troops
-    map.units.foreach { unitsEntry =>
-      _units = _units ++ unitsEntry.createTroops()
-    }
+  // Create ground troops
+  map.units.foreach { unitsEntry =>
+    _units = _units ++ unitsEntry.createTroops()
   }
 
   protected def freeTilesList(
