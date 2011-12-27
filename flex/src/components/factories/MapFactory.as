@@ -76,7 +76,7 @@ package components.factories
          );
          viewport.underlayImage = getImage(AssetNames.getSpaceBackgroundImageName());
          viewport.underlayScrollSpeedRatio = 0.07;
-         viewport.paddingHorizontal = 50;
+         viewport.paddingHorizontal = 200;
          viewport.paddingVertical   = 50;
          return viewport;
       };
@@ -84,7 +84,7 @@ package components.factories
          var viewport:ViewportZoomable = new ViewportZoomable();
          viewport.underlayImage = getImage(AssetNames.getSpaceBackgroundImageName());
          viewport.underlayScrollSpeedRatio = 0.07;
-         viewport.paddingHorizontal = 300;
+         viewport.paddingHorizontal = 400;
          viewport.paddingVertical = 300;
          return viewport;
       };
