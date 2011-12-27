@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                    xmlns:s="library://ns.adobe.com/flex/spark" 
-                    xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*"
                     xmlns:ctrl="components.map.controllers.*"
-                    xmlns:minimap="components.map.controllers.minimap.*"
-                    implements="components.map.controllers.IMapViewportController">
+                    implements="components.map.controllers.IMapViewportController"
+                    resize="this_resizeHandler(event)">
    
    <fx:Script>
       <![CDATA[
       import components.base.viewport.Viewport;
 
+      import models.map.MMapSolarSystem;
+
       import mx.events.FlexEvent;
+      import mx.events.ResizeEvent;
 
 
       private var _viewport: Viewport;
@@ -22,10 +23,15 @@
       }
 
 
+      private var f_cleanupCalled:Boolean = false;
       public function cleanup(): void {
+         if (f_cleanupCalled) {
+            return;
+         }
+         f_cleanupCalled = true;
          _viewport = null;
          zoom.cleanup();
-         planets.dataProvider = null;
+         watchedObjects.cleanup();
       }
 
 
@@ -35,19 +41,31 @@
 
 
       private function initializeControllers(): void {
-         if (zoom) {
+         if (zoom != null) {
             zoom.setViewport(_viewport);
          }
-         if (planets) {
-            planets.dataProvider = ML.latestSSMap.importantObjects;
+         if (watchedObjects != null && watchedObjects.model == null) {
+            var solarSystem:MMapSolarSystem = ML.latestSSMap;
+            watchedObjects.model = new WatchedObjects(
+               solarSystem, new SolarSystemSectorsProvider(solarSystem)
+            );
+         }
+      }
+
+      private function this_resizeHandler(event: ResizeEvent): void {
+         if (watchedObjects != null) {
+            watchedObjects.maxHeight = this.height - 110;
+            watchedObjects.invalidateSize();
+            invalidateSize();
          }
       }
       ]]>
    </fx:Script>
    
    <ctrl:ViewportZoomController id="zoom"/>
-   <ctrl:MapObjectsList id="planets" right="2" bottom="2" height="40%"
-                        skinClass="components.skins.MapObjectsListSkin"
-                        itemRenderer="components.skins.itemrenderers.IRPlanet"/>
+   <ctrl:CWatchedObjects
+      id="watchedObjects"
+      right="2" bottom="2" height="40%"
+      skinClass="components.skins.MapObjectsListSkin"/>
    
 </base:BaseContainer>
