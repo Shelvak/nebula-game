@@ -167,7 +167,7 @@ package utils
        * 
        * @param CLASS a class that will be examined.
        * @param type type Type of the static property. Use values from
-       * <code>ClassPropertyType</code>.
+       * <code>ObjectPropertyType</code>.
        * @param callback A function that will be called for each static.
        * 
        * @see #forEachStatic()
@@ -188,7 +188,7 @@ package utils
        * 
        * @param CLASS a class that will be examined.
        * @param type type Type of the static property. Use values from
-       * <code>ClassPropertyType</code>.
+       * <code>ObjectPropertyType</code>.
        * @param callback A function that will be called for each static.
        * @param exclusions Array of statics' names to exclude.
        * 
@@ -207,7 +207,7 @@ package utils
        * 
        * @param CLASS a class that will be examined.
        * @param type Type of the static property. Use values from
-       * <code>ClassPropertyType</code>.
+       * <code>ObjectPropertyType</code>.
        * @param name If <code>true</code>, name of the static will be passed to the
        * callback function, if <code>false</code> value of the static will
        * be passed instead.
@@ -558,7 +558,7 @@ package utils
             throw new ArgumentError(
                "paramInRangeNumbers(): [param low] must be less than [param high] but\n"
                + "   [param low] was equal to" + low + "\n"
-               + "   [param hight] was equal to " + high
+               + "   [param high] was equal to " + high
             );
          }
          paramGreaterThanNumber(paramName, low, paramValue, allowLow);
@@ -582,7 +582,7 @@ package utils
        * Checks if the given <code>value</code> is of given <code>type</code>. If so, returns
        * <code>value</code> otherwise throws <code>TypeError</code> with a given <code>errorMessage</code>.
        * 
-       * @param value an isntance to check the type of
+       * @param value an instance to check the type of
        * @param type required type of the instance referenced by <code>value</code>
        * <ul><b>
        * <li>Not null.</li>

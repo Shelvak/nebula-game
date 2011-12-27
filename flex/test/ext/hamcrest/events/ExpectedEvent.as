@@ -17,23 +17,22 @@ package ext.hamcrest.events
       public function ExpectedEvent(eventType:String, eventMatcher:* = null)
       {
          this.eventType = eventType;
-         if (eventMatcher == null ||
-             eventMatcher is Matcher)
-         {
+         if (eventMatcher == null || eventMatcher is Matcher) {
             this.eventMatcher = eventMatcher;
          }
-         else if (eventMatcher is Class)
-         {
+         else if (eventMatcher is Class) {
             this.eventMatcher = instanceOf(eventMatcher);
          }
-         else if (eventMatcher is Event)
-         {
+         else if (eventMatcher is Event) {
             this.eventMatcher = equals(eventMatcher);
          }
-         else
-         {
+         else if (eventMatcher is Function) {
+            this.eventHandler = eventMatcher;
+         }
+         else {
             throw new TypeError(
-               "[param eventMatcher] when provided must be of Class, Event or Matcher type but was " +
+               "[param eventMatcher] when provided must be of Function, Class, "
+                  + "Event or Matcher type but was " +
                eventMatcher
             );
          }
@@ -43,17 +42,22 @@ package ext.hamcrest.events
       internal var event:Event;
       internal var eventType:String;
       internal var eventMatcher:Matcher;
+      internal var eventHandler:Function;
       
-      
-      internal function get useMatcher() : Boolean
-      {
+      internal function get useMatcher() : Boolean {
          return eventMatcher != null;
       }
+
+      internal function get useHandler(): Boolean {
+         return eventHandler != null;
+      }
       
-      
-      internal function get eventDispatched() : Boolean
-      {
+      internal function get eventDispatched() : Boolean {
          return event != null;
+      }
+
+      internal function invokeHandler(): void {
+         eventHandler.call(null, event);
       }
    }
 }

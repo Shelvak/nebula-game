@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <space:CStaticSpaceObjectInfo xmlns:fx="http://ns.adobe.com/mxml/2009"
                               xmlns:s="library://ns.adobe.com/flex/spark"
-                              xmlns:mx="library://ns.adobe.com/flex/halo"
                               xmlns:space="components.map.space.*"
                               xmlns:base="components.base.*"
                               xmlns:ui="components.ui.*"
-                              title="{getString('title.info', [(MSSObject(staticObject).typeName)])}">
+                              title="{getString('title.info', [ssObject.typeName])}">
    
    <fx:Binding source="MSSObject(staticObject)" destination="ssObject"/>
    <fx:Script>
@@ -20,19 +19,23 @@
          private var ssObject:MSSObject;
          
          
-         private function getString(key:String, parameters:Array = null) : String {
+         private function getString(key:String,
+                                    parameters:Array = null) : String {
             return Localizer.string("SSObjects", key, parameters);
          }
          
-         private function getLabel(labelName:String, parameters:Array = null) : String {
+         private function getLabel(labelName:String,
+                                   parameters:Array = null) : String {
             return getString("label." + labelName, parameters);
          }
          
-         private function getTooltip(tooltipName:String, parameters:Array = null) : String {
+         private function getTooltip(tooltipName:String,
+                                     parameters:Array = null) : String {
             return getString("tooltip." + tooltipName, parameters);
          }
          
-         private function getMessage(messageName:String, parameters:Array = null) : String {
+         private function getMessage(messageName:String,
+                                     parameters:Array = null) : String {
             return getString("message." + messageName, parameters);
          }
          
@@ -42,33 +45,40 @@
       ]]>
    </fx:Script>
    
-   <!--- Full size palnet image -->
-   <s:BitmapImage id="bmpImage" horizontalCenter="0" source="{ssObject.imageData}"/>
-   <base:AdvancedContainer left="0" right="0" top="{MSSObject.IMAGE_HEIGHT + 10}">
+   <!--- Full size planet image -->
+   <s:BitmapImage id="bmpImage" horizontalCenter="0"
+                  source="{ssObject.imageData}"/>
+   <base:AdvancedContainer left="0" right="0"
+                           top="{MSSObject.IMAGE_HEIGHT + 10}">
       <base:layout>
          <s:VerticalLayout horizontalAlign="center"/>
       </base:layout>
       
       <!--- Name of the the object -->
-      <s:Label id="lblName" text="{getString('typeAndName', [ssObject.typeName, ssObject.name])}"/>
+      <s:Label id="lblName"
+               text="{getString('typeAndName', [ssObject.typeName, ssObject.name])}"/>
       <!--- Sector -->
       <s:Label id="lblSector" text="{getSectorLabel(ssObject)}"/>
       <!--- Player name who owns this planet. -->
-      <base:AdvancedContainer minWidth="0" minHeight="0" visible="{ssObject.isPlanet}">
+      <base:AdvancedContainer minWidth="0" minHeight="0"
+                              visible="{ssObject.isPlanet}">
          <base:layout>
             <s:HorizontalLayout verticalAlign="middle" gap="5"/>
          </base:layout>
          <s:Label id="lblOwner" 
-                  text="{ssObject.isOwned ? getLabel('owner') : getLabel('unoccupied')}"/>
+                  text="{ssObject.isOwned
+                           ? getLabel('owner')
+                           : getLabel('unoccupied')}"/>
          <ui:PlayerProfileButton id="btnOwner" player="{ssObject.player}" 
                                  visible="{ssObject.isOwned}"/>
       </base:AdvancedContainer>
       <!--- Allows player to invite the owner of this planet to the alliance -->
-      <s:Button id="btnIviteToAlliance"
+      <s:Button id="btnInviteToAlliance"
                 label="{getLabel('inviteToAlliance')}"
                 visible="{ssObject.canInviteOwnerToAlliance}"
                 click="ssObject.inviteOwnerToAlliance()"/>
-      <!-- Labels that tells why user can't invite owner of the planet to the alliance -->
+      <!-- Labels that tells why user can't invite owner of the planet to
+           the alliance -->
       <s:Group textAlign="center" width="100%"
                visible="{ssObject.isOwned &amp;&amp;
                         !ssObject.ownerIsPlayer &amp;&amp;
@@ -77,12 +87,17 @@
             text="{getMessage('allianceFull')}"  
             toolTip="{getTooltip('allianceFull')}"
             left="0" right="0" lineBreak="toFit"
-            visible="{ML.player.allianceOwner &amp;&amp; ML.player.allianceFull &amp;&amp; !ssObject.ownerIsAlly}"/>
+            visible="{ML.player.allianceOwner &amp;&amp;
+                      ML.player.allianceFull &amp;&amp;
+                      !ssObject.ownerIsAlly}"/>
       </s:Group>
-      <!--- Button that lets view the object. Disabled if a player does not own the object. -->
+      <!--- Button that lets view the object. Disabled if a player does not
+            own the object. -->
       <s:Button id="btnEnter"
                 visible="{ssObject.isNavigable}"
-                label="{ssObject.isJumpgate ? getLabel('toGalaxy') : getLabel('toPlanet')}"
+                label="{ssObject.isJumpgate
+                           ? getLabel('toGalaxy')
+                           : getLabel('toPlanet')}"
                 enabled="{ssObject.viewable || ssObject.isJumpgate}"
                 click="ssObject.navigateTo()"/>
    </base:AdvancedContainer>

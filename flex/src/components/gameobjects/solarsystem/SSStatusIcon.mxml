@@ -22,7 +22,7 @@
 
       [Bindable]
       /**
-       * Idicates if text explaining icon meaning should be visible.
+       * Indicates if text explaining icon meaning should be visible.
        */
       public var explanationVisible: Boolean = false;
 
