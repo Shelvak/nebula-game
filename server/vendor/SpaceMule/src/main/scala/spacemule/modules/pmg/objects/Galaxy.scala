@@ -1,12 +1,10 @@
 package spacemule.modules.pmg.objects
 
 import scala.collection.mutable.HashMap
-import solar_systems.{Homeworld}
+import solar_systems.{SpaceStation, Homeworld, Pulsar, Wormhole}
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
-import spacemule.modules.pmg.objects.solar_systems.Pulsar
-import spacemule.modules.pmg.objects.solar_systems.Wormhole
 
 /**
  * Created by IntelliJ IDEA.
@@ -85,12 +83,11 @@ class Galaxy(val id: Int, val ruleset: String) {
         // Check if we have zone in these coords
         zones.get(zone.coords) match {
           // If we do find existing zone
-          case Some(existing) => {
-              // Add if there are room for one more player there
-              if (existing.playerCount < Config.playersPerZone) {
-                return existing
-              }
-          }
+          case Some(existing) =>
+            // Add if there are room for one more player there
+            if (existing.playerCount < Config.playersPerZone) {
+              return existing
+            }
           case None => return zone
         }
       }
@@ -119,6 +116,6 @@ class Galaxy(val id: Int, val ruleset: String) {
         zone.addSolarSystem(new Pulsar(), coords) }
     }
 
-    zone.addSolarSystem(new Homeworld(player))
+    zone.addSolarSystem(new Homeworld(player), new SpaceStation(player))
   }
 }

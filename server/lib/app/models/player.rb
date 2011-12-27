@@ -459,4 +459,34 @@ class Player < ActiveRecord::Base
       end
     end
   end
+
+  def self.on_callback(id, event)
+    case event
+      when CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
+      check_activity!(id)
+    end
+  end
+
+  # Checks if player is active.
+  def self.check_activity!(id)
+    player_ids = SsObject.connection.select_values(
+      "SELECT DISTINCT(player_id) FROM `#{SsObject.table_name
+      }` WHERE `solar_system_id`=#{id.to_i} AND `player_id` IS NOT NULL"
+    )
+    raise GameLogicError.new(
+            "Cannot check player activity if more than one player exists in SS #{
+            id}! Player IDs: #{player_ids.inspect}#") if player_ids.size > 1
+    return if player_ids.size > 1
+
+    player = Player.find(player_ids[0])
+    if player.last_seen.nil? || ! (
+    player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
+      player.last_seen >= Cfg.player_last_seen_in.ago)
+      # This player is inactive. Destroy him.
+      player.destroy!
+
+      # Change solar system into a dead one.
+      find(id).die!
+    end
+  end
 end

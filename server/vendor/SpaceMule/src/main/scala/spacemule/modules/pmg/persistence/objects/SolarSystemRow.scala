@@ -11,14 +11,10 @@ object SolarSystemRow extends RowObject {
 }
 
 case class SolarSystemRow(
-  val galaxyId: Int, val solarSystem: SolarSystem, coords: Option[Coords]
+  val galaxyId: Int, val solarSystem: SolarSystem, coords: Option[Coords],
+  playerRow: Option[PlayerRow]
 ) extends Row {
   val companion = SolarSystemRow
-
-  val playerRow = solarSystem match {
-    case homeworld: Homeworld => Some(new PlayerRow(galaxyId, homeworld.player))
-    case _ => None
-  }
 
   val id = TableIds.solarSystem.next
   val valuesSeq = Seq(

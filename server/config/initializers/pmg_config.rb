@@ -165,6 +165,7 @@ class PmgConfigInitializer < GameConfig::Initializer
       'i' => Building::NpcInfantryFactory.to_s.demodulize,
       'n' => Building::NpcTankFactory.to_s.demodulize,
       'f' => Building::NpcSpaceFactory.to_s.demodulize,
+      't' => Building::NpcTechLab.to_s.demodulize,
     }
     npc_units = {}
 

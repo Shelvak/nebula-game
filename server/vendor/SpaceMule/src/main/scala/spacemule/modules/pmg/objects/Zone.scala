@@ -1,10 +1,12 @@
 package spacemule.modules.pmg.objects
 
+import solar_systems.{SpaceStation, Homeworld}
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.WithCoords
 import util.Random
 import collection.mutable.HashMap
+import java.lang.IllegalStateException
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,8 +42,7 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
     
     val spot = new Coords(Random.nextInt(diameter), Random.nextInt(diameter))
 
-    var found = false
-    while (! found) {
+    while (true) {
       if (solarSystems.contains(spot)) {
         // This is effective because we only add a small percentage of solar
         // systems into zone, so most time this only takes 1 iteration.
@@ -49,27 +50,41 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
         spot.y = Random.nextInt(diameter)
       }
       else {
-        found = true
+        return spot
       }
     }
 
-    spot
+    throw new IllegalStateException("Ne should never get here.")
   }
 
   /**
    * Adds new solar system to given coords. Also initializes it.
    */
-  def addSolarSystem(solarSystem: SolarSystem, coords: Coords): scala.Unit = {
+  def addSolarSystem(solarSystem: SolarSystem, coords: Coords) {
     solarSystems(coords) = Some(solarSystem)
     solarSystem.createObjects()
     _hasNewPlayers = true
   }
 
   /**
-   * Adds new solar system to random free spot.
+   * Adds new homeworld to random free spot and puts its space station near it.
    */
-  def addSolarSystem(solarSystem: SolarSystem): scala.Unit = {
-    addSolarSystem(solarSystem, findFreeSpot())
+  def addSolarSystem(homeworld: Homeworld, spaceStation: SpaceStation) {
+    var spot = findFreeSpot()
+    while (true) {
+      (-1 to 1).foreach { x =>
+        (-1 to 1).foreach { y =>
+          val stationSpot = Coords(spot.x - x, spot.y - y)
+          if (! solarSystems.contains(stationSpot)) {
+            addSolarSystem(homeworld, spot)
+            addSolarSystem(spaceStation, stationSpot)
+            return
+          }
+        }
+      }
+
+      spot = findFreeSpot()
+    }
   }
 
   /**

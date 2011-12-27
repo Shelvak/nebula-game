@@ -6,7 +6,7 @@
 # Diameter of starting zone
 zone.diameter: 8
 # Players per zone.
-zone.players: 20
+zone.players: 10
 
 # Free population given to player upon creation
 player.population: 60

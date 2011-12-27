@@ -70,6 +70,7 @@ case class CallbackRow(
       case aRow: AsteroidRow => "SsObject::Asteroid"
       case pRow: PlanetRow => "SsObject::Planet"
       case ssRow: SolarSystemRow => "SolarSystem"
+      case pRow: PlayerRow => "Player"
     },
     row.id,
     event.id,

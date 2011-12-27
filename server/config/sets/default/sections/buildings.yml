@@ -787,3 +787,21 @@ npc_hall.zetium.cost: 0
 npc_hall.cooldown: <%= 5.minutes * bg_building_level %> / level / speed
 npc_hall.victory_points: 1
 npc_hall.creds: 2
+
+### npc_tech_lab config ###
+
+# Dimensions
+npc_tech_lab.width: 3
+npc_tech_lab.height: 3
+npc_tech_lab.constructable: false
+npc_tech_lab.destroyable: false
+
+# Hit points
+npc_tech_lab.hp: 9000
+
+# Upgrades
+npc_tech_lab.max_level: 10
+npc_tech_lab.upgrade_time: <%= 1.minute + 20.seconds %> + 10 * (level - 1)
+npc_tech_lab.metal.cost: 100 * (level + 1)
+npc_tech_lab.energy.cost: 200 * (level + 1)
+npc_tech_lab.zetium.cost: 200 * (level + 1)

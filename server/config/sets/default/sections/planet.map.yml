@@ -42,6 +42,7 @@
 #   i - NPC Infantry factory (3x3)
 #   n - NPC taNks factory (4x4)
 #   f - NPC space Factory (4x5)
+#   t - NPC Tech lab (3x3)
 #
 # Barracks:
 # . .-.-.-. .

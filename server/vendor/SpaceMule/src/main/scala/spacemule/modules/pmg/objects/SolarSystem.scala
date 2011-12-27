@@ -8,7 +8,6 @@ class SolarSystem(map: Option[SsConfig.Data]) {
   def this(map: SsConfig.Data) = this(Some(map))
 
   val kind = SolarSystem.Normal
-  val shielded = false
 
   val orbitCount = Config.orbitCount
 
@@ -107,5 +106,6 @@ object SolarSystem extends Enumeration {
   val Normal = Value(0, "normal")
   val Wormhole = Value(1, "wormhole")
   val Battleground = Value(2, "battleground")
+  val SpaceStation = Value(4, "space station")
   type Kind = Value
 }

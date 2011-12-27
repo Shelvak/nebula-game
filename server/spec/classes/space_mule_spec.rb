@@ -148,14 +148,42 @@ describe SpaceMule do
                              :web_user_id => @web_user_id).first
     end
 
-    it "should start quests for player" do
-      QuestProgress.where(:player_id => @player.id,
-        :quest_id => @quest.id, :completed => 0).count.should == 1
-    end
+    describe "player" do
+      it "should start quests" do
+        QuestProgress.
+          where(:player_id => @player.id, :quest_id => @quest.id,
+                :completed => 0).
+          count.should == 1
+      end
 
-    it "should start objectives for player" do
-      ObjectiveProgress.where(:player_id => @player.id,
-        :objective_id => @objective.id, :completed => 0).count.should == 1
+      it "should start objectives" do
+        ObjectiveProgress.
+          where(:player_id => @player.id, :objective_id => @objective.id,
+                :completed => 0).
+          count.should == 1
+      end
+
+      it "should register callback for inactivity check" do
+        @player.should have_callback(
+                     CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+                     Cfg.player_inactivity_check(@player.points).from_now
+                   )
+      end
+
+      it "should set scientists" do
+        @player.scientists.should ==
+          CONFIG["buildings.mothership.scientists"].to_i
+      end
+
+      it "should set scientists_total" do
+        @player.scientists_total.should == @player.scientists
+      end
+
+      it "should set population_max" do
+        @player.population_max.should ==
+          CONFIG["galaxy.player.population"] +
+            CONFIG["buildings.mothership.population"]
+      end
     end
 
     describe "returned value" do
@@ -176,39 +204,29 @@ describe SpaceMule do
       end
     end
 
-    describe "player attributes" do
-      it "should set scientists" do
-        @player.scientists.should ==
-          CONFIG["buildings.mothership.scientists"].to_i
-      end
-
-      it "should set scientists_total" do
-        @player.scientists_total.should == @player.scientists
-      end
-
-      it "should set population_max" do
-        @player.population_max.should ==
-          CONFIG["galaxy.player.population"] +
-          CONFIG["buildings.mothership.population"]
-      end
-    end
-
     describe "home solar system" do
       before(:all) do
         @condition = SolarSystem.
           where(:player_id => @player.id, :kind => SolarSystem::KIND_NORMAL)
         @ss = @condition.first
+
+        @station_condition = SolarSystem.
+          where(:player_id => @player.id,
+                :kind => SolarSystem::KIND_SPACE_STATION)
+        @station = @station_condition.first
       end
 
       it "should only have one home solar system" do
         @condition.count.should == 1
       end
 
-      it "should register callback for inactivity check" do
-        @ss.should have_callback(
-          CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
-          Cfg.player_inactivity_check(@player.points).from_now
-        )
+      it "should only have one space station" do
+        @station_condition.count.should == 1
+      end
+
+      it "should be placed near home solar system" do
+        diff = [@station.x - @ss.x, @station.y - @ss.y].map(&:abs)
+        [[0, 1], [1, 0], [1, 1]].should include(diff)
       end
 
       it "should register callback for spawn" do
