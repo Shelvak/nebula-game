@@ -30,22 +30,244 @@ UNITS_SHIPS = [
   [Unit::Dart, 1, 3], [Unit::Avenger, 1, 3],
 ]
 
+# Tutorial screens:
+# Quest screen.
+s_quest = "Quest"
+# Shows quest screen with image.
+s_quest_with_image = lambda { |klass| "QuestWithImage:#{klass.to_s}" }
+# Explains about building sidebar.
+s_building_sidebar = "BuildingSidebar"
+# Explains claiming rewards for completed quests.
+s_claim_reward = "ClaimReward"
+# Explains about ore tiles.
+s_ore_tile = "OreTile"
+# Explains about building upgrades.
+s_building_upgrade = "BuildingUpgrade"
+# Explains about +energy tiles.
+s_energy_tiles = "EnergyTiles"
+# Explains about +construction tiles.
+s_construction_tiles = "ConstructionTiles"
+# Explains about speeding up constructions.
+s_speedup_construction = "SpeedupConstruction"
+# Explains about unit constructors
+s_unit_constructors = "UnitConstructors"
+# Explains about unit construction screen.
+s_unit_construction_screen = "UnitConstructionScreen"
+# Previous quest has given you units as a reward. Claim them.
+s_take_units_reward = "TakeUnitsReward"
+# Explains about unit screen. Where to find it and what's in it.
+s_unit_screen = "UnitScreen"
+# Explains about attack button.
+s_attack_button = "AttackButton"
+# Explains about attack screen.
+s_attack_screen = "AttackScreen"
+# Explains about damaged units and their healing (that it will be available
+# later and you need to research it).
+s_damaged_units = "DamagedUnits"
+# Explains about exploring.
+s_exploring = "Exploring"
+# Explains about notifications.
+s_notifications = "Notifications"
+# Explains about technology tree.
+s_tech_tree = "TechTree"
+# Explains about researching technologies.
+s_tech_research = "TechResearch"
+# Explains about war points importance in technologies.
+s_wp_in_techs = "WPInTechs"
+# Explains about zetium tile.
+s_zetium_tile = "ZetiumTile"
+# Explains about NPC zetium extractor (if you haven't destroyed it yet).
+s_npc_zex = "NPCZex"
+# Explains about planet resources & storage types.
+s_resources = "Resources"
+# Explains about resource bar at the bottom of the screen.
+s_resource_bar = "ResourceBar"
+# Explains population and overpopulation.
+s_population = "Population"
+# Explains about unit screen when space units are present.
+s_unit_screen_with_space = "UnitScreenWithSpace"
+# Explains how to send your unit above your planet.
+s_sending_ships = "SendingShips"
+# Explains about combat in space sector.
+s_combat_in_space = "CombatInSpace"
+# Explains how to send units from space to planet.
+s_move_to_planet = "MoveToPlanet"
+# Explains how to take over a planet and that all buildings will be transferred
+# to player.
+s_claim_planet = "ClaimPlanet"
+# Explains about wreckage.
+s_wreckage = "Wreckage"
+# Explains how to load wreckage into mule when it is above wreckage:
+# Press show, press load on mule, press load all/tune sliders, confirm, close.
+s_load_wreckage = "LoadWreckage"
+# Explains how to unload wreckage in planet:
+# Press units, press unload, press unload all/tune sliders, confirm, close.
+s_unload_resources = "UnloadResources"
+# Explains what radar does.
+s_radar = "Radar"
+
 QUESTS = QuestDefinition.define(:debug => false) do
-  define(1, "buildings") do
+  define(1, [s_quest, s_building_sidebar]) do
     have_upgraded_to Building::CollectorT1
 
     reward_cost Building::MetalExtractor, :count => 1.2
-  end.define(2, "metal") do
+  end.define(2, [s_claim_reward, s_quest, s_ore_tile]) do
     have_upgraded_to Building::MetalExtractor
 
     reward_cost Building::MetalExtractor, :count => 1.1
     reward_cost Building::CollectorT1, :count => 1.1
-  end.define(3) do
-    have_upgraded_to Building::CollectorT1, :count => 2
+  end.define(3, [s_quest, s_building_upgrade]) do
+    have_upgraded_to Building::CollectorT1, :level => 2
+    have_upgraded_to Building::MetalExtractor, :level => 2
+
+    reward_cost Building::MetalExtractor, :count => 1.1
+    reward_cost Building::CollectorT1, :count => 4.2
+  end.define(4, [s_quest, s_energy_tiles]) do
     have_upgraded_to Building::MetalExtractor, :count => 2
+    have_upgraded_to Building::CollectorT1, :count => 4
 
     reward_cost Building::Barracks, :count => 1.2
+    # 200 creds are enough for the speeding up of barracks construction.
+    reward_creds 200
+  end.define(5, [s_quest, s_construction_tiles, s_speedup_construction]) do
+    have_upgraded_to Building::Barracks
+
+    reward_cost Unit::Trooper, :count => 1.2
+  end.define(6, [s_quest, s_unit_constructors, s_unit_construction_screen]) do
+    have_upgraded_to Unit::Trooper
+
+    reward_unit Unit::Trooper, :count => 5
   end.tap do |quest|
+    quest.define(7) do
+      destroy_npc_building Building::NpcMetalExtractor
+
+      reward_cost Building::MetalExtractor, :count => 2, :level => 4
+    end
+  end.define(8, [s_take_units_reward, s_unit_screen,
+                 s_quest_with_image[Building::NpcSolarPlant], s_attack_button,
+                 s_attack_screen]) do
+    destroy_npc_building Building::NpcSolarPlant, :count => 5
+
+    reward_cost Building::ResearchCenter
+    # 1000 creds should be sufficient for completing research center.
+    reward_creds 1000
+  end.define(9, [s_damaged_units,
+                 s_quest_with_image[Building::ResearchCenter]]) do
+    have_upgraded_to Building::ResearchCenter
+
+    reward_scientists 18
+  end.define(10, [s_quest, s_exploring, s_notifications]) do
+    explore_object Tile::FOLLIAGE_3X3
+
+    reward_unit Unit::Gnat, :count => 5
+    reward_unit Unit::Glancer, :count => 2
+    reward_cost Technology::ZetiumExtraction, :count => 0.95
+  end.define(11, [s_quest_with_image[Technology::ZetiumExtraction], s_tech_tree,
+                  s_tech_research, s_wp_in_techs]) do
+    have_upgraded_to Technology::ZetiumExtraction
+
+    reward_cost Building::ZetiumExtraction, :count => 0.9
+  end.define(12, [s_quest_with_image[Building::ZetiumExtractor], s_zetium_tile,
+                  s_npc_zex]) do
+    have_upgraded_to Building::ZetiumExtractor
+
+    reward_cost Technology::HealingCenter, :count => 0.85
+    reward_cost Building::HealingCenter, :count => 0.85
+  end.define(13, [s_quest_with_image[Technology::HealingCenter]]) do
+    # Build healing center.
+    have_upgraded_to Building::HealingCenter
+
+    reward_cost Building::MetalStorage, :level => 1, :count => 0.85
+    reward_cost Building::MetalStorage, :level => 2, :count => 0.85
+    reward_cost Building::EnergyStorage, :level => 1, :count => 0.85
+    reward_cost Building::ZetiumStorage, :level => 1, :count => 0.85
+  end.define(14, [s_quest, s_resources, s_resource_bar]) do
+    # Upgrade your storage buildings.
+    have_upgraded_to Building::MetalStorage, :level => 2
+    have_upgraded_to Building::EnergyStorage, :level => 1
+    have_upgraded_to Building::ZetiumStorage, :level => 1
+
+    reward_cost Building::MetalExtractor, :level => 5, :count => 4
+    reward_cost Building::CollectorT1, :level => 5, :count => 6
+    reward_cost Building::ZetiumExtractor, :level => 3, :count => 1
+    # For speeding up some of the upgrades.
+    reward_creds 500
+  end.define(15, [s_quest]) do
+    # Boost your economy.
+    have_upgraded_to Building::MetalExtractor, :level => 5, :count => 7
+    have_upgraded_to Building::CollectorT1, :level => 5, :count => 8
+    have_upgraded_to Building::ZetiumExtractor, :level => 3, :count => 2
+
+    reward_cost Building::Housing, :count => 0.8
+  end.define(16, [s_quest_with_image[Building::Housing], s_population]) do
+    # Build population building.
+    have_upgraded_to Building::Housing
+
+    reward_cost Technology::SpaceFactory, :count => 0.8
+  end.define(17, [s_quest_with_image[Technology::SpaceFactory]]) do
+    # Research space factory
+    have_upgraded_to Technology::SpaceFactory
+
+    reward_cost Building::SpaceFactory, :count => 0.75
+  end.define(18, [s_quest_with_image[Building::SpaceFactory],
+                  s_construction_tiles]) do
+    # Build space factory
+    have_upgraded_to Building::SpaceFactory
+
+    reward_cost Unit::Crow, :count => 0.75
+  end.define(19, [s_quest_with_image[Unit::Crow]]) do
+    # Build a crow.
+    have_upgraded_to Unit::Crow
+
+    reward_unit Unit::Crow, :count => 2
+  end.define(20, [s_quest_with_image[Unit::Dirac], s_unit_screen_with_space,
+                  s_sending_ships, s_combat_in_space]) do
+    destroy Unit::Dirac
+
+    reward_unit Unit::Crow, :count => 2
+    reward_cost Unit::Crow, :count => 2
+  end.define(21, [s_quest, s_move_to_planet, s_claim_planet]) do
+    have_planets :count => 2
+
+    reward_unit Unit::Trooper, :count => 5, :level => 6
+    reward_unit Unit::Shocker, :count => 2, :level => 8
+    reward_unit Unit::Seeker, :count => 2, :level => 8
+  end.define(22, [s_quest]) do
+    # Boost your economy (again).
+    have_upgraded_to Building::MetalExtractor, :level => 6, :count => 7 + 8
+    have_upgraded_to Building::CollectorT1, :level => 6, :count => 16
+    have_upgraded_to Building::ZetiumExtractor, :level => 4, :count => 6
+
+    reward_cost Unit::Mule
+  end.define(23, [s_quest_with_image[Unit::Mule], s_wreckage, s_load_wreckage,
+                  s_unload_resources]) do
+    # Resource transportation explained.
+    have_upgraded_to Unit::Mule
+
+    reward_unit Unit::Mule
+  end.define(24, [s_quest_with_image[Unit::Dirac]]) do
+    destroy Unit::Dirac, :count => 8
+
+    reward_unit Unit::Cyrix, :level => 6, :count => 2
+  end.define(25, [s_quest_with_image[Unit::Thor]]) do
+    destroy Unit::Dirac, :count => 8
+    destroy Unit::Thor, :count => 8
+
+    reward_unit Unit::Avenger, :level => 6, :count => 2
+  end.define(26, [s_quest_with_image[Unit::Demosis]]) do
+    destroy Unit::Dirac, :count => 8
+    destroy Unit::Thor, :count => 8
+    destroy Unit::Demosis, :count => 2
+
+    reward_creds 2000
+  end.define(27, [s_quest_with_image[Technology::Radar], s_radar]) do
+    have_upgraded_to Building::Radar
+
+    reward_cost Technology::GroundFactory, :count => 0.7
+    reward_cost Building::GroundFactory, :count => 0.6
+  end
+
+    tap do |quest|
     # Side quest chain
     quest.define(22, "exploring") do
       explore_object Tile::FOLLIAGE_3X3
@@ -62,8 +284,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
 
     # Side quest chain
     quest.define(4, "upgrading") do
-      have_upgraded_to Building::CollectorT1, :count => 2, :level => 3
-      have_upgraded_to Building::MetalExtractor, :count => 2, :level => 3
+      have_upgraded_to Building::CollectorT1, :count => 2
+      have_upgraded_to Building::MetalExtractor, :count => 2
 
       reward_cost Building::CollectorT1, :count => 1.1, :level => 4
       reward_cost Building::MetalExtractor, :count => 1.1, :level => 4
