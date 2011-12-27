@@ -16,8 +16,13 @@ package models
       {
          super();
       }
-      
-      
+
+
+      /* ########################### */
+      /* ### IMStaticSpaceObject ### */
+      /* ########################### */
+
+
       public function get objectType() : int
       {
          return MMapSpace.STATIC_OBJECT_WRECKAGE
@@ -65,7 +70,7 @@ package models
       [Bindable(event="willNotChange")]
       public function get imageData() : BitmapData
       {
-         return IMG.getImage(AssetNames.getIconImageName("wreckage"));;
+         return IMG.getImage(AssetNames.getIconImageName("wreckage"));
       }
       
       
@@ -80,6 +85,15 @@ package models
       public function get componentHeight() : int
       {
          return imageData.height;
+      }
+
+      /**
+       * Not supported.
+       *
+       * @return empty string
+       */
+      public function get name(): String {
+         return "";
       }
       
       

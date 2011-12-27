@@ -27,6 +27,24 @@ package models.cooldown
       // not have any effect on the dimensions and position of
       // CStaticObjectsAggregator
 
+      /**
+       * Not supported.
+       *
+       * @return null
+       */
+      public function get imageData(): BitmapData {
+         return null;
+      }
+
+      /**
+       * Not supported.
+       *
+       * @return empty string
+       */
+      public function get name(): String {
+         return "";
+      }
+
       public function get componentWidth(): int {
          return 1;
       }
