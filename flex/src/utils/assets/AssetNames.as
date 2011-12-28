@@ -84,11 +84,6 @@ package utils.assets
       public static const TECHNOLOGIES_IMAGE_FOLDER: String = IMAGE_FOLDER + "technologies/";
       
       /**
-       * Path to folder where galaxy images reside.
-       */
-      public static const GALAXY_IMAGE_FOLDER: String = IMAGE_FOLDER + "galaxy/";
-      
-      /**
        * Path to folder where solar system images reside. 
        */
       public static const SS_IMAGE_FOLDER:String = IMAGE_FOLDER + "solar_system/";

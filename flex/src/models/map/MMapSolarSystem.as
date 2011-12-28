@@ -106,7 +106,7 @@ package models.map
          return locWrapper.type == LocationType.SOLAR_SYSTEM
                    && locWrapper.id == id
                    && locWrapper.position >= 0
-                   && locWrapper.position <= orbitsTotal;
+                   && locWrapper.position < orbitsTotal;
       }
 
       /**

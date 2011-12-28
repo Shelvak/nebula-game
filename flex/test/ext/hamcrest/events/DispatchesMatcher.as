@@ -38,10 +38,18 @@ package ext.hamcrest.events
          (item as Function).call();
          
          for each (expectedEvent in _events) {
-            if (!expectedEvent.eventDispatched ||
-                 expectedEvent.useMatcher && !expectedEvent.eventMatcher.matches(expectedEvent.event)) {
+            if (!expectedEvent.eventDispatched) {
                _failedEvent = expectedEvent;
                return false;
+            }
+            else if (expectedEvent.useMatcher) {
+               if (!expectedEvent.eventMatcher.matches(expectedEvent.event)) {
+                  _failedEvent = expectedEvent;
+                  return false;
+               }
+            }
+            else if (expectedEvent.useHandler) {
+               expectedEvent.invokeHandler();
             }
          }
          

@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<local:IRSector xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                xmlns:local="components.map.controllers.*"
+                xmlns:ss="components.gameobjects.solarsystem.*"
+                xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+      import models.solarsystem.MSSObject;
+      import models.solarsystem.SSMetadataType;
+
+      import utils.assets.AssetNames;
+
+
+      private function getShipIcon(type: String): BitmapData {
+         return getImage(AssetNames.getSSStatusIconName(type));
+      }
+      ]]>
+   </fx:Script>
+   <local:mxmlContent>
+      <ss:SSObjectImage left="5" top="5" width="50" height="50"
+                        visible="{sector.hasObject}"
+                        includeInLayout="{sector.hasObject}"
+                        model="{MSSObject(sector.object)}"/>
+      <s:BitmapImage left="5" top="5" width="50" height="50" fillMode="scale"
+                     visible="{!sector.hasObject}"
+                     includeInLayout="{!sector.hasObject}"
+                     source="{bigShipIcon}"/>
+      <base:AdvancedContainer left="55" right="5" top="5" bottom="5">
+         <base:layout>
+            <s:VerticalLayout horizontalAlign="justify"
+                              verticalAlign="middle" gap="2"/>
+         </base:layout>
+         <s:Label text="{sector.object.name}" visible="{sector.hasObject}"/>
+         <s:Label text="{sector.sectorLabel}"/>
+         <base:AdvancedContainer visible="{sector.hasShips}">
+            <base:layout>
+               <s:HorizontalLayout gap="0" horizontalAlign="left"/>
+            </base:layout>
+            <s:BitmapImage
+               source="{getShipIcon(SSMetadataType.PLAYER_SHIPS)}"
+               visible="{sector.ships.player}"/>
+            <s:BitmapImage
+               source="{getShipIcon(SSMetadataType.ALLIANCE_SHIPS)}"
+               visible="{sector.ships.alliance}"/>
+            <s:BitmapImage
+               source="{getShipIcon(SSMetadataType.NAP_SHIPS)}"
+               visible="{sector.ships.nap}"/>
+            <s:BitmapImage
+               source="{getShipIcon(SSMetadataType.ENEMY_SHIPS)}"
+               visible="{sector.ships.enemy}"/>
+            <s:BitmapImage
+               source="{getShipIcon(SSMetadataType.NPC_SHIPS)}"
+               visible="{sector.ships.npc}"/>
+         </base:AdvancedContainer>
+      </base:AdvancedContainer>
+   </local:mxmlContent>
+</local:IRSector>

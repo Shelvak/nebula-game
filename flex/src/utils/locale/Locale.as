@@ -7,6 +7,10 @@ package utils.locale
     */
    public final class Locale
    {
+      /**
+       * A locale for testing. Don't use other locales in tests.
+       */
+      public static const TEST:String = "test";
       public static const EN:String = "en";
       public static const LT:String = "lt";
       public static const LV:String = "lv";
