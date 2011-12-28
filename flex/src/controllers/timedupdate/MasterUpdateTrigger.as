@@ -84,7 +84,6 @@ package controllers.timedupdate
          _triggers = Vector.<IUpdateTrigger>([
             TemporaryUpdateTrigger.getInstance(),
             new CooldownsUpdateTrigger(),
-            new SSUpdateTrigger(),
             new PlayersUpdateTrigger(),
             new MovementUpdateTrigger()
          ]);
@@ -99,9 +98,9 @@ package controllers.timedupdate
       
       
       private function initTimer() : void {
-         // Simplest way to devide work: each trigger gets the same amount of time to
+         // Simplest way to divide work: each trigger gets the same amount of time to
          // execute. Therefore all triggers should get the equal amount of workload and
-         // I expect that to be difficult to atchieve.
+         // I expect that to be difficult to achieve.
          _timer = new Timer(1000 / _triggers.length);
          _timer.addEventListener(TimerEvent.TIMER, timer_timerHandler, false, 0, true);
       }

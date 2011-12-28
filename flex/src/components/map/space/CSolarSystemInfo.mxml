@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <space:CStaticSpaceObjectInfo xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                              xmlns:s="library://ns.adobe.com/flex/spark" 
-                              xmlns:mx="library://ns.adobe.com/flex/mx"
+                              xmlns:s="library://ns.adobe.com/flex/spark"
                               xmlns:space="components.map.space.*"
                               xmlns:solarsystem="components.gameobjects.solarsystem.*"
                               title="{getString('title.solarSystemInfo')}">
@@ -11,8 +10,6 @@
       import models.location.LocationMinimal;
       import models.solarsystem.MSSObject;
       import models.solarsystem.MSolarSystem;
-
-      import spark.utils.TextFlowUtil;
 
       import utils.DateUtil;
       import utils.locale.Localizer;
@@ -35,7 +32,7 @@
 
       private function getSectorLabel(ss: MSolarSystem): String {
          return ss == null
-           ? "" : LocationMinimal.getSectorLabel(ss.currentLocation);
+                   ? "" : LocationMinimal.getSectorLabel(ss.currentLocation);
       }
 
       private function btnOpen_clickHandler(event: MouseEvent): void {
@@ -74,11 +71,10 @@
             visible="{ss.isDead}" includeInLayout="{ss.isDead}"
             width="{MSSObject.IMAGE_WIDTH}"
             lineBreak="toFit" textAlign="center"/>
-   <s:RichText id="txtShield"
-               textFlow="{TextFlowUtil.importFromString(getString('label.shield', [formatTime(ss.shieldEndsIn)]))}"
-               visible="{ss.isShielded}" includeInLayout="{ss.isShielded}"
-               width="{MSSObject.IMAGE_WIDTH}"
-               lineBreak="toFit" textAlign="center"/>
+   <s:Label id="lblShield" text="{getString('label.shield')}"
+            visible="{ss.isShielded}" includeInLayout="{ss.isShielded}"
+            width="{MSSObject.IMAGE_WIDTH}" lineBreak="toFit"
+            textAlign="center"/>
    <s:Button id="btnOpen" label="{getBtnOpenLabel(ss)}"
              visible="{ss.isNavigable}"
              includeInLayout="{ss.isNavigable}"

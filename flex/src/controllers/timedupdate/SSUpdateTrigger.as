@@ -3,8 +3,6 @@ package controllers.timedupdate
    import models.ModelLocator;
    import models.solarsystem.MSolarSystem;
 
-   import utils.DateUtil;
-
 
    public class SSUpdateTrigger implements IUpdateTrigger
    {
@@ -18,12 +16,6 @@ package controllers.timedupdate
       public function update(): void {
          if (solarSystemsInGalaxyAccessible) {
             for each (var ss: MSolarSystem in ML.latestGalaxy.solarSystems) {
-               // remove shield protection if it has expired
-               if (ss.isShielded && ss.shieldEndsAt.time <= DateUtil.now) {
-                  ss.shieldOwnerId = 0;
-                  ss.shieldEndsAt = null;
-               }
-               ss.update();
             }
          }
       }

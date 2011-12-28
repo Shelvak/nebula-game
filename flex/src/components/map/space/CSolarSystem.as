@@ -2,23 +2,22 @@ package components.map.space
 {
    import components.gameobjects.solarsystem.SSPlanetsStatusIcons;
    import components.gameobjects.solarsystem.SSShipsStatusIcons;
-   
+
    import models.map.IMStaticSpaceObject;
    import models.solarsystem.MSolarSystem;
-   import models.solarsystem.events.MSolarSystemEvent;
-   
+
    import mx.graphics.BitmapFillMode;
-   
+
    import spark.components.Group;
    import spark.components.Label;
    import spark.layouts.HorizontalAlign;
    import spark.layouts.VerticalLayout;
    import spark.primitives.BitmapImage;
-   
+
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
-   
-   
+
+
    public class CSolarSystem extends CStaticSpaceObject
    {
       private function get IMG() : ImagePreloader {
@@ -32,12 +31,7 @@ package components.map.space
       
       /* ############################ */
       /* ### MODEL EVENT HANDLERS ### */
-      /* ############################ */      
-      
-      private function solarSystem_shieldOwnerChangeHandler(event:MSolarSystemEvent) : void {
-         f_ssShieldChanged = true;
-         invalidateProperties();
-      }
+      /* ############################ */
       
       
       /* ################## */
@@ -46,18 +40,6 @@ package components.map.space
       
       public override function set staticObject(value:IMStaticSpaceObject) : void {
          if (super.staticObject != value) {
-            if (super.staticObject != null) {
-               MSolarSystem(super.staticObject).removeEventListener(
-                  MSolarSystemEvent.SHIELD_OWNER_CHANGE,
-                  solarSystem_shieldOwnerChangeHandler, false
-               );
-            }
-            if (value != null) {
-               MSolarSystem(value).addEventListener(
-                  MSolarSystemEvent.SHIELD_OWNER_CHANGE,
-                  solarSystem_shieldOwnerChangeHandler, false, 0, true
-               );
-            }
             super.staticObject = value;
             f_staticObjectChanged = true;
             invalidateProperties();

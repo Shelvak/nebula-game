@@ -1,14 +1,9 @@
 package models.map
 {
-   import interfaces.IUpdatable;
-
    import models.location.Location;
-
    import models.location.LocationMinimal;
-
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
-
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
 
@@ -18,7 +13,7 @@ package models.map
    import utils.datastructures.Collections;
 
 
-   public class MMapSolarSystem extends MMapSpace implements IUpdatable
+   public class MMapSolarSystem extends MMapSpace
    {
       public function MMapSolarSystem(solarSystem:MSolarSystem) {
          _solarSystem = Objects.paramNotNull("solarSystem", solarSystem);
@@ -114,18 +109,6 @@ package models.map
        */
       override public function get cached(): Boolean {
          return _solarSystem.cached;
-      }
-
-      /* ################## */
-      /* ### IUpdatable ### */
-      /* ################## */
-
-      public function update(): void {
-         _solarSystem.update();
-      }
-
-      public function resetChangeFlags(): void {
-         _solarSystem.resetChangeFlags();
       }
 
       /* ########################### */
