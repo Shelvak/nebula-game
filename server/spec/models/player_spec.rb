@@ -758,6 +758,22 @@ describe Player do
         player.save!
       end
 
+      it "should progress BeInAlliance objective if it is not nil" do
+        player = Factory.create(:player)
+        Objective::BeInAlliance.should_receive(:progress).with(player)
+
+        player.alliance = Factory.create(:alliance)
+        player.save!
+      end
+
+      it "should not progress BeInAlliance objective if it is nil" do
+        player = Factory.create(:player, :alliance => Factory.create(:alliance))
+        Objective::BeInAlliance.should_not_receive(:progress).with(player)
+
+        player.alliance = nil
+        player.save!
+      end
+
       it "should not update chat hub if alliance id does not change" do
         player = Factory.create(:player,
           :alliance => Factory.create(:alliance))

@@ -404,6 +404,10 @@ class Player < ActiveRecord::Base
   after_save do
     dispatcher = Dispatcher.instance
     dispatcher.update_player(self) if dispatcher.connected?(id)
+
+    Objective::BeInAlliance.progress(self) \
+      if alliance_id_changed? && ! alliance_id.nil?
+
     if alliance_id_changed? || language_changed?
       hub = Chat::Pool.instance.hub_for(self)
       hub.on_alliance_change(self) if alliance_id_changed?

@@ -175,8 +175,16 @@ benchmark :logger do
 end
 
 def read_config(*path)
-  template = ERB.new(File.read(File.expand_path(File.join(*path))))
-  YAML.load(template.result(binding))
+  filename = File.expand_path(File.join(*path))
+  template = ERB.new(File.read(filename))
+  contents = template.result(binding)
+  YAML.load(contents)
+rescue Exception => e
+  STDERR.write "Error while reading config #{filename}!\n\n"
+  STDERR.write "File contents: \n#{
+    defined?(contents) ? contents : "not read yet"
+  }"
+  raise e
 end
 
 def load_config
