@@ -127,7 +127,7 @@ zex_3rd_planet = 2
 
 QUESTS = QuestDefinition.define(:debug => false) do
   # Main quests  - they have IDs of     1 - 10000
-  #                and are spaced by 10 to allow  insertion.                     ###
+  #                and are spaced by 10 to allow insertion.                     ###
   #                Last id: 340
   # Side quests  - they have IDs of 10001 - 20000
   #                last id: 1
@@ -150,8 +150,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
     reward_cost Building::MetalExtractor, :count => 1.1
     reward_cost Building::CollectorT1, :count => 4.2
   end.define(40, [s_quest, s_energy_tiles]) do
-    have_upgraded_to Building::MetalExtractor, :count => 2
-    have_upgraded_to Building::CollectorT1, :count => 4
+    have_upgraded_to Building::MetalExtractor, :count => 2, :level => 2
+    have_upgraded_to Building::CollectorT1, :count => 4, :level => 2
 
     reward_cost Building::Barracks, :count => 1.2
     # 200 creds are enough for the speeding up of barracks construction.

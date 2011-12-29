@@ -2232,26 +2232,25 @@
 
     <Destroy value="Sunaikinti" />
 
-    <title.1 value="Pradžia" />
-    <about.1>
+    <!-- old id: 1 --> <title.10 value="Pradžia" />
+    <!-- old id: 1 --> <about.10>
       <p>Sveiki atvykę, Komandore.</p>
 
-      <p>Mes sėkmingai nutupdėme motininį laivą šioje planetoje ir remiantis 
-      pirminiais žvalgybos duomenimis, čia esame ne vieni. Inžinieriai įrengė 
-      gynybos perimetrą, tačiau šis išeikvoja gerokai daugiau energijos, nei 
-      jos pagamina mūsų generatoriai. Tokiomis sąlygomis ilgai čia 
-      netversime!</p>
+      <p>
+        Mes sėkmingai nutupdėme motininį laivą šioje planetoje ir remiantis
+        pirminiais žvalgybos duomenimis, čia esame ne vieni. Jau įsikūrėme,
+        tačiau mums reikia gerokai daugiau energijos, nei
+        jos pagamina mūsų generatoriai. Tokiomis sąlygomis ilgai čia
+        netversime!
+      </p>
 
-      <p>Privalome pastatyti vėjo jėgainę, kad patenkintume savo energetinius 
+      <p>Privalome pastatyti vėjo jėgainę, kad patenkintume savo energetinius
       poreikius. Negaiškite laiko, Komandore, tuoj pat įsakykite pradėti 
       darbus.</p>
-      
-      <p>Savo planetą gali pasirinkti iš meniu viršutiniame kairiajame
-      kampe. Pradėk vykdyti savo misiją nedelsiant!</p>
-    </about.1>
+    <!-- old id: 1 --> </about.10>
 
-    <title.2 value="Apšilimas" />
-    <about.2>
+    <!-- old id: 2 --> <title.20 value="Apšilimas" />
+    <!-- old id: 2 --> <about.20>
       <p>Puikiai susidorota, Komandore.</p>
 
       <p>Mūsų energijos tiekimas normalizavosi, bet panašu, kad šioje 
@@ -2262,21 +2261,31 @@
       metalo.</p>
 
       <p>Mūsų ateitis jūsų rankose, Komandore.</p>
-    </about.2>
+    <!-- old id: 2 --> </about.20>
 
-    <title.3 value="Augantys poreikiai" />
-    <about.3>
+    <!-- old id: 3 --> <title.30 value="Augantys poreikiai" />
+    <!-- old id: 3 --> <about.30>
       <p>Komandore,</p>
       
       <p>
         Panašu, kad su metalo gavyba viskas tvarkoje. Gera pradžia pusė darbo, 
-        bet mes privalome užtikrinti stabilų atsargų augimą. Pastatykime dar 
-        pora resursinių pastatų, jie puikiai pasitarnaus mūsų reikmėms!
+        bet mes privalome užtikrinti stabilų atsargų augimą. Patobulinkime mūsų
+        resursinius pastatus, jie puikiai pasitarnaus mūsų reikmėms!
       </p>
-    </about.3>
+    <!-- old id: 3 --> </about.30>
 
-    <title.22 value="Atradimai" />
-    <about.22>
+    <title.40 value="Prieaugis" />
+    <about.40>
+      <p>Komandore,</p>
+
+      <p>
+        Resursų gavyba - mūsų pirmoji užduotis! Įrenkite daugiau kasyklų, kad
+        tikrai užtikrintumėte stabilų resursų augimą.
+      </p>
+    </about.40>
+
+    <!-- old id: 22 --> <title.x value="Atradimai" />
+    <!-- old id: 22 --> <about.x>
       <p>Gerą dieną, Komandore!</p>
 
       <p>
@@ -2289,10 +2298,10 @@
         Būtų labai teisinga ir tikslinga į įvykio vietą nusiųsti tyrėjus. 
         Galbūt jiems pavyks sužinoti ką nors daugiau.
       </p>
-    </about.22>
+    <!-- old id: 22 --> </about.x>
 
-    <title.23 value="Smalsiųjų laimikis" />
-    <about.23>
+    <!-- old id: 23 --> <title.x value="Smalsiųjų laimikis" />
+    <!-- old id: 23 --> <about.x>
       <p>Gera žinia!</p>
 
       <p>
@@ -2308,10 +2317,10 @@
         Negalime žinoti ką ten rasime, bet panašu, kad kol kas ši praktika 
         atneša apčiuopiamos naudos.     
       </p>
-    </about.23>
+    <!-- old id: 23 --> </about.x>
 
-    <title.4 value="Godumas" />
-    <about.4>
+    <!-- old id: 4 --> <title.x value="Godumas" />
+    <!-- old id: 4 --> <about.x>
       <p>Nuostabu, kad užsukote, Komandore.</p>
 
       <p>
@@ -2326,10 +2335,10 @@
         ką siūlau. Mes privalome patobulinti resursų išgavėjus! Žaliavų 
         perteklius dar niekam nepakenkė, juk tiesa?     
       </p>
-    </about.4>
+    <!-- old id: 4 --> </about.x>
 
-    <title.5 value="Dar. Dar. Dar!" />
-    <about.5>
+    <!-- old id: 5 --> <title.x value="Dar. Dar. Dar!" />
+    <!-- old id: 5 --> <about.x>
       <p>Sveiki ir vėl, Komandore.</p>
 
       <p>
@@ -2339,10 +2348,10 @@
       </p>
       
       <p>Iki greito!</p>
-    </about.5>
+    <!-- old id: 5 --> </about.x>
 
-    <title.6 value="Nerimas" />
-    <about.6>
+    <!-- old id: 6 --> <title.x value="Nerimas" />
+    <!-- old id: 6 --> <about.x>
       <p>Komandore!</p>
 
       <p>
@@ -2356,10 +2365,10 @@
       <p>Mums reikia karių! Įsakykite įrengti kareivines!</p>
 
       <p>Mes privalome užtikrinti savo žmonių saugumą.</p>
-    </about.6>
+    <!-- old id: 6 --> </about.x>
 
-    <title.7 value="Ginklavimosi varžybos" />
-    <about.7>
+    <!-- old id: 7 --> <title.x value="Ginklavimosi varžybos" />
+    <!-- old id: 7 --> <about.x>
       <p>Komandore.</p>
 
       <p>
@@ -2372,7 +2381,7 @@
         Privalome parengti daugiau karių. Užsukite į kareivines ir įsakykite 
         pradėti desantininkų mokymus.
       </p>
-    </about.7>
+    <!-- old id: 7 --> </about.x>
 
     <StrenghteningForces.title value="Pranašumo įtvirtinimas"/>
     <StrenghteningForces.about>
@@ -2386,98 +2395,98 @@
       </p>
     </StrenghteningForces.about>
     
-    <title.66 ref="StrenghteningForces.title" />
-    <about.66 ref="StrenghteningForces.about" />
+    <!-- old id: 66 --> <title.x ref="StrenghteningForces.title" />
+    <!-- old id: 66 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.67 value="[reference:StrenghteningForces.title] (II)" />
-    <about.67 ref="StrenghteningForces.about" />
+    <!-- old id: 67 --> <title.x value="[reference:StrenghteningForces.title] (II)" />
+    <!-- old id: 67 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.68 value="[reference:StrenghteningForces.title] (III)" />
-    <about.68 ref="StrenghteningForces.about" />
+    <!-- old id: 68 --> <title.x value="[reference:StrenghteningForces.title] (III)" />
+    <!-- old id: 68 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.69 value="[reference:StrenghteningForces.title] (IV)" />
-    <about.69 ref="StrenghteningForces.about" />
+    <!-- old id: 69 --> <title.x value="[reference:StrenghteningForces.title] (IV)" />
+    <!-- old id: 69 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.70 value="[reference:StrenghteningForces.title] (V)" />
-    <about.70 ref="StrenghteningForces.about" />
+    <!-- old id: 70 --> <title.x value="[reference:StrenghteningForces.title] (V)" />
+    <!-- old id: 70 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.71 value="[reference:StrenghteningForces.title] (VI)" />
-    <about.71 ref="StrenghteningForces.about" />
+    <!-- old id: 71 --> <title.x value="[reference:StrenghteningForces.title] (VI)" />
+    <!-- old id: 71 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.95 value="[reference:StrenghteningForces.title] (VII)" />
-    <about.95 ref="StrenghteningForces.about" />
+    <!-- old id: 95 --> <title.x value="[reference:StrenghteningForces.title] (VII)" />
+    <!-- old id: 95 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
-    <about.96 ref="StrenghteningForces.about" />
+    <!-- old id: 96 --> <title.x value="[reference:StrenghteningForces.title] (VIII)" />
+    <!-- old id: 96 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.97 value="[reference:StrenghteningForces.title] (IX)" />
-    <about.97 ref="StrenghteningForces.about" />
+    <!-- old id: 97 --> <title.x value="[reference:StrenghteningForces.title] (IX)" />
+    <!-- old id: 97 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.98 value="[reference:StrenghteningForces.title] (X)" />
-    <about.98 ref="StrenghteningForces.about" />
+    <!-- old id: 98 --> <title.x value="[reference:StrenghteningForces.title] (X)" />
+    <!-- old id: 98 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.99 value="[reference:StrenghteningForces.title] (XI)" />
-    <about.99 ref="StrenghteningForces.about" />
+    <!-- old id: 99 --> <title.x value="[reference:StrenghteningForces.title] (XI)" />
+    <!-- old id: 99 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.100 value="[reference:StrenghteningForces.title] (XII)" />
-    <about.100 ref="StrenghteningForces.about" />
+    <!-- old id: 100 --> <title.x value="[reference:StrenghteningForces.title] (XII)" />
+    <!-- old id: 100 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
-    <about.101 ref="StrenghteningForces.about" />
+    <!-- old id: 101 --> <title.x value="[reference:StrenghteningForces.title] (XIII)" />
+    <!-- old id: 101 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
-    <about.102 ref="StrenghteningForces.about" />
+    <!-- old id: 102 --> <title.x value="[reference:StrenghteningForces.title] (XIV)" />
+    <!-- old id: 102 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.95 value="[reference:StrenghteningForces.title] (VII)" />
-    <about.95 ref="StrenghteningForces.about" />
+    <!-- old id: 95 --> <title.x value="[reference:StrenghteningForces.title] (VII)" />
+    <!-- old id: 95 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
-    <about.96 ref="StrenghteningForces.about" />
+    <!-- old id: 96 --> <title.x value="[reference:StrenghteningForces.title] (VIII)" />
+    <!-- old id: 96 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.97 value="[reference:StrenghteningForces.title] (IX)" />
-    <about.97 ref="StrenghteningForces.about" />
+    <!-- old id: 97 --> <title.x value="[reference:StrenghteningForces.title] (IX)" />
+    <!-- old id: 97 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.98 value="[reference:StrenghteningForces.title] (X)" />
-    <about.98 ref="StrenghteningForces.about" />
+    <!-- old id: 98 --> <title.x value="[reference:StrenghteningForces.title] (X)" />
+    <!-- old id: 98 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.99 value="[reference:StrenghteningForces.title] (XI)" />
-    <about.99 ref="StrenghteningForces.about" />
+    <!-- old id: 99 --> <title.x value="[reference:StrenghteningForces.title] (XI)" />
+    <!-- old id: 99 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.100 value="[reference:StrenghteningForces.title] (XII)" />
-    <about.100 ref="StrenghteningForces.about" />
+    <!-- old id: 100 --> <title.x value="[reference:StrenghteningForces.title] (XII)" />
+    <!-- old id: 100 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
-    <about.101 ref="StrenghteningForces.about" />
+    <!-- old id: 101 --> <title.x value="[reference:StrenghteningForces.title] (XIII)" />
+    <!-- old id: 101 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
-    <about.102 ref="StrenghteningForces.about" />
+    <!-- old id: 102 --> <title.x value="[reference:StrenghteningForces.title] (XIV)" />
+    <!-- old id: 102 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.95 value="[reference:StrenghteningForces.title] (VII)" />
-    <about.95 ref="StrenghteningForces.about" />
+    <!-- old id: 95 --> <title.x value="[reference:StrenghteningForces.title] (VII)" />
+    <!-- old id: 95 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
-    <about.96 ref="StrenghteningForces.about" />
+    <!-- old id: 96 --> <title.x value="[reference:StrenghteningForces.title] (VIII)" />
+    <!-- old id: 96 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.97 value="[reference:StrenghteningForces.title] (IX)" />
-    <about.97 ref="StrenghteningForces.about" />
+    <!-- old id: 97 --> <title.x value="[reference:StrenghteningForces.title] (IX)" />
+    <!-- old id: 97 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.98 value="[reference:StrenghteningForces.title] (X)" />
-    <about.98 ref="StrenghteningForces.about" />
+    <!-- old id: 98 --> <title.x value="[reference:StrenghteningForces.title] (X)" />
+    <!-- old id: 98 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.99 value="[reference:StrenghteningForces.title] (XI)" />
-    <about.99 ref="StrenghteningForces.about" />
+    <!-- old id: 99 --> <title.x value="[reference:StrenghteningForces.title] (XI)" />
+    <!-- old id: 99 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.100 value="[reference:StrenghteningForces.title] (XII)" />
-    <about.100 ref="StrenghteningForces.about" />
+    <!-- old id: 100 --> <title.x value="[reference:StrenghteningForces.title] (XII)" />
+    <!-- old id: 100 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
-    <about.101 ref="StrenghteningForces.about" />
+    <!-- old id: 101 --> <title.x value="[reference:StrenghteningForces.title] (XIII)" />
+    <!-- old id: 101 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
-    <about.102 ref="StrenghteningForces.about" />
+    <!-- old id: 102 --> <title.x value="[reference:StrenghteningForces.title] (XIV)" />
+    <!-- old id: 102 --> <about.x ref="StrenghteningForces.about" />
 
-    <title.8 value="Pirmas kontaktas" />
-    <about.8>
+    <!-- old id: 8 --> <title.x value="Pirmas kontaktas" />
+    <!-- old id: 8 --> <about.x>
       <p>Komandore.</p>
       <p>
         Iškilo problema. Metalo poreikiai nuolat auga, o du mūsų turimi MEX-ai 
@@ -2497,20 +2506,20 @@
         ji lemtinga tolimesniai mūsų raidai planetoje. 
       </p>
       <p>Mes pasitikime jūsų kompetencija, Komandore.</p>
-    </about.8>
+    <!-- old id: 8 --> </about.x>
 
-    <title.32 value="Drąsos vaisiai" />
-    <about.32>
+    <!-- old id: 32 --> <title.x value="Drąsos vaisiai" />
+    <!-- old id: 32 --> <about.x>
       <p>Gera žinia!</p>
       <p>
         Mes užėmėme rūda turtingas pozicijas! Dabar galime įrengti ten MEX‘ą. 
         Jums leidus, siųlyčiau padaryti tai nedelsiant. Šią akimirką kolonija 
         tikrai ras kur panaudoti papildomas metalų atsargas.
       </p>
-    </about.32>
+    <!-- old id: 32 --> </about.x>
 
-    <title.9 value="Mokslas metalo vardan" />
-    <about.9>
+    <!-- old id: 9 --> <title.x value="Mokslas metalo vardan" />
+    <!-- old id: 9 --> <about.x>
       <p>Komandore, džiaugiuosi jus matydama!</p>
       <p>
         Aš ką tik peržiūrėjau naudingų iškasenų gavybos duomenis. Skaičiai 
@@ -2524,10 +2533,10 @@
         Pamėginkime patobulinti vieną iš mūsų MEX‘ų ir išsiaiškinkime ar 
         moksliukai gali sukurti tai ką pažada.  
       </p>
-    </about.9>
+    <!-- old id: 9 --> </about.x>
 
-    <title.10 value="Energetinis mokslas" />
-    <about.10>
+    <!-- old id: 10 --> <title.x value="Energetinis mokslas" />
+    <!-- old id: 10 --> <about.x>
       <p>Komandore!</p>
       <p>
         Aš ką tik iš susitikimo su mūsų laborantais, jie pristatė naujus 
@@ -2539,10 +2548,10 @@
         išlaidos atsipirks su kaupu. Nedelsdami įsakykite patobulinti vieną 
         iš vėjo jėgainių.
       </p>
-    </about.10>
+    <!-- old id: 10 --> </about.x>
 
-    <title.116 value="Galingųjų turtai" />
-    <about.116>
+    <!-- old id: 116 --> <title.x value="Galingųjų turtai" />
+    <!-- old id: 116 --> <about.x>
       <p>Komandore!</p>
       <p>Po sėkmingos atakos „Pirmojo kontakto“ metu, jūs buvote apdovanoti 
       simboline kreditų suma. Būtinai atsiimkite šį apdovanojimą, jei to 
@@ -2562,10 +2571,10 @@
       savo nuožiūra.</p>
       <p>Išmėginkite VIP paslaugą dabar ir mėgaukitės apdovanojimais ir jų 
       suteikiama galia!</p>
-    </about.116>
+    <!-- old id: 116 --> </about.x>
 
-    <title.117 value="Skubos darbas!" />
-    <about.117>
+    <!-- old id: 117 --> <title.x value="Skubos darbas!" />
+    <!-- old id: 117 --> <about.x>
       <p>Sveikinimai tapus VIP, Komandore.</p>
       <p>Nuo šiol jūs kasdien gausite kreditų įvairioms išlaidoms, tad kodėl gi 
       jų neišeikvojus naudingai veiklai?</p>
@@ -2573,10 +2582,10 @@
       nudžiugintu iki šiol mums labai daug naudos atnešusius mokslininkus. 
       Įsakykite pradėti jo statybas ir paspartinkite jas išleisdami 
       dalį kreditų.</p>
-    </about.117>
+    <!-- old id: 117 --> </about.x>
 
-    <title.11 value="Neramios sielos" />
-    <about.11>
+    <!-- old id: 11 --> <title.x value="Neramios sielos" />
+    <!-- old id: 11 --> <about.x>
       <p>Sveiki, Komandore.</p>
       <p>
         Mūsų kolonija klesti. Paskutinės ataskaitos demonstruoja stabilų 
@@ -2596,10 +2605,10 @@
         nedelsiant. Galų gale vienas kitas mokslinis triukas rankovėje mums 
         tikrai nepakenks!
       </p>
-    </about.11>
+    <!-- old id: 11 --> </about.x>
 
-    <title.24 value="Tai, kas mus supa" />
-    <about.24>
+    <!-- old id: 24 --> <title.x value="Tai, kas mus supa" />
+    <!-- old id: 24 --> <about.x>
       <p>
         Tyrimų centras įrengtas! Prie paradinių durų būriuojasi mokslininkai 
         trokštantys tuojau pat leistis į ekspedicijas. Žvalgybos pranešimuose 
@@ -2610,10 +2619,10 @@
         Pasiųskime grupę ar kelias ir ištirkime tuos objektus ir pažiūrėkime 
         ką dar nuo mūsų slepia ši planeta. 
       </p>
-    </about.24>
+    <!-- old id: 24 --> </about.x>
 
-    <title.25 value="Naudingi atradimai" />
-    <about.25>
+    <!-- old id: 25 --> <title.x value="Naudingi atradimai" />
+    <!-- old id: 25 --> <about.x>
       <p>Tai buvo netikėta!</p>
       <p>
         Kartu su kalnais šlamšto, mokslininkai atvilko dar keletą ateivių 
@@ -2626,10 +2635,10 @@
         jis mėtosi dabar.
       </p>
       <p>Leiskime jiems keliauti! Įsakykime rengti mega-ekspediciją!</p>
-    </about.25>
+    <!-- old id: 25 --> </about.x>
 
-    <title.26 value="Nepasotinami" />
-    <about.26>
+    <!-- old id: 26 --> <title.x value="Nepasotinami" />
+    <!-- old id: 26 --> <about.x>
       <p>Jie paprasčiausiai išsikraustė iš proto!</p>
       <p>
         Mokslininkai ir laborantai vėl kraunasi kuprines. Šį kartą jie ketina 
@@ -2644,10 +2653,10 @@
         likusius mokslininkus vis tiek galėsime siųsti į ekspedicijas.
       </p>
       <p>Sprendimą ir tolimesnių darbų planavimą palieku jums, Komandore.</p>
-    </about.26>
+    <!-- old id: 26 --> </about.x>
     
-    <title.12 value="Keliaujantys su šešėliu" />
-    <about.12>
+    <!-- old id: 12 --> <title.x value="Keliaujantys su šešėliu" />
+    <!-- old id: 12 --> <about.x>
       <p>Sveiki, Komandore.</p>
       <p>Žmonės baltais chalatais jau atsigauna nuo euforijos kurią sukėlė 
       naujas tyrimų centras. Pats metas duoti jiems darbo. Jei jums įdomi mano 
@@ -2659,10 +2668,10 @@
       
       <p>Kai tik mokslininkai baigs tyrimą, siūlyčiau iškart pasigaminti 
       keletą šių karių, kad patikrinti jų kovines galias mūšio lauke.</p>
-    </about.12>
+    <!-- old id: 12 --> </about.x>
 
-    <title.13 value="Veteranai" />
-    <about.13>
+    <!-- old id: 13 --> <title.x value="Veteranai" />
+    <!-- old id: 13 --> <about.x>
       <p>Komandore.</p>
       <p>
         Jūsų ryžtas ir nusiteikimas asmeniškai vadovauti mūšyje 
@@ -2676,7 +2685,7 @@
         pasireiškia geltonsnapiai naujokai. Neleiskite žūti veteranams, tai 
         galingi ir įkvepiantys kovotojai, mums jie reikalingi gyvi. 
       </p>
-    </about.13>
+    <!-- old id: 13 --> </about.x>
 
     <ThirstForKnowledge.title value="Žinių troškimas" />
     <ThirstForKnowledge.about>
@@ -2689,32 +2698,32 @@
       </p>
     </ThirstForKnowledge.about>
 
-    <title.72 ref="ThirstForKnowledge.title" />
-    <about.72 ref="ThirstForKnowledge.about" />
+    <!-- old id: 72 --> <title.x ref="ThirstForKnowledge.title" />
+    <!-- old id: 72 --> <about.x ref="ThirstForKnowledge.about" />
 
-    <title.73 value="[reference:ThirstForKnowledge.title] (II)" />
-    <about.73 ref="ThirstForKnowledge.about" />
+    <!-- old id: 73 --> <title.x value="[reference:ThirstForKnowledge.title] (II)" />
+    <!-- old id: 73 --> <about.x ref="ThirstForKnowledge.about" />
 
-    <title.74 value="[reference:ThirstForKnowledge.title] (III)" />
-    <about.74 ref="ThirstForKnowledge.about" />
+    <!-- old id: 74 --> <title.x value="[reference:ThirstForKnowledge.title] (III)" />
+    <!-- old id: 74 --> <about.x ref="ThirstForKnowledge.about" />
 
-    <title.75 value="[reference:ThirstForKnowledge.title] (IV)" />
-    <about.75 ref="ThirstForKnowledge.about" />
+    <!-- old id: 75 --> <title.x value="[reference:ThirstForKnowledge.title] (IV)" />
+    <!-- old id: 75 --> <about.x ref="ThirstForKnowledge.about" />
 
-    <title.76 value="[reference:ThirstForKnowledge.title] (V)" />
-    <about.76 ref="ThirstForKnowledge.about" />
+    <!-- old id: 76 --> <title.x value="[reference:ThirstForKnowledge.title] (V)" />
+    <!-- old id: 76 --> <about.x ref="ThirstForKnowledge.about" />
 
-    <title.77 value="[reference:ThirstForKnowledge.title] (VI)" />
-    <about.77 ref="ThirstForKnowledge.about" />
+    <!-- old id: 77 --> <title.x value="[reference:ThirstForKnowledge.title] (VI)" />
+    <!-- old id: 77 --> <about.x ref="ThirstForKnowledge.about" />
 
-    <title.78 value="[reference:ThirstForKnowledge.title] (VII)" />
-    <about.78 ref="ThirstForKnowledge.about" />
+    <!-- old id: 78 --> <title.x value="[reference:ThirstForKnowledge.title] (VII)" />
+    <!-- old id: 78 --> <about.x ref="ThirstForKnowledge.about" />
 
-    <title.79 value="[reference:ThirstForKnowledge.title] (VIII)" />
-    <about.79 ref="ThirstForKnowledge.about" />
+    <!-- old id: 79 --> <title.x value="[reference:ThirstForKnowledge.title] (VIII)" />
+    <!-- old id: 79 --> <about.x ref="ThirstForKnowledge.about" />
     
-    <title.118 value="Poreikių patenkinimas" />
-    <about.118>
+    <!-- old id: 118 --> <title.x value="Poreikių patenkinimas" />
+    <!-- old id: 118 --> <about.x>
       <p>Sveiki, Komandore.</p>
       <p>Skirtingais laikais mums reikia skirtingų dalykų, ir deja nei vienas
       iš mūsų negali tobulai numatyti ateities. Išrask turgų jog galėtume
@@ -2722,10 +2731,10 @@
       <p>Juk jiems gali reikėti to, ko mes turime, ir atvirkščiai. Kodėl mes
       neturėtume padėti vieni kitiems? Galbūt besimainydami netgi susirasim
       ir vieną kitą draugą? Kas žino...</p>
-    </about.118>
+    <!-- old id: 118 --> </about.x>
 
-    <title.27 value="Technologijų šukės" />
-    <about.27>
+    <!-- old id: 27 --> <title.x value="Technologijų šukės" />
+    <!-- old id: 27 --> <about.x>
       <p>Komandore,</p>
       <p>
         Žvalgyba aptiko keletą keistų, ateivių robotų saugomų, pastatų. Juos 
@@ -2740,7 +2749,7 @@
         Mums būtina pradėti šių kristalų gavybą! 
       </p>
       <p>Pats metas išvaduoti kristalus iš ateiviškų pastatų priespaudos!</p>
-    </about.27>
+    <!-- old id: 27 --> </about.x>
 
     <EchoesOfBattle.title value="Mūšio aidai" />
     <EchoesOfBattle.about>
@@ -2757,197 +2766,197 @@
       taip, ar taip nesusikalbėtumėte.</p>
     </EchoesOfBattle.about>
 
-    <title.80 ref="EchoesOfBattle.title" />
-    <about.80 ref="EchoesOfBattle.about" />
+    <!-- old id: 80 --> <title.x ref="EchoesOfBattle.title" />
+    <!-- old id: 80 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.81 value="[reference:EchoesOfBattle.title] (II)" />
-    <about.81 ref="EchoesOfBattle.about" />
+    <!-- old id: 81 --> <title.x value="[reference:EchoesOfBattle.title] (II)" />
+    <!-- old id: 81 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.82 value="[reference:EchoesOfBattle.title] (III)" />
-    <about.82 ref="EchoesOfBattle.about" />
+    <!-- old id: 82 --> <title.x value="[reference:EchoesOfBattle.title] (III)" />
+    <!-- old id: 82 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.83 value="[reference:EchoesOfBattle.title] (IV)" />
-    <about.83 ref="EchoesOfBattle.about" />
+    <!-- old id: 83 --> <title.x value="[reference:EchoesOfBattle.title] (IV)" />
+    <!-- old id: 83 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.84 value="[reference:EchoesOfBattle.title] (V)" />
-    <about.84 ref="EchoesOfBattle.about" />
+    <!-- old id: 84 --> <title.x value="[reference:EchoesOfBattle.title] (V)" />
+    <!-- old id: 84 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.85 value="[reference:EchoesOfBattle.title] (VI)" />
-    <about.85 ref="EchoesOfBattle.about" />
+    <!-- old id: 85 --> <title.x value="[reference:EchoesOfBattle.title] (VI)" />
+    <!-- old id: 85 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
-    <about.86 ref="EchoesOfBattle.about" />
+    <!-- old id: 86 --> <title.x value="[reference:EchoesOfBattle.title] (VII)" />
+    <!-- old id: 86 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
-    <about.87 ref="EchoesOfBattle.about" />
+    <!-- old id: 87 --> <title.x value="[reference:EchoesOfBattle.title] (VIII)" />
+    <!-- old id: 87 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
-    <about.88 ref="EchoesOfBattle.about" />
+    <!-- old id: 88 --> <title.x value="[reference:EchoesOfBattle.title] (IX)" />
+    <!-- old id: 88 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.89 value="[reference:EchoesOfBattle.title] (X)" />
-    <about.89 ref="EchoesOfBattle.about" />
+    <!-- old id: 89 --> <title.x value="[reference:EchoesOfBattle.title] (X)" />
+    <!-- old id: 89 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
-    <about.90 ref="EchoesOfBattle.about" />
+    <!-- old id: 90 --> <title.x value="[reference:EchoesOfBattle.title] (XI)" />
+    <!-- old id: 90 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
-    <about.91 ref="EchoesOfBattle.about" />
+    <!-- old id: 91 --> <title.x value="[reference:EchoesOfBattle.title] (XII)" />
+    <!-- old id: 91 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
-    <about.92 ref="EchoesOfBattle.about" />
+    <!-- old id: 92 --> <title.x value="[reference:EchoesOfBattle.title] (XIII)" />
+    <!-- old id: 92 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
-    <about.93 ref="EchoesOfBattle.about" />
+    <!-- old id: 93 --> <title.x value="[reference:EchoesOfBattle.title] (XIV)" />
+    <!-- old id: 93 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
-    <about.94 ref="EchoesOfBattle.about" />
+    <!-- old id: 94 --> <title.x value="[reference:EchoesOfBattle.title] (XV)" />
+    <!-- old id: 94 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
-    <about.106 ref="EchoesOfBattle.about" />
+    <!-- old id: 106 --> <title.x value="[reference:EchoesOfBattle.title] (XVI)" />
+    <!-- old id: 106 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
-    <about.107 ref="EchoesOfBattle.about" />
+    <!-- old id: 107 --> <title.x value="[reference:EchoesOfBattle.title] (XVII)" />
+    <!-- old id: 107 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
-    <about.108 ref="EchoesOfBattle.about" />
+    <!-- old id: 108 --> <title.x value="[reference:EchoesOfBattle.title] (XVIII)" />
+    <!-- old id: 108 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
-    <about.109 ref="EchoesOfBattle.about" />
+    <!-- old id: 109 --> <title.x value="[reference:EchoesOfBattle.title] (XIX)" />
+    <!-- old id: 109 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
-    <about.110 ref="EchoesOfBattle.about" />
+    <!-- old id: 110 --> <title.x value="[reference:EchoesOfBattle.title] (XX)" />
+    <!-- old id: 110 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
-    <about.111 ref="EchoesOfBattle.about" />
+    <!-- old id: 111 --> <title.x value="[reference:EchoesOfBattle.title] (XXI)" />
+    <!-- old id: 111 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
-    <about.112 ref="EchoesOfBattle.about" />
+    <!-- old id: 112 --> <title.x value="[reference:EchoesOfBattle.title] (XXII)" />
+    <!-- old id: 112 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
-    <about.113 ref="EchoesOfBattle.about" />
+    <!-- old id: 113 --> <title.x value="[reference:EchoesOfBattle.title] (XXIII)" />
+    <!-- old id: 113 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
-    <about.114 ref="EchoesOfBattle.about" />
+    <!-- old id: 114 --> <title.x value="[reference:EchoesOfBattle.title] (XXIV)" />
+    <!-- old id: 114 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
-    <about.115 ref="EchoesOfBattle.about" />
+    <!-- old id: 115 --> <title.x value="[reference:EchoesOfBattle.title] (XXV)" />
+    <!-- old id: 115 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
-    <about.86 ref="EchoesOfBattle.about" />
+    <!-- old id: 86 --> <title.x value="[reference:EchoesOfBattle.title] (VII)" />
+    <!-- old id: 86 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
-    <about.87 ref="EchoesOfBattle.about" />
+    <!-- old id: 87 --> <title.x value="[reference:EchoesOfBattle.title] (VIII)" />
+    <!-- old id: 87 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
-    <about.88 ref="EchoesOfBattle.about" />
+    <!-- old id: 88 --> <title.x value="[reference:EchoesOfBattle.title] (IX)" />
+    <!-- old id: 88 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.89 value="[reference:EchoesOfBattle.title] (X)" />
-    <about.89 ref="EchoesOfBattle.about" />
+    <!-- old id: 89 --> <title.x value="[reference:EchoesOfBattle.title] (X)" />
+    <!-- old id: 89 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
-    <about.90 ref="EchoesOfBattle.about" />
+    <!-- old id: 90 --> <title.x value="[reference:EchoesOfBattle.title] (XI)" />
+    <!-- old id: 90 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
-    <about.91 ref="EchoesOfBattle.about" />
+    <!-- old id: 91 --> <title.x value="[reference:EchoesOfBattle.title] (XII)" />
+    <!-- old id: 91 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
-    <about.92 ref="EchoesOfBattle.about" />
+    <!-- old id: 92 --> <title.x value="[reference:EchoesOfBattle.title] (XIII)" />
+    <!-- old id: 92 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
-    <about.93 ref="EchoesOfBattle.about" />
+    <!-- old id: 93 --> <title.x value="[reference:EchoesOfBattle.title] (XIV)" />
+    <!-- old id: 93 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
-    <about.94 ref="EchoesOfBattle.about" />
+    <!-- old id: 94 --> <title.x value="[reference:EchoesOfBattle.title] (XV)" />
+    <!-- old id: 94 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
-    <about.106 ref="EchoesOfBattle.about" />
+    <!-- old id: 106 --> <title.x value="[reference:EchoesOfBattle.title] (XVI)" />
+    <!-- old id: 106 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
-    <about.107 ref="EchoesOfBattle.about" />
+    <!-- old id: 107 --> <title.x value="[reference:EchoesOfBattle.title] (XVII)" />
+    <!-- old id: 107 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
-    <about.108 ref="EchoesOfBattle.about" />
+    <!-- old id: 108 --> <title.x value="[reference:EchoesOfBattle.title] (XVIII)" />
+    <!-- old id: 108 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
-    <about.109 ref="EchoesOfBattle.about" />
+    <!-- old id: 109 --> <title.x value="[reference:EchoesOfBattle.title] (XIX)" />
+    <!-- old id: 109 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
-    <about.110 ref="EchoesOfBattle.about" />
+    <!-- old id: 110 --> <title.x value="[reference:EchoesOfBattle.title] (XX)" />
+    <!-- old id: 110 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
-    <about.111 ref="EchoesOfBattle.about" />
+    <!-- old id: 111 --> <title.x value="[reference:EchoesOfBattle.title] (XXI)" />
+    <!-- old id: 111 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
-    <about.112 ref="EchoesOfBattle.about" />
+    <!-- old id: 112 --> <title.x value="[reference:EchoesOfBattle.title] (XXII)" />
+    <!-- old id: 112 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
-    <about.113 ref="EchoesOfBattle.about" />
+    <!-- old id: 113 --> <title.x value="[reference:EchoesOfBattle.title] (XXIII)" />
+    <!-- old id: 113 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
-    <about.114 ref="EchoesOfBattle.about" />
+    <!-- old id: 114 --> <title.x value="[reference:EchoesOfBattle.title] (XXIV)" />
+    <!-- old id: 114 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
-    <about.115 ref="EchoesOfBattle.about" />
+    <!-- old id: 115 --> <title.x value="[reference:EchoesOfBattle.title] (XXV)" />
+    <!-- old id: 115 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
-    <about.86 ref="EchoesOfBattle.about" />
+    <!-- old id: 86 --> <title.x value="[reference:EchoesOfBattle.title] (VII)" />
+    <!-- old id: 86 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
-    <about.87 ref="EchoesOfBattle.about" />
+    <!-- old id: 87 --> <title.x value="[reference:EchoesOfBattle.title] (VIII)" />
+    <!-- old id: 87 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
-    <about.88 ref="EchoesOfBattle.about" />
+    <!-- old id: 88 --> <title.x value="[reference:EchoesOfBattle.title] (IX)" />
+    <!-- old id: 88 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.89 value="[reference:EchoesOfBattle.title] (X)" />
-    <about.89 ref="EchoesOfBattle.about" />
+    <!-- old id: 89 --> <title.x value="[reference:EchoesOfBattle.title] (X)" />
+    <!-- old id: 89 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
-    <about.90 ref="EchoesOfBattle.about" />
+    <!-- old id: 90 --> <title.x value="[reference:EchoesOfBattle.title] (XI)" />
+    <!-- old id: 90 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
-    <about.91 ref="EchoesOfBattle.about" />
+    <!-- old id: 91 --> <title.x value="[reference:EchoesOfBattle.title] (XII)" />
+    <!-- old id: 91 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
-    <about.92 ref="EchoesOfBattle.about" />
+    <!-- old id: 92 --> <title.x value="[reference:EchoesOfBattle.title] (XIII)" />
+    <!-- old id: 92 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
-    <about.93 ref="EchoesOfBattle.about" />
+    <!-- old id: 93 --> <title.x value="[reference:EchoesOfBattle.title] (XIV)" />
+    <!-- old id: 93 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
-    <about.94 ref="EchoesOfBattle.about" />
+    <!-- old id: 94 --> <title.x value="[reference:EchoesOfBattle.title] (XV)" />
+    <!-- old id: 94 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
-    <about.106 ref="EchoesOfBattle.about" />
+    <!-- old id: 106 --> <title.x value="[reference:EchoesOfBattle.title] (XVI)" />
+    <!-- old id: 106 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
-    <about.107 ref="EchoesOfBattle.about" />
+    <!-- old id: 107 --> <title.x value="[reference:EchoesOfBattle.title] (XVII)" />
+    <!-- old id: 107 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
-    <about.108 ref="EchoesOfBattle.about" />
+    <!-- old id: 108 --> <title.x value="[reference:EchoesOfBattle.title] (XVIII)" />
+    <!-- old id: 108 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
-    <about.109 ref="EchoesOfBattle.about" />
+    <!-- old id: 109 --> <title.x value="[reference:EchoesOfBattle.title] (XIX)" />
+    <!-- old id: 109 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
-    <about.110 ref="EchoesOfBattle.about" />
+    <!-- old id: 110 --> <title.x value="[reference:EchoesOfBattle.title] (XX)" />
+    <!-- old id: 110 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
-    <about.111 ref="EchoesOfBattle.about" />
+    <!-- old id: 111 --> <title.x value="[reference:EchoesOfBattle.title] (XXI)" />
+    <!-- old id: 111 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
-    <about.112 ref="EchoesOfBattle.about" />
+    <!-- old id: 112 --> <title.x value="[reference:EchoesOfBattle.title] (XXII)" />
+    <!-- old id: 112 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
-    <about.113 ref="EchoesOfBattle.about" />
+    <!-- old id: 113 --> <title.x value="[reference:EchoesOfBattle.title] (XXIII)" />
+    <!-- old id: 113 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
-    <about.114 ref="EchoesOfBattle.about" />
+    <!-- old id: 114 --> <title.x value="[reference:EchoesOfBattle.title] (XXIV)" />
+    <!-- old id: 114 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
-    <about.115 ref="EchoesOfBattle.about" />
+    <!-- old id: 115 --> <title.x value="[reference:EchoesOfBattle.title] (XXV)" />
+    <!-- old id: 115 --> <about.x ref="EchoesOfBattle.about" />
 
-    <title.14 value="Kristalizacija" />
-    <about.14>
+    <!-- old id: 14 --> <title.x value="Kristalizacija" />
+    <!-- old id: 14 --> <about.x>
       <p>Komandore,</p>
       <p>
         Iš žvalgų gavę zetiumo pavyzdžius mūsų mokslininkai teigia jog tai
@@ -2957,10 +2966,10 @@
       <p>
         Nedelskite! Užsukite į tyrimų centrą ir įsakykite pradėti darbus. 
       </p>
-    </about.14>
+    <!-- old id: 14 --> </about.x>
 
-    <title.15 value="Kantrybės vaisiai" />
-    <about.15>
+    <!-- old id: 15 --> <title.x value="Kantrybės vaisiai" />
+    <!-- old id: 15 --> <about.x>
       <p>Komandore!</p>
       <p>
         Jūsų kabinete išties karšta... Ar jūsų kondicionavimo sistema 
@@ -2969,43 +2978,43 @@
         Mokslininkai baigė tyrimą, mes galime pradėti zetiumo ekstraktorių 
         statybas! 
       </p>
-    </about.15>
+    <!-- old id: 15 --> </about.x>
 
-    <title.121 value="Užgniaužus kvapą" />
-    <about.121>
+    <!-- old id: 121 --> <title.x value="Užgniaužus kvapą" />
+    <!-- old id: 121 --> <about.x>
       <p>Komandore,</p>
       <p>Mūsų žmonėms reikia daugiau vietos! Dar truputis ir nebus kur
       kojos padėti!</p>
       <p>Nedelsiant pradėkite gyvenamųjų bokštų statybas.</p>
-    </about.121>
+    <!-- old id: 121 --> </about.x>
     
-    <title.16 value="Dydybės link" />
-    <about.16>
+    <!-- old id: 16 --> <title.x value="Dydybės link" />
+    <!-- old id: 16 --> <about.x>
       <p>Komandore.</p>
       <p>
         Tiesiog užsukau pasakyti, kad esate didis vadovas ir nuostabus 
         lyderis. Jūsų dėka mes daug pasiekėme ir už tai esame dėkingi. 
       </p>
-    </about.16>
+    <!-- old id: 16 --> </about.x>
 
-    <title.28 value="Šlovė jums!" />
-    <about.28>
+    <!-- old id: 28 --> <title.x value="Šlovė jums!" />
+    <!-- old id: 28 --> <about.x>
       <p>Komandore.</p>
       <p>Jūsų darbų reikšmė žmonijai neprilygstama.</p>
       <p>Telydi jus sėkmė.</p>
-    </about.28>
+    <!-- old id: 28 --> </about.x>
 
-    <title.29 value="Galaktikos talentas" />
-    <about.29>
+    <!-- old id: 29 --> <title.x value="Galaktikos talentas" />
+    <!-- old id: 29 --> <about.x>
       <p>Komandore.</p>
       <p>
         Kaimynystėje visi tik ir šneka apie neprilygstamus jūsų įgūdžius. 
         Jūs to nusipelnote. Neatsipalaiduokite, išlaikykite tą patį ritmą! 
       </p>
-    </about.29>
+    <!-- old id: 29 --> </about.x>
 
-    <title.30 value="Viršukalnė" />
-    <about.30>
+    <!-- old id: 30 --> <title.x value="Viršukalnė" />
+    <!-- old id: 30 --> <about.x>
       <p>Komandore.</p>
       <p>
         Žmonės kurių gyvenimas neapdovanojo galimybe tarnauti po jūsų vėliava, 
@@ -3013,10 +3022,10 @@
         ką tai reiškia. Ačiū, jums už tai.
       </p>
       <p>Aš kalbu mūsų kolonijos vardu, Komandore.</p>
-    </about.30>
+    <!-- old id: 30 --> </about.x>
 
-    <title.33 value="Nesustabdoma jėga" />
-    <about.33>
+    <!-- old id: 33 --> <title.x value="Nesustabdoma jėga" />
+    <!-- old id: 33 --> <about.x>
       <p>Komandore.</p>
       <p>
         Šiame galaktikos sektoriuje nebeliko žmogaus kuris apie jus nežinotų. 
@@ -3025,17 +3034,17 @@
         didesnės jūsų rūstybės. 
       </p>
       <p>Jūs nesustabdomas!</p>
-    </about.33>
+    <!-- old id: 33 --> </about.x>
 
-    <title.64 value="Dievybė" />
-    <about.64>
+    <!-- old id: 64 --> <title.x value="Dievybė" />
+    <!-- old id: 64 --> <about.x>
       <p>Komandore.</p>
       <p>Jūs esate ekonomikos, mokslo ir karybos guru. Mes lyderiaujame visose 
       sferose! Jums nebuvo kilusi mintis sukurti savo religiją?</p>
-    </about.64>
+    <!-- old id: 64 --> </about.x>
 
-    <title.17 value="Taupumas" />
-    <about.17>
+    <!-- old id: 17 --> <title.x value="Taupumas" />
+    <!-- old id: 17 --> <about.x>
       <p>Sveiki sugrįžę, Komandore.</p>
       <p>
         Bijau, kad sakydama „resursų nebūna per daug“ truputį pasikarščiavau. 
@@ -3049,10 +3058,10 @@
         Įsakykite pastatyti po saugyklą kiekvienam išgaunamų resursų tipui, 
         Komandore.
       </p>
-    </about.17>
+    <!-- old id: 17 --> </about.x>
 
-    <title.18 value="Kelias į žvaigždes" />
-    <about.18>
+    <!-- old id: 18 --> <title.x value="Kelias į žvaigždes" />
+    <!-- old id: 18 --> <about.x>
       <p>Komandore.</p>
       <p>
         Mokslininkai sugalvojo kaip panaudoti zetiumą kosminių kelionių metu. 
@@ -3060,10 +3069,10 @@
         laivų statyklos projektą.
       </p>
       <p>Kad pastatyti statyklą, mums būtini brėžiniai, tad nedelskite!</p>
-    </about.18>
+    <!-- old id: 18 --> </about.x>
 
-    <title.19 value="Kad kelias nedulkėtų..." />
-    <about.19>
+    <!-- old id: 19 --> <title.x value="Kad kelias nedulkėtų..." />
+    <!-- old id: 19 --> <about.x>
       <p>Komandore!</p>
       <p>
         Laivų statyklos projektas ir technologijų aprašai jau perduoti 
@@ -3076,10 +3085,10 @@
         ideali vieta statyboms. Jei gamyklą statysime ten, darbai eisis 
         gerokai sparčiau. 
       </p>
-    </about.19>
+    <!-- old id: 19 --> </about.x>
 
-    <title.31 value="Kosmoso grėsmės" />
-    <about.31>
+    <!-- old id: 31 --> <title.x value="Kosmoso grėsmės" />
+    <!-- old id: 31 --> <about.x>
       <p>Sveiki, Komandore.</p>
       <p>Štai, mūsų laivų gamykla jau stovi. Galėtume kilti į kosmosą, tačiau
       mums reikia laivų! Žinome mes galėtume naudotis mulo klasės laivais, 
@@ -3088,10 +3097,10 @@
       <p>Ne, tam, kad įveiktumėme ateivių laivus, stovinčius prie asteroidų ir
       planetų, mums prireiks kovinių laivų! Keliaukite į savo laivų gamyklą ir
       liepkite pradėti gamybą!</p>
-    </about.31>
+    <!-- old id: 31 --> </about.x>
     
-    <title.119 value="Bauginantys laivynai" />
-    <about.119>
+    <!-- old id: 119 --> <title.x value="Bauginantys laivynai" />
+    <!-- old id: 119 --> <about.x>
       <p>Komandore.</p>
       <p>Statant varno klasės laivus šauniai padirbėjote. Jie greiti ir 
       mirtini mūsų priešams. Ech... Kai pagalvoju apie juos mane apima toks
@@ -3102,10 +3111,10 @@
       <p>O vienaip ar kitaip - ta planeta atrodo kaip visai nieko vietelė 
       antrosios mūsų kolonijos įkurtuvėms. O jeigu jau ten kursimės - juk 
       nenorėtumėme, kad aplink šlaistytųsi kažkokie ateivių pašlemėkai?</p>
-    </about.119>
+    <!-- old id: 119 --> </about.x>
     
-    <title.120 value="Mineralų skraidinimas" />
-    <about.120>
+    <!-- old id: 120 --> <title.x value="Mineralų skraidinimas" />
+    <!-- old id: 120 --> <about.x>
       <p>Komandore!</p>
       <p>Šaunus darbelis! Ateivių dirakai neturėjo nei menkiausio šanso prieš
       mūsų laivyną.</p>
@@ -3117,35 +3126,35 @@
       iš karto šypsena ant ausų lipa ;)</p>
       <p>Taigi, susirinkime tuos resursus! Pasistatykime mūsų pirmajį
       mulo klasės laiva!</p>
-    </about.120>
+    <!-- old id: 120 --> </about.x>
 
-    <title.35 value="Išvalymas" />
-    <about.35>
+    <!-- old id: 35 --> <title.x value="Išvalymas" />
+    <!-- old id: 35 --> <about.x>
       <p>Sveiki, Komandore.</p>
       <p>Kadangi jau turime funkcionuojančia laivų gamyklą, galime truputi 
       patreniruoti savo pilotus. Nusiųskite juos sumedžioti keletos dirakų. Tai
       neturėtų jiems būti sunki užduotis.</p>
-    </about.35>
+    <!-- old id: 35 --> </about.x>
 
-    <title.36 value="Verdantys vandenys" />
-    <about.36>
+    <!-- old id: 36 --> <title.x value="Verdantys vandenys" />
+    <!-- old id: 36 --> <about.x>
       <p>Komandore,</p>
       <p>jūsų aktyvumas šiame regione privertė ateivius būti atsargesniais.
       Sklinda gandai, kad jie netgi planuoja atsakomajį smūgį! Sunaikinkite jų
       galinguosius toro klasės laivus, parodykite jiems kas valdo šią 
       galaktiką!</p>
-    </about.36>
+    <!-- old id: 36 --> </about.x>
 
-    <title.37 value="Ugnimi prieš ugnį" />
-    <about.37>
+    <!-- old id: 37 --> <title.x value="Ugnimi prieš ugnį" />
+    <!-- old id: 37 --> <about.x>
       <p>Komandore,</p>
       <p>panašu kad tie ateiviai yra beatodariški fanatikai. Jūs privalote 
       smogti triuškinantį smūgį į jų stipriausius laivus, jog parodytumėte savo
       galia! Tai vienintėlis būdas juos sustabdyti!</p>
-    </about.37>
+    <!-- old id: 37 --> </about.x>
 
-    <title.20 value="Plečiant valdas" />
-    <about.20>
+    <!-- old id: 20 --> <title.x value="Plečiant valdas" />
+    <!-- old id: 20 --> <about.x>
       <p>Komandore,</p>
       <p>Dabar, kai jau įvaldėme skrydžius po kosmosą, turėtume pradėti plėstis
       į kitas planetas. Mūsų sensoriai aptiko gretimais esančią gyvybei tinkamą
@@ -3154,10 +3163,10 @@
       planetą!</p>
       <p>Planetos užėmimui jums reikės nusileisti su mūsų laivais ant tos 
       planetos žemės.</p>
-    </about.20>
+    <!-- old id: 20 --> </about.x>
 
-    <title.122 value="Kolonijos įtvirtinimas" />
-    <about.122>
+    <!-- old id: 122 --> <title.x value="Kolonijos įtvirtinimas" />
+    <!-- old id: 122 --> <about.x>
       <p>Komandore!</p>
       <p>
         Antrojoje kolonijoje mes radome keletą apleistų mobilių pastatų,
@@ -3169,20 +3178,20 @@
         tad reikia kuo greičiau juos išskleisti ir užtikrinti šios kolonijos
         saugumą!
       </p>
-    </about.122>
+    <!-- old id: 122 --> </about.x>
 
-    <title.21 value="Antroji stovykla" />
-    <about.21>
+    <!-- old id: 21 --> <title.x value="Antroji stovykla" />
+    <!-- old id: 21 --> <about.x>
       <p>Komandore, puikiai padirbėta!</p>
       <p>Dabar mes valdome dvi planetas! Pradėkime statybas antrojoje planetoje!
       Įkraukite savo mobilų štabą į mulą ir nukeliaukite į savo naujają 
       koloniją. Tuo pačiu pasiimkite ir resursų bei karių!</p>
       <p>Nukeliavę, išskleiskite savo mobilų štabą ir pradėkite įkurtuves 
       naujoje planetoje.</p>
-    </about.21>
+    <!-- old id: 21 --> </about.x>
 
-    <title.34 value="Akis danguje" />
-    <about.34>
+    <!-- old id: 34 --> <title.x value="Akis danguje" />
+    <!-- old id: 34 --> <about.x>
       <p>Komandore!</p>
       <p>Naujoje mūsų planetoje turime nemažai laisvos vietos. Manau, kad po to,
       kai joje saugiai įsikursime, reikėtų pradėti tyrinėti mūsų galaktiką.</p>
@@ -3192,53 +3201,53 @@
       neužtikrinsite pakankamos jos gavybos, jūsų energijos ištekliai bus kaip
       mat ištuštinti. O jeigu jam pasibaigs energija - jis paprasčiausiai 
       nebeveiks.</p>
-    </about.34>
+    <!-- old id: 34 --> </about.x>
 
-    <title.38 value="Teritorijos plėtimas" />
-    <about.38>
+    <!-- old id: 38 --> <title.x value="Teritorijos plėtimas" />
+    <!-- old id: 38 --> <about.x>
       <p>Komandore.</p>
       <p>Atėjo laikas išplėsti mūsų imperiją! Užimkite dar vieną koloniją, esu
       tikra, jog mes puikiai joje įsikursime.</p>
-    </about.38>
+    <!-- old id: 38 --> </about.x>
     
     <expanding_empire.title value="Auganti imperija" />
 
-    <title.39 value="[reference:expanding_empire.title]" />
-    <about.39>
+    <!-- old id: 39 --> <title.x value="[reference:expanding_empire.title]" />
+    <!-- old id: 39 --> <about.x>
       <p>Komandore, šauniai padirbėta!</p>
       <p>Netgi užvaldžius dar vieną pasaulį aš jaučiu valdžios alkį. 
       Neapsiribokime anuo pasauliu, juk yra dar tiek laisvų planetų... Užimkite
       dar vieną! Tegul ji dreba prieš mūsų galią!</p>
-    </about.39>
+    <!-- old id: 39 --> </about.x>
 
-    <title.40 value="[reference:expanding_empire.title] (II)" />
-    <about.40>
+    <!-- old id: 40 --> <title.x value="[reference:expanding_empire.title] (II)" />
+    <!-- old id: 40 --> <about.x>
       <p>Komandore,</p>
       <p>manau, kad mūsų imperija jau pakankamai įspūdinga. Bet negi jūs
       dabar sustosite?</p>
-    </about.40>
+    <!-- old id: 40 --> </about.x>
 
-    <title.41 value="[reference:expanding_empire.title] (III)" />
-    <about.41>
+    <!-- old id: 41 --> <title.x value="[reference:expanding_empire.title] (III)" />
+    <!-- old id: 41 --> <about.x>
       <p>Komandore,</p>
       <p>jūsų darbai - neįtikėtini. Tačiau, kad ir kaip bebūtų, mūsų gyventojų
       skaičius auga, mums reikia daugiau vietos! Užimkite dar vieną planetą.</p>
-    </about.41>
+    <!-- old id: 41 --> </about.x>
 
-    <title.42 value="[reference:expanding_empire.title] (IV)" />
-    <about.42>
+    <!-- old id: 42 --> <title.x value="[reference:expanding_empire.title] (IV)" />
+    <!-- old id: 42 --> <about.x>
       <p>Komandore,</p>
       <p>mūsų imperija praktiškai nenugalima, visi mūsų kaimynai dreba iš 
       baimės! Sakau gal paimkime dar vieną planetą iš jų, vien tam, kad parodyti
       savo galią? Ką manote?</p>
-    </about.42>
+    <!-- old id: 42 --> </about.x>
 
-    <title.43 value="Transporto linijų sabotažas" />
-    <about.43>
+    <!-- old id: 43 --> <title.x value="Transporto linijų sabotažas" />
+    <!-- old id: 43 --> <about.x>
       <p>Komandore,</p>
       <p>mums derėtų sumedžioti keletą priešininko transportinių laivų. Tai 
       sutrikdys jų resursų tiekimą ir pakenks jų vystimuisi.</p>
-    </about.43>
+    <!-- old id: 43 --> </about.x>
 
     <destroying_enemy_will.title value="Naikinant priešo valią" />
     <destroying_enemy_will.about>
@@ -3247,38 +3256,38 @@
       karius! Sutriuškinkite pasipriešinimą! Parodykite mūsų tikrą galią!</p>
     </destroying_enemy_will.about>
 
-    <title.44 ref="destroying_enemy_will.title" />
-    <about.44 ref="destroying_enemy_will.about" />
+    <!-- old id: 44 --> <title.x ref="destroying_enemy_will.title" />
+    <!-- old id: 44 --> <about.x ref="destroying_enemy_will.about" />
 
-    <title.45 value="[reference:destroying_enemy_will.title] (II)" />
-    <about.45 ref="destroying_enemy_will.about" />
+    <!-- old id: 45 --> <title.x value="[reference:destroying_enemy_will.title] (II)" />
+    <!-- old id: 45 --> <about.x ref="destroying_enemy_will.about" />
 
-    <title.46 value="[reference:destroying_enemy_will.title] (III)" />
-    <about.46 ref="destroying_enemy_will.about" />
+    <!-- old id: 46 --> <title.x value="[reference:destroying_enemy_will.title] (III)" />
+    <!-- old id: 46 --> <about.x ref="destroying_enemy_will.about" />
 
-    <title.47 value="[reference:destroying_enemy_will.title] (IV)" />
-    <about.47 ref="destroying_enemy_will.about" />
+    <!-- old id: 47 --> <title.x value="[reference:destroying_enemy_will.title] (IV)" />
+    <!-- old id: 47 --> <about.x ref="destroying_enemy_will.about" />
 
-    <title.48 value="[reference:destroying_enemy_will.title] (V)" />
-    <about.48 ref="destroying_enemy_will.about" />
+    <!-- old id: 48 --> <title.x value="[reference:destroying_enemy_will.title] (V)" />
+    <!-- old id: 48 --> <about.x ref="destroying_enemy_will.about" />
 
-    <title.49 value="[reference:destroying_enemy_will.title] (VI)" />
-    <about.49 ref="destroying_enemy_will.about" />
+    <!-- old id: 49 --> <title.x value="[reference:destroying_enemy_will.title] (VI)" />
+    <!-- old id: 49 --> <about.x ref="destroying_enemy_will.about" />
 
-    <title.50 value="[reference:destroying_enemy_will.title] (VII)" />
-    <about.50 ref="destroying_enemy_will.about" />
+    <!-- old id: 50 --> <title.x value="[reference:destroying_enemy_will.title] (VII)" />
+    <!-- old id: 50 --> <about.x ref="destroying_enemy_will.about" />
 
-    <title.51 value="[reference:destroying_enemy_will.title] (VIII)" />
-    <about.51 ref="destroying_enemy_will.about" />
+    <!-- old id: 51 --> <title.x value="[reference:destroying_enemy_will.title] (VIII)" />
+    <!-- old id: 51 --> <about.x ref="destroying_enemy_will.about" />
 
-    <title.52 value="[reference:destroying_enemy_will.title] (IX)" />
-    <about.52 ref="destroying_enemy_will.about" />
+    <!-- old id: 52 --> <title.x value="[reference:destroying_enemy_will.title] (IX)" />
+    <!-- old id: 52 --> <about.x ref="destroying_enemy_will.about" />
 
-    <title.53 value="[reference:destroying_enemy_will.title] (X)" />
-    <about.53 ref="destroying_enemy_will.about" />
+    <!-- old id: 53 --> <title.x value="[reference:destroying_enemy_will.title] (X)" />
+    <!-- old id: 53 --> <about.x ref="destroying_enemy_will.about" />
 
-    <title.54 value="[reference:destroying_enemy_will.title] (XI)" />
-    <about.54 ref="destroying_enemy_will.about" />
+    <!-- old id: 54 --> <title.x value="[reference:destroying_enemy_will.title] (XI)" />
+    <!-- old id: 54 --> <about.x ref="destroying_enemy_will.about" />
 
     <crushing_enemy_defenses.title value="Griūvanti gynyba" />
     <crushing_enemy_defenses.about>
@@ -3287,39 +3296,39 @@
       ir sunaikinkite jų gynybą!</p>
     </crushing_enemy_defenses.about>
 
-    <title.55 ref="crushing_enemy_defenses.title" />
-    <about.55 ref="crushing_enemy_defenses.about" />
+    <!-- old id: 55 --> <title.x ref="crushing_enemy_defenses.title" />
+    <!-- old id: 55 --> <about.x ref="crushing_enemy_defenses.about" />
 
-    <title.56 value="[reference:crushing_enemy_defenses.title] (II)" />
-    <about.56 ref="crushing_enemy_defenses.about" />
+    <!-- old id: 56 --> <title.x value="[reference:crushing_enemy_defenses.title] (II)" />
+    <!-- old id: 56 --> <about.x ref="crushing_enemy_defenses.about" />
 
-    <title.57 value="[reference:crushing_enemy_defenses.title] (III)" />
-    <about.57 ref="crushing_enemy_defenses.about" />
+    <!-- old id: 57 --> <title.x value="[reference:crushing_enemy_defenses.title] (III)" />
+    <!-- old id: 57 --> <about.x ref="crushing_enemy_defenses.about" />
 
-    <title.58 value="[reference:crushing_enemy_defenses.title] (IV)" />
-    <about.58 ref="crushing_enemy_defenses.about" />
+    <!-- old id: 58 --> <title.x value="[reference:crushing_enemy_defenses.title] (IV)" />
+    <!-- old id: 58 --> <about.x ref="crushing_enemy_defenses.about" />
 
-    <title.59 value="[reference:crushing_enemy_defenses.title] (V)" />
-    <about.59 ref="crushing_enemy_defenses.about" />
+    <!-- old id: 59 --> <title.x value="[reference:crushing_enemy_defenses.title] (V)" />
+    <!-- old id: 59 --> <about.x ref="crushing_enemy_defenses.about" />
 
-    <title.60 value="[reference:crushing_enemy_defenses.title] (VI)" />
-    <about.60 ref="crushing_enemy_defenses.about" />
+    <!-- old id: 60 --> <title.x value="[reference:crushing_enemy_defenses.title] (VI)" />
+    <!-- old id: 60 --> <about.x ref="crushing_enemy_defenses.about" />
 
-    <title.61 value="[reference:crushing_enemy_defenses.title] (VII)" />
-    <about.61 ref="crushing_enemy_defenses.about" />
+    <!-- old id: 61 --> <title.x value="[reference:crushing_enemy_defenses.title] (VII)" />
+    <!-- old id: 61 --> <about.x ref="crushing_enemy_defenses.about" />
 
-    <title.62 value="[reference:crushing_enemy_defenses.title] (VIII)" />
-    <about.62 ref="crushing_enemy_defenses.about" />
+    <!-- old id: 62 --> <title.x value="[reference:crushing_enemy_defenses.title] (VIII)" />
+    <!-- old id: 62 --> <about.x ref="crushing_enemy_defenses.about" />
 
-    <title.63 value="[reference:crushing_enemy_defenses.title] (IX)" />
-    <about.63 ref="crushing_enemy_defenses.about" />
+    <!-- old id: 63 --> <title.x value="[reference:crushing_enemy_defenses.title] (IX)" />
+    <!-- old id: 63 --> <about.x ref="crushing_enemy_defenses.about" />
 
-    <title.65 value="Priešų perėmimas" />
-    <about.65>
+    <!-- old id: 65 --> <title.x value="Priešų perėmimas" />
+    <!-- old id: 65 --> <about.x>
       <p>Komandore!</p>
       <p>Prie mūsų durų stovi priešai! Privalome juos sustabyti! Užpulkite ir
       užvaldykite vieną iš jų pasaulių! Tai turėtų nuraminti jų įkarštį.</p>
-    </about.65>
+    <!-- old id: 65 --> </about.x>
   </Quests>
 
   <Ratings>
