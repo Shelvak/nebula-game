@@ -35,6 +35,7 @@ package tests.time
       [Before]
       public function setUp() : void {
          DateUtil.now = new Date().time;
+         DateUtil.timeDiff = 0;
          timeEvent = new MTimeEventFixedMoment();
       }
       

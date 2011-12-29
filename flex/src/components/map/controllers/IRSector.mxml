@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                autoDrawBackground="false"
+                height="76">
+   <fx:Declarations>
+      <s:Rect id="background" left="0" right="0" top="0" bottom="0">
+         <s:fill>
+            <s:SolidColor
+               color.normal="{getStyle('contentBackgroundColor')}"
+               color.hovered="{getStyle('rollOverColor')}"/>
+         </s:fill>
+      </s:Rect>
+   </fx:Declarations>
+   <fx:Script>
+      <![CDATA[
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+
+      protected function getImage(name:String): BitmapData {
+         return ImagePreloader.getInstance().getImage(name);
+      }
+
+      protected function get bigShipIcon(): BitmapData {
+         return getImage(
+            AssetNames.MOVEMENT_IMAGES_FOLDER + "sector_with_ships"
+         );
+      }
+
+      private var _sector: Sector;
+      [Bindable(event="dataChange")]
+      protected function get sector(): Sector {
+         return _sector;
+      }
+
+      public override function set data(value: Object): void {
+         if (super.data != value) {
+            _sector = Sector(value);
+            super.data = value;
+         }
+      }
+
+      private var f_childrenCreated:Boolean = false;
+      protected override function createChildren(): void {
+         super.createChildren();
+         if (!f_childrenCreated) {
+            f_childrenCreated = true;
+            addElementAt(background, 0);
+         }
+      }
+      ]]>
+   </fx:Script>
+   <s:states>
+      <s:State name="normal" />
+      <s:State name="hovered" />
+   </s:states>
+</s:ItemRenderer>

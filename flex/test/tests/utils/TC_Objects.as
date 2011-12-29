@@ -191,6 +191,7 @@ package tests.utils
          checkIfNotChanged("age", 0);
 
          data = {"date": "2009-09-25T18:45:26+03:00"};
+         DateUtil.timeDiff = 0;
          Objects.setTypeProcessor(Date, DateUtil.autoCreate);
          object = Objects.create(DateProp, data);
          delete Objects.client_internal::TYPE_PROCESSORS[Date];

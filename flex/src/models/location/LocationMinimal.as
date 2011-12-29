@@ -19,7 +19,7 @@ package models.location
       }
       
       
-      public function LocationMinimal(){
+      public function LocationMinimal() {
          super();
       }
       

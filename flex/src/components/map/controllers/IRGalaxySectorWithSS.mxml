@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<local:IRSector xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                xmlns:local="components.map.controllers.*"
+                xmlns:ss="components.gameobjects.solarsystem.*"
+                xmlns:base="components.base.*"
+                height="76">
+   <fx:Script>
+      <![CDATA[
+      import models.solarsystem.MSolarSystem;
+
+      import utils.assets.AssetNames;
+
+
+      [Bindable(event="willNotChange")]
+      private function get shieldImage(): BitmapData {
+         return getImage(AssetNames.SS_SHIELD_IMAGE_NAME);
+      }
+      ]]>
+   </fx:Script>
+   <local:mxmlContent>
+      <s:BitmapImage left="5" verticalCenter="0" width="50" height="50"
+                     fillMode="scale"
+                     source="{sector.object.imageData}"/>
+      <s:BitmapImage left="0" verticalCenter="0" width="60" height="60"
+                     fillMode="scale"
+                     visible="{MSolarSystem(sector.object).isShielded}"
+                     includeInLayout="{MSolarSystem(sector.object).isShielded}"
+                     source="{shieldImage}"/>
+
+      <base:AdvancedContainer left="60" top="0" bottom="0">
+         <base:layout>
+            <s:VerticalLayout gap="4"
+                              verticalAlign="middle"
+                              horizontalAlign="left"/>
+         </base:layout>
+         <s:Label text="{sector.object.name}"/>
+         <s:Label text="{sector.sectorLabel}"/>
+         <ss:SSPlanetsStatusIcons solarSystem="{MSolarSystem(sector.object)}"/>
+         <ss:SSShipsStatusIcons solarSystem="{MSolarSystem(sector.object)}"/>
+      </base:AdvancedContainer>
+   </local:mxmlContent>
+</local:IRSector>

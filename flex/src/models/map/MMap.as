@@ -35,6 +35,13 @@ package models.map
     * @eventType models.map.events.MMapEvent.UICMD_SELECT_OBJECT
     */
    [Event(name="uicmdSelectObject", type="models.map.events.MMapEvent")]
+
+   /**
+    * Signals component to deselect selected object if one is selected.
+    *
+    * @eventType models.map.events.MMapEvent.UICMD_DESELECT_SELECTED_OBJECT
+    */
+   [Event(name="uicmdDeselectSelectedObject", type="models.map.events.MMapEvent")]
    
    /**
     * Signals component to move the map to given location. <code>object</code> property holds
@@ -344,6 +351,13 @@ package models.map
          dispatchUiCommand(
             MMapEvent.UICMD_SELECT_OBJECT,
             object, instant, operationCompleteHandler
+         );
+      }
+
+      public function deselectSelectedObject(instant:Boolean = false, operationCompleteHandler:Function = null): void {
+         dispatchUiCommand(
+            MMapEvent.UICMD_DESELECT_SELECTED_OBJECT,
+            null, instant, operationCompleteHandler
          );
       }
       

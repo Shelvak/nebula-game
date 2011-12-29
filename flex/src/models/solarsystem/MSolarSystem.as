@@ -1,58 +1,25 @@
 package models.solarsystem
 {
    import config.Config;
-   
+
    import controllers.ui.NavigationController;
-   
+
    import flash.display.BitmapData;
-   
-   import interfaces.IUpdatable;
 
    import models.BaseModel;
-
-   import models.location.Location;
    import models.location.LocationMinimal;
-   import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
    import models.map.IMStaticSpaceObject;
    import models.map.MMapSpace;
-   import models.map.MapType;
-   import models.solarsystem.events.MSolarSystemEvent;
-   
-   import mx.collections.ListCollectionView;
-   
-   import namespaces.change_flag;
-   
-   import utils.DateUtil;
+   import models.player.PlayerMinimal;
+
    import utils.NameResolver;
    import utils.assets.AssetNames;
-   import utils.datastructures.Collections;
    import utils.locale.Localizer;
-   
-   
-   /**
-    * Dispatched when <code>shieldOwnerId</code> property changes.
-    * 
-    * @eventType models.solarSystem.events.MSolarSystemEvent.SHIELD_OWNER_CHANGE
-    */
-   [Event(name="shieldOwnerChange", type="models.solarsystem.events.MSolarSystemEvent")]
-   
-   /**
-    * Dispatched when <code>shieldEndsAt</code> property changes.
-    * 
-    * @eventType models.solarSystem.events.MSolarSystemEvent.SHIELD_ENDS_AT_CHANGE
-    */
-   [Event(name="shieldEndsAtChange", type="models.solarsystem.events.MSolarSystemEvent")]
-   
-   /**
-    * Dispatched when <code>shieldEndsIn</code> property changes.
-    * 
-    * @eventType models.solarSystem.events.MSolarSystemEvent.SHIELD_ENDS_IN_CHANGE
-    */
-   [Event(name="shieldEndsInChange", type="models.solarsystem.events.MSolarSystemEvent")]
-   
+
+
    [Bindable]
-   public class MSolarSystem extends BaseModel implements IMStaticSpaceObject, IUpdatable
+   public class MSolarSystem extends BaseModel implements IMStaticSpaceObject
    {
       public static const IMAGE_WIDTH: Number = 64;
       public static const IMAGE_HEIGHT: Number = IMAGE_WIDTH;
@@ -142,24 +109,19 @@ package models.solarsystem
       public function get galaxyId(): int {
          return ML.player.galaxyId;
       }
-      
-      
-      /* ################## */
-      /* ### IUpdatable ### */
-      /* ################## */
 
-      public function update(): void {
-         if (isShielded) {
-            change_flag::shieldEndsIn = true;
-            dispatchSimpleEvent(MSolarSystemEvent,
-                                MSolarSystemEvent.SHIELD_ENDS_IN_CHANGE);
+      private var _player:PlayerMinimal;
+      [Required]
+      /**
+       * Player that owns this solar system. May be <code>null</code>.
+       */
+      public function set player(value: PlayerMinimal): void {
+         if (_player != value) {
+            _player = value;
          }
       }
-
-      public function resetChangeFlags(): void {
-         change_flag::shieldEndsIn = false;
-         change_flag::shieldEndsAt = false;
-         change_flag::shieldOwnerId = false;
+      public function get player(): PlayerMinimal {
+         return _player;
       }
       
       
@@ -190,7 +152,7 @@ package models.solarsystem
        * @inheritDoc
        */
       public function get isNavigable(): Boolean {
-         return !isDead && (!isShielded || _shieldOwnerId == ML.player.id);
+         return !isDead && (!isShielded || ML.player.equals(_player));
       }
 
       public function navigateTo(): void {
@@ -226,91 +188,6 @@ package models.solarsystem
       }
 
 
-      /* ############## */
-      /* ### SHIELD ### */
-      /* ############## */
-
-      [Bindable(event="shieldOwnerChange")]
-      /**
-       * Returns <code>true</code> if this solar system is shielded.
-       *
-       * <p>Metadata:<br/>
-       * [Bindable(event="shieldOwnerChange")]
-       * </p>
-       */
-      public function get isShielded(): Boolean {
-         return _shieldOwnerId > 0;
-      }
-
-      change_flag var shieldOwnerId: Boolean = true;
-      private var _shieldOwnerId: int = 0;
-      [Bindable(event="shieldOwnerChange")]
-      [Optional]
-      /**
-       * Id of a shield owner. <code>0</code> if this solar system is not shielded.
-       * Default is <code>0</code>.
-       *
-       * <p>Metadata:<br/>
-       * [Bindable(event="shieldOwnerChange")]
-       * [Optional]
-       * </p>
-       */
-      public function set shieldOwnerId(value: int): void {
-         if (_shieldOwnerId != value) {
-            _shieldOwnerId = value;
-            dispatchSimpleEvent(MSolarSystemEvent,
-                                MSolarSystemEvent.SHIELD_OWNER_CHANGE);
-         }
-      }
-      /**
-       * @private
-       */
-      public function get shieldOwnerId(): int {
-         return _shieldOwnerId;
-      }
-
-      change_flag var shieldEndsAt: Boolean = true;
-      private var _shieldEndsAt: Date = null;
-      [Bindable(event="shieldEndsAtChange")]
-      [Optional]
-      /**
-       * Time when the shield expires if the shield is preset at all. If solar
-       * system is not shielded, this property is <code>null</code>. Default
-       * is <code>null</code>.
-       */
-      public function set shieldEndsAt(value: Date): void {
-         if (_shieldEndsAt != value) {
-            _shieldEndsAt = value;
-            dispatchSimpleEvent(MSolarSystemEvent,
-                                MSolarSystemEvent.SHIELD_ENDS_AT_CHANGE);
-         }
-      }
-
-      /**
-       * @private
-       */
-      public function get shieldEndsAt(): Date {
-         return _shieldEndsAt;
-      }
-
-      change_flag var shieldEndsIn: Boolean = true;
-      [Bindable(event="shieldEndsInChange")]
-      /**
-       * Number of seconds this solar system will be shielded for.
-       * <code>0</code> if solar system is not shielded.
-       *
-       * <p>Metadata:<br/>
-       * [Bindable(event="shieldEndsInChange")]
-       * </p>
-       */
-      public function get shieldEndsIn(): int {
-         if (!isShielded || _shieldEndsAt == null) {
-            return 0
-         }
-         return Math.max(0, (shieldEndsAt.time - DateUtil.now) / 1000);
-      }
-
-
       /* ############ */
       /* ### KIND ### */
       /* ############ */
@@ -335,6 +212,13 @@ package models.solarsystem
       [Bindable(event="willNotChange")]
       public function get isDead(): Boolean {
          return kind == SSKind.DEAD_STAR;
+      }
+
+      /**
+       * Returns <code>true</code> if this solar system is shielded.
+       */
+      public function get isShielded(): Boolean {
+         return kind == SSKind.NORMAL;
       }
 
       /**

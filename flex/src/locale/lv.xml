@@ -1392,10 +1392,8 @@
       izzudusi.</p>
       <p>Aizliegts apmeklēt šo zvaigzni.</p>
     </label.deadStar>
-    <label.shield>
-      <![CDATA[This solar system is shielded for<br/><span fontWeight="bold">{0}</span>]]>
-    </label.shield>
-    <!-- TODO -->
+     <!-- TODO -->
+    <label.shield value="This solar system is shielded"/>
     <label.over value="Fleet over"/>
     <!-- /TODO -->
     <message.noRadar value="Jums vajadzīgs radars, lai izpētītu galaktiku" />
