@@ -573,6 +573,10 @@
     </label.deactivateOverdrive>
     <button.activateOverdrive value="Aktyvuoti perkrovą" />
     <button.deactivateOverdrive value="Deaktyvuoti perkrovą" />
+    <warning.attackNpc>
+      <p>Šis pastatas priklauso ateiviams. Jei sunaikinsi visus viduje esančius
+        ateivių karius tai pastatas bus sugriautas.</p>
+    </warning.attackNpc>
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>
@@ -4054,6 +4058,8 @@
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
 
+    <label.showNpc value="Rodyti"/>
+
     <tooltip.willBeQueued>
       <p>Šie kariai bus įdėti į statymo eilę.</p>
       <p>Už karius nebus sumokėta iš anksto ir jų apmokymas bus atšauktas jei
@@ -4189,6 +4195,9 @@
     <label.currentFacilities value="Gamyklos" />
     <label.flankNr0 value="Pirmas" />
     <label.flankNr1 value="Antras" />
+    <!-- 0: units count in that flank -->
+    <label.flankCountNr0 value="Pirmas ({0})" />
+    <label.flankCountNr1 value="Antras ({0})" />
     <tooltip.flank>
       <p>{0} flangas</p>
       <p>Kariai šiame flange turi {1}% tikimybę, kad į juos pataikys.</p>

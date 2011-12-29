@@ -180,6 +180,7 @@ package models.chat
          MCHAT.messagePool.returnObject(message);
          if (!_visible)
             setHasUnreadMessages(true);
+         dispatchChannelEvent(MChatChannelEvent.GOT_SOME_MESSAGE);
       }
       
       /**
@@ -204,6 +205,7 @@ package models.chat
          message.time = new Date();
          content.addMessage(message.toFlowElement());
          MCHAT.messagePool.returnObject(message);
+         dispatchChannelEvent(MChatChannelEvent.GOT_SOME_MESSAGE);
       }
       
       /**

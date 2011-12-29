@@ -7,8 +7,7 @@
       <![CDATA[
          import flashx.textLayout.elements.TextFlow;
          import flashx.textLayout.formats.TextAlign;
-         
-         import spark.utils.TextFlowUtil;
+         import utils.TextFlowUtil;
          
          import utils.assets.AssetNames;
          

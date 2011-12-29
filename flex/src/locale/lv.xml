@@ -615,6 +615,10 @@
     </label.deactivateOverdrive>
     <button.activateOverdrive value="Activate overdrive" />
     <button.deactivateOverdrive value="Deactivate overdrive" />
+    <warning.attackNpc>
+      <p>This is an NPC building. You can destroy it by killing all the units
+        inside.</p>
+    </warning.attackNpc>
     <!-- /TODO -->
   </BuildingSelectedSidebar>
 
@@ -4223,6 +4227,8 @@
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
     
     <!-- TODO: translate this -->
+    <label.showNpc value="Show"/>
+
     <tooltip.willBeQueued>
       <p>These units will be added to queue.</p>
       <p>However they will not be paid for and will be cancelled if you don't have
@@ -4362,6 +4368,9 @@
     <label.currentFacilities value="Spējas" />
     <label.flankNr0 value="Pirmais" />
     <label.flankNr1 value="Otrais" />
+    <!-- 0: units count in that flank -->
+    <label.flankCountNr0 value="Pirmais ({0})" />
+    <label.flankCountNr1 value="Otrais ({0})" />
     <tooltip.flank>
       <p>{0} flank</p>
       <p>Units in {0} flank has {1}% probability to be hit.</p>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         mouseEnabled="false" mouseChildren="false"
+         implements="mx.core.IToolTip">
+   <fx:Script>
+      <![CDATA[
+         import mx.collections.ArrayCollection;
+
+         import utils.assets.AssetNames;
+
+         import utils.assets.ImagePreloader;
+
+         [Bindable]
+         public var cachedUnits: ArrayCollection;
+
+         public function get text():String {
+            return "";
+         }
+         public function set text(value:String):void {
+         }
+
+         private function getImg(name:String) : BitmapData
+         {
+            return ImagePreloader.getInstance().getImage
+               (AssetNames.UNITS_SCREEN_IMAGE_FOLDER + "hint_" + name);
+         }
+
+      ]]>
+   </fx:Script>
+   <s:Rect left="1" right="1" top="2" bottom="2" alpha="0.75">
+      <s:fill>
+         <s:SolidColor color="#000000"/>
+      </s:fill>
+   </s:Rect>
+   <s:Group left="0" right="0" top="0" bottom="0">
+      <s:layout>
+         <s:VerticalLayout gap="0" horizontalAlign="justify"/>
+      </s:layout>
+      <s:Group>
+         <s:layout><s:HorizontalLayout gap="0" verticalAlign="top"/></s:layout>
+         <s:BitmapImage source="{getImg('top_left')}"/>
+         <s:BitmapImage source="{getImg('top_center')}" width="100%" fillMode="repeat"/>
+         <s:BitmapImage source="{getImg('top_right')}"/>
+      </s:Group>
+      <s:Group height="100%">
+         <s:BitmapImage source="{getImg('center_left')}" top="0" bottom="0" left="0" fillMode="repeat"/>
+         <s:BitmapImage source="{getImg('center_right')}" top="0" bottom="0" right="0" fillMode="repeat"/>
+      </s:Group>
+      <s:Group>
+         <s:layout><s:HorizontalLayout gap="0" verticalAlign="bottom"/></s:layout>
+         <s:BitmapImage source="{getImg('bottom_left')}"/>
+         <s:BitmapImage source="{getImg('bottom_center')}" width="100%" fillMode="repeat"/>
+         <s:BitmapImage source="{getImg('bottom_right')}"/>
+      </s:Group>
+   </s:Group>
+   <s:DataGroup dataProvider="{cachedUnits}" left="12" right="12" top="15"
+                bottom="15"
+                itemRenderer="components.unit.IRUnitBuildingEntrySmall">
+      <s:layout>
+         <s:TileLayout id="unitLayout"/>
+      </s:layout>
+   </s:DataGroup>
+</s:Group>

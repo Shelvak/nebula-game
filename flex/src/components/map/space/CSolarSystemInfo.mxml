@@ -12,7 +12,7 @@
       import models.solarsystem.MSSObject;
       import models.solarsystem.MSolarSystem;
 
-      import spark.utils.TextFlowUtil;
+      import utils.TextFlowUtil;
 
       import utils.DateUtil;
       import utils.locale.Localizer;

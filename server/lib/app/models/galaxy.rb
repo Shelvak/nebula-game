@@ -158,10 +158,12 @@ class Galaxy < ActiveRecord::Base
   # @param galaxy_id [Fixnum]
   # @return [TrueClass]
   def self.save_apocalypse_finish_data(galaxy_id)
+    galaxy = Galaxy.find(galaxy_id)
     ratings = Player.ratings(galaxy_id)
 
     data = JSON.generate({
       'date' => Time.now,
+      'apocalypse_start' => galaxy.apocalypse_start,
       'apocalypse' => true,
       'ratings' => ratings
     })

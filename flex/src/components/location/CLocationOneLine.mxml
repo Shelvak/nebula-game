@@ -7,8 +7,8 @@
          import flashx.textLayout.elements.TextFlow;
          
          import models.location.Location;
-         
-         import spark.utils.TextFlowUtil;
+
+         import utils.TextFlowUtil;
          
          import utils.locale.Localizer;
          
