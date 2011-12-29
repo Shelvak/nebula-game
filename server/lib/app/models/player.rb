@@ -235,6 +235,8 @@ class Player < ActiveRecord::Base
         row['last_seen'] = true if Dispatcher.instance.connected?(row['id'])
         row['last_seen'] = Time.parse(row['last_seen']) \
           if row['last_seen'].is_a?(String)
+        row['death_date'] = Time.parse(row['death_date']) \
+          if row['death_date'].is_a?(String)
         row
       end
   end

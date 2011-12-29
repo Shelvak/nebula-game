@@ -291,7 +291,7 @@ def players(b, data, apocalypse_start)
           death_date = Time.parse(row[ATTR_DEATH_DATE])
           b.td death_date.to_s(:db)
           # Death day
-          b.td ((death_date - apocalypse_start) / 60 * 60 * 24).round + 1
+          b.td(((death_date - apocalypse_start) / (60 * 60 * 24)).round + 1)
         else
           b.td row[ATTR_PLANETS_COUNT]
           b.td row[ATTR_ECONOMY_POINTS]
