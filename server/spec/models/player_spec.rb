@@ -16,12 +16,12 @@ describe Player do
       not_logged_in = Factory.create(:player_for_ratings,
         :galaxy => ally.galaxy, :last_seen => nil)
 
-      @players = [ally, no_ally, not_logged_in]
+      @players = [allny, no_ally, not_logged_in]
       @result = Player.ratings(@alliance.galaxy_id)
     end
 
     (
-      %w{id name victory_points alliance_vps death_day
+      %w{id name victory_points alliance_vps death_date
          planets_count bg_planets_count last_seen} +
       Player::POINT_ATTRIBUTES
     ).each do |attr|
@@ -146,10 +146,10 @@ describe Player do
         player.planets_count = 0
       end
 
-      it "should set #death_day" do
-        lambda do
-          player.save!
-        end.should change(player, :death_day).to(player.galaxy.apocalypse_day)
+      it "should set #death_date" do
+        player.save!
+        player.reload
+        player.death_date.should be_within(SPEC_TIME_PRECISION).of(Time.now)
       end
 
       it "should transfer player creds + apocalypse survival bonus to web" do
@@ -176,10 +176,11 @@ describe Player do
         player.planets_count = 1
       end
 
-      it "should not set #death_day" do
+      it "should not set #death_date" do
         lambda do
           player.save!
-        end.should_not change(player, :death_day)
+          player.reload
+        end.should_not change(player, :death_date)
       end
 
       it "should not change player creds" do

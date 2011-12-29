@@ -6,12 +6,14 @@ end
 
 PART_DATE = 'date'
 PART_APOCALYPSE = 'apocalypse'
+PART_APOCALYPSE_START = 'apocalypse_start'
 PART_PLAYER_RATINGS = 'ratings'
 PART_ALLIANCE_RATINGS = 'alliance_ratings'
 
 LABEL_INDEX = "Turinys"
 LABEL_GALAXY_WIN_DATE = "Galaktikos laimėjimo data"
 LABEL_GALAXY_END_DATE = "Galaktikos pabaigos data"
+LABEL_APOCALYPSE_START = "Apokalipsės pradžia"
 LABEL_ALLIANCES = "Sąjungos"
 LABEL_PLAYERS = "Žaidėjai"
 LABEL_TITLE = "Galaktikos laimėtojai"
@@ -30,6 +32,7 @@ LABEL_ARMY_POINTS = "Kariuomenės taškai"
 LABEL_WAR_POINTS = "Karo taškai"
 LABEL_ALLIANCE_VICTORY_POINTS = "Sąjungos pergalės taškų"
 LABEL_VICTORY_POINTS = "Pergalės taškų"
+LABEL_DEATH_DATE = "Pražūties data"
 LABEL_DEATH_DAY = "Pražūties diena"
 LABEL_TOTAL_POINTS = "Bendri taškai"
 
@@ -45,7 +48,7 @@ ATTR_ARMY_POINTS = 'army_points'
 ATTR_WAR_POINTS = 'war_points'
 ATTR_ALLIANCE_VICTORY_POINTS = 'alliance_vps'
 ATTR_VICTORY_POINTS = 'victory_points'
-ATTR_DEATH_DAY = 'death_day'
+ATTR_DEATH_DATE = 'death_date'
 ATTR_TOTAL_POINTS = 'total_points'
 
 NAME_TOP = "top"
@@ -73,7 +76,7 @@ def read_data(filename)
   #     "name" => String (player name),
   #     "victory_points" => Fixnum,
   #     "alliance_vps" => Fixnum,
-  #     "death_day" => Fixnum,
+  #     "death_date" => Date,
   #     "planets_count" => Fixnum,
   #     "war_points" => Fixnum,
   #     "science_points" => Fixnum,
@@ -84,7 +87,7 @@ def read_data(filename)
   #   }
   data[PART_PLAYER_RATINGS].sort! do |r1, r2|
     if data[PART_APOCALYPSE]
-      status = (r1[ATTR_DEATH_DAY] <=> r2[ATTR_DEATH_DAY]) * -1
+      status = (r1[ATTR_DEATH_DATE] <=> r2[ATTR_DEATH_DATE]) * -1
     else
       status = (r1[ATTR_VICTORY_POINTS] <=> r2[ATTR_VICTORY_POINTS]) * -1
       status = (r1[ATTR_TOTAL_POINTS] <=> r2[ATTR_TOTAL_POINTS]) * -1 \
@@ -238,7 +241,7 @@ def alliances(b, data)
   end
 end
 
-def players(b, data)
+def players(b, data, apocalypse_start)
   b.h1 do
     b.a LABEL_PLAYERS, :name => NAME_PLAYERS
   end
@@ -249,6 +252,7 @@ def players(b, data)
       b.th LABEL_PLAYER
       b.th LABEL_ALLIANCE
       if data[PART_APOCALYPSE]
+        b.th LABEL_DEATH_DATE
         b.th LABEL_DEATH_DAY
       else
         b.th LABEL_PLANETS_COUNT
@@ -284,7 +288,10 @@ def players(b, data)
         end
 
         if data[PART_APOCALYPSE]
-          b.td row[ATTR_DEATH_DAY]
+          death_date = Time.parse(row[ATTR_DEATH_DATE])
+          b.td death_date.to_s(:db)
+          # Death day
+          b.td ((death_date - apocalypse_start) / 60 * 60 * 24).round + 1
         else
           b.td row[ATTR_PLANETS_COUNT]
           b.td row[ATTR_ECONOMY_POINTS]
@@ -323,12 +330,19 @@ html = b.html do
       end
     end
 
-    b.h1 data[PART_APOCALYPSE] \
-      ? LABEL_GALAXY_END_DATE : LABEL_GALAXY_WIN_DATE
+    apocalypse_start = data[PART_APOCALYPSE] \
+      ? Time.parse(data[PART_APOCALYPSE_START]) \
+      : nil
+
+    b.h1(data[PART_APOCALYPSE] ? LABEL_GALAXY_END_DATE : LABEL_GALAXY_WIN_DATE)
     b.p Time.parse(data[PART_DATE]).to_s(:db)
+    if data[PART_APOCALYPSE]
+      b.h2 LABEL_APOCALYPSE_START
+      b.p apocalypse_start.to_s(:db)
+    end
     
     alliances(b, data) unless data[PART_APOCALYPSE]
-    players(b, data)
+    players(b, data, apocalypse_start)
   end
 end
 

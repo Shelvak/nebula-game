@@ -183,7 +183,7 @@ class Player < ActiveRecord::Base
 
   RATING_ATTRIBUTES_SQL = (
     %w{
-      id name victory_points alliance_vps death_day
+      id name victory_points alliance_vps death_date
       planets_count bg_planets_count
     } + POINT_ATTRIBUTES
   ).map { |attr| "`#{table_name}`.`#{attr}`" }.join(", ")
@@ -203,7 +203,7 @@ class Player < ActiveRecord::Base
   #     "name" => String (player name),
   #     "victory_points" => Fixnum,
   #     "alliance_vps" => Fixnum,
-  #     "death_day" => Fixnum,
+  #     "death_date" => Time | nil,
   #     "planets_count" => Fixnum,
   #     "bg_planets_count" => Fixnum,
   #     "war_points" => Fixnum,
@@ -346,9 +346,9 @@ class Player < ActiveRecord::Base
     end
 
     if dead_changed? && dead?
-      self.death_day = galaxy.apocalypse_day
+      self.death_date = Time.now
       ControlManager.instance.player_death(
-        self, pure_creds + Cfg.apocalypse_survival_bonus(death_day)
+        self, pure_creds + Cfg.apocalypse_survival_bonus(galaxy.apocalypse_day)
       )
       self.pure_creds = 0
     end
