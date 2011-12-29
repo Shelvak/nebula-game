@@ -14,7 +14,9 @@
          
          import models.ModelLocator;
          import models.player.MRatingPlayer;
-         
+
+         import utils.DateUtil;
+
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
@@ -44,6 +46,9 @@
             else if (rank > 10) return 8;
             else return 9;
          }
+
+         [Bindable]
+      private var ML: ModelLocator = ModelLocator.getInstance();
       ]]>
    </fx:Script>
    <s:Rect left="0" right="0" top="0" bottom="0">
@@ -90,13 +95,20 @@
                || player.bgPlanetsCount > 0}"
                includeInLayout="{player.planetsCount > 0
                || player.bgPlanetsCount > 0}"/>
-      <s:Label text="{Localizer.string('Ratings', 'label.deathDay',
-                  [player.deathDay])}"
-               toolTip="{Localizer.string('Ratings', 'tooltip.deathDay',
-                  [player.deathDay])}"
-               width="{RatingsWidths.planetsCount + 1 + RatingsWidths.bgPlanetsCount}"
-               textAlign="center" visible="{player.planetsCount == 0
+      <s:Label visible="{player.planetsCount == 0
                &amp;&amp; player.bgPlanetsCount == 0}"
+               text="{player.deathDate == null ? ''
+               : Localizer.string('Ratings', 'label.deathDay',
+                  [MRatingPlayer.getDays(
+                     ML.latestGalaxy.apocalypseStartEvent.occuresAt,
+                     player.deathDate)
+                  ])}"
+               toolTip="{player.deathDate == null ? ''
+               : Localizer.string('Ratings', 'tooltip.deathDay',
+                  [DateUtil.formatShortDateTime(
+                     player.deathDate)])}"
+               width="{RatingsWidths.planetsCount + 1 + RatingsWidths.bgPlanetsCount}"
+               textAlign="center"
                includeInLayout="{player.planetsCount == 0
                &amp;&amp; player.bgPlanetsCount == 0}"
                styleName="unsatisfied"/>

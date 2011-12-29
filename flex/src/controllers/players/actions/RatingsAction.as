@@ -37,7 +37,7 @@ package controllers.players.actions
          {
             RS.sortList([new SortField('planetsCount', false, true, true),
                new SortField('bgPlanetsCount', false, true, true),
-               new SortField('deathDay', false, true, true),
+               new SortField('deathDate', false, true),
                new SortField('victoryPoints', false, true, true),
                new SortField('points', false, true, true),
                new SortField('name')]);

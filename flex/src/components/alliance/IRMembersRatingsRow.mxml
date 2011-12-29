@@ -14,6 +14,8 @@
       import models.ModelLocator;
       import models.player.MRatingPlayer;
 
+      import utils.DateUtil;
+
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
       import utils.locale.Localizer;
@@ -79,10 +81,16 @@
                || player.bgPlanetsCount > 0}"
                includeInLayout="{player.planetsCount > 0
                || player.bgPlanetsCount > 0}"/>
-      <s:Label text="{Localizer.string('Ratings', 'label.deathDay',
-                  [player.deathDay])}"
-               toolTip="{Localizer.string('Ratings', 'tooltip.deathDay',
-                  [player.deathDay])}"
+      <s:Label text="{player.deathDate == null ? ''
+               : Localizer.string('Ratings', 'label.deathDay',
+                  [MRatingPlayer.getDays(
+                     ML.latestGalaxy.apocalypseStartEvent.occuresAt,
+                     player.deathDate)
+                  ])}"
+               toolTip="{player.deathDate == null ? ''
+               : Localizer.string('Ratings', 'tooltip.deathDay',
+                  [DateUtil.formatShortDateTime(
+                     player.deathDate)])}"
                width="{RatingsWidths.planetsCount + 1 + RatingsWidths.bgPlanetsCount}"
                textAlign="center" visible="{player.planetsCount == 0
                &amp;&amp; player.bgPlanetsCount == 0}"

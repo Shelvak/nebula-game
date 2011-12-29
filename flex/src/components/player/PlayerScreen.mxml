@@ -22,6 +22,8 @@
       import mx.collections.ArrayCollection;
       import mx.events.FlexEvent;
 
+      import utils.DateUtil;
+
       import utils.UrlNavigate;
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
@@ -56,6 +58,9 @@
       protected function group1_creationCompleteHandler(event: FlexEvent): void {
          NC.creationCompleteFunction(MainAreaScreens.PLAYER, this);
       }
+
+         [Bindable]
+      private var ML: ModelLocator = ModelLocator.getInstance();
       ]]>
    </fx:Script>
    <s:Label fontSize="52" horizontalCenter="0" verticalCenter="0" color="#eec500"
@@ -114,10 +119,15 @@
                              includeInLayout="{player.planetsCount > 0
                              || player.bgPlanetsCount > 0}"/>
 
-                     <s:Label text="{Localizer.string('Ratings', 'label.deathDay',
-                                 [player.deathDay])}"
-                              toolTip="{Localizer.string('Ratings', 'tooltip.deathDay',
-                                 [player.deathDay])}"
+                     <s:Label text="{player.deathDate == null ? ''
+                                 : Localizer.string('Ratings', 'label.deathDay',
+                                 [MRatingPlayer.getDays(
+                                 ML.latestGalaxy.apocalypseStartEvent.occuresAt,
+                                 player.deathDate)])}"
+                              toolTip="{player.deathDate == null ? ''
+                                 : Localizer.string('Ratings', 'tooltip.deathDay',
+                                 [DateUtil.formatShortDateTime(
+                                 player.deathDate)])}"
                               textAlign="center" visible="{player.planetsCount == 0
                               &amp;&amp; player.bgPlanetsCount == 0}"
                               includeInLayout="{player.planetsCount == 0

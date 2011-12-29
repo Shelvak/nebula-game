@@ -3336,8 +3336,7 @@
     <points value="Viso taškų" />
     <playersCount value="Žaidėjai" />
     <tooltip.deathDay>
-      <p>Žaidėjas prarado paskutinę savo planetą {0}-ą dieną po apokalipsės
-        pradžios</p>
+      <p>Žaidėjas prarado paskutinę savo planetą {0}</p>
     </tooltip.deathDay>
     <label.deathDay value="0 ({0}d.)"/>
     <planetsCount value="PPK" />
