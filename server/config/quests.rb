@@ -83,7 +83,8 @@ s_load_wreckage = "LoadWreckage"
 s_unload_resources = "UnloadResources"
 # Explains what radar does.
 s_radar = "Radar"
-# Explains how to load units.
+# Explains how to load units. Explain that we need MDH & ground units to attack
+# third planet.
 s_load_units = "LoadUnits"
 # Explains how to unload units.
 s_unload_units = "UnloadUnits"
@@ -175,8 +176,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
 
     # Economy points side chain
     quest.define_eco_chain(10020, 5,    2000, 1.4 ). # Last quest ID is 10024
-          define_eco_chain(10040, 10,  10000, 1.37). # Last quest ID is 10039
-          define_eco_chain(10060, 10, 200000, 1.15)  # Last quest ID is 10049
+          define_eco_chain(10040, 10,  10000, 1.37). # Last quest ID is 10049
+          define_eco_chain(10060, 10, 200000, 1.15)  # Last quest ID is 10069
 
     # War points side chain
     quest.define_war_chain(10100,  5,   2000, 1.4 ). # Last quest ID is 10104
@@ -242,6 +243,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
       define(10270) { have_science_points   500_000; reward_scientists 300 }.
       define(10275) { have_science_points   750_000; reward_scientists 400 }.
       define(10280) { have_science_points 1_000_000; reward_scientists 500 }
+      define(10285) { have_science_points 1_500_000; reward_scientists 600 }
+      define(10290) { have_science_points 2_000_000; reward_scientists 700 }
 
     # Technologies side quest line
     tech_side = [
@@ -296,8 +299,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
         reward_unit unit, :count => unit_count, :level => unit_level
       end
     end
-  end.define(100, [s_quest_with_image[Technology::ZetiumExtraction], s_tech_tree,
-                  s_tech_research, s_wp_in_techs]) do
+  end.define(100, [s_quest_with_image[Technology::ZetiumExtraction],
+                   s_tech_tree, s_tech_research, s_wp_in_techs]) do
     have_upgraded_to Technology::ZetiumExtraction
 
     reward_cost Building::ZetiumExtractor, :count => 0.9
@@ -387,7 +390,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
     destroy Unit::Dirac
 
     reward_unit Unit::Crow, :count => 2
-    reward_cost Unit::Crow, :count => 2
+    reward_cost Unit::Crow, :count => 3 * 0.7
   end.define(210, [s_quest, s_move_to_planet, s_claim_planet]) do
     have_planets :count => 2
 
@@ -403,7 +406,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
     have_upgraded_to Building::ZetiumExtractor, :level => 4,
                      :count => zex_1st_planet + zex_2nd_planet
 
-    reward_cost Unit::Mule
+    reward_cost Unit::Mule, :count => 0.7
   end.define(230, [s_quest_with_image[Unit::Mule], s_wreckage, s_load_wreckage,
                   s_unload_resources]) do
     # Resource transportation explained.
@@ -449,6 +452,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
   end.define(300, [s_quest_with_image[Unit::Mdh], s_load_units,
                   s_unload_units, s_deploy_units]) do
     # Have third planet and build Headquarters.
+    have_upgraded_to Unit::Mdh
     have_planets :count => 3
     have_upgraded_to Building::Headquarters
 
