@@ -3127,327 +3127,90 @@
       </p>
     <!-- old id: 23 --> </about.10425>
 
-    <!-- old id: 4 --> <title.x value="Godumas" />
-    <!-- old id: 4 --> <about.x>
-      <p>Nuostabu, kad užsukote, Komandore.</p>
-
+    <title.10450 value="Pirmasis atlygis" />
+    <about.10450>
+      <p>Komandore.</p>
       <p>
-        Skubu pranešti, kad išteklių gavyba šioje planetoje vyksta sklandžiai. 
-        Nors iš pirmo žvilgsnio atrodo, kad esame apsirūpinę, aš negaliu 
-        atsikratyti minčių apie mūsų galimybių ribas. Ši planeta tokia 
-        turtinga ištekliais! Mes galime iš jos išspausti daug, daug daugiau!      
+        Užtikrinkite, jog mes turime pakankamai kasyklų, jog patenkinti mūsų
+        būtiniausius poreikius. Kažkas man kužda, jog greitai mums prireiks
+        žymiai daugiau...
       </p>
+    </about.10450>
 
-      <p>
-        Vadinkite mane godžia, jei jums taip norisi, bet pirma išklausykite 
-        ką siūlau. Mes privalome patobulinti resursų išgavėjus! Žaliavų 
-        perteklius dar niekam nepakenkė, juk tiesa?     
-      </p>
-    <!-- old id: 4 --> </about.x>
-
-    <!-- old id: 5 --> <title.x value="Dar. Dar. Dar!" />
-    <!-- old id: 5 --> <about.x>
-      <p>Sveiki ir vėl, Komandore.</p>
-
-      <p>
-        Matau jūs atsižvelgėte į mano pastabas ir patobulinote išteklių gavybą. 
-        Nesustokite. Investuokime į gamybą ir toliau, visos išlaidos tikrai
-        atsipirks su kaupu!
-      </p>
-      
-      <p>Iki greito!</p>
-    <!-- old id: 5 --> </about.x>
-
-    
-
-
-    <!-- old id: 32 --> <title.x value="Drąsos vaisiai" />
-    <!-- old id: 32 --> <about.x>
-      <p>Gera žinia!</p>
-      <p>
-        Mes užėmėme rūda turtingas pozicijas! Dabar galime įrengti ten MEX‘ą. 
-        Jums leidus, siųlyčiau padaryti tai nedelsiant. Šią akimirką kolonija 
-        tikrai ras kur panaudoti papildomas metalų atsargas.
-      </p>
-    <!-- old id: 32 --> </about.x>
-
-    <!-- old id: 9 --> <title.x value="Mokslas metalo vardan" />
-    <!-- old id: 9 --> <about.x>
-      <p>Komandore, džiaugiuosi jus matydama!</p>
-      <p>
-        Aš ką tik peržiūrėjau naudingų iškasenų gavybos duomenis. Skaičiai 
-        mums palankūs, bet aš manau mes galime išspausti daugiau. Mūsų 
-        mokslininkai teigia, kad gavę reikiamą resursų kiekį, jie gali 
-        patobulinti MEX‘us ir padidinti metalų išgavimo greitį iki naujų, 
-        dar neregėtų aukštumų. Vadinkite tai moteriška nuovoka, bet aš jais 
-        tikiu.
-      </p>
-      <p>
-        Pamėginkime patobulinti vieną iš mūsų MEX‘ų ir išsiaiškinkime ar 
-        moksliukai gali sukurti tai ką pažada.  
-      </p>
-    <!-- old id: 9 --> </about.x>
-
-    <!-- old id: 10 --> <title.x value="Energetinis mokslas" />
-    <!-- old id: 10 --> <about.x>
-      <p>Komandore!</p>
-      <p>
-        Aš ką tik iš susitikimo su mūsų laborantais, jie pristatė naujus 
-        sprendimus energijos gavybai. Viskas ko jiems reikia, kad kibtų į 
-        darbą ir juos pritaikytų — investicijos.
-      </p>
-      <p>
-        Rekomenduočiau duoti jiems tai, ko prašo. Tikiu, kad netrukus patirtos 
-        išlaidos atsipirks su kaupu. Nedelsdami įsakykite patobulinti vieną 
-        iš vėjo jėgainių.
-      </p>
-    <!-- old id: 10 --> </about.x>
-
-    <!-- old id: 116 --> <title.x value="Galingųjų turtai" />
-    <!-- old id: 116 --> <about.x>
-      <p>Komandore!</p>
-      <p>Po sėkmingos atakos „Pirmojo kontakto“ metu, jūs buvote apdovanoti 
-      simboline kreditų suma. Būtinai atsiimkite šį apdovanojimą, jei to 
+    <!-- old id: 116 --> <title.10460 value="Galingųjų turtai" />
+    <!-- old id: 116 --> <about.10460>
+    <p>Komandore!</p>
+    <p>Už prieš tai buvusią užduotį jūs buvote apdovanoti
+      simboline kreditų suma. Būtinai atsiimkite šį apdovanojimą, jei to
       nepadarėte iki šiol.</p>
-      <p>Kreditai — naudingas ir galingas įrankis. Juos galite išleisti 
-      įvairiausioms užduotims — paspartinti statybas, tyrimus ir karių 
-      parengimą. Tiesą sakant juos galėsite išleisti net pastatų perkėlimui į 
+    <p>Kreditai — naudingas ir galingas įrankis. Juos galite išleisti
+      įvairiausioms užduotims — paspartinti statybas, tyrimus ir karių
+      parengimą. Tiesą sakant juos galėsite išleisti net pastatų perkėlimui į
       kitą vietą ar norėdami paspartinti savo erdvėlaivius!</p>
-      <p>Matau ketinate klausti, kaip gauti daugiau kreditų. Tam yra keli 
+    <p>Matau ketinate klausti, kaip gauti daugiau kreditų. Tam yra keli
       metodai. Galite tiesiog įsigyti jų parduotuvėje į kurią galite nueiti
-      per N44 meniu apatiniame kairiajame žaidimo kampe. Taip pat kreditais 
-      apdovanojami Komandorai gebantys užimti ir išlaikyti tam tikras, karo 
+      per N44 meniu apatiniame kairiajame žaidimo kampe. Taip pat kreditais
+      apdovanojami Komandorai gebantys užimti ir išlaikyti tam tikras, karo
       niokojamas planetas, apie kurias sužinosite vėliau.</p>
-      <p>Yra ir dar vienas būdas. Galite prisijungti prie VIP Komandorų. Tapdami
-      vienu iš galaktikos VIP‘ų, jūs gausite daugiau kreditų, nei pačios 
-      narystės kaina. Kartu su VIP naryste gautus kreditus galėsite išleisti 
+    <p>Yra ir dar vienas būdas. Galite prisijungti prie VIP Komandorų. Tapdami
+      vienu iš galaktikos VIP‘ų, jūs gausite daugiau kreditų, nei pačios
+      narystės kaina. Kartu su VIP naryste gautus kreditus galėsite išleisti
       savo nuožiūra.</p>
-      <p>Išmėginkite VIP paslaugą dabar ir mėgaukitės apdovanojimais ir jų 
+    <p>Išmėginkite VIP paslaugą dabar ir mėgaukitės apdovanojimais ir jų
       suteikiama galia!</p>
-    <!-- old id: 116 --> </about.x>
+    <!-- old id: 116 --> </about.10460>
 
-    <!-- old id: 117 --> <title.x value="Skubos darbas!" />
-    <!-- old id: 117 --> <about.x>
-      <p>Sveikinimai tapus VIP, Komandore.</p>
-      <p>Nuo šiol jūs kasdien gausite kreditų įvairioms išlaidoms, tad kodėl gi 
+    <!-- old id: 117 --> <title.10470 value="Skubos darbas!" />
+    <!-- old id: 117 --> <about.10470>
+    <p>Sveikinimai tapus VIP, Komandore.</p>
+    <p>Nuo šiol jūs kasdien gausite kreditų įvairioms išlaidoms, tad kodėl gi
       jų neišeikvojus naudingai veiklai?</p>
-      <p>Aš rekomenduočiau paspartinti statybas. Tyrimų centras tikrai 
-      nudžiugintu iki šiol mums labai daug naudos atnešusius mokslininkus. 
-      Įsakykite pradėti jo statybas ir paspartinkite jas išleisdami 
+    <p>Aš rekomenduočiau paspartinti statybas. Yra tikrai nemažai pastatų, kurie
+      mums praverstų anksčiau, nei vėliau. Paspartinkite jų statybą išleisdami
       dalį kreditų.</p>
-    <!-- old id: 117 --> </about.x>
+    <!-- old id: 117 --> </about.10470>
 
-
-    
-    <!-- old id: 12 --> <title.x value="Keliaujantys su šešėliu" />
-    <!-- old id: 12 --> <about.x>
-      <p>Sveiki, Komandore.</p>
-      <p>Žmonės baltais chalatais jau atsigauna nuo euforijos kurią sukėlė 
-      naujas tyrimų centras. Pats metas duoti jiems darbo. Jei jums įdomi mano 
-      nuomonė, Komandore, mes turėtume investuoti į kovinę galią. Kam dar gali 
-      būti naudingas mokslas, jei ne karui? Apsilankykite tyrimų centre ir 
-      liepkite pradėti „Sėlintojų“ projektą. Šie kariai puikiai pasitarnaus 
-      naikinant šarvuotus priešo pėstininkus. Pats tas ko reikia kovai su 
-      ateivių robotais.</p>
-      
-      <p>Kai tik mokslininkai baigs tyrimą, siūlyčiau iškart pasigaminti 
-      keletą šių karių, kad patikrinti jų kovines galias mūšio lauke.</p>
-    <!-- old id: 12 --> </about.x>
-
-    <!-- old id: 13 --> <title.x value="Veteranai" />
-    <!-- old id: 13 --> <about.x>
-      <p>Komandore.</p>
-      <p>
-        Jūsų ryžtas ir nusiteikimas asmeniškai vadovauti mūšyje 
-        dalyvaujantiems kariams verti pagarbos. Esu įsitikinusi, kad jūs tą 
-        patį pasakytumėte apie kiekvieną jūsų įsakymus vykdžiusi karį. 
-        Atkreipkite dėmesį, kad kai kurie, nuolatos greta esantys, kovotojai 
-        tapo labiau patyrę. Jie tapo efektyvesni ir atsparesni priešų atakoms. 
-      </p>
-      <p>
-        Būtų protinga atitraukti juos iš priešakinių linijų, tegul ten 
-        pasireiškia geltonsnapiai naujokai. Neleiskite žūti veteranams, tai 
-        galingi ir įkvepiantys kovotojai, mums jie reikalingi gyvi. 
-      </p>
-    <!-- old id: 13 --> </about.x>
-
-    
-    
-
-
-
-    <!-- old id: 14 --> <title.x value="Kristalizacija" />
-    <!-- old id: 14 --> <about.x>
-      <p>Komandore,</p>
-      <p>
-        Iš žvalgų gavę zetiumo pavyzdžius mūsų mokslininkai teigia jog tai
-        labai naudinga medžiaga. Jie nekantrauja pradėti praktinius šios 
-        medžiagos panaudojimo tyrimus.
-      </p>
-      <p>
-        Nedelskite! Užsukite į tyrimų centrą ir įsakykite pradėti darbus. 
-      </p>
-    <!-- old id: 14 --> </about.x>
-
-    
-
-
-    <!-- old id: 119 --> <title.x value="Bauginantys laivynai" />
-    <!-- old id: 119 --> <about.x>
-      <p>Komandore.</p>
-      <p>Statant varno klasės laivus šauniai padirbėjote. Jie greiti ir 
-      mirtini mūsų priešams. Ech... Kai pagalvoju apie juos mane apima toks
-      išdidumas! Reikėtų juos kur nors panaudoti!</p>
-      <p>Aplink gretimą planetą skraido keli ateivių dirako klasės laivai. 
-      Argi ne šaunus taikinys mūsų pilotų pratyboms? Skriskime ir sunaikinkime
-      juos.</p>
-      <p>O vienaip ar kitaip - ta planeta atrodo kaip visai nieko vietelė 
-      antrosios mūsų kolonijos įkurtuvėms. O jeigu jau ten kursimės - juk 
-      nenorėtumėme, kad aplink šlaistytųsi kažkokie ateivių pašlemėkai?</p>
-    <!-- old id: 119 --> </about.x>
-
-
-
-
-
-
-    <!-- old id: 21 --> <title.x value="Antroji stovykla" />
-    <!-- old id: 21 --> <about.x>
-      <p>Komandore, puikiai padirbėta!</p>
-      <p>Dabar mes valdome dvi planetas! Pradėkime statybas antrojoje planetoje!
-      Įkraukite savo mobilų štabą į mulą ir nukeliaukite į savo naujają 
-      koloniją. Tuo pačiu pasiimkite ir resursų bei karių!</p>
-      <p>Nukeliavę, išskleiskite savo mobilų štabą ir pradėkite įkurtuves 
-      naujoje planetoje.</p>
-    <!-- old id: 21 --> </about.x>
-
-
-    <!-- old id: 38 --> <title.x value="Teritorijos plėtimas" />
-    <!-- old id: 38 --> <about.x>
-      <p>Komandore.</p>
-      <p>Atėjo laikas išplėsti mūsų imperiją! Užimkite dar vieną koloniją, esu
+    <!-- old id: 38 --> <title.10500 value="Teritorijos plėtimas" />
+    <!-- old id: 38 --> <about.10500>
+    <p>Komandore.</p>
+    <p>Atėjo laikas išplėsti mūsų imperiją! Užimkite dar vieną koloniją, esu
       tikra, jog mes puikiai joje įsikursime.</p>
-    <!-- old id: 38 --> </about.x>
-    
-    <expanding_empire.title value="Auganti imperija" />
+    <!-- old id: 38 --> </about.10500>
 
-    <!-- old id: 39 --> <title.x value="[reference:expanding_empire.title]" />
-    <!-- old id: 39 --> <about.x>
-      <p>Komandore, šauniai padirbėta!</p>
-      <p>Netgi užvaldžius dar vieną pasaulį aš jaučiu valdžios alkį. 
+    <!-- old id: 39 --> <title.10510 value="Auganti imperija" />
+    <!-- old id: 39 --> <about.10510>
+    <p>Komandore, šauniai padirbėta!</p>
+    <p>Netgi užvaldžius dar vieną pasaulį aš jaučiu valdžios alkį.
       Neapsiribokime anuo pasauliu, juk yra dar tiek laisvų planetų... Užimkite
       dar vieną! Tegul ji dreba prieš mūsų galią!</p>
-    <!-- old id: 39 --> </about.x>
+    <!-- old id: 39 --> </about.10510>
 
-    <!-- old id: 40 --> <title.x value="[reference:expanding_empire.title] (II)" />
-    <!-- old id: 40 --> <about.x>
-      <p>Komandore,</p>
-      <p>manau, kad mūsų imperija jau pakankamai įspūdinga. Bet negi jūs
-      dabar sustosite?</p>
-    <!-- old id: 40 --> </about.x>
-
-    <!-- old id: 41 --> <title.x value="[reference:expanding_empire.title] (III)" />
-    <!-- old id: 41 --> <about.x>
-      <p>Komandore,</p>
-      <p>jūsų darbai - neįtikėtini. Tačiau, kad ir kaip bebūtų, mūsų gyventojų
-      skaičius auga, mums reikia daugiau vietos! Užimkite dar vieną planetą.</p>
-    <!-- old id: 41 --> </about.x>
-
-    <!-- old id: 42 --> <title.x value="[reference:expanding_empire.title] (IV)" />
-    <!-- old id: 42 --> <about.x>
-      <p>Komandore,</p>
-      <p>mūsų imperija praktiškai nenugalima, visi mūsų kaimynai dreba iš 
-      baimės! Sakau gal paimkime dar vieną planetą iš jų, vien tam, kad parodyti
-      savo galią? Ką manote?</p>
-    <!-- old id: 42 --> </about.x>
-
-    <!-- old id: 43 --> <title.x value="Transporto linijų sabotažas" />
-    <!-- old id: 43 --> <about.x>
-      <p>Komandore,</p>
-      <p>mums derėtų sumedžioti keletą priešininko transportinių laivų. Tai 
-      sutrikdys jų resursų tiekimą ir pakenks jų vystimuisi.</p>
-    <!-- old id: 43 --> </about.x>
-
-    <destroying_enemy_will.title value="Naikinant priešo valią" />
-    <destroying_enemy_will.about>
-      <p>Komandore,</p>
-      <p>netoliese pastebėjome priešo aktyvumą. Sunaikinkite jų laivyną ir 
-      karius! Sutriuškinkite pasipriešinimą! Parodykite mūsų tikrą galią!</p>
-    </destroying_enemy_will.about>
-
-    <!-- old id: 44 --> <title.x ref="destroying_enemy_will.title" />
-    <!-- old id: 44 --> <about.x ref="destroying_enemy_will.about" />
-
-    <!-- old id: 45 --> <title.x value="[reference:destroying_enemy_will.title] (II)" />
-    <!-- old id: 45 --> <about.x ref="destroying_enemy_will.about" />
-
-    <!-- old id: 46 --> <title.x value="[reference:destroying_enemy_will.title] (III)" />
-    <!-- old id: 46 --> <about.x ref="destroying_enemy_will.about" />
-
-    <!-- old id: 47 --> <title.x value="[reference:destroying_enemy_will.title] (IV)" />
-    <!-- old id: 47 --> <about.x ref="destroying_enemy_will.about" />
-
-    <!-- old id: 48 --> <title.x value="[reference:destroying_enemy_will.title] (V)" />
-    <!-- old id: 48 --> <about.x ref="destroying_enemy_will.about" />
-
-    <!-- old id: 49 --> <title.x value="[reference:destroying_enemy_will.title] (VI)" />
-    <!-- old id: 49 --> <about.x ref="destroying_enemy_will.about" />
-
-    <!-- old id: 50 --> <title.x value="[reference:destroying_enemy_will.title] (VII)" />
-    <!-- old id: 50 --> <about.x ref="destroying_enemy_will.about" />
-
-    <!-- old id: 51 --> <title.x value="[reference:destroying_enemy_will.title] (VIII)" />
-    <!-- old id: 51 --> <about.x ref="destroying_enemy_will.about" />
-
-    <!-- old id: 52 --> <title.x value="[reference:destroying_enemy_will.title] (IX)" />
-    <!-- old id: 52 --> <about.x ref="destroying_enemy_will.about" />
-
-    <!-- old id: 53 --> <title.x value="[reference:destroying_enemy_will.title] (X)" />
-    <!-- old id: 53 --> <about.x ref="destroying_enemy_will.about" />
-
-    <!-- old id: 54 --> <title.x value="[reference:destroying_enemy_will.title] (XI)" />
-    <!-- old id: 54 --> <about.x ref="destroying_enemy_will.about" />
-
-    <crushing_enemy_defenses.title value="Griūvanti gynyba" />
-    <crushing_enemy_defenses.about>
-      <p>Komandore,</p>
-      <p>negalime daugiau delsti! Paskubėkite, užpulkite mūsų priešų planetas 
-      ir sunaikinkite jų gynybą!</p>
-    </crushing_enemy_defenses.about>
-
-    <!-- old id: 55 --> <title.x ref="crushing_enemy_defenses.title" />
-    <!-- old id: 55 --> <about.x ref="crushing_enemy_defenses.about" />
-
-    <!-- old id: 56 --> <title.x value="[reference:crushing_enemy_defenses.title] (II)" />
-    <!-- old id: 56 --> <about.x ref="crushing_enemy_defenses.about" />
-
-    <!-- old id: 57 --> <title.x value="[reference:crushing_enemy_defenses.title] (III)" />
-    <!-- old id: 57 --> <about.x ref="crushing_enemy_defenses.about" />
-
-    <!-- old id: 58 --> <title.x value="[reference:crushing_enemy_defenses.title] (IV)" />
-    <!-- old id: 58 --> <about.x ref="crushing_enemy_defenses.about" />
-
-    <!-- old id: 59 --> <title.x value="[reference:crushing_enemy_defenses.title] (V)" />
-    <!-- old id: 59 --> <about.x ref="crushing_enemy_defenses.about" />
-
-    <!-- old id: 60 --> <title.x value="[reference:crushing_enemy_defenses.title] (VI)" />
-    <!-- old id: 60 --> <about.x ref="crushing_enemy_defenses.about" />
-
-    <!-- old id: 61 --> <title.x value="[reference:crushing_enemy_defenses.title] (VII)" />
-    <!-- old id: 61 --> <about.x ref="crushing_enemy_defenses.about" />
-
-    <!-- old id: 62 --> <title.x value="[reference:crushing_enemy_defenses.title] (VIII)" />
-    <!-- old id: 62 --> <about.x ref="crushing_enemy_defenses.about" />
-
-    <!-- old id: 63 --> <title.x value="[reference:crushing_enemy_defenses.title] (IX)" />
-    <!-- old id: 63 --> <about.x ref="crushing_enemy_defenses.about" />
-
-    <!-- old id: 65 --> <title.x value="Priešų perėmimas" />
-    <!-- old id: 65 --> <about.x>
+    <DestroyingEnemies.title value="Naikintant priešo galią" />
+    <DestroyingEnemies.about>
       <p>Komandore!</p>
-      <p>Prie mūsų durų stovi priešai! Privalome juos sustabyti! Užpulkite ir
-      užvaldykite vieną iš jų pasaulių! Tai turėtų nuraminti jų įkarštį.</p>
-    <!-- old id: 65 --> </about.x>
+      <p>
+        Pakirskime mūsų priešo galią! Sunaikinkime jo imperijos kertinį akmenį -
+        karius.
+      </p>
+    </DestroyingEnemies.about>
+
+    <title.10550 value="[reference:DestroyingEnemies.title] (I)" />
+    <about.10550 ref="DestroyingEnemies.about" />
+
+    <title.10555 value="[reference:DestroyingEnemies.title] (II)" />
+    <about.10555 ref="DestroyingEnemies.about" />
+
+    <title.10560 value="[reference:DestroyingEnemies.title] (III)" />
+    <about.10560 ref="DestroyingEnemies.about" />
+
+    <title.10565 value="[reference:DestroyingEnemies.title] (IV)" />
+    <about.10565 ref="DestroyingEnemies.about" />
+
+    <title.10570 value="[reference:DestroyingEnemies.title] (V)" />
+    <about.10570 ref="DestroyingEnemies.about" />
+
+    <title.10575 value="[reference:DestroyingEnemies.title] (VI)" />
+    <about.10575 ref="DestroyingEnemies.about" />
   </Quests>
 
   <Ratings>
