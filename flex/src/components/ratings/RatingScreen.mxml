@@ -130,7 +130,7 @@
          private static const allianceField: SortField = new SortField('alliance', true);
          private static const victoryPtsField: SortField = new SortField('victoryPoints', false, true, true);
          private static const pointsField: SortField = new SortField('points', false, true, true);
-         private static const deathDayField: SortField = new SortField('deathDay', false, true, true);
+         private static const deathDayField: SortField = new SortField('deathDate', false, true);
          private static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
          private static const bgPlanetsCountField: SortField = new SortField('bgPlanetsCount', false, true, true);
          private static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);

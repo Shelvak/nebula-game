@@ -157,5 +157,12 @@ package utils
          );
          return _formatter.format(date);
       }
+
+      private static const SECONDS_IN_DAY: int = 24 * 60 * 60;
+
+      /* returns Rounded + 1 */
+      public static function secondsToDays(elapsedTime: Number): int {
+         return Math.round(elapsedTime / SECONDS_IN_DAY) + 1;
+      }
    }
 }

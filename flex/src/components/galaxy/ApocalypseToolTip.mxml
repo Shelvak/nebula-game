@@ -15,14 +15,14 @@
       import models.ModelLocator;
       import models.time.MTimeEventFixedMoment;
 
+      import utils.DateUtil;
+
       import utils.TextFlowUtil;
 
       import utils.DateUtil;
 
       import utils.locale.Localizer;
 
-
-      private static const SECONDS_IN_DAY: int = 24 * 60 * 60;
 
       private function get ML(): ModelLocator {
          return ModelLocator.getInstance();
@@ -36,16 +36,12 @@
                  params);
       }
 
-      private function getDays(elapsedTime: Number): int {
-         return Math.round(elapsedTime / SECONDS_IN_DAY) + 1;
-      }
-
       private function getTime(remainingTime: Number): String {
          return DateUtil.secondsToHumanString(remainingTime, 2);
       }
 
       private function getReward(elapsedTime: Number): int {
-         return Config.getApocalypseSurvivalBonus(getDays(elapsedTime));
+         return Config.getApocalypseSurvivalBonus(DateUtil.secondsToDays(elapsedTime));
       }
 
       /* ################ */
@@ -73,7 +69,7 @@
                textFlow="{apocalypseEvent.hasOccured
                ? getFlow(true, [
                   apocalypseEvent.occuresAtString,
-                  getDays(apocalypseEvent.occurredBefore),
+                  DateUtil.secondsToDays(apocalypseEvent.occurredBefore),
                   getReward(apocalypseEvent.occurredBefore)
                  ])
                : getFlow(false, [
