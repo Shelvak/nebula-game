@@ -3213,6 +3213,69 @@
     <about.10575 ref="DestroyingEnemies.about" />
   </Quests>
 
+  <QuestScreens>
+    <BuildingSidebar>
+      <p>Pastatus gali statyti iš dešinėje pusėje esančio meniu.</p>
+      <p>Pasirinkus pastatą meniu apačioje bus rodoma pastato kaina, statymo
+      laikas, bei žemės, ant kurios statoma, pliusai ir minusai.</p>
+      <p>Jeigu vienas pastatas jau yra statomas, kitas bus įdėtas į eilę.</p>
+    </BuildingSidebar>
+
+    <ClaimReward>
+      <p>Kiekviena įvykdyta užduotis duoda atlygį. Jį pasiimti gali nuėjęs į
+      užduočių langą: paspausk N44 logotipą apatiniame kairiame kampe ir
+      pasirink užduočių mygtuką.</p>
+      <p>Tada susirask įvykdytą užduotį (jos žymimos gelsvai) ir spausk pasiimti
+      atlygį.</p>
+    </ClaimReward>
+
+    <OreTile>
+      <p>MEX-us gali statyti tik ant metalo rūdos klodų. Dažniausiai ant jų
+      stovi ateivių pastatai, kuriuos reikia nugriauti, bet kartais randama ir
+      laisvų klodų.</p>
+    </OreTile>
+    
+    <BuildingUpgrade>
+      <p>Pastatai gali būti tobulinami. Kad patobulintum pastatą pasirink jį
+      žemėlapyje, ir dešinėje esančiame meniu paspausk mygtuką „Tobulinti“.</p>
+      <p>Patobulinti pastatai pagerina savo savybes - greičiau išgauna resursus,
+      stato karius, teikia daugiau mokslininkų ir t.t.</p>
+    </BuildingUpgrade>
+
+    <EnergyTiles>
+      <p>Nors elektros jėgaines gali statyti bet kur, jas rekomenduotina
+      statyti ant papildomos energijos suteikiančios žemės.</p>
+      <p>Žemės suteikiamą pliusą gali pamatyti dešinės juostos apačioje,
+      rinkdamas statymo vietą naujai elektrinei.</p>
+    </EnergyTiles>
+
+    <ConstructionTiles>
+      <p>
+        Pastatus ant šios žemės pastatys greičiau. Be to - jeigu pastatas
+        stato kitus pastatus arba gamina karius - jis taip pat tai darys
+        greičiau, todėl šią žemę geriausia išnaudoti įvairioms gamykloms.
+      </p>
+    </ConstructionTiles>
+
+    <SpeedupConstruction>
+      <p>
+        Ilgai trunkančias statybas gali pagreitinti pasinaudodamas kredais -
+        specialiu žaidimo resursu. Tam tau reikia pasirinkti statomą pastatą ir
+        dešinėje juostoje paspaudus „Paspartinti“ pasirinkti norimą
+        pagreitinimo trukmę.
+      </p>
+      <p>
+        Kredų gali gauti jų nusipirkdamas - paspausk mygtuką „Pirkti kredus“ iš
+        N44 meniu.
+      </p>
+      <p>
+        Taip pat kredų duoda kai kurios užduotys. Jų tau kaip tik davė prieš tai
+        įvykdyta užduotis - nueik atsiimk apdovanojimą ir paspartink pastato
+        statybą!
+      </p>
+    </SpeedupConstruction>
+  </QuestScreens>
+
   <Ratings>
     <label.ratings value="Reitingai" />
     <label.loading value="Kraunasi..." />
