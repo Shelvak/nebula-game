@@ -84,6 +84,9 @@ class RaidSpawner
   # ]
   #
   def unit_counts
+    # No raiders if apocalypse and planet is not occupied.
+    return [] if apocalypse? && @planet.player_id.nil?
+
     units = {}
     max_flanks = Cfg.max_flanks
 
