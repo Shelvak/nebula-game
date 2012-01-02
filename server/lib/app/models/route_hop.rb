@@ -90,57 +90,55 @@ class RouteHop < ActiveRecord::Base
     old_location = route.current
 
     SsObject::Planet.changing_viewable([old_location, location]) do
-      transaction do
-        route.current = location.client_location
+      route.current = location.client_location
 
-        Unit.where(:route_id => route.id).update_all(
-          "#{Unit.update_location_sql(location)}, #{
-            Unit.set_flag_sql(:hidden, false)}")
+      Unit.where(:route_id => route.id).update_all(
+        "#{Unit.update_location_sql(location)}, #{
+          Unit.set_flag_sql(:hidden, false)}")
 
-        next_hop = route.hops.where(:index => index + 1).first
-        if next_hop
-          next_hop.next = true
-          next_hop.save!
+      next_hop = route.hops.where(:index => index + 1).first
+      if next_hop
+        next_hop.next = true
+        next_hop.save!
 
-          CallbackManager.register(next_hop, CallbackManager::EVENT_MOVEMENT,
-            next_hop.arrives_at)
-        end
+        CallbackManager.register(next_hop, CallbackManager::EVENT_MOVEMENT,
+          next_hop.arrives_at)
+      end
 
-        event = Event::Movement.new(route, old_location, self, next_hop)
-        zone_changed = Zone.different?(old_location, route.current)
+      event = Event::Movement.new(route, old_location, self, next_hop)
+      zone_changed = Zone.different?(old_location, route.current)
 
-        if zone_changed
-          self.class.handle_fow_change(event)
-          # Update Route#jumps_at when zone changes.
-          route.jumps_at = route.hops.
-            where("location_type != ?", route.current.type).first.
-            try(:arrives_at)
-        end
+      if zone_changed
+        self.class.handle_fow_change(event)
+        # Update Route#jumps_at when zone changes.
+        route.jumps_at = route.hops.
+          where("location_type != ?", route.current.type).first.
+          try(:arrives_at)
+      end
 
-        # Destroy this route hop. This is important to do before firing the
-        # event, because otherwise this route hop would be included in zone
-        # hops, event though it was just executed.
-        destroy!
+      # Destroy this route hop. This is important to do before firing the
+      # event, because otherwise this route hop would be included in zone
+      # hops, event though it was just executed.
+      destroy!
 
-        # Fire event.
-        EventBroker.fire(
-          event,
-          EventBroker::MOVEMENT,
-          zone_changed \
-            ? EventBroker::REASON_BETWEEN_ZONES \
-            : EventBroker::REASON_IN_ZONE
-        )
+      # Fire event.
+      EventBroker.fire(
+        event,
+        EventBroker::MOVEMENT,
+        zone_changed \
+          ? EventBroker::REASON_BETWEEN_ZONES \
+          : EventBroker::REASON_IN_ZONE
+      )
 
-        # Saving/destroying route dispatches event that is transmitted to
-        # Dispatcher. We need event to go in "movement, route" sequence, not
-        # other way round
+      # Saving/destroying route dispatches event that is transmitted to
+      # Dispatcher. We need event to go in "movement, route" sequence, not
+      # other way round
 
-        if next_hop
-          route.save!
-        else
-          route.completed = true
-          route.destroy!
-        end
+      if next_hop
+        route.save!
+      else
+        route.completed = true
+        route.destroy!
       end
     end
   end

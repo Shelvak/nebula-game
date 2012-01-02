@@ -271,11 +271,9 @@ class FowSsEntry < ActiveRecord::Base
 
     # Creates entries for _player_ for every +SolarSystem+ in _zone_.
     def increase_for_zone(zone, player, increment=1, should_dispatch=true)
-      transaction do
-        SolarSystem.in_zone(*zone).find_all_by_galaxy_id(
-        player.galaxy_id).each do |solar_system|
-          increase(solar_system.id, player, increment, should_dispatch)
-        end
+      SolarSystem.in_zone(*zone).find_all_by_galaxy_id(
+      player.galaxy_id).each do |solar_system|
+        increase(solar_system.id, player, increment, should_dispatch)
       end
     end
 
@@ -287,15 +285,13 @@ class FowSsEntry < ActiveRecord::Base
     # Update player entries in alliance pool upon #assimilate_player or
     # #throw_out_player.
     def update_player(alliance_id, player_id, modifier)      
-      transaction do
-        where(:player_id => player_id).each do |entry|
-          increase_for_kind(entry.solar_system_id, 'alliance_id', alliance_id,
-            entry.counter * modifier)
-          # Recalculate solar system metadata, because statuses have changed.
-          # Do not dispatch events, because whole galaxy map will be resent
-          # later.
-          recalculate(entry.solar_system_id, false)
-        end
+      where(:player_id => player_id).each do |entry|
+        increase_for_kind(entry.solar_system_id, 'alliance_id', alliance_id,
+          entry.counter * modifier)
+        # Recalculate solar system metadata, because statuses have changed.
+        # Do not dispatch events, because whole galaxy map will be resent
+        # later.
+        recalculate(entry.solar_system_id, false)
       end
     end
 

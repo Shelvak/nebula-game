@@ -146,37 +146,35 @@ class MarketOffer < ActiveRecord::Base
     # Reduce bought amount from offer.
     self.from_amount -= amount
     
-    transaction do
-      objects = [buyer_source, buyer_target]
-      # We might not have seller target. See above.
-      objects.push seller_target unless seller_target.nil?
-      objects.uniq.each { |obj| self.class.save_obj_with_event(obj) }
-      
-      if from_amount == 0
-        # Schedule creation of new system offer. 
-        CallbackManager.register(galaxy, CALLBACK_MAPPINGS[from_kind],
-          Cfg.market_bot_random_resource_cooldown_date) if system?
-        destroy!
-      else
-        save!
-      end
-      percentage_bought = amount.to_f / original_amount
+    objects = [buyer_source, buyer_target]
+    # We might not have seller target. See above.
+    objects.push seller_target unless seller_target.nil?
+    objects.uniq.each { |obj| self.class.save_obj_with_event(obj) }
 
-      MarketRate.subtract_amount(galaxy_id, from_kind, to_kind, amount)
-
-      # Create notification if:
-      # * It's not a system notification
-      # * Enough of the percentage was bought
-      # * Sellers planet currently has a player.
-      Notification.create_for_market_offer_bought(
-        self, buyer_planet.player, amount, cost
-      ) if ! system? &&  
-        percentage_bought >= CONFIG['market.buy.notification.threshold'] &&
-        ! planet.player_id.nil?
-      
-      stats.save! unless stats.nil?
+    if from_amount == 0
+      # Schedule creation of new system offer.
+      CallbackManager.register(galaxy, CALLBACK_MAPPINGS[from_kind],
+        Cfg.market_bot_random_resource_cooldown_date) if system?
+      destroy!
+    else
+      save!
     end
-    
+    percentage_bought = amount.to_f / original_amount
+
+    MarketRate.subtract_amount(galaxy_id, from_kind, to_kind, amount)
+
+    # Create notification if:
+    # * It's not a system notification
+    # * Enough of the percentage was bought
+    # * Sellers planet currently has a player.
+    Notification.create_for_market_offer_bought(
+      self, buyer_planet.player, amount, cost
+    ) if ! system? &&
+      percentage_bought >= CONFIG['market.buy.notification.threshold'] &&
+      ! planet.player_id.nil?
+
+    stats.save! unless stats.nil?
+
     amount
   end
   

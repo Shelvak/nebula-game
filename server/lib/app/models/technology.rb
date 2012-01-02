@@ -80,11 +80,9 @@ class Technology < ActiveRecord::Base
 
     player.creds -= creds_required
 
-    transaction do
-      # #destroy! invokes player#save! too
-      destroy!
-      CredStats.unlearn_technology(player, creds_required)
-    end
+    # #destroy! invokes player#save! too
+    destroy!
+    CredStats.unlearn_technology(player, creds_required)
   end
 
   # Overrides Parts::Upgradable::InstanceMethods#calculate_upgrade_time with

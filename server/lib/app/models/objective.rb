@@ -87,11 +87,9 @@ class Objective < ActiveRecord::Base
       #
       # Q1 gets completed, Q2 gets it's #initial_completed set and THEN gets
       # progressed by .progress loop.
-      transaction do
-        all_progresses.each do |progress, count|
-          progress.completed += count
-          progress.save!
-        end
+      all_progresses.each do |progress, count|
+        progress.completed += count
+        progress.save!
       end
     end
 

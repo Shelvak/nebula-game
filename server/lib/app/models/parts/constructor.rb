@@ -165,18 +165,16 @@ module Parts::Constructor
       free_slots += 1 unless working?
       count = free_slots if count > free_slots
 
-      transaction do
-        if working?
-          enqueue!(type, prepaid, count, params)
-        else
-          model = construct_model!(type, false, params)
+      if working?
+        enqueue!(type, prepaid, count, params)
+      else
+        model = construct_model!(type, false, params)
 
-          if count > 1
-            entry = enqueue!(type, prepaid, count - 1, params)
-            {:model => model, :construction_queue_entry => entry}
-          else
-            model
-          end
+        if count > 1
+          entry = enqueue!(type, prepaid, count - 1, params)
+          {:model => model, :construction_queue_entry => entry}
+        else
+          model
         end
       end
     end

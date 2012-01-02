@@ -16,7 +16,7 @@ describe Player do
       not_logged_in = Factory.create(:player_for_ratings,
         :galaxy => ally.galaxy, :last_seen => nil)
 
-      @players = [allny, no_ally, not_logged_in]
+      @players = [ally, no_ally, not_logged_in]
       @result = Player.ratings(@alliance.galaxy_id)
     end
 

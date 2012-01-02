@@ -13,24 +13,22 @@ module Parts::Deployable
       raise GameLogicError.new("Unit #{self.inspect} is not deployable!") \
         unless deployable?
 
-      transaction do
-        building = deploys_to_class.new(:planet => planet, :x => x, :y => y)
-        building.level = 0
-        building.construction_mod = 0
-        building.skip_resources = true
-        building.skip_validate_technologies = true
-        building.upgrade!
-        EventBroker.fire(building, EventBroker::CREATED)
+      building = deploys_to_class.new(:planet => planet, :x => x, :y => y)
+      building.level = 0
+      building.construction_mod = 0
+      building.skip_resources = true
+      building.skip_validate_technologies = true
+      building.upgrade!
+      EventBroker.fire(building, EventBroker::CREATED)
 
-        # Destroy unit, it has been consumed.
-        destroy!
-        # Dispatch event with deployment reason, because if the unit is being
-        # deployed to alliance planet directly from a transporter, ally client
-        # won't have unit in its unit list and has to silently ignore this
-        # message.
-        EventBroker.fire(self, EventBroker::DESTROYED,
-                         EventBroker::REASON_DEPLOYMENT)
-      end
+      # Destroy unit, it has been consumed.
+      destroy!
+      # Dispatch event with deployment reason, because if the unit is being
+      # deployed to alliance planet directly from a transporter, ally client
+      # won't have unit in its unit list and has to silently ignore this
+      # message.
+      EventBroker.fire(self, EventBroker::DESTROYED,
+                       EventBroker::REASON_DEPLOYMENT)
     end
 
     # Is this unit deployable?

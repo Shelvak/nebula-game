@@ -338,7 +338,8 @@ describe Combat do
 
        assets = dsl.run
        notification = Notification.find(
-         assets.notification_ids[player.player.id])
+         assets.notification_ids[player.player.id]
+       )
        notification.params['units']['yours']['alive'].should include(
          "Building::Thunder")
     end
@@ -356,7 +357,8 @@ describe Combat do
 
       assets = dsl.run
       notification = Notification.find(
-        assets.notification_ids[player.player.id])
+        assets.notification_ids[player.player.id]
+      )
       notification.params['leveled_up'].find do |unit_hash|
         unit_hash[:type] == "Unit::Crow"
       end.should be_nil
@@ -445,7 +447,8 @@ describe Combat do
     it "should include teleported units in alive/dead stats" do
       assets = @dsl.run
       notification = Notification.find(
-        assets.notification_ids[@player.id])
+        assets.notification_ids[@player.id]
+      )
       notification.params['units']['yours']['alive'].should include(
         "Unit::Trooper")
     end
@@ -589,14 +592,14 @@ describe Combat do
   describe "victory points" do
     describe "when in battleground" do
       [
-        [:planet, {:solar_system => Factory.create(:battleground)}],
-        [:solar_system, Factory.attributes_for(:battleground)],
+        [:planet, lambda { {:solar_system => Factory.create(:battleground)} }],
+        [:solar_system, lambda { Factory.attributes_for(:battleground) }],
       ].each do |type, options|
         describe type do
           it "should calculate victory points for doing damage to other units" do
             player1 = player2 = nil
             assets = CombatDsl.new do
-              location(type, options)
+              location(type, options.call)
               player1 = player { units { rhyno } }.player
               player2 = player { units { rhyno } }.player
             end.run
@@ -616,7 +619,7 @@ describe Combat do
           it "should not calculate VPs for doing damage to NPC units" do
             player = nil
             assets = CombatDsl.new do
-              location(type, options)
+              location(type, options.call)
               player = player { units { rhyno } }.player
               player(:npc => true) { units { rhyno } }
             end.run

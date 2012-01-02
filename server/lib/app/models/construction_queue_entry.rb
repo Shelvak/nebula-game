@@ -48,16 +48,14 @@ class ConstructionQueueEntry < ActiveRecord::Base
       planet.zetium < zetium_cost ||
       (! player.nil? && player.population_free < population_cost)
 
-    transaction do
-      planet.increase!(
-        :metal => -metal_cost, :energy => -energy_cost,
-        :zetium => -zetium_cost
-      )
+    planet.increase!(
+      :metal => -metal_cost, :energy => -energy_cost,
+      :zetium => -zetium_cost
+    )
 
-      unless player.nil?
-        player.population += population_cost
-        player.save!
-      end
+    unless player.nil?
+      player.population += population_cost
+      player.save!
     end
   end
 
@@ -71,16 +69,14 @@ class ConstructionQueueEntry < ActiveRecord::Base
     metal_cost, energy_cost, zetium_cost, population_cost = get_resources(count)
     player = get_player(planet, population_cost)
 
-    transaction do
-      planet.increase!(
-        :metal => metal_cost, :energy => energy_cost,
-        :zetium => zetium_cost
-      )
+    planet.increase!(
+      :metal => metal_cost, :energy => energy_cost,
+      :zetium => zetium_cost
+    )
 
-      unless player.nil?
-        player.population -= population_cost
-        player.save!
-      end
+    unless player.nil?
+      player.population -= population_cost
+      player.save!
     end
   end
 
@@ -119,14 +115,12 @@ class ConstructionQueueEntry < ActiveRecord::Base
     raise ArgumentError.new("Cannot merge #{self} and #{model}!") \
       unless can_merge?(model)
 
-    transaction do
-      self.count += model.count
-      # Don't destroy unsaved records, because callbacks are still fired even
-      # for not saved records and we don't want that.
-      model.destroy! unless model.new_record?
+    self.count += model.count
+    # Don't destroy unsaved records, because callbacks are still fired even
+    # for not saved records and we don't want that.
+    model.destroy! unless model.new_record?
 
-      save!
-    end
+    save!
   end
 
   # Reduce models count by _count_.

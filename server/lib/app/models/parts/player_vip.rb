@@ -73,13 +73,11 @@ module Parts
         self.vip_level = vip_level
         self.vip_until = duration.from_now
 
-        self.class.transaction do
-          vip_tick!
-          CallbackManager.register(self, CallbackManager::EVENT_VIP_STOP,
-            vip_until)
-          stats.save!
-          Objective::BecomeVip.progress(self)
-        end
+        vip_tick!
+        CallbackManager.register(self, CallbackManager::EVENT_VIP_STOP,
+          vip_until)
+        stats.save!
+        Objective::BecomeVip.progress(self)
       end
 
       # Call to refresh player creds.
@@ -90,11 +88,9 @@ module Parts
         self.vip_creds_until ||= Time.now
         self.vip_creds_until += Cfg.player_vip_tick_duration
 
-        self.class.transaction do
-          save!
-          CallbackManager.register(self, CallbackManager::EVENT_VIP_TICK,
-            vip_creds_until)
-        end
+        save!
+        CallbackManager.register(self, CallbackManager::EVENT_VIP_TICK,
+          vip_creds_until)
       end
 
       # Stop VIP membership.
@@ -107,11 +103,9 @@ module Parts
         self.vip_creds_until = nil
         self.vip_free = false
 
-        self.class.transaction do
-          save!
-          CallbackManager.unregister(self, CallbackManager::EVENT_VIP_STOP)
-          CallbackManager.unregister(self, CallbackManager::EVENT_VIP_TICK)
-        end
+        save!
+        CallbackManager.unregister(self, CallbackManager::EVENT_VIP_STOP)
+        CallbackManager.unregister(self, CallbackManager::EVENT_VIP_TICK)
       end
   
       # Returns conversion rate from VIP creds to regular creds. It is 

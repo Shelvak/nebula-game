@@ -35,12 +35,10 @@ class Building::Market < Building
       :from_amount => from_amount, :from_kind => from_kind,
       :to_kind => to_kind, :to_rate => to_rate)
     
-    transaction do
-      stats.save! if stats
-      offer.save!
-      MarketOffer.save_obj_with_event(source)
-    end
-    
+    stats.save! if stats
+    offer.save!
+    MarketOffer.save_obj_with_event(source)
+
     offer
   end
   

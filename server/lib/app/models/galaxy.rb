@@ -128,10 +128,8 @@ class Galaxy < ActiveRecord::Base
 
     self.apocalypse_start = Cfg.apocalypse_start_time
 
-    transaction do
-      save!
-      convert_vps_to_creds!
-    end
+    save!
+    convert_vps_to_creds!
 
     EventBroker.fire(
       Event::ApocalypseStart.new(id, apocalypse_start), EventBroker::CREATED
@@ -251,21 +249,19 @@ class Galaxy < ActiveRecord::Base
       end
 
       # Create units.
-      transaction do
-        units = UnitBuilder.from_random_ranges(
-          Cfg.galaxy_convoy_units_definition, id, source, nil
-        )
-        Unit.save_all_units(units, nil, EventBroker::CREATED)
-        route = UnitMover.move(nil, units.map(&:id), source, target, false,
-          CONFIG['galaxy.convoy.speed_modifier'])
+      units = UnitBuilder.from_random_ranges(
+        Cfg.galaxy_convoy_units_definition, id, source, nil
+      )
+      Unit.save_all_units(units, nil, EventBroker::CREATED)
+      route = UnitMover.move(nil, units.map(&:id), source, target, false,
+        CONFIG['galaxy.convoy.speed_modifier'])
 
-        units.each do |unit|
-          CallbackManager.register(unit, CallbackManager::EVENT_DESTROY,
-            route.arrives_at)
-        end
-
-        route
+      units.each do |unit|
+        CallbackManager.register(unit, CallbackManager::EVENT_DESTROY,
+          route.arrives_at)
       end
+
+      route
     end
   end
 
