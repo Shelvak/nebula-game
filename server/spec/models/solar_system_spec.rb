@@ -6,17 +6,18 @@ describe SolarSystem do
                     %w{id x y kind},
                     %w{galaxy_id}
 
-    shieldable_fields = %w{shield_ends_at shield_owner_id}
-
-    describe "when has shield" do
-      it_behaves_like "as json", 
-                      Factory.create(:solar_system, opts_shielded),
-                      nil, shieldable_fields, []
+    describe "when belongs to player" do
+      it "should have player => Player#minimal" do
+        ss = Factory.create(:solar_system, :player => Factory.create(:player))
+        ss.as_json["player"].should == Player.minimal(ss.player_id)
+      end
     end
 
-    describe "when does not have shield" do
-      it_behaves_like "as json", Factory.create(:solar_system),
-                      nil, [], shieldable_fields
+    describe "when does not belong to player" do
+      it "should have player => nil" do
+        ss = Factory.create(:solar_system)
+        ss.as_json["player"].should be_nil
+      end
     end
   end
 

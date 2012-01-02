@@ -2,8 +2,6 @@
 class SolarSystem < ActiveRecord::Base
   belongs_to :galaxy
 
-  include Parts::CleanAsJson
-  include Parts::Shieldable
   include Parts::Object
   include Zone
 
@@ -18,6 +16,8 @@ class SolarSystem < ActiveRecord::Base
   # Space station flying in the galaxy. Not actually a solar system, it just
   # reserves place for it.
   KIND_SPACE_STATION = 4
+
+  belongs_to :player
 
   # Foreign keys take care of the destruction
   has_many :ss_objects
@@ -135,12 +135,13 @@ class SolarSystem < ActiveRecord::Base
   end
 
   def as_json(options=nil)
-    hash = defined?(super) ? super(options) : {}
-    hash["id"] = id
-    hash["x"] = x
-    hash["y"] = y
-    hash["kind"] = kind
-    hash
+    {
+      "id" => id,
+      "x" => x,
+      "y" => y,
+      "kind" => kind,
+      "player" => player_id.nil? ? nil : Player.minimal(player_id)
+    }
   end
 
   def galaxy_point

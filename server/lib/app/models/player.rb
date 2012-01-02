@@ -14,6 +14,8 @@ class Player < ActiveRecord::Base
   belongs_to :alliance
   belongs_to :galaxy
   # FK :dependent => :delete_all
+  has_many :solar_systems
+  # FK :dependent => :delete_all
   has_many :fow_ss_entries
   # FK :dependent => :delete_all
   has_many :fow_galaxy_entries
@@ -469,7 +471,7 @@ class Player < ActiveRecord::Base
   def self.on_callback(id, event)
     case event
       when CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
-      check_activity!(id)
+        #check_activity!(id)
     end
   end
 
