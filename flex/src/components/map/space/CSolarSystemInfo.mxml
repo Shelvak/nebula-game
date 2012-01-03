@@ -72,13 +72,17 @@
             visible="{ss.isDead}" includeInLayout="{ss.isDead}"
             width="{MSSObject.IMAGE_WIDTH}"
             lineBreak="toFit" textAlign="center"/>
-   <s:Group visible="{ss.isShielded}" includeInLayout="{ss.isShielded}">
+   <s:Label id="lblShield" text="{getString('label.shield')}"
+            visible="{ss.isShielded}" includeInLayout="{ss.isShielded}"
+            width="{MSSObject.IMAGE_WIDTH}" lineBreak="toFit"
+            textAlign="center"/>
+   <s:Group visible="{ss.isShielded}" includeInLayout="{ss.isShielded}"
+            width="{MSSObject.IMAGE_WIDTH}">
       <s:layout>
-         <s:HorizontalLayout verticalAlign="middle" gap="5"/>
+         <s:HorizontalLayout verticalAlign="middle" horizontalAlign="center"
+                             gap="5"/>
       </s:layout>
-      <s:Label id="lblShield" text="{getString('label.shield')}"
-               width="{MSSObject.IMAGE_WIDTH}" lineBreak="toFit"
-               textAlign="center"/>
+      <s:Label id="lblOwner" text="{getString('label.ssOwner')}"/>
       <ui:PlayerProfileButton player="{ss.player}"/>
    </s:Group>
    <s:Button id="btnOpen" label="{getBtnOpenLabel(ss)}"
