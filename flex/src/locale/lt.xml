@@ -575,7 +575,7 @@
     <button.deactivateOverdrive value="Deaktyvuoti perkrovą" />
     <warning.attackNpc>
       <p>Šis pastatas priklauso ateiviams. Jei sunaikinsi visus viduje esančius
-        ateivių karius tai pastatas bus sugriautas.</p>
+        ateivių karius, pastatas bus sugriautas.</p>
     </warning.attackNpc>
   </BuildingSelectedSidebar>
 

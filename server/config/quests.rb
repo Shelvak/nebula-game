@@ -242,8 +242,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
       define(10265) { have_science_points   400_000; reward_scientists 250 }.
       define(10270) { have_science_points   500_000; reward_scientists 300 }.
       define(10275) { have_science_points   750_000; reward_scientists 400 }.
-      define(10280) { have_science_points 1_000_000; reward_scientists 500 }
-      define(10285) { have_science_points 1_500_000; reward_scientists 600 }
+      define(10280) { have_science_points 1_000_000; reward_scientists 500 }.
+      define(10285) { have_science_points 1_500_000; reward_scientists 600 }.
       define(10290) { have_science_points 2_000_000; reward_scientists 700 }
 
     # Technologies side quest line

@@ -13,8 +13,8 @@
 #       {'type' => "Trooper", 'level' => 2, 'count' => 2}
 #     ],
 #   }
-# - help_url_id (String): ID of help article associated to this quest in
-# knowledge base.
+# - main_quest_slides (String | nil): comma separated slide list for main
+# quests. nil if quest is not a main quest.
 #
 class Quest < ActiveRecord::Base
   belongs_to :parent, :class_name => "Quest"
@@ -33,8 +33,8 @@ class Quest < ActiveRecord::Base
     :unserialize => lambda { |json| json.nil? ? nil : Rewards.from_json(json) }
 
   def to_s
-    "<Quest(#{id}, p #{parent_id.inspect}) ach: #{achievement?}, help: #{
-      help_url_id}>"
+    "<Quest(#{id}, p #{parent_id.inspect}) ach: #{achievement?}, slides: #{
+      main_quest_slides}>"
   end
 
   def quest?; ! achievement?; end
@@ -44,7 +44,7 @@ class Quest < ActiveRecord::Base
     {
       :id => id,
       :rewards => rewards.as_json(options),
-      :help_url_id => help_url_id,
+      :main_quest_slides => main_quest_slides,
     }
   end
 

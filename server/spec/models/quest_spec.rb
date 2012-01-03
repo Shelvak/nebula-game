@@ -7,7 +7,7 @@ describe Quest do
       quest.as_json.should == {
         :id => quest.id,
         :rewards => quest.rewards.as_json,
-        :help_url_id => quest.help_url_id,
+        :main_quest_slides => quest.main_quest_slides,
       }
     end
   end
