@@ -112,8 +112,8 @@ class SolarSystem < ActiveRecord::Base
     raise ActiveRecord::RecordNotFound if entries == 0
 
     ss = SolarSystem.find(id)
-    raise ActiveRecord::RecordNotFound if ss.has_shield? &&
-      ss.shield_owner_id != player.id
+    raise ActiveRecord::RecordNotFound if ! ss.player_id.nil? &&
+      ss.player_id != player.id
 
     ss
   end

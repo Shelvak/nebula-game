@@ -12,8 +12,7 @@ class BulkSql
       @connection = ActiveRecord::Base.
         connection. # We can't use savepoints when using this.
         #connection_pool.checkout. # But this somehow deadlocks the mysql.
-        raw_connection.
-        with_connection_retry_guard { |c| c }
+        jdbc_connection
     end
 
     def create_statement

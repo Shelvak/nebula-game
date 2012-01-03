@@ -155,6 +155,10 @@ class PmgConfigInitializer < GameConfig::Initializer
 
     # Map building signatures with no npc units.
     building_signatures = {
+      # These are special signatures but do not mean that building stands there.
+      ' ' => nil, '-' => nil, '0' => nil, '1' => nil, '2' => nil, '3' => nil,
+      '4' => nil, '5' => nil, '6' => nil, '7' => nil, '8' => nil, '9' => nil,
+      # Actual buildings
       'm' => Building::Mothership.to_s.demodulize,
       'h' => Building::Headquarters.to_s.demodulize,
       'b' => Building::Barracks.to_s.demodulize,
@@ -275,6 +279,7 @@ class PmgConfigInitializer < GameConfig::Initializer
     # }
     #
     CONFIG.filter(/^planet\.map\./).each do |key, map_set|
+      map_index = 0
       CONFIG[key] = map_set.map do |map_parameters|
         map = map_parameters['map']
         map_data = {
@@ -290,20 +295,28 @@ class PmgConfigInitializer < GameConfig::Initializer
 
         map.reverse.each_with_index do |line, y|
           chars = line.split('')
-          0.step(chars.size / 2, 2) do |index|
+          0.step(chars.size - 1, 2) do |index|
             x = index / 2
             tile = chars[index]
             building = chars[index + 1]
+            coords_str = "#{x},#{y} in #{key} map #{map_index}"
+
+            raise "Unknown tile signature #{tile.inspect} @ #{coords_str}!" \
+              unless tile_signatures.has_key?(tile)
 
             kind = tile_signatures[tile]
             map_data['tiles'][kind] ||= []
             map_data['tiles'][kind] << [x, y]
+
+            raise "Unknown building signature #{building.inspect} @ #{
+              coords_str}!" unless building_signatures.has_key?(building)
 
             name = building_signatures[building]
             unless name.nil?
               level = chars[index + 3].to_i
               if npc_units.has_key?(name)
                 units = npc_units[name][level.to_i]
+                level = 1
               else
                 units = []
                 level = [level, 1].max
@@ -315,6 +328,7 @@ class PmgConfigInitializer < GameConfig::Initializer
           end
         end
 
+        map_index += 1
         map_data
       end
     end
