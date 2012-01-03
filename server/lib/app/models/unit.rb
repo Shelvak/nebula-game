@@ -276,19 +276,17 @@ class Unit < ActiveRecord::Base
     end
     
     def update_combat_attributes(player_id, updates)
-      transaction do
-        updates.each do |unit_id, (flank, stance)|
-          raise ArgumentError.new(
-            "flank #{flank} is invalid (too large)!"
-          ) unless flank_valid?(flank)
-          raise ArgumentError.new(
-            "stance #{stance} is invalid!"
-          ) unless stance_valid?(stance)
+      updates.each do |unit_id, (flank, stance)|
+        raise ArgumentError.new(
+          "flank #{flank} is invalid (too large)!"
+        ) unless flank_valid?(flank)
+        raise ArgumentError.new(
+          "stance #{stance} is invalid!"
+        ) unless stance_valid?(stance)
 
-          where(:id => unit_id, :player_id => player_id).update_all(
-            "flank=#{flank.to_i}, stance=#{stance.to_i}"
-          )
-        end
+        where(:id => unit_id, :player_id => player_id).update_all(
+          "flank=#{flank.to_i}, stance=#{stance.to_i}"
+        )
       end
     end
 
@@ -467,7 +465,8 @@ class Unit < ActiveRecord::Base
     def save_all_units(units, reason=nil, event=EventBroker::CHANGED)
       return true if units.blank?
 
-      transaction { units.each { |unit| unit.save! } }
+      units.each(&:upgrade_through_xp)
+      BulkSql::Unit.save(units)
       # Don't dispatch units which are inside other units.
       updated = units.reject { |u| u.location_type == Location::UNIT }
       EventBroker.fire(updated, event, reason)
@@ -547,26 +546,24 @@ class Unit < ActiveRecord::Base
         unit.skip_validate_technologies = true
       end
 
-      transaction do
-        if player
-          points.increase(player)
-          player.population += population
-          player.save!
+      if player
+        points.increase(player)
+        player.population += population
+        player.save!
 
-          FowSsEntry.increase(
-            location.solar_system_id, player, fse_counter
-          ) if fse_counter > 0 && location.is_a?(SsObject::Planet)
-          Objective::HaveUpgradedTo.progress(units, false)
-        end
-
-        save_all_units(units, nil, EventBroker::CREATED)
-        # Use units[0].location because location can be planet and
-        # LocationChecker expects LocationPoint.
-        Combat::LocationChecker.check_location(units[0].location) \
-          unless units.find(&:can_fight?).nil?
-        
-        units
+        FowSsEntry.increase(
+          location.solar_system_id, player, fse_counter
+        ) if fse_counter > 0 && location.is_a?(SsObject::Planet)
+        Objective::HaveUpgradedTo.progress(units, false)
       end
+
+      save_all_units(units, nil, EventBroker::CREATED)
+      # Use units[0].location because location can be planet and
+      # LocationChecker expects LocationPoint.
+      Combat::LocationChecker.check_location(units[0].location) \
+        unless units.find(&:can_fight?).nil?
+
+      units
     end
 
     def dismiss_units(planet, unit_ids)

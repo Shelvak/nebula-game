@@ -128,10 +128,8 @@ class Galaxy < ActiveRecord::Base
 
     self.apocalypse_start = Cfg.apocalypse_start_time
 
-    transaction do
-      save!
-      convert_vps_to_creds!
-    end
+    save!
+    convert_vps_to_creds!
 
     EventBroker.fire(
       Event::ApocalypseStart.new(id, apocalypse_start), EventBroker::CREATED
@@ -158,10 +156,12 @@ class Galaxy < ActiveRecord::Base
   # @param galaxy_id [Fixnum]
   # @return [TrueClass]
   def self.save_apocalypse_finish_data(galaxy_id)
+    galaxy = Galaxy.find(galaxy_id)
     ratings = Player.ratings(galaxy_id)
 
     data = JSON.generate({
       'date' => Time.now,
+      'apocalypse_start' => galaxy.apocalypse_start,
       'apocalypse' => true,
       'ratings' => ratings
     })
@@ -249,21 +249,19 @@ class Galaxy < ActiveRecord::Base
       end
 
       # Create units.
-      transaction do
-        units = UnitBuilder.from_random_ranges(
-          Cfg.galaxy_convoy_units_definition, id, source, nil
-        )
-        Unit.save_all_units(units, nil, EventBroker::CREATED)
-        route = UnitMover.move(nil, units.map(&:id), source, target, false,
-          CONFIG['galaxy.convoy.speed_modifier'])
+      units = UnitBuilder.from_random_ranges(
+        Cfg.galaxy_convoy_units_definition, id, source, nil
+      )
+      Unit.save_all_units(units, nil, EventBroker::CREATED)
+      route = UnitMover.move(nil, units.map(&:id), source, target, false,
+        CONFIG['galaxy.convoy.speed_modifier'])
 
-        units.each do |unit|
-          CallbackManager.register(unit, CallbackManager::EVENT_DESTROY,
-            route.arrives_at)
-        end
-
-        route
+      units.each do |unit|
+        CallbackManager.register(unit, CallbackManager::EVENT_DESTROY,
+          route.arrives_at)
       end
+
+      route
     end
   end
 
@@ -277,6 +275,11 @@ class Galaxy < ActiveRecord::Base
   # Return solar system with coordinates x, y.
   def by_coords(x, y)
     solar_systems.find(:first, :conditions => {:x => x, :y => y})
+  end
+
+  # Which day is it? Rounded to integer.
+  def current_day
+    ((Time.now - created_at) / 1.day).round
   end
 
   def as_json(options=nil)

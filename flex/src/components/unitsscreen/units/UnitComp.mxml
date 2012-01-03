@@ -226,6 +226,16 @@
                               &amp;&amp; !expanded}" 
                               bottom="17" right="24" text="{model.unit.volume}"
                               defaultFontSize="12"/>
+      <base:BackgroundedLabel visible="{model.unit &amp;&amp; model.unit.stored
+                              &amp;&amp; !expanded &amp;&amp; !model.loadUnload}"
+                              bottom="17" right="24"
+                              text="{Localizer.string('Units', 'stored.short',
+                              [Unit.getStoredResourcesPercent(
+                              ML.technologies.getUnitStorage(model.unit.type, model.unit.level), model.unit.metal,
+                              model.unit.energy, model.unit.zetium), Unit.getStoredUnitsPercent(
+                              ML.technologies.getUnitStorage(model.unit.type, model.unit.level),
+                              model.unit.stored, model.unit.metal, model.unit.energy, model.unit.zetium)])}"
+                              defaultFontSize="10"/>
       <s:Group right="0" width="24" bottom="0" top="0">
          <s:BitmapImage source="{IMG.getImage(AssetNames.getIconImageName(
                         Unit.STANCE_WORD + model.unit.stance))}" 

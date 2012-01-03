@@ -254,6 +254,12 @@ describe RaidSpawner do
           counts['gnat'].should == 7 + 5
         end
       end
+
+      it "should return [] if planet is unoccupied" do
+        apocalyptic_planet.player = nil
+        spawner = RaidSpawner.new(apocalyptic_planet)
+        spawner.unit_counts.should == []
+      end
     end
   end
 end

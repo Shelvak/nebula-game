@@ -78,7 +78,7 @@ package models.player
       [Optional]
       public var playersCount: int;
       [Optional]
-      public var deathDay: int;
+      public var deathDate: Date;
       [Optional]
       public var victoryPoints: int;
       [Optional]
@@ -108,6 +108,11 @@ package models.player
          {
             return null;
          }
+      }
+
+      public static function getDays(from: Date,  to: Date): int
+      {
+         return DateUtil.secondsToDays((to.time - from.time)/1000);
       }
    }
 }

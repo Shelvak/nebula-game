@@ -28,6 +28,12 @@ package models.chat.events
        * @eventType generateJoinLeaveMsgsChange
        */
       public static const GENERATE_JOIN_LEAVE_MSGS_CHANGE:String = "generateJoinLeaveMsgsChange";
+
+      /**
+       * Dispatched to fix url bug in chat, should be temporary, TODO ?
+       * @eventType gotSomeMessage
+       */
+      public static const GOT_SOME_MESSAGE:String = "gotSomeMessage";
       
       
       public function MChatChannelEvent(type:String) {

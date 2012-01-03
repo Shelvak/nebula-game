@@ -4,11 +4,6 @@ module SpaceMule::Combat
   CO = Combat.objects
   Location = SpaceMule::SmModules.pmg.objects.Location
 
-  # Special value for overpopulation mod.
-  # Defined in SpaceMule:
-  # spacemule.modules.combat.objects.Player.Technologies.ModsMap.Overpopulation
-  OVERPOPULATION_TECH_MOD = 'overpopulation'
-
   # See SpaceMule#combat for options.
   def self.invoke(location, players, nap_rules, units, loaded_units,
                   unloaded_unit_ids, buildings)
@@ -117,7 +112,8 @@ module SpaceMule::Combat
           player.id,
           player.name,
           player.alliance_id.nil? ? None : Some(player.alliance_id),
-          technologies_for(player)
+          technologies_for(player),
+          player.overpopulation_mod
         ))
       end
     end
@@ -130,12 +126,6 @@ module SpaceMule::Combat
     technologies = TechTracker.query_active(player.id, 'damage', 'armor').all
     damage_mods = TechModApplier.apply(technologies, 'damage')
     armor_mods = TechModApplier.apply(technologies, 'armor')
-
-    # Player#overpopulation_mod returns (0..1], and we need (-1..1) in
-    # SpaceMule.
-    overpopulation_mod = player.overpopulation_mod - 1
-    damage_mods[OVERPOPULATION_TECH_MOD] = overpopulation_mod
-    armor_mods[OVERPOPULATION_TECH_MOD] = overpopulation_mod
 
     CO.Player::Technologies.new(damage_mods.to_scala, armor_mods.to_scala)
   end

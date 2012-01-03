@@ -85,3 +85,6 @@ end
 
 Factory.define :o_repair_hp, :parent => :objective,
 :class => Objective::RepairHp do |m|; end
+
+Factory.define :o_be_in_alliance, :parent => :objective,
+:class => Objective::BeInAlliance do |m|; end

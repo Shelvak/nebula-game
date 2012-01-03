@@ -112,12 +112,10 @@ class FowGalaxyEntry < ActiveRecord::Base
     #
     # Multiply _counter_ by _modifier_ before adding.
     def change_player(alliance_id, player_id, modifier)
-      transaction do
-        find(:all, :conditions => {:player_id => player_id}).each do |entry|
-          increase_for_kind(entry.rectangle, entry.galaxy_id,
-            'alliance_id', alliance_id,
-            entry.counter * modifier)
-        end
+      where(:player_id => player_id).all.each do |entry|
+        increase_for_kind(entry.rectangle, entry.galaxy_id,
+          'alliance_id', alliance_id,
+          entry.counter * modifier)
       end
     end
 

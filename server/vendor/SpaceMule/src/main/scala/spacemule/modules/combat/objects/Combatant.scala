@@ -118,7 +118,7 @@ trait Combatant extends Trackable {
    * Damage modifier gained from technologies.
    */
   def technologiesDamageMod = player match {
-    case Some(player) => player.technologies.damageModFor(this)
+    case Some(p) => p.technologies.damageModFor(this)
     case None => 0.0
   }
 
@@ -126,8 +126,17 @@ trait Combatant extends Trackable {
    * Armor modifier gained from technologies.
    */
   def technologiesArmorMod = player match {
-    case Some(player) => player.technologies.armorModFor(this)
+    case Some(p) => p.technologies.armorModFor(this)
     case None => 0.0
+  }
+
+  /**
+   * Returns value (0..1] for combat mods. If player is overpopulated this
+   * value will be < 1, else it will be 1.0.
+   */
+  def overpopulationMod = player match {
+    case Some(p) => p.overpopulation
+    case None => Player.DefaultOverpopulation
   }
 
   /**

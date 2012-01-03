@@ -34,6 +34,10 @@ average.seed.3.2: [1000, 1.25]    # creds to zetium
 # Resource ranges for generated system offers.
 bot.resources.range.0: [3750, 7500]         # metal range
 bot.resources.range.1: [10000, 20000]       # energy range
-bot.resources.range.2: [750, 1500]         # zetium range
+bot.resources.range.2: [750, 1500]          # zetium range
+# Selected amount of resources is multiplied by [1, day / day_divider].max
+# when creating system offer. This ensures amount of resources stay relevant
+# through course of the game.
+bot.resources.day_divider: 15.0
 # Cooldown range for when system offer is totally bought out.
 bot.resources.cooldown: [<%= 10.minutes %> / speed, <%= 30.minutes %> / speed]

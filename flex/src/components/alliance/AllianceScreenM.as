@@ -62,7 +62,7 @@ package components.alliance
       public static const victoryPtsField: SortField = new SortField('victoryPoints', false, true, true);
       public static const allianceVpsField: SortField = new SortField('allianceVps', false, true, true);
       public static const pointsField: SortField = new SortField('points', false, true, true);
-      public static const deathDayField: SortField = new SortField('deathDay', false, true, true);
+      public static const deathDayField: SortField = new SortField('deathDate', false, true);
       public static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
       public static const bgPlanetsCountField: SortField = new SortField('bgPlanetsCount', false, true, true);
       public static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);

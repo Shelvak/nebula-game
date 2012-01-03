@@ -157,8 +157,21 @@ object Config {
   def zoneDiameter = int("galaxy.zone.diameter")
   def playersPerZone = int("galaxy.zone.players")
   // Number of seconds for first inactivity check.
-  def playerInactivityCheck: Int =
-    seq[Seq[Long]]("galaxy.player.inactivity_check")(0)(1).toInt
+  def playerInactivityCheck: Int = {
+    try {
+      seq[Seq[Long]]("galaxy.player.inactivity_check")(0)(1).toInt
+    }
+    catch {
+      case e: Exception =>
+        System.err.println(
+          ("Error while accessing galaxy.player.inactivity_check[0][1]:" +
+              "\n%s").format(
+            get[Any]("galaxy.player.inactivity_check")
+          )
+        )
+      throw e
+    }
+  }
   lazy val freeSolarSystems =
     positions("galaxy.free_systems.positions")
   lazy val wormholes = positions("galaxy.wormholes.positions")

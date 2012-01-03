@@ -63,12 +63,10 @@ module Parts::Transportation
           }) to load all requested units (volume #{taken_volume})!"
       ) if taken_volume > (storage - stored)
 
-      transaction do
-        self.stored += taken_volume
-        save!
+      self.stored += taken_volume
+      save!
 
-        update_transporter_units(units, location_point)
-      end
+      update_transporter_units(units, location_point)
     end
 
     # Unloads units in contained in this +Unit+ into _planet_.
@@ -87,12 +85,10 @@ module Parts::Transportation
         ) if unit.hidden?
       end
 
-      transaction do
-        self.stored -= self.class.calculate_volume(units)
-        save!
+      self.stored -= self.class.calculate_volume(units)
+      save!
 
-        update_transporter_units(units, planet.location_point)
-      end
+      update_transporter_units(units, planet.location_point)
     end
 
     # Loads/unloads _metal_, _energy_ and _zetium_ from _source_ to/from
@@ -161,16 +157,14 @@ module Parts::Transportation
       end
 
       # Save everybody
-      transaction do
-        save!
-        # Do not save it is a new wreckage and we will unload.
-        if (location.new_record? && will_unload) || ! location.new_record?
-          location.save!
-        end
-        # Only fire changed for those which does not notify themselves.
-        changed = location.is_a?(SsObject::Planet) ? [self, location] : [self]
-        EventBroker.fire(changed, EventBroker::CHANGED)
+      save!
+      # Do not save it is a new wreckage and we will unload.
+      if (location.new_record? && will_unload) || ! location.new_record?
+        location.save!
       end
+      # Only fire changed for those which does not notify themselves.
+      changed = location.is_a?(SsObject::Planet) ? [self, location] : [self]
+      EventBroker.fire(changed, EventBroker::CHANGED)
     end
 
     def update_transporter_units(units, location)

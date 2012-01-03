@@ -21,7 +21,7 @@ describe Player do
     end
 
     (
-      %w{id name victory_points alliance_vps death_day
+      %w{id name victory_points alliance_vps death_date
          planets_count bg_planets_count last_seen} +
       Player::POINT_ATTRIBUTES
     ).each do |attr|
@@ -146,10 +146,10 @@ describe Player do
         player.planets_count = 0
       end
 
-      it "should set #death_day" do
-        lambda do
-          player.save!
-        end.should change(player, :death_day).to(player.galaxy.apocalypse_day)
+      it "should set #death_date" do
+        player.save!
+        player.reload
+        player.death_date.should be_within(SPEC_TIME_PRECISION).of(Time.now)
       end
 
       it "should transfer player creds + apocalypse survival bonus to web" do
@@ -176,10 +176,11 @@ describe Player do
         player.planets_count = 1
       end
 
-      it "should not set #death_day" do
+      it "should not set #death_date" do
         lambda do
           player.save!
-        end.should_not change(player, :death_day)
+          player.reload
+        end.should_not change(player, :death_date)
       end
 
       it "should not change player creds" do
@@ -755,6 +756,22 @@ describe Player do
         player.alliance = Factory.create(:alliance)
         Chat::Pool.instance.hub_for(player).should_receive(
           :on_alliance_change).with(player)
+        player.save!
+      end
+
+      it "should progress BeInAlliance objective if it is not nil" do
+        player = Factory.create(:player)
+        Objective::BeInAlliance.should_receive(:progress).with(player)
+
+        player.alliance = Factory.create(:alliance)
+        player.save!
+      end
+
+      it "should not progress BeInAlliance objective if it is nil" do
+        player = Factory.create(:player, :alliance => Factory.create(:alliance))
+        Objective::BeInAlliance.should_not_receive(:progress).with(player)
+
+        player.alliance = nil
         player.save!
       end
 

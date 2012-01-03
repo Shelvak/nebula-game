@@ -282,7 +282,7 @@ package models.chat
        */
       public function selectChannel(channelName:String) : void {
          Objects.paramNotEquals("channelName", channelName, [null, ""]);
-         
+
          var toSelect:MChatChannel = _channels.getChannel(channelName);
          if (toSelect == null)
             throwChannelNotFoundError("Unable to select channel", channelName);
@@ -918,7 +918,7 @@ package models.chat
       /* ### HELPERS ### */
       /* ############### */
       
-      private function dispatchChatEvent(type:String) : void {
+      public function dispatchChatEvent(type:String) : void {
          dispatchSimpleEvent(MChatEvent, type);
       }
       

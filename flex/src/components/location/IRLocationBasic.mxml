@@ -9,7 +9,7 @@
             import models.location.Location;
       import models.location.LocationType;
 
-      import spark.utils.TextFlowUtil;
+      import utils.TextFlowUtil;
 
             import utils.locale.Localizer;
 

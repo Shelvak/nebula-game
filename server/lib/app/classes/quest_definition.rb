@@ -89,9 +89,11 @@ class QuestDefinition
       parent_id = nil
     end
     quest_id = args.shift
-    help_url_id = args.shift
+    main_quest_slides = args.shift
 
-    define_quest(quest_id, parent_id, help_url_id, false, block)
+    #puts "define_quest(#{quest_id}, #{parent_id}, #{main_quest_slides.inspect
+    #  }, false, #{block})"
+    define_quest(quest_id, parent_id, main_quest_slides, false, block)
   end
 
   def achievement(quest_id, &block)
@@ -99,9 +101,10 @@ class QuestDefinition
   end
 
   private
-  def define_quest(quest_id, parent_id, help_url_id, achievement, block)
+  def define_quest(quest_id, parent_id, main_quest_slides, achievement, block)
     raise ArgumentError.new("Quest cannot be without an ID! parent: #{
-      parent_id.inspect}, help_url: #{help_url_id}") if quest_id.nil?
+      parent_id.inspect}, main_quest_slides: #{main_quest_slides.inspect}") \
+      if quest_id.nil?
 
     raise ArgumentError.new(
       "Trying to define quest with id #{quest_id.inspect
@@ -109,7 +112,7 @@ class QuestDefinition
     ) if @defined_quest_ids.include?(quest_id)
     @defined_quest_ids.add quest_id
 
-    dsl = Quest::DSL.new(parent_id, quest_id, help_url_id, achievement)
+    dsl = Quest::DSL.new(parent_id, quest_id, main_quest_slides, achievement)
     dsl.instance_eval(&block)
     @dsls_for_checking.push dsl
     
@@ -180,31 +183,29 @@ class QuestDefinition::WithParent
     @definition.define(self, *args, &block)
   end
 
-  def define_army_chain(start_id, quest_count, start_points, multiplier)
+  def define_points_chain(points_method, start_id, quest_count, start_points,
+      multiplier, resources_multiplier=nil, creds_multiplier=nil)
     quest = self
     quest_count.times do |i|
       quest = quest.define(start_id + i) do
         points = (start_points * multiplier ** i).ceil
-        have_army_points points
-        reward_resources_for_points points
+        send(points_method, points)
+        #puts "! #{i}"
+        reward_resources_for_points points, resources_multiplier
+        reward_creds_for_points points, creds_multiplier
       end
     end
 
     quest
   end
 
-  def define_war_chain(start_id, quest_count, start_points, multiplier,
-      unit_list)
-    quest = self
-    quest_count.times do |i|
-      quest = quest.define(start_id + i) do
-        points = (start_points * multiplier ** i).ceil
-        have_war_points points
-#        puts "! #{i}"
-        reward_units_for_points points, unit_list
-      end
-    end
+  def define_eco_chain(start_id, quest_count, start_points, multiplier)
+    define_points_chain(:have_economy_points, start_id, quest_count,
+                        start_points, multiplier, 0.015, 0.25)
+  end
 
-    quest
+  def define_war_chain(start_id, quest_count, start_points, multiplier)
+    define_points_chain(:have_war_points, start_id, quest_count,
+                        start_points, multiplier, 0.03, 0.5)
   end
 end

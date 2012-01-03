@@ -265,19 +265,48 @@ describe Combat do
   end
   
   it "should calculate overpopulation into account" do
-    loser = nil # This will lose because being THAT much into overpopulation
-                # sucks bad for you.
-    winner = nil
-    CombatDsl.new do
+    p1 = p2 = u1_normal = u2_normal = nil
+    dsl = CombatDsl.new do
       location :planet
-      player(:population => 100000, :population_cap => 10) do
-        units { loser = trooper }
-      end
-      player { units { winner = trooper :hp => 20 } }
-    end.run
-    
-    loser.should be_dead
-    winner.should be_alive
+      p1 = player do
+        units { u1_normal = scorpion }
+      end.player
+      p2 = player { units { u2_normal = scorpion } }.player
+    end
+
+    Factory.create!(:t_scorpion, :player => p1, :level => 3)
+    Factory.create!(:t_scorpion, :player => p2, :level => 2)
+
+    dsl.run
+
+    p1 = p2 = u1_overpop = u2_overpop = player = nil
+    dsl = CombatDsl.new do
+      location :planet
+      p1 = player(:population => 30, :population_cap => 10) do
+        units { u1_overpop = scorpion }
+      end.player
+      p2 = player { units { u2_overpop = scorpion } }.player
+    end
+
+    Factory.create!(:t_scorpion, :player => p1, :level => 3)
+    Factory.create!(:t_scorpion, :player => p2, :level => 2)
+
+    dsl.run
+
+    [u1_normal, u2_normal, u1_overpop, u2_overpop].each(&:reload)
+
+    mod = p1.overpopulation_mod
+
+    dmg_dealt_u1_normal = u2_normal.hit_points - u2_normal.hp
+    dmg_dealt_u1_overpop = u2_overpop.hit_points - u2_overpop.hp
+
+    (dmg_dealt_u1_overpop.to_f / dmg_dealt_u1_normal).should be_within(0.01).
+                                                               of(mod)
+    dmg_dealt_u2_normal = u1_normal.hit_points - u1_normal.hp
+    dmg_dealt_u2_overpop = u1_overpop.hit_points - u1_overpop.hp
+
+    (dmg_dealt_u2_normal.to_f / dmg_dealt_u2_overpop).should be_within(0.01).
+                                                               of(mod)
   end
   
   it "should not crash if planet owner does not have any assets" do
@@ -301,8 +330,22 @@ describe Combat do
     player = rhyno.player
 
     assets = dsl.run
-    rhyno.xp.should == 100 +
+    rhyno.reload.xp.should == 100 +
       assets.response['statistics'][player.id]['xp_earned']
+  end
+
+  it "should be able to level up" do
+    zeus = nil
+    dsl = CombatDsl.new do
+      location(:planet)
+      player(:planet_owner => true) { units { zeus = zeus() } }
+      player { units { dirac :count => 10 } }
+    end
+
+    zeus.xp = zeus.xp_needed - 1
+
+    assets = dsl.run
+    zeus.reload.level.should_not == 1
   end
 
   it "should run combat if there is nothing to fire, but units " +
@@ -338,7 +381,8 @@ describe Combat do
 
        assets = dsl.run
        notification = Notification.find(
-         assets.notification_ids[player.player.id])
+         assets.notification_ids[player.player.id]
+       )
        notification.params['units']['yours']['alive'].should include(
          "Building::Thunder")
     end
@@ -356,7 +400,8 @@ describe Combat do
 
       assets = dsl.run
       notification = Notification.find(
-        assets.notification_ids[player.player.id])
+        assets.notification_ids[player.player.id]
+      )
       notification.params['leveled_up'].find do |unit_hash|
         unit_hash[:type] == "Unit::Crow"
       end.should be_nil
@@ -445,7 +490,8 @@ describe Combat do
     it "should include teleported units in alive/dead stats" do
       assets = @dsl.run
       notification = Notification.find(
-        assets.notification_ids[@player.id])
+        assets.notification_ids[@player.id]
+      )
       notification.params['units']['yours']['alive'].should include(
         "Unit::Trooper")
     end
@@ -589,14 +635,14 @@ describe Combat do
   describe "victory points" do
     describe "when in battleground" do
       [
-        [:planet, {:solar_system => Factory.create(:battleground)}],
-        [:solar_system, Factory.attributes_for(:battleground)],
+        [:planet, lambda { {:solar_system => Factory.create(:battleground)} }],
+        [:solar_system, lambda { Factory.attributes_for(:battleground) }],
       ].each do |type, options|
         describe type do
           it "should calculate victory points for doing damage to other units" do
             player1 = player2 = nil
             assets = CombatDsl.new do
-              location(type, options)
+              location(type, options.call)
               player1 = player { units { rhyno } }.player
               player2 = player { units { rhyno } }.player
             end.run
@@ -616,7 +662,7 @@ describe Combat do
           it "should not calculate VPs for doing damage to NPC units" do
             player = nil
             assets = CombatDsl.new do
-              location(type, options)
+              location(type, options.call)
               player = player { units { rhyno } }.player
               player(:npc => true) { units { rhyno } }
             end.run

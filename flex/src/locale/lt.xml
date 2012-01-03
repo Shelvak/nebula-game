@@ -573,6 +573,10 @@
     </label.deactivateOverdrive>
     <button.activateOverdrive value="Aktyvuoti perkrovą" />
     <button.deactivateOverdrive value="Deaktyvuoti perkrovą" />
+    <warning.attackNpc>
+      <p>Šis pastatas priklauso ateiviams. Jei sunaikinsi visus viduje esančius
+        ateivių karius tai pastatas bus sugriautas.</p>
+    </warning.attackNpc>
   </BuildingSelectedSidebar>
 
   <BuildingSidebar>
@@ -2220,7 +2224,7 @@
 
     <message.rewardClaimed value="Atlygis buvo pasiimtas į planetą „{0}“" />
 
-    <title.newQuest value="Naujas užduotis: {0}" />
+    <title.newQuest value="Nauja užduotis: {0}" />
     <title.questCompleted value="Užduotis įvykdyta: {0}" />
 
     <units value="Kariai" />
@@ -2228,26 +2232,29 @@
 
     <Destroy value="Sunaikinti" />
 
-    <title.1 value="Pradžia" />
-    <about.1>
+    <!-- ############################ -->
+    <!-- ### Pagrindinės užduotys ### -->
+    <!-- ############################ -->
+
+    <!-- old id: 1 --> <title.10 value="Pradžia" />
+    <!-- old id: 1 --> <about.10>
       <p>Sveiki atvykę, Komandore.</p>
 
-      <p>Mes sėkmingai nutupdėme motininį laivą šioje planetoje ir remiantis 
-      pirminiais žvalgybos duomenimis, čia esame ne vieni. Inžinieriai įrengė 
-      gynybos perimetrą, tačiau šis išeikvoja gerokai daugiau energijos, nei 
-      jos pagamina mūsų generatoriai. Tokiomis sąlygomis ilgai čia 
-      netversime!</p>
+      <p>
+        Mes sėkmingai nutupdėme motininį laivą šioje planetoje ir remiantis
+        pirminiais žvalgybos duomenimis, čia esame ne vieni. Jau įsikūrėme,
+        tačiau mums reikia gerokai daugiau energijos, nei
+        jos pagamina mūsų generatoriai. Tokiomis sąlygomis ilgai čia
+        netversime!
+      </p>
 
-      <p>Privalome pastatyti vėjo jėgainę, kad patenkintume savo energetinius 
+      <p>Privalome pastatyti vėjo jėgainę, kad patenkintume savo energetinius
       poreikius. Negaiškite laiko, Komandore, tuoj pat įsakykite pradėti 
       darbus.</p>
-      
-      <p>Savo planetą gali pasirinkti iš meniu viršutiniame kairiajame
-      kampe. Pradėk vykdyti savo misiją nedelsiant!</p>
-    </about.1>
+    <!-- old id: 1 --> </about.10>
 
-    <title.2 value="Apšilimas" />
-    <about.2>
+    <!-- old id: 2 --> <title.20 value="Apšilimas" />
+    <!-- old id: 2 --> <about.20>
       <p>Puikiai susidorota, Komandore.</p>
 
       <p>Mūsų energijos tiekimas normalizavosi, bet panašu, kad šioje 
@@ -2258,21 +2265,95 @@
       metalo.</p>
 
       <p>Mūsų ateitis jūsų rankose, Komandore.</p>
-    </about.2>
+    <!-- old id: 2 --> </about.20>
 
-    <title.3 value="Augantys poreikiai" />
-    <about.3>
+    <!-- old id: 3 --> <title.30 value="Augantys poreikiai" />
+    <!-- old id: 3 --> <about.30>
       <p>Komandore,</p>
       
       <p>
         Panašu, kad su metalo gavyba viskas tvarkoje. Gera pradžia pusė darbo, 
-        bet mes privalome užtikrinti stabilų atsargų augimą. Pastatykime dar 
-        pora resursinių pastatų, jie puikiai pasitarnaus mūsų reikmėms!
+        bet mes privalome užtikrinti stabilų atsargų augimą. Patobulinkime mūsų
+        resursinius pastatus, jie puikiai pasitarnaus mūsų reikmėms!
       </p>
-    </about.3>
+    <!-- old id: 3 --> </about.30>
 
-    <title.22 value="Atradimai" />
-    <about.22>
+    <title.40 value="Prieaugis" />
+    <about.40>
+      <p>Komandore,</p>
+
+      <p>
+        Resursų gavyba - mūsų pirmoji užduotis! Įrenkite daugiau kasyklų, kad
+        tikrai užtikrintumėte stabilų resursų augimą.
+      </p>
+    </about.40>
+
+    <!-- old id: 6 --> <title.50 value="Nerimas" />
+    <!-- old id: 6 --> <about.50>
+    <p>Komandore!</p>
+
+    <p>
+      Žvalgyba praneša apie keistus triukšmus ir tai nėra šiaip vėjo
+      stūgavimas. Žvalgų nerimą patvirtina ir skeneriai, kuriuose stebime
+      keistas anomalijas. Įtarimai, kad šioje planetoje esame ne vieni
+      pasitvirtino, o kol nežinome su kuo susidūrėme, negalime pasikliauti
+      tik sienų tvirtumu.
+    </p>
+
+    <p>Mums reikia karių! Įsakykite įrengti kareivines!</p>
+
+    <p>Mes privalome užtikrinti savo žmonių saugumą.</p>
+    <!-- old id: 6 --> </about.50>
+
+    <!-- old id: 7 --> <title.60 value="Ginklavimosi varžybos" />
+    <!-- old id: 7 --> <about.60>
+    <p>Komandore.</p>
+
+    <p>
+      Jūsų įsakymu įrengėme kareivines. Dabar privalome parengti daugiau karių.
+      Užsukite į kareivines ir įsakykite pradėti desantininkų mokymus.
+    </p>
+    <!-- old id: 7 --> </about.60>
+
+    <!-- old id: 8 --> <title.70 value="Pirmas kontaktas" />
+    <!-- old id: 8 --> <about.70>
+    <p>Komandore.</p>
+    <p>
+      Už bazės ribų radome keletą silpnai saugomų ateivių pastatų. Užpulkime
+      juos ir sunaikinkime - tai bus puikios pratybos mūsų kariams, o be to iš
+      sunaikintų ateivių nuolaužų papildysime savo resursų saugyklas.
+    </p>
+    <p>
+      Mūsų žvalgyba sako, kad ateivių gnatai stiprumu yra apylygiai su mūsų
+      desantininkais. Siūlau prieš puolant turėti kelių karių persvarą.
+    </p>
+    <!-- old id: 8 --> </about.70>
+
+    <!-- old id: 11 --> <title.80 value="Neramios sielos" />
+    <!-- old id: 11 --> <about.80>
+    <p>Sveiki, Komandore.</p>
+    <p>
+      Mūsų kolonija klesti. Paskutinės ataskaitos demonstruoja stabilų
+      resursų išgavimą, mūsų kariai tvirti ir bebaimiai, kolonistai jaučiasi
+      saugūs ir galų gale sulaukėme puikaus oro. Pastarieji įvykiai ir
+      saulės spinduliai sukuria jaukią namų atmosferą, ar ne tiesa,
+      Komandore?
+    </p>
+    <p>
+      Tokios nuostabios dienos proga, būtų puiku pakloti pamatus tolimesniai
+      mūsų raidai. Tyrimų centras būtų puiki pradžia. Mes net radome grupę
+      savanorių, kurie mielai taptų tyrėjais, o reikalui esant ir tyrimų
+      objektais. Neverskime jų laukti.
+    </p>
+    <p>
+      Mano rekomendacija — tyrimų centrą šioje planetoje turime įrengti
+      nedelsiant. Galų gale vienas kitas mokslinis triukas rankovėje mums
+      tikrai nepakenks!
+    </p>
+    <!-- old id: 11 --> </about.80>
+
+    <!-- old id: 22 --> <title.90 value="Atradimai" />
+    <!-- old id: 22 --> <about.90>
       <p>Gerą dieną, Komandore!</p>
 
       <p>
@@ -2285,17 +2366,757 @@
         Būtų labai teisinga ir tikslinga į įvykio vietą nusiųsti tyrėjus. 
         Galbūt jiems pavyks sužinoti ką nors daugiau.
       </p>
-    </about.22>
+    <!-- old id: 22 --> </about.90>
 
-    <title.23 value="Smalsiųjų laimikis" />
-    <about.23>
+    <!-- old id: 27 --> <title.100 value="Technologijų šukės" />
+    <!-- old id: 27 --> <about.100>
+    <p>Komandore,</p>
+    <p>
+      Žvalgyba aptiko keletą keistų, ateivių robotų saugomų, pastatų. Juos
+      aptikęs dalinys sugebėjo prasmukti pro išorinį jų apsaugos perimetrą
+      ir paimti keletą aplinkoje vyraujančios medžiagos mėginių. Gautus
+      mėginius, jau kuris laikas analizuoja proto bokštai iš tyrimų centro.
+    </p>
+    <p>
+      Jų atąskaitose teigiama, kad mislinguose ateivių pastatuose išgaunama
+      nauja, kristalizuota medžiaga — zetiumas. Panašu, kad ateiviai rado
+      gausybę praktiškų šios medžiagos panaudojimo būdų. Atrasime ir mes.
+      Mums būtina pradėti šių kristalų gavybą!
+    </p>
+    <p>
+      Pats metas išvaduoti kristalus iš ateiviškų pastatų priespaudos! Išraskite
+      technologiją reikalingą šiems kristalams apdirbti.
+    </p>
+    <!-- old id: 27 --> </about.100>
+
+    <!-- old id: 15 --> <title.110 value="Kantrybės vaisiai" />
+    <!-- old id: 15 --> <about.110>
+    <p>Komandore!</p>
+    <p>
+      Mokslinkinkai pabaigė zetiumo tyrimus! Galime pradėti kasinėjimus. Tam
+      mums prireiks specialių zetiumo kasyklų.
+    </p>
+    <p>
+      Žinoma prieš tai mums teks atsiimti zetiumo klodus iš ateivių. Suburkite
+      kariuomenę ir pulkite ateiviškuosius pastatus!
+    </p>
+    <!-- old id: 15 --> </about.110>
+
+    <title.120 value="Kritinė žala" />
+    <about.120>
+      <p>Komandore!</p>
+      <p>
+        Mūsų kariai sužeisti. Mums labai praverstų būdas juos gydyti! Liepkite
+        mokslininkams išrasti [obj:1:HealingCenter:what:dc] technologiją, o ją
+        turint - nedelsiant pradėkite jo statybas!
+      </p>
+    </about.120>
+
+    <!-- old id: 17 --> <title.130 value="Taupumas" />
+    <!-- old id: 17 --> <about.130>
+    <p>Sveiki sugrįžę, Komandore.</p>
+    <p>
+      Bijau, kad sakydama „resursų nebūna per daug“ truputį pasikarščiavau.
+      Analitikai pateikė žaliavų ir energijos gavybos planą, kuris aprėpia
+      kelis ciklus. Panašu, kad dirbdami tokiais tempais, mes nepajėgsime
+      sunaudoti visko, ką išgausime. Suprantu, tai skamba lyg bloga naujiena,
+      tačiau iš tiesų ji gera. Viskas ką turime padaryti, tai įrengti keletą
+      saugyklų nepanaudotoms žaliavoms.
+    </p>
+    <p>
+      Įsakykite pastatyti po saugyklą kiekvienam išgaunamų resursų tipui,
+      Komandore.
+    </p>
+    <!-- old id: 17 --> </about.130>
+
+    <title.140 value="Užtikrinta ekonomika" />
+    <about.140>
+      <p>Komandore, sveiki.</p>
+      <p>
+        Bet kuriai imperijai reikalinga stipri ekonominė pusė. Būkime pasiruošę
+        staigiam resursų poreikiui - įrenkime ir ištobulinkime savo kasyklas.
+      </p>
+    </about.140>
+
+    <!-- old id: 118 --> <title.150 value="Poreikių patenkinimas" />
+    <!-- old id: 118 --> <about.150>
+    <p>Sveiki, Komandore.</p>
+    <p>Skirtingais laikais mums reikia skirtingų dalykų, ir deja nei vienas
+      iš mūsų negali tobulai numatyti ateities. Išraskite ir pastatykite turgų
+      jog galėtume vykdyti mainus su kitais šios galaktikos gyventojais.</p>
+    <p>Juk jiems gali reikėti to, ko mes turime, ir atvirkščiai. Kodėl mes
+      neturėtume padėti vieni kitiems? Galbūt besimainydami netgi susirasim
+      ir vieną kitą draugą? Kas žino...</p>
+    <!-- old id: 118 --> </about.150>
+
+    <!-- old id: 121 --> <title.160 value="Užgniaužus kvapą" />
+    <!-- old id: 121 --> <about.160>
+      <p>Komandore,</p>
+      <p>Mūsų žmonėms reikia daugiau vietos! Dar truputis ir nebus kur
+        kojos padėti!</p>
+      <p>Nedelsiant pradėkite gyvenamųjų bokštų statybas.</p>
+    <!-- old id: 121 --> </about.160>
+
+    <!-- old id: 18 --> <title.170 value="Kelias į žvaigždes" />
+    <!-- old id: 18 --> <about.170>
+    <p>Komandore.</p>
+    <p>
+      Mokslininkai sugalvojo kaip panaudoti zetiumą kosminių kelionių metu.
+      Šią nuostabią dieną mes vėl trauksime žvaigždžių link! Įsakykite pradėti
+      laivų statyklos projektą.
+    </p>
+    <p>Kad pastatyti statyklą, mums būtini brėžiniai, tad nedelskite!</p>
+    <!-- old id: 18 --> </about.170>
+
+    <!-- old id: 19 --> <title.180 value="Kad kelias nedulkėtų..." />
+    <!-- old id: 19 --> <about.180>
+    <p>Komandore!</p>
+    <p>
+      Laivų statyklos projektas ir technologijų aprašai jau perduoti
+      statybininkų brigadoms. Ne patys iškiliausi, bet tikrai darbštūs
+      kolonistai nekantrauja griebti suvirinimo aparatus ir pradėti darbą!
+      Įsakykite pradėti laivų statyklos statybas šioje planetoje.
+    </p>
+    <p>
+      Atkeipkite dėmesį į tuos pilkus, lygius plotus. Panašu, kad tai
+      ideali vieta statyboms. Jei gamyklą statysime ten, darbai eisis
+      gerokai sparčiau.
+    </p>
+    <!-- old id: 19 --> </about.180>
+
+    <!-- old id: 31 --> <title.190 value="Kosmoso grėsmės" />
+    <!-- old id: 31 --> <about.190>
+    <p>Sveiki, Komandore.</p>
+    <p>Štai, mūsų laivų gamykla jau stovi. Galėtume kilti į kosmosą, tačiau
+      mums reikia laivų! Žinome mes galėtume naudotis mulo klasės laivais,
+      tačiau jų pagrindinė paskirtis - gabenti krovinius. Nors jie ir turi
+      stiprius šarvus, tačiau beveik neturi puolamosios galios.</p>
+    <p>Ne, tam, kad įveiktumėme ateivių laivus, stovinčius prie asteroidų ir
+      planetų, mums prireiks kovinių laivų! Keliaukite į savo laivų gamyklą ir
+      liepkite pradėti savo pirmojo varno klasės laivo gamybą!</p>
+    <!-- old id: 31 --> </about.190>
+
+    <title.200 value="Atskleistas šnipas" />
+    <about.200>
+      <p>Komandore!</p>
+      <p>
+        Skaneris parodė, jog virš mūsų planetos visą šį laiką kybojo ateivių
+        laivas! Jis ko gero mus intensyviai šnipinėja!
+      </p>
+      <p>
+        Surinkite flotilę ir pakilkite į planetos orbitą - numuškite ateivių
+        šnipą!
+      </p>
+    </about.200>
+
+    <!-- old id: 20 --> <title.210 value="Plečiant valdas" />
+    <!-- old id: 20 --> <about.210>
+      <p>Komandore,</p>
+      <p>
+        Dabar, kai jau įvaldėme skrydžius po kosmosą, turėtume pradėti plėstis
+        į kitas planetas. Mūsų sensoriai aptiko gretimais esančią gyvybei
+        tinkamą planetą, tačiau ją saugo ateivių laivai.
+      </p>
+      <p>
+        Pasinaudokite mūsų kosmoso laivynu, nušluokite juos ir užimkite tą
+        planetą!
+      </p>
+      <p>
+        Tam, kad tai padarytumėme, mūsų laivai turės nusileisti ant planetos
+        paviršiaus.
+      </p>
+    <!-- old id: 20 --> </about.210>
+
+    <title.220 value="Pasaulių ekonomika" />
+    <about.220>
+      <p>Sveiki, Komandore,</p>
+      <p>
+        Sveikinu užėmus antrają planetą. Mes ką tik oficialiai tapome
+        daugiaplanetine civilizacija! Žinoma antrąją planetą dar reikia įrengti
+        ir mūsų čia laukia dar daug darbų.
+      </p>
+      <p>
+        Vienas iš pirmųjų - įkurti antrosios planetos ekonominę bazę. Turime
+        pastatyti resursų kasyklas, jog galėtume toliau plėtoti savo koloniją.
+      </p>
+      <p>Tad negaiškime ir kibkime į darbą.</p>
+    </about.220>
+
+    <!-- old id: 120 --> <title.230 value="Mineralų skraidinimas" />
+    <!-- old id: 120 --> <about.230>
+    <p>Komandore!</p>
+    <p>
+      Po mūšių lieka siaubinga netvarka - visame sektoriuje kairėn dešinėn
+      skraido laivų nuolaužos. Ko gero reikėtų išsikuopti...
+    </p>
+    <p>
+      Na ir ko taip nusiminėt? Pamiršau paminėti, jog surinktas
+      nuolaužas mūsų planetoje galėsime panaudoti kaip resursus!
+    </p>
+    <p>
+      O tam, kad galėtume juos persigabenti, mums reikės mulo klasės laivo.
+      Taigi, pirmyn, susirinkime tas nuolaužas! Pasistatykime mūsų pirmajį
+      mulo klasės laiva!
+    </p>
+    <!-- old id: 120 --> </about.230>
+
+    <!-- old id: 35 --> <title.240 value="Išvalymas" />
+    <!-- old id: 35 --> <about.240>
+    <p>Sveiki, Komandore.</p>
+    <p>Kadangi jau turime funkcionuojančia laivų gamyklą, galime truputi
+      patreniruoti savo pilotus. Nusiųskite juos sumedžioti keletos dirakų. Tai
+      neturėtų jiems būti sunki užduotis.</p>
+    <!-- old id: 35 --> </about.240>
+
+    <!-- old id: 36 --> <title.250 value="Verdantys vandenys" />
+    <!-- old id: 36 --> <about.250>
+    <p>Komandore,</p>
+    <p>jūsų aktyvumas šiame regione privertė ateivius būti atsargesniais.
+      Sklinda gandai, kad jie netgi planuoja atsakomajį smūgį! Sunaikinkite jų
+      galinguosius toro klasės laivus, parodykite jiems kas valdo šią
+      galaktiką!</p>
+    <!-- old id: 36 --> </about.250>
+
+    <!-- old id: 37 --> <title.260 value="Ugnimi prieš ugnį" />
+    <!-- old id: 37 --> <about.260>
+    <p>Komandore,</p>
+    <p>panašu kad tie ateiviai yra beatodariški fanatikai. Jūs privalote
+      smogti triuškinantį smūgį į jų stipriausius laivus, jog parodytumėte savo
+      galia! Tai vienintėlis būdas juos sustabdyti!</p>
+    <!-- old id: 37 --> </about.260>
+
+    <!-- old id: 34 --> <title.270 value="Akis danguje" />
+    <!-- old id: 34 --> <about.270>
+    <p>Komandore!</p>
+    <p>Naujoje mūsų planetoje turime nemažai laisvos vietos. Manau, kad po to,
+      kai joje saugiai įsikursime, reikėtų pradėti tyrinėti mūsų galaktiką.</p>
+    <p>Pastatykite radarą, kuris atvers mums dalelę galaktikos žemėlapio. Jūs
+      matysite kitų žaidėjų saulės sistemas, planetas ir jų laivus.</p>
+    <p>Beje, atminkite, kad radaras reikalauja nemažai energijos. Jeigu
+      neužtikrinsite pakankamos jos gavybos, jūsų energijos ištekliai bus kaip
+      mat ištuštinti. O jeigu jam pasibaigs energija - jis paprasčiausiai
+      nebeveiks.</p>
+    <!-- old id: 34 --> </about.270>
+
+    <title.280 value="Techninis progresas" />
+    <about.280>
+      <p>Sveiki, Komandore.</p>
+      <p>
+        Pastačius radarą pamatėme, jog už mūsų saulės sistemos ribų egzistuoja
+        kitos saulės sistemos su laisvomis planetomis. Mūsų analitikai sako, jog
+        mums labai praverstų dar viena planeta. O tam, jog ją kolonizuotume,
+        mums reikia tam tikrų įrenginių, kuriuos galime pagaminti tik tankų
+        gamykloje.
+      </p>
+      <p>
+        Tad nedelskite, pradėkite išradinėti ir statyti tankų gamyklą!
+      </p>
+    </about.280>
+
+    <title.290 value="Mobilusis štabas" />
+    <about.290>
+      <p>Komandore.</p>
+      <p>
+        Mes jau turime tankų gamyklą, dabar mums reikia mobiliojo štabo
+        technologijos. Antroje planetoje mes jau radome kažkieno išskleistą ir
+        pastatytą štabą, bet tai, ko gero, buvo tik laimingas atsitiktinumas.
+      </p>
+      <p>
+        Mobilusis štabas mums pravers norint kolonizuoti trečiają planetą. Vis
+        gi kelias ilgas ir nesinorėtų ten nuskridus likti it musę kandus.
+      </p>
+    </about.290>
+
+    <title.300 value="Trečiasis pasaulis" />
+    <about.300>
+      <p>Komandore.</p>
+      <p>
+        Išradome mobiliojo štabo technologiją - beliko tik nuskristi ir užimti
+        tą trečiają planetą.
+      </p>
+      <p>
+        Tankų gamykloje pastatykime savo mobilųjį štabą, įkraukime jį į mulą ir
+        su palyda nusiųskime jį į trečiają planetą. Nepamirškite nusivežti ir
+        žemės karių - greičiausiai planeta bus saugoma ateivių.
+      </p>
+      <p>Sekmės!</p>
+    </about.300>
+
+    <!-- old id: 122 --> <title.310 value="Kolonijos įtvirtinimas" />
+    <!-- old id: 122 --> <about.310>
+    <p>Komandore!</p>
+    <p>
+      Mūsų žvalgyba praneša, jog į šią koloniją jau nusitaikė ateivių piratai,
+      tad reikia kuo greičiau užtikrinti šios kolonijos saugumą!
+    </p>
+    <p>
+      Už praeitos užduoties atlikimą jūs gavote mobilių bokštelių, kuriuos
+      galite atsiimti tiesiai į šią koloniją ir išskleisti.
+    </p>
+    <!-- old id: 122 --> </about.310>
+
+    <title.320 value="Naujoji ekonomika" />
+    <about.320>
+      <p>Komandore.</p>
+      <p>
+        Naujoje planetoje mums reikia ir naujų ekonomikos technologijų. Mūsų
+        mokslininkai mano, kad išanalizavę ateivių kasyklas gali pritaikyti jų
+        technologijas mūsų moksle, taip žymiai pagerinant resursų išgavimo
+        tempus.
+      </p>
+      <p>
+        Išraskite naujasias kasyklų technologijas, bei pastatykite naujasias
+        kasyklas trečioje planetoje. Ir nepamirškite atnaujinti senų kasyklų
+        pirmosiose dvejose planetose - ši nauja technologija yra žymiai
+        pranašesnė.
+      </p>
+    </about.320>
+
+    <title.330 value="Draugų ratas" />
+    <about.330>
+      <p>Sveiki, Komandore.</p>
+      <p>
+        Pasirodo ši galaktika yra daug didesnė nei mes manėme. O tokioje
+        didelėje galaktikoje vieniems kovoti labai sunku.
+      </p>
+      <p>
+        Susisiekite su kitais komandorais ir tapkite sąjungos dalimi. Išradę
+        sąjungos technologiją galite įkurti savo sąjungą arba bandykite būti
+        pakviestas į kitą, jau egzistuojančią, sąjungą.
+      </p>
+    </about.330>
+
+    <title.340 value="Artyn pergalės" />
+    <about.340>
+      <p>Komandore.</p>
+      <p>
+        Tam, kad laimėti, mums, kartu su sąjunga, reikia surinkti tam tikrą
+        kiekį pergalės taškų. Pabandykite surinkti pirmuosius savo pergalės
+        taškus ir jums bus dosniai atlyginta.
+      </p>
+    </about.340>
+
+    <!-- ########################### -->
+    <!-- ### Papildomos užduotys ### -->
+    <!-- ########################### -->
+
+    <title.10010 value="Išvalant žemes" />
+    <about.10010>
+      <p>Komandore.</p>
+      <p>
+        Ant vertingų metalo rūdos išteklių stovi ne viena ateivių kasykla.
+      </p>
+      <p>
+        Mums būtina juos iš ten pašalinti, jog galėtume patys pastatyti savo
+        kasyklas!
+      </p>
+    </about.10010>
+
+    <EconomySideQuest.title value="Pramoninė zona"/>
+    <EconomySideQuest.about>
+      <p>Komandore.</p>
+
+      <p>
+        Kolonistai ir bazės įgula su pasigėrėjimu stebi kaip auga mūsų
+        ekonominė galia. Nesustokime pusiaukelėje. Didinkime savo
+        pramoninį potencialą, neleiskime progresui sustoti!
+      </p>
+    </EconomySideQuest.about>
+
+    <title.10020 ref="EconomySideQuest.title" />
+    <about.10020 ref="EconomySideQuest.about" />
+
+    <title.10021 value="[reference:EconomySideQuest.title] (II)" />
+    <about.10021 ref="EconomySideQuest.about" />
+
+    <title.10022 value="[reference:EconomySideQuest.title] (III)" />
+    <about.10022 ref="EconomySideQuest.about" />
+
+    <title.10023 value="[reference:EconomySideQuest.title] (IV)" />
+    <about.10023 ref="EconomySideQuest.about" />
+
+    <title.10024 value="[reference:EconomySideQuest.title] (V)" />
+    <about.10024 ref="EconomySideQuest.about" />
+
+    <title.10040 value="[reference:EconomySideQuest.title] (VI)" />
+    <about.10040 ref="EconomySideQuest.about" />
+
+    <title.10041 value="[reference:EconomySideQuest.title] (VII)" />
+    <about.10041 ref="EconomySideQuest.about" />
+
+    <title.10042 value="[reference:EconomySideQuest.title] (VIII)" />
+    <about.10042 ref="EconomySideQuest.about" />
+
+    <title.10043 value="[reference:EconomySideQuest.title] (IX)" />
+    <about.10043 ref="EconomySideQuest.about" />
+
+    <title.10044 value="[reference:EconomySideQuest.title] (X)" />
+    <about.10044 ref="EconomySideQuest.about" />
+
+    <title.10045 value="[reference:EconomySideQuest.title] (XI)" />
+    <about.10045 ref="EconomySideQuest.about" />
+
+    <title.10046 value="[reference:EconomySideQuest.title] (XII)" />
+    <about.10046 ref="EconomySideQuest.about" />
+
+    <title.10047 value="[reference:EconomySideQuest.title] (XIII)" />
+    <about.10047 ref="EconomySideQuest.about" />
+
+    <title.10048 value="[reference:EconomySideQuest.title] (XIV)" />
+    <about.10048 ref="EconomySideQuest.about" />
+
+    <title.10049 value="[reference:EconomySideQuest.title] (XV)" />
+    <about.10049 ref="EconomySideQuest.about" />
+
+    <title.10060 value="[reference:EconomySideQuest.title] (XVI)" />
+    <about.10060 ref="EconomySideQuest.about" />
+
+    <title.10061 value="[reference:EconomySideQuest.title] (XVII)" />
+    <about.10061 ref="EconomySideQuest.about" />
+
+    <title.10062 value="[reference:EconomySideQuest.title] (XVIII)" />
+    <about.10062 ref="EconomySideQuest.about" />
+
+    <title.10063 value="[reference:EconomySideQuest.title] (XIX)" />
+    <about.10063 ref="EconomySideQuest.about" />
+
+    <title.10064 value="[reference:EconomySideQuest.title] (XX)" />
+    <about.10064 ref="EconomySideQuest.about" />
+
+    <title.10065 value="[reference:EconomySideQuest.title] (XXI)" />
+    <about.10065 ref="EconomySideQuest.about" />
+
+    <title.10066 value="[reference:EconomySideQuest.title] (XXII)" />
+    <about.10066 ref="EconomySideQuest.about" />
+
+    <title.10067 value="[reference:EconomySideQuest.title] (XXIII)" />
+    <about.10067 ref="EconomySideQuest.about" />
+
+    <title.10068 value="[reference:EconomySideQuest.title] (XXIV)" />
+    <about.10068 ref="EconomySideQuest.about" />
+
+    <title.10069 value="[reference:EconomySideQuest.title] (XXV)" />
+    <about.10069 ref="EconomySideQuest.about" />
+
+    <WarSideQuest.title value="Mūšio aidai" />
+    <WarSideQuest.about>
+      <p>Komandore.</p>
+      <p>
+        Galaktika — pavojinga ir nerami vieta. Žinoma, mes esame taikūs
+        žmonės, bet mus supantys pavojai mūsų nuosaikumą gali suvokti kaip
+        baimės ar neryžtingumo požymį. Mes privalome gintis nuo grobikiškas
+        mintis puoselėjančių kaimynų, o geriausia gynyba yra... Taip,
+        Komandore, puolimas! Suduokime jiems pirmą prevencinį smūgį!
+      </p>
+      <p>Atminkite, piktų kėslų prevencija yra doras savigynos būdas.
+        Nedvejokite, drąsiai ginkitės nuo užpuolimų ar kas kartą sutikę
+        ateivius, su kuriais ar taip, ar taip nesusikalbėtumėte.</p>
+    </WarSideQuest.about>
+
+    <title.10100 ref="WarSideQuest.title" />
+    <about.10100 ref="WarSideQuest.about" />
+
+    <title.10101 value="[reference:WarSideQuest.title] (II)" />
+    <about.10101 ref="WarSideQuest.about" />
+
+    <title.10102 value="[reference:WarSideQuest.title] (III)" />
+    <about.10102 ref="WarSideQuest.about" />
+
+    <title.10103 value="[reference:WarSideQuest.title] (IV)" />
+    <about.10103 ref="WarSideQuest.about" />
+
+    <title.10104 value="[reference:WarSideQuest.title] (V)" />
+    <about.10104 ref="WarSideQuest.about" />
+
+    <title.10120 value="[reference:WarSideQuest.title] (VI)" />
+    <about.10120 ref="WarSideQuest.about" />
+
+    <title.10121 value="[reference:WarSideQuest.title] (VII)" />
+    <about.10121 ref="WarSideQuest.about" />
+
+    <title.10122 value="[reference:WarSideQuest.title] (VIII)" />
+    <about.10122 ref="WarSideQuest.about" />
+
+    <title.10123 value="[reference:WarSideQuest.title] (IX)" />
+    <about.10123 ref="WarSideQuest.about" />
+
+    <title.10124 value="[reference:WarSideQuest.title] (X)" />
+    <about.10124 ref="WarSideQuest.about" />
+
+    <title.10125 value="[reference:WarSideQuest.title] (XI)" />
+    <about.10125 ref="WarSideQuest.about" />
+
+    <title.10126 value="[reference:WarSideQuest.title] (XII)" />
+    <about.10126 ref="WarSideQuest.about" />
+
+    <title.10127 value="[reference:WarSideQuest.title] (XIII)" />
+    <about.10127 ref="WarSideQuest.about" />
+
+    <title.10128 value="[reference:WarSideQuest.title] (XIV)" />
+    <about.10128 ref="WarSideQuest.about" />
+
+    <title.10129 value="[reference:WarSideQuest.title] (XV)" />
+    <about.10129 ref="WarSideQuest.about" />
+
+    <title.10140 value="[reference:WarSideQuest.title] (XVI)" />
+    <about.10140 ref="WarSideQuest.about" />
+
+    <title.10141 value="[reference:WarSideQuest.title] (XVII)" />
+    <about.10141 ref="WarSideQuest.about" />
+
+    <title.10142 value="[reference:WarSideQuest.title] (XVIII)" />
+    <about.10142 ref="WarSideQuest.about" />
+
+    <title.10143 value="[reference:WarSideQuest.title] (XIX)" />
+    <about.10143 ref="WarSideQuest.about" />
+
+    <title.10144 value="[reference:WarSideQuest.title] (XX)" />
+    <about.10144 ref="WarSideQuest.about" />
+
+    <title.10145 value="[reference:WarSideQuest.title] (XXI)" />
+    <about.10145 ref="WarSideQuest.about" />
+
+    <title.10146 value="[reference:WarSideQuest.title] (XXII)" />
+    <about.10146 ref="WarSideQuest.about" />
+
+    <title.10147 value="[reference:WarSideQuest.title] (XXIII)" />
+    <about.10147 ref="WarSideQuest.about" />
+
+    <title.10148 value="[reference:WarSideQuest.title] (XXIV)" />
+    <about.10148 ref="WarSideQuest.about" />
+
+    <title.10149 value="[reference:WarSideQuest.title] (XXV)" />
+    <about.10149 ref="WarSideQuest.about" />
+
+    <!-- old id: 16 --> <title.10160 value="Dydybės link" />
+    <!-- old id: 16 --> <about.10160>
+    <p>Komandore.</p>
+    <p>
+      Tiesiog užsukau pasakyti, kad esate didis vadovas ir nuostabus
+      lyderis. Jūsų dėka mes daug pasiekėme ir už tai esame dėkingi.
+    </p>
+    <!-- old id: 16 --> </about.10160>
+
+    <!-- old id: 28 --> <title.10170 value="Šlovė jums!" />
+    <!-- old id: 28 --> <about.10170>
+    <p>Komandore.</p>
+    <p>Jūsų darbų reikšmė žmonijai neprilygstama.</p>
+    <p>Telydi jus sėkmė.</p>
+    <!-- old id: 28 --> </about.10170>
+
+    <!-- old id: 29 --> <title.10180 value="Galaktikos talentas" />
+    <!-- old id: 29 --> <about.10180>
+    <p>Komandore.</p>
+    <p>
+      Kaimynystėje visi tik ir šneka apie neprilygstamus jūsų įgūdžius.
+      Jūs to nusipelnote. Neatsipalaiduokite, išlaikykite tą patį ritmą!
+    </p>
+    <!-- old id: 29 --> </about.10180>
+
+    <!-- old id: 30 --> <title.10190 value="Viršukalnė" />
+    <!-- old id: 30 --> <about.10190>
+    <p>Komandore.</p>
+    <p>
+      Žmonės kurių gyvenimas neapdovanojo galimybe tarnauti po jūsų vėliava,
+      nesupranta tikrosios žodžių „laimingai klęstėti“ prasmės. Mes žinome,
+      ką tai reiškia. Ačiū, jums už tai.
+    </p>
+    <p>Aš kalbu mūsų kolonijos vardu, Komandore.</p>
+    <!-- old id: 30 --> </about.10190>
+
+    <!-- old id: 33 --> <title.10200 value="Nesustabdoma jėga" />
+    <!-- old id: 33 --> <about.10200>
+    <p>Komandore.</p>
+    <p>
+      Šiame galaktikos sektoriuje nebeliko žmogaus kuris apie jus nežinotų.
+      Milijardai mamų savo sūnus krikštyja jūsų vardu. Mūsų sąjungininkai
+      reiškia jums pagarbą, priešai daro viską, kad tik neužsitrauktų
+      didesnės jūsų rūstybės.
+    </p>
+    <p>Jūs nesustabdomas!</p>
+    <!-- old id: 33 --> </about.10200>
+
+    <!-- old id: 64 --> <title.10210 value="Dievybė" />
+    <!-- old id: 64 --> <about.10210>
+    <p>Komandore.</p>
+    <p>Jūs esate ekonomikos, mokslo ir karybos guru. Mes lyderiaujame visose
+      sferose! Jums nebuvo kilusi mintis sukurti savo religiją?</p>
+    <!-- old id: 64 --> </about.10210>
+
+    <ScienceSideQuest.title value="Žinių troškimas" />
+    <ScienceSideQuest.about>
+      <p>Komandore.</p>
+      <p>
+        Atradimai! Progresas! Pasitelkę mokslą, mes išplečiame savo galimybių
+        ribas. Mūsų priešai gali statytis laivynus, bet mes pasistatysime
+        geresnius! Negailėkite investicijų tyrimams ir mėgaukitės kosminiais
+        dividendais!
+      </p>
+    </ScienceSideQuest.about>
+
+    <title.10220 ref="ScienceSideQuest.title" />
+    <about.10220 ref="ScienceSideQuest.about" />
+
+    <title.10225 value="[reference:ScienceSideQuest.title] (II)" />
+    <about.10225 ref="ScienceSideQuest.about" />
+
+    <title.10230 value="[reference:ScienceSideQuest.title] (III)" />
+    <about.10230 ref="ScienceSideQuest.about" />
+
+    <title.10235 value="[reference:ScienceSideQuest.title] (IV)" />
+    <about.10235 ref="ScienceSideQuest.about" />
+
+    <title.10240 value="[reference:ScienceSideQuest.title] (V)" />
+    <about.10240 ref="ScienceSideQuest.about" />
+
+    <title.10245 value="[reference:ScienceSideQuest.title] (VI)" />
+    <about.10245 ref="ScienceSideQuest.about" />
+
+    <title.10250 value="[reference:ScienceSideQuest.title] (VII)" />
+    <about.10250 ref="ScienceSideQuest.about" />
+
+    <title.10255 value="[reference:ScienceSideQuest.title] (VIII)" />
+    <about.10255 ref="ScienceSideQuest.about" />
+
+    <title.10260 value="[reference:ScienceSideQuest.title] (IX)" />
+    <about.10260 ref="ScienceSideQuest.about" />
+
+    <title.10265 value="[reference:ScienceSideQuest.title] (X)" />
+    <about.10265 ref="ScienceSideQuest.about" />
+
+    <title.10270 value="[reference:ScienceSideQuest.title] (XI)" />
+    <about.10270 ref="ScienceSideQuest.about" />
+
+    <title.10275 value="[reference:ScienceSideQuest.title] (XII)" />
+    <about.10275 ref="ScienceSideQuest.about" />
+
+    <title.10280 value="[reference:ScienceSideQuest.title] (XIII)" />
+    <about.10280 ref="ScienceSideQuest.about" />
+
+    <title.10285 value="[reference:ScienceSideQuest.title] (XIV)" />
+    <about.10285 ref="ScienceSideQuest.about" />
+
+    <title.10290 value="[reference:ScienceSideQuest.title] (XV)" />
+    <about.10290 ref="ScienceSideQuest.about" />
+
+    <TechnologySideQuest.title value="Pasitelkiant mokslą" />
+    <TechnologySideQuest.about>
+      <p>Komandore.</p>
+      <p>
+        Ši technologija yra ypatingai svarbi mūsų tolesniam vystimuisi. 
+        Išraskite ją ir būsite dosniai apdovanotas.
+      </p>
+    </TechnologySideQuest.about>
+
+    <title.10300 ref="TechnologySideQuest.title" />
+    <about.10300 ref="TechnologySideQuest.about" />
+
+    <title.10305 value="[reference:TechnologySideQuest.title] (II)" />
+    <about.10305 ref="TechnologySideQuest.about" />
+
+    <title.10310 value="[reference:TechnologySideQuest.title] (III)" />
+    <about.10310 ref="TechnologySideQuest.about" />
+
+    <title.10315 value="[reference:TechnologySideQuest.title] (IV)" />
+    <about.10315 ref="TechnologySideQuest.about" />
+
+    <title.10320 value="[reference:TechnologySideQuest.title] (V)" />
+    <about.10320 ref="TechnologySideQuest.about" />
+
+    <title.10325 value="[reference:TechnologySideQuest.title] (VI)" />
+    <about.10325 ref="TechnologySideQuest.about" />
+
+    <title.10330 value="[reference:TechnologySideQuest.title] (VII)" />
+    <about.10330 ref="TechnologySideQuest.about" />
+
+    <title.10335 value="[reference:TechnologySideQuest.title] (VIII)" />
+    <about.10335 ref="TechnologySideQuest.about" />
+
+    <title.10340 value="[reference:TechnologySideQuest.title] (IX)" />
+    <about.10340 ref="TechnologySideQuest.about" />
+
+    <title.10345 value="[reference:TechnologySideQuest.title] (X)" />
+    <about.10345 ref="TechnologySideQuest.about" />
+
+    <title.10350 value="[reference:TechnologySideQuest.title] (XI)" />
+    <about.10350 ref="TechnologySideQuest.about" />
+
+    <title.10355 value="[reference:TechnologySideQuest.title] (XII)" />
+    <about.10355 ref="TechnologySideQuest.about" />
+
+    <!-- old id: 24 --> <title.10400 value="Tai, kas mus supa" />
+    <!-- old id: 24 --> <about.10400>
+    <p>
+      Tyrimų centre prie paradinių durų būriuojasi mokslininkai
+      trokštantys tuojau pat leistis į ekspedicijas. Žvalgybos pranešimuose
+      minimi įdomūs, dėmesio verti objektai ir tyrėjai tiesiog dega
+      troškimu juos aplankyti.
+    </p>
+    <p>
+      Pasiųskime grupę ar kelias ir ištirkime tuos objektus ir pažiūrėkime
+      ką dar nuo mūsų slepia ši planeta.
+    </p>
+    <!-- old id: 24 --> </about.10400>
+
+    <title.10405 value="[reference:title.10400] (II)" />
+    <about.10405>
+      <p>
+        Mokslininkai gryžo, tačiau jie dega troškimu tęsti savo tyrinėjimus.
+        Na, o kas mes tokie, kad jiems draustumėme?
+      </p>
+    </about.10405>
+
+    <!-- old id: 25 --> <title.10410 value="Naudingi atradimai" />
+    <!-- old id: 25 --> <about.10410>
+    <p>Tai buvo netikėta!</p>
+    <p>
+      Kartu su kalnais šlamšto, mokslininkai atvilko dar keletą ateivių
+      robotų. Nedalyvavę ekspedicijoje mokslininkai, dabar lipa laboratorijų
+      sienomis ir reikalauja surengti daugiau iškylų! Jie ketina surinkti
+      dar didesnę tyrėjų grupę ir apžiūrėti dar didesnį kalną. Sakyčiau
+      padėtis tampa nekontroliuojama, bet moksliukai savo ataskaitose
+      įrodinėja, kad jų ekspedicijos tikslas „Žvilgčiotojas“. Tai galingas
+      robotas, kuris tikrai būtų naudingesnis šioje bazėje, nei kažkur, kur
+      jis mėtosi dabar.
+    </p>
+    <p>Leiskime jiems keliauti! Įsakykime rengti mega-ekspediciją!</p>
+    <!-- old id: 25 --> </about.10410>
+
+    <title.10415 value="[reference:title.10410] (II)" />
+    <about.10415>
+      <p>
+        Mokslinčiai sako, kad kažkur ten, tarp neištyrinėtų objektų, galima
+        rasti visą armiją! Kodėl gi nepabandžius?
+      </p>
+    </about.10415>
+
+    <!-- old id: 26 --> <title.10420 value="Nepasotinami" />
+    <!-- old id: 26 --> <about.10420>
+    <p>Jie paprasčiausiai išsikraustė iš proto!</p>
+    <p>
+      Mokslininkai ir laborantai vėl kraunasi kuprines. Šį kartą jie ketina
+      apžiūrėti dar vieną milžinišką kalną! Sumauti geografai...
+      Atleiskit už išsireiškimą. Bėda tame, kad šiai ekspedicijai mūsų
+      personalas per mažas.
+    </p>
+    <p>
+      Mūsų tyrimų centras turi būti išplėstas ir patobulintas. Komandore,
+      privalau jus įspėti, kad kol bus vykdomi centro išplėtimo darbai,
+      jame negalėsime vykdyti jokių tyrimų. Tiesa... Trumpam be darbo
+      likusius mokslininkus vis tiek galėsime siųsti į ekspedicijas.
+    </p>
+    <p>Sprendimą ir tolimesnių darbų planavimą palieku jums, Komandore.</p>
+    <!-- old id: 26 --> </about.10420>
+
+    <!-- old id: 23 --> <title.10425 value="Smalsiųjų laimikis" />
+    <!-- old id: 23 --> <about.10425>
       <p>Gera žinia!</p>
 
       <p>
         Pamenate nesenai išsiųstą tyrėjų ekspediciją? Jie grįžo! Ir ne vieni! 
-        Tyrėjai į bazę atgabeno ateivių robotą! Jis gerokai nusidėvėjęs, bet 
-        nepaisant to, mokslininkams pavyko jį aktyvuoti. Mūsų gretas ką tik 
-        papildė ištikimas tarnas. Šaunu!     
+        Tyrėjai į bazę atgabeno ateivių robotų! Jie gerokai nusidėvėję, bet
+        nepaisant to, mokslininkams pavyko juos aktyvuoti. Mūsų gretas ką tik
+        papildė ištikimi tarnai. Šaunu!
       </p>
 
       <p>
@@ -2304,1019 +3125,156 @@
         Negalime žinoti ką ten rasime, bet panašu, kad kol kas ši praktika 
         atneša apčiuopiamos naudos.     
       </p>
-    </about.23>
+    <!-- old id: 23 --> </about.10425>
 
-    <title.4 value="Godumas" />
-    <about.4>
-      <p>Nuostabu, kad užsukote, Komandore.</p>
-
-      <p>
-        Skubu pranešti, kad išteklių gavyba šioje planetoje vyksta sklandžiai. 
-        Nors iš pirmo žvilgsnio atrodo, kad esame apsirūpinę, aš negaliu 
-        atsikratyti minčių apie mūsų galimybių ribas. Ši planeta tokia 
-        turtinga ištekliais! Mes galime iš jos išspausti daug, daug daugiau!      
-      </p>
-
-      <p>
-        Vadinkite mane godžia, jei jums taip norisi, bet pirma išklausykite 
-        ką siūlau. Mes privalome patobulinti resursų išgavėjus! Žaliavų 
-        perteklius dar niekam nepakenkė, juk tiesa?     
-      </p>
-    </about.4>
-
-    <title.5 value="Dar. Dar. Dar!" />
-    <about.5>
-      <p>Sveiki ir vėl, Komandore.</p>
-
-      <p>
-        Matau jūs atsižvelgėte į mano pastabas ir patobulinote išteklių gavybą. 
-        Nesustokite. Investuokime į gamybą ir toliau, visos išlaidos tikrai
-        atsipirks su kaupu!
-      </p>
-      
-      <p>Iki greito!</p>
-    </about.5>
-
-    <title.6 value="Nerimas" />
-    <about.6>
-      <p>Komandore!</p>
-
-      <p>
-        Žvalgyba praneša apie keistus triukšmus ir tai nėra šiaip vėjo 
-        stūgavimas. Žvalgų nerimą patvirtina ir skeneriai, kuriuose stebime 
-        keistas anomalijas. Įtarimai, kad šioje planetoje esame ne vieni 
-        pasitvirtino, o kol nežinome su kuo susidūrėme, negalime pasikliauti 
-        tik gynybinio perimetro apsauga. 
-      </p>
-
-      <p>Mums reikia karių! Įsakykite įrengti kareivines!</p>
-
-      <p>Mes privalome užtikrinti savo žmonių saugumą.</p>
-    </about.6>
-
-    <title.7 value="Ginklavimosi varžybos" />
-    <about.7>
-      <p>Komandore.</p>
-
-      <p>
-        Jūsų įsakymu įrengėme kareivines. Keli įgulos nariai pareiškė norą 
-        tapti pirmaisiais desantininkais, tačiau jų negana. Toks menkas būrys 
-        bus nušluotas pirmos atakos metu.
-      </p>
-
-      <p>
-        Privalome parengti daugiau karių. Užsukite į kareivines ir įsakykite 
-        pradėti desantininkų mokymus.
-      </p>
-    </about.7>
-
-    <StrenghteningForces.title value="Pranašumo įtvirtinimas"/>
-    <StrenghteningForces.about>
-      <p>Komandore.</p>
-
-      <p>
-        Kolonistai ir bazės įgula su pasigėrėjimu stebi kaip auga mūsų 
-        ryžtas ir kovinė galia. Nesustokime pusiaukelėje. Didinkime savo 
-        kovinį potencialą, priverskime priešus virpėti vien nuo minties 
-        apie susidūrimą su mūsų pajėgomis! 
-      </p>
-    </StrenghteningForces.about>
-    
-    <title.66 ref="StrenghteningForces.title" />
-    <about.66 ref="StrenghteningForces.about" />
-
-    <title.67 value="[reference:StrenghteningForces.title] (II)" />
-    <about.67 ref="StrenghteningForces.about" />
-
-    <title.68 value="[reference:StrenghteningForces.title] (III)" />
-    <about.68 ref="StrenghteningForces.about" />
-
-    <title.69 value="[reference:StrenghteningForces.title] (IV)" />
-    <about.69 ref="StrenghteningForces.about" />
-
-    <title.70 value="[reference:StrenghteningForces.title] (V)" />
-    <about.70 ref="StrenghteningForces.about" />
-
-    <title.71 value="[reference:StrenghteningForces.title] (VI)" />
-    <about.71 ref="StrenghteningForces.about" />
-
-    <title.95 value="[reference:StrenghteningForces.title] (VII)" />
-    <about.95 ref="StrenghteningForces.about" />
-
-    <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
-    <about.96 ref="StrenghteningForces.about" />
-
-    <title.97 value="[reference:StrenghteningForces.title] (IX)" />
-    <about.97 ref="StrenghteningForces.about" />
-
-    <title.98 value="[reference:StrenghteningForces.title] (X)" />
-    <about.98 ref="StrenghteningForces.about" />
-
-    <title.99 value="[reference:StrenghteningForces.title] (XI)" />
-    <about.99 ref="StrenghteningForces.about" />
-
-    <title.100 value="[reference:StrenghteningForces.title] (XII)" />
-    <about.100 ref="StrenghteningForces.about" />
-
-    <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
-    <about.101 ref="StrenghteningForces.about" />
-
-    <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
-    <about.102 ref="StrenghteningForces.about" />
-
-    <title.95 value="[reference:StrenghteningForces.title] (VII)" />
-    <about.95 ref="StrenghteningForces.about" />
-
-    <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
-    <about.96 ref="StrenghteningForces.about" />
-
-    <title.97 value="[reference:StrenghteningForces.title] (IX)" />
-    <about.97 ref="StrenghteningForces.about" />
-
-    <title.98 value="[reference:StrenghteningForces.title] (X)" />
-    <about.98 ref="StrenghteningForces.about" />
-
-    <title.99 value="[reference:StrenghteningForces.title] (XI)" />
-    <about.99 ref="StrenghteningForces.about" />
-
-    <title.100 value="[reference:StrenghteningForces.title] (XII)" />
-    <about.100 ref="StrenghteningForces.about" />
-
-    <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
-    <about.101 ref="StrenghteningForces.about" />
-
-    <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
-    <about.102 ref="StrenghteningForces.about" />
-
-    <title.95 value="[reference:StrenghteningForces.title] (VII)" />
-    <about.95 ref="StrenghteningForces.about" />
-
-    <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
-    <about.96 ref="StrenghteningForces.about" />
-
-    <title.97 value="[reference:StrenghteningForces.title] (IX)" />
-    <about.97 ref="StrenghteningForces.about" />
-
-    <title.98 value="[reference:StrenghteningForces.title] (X)" />
-    <about.98 ref="StrenghteningForces.about" />
-
-    <title.99 value="[reference:StrenghteningForces.title] (XI)" />
-    <about.99 ref="StrenghteningForces.about" />
-
-    <title.100 value="[reference:StrenghteningForces.title] (XII)" />
-    <about.100 ref="StrenghteningForces.about" />
-
-    <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
-    <about.101 ref="StrenghteningForces.about" />
-
-    <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
-    <about.102 ref="StrenghteningForces.about" />
-
-    <title.8 value="Pirmas kontaktas" />
-    <about.8>
+    <title.10450 value="Pirmasis atlygis" />
+    <about.10450>
       <p>Komandore.</p>
       <p>
-        Iškilo problema. Metalo poreikiai nuolat auga, o du mūsų turimi MEX-ai 
-        netrukus negalės jų patenkinti. Pats metas atrasti naują rūdos šaltinį.
+        Užtikrinkite, jog mes turime pakankamai kasyklų, jog patenkinti mūsų
+        būtiniausius poreikius. Kažkas man kužda, jog greitai mums prireiks
+        žymiai daugiau...
       </p>
-      <p>
-        Laimei mūsų žvalgams pavyko aptikti metalų klodus visai šalia bazės, 
-        bet juos sergi ateivių robotai. Panašu, kad šį sykį nepavyks išvengti 
-        kautynių, žvalgyba teigia, kad ateiviai nusiteikę agresyviai ir 
-        veikiau mirs nei atsitrauks nuo resursų.
-      </p>
-      <p>
-        Privalome veikti. Žvalgybos skaičiavimu 8 desantininkai turėtų 
-        susidoroti su ateivių pajėgomis. Tikslus reikalingų pajėgų dydis 
-        gali svyruoti, jis priklauso ir nuo jūsų strateginių gebėjimų. 
-        Kaip ten bebūtų, privalome išmušti ateivius iš šios pozicijos, 
-        ji lemtinga tolimesniai mūsų raidai planetoje. 
-      </p>
-      <p>Mes pasitikime jūsų kompetencija, Komandore.</p>
-    </about.8>
+    </about.10450>
 
-    <title.32 value="Drąsos vaisiai" />
-    <about.32>
-      <p>Gera žinia!</p>
-      <p>
-        Mes užėmėme rūda turtingas pozicijas! Dabar galime įrengti ten MEX‘ą. 
-        Jums leidus, siųlyčiau padaryti tai nedelsiant. Šią akimirką kolonija 
-        tikrai ras kur panaudoti papildomas metalų atsargas.
-      </p>
-    </about.32>
-
-    <title.9 value="Mokslas metalo vardan" />
-    <about.9>
-      <p>Komandore, džiaugiuosi jus matydama!</p>
-      <p>
-        Aš ką tik peržiūrėjau naudingų iškasenų gavybos duomenis. Skaičiai 
-        mums palankūs, bet aš manau mes galime išspausti daugiau. Mūsų 
-        mokslininkai teigia, kad gavę reikiamą resursų kiekį, jie gali 
-        patobulinti MEX‘us ir padidinti metalų išgavimo greitį iki naujų, 
-        dar neregėtų aukštumų. Vadinkite tai moteriška nuovoka, bet aš jais 
-        tikiu.
-      </p>
-      <p>
-        Pamėginkime patobulinti vieną iš mūsų MEX‘ų ir išsiaiškinkime ar 
-        moksliukai gali sukurti tai ką pažada.  
-      </p>
-    </about.9>
-
-    <title.10 value="Energetinis mokslas" />
-    <about.10>
-      <p>Komandore!</p>
-      <p>
-        Aš ką tik iš susitikimo su mūsų laborantais, jie pristatė naujus 
-        sprendimus energijos gavybai. Viskas ko jiems reikia, kad kibtų į 
-        darbą ir juos pritaikytų — investicijos.
-      </p>
-      <p>
-        Rekomenduočiau duoti jiems tai, ko prašo. Tikiu, kad netrukus patirtos 
-        išlaidos atsipirks su kaupu. Nedelsdami įsakykite patobulinti vieną 
-        iš vėjo jėgainių.
-      </p>
-    </about.10>
-
-    <title.116 value="Galingųjų turtai" />
-    <about.116>
-      <p>Komandore!</p>
-      <p>Po sėkmingos atakos „Pirmojo kontakto“ metu, jūs buvote apdovanoti 
-      simboline kreditų suma. Būtinai atsiimkite šį apdovanojimą, jei to 
+    <!-- old id: 116 --> <title.10460 value="Galingųjų turtai" />
+    <!-- old id: 116 --> <about.10460>
+    <p>Komandore!</p>
+    <p>Už prieš tai buvusią užduotį jūs buvote apdovanoti
+      simboline kreditų suma. Būtinai atsiimkite šį apdovanojimą, jei to
       nepadarėte iki šiol.</p>
-      <p>Kreditai — naudingas ir galingas įrankis. Juos galite išleisti 
-      įvairiausioms užduotims — paspartinti statybas, tyrimus ir karių 
-      parengimą. Tiesą sakant juos galėsite išleisti net pastatų perkėlimui į 
+    <p>Kreditai — naudingas ir galingas įrankis. Juos galite išleisti
+      įvairiausioms užduotims — paspartinti statybas, tyrimus ir karių
+      parengimą. Tiesą sakant juos galėsite išleisti net pastatų perkėlimui į
       kitą vietą ar norėdami paspartinti savo erdvėlaivius!</p>
-      <p>Matau ketinate klausti, kaip gauti daugiau kreditų. Tam yra keli 
+    <p>Matau ketinate klausti, kaip gauti daugiau kreditų. Tam yra keli
       metodai. Galite tiesiog įsigyti jų parduotuvėje į kurią galite nueiti
-      per N44 meniu apatiniame kairiajame žaidimo kampe. Taip pat kreditais 
-      apdovanojami Komandorai gebantys užimti ir išlaikyti tam tikras, karo 
+      per N44 meniu apatiniame kairiajame žaidimo kampe. Taip pat kreditais
+      apdovanojami Komandorai gebantys užimti ir išlaikyti tam tikras, karo
       niokojamas planetas, apie kurias sužinosite vėliau.</p>
-      <p>Yra ir dar vienas būdas. Galite prisijungti prie VIP Komandorų. Tapdami
-      vienu iš galaktikos VIP‘ų, jūs gausite daugiau kreditų, nei pačios 
-      narystės kaina. Kartu su VIP naryste gautus kreditus galėsite išleisti 
+    <p>Yra ir dar vienas būdas. Galite prisijungti prie VIP Komandorų. Tapdami
+      vienu iš galaktikos VIP‘ų, jūs gausite daugiau kreditų, nei pačios
+      narystės kaina. Kartu su VIP naryste gautus kreditus galėsite išleisti
       savo nuožiūra.</p>
-      <p>Išmėginkite VIP paslaugą dabar ir mėgaukitės apdovanojimais ir jų 
+    <p>Išmėginkite VIP paslaugą dabar ir mėgaukitės apdovanojimais ir jų
       suteikiama galia!</p>
-    </about.116>
+    <!-- old id: 116 --> </about.10460>
 
-    <title.117 value="Skubos darbas!" />
-    <about.117>
-      <p>Sveikinimai tapus VIP, Komandore.</p>
-      <p>Nuo šiol jūs kasdien gausite kreditų įvairioms išlaidoms, tad kodėl gi 
+    <!-- old id: 117 --> <title.10470 value="Skubos darbas!" />
+    <!-- old id: 117 --> <about.10470>
+    <p>Sveikinimai tapus VIP, Komandore.</p>
+    <p>Nuo šiol jūs kasdien gausite kreditų įvairioms išlaidoms, tad kodėl gi
       jų neišeikvojus naudingai veiklai?</p>
-      <p>Aš rekomenduočiau paspartinti statybas. Tyrimų centras tikrai 
-      nudžiugintu iki šiol mums labai daug naudos atnešusius mokslininkus. 
-      Įsakykite pradėti jo statybas ir paspartinkite jas išleisdami 
+    <p>Aš rekomenduočiau paspartinti statybas. Yra tikrai nemažai pastatų, kurie
+      mums praverstų anksčiau, nei vėliau. Paspartinkite jų statybą išleisdami
       dalį kreditų.</p>
-    </about.117>
-
-    <title.11 value="Neramios sielos" />
-    <about.11>
-      <p>Sveiki, Komandore.</p>
-      <p>
-        Mūsų kolonija klesti. Paskutinės ataskaitos demonstruoja stabilų 
-        resursų išgavimą, mūsų kariai tvirti ir bebaimiai, kolonistai jaučiasi 
-        saugūs ir galų gale sulaukėme puikaus oro. Pastarieji įvykiai ir 
-        saulės spinduliai sukuria jaukią namų atmosferą, ar ne tiesa, 
-        Komandore?
-      </p>
-      <p>
-        Tokios nuostabios dienos proga, būtų puiku pakloti pamatus tolimesniai 
-        mūsų raidai. Tyrimų centras būtų puiki pradžia. Mes net radome grupę 
-        savanorių, kurie mielai taptų tyrėjais, o reikalui esant ir tyrimų 
-        objektais. Neverskime jų laukti. 
-      </p>
-      <p>
-        Mano rekomendacija — tyrimų centrą šioje planetoje turime įrengti 
-        nedelsiant. Galų gale vienas kitas mokslinis triukas rankovėje mums 
-        tikrai nepakenks!
-      </p>
-    </about.11>
-
-    <title.24 value="Tai, kas mus supa" />
-    <about.24>
-      <p>
-        Tyrimų centras įrengtas! Prie paradinių durų būriuojasi mokslininkai 
-        trokštantys tuojau pat leistis į ekspedicijas. Žvalgybos pranešimuose 
-        minimi įdomūs, dėmesio verti objektai ir tyrėjai tiesiog dega 
-        troškimu juos aplankyti. 
-      </p>
-      <p>
-        Pasiųskime grupę ar kelias ir ištirkime tuos objektus ir pažiūrėkime 
-        ką dar nuo mūsų slepia ši planeta. 
-      </p>
-    </about.24>
-
-    <title.25 value="Naudingi atradimai" />
-    <about.25>
-      <p>Tai buvo netikėta!</p>
-      <p>
-        Kartu su kalnais šlamšto, mokslininkai atvilko dar keletą ateivių 
-        robotų. Nedalyvavę ekspedicijoje mokslininkai, dabar lipa laboratorijų 
-        sienomis ir reikalauja surengti daugiau iškylų! Jie ketina surinkti 
-        dar didesnę tyrėjų grupę ir apžiūrėti dar didesnį kalną. Sakyčiau 
-        padėtis tampa nekontroliuojama, bet moksliukai savo ataskaitose 
-        įrodinėja, kad jų ekspedicijos tikslas „Žvilgčiotojas“. Tai galingas 
-        robotas, kuris tikrai būtų naudingesnis šioje bazėje, nei kažkur, kur 
-        jis mėtosi dabar.
-      </p>
-      <p>Leiskime jiems keliauti! Įsakykime rengti mega-ekspediciją!</p>
-    </about.25>
-
-    <title.26 value="Nepasotinami" />
-    <about.26>
-      <p>Jie paprasčiausiai išsikraustė iš proto!</p>
-      <p>
-        Mokslininkai ir laborantai vėl kraunasi kuprines. Šį kartą jie ketina 
-        apžiūrėti dar vieną milžinišką kalną! Sumauti geografai... 
-        Atleiskit už išsireiškimą. Bėda tame, kad šiai ekspedicijai mūsų 
-        personalas per mažas.
-      </p>
-      <p>
-        Mūsų tyrimų centras turi būti išplėstas ir patobulintas. Komandore, 
-        privalau jus įspėti, kad kol bus vykdomi centro išplėtimo darbai, 
-        jame negalėsime vykdyti jokių tyrimų. Tiesa... Trumpam be darbo 
-        likusius mokslininkus vis tiek galėsime siųsti į ekspedicijas.
-      </p>
-      <p>Sprendimą ir tolimesnių darbų planavimą palieku jums, Komandore.</p>
-    </about.26>
-    
-    <title.12 value="Keliaujantys su šešėliu" />
-    <about.12>
-      <p>Sveiki, Komandore.</p>
-      <p>Žmonės baltais chalatais jau atsigauna nuo euforijos kurią sukėlė 
-      naujas tyrimų centras. Pats metas duoti jiems darbo. Jei jums įdomi mano 
-      nuomonė, Komandore, mes turėtume investuoti į kovinę galią. Kam dar gali 
-      būti naudingas mokslas, jei ne karui? Apsilankykite tyrimų centre ir 
-      liepkite pradėti „Sėlintojų“ projektą. Šie kariai puikiai pasitarnaus 
-      naikinant šarvuotus priešo pėstininkus. Pats tas ko reikia kovai su 
-      ateivių robotais.</p>
-      
-      <p>Kai tik mokslininkai baigs tyrimą, siūlyčiau iškart pasigaminti 
-      keletą šių karių, kad patikrinti jų kovines galias mūšio lauke.</p>
-    </about.12>
-
-    <title.13 value="Veteranai" />
-    <about.13>
-      <p>Komandore.</p>
-      <p>
-        Jūsų ryžtas ir nusiteikimas asmeniškai vadovauti mūšyje 
-        dalyvaujantiems kariams verti pagarbos. Esu įsitikinusi, kad jūs tą 
-        patį pasakytumėte apie kiekvieną jūsų įsakymus vykdžiusi karį. 
-        Atkreipkite dėmesį, kad kai kurie, nuolatos greta esantys, kovotojai 
-        tapo labiau patyrę. Jie tapo efektyvesni ir atsparesni priešų atakoms. 
-      </p>
-      <p>
-        Būtų protinga atitraukti juos iš priešakinių linijų, tegul ten 
-        pasireiškia geltonsnapiai naujokai. Neleiskite žūti veteranams, tai 
-        galingi ir įkvepiantys kovotojai, mums jie reikalingi gyvi. 
-      </p>
-    </about.13>
-
-    <ThirstForKnowledge.title value="Žinių troškimas" />
-    <ThirstForKnowledge.about>
-      <p>Komandore.</p>
-      <p>
-        Atradimai! Progresas! Pasitelkę mokslą, mes išplečiame savo galimybių 
-        ribas. Mūsų priešai gali statytis laivynus, bet mes pasistatysime 
-        geresnius! Negailėkite investicijų tyrimams ir mėgaukitės kosminiais 
-        dividendais!
-      </p>
-    </ThirstForKnowledge.about>
-
-    <title.72 ref="ThirstForKnowledge.title" />
-    <about.72 ref="ThirstForKnowledge.about" />
-
-    <title.73 value="[reference:ThirstForKnowledge.title] (II)" />
-    <about.73 ref="ThirstForKnowledge.about" />
-
-    <title.74 value="[reference:ThirstForKnowledge.title] (III)" />
-    <about.74 ref="ThirstForKnowledge.about" />
-
-    <title.75 value="[reference:ThirstForKnowledge.title] (IV)" />
-    <about.75 ref="ThirstForKnowledge.about" />
-
-    <title.76 value="[reference:ThirstForKnowledge.title] (V)" />
-    <about.76 ref="ThirstForKnowledge.about" />
-
-    <title.77 value="[reference:ThirstForKnowledge.title] (VI)" />
-    <about.77 ref="ThirstForKnowledge.about" />
-
-    <title.78 value="[reference:ThirstForKnowledge.title] (VII)" />
-    <about.78 ref="ThirstForKnowledge.about" />
-
-    <title.79 value="[reference:ThirstForKnowledge.title] (VIII)" />
-    <about.79 ref="ThirstForKnowledge.about" />
-    
-    <title.118 value="Poreikių patenkinimas" />
-    <about.118>
-      <p>Sveiki, Komandore.</p>
-      <p>Skirtingais laikais mums reikia skirtingų dalykų, ir deja nei vienas
-      iš mūsų negali tobulai numatyti ateities. Išrask turgų jog galėtume
-      vykdyti mainus su kitais šios galaktikos gyventojais.</p>
-      <p>Juk jiems gali reikėti to, ko mes turime, ir atvirkščiai. Kodėl mes
-      neturėtume padėti vieni kitiems? Galbūt besimainydami netgi susirasim
-      ir vieną kitą draugą? Kas žino...</p>
-    </about.118>
-
-    <title.27 value="Technologijų šukės" />
-    <about.27>
-      <p>Komandore,</p>
-      <p>
-        Žvalgyba aptiko keletą keistų, ateivių robotų saugomų, pastatų. Juos 
-        aptikęs dalinys sugebėjo prasmukti pro išorinį jų apsaugos perimetrą 
-        ir paimti keletą aplinkoje vyraujančios medžiagos mėginių. Gautus 
-        mėginius, jau kuris laikas analizuoja proto bokštai iš tyrimų centro. 
-      </p>
-      <p>
-        Jų atąskaitose teigiama, kad mislinguose ateivių pastatuose išgaunama 
-        nauja, kristalizuota medžiaga — zetiumas. Panašu, kad ateiviai rado 
-        gausybę praktiškų šios medžiagos panaudojimo būdų. Atrasime ir mes. 
-        Mums būtina pradėti šių kristalų gavybą! 
-      </p>
-      <p>Pats metas išvaduoti kristalus iš ateiviškų pastatų priespaudos!</p>
-    </about.27>
-
-    <EchoesOfBattle.title value="Mūšio aidai" />
-    <EchoesOfBattle.about>
-      <p>Komandore.</p>
-      <p>
-        Galaktika — pavojinga ir nerami vieta. Žinoma, mes esame taikūs 
-        žmonės, bet mus supantys pavojai mūsų nuosaikumą gali suvokti kaip 
-        baimės ar neryžtingumo požymį. Mes privalome gintis nuo grobikiškas 
-        mintis puoselėjančių kaimynų, o geriausia gynyba yra... Taip, 
-        Komandore, puolimas! Suduokime jiems pirmą prevencinį smūgį!
-      </p>
-      <p>Atminkite, piktų kėslų prevencija yra doras savigynos būdas. 
-      Nedvejokite, drąsiai ginkitės kas kartą sutikę ateivius, su kuriais ar 
-      taip, ar taip nesusikalbėtumėte.</p>
-    </EchoesOfBattle.about>
-
-    <title.80 ref="EchoesOfBattle.title" />
-    <about.80 ref="EchoesOfBattle.about" />
-
-    <title.81 value="[reference:EchoesOfBattle.title] (II)" />
-    <about.81 ref="EchoesOfBattle.about" />
-
-    <title.82 value="[reference:EchoesOfBattle.title] (III)" />
-    <about.82 ref="EchoesOfBattle.about" />
-
-    <title.83 value="[reference:EchoesOfBattle.title] (IV)" />
-    <about.83 ref="EchoesOfBattle.about" />
-
-    <title.84 value="[reference:EchoesOfBattle.title] (V)" />
-    <about.84 ref="EchoesOfBattle.about" />
-
-    <title.85 value="[reference:EchoesOfBattle.title] (VI)" />
-    <about.85 ref="EchoesOfBattle.about" />
-
-    <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
-    <about.86 ref="EchoesOfBattle.about" />
-
-    <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
-    <about.87 ref="EchoesOfBattle.about" />
-
-    <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
-    <about.88 ref="EchoesOfBattle.about" />
-
-    <title.89 value="[reference:EchoesOfBattle.title] (X)" />
-    <about.89 ref="EchoesOfBattle.about" />
-
-    <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
-    <about.90 ref="EchoesOfBattle.about" />
-
-    <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
-    <about.91 ref="EchoesOfBattle.about" />
-
-    <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
-    <about.92 ref="EchoesOfBattle.about" />
-
-    <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
-    <about.93 ref="EchoesOfBattle.about" />
-
-    <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
-    <about.94 ref="EchoesOfBattle.about" />
-
-    <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
-    <about.106 ref="EchoesOfBattle.about" />
-
-    <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
-    <about.107 ref="EchoesOfBattle.about" />
-
-    <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
-    <about.108 ref="EchoesOfBattle.about" />
-
-    <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
-    <about.109 ref="EchoesOfBattle.about" />
-
-    <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
-    <about.110 ref="EchoesOfBattle.about" />
-
-    <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
-    <about.111 ref="EchoesOfBattle.about" />
-
-    <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
-    <about.112 ref="EchoesOfBattle.about" />
-
-    <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
-    <about.113 ref="EchoesOfBattle.about" />
-
-    <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
-    <about.114 ref="EchoesOfBattle.about" />
-
-    <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
-    <about.115 ref="EchoesOfBattle.about" />
-
-    <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
-    <about.86 ref="EchoesOfBattle.about" />
-
-    <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
-    <about.87 ref="EchoesOfBattle.about" />
-
-    <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
-    <about.88 ref="EchoesOfBattle.about" />
-
-    <title.89 value="[reference:EchoesOfBattle.title] (X)" />
-    <about.89 ref="EchoesOfBattle.about" />
-
-    <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
-    <about.90 ref="EchoesOfBattle.about" />
-
-    <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
-    <about.91 ref="EchoesOfBattle.about" />
-
-    <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
-    <about.92 ref="EchoesOfBattle.about" />
-
-    <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
-    <about.93 ref="EchoesOfBattle.about" />
-
-    <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
-    <about.94 ref="EchoesOfBattle.about" />
-
-    <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
-    <about.106 ref="EchoesOfBattle.about" />
-
-    <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
-    <about.107 ref="EchoesOfBattle.about" />
-
-    <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
-    <about.108 ref="EchoesOfBattle.about" />
-
-    <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
-    <about.109 ref="EchoesOfBattle.about" />
-
-    <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
-    <about.110 ref="EchoesOfBattle.about" />
-
-    <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
-    <about.111 ref="EchoesOfBattle.about" />
-
-    <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
-    <about.112 ref="EchoesOfBattle.about" />
-
-    <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
-    <about.113 ref="EchoesOfBattle.about" />
-
-    <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
-    <about.114 ref="EchoesOfBattle.about" />
-
-    <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
-    <about.115 ref="EchoesOfBattle.about" />
-
-    <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
-    <about.86 ref="EchoesOfBattle.about" />
-
-    <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
-    <about.87 ref="EchoesOfBattle.about" />
-
-    <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
-    <about.88 ref="EchoesOfBattle.about" />
-
-    <title.89 value="[reference:EchoesOfBattle.title] (X)" />
-    <about.89 ref="EchoesOfBattle.about" />
-
-    <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
-    <about.90 ref="EchoesOfBattle.about" />
-
-    <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
-    <about.91 ref="EchoesOfBattle.about" />
-
-    <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
-    <about.92 ref="EchoesOfBattle.about" />
-
-    <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
-    <about.93 ref="EchoesOfBattle.about" />
-
-    <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
-    <about.94 ref="EchoesOfBattle.about" />
-
-    <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
-    <about.106 ref="EchoesOfBattle.about" />
-
-    <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
-    <about.107 ref="EchoesOfBattle.about" />
-
-    <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
-    <about.108 ref="EchoesOfBattle.about" />
-
-    <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
-    <about.109 ref="EchoesOfBattle.about" />
-
-    <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
-    <about.110 ref="EchoesOfBattle.about" />
-
-    <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
-    <about.111 ref="EchoesOfBattle.about" />
-
-    <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
-    <about.112 ref="EchoesOfBattle.about" />
-
-    <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
-    <about.113 ref="EchoesOfBattle.about" />
-
-    <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
-    <about.114 ref="EchoesOfBattle.about" />
-
-    <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
-    <about.115 ref="EchoesOfBattle.about" />
-
-    <title.14 value="Kristalizacija" />
-    <about.14>
-      <p>Komandore,</p>
-      <p>
-        Iš žvalgų gavę zetiumo pavyzdžius mūsų mokslininkai teigia jog tai
-        labai naudinga medžiaga. Jie nekantrauja pradėti praktinius šios 
-        medžiagos panaudojimo tyrimus.
-      </p>
-      <p>
-        Nedelskite! Užsukite į tyrimų centrą ir įsakykite pradėti darbus. 
-      </p>
-    </about.14>
-
-    <title.15 value="Kantrybės vaisiai" />
-    <about.15>
-      <p>Komandore!</p>
-      <p>
-        Jūsų kabinete išties karšta... Ar jūsų kondicionavimo sistema 
-        tvarkinga? Hm... Panašu, kad viskas tvarkoje. Vadinas čia aš užkaitau 
-        nuo minties apie tai, ką mes išdarinėsime su rastais kristalais! 
-        Mokslininkai baigė tyrimą, mes galime pradėti zetiumo ekstraktorių 
-        statybas! 
-      </p>
-    </about.15>
-
-    <title.121 value="Užgniaužus kvapą" />
-    <about.121>
-      <p>Komandore,</p>
-      <p>Mūsų žmonėms reikia daugiau vietos! Dar truputis ir nebus kur
-      kojos padėti!</p>
-      <p>Nedelsiant pradėkite gyvenamųjų bokštų statybas.</p>
-    </about.121>
-    
-    <title.16 value="Dydybės link" />
-    <about.16>
-      <p>Komandore.</p>
-      <p>
-        Tiesiog užsukau pasakyti, kad esate didis vadovas ir nuostabus 
-        lyderis. Jūsų dėka mes daug pasiekėme ir už tai esame dėkingi. 
-      </p>
-    </about.16>
-
-    <title.28 value="Šlovė jums!" />
-    <about.28>
-      <p>Komandore.</p>
-      <p>Jūsų darbų reikšmė žmonijai neprilygstama.</p>
-      <p>Telydi jus sėkmė.</p>
-    </about.28>
-
-    <title.29 value="Galaktikos talentas" />
-    <about.29>
-      <p>Komandore.</p>
-      <p>
-        Kaimynystėje visi tik ir šneka apie neprilygstamus jūsų įgūdžius. 
-        Jūs to nusipelnote. Neatsipalaiduokite, išlaikykite tą patį ritmą! 
-      </p>
-    </about.29>
-
-    <title.30 value="Viršukalnė" />
-    <about.30>
-      <p>Komandore.</p>
-      <p>
-        Žmonės kurių gyvenimas neapdovanojo galimybe tarnauti po jūsų vėliava, 
-        nesupranta tikrosios žodžių „laimingai klęstėti“ prasmės. Mes žinome, 
-        ką tai reiškia. Ačiū, jums už tai.
-      </p>
-      <p>Aš kalbu mūsų kolonijos vardu, Komandore.</p>
-    </about.30>
-
-    <title.33 value="Nesustabdoma jėga" />
-    <about.33>
-      <p>Komandore.</p>
-      <p>
-        Šiame galaktikos sektoriuje nebeliko žmogaus kuris apie jus nežinotų. 
-        Milijardai mamų savo sūnus krikštyja jūsų vardu. Mūsų sąjungininkai 
-        reiškia jums pagarbą, priešai daro viską, kad tik neužsitrauktų 
-        didesnės jūsų rūstybės. 
-      </p>
-      <p>Jūs nesustabdomas!</p>
-    </about.33>
-
-    <title.64 value="Dievybė" />
-    <about.64>
-      <p>Komandore.</p>
-      <p>Jūs esate ekonomikos, mokslo ir karybos guru. Mes lyderiaujame visose 
-      sferose! Jums nebuvo kilusi mintis sukurti savo religiją?</p>
-    </about.64>
-
-    <title.17 value="Taupumas" />
-    <about.17>
-      <p>Sveiki sugrįžę, Komandore.</p>
-      <p>
-        Bijau, kad sakydama „resursų nebūna per daug“ truputį pasikarščiavau. 
-        Analitikai pateikė žaliavų ir energijos gavybos planą, kuris aprėpia 
-        kelis ciklus. Panašu, kad dirbdami tokiais tempais, mes nepajėgsime 
-        sunaudoti visko, ką išgausime. Suprantu, tai skamba lyg bloga naujiena,
-        tačiau iš tiesų ji gera. Viskas ką turime padaryti, tai įrengti keletą 
-        saugyklų nepanaudotoms žaliavoms.  
-      </p>
-      <p>
-        Įsakykite pastatyti po saugyklą kiekvienam išgaunamų resursų tipui, 
-        Komandore.
-      </p>
-    </about.17>
-
-    <title.18 value="Kelias į žvaigždes" />
-    <about.18>
-      <p>Komandore.</p>
-      <p>
-        Mokslininkai sugalvojo kaip panaudoti zetiumą kosminių kelionių metu. 
-        Šią nuostabią dieną mes vėl trauksime žvaigždžių link! Įsakykite pradėti 
-        laivų statyklos projektą.
-      </p>
-      <p>Kad pastatyti statyklą, mums būtini brėžiniai, tad nedelskite!</p>
-    </about.18>
-
-    <title.19 value="Kad kelias nedulkėtų..." />
-    <about.19>
-      <p>Komandore!</p>
-      <p>
-        Laivų statyklos projektas ir technologijų aprašai jau perduoti 
-        statybininkų brigadoms. Ne patys iškiliausi, bet tikrai darbštūs 
-        kolonistai nekantrauja griebti suvirinimo aparatus ir pradėti darbą! 
-        Įsakykite pradėti laivų statyklos statybas šioje planetoje. 
-      </p>
-      <p>
-        Atkeipkite dėmesį į tuos pilkus, lygius plotus. Panašu, kad tai 
-        ideali vieta statyboms. Jei gamyklą statysime ten, darbai eisis 
-        gerokai sparčiau. 
-      </p>
-    </about.19>
-
-    <title.31 value="Kosmoso grėsmės" />
-    <about.31>
-      <p>Sveiki, Komandore.</p>
-      <p>Štai, mūsų laivų gamykla jau stovi. Galėtume kilti į kosmosą, tačiau
-      mums reikia laivų! Žinome mes galėtume naudotis mulo klasės laivais, 
-      tačiau jų pagrindinė paskirtis - gabenti krovinius. Nors jie ir turi
-      stiprius šarvus, tačiau beveik neturi puolamosios galios.</p>
-      <p>Ne, tam, kad įveiktumėme ateivių laivus, stovinčius prie asteroidų ir
-      planetų, mums prireiks kovinių laivų! Keliaukite į savo laivų gamyklą ir
-      liepkite pradėti gamybą!</p>
-    </about.31>
-    
-    <title.119 value="Bauginantys laivynai" />
-    <about.119>
-      <p>Komandore.</p>
-      <p>Statant varno klasės laivus šauniai padirbėjote. Jie greiti ir 
-      mirtini mūsų priešams. Ech... Kai pagalvoju apie juos mane apima toks
-      išdidumas! Reikėtų juos kur nors panaudoti!</p>
-      <p>Aplink gretimą planetą skraido keli ateivių dirako klasės laivai. 
-      Argi ne šaunus taikinys mūsų pilotų pratyboms? Skriskime ir sunaikinkime
-      juos.</p>
-      <p>O vienaip ar kitaip - ta planeta atrodo kaip visai nieko vietelė 
-      antrosios mūsų kolonijos įkurtuvėms. O jeigu jau ten kursimės - juk 
-      nenorėtumėme, kad aplink šlaistytųsi kažkokie ateivių pašlemėkai?</p>
-    </about.119>
-    
-    <title.120 value="Mineralų skraidinimas" />
-    <about.120>
-      <p>Komandore!</p>
-      <p>Šaunus darbelis! Ateivių dirakai neturėjo nei menkiausio šanso prieš
-      mūsų laivyną.</p>
-      <p>Na ką, pasismaginom, kimbam į darbus. Mūšio vietoje liko siaubinga
-      netvarka - visame sektoriuje kairėn dešinėn skraido laivų nuolaužos.
-      Ko gero reikėtų išsikuopti...</p>
-      <p>Na ir ko taip nusiminėt? Ai, gi pamiršau paminėti, jog surinktas
-      nuolaužas mūsų planetoje galėsime panaudoti kaip resursus! Na va, matau
-      iš karto šypsena ant ausų lipa ;)</p>
-      <p>Taigi, susirinkime tuos resursus! Pasistatykime mūsų pirmajį
-      mulo klasės laiva!</p>
-    </about.120>
-
-    <title.35 value="Išvalymas" />
-    <about.35>
-      <p>Sveiki, Komandore.</p>
-      <p>Kadangi jau turime funkcionuojančia laivų gamyklą, galime truputi 
-      patreniruoti savo pilotus. Nusiųskite juos sumedžioti keletos dirakų. Tai
-      neturėtų jiems būti sunki užduotis.</p>
-    </about.35>
-
-    <title.36 value="Verdantys vandenys" />
-    <about.36>
-      <p>Komandore,</p>
-      <p>jūsų aktyvumas šiame regione privertė ateivius būti atsargesniais.
-      Sklinda gandai, kad jie netgi planuoja atsakomajį smūgį! Sunaikinkite jų
-      galinguosius toro klasės laivus, parodykite jiems kas valdo šią 
-      galaktiką!</p>
-    </about.36>
-
-    <title.37 value="Ugnimi prieš ugnį" />
-    <about.37>
-      <p>Komandore,</p>
-      <p>panašu kad tie ateiviai yra beatodariški fanatikai. Jūs privalote 
-      smogti triuškinantį smūgį į jų stipriausius laivus, jog parodytumėte savo
-      galia! Tai vienintėlis būdas juos sustabdyti!</p>
-    </about.37>
-
-    <title.20 value="Plečiant valdas" />
-    <about.20>
-      <p>Komandore,</p>
-      <p>Dabar, kai jau įvaldėme skrydžius po kosmosą, turėtume pradėti plėstis
-      į kitas planetas. Mūsų sensoriai aptiko gretimais esančią gyvybei tinkamą
-      planetą, tačiau ją saugo ateivių laivai.</p>
-      <p>Pasinaudokite mūsų kosmoso laivynu, nušluokite juos ir užimkite tą 
-      planetą!</p>
-      <p>Planetos užėmimui jums reikės nusileisti su mūsų laivais ant tos 
-      planetos žemės.</p>
-    </about.20>
-
-    <title.122 value="Kolonijos įtvirtinimas" />
-    <about.122>
-      <p>Komandore!</p>
-      <p>
-        Antrojoje kolonijoje mes radome keletą apleistų mobilių pastatų,
-        kuriuos mūsų inžinieriai prikėlė antrąjam gyvenimui! Dabar jie puikiai
-        veikia ir yra paruošti išskleidimui.
-      </p>
-      <p>
-        Mūsų žvalgyba praneša, jog į šią koloniją jau nusitaikė ateivių piratai,
-        tad reikia kuo greičiau juos išskleisti ir užtikrinti šios kolonijos
-        saugumą!
-      </p>
-    </about.122>
-
-    <title.21 value="Antroji stovykla" />
-    <about.21>
-      <p>Komandore, puikiai padirbėta!</p>
-      <p>Dabar mes valdome dvi planetas! Pradėkime statybas antrojoje planetoje!
-      Įkraukite savo mobilų štabą į mulą ir nukeliaukite į savo naujają 
-      koloniją. Tuo pačiu pasiimkite ir resursų bei karių!</p>
-      <p>Nukeliavę, išskleiskite savo mobilų štabą ir pradėkite įkurtuves 
-      naujoje planetoje.</p>
-    </about.21>
-
-    <title.34 value="Akis danguje" />
-    <about.34>
-      <p>Komandore!</p>
-      <p>Naujoje mūsų planetoje turime nemažai laisvos vietos. Manau, kad po to,
-      kai joje saugiai įsikursime, reikėtų pradėti tyrinėti mūsų galaktiką.</p>
-      <p>Pastatykite radarą, kuris atvers mums dalelę galaktikos žemėlapio. Jūs
-      matysite kitų žaidėjų saulės sistemas, planetas ir jų laivus.</p>
-      <p>Beje, atminkite, kad radaras reikalauja nemažai energijos. Jeigu 
-      neužtikrinsite pakankamos jos gavybos, jūsų energijos ištekliai bus kaip
-      mat ištuštinti. O jeigu jam pasibaigs energija - jis paprasčiausiai 
-      nebeveiks.</p>
-    </about.34>
-
-    <title.38 value="Teritorijos plėtimas" />
-    <about.38>
-      <p>Komandore.</p>
-      <p>Atėjo laikas išplėsti mūsų imperiją! Užimkite dar vieną koloniją, esu
+    <!-- old id: 117 --> </about.10470>
+
+    <!-- old id: 38 --> <title.10500 value="Teritorijos plėtimas" />
+    <!-- old id: 38 --> <about.10500>
+    <p>Komandore.</p>
+    <p>Atėjo laikas išplėsti mūsų imperiją! Užimkite dar vieną koloniją, esu
       tikra, jog mes puikiai joje įsikursime.</p>
-    </about.38>
-    
-    <expanding_empire.title value="Auganti imperija" />
+    <!-- old id: 38 --> </about.10500>
 
-    <title.39 value="[reference:expanding_empire.title]" />
-    <about.39>
-      <p>Komandore, šauniai padirbėta!</p>
-      <p>Netgi užvaldžius dar vieną pasaulį aš jaučiu valdžios alkį. 
+    <!-- old id: 39 --> <title.10510 value="Auganti imperija" />
+    <!-- old id: 39 --> <about.10510>
+    <p>Komandore, šauniai padirbėta!</p>
+    <p>Netgi užvaldžius dar vieną pasaulį aš jaučiu valdžios alkį.
       Neapsiribokime anuo pasauliu, juk yra dar tiek laisvų planetų... Užimkite
       dar vieną! Tegul ji dreba prieš mūsų galią!</p>
-    </about.39>
+    <!-- old id: 39 --> </about.10510>
 
-    <title.40 value="[reference:expanding_empire.title] (II)" />
-    <about.40>
-      <p>Komandore,</p>
-      <p>manau, kad mūsų imperija jau pakankamai įspūdinga. Bet negi jūs
-      dabar sustosite?</p>
-    </about.40>
-
-    <title.41 value="[reference:expanding_empire.title] (III)" />
-    <about.41>
-      <p>Komandore,</p>
-      <p>jūsų darbai - neįtikėtini. Tačiau, kad ir kaip bebūtų, mūsų gyventojų
-      skaičius auga, mums reikia daugiau vietos! Užimkite dar vieną planetą.</p>
-    </about.41>
-
-    <title.42 value="[reference:expanding_empire.title] (IV)" />
-    <about.42>
-      <p>Komandore,</p>
-      <p>mūsų imperija praktiškai nenugalima, visi mūsų kaimynai dreba iš 
-      baimės! Sakau gal paimkime dar vieną planetą iš jų, vien tam, kad parodyti
-      savo galią? Ką manote?</p>
-    </about.42>
-
-    <title.43 value="Transporto linijų sabotažas" />
-    <about.43>
-      <p>Komandore,</p>
-      <p>mums derėtų sumedžioti keletą priešininko transportinių laivų. Tai 
-      sutrikdys jų resursų tiekimą ir pakenks jų vystimuisi.</p>
-    </about.43>
-
-    <destroying_enemy_will.title value="Naikinant priešo valią" />
-    <destroying_enemy_will.about>
-      <p>Komandore,</p>
-      <p>netoliese pastebėjome priešo aktyvumą. Sunaikinkite jų laivyną ir 
-      karius! Sutriuškinkite pasipriešinimą! Parodykite mūsų tikrą galią!</p>
-    </destroying_enemy_will.about>
-
-    <title.44 ref="destroying_enemy_will.title" />
-    <about.44 ref="destroying_enemy_will.about" />
-
-    <title.45 value="[reference:destroying_enemy_will.title] (II)" />
-    <about.45 ref="destroying_enemy_will.about" />
-
-    <title.46 value="[reference:destroying_enemy_will.title] (III)" />
-    <about.46 ref="destroying_enemy_will.about" />
-
-    <title.47 value="[reference:destroying_enemy_will.title] (IV)" />
-    <about.47 ref="destroying_enemy_will.about" />
-
-    <title.48 value="[reference:destroying_enemy_will.title] (V)" />
-    <about.48 ref="destroying_enemy_will.about" />
-
-    <title.49 value="[reference:destroying_enemy_will.title] (VI)" />
-    <about.49 ref="destroying_enemy_will.about" />
-
-    <title.50 value="[reference:destroying_enemy_will.title] (VII)" />
-    <about.50 ref="destroying_enemy_will.about" />
-
-    <title.51 value="[reference:destroying_enemy_will.title] (VIII)" />
-    <about.51 ref="destroying_enemy_will.about" />
-
-    <title.52 value="[reference:destroying_enemy_will.title] (IX)" />
-    <about.52 ref="destroying_enemy_will.about" />
-
-    <title.53 value="[reference:destroying_enemy_will.title] (X)" />
-    <about.53 ref="destroying_enemy_will.about" />
-
-    <title.54 value="[reference:destroying_enemy_will.title] (XI)" />
-    <about.54 ref="destroying_enemy_will.about" />
-
-    <crushing_enemy_defenses.title value="Griūvanti gynyba" />
-    <crushing_enemy_defenses.about>
-      <p>Komandore,</p>
-      <p>negalime daugiau delsti! Paskubėkite, užpulkite mūsų priešų planetas 
-      ir sunaikinkite jų gynybą!</p>
-    </crushing_enemy_defenses.about>
-
-    <title.55 ref="crushing_enemy_defenses.title" />
-    <about.55 ref="crushing_enemy_defenses.about" />
-
-    <title.56 value="[reference:crushing_enemy_defenses.title] (II)" />
-    <about.56 ref="crushing_enemy_defenses.about" />
-
-    <title.57 value="[reference:crushing_enemy_defenses.title] (III)" />
-    <about.57 ref="crushing_enemy_defenses.about" />
-
-    <title.58 value="[reference:crushing_enemy_defenses.title] (IV)" />
-    <about.58 ref="crushing_enemy_defenses.about" />
-
-    <title.59 value="[reference:crushing_enemy_defenses.title] (V)" />
-    <about.59 ref="crushing_enemy_defenses.about" />
-
-    <title.60 value="[reference:crushing_enemy_defenses.title] (VI)" />
-    <about.60 ref="crushing_enemy_defenses.about" />
-
-    <title.61 value="[reference:crushing_enemy_defenses.title] (VII)" />
-    <about.61 ref="crushing_enemy_defenses.about" />
-
-    <title.62 value="[reference:crushing_enemy_defenses.title] (VIII)" />
-    <about.62 ref="crushing_enemy_defenses.about" />
-
-    <title.63 value="[reference:crushing_enemy_defenses.title] (IX)" />
-    <about.63 ref="crushing_enemy_defenses.about" />
-
-    <title.65 value="Priešų perėmimas" />
-    <about.65>
+    <DestroyingEnemies.title value="Naikintant priešo galią" />
+    <DestroyingEnemies.about>
       <p>Komandore!</p>
-      <p>Prie mūsų durų stovi priešai! Privalome juos sustabyti! Užpulkite ir
-      užvaldykite vieną iš jų pasaulių! Tai turėtų nuraminti jų įkarštį.</p>
-    </about.65>
+      <p>
+        Pakirskime mūsų priešo galią! Sunaikinkime jo imperijos kertinį akmenį -
+        karius.
+      </p>
+    </DestroyingEnemies.about>
+
+    <title.10550 value="[reference:DestroyingEnemies.title] (I)" />
+    <about.10550 ref="DestroyingEnemies.about" />
+
+    <title.10555 value="[reference:DestroyingEnemies.title] (II)" />
+    <about.10555 ref="DestroyingEnemies.about" />
+
+    <title.10560 value="[reference:DestroyingEnemies.title] (III)" />
+    <about.10560 ref="DestroyingEnemies.about" />
+
+    <title.10565 value="[reference:DestroyingEnemies.title] (IV)" />
+    <about.10565 ref="DestroyingEnemies.about" />
+
+    <title.10570 value="[reference:DestroyingEnemies.title] (V)" />
+    <about.10570 ref="DestroyingEnemies.about" />
+
+    <title.10575 value="[reference:DestroyingEnemies.title] (VI)" />
+    <about.10575 ref="DestroyingEnemies.about" />
   </Quests>
+
+  <QuestScreens>
+    <BuildingSidebar>
+      <p>Pastatus gali statyti iš dešinėje pusėje esančio meniu.</p>
+      <p>Pasirinkus pastatą meniu apačioje bus rodoma pastato kaina, statymo
+      laikas, bei žemės, ant kurios statoma, pliusai ir minusai.</p>
+      <p>Jeigu vienas pastatas jau yra statomas, kitas bus įdėtas į eilę.</p>
+    </BuildingSidebar>
+
+    <ClaimReward>
+      <p>Kiekviena įvykdyta užduotis duoda atlygį. Jį pasiimti gali nuėjęs į
+      užduočių langą: paspausk N44 logotipą apatiniame kairiame kampe ir
+      pasirink užduočių mygtuką.</p>
+      <p>Tada susirask įvykdytą užduotį (jos žymimos gelsvai) ir spausk pasiimti
+      atlygį.</p>
+    </ClaimReward>
+
+    <OreTile>
+      <p>MEX-us gali statyti tik ant metalo rūdos klodų. Dažniausiai ant jų
+      stovi ateivių pastatai, kuriuos reikia nugriauti, bet kartais randama ir
+      laisvų klodų.</p>
+    </OreTile>
+    
+    <BuildingUpgrade>
+      <p>Pastatai gali būti tobulinami. Kad patobulintum pastatą pasirink jį
+      žemėlapyje, ir dešinėje esančiame meniu paspausk mygtuką „Tobulinti“.</p>
+      <p>Patobulinti pastatai pagerina savo savybes - greičiau išgauna resursus,
+      stato karius, teikia daugiau mokslininkų ir t.t.</p>
+    </BuildingUpgrade>
+
+    <EnergyTiles>
+      <p>Nors elektros jėgaines gali statyti bet kur, jas rekomenduotina
+      statyti ant papildomos energijos suteikiančios žemės.</p>
+      <p>Žemės suteikiamą pliusą gali pamatyti dešinės juostos apačioje,
+      rinkdamas statymo vietą naujai elektrinei.</p>
+    </EnergyTiles>
+
+    <ConstructionTiles>
+      <p>
+        Pastatus ant šios žemės pastatys greičiau. Be to - jeigu pastatas
+        stato kitus pastatus arba gamina karius - jis taip pat tai darys
+        greičiau, todėl šią žemę geriausia išnaudoti įvairioms gamykloms.
+      </p>
+    </ConstructionTiles>
+
+    <SpeedupConstruction>
+      <p>
+        Ilgai trunkančias statybas gali pagreitinti pasinaudodamas kredais -
+        specialiu žaidimo resursu. Tam tau reikia pasirinkti statomą pastatą ir
+        dešinėje juostoje paspaudus „Paspartinti“ pasirinkti norimą
+        pagreitinimo trukmę.
+      </p>
+      <p>
+        Kredų gali gauti jų nusipirkdamas - paspausk mygtuką „Pirkti kredus“ iš
+        N44 meniu.
+      </p>
+      <p>
+        Taip pat kredų duoda kai kurios užduotys. Jų tau kaip tik davė prieš tai
+        įvykdyta užduotis - nueik atsiimk apdovanojimą ir paspartink pastato
+        statybą!
+      </p>
+    </SpeedupConstruction>
+  </QuestScreens>
 
   <Ratings>
     <label.ratings value="Reitingai" />
@@ -3330,8 +3288,7 @@
     <points value="Viso taškų" />
     <playersCount value="Žaidėjai" />
     <tooltip.deathDay>
-      <p>Žaidėjas prarado paskutinę savo planetą {0}-ą dieną po apokalipsės
-        pradžios</p>
+      <p>Žaidėjas prarado paskutinę savo planetą {0}</p>
     </tooltip.deathDay>
     <label.deathDay value="0 ({0}d.)"/>
     <planetsCount value="PPK" />
@@ -4052,6 +4009,8 @@
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
 
+    <label.showNpc value="Rodyti"/>
+
     <tooltip.willBeQueued>
       <p>Šie kariai bus įdėti į statymo eilę.</p>
       <p>Už karius nebus sumokėta iš anksto ir jų apmokymas bus atšauktas jei
@@ -4187,6 +4146,9 @@
     <label.currentFacilities value="Gamyklos" />
     <label.flankNr0 value="Pirmas" />
     <label.flankNr1 value="Antras" />
+    <!-- 0: units count in that flank -->
+    <label.flankCountNr0 value="Pirmas ({0})" />
+    <label.flankCountNr1 value="Antras ({0})" />
     <tooltip.flank>
       <p>{0} flangas</p>
       <p>Kariai šiame flange turi {1}% tikimybę, kad į juos pataikys.</p>

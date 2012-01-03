@@ -10,15 +10,13 @@ module Parts::ResetableCooldown
 
     event = CallbackManager::EVENT_COOLDOWN_EXPIRED
 
-    transaction do
-      if cooldown_registered
-        CallbackManager.update(self, event, cooldown_ends_at)
-      else
-        CallbackManager.register(self, event, cooldown_ends_at)
-      end
-
-      save!
-      EventBroker.fire(self, EventBroker::CHANGED)
+    if cooldown_registered
+      CallbackManager.update(self, event, cooldown_ends_at)
+    else
+      CallbackManager.register(self, event, cooldown_ends_at)
     end
+
+    save!
+    EventBroker.fire(self, EventBroker::CHANGED)
   end
 end

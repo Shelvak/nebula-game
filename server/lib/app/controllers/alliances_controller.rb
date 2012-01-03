@@ -22,14 +22,12 @@ class AlliancesController < GenericController
       unless Technology::Alliances.exists?([
         "player_id=? AND level > 0", player.id])
 
-    ActiveRecord::Base.transaction do
-      alliance = Alliance.new(:name => params['name'],
-        :galaxy_id => player.galaxy_id, :owner_id => player.id)
-      alliance.save!
-      alliance.accept(player)
+    alliance = Alliance.new(:name => params['name'],
+      :galaxy_id => player.galaxy_id, :owner_id => player.id)
+    alliance.save!
+    alliance.accept(player)
 
-      respond :id => alliance.id
-    end
+    respond :id => alliance.id
   rescue ActiveRecord::RecordNotUnique
     respond :id => 0
   end
@@ -216,11 +214,9 @@ class AlliancesController < GenericController
     player.creds -= creds_needed
     alliance.name = params['name'] if params['name']
 
-    ActiveRecord::Base.transaction do
-      alliance.save!
-      player.save!
-      stats.save!
-    end
+    alliance.save!
+    player.save!
+    stats.save!
   rescue ActiveRecord::RecordNotUnique
     respond :error => 'not_unique'
   end

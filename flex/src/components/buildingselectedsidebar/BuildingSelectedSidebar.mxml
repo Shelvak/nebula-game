@@ -10,66 +10,30 @@
    
    <fx:Script>
       <![CDATA[
-      import com.developmentarc.core.utils.EventBroker;
-
-      import components.credits.AccelerateSelector;
-      import components.credits.ConfirmCredsLabel;
-      import components.popups.ActionConfirmationPopup;
-      import components.popups.WaitingCredsPopup;
       import components.skins.ButtonSkin;
       import components.skins.CreditButtonSkin;
-      import components.skins.RedButtonSkin;
 
       import config.Config;
 
-      import models.unit.Unit;
-
-      import utils.ApplicationLocker;
-
-      import controllers.Messenger;
-      import controllers.buildings.BuildingsCommand;
-      import controllers.constructionqueues.ConstructionQueuesCommand;
-      import controllers.navigation.MCSidebar;
       import controllers.objects.ObjectClass;
       import controllers.planets.PlanetsCommand;
       import controllers.planets.actions.EditActionParams;
       import controllers.ui.NavigationController;
 
-      import flashx.textLayout.elements.TextFlow;
-
-      import globalevents.GBuildingEvent;
-      import globalevents.GCreditEvent;
-      import globalevents.GPlanetEvent;
-      import globalevents.GResourcesEvent;
-      import globalevents.GlobalEvent;
-
-      import models.Owner;
       import models.building.Building;
       import models.building.BuildingType;
       import models.building.MCBuildingSelectedSidebar;
-      import models.building.events.BuildingEvent;
-      import models.building.events.BuildingSidebarEvent;
-      import models.constructionqueueentry.ConstructionQueueEntry;
-      import models.healing.HealPrice;
-      import models.parts.Upgradable;
-      import models.parts.events.UpgradeEvent;
       import models.resource.Resource;
       import models.resource.ResourceType;
-      import models.resource.ResourcesAmount;
-      import models.solarsystem.MSSObject;
+      import models.unit.Unit;
 
       import mx.core.ScrollPolicy;
       import mx.events.DragEvent;
       import mx.events.FlexEvent;
-      import mx.managers.DragManager;
-
-      import spark.utils.TextFlowUtil;
 
       import utils.DateUtil;
       import utils.MathUtil;
-      import utils.ModelUtil;
       import utils.NumberUtil;
-      import utils.UrlNavigate;
       import utils.assets.AssetNames;
       import utils.locale.Localizer;
 
@@ -205,6 +169,8 @@
                            </s:Group>
                            
                            <base:AdvancedContainer visible="{bSidebar.selectedBuilding.npc}">
+                              <base:Warning text="{getString('warning.attackNpc')}"
+                                            width="100%" showSign="false"/>
                               <s:Label text="{getString('noUnits')}" 
                                        visible="{!ML.latestPlanet.hasAgressiveGroundUnits()}"
                                        styleName="unsatisfied" fontSize="16"/>
@@ -214,7 +180,8 @@
                                         skinClass="components.skins.RedButtonSkin"
                                         label="{getString('attack')}"/>
                               <base:layout>
-                                 <s:VerticalLayout horizontalAlign="center"/>
+                                 <s:VerticalLayout horizontalAlign="center"
+                                         gap="9"/>
                               </base:layout>
                            </base:AdvancedContainer>
                            
