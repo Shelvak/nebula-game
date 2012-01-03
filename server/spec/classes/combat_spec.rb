@@ -301,8 +301,22 @@ describe Combat do
     player = rhyno.player
 
     assets = dsl.run
-    rhyno.xp.should == 100 +
+    rhyno.reload.xp.should == 100 +
       assets.response['statistics'][player.id]['xp_earned']
+  end
+
+  it "should be able to level up" do
+    zeus = nil
+    dsl = CombatDsl.new do
+      location(:planet)
+      player(:planet_owner => true) { units { zeus = zeus() } }
+      player { units { dirac :count => 10 } }
+    end
+
+    zeus.xp = zeus.xp_needed - 1
+
+    assets = dsl.run
+    zeus.reload.level.should_not == 1
   end
 
   it "should run combat if there is nothing to fire, but units " +

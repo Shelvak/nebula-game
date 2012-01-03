@@ -465,6 +465,7 @@ class Unit < ActiveRecord::Base
     def save_all_units(units, reason=nil, event=EventBroker::CHANGED)
       return true if units.blank?
 
+      units.each(&:upgrade_through_xp)
       BulkSql::Unit.save(units)
       # Don't dispatch units which are inside other units.
       updated = units.reject { |u| u.location_type == Location::UNIT }
