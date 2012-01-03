@@ -282,9 +282,11 @@ $(document).ready(function() {
       flashvars, params, attributes);
   swfobject.createCSS("#flashContent", "display:block;text-align:left;");
 
-  // Ensure player does not close the game accidentaly.
-  window.onbeforeunload = function() {
-    return locales.navigateAwayMessage(locale);
+  // Ensure player does not close the game accidentally.
+  if (! (inLocalComputer() || inDeveloperMode())) {
+    window.onbeforeunload = function() {
+      return locales.navigateAwayMessage(locale);
+    }
   }
 });
 // }}}
