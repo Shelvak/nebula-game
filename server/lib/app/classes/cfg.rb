@@ -64,9 +64,10 @@ class Cfg; class << self
 
   # Returns random resource amount for market resources bot for
   # resource kind _resource_kind_.
-  def market_bot_random_resource(resource_kind)
+  def market_bot_random_resource(galaxy_id, resource_kind)
     range = market_bot_resource_range(resource_kind)
-    rand(range.first, range.last + 1)
+    amount = rand(range.first, range.last + 1)
+    amount * market_bot_resource_multiplier(galaxy_id)
   end
 
   # Returns +Range+ of how much seconds we should wait before creating new
@@ -76,6 +77,17 @@ class Cfg; class << self
     from = CONFIG.safe_eval(from)
     to = CONFIG.safe_eval(to)
     from..to
+  end
+
+  # Returns resource multiplier for given galaxy. This ensures amount of
+  # resources stay relevant through course of the galaxy.
+  def market_bot_resource_multiplier(galaxy_id)
+    galaxy = Galaxy.find(galaxy_id)
+    [1, galaxy.current_day / market_bot_resource_day_divider].max
+  end
+
+  def market_bot_resource_day_divider
+    CONFIG['market.bot.resources.day_divider'].to_f
   end
 
   # Returns random number of seconds we should wait before creating new

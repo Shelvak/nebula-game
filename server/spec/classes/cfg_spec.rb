@@ -43,4 +43,33 @@ describe Cfg do
         should be_within(SPEC_TIME_PRECISION).of(expected)
     end
   end
+
+  describe ".market_bot_random_resource" do
+    it "should return item from range multiplied by time multiplier" do
+      kind = MarketOffer::KIND_METAL
+      multiplier = 105
+      galaxy_id = 10
+
+      range = Cfg.market_bot_resource_range(kind) * multiplier
+      Cfg.should_receive(:market_bot_resource_multiplier).with(galaxy_id).
+        and_return(multiplier)
+      range.should cover(Cfg.market_bot_random_resource(galaxy_id, kind))
+    end
+  end
+
+  describe ".market_bot_resource_multiplier" do
+    let(:divider) { Cfg.market_bot_resource_day_divider }
+
+    it "should return 1 if galaxy is still young" do
+      galaxy = Factory.create(:galaxy, :created_at => (divider - 1).days.ago)
+      Cfg.market_bot_resource_multiplier(galaxy.id).should == 1
+    end
+
+    it "should return a Float if galaxy is old enough" do
+      galaxy = Factory.create(:galaxy, :created_at => (divider + 28).days.ago)
+      Cfg.market_bot_resource_multiplier(galaxy.id).should be_within(0.01).of(
+        (divider + 28) / divider.to_f
+      )
+    end
+  end
 end

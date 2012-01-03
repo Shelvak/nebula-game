@@ -241,7 +241,7 @@ class MarketOffer < ActiveRecord::Base
   def self.create_system_offer(galaxy_id, resource_kind)
     avg_rate = MarketRate.average(galaxy_id, resource_kind, KIND_CREDS)
     to_rate = avg_rate * (1 + Cfg.market_rate_offset)
-    from_amount = Cfg.market_bot_random_resource(resource_kind)
+    from_amount = Cfg.market_bot_random_resource(galaxy_id, resource_kind)
     
     new(:from_amount => from_amount, :from_kind => resource_kind,
       :to_kind => KIND_CREDS, :to_rate => to_rate, :galaxy_id => galaxy_id)

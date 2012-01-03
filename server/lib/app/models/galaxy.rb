@@ -277,6 +277,11 @@ class Galaxy < ActiveRecord::Base
     solar_systems.find(:first, :conditions => {:x => x, :y => y})
   end
 
+  # Which day is it? Rounded to integer.
+  def current_day
+    ((Time.now - created_at) / 1.day).round
+  end
+
   def as_json(options=nil)
     attributes
   end
