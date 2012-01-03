@@ -1389,7 +1389,7 @@
       <p>Aizliegts apmeklēt šo zvaigzni.</p>
     </label.deadStar>
      <!-- TODO -->
-    <label.shield value="This solar system is shielded"/>
+    <label.shield value="This solar system is shielded and belongs to:"/>
     <label.over value="Fleet over"/>
     <!-- /TODO -->
     <message.noRadar value="Jums vajadzīgs radars, lai izpētītu galaktiku" />

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<space:CStaticSpaceObjectInfo xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<space:CStaticSpaceObjectInfo xmlns:fx="http://ns.adobe.com/mxml/2009"
                               xmlns:s="library://ns.adobe.com/flex/spark"
                               xmlns:space="components.map.space.*"
                               xmlns:solarsystem="components.gameobjects.solarsystem.*"
+                              xmlns:ui="components.ui.*"
                               title="{getString('title.solarSystemInfo')}">
    <fx:Binding source="MSolarSystem(staticObject)" destination="ss"/>
    <fx:Script>
@@ -71,10 +72,15 @@
             visible="{ss.isDead}" includeInLayout="{ss.isDead}"
             width="{MSSObject.IMAGE_WIDTH}"
             lineBreak="toFit" textAlign="center"/>
-   <s:Label id="lblShield" text="{getString('label.shield')}"
-            visible="{ss.isShielded}" includeInLayout="{ss.isShielded}"
-            width="{MSSObject.IMAGE_WIDTH}" lineBreak="toFit"
-            textAlign="center"/>
+   <s:Group visible="{ss.isShielded}" includeInLayout="{ss.isShielded}">
+      <s:layout>
+         <s:HorizontalLayout verticalAlign="middle" gap="5"/>
+      </s:layout>
+      <s:Label id="lblShield" text="{getString('label.shield')}"
+               width="{MSSObject.IMAGE_WIDTH}" lineBreak="toFit"
+               textAlign="center"/>
+      <ui:PlayerProfileButton player="{ss.player}"/>
+   </s:Group>
    <s:Button id="btnOpen" label="{getBtnOpenLabel(ss)}"
              visible="{ss.isNavigable}"
              includeInLayout="{ss.isNavigable}"

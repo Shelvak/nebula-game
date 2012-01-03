@@ -1229,7 +1229,7 @@
       long gone.</p>
       <p>Visiting this star is forbidden.</p>
     </label.deadStar>
-    <label.shield value="This solar system is shielded"/>
+    <label.shield value="This solar system is shielded and belongs to:"/>
     <label.over value="Fleet over"/>
     <message.noRadar value="You need a Radar to explore the galaxy" />
 

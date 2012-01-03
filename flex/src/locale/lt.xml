@@ -1327,7 +1327,7 @@
       jos jau seniai nebėra.</p>
       <p>Įeiti į šią žvaigždę negalima.</p>
     </label.deadStar>
-    <label.shield value="Ši saulės sistema yra apsaugota"/>
+    <label.shield value="Ši saulės sistema yra apsaugota ir priklauso:"/>
     <label.over value="Laivai virš"/>
     <message.noRadar value="Tau reikia radaro, jog matytum galaktiką" />
 
