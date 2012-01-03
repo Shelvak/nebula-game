@@ -53,17 +53,15 @@ module Parts::Repairable
       self.cooldown_ends_at = technology.healing_time(damaged_hp).seconds.
         from_now
 
-      transaction do
-        save!
-        planet.save!
+      save!
+      planet.save!
 
-        EventBroker.fire(self, EventBroker::CHANGED)
-        EventBroker.fire(planet, EventBroker::CHANGED,
-          EventBroker::REASON_OWNER_PROP_CHANGE)
-        Objective::RepairHp.progress(player, damaged_hp)
-        CallbackManager.register(self, CallbackManager::EVENT_COOLDOWN_EXPIRED,
-          cooldown_ends_at)
-      end
+      EventBroker.fire(self, EventBroker::CHANGED)
+      EventBroker.fire(planet, EventBroker::CHANGED,
+        EventBroker::REASON_OWNER_PROP_CHANGE)
+      Objective::RepairHp.progress(player, damaged_hp)
+      CallbackManager.register(self, CallbackManager::EVENT_COOLDOWN_EXPIRED,
+        cooldown_ends_at)
     end
 
     # Finish repairs.

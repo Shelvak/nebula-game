@@ -106,6 +106,15 @@ benchmark :gems do
   Bundler.require(*require_groups)
 
   require 'active_support/dependencies'
+
+  # We don't need our #destroy, #save and #save! automatically wrapped under
+  # transaction because we wrap whole request in one and can't use nested
+  # transactions due to BulkSql.
+  module ActiveRecord::Transactions
+    def destroy; super; end
+    def save(*); super; end
+    def save!(*); super; end
+  end
 end
 
 # Require plugins so all their functionality is present during

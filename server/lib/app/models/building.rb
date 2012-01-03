@@ -268,27 +268,25 @@ class Building < ActiveRecord::Base
         unless planet.can_destroy_building?
     end
 
-    transaction do
-      if with_credits
-        stats.save!
-        player.save!
-      end
-      Objective::SelfDestruct.progress(self)
-
-      destroy!
-
-      # We need to reload the planet, because #destroy! might have increased
-      # resources on it. Baargh, we need identity map badly here!
-      planet.reload
-      planet.can_destroy_building_at = CONFIG.evalproperty(
-        "buildings.self_destruct.cooldown"
-      ).since unless with_credits
-      planet.delayed_fire(planet, EventBroker::CHANGED,
-                          EventBroker::REASON_OWNER_PROP_CHANGE)
-
-      metal, energy, zetium = self_destruct_resources
-      planet.increase!(:metal => metal, :energy => energy, :zetium => zetium)
+    if with_credits
+      stats.save!
+      player.save!
     end
+    Objective::SelfDestruct.progress(self)
+
+    destroy!
+
+    # We need to reload the planet, because #destroy! might have increased
+    # resources on it. Baargh, we need identity map badly here!
+    planet.reload
+    planet.can_destroy_building_at = CONFIG.evalproperty(
+      "buildings.self_destruct.cooldown"
+    ).since unless with_credits
+    planet.delayed_fire(planet, EventBroker::CHANGED,
+                        EventBroker::REASON_OWNER_PROP_CHANGE)
+
+    metal, energy, zetium = self_destruct_resources
+    planet.increase!(:metal => metal, :energy => energy, :zetium => zetium)
   end
 
   # Moves building to new coordinates using creds.
@@ -322,12 +320,10 @@ class Building < ActiveRecord::Base
     raise ActiveRecord::RecordInvalid.new(self) unless errors.blank?
     calculate_mods(true)
 
-    transaction do
-      stats.save!
-      player.save!
-      energy_provider ? activate! : save!
-      Objective::MoveBuilding.progress(self)
-    end
+    stats.save!
+    player.save!
+    energy_provider ? activate! : save!
+    Objective::MoveBuilding.progress(self)
 
     EventBroker.fire(self, EventBroker::CHANGED)
   end

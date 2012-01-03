@@ -117,30 +117,28 @@ module Dev
     owner = planet.player
     raise "No planet owner in #{planet}!" if owner.nil?
     
-    ActiveRecord::Base.transaction do
-      Unit.give_units(parse.call(defenders), planet, owner) \
-        unless defenders == ""
+    Unit.give_units(parse.call(defenders), planet, owner) \
+      unless defenders == ""
 
-      galaxy_id = owner.galaxy_id
-      attackers = []
-      parse.call(offenders).each do |type, count|
-        klass = "Unit::#{type.camelcase}".constantize
-        count.times do
-          unit = klass.new(
-            :level => 1,
-            :hp => klass.hit_points,
-            :location => planet,
-            :galaxy_id => galaxy_id,
-            :flank => 0
-          )
-          unit.skip_validate_technologies = true
+    galaxy_id = owner.galaxy_id
+    attackers = []
+    parse.call(offenders).each do |type, count|
+      klass = "Unit::#{type.camelcase}".constantize
+      count.times do
+        unit = klass.new(
+          :level => 1,
+          :hp => klass.hit_points,
+          :location => planet,
+          :galaxy_id => galaxy_id,
+          :flank => 0
+        )
+        unit.skip_validate_technologies = true
 
-          attackers.push unit
-        end
+        attackers.push unit
       end
-      Unit.save_all_units(attackers, nil, EventBroker::CREATED)
-      Combat::LocationChecker.check_location(planet.location_point)
     end
+    Unit.save_all_units(attackers, nil, EventBroker::CREATED)
+    Combat::LocationChecker.check_location(planet.location_point)
   end
   
   def self.pimp(player_id_or_name, opts={})

@@ -126,18 +126,16 @@ module Parts
         planet.increase(:metal => metal, :energy => energy, :zetium => zetium)
         
         self.upgrade_ends_at = nil
-        transaction do
-          CallbackManager.
-            unregister(self, CallbackManager::EVENT_UPGRADE_FINISHED)
-          if level == 0
-            destroy!
-          else
-            # Invoked by Building#cancel!
-            yield if block_given?
-            save!
-          end
-          planet.save!
+        CallbackManager.
+          unregister(self, CallbackManager::EVENT_UPGRADE_FINISHED)
+        if level == 0
+          destroy!
+        else
+          # Invoked by Building#cancel!
+          yield if block_given?
+          save!
         end
+        planet.save!
       end
 
       # Accelerate upgrading. Returns number of seconds reduced.
@@ -169,13 +167,11 @@ module Parts
         stats = CredStats.accelerate(self, cost, time, seconds_reduced)
         player.creds -= cost
 
-        transaction do
-          stats.save!
-          player.save!
-          save!
-          EventBroker.fire(self, EventBroker::CHANGED)
-          Objective::Accelerate.progress([self])
-        end
+        stats.save!
+        player.save!
+        save!
+        EventBroker.fire(self, EventBroker::CHANGED)
+        Objective::Accelerate.progress([self])
 
         seconds_reduced
       end

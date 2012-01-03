@@ -4,15 +4,13 @@ class Building::NpcHall < Building
   include Parts::LoopedCooldown
 
   def cooldown_expired!
-    transaction do
-      player = planet.player
-      if player
-        player.victory_points += property('victory_points')
-        player.creds += property('creds')
-        player.save!
-      end
-      
-      super
+    player = planet.player
+    if player
+      player.victory_points += property('victory_points')
+      player.creds += property('creds')
+      player.save!
     end
+
+    super
   end
 end

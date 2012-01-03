@@ -45,14 +45,12 @@ module Parts::PlanetBoosts
     from = current.nil? || current < now ? now : current
     self.send(:"#{attr}=", from + duration)
 
-    ActiveRecord::Base.transaction do
-      self.save!
-      player.save!
-      EventBroker.fire(self, EventBroker::CHANGED,
-        EventBroker::REASON_OWNER_PROP_CHANGE)
-      stats.save!
-    end
-    
+    self.save!
+    player.save!
+    EventBroker.fire(self, EventBroker::CHANGED,
+      EventBroker::REASON_OWNER_PROP_CHANGE)
+    stats.save!
+
     self
   end
 end

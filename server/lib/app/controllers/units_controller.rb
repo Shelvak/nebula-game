@@ -213,15 +213,13 @@ class UnitsController < GenericController
 
     sm = MoveSpeedModifier.new(params['speed_modifier'])
     
-    ActiveRecord::Base.transaction do
-      sm.deduct_creds!(player, params['unit_ids'], source, target, 
-        params['avoid_npc'])
+    sm.deduct_creds!(player, params['unit_ids'], source, target,
+      params['avoid_npc'])
 
-      UnitMover.move(
-        player.id, params['unit_ids'], source, target, params['avoid_npc'],
-        sm.to_f
-      )
-    end
+    UnitMover.move(
+      player.id, params['unit_ids'], source, target, params['avoid_npc'],
+      sm.to_f
+    )
   end
 
   ACTION_MOVEMENT_PREPARE = 'units|movement_prepare'

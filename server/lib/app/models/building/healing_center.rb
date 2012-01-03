@@ -41,16 +41,14 @@ class Building::HealingCenter < Building
 
     self.cooldown_ends_at = healing_time(damaged_hp).seconds.from_now
 
-    transaction do
-      save!
-      Unit.save_all_units(units)
-      planet.save!
-      
-      EventBroker.fire(self, EventBroker::CHANGED)
-      EventBroker.fire(planet, EventBroker::CHANGED, 
-        EventBroker::REASON_OWNER_PROP_CHANGE)
-      Objective::HealHp.progress(player, damaged_hp)
-    end
+    save!
+    Unit.save_all_units(units)
+    planet.save!
+
+    EventBroker.fire(self, EventBroker::CHANGED)
+    EventBroker.fire(planet, EventBroker::CHANGED,
+      EventBroker::REASON_OWNER_PROP_CHANGE)
+    Objective::HealHp.progress(player, damaged_hp)
   end
 
   def as_json(options=nil)

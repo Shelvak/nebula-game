@@ -314,10 +314,8 @@ class SsObject::Planet < SsObject
     stop_exploration!(old_player) if exploring?
 
     if scientist_count > 0
-      transaction do
-        old_player.change_scientist_count!(- scientist_count) if old_player
-        new_player.change_scientist_count!(scientist_count) if new_player
-      end
+      old_player.change_scientist_count!(- scientist_count) if old_player
+      new_player.change_scientist_count!(scientist_count) if new_player
     end
     
     if old_player

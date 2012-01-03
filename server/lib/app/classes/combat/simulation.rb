@@ -86,19 +86,17 @@ module Combat::Simulation
     )
     combat_log = CombatLog.create_from_combat!(replay_info)
 
-    notification_ids = nil
-    cooldown = nil
-
-    ActiveRecord::Base.transaction do
-      wreckages = add_wreckages(location, buildings, units)
-      notification_ids = create_notifications(response, client_location,
-        filter_leveled_up(units), combat_log, wreckages)
-      save_players(players, response['statistics'])
-      save_updated_participants(units, buildings, killed_by)
-      cooldown = create_cooldown(location, response['outcomes']) \
-        if options[:cooldown]
-      Objective::Battle.progress(response['outcomes'])
-    end
+    wreckages = add_wreckages(location, buildings, units)
+    notification_ids = create_notifications(
+      response, client_location, filter_leveled_up(units), combat_log,
+      wreckages
+    )
+    save_players(players, response['statistics'])
+    save_updated_participants(units, buildings, killed_by)
+    cooldown = options[:cooldown] \
+      ? create_cooldown(location, response['outcomes']) \
+      : nil
+    Objective::Battle.progress(response['outcomes'])
 
     Combat::Assets.new(response, combat_log, notification_ids, cooldown)
   end

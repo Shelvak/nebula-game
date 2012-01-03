@@ -33,35 +33,29 @@ class Combat::Annexer
     def protect(planet, outcomes)
       duration = Cfg.planet_protection_duration(planet.solar_system.galaxy)
 
-      ActiveRecord::Base.transaction do
-        outcomes.each do |player_id, outcome|
-          Notification.create_for_planet_protected(player_id, planet, 
-            outcome, duration) unless player_id.nil?
-        end
-        
-        Cooldown.create_unless_exists(planet, duration.from_now)
+      outcomes.each do |player_id, outcome|
+        Notification.create_for_planet_protected(player_id, planet,
+          outcome, duration) unless player_id.nil?
       end
+
+      Cooldown.create_unless_exists(planet, duration.from_now)
     end
     
     # Remove planet ownership and notify all combat participants.
     def annex_planet(planet, outcomes)
-      ActiveRecord::Base.transaction do
-        outcomes.each do |player_id, outcome|
-          Notification.create_for_planet_annexed(player_id, planet, 
-            outcome) unless player_id.nil?
-        end
-        
-        planet.player = nil
-        planet.save!
+      outcomes.each do |player_id, outcome|
+        Notification.create_for_planet_annexed(player_id, planet,
+          outcome) unless player_id.nil?
       end
+
+      planet.player = nil
+      planet.save!
     end
     
     # Planet is free, send notifications for everyone in alliances.
     def planet_free(planet, alliances)
-      ActiveRecord::Base.transaction do
-        alliances.values.flatten.compact.each do |player|
-          Notification.create_for_planet_annexed(player.id, planet, nil)
-        end
+      alliances.values.flatten.compact.each do |player|
+        Notification.create_for_planet_annexed(player.id, planet, nil)
       end
     end
   end

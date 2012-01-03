@@ -26,11 +26,9 @@ class MoveSpeedModifier
       stats = CredStats.movement_speed_up(player, creds_needed)
       player.creds -= creds_needed
       
-      ActiveRecord::Base.transaction do
-        player.save!
-        Objective::AccelerateFlight.progress(player)
-        stats.save!
-      end
+      player.save!
+      Objective::AccelerateFlight.progress(player)
+      stats.save!
     end
   end
   

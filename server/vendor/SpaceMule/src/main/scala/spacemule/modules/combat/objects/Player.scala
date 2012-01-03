@@ -9,13 +9,6 @@ object Player {
      * Modifier example: 0.25 would mean 25% more damage.
      */
     type ModsMap = Map[String, Double]
-    
-    object ModsMap {
-      /**
-       * Special value for overpopulation mod.
-       */
-      val Overpopulation = "overpopulation"
-    }
 
     def empty = new Player.Technologies(Map(), Map())
   }
@@ -37,13 +30,21 @@ object Player {
      * Return mod for combatant from given mod map.
      */
     private def modsFrom(modsMap: Technologies.ModsMap, combatant: Combatant) =
-      modsMap(Technologies.ModsMap.Overpopulation) + 
       modsMap.getOrElse(combatant.rubyName, 0d)
   }
+
+  val DefaultOverpopulation = 1.0
 }
 
-class Player(val id: Long, val name: String, val allianceId: Option[Long],
-             val technologies: Player.Technologies=Player.Technologies.empty) {
+class Player(
+  val id: Long,
+  val name: String,
+  val allianceId: Option[Long],
+  val technologies: Player.Technologies=Player.Technologies.empty,
+  // Returns value (0..1] for combat mods. If player is overpopulated this
+  // value will be < 1, else it will be 1.0.
+  val overpopulation: Double = Player.DefaultOverpopulation
+) {
   override def equals(other: Any) = other match {
     case player: Player => id == player.id
     case _ => false

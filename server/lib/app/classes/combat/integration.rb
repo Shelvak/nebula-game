@@ -65,7 +65,7 @@ module Combat::Integration
     # This does not dispatch event so we need to dispatch those manually. 
     # Blargh, stupid me.
     unless alive.blank?
-      alive.each { |building| building.save! }
+      BulkSql::Building.save(alive)
       EventBroker.fire(alive, EventBroker::CHANGED)
     end
   end

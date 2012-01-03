@@ -38,15 +38,13 @@ module Parts::PlanetExploration
       self.exploration_ends_at = ends_at
       player.scientists -= scientists_required
 
-      transaction do
-        save!
-        player.save!
-        CallbackManager.register(self,
-          CallbackManager::EVENT_EXPLORATION_COMPLETE,
-          ends_at)
-        EventBroker.fire(self, EventBroker::CHANGED, 
-          EventBroker::REASON_OWNER_PROP_CHANGE)
-      end
+      save!
+      player.save!
+      CallbackManager.register(self,
+        CallbackManager::EVENT_EXPLORATION_COMPLETE,
+        ends_at)
+      EventBroker.fire(self, EventBroker::CHANGED,
+        EventBroker::REASON_OWNER_PROP_CHANGE)
 
       true
     end
@@ -76,14 +74,12 @@ module Parts::PlanetExploration
       self.exploration_y = nil
       self.exploration_ends_at = nil
 
-      transaction do
-        CallbackManager.unregister(self,
-          CallbackManager::EVENT_EXPLORATION_COMPLETE)
-        player.save! unless player.nil?
-        save!
-        EventBroker.fire(self, EventBroker::CHANGED,
-          EventBroker::REASON_OWNER_PROP_CHANGE)
-      end
+      CallbackManager.unregister(self,
+        CallbackManager::EVENT_EXPLORATION_COMPLETE)
+      player.save! unless player.nil?
+      save!
+      EventBroker.fire(self, EventBroker::CHANGED,
+        EventBroker::REASON_OWNER_PROP_CHANGE)
     end
 
     # Finishes exploration, checks if anything was found and gives out
@@ -126,14 +122,12 @@ module Parts::PlanetExploration
         Cfg.exploration_rewards_random("#{win_lose_key}.#{units_key}")
       )
 
-      transaction do
-        stats.save! if with_creds
-        Objective::ExploreBlock.progress(self)
-        Notification.create_for_exploration_finished(self, rewards)
-        rewards.claim!(self, player)
-        player.save!
-        stop_exploration!
-      end
+      stats.save! if with_creds
+      Objective::ExploreBlock.progress(self)
+      Notification.create_for_exploration_finished(self, rewards)
+      rewards.claim!(self, player)
+      player.save!
+      stop_exploration!
 
       true
     end
@@ -183,12 +177,10 @@ module Parts::PlanetExploration
       stats = CredStats.remove_foliage(player, width, height)
       player.creds -= cost
       
-      self.class.transaction do
-        tile.destroy!
-        stats.save!
-        player.save!
-      end
-      
+      tile.destroy!
+      stats.save!
+      player.save!
+
       self
     end
   end
