@@ -38,6 +38,6 @@ bot.resources.range.2: [750, 1500]          # zetium range
 # Selected amount of resources is multiplied by [1, day / day_divider].max
 # when creating system offer. This ensures amount of resources stay relevant
 # through course of the game.
-bot.resources.day_divider: 20.0
+bot.resources.day_divider: 15.0
 # Cooldown range for when system offer is totally bought out.
 bot.resources.cooldown: [<%= 10.minutes %> / speed, <%= 30.minutes %> / speed]
