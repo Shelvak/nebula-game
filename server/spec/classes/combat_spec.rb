@@ -265,19 +265,48 @@ describe Combat do
   end
   
   it "should calculate overpopulation into account" do
-    loser = nil # This will lose because being THAT much into overpopulation
-                # sucks bad for you.
-    winner = nil
-    CombatDsl.new do
+    p1 = p2 = u1_normal = u2_normal = nil
+    dsl = CombatDsl.new do
       location :planet
-      player(:population => 100000, :population_cap => 10) do
-        units { loser = trooper }
-      end
-      player { units { winner = trooper :hp => 20 } }
-    end.run
-    
-    loser.should be_dead
-    winner.should be_alive
+      p1 = player do
+        units { u1_normal = scorpion }
+      end.player
+      p2 = player { units { u2_normal = scorpion } }.player
+    end
+
+    Factory.create!(:t_scorpion, :player => p1, :level => 3)
+    Factory.create!(:t_scorpion, :player => p2, :level => 2)
+
+    dsl.run
+
+    p1 = p2 = u1_overpop = u2_overpop = player = nil
+    dsl = CombatDsl.new do
+      location :planet
+      p1 = player(:population => 30, :population_cap => 10) do
+        units { u1_overpop = scorpion }
+      end.player
+      p2 = player { units { u2_overpop = scorpion } }.player
+    end
+
+    Factory.create!(:t_scorpion, :player => p1, :level => 3)
+    Factory.create!(:t_scorpion, :player => p2, :level => 2)
+
+    dsl.run
+
+    [u1_normal, u2_normal, u1_overpop, u2_overpop].each(&:reload)
+
+    mod = p1.overpopulation_mod
+
+    dmg_dealt_u1_normal = u2_normal.hit_points - u2_normal.hp
+    dmg_dealt_u1_overpop = u2_overpop.hit_points - u2_overpop.hp
+
+    (dmg_dealt_u1_overpop.to_f / dmg_dealt_u1_normal).should be_within(0.01).
+                                                               of(mod)
+    dmg_dealt_u2_normal = u1_normal.hit_points - u1_normal.hp
+    dmg_dealt_u2_overpop = u1_overpop.hit_points - u1_overpop.hp
+
+    (dmg_dealt_u2_normal.to_f / dmg_dealt_u2_overpop).should be_within(0.01).
+                                                               of(mod)
   end
   
   it "should not crash if planet owner does not have any assets" do

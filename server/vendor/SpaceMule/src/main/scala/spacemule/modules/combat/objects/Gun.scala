@@ -57,7 +57,10 @@ class Gun(val index: Int, owner: Combatant, val kind: Kind.Value,
       val armorPercent = (1 + target.technologiesArmorMod) *
         (1 + target.armorModifier) * target.stanceArmorMod
 
-      val damage = (dpt * damagePercent / armorPercent).round
+      val damage = (
+        dpt * damagePercent / armorPercent *
+          owner.overpopulationMod / target.overpopulationMod
+      ).round
 
       if (damage > target.hp) target.hp
       else if (damage < 1) 1
