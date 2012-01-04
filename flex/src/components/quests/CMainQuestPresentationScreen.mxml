@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         visible="{mainQuestLine.isOpen}">
+   <fx:Script>
+      <![CDATA[
+      import models.quest.MMainQuestLine;
+      import models.quest.MMainQuestPresentation;
+      import models.quest.slides.MSlide;
+      import models.quest.MainQuestSlideFactory;
+      import models.quest.events.MMainQuestLineEvent;
+
+      import utils.assets.AssetNames;
+
+      import utils.assets.ImagePreloader;
+
+
+      private function getImage(name: String): BitmapData {
+         return ImagePreloader.getInstance().getImage(
+            AssetNames.MAIN_QUEST_IMAGES_FOLDER + name
+         );
+      }
+
+      private function get mainQuestLine(): MMainQuestLine {
+         return MMainQuestLine.getInstance();
+      }
+
+      protected override function initializationComplete(): void {
+         super.initializationComplete();
+         mainQuestLine.addEventListener(
+            MMainQuestLineEvent.CURRENT_PRESENTATION_CHANGE,
+            mainQuestLine_currentPresentationChangeHandler, false, 0, true
+         );
+         changePresentation();
+      }
+
+      private function mainQuestLine_currentPresentationChangeHandler
+         (event: MMainQuestLineEvent): void {
+         changePresentation();
+      }
+
+      private function changePresentation(): void {
+         grpContent.removeAllElements();
+         const presentation: MMainQuestPresentation =
+                  mainQuestLine.currentPresentation;
+         if (presentation != null) {
+            for each (var slide: MSlide in presentation.allSlides()) {
+               grpContent.addElement(
+                  MainQuestSlideFactory.getInstance().getComponent(slide)
+               );
+            }
+         }
+      }
+      ]]>
+   </fx:Script>
+   <s:BitmapImage left="0" right="0" top="0" bottom="0"
+                  source="{getImage('presentation_background')}"/>
+   <s:Group id="grpContent" verticalCenter="0" horizontalCenter="0"/>
+   <s:Button id="btnPreviousSlide" left="35" bottom="35"
+             enabled="{mainQuestLine.currentPresentation.hasPreviousSlide}"
+             click="mainQuestLine.currentPresentation.previousSlide()"
+             skinClass="components.quests.skins.CPreviousSlideButtonSkin"/>
+   <s:Button id="btnNextSlide" right="35" bottom="35"
+             enabled="{mainQuestLine.currentPresentation.hasNextSlide}"
+             click="mainQuestLine.currentPresentation.nextSlide()"
+             skinClass="components.quests.skins.CNextSlideButtonSkin"/>
+   <s:Button id="btnClose" label="Close"
+             bottom="15" horizontalCenter="0"
+             click="mainQuestLine.close()"/>
+</s:Group>
