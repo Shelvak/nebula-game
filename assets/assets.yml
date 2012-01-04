@@ -221,6 +221,14 @@ assets:
         14.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": Earth_element1.png
+        # 2x3
+        15.png:
+          "flex": {save_as: "swf:png"}
+          "wiki_name": Egg_plant_2x3.png
+        # 2x4
+        16.png:
+          "flex": {save_as: "swf:png"}
+          "wiki_name": Egg_plant_2x4.png
       "0/nonblocking":
         0.tar.gz: Plant01.tar.gz
         1.tar.gz: Plant02.tar.gz
@@ -261,6 +269,14 @@ assets:
         14.png:
           "flex": {save_as: "swf:png"}
           "wiki_name": Desert_element1.png
+        # 2x3
+        15.png:
+          "flex": {save_as: "swf:png"}
+          "wiki_name": Desert_obj_2x3.png
+        # 2x4
+        16.png:
+          "flex": {save_as: "swf:png"}
+          "wiki_name": Desert_obj_2x4.png
       "1/nonblocking":
         0.tar.gz: Sandp01.tar.gz
         1.tar.gz: Sandp02.tar.gz
@@ -297,6 +313,14 @@ assets:
         8.png: Marsh03.png
         # 3x4
         14.png: Mud_element1.png
+        # 2x3
+        15.png:
+          "flex": {save_as: "swf:png"}
+          "wiki_name": Mud_obj_2x3.png
+        # 2x4
+        16.png:
+          "flex": {save_as: "swf:png"}
+          "wiki_name": Mud_obj_2x4.png
       "2/nonblocking":
         0.tar.gz: Mudp01.tar.gz
         1.tar.gz: Mudp02.tar.gz
