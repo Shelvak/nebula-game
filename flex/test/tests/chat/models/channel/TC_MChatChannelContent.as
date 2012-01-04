@@ -1,6 +1,6 @@
 package tests.chat.models.channel
 {
-   import ext.hamcrest.events.causesTarget;
+   import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
    
    import flashx.textLayout.elements.FlowElement;
@@ -70,7 +70,7 @@ package tests.chat.models.channel
       public function messageAddAndMessageRemoveEvents() : void {
          assertThat(
             "adding new message", function():void{ content.addMessage(new ParagraphElement()) },
-            causesTarget(content) .toDispatchEvent (MChatChannelContentEvent.MESSAGE_ADD)
+            causes(content) .toDispatchEvent (MChatChannelContentEvent.MESSAGE_ADD)
          );
          
          for (var i:int = 0; i < ChatConstants.MAX_MESSAGES_IN_CHANNEL; i++) {
@@ -78,7 +78,7 @@ package tests.chat.models.channel
          }
          assertThat(
             "removing oldest message", function():void{ content.addMessage(new ParagraphElement()) },
-            causesTarget(content) .toDispatchEvent (MChatChannelContentEvent.MESSAGE_REMOVE)
+            causes(content) .toDispatchEvent (MChatChannelContentEvent.MESSAGE_REMOVE)
          );
       }
    }

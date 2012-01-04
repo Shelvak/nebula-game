@@ -1,6 +1,6 @@
 package tests.chat.models.channel
 {
-   import ext.hamcrest.events.causesTarget;
+   import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
    
    import models.chat.MChatChannel;
@@ -215,13 +215,13 @@ package tests.chat.models.channel
          assertThat(
             "NUM_MEMBERS_CHANGE is dispatched when member joins",
             function():void{ channel.memberJoin(member) },
-            causesTarget (channel) .toDispatchEvent (MChatChannelEvent.NUM_MEMBERS_CHANGE)
+            causes (channel) .toDispatchEvent (MChatChannelEvent.NUM_MEMBERS_CHANGE)
          );
          
          assertThat(
             "NUM_MEMBERS_CHANGE is dispatched when member leaves",
             function():void{ channel.memberLeave(member) },
-            causesTarget (channel) .toDispatchEvent (MChatChannelEvent.NUM_MEMBERS_CHANGE)
+            causes (channel) .toDispatchEvent (MChatChannelEvent.NUM_MEMBERS_CHANGE)
          );
       }
       
@@ -267,7 +267,7 @@ package tests.chat.models.channel
          
          assertThat(
             "changing generateJoinLeaveMsgs", function():void{ channel.generateJoinLeaveMsgs = false },
-            causesTarget (channel) .toDispatchEvent (MChatChannelEvent.GENERATE_JOIN_LEAVE_MSGS_CHANGE)
+            causes (channel) .toDispatchEvent (MChatChannelEvent.GENERATE_JOIN_LEAVE_MSGS_CHANGE)
          );
       }
    }

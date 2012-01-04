@@ -1,6 +1,6 @@
 package tests.chat.models.chat
 {
-   import ext.hamcrest.events.causesTarget;
+   import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
    
    import models.chat.MChat;
@@ -103,11 +103,11 @@ package tests.chat.models.chat
          chat.visible = false;
          assertThat(
             "making chat visible", function():void{ chat.visible = true },
-            causesTarget(chat) .toDispatchEvent (MChatEvent.VISIBLE_CHANGE)
+            causes(chat) .toDispatchEvent (MChatEvent.VISIBLE_CHANGE)
          );
          assertThat(
             "making chat invisible", function():void{ chat.visible = false },
-            causesTarget(chat) .toDispatchEvent (MChatEvent.VISIBLE_CHANGE)
+            causes(chat) .toDispatchEvent (MChatEvent.VISIBLE_CHANGE)
          );
       }
       

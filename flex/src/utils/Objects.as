@@ -647,7 +647,7 @@ package utils
       /**
        * @throws flash.errors.IllegalOperationError
        */
-      public static function throwAbstractMethodErrror(customMessage:String = null) : void {
+      public static function throwAbstractMethodError(customMessage:String = null) : void {
          throwIllegalOperationError("Method is abstract", customMessage);
       }
       

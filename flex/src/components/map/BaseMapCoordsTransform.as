@@ -72,22 +72,22 @@ package components.map
       }
       
       public function logicalToReal_X(logicalX:int, logicalY:int) : Number {
-         Objects.throwAbstractMethodErrror();
+         Objects.throwAbstractMethodError();
          return 0;   // unreachable
       }
       
       public function logicalToReal_Y(logicalX:int, logicalY:int) : Number {
-         Objects.throwAbstractMethodErrror();
+         Objects.throwAbstractMethodError();
          return 0;   // unreachable
       }
       
       public function realToLogical_X(realX:Number, realY:Number) : int {
-         Objects.throwAbstractMethodErrror();
+         Objects.throwAbstractMethodError();
          return 0;   // unreachable
       }
       
       public function realToLogical_Y(realX:Number, realY:Number) : int {
-         Objects.throwAbstractMethodErrror();
+         Objects.throwAbstractMethodError();
          return 0;   // unreachable
       }
    }

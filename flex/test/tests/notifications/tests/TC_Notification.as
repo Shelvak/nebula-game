@@ -4,7 +4,7 @@ package tests.notifications.tests
    
    import controllers.notifications.NotificationsCommand;
    
-   import ext.hamcrest.events.causesTarget;
+   import ext.hamcrest.events.causes;
    
    import models.notification.Notification;
    import models.notification.events.NotificationEvent;
@@ -145,7 +145,7 @@ package tests.notifications.tests
          notif = Objects.create(Notification, Data.notifOne);
          assertThat(
             "updating location", function():void{ notif.updateLocationName(2, "name") },
-            causesTarget(notif) .toDispatchEvent (NotificationEvent.MESSAGE_CHANGE)
+            causes(notif) .toDispatchEvent (NotificationEvent.MESSAGE_CHANGE)
          );
       }
       
