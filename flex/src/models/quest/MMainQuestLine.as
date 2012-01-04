@@ -29,7 +29,7 @@ package models.quest
 
       private var _quests:QuestsCollection;
       public function setQuests(quests:QuestsCollection): void {
-         Objects.paramNotNull("quests", quests)
+         Objects.paramNotNull("quests", quests);
          if (_quests != null) {
             _quests.removeEventListener(
                QuestCollectionEvent.COUNTERS_UPDATED,

@@ -58,7 +58,7 @@
             
             <s:Button label="{getString('label.tutorial')}" 
                       click="btnTutorial_clickHandler(event)"
-                      visible="{!completed &amp;&amp; (quest.helpUrlId != null)}" 
+                      visible="{quest.isMainQuest}"
                       skinClass="components.skins.YellowButtonSkin"/>
          </base:AdvancedContainer>
          
@@ -78,16 +78,14 @@
       import globalevents.GlobalEvent;
 
       import models.ModelLocator;
+      import models.quest.MMainQuestLine;
       import models.quest.Quest;
       import models.quest.events.QuestEvent;
       import models.resource.Resource;
-      import models.resource.ResourceType;
       import models.solarsystem.MSSObject;
 
       import spark.events.IndexChangeEvent;
 
-      import utils.StringUtil;
-      import utils.UrlNavigate;
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
       import utils.locale.Localizer;
@@ -208,7 +206,7 @@
       }
 
       private function btnTutorial_clickHandler(event: MouseEvent): void {
-         UrlNavigate.getInstance().showTutorial(quest.helpUrlId);
+         MMainQuestLine.getInstance().open(quest);
       }
 
       private function btnClaim_clickHandler(event: MouseEvent): void {

@@ -27,7 +27,6 @@ package models.factories
          var quest:Quest = new Quest();
          quest.id = questData["id"];
          quest.rewards = new Reward(questData["rewards"]);
-         quest.helpUrlId = questData["helpUrlId"];
          quest.mainQuestSlides = questData["mainQuestSlides"];
          quest.status = progressData["status"];
          quest.completed = progressData["completed"];

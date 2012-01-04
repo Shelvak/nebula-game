@@ -29,12 +29,6 @@ package models.quest
       * ]
       */      
       public var rewards: Reward;
-      
-      /**
-       * ID of help article associated to this quest in knowledge base.
-       */      
-      [Optional]
-      public var helpUrlId: String;
 
       [Required]
       public var mainQuestSlides: String;
