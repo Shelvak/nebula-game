@@ -666,11 +666,6 @@ package controllers.ui
                ML.quests.select(quest.id);
             }
          }
-         if (ML.player.firstTime)
-         {
-            ML.quests.select(Quest(ML.quests.getFirst()).id);
-            new PlayersCommand(PlayersCommand.EDIT).dispatch();
-         }
       }
       
       
