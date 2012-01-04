@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:base="components.base.*">
+   <fx:Script>
+      <![CDATA[
+      import models.ModelLocator;
+      import models.quest.Quest;
+      import models.resource.ResourceType;
+
+      import utils.StringUtil;
+
+      import utils.locale.Localizer;
+
+      
+      private function get ML(): ModelLocator {
+         return ModelLocator.getInstance();
+      }
+
+      [Bindable]
+      public var quest:Quest;
+
+      private function getString(property: String, parameters: Array = null): String {
+         return Localizer.string("Quests", property, parameters);
+      }
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:VerticalLayout horizontalAlign="justify" gap="5"/>
+   </s:layout>
+
+   <s:Label text="{quest.about}" color="#D6CA8D" fontSize="15" paddingBottom="20" />
+
+   <s:Group>
+      <s:layout>
+         <s:HorizontalLayout paddingTop="6"/>
+      </s:layout>
+      <s:Label text="{getString('label.objectives')}" fontWeight="bold" fontSize="15" width="95"/>
+      <s:Group id="grpObjectives" width="100%">
+         <s:DataGroup dataProvider="{quest.objectives}">
+            <s:itemRenderer>
+               <fx:Component>
+                  <s:ItemRenderer>
+                     <fx:Script>
+                        import models.objectives.QuestObjective;
+                     </fx:Script>
+                     <s:Label text="{QuestObjective(data).objectiveText}"/>
+                  </s:ItemRenderer>
+               </fx:Component>
+            </s:itemRenderer>
+            <s:layout>
+               <s:VerticalLayout/>
+            </s:layout>
+         </s:DataGroup>
+      </s:Group>
+   </s:Group>
+
+   <s:Group>
+      <s:Label text="{getString('label.rewards')}" fontWeight="bold" paddingTop="6"
+               fontSize="14" width="95"/>
+      <base:AdvancedContainer id="grpRewards" width="100%">
+         <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{quest.rewards.metal}"
+                             visible="{quest.rewards.metal != 0}"
+                             toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+         <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{quest.rewards.energy}"
+                             visible="{quest.rewards.energy != 0}"
+                             toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+         <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{quest.rewards.zetium}"
+                             visible="{quest.rewards.zetium != 0}"
+                             toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+         <s:Group width="100%" visible="{quest.rewards.points != 0}">
+            <s:Label width="{int(getString('rewardsWidth'))}"
+                     text="{getString('points')}"/>
+            <s:Label text="{quest.rewards.points}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%" visible="{quest.rewards.scientists != 0}">
+            <s:Label width="{int(getString('rewardsWidth'))}"
+                     text="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
+            <s:Label text="{quest.rewards.scientists}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%" visible="{quest.rewards.creds != 0}">
+            <s:Label width="{int(getString('rewardsWidth'))}"
+                     text="{StringUtil.firstToUpperCase(Localizer.string('Credits', 'label.creds'))}"/>
+            <s:Label text="{quest.rewards.creds}"/>
+            <s:layout>
+               <s:HorizontalLayout/>
+            </s:layout>
+         </s:Group>
+         <s:Group width="100%" visible="{quest.rewards.units.length > 0}">
+            <s:Label text="{getString('units')}" fontWeight="bold"/>
+            <s:DataGroup itemRenderer="components.unit.IRUnitBuildingEntrySmall"
+                         dataProvider="{quest.rewards.units}"
+                         height="{85 * unitsLayout.rowCount}">
+               <s:layout>
+                  <s:TileLayout id="unitsLayout"/>
+               </s:layout>
+            </s:DataGroup>
+            <s:Label text="{getString('label.populationIncrease',
+                                 [quest.rewards.unitsPopulation])}"
+                     fontWeight="bold"
+                     styleName="{quest.rewards.unitsPopulation + ML.player.population >
+                                 ML.player.populationMax? 'unsatisfied': null}"/>
+            <s:layout>
+               <s:VerticalLayout horizontalAlign="justify"/>
+            </s:layout>
+         </s:Group>
+         <base:layout>
+            <s:VerticalLayout paddingTop="6"/>
+         </base:layout>
+      </base:AdvancedContainer>
+      <s:layout>
+         <s:HorizontalLayout paddingTop="6"/>
+      </s:layout>
+   </s:Group>
+</s:Group>
