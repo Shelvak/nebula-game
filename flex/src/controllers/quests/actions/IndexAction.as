@@ -4,6 +4,7 @@ package controllers.quests.actions
    import controllers.CommunicationCommand;
    
    import models.factories.QuestFactory;
+   import models.quest.MMainQuestLine;
    import models.quest.Quest;
    
    import mx.collections.ArrayCollection;
@@ -31,6 +32,7 @@ package controllers.quests.actions
          {
             ML.quests.addItem(QuestFactory.fromObject(quest));
          }
+         MMainQuestLine.getInstance().setQuests(ML.quests);
       }
    }
 }
