@@ -18,7 +18,6 @@ package controllers.screens
       public static const RATINGS:String = "Ratings";
       public static const MARKET:String = "Market";
       public static const ALLY_RATINGS:String = "AllyRatings";
-      public static const WELCOME:String = "Welcome";
       public static const HEAL:String = "Heal";
       public static const CHAT:String = "Chat";
       public static const VIP:String = "Vip";

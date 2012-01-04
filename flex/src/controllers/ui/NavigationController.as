@@ -205,9 +205,6 @@ package controllers.ui
          _screenProperties[String(MainAreaScreens.ALLIANCE)] = new ScreenProperties(
             MainAreaScreens.ALLIANCE, null, false
          );
-         _screenProperties[String(MainAreaScreens.WELCOME)] = new ScreenProperties(
-            MainAreaScreens.WELCOME, null, false
-         );
          _screenProperties[String (MainAreaScreens.CHAT)] = new ScreenProperties(
             MainAreaScreens.CHAT, null, false, false, 0, null,
             MChat.getInstance().screenShowHandler,
@@ -712,13 +709,6 @@ package controllers.ui
          createdScreens[MainAreaScreens.ALLY_RATINGS] = true;
          showNonMapScreen(_screenProperties[MainAreaScreens.ALLY_RATINGS]);
          new GRatingsEvent(GRatingsEvent.ALLIANCE_RATINGS_REFRESH);
-      }
-      
-      
-      public function showWelcomeScreen() : void
-      {
-         resetToNonMapScreen(_screenProperties[MainAreaScreens.WELCOME]);
-         ML.activeMapType = MapType.GALAXY;
       }
       
       

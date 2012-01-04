@@ -19,6 +19,7 @@ package controllers.galaxies.actions
    import models.map.MapArea;
    import models.map.MapType;
    import models.movement.MHop;
+   import models.quest.MMainQuestLine;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
    import models.time.MTimeEventFixedMoment;
@@ -126,8 +127,10 @@ package controllers.galaxies.actions
                      NAV_CTRL.toPlanet(
                         MSSObject(ML.player.planets.getItemAt(0)),
                         function() : void {
-                           if (ML.player.firstTime)
-                              NAV_CTRL.showWelcomeScreen();
+                           if (ML.player.firstTime) {
+                              MMainQuestLine.getInstance()
+                                 .openCurrentUncompletedQuest();
+                           }
                         }
                      );
                   }

@@ -50,7 +50,6 @@
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.VIP}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.ALLY_RATINGS}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.ALLIANCE}"/>
-      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.WELCOME}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.CHAT}"/>
       <base:TopMessage bottom="20" horizontalCenter="0" width="100%" visible="false"/>
       <menus:LeftHidableMenu left="0" top="200"/>
