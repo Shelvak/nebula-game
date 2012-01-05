@@ -209,28 +209,14 @@ describe SpaceMule do
         @condition = SolarSystem.
           where(:player_id => @player.id, :kind => SolarSystem::KIND_NORMAL)
         @ss = @condition.first
-
-        @station_condition = SolarSystem.
-          where(:player_id => @player.id,
-                :kind => SolarSystem::KIND_SPACE_STATION)
-        @station = @station_condition.first
       end
 
       it "should only have one home solar system" do
         @condition.count.should == 1
       end
 
-      it "should only have one space station" do
-        @station_condition.count.should == 1
-      end
-
-      it "should be placed near home solar system" do
-        diff = [@station.x - @ss.x, @station.y - @ss.y].map(&:abs)
-        [[0, 1], [1, 0], [1, 1]].should include(diff)
-      end
-
       it "should register callback for spawn" do
-         @ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+        @ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
       end
 
       it "should be created from static configuration" do

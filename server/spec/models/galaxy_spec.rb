@@ -388,4 +388,23 @@ describe Galaxy do
       end
     end
   end
+
+  describe "#create_dead_stars?" do
+    let(:galaxy) { Factory.build(:galaxy) }
+    let(:diagonal_no) { 2 }
+
+    it "should return true if zone is old enough" do
+      Cfg.should_receive(:galaxy_zone_death_age).with(diagonal_no).
+        and_return(3.days)
+      galaxy.created_at = 3.1.days.ago
+      galaxy.create_dead_stars?(diagonal_no).should be_true
+    end
+
+    it "should return false if zone is too young" do
+      Cfg.should_receive(:galaxy_zone_death_age).with(diagonal_no).
+        and_return(3.days)
+      galaxy.created_at = 2.9.days.ago
+      galaxy.create_dead_stars?(diagonal_no).should be_false
+    end
+  end
 end

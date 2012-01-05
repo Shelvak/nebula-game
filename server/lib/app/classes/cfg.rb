@@ -153,15 +153,16 @@ class Cfg; class << self
 
   ### galaxy.yml ###
 
+  def galaxy_zone_death_age(diagonal_no)
+    CONFIG.evalproperty('galaxy.zone.death_age', 'arg' => diagonal_no)
+  end
+
   def player_initial_population; CONFIG['galaxy.player.population']; end
   def player_max_population; CONFIG['galaxy.player.population.max']; end
 
-  # Time in seconds that has passed to still count player as active.
-  def player_last_seen_in
-    CONFIG.evalproperty('galaxy.player.inactivity_check.last_seen_in')
-  end
-
-  def player_inactivity_check(points)
+  # Returns number of seconds player is required to be last seen ago to be
+  # considered active.
+  def player_inactivity_time(points)
     CONFIG['galaxy.player.inactivity_check'].each do |points_required, seconds|
       return seconds if points <= points_required
     end

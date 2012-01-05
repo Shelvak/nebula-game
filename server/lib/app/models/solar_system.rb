@@ -13,9 +13,6 @@ class SolarSystem < ActiveRecord::Base
   KIND_BATTLEGROUND = 2
   # Dead solar system
   KIND_DEAD = 3
-  # Space station flying in the galaxy. Not actually a solar system, it just
-  # reserves place for it.
-  KIND_SPACE_STATION = 4
 
   belongs_to :player
 
@@ -193,6 +190,33 @@ class SolarSystem < ActiveRecord::Base
       location
     else
       nil
+    end
+  end
+
+  # Detaches solar systems belonging to player from galaxy. Deactivates player
+  # radars.
+  #
+  # If zone is still young - nothing is placed instead of them. Also
+  # FowSsEntries are destroyed for other players.
+  #
+  # If zone is old enough - dead solar systems are placed in original places and
+  # other player FowSsEntries are registered on them.
+  #
+  def self.detach_player(galaxy, player_id)
+    home_ss = where(:player_id => player_id, :kind => SolarSystem::KIND_NORMAL).
+      first
+
+    # Deactivate radars.
+    home_ss.planets.where(:player_id => player_id).buildings.
+      where(:type => Building::Radar).all.each(&:deactivate!)
+
+    zone = Galaxy::Zone.lookup(home_ss.x, home_ss.y)
+    if galaxy.create_dead_stars?(zone.slot)
+
+    else
+      where(:player_id => player_id).update_all("x = NULL, y = NULL")
+      FowSsEntry.where("player_id != ?", player_id).delete_all
+      # TODO: dispatch ss metadata destroy for alliances/players.
     end
   end
 

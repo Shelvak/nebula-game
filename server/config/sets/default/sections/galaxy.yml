@@ -7,6 +7,9 @@
 zone.diameter: 8
 # Players per zone.
 zone.players: 10
+# How much time should pass in diagonal for dead stars to start appearing?
+# arg - 1 because we start spawning at diagonal 2.
+zone.death_age: (arg - 1) * <%= 1.week %>
 
 # Free population given to player upon creation
 player.population: 60

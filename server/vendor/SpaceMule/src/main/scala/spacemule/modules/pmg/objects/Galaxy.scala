@@ -1,7 +1,7 @@
 package spacemule.modules.pmg.objects
 
 import scala.collection.mutable.HashMap
-import solar_systems.{SpaceStation, Homeworld, Pulsar, Wormhole}
+import solar_systems.{Homeworld, Pulsar, Wormhole}
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
@@ -63,7 +63,7 @@ class Galaxy(val id: Int, val ruleset: String) {
    */
   private def randomZone(): Zone = {
     val zone = new Zone(0, 0, zoneDiameter)
-    var slot = 1
+    var slot = 2 // Start from 2, leave 4 center zones empty
     while (true) {
       // Shamelessly stolen from Mykolas, I don't really have much idea on what
       // is going on here.
@@ -116,6 +116,6 @@ class Galaxy(val id: Int, val ruleset: String) {
         zone.addSolarSystem(new Pulsar(), coords) }
     }
 
-    zone.addSolarSystem(new Homeworld(player), new SpaceStation(player))
+    zone.addSolarSystem(new Homeworld(player))
   }
 }
