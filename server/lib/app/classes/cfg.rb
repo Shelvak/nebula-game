@@ -107,6 +107,14 @@ class Cfg; class << self
   # Number of notifications sent to player.
   def notification_limit; CONFIG['notifications.limit']; end
 
+  def notification_expiration_time
+    CONFIG.evalproperty('notifications.expiration_time')
+  end
+
+  def combat_log_expiration_time
+    notification_expiration_time * 4
+  end
+
   ### combat.yml ###
 
   def max_flanks; CONFIG['combat.flanks.max']; end

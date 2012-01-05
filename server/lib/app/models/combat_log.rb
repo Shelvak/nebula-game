@@ -13,27 +13,29 @@ class CombatLog < ActiveRecord::Base
     ui\.
   )/x
 
+  custom_serialize :info,
+    :serialize => lambda { |info| MessagePack.pack(info) },
+    :unserialize => lambda { |bin| MessagePack.unpack(bin) }
+
   # All the data needed to play back combat replay.
   def self.replay_info(client_location, alliances, nap_rules, outcomes, log)
     {
-      :location => client_location.as_json,
-      :alliances => alliances,
-      :nap_rules => nap_rules,
-      :outcomes => outcomes,
-      :log => log,
-      :config => CONFIG.filter(REPLAY_INFO_CONFIG_REGEXP)
+      "location" => client_location.as_json,
+      "alliances" => alliances,
+      "nap_rules" => nap_rules,
+      "outcomes" => outcomes,
+      "log" => log,
+      "config" => CONFIG.filter(REPLAY_INFO_CONFIG_REGEXP)
     }
   end
 
-  set_primary_key :sha1_id
-
   # Is this player_id a winner in given battle?
   def self.winner?(info, player_id)
-    winner_index = info[:winner_index]
+    winner_index = (info[:winner_index] || info["winner_index"])
     return false if winner_index.nil?
 
-    info[:alliances][winner_index].each do |player_hash|
-      return true if player_hash[:id] == player_id
+    (info[:alliances] || info["alliances"])[winner_index].each do |player_hash|
+      return true if (player_hash[:id] || player_hash["id"]) == player_id
     end
 
     false
@@ -46,23 +48,31 @@ class CombatLog < ActiveRecord::Base
   def self.create_from_combat!(log_report)
     log = new
 
-    log.id = Digest::SHA1.hexdigest(
+    log.sha1_id = Digest::SHA1.hexdigest(
       "%s-%s-%05d" % [
         log_report[:alliances].inspect,
         Time.now.to_f.to_s,
         rand(100000)
       ]
     )
-    log.info = log_report.to_json
-    log.expires_at = Time.now + CONFIG.evalproperty(
-      'notifications.expiration_time')
+    log.info = log_report
 
     log.save!
+
+    CallbackManager.register(
+      log, CallbackManager::EVENT_DESTROY,
+      Cfg.combat_log_expiration_time.from_now
+    )
 
     log
   end
 
-  def self.cleanup!
-    delete_all("expires_at <= NOW()")
+  def self.on_callback(id, event)
+    case event
+      when CallbackManager::EVENT_DESTROY
+        where(:id => id).delete_all
+      else
+        raise CallbackManager::UnknownEvent.new(self, id, event)
+    end
   end
 end
