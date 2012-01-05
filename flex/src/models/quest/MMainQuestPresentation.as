@@ -31,9 +31,10 @@ package models.quest
          const keys:Array = _quest.mainQuestSlides.split(",");
          _slides = new Vector.<MSlide>();
          for each (var key:String in keys) {
-            _slides.push(
-               MainQuestSlideFactory.getInstance().getModel(key, _quest)
-            );
+            var slide:MSlide =
+                   MainQuestSlideFactory.getInstance().getModel(key, _quest);
+            slide.visible = false;
+            _slides.push(slide);
          }
          _numSlides = _slides.length;
       }

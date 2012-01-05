@@ -147,6 +147,34 @@ package tests.quests
          );
       }
 
+      [Test]
+      public function afterInitializationOnlyTheFirstSlideIsVisible(): void {
+         var slides:Vector.<MSlide>;
+         const quest:Quest = getQuest("AA,BB");
+         
+         presentation = new MMainQuestPresentation(quest);
+         slides = presentation.allSlides();
+         assertThat(
+            "first slide visible after initialization with quest",
+            slides[0].visible, isTrue()
+         );
+         assertThat(
+            "second slide invisible after initialization with quest",
+            slides[1].visible, isFalse()
+         );
+
+         presentation.nextSlide();
+         presentation = new MMainQuestPresentation(quest);
+         assertThat(
+            "first slide visible after initialization with same quest again",
+            slides[0].visible, isTrue()
+         );
+         assertThat(
+            "second slide invisible after initialization with same quest again",
+            slides[1].visible, isFalse()
+         );
+      }
+
       private function getQuest(slides:String = "A,B,C"): Quest {
          const quest:Quest = new Quest();
          quest.status = Quest.STATUS_STARTED;
