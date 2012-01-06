@@ -5,6 +5,7 @@ package controllers.objects.actions.customcontrollers
    import models.location.LocationMinimal;
 
    import models.map.MapType;
+   import models.player.PlayerMinimal;
    import models.solarsystem.MSSMetadata;
    import models.solarsystem.MSolarSystem;
    import models.solarsystem.SSKind;
@@ -59,6 +60,7 @@ package controllers.objects.actions.customcontrollers
          ss.x = object["x"];
          ss.y = object["y"];
          ss.kind = object["kind"];
+         ss.player = Objects.create(PlayerMinimal, object["player"]);
          ML.latestGalaxy.addObject(ss);
       }
    }
