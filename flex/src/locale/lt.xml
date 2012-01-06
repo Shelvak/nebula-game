@@ -2237,8 +2237,8 @@
     <!-- ### Pagrindinės užduotys ### -->
     <!-- ############################ -->
 
-    <!-- old id: 1 --> <title.10 value="Pradžia" />
-    <!-- old id: 1 --> <about.10>
+    <title.10 value="Pradžia" />
+    <about.10>
       <p>Sveiki atvykę, Komandore.</p>
 
       <p>
@@ -2252,10 +2252,10 @@
       <p>Privalome pastatyti vėjo jėgainę, kad patenkintume savo energetinius
       poreikius. Negaiškite laiko, Komandore, tuoj pat įsakykite pradėti 
       darbus.</p>
-    <!-- old id: 1 --> </about.10>
+    </about.10>
 
-    <!-- old id: 2 --> <title.20 value="Apšilimas" />
-    <!-- old id: 2 --> <about.20>
+    <title.20 value="Apšilimas" />
+    <about.20>
       <p>Puikiai susidorota, Komandore.</p>
 
       <p>Mūsų energijos tiekimas normalizavosi, bet panašu, kad šioje 
@@ -2266,10 +2266,10 @@
       metalo.</p>
 
       <p>Mūsų ateitis jūsų rankose, Komandore.</p>
-    <!-- old id: 2 --> </about.20>
+    </about.20>
 
-    <!-- old id: 3 --> <title.30 value="Augantys poreikiai" />
-    <!-- old id: 3 --> <about.30>
+    <title.30 value="Augantys poreikiai" />
+    <about.30>
       <p>Komandore,</p>
       
       <p>
@@ -2277,7 +2277,7 @@
         bet mes privalome užtikrinti stabilų atsargų augimą. Patobulinkime mūsų
         resursinius pastatus, jie puikiai pasitarnaus mūsų reikmėms!
       </p>
-    <!-- old id: 3 --> </about.30>
+    </about.30>
 
     <title.40 value="Prieaugis" />
     <about.40>
@@ -2289,35 +2289,35 @@
       </p>
     </about.40>
 
-    <!-- old id: 6 --> <title.50 value="Nerimas" />
-    <!-- old id: 6 --> <about.50>
-    <p>Komandore!</p>
+    <title.50 value="Nerimas" />
+    <about.50>
+      <p>Komandore!</p>
 
-    <p>
-      Žvalgyba praneša apie keistus triukšmus ir tai nėra šiaip vėjo
-      stūgavimas. Žvalgų nerimą patvirtina ir skeneriai, kuriuose stebime
-      keistas anomalijas. Įtarimai, kad šioje planetoje esame ne vieni
-      pasitvirtino, o kol nežinome su kuo susidūrėme, negalime pasikliauti
-      tik sienų tvirtumu.
-    </p>
+      <p>
+        Žvalgyba praneša apie keistus triukšmus ir tai nėra šiaip vėjo
+        stūgavimas. Žvalgų nerimą patvirtina ir skeneriai, kuriuose stebime
+        keistas anomalijas. Įtarimai, kad šioje planetoje esame ne vieni
+        pasitvirtino, o kol nežinome su kuo susidūrėme, negalime pasikliauti
+        tik sienų tvirtumu.
+      </p>
 
-    <p>Mums reikia karių! Įsakykite įrengti kareivines!</p>
+      <p>Mums reikia karių! Įsakykite įrengti kareivines!</p>
 
-    <p>Mes privalome užtikrinti savo žmonių saugumą.</p>
-    <!-- old id: 6 --> </about.50>
+      <p>Mes privalome užtikrinti savo žmonių saugumą.</p>
+    </about.50>
 
-    <!-- old id: 7 --> <title.60 value="Ginklavimosi varžybos" />
-    <!-- old id: 7 --> <about.60>
+    <title.60 value="Ginklavimosi varžybos" />
+    <about.60>
     <p>Komandore.</p>
 
     <p>
       Jūsų įsakymu įrengėme kareivines. Dabar privalome parengti daugiau karių.
       Užsukite į kareivines ir įsakykite pradėti desantininkų mokymus.
     </p>
-    <!-- old id: 7 --> </about.60>
+    </about.60>
 
-    <!-- old id: 8 --> <title.70 value="Pirmas kontaktas" />
-    <!-- old id: 8 --> <about.70>
+    <title.70 value="Pirmas kontaktas" />
+    <about.70>
     <p>Komandore.</p>
     <p>
       Už bazės ribų radome keletą silpnai saugomų ateivių pastatų. Užpulkime
@@ -2328,10 +2328,10 @@
       Mūsų žvalgyba sako, kad ateivių gnatai stiprumu yra apylygiai su mūsų
       desantininkais. Siūlau prieš puolant turėti kelių karių persvarą.
     </p>
-    <!-- old id: 8 --> </about.70>
+    </about.70>
 
-    <!-- old id: 11 --> <title.80 value="Neramios sielos" />
-    <!-- old id: 11 --> <about.80>
+    <title.80 value="Neramios sielos" />
+    <about.80>
     <p>Sveiki, Komandore.</p>
     <p>
       Mūsų kolonija klesti. Paskutinės ataskaitos demonstruoja stabilų
@@ -2351,10 +2351,10 @@
       nedelsiant. Galų gale vienas kitas mokslinis triukas rankovėje mums
       tikrai nepakenks!
     </p>
-    <!-- old id: 11 --> </about.80>
+    </about.80>
 
-    <!-- old id: 22 --> <title.90 value="Atradimai" />
-    <!-- old id: 22 --> <about.90>
+    <title.90 value="Atradimai" />
+    <about.90>
       <p>Gerą dieną, Komandore!</p>
 
       <p>
@@ -2367,10 +2367,10 @@
         Būtų labai teisinga ir tikslinga į įvykio vietą nusiųsti tyrėjus. 
         Galbūt jiems pavyks sužinoti ką nors daugiau.
       </p>
-    <!-- old id: 22 --> </about.90>
+    </about.90>
 
-    <!-- old id: 27 --> <title.100 value="Technologijų šukės" />
-    <!-- old id: 27 --> <about.100>
+    <title.100 value="Technologijų šukės" />
+    <about.100>
     <p>Komandore,</p>
     <p>
       Žvalgyba aptiko keletą keistų, ateivių robotų saugomų, pastatų. Juos
@@ -2388,10 +2388,10 @@
       Pats metas išvaduoti kristalus iš ateiviškų pastatų priespaudos! Išraskite
       technologiją reikalingą šiems kristalams apdirbti.
     </p>
-    <!-- old id: 27 --> </about.100>
+    </about.100>
 
-    <!-- old id: 15 --> <title.110 value="Kantrybės vaisiai" />
-    <!-- old id: 15 --> <about.110>
+    <title.110 value="Kantrybės vaisiai" />
+    <about.110>
     <p>Komandore!</p>
     <p>
       Mokslinkinkai pabaigė zetiumo tyrimus! Galime pradėti kasinėjimus. Tam
@@ -2401,7 +2401,7 @@
       Žinoma prieš tai mums teks atsiimti zetiumo klodus iš ateivių. Suburkite
       kariuomenę ir pulkite ateiviškuosius pastatus!
     </p>
-    <!-- old id: 15 --> </about.110>
+    </about.110>
 
     <title.120 value="Kritinė žala" />
     <about.120>
@@ -2413,8 +2413,8 @@
       </p>
     </about.120>
 
-    <!-- old id: 17 --> <title.130 value="Taupumas" />
-    <!-- old id: 17 --> <about.130>
+    <title.130 value="Taupumas" />
+    <about.130>
     <p>Sveiki sugrįžę, Komandore.</p>
     <p>
       Bijau, kad sakydama „resursų nebūna per daug“ truputį pasikarščiavau.
@@ -2428,7 +2428,7 @@
       Įsakykite pastatyti po saugyklą kiekvienam išgaunamų resursų tipui,
       Komandore.
     </p>
-    <!-- old id: 17 --> </about.130>
+    </about.130>
 
     <title.140 value="Užtikrinta ekonomika" />
     <about.140>
@@ -2439,8 +2439,8 @@
       </p>
     </about.140>
 
-    <!-- old id: 118 --> <title.150 value="Poreikių patenkinimas" />
-    <!-- old id: 118 --> <about.150>
+    <title.150 value="Poreikių patenkinimas" />
+    <about.150>
     <p>Sveiki, Komandore.</p>
     <p>Skirtingais laikais mums reikia skirtingų dalykų, ir deja nei vienas
       iš mūsų negali tobulai numatyti ateities. Išraskite ir pastatykite turgų
@@ -2448,18 +2448,18 @@
     <p>Juk jiems gali reikėti to, ko mes turime, ir atvirkščiai. Kodėl mes
       neturėtume padėti vieni kitiems? Galbūt besimainydami netgi susirasim
       ir vieną kitą draugą? Kas žino...</p>
-    <!-- old id: 118 --> </about.150>
+    </about.150>
 
-    <!-- old id: 121 --> <title.160 value="Užgniaužus kvapą" />
-    <!-- old id: 121 --> <about.160>
+    <title.160 value="Užgniaužus kvapą" />
+    <about.160>
       <p>Komandore,</p>
       <p>Mūsų žmonėms reikia daugiau vietos! Dar truputis ir nebus kur
         kojos padėti!</p>
       <p>Nedelsiant pradėkite gyvenamųjų bokštų statybas.</p>
-    <!-- old id: 121 --> </about.160>
+    </about.160>
 
-    <!-- old id: 18 --> <title.170 value="Kelias į žvaigždes" />
-    <!-- old id: 18 --> <about.170>
+    <title.170 value="Kelias į žvaigždes" />
+    <about.170>
     <p>Komandore.</p>
     <p>
       Mokslininkai sugalvojo kaip panaudoti zetiumą kosminių kelionių metu.
@@ -2467,10 +2467,10 @@
       laivų statyklos projektą.
     </p>
     <p>Kad pastatyti statyklą, mums būtini brėžiniai, tad nedelskite!</p>
-    <!-- old id: 18 --> </about.170>
+    </about.170>
 
-    <!-- old id: 19 --> <title.180 value="Kad kelias nedulkėtų..." />
-    <!-- old id: 19 --> <about.180>
+    <title.180 value="Kad kelias nedulkėtų..." />
+    <about.180>
     <p>Komandore!</p>
     <p>
       Laivų statyklos projektas ir technologijų aprašai jau perduoti
@@ -2483,10 +2483,10 @@
       ideali vieta statyboms. Jei gamyklą statysime ten, darbai eisis
       gerokai sparčiau.
     </p>
-    <!-- old id: 19 --> </about.180>
+    </about.180>
 
-    <!-- old id: 31 --> <title.190 value="Kosmoso grėsmės" />
-    <!-- old id: 31 --> <about.190>
+    <title.190 value="Kosmoso grėsmės" />
+    <about.190>
     <p>Sveiki, Komandore.</p>
     <p>Štai, mūsų laivų gamykla jau stovi. Galėtume kilti į kosmosą, tačiau
       mums reikia laivų! Žinome mes galėtume naudotis mulo klasės laivais,
@@ -2495,7 +2495,7 @@
     <p>Ne, tam, kad įveiktumėme ateivių laivus, stovinčius prie asteroidų ir
       planetų, mums prireiks kovinių laivų! Keliaukite į savo laivų gamyklą ir
       liepkite pradėti savo pirmojo varno klasės laivo gamybą!</p>
-    <!-- old id: 31 --> </about.190>
+    </about.190>
 
     <title.200 value="Atskleistas šnipas" />
     <about.200>
@@ -2510,8 +2510,8 @@
       </p>
     </about.200>
 
-    <!-- old id: 20 --> <title.210 value="Plečiant valdas" />
-    <!-- old id: 20 --> <about.210>
+    <title.210 value="Plečiant valdas" />
+    <about.210>
       <p>Komandore,</p>
       <p>
         Dabar, kai jau įvaldėme skrydžius po kosmosą, turėtume pradėti plėstis
@@ -2526,7 +2526,7 @@
         Tam, kad tai padarytumėme, mūsų laivai turės nusileisti ant planetos
         paviršiaus.
       </p>
-    <!-- old id: 20 --> </about.210>
+    </about.210>
 
     <title.220 value="Pasaulių ekonomika" />
     <about.220>
@@ -2543,8 +2543,8 @@
       <p>Tad negaiškime ir kibkime į darbą.</p>
     </about.220>
 
-    <!-- old id: 120 --> <title.230 value="Mineralų skraidinimas" />
-    <!-- old id: 120 --> <about.230>
+    <title.230 value="Mineralų skraidinimas" />
+    <about.230>
     <p>Komandore!</p>
     <p>
       Po mūšių lieka siaubinga netvarka - visame sektoriuje kairėn dešinėn
@@ -2559,35 +2559,35 @@
       Taigi, pirmyn, susirinkime tas nuolaužas! Pasistatykime mūsų pirmajį
       mulo klasės laiva!
     </p>
-    <!-- old id: 120 --> </about.230>
+    </about.230>
 
-    <!-- old id: 35 --> <title.240 value="Išvalymas" />
-    <!-- old id: 35 --> <about.240>
+    <title.240 value="Išvalymas" />
+    <about.240>
     <p>Sveiki, Komandore.</p>
     <p>Kadangi jau turime funkcionuojančia laivų gamyklą, galime truputi
       patreniruoti savo pilotus. Nusiųskite juos sumedžioti keletos dirakų. Tai
       neturėtų jiems būti sunki užduotis.</p>
-    <!-- old id: 35 --> </about.240>
+    </about.240>
 
-    <!-- old id: 36 --> <title.250 value="Verdantys vandenys" />
-    <!-- old id: 36 --> <about.250>
+    <title.250 value="Verdantys vandenys" />
+    <about.250>
     <p>Komandore,</p>
     <p>jūsų aktyvumas šiame regione privertė ateivius būti atsargesniais.
       Sklinda gandai, kad jie netgi planuoja atsakomajį smūgį! Sunaikinkite jų
       galinguosius toro klasės laivus, parodykite jiems kas valdo šią
       galaktiką!</p>
-    <!-- old id: 36 --> </about.250>
+    </about.250>
 
-    <!-- old id: 37 --> <title.260 value="Ugnimi prieš ugnį" />
-    <!-- old id: 37 --> <about.260>
+    <title.260 value="Ugnimi prieš ugnį" />
+    <about.260>
     <p>Komandore,</p>
     <p>panašu kad tie ateiviai yra beatodariški fanatikai. Jūs privalote
       smogti triuškinantį smūgį į jų stipriausius laivus, jog parodytumėte savo
       galia! Tai vienintėlis būdas juos sustabdyti!</p>
-    <!-- old id: 37 --> </about.260>
+    </about.260>
 
-    <!-- old id: 34 --> <title.270 value="Akis danguje" />
-    <!-- old id: 34 --> <about.270>
+    <title.270 value="Akis danguje" />
+    <about.270>
     <p>Komandore!</p>
     <p>Naujoje mūsų planetoje turime nemažai laisvos vietos. Manau, kad po to,
       kai joje saugiai įsikursime, reikėtų pradėti tyrinėti mūsų galaktiką.</p>
@@ -2597,7 +2597,7 @@
       neužtikrinsite pakankamos jos gavybos, jūsų energijos ištekliai bus kaip
       mat ištuštinti. O jeigu jam pasibaigs energija - jis paprasčiausiai
       nebeveiks.</p>
-    <!-- old id: 34 --> </about.270>
+    </about.270>
 
     <title.280 value="Techninis progresas" />
     <about.280>
@@ -2643,8 +2643,8 @@
       <p>Sekmės!</p>
     </about.300>
 
-    <!-- old id: 122 --> <title.310 value="Kolonijos įtvirtinimas" />
-    <!-- old id: 122 --> <about.310>
+    <title.310 value="Kolonijos įtvirtinimas" />
+    <about.310>
     <p>Komandore!</p>
     <p>
       Mūsų žvalgyba praneša, jog į šią koloniją jau nusitaikė ateivių piratai,
@@ -2654,7 +2654,7 @@
       Už praeitos užduoties atlikimą jūs gavote mobilių bokštelių, kuriuos
       galite atsiimti tiesiai į šią koloniją ir išskleisti.
     </p>
-    <!-- old id: 122 --> </about.310>
+    </about.310>
 
     <title.320 value="Naujoji ekonomika" />
     <about.320>
@@ -2810,8 +2810,8 @@
         Komandore, puolimas! Suduokime jiems pirmą prevencinį smūgį!
       </p>
       <p>Atminkite, piktų kėslų prevencija yra doras savigynos būdas.
-        Nedvejokite, drąsiai ginkitės nuo užpuolimų ar kas kartą sutikę
-        ateivius, su kuriais ar taip, ar taip nesusikalbėtumėte.</p>
+        Nedvejokite, drąsiai ginkitės nuo užpuolimų bei kas kartą pulkite
+        sutikę ateivius, su kuriais ar taip, ar taip nesusikalbėtumėte.</p>
     </WarSideQuest.about>
 
     <title.10100 ref="WarSideQuest.title" />
@@ -2889,44 +2889,44 @@
     <title.10149 value="[reference:WarSideQuest.title] (XXV)" />
     <about.10149 ref="WarSideQuest.about" />
 
-    <!-- old id: 16 --> <title.10160 value="Dydybės link" />
-    <!-- old id: 16 --> <about.10160>
+    <title.10160 value="Dydybės link" />
+    <about.10160>
     <p>Komandore.</p>
     <p>
       Tiesiog užsukau pasakyti, kad esate didis vadovas ir nuostabus
       lyderis. Jūsų dėka mes daug pasiekėme ir už tai esame dėkingi.
     </p>
-    <!-- old id: 16 --> </about.10160>
+    </about.10160>
 
-    <!-- old id: 28 --> <title.10170 value="Šlovė jums!" />
-    <!-- old id: 28 --> <about.10170>
-    <p>Komandore.</p>
-    <p>Jūsų darbų reikšmė žmonijai neprilygstama.</p>
-    <p>Telydi jus sėkmė.</p>
-    <!-- old id: 28 --> </about.10170>
+    <title.10170 value="Šlovė jums!" />
+    <about.10170>
+       <p>Komandore.</p>
+       <p>Jūsų darbų reikšmė žmonijai neprilygstama.</p>
+       <p>Telydi jus sėkmė.</p>
+    </about.10170>
 
-    <!-- old id: 29 --> <title.10180 value="Galaktikos talentas" />
-    <!-- old id: 29 --> <about.10180>
-    <p>Komandore.</p>
-    <p>
-      Kaimynystėje visi tik ir šneka apie neprilygstamus jūsų įgūdžius.
-      Jūs to nusipelnote. Neatsipalaiduokite, išlaikykite tą patį ritmą!
-    </p>
-    <!-- old id: 29 --> </about.10180>
+    <title.10180 value="Galaktikos talentas" />
+    <about.10180>
+       <p>Komandore.</p>
+       <p>
+         Kaimynystėje visi tik ir šneka apie neprilygstamus jūsų įgūdžius.
+         Jūs to nusipelnote. Neatsipalaiduokite, išlaikykite tą patį ritmą!
+       </p>
+    </about.10180>
 
-    <!-- old id: 30 --> <title.10190 value="Viršukalnė" />
-    <!-- old id: 30 --> <about.10190>
-    <p>Komandore.</p>
-    <p>
-      Žmonės kurių gyvenimas neapdovanojo galimybe tarnauti po jūsų vėliava,
-      nesupranta tikrosios žodžių „laimingai klęstėti“ prasmės. Mes žinome,
-      ką tai reiškia. Ačiū, jums už tai.
-    </p>
-    <p>Aš kalbu mūsų kolonijos vardu, Komandore.</p>
-    <!-- old id: 30 --> </about.10190>
+    <title.10190 value="Viršukalnė" />
+    <about.10190>
+       <p>Komandore.</p>
+       <p>
+         Žmonės kurių gyvenimas neapdovanojo galimybe tarnauti po jūsų vėliava,
+         nesupranta tikrosios žodžių „laimingai klęstėti“ prasmės. Mes žinome,
+         ką tai reiškia. Ačiū, jums už tai.
+       </p>
+       <p>Aš kalbu mūsų kolonijos vardu, Komandore.</p>
+    </about.10190>
 
-    <!-- old id: 33 --> <title.10200 value="Nesustabdoma jėga" />
-    <!-- old id: 33 --> <about.10200>
+    <title.10200 value="Nesustabdoma jėga" />
+    <about.10200>
     <p>Komandore.</p>
     <p>
       Šiame galaktikos sektoriuje nebeliko žmogaus kuris apie jus nežinotų.
@@ -2935,14 +2935,14 @@
       didesnės jūsų rūstybės.
     </p>
     <p>Jūs nesustabdomas!</p>
-    <!-- old id: 33 --> </about.10200>
+    </about.10200>
 
-    <!-- old id: 64 --> <title.10210 value="Dievybė" />
-    <!-- old id: 64 --> <about.10210>
+    <title.10210 value="Dievybė" />
+    <about.10210>
     <p>Komandore.</p>
     <p>Jūs esate ekonomikos, mokslo ir karybos guru. Mes lyderiaujame visose
       sferose! Jums nebuvo kilusi mintis sukurti savo religiją?</p>
-    <!-- old id: 64 --> </about.10210>
+    </about.10210>
 
     <ScienceSideQuest.title value="Žinių troškimas" />
     <ScienceSideQuest.about>
@@ -3045,8 +3045,8 @@
     <title.10355 value="[reference:TechnologySideQuest.title] (XII)" />
     <about.10355 ref="TechnologySideQuest.about" />
 
-    <!-- old id: 24 --> <title.10400 value="Tai, kas mus supa" />
-    <!-- old id: 24 --> <about.10400>
+    <title.10400 value="Tai, kas mus supa" />
+    <about.10400>
     <p>
       Tyrimų centre prie paradinių durų būriuojasi mokslininkai
       trokštantys tuojau pat leistis į ekspedicijas. Žvalgybos pranešimuose
@@ -3057,7 +3057,7 @@
       Pasiųskime grupę ar kelias ir ištirkime tuos objektus ir pažiūrėkime
       ką dar nuo mūsų slepia ši planeta.
     </p>
-    <!-- old id: 24 --> </about.10400>
+    </about.10400>
 
     <title.10405 value="[reference:title.10400] (II)" />
     <about.10405>
@@ -3067,8 +3067,8 @@
       </p>
     </about.10405>
 
-    <!-- old id: 25 --> <title.10410 value="Naudingi atradimai" />
-    <!-- old id: 25 --> <about.10410>
+    <title.10410 value="Naudingi atradimai" />
+    <about.10410>
     <p>Tai buvo netikėta!</p>
     <p>
       Kartu su kalnais šlamšto, mokslininkai atvilko dar keletą ateivių
@@ -3081,7 +3081,7 @@
       jis mėtosi dabar.
     </p>
     <p>Leiskime jiems keliauti! Įsakykime rengti mega-ekspediciją!</p>
-    <!-- old id: 25 --> </about.10410>
+    </about.10410>
 
     <title.10415 value="[reference:title.10410] (II)" />
     <about.10415>
@@ -3091,8 +3091,8 @@
       </p>
     </about.10415>
 
-    <!-- old id: 26 --> <title.10420 value="Nepasotinami" />
-    <!-- old id: 26 --> <about.10420>
+    <title.10420 value="Nepasotinami" />
+    <about.10420>
     <p>Jie paprasčiausiai išsikraustė iš proto!</p>
     <p>
       Mokslininkai ir laborantai vėl kraunasi kuprines. Šį kartą jie ketina
@@ -3107,10 +3107,10 @@
       likusius mokslininkus vis tiek galėsime siųsti į ekspedicijas.
     </p>
     <p>Sprendimą ir tolimesnių darbų planavimą palieku jums, Komandore.</p>
-    <!-- old id: 26 --> </about.10420>
+    </about.10420>
 
-    <!-- old id: 23 --> <title.10425 value="Smalsiųjų laimikis" />
-    <!-- old id: 23 --> <about.10425>
+    <title.10425 value="Smalsiųjų laimikis" />
+    <about.10425>
       <p>Gera žinia!</p>
 
       <p>
@@ -3126,7 +3126,7 @@
         Negalime žinoti ką ten rasime, bet panašu, kad kol kas ši praktika 
         atneša apčiuopiamos naudos.     
       </p>
-    <!-- old id: 23 --> </about.10425>
+    </about.10425>
 
     <title.10450 value="Pirmasis atlygis" />
     <about.10450>
@@ -3138,8 +3138,8 @@
       </p>
     </about.10450>
 
-    <!-- old id: 116 --> <title.10460 value="Galingųjų turtai" />
-    <!-- old id: 116 --> <about.10460>
+    <title.10460 value="Galingųjų turtai" />
+    <about.10460>
     <p>Komandore!</p>
     <p>Už prieš tai buvusią užduotį jūs buvote apdovanoti
       simboline kreditų suma. Būtinai atsiimkite šį apdovanojimą, jei to
@@ -3159,24 +3159,24 @@
       savo nuožiūra.</p>
     <p>Išmėginkite VIP paslaugą dabar ir mėgaukitės apdovanojimais ir jų
       suteikiama galia!</p>
-    <!-- old id: 116 --> </about.10460>
+    </about.10460>
 
-    <!-- old id: 117 --> <title.10470 value="Skubos darbas!" />
-    <!-- old id: 117 --> <about.10470>
+    <title.10470 value="Skubos darbas!" />
+    <about.10470>
     <p>Sveikinimai tapus VIP, Komandore.</p>
     <p>Nuo šiol jūs kasdien gausite kreditų įvairioms išlaidoms, tad kodėl gi
       jų neišeikvojus naudingai veiklai?</p>
     <p>Aš rekomenduočiau paspartinti statybas. Yra tikrai nemažai pastatų, kurie
       mums praverstų anksčiau, nei vėliau. Paspartinkite jų statybą išleisdami
       dalį kreditų.</p>
-    <!-- old id: 117 --> </about.10470>
+    </about.10470>
 
-    <!-- old id: 38 --> <title.10500 value="Teritorijos plėtimas" />
-    <!-- old id: 38 --> <about.10500>
+    <title.10500 value="Teritorijos plėtimas" />
+    <about.10500>
     <p>Komandore.</p>
     <p>Atėjo laikas išplėsti mūsų imperiją! Užimkite dar vieną koloniją, esu
       tikra, jog mes puikiai joje įsikursime.</p>
-    <!-- old id: 38 --> </about.10500>
+    </about.10500>
 
     <!-- old id: 39 --> <title.10510 value="Auganti imperija" />
     <!-- old id: 39 --> <about.10510>
