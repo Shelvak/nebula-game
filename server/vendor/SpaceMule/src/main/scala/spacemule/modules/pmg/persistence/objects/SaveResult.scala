@@ -5,8 +5,10 @@
 
 package spacemule.modules.pmg.persistence.objects
 
-import scala.collection.Set
+import scala.collection.{Set, Map}
 
-case class SaveResult(playerRows: Set[PlayerRow],
-                      updatedPlayerIds: Set[Int],
-                      updatedAllianceIds: Set[Int])
+case class SaveResult(
+  playerRows: Set[PlayerRow],
+  // FOW solar system entries for existing players/alliances
+  fsesForExisting: Map[SolarSystemRow, Seq[FowSsEntryRow]]
+)

@@ -262,10 +262,11 @@ class SolarSystem < ActiveRecord::Base
 
     unless entries.blank?
       BulkSql::FowSsEntry.save(entries)
+      player = Player.minimal(player_id)
       # Dispatch updates for other connected players. We don't dispatch to self
       # because this method does not work if player is connected.
       EventBroker.fire(
-        Event::FowChange::SsCreated.new(id, x, y, kind, entries),
+        Event::FowChange::SsCreated.new(id, x, y, kind, player, entries),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_SS_ENTRY
       )

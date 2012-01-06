@@ -519,9 +519,10 @@ describe SolarSystem do
           :enemy_ships => fse.player_ships
         )
       end
+      player = Player.minimal(player.id)
       should_fire_event(
         Event::FowChange::SsCreated.
-          new(solar_system.id, x, y, solar_system.kind, entries),
+          new(solar_system.id, x, y, solar_system.kind, player, entries),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_SS_ENTRY
       ) do

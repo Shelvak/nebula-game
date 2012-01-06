@@ -1,14 +1,13 @@
 package spacemule.modules.pmg.persistence
 
-import collection.mutable.ListBuffer
 import objects._
-import scala.collection.mutable.HashSet
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.ss_objects.Planet
 import spacemule.persistence.DB
 import java.util.{Calendar, Date}
 import spacemule.modules.pmg.objects._
 import solar_systems.{Wormhole, Battleground, Homeworld}
+import collection.mutable.{HashMap, ListBuffer, HashSet}
 
 object Manager {
   val galaxies = ListBuffer[String]()
@@ -52,13 +51,10 @@ object Manager {
    */
   private val playerRows = HashSet[PlayerRow]()
   /**
-   * Fow updates should be dispatched for these players.
+   * Fow ss entry rows that were created during this save.
    */
-  private val updatedPlayerIds = HashSet[Int]()
-  /**
-   * Fow updates should be dispatched for these alliances.
-   */
-  private val updatedAllianceIds = HashSet[Int]()
+  private var fsesForExisting =
+    HashMap.empty[SolarSystemRow, ListBuffer[FowSsEntryRow]]
 
   /**
    * Quest ids that need to be started when creating player.
@@ -107,8 +103,8 @@ object Manager {
     )
   }
 
-  private val saveTempHolders = updatedPlayerIds :: updatedAllianceIds ::
-    playerRows :: Nil
+  type Clearable = {def clear(): Unit}
+  private val saveTempHolders = List[Clearable](fsesForExisting, playerRows)
 
   def save(beforeSave: Option[() => Unit]) {
     TableIds.initialize()
@@ -142,8 +138,7 @@ object Manager {
     save { () => readGalaxy(galaxy) }
     SaveResult(
       playerRows.toSet,
-      updatedPlayerIds.toSet,
-      updatedAllianceIds.toSet
+      fsesForExisting
     )
   }
 
@@ -300,13 +295,16 @@ object Manager {
       // If this is alliance row, player id will be 0
       // If this is player row, player id will be greater than 0
       val fowSseRow = if (playerId != 0) {
-        updatedPlayerIds += playerId
         FowSsEntryRow(ssRow, Some(playerId), None, counter, empty, true)
       }
       else {
-        updatedAllianceIds += allianceId
         FowSsEntryRow(ssRow, None, Some(allianceId), counter, empty, true)
       }
+
+      if (! fsesForExisting.contains(ssRow))
+        fsesForExisting(ssRow) = ListBuffer.empty[FowSsEntryRow]
+      fsesForExisting(ssRow) += fowSseRow
+
       fowSsEntries += fowSseRow.values
     }
   }

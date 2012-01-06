@@ -18,6 +18,13 @@ class FowSsEntry < ActiveRecord::Base
       value.nil? ? [] : value.split(",").map(&:to_i)
     }
 
+  def initialize(*args)
+    super(*args)
+    # Ensure they are not nils.
+    self.alliance_planet_player_ids ||= []
+    self.alliance_ship_player_ids ||= []
+  end
+
   class << self
     # Returns +Player+ ids that observe _solar_system_id_.
     def observer_player_ids(solar_system_id)
@@ -165,7 +172,8 @@ class FowSsEntry < ActiveRecord::Base
     # If coords ([x, y]) are given, they are also merged into metadata as
     # :x and :y.
     #
-    # Same goes with kind, which must be Fixnum.
+    # Same goes with kind, which must be Fixnum and player which must be
+    # Player#minimal.
     #
     # Each entry is determined by merging player and alliance entries by
     # rules.
@@ -174,9 +182,10 @@ class FowSsEntry < ActiveRecord::Base
     # in that zone.
     # _fse_alliance_ can be nil if player is not in alliance.
     #
-    def merge_metadata(fse_player, fse_alliance, coords=nil, kind=nil)
+    def merge_metadata(fse_player, fse_alliance, coords=nil, kind=nil,
+        player=nil)
       typesig binding, [FowSsEntry, NilClass], [FowSsEntry, NilClass],
-                       [Array, NilClass], [Fixnum, NilClass]
+                       [Array, NilClass], [Fixnum, NilClass], [Hash, NilClass]
 
       # If player doesn't have visibility in that zone, then it's
       # their allies for sure.
@@ -187,6 +196,7 @@ class FowSsEntry < ActiveRecord::Base
         :x => coords.try(:[], 0),
         :y => coords.try(:[], 1),
         :kind => kind,
+        :player => player,
 
         # Player may not have visibility of that SS, but alliance may have.
         :player_planets => !! (fse_player ? fse_player.player_planets : false),

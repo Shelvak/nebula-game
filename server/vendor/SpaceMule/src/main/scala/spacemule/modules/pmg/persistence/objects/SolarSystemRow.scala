@@ -16,6 +16,10 @@ case class SolarSystemRow(
 ) extends Row {
   val companion = SolarSystemRow
 
+  def x = coords.get.x
+  def y = coords.get.y
+  def kind = solarSystem.kind.id
+
   val id = TableIds.solarSystem.next
   val valuesSeq = Seq(
     id,

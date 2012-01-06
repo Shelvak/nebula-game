@@ -129,7 +129,9 @@ describe SpaceMule do
 
       @galaxy = Factory.create(:galaxy)
 
-      diameter = CONFIG['galaxy.zone.diameter']
+      # Ensure we see them, because the center is not filled, so need to take
+      # a bit bigger rectangle...
+      diameter = CONFIG['galaxy.zone.diameter'] * 10
       rectangle = Rectangle.new(
         -diameter, -diameter, diameter, diameter
       )
@@ -137,6 +139,9 @@ describe SpaceMule do
         :galaxy => @galaxy)
       @alliance_fge = Factory.create(:fge_alliance, :rectangle => rectangle,
         :galaxy => @galaxy)
+      # Create a player for alliance.
+      Factory.create(:player, :alliance_id => @alliance_fge.alliance_id)
+
       @existing_player = Factory.create(:player, :galaxy => @galaxy)
       @web_user_id = @existing_player.web_user_id + 1
       @players = {
@@ -165,9 +170,9 @@ describe SpaceMule do
 
       it "should register callback for inactivity check" do
         @player.should have_callback(
-                     CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
-                     Cfg.player_inactivity_check(@player.points).from_now
-                   )
+          CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+          Cfg.player_inactivity_time(@player.points).from_now
+        )
       end
 
       it "should set scientists" do
@@ -188,16 +193,16 @@ describe SpaceMule do
 
     describe "returned value" do
       it "should return created player ids" do
-        @result.player_ids[@web_user_id].should == @player.id
+        @result[@web_user_id].should == @player.id
       end
 
       it "should return existing player ids too" do
-        @mule.create_players(@galaxy.id, @galaxy.ruleset, @players).
-          player_ids[@web_user_id].should == @player.id
+        result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
+        result[@web_user_id].should == @player.id
       end
 
       it "should merge created player ids with existing player ids" do
-        @result.player_ids.should equal_to_hash(
+        @result.should equal_to_hash(
           @web_user_id => @player.id,
           @existing_player.web_user_id => @existing_player.id
         )
@@ -343,7 +348,7 @@ describe SpaceMule do
       end
     end
     
-    it "should create fow ss entry" do
+    it "should create fow ss entry for player" do
       fse = FowSsEntry.where(:player_id => @player.id).first
       {
         :player_planets => fse.player_planets,

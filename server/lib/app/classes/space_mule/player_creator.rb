@@ -1,10 +1,7 @@
 class SpaceMule::PlayerCreator
-  # player_ids: {Player#web_user_id => Player#id}
-  # updated_player_ids: Array[Fixnum]
-  # updated_alliance_ids: Array[Fixnum]
-  CreatePlayersResult = Struct.new(:player_ids, :updated_player_ids,
-                                   :updated_alliance_ids)
-
+  # @param galaxy_id [Fixnum]
+  # @param ruleset [String]
+  # @return [Hash] {Player#web_user_id => Player#id}
   def self.invoke(galaxy_id, ruleset, players)
     # {Player#web_user_id => Player#id} of already created players.
     already_created_players = Player.select("id, web_user_id").where(
@@ -29,14 +26,44 @@ class SpaceMule::PlayerCreator
         player_ids[player_row.player.webUserId] = player_row.id
       end
 
-      CreatePlayersResult.new(
-        already_created_players.merge(player_ids),
-        save_result.updatedPlayerIds.from_scala,
-        save_result.updatedAllianceIds.from_scala
-      )
+      # Dispatch newly created solar systems to existing players/alliances.
+      #
+      # This design is an ASS to test. Much because all data is consumed right
+      # here. Probably should only transform the data and do something with it
+      # later, but eh... Its too hard for my brains today.
+      save_result.fsesForExisting.foreach do |tuple|
+        ss_row = tuple._1
+        player = ss_row.playerRow.isDefined \
+          ? Player.minimal(ss_row.playerRow.get.id) : nil
+
+        entries = []
+        tuple._2.foreach do |entry_row|
+          fse = FowSsEntry.new(
+            :solar_system_id => ss_row.id,
+            :counter => entry_row.counter,
+            :player_id =>
+              entry_row.playerId.isDefined ? entry_row.playerId.get : nil,
+            :alliance_id =>
+              entry_row.allianceId.isDefined ? entry_row.allianceId.get : nil,
+            :player_planets => entry_row.playerPlanets,
+            :enemy_planets => entry_row.enemyPlanets
+          )
+          fse.id = entry_row.id
+          entries << fse
+        end
+
+        EventBroker.fire(
+          Event::FowChange::SsCreated.
+            new(ss_row.id, ss_row.x, ss_row.y, ss_row.kind, player, entries),
+          EventBroker::FOW_CHANGE,
+          EventBroker::REASON_SS_ENTRY
+        )
+      end
+
+      already_created_players.merge(player_ids)
     else
       # Fake creation and just return ids of created players.
-      CreatePlayersResult.new(already_created_players, {}, {})
+      already_created_players
     end
   end
 end

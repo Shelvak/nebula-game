@@ -5,9 +5,11 @@
 # {
 #   # Solar system ID.
 #   :id => +Fixnum+,
+#   # Creation properties.
 #   :x => +Fixnum+ | nil,
 #   :y => +Fixnum+ | nil,
 #   :kind => +Fixnum+ | nil,
+#   :player => Player#minimal | nil,
 #   # Metadata flags - only on create/update, otherwise nil.
 #   :player_planets => +Boolean+,
 #   :player_ships => +Boolean+,
@@ -29,7 +31,7 @@ class SolarSystemMetadata
     metadata.ensure_options!(
       :required => {
         :id => Fixnum, :x => [Fixnum, NilClass], :y => [Fixnum, NilClass],
-        :kind => [Fixnum, NilClass],
+        :kind => [Fixnum, NilClass], :player => [Hash, NilClass],
         :player_planets => Boolean, :player_ships => Boolean,
         :enemy_planets => Boolean, :enemy_ships => Boolean,
         :alliance_planets => Boolean, :alliance_ships => Boolean,
@@ -43,6 +45,7 @@ class SolarSystemMetadata
   def self.destroyed(solar_system_id)
     new(
       :id => solar_system_id, :x => nil, :y => nil, :kind => nil,
+      :player => nil,
       :player_planets => false, :player_ships => false,
       :enemy_planets => false, :enemy_ships => false,
       :alliance_planets => false, :alliance_ships => false,
@@ -62,8 +65,6 @@ class SolarSystemMetadata
   def ==(other); eql?(other); end
 
   def eql?(other)
-    puts "/ #{self}"
-    puts "\\ #{other}"
     other.is_a?(self.class) && as_json == other.as_json
   end
 

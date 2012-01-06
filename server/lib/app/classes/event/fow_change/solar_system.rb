@@ -36,12 +36,21 @@ class Event::FowChange::SolarSystem < Event::FowChange
   # * #player_ids (Fixnum[]): Array of players that should be notified
   # * #metadatas (+Hash+ of _player_id_ => +SolarSystemMetadata+)
   #
-  def process_changes(fow_ss_entries, coords=nil, kind=nil)
+  def process_changes(fow_ss_entries, coords=nil, kind=nil, player_minimal=nil)
     metadatas = {}
     player_ids = Set.new
+
+    alliance_ids = fow_ss_entries.map(&:alliance_id).compact
+    alliance_players = Player.select("id, alliance_id").
+      where(:alliance_id => alliance_ids).
+      c_select_all.each_with_object({}) do |row, hash|
+        hash[row['alliance_id']] ||= []
+        hash[row['alliance_id']] << row['id']
+      end
+
     fow_ss_entries.each do |fse|
-      if fse.alliance
-        fse.alliance.member_ids.each do |player_id|
+      if fse.alliance_id
+        alliance_players[fse.alliance_id].each do |player_id|
           player_ids.add(player_id)
           metadatas[player_id] ||= {}
           metadatas[player_id][:alliance] = fse
@@ -56,7 +65,7 @@ class Event::FowChange::SolarSystem < Event::FowChange
     @metadatas = {}
     metadatas.each do |player_id, data|
       @metadatas[player_id] = FowSsEntry.merge_metadata(
-        data[:player], data[:alliance], coords, kind
+        data[:player], data[:alliance], coords, kind, player_minimal
       )
     end
 

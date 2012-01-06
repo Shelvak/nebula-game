@@ -91,20 +91,31 @@ class Galaxy::Zone
   #
   # [
   #   {'quarter' => quarter (1 to 4), 'slot' => Fixnum (1 to inf),
-  #     'points_diff' => Fixnum},
+  #     'points_diff' => Fixnum, 'player_count' => Fixnum},
   #   ...
   # ]
   #
   # points_diff is absolute (> 0) difference between zone average points and
   # your target points.
   #
-  def point_averages(galaxy_id, target_points=0)
+  # player_count is number of players with home solar systems in that zone.
+  #
+  # If it happens so that there is NONE home solar systems then returns zones
+  # without players. If even then there are no zones, raises an error.
+  #
+  def point_averages(galaxy_id, target_points=0, include_non_home_ss=false)
     zone_diam = 8
+    points_select = include_non_home_ss \
+      ? "0 AS points" \
+      : "p.economy_points + p.science_points + p.army_points AS points"
+    player_condition = include_non_home_ss ? "1=1" : "player_id IS NOT NULL"
+
     sql = %Q{
 SELECT
   quarter,
   CAST(slot AS UNSIGNED) AS slot,
-  CAST(ABS(AVG(points) - #{target_points.to_i}) AS UNSIGNED) AS points_diff
+  CAST(ABS(AVG(points) - #{target_points.to_i}) AS UNSIGNED) AS points_diff,
+  CAST(COUNT(player_id) AS UNSIGNED) AS player_count
 FROM (
   SELECT
   @zone_x := FLOOR(IF(x <  0, x * -1 - 1, x) / #{zone_diam}),
@@ -116,11 +127,12 @@ FROM (
   ) AS quarter,
   ((POW(1 + 2 * (@zone_y - @zone_x), 2) - 1) / 8.0) + 1 + (@zone_y + 1) * -1
     AS slot,
-  p.economy_points + p.science_points + p.army_points AS points
+  player_id,
+  #{points_select}
   FROM `solar_systems` AS s
-  INNER JOIN players AS p ON p.id=s.shield_owner_id
+  INNER JOIN players AS p ON p.id=s.player_id
   WHERE
-    shield_owner_id IS NOT NULL AND
+    #{player_condition} AND
     x IS NOT NULL AND
     y IS NOT NULL AND
     s.galaxy_id=#{galaxy_id.to_i}
@@ -128,7 +140,17 @@ FROM (
 GROUP BY quarter, slot
 ORDER BY points_diff
     }
-    ActiveRecord::Base.connection.select_all(sql)
+    rows = ActiveRecord::Base.connection.select_all(sql)
+
+    if rows.blank?
+      if include_non_home_ss
+        raise RuntimeError.new("a")
+      else
+        point_averages(galaxy_id, target_points, true)
+      end
+    else
+      rows
+    end
   end
 
 end
