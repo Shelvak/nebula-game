@@ -1326,11 +1326,6 @@
     <label.openWormhole value="Įeiti į areną" />
     <label.wormhole value="Arena" />
     <label.pulsar value="Pulsaras-{0}"/>
-    <label.deadStar>
-      <p>Tai - mirusi žvaigždė. Joje kažkada gyveno civilizacija, tačiau
-      jos jau seniai nebėra.</p>
-      <p>Įeiti į šią žvaigždę negalima.</p>
-    </label.deadStar>
     <label.shield value="Ši saulės sistema yra apsaugota"/>
     <label.over value="Laivai virš"/>
     <message.noRadar value="Tau reikia radaro, jog matytum galaktiką" />

@@ -11,8 +11,6 @@ class SolarSystem < ActiveRecord::Base
   KIND_WORMHOLE = 1
   # Battleground solar system
   KIND_BATTLEGROUND = 2
-  # Dead solar system
-  KIND_DEAD = 3
 
   belongs_to :player
 
@@ -149,17 +147,6 @@ class SolarSystem < ActiveRecord::Base
   def orbit_count
     SsObject.maximum(:position,
       :conditions => {:solar_system_id => id}) + 1
-  end
-  
-  # Kill solar system. Turns it into dead solar system.
-  def die!
-    self.kind = KIND_DEAD
-    save!
-    delete_assets!
-    fow_ss_entries.update_all(:enemy_planets => false, :enemy_ships => false)
-    CallbackManager.unregister(self, CallbackManager::EVENT_SPAWN)
-    
-    EventBroker.fire(self, EventBroker::CHANGED)
   end
   
   # Removes all ss_objects/wreckages/units in this solar system.

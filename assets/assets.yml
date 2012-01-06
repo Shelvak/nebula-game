@@ -171,9 +171,6 @@ assets:
         shield.png: 
           wiki_name: EnergyShield.png
           "flex": {save_as: "swf:png"}
-        dead_star_0.png: DeadSystem0.png
-        dead_star_1.png: DeadSystem1.png
-        dead_star_2.png: DeadSystem2.png
         wormhole.png:
           wiki_name: Wormhole.png
           "flex": {save_as: "swf:png"}

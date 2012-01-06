@@ -1387,11 +1387,6 @@
     <label.openWormhole value="Ienākt kaujaslaukā" />
     <label.wormhole value="Kaujaslauks"/>
     <label.pulsar value="Pulsārs-{0}"/>
-    <label.deadStar>
-      <p>Šī zvaigzne ir mirusi. Kādreiz šeit bija civilizācija, bet nu tā sen ir
-      izzudusi.</p>
-      <p>Aizliegts apmeklēt šo zvaigzni.</p>
-    </label.deadStar>
      <!-- TODO -->
     <label.shield value="This solar system is shielded"/>
     <label.over value="Fleet over"/>

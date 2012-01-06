@@ -152,7 +152,7 @@ package models.solarsystem
        * @inheritDoc
        */
       public function get isNavigable(): Boolean {
-         return !isDead && (!isShielded || ML.player.equals(_player));
+         return ! isShielded || ML.player.equals(_player);
       }
 
       public function navigateTo(): void {
@@ -209,11 +209,6 @@ package models.solarsystem
          return kind == SSKind.WORMHOLE;
       }
 
-      [Bindable(event="willNotChange")]
-      public function get isDead(): Boolean {
-         return kind == SSKind.DEAD_STAR;
-      }
-
       /**
        * Returns <code>true</code> if this solar system is shielded.
        */
@@ -246,9 +241,7 @@ package models.solarsystem
        * Variation of an icon that visualizes a solar system in a galaxy.
        */
       public function get variation(): int {
-         return isDead
-                   ? id % 3
-                   : id % Config.getSolarSystemVariations();
+         return id % Config.getSolarSystemVariations();
       }
 
       [Bindable(event="willNotChange")]
@@ -258,9 +251,6 @@ package models.solarsystem
          }
          else if (isWormhole || isGlobalBattleground) {
             return IMG.getImage(AssetNames.WORMHOLE_IMAGE_NAME);
-         }
-         else if (isDead) {
-            return IMG.getImage(AssetNames.getDeadStarImageName(variation));
          }
          else {
             return IMG.getImage(AssetNames.getSSImageName(variation));
