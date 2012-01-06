@@ -5,7 +5,7 @@ package tests.maps
    import components.map.controllers.SectorShips;
    import components.map.controllers.WatchedObjects;
 
-   import ext.hamcrest.events.causesTarget;
+   import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
 
    import models.ModelLocator;
@@ -123,9 +123,9 @@ package tests.maps
                objects.itemSelected(new Sector(location, new SectorShips(true)));
             },
             allOf (
-               not (causesTarget(galaxy) .toDispatchEvent (MMapEvent.UICMD_SELECT_OBJECT)),
-               causesTarget(galaxy) .toDispatchEvent (MMapEvent.UICMD_DESELECT_SELECTED_OBJECT),
-               causesTarget(galaxy) .toDispatchEvent (
+               not (causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_SELECT_OBJECT)),
+               causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_DESELECT_SELECTED_OBJECT),
+               causes(galaxy) .toDispatchEvent (
                   MMapEvent.UICMD_MOVE_TO,
                   function(event: MMapEvent): void {
                      assertThat(
@@ -151,9 +151,9 @@ package tests.maps
                objects.itemSelected(new Sector(location, null, solarSystem));
             },
             allOf(
-               not (causesTarget(galaxy) .toDispatchEvent (MMapEvent.UICMD_MOVE_TO)),
-               causesTarget(galaxy) .toDispatchEvent (MMapEvent.UICMD_DESELECT_SELECTED_OBJECT),
-               causesTarget(galaxy) .toDispatchEvent(
+               not (causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_MOVE_TO)),
+               causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_DESELECT_SELECTED_OBJECT),
+               causes(galaxy) .toDispatchEvent(
                   MMapEvent.UICMD_SELECT_OBJECT,
                   function(event: MMapEvent): void {
                      assertThat(

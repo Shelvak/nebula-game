@@ -12,7 +12,7 @@ package tests.foliage.sidebar
    import controllers.startup.StartupInfo;
    
    import ext.hamcrest.events.DispatchesMatcher;
-   import ext.hamcrest.events.causesTarget;
+   import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
    
    import models.ModelLocator;
@@ -157,7 +157,7 @@ package tests.foliage.sidebar
       /* ############### */
       
       private function triggersStateChangeEvent() : DispatchesMatcher {
-         return causesTarget (model) .toDispatchEvent (CFoliageSidebarMEvent.STATE_CHANGE)
+         return causes (model) .toDispatchEvent (CFoliageSidebarMEvent.STATE_CHANGE)
       }
    }
 }

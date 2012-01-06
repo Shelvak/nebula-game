@@ -1326,7 +1326,8 @@
     <label.openWormhole value="Įeiti į areną" />
     <label.wormhole value="Arena" />
     <label.pulsar value="Pulsaras-{0}"/>
-    <label.shield value="Ši saulės sistema yra apsaugota"/>
+    <label.shield value="Ši saulės sistema yra apsaugota."/>
+    <label.ssOwner value="Savininkas: "/>
     <label.over value="Laivai virš"/>
     <message.noRadar value="Tau reikia radaro, jog matytum galaktiką" />
 

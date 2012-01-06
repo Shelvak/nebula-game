@@ -3,25 +3,11 @@
                     xmlns:s="library://ns.adobe.com/flex/spark"
                     xmlns:base="components.base.*"
                     xmlns:screen="components.base.screen.*"
-                    xmlns:announcement="components.announcement.*">
+                    xmlns:menus="components.menus.*">
    <fx:Script>
       <![CDATA[
-      import components.dailybonus.DailyBonusComp;
-      import components.dailybonus.DailyBonusEvent;
-      import components.popups.ActionConfirmationPopup;
-      import components.skins.DailyBonusButtonSkin;
-
-      import utils.ApplicationLocker;
-
-      import controllers.dailybonus.DailyBonusCommand;
       import controllers.screens.MainAreaScreens;
       import controllers.screens.SidebarScreens;
-
-      import models.solarsystem.MSSObject;
-
-      import mx.events.FlexEvent;
-
-      import utils.locale.Localizer;
 
 
       /**
@@ -40,30 +26,9 @@
       public function collapseSidebar(): void {
          sidebarVisible = false;
       }
-
-      private function showDailyBonus(): void {
-         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
-         var cont: DailyBonusComp = new DailyBonusComp();
-         cont.reward = ML.player.dailyBonus;
-         cont.addEventListener(DailyBonusEvent.CLOSE_PANEL,
-                 function(e: DailyBonusEvent): void {
-                    popUp.close();
-                 });
-         popUp.title = Localizer.string('Popups', 'title.dailyBonus');
-         popUp.addElement(cont);
-         popUp.confirmButtonLabel = Localizer.string('Quests', 'label.claimReward');
-         popUp.cancelButtonLabel = Localizer.string('Quests', 'label.claimLater');
-         popUp.confirmButtonClickHandler = function(button: Button): void {
-            new DailyBonusCommand(DailyBonusCommand.CLAIM,
-                    {'planetId': MSSObject(cont.planetSelector.selectedItem).id}
-            ).dispatch();
-         };
-         popUp.show();
-      }
       ]]>
    </fx:Script>
-   <s:Group left="0" top="0" bottom="0"
-            right="{sidebarVisible?240:0}">
+   <s:Group left="0" top="0" bottom="0" right="{sidebarVisible?240:0}">
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.GALAXY}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.SOLAR_SYSTEM}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.PLANET}"/>
@@ -84,17 +49,9 @@
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.VIP}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.ALLY_RATINGS}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.ALLIANCE}"/>
-      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.WELCOME}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.CHAT}"/>
       <base:TopMessage bottom="20" horizontalCenter="0" width="100%" visible="false"/>
-      <s:Group left="0" top="200">
-         <s:layout>
-            <s:VerticalLayout horizontalAlign="left" gap="20"/>
-         </s:layout>
-         <s:Button skinClass="components.skins.DailyBonusButtonSkin"
-                   visible="{ML.player.dailyBonus != null}" click="showDailyBonus()"/>
-         <announcement:AnnouncementButton/>
-      </s:Group>
+      <menus:LeftHidableMenu left="0" top="200"/>
    </s:Group>
    
    <s:SkinnableContainer id="rightSidebarContainer"

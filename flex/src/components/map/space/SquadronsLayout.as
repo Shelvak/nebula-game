@@ -124,7 +124,7 @@ package components.map.space
        */
       private function getSlotCoordsEmpty(loc:LocationMinimal, owner:int, slot:int) : Point {
          slot++;
-         // find logical corrdinates in the first quarter
+         // find logical coordinates in the first quarter
          var diag:int = Math.ceil((Math.sqrt(1 + 8 * slot) - 1) / 2);
          var x:int = diag / 2 * (1 + diag) - slot;
          var y:int = x - diag;

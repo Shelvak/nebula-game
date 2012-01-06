@@ -8,7 +8,9 @@
    <fx:Script>
       <![CDATA[
          import components.skins.YellowButtonSkin;
-         
+
+         import models.quest.MMainQuestLine;
+
          import utils.UrlNavigate;
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
@@ -35,7 +37,7 @@
    <!-- information for the player -->
    <s:Group minHeight="0" minWidth="0" verticalCenter="0" horizontalCenter="0"
             width="{imgInstructions.width}" height="{imgInstructions.height}">
-      <!-- visualized istructions -->
+      <!-- visualized instructions -->
       <s:BitmapImage id="imgInstructions"
                      source="{getImage(AssetNames.UI_IMAGES_FOLDER + 'first_login_background')}"/>
       <!-- title -->
@@ -54,7 +56,7 @@
       
       <!-- start guide button -->
       <s:Button skinClass="components.skins.YellowButtonSkin"
-                click="UrlNavigate.getInstance().showIntro()"
+                click="MMainQuestLine.getInstance().openCurrentUncompletedQuest()"
                 label="{getString('label.intro')}"
                 top="216" left="201"/>
    </s:Group>

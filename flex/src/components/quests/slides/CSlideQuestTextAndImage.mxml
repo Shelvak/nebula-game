@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<slides:CSlide xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:slides="components.quests.slides.*"
+               xmlns:components="utils.components.*"
+               xmlns:quests="components.quests.*"
+               creationComplete="this_creationCompleteHandler(event)"
+               modelChange="this_modelChangeHandler(event)">
+   <fx:Script>
+      <![CDATA[
+      import models.quest.slides.MSlideQuestWithImage;
+
+      import mx.events.FlexEvent;
+
+
+      [Bindable(event="modelChange")]
+      private function get myModel(): MSlideQuestWithImage {
+         return MSlideQuestWithImage(model);
+      }
+
+      protected override function getBackgroundImageId(): int {
+         return 1;
+      }
+
+      private function this_creationCompleteHandler(event: FlexEvent): void {
+         updateImageAndMask();
+      }
+
+      private function this_modelChangeHandler(event: CSlideEvent): void {
+         updateImageAndMask();
+      }
+
+      private function updateImageAndMask(): void {
+         if (myModel == null) {
+            return;
+         }
+         if (myModel.imageIsBuilding) {
+            imageMask.visible = false;
+            imageMask.includeInLayout = false;
+         }
+         else {
+            image.mask = imageMask;
+         }
+      }
+      ]]>
+   </fx:Script>
+   <s:Group x="138" y="248" width="150" height="150">
+      <s:Group id="imageMask" left="0" right="0" top="0" bottom="0">
+         <s:Ellipse left="0" right="0" top="0" bottom="0">
+            <s:fill><s:SolidColor/></s:fill>
+         </s:Ellipse>
+      </s:Group>
+      <components:CenteredBitmapImage
+         id="image" verticalCenter="0" horizontalCenter="0"
+         smooth="true" source="{myModel.image}"/>
+   </s:Group>
+   <quests:CQuestInfo top="10" bottom="10" right="10" width="400"
+                      quest="{model.quest}"/>
+</slides:CSlide>

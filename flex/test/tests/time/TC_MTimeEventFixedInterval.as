@@ -1,7 +1,7 @@
 package tests.time
 {
    import ext.hamcrest.date.dateEqual;
-   import ext.hamcrest.events.causesTarget;
+   import ext.hamcrest.events.causes;
    import ext.hamcrest.events.event;
    import ext.hamcrest.object.equals;
    
@@ -51,7 +51,7 @@ package tests.time
          assertThat(
             "changing occuresIn should dispatch OCCURES_IN_CHANGE, OCCURES_AT_CHANGE and HAS_OCCURED_CHANGE",
             function():void{ timeEvent.occuresIn = 10 },
-            causesTarget (timeEvent) .toDispatch (
+            causes (timeEvent) .toDispatch (
                event (MTimeEventEvent.OCCURES_IN_CHANGE),
                event (MTimeEventEvent.OCCURES_AT_CHANGE),
                event (MTimeEventEvent.HAS_OCCURED_CHANGE)
@@ -61,7 +61,7 @@ package tests.time
          assertThat(
             "calling update() should dispatch OCCURES_AT_CHANGE",
             function():void{ timeEvent.update() },
-            causesTarget (timeEvent) .toDispatchEvent (MTimeEventEvent.OCCURES_AT_CHANGE)
+            causes (timeEvent) .toDispatchEvent (MTimeEventEvent.OCCURES_AT_CHANGE)
          );
       };
       

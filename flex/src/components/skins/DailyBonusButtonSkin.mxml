@@ -32,6 +32,12 @@
          fadeEfect.repeatCount = 0;
          fadeEfect.play([overLabel]);
       }
+
+      private function getImage(name:String): BitmapData {
+         return IMG.getImage(
+            AssetNames.DAILY_BONUS_IMAGES_FOLDER + "button_" + name
+         );
+      }
       
    </fx:Script>
    
@@ -44,9 +50,9 @@
    </base:states>
    
    <!-- layer 1: fill -->
-   <s:BitmapImage source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'daily_bonus_up')}"
-                  source.over="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'daily_bonus_over')}"/>
+   <s:BitmapImage source="{getImage('up')}"
+                  source.over="{getImage('over')}"/>
    <s:BitmapImage id="overLabel" visible="false" visible.up="true"
-                  source="{ImagePreloader.getInstance().getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'daily_bonus_blink')}"/>
+                  source="{getImage('blink')}"/>
    
 </base:BaseSkin>

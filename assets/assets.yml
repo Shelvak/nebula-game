@@ -719,12 +719,36 @@ assets:
         btn_chan_private_down.png:      Chat_b3_down.png
         btn_chan_private_disabled.png:  Chat_b3_disabled.png
         friend_offline_background.png:  W_bg.png
-      
+
+      "left_hidable_menu":
+        show_button_up.png:      Bonusbar_unhide_up.png
+        show_button_over.png:    Bonusbar_unhide_over.png
+        show_button_down.png:    Bonusbar_unhide_down.png
+        hide_button_up.png:      Bonusbar_hide_up.png 
+        hide_button_over.png:    Bonusbar_hide_over.png
+        hide_button_down.png:    Bonusbar_hide_down.png
+
+      "daily_bonus":
+        button_up.png:  Dailybonus_up.png
+        button_over.png:  Dailybonus_over.png
+        button_blink.png:  Dailybonus_up2.png
+
       "announcements":
         button_up.png:        Shutdown_button_up.png
         button_fade.png:      Shutdown_button_up2.png
         button_over.png:      Shutdown_button_over.png      
         image.jpg:            Shutdown_popup_screen.jpg
+
+      "main_quest":
+        presentation_background.png:   Quest_window.png
+        slide_background0.jpg:         Quest_content0.jpg
+        slide_background1.jpg:         Quest_content1.jpg
+        previous_slide_btn_up.png:     Button_back_up.png
+        previous_slide_btn_over.png:   Button_back_over.png
+        previous_slide_btn_down.png:   Button_back_down.png
+        next_slide_btn_up.png:         Button_next_up.png
+        next_slide_btn_over.png:       Button_next_over.png
+        next_slide_btn_down.png:       Button_next_down.png
       
       "buttons":
         close_button_background.png:  Close_panel.png
@@ -840,9 +864,6 @@ assets:
         transfer_down.png:  Load_down.png
         transfer_over.png:  Load_over.png
         transfer_up.png:  Load_up.png
-        daily_bonus_up.png:  Dailybonus_up.png
-        daily_bonus_over.png:  Dailybonus_over.png
-        daily_bonus_blink.png:  Dailybonus_up2.png
         switch_flank_1.png: Flankswitch_1.png
         switch_flank_2.png: Flankswitch_2.png
         switch_flank_0.png: Flankswitch_0.png

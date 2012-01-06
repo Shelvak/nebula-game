@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        alpha="1.0"
+        alpha.disabled="0.5">
+   <fx:Metadata>
+      [HostComponent("spark.components.Button")]
+   </fx:Metadata>
+   <fx:Script>
+      <![CDATA[
+      import utils.Objects;
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+
+
+      protected function getButtonName(): String {
+         Objects.throwAbstractMethodError();
+         return null;   // unreachable
+      }
+
+      private function getImage(name: String): BitmapData {
+         return ImagePreloader.getInstance().getImage(
+            AssetNames.MAIN_QUEST_IMAGES_FOLDER + getButtonName()
+               + "_slide_btn_" + name
+         );
+      }
+      ]]>
+   </fx:Script>
+   <s:states>
+      <s:State name="up"/>
+      <s:State name="over"/>
+      <s:State name="down"/>
+      <s:State name="disabled"/>
+   </s:states>
+   <s:BitmapImage source.up="{getImage('up')}"
+                  source.over="{getImage('over')}"
+                  source.down="{getImage('down')}"
+                  source.disabled="{getImage('up')}"/>
+</s:Skin>

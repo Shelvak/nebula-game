@@ -230,7 +230,10 @@ package utils.assets
       
       
       public static const INFO_SCREEN_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "info_screen/";
+      public static const LEFT_HIDABLE_MENU_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "left_hidable_menu/";
       public static const ANNOUNCEMENTS_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "announcements/";
+      public static const DAILY_BONUS_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "daily_bonus/";
+      public static const MAIN_QUEST_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "main_quest/";
       
       
       /**

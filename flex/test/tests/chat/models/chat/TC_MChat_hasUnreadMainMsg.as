@@ -1,6 +1,6 @@
 package tests.chat.models.chat
 {
-   import ext.hamcrest.events.causesTarget;
+   import ext.hamcrest.events.causes;
    
    import models.chat.MChat;
    import models.chat.MChatMember;
@@ -81,12 +81,12 @@ package tests.chat.models.chat
          
          assertThat(
             function():void{ chat.receivePublicMessage(makeMessage(2, "jho", MChat.MAIN_CHANNEL_NAME, "Hey!", null)) },
-            causesTarget (chat) .toDispatchEvent (MChatEvent.HAS_UNREAD_MAIN_MSG_CHANGE)
+            causes (chat) .toDispatchEvent (MChatEvent.HAS_UNREAD_MAIN_MSG_CHANGE)
          );
          
          assertThat(
             function():void{ chat.visible = true },
-            causesTarget (chat) .toDispatchEvent (MChatEvent.HAS_UNREAD_MAIN_MSG_CHANGE)
+            causes (chat) .toDispatchEvent (MChatEvent.HAS_UNREAD_MAIN_MSG_CHANGE)
          );
       };
       

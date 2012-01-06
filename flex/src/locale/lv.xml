@@ -1388,7 +1388,8 @@
     <label.wormhole value="Kaujaslauks"/>
     <label.pulsar value="Pulsārs-{0}"/>
      <!-- TODO -->
-    <label.shield value="This solar system is shielded"/>
+    <label.shield value="This solar system is shielded."/>
+    <label.ssOwner value="Owned by"/>
     <label.over value="Fleet over"/>
     <!-- /TODO -->
     <message.noRadar value="Jums vajadzīgs radars, lai izpētītu galaktiku" />

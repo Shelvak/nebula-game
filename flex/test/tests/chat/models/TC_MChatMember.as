@@ -6,7 +6,7 @@ package tests.chat.models
    
    import controllers.ui.NavigationController;
    
-   import ext.hamcrest.events.causesTarget;
+   import ext.hamcrest.events.causes;
    
    import models.chat.MChatMember;
    import models.chat.events.MChatMemberEvent;
@@ -57,11 +57,11 @@ package tests.chat.models
       public function should_dispatch_IS_ONLINE_CHANGE_event_when_isOnline_property_changes() : void {
          assertThat(
             function():void{ member.isOnline = true },
-            causesTarget (member) .toDispatchEvent (MChatMemberEvent.IS_ONLINE_CHANGE)
+            causes (member) .toDispatchEvent (MChatMemberEvent.IS_ONLINE_CHANGE)
          );
          assertThat(
             function():void{ member.isOnline = false },
-            causesTarget (member) .toDispatchEvent (MChatMemberEvent.IS_ONLINE_CHANGE)
+            causes (member) .toDispatchEvent (MChatMemberEvent.IS_ONLINE_CHANGE)
          );
       }
       

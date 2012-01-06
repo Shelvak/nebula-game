@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<slides:CSlide xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:slides="components.quests.slides.*"
+               xmlns:quests="components.quests.*">
+   <fx:Script>
+      <![CDATA[
+      protected override function getBackgroundImageId(): int {
+         return 0;
+      }
+      ]]>
+   </fx:Script>
+   <quests:CQuestInfo top="10" bottom="10" right="10" width="400"
+                      quest="{model.quest}"/>
+</slides:CSlide>

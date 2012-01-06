@@ -6,7 +6,7 @@ package tests.models
 
    import controllers.ui.NavigationController;
 
-   import ext.hamcrest.events.causesTarget;
+   import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
 
    import models.ModelLocator;
@@ -375,7 +375,7 @@ package tests.models
          
          assertThat(
             "changing name", function():void{ loc.name = "My home" },
-            causesTarget(loc) .toDispatchEvent (LocationEvent.NAME_CHANGE)
+            causes(loc) .toDispatchEvent (LocationEvent.NAME_CHANGE)
          );
          assertThat( "name", loc.name, equals ("My home") );
          assertThat( "planetName", loc.name, equals ("My home") );

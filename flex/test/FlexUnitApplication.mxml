@@ -17,6 +17,7 @@
          import tests.models.TS_Models;
          import tests.movement.TS_Movement;
          import tests.notifications.TS_Notifications;
+         import tests.quests.TS_Quests;
          import tests.spacemap.TS_SpaceMap;
          import tests.maps.TS_Maps;
          import tests.time.TS_Time;
@@ -45,6 +46,7 @@
                TS_Announcement,
                TS_Galaxy,
                TS_Maps,
+               TS_Quests,
                ModelsTestSuite,
                UtilsTestSuite
             ];
@@ -54,7 +56,7 @@
          public function currentRunTestSuites():Array
          {
             var testsToRun:Array = [
-               TS_Maps
+               TS_Quests
             ];
             return testsToRun;
          }
@@ -64,8 +66,8 @@
          {
             core = new FlexUnitCore();
             core.addListener(runner);
-//            core.run(currentRunTestSuites());
-            core.run(allTestSuites());
+            core.run(currentRunTestSuites());
+//            core.run(allTestSuites());
          }
       ]]>
    </fx:Script>

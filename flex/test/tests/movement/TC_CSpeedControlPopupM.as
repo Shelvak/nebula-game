@@ -5,7 +5,7 @@ package tests.movement
    
    import config.Config;
    
-   import ext.hamcrest.events.causesTarget;
+   import ext.hamcrest.events.causes;
    import ext.hamcrest.events.event;
    import ext.hamcrest.object.equals;
    
@@ -93,7 +93,7 @@ package tests.movement
          assertThat(
             "should dispatch SPEED_MODIFIER_CHANGE and PLAYER_CREDS_CHANGE events",
             function():void{ scpModel.speedModifier = 1.5 },
-            causesTarget (scpModel) .toDispatch (
+            causes (scpModel) .toDispatch (
                event (CSpeedControlPopupMEvent.SPEED_MODIFIER_CHANGE),
                event (CSpeedControlPopupMEvent.PLAYER_CREDS_CHANGE)
             )
@@ -210,7 +210,7 @@ package tests.movement
          assertThat(
             "should dispatch PLAYER_CREDS_CHANGE event when ModelLocator.player.creds changes",
             function():void{ player.creds =  Unit.getMovementSpeedUpCredsCost(0.75, scpModel.hopCount)},
-            causesTarget (scpModel) .toDispatchEvent (CSpeedControlPopupMEvent.PLAYER_CREDS_CHANGE)
+            causes (scpModel) .toDispatchEvent (CSpeedControlPopupMEvent.PLAYER_CREDS_CHANGE)
          );
          assertThat(
             "playerHasEnoughCreds should be updated when ModelLocator.player.creds changes",

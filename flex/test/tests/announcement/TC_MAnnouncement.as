@@ -1,7 +1,7 @@
 package tests.announcement
 {
    import ext.hamcrest.date.dateEqual;
-   import ext.hamcrest.events.causesTarget;
+   import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
    
    import interfaces.IUpdatable;
@@ -66,7 +66,7 @@ package tests.announcement
          
          assertThat(
             "changing message prop", function():void{ announcement.message = "Message" },
-            causesTarget(announcement) .toDispatchEvent (MAnnouncementEvent.MESSAGE_CHANGE)
+            causes(announcement) .toDispatchEvent (MAnnouncementEvent.MESSAGE_CHANGE)
          );
       }
       
@@ -93,7 +93,7 @@ package tests.announcement
                DateUtil.now = new Date(2200, 0, 2).time;
                announcement.update();
             },
-            causesTarget(announcement) .toDispatchEvent (MAnnouncementEvent.BUTTON_VISIBLE_CHANGE)
+            causes(announcement) .toDispatchEvent (MAnnouncementEvent.BUTTON_VISIBLE_CHANGE)
          );
       }
       
@@ -107,7 +107,7 @@ package tests.announcement
          
          assertThat(
             "resetting announcement model", function():void{ announcement.reset() },
-            causesTarget(announcement) .toDispatchEvent (MAnnouncementEvent.RESET)
+            causes(announcement) .toDispatchEvent (MAnnouncementEvent.RESET)
          );
       }
    }
