@@ -218,7 +218,7 @@ package models.solarsystem
        * Returns <code>true</code> if this solar system is shielded.
        */
       public function get isShielded(): Boolean {
-         return kind == SSKind.NORMAL;
+         return kind == SSKind.NORMAL && _player != null;
       }
 
       /**
