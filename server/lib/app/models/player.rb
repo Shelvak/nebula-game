@@ -517,7 +517,9 @@ class Player < ActiveRecord::Base
   # Check if this player is active. If he is not active and can be relocated,
   # then hide his solar system. If he is active - schedule next check.
   def check_activity!
-    if active?
+    if active? || ! relocatable?
+      # Schedule next check in the future if player is active or not
+      # relocatable.
       CallbackManager.register_or_update(
         self, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
         Cfg.player_inactivity_time(points).from_now
@@ -527,28 +529,28 @@ class Player < ActiveRecord::Base
     end
   end
 
+  def detached?
+    home_solar_system.detached?
+  end
+
   # Detach this player from galaxy map. His solar systems are detached from map
   # and if enough time has passed from start zone creation it is replaced by a dead star.
   def detach!
     raise ArgumentError.
             new("Cannot detach #{self} which is already detached!") if detached?
 
-    SolarSystem.detach_player(galaxy, id)
-    self.detached = true
-    save!
+    home_solar_system.detach!
   end
 
   # Unhide this player. His solar systems are reattached to the map. Placer
   # tries to place player in a zone which has closes average player point value
   # to his.
-  def unhide!
-    raise ArgumentError.new("Cannot unhide #{self} which is not hidden!") \
-      unless hidden?
+  def attach!
+    raise ArgumentError.new("Cannot attach #{self} which is not detached!") \
+      unless detached?
 
     zone = Galaxy.find_zone_by_points(points)
     SolarSystem.attach_player(id, zone)
-    self.hidden = false
-    save!
   end
 
   def self.on_callback(id, event)

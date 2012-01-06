@@ -13,6 +13,11 @@ Factory.define :battleground, :parent => :mini_battleground do |m|
   m.y nil
 end
 
+Factory.define :ss_detached, :parent => :solar_system do |m|
+  m.x nil
+  m.y nil
+end
+
 Factory.define :wormhole, :parent => :solar_system do |m|
   m.kind SolarSystem::KIND_WORMHOLE
 end

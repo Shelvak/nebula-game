@@ -21,9 +21,6 @@ class SolarSystem < ActiveRecord::Base
   has_many :jumpgates, :class_name => "SsObject::Jumpgate"
   has_many :fow_ss_entries
 
-  validates_uniqueness_of :galaxy_id, :scope => [:x, :y],
-    :message => "[galaxy_id, x, y] should be unique for SolarSystem."
-
   scope :in_galaxy, Proc.new { |galaxy|
     galaxy = galaxy.id if galaxy.is_a? Galaxy
 
@@ -42,8 +39,11 @@ class SolarSystem < ActiveRecord::Base
     where(:galaxy_id => galaxy_id, :x => nil, :y => nil).first
   end
 
+  # Is this solar system detached from galaxy map?
+  def detached?; x.nil? && y.nil?; end
+
   # Is this solar system a global battleground?
-  def main_battleground?; x.nil? && y.nil?; end
+  def main_battleground?; x.nil? && y.nil? && battleground?; end
   
   def normal?; kind == KIND_NORMAL; end
   scope :normal, where(:kind => KIND_NORMAL)
@@ -180,31 +180,102 @@ class SolarSystem < ActiveRecord::Base
     end
   end
 
-  # Detaches solar systems belonging to player from galaxy. Deactivates player
-  # radars.
-  #
-  # If zone is still young - nothing is placed instead of them. Also
-  # FowSsEntries are destroyed for other players.
-  #
-  # If zone is old enough - dead solar systems are placed in original places and
-  # other player FowSsEntries are registered on them.
-  #
-  def self.detach_player(galaxy, player_id)
-    home_ss = where(:player_id => player_id, :kind => SolarSystem::KIND_NORMAL).
-      first
+  # Detaches solar system from galaxy.
+  def detach!
+    raise RuntimeError.new(
+      "Cannot detach already detached solar system #{self}!"
+    ) if detached?
+
+    raise RuntimeError.new(
+      "Cannot detach non-home solar system #{self}!"
+    ) if player_id.nil?
+
+    raise RuntimeError.new(
+      "Cannot detach solar system #{self} while player is connected!"
+    ) if Dispatcher.instance.connected?(player_id)
 
     # Deactivate radars.
-    home_ss.planets.where(:player_id => player_id).buildings.
-      where(:type => Building::Radar).all.each(&:deactivate!)
+    Building::Radar.for_player(player_id).active.each(&:deactivate!)
 
-    zone = Galaxy::Zone.lookup(home_ss.x, home_ss.y)
-    if galaxy.create_dead_stars?(zone.slot)
+    # Remove this solar system from everyone except owner.
+    # Needs to go before deletion so we could track who sees this solar system.
+    EventBroker.fire(
+      Event::FowChange::SsDestroyed.all_except(id, player_id),
+      EventBroker::FOW_CHANGE,
+      EventBroker::REASON_SS_ENTRY
+    )
+    # Remove fow ss entries for everyone except owner.
+    fow_ss_entries.where("player_id != ?", player_id).delete_all
 
-    else
-      where(:player_id => player_id).update_all("x = NULL, y = NULL")
-      FowSsEntry.where("player_id != ?", player_id).delete_all
-      # TODO: dispatch ss metadata destroy for alliances/players.
+    # Set coordinates to detached state.
+    self.x = self.y = nil
+    save!
+  end
+
+  # Attaches solar system to the galaxy at specified coordinates.
+  def attach!(x, y)
+    raise RuntimeError.new(
+      "Cannot attach #{self} to #{x},#{y} because it is already attached!"
+    ) unless detached?
+
+    raise RuntimeError.new(
+      "Cannot attach non-home solar system #{self} to #{x},#{y}!"
+    ) if player_id.nil?
+
+    # DB index: lookup
+    raise ArgumentError.new(
+      "Cannot attach #{self} to #{x},#{y} because it is occupied!"
+    ) if self.class.where(:galaxy_id => galaxy_id, :x => x, :y => y).exists?
+
+    # Just a safety net, there should be none but if there is - fire up the
+    # alarm bells.
+    raise RuntimeError.new(
+      "There are active radars in #{self
+        }! Visibility will be inconsistent, cannot proceed!"
+    ) if Building::Radar.for_player(player_id).active.count > 0
+
+    owner_fse = fow_ss_entries.where(:player_id => player_id).first
+    raise RuntimeError.new(
+      "Cannot find owner FSE for player #{player_id}!"
+    ) if owner_fse.nil?
+
+    entries = FowGalaxyEntry.
+      select("counter, player_id, alliance_id").
+      where(:galaxy_id => galaxy_id).
+      where("? BETWEEN x AND x_end AND ? BETWEEN y AND y_end", x, y).
+      c_select_all.map do |row|
+        # By idea player is not in the alliance so we don't need to create
+        # alliance entries or view him from a different perspective instead of
+        # enemy.
+        FowSsEntry.new(
+          :solar_system_id => id,
+          :counter => row['counter'],
+          :player_id => row['player_id'],
+          :alliance_id => row['alliance_id'],
+          :enemy_planets => owner_fse.player_planets,
+          :enemy_ships => owner_fse.player_ships
+        )
+      end
+
+    self.x, self.y = x, y
+    save!
+
+    unless entries.blank?
+      BulkSql::FowSsEntry.save(entries)
+      # Dispatch updates for other connected players. We don't dispatch to self
+      # because this method does not work if player is connected.
+      EventBroker.fire(
+        Event::FowChange::SsCreated.new(id, x, y, kind, entries),
+        EventBroker::FOW_CHANGE,
+        EventBroker::REASON_SS_ENTRY
+      )
     end
+
+    # Activate radars.
+    Building::Radar.for_player(player_id).inactive.not_upgrading.
+      each(&:activate!)
+
+    true
   end
 
   def self.on_callback(id, event)

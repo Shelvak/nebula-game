@@ -1483,30 +1483,13 @@ describe Player do
   end
 
   describe "#check_activity!" do
-    let(:player) { Factory.create(:player) }
-
-    describe "player is inactive" do
-      before(:each) do
-        player.should_receive(:active?).and_return(false)
-      end
-
-      it "should hide player" do
-        player.should_receive(:detach!)
-        player.check_activity!
-      end
-
-      it "should not register new callback" do
-        player.check_activity!
-        player.
-          should_not have_callback(CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
-      end
+    let(:player) do
+      player = Factory.create(:player)
+      player.stub!(:detach!)
+      player
     end
 
-    describe "player is active" do
-      before(:each) do
-        player.should_receive(:active?).and_return(true)
-      end
-
+    shared_examples_for "not relocating" do
       it "should not hide player" do
         player.should_not_receive(:detach!)
         player.check_activity!
@@ -1519,6 +1502,46 @@ describe Player do
                         Cfg.player_inactivity_time(player.points).from_now
                       )
       end
+    end
+
+    describe "player is inactive" do
+      before(:each) do
+        player.should_receive(:active?).and_return(false)
+      end
+
+      describe "relocatable" do
+        before(:each) do
+          player.should_receive(:relocatable?).and_return(true)
+        end
+
+        it "should detach player" do
+          player.should_receive(:detach!)
+          player.check_activity!
+        end
+
+        it "should not register new callback" do
+          player.check_activity!
+          player.should_not have_callback(
+                              CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
+                            )
+        end
+      end
+
+      describe "non relocatable" do
+        before(:each) do
+          player.should_receive(:relocatable?).and_return(false)
+        end
+
+        it_should_behave_like "not relocating"
+      end
+    end
+
+    describe "player is active" do
+      before(:each) do
+        player.should_receive(:active?).and_return(true)
+      end
+
+      it_should_behave_like "not relocating"
     end
   end
 

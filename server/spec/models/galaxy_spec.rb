@@ -4,9 +4,14 @@ describe Galaxy do
   describe ".battleground_id" do
     it "should return battleground id" do
       # other battleground in other galaxy.
-      Factory.create(:solar_system, :x => nil, :y => nil)
-      bg = Factory.create(:solar_system, :x => nil, :y => nil)
+      Factory.create(:battleground)
+      bg = Factory.create(:battleground)
       Galaxy.battleground_id(bg.galaxy_id).should == bg.id
+    end
+
+    it "should not return regular detached systems" do
+      ss = Factory.create(:solar_system, :x => nil, :y => nil)
+      Galaxy.battleground_id(ss.galaxy_id).should == 0
     end
   end
 
