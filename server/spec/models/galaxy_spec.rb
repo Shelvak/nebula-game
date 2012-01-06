@@ -4,9 +4,14 @@ describe Galaxy do
   describe ".battleground_id" do
     it "should return battleground id" do
       # other battleground in other galaxy.
-      Factory.create(:solar_system, :x => nil, :y => nil)
-      bg = Factory.create(:solar_system, :x => nil, :y => nil)
+      Factory.create(:battleground)
+      bg = Factory.create(:battleground)
       Galaxy.battleground_id(bg.galaxy_id).should == bg.id
+    end
+
+    it "should not return regular detached systems" do
+      ss = Factory.create(:solar_system, :x => nil, :y => nil)
+      Galaxy.battleground_id(ss.galaxy_id).should == 0
     end
   end
 
@@ -386,6 +391,25 @@ describe Galaxy do
             @route.arrives_at)
         end
       end
+    end
+  end
+
+  describe "#create_dead_stars?" do
+    let(:galaxy) { Factory.build(:galaxy) }
+    let(:diagonal_no) { 2 }
+
+    it "should return true if zone is old enough" do
+      Cfg.should_receive(:galaxy_zone_death_age).with(diagonal_no).
+        and_return(3.days)
+      galaxy.created_at = 3.1.days.ago
+      galaxy.create_dead_stars?(diagonal_no).should be_true
+    end
+
+    it "should return false if zone is too young" do
+      Cfg.should_receive(:galaxy_zone_death_age).with(diagonal_no).
+        and_return(3.days)
+      galaxy.created_at = 2.9.days.ago
+      galaxy.create_dead_stars?(diagonal_no).should be_false
     end
   end
 end

@@ -52,6 +52,7 @@ GEM
     minitar (0.5.3)
     mocha (0.10.0)
       metaclass (~> 0.0.1)
+    msgpack (0.4.6)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
     net-sftp (2.0.5)
@@ -104,6 +105,7 @@ DEPENDENCIES
   mediawiki-gateway
   minitar
   mocha
+  msgpack
   net-scp (~> 1.0)
   net-sftp (~> 2.0)
   net-ssh (~> 2.0)

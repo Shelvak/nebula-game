@@ -36,7 +36,7 @@ package controllers.combatlogs.actions
          EventBroker.clearAllSubscriptions();
          ConnectionManager.getInstance().disconnect();
          MCTopLevel.getInstance().showScreen(Screens.BATTLE);
-         var log:Object = PropertiesTransformer.objectToCamelCase(JSON.decode(cmd.parameters.log));
+         var log:Object = cmd.parameters.log;
          Config.setConfig(log.config);
          BattleController.showBattle(STARTUP_INFO.logId, log);
       }

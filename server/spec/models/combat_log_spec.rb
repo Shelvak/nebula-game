@@ -4,18 +4,18 @@ describe CombatLog do
   before(:all) do
     @log_report = {
       :info => {
-        :player_count => 10,
-        :alliances => [
+        "player_count" => 10,
+        "alliances" => [
           [
-            {:id => 10, :name => "orc"},
-            {:id => 11, :name => "undead"}
+            {"id" => 10, "name" => "orc"},
+            {"id" => 11, "name" => "undead"}
           ],
           [
-            {:id => 20, :name => "human"},
-            {:id => 21, :name => "night elf"}
+            {"id" => 20, "name" => "human"},
+            {"id" => 21, "name" => "night elf"}
           ]
         ],
-        :winner_index => 1
+        "winner_index" => 1
       }
     }
   end
@@ -31,7 +31,7 @@ describe CombatLog do
 
     it "should return false if there was a tie" do
       CombatLog.winner?(
-        @log_report[:info].merge(:winner_index => nil), 20
+        @log_report[:info].merge("winner_index" => nil), 20
       ).should be_false
     end
   end
@@ -40,27 +40,39 @@ describe CombatLog do
     it "should generate an id of length 40" do
       CombatLog.create_from_combat!(
         @log_report[:info]
-      ).id.length.should == 40
+      ).sha1_id.length.should == 40
     end
 
-    it "should set info to log as json" do
+    it "should set info" do
       CombatLog.create_from_combat!(
         @log_report[:info]
-      ).info.should == @log_report[:info].to_json
+      ).info.should == @log_report[:info]
     end
 
-    it "should set expires_at" do
-      CombatLog.create_from_combat!(
-        @log_report[:info]
-      ).expires_at.to_s(:db).should == (
-        Time.now + CONFIG.evalproperty('notifications.expiration_time')
-      ).to_s(:db)
+    it "should register deletion callback" do
+      log = CombatLog.create_from_combat!(@log_report[:info])
+      log.should have_callback(
+                   CallbackManager::EVENT_DESTROY,
+                   Cfg.combat_log_expiration_time.from_now
+                 )
     end
 
     it "should return saved object" do
       CombatLog.create_from_combat!(
         @log_report[:info]
       ).should_not be_new_record
+    end
+  end
+
+  describe ".on_callback" do
+    describe "destroy" do
+      it "should destroy combat log" do
+        log = Factory.create(:combat_log)
+        CombatLog.on_callback(log.id, CallbackManager::EVENT_DESTROY)
+        lambda do
+          log.reload
+        end.should raise_error(ActiveRecord::RecordNotFound)
+      end
     end
   end
 end

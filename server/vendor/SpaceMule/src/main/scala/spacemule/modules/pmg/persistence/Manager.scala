@@ -8,7 +8,7 @@ import spacemule.modules.pmg.objects.ss_objects.Planet
 import spacemule.persistence.DB
 import java.util.{Calendar, Date}
 import spacemule.modules.pmg.objects._
-import solar_systems.{SpaceStation, Wormhole, Battleground, Homeworld}
+import solar_systems.{Wormhole, Battleground, Homeworld}
 
 object Manager {
   val galaxies = ListBuffer[String]()
@@ -328,7 +328,6 @@ object Manager {
   ) = {
     val playerRow = solarSystem match {
       case hw: Homeworld => Some(getPlayerRow(hw.player, galaxy.id))
-      case ss: SpaceStation => Some(getPlayerRow(ss.player, galaxy.id))
       case _ => None
     }
 
@@ -384,8 +383,6 @@ object Manager {
           CallbackRow.playerInactivityCheck
         ).values
         addSpawn() // Spawn callback
-      case _: SpaceStation =>
-        addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords.get)
       case _: Wormhole =>
         addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords.get)
       case _: Battleground =>

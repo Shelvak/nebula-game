@@ -1,6 +1,6 @@
 package spacemule.modules.pmg.objects
 
-import solar_systems.{SpaceStation, Homeworld}
+import solar_systems.{Homeworld}
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.WithCoords
@@ -69,22 +69,9 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
   /**
    * Adds new homeworld to random free spot and puts its space station near it.
    */
-  def addSolarSystem(homeworld: Homeworld, spaceStation: SpaceStation) {
+  def addSolarSystem(homeworld: Homeworld) {
     var spot = findFreeSpot()
-    while (true) {
-      (-1 to 1).foreach { x =>
-        (-1 to 1).foreach { y =>
-          val stationSpot = Coords(spot.x - x, spot.y - y)
-          if (! solarSystems.contains(stationSpot)) {
-            addSolarSystem(homeworld, spot)
-            addSolarSystem(spaceStation, stationSpot)
-            return
-          }
-        }
-      }
-
-      spot = findFreeSpot()
-    }
+    addSolarSystem(homeworld, spot)
   }
 
   /**

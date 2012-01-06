@@ -15,9 +15,17 @@ class Event::FowChange::SolarSystem < Event::FowChange
     SolarSystem.find(@solar_system_id)
   end
 
-  def ==(other)
+  def to_s
+    "<#{self.class} solar_system_id=#{@solar_system_id}, player_ids=#{
+      @player_ids.inspect}, metadatas=#{@metadatas.inspect}>"
+  end
+
+  def ==(other); eql?(other); end
+
+  def eql?(other)
     other.is_a?(self.class) && super(other) &&
-      @solar_system_id == other.solar_system_id
+      @solar_system_id == other.solar_system_id &&
+      @metadatas == other.metadatas
   end
 
   protected
@@ -28,7 +36,7 @@ class Event::FowChange::SolarSystem < Event::FowChange
   # * #player_ids (Fixnum[]): Array of players that should be notified
   # * #metadatas (+Hash+ of _player_id_ => +SolarSystemMetadata+)
   #
-  def process_changes(fow_ss_entries)
+  def process_changes(fow_ss_entries, coords=nil, kind=nil)
     metadatas = {}
     player_ids = Set.new
     fow_ss_entries.each do |fse|
@@ -48,7 +56,8 @@ class Event::FowChange::SolarSystem < Event::FowChange
     @metadatas = {}
     metadatas.each do |player_id, data|
       @metadatas[player_id] = FowSsEntry.merge_metadata(
-        data[:player], data[:alliance])
+        data[:player], data[:alliance], coords, kind
+      )
     end
 
     @player_ids = player_ids.to_a

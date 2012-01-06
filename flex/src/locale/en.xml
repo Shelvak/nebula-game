@@ -1228,11 +1228,6 @@
     <label.openWormhole value="Enter battleground" />
     <label.wormhole value="Battleground"/>
     <label.pulsar value="Pulsar-{0}"/>
-    <label.deadStar>
-      <p>This star is dead. A civilization once lived here but now it's
-      long gone.</p>
-      <p>Visiting this star is forbidden.</p>
-    </label.deadStar>
     <label.shield value="This solar system is shielded."/>
     <label.ssOwner value="Owned by"/>
     <label.over value="Fleet over"/>

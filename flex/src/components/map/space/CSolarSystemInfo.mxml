@@ -68,10 +68,6 @@
       </solarsystem:SSPlanetsStatusIcons>
    </s:Group>
    
-   <s:Label id="txtDeadStar" text="{getString('label.deadStar')}"
-            visible="{ss.isDead}" includeInLayout="{ss.isDead}"
-            width="{MSSObject.IMAGE_WIDTH}"
-            lineBreak="toFit" textAlign="center"/>
    <s:Label id="lblShield" text="{getString('label.shield')}"
             visible="{ss.isShielded}" includeInLayout="{ss.isShielded}"
             width="{MSSObject.IMAGE_WIDTH}" lineBreak="toFit"

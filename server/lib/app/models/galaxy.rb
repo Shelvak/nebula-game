@@ -1,5 +1,5 @@
 class Galaxy < ActiveRecord::Base
-  include Zone
+  include ::Zone
 
   # FK :dependent => :delete_all
   has_many :fow_galaxy_entries
@@ -19,7 +19,8 @@ class Galaxy < ActiveRecord::Base
   # Returns ID of battleground solar system.
   def self.battleground_id(galaxy_id)
     SolarSystem.select("id").
-      where(:galaxy_id => galaxy_id, :x => nil, :y => nil).
+      where(:galaxy_id => galaxy_id, :x => nil, :y => nil,
+            :kind => SolarSystem::KIND_BATTLEGROUND).
       c_select_value.to_i
   end
 
@@ -281,6 +282,12 @@ class Galaxy < ActiveRecord::Base
   def current_day
     ((Time.now - created_at) / 1.day).round
   end
+
+  ## Should we create dead starts when detaching players fron the galaxy?
+  #def create_dead_stars?(zone_diagonal)
+  #  death_age = Cfg.galaxy_zone_death_age(zone_diagonal)
+  #  created_at + death_age < Time.now
+  #end
 
   def as_json(options=nil)
     attributes

@@ -11,9 +11,9 @@ class CombatLogsController < GenericController
   # - log (Hash): combat log as defined in Combat#run_combat
   #
   def action_show
-    param_options :required => %w{id}
+    param_options :required => {:id => String}
 
     combat_log = CombatLog.find(params['id'])
-    respond :log => combat_log.info.as_json
+    respond :log => combat_log.info
   end
 end

@@ -352,14 +352,6 @@ package utils.assets
       
       
       /**
-       * Builds and returns full name of a dead start (kind of solar system) image.
-       */
-      public static function getDeadStarImageName(variation:int) : String {
-         return SS_IMAGE_FOLDER + "dead_star_" + variation;
-      }
-      
-      
-      /**
        * Builds and returns full name of a given solar system status icon.
        * 
        * @param type of the status icon. Use constants in <code>SSMetadataType</code>

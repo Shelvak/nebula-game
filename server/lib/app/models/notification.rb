@@ -54,36 +54,17 @@ class Notification < ActiveRecord::Base
   default_scope order("`read` ASC, `created_at` DESC")
 
   protected
-  before_save :set_timestamps
-  def set_timestamps
+  before_save do
     self.created_at ||= Time.now
-    self.expires_at ||= self.created_at +
-      CONFIG.evalproperty('notifications.expiration_time')
-
-    CallbackManager.update(self, CallbackManager::EVENT_DESTROY,
-      self.expires_at) if expires_at_changed? and ! new_record?
-    true
-  end
-
-  after_create :register_to_cm
-  def register_to_cm
-    CallbackManager.register(self, CallbackManager::EVENT_DESTROY,
-      expires_at)
+    self.expires_at ||= self.created_at + Cfg.notification_expiration_time
 
     true
   end
 
-  after_update :update_related
-  def update_related
-    case event
-    when EVENT_COMBAT
-      CombatLog.update_all(
-        ["expires_at=?", expires_at],
-        ["sha1_id=? AND expires_at<?", self.params[:log_id], expires_at]
-      )
-    end
-
-    true
+  after_save do
+    CallbackManager.register_or_update(
+      self, CallbackManager::EVENT_DESTROY, self.expires_at
+    )
   end
 
   def self.on_callback(id, event)

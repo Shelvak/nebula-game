@@ -75,9 +75,7 @@ module Dev
     player = Player.find(player_id)
     SpaceMule.instance.create_players(player.galaxy_id,
       player.galaxy.ruleset, players)
-    event_dispatched = radar(player_id)
-    FowGalaxyEntry.dispatch_changed(player) unless event_dispatched
-    
+
     players.keys
   end
 

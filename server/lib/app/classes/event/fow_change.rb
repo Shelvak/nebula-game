@@ -14,7 +14,9 @@ class Event::FowChange
   attr_reader :player_ids
 
   # Equality for being able to test it.
-  def ==(other)
+  def ==(other); eql?(other); end
+
+  def eql?(other)
     other.is_a?(self.class) && @player_ids == other.player_ids
   end
 end
