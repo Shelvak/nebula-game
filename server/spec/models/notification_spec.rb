@@ -670,4 +670,37 @@ describe Notification do
       ).params[:alliance_creds_per_player].should == @alliance_creds_per_player
     end
   end
+
+  describe ".create_for_alliance_owner_changed" do
+    before(:all) do
+      @player_id = Factory.create(:player).id
+      @alliance = Factory.create(:alliance).as_json(:mode => :minimal)
+      @old_owner = Factory.create(:player).as_json(:mode => :minimal)
+      @new_owner = Factory.create(:player).as_json(:mode => :minimal)
+
+      @event = Notification::EVENT_ALLIANCE_OWNER_CHANGED
+      @method = :create_for_alliance_owner_changed
+      @args = [@player_id, @alliance, @old_owner, @new_owner]
+    end
+
+    it_behaves_like "create for"
+
+    it "should have :alliance" do
+      Notification.send(
+        @method, *@args
+      ).params[:alliance].should == @alliance
+    end
+
+    it "should have :old_owner" do
+      Notification.send(
+        @method, *@args
+      ).params[:old_owner].should == @old_owner
+    end
+
+    it "should have :new_owner" do
+      Notification.send(
+        @method, *@args
+      ).params[:new_owner].should == @new_owner
+    end
+  end
 end

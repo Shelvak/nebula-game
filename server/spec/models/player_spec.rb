@@ -293,6 +293,27 @@ describe Player do
       it_should_behave_like "not invoking remote"
     end
   end
+
+  describe "#inactivity_time" do
+    it "should return 0 if player is connected" do
+      player = Factory.create(:player)
+      Dispatcher.instance.should_receive(:connected?).with(player.id).
+        and_return(true)
+      player.inactivity_time.should == 0
+    end
+
+    it "should return time from created_at if player has never logged in" do
+      player = Factory.
+        build(:player, :last_seen => nil, :created_at => 15.days.ago)
+      player.inactivity_time.should be_within(SPEC_TIME_PRECISION).of(15.days)
+    end
+
+    it "should return time from last login otherwise" do
+      player = Factory.
+        build(:player, :last_seen => 3.days.ago, :created_at => 15.days.ago)
+      player.inactivity_time.should be_within(SPEC_TIME_PRECISION).of(3.days)
+    end
+  end
   
   describe "#daily_bonus_available?" do
     it "should return true if #daily_bonus_at is nil" do
@@ -946,6 +967,20 @@ describe Player do
     end
   end
 
+  describe ".minimal_from_ids" do
+    it "should resolve from ids" do
+      p1 = Factory.create(:player)
+      p2 = Factory.create(:player)
+
+      ids = [p1.id, nil, p2.id]
+      Player.minimal_from_ids(ids).should equal_to_hash(
+        p1.id => p1.as_json(:mode => :minimal),
+        p2.id => p2.as_json(:mode => :minimal),
+        nil => nil
+      )
+    end
+  end
+
   describe "#change_scientist_count!" do
     before(:each) do
       @player = Factory.create(:player)
@@ -1150,6 +1185,10 @@ describe Player do
           @unshielded_ss.reload
         end.should_not change(@unshielded_ss, :kind)
       end
+    end
+
+    describe "if owns an alliance" do
+      it "should try to pass alliance ownership control to someone else"
     end
   end
 

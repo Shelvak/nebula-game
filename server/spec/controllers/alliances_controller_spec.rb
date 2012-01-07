@@ -483,4 +483,88 @@ describe AlliancesController do
       response_should_include(:ratings => Alliance.ratings(player.galaxy_id))
     end
   end
+
+  describe "alliances|take_over" do
+    before(:each) do
+      @action = "alliances|take_over"
+      @params = {}
+      player.alliance = create_alliance
+      player.alliance.stub!(:take_over!)
+    end
+
+    it "should fail if player is not in the alliance" do
+      player.alliance = nil
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should call #take_over! on alliance" do
+      player.alliance.should_receive(:take_over!).with(player)
+      invoke @action, @params
+    end
+
+    it "should push alliances|show on success" do
+      should_push(AlliancesController::ACTION_SHOW, 'id' => @player.alliance_id)
+      invoke @action, @params
+    end
+  end
+
+  describe "alliances|give_away" do
+    before(:each) do
+      @alliance = create_alliance :owner => player
+      @member = Factory.create(:player, :alliance => @alliance)
+      player.alliance.stub!(:transfer_ownership!)
+
+      @action = "alliances|give_away"
+      @params = {'player_id' => @member.id}
+    end
+
+    it_should_behave_like "with param options", %w{player_id}
+
+    it "should fail if player is not in alliance" do
+      player.alliance = nil
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if player is not alliance owner" do
+      @alliance.owner = Factory.create(:player, :alliance => @alliance)
+      @alliance.save!
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if new owner is not found" do
+      @member.destroy
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should call #transfer_ownership! on alliance" do
+      Player.stub!(:find).with(@member.id).and_return(@member)
+      player.alliance.should_receive(:transfer_ownership!).with(@member)
+      invoke @action, @params
+    end
+
+    it "should respond with success" do
+      invoke @action, @params
+      response_should_include(:status => "success")
+    end
+
+    it "should push alliances|show on success" do
+      should_push(AlliancesController::ACTION_SHOW, 'id' => @alliance.id)
+      invoke @action, @params
+    end
+
+    it "should respond with error if technology is too low" do
+      player.alliance.stub(:transfer_ownership!).
+        and_raise(Alliance::TechnologyLevelTooLow)
+      invoke @action, @params
+      response_should_include(:status => "technology_level_too_low")
+    end
+  end
 end

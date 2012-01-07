@@ -13,6 +13,7 @@
 # * Notification#create_for_alliance_joined
 # * Notification#create_for_market_offer_bought
 # * Notification#create_for_vps_to_creds_conversion
+# * Notification#create_for_alliance_owner_changed
 #
 class Notification < ActiveRecord::Base
   # These methods must be defined before the include.
@@ -50,6 +51,8 @@ class Notification < ActiveRecord::Base
   EVENT_MARKET_OFFER_BOUGHT = 11
   # Creds awarded for victory points.
   EVENT_VPS_CONVERTED_TO_CREDS = 12
+  # Alliance owner has changed.
+  EVENT_ALLIANCE_OWNER_CHANGED = 13
 
   # custom_serialize converts all :symbols to 'symbols'
   serialize :params
@@ -508,6 +511,29 @@ class Notification < ActiveRecord::Base
         :personal_creds => personal_creds,
         :total_alliance_creds => total_alliance_creds,
         :alliance_creds_per_player => alliance_creds_per_player
+      }
+    )
+    model.save!
+
+    model
+  end
+
+  # EVENT_ALLIANCE_OWNER_CHANGED = 13
+  #
+  # params = {
+  #   :alliance => Alliance#as_json(:mode => :minimal)
+  #   :old_owner => Player#minimal,
+  #   :new_owner => Player#minimal,
+  # }
+  def self.create_for_alliance_owner_changed(player_id, alliance, old_owner,
+      new_owner)
+    model = new(
+      :event => EVENT_ALLIANCE_OWNER_CHANGED,
+      :player_id => player_id,
+      :params => {
+        :alliance => alliance,
+        :old_owner => old_owner,
+        :new_owner => new_owner
       }
     )
     model.save!

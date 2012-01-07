@@ -105,6 +105,18 @@ class Player < ActiveRecord::Base
     end
   end
 
+  # Return +Hash+ of {player_id => Player#minimal} pairs from ids.
+  def self.minimal_from_ids(ids)
+    compacted_ids = ids.compact
+    hashed = select("id, name").where(:id => compacted_ids).c_select_all.
+      each_with_object({}) do |row, hash|
+        hash[row['id']] = {"id" => row['id'], "name" => row['name']}
+    end
+    # Add NPC player if it was in the ids.
+    hashed[nil] = nil if ids.size != compacted_ids.size
+    hashed
+  end
+
   # Return Hash of {player_id => Player#minimal} pairs from given _objects_.
   def self.minimal_from_objects(objects, map_method=:player_id, &map_block)
     map_block ||= map_method
@@ -116,6 +128,12 @@ class Player < ActiveRecord::Base
   def self.names_for(player_ids)
     names = select("name").where(:id => player_ids).c_select_values
     Hash[player_ids.zip(names)]
+  end
+
+  # Returns for how much seconds this player has been inactive.
+  def inactivity_time
+    return 0 if Dispatcher.instance.connected?(id)
+    Time.now - (last_seen.nil? ? created_at : last_seen)
   end
 
   # Is daily bonus available for this player?
