@@ -424,12 +424,17 @@ class Player < ActiveRecord::Base
   end
 
   # Before +Player+ destruction leave alliance if he is in one.
-  # Upon +Player+ destroy all shielded solar systems should become dead
-  # stars.
   before_destroy do
+    # Dispatch that home solar system is destroyed. This needs to be in
+    # before_destroy so that visibilities can be gathered.
+    home_ss = home_solar_system
+    EventBroker.fire(
+      Event::FowChange::SsDestroyed.all_except(home_ss.id, id),
+      EventBroker::FOW_CHANGE,
+      EventBroker::REASON_SS_ENTRY
+    ) unless home_ss.detached?
+
     leave_alliance! unless alliance_id.nil?
-    solar_system_ids = planets.map(&:solar_system_id).uniq
-    SolarSystem.shielded.where(:id => solar_system_ids).each(&:die!)
     true
   end
 
@@ -521,12 +526,7 @@ class Player < ActiveRecord::Base
     return false unless alliance_id.nil?
     return false if Route.where(:player_id => id).exists?
 
-    home_ss_id = SolarSystem.
-      select("id").
-      # galaxy_id is added to match "uniqueness" index
-      where(:galaxy_id => galaxy_id, :kind => SolarSystem::KIND_NORMAL,
-            :player_id => id).
-      c_select_value
+    home_ss_id = SolarSystem.select("id").where(:player_id => id).c_select_value
     raise "Home solar system could not be found for #{self}!" if home_ss_id.nil?
 
     return false if SsObject::Planet.where(:player_id => id).
@@ -578,8 +578,7 @@ class Player < ActiveRecord::Base
     home_solar_system.detached?
   end
 
-  # Detach this player from galaxy map. His solar systems are detached from map
-  # and if enough time has passed from start zone creation it is replaced by a dead star.
+  # Detach this players home solar system from galaxy map.
   def detach!
     raise ArgumentError.
             new("Cannot detach #{self} which is already detached!") if detached?
@@ -587,7 +586,7 @@ class Player < ActiveRecord::Base
     home_solar_system.detach!
   end
 
-  # Unhide this player. His solar systems are reattached to the map. Placer
+  # Reattach this players home solar system to galaxy map. Placer
   # tries to place player in a zone which has closes average player point value
   # to his.
   def attach!

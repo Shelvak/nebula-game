@@ -155,6 +155,7 @@ object Config {
   //////////////////////////////////////////////////////////////////////////////
 
   def zoneDiameter = int("galaxy.zone.diameter")
+  def zoneMaturityAge = int("galaxy.zone.maturity_age")
   def playersPerZone = int("galaxy.zone.players")
   // Number of seconds for first inactivity check.
   def playerInactivityCheck: Int = {

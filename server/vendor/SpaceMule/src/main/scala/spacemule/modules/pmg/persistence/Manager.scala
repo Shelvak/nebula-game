@@ -74,17 +74,30 @@ object Manager {
   }
 
   private def loadSolarSystems(galaxy: Galaxy) {
+    val now = DB.date(Calendar.getInstance())
     val rs = DB.query(
-      "SELECT `x`, `y` FROM `%s` WHERE `galaxy_id`=%d".format(
-        solarSystemsTable, galaxy.id
-      )
+      """
+SELECT
+  ss.`x`,
+  ss.`y`,
+  IF(p.`created_at`, TO_SECONDS('%s') - TO_SECONDS(p.`created_at`), 0) AS age
+FROM
+  `%s` AS ss
+LEFT JOIN
+  `%s` AS p
+ON
+  ss.`player_id`=p.`id`
+WHERE
+  ss.`galaxy_id`=%d
+      """.format(now, solarSystemsTable, playersTable, galaxy.id)
     )
 
     while (rs.next) {
       val x = rs.getInt(1)
       val y = rs.getInt(2)
+      val age = rs.getInt(3)
 
-      galaxy.addExistingSS(x, y)
+      galaxy.addExistingSS(x, y, age)
     }
   }
 
