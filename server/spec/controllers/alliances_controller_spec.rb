@@ -232,49 +232,13 @@ describe AlliancesController do
       @params = {}
     end
 
-    it "should fail if you're not in the alliance" do
-      player.alliance = nil
-      player.save!
-
-      lambda do
-        invoke @action, @params
-      end.should raise_error(GameLogicError)
-    end
-
-    it "should set alliance cooldown" do
+    it "should call #leave_alliance! on player" do
+      player.should_receive(:leave_alliance!)
       invoke @action, @params
-      player.reload
-      player.alliance_cooldown_ends_at.should be_within(SPEC_TIME_PRECISION).of(
-        CONFIG.evalproperty('alliances.leave.cooldown').from_now
-      )
     end
 
-    describe "if owner" do
-      before(:each) do
-        @alliance.owner = player
-        @alliance.save!
-      end
-
-      it "should destroy alliance" do
-        invoke @action, @params
-        Alliance.exists?(@alliance).should be_false
-      end
-
-      it "should work properly" do
-        invoke @action, @params
-      end
-    end
-
-    describe "if member" do
-      it "should throw you out from alliance" do
-        player.stub!(:alliance).and_return(@alliance)
-        @alliance.should_receive(:throw_out).with(player)
-        invoke @action, @params
-      end
-
-      it "should work properly" do
-        invoke @action, @params
-      end
+    it "should work" do
+      invoke @action, @params
     end
   end
 
@@ -481,6 +445,90 @@ describe AlliancesController do
     it "should respond with ratings for this galaxy" do
       invoke @action, @params
       response_should_include(:ratings => Alliance.ratings(player.galaxy_id))
+    end
+  end
+
+  describe "alliances|take_over" do
+    before(:each) do
+      @action = "alliances|take_over"
+      @params = {}
+      player.alliance = create_alliance
+      player.alliance.stub!(:take_over!)
+    end
+
+    it "should fail if player is not in the alliance" do
+      player.alliance = nil
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should call #take_over! on alliance" do
+      player.alliance.should_receive(:take_over!).with(player)
+      invoke @action, @params
+    end
+
+    it "should push alliances|show on success" do
+      should_push(AlliancesController::ACTION_SHOW, 'id' => @player.alliance_id)
+      invoke @action, @params
+    end
+  end
+
+  describe "alliances|give_away" do
+    before(:each) do
+      @alliance = create_alliance :owner => player
+      @member = Factory.create(:player, :alliance => @alliance)
+      player.alliance.stub!(:transfer_ownership!)
+
+      @action = "alliances|give_away"
+      @params = {'player_id' => @member.id}
+    end
+
+    it_should_behave_like "with param options", %w{player_id}
+
+    it "should fail if player is not in alliance" do
+      player.alliance = nil
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if player is not alliance owner" do
+      @alliance.owner = Factory.create(:player, :alliance => @alliance)
+      @alliance.save!
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if new owner is not found" do
+      @member.destroy
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should call #transfer_ownership! on alliance" do
+      Player.stub!(:find).with(@member.id).and_return(@member)
+      player.alliance.should_receive(:transfer_ownership!).with(@member)
+      invoke @action, @params
+    end
+
+    it "should respond with success" do
+      invoke @action, @params
+      response_should_include(:status => "success")
+    end
+
+    it "should push alliances|show on success" do
+      should_push(AlliancesController::ACTION_SHOW, 'id' => @alliance.id)
+      invoke @action, @params
+    end
+
+    it "should respond with error if technology is too low" do
+      player.alliance.stub(:transfer_ownership!).
+        and_raise(Alliance::TechnologyLevelTooLow)
+      invoke @action, @params
+      response_should_include(:status => "technology_level_too_low")
     end
   end
 end

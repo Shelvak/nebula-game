@@ -22,6 +22,13 @@ class Alliance < ActiveRecord::Base
     self.name = name.strip.gsub(/ {2,}/, " ")
   end
 
+  # Raised when action requires some +Technology::Alliances+ level but this
+  # condition is not satisfied.
+  class TechnologyLevelTooLow < GameLogicError; end
+
+  # Raised when no successor can be found in #resign_ownership!
+  class NoSuccessorFound < GameError; end
+
   validates_length_of :description,
     :maximum => CONFIG['alliances.validation.description.length.max']
 
@@ -224,6 +231,108 @@ class Alliance < ActiveRecord::Base
     event = Event::StatusChange::Alliance.new(self, player,
       Event::StatusChange::Alliance::THROW_OUT)
     EventBroker.fire(event, EventBroker::CHANGED)
+
+    true
+  end
+
+  # Changes alliance ownership and makes _player_ new owner.
+  #
+  # He must:
+  # 1) Be a member of this alliance.
+  # 2) Have sufficient alliance technology level.
+  def transfer_ownership!(player)
+    raise GameLogicError.new(
+      "Cannot transfer ownership to same player #{player}!"
+    ) if owner_id == player.id
+
+    raise GameLogicError.new(
+      "Cannot transfer alliance ownership to player (#{player
+      }) not from this alliance!"
+    ) unless player.alliance_id == id
+
+    technology = Technology::Alliances.where(:player_id => player.id).first
+    raise TechnologyLevelTooLow.new(
+      "#{player} does not have alliances technology!"
+    ) if technology.nil?
+
+    required_level = Technology::Alliances.
+      required_level_for_player_count(players.size)
+    raise TechnologyLevelTooLow.new(
+      "#{player} only has level #{technology.level
+      } of alliances technology but level #{required_level
+      } is required to transfer alliance ownership."
+    ) if technology.level < required_level
+
+    transfer_ownership_impl!(player)
+  end
+
+  # In case alliance owner resigns and quits the alliance this method tries to
+  # find another player from members which can take over this alliance.
+  #
+  # That member needs to have sufficient alliance technology level.
+  #
+  # Raises +Alliance::NoSuccessorFound+ if no such member can be found.
+  def resign_ownership!
+    potential_ids = member_ids - [owner_id]
+
+    required_level = Technology::Alliances.
+      required_level_for_player_count(potential_ids.size)
+
+    successor_id = Technology::Alliances.
+      select("player_id").
+      where(:player_id => potential_ids).
+      where("level >= ?", required_level).
+      order("RAND()").
+      c_select_value
+
+    raise NoSuccessorFound.new(
+      "Cannot find a successor for #{self}! Alliance technology level #{
+      required_level} is needed but none of the members have it."
+    ) if successor_id.nil?
+
+    current_owner = owner
+    new_owner = Player.find(successor_id)
+
+    transfer_ownership_impl!(new_owner)
+    throw_out(current_owner)
+
+    true
+  end
+
+  # Takes over alliance control from current owner and gives it to _player_.
+  # You can only do this if owner hasn't connected for some time.
+  #
+  # See #transfer_ownership! for more information.
+  def take_over!(player)
+    owner_inactive = owner.inactivity_time
+    required_time = Cfg.alliance_take_over_owner_inactivity_time
+    raise GameLogicError.new(
+      "Alliance owner has to be inactive for #{required_time
+      } seconds but he is only inactive for #{owner_inactive
+      } seconds, takeover not possible!"
+    ) if required_time > owner_inactive
+
+    transfer_ownership!(player)
+  end
+
+  private
+  # No-checks implementation of #transfer_ownership! used by it and
+  # #resign_ownership!.
+  def transfer_ownership_impl!(player)
+    old_owner = Player.minimal(owner_id)
+    self.owner = player
+    save!
+
+    as_json = self.as_json(:mode => :minimal)
+    new_owner = player.as_json(:mode => :minimal)
+
+    member_ids.each do |member_id|
+      Notification.create_for_alliance_owner_changed(
+        member_id, as_json, old_owner, new_owner
+      )
+    end
+
+    ControlManager.instance.alliance_owner_changed(self, player)
 
     true
   end

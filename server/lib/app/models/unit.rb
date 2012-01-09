@@ -164,7 +164,7 @@ class Unit < ActiveRecord::Base
 
   # Checks how many levels we can upgrade with current xp.
   def can_upgrade_by
-    if level == 0 or npc? or dead?
+    if level == 0 || dead?
       0
     else
       levels = 0

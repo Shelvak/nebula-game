@@ -9,6 +9,10 @@ validation.name.length.max: 50 # This one is hardcoded in DB schema!
 
 validation.description.length.max: 1000
 
+# How much time alliance owner has to be absent for players to be able to take
+# over alliance ownership?
+take_over.inactivity_time: <%= 10.days %> / speed
+
 # How much time player needs to wait before joining other alliance?
 leave.cooldown: <%= 24.hours %> / speed
 

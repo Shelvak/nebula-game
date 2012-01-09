@@ -99,7 +99,8 @@ class AlliancesController < GenericController
   # Leaves current alliance. After leaving player will have to wait for
   # a period of time before he can join other alliance.
   #
-  # If alliance owner leaves the alliance, alliance is destroyed. Its
+  # If alliance owner leaves the alliance, he resigns alliance ownership to
+  # his successor. If none is found - alliance is destroyed. Its
   # members are free to join other alliance as soon as this alliance is
   # destroyed.
   #
@@ -110,17 +111,7 @@ class AlliancesController < GenericController
   # Response: None
   #
   def action_leave
-    alliance = get_alliance
-
-    player.alliance_cooldown_ends_at = CONFIG.evalproperty(
-      'alliances.leave.cooldown').from_now
-    player.save!
-
-    if alliance.owner_id == player.id
-      alliance.destroy!
-    else
-      alliance.throw_out(player)
-    end
+    player.leave_alliance!
   end
 
   # Kicks player out of alliance.
@@ -150,6 +141,7 @@ class AlliancesController < GenericController
     Notification.create_for_kicked_from_alliance(alliance, member)
   end
 
+  ACTION_SHOW = 'alliances|show'
   # Shows an alliance.
   #
   # Includes alliance and it's players with ratings.
@@ -249,6 +241,65 @@ class AlliancesController < GenericController
   #
   def action_ratings
     respond :ratings => Alliance.ratings(player.galaxy_id)
+  end
+
+  # Takes over alliance control. You can only do this if:
+  #
+  # 1) You are a member of that alliance.
+  # 2) Owner has not connected for some time.
+  # 3) You have sufficient alliance technology level.
+  #
+  # Invocation: by client
+  #
+  # Parameters: None
+  #
+  # Response: None
+  #
+  def action_take_over
+    alliance = player.alliance
+    raise GameLogicError.new(
+      "You must be in alliance to take ownership of one!"
+    ) if alliance.nil?
+
+    alliance.take_over!(player)
+
+    push ACTION_SHOW, 'id' => alliance.id
+  end
+
+  # Gives away alliance ownership to other player.
+  #
+  # He must:
+  # 1) Be a member of same alliance.
+  # 2) Have sufficient alliance technology level.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - player_id (Fixnum): player that you are giving ownership too.
+  #
+  # Response:
+  # - status (String): "success" | "technology_level_too_low"
+  #
+  def action_give_away
+    param_options :required => {:player_id => Fixnum}
+
+    alliance = player.alliance
+    raise GameLogicError.new(
+      "You must be in alliance give away ownership of one!"
+    ) if alliance.nil?
+
+    raise GameLogicError.new(
+      "You must be alliance owner to give away ownership!"
+    ) unless alliance.owner_id == player.id
+
+    new_owner = Player.find(params['player_id'])
+
+    alliance.transfer_ownership!(new_owner)
+
+    respond :status => 'success'
+    push ACTION_SHOW, 'id' => alliance.id
+  rescue Alliance::TechnologyLevelTooLow
+    respond :status => 'technology_level_too_low'
   end
 
   private

@@ -10,6 +10,16 @@ class Cfg; class << self
     CONFIG['development', ruleset]
   end
 
+  ### alliance.yml ###
+
+  def alliance_take_over_owner_inactivity_time
+    CONFIG.evalproperty('alliances.take_over.inactivity_time')
+  end
+
+  def alliance_leave_cooldown
+    CONFIG.evalproperty('alliances.leave.cooldown')
+  end
+
   ### battleground.yml ###
 
   def vps_for_winning

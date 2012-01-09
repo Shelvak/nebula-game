@@ -486,4 +486,134 @@ describe Alliance do
       end
     end
   end
+
+  describe "#transfer_ownership!" do
+    let(:alliance) do
+      alliance = create_alliance
+      (Technology::Alliances.max_players(2) - 1).times do
+        Factory.create(:player, :alliance => alliance)
+      end
+      alliance
+    end
+    let(:player) { alliance.players.last }
+    let(:technology) do
+      Factory.create!(:t_alliances, :player => player, :level => 2)
+    end
+
+    before(:each) { technology() }
+
+    it "should fail if trying to transfer to same player" do
+      lambda do
+        alliance.transfer_ownership!(alliance.owner)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if player is not from same alliance" do
+      player.alliance = Factory.create(:alliance)
+      lambda do
+        alliance.transfer_ownership!(player)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if player does not have alliances technology" do
+      technology.destroy
+      lambda do
+        alliance.transfer_ownership!(player)
+      end.should raise_error(Alliance::TechnologyLevelTooLow)
+    end
+
+    it "should fail if player does not have sufficient technology level" do
+      technology.level -= 1
+      technology.save!
+      lambda do
+        alliance.transfer_ownership!(player)
+      end.should raise_error(Alliance::TechnologyLevelTooLow)
+    end
+
+    it "should change alliance owner" do
+      lambda do
+        alliance.transfer_ownership!(player)
+        alliance.reload
+      end.should change(alliance, :owner).from(alliance.owner).to(player)
+    end
+
+    it "should create notifications for all alliance members" do
+      as_json = alliance.as_json(:mode => :minimal)
+      old_owner = alliance.owner.as_json(:mode => :minimal)
+      new_owner = player.as_json(:mode => :minimal)
+      alliance.member_ids.each do |member_id|
+        Notification.should_receive(:create_for_alliance_owner_changed).with(
+          member_id, as_json, old_owner, new_owner
+        )
+      end
+
+      alliance.transfer_ownership!(player)
+    end
+
+    it "should notify web about changed owner" do
+      ControlManager.instance.should_receive(:alliance_owner_changed).
+        with(alliance, player)
+      alliance.transfer_ownership!(player)
+    end
+  end
+
+  describe "#resign_ownership!" do
+    let(:alliance) do
+      alliance = create_alliance
+      (Technology::Alliances.max_players(2)).times do
+        Factory.create(:player, :alliance => alliance)
+      end
+      alliance
+    end
+    let(:new_owner) { alliance.players.last }
+    let(:technology) do
+      Factory.create!(:t_alliances, :player => new_owner, :level => 2)
+    end
+
+    before(:each) { technology() }
+
+    it "should raise exception if no successor is found" do
+      technology.destroy!
+      lambda do
+        alliance.resign_ownership!
+      end.should raise_error(Alliance::NoSuccessorFound)
+    end
+
+    it "should transfer ownership" do
+      lambda do
+        alliance.resign_ownership!
+        alliance.reload
+      end.should change(alliance, :owner).from(alliance.owner).to(new_owner)
+    end
+
+    it "should throw old owner out" do
+      old_owner_id = alliance.owner_id
+      alliance.resign_ownership!
+      alliance.member_ids.should_not include(old_owner_id)
+    end
+  end
+
+  describe "#take_over!" do
+    let(:player) { Factory.build(:player) }
+    let(:owner) do
+      Factory.build(:player, :last_seen =>
+        (Cfg.alliance_take_over_owner_inactivity_time + 1.minute).ago
+      )
+    end
+    let(:alliance) { Factory.build(:alliance, :owner => owner) }
+
+    it "should fail if owner is still considered active" do
+      alliance.owner.last_seen =
+        (Cfg.alliance_take_over_owner_inactivity_time - 1.minute).ago
+
+      lambda do
+        alliance.take_over!(player)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should call #transfer_ownership!" do
+      alliance.should_receive(:transfer_ownership!).with(player)
+      alliance.take_over!(player)
+    end
+  end
 end

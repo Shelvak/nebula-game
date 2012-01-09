@@ -6,7 +6,6 @@ gem 'activesupport', '~>3.0.9', :require => 'active_support'
 gem 'activerecord', '~>3.0.9', :require => 'active_record'
 gem 'json', '>=1.4.6', :require => "json/ext"
 gem 'activerecord-jdbcmysql-adapter', '~>1.1'
-gem 'msgpack'
 gem 'flag_shih_tzu', :git => "git://github.com/arturaz/flag_shih_tzu.git"
 
 # Gems that are needed but should never be activated.
@@ -49,7 +48,7 @@ end
 
 # Only setuped, but not required (in test env).
 group :test_setup do
-  gem "rspec", "~>2.0"
+  gem "rspec", "~>2.7.0"
   gem "factory_girl", "~>2.1.2"
   gem "mocha"
 end
