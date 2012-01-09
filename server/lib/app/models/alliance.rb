@@ -282,7 +282,9 @@ class Alliance < ActiveRecord::Base
       select("player_id").
       where(:player_id => potential_ids).
       where("level >= ?", required_level).
-      order("RAND()").
+      joins(:player).
+      order("victory_points DESC").
+      limit(1).
       c_select_value
 
     raise NoSuccessorFound.new(

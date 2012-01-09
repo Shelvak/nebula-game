@@ -558,16 +558,17 @@ describe Alliance do
   end
 
   describe "#resign_ownership!" do
+    let(:tech_level) { 2 }
     let(:alliance) do
       alliance = create_alliance
-      (Technology::Alliances.max_players(2)).times do
+      (Technology::Alliances.max_players(tech_level)).times do
         Factory.create(:player, :alliance => alliance)
       end
       alliance
     end
     let(:new_owner) { alliance.players.last }
     let(:technology) do
-      Factory.create!(:t_alliances, :player => new_owner, :level => 2)
+      Factory.create!(:t_alliances, :player => new_owner, :level => tech_level)
     end
 
     before(:each) { technology() }
@@ -580,6 +581,21 @@ describe Alliance do
     end
 
     it "should transfer ownership" do
+      lambda do
+        alliance.resign_ownership!
+        alliance.reload
+      end.should change(alliance, :owner).from(alliance.owner).to(new_owner)
+    end
+
+    it "should transfer ownership to player who has most victory points" do
+      new_owner.victory_points = 10000
+      new_owner.save!
+
+      player = alliance.players[-2]
+      Factory.create!(:t_alliances, :player => player, :level => tech_level)
+      player.victory_points = 5000
+      player.save!
+
       lambda do
         alliance.resign_ownership!
         alliance.reload
