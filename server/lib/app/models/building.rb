@@ -30,6 +30,9 @@ class Building < ActiveRecord::Base
   # Buildings are always in neutral stance.
   def stance; Combat::STANCE_NEUTRAL; end
 
+  def npc?; self.class.npc?; end
+  def self.npc?; property('npc', false); end
+
   # Order matters here, notification control methods should be above
   # included module.
 

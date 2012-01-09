@@ -689,16 +689,6 @@ describe Unit do
     end
   end
 
-  describe "#npc?" do
-    it "should return false for PC units" do
-      Factory.create(:u_trooper).should_not be_npc
-    end
-
-    it "should return true for NPC units" do
-      Factory.create(:u_gnat).should be_npc
-    end
-  end
-
   describe ".player_ids_for_location" do
     before(:each) do
       @planet = Factory.create :planet
@@ -1286,6 +1276,13 @@ describe Unit do
       model = Factory.create(:unit_built)
       model.xp = model.xp_needed - 1
       model.can_upgrade_by.should == 0
+    end
+
+    # http://bt.nebula44.com/view.php?id=1030
+    it "should return n even if unit is NPC" do
+      model = Factory.create(:u_gnat)
+      model.xp = model.xp_needed + model.xp_needed(model.level + 2)
+      model.can_upgrade_by.should == 2
     end
 
     it "should return n if there is enough xp" do
