@@ -293,6 +293,27 @@ describe Player do
       it_should_behave_like "not invoking remote"
     end
   end
+
+  describe "#inactivity_time" do
+    it "should return 0 if player is connected" do
+      player = Factory.create(:player)
+      Dispatcher.instance.should_receive(:connected?).with(player.id).
+        and_return(true)
+      player.inactivity_time.should == 0
+    end
+
+    it "should return time from created_at if player has never logged in" do
+      player = Factory.
+        build(:player, :last_seen => nil, :created_at => 15.days.ago)
+      player.inactivity_time.should be_within(SPEC_TIME_PRECISION).of(15.days)
+    end
+
+    it "should return time from last login otherwise" do
+      player = Factory.
+        build(:player, :last_seen => 3.days.ago, :created_at => 15.days.ago)
+      player.inactivity_time.should be_within(SPEC_TIME_PRECISION).of(3.days)
+    end
+  end
   
   describe "#daily_bonus_available?" do
     it "should return true if #daily_bonus_at is nil" do
@@ -962,6 +983,20 @@ describe Player do
     end
   end
 
+  describe ".minimal_from_ids" do
+    it "should resolve from ids" do
+      p1 = Factory.create(:player)
+      p2 = Factory.create(:player)
+
+      ids = [p1.id, nil, p2.id]
+      Player.minimal_from_ids(ids).should equal_to_hash(
+        p1.id => p1.as_json(:mode => :minimal),
+        p2.id => p2.as_json(:mode => :minimal),
+        nil => nil
+      )
+    end
+  end
+
   describe "#change_scientist_count!" do
     before(:each) do
       @player = Factory.create(:player)
@@ -1066,6 +1101,56 @@ describe Player do
     end
   end
 
+  describe "#leave_alliance!" do
+    let(:alliance) { create_alliance }
+    let(:player) { Factory.create(:player, :alliance => alliance) }
+
+    it "should fail if you're not in the alliance" do
+      player.alliance = nil
+
+      lambda do
+        player.leave_alliance!
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should set alliance cooldown" do
+      player.leave_alliance!
+      player.reload
+      player.alliance_cooldown_ends_at.should be_within(SPEC_TIME_PRECISION).of(
+        Cfg.alliance_leave_cooldown.from_now
+      )
+    end
+
+    describe "if owner" do
+      let(:player) { alliance.owner }
+
+      before(:each) { player.alliance.stub!(:resign_ownership!) }
+
+      it "should try to resign" do
+        player.alliance.should_receive(:resign_ownership!)
+        player.leave_alliance!
+      end
+
+      it "should destroy alliance if resigning failed" do
+        player.alliance.stub(:resign_ownership!).
+          and_raise(Alliance::NoSuccessorFound)
+        player.leave_alliance!
+        Alliance.exists?(@alliance).should be_false
+      end
+    end
+
+    describe "if member" do
+      it "should throw you out from alliance" do
+        player.alliance.should_receive(:throw_out).with(player)
+        player.leave_alliance!
+      end
+
+      it "should work properly" do
+        player.leave_alliance!
+      end
+    end
+  end
+
   describe ".grouped_by_alliance" do
     it "should return hash of grouped players" do
       p1 = Factory.create :player
@@ -1135,37 +1220,18 @@ describe Player do
       player.destroy
     end
 
-    describe "solar systems" do
-      before(:each) do
-        @player = Factory.create(:player)
-        
-        @shielded_ss = Factory.create(:solar_system, 
-          opts_shielded(@player.id))
-        Factory.create(:planet, :solar_system => @shielded_ss, 
-          :player => @player)
-        Factory.create(:planet, :solar_system => @shielded_ss, 
-          :player => @player, :angle => 90)
-        
-        @unshielded_ss = Factory.create(:solar_system)
-        
-        Factory.create(:planet, :solar_system => @unshielded_ss, 
-          :player => @player)
-      end
-      
-      it "should turn shielded solar systems into dead stars" do
-        lambda do
-          @player.destroy
-          @shielded_ss.reload
-        end.should change(@shielded_ss, :kind).
-          from(SolarSystem::KIND_NORMAL).to(SolarSystem::KIND_DEAD)
-      end
-      
-      it "should not turn unshielded solar systems into dead stars" do
-        lambda do
-          @player.destroy
-          @unshielded_ss.reload
-        end.should_not change(@unshielded_ss, :kind)
-      end
+    it "should leave alliance if he is in one" do
+      alliance = create_alliance
+      player = alliance.owner
+      player.destroy!
+      player.reload
+      player.alliance.should be_nil
+    end
+
+    it "should not leave alliance if he not in one" do
+      player = Factory.create(:player)
+      player.should_not_receive(:leave_alliance!)
+      player.destroy!
     end
   end
 

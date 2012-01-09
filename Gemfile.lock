@@ -112,5 +112,5 @@ DEPENDENCIES
   pry
   rake (~> 0.9.0)
   rest-client
-  rspec (~> 2.0)
+  rspec (~> 2.7.0)
   xml-simple (~> 1.0)

@@ -189,6 +189,10 @@ describe SpaceMule do
           CONFIG["galaxy.player.population"] +
             CONFIG["buildings.mothership.population"]
       end
+
+      it "should set created_at" do
+        @player.created_at.should be_within(SPEC_TIME_PRECISION).of(Time.now)
+      end
     end
 
     describe "returned value" do

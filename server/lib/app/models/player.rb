@@ -110,6 +110,18 @@ class Player < ActiveRecord::Base
     end
   end
 
+  # Return +Hash+ of {player_id => Player#minimal} pairs from ids.
+  def self.minimal_from_ids(ids)
+    compacted_ids = ids.compact
+    hashed = select("id, name").where(:id => compacted_ids).c_select_all.
+      each_with_object({}) do |row, hash|
+        hash[row['id']] = {"id" => row['id'], "name" => row['name']}
+    end
+    # Add NPC player if it was in the ids.
+    hashed[nil] = nil if ids.size != compacted_ids.size
+    hashed
+  end
+
   # Return Hash of {player_id => Player#minimal} pairs from given _objects_.
   def self.minimal_from_objects(objects, map_method=:player_id, &map_block)
     map_block ||= map_method
@@ -121,6 +133,12 @@ class Player < ActiveRecord::Base
   def self.names_for(player_ids)
     names = select("name").where(:id => player_ids).c_select_values
     Hash[player_ids.zip(names)]
+  end
+
+  # Returns for how much seconds this player has been inactive.
+  def inactivity_time
+    return 0 if Dispatcher.instance.connected?(id)
+    Time.now - (last_seen.nil? ? created_at : last_seen)
   end
 
   # Is daily bonus available for this player?
@@ -292,6 +310,31 @@ class Player < ActiveRecord::Base
     alliance_cooldown_ends_at.nil? || alliance_cooldown_ends_at < Time.now
   end
 
+  # Leaves current alliance. If player is alliance owner - tries to resign and
+  # pass the ownership to other player. If that fails, destroys the alliance.
+  #
+  # Either way this player cannot join other alliance for a specified time.
+  # Either way this player cannot join other alliance for a specified time.
+  def leave_alliance!
+    alliance = self.alliance
+
+    raise GameLogicError.new("Player #{self} is not in alliance!") \
+      if alliance.nil?
+
+    self.alliance_cooldown_ends_at = Cfg.alliance_leave_cooldown.from_now
+    save!
+
+    if alliance.owner_id == id
+      begin
+        alliance.resign_ownership!
+      rescue Alliance::NoSuccessorFound
+        alliance.destroy!
+      end
+    else
+      alliance.throw_out(self)
+    end
+  end
+
   def to_s
     "<Player(#{id}), pop: #{population}/#{population_max}(#{population_cap
       }), gid: #{galaxy_id}, name: #{name.inspect}, creds: #{creds}, VIP: #{
@@ -380,9 +423,11 @@ class Player < ActiveRecord::Base
     end
   end
 
+  # Before +Player+ destruction leave alliance if he is in one.
   # Upon +Player+ destroy all shielded solar systems should become dead
   # stars.
   before_destroy do
+    leave_alliance! unless alliance_id.nil?
     solar_system_ids = planets.map(&:solar_system_id).uniq
     SolarSystem.shielded.where(:id => solar_system_ids).each(&:die!)
     true
