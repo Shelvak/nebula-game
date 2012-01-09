@@ -214,6 +214,21 @@ class ControlManager
     end
   end
 
+  def alliance_owner_changed(alliance, new_owner)
+    only_in_production(
+      "alliance_owner_changed invoked for #{alliance}, new owner: #{new_owner}"
+    ) do
+      response = post_to_web(alliance.galaxy.callback_url,
+        "alliance_owner_changed",
+        'galaxy_id' => alliance.galaxy_id,
+        'alliance_id' => alliance.id,
+        'new_owner_name' => new_owner.name
+      )
+
+      check_response(response)
+    end
+  end
+
   def alliance_renamed(alliance)
     only_in_production("alliance_renamed invoked for #{alliance}") do
       response = post_to_web(alliance.galaxy.callback_url,

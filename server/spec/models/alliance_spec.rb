@@ -550,7 +550,11 @@ describe Alliance do
       alliance.transfer_ownership!(player)
     end
 
-    it "should notify web about changed owner"
+    it "should notify web about changed owner" do
+      ControlManager.instance.should_receive(:alliance_owner_changed).
+        with(alliance, player)
+      alliance.transfer_ownership!(player)
+    end
   end
 
   describe "#take_over!" do

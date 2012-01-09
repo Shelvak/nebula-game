@@ -273,7 +273,7 @@ class Alliance < ActiveRecord::Base
       )
     end
 
-    # TODO: notify web server about changed alliance owner.
+    ControlManager.instance.alliance_owner_changed(self, player)
 
     true
   end
