@@ -99,7 +99,8 @@ class AlliancesController < GenericController
   # Leaves current alliance. After leaving player will have to wait for
   # a period of time before he can join other alliance.
   #
-  # If alliance owner leaves the alliance, alliance is destroyed. Its
+  # If alliance owner leaves the alliance, he resigns alliance ownership to
+  # his successor. If none is found - alliance is destroyed. Its
   # members are free to join other alliance as soon as this alliance is
   # destroyed.
   #
@@ -110,17 +111,7 @@ class AlliancesController < GenericController
   # Response: None
   #
   def action_leave
-    alliance = get_alliance
-
-    player.alliance_cooldown_ends_at = CONFIG.evalproperty(
-      'alliances.leave.cooldown').from_now
-    player.save!
-
-    if alliance.owner_id == player.id
-      alliance.destroy!
-    else
-      alliance.throw_out(player)
-    end
+    player.leave_alliance!
   end
 
   # Kicks player out of alliance.

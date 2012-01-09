@@ -232,49 +232,13 @@ describe AlliancesController do
       @params = {}
     end
 
-    it "should fail if you're not in the alliance" do
-      player.alliance = nil
-      player.save!
-
-      lambda do
-        invoke @action, @params
-      end.should raise_error(GameLogicError)
-    end
-
-    it "should set alliance cooldown" do
+    it "should call #leave_alliance! on player" do
+      player.should_receive(:leave_alliance!)
       invoke @action, @params
-      player.reload
-      player.alliance_cooldown_ends_at.should be_within(SPEC_TIME_PRECISION).of(
-        CONFIG.evalproperty('alliances.leave.cooldown').from_now
-      )
     end
 
-    describe "if owner" do
-      before(:each) do
-        @alliance.owner = player
-        @alliance.save!
-      end
-
-      it "should destroy alliance" do
-        invoke @action, @params
-        Alliance.exists?(@alliance).should be_false
-      end
-
-      it "should work properly" do
-        invoke @action, @params
-      end
-    end
-
-    describe "if member" do
-      it "should throw you out from alliance" do
-        player.stub!(:alliance).and_return(@alliance)
-        @alliance.should_receive(:throw_out).with(player)
-        invoke @action, @params
-      end
-
-      it "should work properly" do
-        invoke @action, @params
-      end
+    it "should work" do
+      invoke @action, @params
     end
   end
 

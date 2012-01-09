@@ -305,6 +305,31 @@ class Player < ActiveRecord::Base
     alliance_cooldown_ends_at.nil? || alliance_cooldown_ends_at < Time.now
   end
 
+  # Leaves current alliance. If player is alliance owner - tries to resign and
+  # pass the ownership to other player. If that fails, destroys the alliance.
+  #
+  # Either way this player cannot join other alliance for a specified time.
+  # Either way this player cannot join other alliance for a specified time.
+  def leave_alliance!
+    alliance = self.alliance
+
+    raise GameLogicError.new("Player #{self} is not in alliance!") \
+      if alliance.nil?
+
+    self.alliance_cooldown_ends_at = Cfg.alliance_leave_cooldown.from_now
+    save!
+
+    if alliance.owner_id == id
+      begin
+        alliance.resign_ownership!
+      rescue Alliance::NoSuccessorFound
+        alliance.destroy!
+      end
+    else
+      alliance.throw_out(self)
+    end
+  end
+
   def to_s
     "<Player(#{id}), pop: #{population}/#{population_max}(#{population_cap
       }), gid: #{galaxy_id}, name: #{name.inspect}, creds: #{creds}, VIP: #{
@@ -393,9 +418,11 @@ class Player < ActiveRecord::Base
     end
   end
 
+  # Before +Player+ destruction leave alliance if he is in one.
   # Upon +Player+ destroy all shielded solar systems should become dead
   # stars.
   before_destroy do
+    leave_alliance! unless alliance_id.nil?
     solar_system_ids = planets.map(&:solar_system_id).uniq
     SolarSystem.shielded.where(:id => solar_system_ids).each(&:die!)
     true

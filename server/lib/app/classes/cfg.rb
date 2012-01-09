@@ -16,6 +16,10 @@ class Cfg; class << self
     CONFIG.evalproperty('alliances.take_over.inactivity_time')
   end
 
+  def alliance_leave_cooldown
+    CONFIG.evalproperty('alliances.leave.cooldown')
+  end
+
   ### battleground.yml ###
 
   def vps_for_winning

@@ -557,6 +557,42 @@ describe Alliance do
     end
   end
 
+  describe "#resign_ownership!" do
+    let(:alliance) do
+      alliance = create_alliance
+      (Technology::Alliances.max_players(2)).times do
+        Factory.create(:player, :alliance => alliance)
+      end
+      alliance
+    end
+    let(:new_owner) { alliance.players.last }
+    let(:technology) do
+      Factory.create!(:t_alliances, :player => new_owner, :level => 2)
+    end
+
+    before(:each) { technology() }
+
+    it "should raise exception if no successor is found" do
+      technology.destroy!
+      lambda do
+        alliance.resign_ownership!
+      end.should raise_error(Alliance::NoSuccessorFound)
+    end
+
+    it "should transfer ownership" do
+      lambda do
+        alliance.resign_ownership!
+        alliance.reload
+      end.should change(alliance, :owner).from(alliance.owner).to(new_owner)
+    end
+
+    it "should throw old owner out" do
+      old_owner_id = alliance.owner_id
+      alliance.resign_ownership!
+      alliance.member_ids.should_not include(old_owner_id)
+    end
+  end
+
   describe "#take_over!" do
     let(:player) { Factory.build(:player) }
     let(:owner) do
