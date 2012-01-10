@@ -163,6 +163,8 @@ class Cfg; class << self
 
   ### galaxy.yml ###
 
+  def galaxy_zone_diameter; CONFIG['galaxy.zone.diameter']; end
+
   def galaxy_zone_death_age(diagonal_no)
     CONFIG.evalproperty('galaxy.zone.death_age', 'arg' => diagonal_no)
   end
