@@ -18,6 +18,12 @@ import java.lang.IllegalStateException
 
 class Zone(_x: Int, _y: Int, val diameter: Int)
         extends WithCoords {
+  /**
+   * Does this zone have mature player solar systems? Mature player is one with
+   * age greater than some value.
+   */
+  private[this] var hasMaturePlayers = false
+
   x = _x
   y = _y
   val solarSystems = new HashMap[Coords, Option[SolarSystem]]()
@@ -78,6 +84,14 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
    * Marks spot as taken.
    */
   def markAsTaken(coords: Coords) = solarSystems(coords) = None
+
+  /**
+   * Marks zone as having mature players. That makes it off limits for new
+   * players.
+   */
+  def markAsMature() = hasMaturePlayers = true
+
+  def isFull = hasMaturePlayers || playerCount >= Config.playersPerZone
 
   /**
    * How much players are in this zone?

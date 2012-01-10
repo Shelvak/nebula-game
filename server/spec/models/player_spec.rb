@@ -1193,6 +1193,41 @@ describe Player do
       planet.player_id.should be_nil
     end
 
+    describe "home solar system" do
+      let(:player) { Factory.create(:player) }
+      let(:home_ss) { Factory.create(:solar_system, :player => player) }
+
+      before(:each) { home_ss() }
+
+      it "should destroy players home solar system" do
+        player.destroy!
+        lambda do
+          home_ss.reload
+        end.should raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it "should dispatch solar system destroyed if not detached" do
+        should_fire_event(
+          Event::FowChange::SsDestroyed.all_except(home_ss.id, player.id),
+          EventBroker::FOW_CHANGE,
+          EventBroker::REASON_SS_ENTRY
+        ) do
+          player.destroy!
+        end
+      end
+
+      it "should not dispatch solar system destroyed if detached" do
+        home_ss.detach!
+        should_not_fire_event(
+          Event::FowChange::SsDestroyed.all_except(home_ss.id, player.id),
+          EventBroker::FOW_CHANGE,
+          EventBroker::REASON_SS_ENTRY
+        ) do
+          player.destroy!
+        end
+      end
+    end
+
     it "should call control manager" do
       player = Factory.create :player
       ControlManager.instance.should_receive(:player_destroyed).with(player)

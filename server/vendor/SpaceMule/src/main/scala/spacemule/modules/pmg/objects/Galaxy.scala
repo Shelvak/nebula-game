@@ -21,7 +21,7 @@ class Galaxy(val id: Int, val ruleset: String) {
   val miniBattlegrounds = Config.miniBattlegrounds
   val zones = new HashMap[Coords, Zone]()
 
-  def addExistingSS(x: Int, y: Int): scala.Unit = {
+  def addExistingSS(x: Int, y: Int, age: Int) {
     // For some reason -1 / 2 == 0 instead of -1 in Java.
     // We must fix this.
     val zoneX = (x.toFloat / zoneDiameter).floor.toInt
@@ -37,18 +37,23 @@ class Galaxy(val id: Int, val ruleset: String) {
         }
     }
 
-    // Calculate coordinate in zone. Ensure that in-zone coordinate is
-    // calculated correctly if absolute coord is negative.
-    def calcCoord(c: Int) = {
-      if (c >= 0) c % zoneDiameter
-      else {
-        val mod = c.abs % zoneDiameter
-        if (mod == 0) 0 else zoneDiameter - mod
-      }
+    if (age >= Config.zoneMaturityAge) {
+      zone.markAsMature()
     }
-    val ssX = calcCoord(x)
-    val ssY = calcCoord(y)
-    zone.markAsTaken(Coords(ssX, ssY))
+    else {
+      // Calculate coordinate in zone. Ensure that in-zone coordinate is
+      // calculated correctly if absolute coord is negative.
+      def calcCoord(c: Int) = {
+        if (c >= 0) c % zoneDiameter
+        else {
+          val mod = c.abs % zoneDiameter
+          if (mod == 0) 0 else zoneDiameter - mod
+        }
+      }
+      val ssX = calcCoord(x)
+      val ssY = calcCoord(y)
+      zone.markAsTaken(Coords(ssX, ssY))
+    }
   }
 
   /**
@@ -85,7 +90,7 @@ class Galaxy(val id: Int, val ruleset: String) {
           // If we do find existing zone
           case Some(existing) =>
             // Add if there are room for one more player there
-            if (existing.playerCount < Config.playersPerZone) {
+            if (! existing.isFull) {
               return existing
             }
           case None => return zone
