@@ -14,8 +14,8 @@ class CombatLog < ActiveRecord::Base
   )/x
 
   custom_serialize :info,
-    :serialize => lambda { |info| MessagePack.pack(info) },
-    :unserialize => lambda { |bin| MessagePack.unpack(bin) }
+    :serialize => lambda { |info| JSON.generate(info) },
+    :unserialize => lambda { |serialized| JSON.parse(serialized) }
 
   # All the data needed to play back combat replay.
   def self.replay_info(client_location, alliances, nap_rules, outcomes, log)
