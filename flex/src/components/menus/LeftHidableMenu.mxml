@@ -114,7 +114,9 @@
          visible="{ML.player.dailyBonus != null}"
          click="showDailyBonus()"/>
       <announcement:AnnouncementButton/>
-      <s:Button id="btnTutorial" label="Tutorial" visible="{MQL.showButton}"
-                click="btnTutorial_clickHandler(event)"/>
+      <s:Button
+        skinClass="components.skins.MainQuestButtonSkin"
+        id="btnTutorial" label="Tutorial" visible="{MQL.showButton}"
+        click="btnTutorial_clickHandler(event)"/>
    </base:AdvancedContainer>
 </s:Group>

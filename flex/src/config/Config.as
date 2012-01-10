@@ -631,6 +631,12 @@ package config
          return getBuildingProperty(type, 'managable') == null? true
             : getBuildingProperty(type, 'managable');
       }
+
+       public static function getBuildingDestroyable(type: String): Boolean
+       {
+           return getBuildingProperty(type, 'destroyable') == null? true
+                   : getBuildingProperty(type, 'destroyable');
+       }
       
       public static function getBuildingDestructResourceGain(): int
       {

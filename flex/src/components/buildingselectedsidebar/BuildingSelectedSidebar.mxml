@@ -835,6 +835,7 @@
                   
                   <base:Panel title="{getString('selfDestruct')}"
                               visible="{bSidebar.selectedBuilding.managable
+                              &amp;&amp; bSidebar.selectedBuilding.destroyable
                               &amp;&amp; !bSidebar.selectedBuilding.npc
                               &amp;&amp; !bSidebar.selectedBuilding.isGhost
                               &amp;&amp; bSidebar.selectedBuilding.upgradePart.upgradeEndsAt == null}">

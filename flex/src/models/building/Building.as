@@ -158,6 +158,12 @@ package models.building
       {
          return Config.getBuildingManagable(type);
       }
+
+       [Bindable (event="typeChange")]
+       public function get destroyable(): Boolean
+       {
+           return Config.getBuildingDestroyable(type);
+       }
       
       [Bindable (event="levelChange")]
       public function get scientists(): int
