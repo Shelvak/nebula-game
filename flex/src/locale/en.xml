@@ -1770,7 +1770,7 @@
        </p>
        <p>
           "<a href="event:oldOwner">{1}</a>" commanded this alliances up until now.
-          From now on "<a id="event:newOwner">{2}</a>" is the new leader.
+          From now on "<a href="event:newOwner">{2}</a>" is the new leader.
        </p>
        ]]>
     </content.allianceOwnerChanged.forOthers>
