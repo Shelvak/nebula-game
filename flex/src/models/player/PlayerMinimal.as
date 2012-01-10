@@ -3,7 +3,9 @@ package models.player
    import controllers.ui.NavigationController;
    
    import models.BaseModel;
-   
+
+   import utils.Objects;
+
    import utils.locale.Localizer;
    
    
@@ -24,8 +26,14 @@ package models.player
       }
       
       
-      public function PlayerMinimal() {
+      public function PlayerMinimal(id:int = 0, name:String = null) {
          super();
+         if (id != 0) {
+            this.id = Objects.paramIsId("id", id);
+         }
+         if (name != null) {
+            this.name = Objects.paramNotEmpty("name", name);
+         }
       }
       
       
@@ -42,6 +50,14 @@ package models.player
        * @default empty string
        */
       public var name:String = "";
+
+      public override function equals(o:Object): Boolean {
+         const player:PlayerMinimal = o as PlayerMinimal;
+         if (player == null) {
+            return false;
+         }
+         return this.id == player.id;
+      }
       
       
       /* ########## */
