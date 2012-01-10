@@ -26,6 +26,7 @@ package models.notification
       TYPE_TO_CLASS[NotificationType.ALLIANCE_JOINED] = AllianceJoined;
       TYPE_TO_CLASS[NotificationType.MARKET_OFFER_BOUGHT] = MarketOfferBought;
       TYPE_TO_CLASS[NotificationType.VPS_CONVERTED_TO_CREDS] = CredsConverted;
+      TYPE_TO_CLASS[NotificationType.ALLIANCE_OWNER_CHANGED] = AllianceOwnerChanged;
       
       /**
        * Creates concrete instance of <code>INotificationPart</code> and returns it.

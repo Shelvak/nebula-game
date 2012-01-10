@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<s:Group
+   xmlns:fx="http://ns.adobe.com/mxml/2009"
+   xmlns:s="library://ns.adobe.com/flex/spark"
+   xmlns:base="components.base.*"
+   visible="{meVisible(ML.player.id, alliance.id, alliance.ownerId)}">
+   <fx:Binding
+      destination="ownerIsActive_var"
+      source="allianceOwnerIsActive(
+                  alliance.owner.online,
+                  alliance.owner.offlineSince)"/>
+   <fx:Binding
+      destination="technologyLevelLow_var"
+      source="technologyLevelLow(
+                  ML.player.maxAlliancePlayerCount,
+                  alliance.players.length)"/>
+   <fx:Binding
+      destination="canTakeOver_var"
+      source="canTakeOver(ownerIsActive_var, technologyLevelLow_var)"/>
+   <fx:Script>
+      <![CDATA[
+      import components.popups.ErrorPopup;
+
+      import config.Config;
+
+      import controllers.alliances.AlliancesCommand;
+
+      import models.ModelLocator;
+      import models.alliance.MAlliance;
+
+      import utils.DateUtil;
+      import utils.locale.Localizer;
+
+
+      [Bindable]
+      public var alliance: MAlliance;
+      [Bindable]
+      private var ownerIsActive_var: Boolean;
+      [Bindable]
+      private var technologyLevelLow_var: Boolean;
+      [Bindable]
+      private var canTakeOver_var: Boolean;
+
+      private function get ML(): ModelLocator {
+         return ModelLocator.getInstance();
+      }
+
+      private function meVisible(playerId: int, allianceId: int,
+                                 allianceOwnerId: int): Boolean {
+         return playerId != allianceOwnerId && ML.player.belongsTo(allianceId);
+      }
+
+      private function allianceOwnerIsActive(ownerOnline: Boolean,
+                                             ownerOfflineSince: Date): Boolean {
+         if (ownerOnline) {
+            return true;
+         }
+         const inactiveFor: int =
+                  (DateUtil.now - ownerOfflineSince.time) / 1000;
+         return Config.getAllianceTakeOverInactivityTime() > inactiveFor;
+      }
+
+      private function technologyLevelLow(maxPlayers: int,
+                                          playersInAlliance: int): Boolean {
+         return maxPlayers < playersInAlliance;
+      }
+
+      private function canTakeOver(ownerIsActive: Boolean,
+                                   technologyLevelLow: Boolean): Boolean {
+         return !ownerIsActive && !technologyLevelLow;
+      }
+
+      private function getString(property: String,
+                                 parameters: Array = null): String {
+         return Localizer.string(
+            "Alliances", "takeOver." + property, parameters
+         );
+      }
+
+      private function getOwnerInactiveMessage(offlineSince: Date): String {
+         return getString(
+            'message.ownerIsInactive',
+            [DateUtil.secondsToDays((offlineSince.time - DateUtil.now) / 1000)]
+         );
+      }
+
+      private function get ownerActiveMessage(): String {
+         return getString(
+            "message.ownerIsActive",
+            [DateUtil.secondsToDays(Config.getAllianceTakeOverInactivityTime())]
+         );
+      }
+
+      private function getTechLevelTooLowMessage(numPlayers:int): String {
+         return getString(
+            'message.techLevelTooLow',
+            [MAlliance.technologyLevelRequiredForPlayers(numPlayers)]
+         );
+      }
+
+      private function btnTakeOver_clickHandler(event: MouseEvent): void {
+         const popup: ErrorPopup = new ErrorPopup();
+         popup.title = getString('title.confirmationPopup');
+         popup.retryButtonLabel = Localizer.string("Popups", 'label.yes');
+         popup.cancelButtonLabel = Localizer.string("Popups", 'label.no');
+         popup.showRetryButton = true;
+         popup.showCancelButton = true;
+         popup.message = getString('message.confirmationPopup');
+         popup.retryButtonClickHandler =
+            function(button: Button): void {
+               new AlliancesCommand(AlliancesCommand.TAKE_OVER).dispatch();
+            };
+         popup.show();
+      }
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:VerticalLayout horizontalAlign="center" gap="20"/>
+   </s:layout>
+   <base:Heading1 id="lblHeader" text="{getString('header')}" width="100%"/>
+   <base:AdvancedContainer>
+      <base:layout>
+         <s:VerticalLayout horizontalAlign="center" gap="6"/>
+      </base:layout>
+      <s:Label
+         id="lblOwnerActive" visible="{ownerIsActive_var}"
+         text="{ownerActiveMessage}"/>
+      <s:Label
+         id="lblOwnerInactive" visible="{canTakeOver_var}"
+         text="{getOwnerInactiveMessage(alliance.owner.offlineSince)}"/>
+      <s:Label visible="{technologyLevelLow_var}"
+         id="lblTechnologyTooLow"
+         text="{getTechLevelTooLowMessage(alliance.players.length)} "/>
+      <s:Button
+         id="btnTakeOver" enabled="{canTakeOver_var}"
+         label="{getString('label.takeOwnershipButton')}"
+         click="btnTakeOver_clickHandler(event)"/>
+   </base:AdvancedContainer>
+</s:Group>

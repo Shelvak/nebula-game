@@ -256,14 +256,11 @@ package controllers.startup
       }
       private static function bindChatCommands() : void
       {
-         with (ChatCommand)
-         {
-            bindPair(INDEX, new controllers.chat.actions.IndexAction());
-            bindPair(CHANNEL_JOIN, new ChannelJoinAction());
-            bindPair(CHANNEL_LEAVE, new ChannelLeaveAction());
-            bindPair(MESSAGE_PUBLIC, new MessagePublicAction());
-            bindPair(MESSAGE_PRIVATE, new MessagePrivateAction());
-         }
+         bindPair(ChatCommand.INDEX, new controllers.chat.actions.IndexAction());
+         bindPair(ChatCommand.CHANNEL_JOIN, new ChannelJoinAction());
+         bindPair(ChatCommand.CHANNEL_LEAVE, new ChannelLeaveAction());
+         bindPair(ChatCommand.MESSAGE_PUBLIC, new MessagePublicAction());
+         bindPair(ChatCommand.MESSAGE_PRIVATE, new MessagePrivateAction());
       }
       private static function bindMarketCommands() : void
       {
@@ -365,33 +362,29 @@ package controllers.startup
       }
       private static function bindPlayersCommands() : void
       {
-         with (PlayersCommand)
-         {
-            bindPair(LOGIN, new LoginAction());
-            bindPair(DISCONNECT, new DisconnectAction());
-            bindPair(RATINGS, new controllers.players.actions.RatingsAction());
-            bindPair(SHOW, new controllers.players.actions.ShowAction());
-            bindPair(SHOW_PROFILE, new ShowProfileAction());
-            bindPair(CONVERT_CREDS, new ConvertCredsAction());
-            bindPair(EDIT, new controllers.players.actions.EditAction());
-            bindPair(VIP, new VipAction());
-            bindPair(STATUS_CHANGE, new StatusChangeAction());
-         }
+         bindPair(PlayersCommand.LOGIN, new LoginAction());
+         bindPair(PlayersCommand.DISCONNECT, new DisconnectAction());
+         bindPair(PlayersCommand.RATINGS, new controllers.players.actions.RatingsAction());
+         bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
+         bindPair(PlayersCommand.SHOW_PROFILE, new ShowProfileAction());
+         bindPair(PlayersCommand.CONVERT_CREDS, new ConvertCredsAction());
+         bindPair(PlayersCommand.EDIT, new controllers.players.actions.EditAction());
+         bindPair(PlayersCommand.VIP, new VipAction());
+         bindPair(PlayersCommand.STATUS_CHANGE, new StatusChangeAction());
       }
       private static function bindAlliancesCommands() : void
       {
-         with (AlliancesCommand)
-         {
-            bindPair(RATINGS, new controllers.alliances.actions.RatingsAction());
-            bindPair(NEW, new controllers.alliances.actions.NewAction());
-            bindPair(SHOW, new controllers.alliances.actions.ShowAction());
-            bindPair(KICK, new KickAction());
-            bindPair(LEAVE, new LeaveAction());
-            bindPair(EDIT, new controllers.alliances.actions.EditAction());
-            bindPair(EDIT_DESCRIPTION, new EditDescriptionAction());
-            bindPair(INVITE, new InviteAction());
-            bindPair(JOIN, new JoinAction());
-         }
+         bindPair(AlliancesCommand.RATINGS, new controllers.alliances.actions.RatingsAction());
+         bindPair(AlliancesCommand.NEW, new controllers.alliances.actions.NewAction());
+         bindPair(AlliancesCommand.SHOW, new controllers.alliances.actions.ShowAction());
+         bindPair(AlliancesCommand.KICK, new KickAction());
+         bindPair(AlliancesCommand.LEAVE, new LeaveAction());
+         bindPair(AlliancesCommand.EDIT, new controllers.alliances.actions.EditAction());
+         bindPair(AlliancesCommand.EDIT_DESCRIPTION, new EditDescriptionAction());
+         bindPair(AlliancesCommand.INVITE, new InviteAction());
+         bindPair(AlliancesCommand.JOIN, new JoinAction());
+         bindPair(AlliancesCommand.GIVE_AWAY, new GiveAwayAction());
+         bindPair(AlliancesCommand.TAKE_OVER, new TakeOverAction());
       }
       private static function bindGalaxiesCommands() : void
       {
@@ -407,17 +400,15 @@ package controllers.startup
          );
       }
       private static function bindPlanetsCommands() : void {
-         with (PlanetsCommand) {
-            bindPair(SHOW, new controllers.planets.actions.ShowAction());
-            bindPair(EDIT, new controllers.planets.actions.EditAction());
-            bindPair(BOOST, new BoostAction());
-            bindPair(TAKE, new TakeAction());
-            bindPair(PLAYER_INDEX, new PlayerIndexAction());
-            bindPair(EXPLORE, new ExploreAction());
-            bindPair(FINISH_EXPLORATION, new FinishExplorationAction());
-            bindPair(REMOVE_FOLIAGE, new RemoveFoliageAction());
-            bindPair(PORTAL_UNITS, new PortalUnitsAction());
-         }
+         bindPair(PlanetsCommand.SHOW, new controllers.planets.actions.ShowAction());
+         bindPair(PlanetsCommand.EDIT, new controllers.planets.actions.EditAction());
+         bindPair(PlanetsCommand.BOOST, new BoostAction());
+         bindPair(PlanetsCommand.TAKE, new TakeAction());
+         bindPair(PlanetsCommand.PLAYER_INDEX, new PlayerIndexAction());
+         bindPair(PlanetsCommand.EXPLORE, new ExploreAction());
+         bindPair(PlanetsCommand.FINISH_EXPLORATION, new FinishExplorationAction());
+         bindPair(PlanetsCommand.REMOVE_FOLIAGE, new RemoveFoliageAction());
+         bindPair(PlanetsCommand.PORTAL_UNITS, new PortalUnitsAction());
       }
       private static function bindAnnouncementsCommands() : void {
          bindPair(AnnouncementsCommand.NEW, new controllers.announcements.actions.NewAction());

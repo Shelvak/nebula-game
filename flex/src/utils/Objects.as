@@ -481,6 +481,21 @@ package utils
          }
          return paramValue;
       }
+
+      /**
+       * Checks if <code>paramValue</code> can be an ID value.
+       * 
+       * @return <code>paramValue</code>
+       */
+      public static function paramIsId(paramName:String, paramValue:int): int {
+         if (paramValue <= 0) {
+            throw new ArgumentError(
+               "[param " + paramName + "] must be an ID value (greater than "
+                  + "0) but was " + paramValue
+            );
+         }
+         return paramValue;
+      }
       
       /**
        * Checks if <code>paramValue</code> is less than (or equal to, if <code>allowHigh</code> is

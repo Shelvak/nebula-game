@@ -334,6 +334,36 @@
       <p>You can only invite players whose planets you can see (except for 
       planets in battleground).</p>
     </label.explanationInvite>
+
+    <giveAway.label.actionButton value="Give alliance away"/>
+    <giveAway.title.confirmationPopup value="Are you sure?"/>
+    <giveAway.message.confirmationPopup>
+       Are you sure you want to give away your alliance to {0}?
+    </giveAway.message.confirmationPopup>
+    <giveAway.message.techLevelTooLow>
+       Player {0} does not have alliance technology level required to
+       take over your alliance
+    </giveAway.message.techLevelTooLow>
+
+    <takeOver.header value="Take ownership"/>
+    <takeOver.label.takeOwnershipButton value="Take ownership"/>
+    <takeOver.title.confirmationPopup value="Are you sure?"/>
+    <takeOver.message.confirmationPopup>
+       Are you sure you want to gain ownership of this alliance?
+    </takeOver.message.confirmationPopup>
+    <takeOver.message.ownerIsActive>
+       You will be able to take over ownership of this alliance after
+       its current owner is inactive for {0} d.
+    </takeOver.message.ownerIsActive>
+    <takeOver.message.techLevelTooLow>
+       You can't gain ownership of this alliance because you do not have
+       level {0} of alliance technology.
+    </takeOver.message.techLevelTooLow>
+    <takeOver.message.ownerIsInactive>
+       Since current owner of the alliance has been inactive for {0} d., you
+       can now take over the ownership of it.
+    </takeOver.message.ownerIsInactive>
+     
   </Alliances>
 
   <BattleMap>
@@ -1721,6 +1751,29 @@
       <p>Player "{0}" has joined your alliance "{1}".</p>
       <p>Please give him or her a warm welcome!</p>
     </content.allianceJoined>
+
+    <title.allianceOwnerChanged>
+       Owner of alliance "{0}" has changed!
+    </title.allianceOwnerChanged>
+    <content.allianceOwnerChanged.forOldOwner>
+       <![CDATA[ You have lost ownership of alliance "<a href="event:alliance">{0}</a>".
+       The new owner is "<a href="event:newOwner">{1}</a>". ]]>
+    </content.allianceOwnerChanged.forOldOwner>
+    <content.allianceOwnerChanged.forNewOwner>
+       <![CDATA[ You have taken over the command of "<a href="event:alliance">{0}</a>"
+       from the old ruler "<a href="event:oldOwner">{1}</a>". ]]>
+    </content.allianceOwnerChanged.forNewOwner>
+    <content.allianceOwnerChanged.forOthers>
+       <![CDATA[
+       <p>
+          The leader of "<a href="event:alliance">{0}</a>" alliance has changed!
+       </p>
+       <p>
+          "<a href="event:oldOwner">{1}</a>" commanded this alliances up until now.
+          From now on "<a href="event:newOwner">{2}</a>" is the new leader.
+       </p>
+       ]]>
+    </content.allianceOwnerChanged.forOthers>
 
     <prop.alive value="Alive" />
     <prop.destroyed value="Destroyed" />

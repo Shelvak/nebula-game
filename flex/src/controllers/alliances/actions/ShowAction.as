@@ -9,9 +9,9 @@ package controllers.alliances.actions
    import models.player.MRatingPlayer;
 
    import mx.collections.Sort;
-   import mx.collections.SortField;
 
    import utils.remote.rmo.ClientRMO;
+
 
    /**
     * Gets alliance data. 

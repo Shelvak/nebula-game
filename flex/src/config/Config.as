@@ -205,10 +205,6 @@ package config
          return getValue("market.offers.max");
       }
       
-      public static function getAllianceLeaveCooldown(): int
-      {
-         return getValue("alliances.leave.cooldown");
-      }
       /**
        * Returns rounding precision mostly used by resource rate calculations
        * @return rounding precision
@@ -397,11 +393,32 @@ package config
          }
          return types;
       }
-      
+
+      /* ################ */
+      /* ### ALLIANCE ### */
+      /* ################ */
+
+      public static function getAllianceLeaveCooldown(): int
+      {
+         return getValue("alliances.leave.cooldown");
+      }
+
       public static function getAllianceMaxPlayers(techLevel:int) : int
       {
-         return StringUtil.evalFormula
-            (getTechnologyProperty("Alliances", "maxPlayers"), {"level": techLevel});
+         if (techLevel == 0) {
+            return 0;
+         }
+         return StringUtil.evalFormula(
+            getTechnologyProperty("Alliances", "maxPlayers"),
+            {"level": techLevel}
+         );
+      }
+
+      /**
+       * @return seconds
+       */
+      public static function getAllianceTakeOverInactivityTime(): int {
+         return getValue("alliances.takeOver.inactivityTime");
       }
       
       

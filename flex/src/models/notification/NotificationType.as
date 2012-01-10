@@ -15,5 +15,6 @@ package models.notification
       public static const ALLIANCE_JOINED:int = 10;
       public static const MARKET_OFFER_BOUGHT:int = 11;
       public static const VPS_CONVERTED_TO_CREDS: int = 12;
+      public static const ALLIANCE_OWNER_CHANGED: int = 13;
    }
 }
