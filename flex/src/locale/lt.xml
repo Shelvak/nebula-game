@@ -1822,10 +1822,18 @@
     <title.allianceInvitation value="Pakvietimas į sąjungą"/>
     <message.allianceInvitation 
       value="Pakvietimas prisijungti prie sąjungos „{0}“"/>
-    <message.allianceInvitation.long>
-      Tu buvai pakviestas prisijungti prie sąjungos „{0}“. Paspausk 
-      '[reference:label.allianceInvitation.join]' kad prisijungtum.
-    </message.allianceInvitation.long>
+      <message.allianceInvitation.long>
+          <![CDATA[
+      Tu buvai pakviestas prisijungti prie sąjungos <a href="event:openAlliance">
+      „{0}“</a>. Paspausk '[reference:label.allianceInvitation.join]' kad prisijungtum.
+      ]]>
+      </message.allianceInvitation.long>
+      <message.allianceInvitation.denied>
+          <![CDATA[
+      Tu buvai pakviestas prisijungti prie sąjungos „
+      <a href="event:openAlliance">{0}</a>“.
+      ]]>
+      </message.allianceInvitation.denied>
     <label.allianceInvitation.join value="Prisijungti"/>
     <message.allianceInvitation.cooldown 
       value="Tu galėsi prisijungti prie sąjungos už {0} ({1})."/>

@@ -1732,9 +1732,16 @@
     <title.allianceInvitation value="Alliance invitation"/>
     <message.allianceInvitation value="Invitation to join alliance '{0}'"/>
     <message.allianceInvitation.long>
-      You have been invited to the alliance {0}. Click
-      '[reference:Notifications/label.allianceInvitation.join]' to join it.
+      <![CDATA[
+      You have been invited to the alliance <a href="event:openAlliance">{0}</a>.
+      Click '[reference:Notifications/label.allianceInvitation.join]' to join it.
+      ]]>
     </message.allianceInvitation.long>
+      <message.allianceInvitation.denied>
+          <![CDATA[
+      You have been invited to the alliance <a href="event:openAlliance">{0}</a>.
+      ]]>
+      </message.allianceInvitation.denied>
     <label.allianceInvitation.join value="Join"/>
     <message.allianceInvitation.cooldown value="You can't join any alliance for {0} (until {1})."/>
     <message.allianceInvitation.alreadyInAlliance>
